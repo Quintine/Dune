@@ -1,0 +1,108 @@
+.root {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 0.15rem;
+  color: #f2ddb1;
+  font-variant-numeric: tabular-nums;
+}
+
+.wheel {
+  display: block;
+  width: min(100%, 12rem);
+  height: auto;
+  justify-self: center;
+  overflow: visible;
+  pointer-events: none;
+  user-select: none;
+}
+
+.chosen {
+  fill: #f6e2b8;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.5rem;
+  align-items: start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.slider {
+  min-width: 0;
+}
+
+.root .range {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  accent-color: #d8b66a;
+  cursor: pointer;
+}
+
+.bounds {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -0.3rem;
+  color: #bbb39f;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.root .number {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  padding: 0.5rem;
+  border: 1px solid #8e794e;
+  border-radius: 0.35rem;
+  background: #151b13;
+  color: #f6e2b8;
+  font-family: inherit;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color-scheme: dark;
+}
+
+.root input:focus-visible {
+  outline: 2px solid #f0d497;
+  outline-offset: 3px;
+}
+
+.root[data-disabled] .wheel {
+  opacity: 0.6;
+}
+
+.root input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (forced-colors: active) {
+  .root .number {
+    border-color: ButtonText;
+    color: CanvasText;
+    background: Canvas;
+  }
+
+  .root input:focus-visible {
+    outline-color: Highlight;
+  }
+
+  .bounds {
+    color: CanvasText;
+  }
+}

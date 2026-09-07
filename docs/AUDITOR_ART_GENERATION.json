@@ -1,0 +1,18 @@
+{
+  "created": "2026-09-07",
+  "tool": "built-in image_gen.imagegen",
+  "prompt": "Use case: stylized-concept. Asset type: original square special-leader portrait for a sophisticated science-fiction strategy board game. Create the Auditor, a gender-neutral, androgynous middle-aged imperial corporate accountant: severe shrewd face, intelligent watchful eyes, composed businesslike expression, precise short hair, no exaggerated gender cues. Head-and-shoulders portrait centered with the entire head inside the image and generous dark space near the corners for later circular cropping by the application. Copper and aged-brass accents on a high-collared black ceremonial corporate garment, understated fine woven texture, no insignia. Style: refined realistic oil painting with visible restrained impasto brushwork and subtle canvas texture, dignified old-master portrait lighting translated into an original sci-fi setting. Warm directional golden light from the upper left lights the face; the opposite cheek falls into soft dark shadow. Deep umber, black, brass and copper palette; dark painterly atmospheric science-fiction backdrop with no identifiable objects. The face should be clear and expressive even at small leader-token size. Match a cohesive series of centered head-and-shoulders oil portraits against warm umber-black backgrounds, without reproducing any existing character face. Composition 1:1 square, full bleed. No text, captions, lettering, numbers, logos, watermark, medallion circle, border, card frame, UI or graphic overlays. No photographic source, no copied film actor, no copied published board-game artwork.",
+  "generatedPath": "/home/quintine/.codex/generated_images/01a078ad-871d-7401-8ac6-0f67ca1fd2ec/exec-2dd0f8f0-a7e4-4f91-bb0b-d6ef64edd8b4.png",
+  "savedPath": "/tmp/dune-auditor-art.png",
+  "styleInspectedPaths": [
+    "/home/quintine/Projects/Dune/public/art/leaders/choam-0-v1.png",
+    "/home/quintine/Projects/Dune/public/art/leaders/duke-vidal-v1.png"
+  ],
+  "inputReferenceImages": [],
+  "inspection": "Accepted after visual inspection: square centered head-and-shoulders portrait, complete head within frame with crop margin, severe watchful expression, short hair and understated copper/brass/black high-collar dress, warm upper-left light, dark umber-black oil-paint texture. No visible text, logos, circle, border or UI. Matches the inspected existing CHOAM/Duke portrait lighting, texture and crop while depicting a distinct original face.",
+  "projectFilesEdited": false,
+  "width": 1254,
+  "height": 1254,
+  "bytes": 2554538,
+  "sha256": "68b8d266f088f3b6b43be4edc69d35b77beb8636ec2d0020db8e49762b436ed3"
+}

@@ -1,0 +1,830 @@
+{
+  "south_mesa:5": [
+    "cielago_east:4",
+    "false_wall_south:4",
+    "false_wall_south:5",
+    "pasty_mesa:5",
+    "pasty_mesa:6",
+    "south_mesa:4",
+    "south_mesa:6",
+    "tueks_sietch:5"
+  ],
+  "south_mesa:4": [
+    "cielago_east:3",
+    "cielago_east:4",
+    "false_wall_south:4",
+    "false_wall_south:5",
+    "pasty_mesa:5",
+    "south_mesa:5",
+    "tueks_sietch:5"
+  ],
+  "south_mesa:6": [
+    "false_wall_south:5",
+    "pasty_mesa:5",
+    "pasty_mesa:6",
+    "pasty_mesa:7",
+    "red_chasm:7",
+    "south_mesa:5",
+    "tueks_sietch:5"
+  ],
+  "tueks_sietch:5": [
+    "false_wall_south:4",
+    "false_wall_south:5",
+    "pasty_mesa:5",
+    "pasty_mesa:6",
+    "south_mesa:4",
+    "south_mesa:5",
+    "south_mesa:6"
+  ],
+  "false_wall_south:5": [
+    "cielago_east:4",
+    "false_wall_south:4",
+    "harg_pass:4",
+    "harg_pass:5",
+    "pasty_mesa:5",
+    "pasty_mesa:6",
+    "south_mesa:4",
+    "south_mesa:5",
+    "south_mesa:6",
+    "the_minor_erg:5",
+    "the_minor_erg:6",
+    "tueks_sietch:5"
+  ],
+  "false_wall_south:4": [
+    "cielago_east:3",
+    "cielago_east:4",
+    "cielago_north:3",
+    "false_wall_south:5",
+    "harg_pass:4",
+    "harg_pass:5",
+    "pasty_mesa:5",
+    "south_mesa:4",
+    "south_mesa:5",
+    "the_minor_erg:5",
+    "tueks_sietch:5"
+  ],
+  "red_chasm:7": [
+    "pasty_mesa:6",
+    "pasty_mesa:7",
+    "pasty_mesa:8",
+    "south_mesa:6"
+  ],
+  "pasty_mesa:8": [
+    "gara_kulon:8",
+    "pasty_mesa:7",
+    "red_chasm:7",
+    "shield_wall:8",
+    "shield_wall:9",
+    "the_minor_erg:7",
+    "the_minor_erg:8"
+  ],
+  "pasty_mesa:5": [
+    "false_wall_south:4",
+    "false_wall_south:5",
+    "pasty_mesa:6",
+    "south_mesa:4",
+    "south_mesa:5",
+    "south_mesa:6",
+    "the_minor_erg:5",
+    "the_minor_erg:6",
+    "tueks_sietch:5"
+  ],
+  "pasty_mesa:7": [
+    "gara_kulon:8",
+    "pasty_mesa:6",
+    "pasty_mesa:8",
+    "red_chasm:7",
+    "shield_wall:8",
+    "south_mesa:6",
+    "the_minor_erg:6",
+    "the_minor_erg:7",
+    "the_minor_erg:8"
+  ],
+  "pasty_mesa:6": [
+    "false_wall_south:5",
+    "pasty_mesa:5",
+    "pasty_mesa:7",
+    "red_chasm:7",
+    "south_mesa:5",
+    "south_mesa:6",
+    "the_minor_erg:5",
+    "the_minor_erg:6",
+    "the_minor_erg:7",
+    "tueks_sietch:5"
+  ],
+  "the_minor_erg:8": [
+    "false_wall_east:7",
+    "false_wall_east:8",
+    "false_wall_east:9",
+    "pasty_mesa:7",
+    "pasty_mesa:8",
+    "shield_wall:8",
+    "shield_wall:9",
+    "the_minor_erg:7"
+  ],
+  "the_minor_erg:5": [
+    "false_wall_east:5",
+    "false_wall_east:6",
+    "false_wall_south:4",
+    "false_wall_south:5",
+    "harg_pass:4",
+    "harg_pass:5",
+    "pasty_mesa:5",
+    "pasty_mesa:6",
+    "the_minor_erg:6"
+  ],
+  "the_minor_erg:7": [
+    "false_wall_east:6",
+    "false_wall_east:7",
+    "false_wall_east:8",
+    "pasty_mesa:6",
+    "pasty_mesa:7",
+    "pasty_mesa:8",
+    "shield_wall:8",
+    "the_minor_erg:6",
+    "the_minor_erg:8"
+  ],
+  "the_minor_erg:6": [
+    "false_wall_east:5",
+    "false_wall_east:6",
+    "false_wall_east:7",
+    "false_wall_south:5",
+    "harg_pass:5",
+    "pasty_mesa:5",
+    "pasty_mesa:6",
+    "pasty_mesa:7",
+    "the_minor_erg:5",
+    "the_minor_erg:7"
+  ],
+  "gara_kulon:8": [
+    "pasty_mesa:7",
+    "pasty_mesa:8",
+    "shield_wall:8",
+    "shield_wall:9",
+    "sihaya_ridge:9"
+  ],
+  "sihaya_ridge:9": [
+    "basin:9",
+    "gara_kulon:8",
+    "hole_in_the_rock:9",
+    "shield_wall:8",
+    "shield_wall:9"
+  ],
+  "shield_wall:8": [
+    "gara_kulon:8",
+    "hole_in_the_rock:9",
+    "imperial_basin:9",
+    "pasty_mesa:7",
+    "pasty_mesa:8",
+    "shield_wall:9",
+    "sihaya_ridge:9",
+    "the_minor_erg:7",
+    "the_minor_erg:8"
+  ],
+  "shield_wall:9": [
+    "gara_kulon:8",
+    "hole_in_the_rock:9",
+    "imperial_basin:10",
+    "imperial_basin:9",
+    "pasty_mesa:8",
+    "shield_wall:8",
+    "sihaya_ridge:9",
+    "the_minor_erg:8"
+  ],
+  "hole_in_the_rock:9": [
+    "basin:9",
+    "imperial_basin:10",
+    "imperial_basin:9",
+    "rim_wall_west:9",
+    "shield_wall:8",
+    "shield_wall:9",
+    "sihaya_ridge:9"
+  ],
+  "basin:9": [
+    "hole_in_the_rock:9",
+    "oh_gap:10",
+    "oh_gap:9",
+    "rim_wall_west:9",
+    "sihaya_ridge:9"
+  ],
+  "rim_wall_west:9": [
+    "arrakeen:10",
+    "basin:9",
+    "hole_in_the_rock:9",
+    "imperial_basin:10",
+    "imperial_basin:9",
+    "oh_gap:10",
+    "oh_gap:9"
+  ],
+  "polar_sink:0": [
+    "arsunt:11",
+    "arsunt:12",
+    "cielago_north:1",
+    "cielago_north:2",
+    "cielago_north:3",
+    "false_wall_east:5",
+    "false_wall_east:6",
+    "false_wall_east:7",
+    "false_wall_east:8",
+    "false_wall_east:9",
+    "hagga_basin:12",
+    "hagga_basin:13",
+    "harg_pass:4",
+    "harg_pass:5",
+    "imperial_basin:10",
+    "imperial_basin:11",
+    "imperial_basin:9",
+    "wind_pass:14",
+    "wind_pass:15",
+    "wind_pass:16",
+    "wind_pass:17",
+    "wind_pass_north:17",
+    "wind_pass_north:18"
+  ],
+  "arsunt:12": [
+    "arsunt:11",
+    "carthag:11",
+    "hagga_basin:12",
+    "hagga_basin:13",
+    "imperial_basin:11",
+    "polar_sink:0"
+  ],
+  "arsunt:11": [
+    "arsunt:12",
+    "carthag:11",
+    "hagga_basin:12",
+    "imperial_basin:10",
+    "imperial_basin:11",
+    "polar_sink:0"
+  ],
+  "carthag:11": [
+    "arsunt:11",
+    "arsunt:12",
+    "hagga_basin:12",
+    "imperial_basin:10",
+    "imperial_basin:11",
+    "tsimpo:11",
+    "tsimpo:12"
+  ],
+  "tsimpo:13": [
+    "broken_land:12",
+    "hagga_basin:12",
+    "hagga_basin:13",
+    "plastic_basin:12",
+    "plastic_basin:13",
+    "plastic_basin:14",
+    "tsimpo:12"
+  ],
+  "tsimpo:12": [
+    "broken_land:11",
+    "broken_land:12",
+    "carthag:11",
+    "hagga_basin:12",
+    "hagga_basin:13",
+    "imperial_basin:11",
+    "oh_gap:11",
+    "plastic_basin:12",
+    "plastic_basin:13",
+    "tsimpo:11",
+    "tsimpo:13"
+  ],
+  "tsimpo:11": [
+    "broken_land:11",
+    "broken_land:12",
+    "carthag:11",
+    "hagga_basin:12",
+    "imperial_basin:10",
+    "imperial_basin:11",
+    "oh_gap:10",
+    "oh_gap:11",
+    "plastic_basin:12",
+    "tsimpo:12"
+  ],
+  "hagga_basin:13": [
+    "arsunt:12",
+    "hagga_basin:12",
+    "plastic_basin:12",
+    "plastic_basin:13",
+    "plastic_basin:14",
+    "polar_sink:0",
+    "tsimpo:12",
+    "tsimpo:13",
+    "wind_pass:14"
+  ],
+  "hagga_basin:12": [
+    "arsunt:11",
+    "arsunt:12",
+    "carthag:11",
+    "hagga_basin:13",
+    "plastic_basin:12",
+    "plastic_basin:13",
+    "polar_sink:0",
+    "tsimpo:11",
+    "tsimpo:12",
+    "tsimpo:13"
+  ],
+  "broken_land:12": [
+    "broken_land:11",
+    "oh_gap:11",
+    "plastic_basin:12",
+    "plastic_basin:13",
+    "rock_outcroppings:13",
+    "tsimpo:11",
+    "tsimpo:12",
+    "tsimpo:13"
+  ],
+  "broken_land:11": [
+    "broken_land:12",
+    "oh_gap:10",
+    "oh_gap:11",
+    "plastic_basin:12",
+    "tsimpo:11",
+    "tsimpo:12"
+  ],
+  "plastic_basin:13": [
+    "broken_land:12",
+    "hagga_basin:12",
+    "hagga_basin:13",
+    "plastic_basin:12",
+    "plastic_basin:14",
+    "rock_outcroppings:13",
+    "rock_outcroppings:14",
+    "sietch_tabr:14",
+    "tsimpo:12",
+    "tsimpo:13",
+    "wind_pass:14"
+  ],
+  "plastic_basin:12": [
+    "broken_land:11",
+    "broken_land:12",
+    "hagga_basin:12",
+    "hagga_basin:13",
+    "plastic_basin:13",
+    "rock_outcroppings:13",
+    "tsimpo:11",
+    "tsimpo:12",
+    "tsimpo:13"
+  ],
+  "plastic_basin:14": [
+    "funeral_plain:15",
+    "hagga_basin:13",
+    "plastic_basin:13",
+    "rock_outcroppings:13",
+    "rock_outcroppings:14",
+    "sietch_tabr:14",
+    "the_great_flat:15",
+    "tsimpo:13",
+    "wind_pass:14",
+    "wind_pass:15"
+  ],
+  "rock_outcroppings:13": [
+    "bight_of_the_cliff:14",
+    "broken_land:12",
+    "plastic_basin:12",
+    "plastic_basin:13",
+    "plastic_basin:14",
+    "rock_outcroppings:14",
+    "sietch_tabr:14"
+  ],
+  "rock_outcroppings:14": [
+    "bight_of_the_cliff:14",
+    "bight_of_the_cliff:15",
+    "plastic_basin:13",
+    "plastic_basin:14",
+    "rock_outcroppings:13",
+    "sietch_tabr:14"
+  ],
+  "sietch_tabr:14": [
+    "bight_of_the_cliff:14",
+    "bight_of_the_cliff:15",
+    "plastic_basin:13",
+    "plastic_basin:14",
+    "rock_outcroppings:13",
+    "rock_outcroppings:14"
+  ],
+  "bight_of_the_cliff:15": [
+    "bight_of_the_cliff:14",
+    "funeral_plain:15",
+    "rock_outcroppings:14",
+    "sietch_tabr:14"
+  ],
+  "bight_of_the_cliff:14": [
+    "bight_of_the_cliff:15",
+    "funeral_plain:15",
+    "rock_outcroppings:13",
+    "rock_outcroppings:14",
+    "sietch_tabr:14"
+  ],
+  "funeral_plain:15": [
+    "bight_of_the_cliff:14",
+    "bight_of_the_cliff:15",
+    "plastic_basin:14",
+    "the_great_flat:15"
+  ],
+  "the_great_flat:15": [
+    "funeral_plain:15",
+    "plastic_basin:14",
+    "the_greater_flat:16",
+    "wind_pass:14",
+    "wind_pass:15",
+    "wind_pass:16"
+  ],
+  "wind_pass:14": [
+    "hagga_basin:13",
+    "plastic_basin:13",
+    "plastic_basin:14",
+    "polar_sink:0",
+    "the_great_flat:15",
+    "wind_pass:15"
+  ],
+  "wind_pass:15": [
+    "false_wall_west:16",
+    "plastic_basin:14",
+    "polar_sink:0",
+    "the_great_flat:15",
+    "the_greater_flat:16",
+    "wind_pass:14",
+    "wind_pass:16"
+  ],
+  "wind_pass:16": [
+    "false_wall_west:16",
+    "false_wall_west:17",
+    "polar_sink:0",
+    "the_great_flat:15",
+    "the_greater_flat:16",
+    "wind_pass:15",
+    "wind_pass:17",
+    "wind_pass_north:17"
+  ],
+  "wind_pass:17": [
+    "cielago_west:18",
+    "false_wall_west:16",
+    "false_wall_west:17",
+    "false_wall_west:18",
+    "polar_sink:0",
+    "the_greater_flat:16",
+    "wind_pass:16",
+    "wind_pass_north:17",
+    "wind_pass_north:18"
+  ],
+  "the_greater_flat:16": [
+    "false_wall_west:16",
+    "false_wall_west:17",
+    "habbanya_erg:16",
+    "habbanya_erg:17",
+    "the_great_flat:15",
+    "wind_pass:15",
+    "wind_pass:16",
+    "wind_pass:17"
+  ],
+  "false_wall_west:18": [
+    "cielago_west:18",
+    "false_wall_west:17",
+    "habbanya_erg:17",
+    "habbanya_ridge_flat:17",
+    "habbanya_ridge_flat:18",
+    "wind_pass:17"
+  ],
+  "false_wall_west:16": [
+    "false_wall_west:17",
+    "habbanya_erg:16",
+    "habbanya_erg:17",
+    "habbanya_ridge_flat:17",
+    "the_greater_flat:16",
+    "wind_pass:15",
+    "wind_pass:16",
+    "wind_pass:17"
+  ],
+  "false_wall_west:17": [
+    "cielago_west:18",
+    "false_wall_west:16",
+    "false_wall_west:18",
+    "habbanya_erg:16",
+    "habbanya_erg:17",
+    "habbanya_ridge_flat:17",
+    "habbanya_ridge_flat:18",
+    "the_greater_flat:16",
+    "wind_pass:16",
+    "wind_pass:17"
+  ],
+  "habbanya_erg:16": [
+    "false_wall_west:16",
+    "false_wall_west:17",
+    "habbanya_erg:17",
+    "habbanya_ridge_flat:17",
+    "the_greater_flat:16"
+  ],
+  "habbanya_erg:17": [
+    "false_wall_west:16",
+    "false_wall_west:17",
+    "false_wall_west:18",
+    "habbanya_erg:16",
+    "habbanya_ridge_flat:17",
+    "habbanya_ridge_flat:18",
+    "the_greater_flat:16"
+  ],
+  "habbanya_ridge_flat:18": [
+    "cielago_west:18",
+    "false_wall_west:17",
+    "false_wall_west:18",
+    "habbanya_erg:17",
+    "habbanya_ridge_flat:17",
+    "habbanya_ridge_sietch:17"
+  ],
+  "habbanya_ridge_flat:17": [
+    "cielago_west:18",
+    "false_wall_west:16",
+    "false_wall_west:17",
+    "false_wall_west:18",
+    "habbanya_erg:16",
+    "habbanya_erg:17",
+    "habbanya_ridge_flat:18",
+    "habbanya_ridge_sietch:17"
+  ],
+  "habbanya_ridge_sietch:17": [
+    "habbanya_ridge_flat:17",
+    "habbanya_ridge_flat:18"
+  ],
+  "wind_pass_north:18": [
+    "cielago_west:18",
+    "polar_sink:0",
+    "wind_pass:17",
+    "wind_pass_north:17"
+  ],
+  "wind_pass_north:17": [
+    "cielago_west:18",
+    "polar_sink:0",
+    "wind_pass:16",
+    "wind_pass:17",
+    "wind_pass_north:18"
+  ],
+  "cielago_west:18": [
+    "false_wall_west:17",
+    "false_wall_west:18",
+    "habbanya_ridge_flat:17",
+    "habbanya_ridge_flat:18",
+    "wind_pass:17",
+    "wind_pass_north:17",
+    "wind_pass_north:18"
+  ],
+  "cielago_west:1": [
+    "cielago_depression:1",
+    "cielago_depression:2",
+    "cielago_north:1",
+    "cielago_north:2",
+    "meridian:1",
+    "meridian:2"
+  ],
+  "cielago_north:2": [
+    "cielago_depression:1",
+    "cielago_depression:2",
+    "cielago_depression:3",
+    "cielago_east:3",
+    "cielago_north:1",
+    "cielago_north:3",
+    "cielago_west:1",
+    "polar_sink:0"
+  ],
+  "cielago_north:3": [
+    "cielago_depression:2",
+    "cielago_depression:3",
+    "cielago_east:3",
+    "cielago_east:4",
+    "cielago_north:2",
+    "false_wall_south:4",
+    "harg_pass:4",
+    "polar_sink:0"
+  ],
+  "cielago_north:1": [
+    "cielago_depression:1",
+    "cielago_depression:2",
+    "cielago_north:2",
+    "cielago_west:1",
+    "polar_sink:0"
+  ],
+  "cielago_depression:2": [
+    "cielago_depression:1",
+    "cielago_depression:3",
+    "cielago_east:3",
+    "cielago_north:1",
+    "cielago_north:2",
+    "cielago_north:3",
+    "cielago_south:2",
+    "cielago_south:3",
+    "cielago_west:1",
+    "meridian:1",
+    "meridian:2"
+  ],
+  "cielago_depression:3": [
+    "cielago_depression:2",
+    "cielago_east:3",
+    "cielago_east:4",
+    "cielago_north:2",
+    "cielago_north:3",
+    "cielago_south:2",
+    "cielago_south:3",
+    "meridian:2"
+  ],
+  "cielago_depression:1": [
+    "cielago_depression:2",
+    "cielago_north:1",
+    "cielago_north:2",
+    "cielago_south:2",
+    "cielago_west:1",
+    "meridian:1",
+    "meridian:2"
+  ],
+  "meridian:2": [
+    "cielago_depression:1",
+    "cielago_depression:2",
+    "cielago_depression:3",
+    "cielago_south:2",
+    "cielago_south:3",
+    "cielago_west:1",
+    "meridian:1"
+  ],
+  "meridian:1": [
+    "cielago_depression:1",
+    "cielago_depression:2",
+    "cielago_south:2",
+    "cielago_west:1",
+    "meridian:2"
+  ],
+  "cielago_south:2": [
+    "cielago_depression:1",
+    "cielago_depression:2",
+    "cielago_depression:3",
+    "cielago_east:3",
+    "cielago_south:3",
+    "meridian:1",
+    "meridian:2"
+  ],
+  "cielago_south:3": [
+    "cielago_depression:2",
+    "cielago_depression:3",
+    "cielago_east:3",
+    "cielago_east:4",
+    "cielago_south:2",
+    "meridian:2"
+  ],
+  "cielago_east:3": [
+    "cielago_depression:2",
+    "cielago_depression:3",
+    "cielago_east:4",
+    "cielago_north:2",
+    "cielago_north:3",
+    "cielago_south:2",
+    "cielago_south:3",
+    "false_wall_south:4",
+    "south_mesa:4"
+  ],
+  "cielago_east:4": [
+    "cielago_depression:3",
+    "cielago_east:3",
+    "cielago_north:3",
+    "cielago_south:3",
+    "false_wall_south:4",
+    "false_wall_south:5",
+    "south_mesa:4",
+    "south_mesa:5"
+  ],
+  "harg_pass:5": [
+    "false_wall_east:5",
+    "false_wall_east:6",
+    "false_wall_south:4",
+    "false_wall_south:5",
+    "harg_pass:4",
+    "polar_sink:0",
+    "the_minor_erg:5",
+    "the_minor_erg:6"
+  ],
+  "harg_pass:4": [
+    "cielago_north:3",
+    "false_wall_east:5",
+    "false_wall_south:4",
+    "false_wall_south:5",
+    "harg_pass:5",
+    "polar_sink:0",
+    "the_minor_erg:5"
+  ],
+  "false_wall_east:9": [
+    "false_wall_east:8",
+    "imperial_basin:10",
+    "imperial_basin:9",
+    "polar_sink:0",
+    "the_minor_erg:8"
+  ],
+  "false_wall_east:8": [
+    "false_wall_east:7",
+    "false_wall_east:9",
+    "imperial_basin:9",
+    "polar_sink:0",
+    "the_minor_erg:7",
+    "the_minor_erg:8"
+  ],
+  "false_wall_east:6": [
+    "false_wall_east:5",
+    "false_wall_east:7",
+    "harg_pass:5",
+    "polar_sink:0",
+    "the_minor_erg:5",
+    "the_minor_erg:6",
+    "the_minor_erg:7"
+  ],
+  "false_wall_east:5": [
+    "false_wall_east:6",
+    "harg_pass:4",
+    "harg_pass:5",
+    "polar_sink:0",
+    "the_minor_erg:5",
+    "the_minor_erg:6"
+  ],
+  "false_wall_east:7": [
+    "false_wall_east:6",
+    "false_wall_east:8",
+    "polar_sink:0",
+    "the_minor_erg:6",
+    "the_minor_erg:7",
+    "the_minor_erg:8"
+  ],
+  "imperial_basin:9": [
+    "arrakeen:10",
+    "false_wall_east:8",
+    "false_wall_east:9",
+    "hole_in_the_rock:9",
+    "imperial_basin:10",
+    "oh_gap:10",
+    "oh_gap:9",
+    "polar_sink:0",
+    "rim_wall_west:9",
+    "shield_wall:8",
+    "shield_wall:9"
+  ],
+  "imperial_basin:10": [
+    "arrakeen:10",
+    "arsunt:11",
+    "carthag:11",
+    "false_wall_east:9",
+    "hole_in_the_rock:9",
+    "imperial_basin:11",
+    "imperial_basin:9",
+    "oh_gap:10",
+    "oh_gap:11",
+    "oh_gap:9",
+    "polar_sink:0",
+    "rim_wall_west:9",
+    "shield_wall:9",
+    "tsimpo:11"
+  ],
+  "imperial_basin:11": [
+    "arrakeen:10",
+    "arsunt:11",
+    "arsunt:12",
+    "carthag:11",
+    "imperial_basin:10",
+    "oh_gap:10",
+    "oh_gap:11",
+    "polar_sink:0",
+    "tsimpo:11",
+    "tsimpo:12"
+  ],
+  "arrakeen:10": [
+    "imperial_basin:10",
+    "imperial_basin:11",
+    "imperial_basin:9",
+    "oh_gap:10",
+    "oh_gap:11",
+    "oh_gap:9",
+    "rim_wall_west:9"
+  ],
+  "oh_gap:9": [
+    "arrakeen:10",
+    "basin:9",
+    "imperial_basin:10",
+    "imperial_basin:9",
+    "oh_gap:10",
+    "rim_wall_west:9"
+  ],
+  "oh_gap:10": [
+    "arrakeen:10",
+    "basin:9",
+    "broken_land:11",
+    "imperial_basin:10",
+    "imperial_basin:11",
+    "imperial_basin:9",
+    "oh_gap:11",
+    "oh_gap:9",
+    "rim_wall_west:9",
+    "tsimpo:11"
+  ],
+  "oh_gap:11": [
+    "arrakeen:10",
+    "broken_land:11",
+    "broken_land:12",
+    "imperial_basin:10",
+    "imperial_basin:11",
+    "oh_gap:10",
+    "tsimpo:11",
+    "tsimpo:12"
+  ]
+}

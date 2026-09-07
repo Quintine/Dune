@@ -1,0 +1,37 @@
+# Truthtrance current-spice facts
+
+Implemented 7 September 2026 local date. Scope is a truthful question about a respondent's currently held personal spice, not a future-action commitment or a complete natural-language Truthtrance interpreter. Advanced and expansion gates remain unchanged.
+
+## Rule and implementation boundary
+
+The publisher's November 2020 FAQ p8 permits game-related yes/no questions and AND/OR combinations. Its current-turn promise rules are separate from a question about present holdings. The primary-source audit and the remaining shipment example are recorded in [TRUTHTRANCE_NONBATTLE_READINESS_20260907.md](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md). This turn attempted fresh official-domain searches and direct access again; searches yielded no result and the November PDF returned403. The implementation relies on the previously recorded publisher-indexed text and existing source audit, not a claim of a new full FAQ download. No tournament or house rule is added.
+
+The typed fact is `{kind:'spice', compare:'eq'|'gte'|'lte', value:number}` inside the existing fact question. The parser accepts nonnegative safe integers without importing battle-dial limits, validates every nested clause even if a different clause determines the answer, and returns only normalized fields. Evaluation compares exactly `p.spice` when answering. Separate outgoing/incoming allied escrow and unpaid bribes do not count. This is distinct from a legal transaction's available funding.
+
+The public question contains the comparison and chosen threshold. Only the target receives its expected answer before publishing. The server rejects a dishonest, unknown or wrong-player answer without committing state or consuming the card. AND/OR publish only the combined answer, without separate clause results or extra inventory. An exact comparison answered Yes naturally identifies that amount; privacy is not a promise to hide information that the actual question intentionally reveals.
+
+A definite answer creates the existing public history entry, discards the exact declared physical card once, and resumes the saved phase/decision. No turn-level obligation is added. A later legal spend remains legal even if it changes the balance. Existing named-card, selected-traitor, unknown/retry/save, storm-order priority and battle-plan behavior remain supported. The engine's projection and all-four-profile response branch already consume the shared evaluated answer, so they needed no new privileged data or exception. AI strategy does not yet proactively select spice questions.
+
+## Controls and guidance
+
+The verified-fact selector includes Current personal spice, with Exactly, At least and At most. A styled whole-number input, accessible label/error links, explanatory personal-balance text and public preview accompany the choice. Invalid visible clauses disable Ask publicly; unused second clauses do not block a single fact. AND/OR remain available. Target guidance refers to current game information rather than cards alone. The internal reference supplies a separate discoverable topic and five-part implementation/controls/AI/documentation/verification checklist.
+
+Browser inspection caught a native unstyled numeric field; it now uses the shared Input component. Lint then required an explicit label/control association for that wrapper; the final label and input share a unique ID. These were presentation integration fixes, not changes to answer semantics.
+
+## Verification
+
+- `tests/truthtrance-spice.test.ts`: nine cases, including105 real declaration/answer comparator combinations; zero and >40/MAX_SAFE_INTEGER thresholds; malformed numeric/operators with immutable rejection; target-only answers; actual pledge/bribe escrow exclusion; restored answer-state evaluation; mixed card/spice/unknown legacy-traitor groups; combined-answer indistinguishability; all four AI profiles with foreign-private-state perturbation; subsequent legal paid revival.
+- `tests/truthtrance-spice-recovery.test.ts`: four production room-module/SQLite cases. Genuine auction spice-versus-Karama payment choices remain suspended across reload. Three comparison forms preserve private answers/resources, composite results expose no clause identity, dishonest and unauthorized requests write nothing, concurrent valid answers yield one successful CAS and one history/discard, and old hand facts restore unchanged.
+- Final full suites: **1,455/1,455 rules/client/component tests** in `/tmp/dune-truth-spice-final-full.log` and **123/123 persisted/API tests** in `/tmp/dune-truth-spice-multiplayer.log`. The initial full run included eight new rules cases and passed1,454; the final run includes the ninth released case. No failed runtime assertion was hidden. The recovery fixture's first run auto-settled its uniquely funded auction as intended; it was corrected to retain a genuine two-method payment choice.
+
+The earlier648-game calibration remains evidence for its recorded source checkpoint. It was not rerun as this slice's proof. Current full-suite bot scenarios and explicit all-profile spice-answer fixtures cover this change; they do not establish a new strategic strength result or full mode compliance.
+
+## Browser evidence
+
+Created private QA room **PRAVNYBG** through the normal browser with human Atreides “Truth spice QA” and a Hard Emperor AI. Finished ordinary setup. For a focused scenario only in this named QA room, exchanged the host's starting Kulon with a canonical deck Truthtrance and set the Emperor's balance to seven atv9, preserving all33 physical cards, the first Storm, forces and traitors. This scenario is not presented as an unstaged complete game.
+
+Declared Truthtrance through the actual hand control. The Hard AI passed priority. Selected Current personal spice; a negative amount disabled Ask publicly with an accessible reason. A valid threshold of six showed the expected public preview. Clicking Ask publicly led to the AI's public Yes, one discarded Truthtrance and the original human Storm-dial decision atv15. A fresh invitation restored that answered history, empty host hand and unchanged pending Storm. The host view never displayed the Emperor's raw balance.
+
+A second bounded fixture used the remaining physical Truthtrance for an AI-holder question about the human's exact ten spice. The staging script uses actual engine declare/pass/ask actions before a single expected-version commit, producing pendingv16. A fresh invitation restored the human's private Yes guidance, empty hand and saved question. The human then used Publish my answer through the UI. This verifies targeted answer rendering and restoration; it does not claim that the AI strategy independently chose that question.
+
+Artifacts: `/tmp/dune-truth-spice-browser-original.json`, `/tmp/dune-truth-spice-browser-staged.json`, `/tmp/dune-truth-spice-browser-ai-answer.json`, `/tmp/dune-truth-spice-browser-human-pending.json`, and `/tmp/dune-truth-spice-human-stage.mts`. Finalv18 has two Yes records, two distinct physical Truthtrances discarded, unchanged10/7 balances and the same saved Emperor storm dial3; `/tmp/dune-truth-spice-browser-finished.json` preserves that state. Released-source TypeScript, lint and build pass in `/tmp/dune-truth-spice-final2-{type,lint,build}.log`. Mobile, real server restart of this pending answer and full arbitrary-question/promise support remain separate requirements. The removed maintenance automation stays removed.

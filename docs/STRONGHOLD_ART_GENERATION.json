@@ -1,0 +1,81 @@
+{
+  "created": "2026-09-07",
+  "tool": "built-in image_gen.imagegen",
+  "strategy": "six independent parallel requests, one per asset",
+  "referenceImages": [],
+  "projectFilesEdited": false,
+  "assets": [
+    {
+      "id": "arrakeen",
+      "prompt": "Use case: stylized-concept. Asset type: original landscape illustration for a sophisticated science-fiction strategy board-game Stronghold card. Style: refined hand-painted concept art, visible restrained brush texture, architectural detail with clear silhouette, atmospheric depth, cohesive burnt umber, ochre, sand and charcoal palette. Composition: wide 2:1 landscape, a single readable establishing view, full-bleed image, subject comfortably inside edges so it remains recognizable at small card size. No text, lettering, captions, numbers, card frame, graphic border, watermark or logo. Create an original design; do not reproduce any existing Dune board-game art, movie set, or published illustration. Scene: Arrakeen: a fortified desert capital, its broad rounded palace and layered curving ramparts rising above dense low ochre buildings. Massive desert escarpments far behind. Dramatic warm morning sunlight grazes the rounded palace, with cool charcoal shadows and dusty atmospheric perspective. The broad rounded palace is the unmistakable focal point.",
+      "generatedPath": "/home/quintine/.codex/generated_images/01a078ad-871d-7401-8ac6-0f67ca1fd2ec/exec-be9a27e8-bdc7-4a37-b4e1-8e7718ecebb9.png",
+      "savedPath": "/tmp/dune-stronghold-art/arrakeen.png",
+      "inspection": "Accepted: rounded layered capital dominates the image, strong warm light, readable city silhouette, no visible text or framing.",
+      "width": 1774,
+      "height": 887,
+      "aspectRatio": 2.0,
+      "bytes": 2066517,
+      "sha256": "ff9580da7625527764545dd3269062f514a1e71a7e205405d3ad7312c3e33334"
+    },
+    {
+      "id": "carthag",
+      "prompt": "Use case: stylized-concept. Asset type: original landscape illustration for a sophisticated science-fiction strategy board-game Stronghold card. Style: refined hand-painted concept art, visible restrained brush texture, architectural detail with clear silhouette, atmospheric depth, cohesive burnt umber, ochre, sand and charcoal palette. Composition: wide 2:1 landscape, a single readable establishing view, full-bleed image, subject comfortably inside edges so it remains recognizable at small card size. No text, lettering, captions, numbers, card frame, graphic border, watermark or logo. Create an original design; do not reproduce any existing Dune board-game art, movie set, or published illustration. Scene: Carthag: an oppressive angular industrial desert city with severe geometric towers, stepped brutalist walls and narrow dark passages. Heavy block-like architecture rooted in rust-colored sand; a hazy ochre sky. Dramatic slanting afternoon light, deep charcoal shadows and restrained weathered metal accents. Emphasize an austere jagged skyline distinct from a rounded palace.",
+      "generatedPath": "/home/quintine/.codex/generated_images/01a078ad-871d-7401-8ac6-0f67ca1fd2ec/exec-61424728-8790-4a73-beaf-9f9f507a41b8.png",
+      "savedPath": "/tmp/dune-stronghold-art/carthag.png",
+      "inspection": "Accepted: angular industrial skyline and severe walls clearly distinguish it from Arrakeen; ochre-charcoal painted texture, no visible text or framing.",
+      "width": 1774,
+      "height": 887,
+      "aspectRatio": 2.0,
+      "bytes": 2302987,
+      "sha256": "ddc1134b9d23b62ff10fd31677d2c8ed633efd363084538feb092349ef61acf9"
+    },
+    {
+      "id": "habbanya-sietch",
+      "prompt": "Use case: stylized-concept. Asset type: original landscape illustration for a sophisticated science-fiction strategy board-game Stronghold card. Style: refined hand-painted concept art, visible restrained brush texture, architectural detail with clear silhouette, atmospheric depth, cohesive burnt umber, ochre, sand and charcoal palette. Composition: wide 2:1 landscape, a single readable establishing view, full-bleed image, subject comfortably inside edges so it remains recognizable at small card size. No text, lettering, captions, numbers, card frame, graphic border, watermark or logo. Create an original design; do not reproduce any existing Dune board-game art, movie set, or published illustration. Scene: Habbanya Sietch: a narrow hidden entrance set low between soaring eroded desert ridges. Tall thin ochre rock fins and dramatic vertical sandstone strata dominate the scene. A winding strip of sand leads toward the small shaded entrance. Intense natural late-afternoon rim light on the ridges, shadowed burnt-umber interior. Focus on the striking narrow opening and towering ridges, not a large cavern arch.",
+      "generatedPath": "/home/quintine/.codex/generated_images/01a078ad-871d-7401-8ac6-0f67ca1fd2ec/exec-2b229277-bf52-4f44-978d-7c4a01ff4577.png",
+      "savedPath": "/tmp/dune-stronghold-art/habbanya-sietch.png",
+      "inspection": "Accepted: narrow shaded entrance among tall sunlit rock fins; clear ridge composition, no visible text or framing.",
+      "width": 1774,
+      "height": 887,
+      "aspectRatio": 2.0,
+      "bytes": 2426436,
+      "sha256": "a0cfc32f84fb74e329f66714fb97d6a64dae1606af3595bd274fae9d4595c47e"
+    },
+    {
+      "id": "sietch-tabr",
+      "prompt": "Use case: stylized-concept. Asset type: original landscape illustration for a sophisticated science-fiction strategy board-game Stronghold card. Style: refined hand-painted concept art, visible restrained brush texture, architectural detail with clear silhouette, atmospheric depth, cohesive burnt umber, ochre, sand and charcoal palette. Composition: wide 2:1 landscape, a single readable establishing view, full-bleed image, subject comfortably inside edges so it remains recognizable at small card size. No text, lettering, captions, numbers, card frame, graphic border, watermark or logo. Create an original design; do not reproduce any existing Dune board-game art, movie set, or published illustration. Scene: Sietch Tabr: a deep broad arched cavern settlement carved into massive weathered desert cliffs. Layered natural rock frames the spacious dark arch, with subtle inhabited terraces and small warm lights receding inside. A sandy approach leads into the cavern. Dramatic sunlight illuminates the worn cliff face and contrasts with the cool charcoal depths. The broad arched cavern is the dominant silhouette.",
+      "generatedPath": "/home/quintine/.codex/generated_images/01a078ad-871d-7401-8ac6-0f67ca1fd2ec/exec-73f7a825-1774-4849-a91a-23483c9220df.png",
+      "savedPath": "/tmp/dune-stronghold-art/sietch-tabr.png",
+      "inspection": "Accepted: broad cavern arch with terraced habitation and warm interior lights; distinct from Habbanya, no visible text or framing.",
+      "width": 1774,
+      "height": 887,
+      "aspectRatio": 2.0,
+      "bytes": 2616979,
+      "sha256": "97d4423fcb17f706cca175d3beef79f886a0f7f86ccdb6e7bc9279bccf1d0ac3"
+    },
+    {
+      "id": "tueks-sietch",
+      "prompt": "Use case: stylized-concept. Asset type: original landscape illustration for a sophisticated science-fiction strategy board-game Stronghold card. Style: refined hand-painted concept art, visible restrained brush texture, architectural detail with clear silhouette, atmospheric depth, cohesive burnt umber, ochre, sand and charcoal palette. Composition: wide 2:1 landscape, a single readable establishing view, full-bleed image, subject comfortably inside edges so it remains recognizable at small card size. No text, lettering, captions, numbers, card frame, graphic border, watermark or logo. Create an original design; do not reproduce any existing Dune board-game art, movie set, or published illustration. Scene: Tuek's Sietch: a discreet desert smuggler outpost nestled among low rocky ridges beneath a vast starry night sky. Low worn sandstone structures, shadowed arched storage entrances and a few amber lamps suggest a secret haven. Cool charcoal and muted blue-black night, restrained burnt-umber and ochre warmth in the architecture, subtle natural moonlight. Atmospheric and readable, with the outpost large enough to recognize at small card size.",
+      "generatedPath": "/home/quintine/.codex/generated_images/01a078ad-871d-7401-8ac6-0f67ca1fd2ec/exec-8c8d2739-e056-4fe5-85dc-d729591835c2.png",
+      "savedPath": "/tmp/dune-stronghold-art/tueks-sietch.png",
+      "inspection": "Accepted: low smuggler outpost, starry night and amber entrances. Deliberately darker than the other cards; useful focal lights remain visible. No visible text or framing.",
+      "width": 1774,
+      "height": 887,
+      "aspectRatio": 2.0,
+      "bytes": 2047182,
+      "sha256": "394d071237812dfb0fff1a89462df6a6b70f38c723bd77663a06a310264f155a"
+    },
+    {
+      "id": "ixian-hidden-mobile-stronghold",
+      "prompt": "Use case: stylized-concept. Asset type: original landscape illustration for a sophisticated science-fiction strategy board-game Stronghold card. Style: refined hand-painted concept art, visible restrained brush texture, architectural detail with clear silhouette, atmospheric depth, cohesive burnt umber, ochre, sand and charcoal palette. Composition: wide 2:1 landscape, a single readable establishing view, full-bleed image, subject comfortably inside edges so it remains recognizable at small card size. No text, lettering, captions, numbers, card frame, graphic border, watermark or logo. Create an original design; do not reproduce any existing Dune board-game art, movie set, or published illustration. Scene: Ixian Hidden Mobile Stronghold: a low, wide armored mechanical fortress moving slowly across desert sand. An original squat industrial citadel on enormous integrated tracked crawler assemblies, overlapping charcoal armor plates, compact angular upper structures and subtle recessed lights. Sand churns beneath its broad base, leaving heavy parallel tracks. Dramatic low natural sunlight catches weathered ochre dust on dark metal. Grounded massive engineering, not a humanoid robot or a tall castle.",
+      "generatedPath": "/home/quintine/.codex/generated_images/01a078ad-871d-7401-8ac6-0f67ca1fd2ec/exec-1571617e-e534-479c-ba4f-e427effbe6ab.png",
+      "savedPath": "/tmp/dune-stronghold-art/ixian-hidden-mobile-stronghold.png",
+      "inspection": "Accepted: low heavy mechanical fortress, integrated broad tracks and displaced sand; visible grounded movement, no visible text or framing.",
+      "width": 1774,
+      "height": 887,
+      "aspectRatio": 2.0,
+      "bytes": 2209097,
+      "sha256": "abf043618cfcd8070a55883aec47198a4eab4fde124f497948c45ddd3fd3568d"
+    }
+  ]
+}

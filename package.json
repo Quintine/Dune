@@ -1,0 +1,62 @@
+{
+  "name": "sites-project",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "vinext dev",
+    "build": "vinext build",
+    "start": "wrangler dev --config dist/server/wrangler.json",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "db:generate": "drizzle-kit generate",
+    "test": "tsx --test tests/engine.test.ts tests/bots.test.ts tests/reference.test.ts tests/combat.test.ts tests/advanced-phases.test.ts tests/advanced-guild.test.ts tests/kwisatz.test.ts tests/capture.test.ts tests/combat-karama.test.ts tests/advisors.test.ts tests/bg-karama.test.ts tests/special-karama.test.ts tests/guild-stop.test.ts tests/full-plan.test.ts tests/summoned-worm.test.ts tests/tech-tokens.test.ts tests/ix-battle-cards.test.ts tests/tooth-artillery.test.ts tests/sandtrout.test.ts tests/thumper.test.ts tests/cheap-hero-traitor.test.ts tests/amal.test.ts tests/tleilaxu.test.ts tests/tleilaxu-revival.test.ts tests/foreign-gholas.test.ts tests/tleilaxu-special.test.ts tests/ix-forces.test.ts tests/ix-economy.test.ts tests/mobile-stronghold.test.ts tests/ix-technology.test.ts tests/ix-deck.test.ts tests/truthtrance.test.ts tests/battle-promises.test.ts tests/battle-preparation-paths.test.ts tests/choam-charity.test.ts tests/choam-revival.test.ts tests/choam-inflation.test.ts tests/choam-market.test.ts tests/choam-karama.test.ts tests/choam-combat.test.ts tests/choam-worthless.test.ts tests/choam-gamont.test.ts tests/choam-baliset.test.ts tests/choam-jubba.test.ts tests/client-request.test.ts tests/seat-recovery-client.test.ts tests/room-entry-client.test.ts tests/karama-intents.test.ts tests/first-storm.test.ts tests/card-availability.test.ts tests/revival-usage.test.ts tests/fremen-revival.test.ts tests/recruits.test.ts tests/ecaz-cards.test.ts tests/autopilot.test.ts tests/moritani-leaders.test.ts tests/ecaz-leaders.test.ts tests/moritani-terror.test.ts tests/moritani-placement.test.ts tests/moritani-entry.test.ts tests/moritani-entry-overlays.test.ts tests/moritani-force-leader.test.ts tests/moritani-alliance.test.ts tests/duke-vidal.test.ts tests/duke-vidal-engine.test.ts tests/duke-truthtrance.test.ts tests/normal-revival-options.test.ts tests/normal-revival-bots.test.ts tests/moritani-retention.test.ts tests/moritani-retention-bots.test.ts tests/moritani-extortion.test.ts tests/bot-shipment-budget.test.ts tests/ecaz-ambassadors.test.ts tests/ecaz-placement.test.ts tests/automatic-casualties.test.ts tests/automatic-responses.test.ts tests/automatic-decisions.test.ts tests/ecaz-entry.test.ts tests/ecaz-entry-bots.test.ts tests/ecaz-entry-continuations.test.ts tests/choam-richese-leaders.test.ts tests/richese-cards.test.ts tests/richese-auction.test.ts tests/richese-auction-review.test.ts tests/richese-funding.test.ts tests/richese-card-presentation.test.ts tests/richese-engine.test.ts tests/richese-auction-bots.test.ts tests/richese-engine-review.test.ts tests/richese-no-field.test.ts tests/richese-acquisition.test.ts tests/richese-acquisition-review.test.ts tests/richese-acquisition-bots.test.ts tests/force-presence.test.ts tests/richese-no-field-engine.test.ts tests/richese-no-field-review.test.ts tests/richese-no-field-bots.test.ts tests/richese-gift.test.ts tests/richese-allied-no-field.test.ts tests/richese-allied-no-field-review.test.ts tests/richese-allied-no-field-bots.test.ts tests/richese-gift-engine.test.ts tests/richese-gift-review.test.ts tests/richese-gift-bots.test.ts tests/distrans.test.ts tests/distrans-engine.test.ts tests/distrans-engine-review.test.ts tests/distrans-bots.test.ts tests/nullentropy-box.test.ts tests/leader-art.test.ts tests/nullentropy-box-engine.test.ts tests/nullentropy-box-engine-review.test.ts tests/nullentropy-box-bots.test.ts tests/ornithopter.test.ts tests/ornithopter-engine.test.ts tests/ornithopter-engine-review.test.ts tests/ornithopter-bots.test.ts tests/residual-poison.test.ts tests/residual-poison-engine.test.ts tests/residual-poison-engine-review.test.ts tests/residual-poison-bots.test.ts tests/portable-snooper.test.ts tests/portable-snooper-engine.test.ts tests/portable-snooper-review.test.ts tests/portable-snooper-bots.test.ts tests/stone-burner.test.ts tests/stone-burner-engine.test.ts tests/stone-burner-review.test.ts tests/stone-burner-bots.test.ts tests/special-leader-art.test.ts tests/bot-transport-budget.test.ts tests/bot-reachability-review.test.ts tests/bot-plan-commitment.test.ts tests/bot-plan-legality-review.test.ts tests/bot-battle-choice.test.ts tests/bot-worm-ride.test.ts tests/bot-advisor-setup.test.ts tests/fremen-movement-karama.test.ts tests/fremen-movement-review.test.ts tests/base-setup-order.test.ts tests/bot-staged-setup.test.ts tests/truthtrance-spice.test.ts tests/guild-payment-routing.test.ts tests/guild-transport-quote.test.ts tests/pending-shipment-integrity.test.ts tests/effective-weapons.test.ts tests/effective-battle-effects.test.ts tests/stronghold-cards.test.ts tests/stronghold-engine.test.ts tests/stronghold-bots.test.ts tests/stronghold-battle.test.ts tests/choam-auditor.test.ts tests/choam-auditor-engine.test.ts tests/choam-auditor-bots.test.ts tests/choam-auditor-lifecycle.test.ts tests/bot-revival-timing.test.ts tests/choam-market-automatic.test.ts tests/truthtrance-card-count.test.ts tests/shipment-promises.test.ts tests/shipment-promises-bots.test.ts tests/ordered-opportunity.test.ts tests/juice-of-sapho-engine.test.ts tests/juice-of-sapho-engine-review.test.ts tests/juice-of-sapho-bots.test.ts tests/semuta-drug.test.ts tests/treachery-discard-continuations.test.ts tests/battle-discard-continuations.test.ts tests/battle-context-lifecycle.test.ts tests/terror-discard-continuations.test.ts tests/box-discard-continuations.test.ts tests/box-discard-auditor.test.ts tests/ornithopter-discard-continuations.test.ts tests/truthtrance-discard-continuations.test.ts tests/ordinary-card-discard-continuations.test.ts tests/karama-preflight.test.ts tests/karama-promise-preflight.test.ts tests/richese-settlement-preflight.test.ts tests/bg-karama-opportunity.test.ts tests/bg-karama-nested-controls.test.ts tests/karama-battle-preflight.test.ts tests/karama-movement-preflight.test.ts tests/bg-karama-cancel-context.test.ts tests/storm-worm-cancellation.test.ts tests/revival-cancellation.test.ts tests/battle-resolution-quote.test.ts tests/board-resolution-quote.test.ts tests/battle-aftermath-quote.test.ts tests/karama-movement-cancellation.test.ts tests/combat-response-quote.test.ts tests/terminal-cancellation.test.ts tests/karama-no-field-cancellation.test.ts tests/choam-sale-cancellation.test.ts tests/table-turn.test.ts tests/ix-substitution-cancellation.test.ts tests/richese-cancellation.test.ts tests/moritani-alliance-cancellation.test.ts tests/ix-auction-draw-quote.test.ts tests/ix-technology-cancellation.test.ts tests/auction-continuation-quote.test.ts tests/auction-unsold-custody.test.ts tests/choam-storm-quote.test.ts tests/choam-worthless-cancellation.test.ts tests/revival-resume.test.ts tests/placement-cancellation.test.ts tests/phase-resource-quote.test.ts tests/movement-phase-quote.test.ts tests/victory-quote.test.ts tests/ecaz-duke-acquisition.test.ts tests/ecaz-duke-bots.test.ts tests/ecaz-duke-revival.test.ts tests/ghola-lifecycle.test.ts tests/ghola-bots.test.ts tests/richese-ambassador.test.ts tests/richese-ambassador-bots.test.ts tests/richese-ambassador-interruptions.test.ts tests/fremen-ambassador-quote.test.ts tests/fremen-ambassador-engine.test.ts tests/fremen-ambassador-bots.test.ts tests/fremen-ambassador-cancellation.test.ts tests/guild-ambassador-quote.test.ts tests/guild-ambassador-advisor-quote.test.ts tests/guild-ambassador-continuation.test.ts tests/guild-ambassador-cancellation.test.ts tests/ambassador-resume.test.ts tests/guild-ambassador-engine.test.ts tests/guild-ambassador-bots.test.ts tests/guild-ambassador-review.test.ts tests/tleilaxu-ambassador-forces.test.ts tests/ecaz-occupy.test.ts tests/ecaz-occupy-movement.test.ts tests/victory-progress.test.ts tests/ecaz-victory.test.ts",
+    "test:multiplayer": "tsx --test tests/multiplayer.test.ts tests/multiplayer-recovery.test.ts tests/seat-recovery.test.ts tests/room-entry-recovery.test.ts tests/bot-continuation.test.ts tests/autopilot-recovery.test.ts tests/bot-pacing.test.ts tests/paced-games.test.ts tests/automatic-response-recovery.test.ts tests/ecaz-entry-recovery.test.ts tests/richese-auction-recovery.test.ts tests/richese-no-field-recovery.test.ts tests/richese-allied-no-field-recovery.test.ts tests/richese-gift-recovery.test.ts tests/distrans-recovery.test.ts tests/nullentropy-box-recovery.test.ts tests/ornithopter-recovery.test.ts tests/residual-poison-recovery.test.ts tests/portable-snooper-recovery.test.ts tests/stone-burner-recovery.test.ts tests/fremen-movement-recovery.test.ts tests/base-setup-recovery.test.ts tests/truthtrance-spice-recovery.test.ts tests/guild-payment-recovery.test.ts tests/pending-shipment-integrity-recovery.test.ts tests/stronghold-recovery.test.ts tests/choam-auditor-recovery.test.ts tests/shipment-promises-recovery.test.ts tests/juice-of-sapho-recovery.test.ts tests/multiplayer-discard-continuations.test.ts tests/battle-discard-recovery.test.ts tests/terror-discard-recovery.test.ts tests/box-discard-recovery.test.ts tests/ornithopter-discard-recovery.test.ts tests/truthtrance-discard-recovery.test.ts tests/ordinary-card-discard-recovery.test.ts tests/bg-karama-opportunity-recovery.test.ts tests/bg-karama-cancel-recovery.test.ts tests/disaster-revival-recovery.test.ts tests/battle-aftermath-recovery.test.ts tests/combat-terminal-recovery.test.ts tests/restored-cancellation-recovery.test.ts tests/auction-cancellation-recovery.test.ts tests/choam-worthless-cancellation-recovery.test.ts tests/placement-cancellation-recovery.test.ts tests/ecaz-duke-recovery.test.ts tests/ghola-lifecycle-recovery.test.ts tests/fremen-ambassador-recovery.test.ts tests/guild-ambassador-recovery.test.ts tests/ecaz-occupy-recovery.test.ts tests/ecaz-victory-recovery.test.ts",
+    "typecheck": "tsc --noEmit",
+    "db:local": "wrangler d1 migrations apply DB --local --config tools/wrangler.local.json --persist-to .wrangler/state"
+  },
+  "dependencies": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-server-dom-webpack": "19.2.6",
+    "vinext": "1.0.0-beta.5",
+    "drizzle-orm": "0.45.2",
+    "@base-ui/react": "1.7.0",
+    "@shadcn/react": "0.3.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "cmdk": "1.1.1",
+    "date-fns": "4.1.0",
+    "embla-carousel-react": "8.5.2",
+    "input-otp": "1.4.2",
+    "lucide-react": "1.31.0",
+    "react-day-picker": "9.8.1",
+    "react-resizable-panels": "4.5.8",
+    "recharts": "3.8.0",
+    "shadcn": "4.18.0",
+    "tailwind-merge": "3.6.0",
+    "tw-animate-css": "1.4.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@cloudflare/workers-types": "4.20260515.1",
+    "@openai/sites-vite-plugin": "0.2.0",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "oxfmt": "0.61.0",
+    "oxlint": "1.76.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0",
+    "drizzle-kit": "0.31.10"
+  },
+  "type": "module"
+}

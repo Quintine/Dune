@@ -1,0 +1,16 @@
+{
+  "tool": "Built-in image_gen",
+  "date": "2026-09-06",
+  "purpose": "Original special leader-disc portraits, separate from ordinary leader and traitor inventories. Names and gameplay values are rendered in HTML.",
+  "assets": [
+    {
+      "id": "duke-vidal",
+      "name": "Duke Prad Vidal",
+      "strength": 6,
+      "path": "/art/leaders/duke-vidal-v1.png",
+      "styleReference": "ecaz-0-v1.png; paint treatment, lighting and framing only, not identity",
+      "prompt": "Use case: stylized-concept. Create ONE original square premium strategy-game portrait of Duke Prad Vidal, the separate shared Ecaz leader disc in the classic Dune boardgame. An adult human male noble, lean long warm-olive face, dark intelligent hazel eyes, thick dark brown hair swept loosely back with a single natural curl near one temple, clean-shaven angular jaw, poised subtly skeptical closed-mouth expression. Distinct original face unlike any film actor and unlike the female style reference. Refined muted plum and charcoal high-collared woven court clothes, understated moss-green inner collar; no jewelry or insignia. Input image is existing Sanya Ecaz portrait used as STYLE reference ONLY: match realistic oil-painting brushwork, tactile textile texture, warm sand-gold upper-left light, readable cool shadow fill, dark smoky olive-plum atmosphere and centered head-and-shoulders treatment. Do not copy Sanya's facial identity, hairstyle or garment design. Entire head comfortably inside central75 percent with10 percent air above hair, face roughly half image height, both eyes legible, suitable for80px circular token and192px inspector. Natural anatomy, original artistic interpretation; published artwork is not provided or traced. No text, names, numbers, strength values, symbols, insignia, crowns, medals, frames, borders, logos, watermark, weapons, other people, film actor likeness, copied movie costume or photomontage. Square1:1 PNG,1254 by1254 pixels, opaque RGB.",
+      "sourcePath": "/home/quintine/.codex/generated_images/01a07621-d3f9-74d1-bc38-4b9a6dd1f742/exec-26d0c280-b336-450c-9cfd-e16a9d22274a.png"
+    }
+  ]
+}
