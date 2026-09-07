@@ -34,5 +34,7 @@ yarn-error.log*
 next-env.d.ts
 /dist/
 /.wrangler/
-/outputs/
 /work/
+
+# local notes (contains credentials, never commit)
+/github.md
