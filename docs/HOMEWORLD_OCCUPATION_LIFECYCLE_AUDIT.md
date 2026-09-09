@@ -1,5 +1,7 @@
 # Homeworld occupation lifecycle integration audit
 
+Runtime follow-up, 10 September 2026: [the implemented observation hooks and Tupile limits](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupation-observation-boundaries) record the subsequent integration, including why helpers may observe complete Homeworld groups before separate Arrakis/Tanks bookkeeping. This original read-only audit is retained without rewriting its recommendations as completed work.
+
 Read-only code audit, 9 September 2026. This document maps implementation boundaries; it does not settle the occupation interpretations still identified in [the invasion source audit](HOMEWORLD_INVASION_RULES.md#verification-handoff). Root source work must define retention after departure, contested qualification, native high/low coexistence and unique rewards before those consumers are implemented. No runtime, database or deployment changes were made by this audit.
 
 ## Observe semantic force changes, not just actions

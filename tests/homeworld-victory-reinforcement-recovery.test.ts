@@ -117,10 +117,8 @@ async function persisted(ambassador = false, native = 6) {
   }
   const auths = await Promise.all(tokens.map((token) => store.rooms.authenticate(code, token)));
   const initial = await store.rooms.readRoom(code);
-  let encoded = JSON.stringify(ambassador ? caladanAmbassadorFixture() : caladanVictoryFixture());
-  for (const [index, id] of (ambassador ? ['a', 'g', 'ec', 'h', 'bg'] : ['a', 'g']).entries())
-    encoded = encoded.replaceAll(JSON.stringify(id), JSON.stringify(auths[index].playerId));
-  let g: Game = JSON.parse(encoded);
+  const seatIds = Object.fromEntries((ambassador ? ['a','g','ec','h','bg'] : ['a','g']).map((id,index) => [id,auths[index].playerId]));
+  let g: Game = ambassador ? caladanAmbassadorFixture(seatIds) : caladanVictoryFixture({seatIds});
   g.code = code;
   g.host = auths[0].playerId;
   g.version = initial.version;

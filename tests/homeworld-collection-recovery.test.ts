@@ -89,7 +89,7 @@ function unitStore(runBots = bots.runBots) {
   return { rooms: loadRooms(), restart: loadRooms, sqlite, hooks, writes };
 }
 
-import { baseDeck, leaders } from '../game/cards';
+import { baseDeck } from '../game/cards';
 import { createTechTokens } from '../game/tech-tokens';
 const {
   applyAction,
@@ -112,17 +112,22 @@ type Options = {
   stronghold?: boolean;
   empty?: boolean;
   technology?: boolean;
+  seatIds?: [string, string, string];
 };
 function fixture(options: Options = {}) {
+  const [h, partner, a] = options.seatIds ?? ['h', 'g', 'a'];
   let g = createGame(
     'GIEDICOLLECTION',
-    newPlayer('h', 'Harkonnen', 'harkonnen'),
+    newPlayer(h, 'Harkonnen', 'harkonnen'),
     options.advanced ?? true,
     [],
   );
-  joinGame(g, newPlayer('g', 'Guild', 'guild'));
-  joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
-  g = applyAction(g, 'h', { type: 'homeworlds', enabled: true });
+  joinGame(g, newPlayer(partner, 'Guild', 'guild'));
+  joinGame(g, newPlayer(a, 'Atreides', 'atreides'));
+  // Only the offline lobby faction is selected here; no initialized history is
+  // altered and public expansion joins retain their existing gates.
+  if (options.shared) g.players[1] = newPlayer(partner, 'Ecaz', 'ecaz');
+  g = applyAction(g, h, { type: 'homeworlds', enabled: true });
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   g = initializeHomeworldGameForAudit(g);
   for (let n = 0; g.status === 'setup' && n < 40; n++) {
@@ -151,7 +156,7 @@ function fixture(options: Options = {}) {
       moved: 0,
     });
   }
-  const hark = own(g, 'h');
+  const hark = own(g, h);
   hark.forces = {
     'wind_pass:14': 2,
     ...(options.multiple ? { 'hagga_basin:12': 2 } : {}),
@@ -161,11 +166,9 @@ function fixture(options: Options = {}) {
   hark.forces['imperial_basin:10'] =
     20 - hark.reserves - Object.values(hark.forces).reduce((a, b) => a + b, 0);
   if (options.shared) {
-    // Explicit Ecaz faction seam after genuine base Homeworld setup; the shared
-    // collection and all negotiated allocations still use production actions.
-    const ecaz = own(g, 'g');
-    ecaz.faction = 'ecaz';
-    ecaz.leaders = leaders('ecaz');
+    // Ecaz was seated before setup. The later shared position and allocations
+    // preserve that original signed faction identity.
+    const ecaz = own(g, partner);
     ecaz.forces = {
       'wind_pass:14': 2,
       ...(options.multiple ? { 'hagga_basin:12': 2 } : {}),
@@ -179,9 +182,9 @@ function fixture(options: Options = {}) {
   Object.assign(g, {
     phase: 5,
     turn: 2,
-    active: 'a',
-    movementRemaining: ['a'],
-    order: ['g', 'h', 'a'],
+    active: a,
+    movementRemaining: [a],
+    order: [partner, h, a],
     ready: [],
     phaseOpening: null,
     response: null,
@@ -196,7 +199,7 @@ function fixture(options: Options = {}) {
   });
   if (options.technology) {
     g.techTokens = createTechTokens(g.players);
-    g.techTokens.heighliners = { owner: 'h', spice: 2 };
+    g.techTokens.heighliners = { owner: h, spice: 2 };
   }
   inventory(g);
   return g;
@@ -239,16 +242,8 @@ async function persisted(options: Options = {}, collection = false) {
     tokens.map((token) => store.rooms.authenticate(code, token)),
   );
   const initial = await store.rooms.readRoom(code);
-  const prepared = fixture(options);
-  // Preserve the production room credentials while relocating the audited
-  // fixture's three identities consistently through its JSON keys and values.
-  let encoded = JSON.stringify(prepared);
-  for (const [index, id] of ['h', 'g', 'a'].entries())
-    encoded = encoded.replaceAll(
-      JSON.stringify(id),
-      JSON.stringify(auths[index].playerId),
-    );
-  let g: Game = JSON.parse(encoded);
+  // Bind session identities before genuine setup produces signed history.
+  let g = fixture({ ...options, seatIds: auths.map((auth) => auth.playerId) as [string, string, string] });
   g.code = code;
   g.host = auths[0].playerId;
   g.version = initial.version;

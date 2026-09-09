@@ -22,11 +22,11 @@ const p = (g: Game, id: string) =>
   g.players.find((player) => player.id === id)!;
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
 
-function setup(roster: FactionId[] = ['fremen', 'emperor']) {
+function setup(roster: FactionId[] = ['fremen', 'emperor'], advanced = false) {
   let g = createGame(
     'HOMEREVIVALBENEFITS',
     newPlayer(roster[0], roster[0], roster[0]),
-    false,
+    advanced,
     roster.some((id) => id === 'tleilaxu' || id === 'ixians') ? ['ix'] : [],
   );
   for (const id of roster.slice(1)) joinGame(g, newPlayer(id, id, id));
@@ -359,12 +359,11 @@ void test('actual high Tleilax phase opening permits one ordinary free-income pa
 });
 
 void test('every AI respects the projected low-Homeworld special-Karama boundary and can allow the saved revival', () => {
-  let g = setup(['fremen', 'tleilaxu', 'atreides']);
+  let g = setup(['fremen', 'tleilaxu', 'atreides'], true);
   position(g, 'fremen', 2, 12);
   position(g, 'tleilaxu', 12, 0);
-  // This interaction uses the same real physical components under Advanced
-  // timing; public Advanced/Homeworld starts remain independently gated.
-  g.advanced = true;
+  // Advanced identity is established before genuine setup history is signed;
+  // public Advanced/Homeworld starts remain independently gated.
   g = enterRevival(g);
   const card = hold(g, 'tleilaxu', 'karama');
   g = applyAction(g, 'fremen', { type: 'revive', amount: 1, elite: 0 });

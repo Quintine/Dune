@@ -12,7 +12,7 @@ import {
   type Action,
 } from '../game/engine';
 import { botActions } from '../game/bots';
-import { baseDeck, leaders } from '../game/cards';
+import { baseDeck } from '../game/cards';
 import { homeworldGameIntegrity } from '../game/homeworld-game';
 import { createTechTokens } from '../game/tech-tokens';
 
@@ -36,6 +36,8 @@ function fixture(options: Options = {}) {
   );
   joinGame(g, newPlayer('g', 'Guild', 'guild'));
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
+  // Select the audit-only final faction before real setup signs its roster.
+  if (options.shared) g.players[1] = newPlayer('g', 'Ecaz', 'ecaz');
   g = applyAction(g, 'h', { type: 'homeworlds', enabled: true });
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   g = initializeHomeworldGameForAudit(g);
@@ -75,11 +77,9 @@ function fixture(options: Options = {}) {
   hark.forces['imperial_basin:10'] =
     20 - hark.reserves - Object.values(hark.forces).reduce((a, b) => a + b, 0);
   if (options.shared) {
-    // Explicit Ecaz faction seam after genuine base Homeworld setup; the shared
-    // collection and all negotiated allocations still use production actions.
+    // The final Ecaz roster passed through genuine Homeworld setup; only
+    // the conserved collection positions and alliance are staged here.
     const ecaz = own(g, 'g');
-    ecaz.faction = 'ecaz';
-    ecaz.leaders = leaders('ecaz');
     ecaz.forces = {
       'wind_pass:14': 2,
       ...(options.multiple ? { 'hagga_basin:12': 2 } : {}),

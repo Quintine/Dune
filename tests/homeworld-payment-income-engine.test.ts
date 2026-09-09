@@ -11,14 +11,14 @@ import {
   type Game,
 } from '../game/engine';
 import { botActions } from '../game/bots';
-import { baseDeck, leaders } from '../game/cards';
+import { baseDeck } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
 import { homeworldGameIntegrity } from '../game/homeworld-game';
 import { createAmbassadors, placeAmbassador } from '../game/ecaz-ambassadors';
 
 const own = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
-function fixture() {
+function fixture(third: 'atreides' | 'richese' | 'ecaz' = 'atreides') {
   let g = createGame(
     'PAYMENTINCOME',
     newPlayer('e', 'Emperor', 'emperor'),
@@ -27,6 +27,8 @@ function fixture() {
   );
   joinGame(g, newPlayer('g', 'Guild', 'guild'));
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
+  // Final audit roster is fixed before any setup or occupation history exists.
+  if (third !== 'atreides') g.players[2] = newPlayer('a', third, third);
   g = applyAction(g, 'e', { type: 'homeworlds', enabled: true });
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   g = initializeHomeworldGameForAudit(g);
@@ -372,13 +374,9 @@ void test('native Guild shipment crosses from five to low before collecting its 
 
 void test('Richese special cache purchase keeps its three-spice cost while low Kaitain income allows or cancels after reload', () => {
   for (const cancel of [false, true]) {
-    let g = fixture();
+    // Genuine final Richese roster also initializes its physical cache.
+    let g = fixture('richese');
     population(g, 'e', 4);
-    // Explicit Richese/cache seam after genuine base Homeworld setup; no full expansion setup claim.
-    own(g, 'a').faction = 'richese';
-    own(g, 'a').leaders = leaders('richese');
-    g.richeseCache = richeseCards();
-    g.richeseRemoved = [];
     const payment = hold(g, 'a', 'karama');
     const cancellation = hold(g, 'g', 'karama');
     g = applyAction(g, 'a', {
@@ -401,12 +399,10 @@ void test('Richese special cache purchase keeps its three-spice cost while low K
 
 void test('real Richese Ambassador purchase applies low Kaitain income after reload and rejects corrupted owner or gross before mutation', () => {
   for (const cancel of [false, true]) {
-    let g = movement(fixture(), 'g');
+    let g = movement(fixture('ecaz'), 'g');
     population(g, 'e', 4);
-    // Explicit Ecaz faction/token seam after genuine Homeworld setup; arrival,
-    // token trigger, paid card draw and income use their ordinary action paths.
-    own(g, 'a').faction = 'ecaz';
-    own(g, 'a').leaders = leaders('ecaz');
+    // Genuine final Ecaz roster; only this known Ambassador layout is staged.
+    // Arrival, trigger, paid draw and income still use production actions.
     const karama = hold(g, 'a', 'karama');
     let ambassadors = createAmbassadors(() => 0.2);
     const token = ambassadors.tokens.find((t) => t.effect === 'richese')!;

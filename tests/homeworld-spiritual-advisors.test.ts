@@ -209,7 +209,10 @@ void test('advisor group size rejects malformed requests before cards, reserves 
 
 void test('absent Homeworld module preserves ordinary one-force accompaniment and rejects two', () => {
   const g = setup(11).g;
+  // This parity fixture deliberately removes the whole optional module,
+  // including its setup evidence; it does not represent a legal live action.
   g.homeworlds = null;
+  delete g.homeworldOccupationHistory;
   const offered = ship(g);
   reject(offered, 'beneGesserit', {
     type: 'decision',

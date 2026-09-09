@@ -112,6 +112,9 @@ async function fixture(revival = false, advanced = !revival) {
     tokens.map((token) => store.rooms.authenticate(code, token)),
   );
   let g = await store.rooms.readRoom(code);
+  // Public expansion joins stay gated; establish the offline payer faction in
+  // the untouched lobby before genuine setup creates its signed history.
+  if (!revival) g.players[2] = engine.newPlayer(g.players[2].id, 'CHOAM', 'choam');
   g = engine.applyAction(g, g.host, { type: 'homeworlds', enabled: true });
   for (const player of g.players)
     g = engine.applyAction(g, player.id, { type: 'ready' });
@@ -183,9 +186,7 @@ function position(g: engine.Game, index: number, reserves: number, tanks = 0) {
 function charity(f: Fixture) {
   let g = f.initial;
   position(g, 1, 10);
-  // Explicit payer seam after genuine base setup; this is not CHOAM setup or
-  // deck certification. All original physical forces and cards are retained.
-  g.players[2].faction = 'choam';
+  // CHOAM's identity was fixed before setup; only its current balance is staged.
   g.players[2].spice = 12;
   g.players[1].spice = 9;
   g.choamCharity = { turn: g.turn, canceled: false };

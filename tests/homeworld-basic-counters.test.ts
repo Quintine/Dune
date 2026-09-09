@@ -1,3 +1,5 @@
+import { observeHomeworldOccupation } from '../game/homeworld-occupation-history';
+import { homeworldContext } from '../game/homeworld-game';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -70,6 +72,13 @@ function setup(faction: 'emperor' | 'fremen', homeworlds = true) {
   });
   return g;
 }
+/** Record the explicit conserved fixture position before checking read/reload purity. */
+function recordPosition(g: Game) {
+  if (g.homeworldOccupationHistory)
+    g.homeworldOccupationHistory = observeHomeworldOccupation(g.homeworldOccupationHistory,
+      homeworldContext(g), g.homeworlds!.custody!, g.turn, 'change',
+      `fixture-position-${g.homeworldOccupationHistory.sources.length}`);
+}
 function inventory(g: Game) {
   for (const p of g.players) {
     assert.equal(p.reserves + p.tanks + sum(p.forces), 20);
@@ -106,6 +115,7 @@ function battle(faction: 'emperor' | 'fremen', homeworlds = true) {
     player(g).elites!.forces['arrakeen:10'] = 1;
   }
   Object.assign(player(g, 'q'), { reserves: 19, forces: { 'arrakeen:10': 1 } });
+  recordPosition(g);
   inventory(g);
   g = applyAction(g, 'p', {
     type: 'chooseBattle',
@@ -155,6 +165,7 @@ function tanks(faction: 'emperor' | 'fremen', homeworlds = true) {
     p.elites.reserves -= 3;
     p.elites.tanks = 3;
   }
+  recordPosition(g);
   inventory(g);
   return g;
 }

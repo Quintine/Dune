@@ -32,14 +32,17 @@ function hold(g: Game, id: string, match: (card: Card) => boolean) {
 /** Emperor-only cases use the genuine audited setup pipeline. CHOAM's complete
  * expansion deck remains gated, so its shared-window cases use an explicit
  * faction seam with real base-deck IDs and conserved Homeworld counters. */
-function fixture(choam = false, advanced = true) {
+function fixture(choam = false, advanced = true, richese = false) {
   let g = createGame(
     'BIDDINGEND',
     newPlayer('e', 'Emperor', 'emperor'),
     advanced,
-    choam ? ['choam'] : [],
+    choam || richese ? ['choam'] : [],
   );
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
+  if (richese) joinGame(g, newPlayer('r', 'Richese', 'richese'));
+  // The Richese audit uses its separate cache plus the implemented base deck.
+  if (richese) g.expansions = [];
   if (choam) {
     joinGame(g, newPlayer('c', 'CHOAM', 'choam'));
     Object.assign(g, {
@@ -440,16 +443,11 @@ void test('ordinary CHOAM market retains its existing end-of-Bidding decision wh
 });
 
 void test('a scheduled post-normal Richese cache auction completes before the shared Kaitain window opens', () => {
-  let g = fixture(false, false);
-  // Add the explicitly staged Richese faction and complete physical cache to
-  // the audited core game; the full Richese expansion setup remains gated.
-  const r = newPlayer('r', 'Richese', 'richese');
-  r.spice = 20;
-  g.players.push(r);
-  g.order = ['e', 'a', 'r'];
-  g.homeworlds = { custody: createHomeworldCustody(homeworldContext(g)) };
-  g.richeseCache = richeseCards();
-  g.richeseRemoved = [];
+  let g = fixture(false, false, true);
+  // Richese and its separate physical cache originate in genuine setup before
+  // occupation-history initialization. Public expansion release remains gated.
+  assert.equal(g.richeseCache?.length, 10);
+  assert.deepEqual(g.richeseRemoved, []);
   const disposal = hold(g, 'e', (card) => card.kind === 'worthless');
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   assert.equal(g.decision?.kind, 'richeseDeclaration');

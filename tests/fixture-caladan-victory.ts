@@ -10,6 +10,7 @@ import {
   type Game,
 } from '../game/engine';
 import { botActions } from '../game/bots';
+import type { FactionId } from '../game/catalog';
 import { baseDeck, ixDeck } from '../game/cards';
 import {
   homeworldContext,
@@ -24,17 +25,27 @@ export const victoryReload = (g: Game): Game => JSON.parse(JSON.stringify(g));
 /** Genuine setup and physical cards; only the later phase and force positions
  * are staged. Optional Tleilaxu uses its actual Ix setup, not a faction swap. */
 export function caladanVictoryFixture(
-  options: { advanced?: boolean; tleilaxu?: boolean; native?: number } = {},
+  options: {
+    advanced?: boolean;
+    tleilaxu?: boolean;
+    native?: number;
+    seatIds?: Record<string, string>;
+    extraSeats?: readonly { id: string; faction: FactionId }[];
+  } = {},
 ): Game {
+  const id = (key: string) => options.seatIds?.[key] ?? key;
   let g = createGame(
     'CALADANVICTORY',
-    newPlayer('a', 'Atreides', 'atreides'),
+    newPlayer(id('a'), 'Atreides', 'atreides'),
     options.advanced ?? false,
     options.tleilaxu ? ['ix'] : [],
   );
-  joinGame(g, newPlayer('g', 'Guild', 'guild'));
-  if (options.tleilaxu) joinGame(g, newPlayer('t', 'Tleilaxu', 'tleilaxu'));
-  g = applyAction(g, 'a', { type: 'homeworlds', enabled: true });
+  joinGame(g, newPlayer(id('g'), 'Guild', 'guild'));
+  if (options.tleilaxu) joinGame(g, newPlayer(id('t'), 'Tleilaxu', 'tleilaxu'));
+  // Audit-only final roster is fixed before setup signs public history.
+  for (const extra of options.extraSeats ?? [])
+    g.players.push(newPlayer(id(extra.id), extra.faction, extra.faction));
+  g = applyAction(g, id('a'), { type: 'homeworlds', enabled: true });
   for (const player of g.players)
     g = applyAction(g, player.id, { type: 'ready' });
   g = initializeHomeworldGameForAudit(g);
@@ -64,13 +75,17 @@ export function caladanVictoryFixture(
     phaseOpening: null,
     response: null,
     decision: null,
-    active: 'a',
+    active: id('a'),
     ready: [],
     order: g.players.map((player) => player.id),
   });
-  positionVictoryArmy(g, 'a', options.native ?? 6, 3);
-  positionVictoryArmy(g, 'g', 17, 3);
-  if (options.tleilaxu) positionVictoryArmy(g, 't', 20, 0);
+  positionVictoryArmy(g, id('a'), options.native ?? 6, 3);
+  positionVictoryArmy(g, id('g'), 17, 3);
+  if (options.tleilaxu) positionVictoryArmy(g, id('t'), 20, 0);
+  for (const extra of options.extraSeats ?? []) {
+    const player = victoryPlayer(g, id(extra.id));
+    Object.assign(player, { reserves: 20, tanks: 0, forces: {} });
+  }
   victoryInventory(g);
   return g;
 }

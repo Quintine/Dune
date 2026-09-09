@@ -28,7 +28,8 @@ export function homeworldGameIntegrity(g: Game): void {
   if (
     typeof state !== 'object' ||
     Array.isArray(state) ||
-    Object.keys(state).length !== 1 ||
+    Object.keys(state).some((key) => !['custody', 'historyVersion'].includes(key)) ||
+    (state.historyVersion !== undefined && state.historyVersion !== 1) ||
     !Object.hasOwn(state, 'custody')
   )
     throw new HomeworldCustodyError(

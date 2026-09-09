@@ -94,7 +94,7 @@ async function fixture(population = 10, withTleilaxu = false) {
   const store = unitStore();
   const made = await store.rooms.createRoom(
     'Tupile recovery QA',
-    'guild',
+    'choam',
     true,
     ['ix'],
   );
@@ -130,10 +130,9 @@ async function fixture(population = 10, withTleilaxu = false) {
   assert.equal(g.status, 'playing');
   for (const player of g.players) g.deck.push(...player.hand.splice(0));
   const ids = g.players.map((p) => p.id);
-  // Explicit unsupported-faction seam after genuine Homeworld/Ix setup.
-  // This audits production persistence for Tupile sales, not CHOAM setup or its deck.
+  // The real CHOAM identity precedes Homeworld/Ix setup and its signed history.
+  // Stage only the conserved population and balance needed for this sale.
   Object.assign(g.players[0], {
-    faction: 'choam',
     name: 'CHOAM',
     spice: 12,
     reserves: population,

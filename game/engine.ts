@@ -1,3 +1,7 @@
+import { createHomeworldOccupationHistory, observeHomeworldOccupation, validateHomeworldOccupationHistory, tupileOccupationStatus, type HomeworldOccupationHistory } from './homeworld-occupation-history';
+import { tupileIntelligenceTargets, quoteTupileIntelligenceRequest, type TupileIntelligenceCategory } from './tupile-intelligence';
+import { quoteTupileIntelligenceAnswer } from './tupile-intelligence-answer';
+import { createTupileIntelligenceState, appendTupileIntelligenceObservation, validateTupileIntelligenceState, type TupileIntelligenceState } from './tupile-intelligence-state';
 import { quoteHomeworldCustody } from './homeworld-custody';
 import { quoteHomeworldShipment, type HomeworldShipmentIntent } from './homeworld-shipment';
 import { quoteGuildHomeworldShipment } from './guild-homeworld-shipment';
@@ -1241,7 +1245,9 @@ export type Game = {
   techTokens?: TechState | null;
   strongholdCards?: StrongholdState | null;
   /** Null/absent disables the module; custody is installed at force placement. */
-  homeworlds?: { custody: HomeworldCustody | null } | null;
+  homeworlds?: { custody: HomeworldCustody | null; historyVersion?: 1 } | null;
+  homeworldOccupationHistory?: HomeworldOccupationHistory;
+  tupileIntelligence?: TupileIntelligenceState;
   pendingTech?: { player: string; loser: string; choices: TechId[] } | null;
   summonedBeforeBlow?: boolean;
   summonedNexusBeforeRides?: boolean;
@@ -1489,6 +1495,7 @@ function revealPlayerNoField(g: Game, p: Player, cause: NoFieldRevealCause) {
   p.reserves -= result.forces;
   if (result.forces)
     place(p, result.location.territory, result.location.sector, result.forces);
+  observeOccupation(g);
   log(
     g,
     `${p.name} revealed the ${result.value} No-Field in ${territory(result.location.territory).name} (${cause}) and placed ${result.forces} physical forces from reserves.${result.forces < result.value ? ' Only the remaining reserves could be placed.' : ''}`,
@@ -3574,6 +3581,8 @@ function withdrawNativeReserves(
   p.reserves = changed.reserves;
   if (p.elites) p.elites.reserves = changed.eliteReserves;
   g.homeworlds.custody = result.state;
+  // All Homeworld changes are committed here; the destination is on Arrakis.
+  observeOccupation(g);
   return result.receipts;
 }
 function addRevivedReserves(g: Game, p: Player, amount: number, elite: number) {
@@ -3594,6 +3603,7 @@ function addRevivedReserves(g: Game, p: Player, amount: number, elite: number) {
   p.reserves = changed.reserves;
   if (p.elites) p.elites.reserves = changed.eliteReserves;
   g.homeworlds.custody = result.state;
+  observeOccupation(g);
 }
 function kill(
   g: Game,
@@ -3796,6 +3806,7 @@ function settleHomeworldExplosion(g: Game, choice: HomeworldForces, automatic: b
   requireRule(pending.kind === 'explosion' && pending.options.some((p) => p.normal === choice.normal && p.elite === choice.elite),
     'Choose a native explosion casualty allocation.');
   commitHomeworldLoss(g, pending.player, pending.territory, choice);
+  observeOccupation(g);
   const player = getPlayer(g, pending.player);
   log(g, `${player.name} lost ${choice.normal} normal and ${choice.elite} special forces on ${combatLocationName(g, pending.territory)}. The remaining native forces survived the Lasgun–shield explosion.${automatic ? ' The only physical allocation was applied automatically.' : ''}`,
     automatic ? { faction: player.faction, name: 'Native explosion casualties' } : undefined);
@@ -4195,6 +4206,12 @@ function finishSetup(g: Game) {
       .map((leader) => ({ leader, revealed: false }));
   }
   g.status = 'playing';
+  if (g.homeworlds?.custody) {
+    g.homeworldOccupationHistory = homeworldRule(() => createHomeworldOccupationHistory(homeworldContext(g), g.homeworlds!.custody!, g.turn, crypto.randomUUID()));
+    g.homeworlds.historyVersion = 1;
+    const choam = byFaction(g, 'choam');
+    if (choam) g.tupileIntelligence = createTupileIntelligenceState(choam.id);
+  }
   log(g, 'Setup complete. The first storm awaits two secret dials.');
   openPhase(g, false);
 }
@@ -7693,6 +7710,7 @@ function commitAmbassadorShipment(g: Game, shipment: PendingShipment) {
   p.reserves -= order.amount;
   if (p.elites) p.elites.reserves -= order.elite;
   place(p, order.territory, order.sector, order.amount, order.elite);
+  observeOccupation(g);
   if (order.advisors) (p.advisors ??= {})[order.territory] ??= {};
   if (p.faction !== 'fremen') techIncome(g, 'heighliners', p);
   entry.stage = 'arrival';
@@ -9119,6 +9137,7 @@ function decideTerror(g: Game, p: Player, action: Action) {
       );
       p.reserves -= amount;
       place(p, entry.territory, entry.sector, amount);
+      observeOccupation(g);
       log(
         g,
         `${p.name} sent ${amount} reserves into ${territory(entry.territory).name} through Sneak Attack.`,
@@ -9913,8 +9932,10 @@ function completePhase(g: Game) {
   g.phase++;
   if (g.phase === 9) {
     if (g.dukeVidal) g.dukeVidal = expireDuke(g.dukeVidal, g.turn);
+    observeOccupation(g, 'turnEnd');
     g.turn++;
     g.phase = 0;
+    observeOccupation(g, 'turnStart');
   }
   openPhase(g);
 }
@@ -10279,6 +10300,65 @@ function creditGiediCollection(g: Game, player: string, desert: number) {
   if (quote.amount)
     log(g, 'Harkonnen received 2 spice from the bank: high-population Giedi Prime rewards positive desert collection once this phase.',
       { faction: 'harkonnen', name: 'Giedi Prime collection' });
+}
+/** Qualification history records facts only; disputed expiry and benefits remain separate. */
+function observeOccupation(g: Game, cause: 'change' | 'turnStart' | 'turnEnd' = 'change') {
+  if (g.homeworlds?.historyVersion !== 1 || !g.homeworldOccupationHistory) return;
+  g.homeworldOccupationHistory = homeworldRule(() => observeHomeworldOccupation(
+    g.homeworldOccupationHistory!, homeworldContext(g), g.homeworlds!.custody!, g.turn, cause,
+    cause === 'change'
+      ? `homeworld-change-${g.homeworldOccupationHistory!.sources[0].event}-${g.homeworldOccupationHistory!.sources.length}`
+      : `homeworld-turn-${g.turn}-${cause}`));
+}
+function homeworldHistoryIntegrity(g: Game) {
+  const initialized = g.homeworlds?.historyVersion === 1;
+  requireRule(initialized === (g.homeworldOccupationHistory !== undefined),
+    'The Homeworld qualification history has lost its initialized record.');
+  if (initialized) {
+    homeworldRule(() => validateHomeworldOccupationHistory(g.homeworldOccupationHistory!, homeworldContext(g), g.turn));
+    const choam = byFaction(g, 'choam');
+    requireRule(!!choam === (g.tupileIntelligence !== undefined), 'The original Tupile intelligence ledger is missing.');
+    if (g.tupileIntelligence) homeworldRule(() => validateTupileIntelligenceState(g.tupileIntelligence!, g.players, g.turn));
+  } else requireRule(g.tupileIntelligence === undefined, 'Tupile intelligence requires its original Homeworld history.');
+}
+function tupileIntelligenceBlock(g: Game): string | null {
+  if (!g.homeworlds?.custody || !g.tupileIntelligence || !g.homeworldOccupationHistory)
+    return 'This saved game lacks the original occupation and intelligence history required for Tupile.';
+  if (g.status !== 'playing') return 'Tupile intelligence is available during play.';
+  if (g.phaseOpening || g.response || g.decision || g.truthtrance || g.pendingKarama ||
+      g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange ||
+      g.pendingRicheseGift || g.pendingRichesePurchaseIncome || g.battle?.revealed)
+    return 'Finish the current response or committed action before requesting Tupile intelligence.';
+  return null;
+}
+function projectedTupileIntelligence(g: Game, id: string) {
+  const owner = byFaction(g, 'choam');
+  if (!owner || owner.id !== id || !g.homeworlds?.custody) return null;
+  const state = g.tupileIntelligence;
+  const targets = homeworldRule(() => tupileIntelligenceTargets(homeworldContext(g), g.homeworlds!.custody!, id,
+    state?.receipts.map((receipt) => receipt.faction) ?? [],
+    tupileOccupationStatus(g.homeworldOccupationHistory, homeworldContext(g))));
+  return {owner: id, blocked: tupileIntelligenceBlock(g), targets,
+    receipts: (state?.receipts ?? []).map(({event, target, faction, category, spice, count, turn, phase}) =>
+      ({event, target, faction, category, spice, count, turn, phase}))};
+}
+function requestTupileIntelligence(g: Game, p: Player, action: Action) {
+  const blocked = tupileIntelligenceBlock(g);
+  requireRule(!blocked, blocked ?? 'Tupile intelligence is unavailable.');
+  requireRule(p.faction === 'choam' && g.tupileIntelligence!.owner === p.id, 'Only CHOAM may request its private Tupile intelligence.');
+  requireRule(Object.keys(action).every((key) => ['type', 'target', 'category'].includes(key)) &&
+    typeof action.target === 'string' && (action.category === 'weapons' || action.category === 'defenses'),
+    'Choose one opposing faction and either weapons or defenses.');
+  const request = homeworldRule(() => quoteTupileIntelligenceRequest(homeworldContext(g), g.homeworlds!.custody!, p.id,
+    g.tupileIntelligence!.receipts.map((receipt) => receipt.faction),
+    tupileOccupationStatus(g.homeworldOccupationHistory, homeworldContext(g)), action.target as string,
+    action.category as TupileIntelligenceCategory));
+  const target = getPlayer(g, request.target);
+  const answer = homeworldRule(() => quoteTupileIntelligenceAnswer(target.hand, target.spice, request.category));
+  g.tupileIntelligence = homeworldRule(() => appendTupileIntelligenceObservation(g.tupileIntelligence!, {
+    event: crypto.randomUUID(), ...request, ...answer, turn: g.turn, phase: g.phase}));
+  log(g, `${p.name} used Tupile intelligence against ${faction(target.faction).name}. The spice balance and chosen card count were recorded privately; this faction cannot be questioned again.`,
+    {faction: 'choam', name: 'Tupile intelligence'});
 }
 function grummanCollectionIntegrity(g: Game) {
   homeworldRule(() => validateGrummanCollection(g));
@@ -11145,6 +11225,7 @@ function gholaOptions(g: Game, p: Player) {
   };
 }
 function marketGholaIntegrity(g: Game) {
+  homeworldHistoryIntegrity(g);
   grummanCollectionIntegrity(g);
   homeworldVictoryReturnIntegrity(g);
   homeworldRevivalReturnIntegrity(g);
@@ -12214,6 +12295,7 @@ function resolveBattle(g: Game) {
     dead(dl);
     killTerritory(g, a, b.territory, Infinity, true);
     killTerritory(g, d, b.territory, Infinity, true);
+    observeOccupation(g);
     log(g, 'Both leaders were traitors. Both armies were destroyed.');
   } else if (ac || dc) {
     const loser = ac ? d : a;
@@ -12221,6 +12303,7 @@ function resolveBattle(g: Game) {
     dead(l);
     winner!.spice += quote.bounty!.amount;
     killTerritory(g, loser, b.territory, Infinity, true);
+    observeOccupation(g);
     log(
       g,
       `${faction(winner!.faction).name} revealed a traitor and won without losses.`,
@@ -12232,6 +12315,7 @@ function resolveBattle(g: Game) {
       'a Lasgun–shield explosion destroyed it',
     );
     for (const player of quote.destroyedArmies) killTerritory(g, getPlayer(g, player), b.territory, Infinity, true);
+    observeOccupation(g);
     dead(al);
     dead(dl);
     for (const [p, plan] of [
@@ -12261,8 +12345,10 @@ function resolveBattle(g: Game) {
     const loser = winner === a ? d : a;
     if (quote.bounty) winner!.spice += quote.bounty.amount;
     killTerritory(g, loser, b.territory, Infinity, true);
+    observeOccupation(g);
     if (quote.basicWinnerLosses !== null)
       killTerritory(g, winner!, b.territory, quote.basicWinnerLosses, true);
+    observeOccupation(g);
     log(
       g,
       stoneResult
@@ -12456,6 +12542,7 @@ function settleWinnerCasualties(
 ) {
   if (to.startsWith('homeworld:')) homeworldBattleLossIntegrity(g);
   const losses = takeBattleLosses(g, p, to, choice);
+  observeOccupation(g);
   if (to.startsWith('homeworld:')) g.homeworldBattleLoss = null;
   log(
     g,
@@ -12705,6 +12792,7 @@ function decideHomeworldVictoryReturn(g: Game, p: Player, action: Action) {
   const seat = quote.transfer.players.find((seat) => seat.id === p.id)!;
   p.reserves = seat.reserves;
   g.homeworlds!.custody = quote.transfer.state;
+  observeOccupation(g);
   frame.destination = quote.selected.id; frame.stage = 'arrival'; frame.ambassadors = [];
   frame.arrivalSignature = homeworldArrivalSignature(frame);
   stampHomeworldVictoryStage(g);
@@ -13147,6 +13235,7 @@ function decideHomeworldRevivalReturn(g: Game, p: Player, action: Action) {
   p.reserves = seat.reserves;
   if (p.elites) p.elites.reserves = seat.eliteReserves;
   g.homeworlds!.custody = quote.transfer.state;
+  observeOccupation(g);
   frame.destination = quote.selected.id;
   frame.stage = 'arrival';
   stampHomeworldRevivalProgress(g);
@@ -13852,6 +13941,7 @@ function finishResponse(g: Game, canceled: boolean) {
           target.reserves++;
           if (target.elites) target.elites.reserves += pending.elite!;
         }
+        observeOccupation(g);
         settleAdvisors(g);
         log(
           g,
@@ -14061,6 +14151,7 @@ function finishResponse(g: Game, canceled: boolean) {
         `${player.name} substituted surviving suboids for cyborgs lost in this battle.`,
       );
     }
+    observeOccupation(g);
     g.pendingIxSubstitution = null;
     if (quote) {
       log(
@@ -14614,6 +14705,7 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
     owner.reserves = seat.reserves;
     if (owner.elites) owner.elites.reserves = seat.eliteReserves;
   }
+  observeOccupation(g);
   if (arrival) {
     place(p, arrival.territory, arrival.sector, quote.amount, quote.elite);
     if (advisors) (p.advisors ??= {})[arrival.territory] = {
@@ -14711,6 +14803,7 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment) {
     owner.reserves = seat.reserves;
     if (owner.elites) owner.elites.reserves = seat.eliteReserves;
   }
+  observeOccupation(g);
   p.shipped = true;
   g.pendingHomeworldShipment = null;
   // The E3 FAQ explicitly includes Homeworld shipment, including Fremen.
@@ -16026,6 +16119,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  observeOccupation(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
   homeworldSubstitutionIntegrity(g);
@@ -16117,6 +16211,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileBattlePromises(g, { actor: id, action });
   reconcileShipmentPromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
+  observeOccupation(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -16131,6 +16226,7 @@ function finishActionContinuations(g: Game) {
   // discard. Retire that next physical batch before exposing optional choices.
   for (let i = 0; g.pendingTreacheryDiscard && i < 16; i++) finishTreacheryDiscard(g);
   requireRule(!g.pendingTreacheryDiscard, 'The automatic discard chain did not finish.');
+  observeOccupation(g);
   resumeHomeworldRevivalReturn(g);
   resumeHomeworldVictoryReturn(g);
   resumeMarketGhola(g);
@@ -16234,6 +16330,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
   settleAutomaticContinuations(g);
+  observeOccupation(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -16341,6 +16438,10 @@ function applyActionInner(
   }
   if (t === 'card' && action.card === 'richese-juice-of-sapho') {
     playSapho(g, p, action);
+    return g;
+  }
+  if (t === 'tupileIntelligence') {
+    requestTupileIntelligence(g, p, action);
     return g;
   }
   if (t === 'portableSnooper') {
@@ -17198,6 +17299,7 @@ function applyActionInner(
           delete leader.concealed;
         }
         if (total && !home) place(p, decision.territory, sector, total);
+        observeOccupation(g);
         dancer.revealed = true;
         log(
           g,
@@ -18830,6 +18932,7 @@ function applyActionInner(
         };
       else if (p.advisors) delete p.advisors[to];
     }
+    observeOccupation(g);
     finishShipmentPromises(
       g,
       p,
@@ -18879,6 +18982,7 @@ function applyActionInner(
       ),
     );
     g.homeworlds!.custody = quote.state;
+    observeOccupation(g);
     finishShipmentPromises(g, p, null);
     p.shipped = true;
     p.moved++;
@@ -19555,6 +19659,7 @@ export function viewGame(state: Game, id: string) {
     moritaniPendingPlacement:
       me.faction === 'moritani' ? (g.pendingMoritaniPlacement ?? null) : null,
     grummanCollection: projectedGrummanCollection(g, id),
+    tupileIntelligence: projectedTupileIntelligence(g, id),
     terrorEntry: g.pendingTerrorEntry
       ? (() => {
           const entry = g.pendingTerrorEntry!;

@@ -1,4 +1,3 @@
-import { newPlayer } from '../game/engine';
 import { createAmbassadors, placeAmbassador } from '../game/ecaz-ambassadors';
 import {
   homeworldRevivalFixture,
@@ -8,35 +7,30 @@ import {
   revivalInventory as inventory,
 } from './fixture-homeworld-revival';
 
-/** Genuine native revival fixture plus an explicit Ecaz/BG faction seam: no
+/** Genuine final native/Ecaz/BG revival roster with staged positions: no
  * fabricated revival, Ambassador, response or continuation receipt. */
-export function homeworldRevivalAmbassadorFixture() {
-  const g = homeworldRevivalFixture({ advanced: true, tleilaxu: true });
-  for (const [id, faction] of [
-    ['ec', 'ecaz'],
-    ['bg', 'beneGesserit'],
-    ['a', 'atreides'],
-  ] as const) {
-    const player = newPlayer(id, faction, faction);
-    Object.assign(player, {
-      reserves: 20,
-      forces: {},
-      tanks: 0,
-      spice: 20,
-      hand: [],
-      traitors: [],
-      traitorChoices: [],
-    });
-    g.players.push(player);
-  }
+export function homeworldRevivalAmbassadorFixture(
+  seatIds: Record<string, string> = {},
+) {
+  const id = (key: string) => seatIds[key] ?? key;
+  const g = homeworldRevivalFixture({
+    advanced: true,
+    tleilaxu: true,
+    seatIds,
+    extraSeats: [
+      { id: 'ec', faction: 'ecaz' },
+      { id: 'bg', faction: 'beneGesserit' },
+      { id: 'a', faction: 'atreides' },
+    ],
+  });
   g.expansions.push('ecaz');
   g.order = g.players.map((player) => player.id);
-  p(g, 'ec').ally = 'a';
-  p(g, 'a').ally = 'ec';
-  p(g, 'bg').forces = { 'sietch_tabr:14': 1 };
-  p(g, 'bg').reserves = 19;
-  p(g, 'ec').forces = { 'red_chasm:7': 1 };
-  p(g, 'ec').reserves = 19;
+  p(g, id('ec')).ally = id('a');
+  p(g, id('a')).ally = id('ec');
+  p(g, id('bg')).forces = { 'sietch_tabr:14': 1 };
+  p(g, id('bg')).reserves = 19;
+  p(g, id('ec')).forces = { 'red_chasm:7': 1 };
+  p(g, id('ec')).reserves = 19;
   const state = createAmbassadors(() => 0);
   const first = state.tokens.find((token) => token.effect === 'guild')!;
   const second = state.tokens.find((token) => token.effect === 'fremen')!;
@@ -77,6 +71,6 @@ export function homeworldRevivalAmbassadorFixture() {
     }).state;
   inventory(g);
   const entered = enterHomeworldRevival(g);
-  holdRevivalCard(entered, 'ec', 'karama');
+  holdRevivalCard(entered, id('ec'), 'karama');
   return entered;
 }

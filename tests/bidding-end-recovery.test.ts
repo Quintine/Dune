@@ -116,6 +116,10 @@ async function fixture(ecaz = false) {
     tokens.map((token) => store.rooms.authenticate(code, token)),
   );
   let g = await store.rooms.readRoom(code);
+  // Offline lobby faction seam: public expansion joins remain gated, but final
+  // identities precede every genuine setup allocation and signed history.
+  g.players[2] = engine.newPlayer(g.players[2].id, 'CHOAM', 'choam');
+  if (ecaz) g.players[3] = engine.newPlayer(g.players[3].id, 'Ecaz', 'ecaz');
   g = engine.applyAction(g, g.host, { type: 'homeworlds', enabled: true });
   for (const player of g.players)
     g = engine.applyAction(g, player.id, { type: 'ready' });
@@ -137,13 +141,11 @@ async function fixture(ecaz = false) {
   assert.equal(g.status, 'playing');
   for (const player of g.players) g.deck.push(...player.hand.splice(0));
   const ids = g.players.map((p) => p.id);
-  // Explicit expansion-faction seams after genuine base Homeworld setup.
-  // Retain every physical card/counter; no full CHOAM/Ecaz setup is certified.
-  g.players[2].faction = 'choam';
+  // The final faction roster is established before genuine Homeworld setup.
+  // These later positions preserve its signed identities and physical counters.
   g.players[2].name = 'CHOAM';
   if (ecaz) {
     Object.assign(g.players[3], {
-      faction: 'ecaz',
       name: 'Ecaz',
       reserves: 20,
       forces: {},

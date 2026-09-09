@@ -22,17 +22,22 @@ export const grummanReload = (g: Game): Game => JSON.parse(JSON.stringify(g));
  * pre-Collection board position is staged; no signed phase/arrival is fabricated.
  * Runtime Moritani support here does not lift its public expansion-start gate. */
 export function grummanCollectionFixture(
-  options: { native?: number; advanced?: boolean } = {},
+  options: {
+    native?: number;
+    advanced?: boolean;
+    seatIds?: [string, string, string];
+  } = {},
 ): Game {
+  const [m, a, h] = options.seatIds ?? ['m', 'a', 'g'];
   let g = createGame(
     'GRUMMANCOLLECTION',
-    newPlayer('m', 'Moritani', 'moritani'),
+    newPlayer(m, 'Moritani', 'moritani'),
     options.advanced ?? false,
     [],
   );
-  joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
-  joinGame(g, newPlayer('g', 'Harkonnen', 'harkonnen'));
-  g = applyAction(g, 'm', { type: 'homeworlds', enabled: true });
+  joinGame(g, newPlayer(a, 'Atreides', 'atreides'));
+  joinGame(g, newPlayer(h, 'Harkonnen', 'harkonnen'));
+  g = applyAction(g, m, { type: 'homeworlds', enabled: true });
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   g = initializeHomeworldGameForAudit(g);
   for (let n = 0; g.status === 'setup' && n < 60; n++) {
@@ -61,7 +66,7 @@ export function grummanCollectionFixture(
       moved: 0,
     });
   }
-  const owner = grummanPlayer(g, 'm');
+  const owner = grummanPlayer(g, m);
   owner.reserves = options.native ?? 8;
   owner.forces = { 'polar_sink:0': 20 - owner.reserves };
   assert.ok(g.moritaniTerror);
@@ -72,9 +77,9 @@ export function grummanCollectionFixture(
   Object.assign(g, {
     phase: 5,
     turn: 2,
-    active: 'a',
-    movementRemaining: ['a'],
-    order: ['a', 'm', 'g'],
+    active: a,
+    movementRemaining: [a],
+    order: [a, m, h],
     ready: [],
     phaseOpening: null,
     response: null,

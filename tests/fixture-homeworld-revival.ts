@@ -10,6 +10,7 @@ import {
   type Game,
 } from '../game/engine';
 import { botActions } from '../game/bots';
+import type { FactionId } from '../game/catalog';
 import { baseDeck, ixDeck } from '../game/cards';
 import { homeworldGameIntegrity } from '../game/homeworld-game';
 
@@ -24,17 +25,23 @@ export function homeworldRevivalFixture(
   options: {
     advanced?: boolean;
     tleilaxu?: boolean;
+    seatIds?: Record<string, string>;
+    extraSeats?: readonly { id: string; faction: FactionId }[];
   } = {},
 ): Game {
+  const id = (key: string) => options.seatIds?.[key] ?? key;
   let g = createGame(
     'HOMEREVIVAL',
-    newPlayer('f', 'Fremen', 'fremen'),
+    newPlayer(id('f'), 'Fremen', 'fremen'),
     options.advanced ?? false,
     options.tleilaxu ? ['ix'] : [],
   );
-  joinGame(g, newPlayer('e', 'Emperor', 'emperor'));
-  if (options.tleilaxu) joinGame(g, newPlayer('t', 'Tleilaxu', 'tleilaxu'));
-  g = applyAction(g, 'f', { type: 'homeworlds', enabled: true });
+  joinGame(g, newPlayer(id('e'), 'Emperor', 'emperor'));
+  if (options.tleilaxu) joinGame(g, newPlayer(id('t'), 'Tleilaxu', 'tleilaxu'));
+  // Audit-only final roster is fixed before setup signs public history.
+  for (const extra of options.extraSeats ?? [])
+    g.players.push(newPlayer(id(extra.id), extra.faction, extra.faction));
+  g = applyAction(g, id('f'), { type: 'homeworlds', enabled: true });
   for (const player of g.players)
     g = applyAction(g, player.id, { type: 'ready' });
   g = initializeHomeworldGameForAudit(g);
@@ -68,8 +75,13 @@ export function homeworldRevivalFixture(
     response: null,
     decision: null,
   });
-  positionRevivalForces(g, 'f', { native: 3, tanks: 5, eliteTanks: 2 });
-  if (options.tleilaxu) positionRevivalForces(g, 't', { native: 9, tanks: 5 });
+  positionRevivalForces(g, id('f'), { native: 3, tanks: 5, eliteTanks: 2 });
+  if (options.tleilaxu)
+    positionRevivalForces(g, id('t'), { native: 9, tanks: 5 });
+  for (const extra of options.extraSeats ?? []) {
+    const player = revivalPlayer(g, id(extra.id));
+    Object.assign(player, { reserves: 20, tanks: 0, forces: {} });
+  }
   revivalInventory(g);
   return g;
 }

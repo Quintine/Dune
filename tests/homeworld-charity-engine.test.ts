@@ -22,10 +22,13 @@ function setup(advanced = true, ix = false) {
     'HOMECHARITYENGINE',
     newPlayer('a', 'Atreides', 'atreides'),
     advanced,
-    ix ? ['ix'] : [],
+    ix ? ['ix', 'choam'] : ['choam'],
   );
   joinGame(g, newPlayer('b', 'Bene Gesserit', 'beneGesserit'));
-  joinGame(g, newPlayer('c', 'Guild', 'guild'));
+  joinGame(g, newPlayer('c', 'CHOAM', 'choam'));
+  // Audit CHOAM's faction with only the implemented physical base/Ix deck.
+  // The lobby roster is final before any setup pieces or history are created.
+  g.expansions = ix ? ['ix'] : [];
   g = applyAction(g, 'a', { type: 'homeworlds', enabled: true });
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   g = initializeHomeworldGameForAudit(g);
@@ -64,12 +67,10 @@ function low(g: Game, id: string, reserves: number) {
   homeworldGameIntegrity(g);
 }
 function choam(g: Game) {
-  // Explicit unsupported-faction component seam AFTER genuine base/ix setup.
-  // No CHOAM deck/setup completeness is claimed; preserve all original counters
-  // and card custody, change only the payer faction needed by this contract.
+  // Faction identity and both histories originate in genuine setup. Stage only
+  // the phase's existing payer balance/settlement, preserving physical custody.
   const p = seat(g, 'c');
-  p.faction = 'choam';
-  p.name = 'CHOAM';
+  assert.equal(p.faction, 'choam');
   p.spice = 12;
   g.choamCharity = { turn: g.turn, canceled: false };
   homeworldGameIntegrity(g);

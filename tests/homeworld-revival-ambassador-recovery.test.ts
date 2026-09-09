@@ -110,13 +110,8 @@ async function persisted() {
   }
   const auths = await Promise.all(tokens.map((token) => store.rooms.authenticate(code, token)));
   const initial = await store.rooms.readRoom(code);
-  const ids: Record<string, string> = {};
-  let encoded = JSON.stringify(homeworldRevivalAmbassadorFixture());
-  for (const [index, [id]] of roster.entries()) {
-    ids[id] = auths[index].playerId;
-    encoded = encoded.replaceAll(JSON.stringify(id), JSON.stringify(ids[id]));
-  }
-  const g: Game = JSON.parse(encoded);
+  const ids = Object.fromEntries(roster.map(([id],index) => [id,auths[index].playerId]));
+  const g: Game = homeworldRevivalAmbassadorFixture(ids);
   g.code = code;
   g.host = ids.f;
   g.version = initial.version;

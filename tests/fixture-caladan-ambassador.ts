@@ -1,4 +1,3 @@
-import { newPlayer } from '../game/engine';
 import { createAmbassadors, placeAmbassador } from '../game/ecaz-ambassadors';
 import {
   caladanVictoryFixture,
@@ -7,39 +6,31 @@ import {
   victoryPlayer as p,
 } from './fixture-caladan-victory';
 
-/** Real native setup and battle dispatch, with an explicit Ecaz/Harkonnen/BG
- * scenario seam to exercise entry effects without fabricating victory receipts. */
-export function caladanAmbassadorFixture() {
-  const g = caladanVictoryFixture({ advanced: true });
-  for (const [id, faction] of [
-    ['ec', 'ecaz'],
-    ['h', 'harkonnen'],
-    ['bg', 'beneGesserit'],
-  ] as const) {
-    const player = newPlayer(id, faction, faction);
-    Object.assign(player, {
-      reserves: 20,
-      tanks: 0,
-      forces: {},
-      hand: [],
-      traitors: [],
-      traitorChoices: [],
-      spice: 20,
-    });
-    g.players.push(player);
-  }
+/** Real final native/Ecaz/Harkonnen/BG setup and battle dispatch, with
+ * staged positions and Ambassador tokens to exercise entry effects without fabricating victory receipts. */
+export function caladanAmbassadorFixture(seatIds: Record<string, string> = {}) {
+  const id = (key: string) => seatIds[key] ?? key;
+  const g = caladanVictoryFixture({
+    advanced: true,
+    seatIds,
+    extraSeats: [
+      { id: 'ec', faction: 'ecaz' },
+      { id: 'h', faction: 'harkonnen' },
+      { id: 'bg', faction: 'beneGesserit' },
+    ],
+  });
   g.expansions.push('ecaz');
   g.order = g.players.map((player) => player.id);
-  for (const player of [p(g, 'a'), p(g, 'g')]) {
+  for (const player of [p(g, id('a')), p(g, id('g'))]) {
     player.forces['arrakeen:10'] = player.forces['hagga_basin:12'];
     delete player.forces['hagga_basin:12'];
   }
-  p(g, 'ec').ally = 'h';
-  p(g, 'h').ally = 'ec';
-  p(g, 'ec').forces = { 'red_chasm:7': 1 };
-  p(g, 'ec').reserves = 19;
-  p(g, 'bg').forces = { 'sietch_tabr:14': 1 };
-  p(g, 'bg').reserves = 19;
+  p(g, id('ec')).ally = id('h');
+  p(g, id('h')).ally = id('ec');
+  p(g, id('ec')).forces = { 'red_chasm:7': 1 };
+  p(g, id('ec')).reserves = 19;
+  p(g, id('bg')).forces = { 'sietch_tabr:14': 1 };
+  p(g, id('bg')).reserves = 19;
   const state = createAmbassadors(() => 0);
   const guild = state.tokens.find((token) => token.effect === 'guild')!;
   const fremen = state.tokens.find((token) => token.effect === 'fremen')!;
@@ -78,7 +69,7 @@ export function caladanAmbassadorFixture() {
         allowed: true,
       },
     }).state;
-  holdVictoryCard(g, 'ec', 'karama');
+  holdVictoryCard(g, id('ec'), 'karama');
   inventory(g);
   return g;
 }

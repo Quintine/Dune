@@ -297,6 +297,105 @@ void test('two foreign armies at an empty native home resolve automatically afte
   assert.deepEqual(reload(normalizeAutomaticGame(reload(g))), reload(g));
 });
 
+void test('ordered loser elimination records a sole foreign qualifier before the Basic winner loses its entire dialed army', () => {
+  let g = setup(['atreides', 'guild', 'harkonnen']);
+  assert.equal(g.homeworlds!.historyVersion, 1);
+  assert.ok(g.homeworldOccupationHistory);
+  const world = 'homeworld:harkonnen';
+  invade(g, 'atreides', world, 3);
+  invade(g, 'guild', world, 3);
+  seat(g, 'harkonnen').tanks += seat(g, 'harkonnen').reserves;
+  seat(g, 'harkonnen').reserves = 0;
+  g = prepared(g, 'atreides', 'guild', world);
+  assert.equal(
+    g.homeworldOccupationHistory!.qualifications.filter(
+      (fact) => fact.world === world,
+    ).length,
+    0,
+  );
+  g = commit(g, 'atreides', 3);
+  g = commit(reload(g), 'guild');
+  assert.equal(g.lastBattleContext!.winner, 'atreides');
+  assert.equal(seat(g, 'atreides').tanks, 3);
+  assert.equal(seat(g, 'guild').tanks, 3);
+  assert.equal(g.homeworlds!.custody!.visitors[world], undefined);
+  const history = g.homeworldOccupationHistory!;
+  const qualifications = history.qualifications.filter(
+    (fact) => fact.world === world,
+  );
+  assert.equal(qualifications.length, 1);
+  assert.equal(qualifications[0].player, 'atreides');
+  assert.equal(qualifications[0].cause, 'sole');
+  const source = history.sources.find(
+    (entry) => entry.event === qualifications[0].event,
+  )!;
+  const snapshot = JSON.parse(history.snapshots[source.snapshot]) as [
+    string,
+    [string, number, number][],
+  ][];
+  const armies = snapshot.find(([location]) => location === world)![1];
+  assert.deepEqual(
+    armies.filter(([, normal, elite]) => normal + elite > 0),
+    [['atreides', 3, 0]],
+    'The original qualification observes the winner before its own dialed losses.',
+  );
+  inventory(g);
+  const saved = reload(g);
+  for (let attempt = 0; attempt < 3; attempt++)
+    g = normalizeAutomaticGame(reload(g));
+  assert.deepEqual(reload(g), saved);
+  assert.deepEqual(
+    g.homeworldOccupationHistory,
+    saved.homeworldOccupationHistory,
+  );
+});
+
+void test('simultaneous Lasgun Shield destruction of two invaders at an empty native Homeworld never invents a sole qualifier', () => {
+  let g = setup(['atreides', 'guild', 'harkonnen']);
+  const world = 'homeworld:harkonnen';
+  invade(g, 'atreides', world, 3);
+  invade(g, 'guild', world, 3);
+  seat(g, 'harkonnen').tanks += seat(g, 'harkonnen').reserves;
+  seat(g, 'harkonnen').reserves = 0;
+  const laser = hold(g, 'atreides', 'lasgun');
+  const shield = hold(g, 'guild', 'shield');
+  g = prepared(g, 'atreides', 'guild', world);
+  assert.deepEqual(viewGame(g, 'atreides').battle!.traitorVoters, []);
+  assert.equal(
+    g.homeworldOccupationHistory!.qualifications.filter(
+      (fact) => fact.world === world,
+    ).length,
+    0,
+  );
+  g = commit(g, 'atreides', 0, { weapon: laser });
+  g = commit(reload(g), 'guild', 0, { defense: shield });
+  assert.equal(g.lastBattleContext!.winner, null);
+  assert.equal(g.battle, null);
+  assert.equal(seat(g, 'atreides').tanks, 3);
+  assert.equal(seat(g, 'guild').tanks, 3);
+  assert.equal(g.homeworlds!.custody!.visitors[world], undefined);
+  assert.equal(
+    g.homeworldOccupationHistory!.qualifications.filter(
+      (fact) => fact.world === world,
+    ).length,
+    0,
+  );
+  for (const raw of g.homeworldOccupationHistory!.snapshots) {
+    const snapshot = JSON.parse(raw) as [string, [string, number, number][]][];
+    const present = snapshot
+      .find(([location]) => location === world)![1]
+      .filter(([, normal, elite]) => normal + elite > 0);
+    assert.ok(
+      present.length !== 1 || present[0][0] === 'harkonnen',
+      'No sequential half-explosion snapshot may show an invented sole invader.',
+    );
+  }
+  for (const id of [laser, shield])
+    assert.equal(g.discard.filter((card) => card.id === id).length, 1);
+  inventory(g);
+  assert.deepEqual(reload(normalizeAutomaticGame(reload(g))), reload(g));
+});
+
 void test('real Lasgun Shield explosion preserves mixed native reserves and offers the printed-strength typed loss choice after mandatory discard', () => {
   let g = setup(['atreides', 'emperor']);
   invade(g, 'atreides', 'homeworld:emperor', 3);
@@ -355,6 +454,28 @@ void test('real Lasgun Shield explosion preserves mixed native reserves and offe
     for (const card of [laser, shield])
       assert.equal(done.discard.filter((held) => held.id === card).length, 1);
     inventory(done);
+    const history = done.homeworldOccupationHistory!;
+    assert.ok(history);
+    assert.equal(
+      history.qualifications.filter(
+        (fact) => fact.world === 'homeworld:emperor',
+      ).length,
+      0,
+    );
+    const source = history.sources.at(-1)!;
+    const snapshot = JSON.parse(history.snapshots[source.snapshot]) as [
+      string,
+      [string, number, number][],
+    ][];
+    const native = snapshot
+      .find(([world]) => world === 'homeworld:emperor')![1]
+      .find(([owner]) => owner === 'emperor')!;
+    assert.equal(native[1] + native[2], originalNative - 2);
+    assert.equal(native[2], seat(done, 'emperor').elites!.reserves);
+    assert.deepEqual(
+      reload(normalizeAutomaticGame(reload(done))),
+      reload(done),
+    );
     reject(done, 'emperor', action);
   }
 });

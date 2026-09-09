@@ -1,5 +1,7 @@
 # Homeworld occupation: qualification and unresolved entitlement
 
+Runtime follow-up, 10 September 2026: [Tupile intelligence and qualification history](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupation-observation-boundaries) implement confirmed observations while retaining the unresolved entitlement and expiry questions below. The source audit remains historical evidence.
+
 Source audit, 9 September 2026. This supplements [Homeworld rules](HOMEWORLD_RULES.md#occupier-lifecycle-and-benefits) and the [invasion audit](HOMEWORLD_INVASION_RULES.md#occupation-evidence-and-unresolved-lifecycle). It defines the evidence that can safely be recorded; it does **not** settle every occupied benefit or authorize a complete occupation release. The [integration audit](HOMEWORLD_OCCUPATION_LIFECYCLE_AUDIT.md) maps the physical mutation and recovery boundaries.
 
 ## Confirmed publisher contract

@@ -109,10 +109,8 @@ async function persisted() {
   }
   const auths = await Promise.all(credentials.map((value) => store.rooms.authenticate(code, value)));
   const initial = await store.rooms.readRoom(code);
-  let encoded = JSON.stringify(grummanCollectionFixture());
-  for (const [index, id] of ['m', 'a', 'g'].entries())
-    encoded = encoded.replaceAll(JSON.stringify(id), JSON.stringify(auths[index].playerId));
-  const g: Game = JSON.parse(encoded);
+  // Setup signs the final authenticated identities, including occupation history.
+  const g = grummanCollectionFixture({ seatIds: auths.map((auth) => auth.playerId) as [string, string, string] });
   g.code = code;
   g.host = auths[0].playerId;
   g.version = initial.version;

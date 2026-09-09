@@ -113,11 +113,8 @@ async function persisted(mode: Mode = 'fremen') {
   const tokens = [made.token, emperor.token!, ...(tleilaxu ? [tleilaxu.token!] : [])];
   const auths = await Promise.all(tokens.map((token) => store.rooms.authenticate(code, token)));
   const initial = await store.rooms.readRoom(code);
-  const prepared = homeworldRevivalFixture({ advanced, tleilaxu: expansion });
-  let encoded = JSON.stringify(prepared);
-  for (const [index, id] of ['f', 'e', ...(expansion ? ['t'] : [])].entries())
-    encoded = encoded.replaceAll(JSON.stringify(id), JSON.stringify(auths[index].playerId));
-  let g: Game = JSON.parse(encoded);
+  const seatIds = Object.fromEntries(['f','e',...(expansion ? ['t'] : [])].map((id,index) => [id,auths[index].playerId]));
+  let g: Game = homeworldRevivalFixture({advanced,tleilaxu:expansion,seatIds});
   g.code = code;
   g.host = auths[0].playerId;
   g.version = initial.version;

@@ -1,3 +1,4 @@
+import { tupileIntelligenceActions } from './tupile-intelligence-options';
 import { biddingEndActions, choamMarketPolicy } from './bidding-end-options';
 import { homeworldRevivalActionBlock, homeworldRevivalDeploymentActions } from './homeworld-revival-deployment-options';
 import { caladanReinforcementActions } from './caladan-reinforcement-options';
@@ -3295,6 +3296,8 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
   if (g.automaticContinuationPending) return [];
+  const intelligence = tupileIntelligenceActions(g);
+  if (intelligence.length) return intelligence;
   const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {
     const sourced = withNativeShipmentSources(g, action);
     return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) ? [sourced] : [];
