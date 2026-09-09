@@ -1,3 +1,4 @@
+import { nexusCardBotActions } from './nexus-card-options';
 import { tupileIntelligenceActions } from './tupile-intelligence-options';
 import { biddingEndActions, choamMarketPolicy } from './bidding-end-options';
 import { homeworldRevivalActionBlock, homeworldRevivalDeploymentActions } from './homeworld-revival-deployment-options';
@@ -3296,6 +3297,7 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
   if (g.automaticContinuationPending) return [];
+  if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
   const intelligence = tupileIntelligenceActions(g);
   if (intelligence.length) return intelligence;
   const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {

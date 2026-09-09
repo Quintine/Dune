@@ -3,6 +3,7 @@ import { FACTION_RULES } from './faction-reference';
 import { FACTIONS, PHASES } from './catalog';
 import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
+import { NEXUS_CARD_REFERENCE } from './nexus-card-reference';
 
 export const RULE_CHECKLIST_AREAS = [
   'Implementation',
@@ -3331,6 +3332,32 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/homeworld-benefits-recovery.test.ts',
         ],
       },
+    ],
+  },
+  {
+    id: 'nexus-cards',
+    title: 'Nexus Cards',
+    searchText: NEXUS_CARD_REFERENCE.map(card => `${card.faction} ${card.betrayal} ${card.cunning} ${card.secretAlly}`).join(' '),
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    summary: 'A separate twelve-card deck rewards remaining unallied. Ownership and private draw choices are integrated; individual effects remain in development.',
+    steps: [
+      'This optional module can be combined with Basic or Advanced rules independently of the factions and other expansion modules selected. Include one Nexus Card for each of the twelve factions.',
+      'At the end of the entire Spice Blow and Nexus phase, if a Nexus occurred and at least one alliance exists, each unallied player may draw one card or discard their held card and draw a replacement. You may decline. The two Advanced spice piles do not grant two closing draws.',
+      'Keep your card secret until it is used. You may hold at most one Nexus Card. It is separate from your Treachery hand and does not occupy a Treachery hand slot.',
+      'Whenever you draw your own faction card, you may immediately discard it and draw again, in either Basic or Advanced play. A replacement is discarded before the new draw; when the deck is empty, shuffle its discard pile to refill it.',
+      'Before drawing, choose whether to keep your own faction card, redraw it once, or redraw whenever it appears. Its effect is available in the reference before making this choice. The server applies that preference immediately; the table never pauses in a way that identifies a card you chose to keep.',
+      'Entering any alliance discards your held Nexus Card, including alliances made through an Ambassador or Terror token. An offer that has not been accepted does not discard it.',
+      'Use Cunning for your own faction, Betrayal when another player controls the printed faction, and Secret Ally when that faction is absent. Used cards go to the separate Nexus discard pile. Each printed effect has its own timing.',
+      'The development table supports custody, closing choices, replacement, immediate redraw, alliance discard and private card inspection. Effect execution and full module games are unfinished, so public module starts remain disabled.',
+    ],
+    related: ['ecaz-modules', 'spice-blow', 'alliance-funding'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Physical ownership and whole-phase draw lifecycle; all individual card effects still require integration.', evidence: ['game/nexus-cards.ts', 'game/nexus-card-phase.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Private draw, keep, replace and immediate own-faction redraw; readable card inspection. Effect play controls remain unfinished.', evidence: ['components/nexus-cards.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'All profiles draw when empty and keep their held card. Effect strategy and module strength calibration are unfinished.', evidence: ['game/nexus-card-options.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Common rules and twelve printed faces are recorded. Effect interaction guidance remains in development.', evidence: ['docs/NEXUS_CARD_RULES.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused custody and phase regressions; complete module games remain a release requirement.', evidence: ['tests/nexus-cards.test.ts', 'tests/nexus-card-engine.test.ts'] },
     ],
   },
   ...[

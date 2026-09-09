@@ -1,3 +1,5 @@
+import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, type NexusState } from './nexus-cards';
+import { createNexusCardPhase, markNexusCardOccurred, validateNexusCardPhase, closeNexusCardPhase, nexusCardChoices, finishNexusCardChoice, type NexusCardPhase, type NexusCardChoice } from './nexus-card-phase';
 import { createHomeworldOccupationHistory, observeHomeworldOccupation, validateHomeworldOccupationHistory, tupileOccupationStatus, type HomeworldOccupationHistory } from './homeworld-occupation-history';
 import { tupileIntelligenceTargets, quoteTupileIntelligenceRequest, type TupileIntelligenceCategory } from './tupile-intelligence';
 import { quoteTupileIntelligenceAnswer } from './tupile-intelligence-answer';
@@ -1244,6 +1246,8 @@ export type Game = {
   sandtrout?: boolean;
   techTokens?: TechState | null;
   strongholdCards?: StrongholdState | null;
+  /** Optional independent module; complete effect coverage is still release-gated. */
+  nexusCards?: { cards: NexusState | null; phase: NexusCardPhase | null } | null;
   /** Null/absent disables the module; custody is installed at force placement. */
   homeworlds?: { custody: HomeworldCustody | null; historyVersion?: 1 } | null;
   homeworldOccupationHistory?: HomeworldOccupationHistory;
@@ -1389,6 +1393,97 @@ export type Game = {
   aid: Record<string, { recipient: string; amount: number }>;
 };
 export class RuleError extends Error {}
+function nexusRule<T>(work: () => T): T {
+  try { return work(); } catch (error) {
+    throw new RuleError(error instanceof Error ? error.message : 'Invalid Nexus card operation.');
+  }
+}
+function nexusCardsIntegrity(g: Game) {
+  const nexus = g.nexusCards;
+  if (!nexus) return;
+  requireRule(Object.keys(nexus).sort().join(',') === 'cards,phase', 'Invalid Nexus module fields.');
+  if (g.status === 'lobby') {
+    requireRule(nexus.cards === null && nexus.phase === null, 'Nexus cards are dealt only after setup begins.');
+    return;
+  }
+  requireRule(nexus.cards, 'The Nexus inventory is missing.');
+  nexusRule(() => validateNexusCards(nexus.cards!, g.players));
+  requireRule(g.players.every(p => !p.ally || nexus.cards!.hands[p.id] === null),
+    'Allied players cannot retain Nexus cards.');
+  const phase = nexus.phase;
+  if (!phase) {
+    requireRule(g.turn === 1 && g.phase === 0, 'The Nexus phase record is missing.');
+    return;
+  }
+  nexusRule(() => validateNexusCardPhase(phase, g.players, nexus.cards!));
+  requireRule(phase.turn <= g.turn && phase.turn >= g.turn - 1 &&
+    (phase.stage === 'complete' || (phase.turn === g.turn && g.phase === 1)) &&
+    (g.phase !== 1 || phase.turn === g.turn), 'The Nexus record does not match its phase.');
+  if (phase.stage === 'drawing')
+    requireRule(!g.decision && !g.response && !g.phaseOpening && !g.spiceSequence && !g.spiceWindow &&
+      !g.spiceResolution && !g.summonedWorm && !g.wormRides.length && !g.choamMarket &&
+      !g.truthtrance && !g.pendingKarama && !g.pendingTreacheryDiscard,
+    'Finish the preceding phase interaction before drawing Nexus cards.');
+}
+function markNexusOccurred(g: Game) {
+  if (!g.nexusCards) return;
+  const phase = g.nexusCards.phase;
+  requireRule(phase?.turn === g.turn && phase.stage === 'spice', 'A Nexus needs an open Spice Blow phase.');
+  g.nexusCards.phase = nexusRule(() => markNexusCardOccurred(phase));
+}
+function discardAllianceNexusCards(g: Game, ...players: Player[]) {
+  if (!g.nexusCards?.cards) return;
+  for (const player of players) {
+    if (!g.nexusCards.cards.hands[player.id]) continue;
+    g.nexusCards.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, player.id, g.players));
+    log(g, `${player.name} discarded their held Nexus Card to enter the alliance.`,
+      { faction: player.faction, name: 'Nexus alliance discard' });
+  }
+}
+function closeNexusCards(g: Game): boolean {
+  const nexus = g.nexusCards;
+  if (g.phase !== 1 || !nexus) return false;
+  requireRule(nexus.phase?.turn === g.turn && nexus.cards, 'The Nexus phase record is missing.');
+  if (nexus.phase.stage === 'spice') {
+    nexus.phase = nexusRule(() => closeNexusCardPhase(nexus.phase!, g.players));
+    if (nexus.phase.stage === 'drawing')
+      log(g, 'Spice Blow and Nexus is ending. Unallied factions may draw a secret Nexus Card, replace their held card, or keep their current position. Alliances are settled.');
+  }
+  return nexus.phase.stage === 'drawing';
+}
+function decideNexusCard(g: Game, p: Player, action: Action) {
+  const nexus = g.nexusCards;
+  requireRule(g.status === 'playing' && g.phase === 1 && nexus?.cards && nexus.phase?.stage === 'drawing' &&
+    action.turn === nexus.phase.turn && action.card === nexus.cards.hands[p.id] &&
+    Object.keys(action).sort().join(',') === 'card,choice,ownRedraws,turn,type' &&
+    [0, 1, 2].includes(action.ownRedraws as number), 'Choose your current Nexus card opportunity.');
+  const choice = action.choice as NexusCardChoice;
+  requireRule(nexusCardChoices(nexus.phase, nexus.cards, p.id).includes(choice), 'That Nexus choice is unavailable.');
+  requireRule(choice !== 'keep' || action.ownRedraws === 0, 'Keeping your card does not draw a replacement.');
+  if (choice === 'draw') nexus.cards = nexusRule(() => drawNexusCard(nexus.cards!, p.id, g.players, random));
+  else if (choice === 'replace')
+    nexus.cards = nexusRule(() => replaceNexusCard(nexus.cards!, p.id, g.players, random));
+  if (choice !== 'keep') {
+    // The player preselects this optional policy knowing their own faction's
+    // printed effect. No private redraw prompt leaks its identity through
+    // whether the public phase waits or advances. At most two redraws are
+    // possible: twelve cards and at most six held cards leave other cards in
+    // the recycled deck after drawing the same own card for a second time.
+    for (let remaining = action.ownRedraws as number;
+      remaining > 0 && nexus.cards.hands[p.id] === p.faction; remaining--)
+      nexus.cards = nexusRule(() => replaceNexusCard(nexus.cards!, p.id, g.players, random));
+  }
+  nexus.phase = nexusRule(() => finishNexusCardChoice(nexus.phase!, g.players, nexus.cards!, p.id, choice));
+  log(g, `${p.name} ${choice === 'keep' ? 'finished their Nexus card choice' : choice === 'draw' ? 'drew a secret Nexus Card' : 'discarded a Nexus Card and drew a secret replacement'}.`);
+  if (nexus.phase.stage === 'complete') completePhase(g);
+}
+function projectedNexusCards(g: Game, id: string) {
+  const nexus = g.nexusCards;
+  if (!nexus?.cards) return null;
+  return { ...projectNexusCards(nexus.cards, id, g.players), turn: nexus.phase?.turn ?? null,
+    choices: nexusCardChoices(nexus.phase, nexus.cards, id),
+    waiting: nexus.phase?.stage === 'drawing' ? nexus.phase.eligible.filter(owner => !nexus.phase!.done.includes(owner)) : [] };
+}
 function homeworldRule<T>(quote: () => T): T {
   try {
     return quote();
@@ -3908,6 +4003,7 @@ function start(g: Game) {
   );
   requireRule(!g.advanced, 'Advanced rules are still being implemented.');
   requireRule(!g.homeworlds, 'Homeworld gameplay is still being implemented.');
+  requireRule(!g.nexusCards, 'Nexus card effects are still being implemented.');
   requireRule(
     g.players.every((p) => faction(p.faction).expansion === 'base'),
     'Expansion factions are still being implemented.',
@@ -3919,6 +4015,7 @@ function start(g: Game) {
   initializeSetup(g);
 }
 function initializeSetup(g: Game) {
+  if (g.nexusCards) g.nexusCards = { cards: createNexusCards(g.players, random), phase: null };
   const choam = byFaction(g, 'choam');
   if (choam && g.advanced && !choam.leaders.some(isAuditorLeader))
     choam.leaders.push(createAuditorLeader());
@@ -4093,7 +4190,14 @@ export function initializeHomeworldGameForAudit(state: Game): Game {
   );
   return initializeSetupGameForAudit(state, true);
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean): Game {
+/** Offline-only seam for the independent Nexus module; public starts remain gated. */
+export function initializeNexusGameForAudit(state: Game): Game {
+  requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null,
+    'Enable Nexus cards in a fresh audit lobby first.');
+  return initializeSetupGameForAudit(state, false, true);
+}
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false): Game {
+  nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
   homeworldSubstitutionIntegrity(state);
@@ -4114,13 +4218,14 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean): Game {
     'The audit initializer requires two through six distinct ready players and an existing host.',
   );
   requireRule(
-    (homeworlds || g.expansions.length === 0) &&
+    (homeworlds || nexus || g.expansions.length === 0) &&
+      (nexus || !g.nexusCards) &&
       !g.techTokens &&
       !g.strongholdCards &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(
-          (f) => f.id === p.faction && (homeworlds || f.expansion === 'base'),
+          (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base'),
         ),
       ),
     homeworlds
@@ -4495,6 +4600,7 @@ function afterWorm(g: Game) {
   Object.assign(g, pending.resume);
   g.summonedWorm = null;
   g.wormRides = [...g.wormRides, ...rides];
+  markNexusOccurred(g);
   g.ready = [];
   if (g.spiceWindow?.territory === pending.territory) {
     g.spiceWindow.harvested = true;
@@ -4582,6 +4688,7 @@ function continueSpice(g: Game, injected?: SpiceCard) {
       );
     } else {
       g.nexus = true;
+      markNexusOccurred(g);
       g.spiceDiscard[sequence.pile].push(card);
       if (previous && 'worm' in previous && g.advanced) {
         const fremen = byFaction(g, 'fremen');
@@ -8520,6 +8627,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         target.allySinceTurn = member.allySinceTurn;
       }
       g.allianceOffers = quote.allianceOffers;
+      discardAllianceNexusCards(g, owner, entrant);
       g.ready = [];
       log(
         g,
@@ -8959,6 +9067,7 @@ function formTerrorAlliance(g: Game, owner: Player, entrant: Player) {
   owner.ally = entrant.id;
   entrant.ally = owner.id;
   owner.allySinceTurn = entrant.allySinceTurn = g.turn;
+  discardAllianceNexusCards(g, owner, entrant);
   g.ready = [];
 }
 function decideTerror(g: Game, p: Player, action: Action) {
@@ -9923,6 +10032,7 @@ function finishEcazPlacement(g: Game) {
   completePhase(g);
 }
 function completePhase(g: Game) {
+  if (closeNexusCards(g)) return;
   if (g.phase === 7 && g.grummanCollection?.turn === g.turn && g.grummanCollection.stage === 'waiting') {
     g.grummanCollection.stage = 'complete';
     g.grummanCollection.outcome = 'expired';
@@ -9941,6 +10051,8 @@ function completePhase(g: Game) {
 }
 /** Open the same public window for every Ix table, independently of who holds Amal. */
 function openPhase(g: Game, initialize = true) {
+  if (g.phase === 1 && g.nexusCards && g.nexusCards.phase?.turn !== g.turn)
+    g.nexusCards.phase = createNexusCardPhase(g.turn);
   if (initialize && g.phase === 4 && g.homeworlds) {
     g.homeworldRevival = homeworldRule(() => snapshotHomeworldRevival(g));
     if (g.homeworldRevival?.tleilaxu.low)
@@ -11225,6 +11337,7 @@ function gholaOptions(g: Game, p: Player) {
   };
 }
 function marketGholaIntegrity(g: Game) {
+  nexusCardsIntegrity(g);
   homeworldHistoryIntegrity(g);
   grummanCollectionIntegrity(g);
   homeworldVictoryReturnIntegrity(g);
@@ -16409,6 +16522,8 @@ function applyActionInner(
   requireRule(g.status !== 'finished', 'This game has ended.');
   const t = action.type;
   if (t === 'advanceBots') return g;
+  if (t === 'nexusCardChoice') { decideNexusCard(g, p, action); return g; }
+  requireRule(g.nexusCards?.phase?.stage !== 'drawing', 'Finish the closing Nexus card choices first.');
   requireRule(
     !(
       t === 'card' &&
@@ -18134,6 +18249,7 @@ function applyActionInner(
         p.ally = other.id;
         other.ally = id;
         p.allySinceTurn = other.allySinceTurn = g.turn;
+        discardAllianceNexusCards(g, p, other);
         delete g.allianceOffers[id];
         delete g.allianceOffers[other.id];
         log(g, `${p.name} and ${other.name} formed an alliance.`);
@@ -19848,6 +19964,7 @@ export function viewGame(state: Game, id: string) {
       : null,
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
+    nexusCards: projectedNexusCards(g, id),
     homeworldRevivalDeployment: projectedHomeworldRevivalReturn(g, id),
     caladanReinforcement: projectedHomeworldVictoryReturn(g, id),
     homeworldRevivalBlocks: homeworldRevivalChoiceBlocks(g, me),
@@ -19898,6 +20015,7 @@ export function viewGame(state: Game, id: string) {
     spicePile: g.spiceSequence?.pile ?? 0,
     beforeSpiceDraw:
       g.phase === 1 &&
+      g.nexusCards?.phase?.stage !== 'drawing' &&
       !g.spiceSequence &&
       !g.spiceResolution &&
       !g.spiceWindow &&

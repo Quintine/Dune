@@ -9,6 +9,7 @@ import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
 import { CaladanReinforcement } from './caladan-reinforcement';
 import { GrummanCollection } from './grumman-collection';
 import { TupileIntelligence } from './tupile-intelligence';
+import { NexusCards } from './nexus-cards';
 import { TerrorBoardMarkers } from './terror-board-markers';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
@@ -1415,7 +1416,8 @@ export function GameTable({
             {g.status === 'finished' ? 'FINAL OUTCOME' : 'YOUR NEXT DECISION'}
           </div>
           <PrivateBattlePlan game={g} />
-          <TupileIntelligence game={g} act={act} busy={busy} />
+          <NexusCards game={g} act={act} busy={busy} />
+          {!g.nexusCards?.waiting.length && <TupileIntelligence game={g} act={act} busy={busy} />}
           {g.biddingEnd && <BiddingEnd game={g} act={act} busy={busy} />}
           {g.junctionTransport && [g.junctionTransport.owner, g.junctionTransport.recipient].includes(me.id) && (
             <JunctionTransport key={me.id === g.junctionTransport.owner ? g.junctionTransport.offerEvent : g.junctionTransport.event} game={g} act={act} busy={busy} />
@@ -1436,7 +1438,9 @@ export function GameTable({
             sector={sector}
             onSectorChange={setSector}
           />
-          {g.truthtrance ? (
+          {g.nexusCards?.waiting.length ? (
+            <p className="muted">The next phase begins when the remaining Nexus card choices are finished.</p>
+          ) : g.truthtrance ? (
             <Truthtrance
               key={`${g.truthtrance.queue[0]?.card}-${g.truthtrance.stage}`}
               game={g}

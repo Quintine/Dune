@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { StrongholdCardGallery } from './stronghold-cards';
 import { HomeworldCardGallery } from './homeworld-cards';
+import { NexusCardGallery } from './nexus-cards';
 import { createStrongholdCards } from '@/game/stronghold-cards';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect, useRef } from 'react';
@@ -187,6 +188,7 @@ function RulesReferenceContent() {
                     />
                   )}
                   {topic.id === 'homeworlds' && <HomeworldCardGallery />}
+                  {topic.id === 'nexus-cards' && <NexusCardGallery />}
                   {topic.id === 'richese-cards' && (
                     <section
                       aria-label="Richese card collection"
