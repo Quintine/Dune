@@ -74,6 +74,7 @@ for (const advanced of [false, true])
           player: id,
           strongholds: 0,
           collected: 0,
+          desert: 0,
           balance: 10,
         });
       assert.deepEqual(g, before);

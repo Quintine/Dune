@@ -2,6 +2,7 @@ import { fighterCount } from './advisors';
 import { TERRITORIES } from './board';
 import { harvesterAvailable, type Card } from './cards';
 import type { FactionId } from './catalog';
+import { choamSaleGholaTiming } from './choam-market-ghola';
 
 export type OrdinaryCardEffect =
   | 'weather'
@@ -27,6 +28,7 @@ export type OrdinaryCardState = {
   phaseOpening?: { passed: readonly string[] } | null;
   response?: object | null;
   decision?: object | null;
+  choamMarket?: { owner: string } | null;
   shieldWallDestroyed: boolean;
   spiceWindow?: {
     harvested: boolean;
@@ -83,7 +85,7 @@ export function ordinaryCardAvailability(
       'Play Amal or pass the phase opening before taking other actions.',
     );
   }
-  if (state.response)
+  if (state.response && !(card?.effect === 'ghola' && choamSaleGholaTiming(state)))
     return blocked('Resolve the Karama response window first.');
   if (state.decision)
     return blocked('Waiting for the player with the pending decision.');

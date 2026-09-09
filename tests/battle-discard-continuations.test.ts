@@ -240,7 +240,7 @@ void test('last real traitor vote stages a mixed-owner public discard after doub
   assert.equal(result.resolvedTreacheryDiscardSequence, 1);
 });
 
-void test('winner hero and loser defense share one mandatory batch before the sole supported casualty allocation', () => {
+void test('loser defense precedes winner casualties and the separate mandatory hero discard', () => {
   const initial = fixture();
   const hero = hold(initial, 'w', 'hero'),
     defense = hold(initial, 'l', 'snooper');
@@ -251,12 +251,17 @@ void test('winner hero and loser defense share one mandatory batch before the so
   assert.equal(c.casualties!.options.length, 1);
   assert.deepEqual(
     pending.pendingTreacheryDiscard!.batch.entries.map((e) => e.discardedBy),
-    ['w', 'l'],
+    ['l'],
   );
+  assert.deepEqual(pending.pendingWinnerDiscards?.cards, [hero]);
+  assert.ok(player(pending, 'w').hand.some((card) => card.id === hero));
   assert.equal(player(pending, 'w').tanks, 0);
   assert.equal(player(pending, 'l').tanks, 5);
   assert.equal(player(pending, 'w').spice, 18);
   const result = resumed(pending);
+  assert.equal(result.resolvedTreacheryDiscardSequence, 2);
+  assert.equal(result.pendingWinnerDiscards, null);
+  assert.ok(!player(result, 'w').hand.some((card) => card.id === hero));
   assert.equal(player(result, 'w').tanks, 2);
   assert.equal(
     result.log.filter((e) => e.automatic?.name === 'Battle casualties').length,
@@ -329,9 +334,13 @@ void test('Moritani reserves loser cards from the mandatory batch and disposes t
   const hero = hold(initial, 'w', 'hero'),
     weapon = hold(initial, 'l', 'projectile'),
     defense = hold(initial, 'l', 'snooper');
-  const pending = frame(
+  const pending = inner(
     beforeLast(initial, { hero, loserWeapon: weapon, loserDefense: defense }),
+    'l',
+    finalAction(),
   );
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'winnerMandatoryDiscard');
+  assert.equal(player(pending, 'w').tanks, 2);
   assert.deepEqual(
     pending.pendingTreacheryDiscard!.batch.entries.map((e) => e.card.id),
     [hero],

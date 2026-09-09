@@ -202,6 +202,9 @@ void test('charity projections expose the payer and own entitlement without leak
   const g = allow(ready(fixture()));
   const v = viewGame(g, 'e');
   assert.deepEqual(v.charity, {
+    ordinary: 2,
+    homeworld: 0,
+    total: 2,
     multiplier: 1,
     amount: 2,
     payer: 'c',

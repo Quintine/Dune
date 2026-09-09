@@ -10,6 +10,7 @@ import { arrivalAsAdvisor } from './advisors';
 import { presenceAt } from './force-presence';
 import { territoryEntryBlock } from './occupancy';
 import { ecazOccupancyRelation } from './ecaz-occupy';
+import { homeworldNoFieldMovementBlock } from './homeworld-mobility';
 
 export class FremenAmbassadorMoveError extends Error {
   constructor(message: string) {
@@ -176,6 +177,8 @@ export function quoteFremenAmbassadorMove(
   let origin: string | undefined;
   let noField: FremenAmbassadorMove['noField'];
   if (action.noField !== undefined) {
+    const blocked = homeworldNoFieldMovementBlock(g, p.id);
+    requireMove(!blocked, blocked ?? 'This No-Field cannot move.');
     const marker = ownMarker(p);
     requireMove(
       record(action.noField) &&
@@ -339,7 +342,7 @@ export function fremenAmbassadorMovement(
   beneficiaryId: string,
 ): FremenAmbassadorMovement {
   const p = playerFor(g, beneficiaryId);
-  const marker = ownMarker(p);
+  const marker = homeworldNoFieldMovementBlock(g, p.id) ? null : ownMarker(p);
   const sources: FremenAmbassadorMovement['sources'] = [];
   for (const t of gameTerritories(g)) {
     const sectors = Object.entries(p.forces)

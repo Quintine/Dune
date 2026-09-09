@@ -9,6 +9,7 @@ import {
   MovementCancellationError,
 } from './karama-movement-cancellation';
 import { TERROR_KINDS, TERROR_STRONGHOLDS } from './moritani-terror';
+import { validateTerrorEntrySignature } from './terror-entry-receipt';
 
 export class MoritaniAllianceCancellationError extends Error {
   constructor(message: string) {
@@ -80,6 +81,11 @@ export function quoteMoritaniAllianceCancellation(
     'This Enemy of My Enemy opportunity is no longer current.',
   );
   const entrants = g.players.filter((p) => p.id === entry.entrant);
+  try {
+    validateTerrorEntrySignature(entry);
+  } catch (error) {
+    throw new MoritaniAllianceCancellationError((error as Error).message);
+  }
   requireSource(
     entrants.length === 1 &&
       entrants[0].id !== response.owner &&

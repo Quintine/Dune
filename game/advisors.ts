@@ -28,8 +28,10 @@ export function settleAdvisors(g: Game) {
 
 /** Direct shipments are fighters unless joining existing advisors. */
 export function arrivalAsAdvisor(
-  g: Game,
-  p: Player,
+  g: Pick<Game, 'advanced'> & {
+    players: readonly (Pick<Player, 'id' | 'faction' | 'advisors'> & ForcePresence)[];
+  },
+  p: Pick<Player, 'id' | 'faction' | 'advisors'> & ForcePresence,
   to: string,
   source?: string,
   accompanying = false,

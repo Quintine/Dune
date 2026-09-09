@@ -1,4 +1,5 @@
 import { validAmbassadorResume } from './ambassador-resume';
+import { ambassadorPhaseAllowed } from './ambassador-phase';
 import {
   validateGuildAmbassadorArrivalContext,
   GuildAmbassadorContinuationError,
@@ -14,6 +15,10 @@ import {
 } from './board';
 import { presenceAt } from './force-presence';
 import { validateAmbassadors } from './ecaz-ambassadors';
+import {
+  homeworldMobileStrongholdMovementBlock,
+  homeworldSpiritualAdvisorLimit,
+} from './homeworld-mobility';
 
 export class MovementCancellationError extends Error {
   constructor(message: string) {
@@ -148,6 +153,11 @@ export type AmbassadorRelocationContext = Pick<
   | 'players'
   | 'pendingAmbassador'
   | 'ecazAmbassadors'
+  | 'homeworlds'
+  | 'homeworldRevivalReturn'
+  | 'homeworldRevivalProgress'
+  | 'homeworldVictoryReinforcement'
+  | 'lastBattleContext'
 >;
 
 /** Historical receipt only: a child may already have changed alliances, forces
@@ -163,7 +173,7 @@ export function validateAmbassadorRelocationContext(
     g.status === 'playing' &&
       integer(g.turn) &&
       g.turn > 0 &&
-      (g.phase === 1 || g.phase === 5) &&
+      ambassadorPhaseAllowed(g) &&
       Array.isArray(g.players) &&
       new Set(g.players.map((p) => p.id)).size === g.players.length &&
       entry &&
@@ -343,6 +353,8 @@ export function quoteMovementCancellation(
     };
   }
   if (response.kind === 'mobileStronghold') {
+    const blocked = homeworldMobileStrongholdMovementBlock(g, owner.id);
+    requireContext(!blocked, blocked ?? 'This stronghold cannot move.');
     const pending = g.pendingMobileMove;
     requireContext(
       g.phase === 0 &&
@@ -458,7 +470,10 @@ export function quoteMovementCancellation(
     );
     return {
       kind: 'advisorFlip',
-      successor: owner.reserves > 0 ? 'advisor' : 'none',
+      successor:
+        homeworldSpiritualAdvisorLimit(g, owner.id, 'polar_sink') > 0
+          ? 'advisor'
+          : 'none',
     };
   }
   if (response.advisorResume === 'declaration') {

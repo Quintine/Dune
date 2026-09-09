@@ -3,6 +3,7 @@ import { SPICE_CARDS, type SpiceCard } from './cards';
 import { gameTerritories } from './board';
 import { presenceAt } from './force-presence';
 import { ecazOccupancyRelation } from './ecaz-occupy';
+import { homeworldMovementForesightBlock } from './homeworld-mobility';
 import {
   quoteBattleBoard,
   type BoardContext,
@@ -26,6 +27,7 @@ type Context = Pick<
   | 'mobileStronghold'
   | 'spiceDeck'
   | 'spiceDiscard'
+  | 'homeworlds'
 >;
 type AdvisorContext = BoardContext & { turn: number };
 const whole = (n: unknown): n is number =>
@@ -164,7 +166,10 @@ export function quoteMovementPhaseStart(
         phaseOpening: { passed: [], initialize: true },
       };
     const advisor = quoteAdvisorBattleOffer(g);
-    const atreides = g.players.find((p) => p.faction === 'atreides'),
+    const atreides = g.players.find(
+        (p) =>
+          p.faction === 'atreides' && !homeworldMovementForesightBlock(g, p.id),
+      ),
       guild = g.players.find((p) => p.faction === 'guild');
     let refill = false,
       hasCards = false;

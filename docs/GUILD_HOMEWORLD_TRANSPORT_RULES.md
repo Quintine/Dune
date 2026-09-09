@@ -1,0 +1,27 @@
+# Guild transport from Arrakis to Homeworlds
+
+9 September 2026. Fresh primary-source audit for the next transport integration. This supplements [the transport source update](HOMEWORLD_TRANSPORT_SOURCE_UPDATE.md); it does not resolve the already recorded Junction payment, foreign-garrison departure, or ordinary Karama timing questions.
+
+## Route and custody contract
+
+E3 permits Guild shipment from Arrakis to a Homeworld and classifies it as cross-shipment. Guild can return to its own Junction or invade another native faction's world; an allied destination is forbidden. Guild's ordinary alliance grant does not supply this new route to its ally. Junction's separate high-face permission has its own provenance. [GF9 E3, p.10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10), [component audit](HOMEWORLD_COMPONENT_AUDIT.md#verified-high-side-effects).
+
+The implementable tariff is `ceil(physicalCounters / 2)` for Guild. This composes E3's one-spice-per-force Homeworld tariff with its Guild half-price clause; the paragraph does not give a separate Arrakis-origin worked example. For return to Junction, the base reserve-return price independently produces the same result. Do not use the two-spice non-stronghold territory tariff for a Homeworld. [GF9 E3, p.10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10), [GF9 base, pp.19,23](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=19).
+
+The base Guild alternatives use the faction's single shipment and start in one territory. Its Q&A expressly allows counters distributed among sectors of that territory to ship together. Preserve exact typed source groups; reject combining different territories. The Storm Obstruction rule prevents departure of counters under storm. It supplies no exception for Guild cross-shipping; do not reject an entire partly covered territory when the selected counters are outside storm. [GF9 base, pp.7,19,22](https://www.qugs.org/rules/r283355.pdf#page=7).
+
+The Hidden Mobile Stronghold is independently protected from storms. Its interior is the source when shipping out; its pointer locates its ordinary-board entrance. Do not substitute the pointer's storm-covered sector for the protected interior. This follows the printed protection, rather than a dedicated Guild-departure FAQ example. [GF9 E1, p.9](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=9).
+
+## Distinct card interactions
+
+Guild's special Karama names an off-planet shipment of any player. It does not say that the origin must be off Arrakis, or prohibit choosing Guild itself. A physical Arrakis-to-another-world shipment fits the interplanetary predicate used in the preceding audit; this is source composition, not a new explicit FAQ example. Preserve the existing optional owned response when Guild holds the card, including its own shipment. Never use an Arrakis-origin flag as blanket special-interception immunity. [GF9 base, p.14](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=14).
+
+Ordinary Karama has separate targets for Guild transport permission, its half-price benefit, and payment income. E1's reference prohibits cross/return transport when the Three Types advantage is canceled; it separately removes the discount. E3's immunity protects Homeworld face effects, including Junction's granted permission, without turning Guild's ordinary transport advantage into a face effect. Keep those sources separate. This audit does not choose a new announcement, repricing, or affordability policy for [the pending timing questions](GUILD_RATE_KARAMA_RULES.md#material-unresolved-timing). [GF9 E1, p.12](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=12), [GF9 E3, p.10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10).
+
+## Technology and payment
+
+E3's FAQ confirms Heighliner activation for shipment **to** a Homeworld, without restricting the origin or requiring a foreign destination. Preserve E1's exception when Guild is the only qualifying shipper. Thus Guild's own Junction return or invasion alone earns no Heighliner income; a future non-Guild Junction-sponsored shipment to a Homeworld qualifies. Settlement activates the token once for the phase, rather than awarding spice per transported counter. [GF9 E3, p.15](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=15), [GF9 E1, p.5](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=5).
+
+Retain the [contributor-specific payment contract](GUILD_SHIPMENT_PAYMENTS.md#publisher-contract-and-precedence). The shipper's personal fee for this route goes to the bank; any non-Guild ally contribution follows the independently recorded November funding rule. Funds, custody, typed totals, shipment usage, and technology remain unchanged until a valid settlement. No sector, territorial entry effect, or stronghold occupancy cap applies to the Homeworld destination.
+
+Validation: freshly retrieved publisher-indexed E3 pp.10/15 and E1 pp.5/9/12, plus base pp.14/19/22. Direct publisher PDF requests failed; the accessible base mirror contains the publisher-authored 24-page rulebook. Fan compilations and tournament rules were excluded. Local document links reviewed; no runtime, saved game, or automation changed by this audit.

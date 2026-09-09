@@ -1,5 +1,7 @@
 # Component inventory and verification ledger
 
+**Homeworld update, 9 September 2026:** all 13 cards and 26 physical faces are verified, including native population/battle values and occupied income symbols. The internal gallery supplies both faces, complete original gameplay prose, enlarged inspection and thirteen original bundled illustrations. Separate typed custody and population helpers are tested; actual Homeworld gameplay, occupation and effect integration remain unfinished and gated. See [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md) and [HOMEWORLD_COMPONENT_AUDIT.md](HOMEWORLD_COMPONENT_AUDIT.md). Earlier missing-Homeworld statements below are historical.
+
 **Auditor update, 7 September 2026:** the separate strength-2 Advanced CHOAM disc and matching traitor are now represented, with one original portrait alongside Duke Prad Vidal in the special registry. Ordinary leader inventory remains 60. Root inspected Auditor at normal and enlarged sizes on desktop and phone; its inspector supplies complete original gameplay prose. Private audited-card faces, payment controls, setup identity, capture/foreign-ghola exclusions and first native revival have focused tests. Repeat/sixth-disc revival cycles and full module combinations remain unresolved. See [CHOAM_AUDITOR.md](CHOAM_AUDITOR.md); earlier missing-Auditor artwork/runtime statements below are historical.
 
 

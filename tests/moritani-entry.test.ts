@@ -414,22 +414,17 @@ void test('Sabotage refuses exceptional recipient overflow but leaves a safe opt
 
 void test('stale Terror turn or phase metadata cannot settle a persisted decision', () => {
   const offered = enter();
-  for (const field of ['turn', 'phase'] as const) {
-    const stale = reload(offered);
-    stale.pendingTerrorEntry![field]--;
-    rejected(
-      stale,
-      'm',
-      { type: 'decision', decline: true },
-      /no longer current/,
-    );
-    rejected(
-      stale,
-      'm',
-      { type: 'decision', reveal: true },
-      /no longer current/,
-    );
-  }
+  for (const signed of [true, false])
+    for (const field of ['turn', 'phase'] as const) {
+      const stale = reload(offered);
+      if (!signed) delete stale.pendingTerrorEntry!.entrySignature;
+      stale.pendingTerrorEntry![field]--;
+      const reason = signed
+        ? /original public arrival receipt/
+        : /no longer current/;
+      rejected(stale, 'm', { type: 'decision', decline: true }, reason);
+      rejected(stale, 'm', { type: 'decision', reveal: true }, reason);
+    }
 });
 
 void test('resolved Truthtrance can satisfy Robbery overflow without leaving a stale forced discard', () => {

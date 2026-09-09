@@ -76,6 +76,9 @@ export function ChoamMarket({
         exact duplicate for three. A sale reveals the card and gives the table a
         Karama response.
       </p>
+      {market.worthlessSaleBlocked && (
+        <p className="fine">{market.worthlessSaleBlocked}</p>
+      )}
       {market.sales?.map((sale) => (
         <Button
           className="game-action"

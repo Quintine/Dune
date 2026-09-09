@@ -113,9 +113,9 @@ void test('collection uses storm order and shared remaining spice, with city rat
   const before = structuredClone(g),
     q = quoteSpiceCollection(g);
   assert.deepEqual(q.receipts, [
-    { player: 'a', strongholds: 2, collected: 6, balance: 18 },
-    { player: 'e', strongholds: 0, collected: 3, balance: 13 },
-    { player: 'b', strongholds: 0, collected: 0, balance: 10 },
+    { player: 'a', strongholds: 2, collected: 6, desert: 6, balance: 18 },
+    { player: 'e', strongholds: 0, collected: 3, desert: 3, balance: 13 },
+    { player: 'b', strongholds: 0, collected: 0, desert: 0, balance: 10 },
   ]);
   assert.equal(q.spice['red_chasm:7'], 0);
   assert.deepEqual(g, before);

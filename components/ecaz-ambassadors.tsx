@@ -23,7 +23,7 @@ import { TERRITORIES } from '@/game/board';
 import { faction } from '@/game/catalog';
 
 export const AMBASSADOR_COVERAGE =
-  'Development coverage: Ambassador placement, Ecaz’s direct Duke acquisition, Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen and Guild entry effects are supported, plus Bene Gesserit copies of those eight ordinary effects. Ecaz alliance and loan choices, other effects and some competing arrival reactions remain unfinished; full Ecaz starts remain disabled.';
+  'Development coverage: Ambassador placement, Ecaz’s direct Duke acquisition and consensual alliance, Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen and Guild entry effects are supported, plus Bene Gesserit copies of those eight ordinary effects. Duke loan choices, other effects and some competing arrival reactions remain unfinished; full Ecaz starts remain disabled.';
 function tokenLocation(token: AmbassadorToken) {
   if (token.zone === 'placed')
     return `Placed in ${TERRITORIES.find((t) => t.id === token.location)?.name ?? 'a stronghold'}`;

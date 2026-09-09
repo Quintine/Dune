@@ -34,7 +34,17 @@ export function AmbassadorShipment({
     return null;
   const me = game.players.find((p) => p.id === game.me)!;
   const shipment = entry.shipment;
-  const maximum = Math.min(shipment.maximum, me.reserves);
+  const destination =
+    shipment.destinations.find(
+      (d) => location(d.territory, d.sector) === destinationKey,
+    ) ??
+    shipment.destinations.find((d) => !d.blocked) ??
+    shipment.destinations[0];
+  const maximum = Math.min(
+    shipment.maximum,
+    me.reserves,
+    destination?.maximum ?? shipment.maximum,
+  );
   const amount = maximum ? bounded(count ?? maximum, 1, maximum) : 0;
   const minimumElite = Math.max(
     0,
@@ -42,12 +52,6 @@ export function AmbassadorShipment({
   );
   const maximumElite = Math.min(amount, shipment.eliteReserves);
   const elite = bounded(eliteCount, minimumElite, maximumElite);
-  const destination =
-    shipment.destinations.find(
-      (d) => location(d.territory, d.sector) === destinationKey,
-    ) ??
-    shipment.destinations.find((d) => !d.blocked) ??
-    shipment.destinations[0];
   const reason = !amount
     ? 'You have no reserve forces available for this shipment.'
     : !destination

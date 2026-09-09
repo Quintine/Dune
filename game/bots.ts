@@ -1,3 +1,16 @@
+import { biddingEndActions, choamMarketPolicy } from './bidding-end-options';
+import { homeworldRevivalActionBlock, homeworldRevivalDeploymentActions } from './homeworld-revival-deployment-options';
+import { caladanReinforcementActions } from './caladan-reinforcement-options';
+import { botHomeworldShipmentPaymentAllowed } from './homeworld-payment-options';
+import { guildHomeworldShipmentActions } from './guild-homeworld-shipment-options';
+import { choamSaleGholaTiming } from './choam-market-ghola';
+import { junctionTransportActions } from './junction-transport-options';
+import { currentJunctionOffer, junctionSponsor } from './junction-offer';
+import { homeworldShipmentActions } from './homeworld-shipment-options';
+import {
+  emperorHomeworldMoveActions,
+  withNativeShipmentSources,
+} from './homeworld-options';
 import { matchesPlanClaim, respectsBattlePromises } from './battle-promises';
 import { ecazOccupancyRelation } from './ecaz-occupy';
 import { territoryEntryBlock, strongholdPathBlocked } from './occupancy';
@@ -241,16 +254,10 @@ function guildAmbassadorShipments(g: GameView): Action[] {
   const me = g.players.find((p) => p.id === g.me)!;
   const descriptor = entry.shipment;
   const level = rank(g);
-  const amount = Math.min(descriptor.maximum, me.reserves);
+  const available = Math.min(descriptor.maximum, me.reserves);
   const destinations = descriptor.destinations.filter((d) => !d.blocked);
-  if (amount < 1 || !destinations.length)
+  if (available < 1 || !destinations.length)
     return [{ type: 'decision', event: entry.event, amount: 0 }];
-  const minimum = Math.max(
-    0,
-    amount - (me.reserves - descriptor.eliteReserves),
-  );
-  const elite =
-    level === 0 ? minimum : Math.min(amount, descriptor.eliteReserves);
   const score = (d: (typeof destinations)[number]) => {
     const key = location(d.territory, d.sector);
     if (level === 0) return variation(g, key);
@@ -267,6 +274,9 @@ function guildAmbassadorShipments(g: GameView): Action[] {
   };
   destinations.sort((a, b) => score(b) - score(a));
   const destination = destinations[0];
+  const amount = Math.min(available, destination.maximum ?? available);
+  const minimum = Math.max(0, amount - (me.reserves - descriptor.eliteReserves));
+  const elite = level === 0 ? minimum : Math.min(amount, descriptor.eliteReserves);
   return [
     {
       type: 'decision',
@@ -302,7 +312,10 @@ function fremenAmbassadorMoves(g: GameView): Action[] {
         territory(source.territory).type === 'stronghold' &&
         physical > 1 &&
         presenceAt(me, source.territory) === physical;
-      let remaining = physical - (keepsSource ? 1 : 0);
+      let remaining = Math.min(
+        physical - (keepsSource ? 1 : 0),
+        destination.maximum ?? physical,
+      );
       const forces: Record<string, number> = {};
       const eliteForces: Record<string, number> = {};
       for (const s of sectors) {
@@ -368,6 +381,7 @@ function ornithopterMoves(g: GameView): Action[] {
     : null;
   const permittedMarker =
     marker &&
+    !g.homeworldMobility?.noFieldMovementBlocked &&
     (!cohort ||
       (cohort.noField?.tokenId === marker.tokenId &&
         cohort.noField.event === noField?.event &&
@@ -533,6 +547,7 @@ function plans(g: GameView): Action[] {
     normalFixedHalf: me.faction === 'ixians',
     elite,
     eliteStrength:
+      (!g.advanced && me.faction !== 'ixians') ||
       (b.eliteBlocked.includes(me.id) &&
         !(g.advanced && me.faction === 'ixians')) ||
       (me.faction === 'emperor' && other.faction === 'fremen')
@@ -593,7 +608,21 @@ function plans(g: GameView): Action[] {
           (_, i) => i / 2,
         ).filter((dial) => (supporting(dial)?.support ?? 0) > 0)
       : [];
-  const enemies = presenceAt(other, b.territory);
+  const freeEliteDials = forces.eliteFreeSupport
+    ? Array.from(
+        { length: Math.floor(ownStrength * 2) + 1 },
+        (_, i) => i / 2,
+      ).filter((dial) => casualtyOptions(forces, dial, 0).length > 0)
+    : [];
+  const enemies = b.opponentForces
+    ? b.opponentForces.normal + b.opponentForces.elite
+    : presenceAt(other, b.territory);
+  const ownNativeBonus = b.native === me.id ? b.nativeBattleStrength : 0;
+  const enemyNativeBonus = b.native === other.id ? b.nativeBattleStrength : 0;
+  const enemyCapacity = b.opponentForces
+    ? b.opponentForces.normal * (b.opponentForces.normalFixedHalf ? 0.5 : 1) +
+      b.opponentForces.elite * b.opponentForces.eliteStrength
+    : enemies;
   const insight = b.insight;
   const revealedCard =
     insight && ['weapon', 'defense'].includes(insight.field)
@@ -658,7 +687,7 @@ function plans(g: GameView): Action[] {
     ? inspected.plan.dial
     : insight?.field === 'dial' && b.prescience?.player === me.id
       ? Number(insight.value)
-      : Math.ceil(enemies * [0.25, 0.4, 0.6, 0.75][level]);
+      : Math.ceil(enemyCapacity * [0.25, 0.4, 0.6, 0.75][level]);
   const options: { action: Action; score: number }[] = [];
   for (const leader of leaders)
     for (const weapon of weapons)
@@ -722,7 +751,7 @@ function plans(g: GameView): Action[] {
           ...g.players.filter(
             (p) => p.faction === 'harkonnen' && p.ally === other.id,
           ),
-        ];
+        ].filter((holder) => !b.native || holder.id === b.native);
         const exposedLeader =
           !kwisatz &&
           traitorHolders.some((p) =>
@@ -759,12 +788,15 @@ function plans(g: GameView): Action[] {
                   enemySurvivingStrength +
                     expectedDial -
                     ownSurvivingStrength +
+                    enemyNativeBonus -
+                    ownNativeBonus +
                     (b.tieWinner === me.id ? 0 : typedForces ? 0.5 : 1),
                 ),
               );
         for (const dial of new Set([
           ideal,
           ...bankSupportedDials,
+          ...freeEliteDials,
           0,
           ...(typedForces ? [0.5] : []),
           Math.max(0, ownStrength - 1),
@@ -1162,6 +1194,7 @@ function policyActions(g: GameView): Action[] {
     !g.response &&
     !g.decision &&
     g.mobileStronghold?.location &&
+    !g.homeworldMobility?.mobileStrongholdBlocked &&
     (me.forces[MOBILE_LOCATION] ?? 0) > 0
   ) {
     const capacity = (me.forces[MOBILE_LOCATION] ?? 0) * 2;
@@ -1247,7 +1280,10 @@ function policyActions(g: GameView): Action[] {
           leader: dead.id,
         },
       ];
-    const elite = Math.min(me.elites?.tanks ?? 0, eliteRevivalRemaining(me));
+    const elite = Math.min(
+      me.elites?.tanks ?? 0,
+      eliteRevivalRemaining(me, g.advanced),
+    );
     const amount = Math.min(3, me.tanks - (me.elites?.tanks ?? 0) + elite);
     if (amount === 3 || (level === 0 && amount > 0))
       return [
@@ -1299,6 +1335,10 @@ function policyActions(g: GameView): Action[] {
       ? []
       : [{ type: 'passResponse' }];
   }
+  if (g.biddingEnd && !g.decision)
+    return biddingEndActions(
+      g, level, (card) => technologyCardValue(g, card), gamontAction(g)?.card,
+    );
   if (g.decision) {
     if (g.decision.player !== me.id) return [];
     const d = g.decision;
@@ -1550,17 +1590,25 @@ function policyActions(g: GameView): Action[] {
           (me.noField.deployed.location.sector === 0 ||
             me.noField.deployed.location.sector !== g.storm)
         );
+      if (entry.stage === 'allianceReply') return [{ ...action, accept: true }];
       if (entry.stage === 'offer') {
         if (entry.effect === 'ecaz')
           return [
-            entry.dukeAcquisition && !entry.dukeAcquisition.blocked
+            entry.allianceOffer && !entry.allianceOffer.blocked
               ? {
                   ...action,
                   trigger: true,
                   beneficiary: entry.owner,
-                  choice: 'duke',
+                  choice: 'alliance',
                 }
-              : { ...action, decline: true },
+              : entry.dukeAcquisition && !entry.dukeAcquisition.blocked
+                ? {
+                    ...action,
+                    trigger: true,
+                    beneficiary: entry.owner,
+                    choice: 'duke',
+                  }
+                : { ...action, decline: true },
           ];
         const available = entry.beneficiaries.filter(
           (option) =>
@@ -1719,7 +1767,12 @@ function policyActions(g: GameView): Action[] {
     }
     if (d.kind === 'choamBattleFunding') {
       const ally = g.players.find((p) => p.id === me.ally)!;
-      const forces = countAt(ally, g.battle!.territory);
+      const pool = g.combatLocations?.find(
+        (place) => place.id === g.battle!.territory,
+      )?.forces?.[ally.id];
+      const forces = pool
+        ? pool.normal + pool.elite
+        : countAt(ally, g.battle!.territory);
       const total = (me.spice ?? 0) + g.aid.pledged;
       const amount = Math.max(
         g.aid.pledged,
@@ -1727,29 +1780,10 @@ function policyActions(g: GameView): Action[] {
       );
       return [{ type: 'decision', amount }];
     }
-    if (d.kind === 'choamMarket') {
-      const market = g.choamMarket!;
-      const preserve = gamontAction(g)?.card;
-      const sales = market.sales?.filter((s) => s.card !== preserve);
-      const sale = sales?.find((s) => s.price === 3) ?? sales?.[0];
-      if (sale)
-        return [
-          {
-            type: 'decision',
-            mode: 'sell',
-            card: sale.card,
-            witness: sale.witness,
-          },
-        ];
-      const offerable = me.hand?.filter((c) => c.id !== preserve) ?? [];
-      if (market.canTrade && !market.tradeAttempted && offerable.length) {
-        const offered = [...offerable].sort(
-          (a, b) => technologyCardValue(g, a) - technologyCardValue(g, b),
-        )[0];
-        return [{ type: 'decision', mode: 'trade', card: offered.id }];
-      }
-      return [{ type: 'decision', done: true }];
-    }
+    if (d.kind === 'choamMarket')
+      return [choamMarketPolicy(
+        g, (card) => technologyCardValue(g, card), gamontAction(g)?.card,
+      )];
     if (d.kind === 'choamTradeReply') {
       const returned = [...(me.hand ?? [])].sort(
         (a, b) => technologyCardValue(g, a) - technologyCardValue(g, b),
@@ -1807,6 +1841,8 @@ function policyActions(g: GameView): Action[] {
         },
       ];
     if (d.kind === 'mobileStronghold') {
+      if (!d.placement && g.homeworldMobility?.mobileStrongholdBlocked)
+        return [{type: 'decision', decline: true}];
       if (d.placement)
         return TERRITORIES.filter((t) => t.type !== 'stronghold')
           .flatMap((t) =>
@@ -1839,9 +1875,16 @@ function policyActions(g: GameView): Action[] {
       ];
     }
     if (d.kind === 'ixSubstitution') {
-      const sourceEntries = Object.entries(me.forces)
-        .filter(([key]) => splitLocation(key).territory === d.territory)
-        .map(([key, n]) => [key, n - (me.elites?.forces[key] ?? 0)] as const);
+      const world = g.combatLocations?.find(
+        (place) => place.id === d.territory && place.kind === 'homeworld',
+      );
+      const sourceEntries = world
+        ? [[world.id, world.forces?.[me.id]?.normal ?? 0] as const]
+        : Object.entries(me.forces)
+            .filter(([key]) => splitLocation(key).territory === d.territory)
+            .map(
+              ([key, n]) => [key, n - (me.elites?.forces[key] ?? 0)] as const,
+            );
       const max = Math.min(
         Object.values(d.losses).reduce((a, b) => a + b, 0),
         sourceEntries.reduce((sum, [, n]) => sum + n, 0),
@@ -1877,7 +1920,7 @@ function policyActions(g: GameView): Action[] {
         target.id !== me.ally &&
         (target.tanks >= [12, 8, 5, 3][level] ||
           (level > 0 && d.revival === 'leader' && noLeader));
-      if (specialCard && shouldStop)
+      if (specialCard && shouldStop && !g.revival.specialKaramaBlock)
         return [
           {
             type: 'card',
@@ -1890,16 +1933,25 @@ function policyActions(g: GameView): Action[] {
     }
     if (d.kind === 'faceDance') {
       if (
+        d.blocked ||
         !me.faceDancers?.some((c) => !c.revealed && c.leader === d.identity) ||
         me.ally === d.winner
       )
         return [{ type: 'decision', reveal: false }];
       const winner = g.players.find((p) => p.id === d.winner)!;
-      let needed = countAt(winner, d.territory);
-      const sources: Record<string, number> = {
-        reserves: Math.min(me.reserves, needed),
-      };
-      needed -= sources.reserves;
+      const world = g.combatLocations?.find(
+        (place) => place.id === d.territory && place.kind === 'homeworld',
+      );
+      const pool = world?.forces?.[winner.id];
+      let needed = world
+        ? (pool?.normal ?? 0) + (pool?.elite ?? 0)
+        : countAt(winner, d.territory);
+      const sources: Record<string, number> = world
+        ? {}
+        : {
+            reserves: Math.min(me.reserves, needed),
+          };
+      needed -= sources.reserves ?? 0;
       for (const [key, amount] of Object.entries(me.forces).sort(
         ([a], [b]) =>
           (territory(splitLocation(a).territory).type === 'stronghold'
@@ -1925,11 +1977,62 @@ function policyActions(g: GameView): Action[] {
           type: 'decision',
           reveal: true,
           sources,
-          sector:
-            territory(d.territory).sectors.find((s) => s !== g.storm) ??
-            territory(d.territory).sectors[0],
+          ...(world
+            ? {}
+            : {
+                sector:
+                  territory(d.territory).sectors.find((s) => s !== g.storm) ??
+                  territory(d.territory).sectors[0],
+              }),
         },
       ];
+    }
+    if (d.kind === 'homeworldDefense') {
+      const b = g.battle!;
+      const own = b.plans[me.id];
+      const opponentId = b.attacker === me.id ? b.defender : b.attacker;
+      const opponent = b.plans[opponentId];
+      const snooper = me.hand?.find(
+        (card) =>
+          richeseCardDefinition(card)?.card.effect === 'portableSnooper',
+      );
+      const card = (id: string | null) =>
+        b.cards.find((held) => held.id === id);
+      const dead = (late: boolean) =>
+        strongholdBattleEffects(
+          card(own.weapon),
+          late ? snooper : card(b.lateDefense[me.id] ?? own.defense),
+          card(opponent.weapon),
+          card(b.lateDefense[opponentId] ?? opponent.defense),
+          b.poisonTooth[me.id] ?? true,
+          b.poisonTooth[opponentId] ?? true,
+          b.strongholdEffects[me.id],
+          b.strongholdEffects[opponentId],
+        ).attackerDead;
+      const hasLeader =
+        g.allLeaders.some((leader) => leader.id === own.leader) ||
+        (!!own.kwisatz && card(own.leader)?.kind === 'hero');
+      return [
+        {
+          type: 'decision',
+          event: d.event,
+          use: !!snooper && hasLeader && dead(false) && !dead(true),
+        },
+      ];
+    }
+    if (d.kind === 'homeworldExplosion') {
+      const choices = d.options
+        .map((loss, choice) => ({
+          choice,
+          cost:
+            level === 0
+              ? variation(g, `homeworld-explosion-${choice}`)
+              : loss.normal + loss.elite * 2.5,
+        }))
+        .sort((a, b) => a.cost - b.cost);
+      return choices.length
+        ? [{ type: 'decision', event: d.event, choice: choices[0].choice }]
+        : [];
     }
     if (d.kind === 'techToken') {
       const token = [...d.choices].sort((a, b) =>
@@ -1949,6 +2052,7 @@ function policyActions(g: GameView): Action[] {
       const ownDisc = g.allLeaders.find((l) => l.id === own.leader);
       const otherDisc = g.allLeaders.find((l) => l.id === other.leader);
       const alreadyWinsByTraitor =
+        b.traitorVoters.includes(me.id) &&
         !other.kwisatz &&
         !!matchingTraitor(me.traitors ?? [], other.leader, card(other.leader));
       const side = me.id === b.attacker ? 'attacker' : 'defender';
@@ -2041,8 +2145,14 @@ function policyActions(g: GameView): Action[] {
                     b.plans[id === b.attacker ? b.defender : b.attacker].leader,
                 ),
               ) + (b.plans[id].kwisatz ? 2 : 0);
-        const av = a.dial + strength(b.attacker, effects.attackerDead),
-          dv = opponent.dial + strength(b.defender, effects.defenderDead);
+        const av =
+            a.dial +
+            strength(b.attacker, effects.attackerDead) +
+            (b.native === b.attacker ? b.nativeBattleStrength : 0),
+          dv =
+            opponent.dial +
+            strength(b.defender, effects.defenderDead) +
+            (b.native === b.defender ? b.nativeBattleStrength : 0);
         const winsA = av > dv || (av === dv && b.tieWinner === b.attacker);
         const wins = winsA === (me.id === b.attacker);
         const ownDead =
@@ -2088,6 +2198,14 @@ function policyActions(g: GameView): Action[] {
     }
     // A legacy inspection gate is cleared by authoritative normalization.
     if (d.kind === 'fullPlanRead') return [];
+    if (d.kind === 'homeworldShipmentGuild') {
+      const world = g.homeworlds?.worlds?.find((home) => home.id === d.destination);
+      const enemy = d.shipper !== me.id && d.shipper !== me.ally;
+      const threatened = world?.native === me.id || !!world?.forces[me.id];
+      if (specialCard && enemy && (level === 0 || threatened || (level >= 2 && d.amount >= 5)))
+        return [{ type: 'card', mode: 'special', card: specialCard.id }];
+      return [{ type: 'decision', event: d.event, allow: true }];
+    }
     if (d.kind === 'guildShipment') {
       const enemy = d.shipper !== me.id && d.shipper !== me.ally;
       const threatened = fighterCount(me, d.territory) > 0;
@@ -2196,16 +2314,18 @@ function policyActions(g: GameView): Action[] {
           accompany: choice.accompany,
           territory: choice.territory,
           sector: choice.sector,
+          amount: choice.amount,
         })),
         { type: 'decision', accept: false },
       ];
     }
     if (d.kind === 'advisor')
       return [
-        ...(g.advanced && d.destination
+        ...(g.advanced && d.destination && (g.homeworldMobility?.advisorAccompanyMaximum ?? 1) > 0
           ? [{ type: 'decision', accept: true, accompany: true }]
           : []),
-        { type: 'decision', accept: true },
+        ...((g.homeworldMobility?.advisorSinkMaximum ?? 1) > 0
+          ? [{ type: 'decision', accept: true, amount: level === 0 ? 1 : (g.homeworldMobility?.advisorSinkMaximum ?? 1) }] : []),
         { type: 'decision', accept: false },
       ];
     if (d.kind === 'wormProtection')
@@ -2254,6 +2374,10 @@ function policyActions(g: GameView): Action[] {
         { type: 'decision', karama: !!karama },
       ];
     }
+    if (d.kind === 'homeworldRevivalDeployment')
+      return homeworldRevivalDeploymentActions(g);
+    if (d.kind === 'caladanReinforcement')
+      return caladanReinforcementActions(g);
     if (d.kind === 'battleCards')
       return [
         {
@@ -2441,7 +2565,7 @@ function policyActions(g: GameView): Action[] {
     }
     if (g.nexus && !g.spiceWindow && !me.ally) {
       const offer = Object.entries(g.allianceOffers).find(
-        ([id, target]) => id !== me.id && target === me.id,
+        ([id, target]) => id !== me.id && target === me.id && !g.homeworldAllianceBlocks?.[id],
       );
       if (offer && level > 0) return [{ type: 'alliance', target: offer[0] }];
     }
@@ -2605,7 +2729,10 @@ function policyActions(g: GameView): Action[] {
           : Math.min(
               ally.tanks -
                 (ally.elites?.tanks ?? 0) +
-                Math.min(ally.elites?.tanks ?? 0, eliteRevivalRemaining(ally)),
+                Math.min(
+                  ally.elites?.tanks ?? 0,
+                  eliteRevivalRemaining(ally, g.advanced),
+                ),
               3 - (g.emperorExtra[ally.id] ?? 0),
               Math.floor(Math.max(0, (me.spice ?? 0) - 3) / 2),
             );
@@ -2615,7 +2742,7 @@ function policyActions(g: GameView): Action[] {
           amount - (ally.tanks - (ally.elites?.tanks ?? 0)),
         );
         for (const elite of new Set([
-          Math.min(amount, eliteRevivalRemaining(ally)),
+          Math.min(amount, eliteRevivalRemaining(ally, g.advanced)),
           minimumElite,
         ]))
           if (paidForceRevivalCost(ally, amount, elite) <= (me.spice ?? 0) - 3)
@@ -2625,7 +2752,7 @@ function policyActions(g: GameView): Action[] {
     const freeRemaining = g.revival.freeRemaining;
     const eliteAllowance = Math.min(
       me.elites?.tanks ?? 0,
-      eliteRevivalRemaining(me),
+      eliteRevivalRemaining(me, g.advanced),
     );
     const maximum = Math.min(
       me.tanks - (me.elites?.tanks ?? 0) + eliteAllowance,
@@ -2685,7 +2812,7 @@ function policyActions(g: GameView): Action[] {
     )
       return cardMoves;
     if (g.ornithopter?.active && me.shipped) return [{ type: 'endMovement' }];
-    const actions: Action[] = [];
+    const actions: Action[] = [...guildHomeworldShipmentActions(g, level), ...homeworldShipmentActions(g, level)];
     const targets = destinations(g);
     const halfRate =
       me.faction === 'guild' ||
@@ -2741,7 +2868,7 @@ function policyActions(g: GameView): Action[] {
           });
         }
     }
-    if (marker && noField && (me.moved ?? 0) < (me.movesAllowed ?? 1)) {
+    if (marker && noField && !g.homeworldMobility?.noFieldMovementBlocked && (me.moved ?? 0) < (me.movesAllowed ?? 1)) {
       const from = location(marker.location.territory, marker.location.sector);
       const range =
         fighterCount(me, 'arrakeen') || fighterCount(me, 'carthag') ? 3 : 1;
@@ -2899,6 +3026,8 @@ function policyActions(g: GameView): Action[] {
             });
         }
     if (reveal && !actions.length) actions.push(reveal);
+    if (me.shipped || !actions.some((action) => action.type === 'ship' || action.type === 'homeworldShip'))
+      actions.unshift(...emperorHomeworldMoveActions(g));
     actions.push({ type: 'endMovement' });
     return g.ornithopter?.active
       ? actions.filter((action) => action.type !== 'move')
@@ -2968,16 +3097,14 @@ function policyActions(g: GameView): Action[] {
       }));
     }
     if (b.revealed) {
-      if (
-        !b.traitorVoters.includes(me.id) ||
-        b.traitorSubmitted.includes(me.id)
-      )
-        return [];
+      const ownsTraitorDecision =
+        b.traitorVoters.includes(me.id) && !b.traitorSubmitted.includes(me.id);
       const beneficiary = [b.attacker, b.defender].includes(me.id)
         ? me.id
         : me.ally;
       const enemy = b.attacker === beneficiary ? b.defender : b.attacker;
       const call =
+        ownsTraitorDecision &&
         !b.plans[enemy].kwisatz &&
         !!matchingTraitor(
           me.traitors ?? [],
@@ -3029,6 +3156,7 @@ function policyActions(g: GameView): Action[] {
             },
           ];
       }
+      if (!ownsTraitorDecision) return [];
       return [
         {
           type: 'traitorCall',
@@ -3083,12 +3211,13 @@ function policyActions(g: GameView): Action[] {
 function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
   const me = g.players.find((p) => p.id === g.me)!;
   const options = g.ghola;
+  const duringSale = choamSaleGholaTiming(g);
   if (
     !(me.bot ?? me.autopilot) ||
     g.status !== 'playing' ||
     !options?.available ||
     g.battle ||
-    g.response ||
+    (g.response && !duringSale) ||
     g.decision ||
     g.truthtrance ||
     g.phaseOpening ||
@@ -3096,14 +3225,17 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
     g.auction ||
     g.richeseAuction ||
     g.phase <= 1 ||
-    g.ready.includes(me.id) ||
-    ([5, 6].includes(g.phase) && g.active !== me.id) ||
+    (g.ready.includes(me.id) && !duringSale) ||
+    ([5, 6].includes(g.phase) && g.active !== me.id && !duringSale) ||
     g.shipmentCompletion?.actions.length ||
-    (ordinary[0] &&
+    (!duringSale && ordinary[0] &&
       ![
         'ready',
         'ship',
         'guildShip',
+        'homeworldShip',
+        'guildHomeworldShip',
+        'junctionShip',
         'move',
         'endMovement',
         'chooseBattle',
@@ -3156,10 +3288,13 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
   if (g.automaticContinuationPending) return [];
-  const actions = policyActions(g);
+  const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {
+    const sourced = withNativeShipmentSources(g, action);
+    return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) ? [sourced] : [];
+  });
   const me = g.players.find((p) => p.id === g.me)!;
   const ghola = standaloneGholaAction(g, actions);
-  if (ghola) return [ghola];
+  if (ghola && !homeworldRevivalActionBlock(g, ghola)) return [ghola];
   if (
     g.phase !== 5 ||
     g.active !== me.id ||
@@ -3177,12 +3312,30 @@ export function botActions(g: GameView): Action[] {
   );
   if (!promises.length) return actions;
   const filtered = actions.filter((action) => {
-    if (!['ship', 'guildShip', 'move', 'endMovement'].includes(action.type))
+    if (
+      ![
+        'ship',
+        'guildShip',
+        'homeworldShip',
+        'guildHomeworldShip',
+        'junctionShip',
+        'move',
+        'emperorHomeworldMove',
+        'endMovement',
+      ].includes(action.type)
+    )
       return true;
+    const junctionNative = action.type === 'junctionShip' &&
+      typeof action.destination === 'string' && !action.destination.startsWith('homeworld:') &&
+      !!action.sources && Object.keys(action.sources as object).every((source) =>
+        g.homeworlds?.worlds?.some((world) => world.id === source && world.native === me.id));
     const fromReserves =
       action.type === 'ship' ||
       (action.type === 'guildShip' && action.from === 'reserves');
-    const shipment = fromReserves
+    const shipment = junctionNative
+      ? {territory: splitLocation(String(action.destination)).territory,
+          amount: Object.values(action.sources as Record<string, {normal: number; elite: number}>).reduce((n, source) => n + source.normal + source.elite, 0)}
+      : fromReserves
       ? { territory: String(action.territory), amount: Number(action.amount) }
       : null;
     return promises.every(
@@ -3221,7 +3374,12 @@ export function runBots(state: Game, limit = 96): Game {
       : structuredClone(state);
   for (let step = 0; step < limit; step++) {
     let next: Game | undefined;
-    for (const p of g.players.filter((p) => p.bot ?? p.autopilot)) {
+    const actors = g.players.filter((p) => p.bot ?? p.autopilot);
+    // Give an automated optional supplier a chance before a seated-earlier
+    // recipient spends the shipment. Humans retain their ordinary actions.
+    if (g.phase === 5 && junctionSponsor(g) && !currentJunctionOffer(g))
+      actors.sort((a, b) => Number(b.faction === 'guild') - Number(a.faction === 'guild'));
+    for (const p of actors) {
       for (const action of botActions(viewGame(g, p.id))) {
         try {
           next = applyAction(g, p.id, action);

@@ -84,7 +84,10 @@ export function AmbassadorMovement({
       ? 'Choose an available destination.'
       : !total && !includesMarker
         ? 'Choose physical forces or the concealed No-Field to relocate.'
-        : null);
+        : destination.maximum !== null &&
+            total + Number(includesMarker) > destination.maximum
+          ? `At most ${destination.maximum} entering forces are currently supported at this destination; the concealed marker counts as one.`
+          : null);
   const chooseDestination = (key: string) => {
     setDestinationKey(key);
     setForces((old) => ({ ...old, [key]: 0 }));

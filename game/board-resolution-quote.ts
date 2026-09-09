@@ -147,6 +147,8 @@ export type CollectionQuote = {
     player: string;
     strongholds: number;
     collected: number;
+    /** Actual desert deposits, excluding bank income and shared escrow. */
+    desert: number;
     balance: number;
   }[];
   /** Removed from the map, but not credited until the allies resolve allocation. */
@@ -283,6 +285,7 @@ export function quoteSpiceCollection(
     if (ecazCollectionCanceled && collectionBonus?.owner === id)
       strongholds -= collectionBonus.amount;
     let collected = 0;
+    let desert = 0;
     for (const [key, capacity] of capacities.get(id)!) {
       const t = splitLocation(key).territory;
       if (
@@ -314,6 +317,8 @@ export function quoteSpiceCollection(
       }
       const amount = Math.min(spice[key] ?? 0, capacity);
       collected += amount;
+      if (sites.some((site) => site.id === t && site.type === 'sand'))
+        desert += amount;
       spice[key] = (spice[key] ?? 0) - amount;
     }
     const balance = original.spice + strongholds + collected;
@@ -321,7 +326,7 @@ export function quoteSpiceCollection(
       whole(collected) && whole(balance),
       'Collection would overflow the spice balance.',
     );
-    receipts.push({ player: id, strongholds, collected, balance });
+    receipts.push({ player: id, strongholds, collected, desert, balance });
   }
   return { released, spice, receipts, shared, collectionBonus };
 }

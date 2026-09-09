@@ -401,6 +401,7 @@ export async function readSeatView(code: string, auth: SeatAuth) {
 export function needsAutomaticRoomRecovery(
   state: Pick<Game, 'response' | 'decision' | 'pendingTreacheryDiscard'> & {
     richeseAuction?: unknown;
+    battle?: { revealed: boolean; territory: string } | null;
     automaticContinuationPending?: boolean;
   },
 ) {
@@ -409,10 +410,12 @@ export function needsAutomaticRoomRecovery(
     !!state.pendingTreacheryDiscard ||
     !!state.response ||
     !!state.richeseAuction ||
+    (!state.decision && !state.response && state.battle?.revealed === true && state.battle.territory.startsWith('homeworld:')) ||
     state.decision?.kind === 'choamMarket' ||
     state.decision?.kind === 'choamAudit' ||
     state.decision?.kind === 'choamAuditPayment' ||
     state.decision?.kind === 'ecazAmbassador' ||
+    state.decision?.kind === 'homeworldShipmentGuild' ||
     state.decision?.kind === 'fullPlanRead' ||
     state.decision?.kind === 'auctionPayment'
   );

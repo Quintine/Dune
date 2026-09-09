@@ -17,6 +17,7 @@ type Context = Pick<
 > & {
   players: readonly Pick<Game['players'][number], 'id' | 'faction' | 'hand'>[];
   territories: readonly { id: string; sectors: readonly number[] }[];
+  combatLocations?: readonly { id: string; kind: 'territory' | 'homeworld' }[];
   physicalCards: readonly { id: string }[];
 };
 function requireIx(value: unknown, message: string): asserts value {
@@ -43,6 +44,18 @@ export function quoteIxSubstitutionCancellation(
     owner?.faction === 'ixians',
     'The canceled substitution needs its Ixian winner.',
   );
+  const homeworld = g.combatLocations?.find(
+    (location) => location.id === p.territory && location.kind === 'homeworld',
+  );
+  const territory = g.territories.find(
+    (location) => location.id === p.territory,
+  );
+  requireIx(
+    homeworld
+      ? p.territory.startsWith('homeworld:') && !territory
+      : !!territory && !p.territory.startsWith('homeworld:'),
+    'The canceled substitution needs a current canonical combat location.',
+  );
   let context: BattleCleanupContextQuote;
   try {
     context = validateBattleCleanupContext({
@@ -51,7 +64,10 @@ export function quoteIxSubstitutionCancellation(
       battlePresent: !!g.battle,
       lastBattle: g.lastBattle,
       playerIds: g.players.map((p) => p.id),
-      territoryIds: g.territories.map((t) => t.id),
+      territoryIds: [
+        ...g.territories.map((t) => t.id),
+        ...(homeworld ? [homeworld.id] : []),
+      ],
       territory: p.territory,
       winner: p.player,
       context: g.lastBattleContext,
@@ -63,20 +79,22 @@ export function quoteIxSubstitutionCancellation(
         : 'Invalid substitution battle receipt.',
     );
   }
-  const territory = g.territories.find((t) => t.id === p.territory)!;
   const counts = (value: unknown): value is Record<string, number> =>
     record(value) &&
+    (!homeworld || Object.keys(value).length === 1) &&
     Object.entries(value).every(
       ([key, count]) =>
-        territory.sectors.some(
-          (sector) => key === `${territory.id}:${sector}`,
-        ) &&
+        (homeworld
+          ? key === homeworld.id
+          : territory!.sectors.some(
+              (sector) => key === `${territory!.id}:${sector}`,
+            )) &&
         Number.isSafeInteger(count) &&
         Number(count) > 0,
     );
   requireIx(
     counts(p.losses) && counts(p.sources) && counts(p.recover),
-    'The canceled substitution needs its original casualty and exchange sectors.',
+    'The canceled substitution needs its original casualty and exchange locations.',
   );
   const total = (value: Record<string, number>) =>
     Object.values(value).reduce((a, b) => a + b, 0);
@@ -104,13 +122,13 @@ export function quoteIxSubstitutionCancellation(
   );
   return {
     player: owner.id,
-    territory: territory.id,
+    territory: p.territory,
     context,
     decision: p.cards.length
       ? {
           kind: 'battleCards' as const,
           player: owner.id,
-          territory: territory.id,
+          territory: p.territory,
           cards: [...p.cards],
         }
       : null,

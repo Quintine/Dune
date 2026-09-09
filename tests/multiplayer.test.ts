@@ -1,3 +1,4 @@
+// @dune-suite integration
 import test from 'node:test';
 import type { GameView } from '../game/engine';
 import assert from 'node:assert/strict';

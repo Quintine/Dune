@@ -4,6 +4,10 @@ import {
 } from './guild-ambassador-continuation';
 import type { Game, ResponseWindow } from './engine';
 import {
+  homeworldMovementForesightBlock,
+  homeworldSpiritualAdvisorAllowance,
+} from './homeworld-mobility';
+import {
   gameTerritories,
   location,
   splitLocation,
@@ -64,6 +68,11 @@ export type TerminalCancellationContext = Pick<
   | 'choamCharity'
   | 'pendingAmbassador'
   | 'ecazAmbassadors'
+  | 'homeworlds'
+  | 'homeworldRevivalReturn'
+  | 'homeworldRevivalProgress'
+  | 'homeworldVictoryReinforcement'
+  | 'lastBattleContext'
 >;
 const positive = (n: unknown): n is number =>
   Number.isSafeInteger(n) && (n as number) > 0;
@@ -213,6 +222,10 @@ export function validateTerminalCancellation(
     case 'atreidesSpice':
       faction('atreides');
       requireTerminal(
+        !homeworldMovementForesightBlock(g, owner.id),
+        'Low-population Caladan has no Movement foresight opportunity to cancel.',
+      );
+      requireTerminal(
         g.phase === 5 && Array.isArray(g.spiceDeck) && g.spiceDeck.length > 0,
         'Canceled spice knowledge needs its existing lookahead opportunity.',
       );
@@ -254,6 +267,16 @@ export function validateTerminalCancellation(
       return { kind: response.kind, owner: owner.id };
     case 'advisor': {
       faction('beneGesserit');
+      const destination = splitLocation(
+        response.location ?? 'polar_sink:0',
+      ).territory;
+      const advisorAmount = response.amount === undefined ? 1 : response.amount;
+      requireTerminal(
+        positive(advisorAmount) &&
+          advisorAmount <=
+            homeworldSpiritualAdvisorAllowance(g, owner.id, destination),
+        'This spiritual advisor amount is unavailable at the current Homeworld population.',
+      );
       if (response.advisorResume === 'ambassador') {
         try {
           const { order } = validateGuildAmbassadorArrivalContext(

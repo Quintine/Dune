@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { StrongholdCardGallery } from './stronghold-cards';
+import { HomeworldCardGallery } from './homeworld-cards';
 import { createStrongholdCards } from '@/game/stronghold-cards';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect, useRef } from 'react';
@@ -69,6 +70,7 @@ function RulesReferenceContent() {
         [
           t.title,
           t.summary,
+          t.searchText ?? '',
           ...t.steps,
           t.example ?? '',
           ...(t.checklist ?? []).flatMap((item) => [
@@ -184,6 +186,7 @@ function RulesReferenceContent() {
                       players={[]}
                     />
                   )}
+                  {topic.id === 'homeworlds' && <HomeworldCardGallery />}
                   {topic.id === 'richese-cards' && (
                     <section
                       aria-label="Richese card collection"

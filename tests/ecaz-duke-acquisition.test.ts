@@ -276,7 +276,7 @@ void test('explicit Duke choice/owner/event and eligibility are checked before t
   reject(g, 'in', action);
   reject(g, 'ec', { ...action, event: 'stale' });
   reject(g, 'ec', { ...action, choice: undefined });
-  reject(g, 'ec', { ...action, choice: 'alliance' });
+  reject(g, 'ec', { ...action, choice: 'loan' });
   const allied = reload(g);
   p(allied, 'ec').ally = 'al';
   p(allied, 'al').ally = 'ec';

@@ -1,4 +1,5 @@
 import { validAmbassadorResume } from './ambassador-resume';
+import { ambassadorPhaseAllowed } from './ambassador-phase';
 import type { Game } from './engine';
 import type { GuildAmbassadorShipment } from './guild-ambassador';
 import { validLocation, territory } from './board';
@@ -18,6 +19,11 @@ export type GuildAmbassadorArrivalContext = Pick<
   | 'players'
   | 'pendingAmbassador'
   | 'ecazAmbassadors'
+  | 'homeworlds'
+  | 'homeworldRevivalReturn'
+  | 'homeworldRevivalProgress'
+  | 'homeworldVictoryReinforcement'
+  | 'lastBattleContext'
 >;
 export type GuildAmbassadorArrivalNext =
   | 'intrusion'
@@ -61,7 +67,7 @@ export function validateGuildAmbassadorArrivalContext(
     g.status === 'playing' &&
       whole(g.turn) &&
       g.turn > 0 &&
-      (g.phase === 1 || g.phase === 5) &&
+      ambassadorPhaseAllowed(g) &&
       Array.isArray(g.players) &&
       g.players.every((p) => id(p.id)) &&
       new Set(g.players.map((p) => p.id)).size === g.players.length &&
@@ -151,7 +157,11 @@ export function validateGuildAmbassadorArrivalContext(
       bg?.faction === 'beneGesserit' &&
         bg.id !== order.player &&
         g.players.filter((p) => p.faction === 'beneGesserit').length === 1 &&
-        advisorArrival.amount === 1 &&
+        (advisorArrival.amount === 1 ||
+          (advisorArrival.amount === 2 &&
+            !!g.homeworlds?.custody &&
+            advisorArrival.territory === 'polar_sink' &&
+            advisorArrival.sector === 0)) &&
         advisorArrival.elite === 0 &&
         boardLocation(advisorArrival.territory, advisorArrival.sector) &&
         (advisorArrival.territory === order.territory ||
@@ -159,6 +169,9 @@ export function validateGuildAmbassadorArrivalContext(
             advisorArrival.sector === 0)),
       'The saved accompanying advisor does not match this shipment destination and owner.',
     );
+    // This is a committed arrival: the batch itself or later child effects can
+    // lower Wallach below high. Rechecking today's allowance would invalidate
+    // legal historical receipts. Declaration/commit prove the original limit.
   }
   return { order, ...(advisorArrival ? { advisorArrival } : {}) };
 }

@@ -4,6 +4,23 @@ import {
   liveShipmentPromises,
 } from '@/game/shipment-promises';
 import { ShipmentPromises } from './shipment-promises';
+import { HomeworldShipment } from './homeworld-shipment';
+import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
+import { CaladanReinforcement } from './caladan-reinforcement';
+import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
+import { GuildHomeworldShipment } from './guild-homeworld-shipment';
+import { JunctionTransport } from './junction-transport';
+import { BiddingEnd } from './bidding-end';
+import { homeworldShipmentPaymentBlock } from '@/game/homeworld-payment-options';
+import {
+  HomeworldTable,
+  NativeShipmentChoice,
+  EmperorHomeworldMovement,
+} from './homeworld-table';
+import { nativeShipmentSources } from '@/game/homeworld-options';
+import { botBattleChoices } from '@/game/bot-battle-choices';
+import { specialForceName } from '@/game/combat';
+import type { NativeReserveSelections } from '@/game/homeworld-native-reserves';
 import {
   StrongholdCardGallery,
   StrongholdCopyChoice,
@@ -142,6 +159,10 @@ export function GameTable({
   onExit: () => void;
 }) {
   const me = g.players.find((p) => p.id === g.me)!;
+  const combatName = (id: string) =>
+    g.combatLocations?.find((place) => place.id === id)?.name ??
+    gameTerritories(g).find((place) => place.id === id)?.name ??
+    id;
   const turnOwner = tableActionOwner(g);
   const turnOwnerName = g.players.find((p) => p.id === turnOwner)?.name;
   const setupStage = g.setupStage;
@@ -230,7 +251,14 @@ export function GameTable({
   const nextBotFaction = availableBotFactions.some((f) => f.id === botFaction)
     ? botFaction
     : (availableBotFactions[0]?.id ?? '');
-  const [selected, setSelected] = useState(g.battle?.territory ?? 'arrakeen');
+  const [selectedId, setSelected] = useState(() =>
+    gameTerritories(g).some((location) => location.id === g.battle?.territory)
+      ? g.battle!.territory
+      : 'arrakeen',
+  );
+  const selected = gameTerritories(g).some((location) => location.id === selectedId)
+    ? selectedId
+    : 'arrakeen';
   const [sector, setSector] = useState(10);
   const [amount, setAmount] = useState(1);
   const [bidDraft, setBidDraft] = useState({ auction: '', value: 1 });
@@ -246,6 +274,23 @@ export function GameTable({
     ? Number.MAX_SAFE_INTEGER
     : (me.spice ?? 0) + g.aid.available;
   const [eliteAmount, setEliteAmount] = useState(0);
+  const [homeworldDraft, setHomeworldDraft] = useState<{
+    key: string;
+    sources: NativeReserveSelections;
+  } | null>(null);
+  const homeworldSourceKey = JSON.stringify([
+    g.code,
+    g.turn,
+    g.phase,
+    g.active,
+    g.homeworlds,
+    amount,
+    eliteAmount,
+  ]);
+  const homeworldSources =
+    homeworldDraft?.key === homeworldSourceKey
+      ? homeworldDraft.sources
+      : nativeShipmentSources(g, amount, eliteAmount);
   const [freeCyborgFirst, setFreeCyborgFirst] = useState(true);
   const [allyEliteAmount, setAllyEliteAmount] = useState(0);
   const [eliteForces, setEliteForces] = useState<Record<string, number>>({});
@@ -297,7 +342,7 @@ export function GameTable({
       ? ownBattleForces.freeSupport
         ? 0
         : (ownBattleForces.normalFixedHalf ? 0 : ownBattleForces.normal) +
-          ownBattleForces.elite
+          (ownBattleForces.eliteFreeSupport ? 0 : ownBattleForces.elite)
       : Number.POSITIVE_INFINITY,
   );
   const battleSupport = Number.isFinite(support)
@@ -359,6 +404,22 @@ export function GameTable({
   const payment =
     !me.ally || allyPayment === '' ? {} : { allyPayment: Number(allyPayment) };
   const shipmentProblems: string[] = [];
+  if (homeworldSources) {
+    const homes = g.homeworlds!.worlds!.filter((w) => w.native === me.id);
+    if (
+      homes.some((home) =>
+        (['normal', 'elite'] as const).some((kind) => {
+          const n = homeworldSources[home.id]?.[kind];
+          return (
+            !Number.isSafeInteger(n) || n < 0 || n > home.forces[me.id][kind]
+          );
+        }),
+      )
+    )
+      shipmentProblems.push(
+        'Choose available whole numbers of normal forces and Sardaukar from each Homeworld.',
+      );
+  }
   if (
     liveShipmentPromises(g.shipmentPromises, me.id, g.turn).some(
       (p) => matchesShipment(p, { territory: selected, amount }) !== p.answer,
@@ -416,6 +477,10 @@ export function GameTable({
     selectedAllyPayment >= 0 &&
     selectedAllyPayment <= shipmentCost;
   if (shipmentCost !== null) {
+    if (validShipmentShare) {
+      const blocked = homeworldShipmentPaymentBlock(g, shipmentCost, selectedAllyPayment);
+      if (blocked) shipmentProblems.push(blocked);
+    }
     if (!validShipmentShare)
       shipmentProblems.push(
         `Ally payment must be a whole number from 0 to ${shipmentCost}.`,
@@ -462,7 +527,7 @@ export function GameTable({
     !!ownNoField &&
     !!source &&
     ownNoField.location.territory === splitLocation(source).territory;
-  const includesNoField = moveNoField && markerAtSource;
+  const includesNoField = moveNoField && markerAtSource && !g.homeworldMobility?.noFieldMovementBlocked;
   const physicalDraftEntries = combineSectors
     ? Object.entries(moveForces).filter(
         ([key]) =>
@@ -538,8 +603,10 @@ export function GameTable({
     );
   const act = (a: Action) => void send(a);
   const choose = (id: string) => {
+    const location = gameTerritories(g).find((candidate) => candidate.id === id);
+    if (!location) return;
     setSelected(id);
-    setSector(territory(id).sectors[0]);
+    setSector(location.sectors[0]);
   };
   const leaderName = (id: string) =>
     id === CHEAP_HERO_TRAITOR
@@ -997,7 +1064,7 @@ export function GameTable({
                   ? 'awakened'
                   : `${me.kwisatz.losses} of 7 battle losses`}
               {me.kwisatz.usedAt
-                ? ` · used in ${territory(me.kwisatz.usedAt).name} this turn`
+                ? ` · used in ${combatName(me.kwisatz.usedAt)} this turn`
                 : ''}
             </p>
           )}
@@ -1276,6 +1343,7 @@ export function GameTable({
                 })}
             </svg>
           </div>
+          <HomeworldTable game={g} />
           <div className="territory-detail">
             <div>
               <span className="eyebrow">
@@ -1373,6 +1441,10 @@ export function GameTable({
             {g.status === 'finished' ? 'FINAL OUTCOME' : 'YOUR NEXT DECISION'}
           </div>
           <PrivateBattlePlan game={g} />
+          {g.biddingEnd && <BiddingEnd game={g} act={act} busy={busy} />}
+          {g.junctionTransport && [g.junctionTransport.owner, g.junctionTransport.recipient].includes(me.id) && (
+            <JunctionTransport key={me.id === g.junctionTransport.owner ? g.junctionTransport.offerEvent : g.junctionTransport.event} game={g} act={act} busy={busy} />
+          )}
           <RicheseNoFieldControls
             game={g}
             act={act}
@@ -1765,6 +1837,21 @@ export function GameTable({
                   }[g.response.kind]
                 }
               </h2>
+              {g.paymentIncome?.low && (
+                <p className="notice">
+                  Of the {g.paymentIncome.gross} spice payment,{' '}
+                  {g.players.find((player) => player.id === g.paymentIncome?.owner)?.name}
+                  {' '}receives {g.paymentIncome.income}. Low-population{' '}
+                  {g.paymentIncome.kind === 'shipment' ? 'Junction' : 'Kaitain'}
+                  {' '}leaves {g.paymentIncome.bank} spice in the bank. The payer’s cost stays the same.
+                </p>
+              )}
+              {g.response.kind === 'advisor' && (
+                <p className="notice">
+                  {g.players.find((player) => player.id === g.response?.owner)?.name} declared {g.response.amount ?? 1} free {(g.response.amount ?? 1) === 1 ? 'force' : 'forces'} to {territory(splitLocation(g.response.location ?? 'polar_sink:0').territory).name}.
+                  {' '}Allow the arrival or cancel Spiritual Advisors. Canceling prevents the whole declared group.
+                </p>
+              )}
               {g.response.kind === 'moritaniRetention' &&
                 g.moritaniRetentionCard && (
                   <div className="notice">
@@ -1941,163 +2028,171 @@ export function GameTable({
             <>
               <span className="eyebrow">Player decision</span>
               <h2>
-                {g.decision.kind === 'stoneBurner'
-                  ? 'Stone Burner'
-                  : g.decision.kind === 'nullentropy'
-                    ? 'Private Nullentropy Box search'
-                    : g.decision.kind === 'richeseAllyOpportunity'
-                      ? 'Offer allied No-Field shipment'
-                      : g.decision.kind === 'richeseAllyShipment'
-                        ? 'Allied No-Field shipment'
-                        : [
-                              'richeseBlackMarket',
-                              'richeseDeclaration',
-                              'richeseCache',
-                              'richeseUnbid',
-                            ].includes(g.decision.kind)
-                          ? 'Richese auction decision'
-                          : g.decision.kind === 'ecazAmbassador'
-                            ? 'Ecaz · Ambassador entry effect'
-                            : g.decision.kind === 'ecazPlacement'
-                              ? 'Ecaz · Ambassador placement'
-                              : g.decision.kind === 'moritaniRetention'
-                                ? 'Moritani · allied card retention'
-                                : g.decision.kind === 'moritaniTerror'
-                                  ? 'Moritani · Terror entry reaction'
-                                  : g.decision.kind === 'moritaniSetup'
-                                    ? 'Moritani · final deployment'
-                                    : g.decision.kind === 'moritaniPlacement'
-                                      ? 'Moritani · hidden Terror placement'
-                                      : g.decision.kind === 'choamStorm'
-                                        ? 'CHOAM storm protection'
-                                        : g.decision.kind === 'choamMovement'
-                                          ? 'CHOAM movement response'
-                                          : g.decision.kind === 'choamMentat'
-                                            ? 'CHOAM’s final Mentat opportunity'
-                                            : g.decision.kind ===
-                                                'choamFreeRevival'
-                                              ? 'CHOAM free revival response'
+                {g.decision.kind === 'caladanReinforcement'
+                  ? 'Caladan victory reinforcement'
+                  : g.decision.kind === 'homeworldRevivalDeployment'
+                  ? 'Revival deployment'
+                  : g.decision.kind === 'ecazSpice'
+                  ? 'Shared spice collection'
+                  : g.decision.kind === 'stoneBurner'
+                    ? 'Stone Burner'
+                    : g.decision.kind === 'nullentropy'
+                      ? 'Private Nullentropy Box search'
+                      : g.decision.kind === 'richeseAllyOpportunity'
+                        ? 'Offer allied No-Field shipment'
+                        : g.decision.kind === 'richeseAllyShipment'
+                          ? 'Allied No-Field shipment'
+                          : [
+                                'richeseBlackMarket',
+                                'richeseDeclaration',
+                                'richeseCache',
+                                'richeseUnbid',
+                              ].includes(g.decision.kind)
+                            ? 'Richese auction decision'
+                            : g.decision.kind === 'ecazAmbassador'
+                              ? 'Ecaz · Ambassador entry effect'
+                              : g.decision.kind === 'ecazPlacement'
+                                ? 'Ecaz · Ambassador placement'
+                                : g.decision.kind === 'moritaniRetention'
+                                  ? 'Moritani · allied card retention'
+                                  : g.decision.kind === 'moritaniTerror'
+                                    ? 'Moritani · Terror entry reaction'
+                                    : g.decision.kind === 'moritaniSetup'
+                                      ? 'Moritani · final deployment'
+                                      : g.decision.kind === 'moritaniPlacement'
+                                        ? 'Moritani · hidden Terror placement'
+                                        : g.decision.kind === 'choamStorm'
+                                          ? 'CHOAM storm protection'
+                                          : g.decision.kind === 'choamMovement'
+                                            ? 'CHOAM movement response'
+                                            : g.decision.kind === 'choamMentat'
+                                              ? 'CHOAM’s final Mentat opportunity'
                                               : g.decision.kind ===
-                                                  'choamBattleFunding'
-                                                ? 'CHOAM battle funding'
+                                                  'choamFreeRevival'
+                                                ? 'CHOAM free revival response'
                                                 : g.decision.kind ===
-                                                    'choamMarket'
-                                                  ? 'CHOAM · end of phase'
+                                                    'choamBattleFunding'
+                                                  ? 'CHOAM battle funding'
                                                   : g.decision.kind ===
-                                                        'choamTradeReply' ||
-                                                      g.decision.kind ===
-                                                        'choamTradeConfirm'
-                                                    ? 'Allied card exchange'
+                                                      'choamMarket'
+                                                    ? 'CHOAM · end of phase'
                                                     : g.decision.kind ===
-                                                        'ixSetup'
-                                                      ? 'Choose your starting technology'
+                                                          'choamTradeReply' ||
+                                                        g.decision.kind ===
+                                                          'choamTradeConfirm'
+                                                      ? 'Allied card exchange'
                                                       : g.decision.kind ===
-                                                          'ixAuction'
-                                                        ? 'Prepare the auction'
+                                                          'ixSetup'
+                                                        ? 'Choose your starting technology'
                                                         : g.decision.kind ===
-                                                            'ixTechnology'
-                                                          ? 'Substitute an auction card'
+                                                            'ixAuction'
+                                                          ? 'Prepare the auction'
                                                           : g.decision.kind ===
-                                                              'ixAllyCard'
-                                                            ? 'Keep or replace your purchase'
+                                                              'ixTechnology'
+                                                            ? 'Substitute an auction card'
                                                             : g.decision
                                                                   .kind ===
-                                                                'mobileStronghold'
-                                                              ? g.decision
-                                                                  .placement
-                                                                ? 'Place your stronghold'
-                                                                : 'Relocate before the storm'
+                                                                'ixAllyCard'
+                                                              ? 'Keep or replace your purchase'
                                                               : g.decision
                                                                     .kind ===
-                                                                  'ixSubstitution'
-                                                                ? 'Retain lost cyborgs'
+                                                                  'mobileStronghold'
+                                                                ? g.decision
+                                                                    .placement
+                                                                  ? 'Place your stronghold'
+                                                                  : 'Relocate before the storm'
                                                                 : g.decision
                                                                       .kind ===
-                                                                    'revivalStop'
-                                                                  ? 'A revival awaits clearance'
+                                                                    'ixSubstitution'
+                                                                  ? 'Retain lost cyborgs'
                                                                   : g.decision
                                                                         .kind ===
-                                                                      'faceDance'
-                                                                    ? 'A hidden allegiance'
+                                                                      'revivalStop'
+                                                                    ? 'A revival awaits clearance'
                                                                     : g.decision
                                                                           .kind ===
-                                                                        'poisonTooth'
-                                                                      ? 'Activate Poison Tooth?'
+                                                                        'faceDance'
+                                                                      ? 'A hidden allegiance'
                                                                       : g
                                                                             .decision
                                                                             .kind ===
-                                                                          'techToken'
-                                                                        ? 'Claim a tech token'
+                                                                          'poisonTooth'
+                                                                        ? 'Activate Poison Tooth?'
                                                                         : g
                                                                               .decision
                                                                               .kind ===
-                                                                            'fullPlanOffer'
-                                                                          ? 'See the entire battle plan'
+                                                                            'techToken'
+                                                                          ? 'Claim a tech token'
                                                                           : g
                                                                                 .decision
                                                                                 .kind ===
-                                                                              'guildShipment'
-                                                                            ? 'A shipment awaits clearance'
+                                                                              'fullPlanOffer'
+                                                                            ? 'See the entire battle plan'
                                                                             : g
                                                                                   .decision
                                                                                   .kind ===
-                                                                                'handExchange'
-                                                                              ? 'Choose cards to return'
+                                                                                'guildShipment' || g.decision.kind === 'homeworldShipmentGuild'
+                                                                              ? 'A shipment awaits clearance'
                                                                               : g
                                                                                     .decision
                                                                                     .kind ===
-                                                                                    'captureOffer' ||
-                                                                                  g
-                                                                                    .decision
-                                                                                    .kind ===
-                                                                                    'capturedLeader'
-                                                                                ? 'A captive leader'
+                                                                                  'handExchange'
+                                                                                ? 'Choose cards to return'
                                                                                 : g
                                                                                       .decision
                                                                                       .kind ===
-                                                                                    'guildTiming'
-                                                                                  ? 'Choose when to act'
+                                                                                      'captureOffer' ||
+                                                                                    g
+                                                                                      .decision
+                                                                                      .kind ===
+                                                                                      'capturedLeader'
+                                                                                  ? 'A captive leader'
                                                                                   : g
                                                                                         .decision
                                                                                         .kind ===
-                                                                                      'stormLosses'
-                                                                                    ? 'Survive the storm'
+                                                                                      'guildTiming'
+                                                                                    ? 'Choose when to act'
                                                                                     : g
                                                                                           .decision
                                                                                           .kind ===
-                                                                                        'wormPlacement'
-                                                                                      ? 'Place an additional worm'
+                                                                                        'stormLosses'
+                                                                                      ? 'Survive the storm'
                                                                                       : g
                                                                                             .decision
                                                                                             .kind ===
-                                                                                          'battleLosses'
-                                                                                        ? 'Choose your casualties'
+                                                                                          'wormPlacement'
+                                                                                        ? 'Place an additional worm'
                                                                                         : g
                                                                                               .decision
                                                                                               .kind ===
-                                                                                            'auctionPayment'
-                                                                                          ? 'Settle your bid'
-                                                                                          : [
-                                                                                                'advisor',
-                                                                                                'intrusion',
-                                                                                                'advisorBattle',
-                                                                                              ].includes(
-                                                                                                g
-                                                                                                  .decision
-                                                                                                  .kind,
-                                                                                              )
-                                                                                            ? 'Advisors & fighters'
-                                                                                            : g
-                                                                                                  .decision
-                                                                                                  .kind ===
-                                                                                                'wormProtection'
-                                                                                              ? 'Protection of Shai-Hulud'
+                                                                                            'battleLosses'
+                                                                                          ? 'Choose your casualties'
+                                                                                          : g
+                                                                                                .decision
+                                                                                                .kind ===
+                                                                                              'auctionPayment'
+                                                                                            ? 'Settle your bid'
+                                                                                            : [
+                                                                                                  'advisor',
+                                                                                                  'intrusion',
+                                                                                                  'advisorBattle',
+                                                                                                ].includes(
+                                                                                                  g
+                                                                                                    .decision
+                                                                                                    .kind,
+                                                                                                )
+                                                                                              ? 'Advisors & fighters'
                                                                                               : g
                                                                                                     .decision
                                                                                                     .kind ===
-                                                                                                  'wormRide'
-                                                                                                ? 'Ride the sandworm'
-                                                                                                : 'Spoils of battle'}
+                                                                                                  'wormProtection'
+                                                                                                ? 'Protection of Shai-Hulud'
+                                                                                                : g
+                                                                                                      .decision
+                                                                                                      .kind ===
+                                                                                                    'wormRide'
+                                                                                                  ? 'Ride the sandworm'
+                                                                                                  : 'Spoils of battle'}
               </h2>
               {g.decision.kind === 'capturedLeader' &&
                 (g.decision.controller ?? g.decision.owner) === me.id && (
@@ -2118,7 +2213,7 @@ export function GameTable({
                       )?.name
                     }{' '}
                     has declared a move of {g.decision.amount} forces into{' '}
-                    {territory(g.decision.territory).name}, sector{' '}
+                    {combatName(g.decision.territory)}, sector{' '}
                     {g.decision.sector}. CHOAM must allow the move or respond
                     with Baliset; no forces have moved yet.
                   </p>
@@ -2209,6 +2304,10 @@ export function GameTable({
                   act={act}
                   busy={busy}
                 />
+              ) : g.decision.kind === 'homeworldRevivalDeployment' ? (
+                <HomeworldRevivalDeployment game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'caladanReinforcement' ? (
+                <CaladanReinforcement game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'ecazSpice' ? (
                 g.ecazSpice?.allocation ? (
                   <EcazSpice
@@ -2277,6 +2376,9 @@ export function GameTable({
                     turn.
                   </p>
                   <HelpTip topic="tleilaxuSpecial" />
+                  {g.revival.specialKaramaBlock && (
+                    <p role="status">{g.revival.specialKaramaBlock}</p>
+                  )}
                   {me.hand
                     ?.filter((c) => c.effect === 'karama')
                     .map((c) => (
@@ -2284,6 +2386,7 @@ export function GameTable({
                         {actionButton(
                           'Spend special Karama · prevent revival',
                           { type: 'card', card: c.id, mode: 'special' },
+                          !!g.revival.specialKaramaBlock,
                         )}
                       </div>
                     ))}
@@ -2402,6 +2505,17 @@ export function GameTable({
                   Restoring the saved battle continuation. Your inspection
                   remains available above; no confirmation is needed.
                 </p>
+              ) : g.decision.kind === 'homeworldShipmentGuild' ? (
+                <>
+                  <p className="muted">
+                    {g.players.find((p) => p.id === (g.decision?.kind === 'homeworldShipmentGuild' ? g.decision.shipper : ''))?.name} declares {g.decision.amount} forces to {combatName(g.decision.destination)}. Allow this shipment or spend your once-per-game special Karama to stop it.
+                  </p>
+                  <HelpTip topic="guildShipment" />
+                  {actionButton('Allow Homeworld shipment', { type: 'decision', event: g.decision.event, allow: true })}
+                  {me.hand?.filter((c) => c.effect === 'karama').map((c) => (
+                    <div key={c.id}>{actionButton('Spend Karama · stop shipment', { type: 'card', mode: 'special', card: c.id })}</div>
+                  ))}
+                </>
               ) : g.decision.kind === 'guildShipment' ? (
                 <>
                   <p className="muted">
@@ -2415,7 +2529,7 @@ export function GameTable({
                       )?.name
                     }{' '}
                     declares {g.decision.amount} forces to{' '}
-                    {territory(g.decision.territory).name}, sector{' '}
+                    {combatName(g.decision.territory)}, sector{' '}
                     {g.decision.sector}. Allow this shipment or spend your
                     once-per-game special Karama to stop it.
                   </p>
@@ -2484,10 +2598,9 @@ export function GameTable({
               ) : g.decision.kind === 'intrusion' ? (
                 <>
                   <p className="muted">
-                    Another faction entered{' '}
-                    {territory(g.decision.territory).name}. You may turn every
-                    fighter there into an advisor. A Karama response resolves
-                    before the flip.
+                    Another faction entered {combatName(g.decision.territory)}.
+                    You may turn every fighter there into an advisor. A Karama
+                    response resolves before the flip.
                   </p>
                   {actionButton('Become advisors', {
                     type: 'decision',
@@ -2641,11 +2754,74 @@ export function GameTable({
                     accept: false,
                   })}
                 </>
+              ) : g.decision.kind === 'homeworldDefense' ? (
+                <>
+                  <RevealedBattle game={g} />
+                  <h3>Late poison defense</h3>
+                  <p className="muted">
+                    The Traitor window is complete. You may add Portable Snooper
+                    before this Homeworld battle resolves. It protects against
+                    ordinary poison, not Poison Tooth.
+                  </p>
+                  {me.hand
+                    ?.filter(
+                      (card) =>
+                        richeseCardDefinition(card)?.card.effect ===
+                        'portableSnooper',
+                    )
+                    .map((card) => (
+                      <div key={card.id}>
+                        <CardRules card={card} />
+                        <CardInspector card={card} />
+                      </div>
+                    ))}
+                  {actionButton('Use Portable Snooper', {
+                    type: 'decision',
+                    event: g.decision.event,
+                    use: true,
+                  })}
+                  {actionButton('Keep current defense', {
+                    type: 'decision',
+                    event: g.decision.event,
+                    use: false,
+                  })}
+                </>
+              ) : g.decision.kind === 'homeworldExplosion' ? (
+                <>
+                  <h3>Native explosion casualties</h3>
+                  <p className="muted">
+                    The Lasgun–shield explosion limits your native losses at{' '}
+                    {combatName(g.decision.territory)} to the Homeworld’s
+                    printed battle strength. Choose the physical counters sent
+                    to the Tanks; your other native forces remain here.
+                  </p>
+                  <p className="fine">
+                    Available: {g.decision.pool.normal}{' '}
+                    {me.faction === 'ixians' ? 'Suboid' : 'ordinary'} and{' '}
+                    {g.decision.pool.elite} {specialForceName(me.faction)}{' '}
+                    counters.
+                  </p>
+                  {g.decision.options.map((option, choice) => (
+                    <div key={choice}>
+                      {actionButton(
+                        `Lose ${option.normal} ${me.faction === 'ixians' ? 'Suboid' : 'ordinary'} + ${option.elite} ${specialForceName(me.faction)} counters`,
+                        {
+                          type: 'decision',
+                          event:
+                            g.decision?.kind === 'homeworldExplosion'
+                              ? g.decision.event
+                              : undefined,
+                          choice,
+                        },
+                      )}
+                    </div>
+                  ))}
+                </>
               ) : g.decision.kind === 'battleLosses' ? (
                 <>
                   <p className="muted">
-                    Choose forces to lose that match your revealed strength and
-                    spice support.
+                    At {combatName(g.decision.territory)}, choose forces to lose
+                    that match your revealed strength and spice support.
                   </p>
                   {g.decision.options.map((option, choice) => (
                     <div key={choice}>
@@ -2682,23 +2858,24 @@ export function GameTable({
                 <>
                   <p className="muted">
                     Another faction has shipped from off-planet. You may send
-                    one reserve force to the Polar Sink for free.
+                    up to {g.homeworldMobility?.advisorSinkMaximum ?? 1} reserve forces to the Polar Sink for free.
                   </p>
                   {g.guildAmbassadorAdvisorChoices ? (
                     g.guildAmbassadorAdvisorChoices.choices.map((choice) => {
-                      const reasonId = `guild-advisor-${choice.accompany}-${choice.territory}-${choice.sector}`;
+                      const reasonId = `guild-advisor-${choice.accompany}-${choice.territory}-${choice.sector}-${choice.amount}`;
                       return (
                         <div key={reasonId}>
                           {actionButton(
                             choice.accompany
                               ? `Accompany · ${territory(choice.territory).name} · sector ${choice.sector}`
-                              : 'Send to Polar Sink',
+                              : `Send ${choice.amount} to Polar Sink`,
                             {
                               type: 'decision',
                               accept: true,
                               accompany: choice.accompany,
                               territory: choice.territory,
                               sector: choice.sector,
+                              amount: choice.amount,
                             },
                             !!choice.blocked,
                             choice.blocked ? reasonId : undefined,
@@ -2731,10 +2908,11 @@ export function GameTable({
                             )}
                           </div>
                         ))}
-                      {actionButton('Send to Polar Sink', {
-                        type: 'decision',
-                        accept: true,
-                      })}
+                      {Array.from({length: g.homeworldMobility?.advisorSinkMaximum ?? 1}, (_, index) => (
+                        <div key={index}>{actionButton(`Send ${index + 1} to Polar Sink`, {
+                          type: 'decision', accept: true, amount: index + 1,
+                        })}</div>
+                      ))}
                     </>
                   )}
                   {actionButton('Decline shipment', {
@@ -2746,7 +2924,7 @@ export function GameTable({
                 <>
                   <p className="muted">
                     Shai-Hulud has appeared in{' '}
-                    {territory(g.decision.territory).name}. You may protect your
+                    {combatName(g.decision.territory)}. You may protect your
                     ally’s forces from being devoured.
                   </p>
                   {actionButton('Protect my ally', {
@@ -2762,7 +2940,7 @@ export function GameTable({
                 <>
                   <p className="muted">
                     The Nexus has concluded. Move some or all of your forces
-                    from {territory(g.decision.territory).name} to a legal
+                    from {combatName(g.decision.territory)} to a legal
                     territory. This does not use your normal movement.
                   </p>
                   {Object.entries(me.forces)
@@ -3012,8 +3190,9 @@ export function GameTable({
                       {g.players
                         .filter((p) => p.id !== me.id)
                         .map((p) => (
-                          <option value={p.id} key={p.id}>
+                          <option value={p.id} key={p.id} disabled={!!g.homeworldAllianceBlocks?.[p.id]}>
                             {p.name}
+                            {g.homeworldAllianceBlocks?.[p.id] ? ` · ${g.homeworldAllianceBlocks[p.id]}` : ''}
                             {g.allianceOffers[p.id] === me.id
                               ? ' · Invited you'
                               : ''}
@@ -3021,10 +3200,11 @@ export function GameTable({
                         ))}
                     </select>
                   </label>
+                  {g.homeworldAllianceBlocks?.[target] && <p className="notice">{g.homeworldAllianceBlocks[target]}</p>}
                   {actionButton('Propose / accept alliance', {
                     type: 'alliance',
                     target,
-                  })}
+                  }, !target || !!g.homeworldAllianceBlocks?.[target])}
                   {me.ally &&
                     actionButton('Break alliance', { type: 'alliance' })}
                 </>
@@ -3047,8 +3227,10 @@ export function GameTable({
                   </p>
                   <p className="fine">
                     {g.charity.payer
-                      ? `Charity is paid from ${g.players.find((p) => p.id === g.charity.payer)?.name}’s spice.`
+                      ? `The ordinary ${g.charity.ordinary} spice is paid from ${g.players.find((p) => p.id === g.charity.payer)?.name}’s spice.`
                       : 'Charity is paid by the Spice Bank.'}
+                    {g.charity.homeworld > 0 &&
+                      ` Low Homeworld population adds ${g.charity.homeworld} spice directly from the bank${g.charity.multiplier === 2 ? ' after Inflation doubles the bonus' : ''}.`}
                   </p>
                   {actionButton(
                     g.charity.amount > 0
@@ -3177,6 +3359,23 @@ export function GameTable({
                     </p>
                   )}
                   <RevivalCommerce game={g} act={act} busy={busy} />
+                  {g.revival.homeworldBonus > 0 && (
+                    <p className="notice">
+                      Low Homeworld population adds one to your free revival
+                      rate. The next request uses your population after this
+                      group returns.
+                      {g.revival.freeBlocked
+                        ? ' La La La currently prevents taking any free revivals.'
+                        : ''}
+                    </p>
+                  )}
+                  {g.revival.tleilaxuHomeworldIncomeBlocked && (
+                    <p className="notice">
+                      Tleilax started Revival at low population. Tleilaxu
+                      receives no bank reward for other factions’ free revivals
+                      this phase; paid revival and Ghola income remain separate.
+                    </p>
+                  )}
                   {g.revival.freeBlocked && (
                     <p className="notice">
                       La La La prevents your free force revivals for this phase.
@@ -3255,7 +3454,7 @@ export function GameTable({
                               onChange={setAllyEliteAmount}
                               max={Math.min(
                                 amount,
-                                eliteRevivalRemaining(ally),
+                                eliteRevivalRemaining(ally, g.advanced),
                               )}
                             />
                           )}
@@ -3307,7 +3506,13 @@ export function GameTable({
                     },
                     g.revival.prevented ||
                       !me.tanks ||
-                      amount > g.revival.forcesRemaining,
+                      amount > g.revival.forcesRemaining ||
+                      !!homeworldRevivalActionBlock(g, { type: 'revive', amount, elite: eliteAmount }),
+                  )}
+                  {homeworldRevivalActionBlock(g, { type: 'revive', amount, elite: eliteAmount }) && (
+                    <p className="fine" aria-live="polite">
+                      {homeworldRevivalActionBlock(g, { type: 'revive', amount, elite: eliteAmount })}
+                    </p>
                   )}
                   {me.faction === 'fremen' &&
                   amount > g.revival.forcesRemaining ? (
@@ -3392,6 +3597,20 @@ export function GameTable({
               {g.phase === 5 && (
                 <ShipmentPromises game={g} act={act} busy={busy} />
               )}
+              {g.phase === 5 && g.active === me.id && g.homeworldShipment && !me.shipped && (
+                <HomeworldShipment key={g.homeworldShipment.event} game={g} act={act} busy={busy} />
+              )}
+              {g.phase === 5 && g.active === me.id && g.guildHomeworldShipment && !me.shipped && (
+                <GuildHomeworldShipment key={g.guildHomeworldShipment.event} game={g} act={act} busy={busy} />
+              )}
+              {g.phase === 5 && g.homeworldMove && (
+                <EmperorHomeworldMovement
+                  key={g.homeworldMove.event}
+                  game={g}
+                  act={act}
+                  busy={busy}
+                />
+              )}
               {g.phase === 5 &&
                 me.faction === 'choam' &&
                 g.choamMovementBonus > 0 && (
@@ -3467,6 +3686,19 @@ export function GameTable({
                     )}
                     {!me.shipped && (
                       <>
+                        <NativeShipmentChoice
+                          game={g}
+                          amount={amount}
+                          elite={eliteAmount}
+                          sources={homeworldSources}
+                          busy={busy}
+                          onChange={(sources) =>
+                            setHomeworldDraft({
+                              key: homeworldSourceKey,
+                              sources,
+                            })
+                          }
+                        />
                         <ShipmentQuote
                           id="reserve-shipment-quote"
                           quote={shipmentQuote}
@@ -3492,6 +3724,7 @@ export function GameTable({
                               territory: selected,
                               sector,
                               amount,
+                              ...(homeworldSources ? { homeworldSources } : {}),
                             })
                           }
                         >
@@ -3505,7 +3738,7 @@ export function GameTable({
                         <input
                           type="checkbox"
                           checked={includesNoField}
-                          disabled={busy}
+                          disabled={busy || !!g.homeworldMobility?.noFieldMovementBlocked}
                           onChange={(event) =>
                             setMoveNoField(event.target.checked)
                           }
@@ -3520,6 +3753,9 @@ export function GameTable({
                         concealed No-Field. Choose zero physical forces to move
                         only the marker. Its hidden value stays unchanged.
                       </p>
+                    )}
+                    {markerAtSource && g.homeworldMobility?.noFieldMovementBlocked && (
+                      <p className="fine">{g.homeworldMobility.noFieldMovementBlocked} Physical forces may still move without the token.</p>
                     )}
                     <label className="decision-checkbox">
                       <input
@@ -3734,30 +3970,18 @@ export function GameTable({
               {g.phase === 6 && !g.battle && g.active === me.id && (
                 <>
                   <p className="muted">
-                    Select a disputed territory on the map, then choose your
-                    opponent.
+                    Choose one of your unresolved battles.
                   </p>
-                  <label>
-                    Opponent
-                    <select
-                      value={target}
-                      onChange={(e) => setTarget(e.target.value)}
+                  {botBattleChoices(g).map((battle) => (
+                    <div
+                      key={`${String(battle.territory)}-${String(battle.target)}`}
                     >
-                      <option value="">Choose opponent</option>
-                      {g.players
-                        .filter((p) => p.id !== me.id)
-                        .map((p) => (
-                          <option value={p.id} key={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
-                  {actionButton('Begin battle', {
-                    type: 'chooseBattle',
-                    territory: selected,
-                    target,
-                  })}
+                      {actionButton(
+                        `Fight ${g.players.find((p) => p.id === battle.target)?.name} · ${combatName(String(battle.territory))}`,
+                        battle,
+                      )}
+                    </div>
+                  ))}
                 </>
               )}
               {g.phase === 8 && me.faction === 'choam' && (
@@ -3793,8 +4017,28 @@ export function GameTable({
                 <>
                   <p className="battle-location">
                     <Swords size={17} />
-                    {territory(g.battle.territory).name}
+                    {g.battle.locationName ?? combatName(g.battle.territory)}
                   </p>
+                  {!!g.battle.native && (
+                    <p className="notice">
+                      Only the native faction may reveal Traitors or Face
+                      Dancers here.
+                      {[g.battle.attacker, g.battle.defender].includes(
+                        g.battle.native,
+                      ) && (
+                        <>
+                          {' '}
+                          {
+                            g.players.find((p) => p.id === g.battle?.native)
+                              ?.name
+                          }{' '}
+                          adds +{g.battle.nativeBattleStrength} native strength
+                          in ordinary strength comparisons, separately from the
+                          dial.
+                        </>
+                      )}
+                    </p>
+                  )}
                   {g.battle.eliteBlocked.length > 0 && (
                     <p className="notice">
                       Karama:{' '}
@@ -3919,6 +4163,14 @@ export function GameTable({
                                 ? `Your concealed No-Field can reveal ${battleForces} physical forces from your current reserves. This estimate is private.`
                                 : `You have ${battleForces} fighting forces here.`}
                             </p>
+                            {ownBattleForces?.eliteFreeSupport && (
+                              <p className="notice">
+                                Salusa Secundus is at high population. Your
+                                Sardaukar fight at their full current strength
+                                without spice support; normal forces still
+                                require support.
+                              </p>
+                            )}
                             {g.advanced &&
                               (me.faction !== 'fremen' ||
                                 g.battle.fremenSupportBlocked) && (
@@ -4412,6 +4664,14 @@ export function GameTable({
                     )}
                     {c.effect === 'ghola' && (
                       <>
+                        {g.ghola.eliteBlock && (
+                          <p className="fine">{g.ghola.eliteBlock}</p>
+                        )}
+                        {homeworldRevivalActionBlock(g, { type: 'card', card: c.id, amount, elite: eliteAmount, leader: leader || undefined }) && (
+                          <p className="fine" aria-live="polite">
+                            {homeworldRevivalActionBlock(g, { type: 'card', card: c.id, amount, elite: eliteAmount, leader: leader || undefined })}
+                          </p>
+                        )}
                         <label htmlFor={`ghola-${c.id}`}>
                           Forces to revive (or choose a leader)
                           <Input
@@ -4683,6 +4943,7 @@ export function GameTable({
                             busy ||
                             !!g.truthtrance ||
                             (!!availability && !availability.available) ||
+                            !!homeworldRevivalActionBlock(g, { type: 'card', card: c.id, amount, elite: eliteAmount, leader: leader || undefined }) ||
                             (g.status !== 'playing' &&
                               !(
                                 g.status === 'setup' &&

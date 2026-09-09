@@ -1,4 +1,8 @@
-import { casualtyOptions, type CombatForces } from './combat';
+import {
+  casualtyOptions,
+  validCombatForces,
+  type CombatForces,
+} from './combat';
 
 export type StoneBurnerSide = 'attacker' | 'defender';
 export type StoneBurnerComparison = {
@@ -7,28 +11,9 @@ export type StoneBurnerComparison = {
   defender: number[];
 };
 
-// Current supported factions each have 20 physical tokens. This is an input/work
-// bound, not a new battle rule; extend it if a supported module changes that pool.
-const MAX_PHYSICAL_FORCES = 20;
 const opposingChoices = new Map<string, readonly (readonly number[])[]>();
 const MAX_CACHED_POOLS = 128;
 
-function validForces(forces: CombatForces): boolean {
-  return (
-    !!forces &&
-    typeof forces === 'object' &&
-    !Array.isArray(forces) &&
-    Number.isSafeInteger(forces.normal) &&
-    forces.normal >= 0 &&
-    Number.isSafeInteger(forces.elite) &&
-    forces.elite >= 0 &&
-    forces.normal + forces.elite <= MAX_PHYSICAL_FORCES &&
-    (forces.eliteStrength === 1 || forces.eliteStrength === 2) &&
-    typeof forces.freeSupport === 'boolean' &&
-    (forces.normalFixedHalf === undefined ||
-      typeof forces.normalFixedHalf === 'boolean')
-  );
-}
 function validSide(side: StoneBurnerSide): boolean {
   return side === 'attacker' || side === 'defender';
 }
@@ -37,7 +22,7 @@ function sorted(values: Iterable<number>): number[] {
 }
 function totals(forces: CombatForces, dial: number, support: number): number[] {
   if (
-    !validForces(forces) ||
+    !validCombatForces(forces) ||
     !Number.isFinite(dial) ||
     dial < 0 ||
     !Number.isInteger(dial * 2) ||
@@ -105,41 +90,25 @@ function allOpposingTotals(
     forces.eliteStrength,
     !!forces.normalFixedHalf,
     forces.freeSupport,
+    !!forces.eliteFreeSupport,
   ].join(':');
   const cached = opposingChoices.get(key);
   if (cached) return cached;
-  const groups = new Map<string, Set<number>>();
-  const add = (halfDial: number, support: number, undialed: number) => {
-    const planKey = `${halfDial}:${support}`;
-    const group = groups.get(planKey) ?? new Set<number>();
-    group.add(undialed);
-    groups.set(planKey, group);
-  };
-  for (let normal = 0; normal <= forces.normal; normal++)
-    for (let elite = 0; elite <= forces.elite; elite++) {
-      const undialed = forces.normal + forces.elite - normal - elite;
-      if (forces.freeSupport) {
-        add(
-          normal * (forces.normalFixedHalf ? 1 : 2) +
-            elite * forces.eliteStrength * 2,
-          0,
-          undialed,
-        );
-        continue;
-      }
-      for (
-        let paidNormal = 0;
-        paidNormal <= (forces.normalFixedHalf ? 0 : normal);
-        paidNormal++
-      )
-        for (let paidElite = 0; paidElite <= elite; paidElite++)
-          add(
-            normal + paidNormal + (elite + paidElite) * forces.eliteStrength,
-            paidNormal + paidElite,
-            undialed,
-          );
+  const result: number[][] = [];
+  const maximumHalfDial =
+    forces.normal * (forces.normalFixedHalf ? 1 : 2) +
+    forces.elite * forces.eliteStrength * 2;
+  const maximumSupport = forces.freeSupport
+    ? 0
+    : (forces.normalFixedHalf ? 0 : forces.normal) +
+      (forces.eliteFreeSupport ? 0 : forces.elite);
+  // Use the same legality and typed-support arithmetic as sealed plans. Cache
+  // public pool results so repeated preflights do not repeat this enumeration.
+  for (let halfDial = 0; halfDial <= maximumHalfDial; halfDial++)
+    for (let support = 0; support <= maximumSupport; support++) {
+      const choices = totals(forces, halfDial / 2, support);
+      if (choices.length) result.push(choices);
     }
-  const result = [...groups.values()].map(sorted);
   if (opposingChoices.size >= MAX_CACHED_POOLS)
     opposingChoices.delete(opposingChoices.keys().next().value!);
   opposingChoices.set(key, result);
@@ -160,7 +129,7 @@ export function stoneBurnerPlanBlock(
 ): string | null {
   if (!validSide(side) || !validSide(aggressor))
     return 'Choose valid Stone Burner combatant roles.';
-  if (!validForces(own) || !validForces(opponent))
+  if (!validCombatForces(own) || !validCombatForces(opponent))
     return 'Stone Burner needs valid supported physical force pools of at most 20 tokens.';
   const ownTotals = totals(own, dial, support);
   if (!ownTotals.length)
@@ -185,7 +154,7 @@ export function stoneBurnerCompulsionBlock(
 ): string | null {
   if (!validSide(side) || !validSide(aggressor))
     return 'Choose valid Stone Burner combatant roles.';
-  if (!validForces(own) || !validForces(opponent))
+  if (!validCombatForces(own) || !validCombatForces(opponent))
     return 'Stone Burner needs valid supported physical force pools of at most 20 tokens.';
   const maximumStrength = own.normal + own.elite * own.eliteStrength;
   for (let halfDial = 0; halfDial <= maximumStrength * 2; halfDial++) {

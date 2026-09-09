@@ -51,6 +51,12 @@ export function RevealedBattle({ game }: { game: GameView }) {
               {game.advanced ? ` · ${plan.support} spice support` : ''}
               {!!plan.allyPayment && ` (${plan.allyPayment} from CHOAM)`}
             </span>
+            {battle.native === id && !battle.cards.some(isStoneBurner) && (
+              <span>
+                Native Homeworld bonus: +{battle.nativeBattleStrength} to the
+                battle score, separately from the dial
+              </span>
+            )}
             <span>Leader: {name(plan.leader)}</span>
             {plan.kwisatz && (
               <span>

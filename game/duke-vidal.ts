@@ -114,7 +114,7 @@ export const DUKE_VIDAL_RULES = Object.freeze({
     capture: 'not-implemented',
     revival: 'not-implemented',
     ambassadorAcquisition: 'ecaz-self-implemented',
-    ambassadorAlliance: 'not-implemented',
+    ambassadorAlliance: 'consent-implemented',
     ambassadorAllyAcquisition: 'unresolved',
     allyLoanReturn: 'unresolved',
     sourceAudit: 'docs/DUKE_VIDAL_RULES.md',

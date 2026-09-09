@@ -1,6 +1,6 @@
 import type { Decision, Game, ResponseWindow } from './engine';
 import type { PendingRevival } from './revival';
-import { forceRevivalRemaining } from './revival';
+import { forceRevivalRemaining, freeRevivalRemaining } from './revival';
 import {
   continuationCustody,
   RevivalCancellationError,
@@ -8,6 +8,7 @@ import {
 import { isAuditorLeader } from './choam-auditor';
 import { controlsLeader } from './leader-control';
 import { TECH_TOKENS, ownedTech } from './tech-tokens';
+import { tleilaxuHomeworldFreeIncomeBlocked } from './homeworld-benefits';
 
 export type RevivalResumeContext = Pick<
   Game,
@@ -15,6 +16,8 @@ export type RevivalResumeContext = Pick<
   | 'phase'
   | 'turn'
   | 'advanced'
+  | 'homeworlds'
+  | 'homeworldRevival'
   | 'players'
   | 'pendingRevival'
   | 'revivalRules'
@@ -112,6 +115,16 @@ export function quoteRevivalResume(
       'The pending force revival has invalid physical counts.',
     );
     const paid = original.amount - original.free;
+    // Supported pending-revival overlays cannot move native forces or consume
+    // ordinary revival usage. Validate the accepted group's free allocation
+    // before settlement crosses a population threshold. A later independent
+    // request gets the rate at its own declaration.
+    if (g.homeworlds && !original.emperorExtra)
+      requireResume(
+        original.free ===
+          Math.min(original.amount, freeRevivalRemaining(g, p)),
+        'The saved Homeworld revival free allocation does not match its current eligible group.',
+      );
     const elite = original.elite ?? 0;
     const freeCyborgs = paid * 2 + elite - original.normalCost;
     requireResume(
@@ -342,7 +355,10 @@ export function quoteRevivalResume(
       'The revival free-income receipt is invalid.',
     );
     const free = pending.free > 0;
-    const reward = free && lastFree !== g.turn;
+    const reward =
+      free &&
+      lastFree !== g.turn &&
+      !(payer.id !== tleilaxu.id && tleilaxuHomeworldFreeIncomeBlocked(g));
     if (free) quote.freeIncome = { player: payer.id, turn: g.turn };
     const amount =
       (payer.id === tleilaxu.id ? 0 : pending.cost) + (reward ? 1 : 0);

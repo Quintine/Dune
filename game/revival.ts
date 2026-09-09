@@ -1,6 +1,11 @@
 import type { Game, Player } from './engine';
 import { faction, type FactionId } from './catalog';
 import { isAuditorLeader } from './choam-auditor';
+import { homeworldLowBonus } from './homeworld-benefits';
+type RevivalRateContext = Pick<
+  Game,
+  'advanced' | 'players' | 'homeworlds' | 'revivalRules' | 'freeRevival'
+>;
 export type RevivalRules = {
   expanded: string[];
   choamBlocked?: boolean;
@@ -39,20 +44,31 @@ export function revivalDiscount(
     g.players.some((t) => t.faction === 'tleilaxu' && t.ally === p.id)
   );
 }
-export function freeRevivalRemaining(
-  g: Pick<Game, 'revivalRules' | 'freeRevival'>,
-  p: Pick<Player, 'id' | 'faction' | 'revived'>,
+export function freeRevivalRate(
+  g: RevivalRateContext,
+  p: Pick<Player, 'id' | 'faction'>,
 ) {
   return g.revivalRules?.freeBlocked?.includes(p.id)
     ? 0
-    : Math.max(
-        0,
-        (g.freeRevival.includes(p.id) ? 3 : faction(p.faction).revival) -
-          p.revived,
-      );
+    : (g.freeRevival.includes(p.id) ? 3 : faction(p.faction).revival) +
+        homeworldLowBonus(g, p.id);
+}
+/** E3's explicit four-free Fremen rate may exceed the ordinary three-return cap;
+ * the extra free rate never creates an additional paid allowance. */
+export function normalForceRevivalLimit(
+  g: RevivalRateContext,
+  p: Pick<Player, 'id' | 'faction'>,
+) {
+  return Math.max(forceRevivalLimit(g, p), freeRevivalRate(g, p));
+}
+export function freeRevivalRemaining(
+  g: RevivalRateContext,
+  p: Pick<Player, 'id' | 'faction' | 'revived'>,
+) {
+  return Math.max(0, freeRevivalRate(g, p) - p.revived);
 }
 export function forceRevivalQuote(
-  g: Pick<Game, 'players' | 'revivalRules' | 'freeRevival'>,
+  g: RevivalRateContext,
   p: Pick<Player, 'id' | 'faction' | 'revived'>,
   amount: number,
   elite = 0,
@@ -72,14 +88,14 @@ export function forceRevivalQuote(
 
 /** Normal force returns only; Emperor-funded extra revivals and card effects are separate. */
 export function forceRevivalRemaining(
-  g: Pick<Game, 'revivalRules' | 'freeRevival' | 'players'>,
+  g: RevivalRateContext,
   p: Pick<Player, 'id' | 'faction' | 'revived' | 'tanks'>,
 ) {
   return Math.max(
     0,
     Math.min(
       p.tanks,
-      forceRevivalLimit(g, p) - p.revived,
+      normalForceRevivalLimit(g, p) - p.revived,
       // GF9 November 2020 FAQ p. 5 permits paid Fremen revivals with Tleilaxu in play.
       // Selecting expansion cards alone does not provide that faction's permission.
       p.faction === 'fremen' &&
@@ -179,8 +195,11 @@ export function revivalPrevented(
   );
 }
 
-export function eliteRevivalRemaining(p: Pick<Player, 'faction' | 'elites'>) {
-  return p.faction === 'ixians'
+export function eliteRevivalRemaining(
+  p: Pick<Player, 'faction' | 'elites'>,
+  advanced = true,
+) {
+  return !advanced || p.faction === 'ixians'
     ? (p.elites?.tanks ?? 0)
     : Math.min(p.elites?.tanks ?? 0, Math.max(0, 1 - (p.elites?.revived ?? 0)));
 }

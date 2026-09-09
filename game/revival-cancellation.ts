@@ -3,7 +3,8 @@ import { isAuditorLeader } from './choam-auditor';
 import { controlsLeader } from './leader-control';
 import {
   eliteRevivalRemaining,
-  forceRevivalLimit,
+  normalForceRevivalLimit,
+  freeRevivalRate,
   forceRevivalQuote,
   forceRevivalRemaining,
   newRevivalRules,
@@ -23,6 +24,7 @@ export type RevivalCancellationContext = Pick<
   | 'phase'
   | 'turn'
   | 'advanced'
+  | 'homeworlds'
   | 'players'
   | 'revivalRules'
   | 'freeRevival'
@@ -98,7 +100,7 @@ export function continuationCustody(
         eliteTanks <= p.tanks &&
         elite <= eliteTanks &&
         n - elite <= p.tanks - eliteTanks &&
-        elite <= eliteRevivalRemaining(p),
+        elite <= eliteRevivalRemaining(p, g.advanced),
       'The pending ordinary and elite revival groups no longer match their tanks.',
     );
     return;
@@ -283,11 +285,12 @@ export function quoteRevivalCancellation(
   }
   if (kind === 'choamRevival') {
     rules.choamBlocked = true;
-    if (p.revived + pending.amount! > forceRevivalLimit(context, p))
+    if (p.revived + pending.amount! > normalForceRevivalLimit(context, p))
       return { rules, pending: null, outcome: 'abandoned' };
     Object.assign(pending, forceRevivalQuote(context, p, pending.amount!));
     pending.checks = [];
-    if (p.revived + pending.amount! > 3) pending.checks.push('revivalLimit');
+    if (p.revived + pending.amount! > Math.max(3, freeRevivalRate(context, p)))
+      pending.checks.push('revivalLimit');
     if (pending.cost < pending.normalCost)
       pending.checks.push('revivalDiscount');
   } else {

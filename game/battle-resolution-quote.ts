@@ -23,6 +23,11 @@ import {
 } from './stone-burner';
 import { matchingTraitor } from './traitors';
 import { auditCount } from './choam-auditor';
+import {
+  quoteHomeworldBattleRules,
+  type HomeworldBattleRules,
+  type HomeworldExplosionLosses,
+} from './homeworld-battle-rules';
 
 export class BattleResolutionQuoteError extends Error {
   constructor(message: string) {
@@ -63,8 +68,12 @@ export type ResolutionCombatant = ResolutionParticipant & {
 };
 export type BattleResolutionInput = {
   advanced: boolean;
+  /** Preserve physical counter choices in Basic Homeworlds without granting Advanced strength. */
+  typedCasualties?: boolean;
   turn: number;
   territory: string;
+  /** Off-planet rules are explicit; a Homeworld is never a stronghold terrain. */
+  homeworld?: HomeworldBattleRules;
   attacker: ResolutionCombatant;
   defender: ResolutionCombatant;
   /** Exact traitorVoters order, with the canceled allied call substituted false. */
@@ -107,6 +116,9 @@ export type BattleResolutionQuote = {
   strongholdIncome: { player: string; amount: number }[];
   /** Includes noncombatants only for an actual non-traitor explosion. */
   destroyedArmies: string[];
+  /** Native Lasgun/Shield losses replace destruction, including when the
+   * native is a noncombatant at an invaders' battle. Commit one chosen option. */
+  homeworldExplosion?: HomeworldExplosionLosses;
   /** Basic ordinary winners lose their dial immediately; Advanced/Ix defer typed losses. */
   basicWinnerLosses: number | null;
   casualties: {
@@ -153,6 +165,8 @@ function validateCombatant(
       f.normal + f.elite <= 20 &&
       (f.eliteStrength === 1 || f.eliteStrength === 2) &&
       typeof f.freeSupport === 'boolean' &&
+      (f.eliteFreeSupport === undefined ||
+        typeof f.eliteFreeSupport === 'boolean') &&
       (f.normalFixedHalf === undefined ||
         typeof f.normalFixedHalf === 'boolean') &&
       Number.isFinite(p.dial) &&
@@ -236,6 +250,35 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     attacker: validateCombatant(a, input.physicalCards),
     defender: validateCombatant(d, input.physicalCards),
   };
+  requireQuote(
+    !!input.homeworld === input.territory.startsWith('homeworld:'),
+    'A Homeworld battle must carry its explicit native location rules.',
+  );
+  const homeworld = input.homeworld
+    ? quoteHomeworldBattleRules(
+        input.territory,
+        input.participants,
+        input.homeworld,
+      )
+    : null;
+  if (homeworld) {
+    requireQuote(
+      input.advanced || input.homeworld!.card !== 'salusa_secundus',
+      'Salusa Secundus is used only in Advanced Homeworld games.',
+    );
+    requireQuote(
+      !a.stronghold && !d.stronghold &&
+        !input.participants.some((p) => p.noFieldAtTerritory),
+      'Homeworld combat does not inherit stronghold effects or unresolved concealed No-Field combat.',
+    );
+    const native = [a, d].find((side) => side.id === homeworld.native);
+    requireQuote(
+      !native ||
+        (native.forces.normal === input.homeworld!.nativeForces.normal &&
+          native.forces.elite === input.homeworld!.nativeForces.elite),
+      'The native battle army must match its Homeworld custody.',
+    );
+  }
   const card = (
     side: ResolutionCombatant,
     selected: string | null | undefined,
@@ -276,9 +319,12 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   requireQuote(
     Array.isArray(input.voters) &&
       new Set(input.voters.map((v) => v.id)).size === input.voters.length &&
-      [a, d].every((s) =>
+      [a, d].filter((s) => !homeworld || s.id === homeworld.native).every((s) =>
         input.voters.some((v) => v.id === s.id && v.beneficiary === s.id),
-      ),
+      ) &&
+      (!homeworld || input.voters.every((v) =>
+        v.id === homeworld.native && v.beneficiary === homeworld.native,
+      )),
     'The battle needs its complete distinct traitor voters.',
   );
   const revelations: BattleResolutionQuote['revelations'] = [];
@@ -413,11 +459,13 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     scores = {
       attacker:
         a.plan.dial +
+        (a.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.attacker || effects.stunned
           ? 0
           : strengths.attacker + (a.plan.kwisatz ? 2 : 0)),
       defender:
         d.plan.dial +
+        (d.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.defender || effects.stunned
           ? 0
           : strengths.defender + (d.plan.kwisatz ? 2 : 0)),
@@ -440,7 +488,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   }
   const destroyedArmies =
     result === 'explosion'
-      ? input.participants.map((p) => p.id)
+      ? input.participants.filter((p) => p.id !== homeworld?.native).map((p) => p.id)
       : winner
         ? [winner.id === a.id ? d.id : a.id]
         : [a.id, d.id];
@@ -453,7 +501,12 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   let casualties: BattleResolutionQuote['casualties'] = null;
   let basicWinnerLosses: number | null = null;
   if (winner && result === 'normal') {
-    if (input.advanced || winner.faction === 'ixians') {
+    if (
+      input.advanced ||
+      input.typedCasualties ||
+      homeworld ||
+      winner.faction === 'ixians'
+    ) {
       const options = casualtyOptions(
         winner.forces,
         winner.plan.dial,
@@ -599,6 +652,9 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     bounty,
     strongholdIncome,
     destroyedArmies,
+    ...(result === 'explosion' && homeworld
+      ? { homeworldExplosion: homeworld.explosion }
+      : {}),
     basicWinnerLosses,
     casualties,
     played,

@@ -1,0 +1,137 @@
+{
+  "generationMode": "built-in image_gen",
+  "assetType": "Original artistic interpretation; standalone Homeworld planet illustration",
+  "generatedDate": "2026-09-09",
+  "assets": [
+    {
+      "id": "caladan",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-c303d3d4-6ed8-4a86-87fa-dbb944a438e2.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Caladan, an ocean world: immense deep cobalt seas, scattered lush island chains and sweeping white weather systems; blue and jade.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/caladan-v1.png",
+      "sha256": "ff8a7c967856fb56e73f7e1e03cf6e90828f47f7c7e63c56cd9f4186e69b583b",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "ix",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-30201195-892d-465b-88b5-e0a8f192b9ed.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Ix, a shadowed technological world: graphite terrain with dense subtle geometric machinery and a few amber lights glowing through atmospheric haze; charcoal and subdued bronze.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/ix-v1.png",
+      "sha256": "1af35b06cd9bc27c5fee54a8319059c3b0e46fd55a4613291f2d498d0bbc85b0",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "ecaz",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-051e0958-886c-4623-bf6f-51c4aa0158fc.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Ecaz, a lush forest world: vast emerald forests, curving green continents, delicate rivers and white cloud banks; rich green and turquoise.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/ecaz-v1.png",
+      "sha256": "ce4bedf884da51b6945cf5258a2afd00bd5805ad7274e2d22756865e8e203014",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "southern_hemisphere",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-d43b00db-c8f2-49d7-8a56-9df9515e7fca.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Southern Hemisphere of Arrakis, an entirely amber desert planet: enormous golden dune fields, burnt umber rock basins, tawny dust storms and dry ochre ridges; no oceans or vegetation.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/southern_hemisphere-v1.png",
+      "sha256": "3cbad2cf8dbdd364a81867e80ddf5cd3d1700c6dd2dd7729d4f5df4b9b9cec47",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "richese",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-6c35cad1-8960-416f-9046-0b14f6bf672d.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Richese, a silvery industrial world: pale silver-grey terrain and dense refined industrial lattices, metallic valleys, cool white haze; soft silver, steel blue and graphite.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/richese-v1.png",
+      "sha256": "4cb685455459a00351f0b971e630a2a382f3a20e50a15bf140887e6447a9be06",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "tupile",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-61923313-474f-4af2-93d3-e521831211ff.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Tupile, a hidden green sanctuary world: muted green forested land and secluded mountain basins partly veiled by cloud cover; atmospheric and mysterious, moss greens and pale jade.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/tupile-v1.png",
+      "sha256": "ad221709d732e8d7d14456fdaeb8621e215e04979dbe3d89b414d715c2641d7d",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "wallach_ix",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-eaa552d7-44bf-498a-8103-f8796d343d20.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Wallach IX, a misty rocky world: slate-grey mountain ranges, long pale valleys and dense pearly fog layers, hints of muted lavender in the thin atmosphere; cool stone and silver.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/wallach_ix-v1.png",
+      "sha256": "4b5870238e9b710a5a7e9fdcf566d3ea7bb69394e64028085b17996d30bcd1cd",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "junction",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-e5459584-6807-4d7a-800f-135f375da491.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Junction, the navigators' orbital domain: a large muted blue-grey planetary limb with a majestic delicate orbital ring and several tiny distant immense cylindrical navigational stations silhouetted above it. Emphasize the planet and sparse orbital infrastructure, no close spacecraft. Blue-black space, silver and faint amber.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/junction-v1.png",
+      "sha256": "3a103dc55d45fbc06cf79689ed33ae1668efacc66b7bd66d9bcc79a0d17a26e2",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "kaitain",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-c87699f9-808a-4518-886a-2fe471242e75.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Kaitain, a verdant imperial world: rich cultivated green continents with orderly gardenlike patterns, gentle rivers, luminous oceans and a subtle small golden city network; elegant serene green and warm gold.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/kaitain-v1.png",
+      "sha256": "16a8f30bd1557fbdf630232d8c013ec102e45aa9a4690ecc57f8ae8958735088",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "salusa_secundus",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-e0c7e1ee-97af-4541-8a8e-e7439cc16d00.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Salusa Secundus, a barren storm world: scarred rust-grey land, jagged rocky highlands and enormous violent slate storm bands with a few faint lightning glows; desolate slate, umber and pale storm light.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/salusa_secundus-v1.png",
+      "sha256": "f8a08fbb9648860c800ce2fc42d103e95b311eb79cdabb610210c5b524bdfb82",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "giedi_prime",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-b37c0d4b-5d9b-4f3d-bba1-ffb238c1d80a.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Giedi Prime, a dark industrial world: polluted near-black continents scored with vast brutal industrial complexes, ember-orange furnace lights and smoky ochre atmospheric bands, oppressive charcoal and rust.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/giedi_prime-v1.png",
+      "sha256": "209a4014aa153a67d4a7357b2f6c8aa7e62188e17bfa25738c6a70a69c571b56",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "grumman",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-e4831381-8b4e-4e0a-a73f-3ecc180fca9d.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Grumman, a severe fortress world: austere iron-grey mountains, broad dry stone plateaus and small angular fortress grids under thin clouds; martial, cold stone with restrained rusty accents.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/grumman-v1.png",
+      "sha256": "d671f929938ca2134c30a0af7f40f87ade2eea6e114e00410a8b750658ee2a9e",
+      "width": 1774,
+      "height": 887
+    },
+    {
+      "id": "tleilax",
+      "source": "/home/quintine/.codex/generated_images/01a0851a-ce33-7341-852b-02100539fded/exec-2d75af27-6693-4d74-88b4-179fd02a33cd.png",
+      "prompt": "Use case: stylized-concept. Asset type: original standalone planet illustration for a board-game Homeworld card. Style: sophisticated original hand-painted science fiction concept art, tangible fine brush texture, restrained cinematic color, richly textured curved planetary limb and luminous thin atmosphere against deep near-black space with very sparse stars. Composition: wide horizontal 2:1 image, one large planet spans most of the frame, fully atmospheric planet from orbit, strongest identifying surface features through the central horizontal region so this works as a 2:1 card-art crop. No typography, labels, logos, card frames, UI, people, watermark, or reproduction of official Dune card art. Subject: Tleilax, a biological-industrial world: strange muted olive land patterns, organic-looking industrial districts with branching conduits and clustered domes, misty green-grey haze, unsettling but non-graphic; moss green, antique brass and charcoal.",
+      "inspection": "Visually inspected: correct thematic subject, wide planetary limb composition, no text, frame, logo or people.",
+      "workspacePath": "public/art/homeworlds/tleilax-v1.png",
+      "sha256": "0cc5e2c9b065b775931ba37656618637d56630ffe439802d8ea7f10622df2f79",
+      "width": 1774,
+      "height": 887
+    }
+  ]
+}

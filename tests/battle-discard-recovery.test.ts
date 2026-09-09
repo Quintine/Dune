@@ -228,8 +228,22 @@ async function fixture(kind: Kind) {
   });
   g = engine.applyAction(g, winner, { type: 'traitorCall', call: false });
   g = inner(g, loser, { type: 'traitorCall', call: false });
-  assert.equal(g.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
-  assert.equal(g.players[0].tanks, 0);
+  assert.equal(
+    g.pendingTreacheryDiscard?.continuation.kind,
+    kind === 'moritani' ? 'winnerMandatoryDiscard' : 'battleResolved',
+  );
+  assert.equal(g.players[0].tanks, kind === 'moritani' ? 2 : 0);
+  if (kind === 'moritani') {
+    // All loser cards are reserved for retention, so no loser discard batch
+    // delays casualties; the hero starts its own mandatory winner batch.
+    assert.deepEqual(
+      g.pendingTreacheryDiscard!.batch.entries.map((entry) => entry.card.id),
+      [hero],
+    );
+  } else {
+    assert.deepEqual(g.pendingWinnerDiscards?.cards, [hero]);
+    assert.ok(g.players[0].hand.some((card) => card.id === hero));
+  }
   if (kind !== 'mandatory') {
     g = engine.normalizeAutomaticGame(g);
     g = inner(
@@ -314,8 +328,10 @@ async function raceRecovery(f: Fixture) {
   assert.equal(after.pendingTreacheryDiscard, null);
   assert.equal(
     after.resolvedTreacheryDiscardSequence,
-    f.initial.treacheryDiscardSequence,
+    f.initial.treacheryDiscardSequence! +
+      (f.initial.pendingWinnerDiscards ? 1 : 0),
   );
+  assert.equal(after.pendingWinnerDiscards, null);
   assert.deepEqual(inventory(after), f.physicalIds);
   await f.restart().continueRoomAutomatic(f.code, clock);
   assert.deepEqual(await f.restart().readRoom(f.code), after);
@@ -330,7 +346,7 @@ void test('real mandatory battle frame survives private reconnect and two SQL wo
       f.initial.pendingTreacheryDiscard!.batch.entries.map(
         (e) => e.discardedBy,
       ),
-      f.seats.slice(0, 2).map((s) => s.playerId),
+      [f.seats[1].playerId],
     );
     assert.equal(f.initial.players[0].spice, 21); // support paid and three-spice bounty already earned
     assert.equal(f.initial.players[1].leaders[0].deaths, 1);
@@ -462,6 +478,27 @@ void test('forged battle event, casualty allocation and consumed source parent f
           else if (c.kind === 'battleCleanup') c.source = 'moritani';
         },
       ];
+      if (kind === 'mandatory') {
+        assert.equal(
+          f.initial.lastBattleContext?.winnerDiscards?.completed,
+          false,
+        );
+        mutations.push(
+          (g) => {
+            // The first saved frame still holds the winner's separate mandatory
+            // discard commitment; its physical IDs must not be replaceable.
+            g.pendingWinnerDiscards!.cards[0] = g.players[0].hand.find(
+              (card) => card.kind === 'projectile',
+            )!.id;
+          },
+          (g) => {
+            g.pendingWinnerDiscards = null;
+          },
+          (g) => {
+            delete g.pendingWinnerDiscards;
+          },
+        );
+      }
       for (const mutate of mutations) {
         const malformed = structuredClone(f.initial);
         mutate(malformed);

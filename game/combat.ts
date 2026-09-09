@@ -5,6 +5,9 @@ export type CombatForces = {
   elite: number;
   eliteStrength: 1 | 2;
   freeSupport: boolean;
+  /** Special counters retain full strength without paying support; normal
+   * counters still follow their ordinary support rules. */
+  eliteFreeSupport?: boolean;
 };
 export type Casualties = {
   normal: number;
@@ -13,6 +16,26 @@ export type Casualties = {
   paidElite: number;
 };
 
+/** Current supported factions have at most twenty physical counters. */
+export function validCombatForces(forces: CombatForces): boolean {
+  return (
+    !!forces &&
+    typeof forces === 'object' &&
+    !Array.isArray(forces) &&
+    Number.isSafeInteger(forces.normal) &&
+    forces.normal >= 0 &&
+    Number.isSafeInteger(forces.elite) &&
+    forces.elite >= 0 &&
+    forces.normal + forces.elite <= 20 &&
+    (forces.eliteStrength === 1 || forces.eliteStrength === 2) &&
+    typeof forces.freeSupport === 'boolean' &&
+    (forces.eliteFreeSupport === undefined ||
+      typeof forces.eliteFreeSupport === 'boolean') &&
+    (forces.normalFixedHalf === undefined ||
+      typeof forces.normalFixedHalf === 'boolean')
+  );
+}
+
 /** Every loss combination consistent with the revealed dial and spice payment. */
 export function casualtyOptions(
   forces: CombatForces,
@@ -20,11 +43,13 @@ export function casualtyOptions(
   support: number,
 ): Casualties[] {
   if (
+    !validCombatForces(forces) ||
     !Number.isFinite(dial) ||
     dial < 0 ||
     !Number.isInteger(dial * 2) ||
-    !Number.isInteger(support) ||
+    !Number.isSafeInteger(support) ||
     support < 0 ||
+    support > forces.normal + (forces.eliteFreeSupport ? 0 : forces.elite) ||
     (forces.freeSupport && support !== 0)
   )
     return [];
@@ -42,13 +67,16 @@ export function casualtyOptions(
       }
       for (
         let paidElite = Math.max(0, support - normal);
-        paidElite <= Math.min(elite, support);
+        paidElite <= (forces.eliteFreeSupport ? 0 : Math.min(elite, support));
         paidElite++
       ) {
         const paidNormal = support - paidElite;
         if (forces.normalFixedHalf && paidNormal !== 0) continue;
         const doubledStrength =
-          normal + paidNormal + (elite + paidElite) * forces.eliteStrength;
+          normal +
+          paidNormal +
+          (forces.eliteFreeSupport ? elite * 2 : elite + paidElite) *
+            forces.eliteStrength;
         if (doubledStrength === dial * 2) {
           options.push({ normal, elite, paidNormal, paidElite });
           break; // Different support allocations with identical token losses are equivalent choices.

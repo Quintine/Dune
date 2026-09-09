@@ -30,15 +30,20 @@ An uncertain saved-kit recovery keeps its exact retry details in memory and prev
 
 ## Verify changes
 
-Run the development server before the persisted multiplayer suite:
+Use the [development guide](docs/DEVELOPMENT.md) for architecture, focused tests
+and the verification workflow. Tests are discovered automatically; the default
+suite includes in-memory persistence recovery and needs no server:
 
 ```sh
-npm test
-npm run test:multiplayer
-npm run typecheck
-npm run lint
+npm test -- ecaz-collection ecaz-spice
+npm run check
 npm run build
 ```
+
+Run `npm run test:integration` against a development server for HTTP/session
+changes. `npm run test:multiplayer` remains available for recovery plus HTTP
+checks; `npm run test:recovery` runs only in-memory persistence tests. All test
+commands accept filename fragments and `--list` after `--`.
 
 The production build is written to `dist`. `npm start` runs that build with Wrangler; apply its database migrations to the intended storage environment before use. The included local migration command targets the development database, not a remote deployment.
 

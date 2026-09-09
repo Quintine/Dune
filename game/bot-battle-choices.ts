@@ -12,6 +12,15 @@ import {
 export function botBattleChoices(g: GameView): Action[] {
   const me = g.players.find((p) => p.id === g.me)!;
   if (g.active !== me.id) return [];
+  if (Array.isArray(g.battleChoices))
+    return g.battleChoices
+      .filter((battle) => battle.attacker === me.id)
+      .map((battle) => ({
+        type: 'chooseBattle',
+        territory: battle.territory,
+        target: battle.defender,
+      }));
+  // Legacy component fixtures may predate the authoritative combat frontier.
   const ownLocations = Object.keys(presenceByLocation(me));
   return gameTerritories(g)
     .filter((t) => t.type !== 'polar' && fighterCount(me, t.id) > 0)

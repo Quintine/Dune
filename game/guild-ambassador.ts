@@ -9,6 +9,7 @@ import {
 } from './board';
 import { presenceAt } from './force-presence';
 import { territoryEntryBlock } from './occupancy';
+import { homeworldSpiritualAdvisorQuote } from './homeworld-mobility';
 
 export class GuildAmbassadorShipmentError extends Error {
   constructor(message: string) {
@@ -251,7 +252,7 @@ export type GuildAmbassadorAdvisor = {
   player: string;
   territory: string;
   sector: number;
-  amount: 1;
+  amount: 1 | 2;
   elite: 0;
   advisors: boolean;
 };
@@ -306,15 +307,26 @@ export function quoteGuildAmbassadorAdvisor(
       ? shipment.sector
       : (action.sector as number)
     : 0;
+  const allowance = homeworldSpiritualAdvisorQuote(g, bg.id, to);
+  requireShipment(
+    !allowance.blocked,
+    allowance.blocked ?? 'Accompaniment is unavailable.',
+  );
+  const amount = action.amount === undefined ? 1 : action.amount;
+  requireShipment(
+    (amount === 1 || amount === 2) &&
+      amount <= allowance.maximum &&
+      amount <= bg.reserves - (bg.elites?.reserves ?? 0),
+    'Choose an available spiritual-advisor amount; two requires high-population Wallach IX and Polar Sink.',
+  );
   requireShipment(
     (action.territory === undefined || action.territory === to) &&
-      (action.amount === undefined || action.amount === 1) &&
       (action.elite === undefined || action.elite === 0) &&
       action.noField === undefined &&
       action.alliedNoField === undefined &&
       usableLocation(g, location(to, sector)) &&
       (sector === 0 || sector !== g.storm),
-    'This accompaniment grants one ordinary force only to the shipment territory or Polar Sink, outside storm.',
+    'Accompaniment sends ordinary forces only to the shipment territory or Polar Sink, outside storm.',
   );
   // E1 p.10 FAQ explicitly allows BG to accompany Ixians into the HMS. This
   // grants no independent BG direct shipment or relocation of the stronghold.
@@ -325,15 +337,15 @@ export function quoteGuildAmbassadorAdvisor(
   const advisors = arrivalAsAdvisor(g, bg, to, undefined, accompanying);
   validateDestinationOccupancy(g, bg, to, advisors);
   requireShipment(
-    count((bg.forces[location(to, sector)] ?? 0) + 1) &&
-      count(presenceAt(bg, to) + 1),
+    count((bg.forces[location(to, sector)] ?? 0) + amount) &&
+      count(presenceAt(bg, to) + amount),
     'The resulting Bene Gesserit force quantity is invalid.',
   );
   return {
     player: bg.id,
     territory: to,
     sector,
-    amount: 1,
+    amount,
     elite: 0,
     advisors,
   };

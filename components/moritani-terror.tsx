@@ -481,6 +481,8 @@ export function MoritaniEntry({
     advisor: 'as an accompanying advisor',
     wormRide: 'by worm ride',
     ambassador: 'through the Fremen Ambassador',
+    homeworldRevival: 'through Homeworld revival',
+    caladanReinforcement: 'through Caladan reinforcement',
   }[entry.cause];
 
   return (

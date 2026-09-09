@@ -28,6 +28,7 @@ export function MobileStronghold({
 }) {
   const pointer = g.mobileStronghold?.location;
   const placement = !pointer;
+  const blocked = !placement ? g.homeworldMobility?.mobileStrongholdBlocked : null;
   const [destination, setDestination] = useState('polar_sink:0');
   const [route, setRoute] = useState<string[]>(pointer ? [pointer] : []);
   const [collect, setCollect] = useState(true);
@@ -51,11 +52,12 @@ export function MobileStronghold({
   );
   const valid =
     placement ||
-    (route.length > 1 &&
+    (!blocked && route.length > 1 &&
       route.every((key) => splitLocation(key).sector !== g.storm) &&
       territory(splitLocation(current).territory).type !== 'stronghold');
   return (
     <div className="mobile-route">
+      {blocked && <p className="notice">{blocked}</p>}
       <p>
         {placement
           ? 'Point your stronghold at a sector in any non-stronghold territory. Placement does not collect spice.'

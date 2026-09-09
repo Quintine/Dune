@@ -1,3 +1,81 @@
+import { quoteHomeworldCustody } from './homeworld-custody';
+import { quoteHomeworldShipment, type HomeworldShipmentIntent } from './homeworld-shipment';
+import { quoteGuildHomeworldShipment } from './guild-homeworld-shipment';
+import { quoteJunctionTransport } from './junction-transport';
+import { homeworldMovementForesightBlock, homeworldSpiritualAdvisorLimit, homeworldMobileStrongholdMovementBlock, homeworldNoFieldMovementBlock } from './homeworld-mobility';
+import { currentJunctionOffer, junctionOfferEvent, junctionOfferIntegrity, junctionSponsor, type JunctionOffer } from './junction-offer';
+import { homeworldAllianceBlock } from './homeworld-alliance';
+import { quoteHomeworldSubstitution } from './homeworld-substitution';
+import { combatArmy, combatLocations, combatLocationName, homeworldBattleLocation, quoteCombatBoard, quoteCombatBoardContinuation } from './combat-location';
+import { quoteHomeworldCombatLoss } from './homeworld-combat-loss';
+import { quoteHomeworldBattleRules } from './homeworld-battle-rules';
+import type { HomeworldForces } from './homeworld-custody';
+import { nativeReserveSources } from './homeworld-options';
+import { HOMEWORLD_CARDS } from './homeworld-cards';
+import { lowGrummanRevealBlock } from './homeworld-collection';
+import { ambassadorPhaseAllowed } from './ambassador-phase';
+import { makeHomeworldVictoryReturn, validateHomeworldVictoryReturn, homeworldVictoryOfferSignature,
+  homeworldVictoryObligationSignature, type HomeworldVictoryReturn, type HomeworldVictoryObligation } from './homeworld-victory-return';
+import { quoteHomeworldVictoryReinforcement, quoteHomeworldVictoryReinforcementDestination } from './homeworld-victory-reinforcement';
+import { homeworldArrivalSignature, appendHomeworldArrivalAmbassador, completeHomeworldArrivalAmbassador, validateHomeworldArrival } from './homeworld-arrival';
+import {
+  quoteHomeworldRevivalDeployment,
+  type HomeworldRevivalDeploymentSource,
+  type HomeworldRevivalDeploymentGroup,
+} from './homeworld-revival-deployment';
+import {
+  makeHomeworldRevivalReturn,
+  makeHomeworldRevivalProgress,
+  type HomeworldRevivalProgress,
+  validateHomeworldRevivalReturn,
+  homeworldRevivalResumeSignature,
+  appendHomeworldRevivalAmbassador,
+  homeworldRevivalArrivalSignature,
+  type HomeworldRevivalReturn,
+} from './homeworld-revival-return';
+import { homeworldRevivalDestinations, quoteHomeworldRevivalDestination } from './homeworld-revival-destinations';
+import { terrorEntrySignature, validateTerrorEntrySignature } from './terror-entry-receipt';
+import {
+  homeworldLowBonus,
+  homeworldRevivalKaramaBlock,
+  homeworldSardaukarFreeSupport,
+  homeworldSardaukarGholaBlock,
+  snapshotHomeworldRevival,
+  tleilaxuHomeworldFreeIncomeBlocked,
+  HomeworldBenefitError,
+  type HomeworldRevivalOpening,
+} from './homeworld-benefits';
+import {
+  quoteEcazAlliance,
+  ecazAllianceBlock,
+  EcazAllianceError,
+} from './ecaz-alliance';
+import {
+  createHomeworldCustody,
+  HomeworldCustodyError,
+  type HomeworldCustody,
+} from './homeworld-custody';
+import {
+  quoteGiediCollectionReceipt,
+  validateGiediCollection,
+  type GiediCollection,
+} from './giedi-collection';
+import {
+  homeworldContext,
+  homeworldGameIntegrity,
+  homeworldTable,
+} from './homeworld-game';
+import {
+  quoteEmperorHomeworldMove,
+  EmperorHomeworldMoveError,
+  type EmperorHomeworld,
+} from './homeworld-emperor-move';
+import {
+  quoteNativeReserveWithdrawal,
+  quoteNativeRevivalDeposit,
+  NativeReserveError,
+  type NativeReserveSelections,
+} from './homeworld-native-reserves';
 import { validAmbassadorResume } from './ambassador-resume';
 import { ecazOccupancyRelation } from './ecaz-occupy';
 import { territoryEntryBlock, strongholdPathBlocked } from './occupancy';
@@ -119,10 +197,8 @@ import {
   type AftermathCancellation,
 } from './battle-aftermath-quote';
 import {
-  quoteBattleBoard,
   quoteSpiceCollection,
   quoteBattlePhaseAdvance,
-  quoteBattleBoardContinuation,
   BoardResolutionError,
   type AdvisorRelease,
 } from './board-resolution-quote';
@@ -292,8 +368,15 @@ import {
 import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
+import { highKaitainDiscardsAvailable, quoteKaitainDiscards, homeworldWorthlessSaleBlock } from './homeworld-card-economy';
+import { biddingEndError, biddingEndQuiet, biddingEndPubliclyEmpty, type BiddingEnd } from './bidding-end';
+import { quoteHomeworldPaymentIncome, quoteGuildPaymentRounding } from './homeworld-payment-income';
+import { quoteEcazPoisonIncome, EcazPoisonIncomeError, type EcazPoisonDiscard } from './ecaz-poison-income';
+import { resolveBattleWeapons } from './effective-weapons';
+import { choamGholaEvent, choamMarketGholaError, choamSaleGholaTiming, type ChoamMarketGhola } from './choam-market-ghola';
 import {
   charityAmount,
+  charityQuote,
   charityPayer,
   charityMultiplier,
   type Inflation,
@@ -319,7 +402,8 @@ import {
   eliteRevivalRemaining,
   paidForceRevivalCost,
   revivalPrevented,
-  forceRevivalLimit,
+  normalForceRevivalLimit,
+  freeRevivalRate,
   revivalDiscount,
   forceRevivalQuote,
   forceRevivalRemaining,
@@ -440,6 +524,7 @@ export type PlanField = Exclude<
   'support' | 'kwisatz' | 'allyPayment'
 >;
 export type Battle = {
+  homeworldDefensePassed?: string[];
   event?: string;
   strongholdCopy?: StrongholdId;
   preLeader?: { event: string; ready: string[]; closed: boolean };
@@ -491,6 +576,8 @@ export type Auction = {
   allyPayment?: number;
 };
 export type Decision =
+  | { kind: 'homeworldRevivalDeployment'; player: string; event: string }
+  | { kind: 'caladanReinforcement'; player: string; event: string }
   | { kind: 'choamAudit'; player: string; event: string }
   | { kind: 'choamAuditPayment'; player: string; event: string }
   | {
@@ -555,6 +642,7 @@ export type Decision =
     }
   | {
       kind: 'faceDance';
+      blocked?: string;
       player: string;
       winner: string;
       leader: string | null;
@@ -566,6 +654,7 @@ export type Decision =
   | { kind: 'stoneBurner'; player: string; event: string }
   | { kind: 'fullPlanOffer'; player: string }
   | { kind: 'fullPlanRead'; player: string; target: string }
+  | { kind: 'homeworldShipmentGuild'; player: string; shipper: string; destination: string; amount: number; event: string }
   | {
       kind: 'guildShipment';
       player: string;
@@ -583,6 +672,8 @@ export type Decision =
       options: Casualties[];
       cards: string[];
     }
+  | { kind: 'homeworldDefense'; player: string; event: string }
+  | { kind: 'homeworldExplosion'; player: string; territory: string; event: string; options: HomeworldForces[]; pool: HomeworldForces }
   | { kind: 'captureOffer'; player: string; loser: string; territory: string }
   | {
       kind: 'capturedLeader';
@@ -630,6 +721,11 @@ export type Decision =
     }
   | { kind: 'battleCards'; player: string; territory: string; cards: string[] };
 export type ResponseWindow = {
+  /** Original eligible contributor amounts; private routing evidence, not a new payment. */
+  guildContributions?: number[];
+  guildPaymentProof?: string;
+  /** Bank-paid portion of a frozen Homeworld charity claim. */
+  charityHomeworld?: number;
   source?: 'ambassador';
   intent?: string;
   advisors?: boolean;
@@ -708,7 +804,19 @@ type KaramaUse =
   | { kind: 'shipment'; recipient: string; card?: string }
   | { kind: 'purchase' }
   | { kind: 'auctionPayment' };
+type PendingHomeworldShipment = HomeworldShipmentIntent & {
+  /** Absent in older world-to-world declarations. */
+  route?: 'arrakis';
+  event: string;
+  turn: number;
+  amount: number;
+  elite: number;
+  cost: number;
+  allyPayment: number;
+  pools: ReturnType<typeof quoteHomeworldShipment>['sources'] | ReturnType<typeof quoteGuildHomeworldShipment>['boardSources'];
+};
 type PendingShipment = {
+  homeworldSources?: NativeReserveSelections;
   source?: 'ambassador';
   ambassadorEvent?: string;
   /** Absent in legacy rooms; new declarations cannot resume in a later turn. */
@@ -743,6 +851,8 @@ export type Game = {
     batch: FreshDiscardBatch;
     continuation:
       | { kind: 'ambassador'; entry: NonNullable<Game['pendingAmbassador']> }
+      | { kind: 'kaitainDiscard'; owner: string; event: string; cost: number; spiceAfter: number }
+      | { kind: 'winnerMandatoryDiscard'; event: string; player: string; territory: string; optional: string[]; commitment: NonNullable<Game['pendingWinnerDiscards']> }
       | {
           kind: 'nullentropyDiscard';
           player: string;
@@ -900,6 +1010,8 @@ export type Game = {
     seller: string | null;
   } | null;
   pendingAmbassador?: {
+    revivalEvent?: string;
+    victoryEvent?: string;
     event: string;
     owner: string;
     entrant: string;
@@ -910,6 +1022,7 @@ export type Game = {
     phase: number;
     stage:
       | 'offer'
+      | 'allianceReply'
       | 'copy'
       | 'cards'
       | 'income'
@@ -928,7 +1041,7 @@ export type Game = {
         player: string;
         territory: string;
         sector: number;
-        amount: 1;
+        amount: 1 | 2;
         elite: 0;
       };
     };
@@ -971,6 +1084,8 @@ export type Game = {
   dukeVidal?: DukeState;
   dukeAcquisitionTurn?: number;
   pendingTerrorEntry?: {
+    /** Original public arrival, absent only in legacy saves. */
+    entrySignature?: string;
     token: string;
     entrant: string;
     territory: string;
@@ -983,6 +1098,8 @@ export type Game = {
       | 'guildTransport'
       | 'advisor'
       | 'wormRide'
+      | 'homeworldRevival'
+      | 'caladanReinforcement'
       | 'ambassador';
     turn: number;
     phase: number;
@@ -1041,11 +1158,20 @@ export type Game = {
     cards: Card[];
   } | null;
   choamMarket?: ChoamMarket | null;
+  biddingEnd?: BiddingEnd | null;
+  ecazPoisonIncome?: { player: string; turn: number; phase: number; amount: number; count: number }[];
+  pendingWinnerDiscards?: { event: string; turn: number; territory: string; player: string; cards: string[]; optional: string[]; signature: string } | null;
+  pendingChoamMarketGhola?: ChoamMarketGhola | null;
   choamTradeTurn?: number;
   inflation?: Inflation | null;
   inflationUsed?: boolean;
   inflationAttemptTurn?: number;
   choamCharity?: { turn: number; canceled: boolean };
+  homeworldRevival?: HomeworldRevivalOpening | null;
+  homeworldRevivalReturn?: HomeworldRevivalReturn;
+  homeworldRevivalProgress?: HomeworldRevivalProgress;
+  homeworldVictoryReinforcement?: HomeworldVictoryReturn;
+  giediCollection?: GiediCollection;
   ecazCollection?: {
     turn: number;
     event: string;
@@ -1085,6 +1211,7 @@ export type Game = {
     order: MovementOrder;
   } | null;
   pendingIxSubstitution?: {
+    homeworld?: { pool: HomeworldForces; cyborgsLost: number; eliteTanks: number; normalTanks: number; battleLosses: number };
     player: string;
     territory: string;
     losses: Record<string, number>;
@@ -1106,6 +1233,8 @@ export type Game = {
   sandtrout?: boolean;
   techTokens?: TechState | null;
   strongholdCards?: StrongholdState | null;
+  /** Null/absent disables the module; custody is installed at force placement. */
+  homeworlds?: { custody: HomeworldCustody | null } | null;
   pendingTech?: { player: string; loser: string; choices: TechId[] } | null;
   summonedBeforeBlow?: boolean;
   summonedNexusBeforeRides?: boolean;
@@ -1125,6 +1254,8 @@ export type Game = {
     >;
   } | null;
   pendingShipment?: PendingShipment | null;
+  pendingHomeworldShipment?: PendingHomeworldShipment | null;
+  junctionOffer?: JunctionOffer | null;
   pendingExchange?: {
     response: ResponseWindow | null;
     decision: Decision | null;
@@ -1196,6 +1327,15 @@ export type Game = {
   karamaShipping: { player: string; owner: string; card?: string } | null;
   stormDialers: string[];
   lastBattle: string[];
+  homeworldBattleLoss?: {
+    event: string;
+    territory: string;
+    player: string;
+    kind: 'winner' | 'explosion';
+    pool: HomeworldForces;
+    options: HomeworldForces[];
+    commitment?: { forces: CombatForces; dial: number; support: number };
+  } | null;
   lastBattleContext?: {
     event: string;
     turn: number;
@@ -1203,6 +1343,10 @@ export type Game = {
     combatants: string[];
     winner: string | null;
     result: 'normal' | 'traitor' | 'mutualTraitors' | 'explosion' | 'legacy';
+    cardRoles?: Record<string, Record<string, Omit<EcazPoisonDiscard, 'card'>>>;
+    cardRolesSignature?: string;
+    winnerDiscards?: { cards: string[]; completed: boolean; signature: string };
+    caladanReinforcement?: HomeworldVictoryObligation;
   } | null;
   auction: Auction | null;
   battle: Battle | null;
@@ -1232,6 +1376,21 @@ export type Game = {
   aid: Record<string, { recipient: string; amount: number }>;
 };
 export class RuleError extends Error {}
+function homeworldRule<T>(quote: () => T): T {
+  try {
+    return quote();
+  } catch (error) {
+    if (
+      error instanceof HomeworldCustodyError ||
+      error instanceof EmperorHomeworldMoveError ||
+      error instanceof NativeReserveError ||
+      error instanceof EcazPoisonIncomeError ||
+      error instanceof HomeworldBenefitError
+    )
+      throw new RuleError(error.message);
+    throw error;
+  }
+}
 function stringField(value: unknown) {
   requireRule(typeof value === 'string', 'Expected a string.');
   return value;
@@ -1733,6 +1892,9 @@ function savedTransferResponses(g: Game) {
   ];
 }
 function transferCardBlock(g: Game, owner: Player, card: Card) {
+  if (isPortableSnooper(card) && homeworldSavedDecisions(g).some((d) => d.kind === 'homeworldDefense' && d.player === owner.id))
+    return 'Resolve the Homeworld late-defense choice before transferring its Portable Snooper.';
+
   if (
     g.pendingNullentropy?.player === owner.id &&
     g.pendingNullentropy.box === card.id
@@ -2181,7 +2343,7 @@ function draw(g: Game) {
   }
   return g.deck.shift();
 }
-function discard(g: Game, p: Player, id: string) {
+function discard(g: Game, p: Player, id: string, role?: Omit<EcazPoisonDiscard, 'card'>) {
   requireRule(
     !g.pendingTreacheryDiscard,
     'Finish the committed discard continuation before another discard.',
@@ -2196,9 +2358,70 @@ function discard(g: Game, p: Player, id: string) {
   );
   const c = p.hand.find((c) => c.id === id);
   requireRule(c, 'Card is not in your hand.');
+  const income = homeworldRule(() => quoteEcazPoisonIncome(g, [{ card: c, ...role }]));
+  if (income) {
+    const ecaz = getPlayer(g, income.player);
+    requireRule(Number.isSafeInteger(ecaz.spice + income.amount), 'Ecaz income would exceed a valid spice balance.');
+    ecaz.spice += income.amount;
+    // Discard category and resulting private spice must not enter the public
+    // chronicle. The native owner receives a private income receipt instead.
+    (g.ecazPoisonIncome ??= []).push({ ...income, turn: g.turn, phase: g.phase });
+  }
   g.discard.push(c);
   p.hand = p.hand.filter((c) => c.id !== id);
   return c;
+}
+function battleDiscardRoles(g: Game, battle: Battle) {
+  const players = [getPlayer(g, battle.attacker), getPlayer(g, battle.defender)];
+  const selected = players.map((p) => ({ weapon: cardOf(p, battle.plans[p.id].weapon),
+    defense: cardOf(p, battle.plans[p.id].defense) }));
+  const weapons = resolveBattleWeapons({ attacker: selected[0], defender: selected[1] });
+  requireRule(!weapons.error, weapons.error ?? 'Invalid effective battle weapons.');
+  const roles: NonNullable<NonNullable<Game['lastBattleContext']>['cardRoles']> = {};
+  for (const [index, p] of players.entries()) {
+    roles[p.id] = {};
+    for (const slot of ['weapon', 'defense', 'leader'] as const) {
+      const id = battle.plans[p.id][slot];
+      if (!id || !cardOf(p, id)) continue;
+      roles[p.id][id] = { battleSlot: slot,
+        ...(slot === 'weapon' ? { effectiveWeapon: index === 0 ? weapons.attacker : weapons.defender } : {}) };
+    }
+  }
+  return roles;
+}
+function cleanupDiscardRole(g: Game, player: Player, id: string) {
+  battleCardRolesIntegrity(g);
+  const card = cardOf(player, id)!;
+  const context = g.lastBattleContext;
+  const role = context?.cardRoles?.[player.id]?.[id];
+  if (g.homeworlds?.custody && byFaction(g, 'ecaz') &&
+      (card.kind === 'chemistry' || card.effect === 'mirrorWeapon'))
+    requireRule(context?.turn === g.turn && context.combatants.includes(player.id) && role,
+      'This conditional weapon cleanup needs its original battle role receipt.');
+  return role;
+}
+function battleCardRolesSignature(context: NonNullable<Game['lastBattleContext']>) {
+  const { event, turn, territory, combatants, winner, result, cardRoles } = context;
+  return JSON.stringify({ event, turn, territory, combatants, winner, result, cardRoles });
+}
+function battleCardRolesIntegrity(g: Game) {
+  const context = g.lastBattleContext;
+  if (!context?.cardRoles && !context?.cardRolesSignature) return;
+  requireRule(context.cardRoles && context.cardRolesSignature === battleCardRolesSignature(context),
+    'The saved battle card roles no longer match their resolved battle receipt.');
+  for (const [player, cards] of Object.entries(context.cardRoles)) {
+    requireRule(context.combatants.includes(player) && cards && !Array.isArray(cards),
+      'The resolved battle has an invalid card-role owner.');
+    const slots = Object.values(cards).map((role) => role?.battleSlot);
+    requireRule(new Set(slots).size === slots.length &&
+      slots.every((slot) => ['weapon', 'defense', 'leader'].includes(slot ?? '')),
+      'The resolved battle card slots are missing or duplicated.');
+    for (const [card, role] of Object.entries(cards))
+      requireRule(role.battleSlot === 'weapon'
+        ? role.effectiveWeapon?.physicalId === card
+        : role.effectiveWeapon === undefined,
+        'The resolved battle weapon descriptor does not match its physical slot.');
+  }
 }
 /** A receipt of suspended controls and live pending obligations; never restored
  * as game state. Player resources, hands, log and seat control are excluded. */
@@ -2262,6 +2485,11 @@ function ordinaryDiscardSignature(g: Game, next: OrdinaryDiscardContinuation) {
     battle: g.battle,
     shipmentPromises: g.shipmentPromises,
     techTokens: g.techTokens,
+    homeworlds: g.homeworlds,
+    homeworldRevival: g.homeworldRevival,
+    homeworldRevivalReturn: g.homeworldRevivalReturn,
+    ...(g.homeworldRevivalProgress === undefined ? {} : { homeworldRevivalProgress: g.homeworldRevivalProgress }),
+    homeworldVictoryReinforcement: g.homeworldVictoryReinforcement,
     dukeVidal: g.dukeVidal,
     revivalFreeIncome: g.revivalFreeIncome,
     players: g.players.map((p) => ({
@@ -3036,7 +3264,7 @@ function treacheryDiscardIntegrity(g: Game) {
         new Set(c.combatants).size === 2 &&
         JSON.stringify(c.combatants) === JSON.stringify(g.lastBattle) &&
         c.combatants.every((id) => g.players.some((p) => p.id === id)) &&
-        gameTerritories(g).some((t) => t.id === c.territory) &&
+        combatLocations(g).some((t) => t.id === c.territory) &&
         batch.entries.every(
           (e) => e.publicFace && c.combatants.includes(e.discardedBy),
         ),
@@ -3149,6 +3377,7 @@ function treacheryDiscardIntegrity(g: Game) {
           !!c.casualties ===
             (c.result === 'normal' &&
               (g.advanced ||
+                !!g.homeworlds ||
                 g.players.find((p) => p.id === c.winner)?.faction ===
                   'ixians')),
         'The mandatory battle discard cause is inconsistent.',
@@ -3156,20 +3385,9 @@ function treacheryDiscardIntegrity(g: Game) {
       if (c.casualties) {
         const { forces, dial, support, options } = c.casualties;
         const winner = g.players.find((p) => p.id === c.winner);
-        const total = winner
-          ? Object.entries(winner.forces).reduce(
-              (n, [key, count]) =>
-                n + (splitLocation(key).territory === c.territory ? count : 0),
-              0,
-            )
-          : 0;
-        const elites = winner
-          ? Object.entries(winner.elites?.forces ?? {}).reduce(
-              (n, [key, count]) =>
-                n + (splitLocation(key).territory === c.territory ? count : 0),
-              0,
-            )
-          : 0;
+        const pool = winner ? combatArmy(g, winner.id, c.territory) : { normal: 0, elite: 0 };
+        const total = pool.normal + pool.elite;
+        const elites = pool.elite;
         requireRule(
           winner &&
             forces &&
@@ -3179,6 +3397,8 @@ function treacheryDiscardIntegrity(g: Game) {
             forces.elite >= 0 &&
             [1, 2].includes(forces.eliteStrength) &&
             typeof forces.freeSupport === 'boolean' &&
+            (forces.eliteFreeSupport === undefined ||
+              typeof forces.eliteFreeSupport === 'boolean') &&
             (forces.normalFixedHalf === undefined ||
               typeof forces.normalFixedHalf === 'boolean') &&
             forces.normal === total - elites &&
@@ -3191,6 +3411,29 @@ function treacheryDiscardIntegrity(g: Game) {
         );
       }
     }
+  } else if (continuation?.kind === 'winnerMandatoryDiscard') {
+    const c = continuation;
+    requireRule(g.phase === 6 && g.lastBattleContext?.event === c.event &&
+      g.lastBattleContext.winner === c.player && g.lastBattleContext.territory === c.territory &&
+      batch.cause === 'battle:winnerMandatory' && !g.pendingWinnerDiscards &&
+      c.commitment?.signature === winnerDiscardSignature(c.commitment) &&
+      c.commitment.event === c.event && c.commitment.player === c.player &&
+      c.commitment.turn === g.turn && c.commitment.territory === c.territory &&
+      JSON.stringify(c.commitment.optional) === JSON.stringify(c.optional) &&
+      JSON.stringify(c.commitment.cards) === JSON.stringify(batch.entries.map((entry) => entry.card.id)) &&
+      batch.entries.every((entry) => entry.discardedBy === c.player && entry.publicFace) &&
+      Array.isArray(c.optional) && new Set(c.optional).size === c.optional.length &&
+      c.optional.every((id) => getPlayer(g, c.player).hand.some((card) => card.id === id)),
+      'The mandatory winning card discard no longer matches its resolved battle.');
+  } else if (continuation?.kind === 'kaitainDiscard') {
+    const c = continuation;
+    requireRule(g.phase === 3 && g.biddingEnd?.event === c.event &&
+      getPlayer(g, c.owner).faction === 'emperor' && batch.cause === 'kaitain' &&
+      batch.entries.length > 0 && c.cost === 2 * batch.entries.length &&
+      Number.isSafeInteger(c.spiceAfter) && c.spiceAfter >= 0 &&
+      getPlayer(g, c.owner).spice === c.spiceAfter &&
+      batch.entries.every((entry) => entry.discardedBy === c.owner && !entry.publicFace),
+      'The committed Kaitain discard no longer matches its payment and closing opportunity.');
   } else throw new RuleError('Unknown saved discard continuation.');
 }
 function stageTreacheryDiscard(
@@ -3226,6 +3469,11 @@ function finishTreacheryDiscard(g: Game) {
   // Retire before any suffix can draw or create the next semantic discard.
   g.resolvedTreacheryDiscardSequence = pending.sequence;
   g.pendingTreacheryDiscard = null;
+  if (next.kind === 'winnerMandatoryDiscard') {
+    finishWinner(g, getPlayer(g, next.player), next.territory, next.optional);
+    return;
+  }
+  if (next.kind === 'kaitainDiscard') return;
   if (next.kind === 'ambassador') {
     const p = getPlayer(g, next.entry.beneficiary!);
     if (next.entry.effect === 'ixians') {
@@ -3251,6 +3499,8 @@ function finishTreacheryDiscard(g: Game) {
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
+    if (g.pendingChoamMarketGhola?.discardSequence === pending.sequence)
+      g.pendingChoamMarketGhola.stage = g.response ? 'income' : 'complete';
   } else if (next.kind === 'truthtranceDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -3287,6 +3537,56 @@ function place(p: Player, t: string, s: number, n: number, elite = 0) {
   p.forces[k] = (p.forces[k] ?? 0) + n;
   if (p.elites && elite) p.elites.forces[k] = (p.elites.forces[k] ?? 0) + elite;
 }
+function withdrawNativeReserves(
+  g: Game,
+  p: Player,
+  amount: number,
+  elite: number,
+  selections?: NativeReserveSelections,
+) {
+  if (!g.homeworlds?.custody) {
+    requireRule(
+      selections === undefined,
+      'Homeworld source selection requires the Homeworld module.',
+    );
+    p.reserves -= amount;
+    if (p.elites) p.elites.reserves -= elite;
+    return [];
+  }
+  const result = homeworldRule(() =>
+    quoteNativeReserveWithdrawal(
+      homeworldContext(g),
+      g.homeworlds!.custody!,
+      p.id,
+      { normal: amount - elite, elite },
+      selections,
+    ),
+  );
+  const changed = result.players.find((seat) => seat.id === p.id)!;
+  p.reserves = changed.reserves;
+  if (p.elites) p.elites.reserves = changed.eliteReserves;
+  g.homeworlds.custody = result.state;
+  return result.receipts;
+}
+function addRevivedReserves(g: Game, p: Player, amount: number, elite: number) {
+  if (!g.homeworlds?.custody) {
+    p.reserves += amount;
+    if (p.elites) p.elites.reserves += elite;
+    return;
+  }
+  const result = homeworldRule(() =>
+    quoteNativeRevivalDeposit(
+      homeworldContext(g),
+      g.homeworlds!.custody!,
+      p.id,
+      { normal: amount - elite, elite },
+    ),
+  );
+  const changed = result.players.find((seat) => seat.id === p.id)!;
+  p.reserves = changed.reserves;
+  if (p.elites) p.elites.reserves = changed.eliteReserves;
+  g.homeworlds.custody = result.state;
+}
 function kill(
   g: Game,
   p: Player,
@@ -3316,6 +3616,184 @@ function kill(
   p.tanks += amount;
   if (battle) p.battleLosses += amount;
 }
+function homeworldSavedDecisions(g: Game): Decision[] {
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  return [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null,
+  ].flatMap((context) => context?.decision ? [context.decision] : []);
+}
+function spiritualAdvisorMaximum(g: Game, player: string, destination = 'polar_sink') {
+  return homeworldRule(() => homeworldSpiritualAdvisorLimit(g, player, destination));
+}
+function homeworldMobilityIntegrity(g: Game) {
+  if (!g.homeworlds?.custody) return;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const responses = contexts.flatMap((context) => {
+    if (!context) return [];
+    const pending = 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+    return [context.response, pending?.use?.kind === 'cancel' ? pending.use.response : null];
+  });
+  for (const response of responses) {
+    if (response?.kind === 'advisor') {
+      const destination = splitLocation(response.location ?? 'polar_sink:0');
+      integer(response.amount === undefined ? 1 : response.amount, 1, spiritualAdvisorMaximum(g, response.owner, destination.territory), 'Saved Spiritual Advisor forces');
+    }
+    if (response?.kind === 'atreidesSpice') {
+      const blocked = homeworldRule(() => homeworldMovementForesightBlock(g, response.owner));
+      requireRule(!blocked, blocked ?? 'Caladan prevents the saved foresight response.');
+    }
+    if (response?.kind === 'mobileStronghold') {
+      const blocked = homeworldRule(() => homeworldMobileStrongholdMovementBlock(g, response.owner));
+      requireRule(!blocked, blocked ?? 'Ix prevents the saved mobile stronghold response.');
+    }
+  }
+}
+function homeworldDefenseIntegrity(g: Game) {
+  const b = g.battle;
+  const decisions = homeworldSavedDecisions(g).filter((d) => d.kind === 'homeworldDefense');
+  if (!decisions.length && b?.homeworldDefensePassed === undefined) return;
+  requireRule(g.status === 'playing' && g.phase === 6 && b?.revealed && b.territory.startsWith('homeworld:') && b.event,
+    'The Homeworld late-defense frame needs its current revealed battle.');
+  const voters = traitorVoters(g, b);
+  const passed = b.homeworldDefensePassed ?? [];
+  requireRule(Array.isArray(passed) && new Set(passed).size === passed.length &&
+    passed.every((id) => [b.attacker, b.defender].includes(id) && !voters.includes(id)),
+    'Homeworld late-defense passes must belong to distinct invading combatants.');
+  for (const d of decisions) {
+    requireRule(d.event === b.event && [b.attacker, b.defender].includes(d.player) && !voters.includes(d.player) &&
+      !passed.includes(d.player) && voters.every((id) => b.traitorCalls[id] !== undefined),
+      'The saved Homeworld late-defense choice does not match its battle owner and timing.');
+    const owner = getPlayer(g, d.player);
+    const card = owner.hand.find(isPortableSnooper);
+    requireRule(card && !b.lateDefense?.[owner.id] && !portableSnooperPlanBlock(b.plans[owner.id], owner.hand, card,
+      b.voice?.target === owner.id ? b.voice : undefined),
+      'The saved late-defense opportunity needs its held legal Portable Snooper.');
+  }
+}
+function faceDanceReturnBlock(g: Game, winner: string): string | null {
+  return g.advanced && g.homeworlds && getPlayer(g, winner).faction === 'emperor'
+    ? 'Face Dance returning the Emperor’s army awaits the Kaitain/Salusa reserve-placement ruling.' : null;
+}
+function homeworldSubstitutionIntegrity(g: Game) {
+  const pending = g.pendingIxSubstitution;
+  if (!pending?.territory.startsWith('homeworld:')) {
+    requireRule(!pending?.homeworld, 'A native substitution receipt requires a Homeworld battle.');
+    return;
+  }
+  const receipt = pending.homeworld;
+  const p = getPlayer(g, pending.player);
+  const context = g.lastBattleContext;
+  requireRule(receipt && p.faction === 'ixians' && g.phase === 6 && !g.battle &&
+    context?.turn === g.turn && context.territory === pending.territory && context.winner === p.id && context.result === 'normal',
+    'The Homeworld substitution needs its completed Ixian battle receipt.');
+  const pool = combatArmy(g, p.id, pending.territory);
+  requireRule(receipt.pool && pool.normal === receipt.pool.normal && pool.elite === receipt.pool.elite &&
+    p.elites!.tanks === receipt.eliteTanks && p.tanks - p.elites!.tanks === receipt.normalTanks && p.battleLosses === receipt.battleLosses &&
+    Number.isSafeInteger(receipt.cyborgsLost) && receipt.cyborgsLost > 0 &&
+    Object.keys(pending.losses).length === 1 && pending.losses[pending.territory] === receipt.cyborgsLost,
+    'The Homeworld substitution no longer matches its exact survivors and Tanks.');
+  const maps = [pending.sources, pending.recover];
+  requireRule(maps.every((map) => map === undefined) || maps.every((map) => map && Object.keys(map).length === 1 && Object.hasOwn(map, pending.territory)),
+    'A Homeworld substitution must use its exact battle location.');
+  if (pending.sources && pending.recover) {
+    const amount = pending.sources[pending.territory];
+    requireRule(amount === pending.recover[pending.territory], 'The substitution must exchange matching physical counts.');
+    quoteHomeworldSubstitution(homeworldLossContext(g), g.homeworlds!.custody!, {location: pending.territory, player: p.id, amount, cyborgsLost: receipt.cyborgsLost});
+  } else quoteHomeworldLoss(g, p.id, pending.territory, {normal: 0, elite: 0});
+}
+function currentHomeworldBattleRules(g: Game, to: string) {
+  const home = homeworldBattleLocation(g, to);
+  return home ? { native: home.native, card: home.card, side: home.side,
+    nativeForces: { ...home.forces[home.native] } } : null;
+}
+function quoteHomeworldLoss(g: Game, player: string, to: string, losses: HomeworldForces) {
+  requireRule(g.homeworlds?.custody, 'Homeworld casualties require saved custody.');
+  return quoteHomeworldCombatLoss(homeworldLossContext(g), g.homeworlds.custody, { location: to, player, losses });
+}
+function homeworldLossContext(g: Game) {
+  return { advanced: g.advanced, players: g.players.map((p) => {
+    const total = Object.values(p.forces).reduce((a, b) => a + b, 0);
+    const elite = Object.values(p.elites?.forces ?? {}).reduce((a, b) => a + b, 0);
+    return { id: p.id, faction: p.faction, reserves: p.reserves, eliteReserves: p.elites?.reserves ?? 0,
+      tanks: p.tanks, eliteTanks: p.elites?.tanks ?? 0, battleLosses: p.battleLosses,
+      boardForces: { normal: total - elite, elite } };
+  }) };
+}
+function commitHomeworldLoss(g: Game, player: string, to: string, losses: HomeworldForces) {
+  const quote = quoteHomeworldLoss(g, player, to, losses);
+  commitHomeworldResources(g, quote);
+}
+function commitHomeworldResources(g: Game, quote: Pick<ReturnType<typeof quoteHomeworldLoss>, 'custody' | 'players'>) {
+  g.homeworlds!.custody = quote.custody;
+  for (const update of quote.players) {
+    const p = getPlayer(g, update.id);
+    p.reserves = update.reserves;
+    p.tanks = update.tanks;
+    p.battleLosses = update.battleLosses;
+    if (p.elites) { p.elites.reserves = update.eliteReserves; p.elites.tanks = update.eliteTanks; }
+  }
+}
+/** The location's exact typed pool remains fixed while casualty/card choices
+ * wait. No population, support, death or payment is replayed on restoration. */
+function homeworldBattleLossIntegrity(g: Game) {
+  const pending = g.homeworldBattleLoss;
+  const decisions = homeworldSavedDecisions(g).filter((d) => d.kind === 'homeworldExplosion' ||
+    (d.kind === 'battleLosses' && d.territory.startsWith('homeworld:')));
+  if (!pending) { requireRule(!decisions.length, 'The saved Homeworld casualty receipt is missing.'); return; }
+  const context = g.lastBattleContext;
+  requireRule(g.phase === 6 && !g.battle && context && context.turn === g.turn &&
+    context.event === pending.event && context.territory === pending.territory &&
+    pending.territory.startsWith('homeworld:') &&
+    ((pending.kind === 'winner' && context.result === 'normal' && context.winner === pending.player) ||
+      (pending.kind === 'explosion' && context.result === 'explosion' && context.winner === null)),
+    'The Homeworld casualty receipt does not match its resolved battle.');
+  const pool = combatArmy(g, pending.player, pending.territory);
+  requireRule(pending.pool && Object.keys(pending.pool).length === 2 &&
+    pool.normal === pending.pool.normal && pool.elite === pending.pool.elite,
+    'The Homeworld casualty receipt does not match its exact physical pool.');
+  let options: HomeworldForces[];
+  if (pending.kind === 'explosion') {
+    const rules = currentHomeworldBattleRules(g, pending.territory)!;
+    requireRule(rules.native === pending.player && !pending.commitment,
+      'Native explosion casualties belong to this Homeworld’s native faction.');
+    options = quoteHomeworldBattleRules(pending.territory, g.players, rules).explosion.options;
+  } else {
+    const commitment = pending.commitment;
+    requireRule(commitment && commitment.forces.normal === pool.normal && commitment.forces.elite === pool.elite,
+      'The Homeworld winner needs its committed physical forces.');
+    options = casualtyOptions(commitment.forces, commitment.dial, commitment.support).map(({normal, elite}) => ({normal, elite}));
+  }
+  requireRule(options.length > 0 && JSON.stringify(options) === JSON.stringify(pending.options),
+    'The Homeworld casualty choices do not match the committed outcome.');
+  for (const choice of options) quoteHomeworldLoss(g, pending.player, pending.territory, choice);
+  for (const decision of decisions) {
+    if (decision.kind !== 'homeworldExplosion' && decision.kind !== 'battleLosses') continue;
+    requireRule(decision.player === pending.player && decision.territory === pending.territory &&
+      (decision.kind === 'homeworldExplosion' ? pending.kind === 'explosion' && decision.event === pending.event &&
+        JSON.stringify(decision.pool) === JSON.stringify(pending.pool) : pending.kind === 'winner') &&
+      JSON.stringify(decision.options.map(({normal, elite}) => ({normal, elite}))) === JSON.stringify(options),
+      'The owned Homeworld casualty decision does not match its receipt.');
+  }
+}
+function settleHomeworldExplosion(g: Game, choice: HomeworldForces, automatic: boolean) {
+  homeworldBattleLossIntegrity(g);
+  homeworldSubstitutionIntegrity(g);
+  homeworldDefenseIntegrity(g);
+  homeworldShipmentIntegrity(g);
+  const pending = g.homeworldBattleLoss!;
+  requireRule(pending.kind === 'explosion' && pending.options.some((p) => p.normal === choice.normal && p.elite === choice.elite),
+    'Choose a native explosion casualty allocation.');
+  commitHomeworldLoss(g, pending.player, pending.territory, choice);
+  const player = getPlayer(g, pending.player);
+  log(g, `${player.name} lost ${choice.normal} normal and ${choice.elite} special forces on ${combatLocationName(g, pending.territory)}. The remaining native forces survived the Lasgun–shield explosion.${automatic ? ' The only physical allocation was applied automatically.' : ''}`,
+    automatic ? { faction: player.faction, name: 'Native explosion casualties' } : undefined);
+  g.homeworldBattleLoss = null;
+  finishBattle(g);
+}
 function killTerritory(
   g: Game,
   p: Player,
@@ -3324,6 +3802,11 @@ function killTerritory(
   battle = false,
   noFieldCause?: NoFieldRevealCause,
 ) {
+  if (t.startsWith('homeworld:')) {
+    requireRule(battle && n === Infinity, 'Homeworld force removal requires an exact combat casualty allocation.');
+    commitHomeworldLoss(g, p.id, t, combatArmy(g, p.id, t));
+    return;
+  }
   if (p.noField?.deployed?.location.territory === t) {
     requireRule(
       noFieldCause,
@@ -3352,18 +3835,18 @@ function combatForces(
           p.noField!.tokens.find((token) => token.id === marker.tokenId)!.value,
         )
       : 0;
-  const physical = Object.entries(p.forces).reduce(
-    (n, [key, count]) => n + (splitLocation(key).territory === t ? count : 0),
-    0,
-  );
-  const elite = Object.entries(p.elites?.forces ?? {})
-    .filter(([key]) => splitLocation(key).territory === t)
-    .reduce((sum, [, n]) => sum + n, 0);
+  const army = combatArmy(g, p.id, t);
+  const physical = army.normal + army.elite;
+  const elite = army.elite;
   return {
     normal: physical + prospective - elite,
+    ...(homeworldSardaukarFreeSupport(g, p.id)
+      ? { eliteFreeSupport: true }
+      : {}),
     normalFixedHalf: p.faction === 'ixians',
     elite,
     eliteStrength:
+      (!g.advanced && p.faction !== 'ixians') ||
       (g.battle?.eliteBlocked?.includes(p.id) &&
         !(g.advanced && p.faction === 'ixians')) ||
       (p.faction === 'emperor' && opponent.faction === 'fremen')
@@ -3375,6 +3858,10 @@ function combatForces(
   };
 }
 function takeBattleLosses(g: Game, p: Player, t: string, losses: Casualties) {
+  if (t.startsWith('homeworld:')) {
+    commitHomeworldLoss(g, p.id, t, { normal: losses.normal, elite: losses.elite });
+    return losses.elite ? { [t]: losses.elite } : {};
+  }
   const lostCyborgs: Record<string, number> = {};
   let normal = losses.normal,
     elite = losses.elite;
@@ -3401,6 +3888,7 @@ function start(g: Game) {
     'Every player must be ready.',
   );
   requireRule(!g.advanced, 'Advanced rules are still being implemented.');
+  requireRule(!g.homeworlds, 'Homeworld gameplay is still being implemented.');
   requireRule(
     g.players.every((p) => faction(p.faction).expansion === 'base'),
     'Expansion factions are still being implemented.',
@@ -3470,7 +3958,10 @@ function initializeStartingForces(g: Game) {
       p.reserves -= 6;
       g.mobileStronghold = { location: null };
     }
-    if (g.advanced && ['emperor', 'fremen'].includes(p.faction))
+    if (
+      (g.advanced || g.homeworlds) &&
+      ['emperor', 'fremen'].includes(p.faction)
+    )
       p.elites = {
         reserves: p.faction === 'emperor' ? 5 : 3,
         tanks: 0,
@@ -3489,6 +3980,8 @@ function initializeStartingForces(g: Game) {
       p.reserves -= t[2];
     }
   }
+  if (g.homeworlds)
+    g.homeworlds.custody = createHomeworldCustody(homeworldContext(g));
 }
 function dealStartingTreachery(g: Game) {
   const ixians = byFaction(g, 'ixians');
@@ -3571,6 +4064,22 @@ function advanceSetup(g: Game) {
 }
 /** Offline-only test seam. No player action or room API dispatches this function. */
 export function initializeBaseGameForAudit(state: Game): Game {
+  return initializeSetupGameForAudit(state, false);
+}
+/** Offline-only seam through the real setup pipeline. Public Homeworld starts remain gated. */
+export function initializeHomeworldGameForAudit(state: Game): Game {
+  requireRule(
+    !!state.homeworlds,
+    'Enable the Homeworld module in the audit lobby first.',
+  );
+  return initializeSetupGameForAudit(state, true);
+}
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean): Game {
+  homeworldRule(() => homeworldGameIntegrity(state));
+  homeworldBattleLossIntegrity(state);
+  homeworldSubstitutionIntegrity(state);
+  homeworldDefenseIntegrity(state);
+  homeworldShipmentIntegrity(state);
   const g = structuredClone(state);
   requireRule(
     g.status === 'lobby' && !g.setupStage && g.turn === 1 && g.phase === 0,
@@ -3586,13 +4095,18 @@ export function initializeBaseGameForAudit(state: Game): Game {
     'The audit initializer requires two through six distinct ready players and an existing host.',
   );
   requireRule(
-    g.expansions.length === 0 &&
+    (homeworlds || g.expansions.length === 0) &&
       !g.techTokens &&
       !g.strongholdCards &&
+      (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
-        FACTIONS.some((f) => f.id === p.faction && f.expansion === 'base'),
+        FACTIONS.some(
+          (f) => f.id === p.faction && (homeworlds || f.expansion === 'base'),
+        ),
       ),
-    'The audit initializer supports base factions without expansions or optional modules.',
+    homeworlds
+      ? 'The Homeworld setup audit supports implemented deck sets without Tech Tokens or Stronghold Cards.'
+      : 'The audit initializer supports base factions without expansions or optional modules.',
   );
   requireRule(
     !g.deck.length &&
@@ -3617,7 +4131,13 @@ export function initializeBaseGameForAudit(state: Game): Game {
           !p.shipped &&
           !p.prediction &&
           !p.advisorSetup &&
-          !p.elites,
+          (!p.elites ||
+            (homeworlds &&
+              p.faction === 'ixians' &&
+              p.elites.reserves === 7 &&
+              p.elites.tanks === 0 &&
+              p.elites.revived === 0 &&
+              Object.keys(p.elites.forces).length === 0)),
       ),
     'The audit initializer cannot redeal or replace existing game pieces.',
   );
@@ -4725,7 +5245,9 @@ function pledgeAid(g: Game, p: Player, requested: unknown) {
     'Ally funding cannot be reduced until the submitted Silent bids are revealed.',
   );
   const committed =
-    g.phase === 6
+    g.pendingHomeworldShipment?.player === p.ally
+      ? g.pendingHomeworldShipment.allyPayment
+      : g.phase === 6
       ? (g.battle?.plans[p.ally]?.allyPayment ?? 0)
       : g.auction?.bidder === p.ally
         ? (g.auction.allyPayment ?? 0)
@@ -4755,7 +5277,9 @@ function uncommittedSpice(g: Game, p: Player) {
       ? g.auction.bid - (g.auction.allyPayment ?? 0)
       : 0) -
     (battleSupportCost(g, p, g.battle?.plans[p.id]?.support ?? 0) -
-      (g.battle?.plans[p.id]?.allyPayment ?? 0))
+      (g.battle?.plans[p.id]?.allyPayment ?? 0)) -
+    (g.pendingHomeworldShipment?.player === p.id
+      ? g.pendingHomeworldShipment.cost - g.pendingHomeworldShipment.allyPayment : 0)
   );
 }
 function contribution(g: Game, p: Player, cost: number, requested?: unknown) {
@@ -5225,9 +5749,13 @@ function ixSubstitutionCancellationQuote(
 ) {
   if (response.kind !== 'ixSubstitution') return null;
   try {
+    homeworldSubstitutionIntegrity(g);
+  homeworldDefenseIntegrity(g);
+  homeworldShipmentIntegrity(g);
     const quote = quoteIxSubstitutionCancellation(
       {
         ...g,
+        combatLocations: combatLocations(g),
         territories: gameTerritories(g),
         physicalCards: physicalTreacheryCards(g),
       },
@@ -5563,7 +6091,15 @@ function recordFullPlanInspection(g: Game, owner: string) {
   );
 }
 function finishAutomaticDecision(g: Game): boolean {
+  if (g.biddingEnd && biddingEndQuiet(g)) return finishBiddingEnd(g);
+  if (advanceHomeworldReveal(g)) return true;
   const decision = g.decision;
+  if (homeworldShipmentAutomatic(g)) {
+    const shipment = g.pendingHomeworldShipment!;
+    g.decision = null;
+    commitHomeworldShipment(g, shipment);
+    return true;
+  }
   const market = g.choamMarket;
   if (
     decision?.kind === 'ecazAmbassador' &&
@@ -5933,6 +6469,60 @@ function movesAllowed(g: Game, p: Player) {
       ? 2
       : 1;
 }
+function emperorHomeworldMoveBlock(g: Game, p: Player): string | null {
+  if (!g.homeworlds?.custody || !g.advanced || p.faction !== 'emperor')
+    return 'Moving between Kaitain and Salusa requires the Advanced Emperor Homeworlds.';
+  if (
+    g.status !== 'playing' ||
+    g.phase !== 5 ||
+    g.active !== p.id ||
+    p.moved >= movesAllowed(g, p)
+  )
+    return 'Use an available movement during your own Shipment and Movement turn.';
+  if (
+    g.truthtrance ||
+    g.response ||
+    g.decision ||
+    g.phaseOpening ||
+    g.pendingNullentropy ||
+    g.pendingTreacheryDiscard ||
+    g.pendingShipment ||
+    g.battle
+  )
+    return 'Finish the current interaction before moving between Homeworlds.';
+  if (g.ornithopter)
+    return 'Homeworld transfers during an active Ornithopter card await their movement-group integration.';
+  const richese = byFaction(g, 'richese');
+  if (
+    richese &&
+    !noFieldAllyOfferBlock(g, richese) &&
+    !(
+      g.richeseAllyOpportunity?.turn === g.turn &&
+      g.richeseAllyOpportunity.recipient === p.id
+    )
+  )
+    return 'Wait for Richese to offer or pass its allied shipment opportunity.';
+  if (!p.shipped) {
+    try {
+      checkShipmentPromises(g, p, null);
+    } catch (error) {
+      if (error instanceof RuleError) return error.message;
+      throw error;
+    }
+  }
+  return null;
+}
+function emperorHomeworldMoveEvent(g: Game, p: Player) {
+  return JSON.stringify([
+    g.turn,
+    g.phase,
+    g.active,
+    p.moved,
+    p.shipped,
+    homeworldContext(g),
+    g.homeworlds?.custody,
+  ]);
+}
 function ornithopterBlock(
   g: Game,
   p: Player,
@@ -6158,6 +6748,10 @@ function offerChoamMovement(g: Game, move: MovementOrder) {
   else completeMove(g, move);
 }
 function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
+  if (move.noField) {
+    const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, p.id));
+    requireRule(!blocked, blocked ?? 'The No-Field cannot move.');
+  }
   if (move.source === 'ambassador') {
     const { beneficiary } = currentFremenAmbassador(g, move.ambassadorEvent);
     requireRule(
@@ -6284,7 +6878,8 @@ function validateMovementArrival(
       players: g.players,
       order: move,
       ambassadors: g.ecazAmbassadors?.tokens ?? [],
-      terror: g.moritaniTerror?.tokens ?? [],
+      terror: homeworldTerrorEntryBlock(g, move.total)
+        ? [] : (g.moritaniTerror?.tokens ?? []),
       flight: g.ornithopter,
       controls: {
         response: !cancelingChoam && !!g.response,
@@ -6301,6 +6896,10 @@ function validateMovementArrival(
   }
 }
 function completeMove(g: Game, move: MovementOrder) {
+  if (move.noField) {
+    const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, move.player));
+    requireRule(!blocked, blocked ?? 'The No-Field cannot move.');
+  }
   const {
     group,
     eliteGroup,
@@ -6469,7 +7068,10 @@ function returnAmbassadorsIn(g: Game, to: string, reason: string) {
     );
   }
 }
-function ambassadorDiscardBlock(g: Game, p: Player, card: Card) {
+function ambassadorDiscardBlock(g: Game, p: Player, card: Card, effect?: AmbassadorEffect) {
+  if (g.pendingWinnerDiscards?.player === p.id &&
+    [...g.pendingWinnerDiscards.cards, ...g.pendingWinnerDiscards.optional].includes(card.id))
+    return 'This played card is reserved until the winner’s casualties and card cleanup.';
   if (g.battle?.lateDefense?.[p.id] === card.id)
     return 'This Portable Snooper is already played and reserved for battle cleanup.';
   if (giftReserved(g, p.id, card.id))
@@ -6488,6 +7090,8 @@ function ambassadorDiscardBlock(g: Game, p: Player, card: Card) {
   const insight = g.battle?.prescience;
   if (insight && insight.player !== p.id && insight.value === card.id)
     return 'This card is committed to prescience.';
+  if (effect === 'choam')
+    return homeworldRule(() => homeworldWorthlessSaleBlock(g, p.id, card));
   return null;
 }
 function ambassadorEffectBlock(
@@ -6564,6 +7168,7 @@ function openTerritoryEntry(
     moritani &&
     entrant.id !== moritani.id &&
     entrant.id !== moritani.ally &&
+    !homeworldTerrorEntryBlock(g, amount) &&
     g.moritaniTerror?.tokens.some(
       (t) => t.status === 'placed' && t.location === to,
     );
@@ -6601,6 +7206,12 @@ function openTerritoryEntry(
 }
 function finishAmbassador(g: Game, deferResume = false) {
   const pending = g.pendingAmbassador!;
+  if (pending.revivalEvent !== undefined || pending.victoryEvent !== undefined) {
+    const arrival = pending.revivalEvent !== undefined ? g.homeworldRevivalReturn : g.homeworldVictoryReinforcement;
+    requireRule(arrival && ambassadorPhaseAllowed(g),
+      'This Ambassador has lost its original Homeworld arrival completion.');
+    completeHomeworldArrivalAmbassador(arrival, pending.event);
+  }
   if (
     pending.beneficiary &&
     pending.effect !== 'ecaz' &&
@@ -6632,7 +7243,7 @@ function currentFremenAmbassador(g: Game, event?: string, completed = false) {
       entry.effect === 'fremen' &&
       entry.turn === g.turn &&
       entry.phase === g.phase &&
-      (g.phase === 1 || g.phase === 5) &&
+      ambassadorPhaseAllowed(g) &&
       (event === undefined || entry.event === event) &&
       (completed
         ? entry.stage === 'arrival' && entry.relocation
@@ -6652,6 +7263,11 @@ function currentFremenAmbassador(g: Game, event?: string, completed = false) {
 /** Check historical arrival receipts without replaying movement or inspecting concealed values. */
 function ambassadorRelocationIntegrity(g: Game) {
   const entry = g.pendingAmbassador;
+  if (entry && (entry.revivalEvent !== undefined || entry.victoryEvent !== undefined ||
+      g.homeworldRevivalReturn?.ambassadors?.some((record) => record.event === entry.event) ||
+      g.homeworldVictoryReinforcement?.ambassadors?.some((record) => record.event === entry.event)))
+    requireRule(ambassadorPhaseAllowed(g),
+      'This Ambassador has lost its original Homeworld revival arrival.');
   if (entry)
     requireRule(
       validAmbassadorResume(g, entry),
@@ -6966,7 +7582,7 @@ function currentGuildAmbassador(g: Game, event?: string) {
       entry.stage === 'ship' &&
       entry.turn === g.turn &&
       entry.phase === g.phase &&
-      (g.phase === 1 || g.phase === 5) &&
+      ambassadorPhaseAllowed(g) &&
       (event === undefined || event === entry.event) &&
       (beneficiary.id === owner.id ||
         (owner.ally === beneficiary.id && beneficiary.ally === owner.id)) &&
@@ -7025,6 +7641,7 @@ function validateAmbassadorShipmentArrival(
     order.player,
     'reserves',
     order.territory,
+    order.amount,
   );
   requireRule(!blocked, blocked ?? 'This shipment arrival is unavailable.');
 }
@@ -7122,7 +7739,7 @@ function continueGuildAmbassadorShipment(g: Game, event: string) {
   if (receipt.next === 'accompany') {
     receipt.next = 'advisor';
     const bg = byFaction(g, 'beneGesserit');
-    if (p.faction !== 'fremen' && bg && bg.id !== p.id && bg.reserves > 0) {
+    if (p.faction !== 'fremen' && bg && bg.id !== p.id && spiritualAdvisorMaximum(g, bg.id) > 0) {
       g.decision = {
         kind: 'advisor',
         player: bg.id,
@@ -7168,6 +7785,7 @@ function validateGuildAdvisorEntry(
     moritani &&
     moritani.id !== bg.id &&
     moritani.ally !== bg.id &&
+    !homeworldTerrorEntryBlock(g, quote.amount) &&
     g.moritaniTerror?.tokens.some(
       (t) => t.status === 'placed' && t.location === quote.territory,
     );
@@ -7195,9 +7813,11 @@ function guildAdvisorChoices(g: Game, player: string) {
           accompany: true,
           territory: order.territory,
           sector,
+          amount: 1,
         }))
       : []),
-    { accompany: false, territory: 'polar_sink', sector: 0 },
+    ...Array.from({length: Math.max(1, spiritualAdvisorMaximum(g, player))}, (_, index) =>
+      ({accompany: false, territory: 'polar_sink', sector: 0, amount: index + 1})),
   ];
   return {
     choices: candidates.map((choice) => {
@@ -7252,12 +7872,13 @@ function finishGuildAmbassadorAdvisor(
       accompany: at.territory !== 'polar_sink',
       sector: at.sector,
       territory: at.territory,
+      amount: response.amount ?? 1,
     }),
   );
   validateGuildAdvisorEntry(g, quote);
   const bg = getPlayer(g, quote.player);
-  bg.reserves--;
-  place(bg, quote.territory, quote.sector, 1);
+  withdrawNativeReserves(g, bg, quote.amount, 0);
+  place(bg, quote.territory, quote.sector, quote.amount);
   techIncome(g, 'heighliners', bg);
   if (quote.advisors)
     (bg.advisors ??= {})[quote.territory] = { lockedTurn: g.turn };
@@ -7267,16 +7888,23 @@ function finishGuildAmbassadorAdvisor(
     player: bg.id,
     territory: quote.territory,
     sector: quote.sector,
-    amount: 1,
+    amount: quote.amount,
     elite: 0,
   };
   log(
     g,
-    `${bg.name} sent one reserve force to ${territory(quote.territory).name}, sector ${quote.sector}, for free after the Guild Ambassador shipment.`,
+    `${bg.name} sent ${quote.amount} free reserve ${quote.amount === 1 ? 'force' : 'forces'} to ${territory(quote.territory).name}, sector ${quote.sector}, after the Guild Ambassador shipment${quote.amount === 2 ? ' using high-population Wallach IX' : ''}.`,
     { faction: bg.faction, name: 'Spiritual Advisors' },
   );
   if (guildAdvisorAmbassador(g, quote)) {
     const parent = g.pendingAmbassador!;
+    const arrivalTag = parent.revivalEvent !== undefined ? 'revivalEvent' :
+      parent.victoryEvent !== undefined ? 'victoryEvent' : undefined;
+    const arrival = arrivalTag === 'revivalEvent' ? g.homeworldRevivalReturn :
+      arrivalTag === 'victoryEvent' ? g.homeworldVictoryReinforcement : undefined;
+    if (arrivalTag !== undefined)
+      requireRule(arrival && ambassadorPhaseAllowed(g),
+        'This Ambassador accompaniment has lost its original Homeworld arrival.');
     const resume = parent.resume;
     const wormRider =
       parent.wormRider ?? (resume === 'wormRide' ? parent.entrant : undefined);
@@ -7289,7 +7917,7 @@ function finishGuildAmbassadorAdvisor(
         bg,
         quote.territory,
         quote.sector,
-        1,
+        quote.amount,
         0,
         'advisor',
         resume,
@@ -7303,13 +7931,19 @@ function finishGuildAmbassadorAdvisor(
       territory: order.territory,
       sector: order.sector,
     };
+    if (arrival && arrivalTag) {
+      requireRule(validAmbassadorResume(g, g.pendingAmbassador!),
+        'The accompanying Ambassador has lost its completed Guild shipment.');
+      g.pendingAmbassador![arrivalTag] = arrival.event;
+      appendHomeworldArrivalAmbassador(arrival, g.pendingAmbassador!, parent.event);
+    }
   } else if (
     !openTerrorEntry(
       g,
       bg,
       quote.territory,
       quote.sector,
-      1,
+      quote.amount,
       0,
       'ambassador',
       'ambassador',
@@ -7347,6 +7981,7 @@ function ambassadorRelocationArrivalBlock(
   player: string,
   origin: string,
   to: string,
+  entering: number,
 ): string | null {
   const mover = getPlayer(g, player);
   if (origin === to) return null;
@@ -7358,6 +7993,7 @@ function ambassadorRelocationArrivalBlock(
     moritani &&
     mover.id !== moritani.id &&
     mover.id !== moritani.ally &&
+    !homeworldTerrorEntryBlock(g, entering) &&
     g.moritaniTerror?.tokens.some(
       (token) => token.status === 'placed' && token.location === to,
     );
@@ -7374,8 +8010,14 @@ function validateAmbassadorRelocationArrival(
     move.player,
     move.origin,
     move.to,
+    move.total,
   );
   requireRule(!blocked, blocked ?? 'This arrival is unavailable.');
+}
+function ambassadorArrivalChoices(g: Game, player: string, origin: string, to: string) {
+  const blocked = ambassadorRelocationArrivalBlock(g, player, origin, to, 1);
+  const largerBlocked = ambassadorRelocationArrivalBlock(g, player, origin, to, 3);
+  return { blocked, maximum: !blocked && largerBlocked ? 2 : null };
 }
 function ambassadorRelocationMovement(g: Game, player: string) {
   return {
@@ -7383,7 +8025,7 @@ function ambassadorRelocationMovement(g: Game, player: string) {
       ...source,
       destinations: source.destinations.map((destination) => ({
         ...destination,
-        blocked: ambassadorRelocationArrivalBlock(
+        ...ambassadorArrivalChoices(
           g,
           player,
           source.territory,
@@ -7500,7 +8142,7 @@ function validateAmbassadorPurchaseResponse(g: Game, response: ResponseWindow) {
       receipt &&
       entry.turn === g.turn &&
       entry.phase === g.phase &&
-      (g.phase === 1 || g.phase === 5) &&
+      ambassadorPhaseAllowed(g) &&
       response.intent === entry.event &&
       entry.effect === 'richese' &&
       entry.beneficiary === receipt.buyer &&
@@ -7551,6 +8193,72 @@ function ambassadorPurchaseBonus(g: Game) {
     };
   } else finishAmbassador(g);
 }
+/** The payer has already paid. Only credit the eligible faction share once. */
+function creditFactionPayment(g: Game, ownerId: string, kind: 'shipment' | 'treachery', gross: number) {
+  const payment = homeworldRule(() => quoteHomeworldPaymentIncome(g, ownerId, kind, gross));
+  const owner = getPlayer(g, ownerId);
+  requireRule(Number.isSafeInteger(owner.spice + payment.income), 'The faction payment would overflow its spice balance.');
+  owner.spice += payment.income;
+  return payment;
+}
+function currentFactionPayment(g: Game) {
+  const response = g.response;
+  if (!g.homeworlds?.custody || !response) return null;
+  const kind = response.kind === 'guildIncome' ? 'shipment' :
+    ['emperorIncome', 'richesePurchaseIncome'].includes(response.kind) ? 'treachery' : null;
+  if (!kind) return null;
+  if (response.kind === 'emperorIncome' && response.source === 'ambassador')
+    validateAmbassadorPurchaseResponse(g, response);
+  if (response.kind === 'richesePurchaseIncome') {
+    const pending = g.pendingRichesePurchaseIncome;
+    requireRule(pending && pending.owner === response.owner && pending.turn === g.turn &&
+      pending.phase === g.phase && response.amount === 3,
+      'This Richese purchase income is no longer current.');
+  }
+  const gross = response.kind === 'emperorIncome'
+    ? response.source === 'ambassador' ? response.amount! : g.currentAuctionSale?.amount ?? g.auction?.bid
+    : response.amount;
+  requireRule(gross !== undefined, 'The faction payment is missing its original amount.');
+  if (kind === 'shipment' &&
+    (Object.hasOwn(response, 'guildContributions') || Object.hasOwn(response, 'guildPaymentProof'))) {
+    requireRule(Array.isArray(response.guildContributions) &&
+      response.guildPaymentProof === guildPaymentSignature(g, response.owner, gross, response.guildContributions),
+      'The saved Guild payment no longer matches its original contributor receipt.');
+    validateGuildPaymentRounding(g, response.owner, gross, response.guildContributions);
+  }
+  return { owner: response.owner, kind,
+    ...homeworldRule(() => quoteHomeworldPaymentIncome(g, response.owner, kind, gross)) };
+}
+function validateGuildPaymentRounding(g: Game, owner: string, gross: number, contributions: number[]) {
+  if (!g.homeworlds?.custody) return;
+  const rounding = homeworldRule(() => quoteGuildPaymentRounding(gross, contributions));
+  const payment = homeworldRule(() => quoteHomeworldPaymentIncome(g, owner, 'shipment', gross));
+  requireRule(!payment.low || rounding.unambiguous,
+    'Low Junction rounding for two odd allied contributions awaits a ruling. Choose a different payment split.');
+}
+function shipmentIncomeContributions(g: Game, p: Player, cost: number, allyPayment: number) {
+  const guild = byFaction(g, 'guild');
+  if (!guild || g.karamaShipping?.player === p.id) return [];
+  return [p.id === guild.id ? 0 : cost - allyPayment,
+    p.ally === guild.id ? 0 : allyPayment].filter(amount => amount > 0);
+}
+function checkShipmentIncomeRounding(g: Game, p: Player, cost: number, allyPayment: number) {
+  const guild = byFaction(g, 'guild');
+  if (!guild) return;
+  const amounts = shipmentIncomeContributions(g, p, cost, allyPayment);
+  validateGuildPaymentRounding(g, guild.id, amounts.reduce((sum, amount) => sum + amount, 0), amounts);
+}
+function guildPaymentResponse(g: Game, owner: string, amounts: number[]): ResponseWindow {
+  const contributions = amounts.filter(amount => amount > 0);
+  const amount = contributions.reduce((sum, value) => sum + value, 0);
+  validateGuildPaymentRounding(g, owner, amount, contributions);
+  return { kind: 'guildIncome', owner, amount, passed: [],
+    ...(g.homeworlds?.custody ? { guildContributions: contributions,
+      guildPaymentProof: guildPaymentSignature(g, owner, amount, contributions) } : {}) };
+}
+function guildPaymentSignature(g: Game, owner: string, amount: number, contributions: number[]) {
+  return JSON.stringify({ turn: g.turn, phase: g.phase, owner, amount, contributions });
+}
 function finishAmbassadorPurchaseResponse(
   g: Game,
   response: ResponseWindow,
@@ -7558,12 +8266,12 @@ function finishAmbassadorPurchaseResponse(
 ) {
   const { receipt, buyer } = validateAmbassadorPurchaseResponse(g, response);
   if (response.kind === 'emperorIncome') {
-    if (!canceled) getPlayer(g, response.owner).spice += receipt.amount;
+    const payment = !canceled ? creditFactionPayment(g, response.owner, 'treachery', receipt.amount) : null;
     log(
       g,
       canceled
         ? 'Karama prevented Emperor income from the Richese Ambassador purchase. The three-spice payment stays in the bank; the buyer keeps the card.'
-        : `${getPlayer(g, response.owner).name} collected the three-spice Richese Ambassador purchase payment through Emperor income.`,
+        : `${getPlayer(g, response.owner).name} collected ${payment!.income} spice from the three-spice Richese Ambassador purchase payment.${payment!.bank ? ` Low-population Kaitain leaves ${payment!.bank} spice in the bank.` : ''}`,
       {
         faction: 'emperor',
         name: canceled ? 'Purchase income prevented' : 'Card purchase income',
@@ -7662,7 +8370,7 @@ function resolveAmbassadorEffect(g: Game) {
   }
   if (
     effect === 'ixians' ||
-    (effect === 'choam' && p.hand.some((c) => !ambassadorDiscardBlock(g, p, c)))
+    (effect === 'choam' && p.hand.some((c) => !ambassadorDiscardBlock(g, p, c, effect)))
   ) {
     entry.stage = 'cards';
     g.decision = { kind: 'ecazAmbassador', player: p.id };
@@ -7705,6 +8413,58 @@ function resolveAmbassadorEffect(g: Game) {
   }
   finishAmbassador(g);
 }
+function ecazAllianceQuote(g: Game, owner: string, entrant: string) {
+  const blocked = homeworldAllianceReason(g, owner, entrant);
+  requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
+  try {
+    return quoteEcazAlliance(g, owner, entrant);
+  } catch (error) {
+    if (error instanceof EcazAllianceError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function ecazAllianceIntegrity(g: Game) {
+  const entry = g.pendingAmbassador;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const controls = [
+    g,
+    g.pendingExchange,
+    g.pendingRicheseGift?.resume,
+    g.pendingNullentropy?.resume,
+    g.pendingRichesePurchaseIncome?.resume,
+    g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null,
+  ];
+  if (!entry) {
+    requireRule(
+      !controls.some((control) => control?.decision?.kind === 'ecazAmbassador'),
+      'The Ambassador decision has lost its entry event.',
+    );
+    return;
+  }
+  if (entry.stage !== 'allianceReply') return;
+  const token = g.ecazAmbassadors?.tokens.find((t) => t.id === entry.token);
+  requireRule(
+    g.status === 'playing' &&
+      entry.turn === g.turn &&
+      entry.phase === g.phase &&
+      ambassadorPhaseAllowed(g) &&
+      typeof entry.event === 'string' &&
+      entry.event.length > 0 &&
+      entry.effect === 'ecaz' &&
+      entry.beneficiary === entry.entrant &&
+      token?.effect === 'ecaz' &&
+      token.zone === 'supply' &&
+      token.location === null &&
+      controls.some(
+        (control) =>
+          control?.decision?.kind === 'ecazAmbassador' &&
+          control.decision.player === entry.entrant,
+      ),
+    'The Ecaz alliance reply has lost its original Ambassador or decision owner.',
+  );
+  ecazAllianceQuote(g, entry.owner, entry.entrant);
+}
 function decideAmbassador(g: Game, p: Player, action: Action) {
   const entry = g.pendingAmbassador;
   requireRule(
@@ -7720,6 +8480,34 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
     p.id === (entry.stage === 'offer' ? owner.id : entry.beneficiary),
     'The Ambassador choice belongs to another player.',
   );
+  if (entry.stage === 'allianceReply') {
+    requireRule(
+      typeof action.accept === 'boolean',
+      'Accept or refuse the Ecaz alliance offer.',
+    );
+    const quote = ecazAllianceQuote(g, owner.id, entrant.id);
+    if (action.accept) {
+      for (const member of quote.players) {
+        if (member.id !== owner.id && member.id !== entrant.id) continue;
+        const target = getPlayer(g, member.id);
+        target.ally = member.ally;
+        target.allySinceTurn = member.allySinceTurn;
+      }
+      g.allianceOffers = quote.allianceOffers;
+      g.ready = [];
+      log(
+        g,
+        `${owner.name} and ${entrant.name} formed an alliance through the Ecaz Ambassador. Both were unallied and ${entrant.name} accepted. Their alliance abilities apply immediately; the entrant’s remaining actions resume.`,
+        { faction: 'ecaz', name: 'Ambassador alliance' },
+      );
+    } else
+      log(
+        g,
+        `${entrant.name} refused the Ecaz Ambassador alliance. No alliance or Duke transfer occurred; the triggered token remains in Ecaz’s supply and the entrant’s remaining actions resume.`,
+      );
+    finishAmbassador(g);
+    return;
+  }
   if (entry.stage === 'offer') {
     const token = g.ecazAmbassadors?.tokens.find((t) => t.id === entry.token);
     requireRule(
@@ -7738,6 +8526,34 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
       action.trigger === true,
       'Trigger the Ambassador or leave it in place.',
     );
+    if (token.effect === 'ecaz' && action.choice === 'alliance') {
+      requireRule(
+        action.beneficiary === owner.id,
+        'Ecaz must offer its own Ambassador alliance.',
+      );
+      ecazAllianceQuote(g, owner.id, entrant.id);
+      requireRule(
+        canTriggerAmbassador({
+          owner: owner.id,
+          ally: owner.ally,
+          entrant: entrant.id,
+          entrantFaction: entrant.faction,
+          advisors: isAdvisor(entrant, entry.territory),
+          effect: token.effect,
+        }),
+        'This entrant cannot trigger the Ecaz Ambassador.',
+      );
+      entry.effect = 'ecaz';
+      entry.beneficiary = entrant.id;
+      entry.stage = 'allianceReply';
+      g.ecazAmbassadors = triggerAmbassador(g.ecazAmbassadors!, token.id);
+      g.decision = { kind: 'ecazAmbassador', player: entrant.id };
+      log(
+        g,
+        `${owner.name} offered an alliance to ${entrant.name} through the Ecaz Ambassador. The reusable token returned to supply; the five random Ambassadors are unchanged. Only the entrant can accept or refuse. Duke Vidal has not changed hands.`,
+      );
+      return;
+    }
     const beneficiary = getPlayer(g, stringField(action.beneficiary));
     requireRule(
       beneficiary.id === owner.id ||
@@ -7857,7 +8673,7 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
     for (const id of ids) {
       const card = p.hand.find((c) => c.id === id);
       requireRule(card, 'Choose a card in your own hand.');
-      const blocked = ambassadorDiscardBlock(g, p, card);
+      const blocked = ambassadorDiscardBlock(g, p, card, entry.effect);
       requireRule(!blocked, blocked ?? 'This card cannot be discarded.');
     }
     const entries = ids.map((id) => ({
@@ -7886,6 +8702,28 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
   }
 }
 
+/** Card interruptions keep the live entry; fresh discard owns its one suspended copy. */
+function terrorEntryIntegrity(g: Game) {
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const entries = [g.pendingTerrorEntry,
+    continuation?.kind === 'terrorDiscard' ? continuation.entry : null];
+  for (const entry of entries) {
+    if (!entry) continue;
+    homeworldRule(() => validateTerrorEntrySignature(entry));
+    if (entry.entrySignature === undefined) continue;
+    requireRule(entry.turn === g.turn && entry.phase === g.phase &&
+      g.players.some((p) => p.id === entry.entrant && p.faction !== 'moritani') &&
+      g.players.filter((p) => p.faction === 'moritani').length === 1,
+      'The saved Terror entry has lost its original turn or seated participants.');
+  }
+}
+/** Public original batch size; concealed No-Field markers count as one. */
+function homeworldTerrorEntryBlock(g: Game, entering: number): string | null {
+  const owner = byFaction(g, 'moritani');
+  return owner
+    ? homeworldRule(() => lowGrummanRevealBlock(g, owner.id, entering))
+    : null;
+}
 /** Entry is already paid and committed; a reaction must never replay its original action. */
 function openTerrorEntry(
   g: Game,
@@ -7906,7 +8744,8 @@ function openTerrorEntry(
     !moritani ||
     !token ||
     entrant.id === moritani.id ||
-    entrant.id === moritani.ally
+    entrant.id === moritani.ally ||
+    homeworldTerrorEntryBlock(g, amount)
   )
     return false;
   requireRule(!g.pendingTerrorEntry, 'Resolve the pending Terror entry first.');
@@ -7928,6 +8767,7 @@ function openTerrorEntry(
     resume,
     ...(ambassadorEvent ? { ambassadorEvent } : {}),
   };
+  g.pendingTerrorEntry.entrySignature = terrorEntrySignature(g.pendingTerrorEntry);
   g.decision = {
     kind: 'moritaniTerror',
     player: moritani.id,
@@ -7974,6 +8814,8 @@ function terrorRevealBlocked(
   entry: NonNullable<Game['pendingTerrorEntry']>,
   kind: TerrorKind,
 ): string | null {
+  const homeworldBlock = homeworldTerrorEntryBlock(g, entry.amount);
+  if (homeworldBlock) return homeworldBlock;
   if (kind === 'robbery' || kind === 'sabotage' || kind === 'sneakAttack')
     return null;
   if (kind !== 'assassination')
@@ -8048,6 +8890,8 @@ function terrorAllianceBlocked(
     return 'Karama prevented this alliance opportunity; you may still reveal the token or leave it hidden.';
   const entrant = getPlayer(g, entry.entrant);
   const owner = byFaction(g, 'moritani')!;
+  const homeworldBlock = homeworldAllianceReason(g, owner.id, entrant.id);
+  if (homeworldBlock) return homeworldBlock;
   if (entrant.faction === 'ecaz')
     return 'Enemy of My Enemy cannot be offered to Ecaz.';
   if (entrant.id === owner.id || entrant.id === owner.ally)
@@ -8058,6 +8902,8 @@ function terrorAllianceBlocked(
 }
 /** Return only unspent escrow for the pairs this special alliance breaks. */
 function formTerrorAlliance(g: Game, owner: Player, entrant: Player) {
+  const blocked = homeworldAllianceReason(g, owner.id, entrant.id);
+  requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
   const changed = new Set([owner.id, entrant.id]);
   for (const member of [owner, entrant]) {
     if (member.ally) getPlayer(g, member.ally).ally = null;
@@ -8346,7 +9192,7 @@ function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
     delete getPlayer(g, entry.player).advisors?.[entry.territory];
 }
 export function battles(g: Game) {
-  const quote = boardResolution(() => quoteBattleBoard(g));
+  const quote = boardResolution(() => quoteCombatBoard(g));
   applyAdvisorReleases(g, quote.released);
   return quote.battles;
 }
@@ -8374,6 +9220,7 @@ function offerMoritaniDuke(g: Game) {
       .filter(
         (battle) =>
           [battle.attacker, battle.defender].includes(owner.id) &&
+          !battle.territory.startsWith('homeworld:') &&
           territory(battle.territory).type === 'stronghold' &&
           getPlayer(
             g,
@@ -8697,7 +9544,7 @@ function finishAdvisorReaction(
   },
 ) {
   const bg = byFaction(g, 'beneGesserit')!;
-  if (details.advisorFollowup && bg.reserves > 0)
+  if (details.advisorFollowup && spiritualAdvisorMaximum(g, bg.id) > 0)
     g.decision = { kind: 'advisor', player: bg.id, ...details.advisorFollowup };
   else if (details.advisorResume === 'wormRide') nextWormRide(g);
   else if (details.advisorResume === 'declaration')
@@ -8786,6 +9633,99 @@ function transferTech(g: Game, id: TechId, winner: string) {
     `${getPlayer(g, winner).name} took ${TECH_TOKENS.find((t) => t.id === id)!.name} after winning the battle.`,
   );
 }
+function decideChoamMarket(g: Game, decision: Extract<Decision, {kind: 'choamMarket' | 'choamTradeReply' | 'choamTradeConfirm'}>, action: Action) {
+      const market = g.choamMarket!;
+      const owner = getPlayer(g, market.owner);
+      if (decision.kind === 'choamMarket') {
+        if (action.done === true) {
+          finishChoamMarket(g);
+        } else if (action.mode === 'sell') {
+          const sale = quoteSale(
+            owner.hand,
+            action.card,
+            action.witness,
+            market.blocked,
+          );
+          requireRule(
+            sale,
+            'Choose an available Worthless card or surplus exact duplicate.',
+          );
+          const card = owner.hand.find((c) => c.id === sale.card)!;
+          const blocked = homeworldRule(() => homeworldWorthlessSaleBlock(g, owner.id, card));
+          requireRule(!blocked, blocked ?? 'This card sale is unavailable.');
+          market.sale = sale;
+          log(
+            g,
+            `${owner.name} revealed ${sale.witness ? 'two copies of ' : ''}${card.name} and offered one for ${sale.price} spice.`,
+          );
+          g.response = { kind: 'choamSale', owner: owner.id, passed: [] };
+        } else {
+          requireRule(
+            action.mode === 'trade',
+            'Sell a card, offer a trade or finish the phase.',
+          );
+          requireRule(
+            g.choamTradeTurn !== g.turn,
+            'CHOAM may exchange one card with its ally only once per turn.',
+          );
+          const ally = g.players.find(
+            (p) => p.id === owner.ally && p.ally === owner.id,
+          );
+          requireRule(ally, 'You need an ally for a two-way trade.');
+          requireRule(
+            owner.hand.some((c) => c.id === action.card),
+            'Offer a card from your own hand.',
+          );
+          market.trade = { ally: ally.id, offered: stringField(action.card) };
+          market.tradeAttempted = true;
+          g.decision = { kind: 'choamTradeReply', player: ally.id };
+        }
+      } else {
+        const trade = market.trade!;
+        const ally = getPlayer(g, trade.ally);
+        if (action.decline === true) {
+          delete market.trade;
+          resumeChoamMarket(g);
+        } else if (decision.kind === 'choamTradeReply') {
+          requireRule(
+            ally.hand.some((c) => c.id === action.card),
+            'Choose one of your cards to return, or decline.',
+          );
+          trade.returned = stringField(action.card);
+          g.decision = { kind: 'choamTradeConfirm', player: owner.id };
+        } else {
+          requireRule(
+            action.accept === true,
+            'Confirm the two-way exchange or decline.',
+          );
+          const offered = owner.hand.find((c) => c.id === trade.offered);
+          const returned = ally.hand.find((c) => c.id === trade.returned);
+          if (
+            offered &&
+            returned &&
+            owner.ally === ally.id &&
+            ally.ally === owner.id &&
+            g.choamTradeTurn !== g.turn
+          ) {
+            owner.hand = owner.hand.filter((c) => c.id !== offered.id);
+            ally.hand = ally.hand.filter((c) => c.id !== returned.id);
+            owner.hand.push(returned);
+            ally.hand.push(offered);
+            g.choamTradeTurn = g.turn;
+            log(
+              g,
+              `${owner.name} and ${ally.name} exchanged one treachery card each.`,
+            );
+          } else
+            log(
+              g,
+              'The proposed card exchange is no longer possible; both hands remain unchanged.',
+            );
+          delete market.trade;
+          resumeChoamMarket(g);
+        }
+      }
+}
 function openChoamMarket(g: Game, resume: ChoamMarket['resume']) {
   const choam = byFaction(g, 'choam');
   if (g.status !== 'playing' || !choam) return false;
@@ -8794,9 +9734,15 @@ function openChoamMarket(g: Game, resume: ChoamMarket['resume']) {
   return true;
 }
 function resumeChoamMarket(g: Game) {
-  g.decision = { kind: 'choamMarket', player: g.choamMarket!.owner };
+  g.decision = g.biddingEnd ? null : { kind: 'choamMarket', player: g.choamMarket!.owner };
 }
 function finishChoamMarket(g: Game) {
+  if (g.biddingEnd || openBiddingEnd(g)) {
+    const owner = g.choamMarket!.owner;
+    if (!g.biddingEnd!.ready.includes(owner)) g.biddingEnd!.ready.push(owner);
+    g.decision = null;
+    return;
+  }
   const resume = g.choamMarket!.resume;
   g.choamMarket = null;
   g.decision = null;
@@ -8804,7 +9750,69 @@ function finishChoamMarket(g: Game) {
   else advancePhase(g);
 }
 function nextPhase(g: Game) {
+  if (openBiddingEnd(g)) return;
   if (!openChoamMarket(g, 'phase')) advancePhase(g);
+}
+function openBiddingEnd(g: Game): boolean {
+  const emperor = byFaction(g, 'emperor');
+  if (g.status !== 'playing' || g.phase !== 3 || !g.homeworlds?.custody || !emperor) return false;
+  if (g.biddingEnd) return true;
+  const choam = byFaction(g, 'choam');
+  g.biddingEnd = { event: crypto.randomUUID(), turn: g.turn,
+    owners: [emperor.id, ...(choam ? [choam.id] : [])], ready: [] };
+  if (choam) g.choamMarket ??= { owner: choam.id, resume: 'phase', blocked: [] };
+  g.decision = null;
+  g.active = null;
+  log(g, 'Bidding is complete. Kaitain disposal and any CHOAM market actions share this closing opportunity; the owners may act in either order.');
+  return true;
+}
+function finishBiddingEnd(g: Game): boolean {
+  if (!biddingEndQuiet(g)) return false;
+  let changed = false;
+  const end = g.biddingEnd!;
+  for (const id of end.owners) {
+    if (end.ready.includes(id) || !biddingEndPubliclyEmpty(g, id)) continue;
+    end.ready.push(id);
+    changed = true;
+    log(g, `${getPlayer(g, id).name} has no cards and no incoming exchange is available. Their end-of-Bidding opportunity finishes automatically.`);
+  }
+  if (end.owners.every((id) => end.ready.includes(id))) {
+    g.biddingEnd = null;
+    g.choamMarket = null;
+    advancePhase(g);
+    return true;
+  }
+  return changed;
+}
+function decideBiddingEnd(g: Game, p: Player, action: Action) {
+  const end = g.biddingEnd;
+  requireRule(end && action.event === end.event && end.owners.includes(p.id),
+    'Choose the current end-of-Bidding opportunity for your faction.');
+  requireRule(biddingEndQuiet(g), 'Finish the pending interaction before an end-of-Bidding action.');
+  if (action.mode === 'ready') {
+    requireRule(!end.ready.includes(p.id), 'You are already ready to finish Bidding.');
+    end.ready.push(p.id);
+    log(g, `${p.name} is ready to finish Bidding. They may still act if another closing opportunity remains.`);
+  } else if (action.mode === 'discard') {
+    const quote = homeworldRule(() => quoteKaitainDiscards(g, p.id, action.cards));
+    requireRule(quote.cards.length > 0, 'Choose cards to discard, or finish your opportunity.');
+    for (const card of quote.cards) {
+      const blocked = ambassadorDiscardBlock(g, p, card);
+      requireRule(!blocked, blocked ?? 'This card is committed to another effect.');
+    }
+    p.spice -= quote.cost;
+    const entries = quote.cards.map((card) => ({ card: discard(g, p, card.id),
+      discardedBy: p.id, publicFace: false }));
+    log(g, `${p.name} paid ${quote.cost} spice to the bank and discarded ${entries.length} Treachery Card${entries.length === 1 ? '' : 's'} through high-population Kaitain. No new auction begins.`,
+      { faction: p.faction, name: 'Kaitain disposal' });
+    stageTreacheryDiscard(g, 'kaitain', entries, { kind: 'kaitainDiscard',
+      owner: p.id, event: end.event, cost: quote.cost, spiceAfter: p.spice });
+  } else {
+    requireRule(p.faction === 'choam' && g.choamMarket?.owner === p.id &&
+      (action.mode === 'sell' || action.mode === 'trade'),
+      'Choose Kaitain disposal, a CHOAM market action or finish your opportunity.');
+    decideChoamMarket(g, { kind: 'choamMarket', player: p.id }, action);
+  }
 }
 function advancePhase(g: Game) {
   if (g.phase === 6) boardResolution(() => quoteBattlePhaseAdvance(g));
@@ -8868,6 +9876,11 @@ function completePhase(g: Game) {
 }
 /** Open the same public window for every Ix table, independently of who holds Amal. */
 function openPhase(g: Game, initialize = true) {
+  if (initialize && g.phase === 4 && g.homeworlds) {
+    g.homeworldRevival = homeworldRule(() => snapshotHomeworldRevival(g));
+    if (g.homeworldRevival?.tleilaxu.low)
+      log(g, 'Tleilax began Revival at low population. Tleilaxu will receive no bank reward for other factions’ Free Revival this phase, even if Tleilax later returns to high population. Paid revival and Ghola income are unchanged.', { faction: 'tleilaxu', name: 'Tleilax low population' });
+  }
   if (g.expansions.includes('ix')) g.phaseOpening = { passed: [], initialize };
   else if (initialize) beginPhase(g);
 }
@@ -8948,6 +9961,7 @@ function beginPhase(g: Game) {
     if (
       g.mobileStronghold?.location &&
       ixians &&
+      !homeworldMobileStrongholdMovementBlock(g, ixians.id) &&
       at(ixians, MOBILE_STRONGHOLD)
     ) {
       g.decision = {
@@ -8961,17 +9975,37 @@ function beginPhase(g: Game) {
   }
 }
 /** Transfer actual charity only after its applicable power response. */
-function payCharity(g: Game, player: Player, amount: number) {
+function payCharity(g: Game, player: Player, amount: number, homeworld = 0) {
+  if (g.homeworlds) {
+    const eligible = charityQuote(g, player);
+    requireRule(
+      eligible.total > 0 &&
+        amount === eligible.total &&
+        homeworld === eligible.homeworld,
+      'The saved Homeworld charity claim does not match its eligible ordinary and bank amounts.',
+    );
+  }
+  requireRule(
+    Number.isSafeInteger(homeworld) && homeworld >= 0 && homeworld <= amount,
+    'The Homeworld charity payment is invalid.',
+  );
+  const ordinary = amount - homeworld;
   const payer = charityPayer(g);
   // The published charity rule does not specify insolvency after intervening
   // spending. Fail atomically while this edge case remains under audit; never
   // mint a bank subsidy or create a negative spice balance silently.
   requireRule(
-    !payer || payer.spice >= amount,
+    !payer || payer.spice >= ordinary,
     'CHOAM cannot fund this charity claim.',
   );
-  if (payer) payer.spice -= amount;
+  if (payer) payer.spice -= ordinary;
   player.spice += amount;
+  if (homeworld)
+    log(
+      g,
+      `${player.name} received ${ordinary} ordinary charity spice ${payer ? `from ${payer.name}` : 'from the Spice Bank'} and ${homeworld} additional bank spice for low Homeworld population.`,
+      { faction: player.faction, name: 'Homeworld charity' },
+    );
   techIncome(g, 'production', player);
 }
 function beginStormTurn(g: Game) {
@@ -9025,25 +10059,6 @@ function collectionAllocation<T>(work: () => T): T {
   }
 }
 function ecazCollectionIntegrity(g: Game) {
-  const pending = g.ecazCollection;
-  if (!pending) return;
-  requireRule(
-    Number.isSafeInteger(pending.turn) &&
-      pending.turn >= 1 &&
-      pending.turn <= g.turn &&
-      typeof pending.event === 'string' &&
-      pending.event.length > 0 &&
-      typeof pending.canceled === 'boolean' &&
-      Array.isArray(pending.settled),
-    'The saved collection event is invalid.',
-  );
-  if (pending.stage === 'complete') {
-    requireRule(
-      pending.allocation === null,
-      'Completed collection cannot retain unresolved shared spice.',
-    );
-    return;
-  }
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const controls: (
     | {
@@ -9062,6 +10077,43 @@ function ecazCollectionIntegrity(g: Game) {
     g.summonedWorm?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null,
   ].filter(Boolean);
+  const hasCollectionControl = controls.some((control) => {
+    const karama = control!.pendingKarama;
+    const response =
+      control!.response?.kind === 'worthlessKarama' &&
+      karama?.use.kind === 'cancel'
+        ? karama.use.response
+        : control!.response;
+    return (
+      control!.decision?.kind === 'ecazSpice' ||
+      response?.kind === 'ecazCollection'
+    );
+  });
+  const pending = g.ecazCollection;
+  if (!pending) {
+    requireRule(
+      !hasCollectionControl,
+      'The shared collection decision has lost its collection event.',
+    );
+    return;
+  }
+  requireRule(
+    Number.isSafeInteger(pending.turn) &&
+      pending.turn >= 1 &&
+      pending.turn <= g.turn &&
+      typeof pending.event === 'string' &&
+      pending.event.length > 0 &&
+      typeof pending.canceled === 'boolean' &&
+      Array.isArray(pending.settled),
+    'The saved collection event is invalid.',
+  );
+  if (pending.stage === 'complete') {
+    requireRule(
+      pending.allocation === null && !hasCollectionControl,
+      'Completed collection cannot retain unresolved shared spice.',
+    );
+    return;
+  }
   requireRule(
     g.status === 'playing' &&
       g.phase === 7 &&
@@ -9170,6 +10222,20 @@ function currentEcazCollectionQuote(
   );
   return quote;
 }
+function creditGiediCollection(g: Game, player: string, desert: number) {
+  if (!g.homeworlds?.custody || getPlayer(g, player).faction !== 'harkonnen') return;
+  const quote = homeworldRule(() => quoteGiediCollectionReceipt(
+    g, g.turn, player, [{ kind: 'desert', amount: desert }], g.giediCollection,
+  ));
+  const p = getPlayer(g, player);
+  requireRule(Number.isSafeInteger(p.spice + quote.amount),
+    'Giedi Prime collection would overflow the spice balance.');
+  p.spice += quote.amount;
+  g.giediCollection = quote.receipt;
+  if (quote.amount)
+    log(g, 'Harkonnen received 2 spice from the bank: high-population Giedi Prime rewards positive desert collection once this phase.',
+      { faction: 'harkonnen', name: 'Giedi Prime collection' });
+}
 function commitCollection(
   g: Game,
   quote: ReturnType<typeof quoteSpiceCollection>,
@@ -9227,10 +10293,16 @@ function commitCollection(
       `Ecaz and its ally collected ${quote.shared.reduce((sum, lot) => sum + lot.amount, 0)} shared desert spice. Allocate each territory by agreement, or split it equally with any odd spice going to the ally.`,
     );
   }
+  for (const receipt of quote.receipts)
+    creditGiediCollection(g, receipt.player, receipt.desert);
 }
 function collect(g: Game) {
   if (g.ecazCollection?.turn === g.turn) {
     ecazCollectionIntegrity(g);
+    return;
+  }
+  if (g.giediCollection?.turn === g.turn) {
+    homeworldRule(() => validateGiediCollection(g, g.turn, g.giediCollection));
     return;
   }
   const quote = boardResolution(() => quoteSpiceCollection(g));
@@ -9289,6 +10361,8 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
     pending.settled.push(receipt);
     getPlayer(g, receipt.ecaz).spice += receipt.ecazAmount;
     getPlayer(g, receipt.ally).spice += receipt.allyAmount;
+    creditGiediCollection(g, receipt.ecaz, receipt.ecazAmount);
+    creditGiediCollection(g, receipt.ally, receipt.allyAmount);
     log(
       g,
       `${territory(receipt.territory).name} shared collection: Ecaz received ${receipt.ecazAmount} spice and ${faction(getPlayer(g, receipt.ally).faction).name} received ${receipt.allyAmount}, ${receipt.method === 'agreement' ? 'by agreement' : 'using the equal split with any odd spice going to the ally'}.`,
@@ -9773,7 +10847,7 @@ function currentCombatResponseQuote(
         status: g.status,
         phase: g.phase,
         advanced: g.advanced,
-        territoryIds: gameTerritories(g).map((t) => t.id),
+        territoryIds: combatLocations(g).map((t) => t.id),
         players: g.players.map((p) => ({
           id: p.id,
           faction: p.faction,
@@ -9919,9 +10993,10 @@ function gholaOptions(g: Game, p: Player) {
     strength,
   }));
   const kwisatz = !!(g.advanced && p.faction === 'atreides' && p.kwisatz?.dead);
-  const eliteRemaining = Math.min(
+  const eliteBlock = homeworldSardaukarGholaBlock(g, p.id);
+  const eliteRemaining = eliteBlock ? 0 : Math.min(
     p.elites?.tanks ?? 0,
-    eliteRevivalRemaining(p),
+    eliteRevivalRemaining(p, g.advanced),
   );
   const maxForces = Math.min(
     5,
@@ -9944,11 +11019,62 @@ function gholaOptions(g: Game, p: Player) {
     kwisatz,
     maxForces,
     eliteRemaining,
+    eliteBlock,
     available: reason === null,
     reason,
   };
 }
-function applyGholaEffect(g: Game, p: Player, action: Action) {
+function marketGholaIntegrity(g: Game) {
+  homeworldVictoryReturnIntegrity(g);
+  homeworldRevivalReturnIntegrity(g);
+  terrorEntryIntegrity(g);
+  homeworldRule(() => validateGiediCollection(g, g.turn, g.giediCollection));
+  currentFactionPayment(g);
+  battleCardRolesIntegrity(g);
+  winnerDiscardsIntegrity(g);
+  const endError = biddingEndError(g);
+  requireRule(!endError, endError ?? 'Invalid end-of-Bidding opportunity.');
+  const error = choamMarketGholaError(g);
+  requireRule(!error, error ?? 'Invalid Ghola market interruption.');
+}
+function resumeMarketGhola(g: Game) {
+  if (g.homeworldRevivalReturn && g.homeworldRevivalReturn.stage !== 'complete') return;
+  const pending = g.pendingChoamMarketGhola;
+  if (!pending || pending.stage !== 'complete' || g.pendingTreacheryDiscard || g.pendingNullentropy ||
+      g.response || g.decision || g.pendingKarama || g.truthtrance ||
+      g.phaseOpening || g.pendingRicheseGift || g.pendingExchange) return;
+  marketGholaIntegrity(g);
+  g.response = structuredClone(pending.response);
+  g.pendingChoamMarketGhola = null;
+}
+function playMarketGhola(g: Game, p: Player, action: Action) {
+  requireRule(choamSaleGholaTiming(g) && !g.pendingChoamMarketGhola,
+    'Finish the current Ghola interruption first.');
+  const card = p.hand.find((c) => c.id === action.card && c.effect === 'ghola');
+  requireRule(card && !action.mode, 'Choose an owned Ghola card.');
+  const options = gholaOptions(g, p);
+  requireRule(options.available, options.reason ?? 'Ghola is unavailable.');
+  requireRule(!g.pendingKarama && !g.pendingRicheseGift && !g.pendingExchange,
+    'Finish the nested exchange before playing Ghola.');
+  const reserved = ambassadorDiscardBlock(g, p, card);
+  requireRule(!reserved, reserved ?? 'This Ghola is already committed.');
+  choamSaleCancellationQuote(g, g.response!);
+  g.pendingChoamMarketGhola = {
+    turn: g.turn, phase: g.phase, player: p.id, card: card.id,
+    discardSequence: (g.treacheryDiscardSequence ?? 0) + 1,
+    event: '', stage: 'discard',
+    response: structuredClone(g.response!), market: structuredClone(g.choamMarket!),
+  };
+  g.pendingChoamMarketGhola.event = choamGholaEvent(g.pendingChoamMarketGhola);
+  g.response = null;
+  applyGholaEffect(g, p, action, card.id);
+  if (g.response) (g.response as ResponseWindow).intent = g.pendingChoamMarketGhola.event;
+  const used = discard(g, p, card.id);
+  log(g, `${p.name} played ${card.name}. The declared CHOAM sale waits for this revival and its income to finish.`,
+    { faction: p.faction, name: 'Ghola revival' });
+  stageOrdinaryCardDiscard(g, p, used);
+}
+function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
   if (action.leader === 'kwisatz') {
     requireRule(
       g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
@@ -9986,21 +11112,25 @@ function applyGholaEffect(g: Game, p: Player, action: Action) {
       'Forces',
     );
     const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
+    const eliteBlock = elite > 0 ? homeworldSardaukarGholaBlock(g, p.id) : null;
+    requireRule(!eliteBlock, eliteBlock ?? 'Choose an eligible Ghola return.');
     requireRule(
-      elite <= eliteRevivalRemaining(p),
+      elite <= eliteRevivalRemaining(p, g.advanced),
       'Only one elite force may be revived per turn.',
     );
+    const group = { amount: n, elite, free: 0 };
+    const grant = requireHomeworldRevivalGrant(g, p, 'ghola', group);
+    addRevivedReserves(g, p, n, elite);
     p.tanks -= n;
-    p.reserves += n;
     if (p.elites) {
       p.elites.tanks -= elite;
-      p.elites.reserves += elite;
       p.elites.revived += elite;
     }
     log(
       g,
       `${p.name} revived ${n} forces${elite ? `, including ${elite} elite force${elite === 1 ? '' : 's'}` : ''} with Ghola. They returned to reserves for free without using the normal force-revival allowance.`,
     );
+    if (cardId) stageHomeworldRevivalReturn(g, p, 'ghola', group, grant, cardId);
   }
   techIncome(g, 'axlotl', p);
   collectRevivalIncome(g, p, 0, false, true);
@@ -10107,7 +11237,12 @@ function gholaPreparationActions(g: Game, p: Player): Action[] {
   for (let amount = 1; amount <= Math.min(5, p.tanks); amount++)
     for (
       let elite = Math.max(0, amount - (p.tanks - (p.elites?.tanks ?? 0)));
-      elite <= Math.min(amount, p.elites?.tanks ?? 0, eliteRevivalRemaining(p));
+      elite <=
+      Math.min(
+        amount,
+        p.elites?.tanks ?? 0,
+        eliteRevivalRemaining(p, g.advanced),
+      );
       elite++
     )
       actions.push({ type: 'card', card: card.id, amount, elite });
@@ -10278,6 +11413,8 @@ function findShipmentCompletion(
       p.spice,
       p.reserves,
       p.tanks,
+      p.elites,
+      g.homeworlds,
       p.hand.map((c) => c.id),
       g.aid,
       g.karamaShipping,
@@ -10313,7 +11450,17 @@ function findShipmentCompletion(
             p.elites?.reserves ?? 0,
             undefined,
           );
+          const sources = g.homeworlds?.custody
+            ? nativeReserveSources(
+                homeworldContext(g),
+                g.homeworlds.custody,
+                p.id,
+                { normal: amount - elite, elite },
+              )
+            : null;
+          const nativeSources = sources ? { homeworldSources: sources } : {};
           validatePhysicalShipment(g, {
+            ...nativeSources,
             turn: g.turn,
             player: p.id,
             territory: destination,
@@ -10334,6 +11481,7 @@ function findShipmentCompletion(
                 amount,
                 elite,
                 allyPayment,
+                ...nativeSources,
               },
             ],
           };
@@ -10582,7 +11730,7 @@ function feasiblePrescience(
       for (const defense of field === 'defense' ? [value] : defenses) {
         const maxSupport =
           g.advanced && field === 'dial'
-            ? Math.min(battleSupportBudget(g, p), at(p, b.territory))
+            ? Math.min(battleSupportBudget(g, p), (combatArmy(g, p.id, b.territory).normal + combatArmy(g, p.id, b.territory).elite))
             : 0;
         for (let support = 0; support <= maxSupport; support++) {
           try {
@@ -10667,7 +11815,7 @@ function validatePortableSnooper(
     'Use the current revealed battle event; legacy battles without one are not reopened.',
   );
   requireRule(
-    b.traitorCalls[owner.id] === undefined,
+    b.traitorCalls[owner.id] === undefined && !b.homeworldDefensePassed?.includes(owner.id),
     'Your battle decisions are already submitted; the late-defense opportunity has closed.',
   );
   requireRule(
@@ -10781,7 +11929,30 @@ function nextRevealedDecision(g: Game) {
   );
   if (player) g.decision = { kind: 'poisonTooth', player };
 }
+/** Homeworld invaders have no traitor vote to hold their late-defense window.
+ * Offer only a real held legal defense; empty windows resolve automatically. */
+function homeworldRevealPending(g: Game): boolean {
+  const b = g.battle;
+  if (g.status !== 'playing' || g.phase !== 6 || !b?.revealed || !b.territory.startsWith('homeworld:') || g.decision || g.response ||
+    g.truthtrance || g.phaseOpening || g.pendingNullentropy || g.pendingTreacheryDiscard ||
+    g.pendingRicheseGift || g.pendingExchange || g.pendingKarama || g.summonedWorm) return false;
+  return traitorVoters(g, b).every((id) => b.traitorCalls[id] !== undefined);
+}
+function advanceHomeworldReveal(g: Game): boolean {
+  if (!homeworldRevealPending(g)) return false;
+  const b = g.battle!;
+  const voters = traitorVoters(g, b);
+  const owner = g.order.find((id) => [b.attacker, b.defender].includes(id) && !voters.includes(id) &&
+    !b.homeworldDefensePassed?.includes(id) && (() => { const offer = portableSnooperView(g, getPlayer(g, id)); return offer && !offer.blocked; })());
+  if (owner) {
+    requireRule(b.event, 'The Homeworld defense opportunity needs its battle event.');
+    g.decision = {kind: 'homeworldDefense', player: owner, event: b.event};
+  } else resolveBattle(g);
+  return true;
+}
 function traitorVoters(g: Game, b: Battle) {
+  const home = homeworldBattleLocation(g, b.territory);
+  if (home) return [b.attacker, b.defender].filter((id) => id === home.native);
   const voters = [b.attacker, b.defender];
   const harkonnen = byFaction(g, 'harkonnen');
   if (
@@ -10822,6 +11993,8 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
   try {
     const quote = quoteBattleResolution({
       advanced: g.advanced,
+      typedCasualties: !!g.homeworlds,
+      ...(homeworldBattleLocation(g, b.territory) ? { homeworld: currentHomeworldBattleRules(g, b.territory)! } : {}),
       turn: g.turn,
       territory: b.territory,
       attacker: combatant(b.attacker, b.defender),
@@ -10844,14 +12017,19 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       pendingRetentionPresent: !!g.moritaniRetention,
     });
     for (const id of quote.destroyedArmies)
-      validateBattleForceLoss(getPlayer(g, id), b.territory, Infinity);
-    if (quote.winner && quote.result === 'normal')
+      if (b.territory.startsWith('homeworld:')) quoteHomeworldLoss(g, id, b.territory, combatArmy(g, id, b.territory));
+      else validateBattleForceLoss(getPlayer(g, id), b.territory, Infinity);
+    if (quote.winner && quote.result === 'normal' && b.territory.startsWith('homeworld:'))
+      for (const losses of quote.casualties!.options) quoteHomeworldLoss(g, quote.winner, b.territory, { normal: losses.normal, elite: losses.elite });
+    else if (quote.winner && quote.result === 'normal')
       validateBattleForceLoss(
         getPlayer(g, quote.winner),
         b.territory,
         quote.basicWinnerLosses ??
           Math.max(...quote.casualties!.options.map((c) => c.normal + c.elite)),
       );
+    if (quote.homeworldExplosion)
+      for (const losses of quote.homeworldExplosion.options) quoteHomeworldLoss(g, quote.homeworldExplosion.player, b.territory, losses);
     return quote;
   } catch (error) {
     if (
@@ -10932,7 +12110,7 @@ function resolveBattle(g: Game) {
       b.territory,
       'a Lasgun–shield explosion destroyed it',
     );
-    for (const p of g.players) killTerritory(g, p, b.territory, Infinity, true);
+    for (const player of quote.destroyedArmies) killTerritory(g, getPlayer(g, player), b.territory, Infinity, true);
     dead(al);
     dead(dl);
     for (const [p, plan] of [
@@ -10948,7 +12126,9 @@ function resolveBattle(g: Game) {
       if (splitLocation(k).territory === b.territory) delete g.spice[k];
     log(
       g,
-      'Lasgun and shield exploded. All forces and spice in the territory were destroyed.',
+      quote.homeworldExplosion
+        ? `Lasgun and shield exploded. Invading armies were destroyed; the native faction loses ${quote.homeworldExplosion.amount} physical forces, limited by its Homeworld’s printed battle strength.`
+        : 'Lasgun and shield exploded. All forces and spice in the territory were destroyed.',
     );
   } else {
     const ak = quote.leaderDeaths.attacker,
@@ -10965,8 +12145,8 @@ function resolveBattle(g: Game) {
     log(
       g,
       stoneResult
-        ? `${faction(winner!.faction).name} won in ${territory(b.territory).name} by Stone Burner’s undialed physical tokens (aggressor ${stoneResult.attacker.join(' or ')}, defender ${stoneResult.defender.join(' or ')}; ${strongholdEffect(g, battleTieWinner(g)) === 'habbanya_ridge_sietch' ? 'Habbanya Stronghold advantage wins ties' : 'aggressor wins ties'}). Leader strength and Kwisatz Haderach’s bonus do not affect this comparison; the winner loses its dialed forces normally.`
-        : `${faction(winner!.faction).name} won in ${territory(b.territory).name} (${av}–${dv}${av === dv ? (strongholdEffect(g, winner!.id) === 'habbanya_ridge_sietch' ? ', Habbanya Stronghold advantage wins ties' : ', aggressor wins ties') : ''}).`,
+        ? `${faction(winner!.faction).name} won in ${combatLocationName(g, b.territory)} by Stone Burner’s undialed physical tokens (aggressor ${stoneResult.attacker.join(' or ')}, defender ${stoneResult.defender.join(' or ')}; ${strongholdEffect(g, battleTieWinner(g)) === 'habbanya_ridge_sietch' ? 'Habbanya Stronghold advantage wins ties' : 'aggressor wins ties'}). Leader strength and Kwisatz Haderach’s bonus do not affect this comparison; the winner loses its dialed forces normally.`
+        : `${faction(winner!.faction).name} won in ${combatLocationName(g, b.territory)} (${av}–${dv}${av === dv ? (strongholdEffect(g, winner!.id) === 'habbanya_ridge_sietch' ? ', Habbanya Stronghold advantage wins ties' : ', aggressor wins ties') : ''}).`,
       stoneResult
         ? { faction: (isStoneBurner(aw) ? a : d).faction, name: 'Stone Burner' }
         : undefined,
@@ -10982,7 +12162,8 @@ function resolveBattle(g: Game) {
     );
   }
   const tleilaxu = byFaction(g, 'tleilaxu');
-  if (winner && tleilaxu && winner.id !== tleilaxu.id) {
+  if (winner && tleilaxu && winner.id !== tleilaxu.id &&
+    (!b.territory.startsWith('homeworld:') || homeworldBattleLocation(g, b.territory)!.native === tleilaxu.id)) {
     const winningPlan = winner.id === a.id ? ap : dp;
     g.pendingFaceDance = {
       player: tleilaxu.id,
@@ -11001,6 +12182,9 @@ function resolveBattle(g: Game) {
       event: b.event ?? crypto.randomUUID(),
     };
   if (quote.retention) g.moritaniRetention = structuredClone(quote.retention);
+  const playedCardRoles = g.homeworlds?.custody && byFaction(g, 'ecaz')
+    ? battleDiscardRoles(g, b) : undefined;
+  const winningDiscards = quote.discarded.filter((entry) => entry.player === winner?.id).map((entry) => entry.card);
   const discarded: { card: Card; discardedBy: string; publicFace: boolean }[] =
     [];
   for (const [p, plan, l] of [
@@ -11017,10 +12201,10 @@ function resolveBattle(g: Game) {
       p.kwisatz.usedAt = b.territory;
     }
     for (const entry of quote.discarded.filter(
-      (entry) => entry.player === p.id,
+      (entry) => entry.player === p.id && entry.player !== winner?.id,
     ))
       discarded.push({
-        card: discard(g, p, entry.card),
+        card: discard(g, p, entry.card, playedCardRoles?.[p.id]?.[entry.card]),
         discardedBy: p.id,
         publicFace: true,
       });
@@ -11052,7 +12236,43 @@ function resolveBattle(g: Game) {
     combatants: [...g.lastBattle],
     winner: winner?.id ?? null,
     result: quote.result,
+    ...(playedCardRoles ? { cardRoles: playedCardRoles } : {}),
   };
+  if (g.homeworlds?.custody && winner?.faction === 'atreides' &&
+      (quote.result === 'normal' || quote.result === 'traitor')) {
+    requireRule(!g.homeworldVictoryReinforcement || g.homeworldVictoryReinforcement.stage === 'complete',
+      'Finish the previous Caladan reinforcement before resolving another battle.');
+    g.homeworldVictoryReinforcement = makeHomeworldVictoryReturn({
+      event: g.lastBattleContext.event, turn: g.turn, player: winner.id,
+      territory: b.territory, result: quote.result,
+    });
+    g.lastBattleContext.caladanReinforcement = {
+      event: g.lastBattleContext.event, completed: false, stage: 'waiting',
+      signature: homeworldVictoryObligationSignature(g.lastBattleContext, false, 'waiting'),
+    };
+  }
+  if (playedCardRoles)
+    g.lastBattleContext.cardRolesSignature = battleCardRolesSignature(g.lastBattleContext);
+  if (winner && winningDiscards.length)
+    g.pendingWinnerDiscards = { event: g.lastBattleContext.event, turn: g.turn,
+      territory: b.territory, player: winner.id, cards: winningDiscards,
+      optional: [...quote.winnerCards], signature: '' };
+  if (g.pendingWinnerDiscards)
+    g.pendingWinnerDiscards.signature = winnerDiscardSignature(g.pendingWinnerDiscards);
+  if (g.pendingWinnerDiscards) {
+    g.lastBattleContext.winnerDiscards = { cards: [...winningDiscards], completed: false, signature: '' };
+    g.lastBattleContext.winnerDiscards.signature = winnerDiscardObligationSignature(g.lastBattleContext);
+  }
+  if (b.territory.startsWith('homeworld:') && (casualtyCommitment || quote.homeworldExplosion)) {
+    const owner = quote.homeworldExplosion?.player ?? winner!.id;
+    g.homeworldBattleLoss = {
+      event: g.lastBattleContext.event, territory: b.territory, player: owner,
+      kind: quote.homeworldExplosion ? 'explosion' : 'winner',
+      pool: combatArmy(g, owner, b.territory),
+      options: (quote.homeworldExplosion?.options ?? casualtyCommitment!.options).map(({normal, elite}) => ({normal, elite})),
+      ...(casualtyCommitment ? { commitment: { forces: {...casualtyCommitment.forces}, dial: casualtyCommitment.dial, support: casualtyCommitment.support } } : {}),
+    };
+  }
   g.battle = null;
   const cards = [...quote.winnerCards];
   const continuation: Extract<
@@ -11082,6 +12302,16 @@ function continueResolvedBattle(
   const { cards, territory: to } = continuation;
   const winner = continuation.winner ? getPlayer(g, continuation.winner) : null;
   const losses = continuation.casualties?.options;
+  const native = g.homeworldBattleLoss;
+  if (native?.kind === 'explosion') {
+    homeworldBattleLossIntegrity(g);
+  homeworldSubstitutionIntegrity(g);
+  homeworldDefenseIntegrity(g);
+  homeworldShipmentIntegrity(g);
+    if (native.options.length === 1) settleHomeworldExplosion(g, native.options[0], true);
+    else g.decision = { kind: 'homeworldExplosion', event: native.event, player: native.player, territory: native.territory, options: native.options.map((p) => ({...p})), pool: {...native.pool} };
+    return;
+  }
   if (winner && losses?.length === 1) {
     settleWinnerCasualties(g, winner, to, cards, losses[0], true);
   } else if (winner && losses)
@@ -11103,20 +12333,27 @@ function settleWinnerCasualties(
   choice: Casualties,
   automatic = false,
 ) {
+  if (to.startsWith('homeworld:')) homeworldBattleLossIntegrity(g);
   const losses = takeBattleLosses(g, p, to, choice);
+  if (to.startsWith('homeworld:')) g.homeworldBattleLoss = null;
   log(
     g,
-    `${p.name} sent ${choice.normal} normal and ${choice.elite} elite forces from ${territory(to).name} to the Tanks. ${automatic ? 'This was the only legal casualty allocation for the revealed battle plan, so it was applied automatically.' : 'This applies the selected casualty allocation for the revealed battle plan.'}`,
+    `${p.name} sent ${choice.normal} normal and ${choice.elite} elite forces from ${combatLocationName(g, to)} to the Tanks. ${automatic ? 'This was the only legal casualty allocation for the revealed battle plan, so it was applied automatically.' : 'This applies the selected casualty allocation for the revealed battle plan.'}`,
     automatic ? { faction: p.faction, name: 'Battle casualties' } : undefined,
   );
-  const survivingSuboids = Object.entries(p.forces)
+  const survivingSuboids = to.startsWith('homeworld:') ? combatArmy(g, p.id, to).normal : Object.entries(p.forces)
     .filter(([key]) => splitLocation(key).territory === to)
     .reduce(
       (sum, [key, count]) => sum + count - (p.elites?.forces[key] ?? 0),
       0,
     );
   if (p.faction === 'ixians' && choice.elite > 0 && survivingSuboids > 0) {
-    g.pendingIxSubstitution = { player: p.id, territory: to, losses, cards };
+    g.pendingIxSubstitution = { player: p.id, territory: to, losses, cards,
+      ...(to.startsWith('homeworld:') ? { homeworld: {
+        pool: combatArmy(g, p.id, to), cyborgsLost: choice.elite,
+        eliteTanks: p.elites!.tanks, normalTanks: p.tanks - p.elites!.tanks, battleLosses: p.battleLosses,
+      } } : {}),
+    };
     g.decision = {
       kind: 'ixSubstitution',
       player: p.id,
@@ -11125,7 +12362,59 @@ function settleWinnerCasualties(
     };
   } else finishWinner(g, p, to, cards);
 }
+function winnerDiscardSignature(pending: NonNullable<Game['pendingWinnerDiscards']>) {
+  const { event, turn, territory, player, cards, optional } = pending;
+  return JSON.stringify({ event, turn, territory, player, cards, optional });
+}
+function winnerDiscardObligationSignature(context: NonNullable<Game['lastBattleContext']>) {
+  return JSON.stringify({ event: context.event, turn: context.turn, territory: context.territory,
+    player: context.winner, cards: context.winnerDiscards?.cards,
+    completed: context.winnerDiscards?.completed });
+}
+function winnerDiscardsIntegrity(g: Game) {
+  const pending = g.pendingWinnerDiscards;
+  const context = g.lastBattleContext;
+  const obligation = context?.winnerDiscards;
+  if (obligation) {
+    requireRule(obligation.signature === winnerDiscardObligationSignature(context!) &&
+      Array.isArray(obligation.cards) && obligation.cards.length > 0 &&
+      new Set(obligation.cards).size === obligation.cards.length &&
+      typeof obligation.completed === 'boolean' &&
+      (obligation.completed ? !pending : !!pending &&
+        JSON.stringify(pending.cards) === JSON.stringify(obligation.cards)),
+      'The saved mandatory winner discard obligation lost its original queue or completion.');
+  }
+  if (!pending) return;
+  const owner = g.players.find((p) => p.id === pending.player);
+  requireRule(g.status === 'playing' && g.phase === 6 && pending.turn === g.turn &&
+    obligation && !obligation.completed &&
+    pending.signature === winnerDiscardSignature(pending) &&
+    context?.event === pending.event && context.turn === g.turn &&
+    context.territory === pending.territory && context.winner === pending.player && owner &&
+    Array.isArray(pending.cards) && pending.cards.length > 0 && Array.isArray(pending.optional) &&
+    new Set([...pending.cards, ...pending.optional]).size === pending.cards.length + pending.optional.length &&
+    [...pending.cards, ...pending.optional].every((id) => typeof id === 'string' && owner.hand.some((card) => card.id === id)),
+    'The saved mandatory winner discards no longer match their battle or physical cards.');
+}
 function finishWinner(g: Game, winner: Player, t: string, cards: string[]) {
+  if (g.pendingWinnerDiscards) {
+    winnerDiscardsIntegrity(g);
+    const pending = g.pendingWinnerDiscards;
+    requireRule(pending.player === winner.id && pending.territory === t &&
+      JSON.stringify(pending.optional) === JSON.stringify(cards),
+      'The mandatory winner discard must resume its original cleanup.');
+    const entries = pending.cards.map((id) => ({ card: discard(g, winner, id,
+      cleanupDiscardRole(g, winner, id)), discardedBy: winner.id, publicFace: true }));
+    g.pendingWinnerDiscards = null;
+    if (g.lastBattleContext?.winnerDiscards) {
+      g.lastBattleContext.winnerDiscards.completed = true;
+      g.lastBattleContext.winnerDiscards.signature = winnerDiscardObligationSignature(g.lastBattleContext);
+    }
+    stageTreacheryDiscard(g, 'battle:winnerMandatory', entries, {
+      kind: 'winnerMandatoryDiscard', event: pending.event, player: winner.id,
+      territory: t, optional: [...cards], commitment: structuredClone(pending) });
+    return;
+  }
   if (cards.length)
     g.decision = {
       kind: 'battleCards',
@@ -11150,7 +12439,7 @@ function currentBattleAftermathQuote(
         advanced: g.advanced,
         battlePresent: !!g.battle,
         lastBattle: g.lastBattle,
-        territoryIds: gameTerritories(g).map((t) => t.id),
+        territoryIds: combatLocations(g).map((t) => t.id),
         context: g.lastBattleContext,
         players: g.players.map((p) => ({
           id: p.id,
@@ -11179,7 +12468,7 @@ function currentBattleAftermathQuote(
       spending,
     );
     if (quote.next.kind === 'board')
-      boardResolution(() => quoteBattleBoardContinuation(g));
+      boardResolution(() => quoteCombatBoardContinuation(g));
     return quote;
   } catch (error) {
     if (error instanceof BattleAftermathQuoteError)
@@ -11207,6 +12496,125 @@ function validateAftermathCancellation(
       spending,
     );
 }
+function homeworldVictoryWitness(frame: HomeworldVictoryReturn) {
+  return { event: frame.event, turn: frame.turn, player: frame.player,
+    territory: frame.territory, result: frame.result };
+}
+function homeworldVictoryReturnIntegrity(g: Game) {
+  homeworldRule(() => validateHomeworldVictoryReturn(g));
+  const frame = g.homeworldVictoryReinforcement;
+  if (frame?.stage === 'arrival' || frame?.stage === 'complete')
+    homeworldRule(() => validateHomeworldArrival(g, frame, 'victoryEvent'));
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume,
+    g.pendingRicheseGift?.resume, g.pendingRichesePurchaseIncome?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const decisions = contexts.flatMap((context) => context?.decision?.kind === 'caladanReinforcement' ? [context.decision] : []);
+  requireRule(decisions.every((decision) => frame?.stage === 'choice' && decision.player === frame.player && decision.event === frame.event),
+    'The Caladan choice has lost its original victory.');
+  if (frame?.stage === 'choice')
+    requireRule(decisions.length > 0, 'The Caladan victory has lost its reinforcement choice.');
+  if (frame?.stage === 'waiting')
+    requireRule(!!g.pendingTreacheryDiscard || !!g.pendingNullentropy ||
+      !!g.truthtrance || !!g.pendingKarama ||
+      contexts.some((context) => !!context?.decision || !!context?.response),
+      'The Caladan victory has lost its preceding battle cleanup choice.');
+}
+function completeHomeworldVictoryReturn(g: Game) {
+  const frame = g.homeworldVictoryReinforcement!;
+  frame.stage = 'complete';
+  const context = g.lastBattleContext!;
+  requireRule(context.caladanReinforcement?.event === frame.event,
+    'The Caladan reinforcement has lost its battle completion.');
+  context.caladanReinforcement.completed = true;
+  context.caladanReinforcement.stage = 'complete';
+  context.caladanReinforcement.signature = homeworldVictoryObligationSignature(context, true, 'complete');
+}
+function stampHomeworldVictoryStage(g: Game) {
+  const frame = g.homeworldVictoryReinforcement!;
+  const context = g.lastBattleContext!;
+  requireRule(context.caladanReinforcement?.event === frame.event,
+    'The Caladan reinforcement has lost its original stage obligation.');
+  context.caladanReinforcement.stage = frame.stage;
+  context.caladanReinforcement.signature = homeworldVictoryObligationSignature(context,
+    context.caladanReinforcement.completed, frame.stage);
+}
+function openHomeworldVictoryReturn(g: Game, faceDancePending: boolean) {
+  const frame = g.homeworldVictoryReinforcement;
+  if (!frame || frame.stage === 'complete' || frame.event !== g.lastBattleContext?.event) return false;
+  requireRule(frame.stage === 'waiting', 'Finish the Caladan reinforcement before resuming battle cleanup.');
+  const quote = homeworldRule(() => quoteHomeworldVictoryReinforcement(g, homeworldVictoryWitness(frame)));
+  if (quote.amount === 0) {
+    frame.destination = 'decline'; frame.ambassadors = [];
+    frame.arrivalSignature = homeworldArrivalSignature(frame);
+    completeHomeworldVictoryReturn(g);
+    if (quote.blocked)
+      log(g, `${getPlayer(g, frame.player).name} received no Caladan victory reinforcement: ${quote.blocked}`);
+    return false;
+  }
+  const blocked = faceDancePending
+    ? 'Caladan reinforcement and Face Dancer replacement await an ordering ruling. You may leave the reserve force at home.'
+    : quote.blocked;
+  const offer = { population: quote.population, survivors: quote.survivors, blocked };
+  frame.offer = { ...offer, signature: homeworldVictoryOfferSignature(frame, offer) };
+  frame.stage = 'choice';
+  stampHomeworldVictoryStage(g);
+  g.decision = { kind: 'caladanReinforcement', player: frame.player, event: frame.event };
+  return true;
+}
+function decideHomeworldVictoryReturn(g: Game, p: Player, action: Action) {
+  const frame = g.homeworldVictoryReinforcement;
+  requireRule(frame?.stage === 'choice' && frame.player === p.id && frame.event === action.event,
+    'Choose the current Caladan victory reinforcement.');
+  if (action.decline === true) {
+    requireRule(action.amount === undefined && action.destination === undefined,
+      'Leaving the reserve force at home does not select a quantity or destination.');
+    frame.destination = 'decline'; frame.ambassadors = [];
+    frame.arrivalSignature = homeworldArrivalSignature(frame);
+    completeHomeworldVictoryReturn(g);
+    log(g, `${p.name} left the optional Caladan victory reinforcement in reserves.`);
+    finishBattle(g);
+    return;
+  }
+  requireRule(!frame.offer?.blocked, frame.offer?.blocked ?? 'This reinforcement needs its ordering ruling.');
+  requireRule((action.amount === undefined || action.amount === 1) && typeof action.destination === 'string',
+    'Caladan adds exactly one reserve force to the battle location.');
+  const quote = homeworldRule(() => quoteHomeworldVictoryReinforcementDestination(g,
+    homeworldVictoryWitness(frame), action.destination as string));
+  const seat = quote.transfer.players.find((seat) => seat.id === p.id)!;
+  p.reserves = seat.reserves;
+  g.homeworlds!.custody = quote.transfer.state;
+  frame.destination = quote.selected.id; frame.stage = 'arrival'; frame.ambassadors = [];
+  frame.arrivalSignature = homeworldArrivalSignature(frame);
+  stampHomeworldVictoryStage(g);
+  if (quote.selected.territory) {
+    place(p, quote.selected.territory, quote.selected.sector!, 1);
+    openTerritoryEntry(g, p, quote.selected.territory, quote.selected.sector!, 1, 0, 'caladanReinforcement');
+    if (g.pendingAmbassador) {
+      g.pendingAmbassador.victoryEvent = frame.event;
+      appendHomeworldArrivalAmbassador(frame, g.pendingAmbassador);
+    }
+  }
+  log(g, `${p.name} added one force from Caladan reserves to ${quote.selected.name} after winning the battle. The force joins an existing surviving army; no spice or shipment allowance was spent.`,
+    { faction: p.faction, name: 'Caladan victory reinforcement' });
+}
+function resumeHomeworldVictoryReturn(g: Game) {
+  const frame = g.homeworldVictoryReinforcement;
+  if (frame?.stage !== 'arrival' || g.pendingTreacheryDiscard || g.pendingNullentropy ||
+    g.truthtrance || g.pendingExchange || g.pendingRicheseGift || g.pendingAmbassador ||
+    g.pendingTerrorEntry || g.pendingKarama || g.decision || g.response) return;
+  completeHomeworldVictoryReturn(g);
+  finishBattle(g);
+}
+function projectedHomeworldVictoryReturn(g: Game, player: string) {
+  const frame = g.homeworldVictoryReinforcement;
+  if (frame?.stage !== 'choice') return null;
+  const quote = homeworldRule(() => quoteHomeworldVictoryReinforcement(g, homeworldVictoryWitness(frame)));
+  return { event: frame.event, player: frame.player, territory: frame.territory, amount: 1 as const,
+    blocked: frame.offer?.blocked ?? quote.blocked,
+    destinations: player === frame.player ? quote.destinations : [],
+  };
+}
 function finishBattle(g: Game) {
   const quote = currentBattleAftermathQuote(g);
   for (const step of quote.steps) {
@@ -11223,6 +12631,8 @@ function finishBattle(g: Game) {
     }
   }
   const next = quote.next;
+  if ((next.kind === 'faceDance' || next.kind === 'board') &&
+      openHomeworldVictoryReturn(g, next.kind === 'faceDance')) return;
   if (next.kind === 'choamBattleIncome') {
     g.response = { ...next, passed: [] };
   } else if (next.kind === 'choamAudit') {
@@ -11324,7 +12734,7 @@ function auditorIntegrity(g: Game) {
       g.lastBattle.length === 2 &&
       g.lastBattle.includes(pending.owner) &&
       g.lastBattle.includes(pending.opponent) &&
-      gameTerritories(g).some((t) => t.id === pending.territory) &&
+      combatLocations(g).some((t) => t.id === pending.territory) &&
       g.players.some(
         (p) =>
           p.id === pending.owner &&
@@ -11403,7 +12813,7 @@ function battleCleanupInput(g: Game) {
     battlePresent: !!g.battle,
     lastBattle: g.lastBattle,
     playerIds: g.players.map((p) => p.id),
-    territoryIds: gameTerritories(g).map((t) => t.id),
+    territoryIds: combatLocations(g).map((t) => t.id),
     context: g.lastBattleContext,
   };
 }
@@ -11463,7 +12873,7 @@ function finishMoritaniRetention(g: Game, keep: string | null) {
   const discarded = pending.played
     .filter((id) => id !== keep)
     .map((id) => ({
-      card: discard(g, player, id),
+      card: discard(g, player, id, cleanupDiscardRole(g, player, id)),
       discardedBy: player.id,
       publicFace: true,
     }));
@@ -11495,6 +12905,167 @@ function finishMoritaniRetention(g: Game, keep: string | null) {
     });
   else finishBattle(g);
 }
+function currentHomeworldRevivalGrant(
+  g: Game, p: Player, source: HomeworldRevivalDeploymentSource,
+  group: HomeworldRevivalDeploymentGroup,
+) {
+  if (!g.homeworlds?.custody || !['fremen', 'tleilaxu'].includes(p.faction)) return null;
+  const deposit = homeworldRule(() => quoteNativeRevivalDeposit(
+    homeworldContext(g), g.homeworlds!.custody!, p.id,
+    { normal: group.amount - group.elite, elite: group.elite },
+  ));
+  const seat = deposit.players.find((seat) => seat.id === p.id)!;
+  const after = {
+    advanced: g.advanced,
+    homeworlds: { custody: deposit.state },
+    players: g.players.map((other) => other.id !== p.id ? other : {
+      ...p, reserves: seat.reserves,
+      ...(p.elites ? { elites: { ...p.elites, reserves: seat.eliteReserves } } : {}),
+    }),
+  };
+  return homeworldRule(() => quoteHomeworldRevivalDeployment(g, after, p.id, source, group));
+}
+function requireHomeworldRevivalGrant(
+  g: Game, p: Player, source: HomeworldRevivalDeploymentSource,
+  group: HomeworldRevivalDeploymentGroup,
+) {
+  requireRule(!g.homeworldRevivalReturn || g.homeworldRevivalReturn.stage === 'complete',
+    'Finish the previous revived group’s placement before another revival.');
+  const grant = currentHomeworldRevivalGrant(g, p, source, group);
+  requireRule(!grant?.blocked, grant?.blocked ?? 'This revival placement needs its timing ruling.');
+  return grant;
+}
+function stageHomeworldRevivalReturn(
+  g: Game, p: Player, source: HomeworldRevivalDeploymentSource,
+  group: HomeworldRevivalDeploymentGroup,
+  grant: ReturnType<typeof currentHomeworldRevivalGrant>, card?: string,
+) {
+  if (!grant) return;
+  g.homeworldRevivalReturn = homeworldRule(() => makeHomeworldRevivalReturn({
+    event: crypto.randomUUID(), turn: g.turn, phase: g.phase, player: p.id,
+    source, group, quote: grant, ...(card ? { card } : {}),
+  }));
+  stampHomeworldRevivalProgress(g);
+}
+function stampHomeworldRevivalProgress(g: Game) {
+  const frame = g.homeworldRevivalReturn!;
+  if (frame.progressVersion === 1)
+    g.homeworldRevivalProgress = makeHomeworldRevivalProgress(frame);
+}
+function homeworldRevivalReturnIntegrity(g: Game) {
+  const frame = g.homeworldRevivalReturn;
+  homeworldRule(() => validateHomeworldRevivalReturn(g, frame));
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume,
+    g.pendingRicheseGift?.resume, g.pendingRichesePurchaseIncome?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const decisions = contexts.flatMap((context) => context?.decision?.kind === 'homeworldRevivalDeployment' ? [context.decision] : []);
+  requireRule(decisions.every((decision) => frame?.stage === 'choice' &&
+    decision.player === frame.player && decision.event === frame.event),
+    'The revival placement decision has lost its original returned group.');
+  if (frame?.stage === 'choice')
+    requireRule(decisions.length > 0, 'The returned group has lost its owned placement choice.');
+}
+function completeHomeworldRevivalReturn(g: Game) {
+  const frame = g.homeworldRevivalReturn!;
+  requireRule(!frame.ambassadors?.some((entry) => !entry.completed),
+    'Finish the revived group’s Ambassador opportunity before its original revival income.');
+  frame.stage = 'complete';
+  stampHomeworldRevivalProgress(g);
+  g.response = structuredClone(frame.resumeResponse ?? null);
+}
+function resumeHomeworldRevivalReturn(g: Game) {
+  const frame = g.homeworldRevivalReturn;
+  if (!frame || frame.stage === 'complete' || frame.stage === 'choice' ||
+      g.pendingTreacheryDiscard || g.pendingNullentropy || g.truthtrance ||
+      g.pendingExchange || g.pendingRicheseGift || g.pendingAmbassador ||
+      g.pendingTerrorEntry || g.pendingKarama || g.decision) return;
+  if (frame.stage === 'arrival') {
+    if (!g.response) completeHomeworldRevivalReturn(g);
+    return;
+  }
+  // The original revival/card has committed. Hold its independent income until
+  // the optional physical placement and any Ambassador children are complete.
+  requireRule(!g.response || g.response.kind === 'revivalIncome',
+    'Finish the original revival continuation before placement.');
+  frame.resumeResponse = structuredClone(g.response);
+  frame.resumeSignature = homeworldRevivalResumeSignature(frame.resumeResponse);
+  g.response = null;
+  frame.stage = 'choice';
+  stampHomeworldRevivalProgress(g);
+  const destinations = homeworldRule(() => homeworldRevivalDestinations(g, frame.player, frame.quote));
+  if (!destinations.length || destinations.every((d) => d.blocked && !d.blocked.includes('await'))) {
+    frame.destination = 'decline';
+    frame.ambassadors = [];
+    frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
+    completeHomeworldRevivalReturn(g);
+    log(g, `${getPlayer(g, frame.player).name} left the revived group in reserves because no placement destination is available.`);
+    return;
+  }
+  g.decision = { kind: 'homeworldRevivalDeployment', player: frame.player, event: frame.event };
+}
+function decideHomeworldRevivalReturn(g: Game, p: Player, action: Action) {
+  const frame = g.homeworldRevivalReturn;
+  requireRule(frame?.stage === 'choice' && frame.player === p.id && action.event === frame.event,
+    'Choose the current returned group’s placement.');
+  if (action.decline === true) {
+    requireRule(action.destination === undefined && action.amount === undefined,
+      'Leaving the group in reserves does not select a destination or quantity.');
+    frame.destination = 'decline';
+    frame.ambassadors = [];
+    frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
+    completeHomeworldRevivalReturn(g);
+    log(g, `${p.name} left the newly revived group in reserves.`);
+    return;
+  }
+  const amount = frame.quote.normal + frame.quote.elite;
+  requireRule((action.amount === undefined || action.amount === amount) && typeof action.destination === 'string',
+    'Place the entire eligible revived group in one destination.');
+  const quote = homeworldRule(() => quoteHomeworldRevivalDestination(g, p.id, frame.quote, action.destination as string));
+  const seat = quote.transfer.players.find((seat) => seat.id === p.id)!;
+  p.reserves = seat.reserves;
+  if (p.elites) p.elites.reserves = seat.eliteReserves;
+  g.homeworlds!.custody = quote.transfer.state;
+  frame.destination = quote.selected.id;
+  frame.stage = 'arrival';
+  stampHomeworldRevivalProgress(g);
+  frame.ambassadors = [];
+  frame.arrivalSignature = homeworldRevivalArrivalSignature(frame);
+  if (quote.selected.territory) {
+    place(p, quote.selected.territory, quote.selected.sector!, amount, frame.quote.elite);
+    openTerritoryEntry(g, p, quote.selected.territory, quote.selected.sector!, amount, frame.quote.elite, 'homeworldRevival');
+    if (g.pendingAmbassador) {
+      g.pendingAmbassador.revivalEvent = frame.event;
+      appendHomeworldRevivalAmbassador(frame, g.pendingAmbassador);
+    }
+  }
+  log(g, `${p.name} placed ${amount} newly revived ${frame.quote.kind === 'fedaykin' ? 'Fedaykin' : 'free forces'} in ${quote.selected.name}. No additional revival payment or shipment allowance was used.`,
+    { faction: p.faction, name: frame.quote.kind === 'fedaykin' ? 'Southern Hemisphere revival' : 'Tleilax free revival' });
+}
+function projectedHomeworldRevivalReturn(g: Game, player: string) {
+  const frame = g.homeworldRevivalReturn;
+  if (frame?.stage !== 'choice') return null;
+  return { event: frame.event, player: frame.player, kind: frame.quote.kind,
+    normal: frame.quote.normal, elite: frame.quote.elite, blocked: frame.quote.blocked,
+    destinations: player === frame.player
+      ? homeworldRule(() => homeworldRevivalDestinations(g, player, frame.quote)) : [],
+  };
+}
+function homeworldRevivalChoiceBlocks(g: Game, p: Player) {
+  const blocks: { source: 'normal' | 'ghola'; amount: number; elite: number; reason: string }[] = [];
+  if (!g.homeworlds?.custody || !['fremen', 'tleilaxu'].includes(p.faction)) return blocks;
+  for (const source of ['normal', 'ghola'] as const) {
+    const maximum = source === 'normal' ? forceRevivalRemaining(g, p) : Math.min(5, p.tanks);
+    for (let amount = 1; amount <= maximum; amount++)
+      for (let elite = Math.max(0, amount - (p.tanks - (p.elites?.tanks ?? 0)));
+        elite <= Math.min(amount, eliteRevivalRemaining(p, g.advanced)); elite++) {
+        const free = source === 'normal' ? forceRevivalQuote(g, p, amount, elite).free : 0;
+        const grant = currentHomeworldRevivalGrant(g, p, source, { amount, elite, free });
+        if (grant?.blocked) blocks.push({ source, amount, elite, reason: grant.blocked });
+      }
+  }
+  return blocks;
+}
 function collectRevivalIncome(
   g: Game,
   actor: Player,
@@ -11505,7 +13076,14 @@ function collectRevivalIncome(
   const tleilaxu = byFaction(g, 'tleilaxu');
   if (!tleilaxu) return;
   g.revivalFreeIncome ??= {};
-  const reward = ghola || (free && g.revivalFreeIncome[actor.id] !== g.turn);
+  const reward =
+    ghola ||
+    (free &&
+      g.revivalFreeIncome[actor.id] !== g.turn &&
+      !(
+        actor.id !== tleilaxu.id &&
+        homeworldRule(() => tleilaxuHomeworldFreeIncomeBlocked(g))
+      ));
   if (free && !ghola) g.revivalFreeIncome[actor.id] = g.turn;
   const amount = (actor.id === tleilaxu.id ? 0 : paid) + (reward ? 1 : 0);
   if (amount)
@@ -11554,12 +13132,19 @@ function finishRevival(
     );
     return;
   }
+  const deploymentGrant = revival.kind === 'forces'
+    ? requireHomeworldRevivalGrant(g, p, revival.emperorExtra ? 'emperorExtra' : 'normal', {
+        amount: revival.amount!, elite: revival.elite ?? 0, free: revival.free,
+      })
+    : null;
   payer.spice -= revival.cost;
   if (revival.kind === 'forces') {
     const n = revival.amount!,
       elite = revival.elite ?? 0;
+    const source = revival.emperorExtra ? 'emperorExtra' : 'normal';
+    const group = { amount: n, elite, free: revival.free };
+    addRevivedReserves(g, p, n, elite);
     p.tanks -= n;
-    p.reserves += n;
     if (revival.emperorExtra)
       g.emperorExtra[p.id] = (g.emperorExtra[p.id] ?? 0) + n;
     else {
@@ -11570,7 +13155,6 @@ function finishRevival(
     }
     if (p.elites) {
       p.elites.tanks -= elite;
-      p.elites.reserves += elite;
       p.elites.revived += elite;
     }
     if (quote.techIncome) {
@@ -11584,7 +13168,8 @@ function finishRevival(
         `${rule.name} accrued ${token.spice} spice for ${getPlayer(g, income.owner).name}, payable at phase end.`,
       );
     }
-    log(g, `${p.name} revived ${n} forces.`);
+    log(g, `${p.name} revived ${n} forces.${g.homeworlds ? ` ${revival.free} were free; ${n - revival.free} were paid. ${payer.name} paid ${revival.cost} spice. Future revival requests use the resulting Homeworld population.` : ''}`);
+    stageHomeworldRevivalReturn(g, p, source, group, deploymentGrant);
   } else {
     if (revival.kind === 'kwisatz') {
       p.kwisatz!.dead = false;
@@ -11619,6 +13204,9 @@ function beginRevival(g: Game, revival: PendingRevival) {
     !revivalPrevented(g, revival.player),
     'Tleilaxu prevented this faction’s normal revivals for this turn.',
   );
+  if (revival.kind === 'forces')
+    requireHomeworldRevivalGrant(g, getPlayer(g, revival.player), revival.emperorExtra ? 'emperorExtra' : 'normal',
+      { amount: revival.amount!, elite: revival.elite ?? 0, free: revival.free });
   g.pendingRevival = revival;
   const choam = byFaction(g, 'choam');
   if (
@@ -11758,7 +13346,7 @@ function currentPlacementCancellationQuote(g: Game, response: ResponseWindow) {
     } else if (!byFaction(g, 'choam')) {
       const resources = currentPhaseResources(g);
       if (!g.expansions.includes('ix')) {
-        const board = boardResolution(() => quoteBattleBoard(g));
+        const board = boardResolution(() => quoteCombatBoard(g));
         if (!board.battles.length) {
           // No combat: the actual Battle initializer departs again to
           // collection. Project only settled public balances and empty aid.
@@ -11795,6 +13383,7 @@ function currentPlacementCancellationQuote(g: Game, response: ResponseWindow) {
 }
 function finishResponse(g: Game, canceled: boolean) {
   karamaConversionIntegrity(g);
+  currentFactionPayment(g);
   const response = g.response!;
   const ecazCollectionQuote =
     response.kind === 'ecazCollection'
@@ -12326,7 +13915,17 @@ function finishResponse(g: Game, canceled: boolean) {
       : null;
     const pending = g.pendingIxSubstitution!;
     const player = getPlayer(g, pending.player);
-    if (!canceled) {
+    if (!canceled && pending.homeworld) {
+      homeworldSubstitutionIntegrity(g);
+  homeworldDefenseIntegrity(g);
+  homeworldShipmentIntegrity(g);
+      const amount = Object.values(pending.sources!).reduce((a, b) => a + b, 0);
+      const quote = quoteHomeworldSubstitution(homeworldLossContext(g), g.homeworlds!.custody!, {
+        location: pending.territory, player: player.id, amount, cyborgsLost: pending.homeworld.cyborgsLost,
+      });
+      commitHomeworldResources(g, quote);
+      log(g, `${player.name} exchanged ${amount} surviving Suboids for the same number of Cyborgs lost at ${combatLocationName(g, pending.territory)}.`);
+    } else if (!canceled) {
       for (const [key, count] of Object.entries(pending.sources!))
         kill(g, player, key, count, true, 0);
       for (const [key, count] of Object.entries(pending.recover!)) {
@@ -12381,6 +13980,8 @@ function finishResponse(g: Game, canceled: boolean) {
     if (g.pendingRevival) finishRevival(g);
   } else if (response.kind === 'revivalIncome') {
     if (!canceled) getPlayer(g, response.owner).spice += response.amount!;
+    if (g.pendingChoamMarketGhola && g.pendingChoamMarketGhola.event === response.intent)
+      g.pendingChoamMarketGhola.stage = 'complete';
   } else if (response.kind === 'faceDancerReplacement') {
     const owner = getPlayer(g, response.owner);
     const index = owner.faceDancers!.findIndex(
@@ -12412,20 +14013,27 @@ function finishResponse(g: Game, canceled: boolean) {
     if (canceled) {
       const quote = choamSaleCancellationQuote(g, response)!;
       g.choamMarket = quote.market;
-      g.decision = quote.decision;
+      resumeChoamMarket(g);
       log(
         g,
         'The declared CHOAM card sale was canceled; the card stays in hand.',
       );
       return;
-    } else if (quoteSale(owner.hand, sale.card, sale.witness)) {
+    }
+    const saleCard = owner.hand.find((card) => card.id === sale.card);
+    const saleBlock = saleCard
+      ? homeworldRule(() => homeworldWorthlessSaleBlock(g, owner.id, saleCard))
+      : null;
+    if (quoteSale(owner.hand, sale.card, sale.witness) && !saleBlock) {
       discard(g, owner, sale.card);
       owner.spice += sale.price;
       log(g, `${owner.name} received ${sale.price} spice from the card sale.`);
     } else
       log(
         g,
-        'The declared card sale is no longer possible; no spice was paid.',
+        saleBlock
+          ? 'Tupile is now high population, so the declared Worthless sale cannot finish. The card stays in hand and no spice is paid.'
+          : 'The declared card sale is no longer possible; no spice was paid.',
       );
     delete market.sale;
     resumeChoamMarket(g);
@@ -12450,6 +14058,10 @@ function finishResponse(g: Game, canceled: boolean) {
         : { turn: g.turn, canceled };
     if (!canceled) {
       const choam = getPlayer(g, response.owner);
+      requireRule(
+        homeworldLowBonus(g, choam.id) === 0,
+        'Low-population CHOAM opening income awaits its Homeworld charity ruling.',
+      );
       const amount = 2 * g.players.length * charityMultiplier(g);
       choam.spice += amount;
       log(g, `${choam.name} collected ${amount} spice before charity claims.`);
@@ -12460,7 +14072,12 @@ function finishResponse(g: Game, canceled: boolean) {
       );
   } else if (response.kind === 'bgCharity') {
     if (!canceled)
-      payCharity(g, getPlayer(g, response.owner), response.amount ?? 2);
+      payCharity(
+        g,
+        getPlayer(g, response.owner),
+        response.amount ?? 2,
+        response.charityHomeworld ?? 0,
+      );
   } else if (response.kind === 'advisorFlip') {
     if (canceled) movementCancellationQuote(g, response);
     const bg = getPlayer(g, response.owner),
@@ -12572,6 +14189,8 @@ function finishResponse(g: Game, canceled: boolean) {
       g.auction!.peekKnown =
         terminal?.kind === 'atreidesAuction' ? terminal.known : !canceled;
   } else if (response.kind === 'atreidesSpice') {
+    const blocked = homeworldRule(() => homeworldMovementForesightBlock(g, response.owner));
+    requireRule(!blocked, blocked ?? 'Caladan prevents this foresight.');
     g.spicePeekKnown =
       terminal?.kind === 'atreidesSpice' ? terminal.known : !canceled;
   } else if (response.kind === 'wormPlacement') {
@@ -12651,12 +14270,12 @@ function finishResponse(g: Game, canceled: boolean) {
       );
     }
   } else if (response.kind === 'guildIncome') {
-    if (!canceled) getPlayer(g, response.owner).spice += response.amount!;
+    const payment = !canceled ? creditFactionPayment(g, response.owner, 'shipment', response.amount!) : null;
     log(
       g,
       canceled
         ? `Karama sent the ${response.amount} spice of Guild shipment income to the bank. The shipment and its price remain unchanged.`
-        : `${getPlayer(g, response.owner).name} collected ${response.amount} spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.`,
+        : `${getPlayer(g, response.owner).name} collected ${payment!.income} spice paid by other factions for shipment.${payment!.bank ? ` Low-population Junction leaves ${payment!.bank} spice in the bank.` : ''} Spice contributed by the Guild itself goes to the bank.`,
       {
         faction: 'guild',
         name: canceled ? 'Shipment income prevented' : 'Shipment income',
@@ -12679,12 +14298,12 @@ function finishResponse(g: Game, canceled: boolean) {
         response.amount === 3,
       'This Richese purchase income is no longer current.',
     );
-    if (!canceled) getPlayer(g, response.owner).spice += 3;
+    const payment = !canceled ? creditFactionPayment(g, response.owner, 'treachery', 3) : null;
     log(
       g,
       canceled
         ? 'Karama prevented the Emperor from collecting the 3-spice Richese purchase payment. The purchase remains completed and the payment goes to the bank.'
-        : `${getPlayer(g, response.owner).name} collected 3 spice because the Emperor receives another faction’s Treachery Card purchase payment.`,
+        : `${getPlayer(g, response.owner).name} collected ${payment!.income} spice from another faction’s Treachery Card purchase payment.${payment!.bank ? ` Low-population Kaitain leaves ${payment!.bank} spice in the bank.` : ''}`,
       {
         faction: 'emperor',
         name: canceled ? 'Purchase income prevented' : 'Card purchase income',
@@ -12702,10 +14321,10 @@ function finishResponse(g: Game, canceled: boolean) {
     if (!canceled) {
       const owner = getPlayer(g, response.owner);
       const amount = g.currentAuctionSale?.amount ?? g.auction!.bid;
-      owner.spice += amount;
+      const payment = creditFactionPayment(g, owner.id, 'treachery', amount);
       log(
         g,
-        `${owner.name} received ${amount} spice because the Emperor collects another faction’s paid auction bid.`,
+        `${owner.name} received ${payment.income} spice from another faction’s ${amount}-spice paid auction bid.${payment.bank ? ` Low-population Kaitain leaves ${payment.bank} spice in the bank.` : ''}`,
         { faction: owner.faction, name: 'Auction income' },
       );
     }
@@ -12738,9 +14357,8 @@ function finishResponse(g: Game, canceled: boolean) {
     }
     if (canceled) return;
     const owner = getPlayer(g, response.owner);
-    requireRule(owner.reserves > 0, 'No forces remain in reserves.');
-    owner.reserves--;
     const target = splitLocation(response.location ?? 'polar_sink:0');
+    const amount = integer(response.amount === undefined ? 1 : response.amount, 1, spiritualAdvisorMaximum(g, owner.id, target.territory), 'Spiritual Advisor forces');
     const advisors = arrivalAsAdvisor(
       g,
       owner,
@@ -12748,7 +14366,9 @@ function finishResponse(g: Game, canceled: boolean) {
       undefined,
       target.territory !== 'polar_sink',
     );
-    place(owner, target.territory, target.sector, 1);
+    allowedEntry(g, owner, target.territory, target.sector, false, advisors);
+    withdrawNativeReserves(g, owner, amount, 0);
+    place(owner, target.territory, target.sector, amount);
     techIncome(g, 'heighliners', owner);
     if (advisors) {
       owner.advisors ??= {};
@@ -12756,20 +14376,253 @@ function finishResponse(g: Game, canceled: boolean) {
     }
     log(
       g,
-      `${owner.name} sent a free force to ${territory(target.territory).name}.`,
+      `${owner.name} sent ${amount} free ${amount === 1 ? 'force' : 'forces'} to ${territory(target.territory).name}${amount === 2 ? ' using high-population Wallach IX' : ''}.`,
+      {faction: owner.faction, name: 'Spiritual Advisors'},
     );
     openTerritoryEntry(
       g,
       owner,
       target.territory,
       target.sector,
-      1,
+      amount,
       0,
       'advisor',
     );
   } else throw new RuleError('Unknown faction response.');
 }
+function homeworldAllianceReason(g: Game, first: string, second: string) {
+  return g.homeworlds?.custody
+    ? homeworldRule(() => homeworldAllianceBlock(homeworldContext(g), g.homeworlds!.custody!, first, second)) : null;
+}
+function homeworldShipmentAutomatic(g: Game): boolean {
+  const decision = g.decision;
+  if (decision?.kind !== 'homeworldShipmentGuild' || g.response || g.truthtrance ||
+      g.phaseOpening || g.pendingNullentropy || g.pendingTreacheryDiscard ||
+      g.pendingKarama || g.pendingExchange || g.pendingRicheseGift || g.summonedWorm)
+    return false;
+  homeworldShipmentIntegrity(g);
+  const guild = getPlayer(g, decision.player);
+  return !guild.hand.some((card) => {
+    if (card.effect !== 'karama') return false;
+    try { prepareSpecialKaramaIntent(g, guild.id, {type: 'card', mode: 'special', card: card.id}); return true; }
+    catch (error) { if (error instanceof RuleError) return false; throw error; }
+  });
+}
+function homeworldShipmentEvent(g: Game, p: Player, route?: 'arrakis'): string {
+  if (route === 'arrakis') return JSON.stringify([homeworldShipmentEvent(g, p), route,
+    g.storm, p.forces, p.elites?.forces ?? {}, g.mobileStronghold?.location ?? null]);
+  return JSON.stringify([g.turn, g.phase, g.active, p.id, p.shipped,
+    homeworldContext(g), g.homeworlds?.custody,
+    g.players.map((seat) => [seat.id, seat.ally])]);
+}
+function homeworldShipmentBlock(g: Game, p: Player, checkPromises = true): string | null {
+  if (!g.homeworlds?.custody) return 'Homeworld shipment requires the Homeworld module.';
+  if (g.status !== 'playing' || g.phase !== 5 || g.active !== p.id || p.shipped)
+    return 'Use your unused shipment during your own Shipment and Movement turn.';
+  if (g.truthtrance || g.response || g.decision || g.phaseOpening ||
+      g.pendingNullentropy || g.pendingTreacheryDiscard || g.pendingShipment ||
+      g.pendingHomeworldShipment || g.pendingExchange || g.pendingRicheseGift || g.battle)
+    return 'Finish the current interaction before another Homeworld shipment.';
+  if (g.karamaShipping?.player === p.id)
+    return 'Homeworld shipment using a purchased Karama rate awaits its card-scope integration.';
+  const richese = byFaction(g, 'richese');
+  if (richese && !noFieldAllyOfferBlock(g, richese) &&
+      !(g.richeseAllyOpportunity?.turn === g.turn && g.richeseAllyOpportunity.recipient === p.id))
+    return 'Wait for Richese to offer or pass its allied shipment opportunity.';
+  try { if (checkPromises) checkShipmentPromises(g, p, null); }
+  catch (error) { if (error instanceof RuleError) return error.message; throw error; }
+  return null;
+}
+function guildHomeworldShipmentBlock(g: Game, p: Player): string | null {
+  if (p.faction !== 'guild') return 'Only Guild has this Arrakis-to-Homeworld shipment permission.';
+  return homeworldShipmentBlock(g, p);
+}
+function junctionTransportWindow(g: Game) {
+  const owner = homeworldRule(() => junctionSponsor(g));
+  const recipient = g.players.find((seat) => seat.id === g.active);
+  if (!owner || !recipient || owner === recipient.id || g.phase !== 5 ||
+      g.status !== 'playing' || recipient.shipped) return null;
+  const offer = currentJunctionOffer(g);
+  const blocked = homeworldShipmentBlock(g, recipient, false);
+  return {owner, recipient: recipient.id, offer, blocked,
+    canOffer: !blocked, offerEvent: junctionOfferEvent(g),
+    event: JSON.stringify([homeworldShipmentEvent(g, recipient, 'arrakis'), offer])};
+}
+function performJunctionTransport(g: Game, p: Player, action: Action) {
+  const option = junctionTransportWindow(g);
+  requireRule(option && option.recipient === p.id && !option.blocked && option.offer,
+    option?.blocked ?? 'Wait for Guild to offer Junction transport during your unused shipment.');
+  requireRule(action.event === option.event && action.offer === option.offer.event,
+    'This Junction offer or physical source selection has changed.');
+  requireRule(Object.keys(action).every((key) =>
+    ['type', 'event', 'offer', 'destination', 'sources', 'allyPayment'].includes(key)),
+    'Use the offered tariff and explicit physical forces without concealed tokens.');
+  const destination = stringField(action.destination);
+  const context = {...homeworldContext(g), storm: g.storm,
+    players: homeworldContext(g).players.map((seat) => ({...seat, ally: getPlayer(g, seat.id).ally})),
+    mobileStronghold: g.mobileStronghold?.location ?? null,
+    board: {[p.id]: {forces: p.forces, eliteForces: p.elites?.forces ?? {}, advisors: p.advisors}}};
+  const quote = homeworldRule(() => quoteJunctionTransport(context, g.homeworlds!.custody!,
+    {player: p.id, sponsor: option.owner, rate: option.offer!.rate, destination,
+      sources: action.sources as HomeworldShipmentIntent['sources']}));
+  const arrival = quote.destinationKind === 'arrakis' ? splitLocation(destination) : null;
+  const nativeDeparture = quote.originKind === 'homeworld' && quote.sources.every((source) =>
+    source.key === `homeworld:${p.faction}` || (p.faction === 'emperor' && source.key === 'homeworld:emperor:salusa'));
+  const promise = nativeDeparture && arrival ? {territory: arrival.territory, amount: quote.amount} : null;
+  checkShipmentPromises(g, p, promise);
+  const sourceLock = quote.originKind === 'arrakis' ? p.advisors?.[quote.origin]?.lockedTurn : undefined;
+  const advisors = arrival ? arrivalAsAdvisor(g, p, arrival.territory,
+    quote.originKind === 'arrakis' ? quote.origin : undefined) : false;
+  if (arrival) {
+    requireRule(arrival.territory !== MOBILE_STRONGHOLD || p.faction === 'ixians',
+      'Only Ixians may ship directly into the mobile stronghold.');
+    requireRule(advisors || sourceLock !== g.turn ||
+      !g.players.some((other) => other.id !== p.id && at(other, arrival.territory)),
+      'New advisors cannot become fighters this turn.');
+    allowedEntry(g, p, arrival.territory, arrival.sector, false, advisors);
+  }
+  const allyPayment = contribution(g, p, quote.cost, action.allyPayment);
+  // Junction permission and tariff are Homeworld effects and resist Karama.
+  // All validation precedes this atomic settlement; there is no special-stop frame.
+  payWithAlly(g, p, quote.cost, allyPayment);
+  g.homeworlds!.custody = quote.state;
+  p.forces = quote.boardForces;
+  if (p.elites) p.elites.forces = quote.boardEliteForces;
+  for (const seat of quote.players) {
+    const owner = getPlayer(g, seat.id);
+    owner.reserves = seat.reserves;
+    if (owner.elites) owner.elites.reserves = seat.eliteReserves;
+  }
+  if (arrival) {
+    place(p, arrival.territory, arrival.sector, quote.amount, quote.elite);
+    if (advisors) (p.advisors ??= {})[arrival.territory] = {
+      lockedTurn: Math.max(sourceLock ?? 0, p.advisors?.[arrival.territory]?.lockedTurn ?? 0) || undefined};
+    else if (p.advisors) delete p.advisors[arrival.territory];
+  }
+  p.shipped = true;
+  g.junctionOffer = null;
+  finishShipmentPromises(g, p, promise);
+  // Native Fremen reinforcement is on Arrakis; all other world departures
+  // are off-planet. Homeworld destinations independently trigger E3 technology.
+  const offPlanet = quote.originKind === 'homeworld' && !(nativeDeparture && p.faction === 'fremen');
+  if (!arrival || offPlanet) techIncome(g, 'heighliners', p);
+  const ordinaryIncome = !!arrival && nativeDeparture && p.faction !== 'fremen';
+  const income = (ordinaryIncome ? quote.cost - allyPayment : 0) +
+    (p.ally === option.owner ? 0 : allyPayment);
+  if (income > 0) g.response = guildPaymentResponse(g, option.owner,
+    [ordinaryIncome ? quote.cost - allyPayment : 0, p.ally === option.owner ? 0 : allyPayment]);
+  const sourceName = quote.originKind === 'arrakis' ? territory(quote.origin).name :
+    quote.sources.map((s) => combatLocationName(g, s.key)).join(' and ');
+  log(g, `${p.name} accepted ${getPlayer(g, option.owner).name}’s Junction ${option.offer.rate}-price offer and transported ${quote.amount} physical forces (${quote.elite} special) from ${sourceName} to ${arrival ? `${territory(arrival.territory).name}, sector ${arrival.sector}` : combatLocationName(g, destination)} for ${quote.cost} spice (${quote.cost - allyPayment} own, ${allyPayment} pledged). The shipment is used; movement remains available.`,
+    {faction: 'guild', name: 'Junction transport'});
+  if (arrival) {
+    const bg = byFaction(g, 'beneGesserit');
+    const followup = offPlanet && bg && bg.id !== p.id && spiritualAdvisorMaximum(g, bg.id) > 0
+      ? {shipment: p.id, destination} : undefined;
+    if (!intrusion(g, p, arrival.territory, {followup}) && followup)
+      g.decision = {kind: 'advisor', player: bg!.id, ...followup};
+    openTerritoryEntry(g, p, arrival.territory, arrival.sector, quote.amount, quote.elite, 'shipment');
+  }
+}
+function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {route?: 'arrakis'}) {
+  requireRule(g.homeworlds?.custody, 'Homeworld shipment requires saved physical custody.');
+  const context = {
+    ...homeworldContext(g),
+    players: homeworldContext(g).players.map((seat) => ({...seat, ally: getPlayer(g, seat.id).ally})),
+  };
+  const order = {player: intent.player, destination: intent.destination, sources: intent.sources};
+  if (intent.route === 'arrakis') {
+    const quote = homeworldRule(() => quoteGuildHomeworldShipment({...context, storm: g.storm,
+      mobileStronghold: g.mobileStronghold?.location ?? null,
+      board: Object.fromEntries(g.players.map((p) => [p.id, {forces: p.forces, eliteForces: p.elites?.forces ?? {}}])),
+    }, g.homeworlds!.custody!, order));
+    return {...quote, sources: quote.boardSources, sourceNames: [territory(quote.origin).name]};
+  }
+  const quote = homeworldRule(() => quoteHomeworldShipment(context, g.homeworlds!.custody!, order));
+  return {...quote, boardForces: undefined, boardEliteForces: undefined,
+    sourceNames: quote.sources.map((s) => combatLocationName(g, s.homeworld))};
+}
+function validateHomeworldShipment(g: Game, shipment: PendingHomeworldShipment) {
+  const p = getPlayer(g, shipment.player);
+  requireRule(g.status === 'playing' && g.phase === 5 && g.active === p.id && !p.shipped &&
+    shipment.turn === g.turn && (shipment.route === undefined || shipment.route === 'arrakis') &&
+    shipment.event === homeworldShipmentEvent(g, p, shipment.route),
+    'This Homeworld declaration no longer matches its unused shipment and physical custody.');
+  requireRule(g.karamaShipping?.player !== p.id,
+    'Homeworld shipment using a purchased Karama rate awaits its card-scope integration.');
+  const quote = homeworldShipmentQuote(g, shipment);
+  requireRule(shipment.amount === quote.amount && shipment.elite === quote.elite &&
+    shipment.cost === quote.cost && JSON.stringify(shipment.pools) === JSON.stringify(quote.sources),
+    'The saved Homeworld shipment price or typed source pools changed.');
+  integer(shipment.allyPayment, 0, quote.cost, 'Shipment ally payment');
+  contribution(g, p, quote.cost, shipment.allyPayment);
+  checkShipmentPromises(g, p, null);
+  return quote;
+}
+function homeworldShipmentIntegrity(g: Game) {
+  homeworldMobilityIntegrity(g);
+  homeworldRule(() => junctionOfferIntegrity(g));
+  const decisions = homeworldSavedDecisions(g).filter((d) => d.kind === 'homeworldShipmentGuild');
+  const shipment = g.pendingHomeworldShipment;
+  if (!shipment && !decisions.length) return;
+  requireRule(shipment && decisions.length > 0 && !g.pendingShipment,
+    'The saved Homeworld shipment needs its original Guild decision.');
+  validateHomeworldShipment(g, shipment);
+  const guild = byFaction(g, 'guild');
+  requireRule(g.advanced && guild && !guild.specialKaramaUsed,
+    'This Homeworld shipment has no available Guild interception.');
+  for (const d of decisions) requireRule(d.player === guild.id &&
+    d.shipper === shipment.player && d.destination === shipment.destination &&
+    d.amount === shipment.amount && d.event === shipment.event,
+    'The saved Guild decision differs from its Homeworld declaration.');
+}
+function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment) {
+  const quote = validateHomeworldShipment(g, shipment);
+  const p = getPlayer(g, shipment.player);
+  payWithAlly(g, p, quote.cost, shipment.allyPayment);
+  g.homeworlds!.custody = quote.state;
+  if (shipment.route === 'arrakis') {
+    p.forces = quote.boardForces!;
+    if (p.elites) p.elites.forces = quote.boardEliteForces!;
+  }
+  for (const seat of quote.players) {
+    const owner = getPlayer(g, seat.id);
+    owner.reserves = seat.reserves;
+    if (owner.elites) owner.elites.reserves = seat.eliteReserves;
+  }
+  p.shipped = true;
+  g.pendingHomeworldShipment = null;
+  // The E3 FAQ explicitly includes Homeworld shipment, including Fremen.
+  techIncome(g, 'heighliners', p);
+  // Off-planet destinations do not create the Guild's ordinary onto-Dune income.
+  // November FAQ contributor routing remains independent of that trigger.
+  const guild = byFaction(g, 'guild');
+  const income = guild && p.ally !== guild.id ? shipment.allyPayment : 0;
+  if (guild && income > 0)
+    g.response = guildPaymentResponse(g, guild.id, [income]);
+  finishShipmentPromises(g, p, null);
+  log(g, `${p.name} shipped ${quote.amount} physical forces (${quote.elite} special) from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.`,
+    {faction: p.faction, name: 'Homeworld shipment'});
+}
+function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentIntent & {route?: 'arrakis'}, allyPayment?: unknown) {
+  const quote = homeworldShipmentQuote(g, intent);
+  const shipment: PendingHomeworldShipment = {...intent, sources: structuredClone(intent.sources),
+    event: homeworldShipmentEvent(g, p, intent.route), turn: g.turn, amount: quote.amount, elite: quote.elite,
+    cost: quote.cost, allyPayment: contribution(g, p, quote.cost, allyPayment), pools: quote.sources};
+  const guild = byFaction(g, 'guild');
+  if (g.advanced && guild && !guild.specialKaramaUsed) {
+    g.pendingHomeworldShipment = shipment;
+    g.decision = {kind: 'homeworldShipmentGuild', player: guild.id, shipper: p.id,
+      destination: intent.destination, amount: quote.amount, event: shipment.event};
+    log(g, `${p.name} declared ${quote.amount} physical forces for ${combatLocationName(g, intent.destination)}. Payment and departure await the Guild interception decision.`);
+  } else commitHomeworldShipment(g, shipment);
+}
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
+  requireRule(
+    !(shipment.noField || shipment.alliedNoField) ||
+      shipment.homeworldSources === undefined,
+    'A No-Field shipment uses its own physical source allocation.',
+  );
   if (shipment.source === 'ambassador') {
     validateAmbassadorShipmentOrder(g, shipment);
     return;
@@ -12788,6 +14641,21 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
   const n = integer(shipment.amount, 1, p.reserves, 'Shipment forces');
   integer(shipment.sector, 0, 18, 'Shipment sector');
   eliteChoice(n, p.reserves, p.elites?.reserves ?? 0, shipment.elite);
+  if (g.homeworlds?.custody)
+    homeworldRule(() =>
+      quoteNativeReserveWithdrawal(
+        homeworldContext(g),
+        g.homeworlds!.custody!,
+        p.id,
+        { normal: n - shipment.elite, elite: shipment.elite },
+        shipment.homeworldSources,
+      ),
+    );
+  else
+    requireRule(
+      shipment.homeworldSources === undefined,
+      'Homeworld source selection requires the Homeworld module.',
+    );
   requireRule(
     typeof shipment.elite === 'number' &&
       shipment.advisors === arrivalAsAdvisor(g, p, shipment.territory),
@@ -12868,6 +14736,7 @@ function validateGuildShipmentDecision(
 }
 function offerShipment(g: Game, shipment: PendingShipment) {
   validatePhysicalShipment(g, shipment);
+  checkShipmentIncomeRounding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
   const p = getPlayer(g, shipment.player),
     id = p.id;
   const { territory: to, sector: s } = shipment;
@@ -12973,9 +14842,25 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     owner.spice -= quote.ownerPayment;
     p.spice -= quote.recipientPayment;
   } else payWithAlly(g, p, cost, allyPayment);
+  let homeworldOrigins = '';
   if (!shipment.noField) {
-    p.reserves -= n;
-    if (p.elites) p.elites.reserves -= elite;
+    const receipts = withdrawNativeReserves(
+      g,
+      p,
+      n,
+      elite,
+      shipment.homeworldSources,
+    );
+    homeworldOrigins = receipts
+      .map((receipt) => {
+        const card = HOMEWORLD_CARDS.find((c) =>
+          receipt.homeworld === 'homeworld:emperor:salusa'
+            ? c.id === 'salusa_secundus'
+            : c.faction === p.faction && c.id !== 'salusa_secundus',
+        )!;
+        return `${receipt.before.normal - receipt.after.normal} normal and ${receipt.before.elite - receipt.after.elite} special forces from ${card.name}`;
+      })
+      .join('; ');
     if (n > 0) place(p, to, s, n, elite);
   }
   if (advisors && n > 0) (p.advisors ??= {})[to] ??= {};
@@ -12991,12 +14876,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     bankOnly: g.karamaShipping?.player === p.id,
   });
   if (guild && guildPayment > 0)
-    g.response = {
-      kind: 'guildIncome',
-      owner: guild.id,
-      amount: guildPayment,
-      passed: [],
-    };
+    g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment));
   g.karamaShipping = null;
   log(
     g,
@@ -13004,14 +14884,14 @@ function commitShipment(g: Game, shipment: PendingShipment) {
       ? `${getPlayer(g, shipment.alliedNoField.owner).name} shipped ${p.name} with No-Field ${quoteAlliedTokenValue(g, shipment.alliedNoField)}, immediately placing ${n} physical forces (${elite} elite) in ${territory(to).name}, sector ${s}. ${shipment.alliedNoField.payer === 'both' ? 'Each ally paid 1 spice' : `${getPlayer(g, shipment.alliedNoField.payer).name} paid ${cost} spice`}.`
       : shipment.noField
         ? `${p.name} shipped one concealed No-Field to ${territory(to).name}, sector ${s}, for ${cost} spice. It counts as one force; physical reserves remain unchanged until reveal.`
-        : `${p.name} shipped ${n} forces to ${territory(to).name}, sector ${s}.`,
+        : `${p.name} shipped ${n} forces to ${territory(to).name}, sector ${s}.${homeworldOrigins ? ` Homeworld sources: ${homeworldOrigins}. Total shipment cost: ${cost} spice.` : ''}`,
     shipment.noField || shipment.alliedNoField
       ? { faction: 'richese', name: 'No-Field shipment' }
       : undefined,
   );
   const bg = byFaction(g, 'beneGesserit');
   const followup =
-    p.faction !== 'fremen' && bg && bg.id !== p.id && bg.reserves > 0
+    p.faction !== 'fremen' && bg && bg.id !== p.id && spiritualAdvisorMaximum(g, bg.id) > 0
       ? { shipment: p.id, destination: location(to, s) }
       : undefined;
   if (!intrusion(g, p, to, { followup }) && followup)
@@ -13042,6 +14922,8 @@ function quoteAlliedTokenValue(g: Game, offer: RicheseAllyOffer) {
   )!.value;
 }
 function validateMobileMove(g: Game, p: Player, input: unknown, max: number) {
+  const blocked = homeworldRule(() => homeworldMobileStrongholdMovementBlock(g, p.id));
+  requireRule(!blocked, blocked ?? 'The mobile stronghold cannot move.');
   requireRule(
     p.faction === 'ixians' &&
       g.mobileStronghold?.location &&
@@ -13074,6 +14956,8 @@ function relocateMobileStronghold(
   move: { player: string; route: string[]; collect: boolean },
 ) {
   const p = getPlayer(g, move.player);
+  const blocked = homeworldRule(() => homeworldMobileStrongholdMovementBlock(g, p.id));
+  requireRule(!blocked, blocked ?? 'The mobile stronghold cannot move.');
   let collected = 0;
   if (move.collect)
     for (const key of move.route) {
@@ -13327,6 +15211,7 @@ export type SpecialKaramaIntent = {
       battle: Pick<Battle, 'territory' | 'attacker' | 'defender'>;
     }
   | { kind: 'guild'; target: string; shipment: PendingShipment }
+  | { kind: 'guildHomeworld'; target: string; shipment: PendingHomeworldShipment }
   | { kind: 'emperorForces'; amount: number; elite: number }
   | { kind: 'emperorLeader'; leader: string }
   | { kind: 'harkonnen'; target: string; amount: number }
@@ -13460,6 +15345,11 @@ export function prepareSpecialKaramaIntent(
       'Wait for a normal revival declaration before preventing it.',
     );
     const target = g.pendingRevival.player;
+    const homeworldBlock = homeworldRevivalKaramaBlock(g, target);
+    requireRule(
+      !homeworldBlock,
+      homeworldBlock ?? '',
+    );
     requireRule(
       action.target === undefined || action.target === target,
       'This decision applies to the faction currently reviving.',
@@ -13514,6 +15404,15 @@ export function prepareSpecialKaramaIntent(
       },
     };
   } else if (p.faction === 'guild') {
+    if (g.decision?.kind === 'homeworldShipmentGuild') {
+      requireRule(!g.response && g.decision.player === p.id,
+        'Wait for your Homeworld shipment interception decision.');
+      homeworldShipmentIntegrity(g);
+      const shipment = g.pendingHomeworldShipment!;
+      requireRule(action.target === undefined || action.target === shipment.player,
+        'Stop the player who declared this Homeworld shipment.');
+      return {...base, kind: 'guildHomeworld', target: shipment.player, shipment: structuredClone(shipment)};
+    }
     requireRule(
       g.phase === 5 &&
         !g.response &&
@@ -13554,7 +15453,7 @@ export function prepareSpecialKaramaIntent(
     const n = integer(action.amount, 1, Math.min(3, p.tanks), 'Forces');
     const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
     requireRule(
-      elite <= eliteRevivalRemaining(p),
+      elite <= eliteRevivalRemaining(p, g.advanced),
       'Only one elite force may be revived per turn.',
     );
     return { ...base, kind: 'emperorForces', amount: n, elite };
@@ -13600,6 +15499,7 @@ function specialKaramaAction(intent: SpecialKaramaIntent): Action {
     case 'tleilaxu':
     case 'atreides':
     case 'guild':
+    case 'guildHomeworld':
       return { ...action, target: intent.target };
     case 'fremen':
       return { ...action, territory: intent.territory };
@@ -13656,6 +15556,9 @@ export function executeSpecialKaramaIntent(
         sameDeclaration(intent.shipment, prepared.shipment),
       'The original shipment declaration is no longer pending.',
     );
+  if (intent.kind === 'guildHomeworld' && prepared.kind === 'guildHomeworld')
+    requireRule(intent.target === prepared.target && sameDeclaration(intent.shipment, prepared.shipment),
+      'The original Homeworld shipment declaration is no longer pending.');
   if (intent.kind === 'atreides' && prepared.kind === 'atreides')
     requireRule(
       sameDeclaration(intent.battle, prepared.battle),
@@ -13770,6 +15673,15 @@ export function executeSpecialKaramaIntent(
       g,
       `${p.name} used special Karama to inspect ${getPlayer(g, target).name}’s entire battle plan.`,
     );
+  } else if (intent.kind === 'guildHomeworld') {
+    const shipper = getPlayer(g, intent.target);
+    discard(g, p, card.id);
+    p.specialKaramaUsed = true;
+    shipper.shipped = true;
+    g.pendingHomeworldShipment = null;
+    g.decision = null;
+    finishShipmentPromises(g, shipper, null);
+    log(g, `${p.name} used special Karama to stop ${shipper.name}’s interplanetary shipment. No forces arrive or spice is paid; their shipment is used and movement remains available.`);
   } else if (intent.kind === 'guild') {
     const shipper = getPlayer(g, intent.target);
     discard(g, p, card.id);
@@ -13813,11 +15725,10 @@ export function executeSpecialKaramaIntent(
     } else {
       const n = intent.amount,
         elite = intent.elite;
+      addRevivedReserves(g, p, n, elite);
       p.tanks -= n;
-      p.reserves += n;
       if (p.elites) {
         p.elites.tanks -= elite;
-        p.elites.reserves += elite;
         p.elites.revived += elite;
       }
       log(g, `${p.name} used special Karama to revive ${n} forces for free.`);
@@ -13937,12 +15848,19 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  marketGholaIntegrity(state);
+  homeworldRule(() => homeworldGameIntegrity(state));
+  homeworldBattleLossIntegrity(state);
+  homeworldSubstitutionIntegrity(state);
+  homeworldDefenseIntegrity(state);
+  homeworldShipmentIntegrity(state);
   karamaConversionIntegrity(state);
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
   ambassadorRelocationIntegrity(state);
   ecazCollectionIntegrity(state);
+  ecazAllianceIntegrity(state);
   // Seat control is independent of gameplay locks and must preserve their exact continuation.
   if (action?.type === 'setAutopilot') {
     requireRule(
@@ -13987,6 +15905,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  homeworldRule(() => homeworldGameIntegrity(g));
+  homeworldBattleLossIntegrity(g);
+  homeworldSubstitutionIntegrity(g);
+  homeworldDefenseIntegrity(g);
+  homeworldShipmentIntegrity(g);
   karamaConversionIntegrity(g);
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
@@ -14073,11 +15996,23 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileBattlePromises(g, { actor: id, action });
   reconcileShipmentPromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
+  marketGholaIntegrity(g);
+  homeworldRule(() => homeworldGameIntegrity(g));
+  homeworldBattleLossIntegrity(g);
+  homeworldSubstitutionIntegrity(g);
+  homeworldDefenseIntegrity(g);
+  homeworldShipmentIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
   if (g.pendingNullentropy) return;
-  finishTreacheryDiscard(g);
+  // Losing cleanup may finish casualties and produce the winner's mandatory
+  // discard. Retire that next physical batch before exposing optional choices.
+  for (let i = 0; g.pendingTreacheryDiscard && i < 16; i++) finishTreacheryDiscard(g);
+  requireRule(!g.pendingTreacheryDiscard, 'The automatic discard chain did not finish.');
+  resumeHomeworldRevivalReturn(g);
+  resumeHomeworldVictoryReturn(g);
+  resumeMarketGhola(g);
   if (!g.truthtrance && !g.decision && !g.response) advanceSetup(g);
   if (
     !g.truthtrance &&
@@ -14151,12 +16086,19 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  marketGholaIntegrity(state);
+  homeworldRule(() => homeworldGameIntegrity(state));
+  homeworldBattleLossIntegrity(state);
+  homeworldSubstitutionIntegrity(state);
+  homeworldDefenseIntegrity(state);
+  homeworldShipmentIntegrity(state);
   karamaConversionIntegrity(state);
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
   ambassadorRelocationIntegrity(state);
   ecazCollectionIntegrity(state);
+  ecazAllianceIntegrity(state);
   const g = structuredClone(state);
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
@@ -14170,6 +16112,12 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
   settleAutomaticContinuations(g);
+  marketGholaIntegrity(g);
+  homeworldRule(() => homeworldGameIntegrity(g));
+  homeworldBattleLossIntegrity(g);
+  homeworldSubstitutionIntegrity(g);
+  homeworldDefenseIntegrity(g);
+  homeworldShipmentIntegrity(g);
   return g;
 }
 
@@ -14180,6 +16128,9 @@ function applyActionInner(
   execution: 'live' | 'shipmentPreparation' = 'live',
 ): Game {
   const g = structuredClone(state);
+  if (g.biddingEnd && action.type !== 'advanceBots' &&
+      !(action.type === 'biddingEnd' && action.mode === 'ready'))
+    g.biddingEnd.ready = [];
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
   stoneBurnerIntegrity(g);
@@ -14406,6 +16357,15 @@ function applyActionInner(
     specialKarama(g, p, action);
     return g;
   }
+  if (t === 'card' && choamSaleGholaTiming(g) &&
+      p.hand.some((card) => card.id === action.card && card.effect === 'ghola')) {
+    playMarketGhola(g, p, action);
+    return g;
+  }
+  if (t === 'biddingEnd') {
+    decideBiddingEnd(g, p, action);
+    return g;
+  }
   if (g.phaseOpening) {
     requireRule(
       g.status === 'playing',
@@ -14495,6 +16455,14 @@ function applyActionInner(
       'Waiting for the player with the pending decision.',
     );
     g.decision = null;
+    if (decision.kind === 'homeworldRevivalDeployment') {
+      decideHomeworldRevivalReturn(g, p, action);
+      return g;
+    }
+    if (decision.kind === 'caladanReinforcement') {
+      decideHomeworldVictoryReturn(g, p, action);
+      return g;
+    }
     if (decision.kind === 'ecazSpice') {
       g.decision = decision;
       decideSharedSpice(g, id, action);
@@ -14833,95 +16801,7 @@ function applyActionInner(
       decision.kind === 'choamTradeReply' ||
       decision.kind === 'choamTradeConfirm'
     ) {
-      const market = g.choamMarket!;
-      const owner = getPlayer(g, market.owner);
-      if (decision.kind === 'choamMarket') {
-        if (action.done === true) {
-          finishChoamMarket(g);
-        } else if (action.mode === 'sell') {
-          const sale = quoteSale(
-            owner.hand,
-            action.card,
-            action.witness,
-            market.blocked,
-          );
-          requireRule(
-            sale,
-            'Choose an available Worthless card or surplus exact duplicate.',
-          );
-          market.sale = sale;
-          const card = owner.hand.find((c) => c.id === sale.card)!;
-          log(
-            g,
-            `${owner.name} revealed ${sale.witness ? 'two copies of ' : ''}${card.name} and offered one for ${sale.price} spice.`,
-          );
-          g.response = { kind: 'choamSale', owner: owner.id, passed: [] };
-        } else {
-          requireRule(
-            action.mode === 'trade',
-            'Sell a card, offer a trade or finish the phase.',
-          );
-          requireRule(
-            g.choamTradeTurn !== g.turn,
-            'CHOAM may exchange one card with its ally only once per turn.',
-          );
-          const ally = g.players.find(
-            (p) => p.id === owner.ally && p.ally === owner.id,
-          );
-          requireRule(ally, 'You need an ally for a two-way trade.');
-          requireRule(
-            owner.hand.some((c) => c.id === action.card),
-            'Offer a card from your own hand.',
-          );
-          market.trade = { ally: ally.id, offered: stringField(action.card) };
-          market.tradeAttempted = true;
-          g.decision = { kind: 'choamTradeReply', player: ally.id };
-        }
-      } else {
-        const trade = market.trade!;
-        const ally = getPlayer(g, trade.ally);
-        if (action.decline === true) {
-          delete market.trade;
-          resumeChoamMarket(g);
-        } else if (decision.kind === 'choamTradeReply') {
-          requireRule(
-            ally.hand.some((c) => c.id === action.card),
-            'Choose one of your cards to return, or decline.',
-          );
-          trade.returned = stringField(action.card);
-          g.decision = { kind: 'choamTradeConfirm', player: owner.id };
-        } else {
-          requireRule(
-            action.accept === true,
-            'Confirm the two-way exchange or decline.',
-          );
-          const offered = owner.hand.find((c) => c.id === trade.offered);
-          const returned = ally.hand.find((c) => c.id === trade.returned);
-          if (
-            offered &&
-            returned &&
-            owner.ally === ally.id &&
-            ally.ally === owner.id &&
-            g.choamTradeTurn !== g.turn
-          ) {
-            owner.hand = owner.hand.filter((c) => c.id !== offered.id);
-            ally.hand = ally.hand.filter((c) => c.id !== returned.id);
-            owner.hand.push(returned);
-            ally.hand.push(offered);
-            g.choamTradeTurn = g.turn;
-            log(
-              g,
-              `${owner.name} and ${ally.name} exchanged one treachery card each.`,
-            );
-          } else
-            log(
-              g,
-              'The proposed card exchange is no longer possible; both hands remain unchanged.',
-            );
-          delete market.trade;
-          resumeChoamMarket(g);
-        }
-      }
+      decideChoamMarket(g, decision, action);
     } else if (decision.kind === 'ixSetup') {
       requireRule(
         g.status === 'setup' && p.faction === 'ixians' && g.ixSetupCards,
@@ -15074,7 +16954,9 @@ function applyActionInner(
               .filter(([, count]) => Number(count) > 0),
           ) as Record<string, number>;
         };
-        const sources = Object.fromEntries(
+        const sources = pending.territory.startsWith('homeworld:')
+          ? { [pending.territory]: combatArmy(g, p.id, pending.territory).normal }
+          : Object.fromEntries(
           Object.entries(p.forces)
             .filter(
               ([key]) => splitLocation(key).territory === pending.territory,
@@ -15112,7 +16994,12 @@ function applyActionInner(
           'You do not have an unrevealed Face Dancer for that leader.',
         );
         const winner = getPlayer(g, decision.winner);
-        const maximum = at(winner, decision.territory);
+        const blocked = faceDanceReturnBlock(g, winner.id);
+        requireRule(!blocked, blocked ?? 'This Face Dance return is unavailable.');
+        const home = homeworldBattleLocation(g, decision.territory);
+        requireRule(!home || home.native === p.id, 'Only the native faction may call a Face Dancer on a Homeworld.');
+        const army = combatArmy(g, winner.id, decision.territory);
+        const maximum = home ? army.normal + army.elite : at(winner, decision.territory);
         const sources = action.sources;
         requireRule(
           sources && typeof sources === 'object' && !Array.isArray(sources),
@@ -15138,19 +17025,31 @@ function applyActionInner(
           total <= maximum,
           'You cannot replace more forces than the winner has remaining.',
         );
-        const sector = integer(action.sector, 0, 18, 'Sector');
-        requireRule(
-          validLocation(decision.territory, sector),
-          'Choose a sector in the battle territory.',
-        );
+        const sector = home ? 0 : integer(action.sector, 0, 18, 'Sector');
+        requireRule(home || validLocation(decision.territory, sector), 'Choose a sector in the battle territory.');
         // This is replacement, not shipment or movement: no transport cost or worm/storm transit.
         for (const source of selected) {
-          if (source.key === 'reserves') p.reserves -= source.count;
+          if (source.key === 'reserves') { if (!home) p.reserves -= source.count; }
           else {
             p.forces[source.key] -= source.count;
             if (!p.forces[source.key]) delete p.forces[source.key];
           }
         }
+        if (home) {
+          const destination = `homeworld:${winner.faction}`;
+          const external = selected.filter((source) => source.key !== 'reserves').reduce((n, source) => n + source.count, 0);
+          const quote = quoteHomeworldCustody(homeworldContext(g), g.homeworlds!.custody!, [
+            { homeworld: home.id, player: winner.id, withdraw: army, deposit: {normal: 0, elite: 0} },
+            { homeworld: destination, player: winner.id, withdraw: {normal: 0, elite: 0}, deposit: army },
+            { homeworld: home.id, player: p.id, withdraw: {normal: 0, elite: 0}, deposit: {normal: external, elite: 0} },
+          ]);
+          g.homeworlds!.custody = quote.state;
+          for (const update of quote.players) {
+            const owner = getPlayer(g, update.id);
+            owner.reserves = update.reserves;
+            if (owner.elites) owner.elites.reserves = update.eliteReserves;
+          }
+        } else {
         for (const key of Object.keys(winner.forces).filter(
           (key) => splitLocation(key).territory === decision.territory,
         )) {
@@ -15160,6 +17059,7 @@ function applyActionInner(
             delete winner.elites.forces[key];
           }
           delete winner.forces[key];
+        }
         }
         const leader = g.players
           .flatMap((player) => player.leaders)
@@ -15171,11 +17071,11 @@ function applyActionInner(
           delete leader.capturedBy;
           delete leader.concealed;
         }
-        if (total) place(p, decision.territory, sector, total);
+        if (total && !home) place(p, decision.territory, sector, total);
         dancer.revealed = true;
         log(
           g,
-          `${p.name} revealed a Face Dancer and replaced ${total} forces in ${territory(decision.territory).name}.`,
+          `${p.name} revealed a Face Dancer and replaced ${total} forces in ${combatLocationName(g, decision.territory)}.`,
         );
         if (p.faceDancers!.every((c) => c.revealed)) {
           g.traitorReserve = shuffle([
@@ -15252,6 +17152,15 @@ function applyActionInner(
         action.continue === true,
         'Confirm that you have inspected the battle plan.',
       );
+    } else if (decision.kind === 'homeworldShipmentGuild') {
+      requireRule(action.allow === true && action.event === decision.event,
+        'Allow this exact Homeworld declaration, or use the Guild special Karama.');
+      const shipment = g.pendingHomeworldShipment;
+      requireRule(shipment && decision.player === byFaction(g, 'guild')?.id &&
+        decision.event === shipment.event && decision.shipper === shipment.player &&
+        decision.destination === shipment.destination && decision.amount === shipment.amount,
+        'The Guild decision no longer matches this Homeworld shipment.');
+      commitHomeworldShipment(g, shipment);
     } else if (decision.kind === 'guildShipment') {
       requireRule(
         action.allow === true,
@@ -15348,6 +17257,29 @@ function applyActionInner(
       );
       kill(g, p, decision.key, decision.amount, false, elite);
       if (decision.resume === 'storm') continueStorm(g);
+    } else if (decision.kind === 'homeworldDefense') {
+      const b = g.battle;
+      requireRule(b?.revealed && b.territory.startsWith('homeworld:') && b.event === decision.event && action.event === decision.event &&
+        [b.attacker, b.defender].includes(id) && !traitorVoters(g, b).includes(id) && !b.homeworldDefensePassed?.includes(id),
+        'This Homeworld late-defense choice is no longer current.');
+      requireRule(typeof action.use === 'boolean', 'Use Portable Snooper or decline its late-defense opportunity.');
+      if (action.use) {
+        const card = p.hand.find(isPortableSnooper);
+        requireRule(card, 'The late defense needs your held Portable Snooper.');
+        validatePortableSnooper(g, p, card.id, decision.event);
+        (b.lateDefense ??= {})[id] = card.id;
+        log(g, `${p.name} added Portable Snooper after the Homeworld battle plans were revealed.`, {faction: p.faction, name: 'Portable Snooper'});
+      }
+      (b.homeworldDefensePassed ??= []).push(id);
+      advanceHomeworldReveal(g);
+    } else if (decision.kind === 'homeworldExplosion') {
+      homeworldBattleLossIntegrity(g);
+  homeworldSubstitutionIntegrity(g);
+  homeworldDefenseIntegrity(g);
+  homeworldShipmentIntegrity(g);
+      requireRule(action.event === decision.event, 'This Homeworld casualty choice belongs to a different battle.');
+      const choice = decision.options[integer(action.choice, 0, decision.options.length - 1, 'Casualty choice')];
+      settleHomeworldExplosion(g, choice, false);
     } else if (decision.kind === 'battleLosses') {
       const choice =
         decision.options[
@@ -15443,6 +17375,7 @@ function applyActionInner(
             owner: id,
             passed: [],
             location: location(quote.territory, quote.sector),
+            amount: quote.amount,
             advisorResume: 'ambassador',
             advisorAmbassadorEvent: decision.ambassadorEvent,
           };
@@ -15454,13 +17387,13 @@ function applyActionInner(
           finishAmbassador(g);
         }
       } else if (action.accept) {
-        requireRule(p.reserves > 0, 'No forces remain in your reserves.');
         const target =
           action.accompany === true && g.advanced
             ? decision.destination
             : 'polar_sink:0';
         requireRule(target, 'This shipment has no accompanying destination.');
         const dest = splitLocation(target);
+        const amount = integer(action.amount === undefined ? 1 : action.amount, 1, spiritualAdvisorMaximum(g, p.id, dest.territory), 'Spiritual Advisor forces');
         if (
           g.advanced &&
           action.accompany === true &&
@@ -15480,6 +17413,7 @@ function applyActionInner(
           owner: id,
           passed: [],
           location: location(dest.territory, dest.sector),
+          amount,
         };
       } else log(g, `${p.name} declined the free shipment.`);
     } else if (decision.kind === 'wormPlacement') {
@@ -15594,7 +17528,7 @@ function applyActionInner(
         ? cleanupBattleContext(g, decision.territory, p.id)
         : null;
       const discarded = [...selected].map((id) => ({
-        card: discard(g, p, id),
+        card: discard(g, p, id, cleanupDiscardRole(g, p, id)),
         discardedBy: p.id,
         publicFace: true,
       }));
@@ -15649,6 +17583,16 @@ function applyActionInner(
       );
       g.techTokens = action.enabled ? createTechTokens() : null;
       g.players.forEach((p) => (p.ready = !!p.bot));
+      return g;
+    }
+    if (t === 'homeworlds') {
+      requireRule(id === g.host, 'Only the host can change optional rules.');
+      requireRule(
+        typeof action.enabled === 'boolean',
+        'Choose whether to use Homeworlds.',
+      );
+      g.homeworlds = action.enabled ? { custody: null } : null;
+      g.players.forEach((player) => (player.ready = !!player.bot));
       return g;
     }
     if (t === 'strongholdCards') {
@@ -15951,6 +17895,8 @@ function applyActionInner(
     } else {
       const other = getPlayer(g, stringField(action.target));
       requireRule(other.id !== id, 'Choose another player.');
+      const blocked = homeworldAllianceReason(g, id, other.id);
+      requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
       requireRule(
         !p.ally && !other.ally,
         'Break existing alliances before forming a new one.',
@@ -15970,7 +17916,8 @@ function applyActionInner(
   }
   if (t === 'charity') {
     const advancedBG = g.advanced && p.faction === 'beneGesserit';
-    const amount = charityAmount(g, p);
+    const quote = charityQuote(g, p);
+    const amount = quote.total;
     requireRule(
       g.phase === 2 && amount > 0,
       'Charity is available here when you have fewer than two spice.',
@@ -15985,8 +17932,14 @@ function applyActionInner(
     );
     p.charityTurn = g.turn;
     if (advancedBG && p.spice >= 2)
-      g.response = { kind: 'bgCharity', owner: id, passed: [], amount };
-    else payCharity(g, p, amount);
+      g.response = {
+        kind: 'bgCharity',
+        owner: id,
+        passed: [],
+        amount,
+        ...(g.homeworlds ? { charityHomeworld: quote.homeworld } : {}),
+      };
+    else payCharity(g, p, amount, quote.homeworld);
     log(g, `${p.name} claimed CHOAM charity.`);
     return g;
   }
@@ -16124,7 +18077,7 @@ function applyActionInner(
           )
         : 0;
     requireRule(
-      elite <= eliteRevivalRemaining(recipient),
+      elite <= eliteRevivalRemaining(recipient, g.advanced),
       'Only one elite force may be revived per turn.',
     );
     if (t === 'emperorRevival')
@@ -16331,7 +18284,7 @@ function applyActionInner(
     const n = integer(action.amount, 1, forceRevivalRemaining(g, p), 'Forces');
     const elite = eliteChoice(n, p.tanks, p.elites?.tanks ?? 0, action.elite);
     requireRule(
-      elite <= eliteRevivalRemaining(p),
+      elite <= eliteRevivalRemaining(p, g.advanced),
       'Only one elite force may be revived per turn.',
     );
     const availableFree = forceRevivalQuote(g, p, n).free;
@@ -16348,9 +18301,11 @@ function applyActionInner(
     requireRule(quote.cost <= p.spice, 'Not enough spice for revival.');
     const checks: PendingRevival['checks'] = [];
     const choamBenefit = p.faction === 'choam' && !g.revivalRules?.choamBlocked;
-    if (choamBenefit && (n > quote.free || p.revived + n > 3))
+    const uncancelableLimit = Math.max(3, freeRevivalRate(g, p));
+    if (choamBenefit && (n > quote.free || p.revived + n > uncancelableLimit))
       checks.push('choamRevival');
-    if (!choamBenefit && p.revived + n > 3) checks.push('revivalLimit');
+    if (!choamBenefit && p.revived + n > uncancelableLimit)
+      checks.push('revivalLimit');
     const factionCost = choamBenefit ? n - quote.free : quote.normalCost;
     if (quote.cost < factionCost) checks.push('revivalDiscount');
     beginRevival(g, {
@@ -16437,7 +18392,18 @@ function applyActionInner(
     revealPlayerNoField(g, p, 'voluntary');
     return g;
   }
-  if (['ship', 'move', 'endMovement', 'guildShip'].includes(t)) {
+  if (
+    [
+      'ship',
+      'homeworldShip',
+      'guildHomeworldShip',
+      'junctionShip',
+      'move',
+      'emperorHomeworldMove',
+      'endMovement',
+      'guildShip',
+    ].includes(t)
+  ) {
     const richese = byFaction(g, 'richese');
     requireRule(
       !richese ||
@@ -16480,6 +18446,33 @@ function applyActionInner(
       g,
       `${p.name} offered their ally a No-Field shipment. Its proposed token and destination remain private until shipment is declared.`,
     );
+    return g;
+  }
+  if (t === 'offerJunctionTransport') {
+    const option = junctionTransportWindow(g);
+    requireRule(option && option.owner === id && option.canOffer,
+      option?.blocked ?? 'Only high-population Junction can offer transport during another faction’s unused shipment.');
+    requireRule(action.event === option.offerEvent && (action.rate === 'half' || action.rate === 'full') &&
+      Object.keys(action).every((key) => ['type', 'event', 'rate'].includes(key)),
+      'Choose half or full price for the current Junction opportunity.');
+    g.junctionOffer = {event: crypto.randomUUID(), turn: g.turn, owner: id,
+      recipient: option.recipient, rate: action.rate};
+    log(g, `${p.name} offered ${getPlayer(g, option.recipient).name} ${action.rate}-price Junction transport for their current shipment. They may use the offer or choose their ordinary actions.`);
+    return g;
+  }
+  if (t === 'junctionShip') {
+    performJunctionTransport(g, p, action);
+    return g;
+  }
+  if (t === 'homeworldShip' || t === 'guildHomeworldShip') {
+    const route = t === 'guildHomeworldShip' ? 'arrakis' as const : undefined;
+    const blocked = route ? guildHomeworldShipmentBlock(g, p) : homeworldShipmentBlock(g, p);
+    requireRule(!blocked, blocked ?? 'Homeworld shipment is unavailable.');
+    requireRule(Object.keys(action).every((key) => ['type', 'event', 'destination', 'sources', 'allyPayment'].includes(key)),
+      'Choose explicit typed source groups and a Homeworld destination without concealed tokens.');
+    requireRule(action.event === homeworldShipmentEvent(g, p, route), 'This Homeworld source selection is stale.');
+    declareHomeworldShipment(g, p, {player: id, destination: stringField(action.destination),
+      sources: action.sources as HomeworldShipmentIntent['sources'], ...(route ? {route} : {})}, action.allyPayment);
     return g;
   }
   if (t === 'ship') {
@@ -16570,9 +18563,16 @@ function applyActionInner(
       cost,
       allyPayment,
       advisors,
+      ...(action.homeworldSources === undefined
+        ? {}
+        : {
+            homeworldSources:
+              action.homeworldSources as NativeReserveSelections,
+          }),
       ...(noField ? { noField } : {}),
     };
     if (shipment.noField) {
+      checkShipmentIncomeRounding(g, p, cost, allyPayment);
       g.pendingShipment = shipment;
       g.response = { kind: 'richeseNoField', owner: p.id, passed: [] };
       log(
@@ -16583,6 +18583,21 @@ function applyActionInner(
     return g;
   }
   if (t === 'guildShip') {
+    const homeworldTarget = action.territory ?? 'reserves';
+    if (g.homeworlds?.custody && p.faction === 'guild' &&
+        (homeworldTarget === 'reserves' || (typeof homeworldTarget === 'string' && homeworldTarget.startsWith('homeworld:')))) {
+      const blocked = guildHomeworldShipmentBlock(g, p);
+      requireRule(!blocked, blocked ?? 'Guild Homeworld shipment is unavailable.');
+      requireRule(action.noField === undefined && (action.sector === undefined || action.sector === 0),
+        'A Homeworld arrival has no planet sector or concealed token.');
+      const group = forceGroup(p, action);
+      const sources = Object.fromEntries(group.group.map(([key, amount]) => [key,
+        {normal: amount - (group.eliteGroup[key] ?? 0), elite: group.eliteGroup[key] ?? 0}]));
+      declareHomeworldShipment(g, p, {route: 'arrakis', player: id,
+        destination: homeworldTarget === 'reserves' ? 'homeworld:guild' : homeworldTarget as string,
+        sources}, action.allyPayment);
+      return g;
+    }
     checkShipmentPromises(
       g,
       p,
@@ -16659,6 +18674,7 @@ function applyActionInner(
       'Not enough spice.',
     );
     const allyPayment = contribution(g, p, cost, action.allyPayment);
+    checkShipmentIncomeRounding(g, p, cost, allyPayment);
     payWithAlly(g, p, cost, allyPayment);
     const guild = byFaction(g, 'guild');
     const guildPayment = guildShipmentIncome({
@@ -16670,12 +18686,7 @@ function applyActionInner(
       bankOnly: g.karamaShipping?.player === id,
     });
     if (guild && guildPayment > 0)
-      g.response = {
-        kind: 'guildIncome',
-        owner: guild.id,
-        amount: guildPayment,
-        passed: [],
-      };
+      g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment));
     if (fromReserves) {
       p.reserves -= n;
       if (p.elites) p.elites.reserves -= elite;
@@ -16708,7 +18719,63 @@ function applyActionInner(
     }
     return g;
   }
+  if (t === 'emperorHomeworldMove') {
+    const blocked = emperorHomeworldMoveBlock(g, p);
+    requireRule(!blocked, blocked ?? 'Homeworld movement is unavailable.');
+    requireRule(
+      Object.keys(action).every((key) =>
+        ['type', 'event', 'origin', 'normal', 'elite'].includes(key),
+      ),
+      'Choose only the source Homeworld and physical force types.',
+    );
+    requireRule(
+      action.event === emperorHomeworldMoveEvent(g, p),
+      'This Homeworld movement selection is stale.',
+    );
+    const quote = homeworldRule(() =>
+      quoteEmperorHomeworldMove(
+        {
+          ...homeworldContext(g),
+          status: g.status,
+          phase: g.phase,
+          currentPlayer: g.active,
+          movesLeft: movesAllowed(g, p) - p.moved,
+        },
+        g.homeworlds!.custody!,
+        id,
+        {
+          origin: stringField(action.origin) as EmperorHomeworld,
+          forces: {
+            normal: integer(action.normal, 0, 20, 'Normal forces'),
+            elite: integer(action.elite, 0, 5, 'Sardaukar'),
+          },
+        },
+      ),
+    );
+    g.homeworlds!.custody = quote.state;
+    finishShipmentPromises(g, p, null);
+    p.shipped = true;
+    p.moved++;
+    const name = (world: string) =>
+      world === 'homeworld:emperor' ? 'Kaitain' : 'Salusa Secundus';
+    const shifts = quote.populations.after
+      .filter((world) => world.native === id)
+      .map(
+        (world) =>
+          `${name(world.location)} now has ${world.population} ${world.card === 'salusa_secundus' ? 'Sardaukar' : 'native reserves'} (${world.side} population)`,
+      )
+      .join('; ');
+    log(
+      g,
+      `${p.name} moved ${quote.forces.normal} normal forces and ${quote.forces.elite} Sardaukar from ${name(quote.origin)} to ${name(quote.destination)}. This spends one movement and no spice; total reserves are unchanged. ${shifts}.`,
+    );
+    return g;
+  }
   if (t === 'move') {
+    if (action.noField !== undefined) {
+      const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, id));
+      requireRule(!blocked, blocked ?? 'The No-Field cannot move.');
+    }
     if (!p.shipped) checkShipmentPromises(g, p, null);
     requireRule(
       g.phase === 5 && g.active === id && p.moved < movesAllowed(g, p),
@@ -16926,7 +18993,7 @@ function applyActionInner(
     beginStrongholdBattle(g);
     log(
       g,
-      `${p.name} attacks ${getPlayer(g, choice.defender).name} in ${territory(choice.territory).name}.`,
+      `${p.name} attacks ${getPlayer(g, choice.defender).name} in ${combatLocationName(g, choice.territory)}.`,
     );
     return g;
   }
@@ -16993,7 +19060,7 @@ function applyActionInner(
           ? typeof action.value === 'number'
             ? action.value
             : NaN
-          : integer(action.value, 0, at(p, b.territory), 'Forces dialed')
+          : integer(action.value, 0, (combatArmy(g, p.id, b.territory).normal + combatArmy(g, p.id, b.territory).elite), 'Forces dialed')
         : action.value === null || action.value === ''
           ? null
           : stringField(action.value);
@@ -17116,7 +19183,8 @@ function applyActionInner(
     if (
       traitorVoters(g, b).every((voter) => b.traitorCalls[voter] !== undefined)
     )
-      resolveBattle(g);
+      if (!b.territory.startsWith('homeworld:')) resolveBattle(g);
+      else advanceHomeworldReveal(g);
     return g;
   }
   if (t === 'card') {
@@ -17204,7 +19272,7 @@ function applyActionInner(
       );
       g.hajr.push(id);
     } else if (c.effect === 'ghola') {
-      applyGholaEffect(g, p, action);
+      applyGholaEffect(g, p, action, c.id);
     } else if (c.effect === 'harvester') {
       const blow = g.spiceWindow!;
       if (blow.sector !== g.storm) {
@@ -17261,12 +19329,19 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  marketGholaIntegrity(state);
+  homeworldRule(() => homeworldGameIntegrity(state));
+  homeworldBattleLossIntegrity(state);
+  homeworldSubstitutionIntegrity(state);
+  homeworldDefenseIntegrity(state);
+  homeworldShipmentIntegrity(state);
   karamaConversionIntegrity(state);
   treacheryDiscardIntegrity(state);
   shipmentPromiseIntegrity(state);
   saphoMovementIntegrity(state);
   ambassadorRelocationIntegrity(state);
   ecazCollectionIntegrity(state);
+  ecazAllianceIntegrity(state);
   const g = structuredClone(state);
   normalizeCardNames(g);
   settleAdvisors(g);
@@ -17297,6 +19372,14 @@ export function viewGame(state: Game, id: string) {
       ? findReachableBattlePlan(g, me)
       : null;
   return {
+    ecazPoisonIncome: (g.ecazPoisonIncome ?? []).filter((income) => income.player === id)
+      .map(({turn, phase, amount, count}) => ({turn, phase, amount, count})),
+    biddingEnd: g.biddingEnd ? { event: g.biddingEnd.event,
+      owners: [...g.biddingEnd.owners], ready: [...g.biddingEnd.ready],
+      canAct: biddingEndQuiet(g) && g.biddingEnd.owners.includes(id), kaitain: { owner: byFaction(g, 'emperor')!.id,
+        eligible: homeworldRule(() => highKaitainDiscardsAvailable(g, byFaction(g, 'emperor')!.id)) } } : null,
+    combatLocations: combatLocations(g),
+    battleChoices: g.status === 'playing' && g.phase === 6 ? quoteCombatBoard(g).battles : [],
     guildAmbassadorAdvisorChoices: guildAdvisorChoices(g, id),
     truthShipmentAnswers:
       g.truthtrance?.stage === 'answer' &&
@@ -17328,7 +19411,7 @@ export function viewGame(state: Game, id: string) {
         : null,
     schema: g.schema,
     botsPending: g.botsPending ?? false,
-    automaticContinuationPending: !!g.pendingTreacheryDiscard,
+    automaticContinuationPending: !!g.pendingTreacheryDiscard || homeworldRevealPending(g) || homeworldShipmentAutomatic(g),
     botNextActionAt: g.botNextActionAt ?? null,
     code: g.code,
     version: g.version,
@@ -17437,7 +19520,7 @@ export function viewGame(state: Game, id: string) {
                       ...choices,
                       destinations: choices.destinations.map((destination) => ({
                         ...destination,
-                        blocked: ambassadorRelocationArrivalBlock(
+                        ...ambassadorArrivalChoices(
                           g,
                           id,
                           'reserves',
@@ -17450,6 +19533,12 @@ export function viewGame(state: Game, id: string) {
             movement:
               entry.stage === 'move' && id === entry.beneficiary
                 ? ambassadorRelocationMovement(g, id)
+                : null,
+            allianceOffer:
+              entry.stage === 'offer' &&
+              token.effect === 'ecaz' &&
+              id === owner.id
+                ? { blocked: homeworldAllianceReason(g, owner.id, entrant.id) ?? ecazAllianceBlock(g, owner.id, entrant.id) }
                 : null,
             dukeAcquisition:
               entry.stage === 'offer' &&
@@ -17489,7 +19578,7 @@ export function viewGame(state: Game, id: string) {
               entry.stage === 'cards' && id === entry.beneficiary
                 ? me.hand.map((card) => ({
                     card: card.id,
-                    blocked: ambassadorDiscardBlock(g, me, card),
+                    blocked: ambassadorDiscardBlock(g, me, card, entry.effect),
                   }))
                 : [],
           };
@@ -17520,6 +19609,34 @@ export function viewGame(state: Game, id: string) {
       : null,
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
+    homeworldRevivalDeployment: projectedHomeworldRevivalReturn(g, id),
+    caladanReinforcement: projectedHomeworldVictoryReturn(g, id),
+    homeworldRevivalBlocks: homeworldRevivalChoiceBlocks(g, me),
+    homeworlds: g.homeworlds
+      ? { worlds: homeworldRule(() => homeworldTable(g)) }
+      : null,
+    homeworldMove:
+      g.homeworlds?.custody && g.advanced && me.faction === 'emperor'
+        ? {
+            event: emperorHomeworldMoveEvent(g, me),
+            blocked: emperorHomeworldMoveBlock(g, me),
+            remaining: Math.max(0, movesAllowed(g, me) - me.moved),
+          }
+        : null,
+    homeworldShipment: g.homeworlds?.custody
+      ? {event: homeworldShipmentEvent(g, me), blocked: homeworldShipmentBlock(g, me)}
+      : null,
+    guildHomeworldShipment: g.homeworlds?.custody && me.faction === 'guild'
+      ? {event: homeworldShipmentEvent(g, me, 'arrakis'), blocked: guildHomeworldShipmentBlock(g, me)}
+      : null,
+    junctionTransport: junctionTransportWindow(g),
+    homeworldMobility: {
+      foresightBlocked: homeworldRule(() => homeworldMovementForesightBlock(g, me.id)),
+      mobileStrongholdBlocked: homeworldRule(() => homeworldMobileStrongholdMovementBlock(g, me.id)),
+      noFieldMovementBlocked: homeworldRule(() => homeworldNoFieldMovementBlock(g, me.id)),
+      advisorSinkMaximum: spiritualAdvisorMaximum(g, me.id),
+      advisorAccompanyMaximum: spiritualAdvisorMaximum(g, me.id, 'arrakeen'),
+    },
     expansions: g.expansions,
     turn: g.turn,
     phase: g.phase,
@@ -17548,6 +19665,8 @@ export function viewGame(state: Game, id: string) {
       !g.nexus,
     spiceDiscardTop: g.spiceDiscard.map((pile) => pile.at(-1) ?? null),
     allianceOffers: g.allianceOffers,
+    homeworldAllianceBlocks: Object.fromEntries(g.players.filter((p) => p.id !== id)
+      .flatMap((p) => { const reason = homeworldAllianceReason(g, id, p.id); return reason ? [[p.id, reason]] : []; })),
     ecazSpice:
       g.ecazCollection?.stage === 'allocation' && g.ecazCollection.allocation
         ? {
@@ -17661,7 +19780,14 @@ export function viewGame(state: Game, id: string) {
           owner: g.choamMarket.owner,
           ...(g.choamMarket.owner === id
             ? {
-                sales: saleOptions(me.hand, g.choamMarket.blocked),
+                sales: saleOptions(me.hand, g.choamMarket.blocked).filter((sale) =>
+                  !homeworldRule(() => homeworldWorthlessSaleBlock(
+                    g, me.id, me.hand.find((card) => card.id === sale.card)!,
+                  )),
+                ),
+                worthlessSaleBlocked: homeworldRule(() =>
+                  homeworldWorthlessSaleBlock(g, me.id, { kind: 'worthless' }),
+                ),
                 canTrade: !!me.ally && g.choamTradeTurn !== g.turn,
                 tradeAttempted: !!g.choamMarket.tradeAttempted,
               }
@@ -17683,6 +19809,7 @@ export function viewGame(state: Game, id: string) {
     inflationUsed: g.inflationUsed ?? false,
     inflationAttempted: g.inflationAttemptTurn === g.turn,
     charity: {
+      ...charityQuote(g, me),
       multiplier: charityMultiplier(g),
       amount: charityAmount(g, me),
       payer: charityPayer(g)?.id ?? null,
@@ -17703,10 +19830,14 @@ export function viewGame(state: Game, id: string) {
         id,
       )
         ? { ...g.decision, leader: '', owner: '' }
-        : (g.decision ?? null),
+        : g.decision?.kind === 'faceDance'
+          ? { ...g.decision, ...(faceDanceReturnBlock(g, g.decision.winner) ? {blocked: faceDanceReturnBlock(g, g.decision.winner)!} : {}) }
+          : (g.decision ?? null),
     response: g.response
       ? {
           ...g.response,
+          ...(g.response.guildContributions ? { guildContributions: undefined } : {}),
+          ...(g.response.guildPaymentProof ? { guildPaymentProof: undefined } : {}),
           passed: g.response.passed.includes(id) ? [id] : [],
           ...(g.response.kind === 'revivalIncome' &&
           ![g.response.owner, g.response.recipient].includes(id)
@@ -17722,6 +19853,7 @@ export function viewGame(state: Game, id: string) {
             : {}),
         }
       : null,
+    paymentIncome: currentFactionPayment(g),
     responseControls: g.response
       ? {
           cancelCards: responseCancelCards(g, me, g.response),
@@ -17745,15 +19877,23 @@ export function viewGame(state: Game, id: string) {
     ),
     revival: {
       pending: !!g.pendingRevival,
+      specialKaramaBlock:
+        g.decision?.kind === 'revivalStop'
+          ? homeworldRevivalKaramaBlock(g, g.decision.recipient)
+          : null,
       leaders: leaderRevivals.leaders,
       kwisatz: leaderRevivals.kwisatz,
       prevented: revivalPrevented(g, me.id),
-      eliteRemaining: eliteRevivalRemaining(me),
-      limit: forceRevivalLimit(g, me),
+      eliteRemaining: eliteRevivalRemaining(me, g.advanced),
+      limit: normalForceRevivalLimit(g, me),
       forcesRemaining: forceRevivalRemaining(g, me),
       discount: revivalDiscount(g, me),
       choamBlocked: !!g.revivalRules?.choamBlocked,
       freeRemaining: freeRevivalRemaining(g, me),
+      homeworldBonus: homeworldLowBonus(g, me.id),
+      tleilaxuHomeworldIncomeBlocked: homeworldRule(() =>
+        tleilaxuHomeworldFreeIncomeBlocked(g),
+      ),
       freeBlocked: g.revivalRules?.freeBlocked?.includes(id) ?? false,
     },
     ghola: gholaOptions(g, me),
@@ -18000,6 +20140,13 @@ export function viewGame(state: Game, id: string) {
       : null,
     battle: b
       ? {
+          locationName: combatLocationName(g, b.territory),
+          native: homeworldBattleLocation(g, b.territory)?.native ?? null,
+          nativeBattleStrength: homeworldBattleLocation(g, b.territory)?.nativeBattleStrength ?? 0,
+          opponentForces: [b.attacker, b.defender].includes(id) &&
+            !getPlayer(g, b.attacker === id ? b.defender : b.attacker).noField?.deployed
+            ? combatForces(g, getPlayer(g, b.attacker === id ? b.defender : b.attacker), b.territory, me)
+            : null,
           strongholdCopy: b.strongholdCopy ?? null,
           strongholdEffects: Object.fromEntries(
             [b.attacker, b.defender].map((player) => [

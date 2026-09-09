@@ -32,7 +32,9 @@ export function EcazEntry({
     !entry ||
     game.decision?.kind !== 'ecazAmbassador' ||
     game.decision.player !== game.me ||
-    !['offer', 'copy', 'cards', 'move', 'ship'].includes(entry.stage)
+    !['offer', 'allianceReply', 'copy', 'cards', 'move', 'ship'].includes(
+      entry.stage,
+    )
   )
     return null;
   const me = game.players.find((p) => p.id === game.me)!;
@@ -54,6 +56,9 @@ export function EcazEntry({
     (entry.dukeAcquisition
       ? null
       : 'Duke acquisition is unavailable for this opportunity.');
+  const allianceBlock =
+    entry.allianceOffer?.blocked ??
+    (entry.allianceOffer ? null : 'This alliance opportunity is unavailable.');
   const duke = game.dukeVidal?.leader;
   return (
     <section
@@ -107,9 +112,36 @@ export function EcazEntry({
                   {dukeBlock}
                 </p>
               )}
+              <Button
+                className={buttonClass}
+                disabled={busy || !!allianceBlock}
+                aria-describedby={
+                  allianceBlock ? `${id}-alliance-block` : undefined
+                }
+                onClick={() => {
+                  if (!allianceBlock)
+                    send({
+                      trigger: true,
+                      beneficiary: entry.owner,
+                      choice: 'alliance',
+                    });
+                }}
+              >
+                Offer alliance to{' '}
+                {game.players.find((p) => p.id === entry.entrant)?.name}
+              </Button>
+              {allianceBlock && (
+                <p
+                  id={`${id}-alliance-block`}
+                  className="m-0 text-sm leading-6"
+                >
+                  {allianceBlock}
+                </p>
+              )}
               <p className="m-0 text-sm leading-6">
-                Alliance proposals, acquisition for an ally and Duke loans
-                through this Ambassador remain unfinished.
+                Both factions must be unallied. The entrant chooses whether to
+                accept. The triggered Ambassador returns to supply even if the
+                offer is refused. Duke loans remain unfinished.
               </p>
             </>
           ) : (
@@ -155,6 +187,30 @@ export function EcazEntry({
             onClick={() => send({ decline: true })}
           >
             Leave Ambassador in place
+          </Button>
+        </>
+      ) : entry.stage === 'allianceReply' ? (
+        <>
+          <p className="m-0 text-sm leading-6">
+            {game.players.find((p) => p.id === entry.owner)?.name} offers you an
+            alliance. Accepting activates both factions’ alliance abilities
+            immediately. Duke Vidal is not included in this offer. Your
+            remaining actions resume after your reply.
+          </p>
+          <Button
+            className={buttonClass}
+            disabled={busy}
+            onClick={() => send({ accept: true })}
+          >
+            Accept alliance
+          </Button>
+          <Button
+            variant="outline"
+            className={buttonClass}
+            disabled={busy}
+            onClick={() => send({ accept: false })}
+          >
+            Refuse alliance
           </Button>
         </>
       ) : entry.stage === 'copy' ? (

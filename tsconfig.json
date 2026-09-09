@@ -14,6 +14,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.cache/dune/tsconfig.tsbuildinfo",
     "paths": {
       "@/*": ["./*"]
     }
@@ -26,5 +27,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist", "out", "build", "coverage", ".wrangler"]
 }

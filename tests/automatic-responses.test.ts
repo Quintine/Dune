@@ -362,7 +362,8 @@ void test('setup completion waits for a real response then resumes automatically
 });
 
 void test('summoned worm resolves its own window before restoring and automatically completing the saved response', () => {
-  let g = fixture(['fremen', 'emperor', 'guild']);
+  // Isolate suspended-response ordering with a correctly seated Guild income owner.
+  let g = fixture(['fremen', 'guild', 'emperor']);
   g.phase = 1;
   g.storm = 18;
   g.players[0].hand = [karamas[0]];

@@ -1,0 +1,27 @@
+# Junction transport runtime
+
+9 September 2026. [Source contract and adjudicated compositions](JUNCTION_TRANSPORT_RULES.md). This extends [Guild transport](GUILD_HOMEWORLD_TRANSPORT_RUNTIME.md) with Junction's distinct high-population grant. Homeworld game starts remain disabled pending completion of the entire module.
+
+## Offers and routes
+
+Guild can offer half or full price to the faction currently taking its unused shipment. Offers are optional: the recipient can use one or continue ordinary actions. A replacement has a new identity; the old proposal cannot authorize a shipment. Current actor, turn, unused shipment, native high population, typed source custody, funding and destination legality are revalidated before acceptance. Expired offers cannot be reused in a later opportunity. The grant gives no extra shipment or movement.
+
+The shared quote supports one Arrakis territory to another territory or Homeworld, and one native or foreign Homeworld to Arrakis or another Homeworld. Advanced Emperor can combine both native worlds. Native returns are allowed; allied-world destinations remain prohibited. Normal and elite counters retain physical identity and exact source custody. Multiple sectors from the same territory can contribute. Protected mobile-stronghold interiors, source/destination storms, advisor stance and locked advisors, native reserves, and foreign garrisons remain distinct. Concealed No-Fields are not silently converted to physical counters.
+
+Homeworld destinations cost one spice per counter; ordinary Arrakis destination tariffs apply before the offered multiplier. Half price rounds upward once and does not stack with an ordinary allied discount. Junction's route and rate resist Karama, so settlement has no special Guild interception choice. Unrelated arrival responses retain their own cancellation rules.
+
+Settlement validates before changing payment or forces, consumes the shipment once, and retains movement. Native off-planet reserve shipments onto Arrakis produce ordinary Guild income; other personal route fees use the bank default. The November contributor-specific ally routing remains independent. Incoming income cannot finance the transaction that creates it. Actual Homeworld arrivals and eligible off-planet arrivals on Arrakis activate Heighliner; native Fremen southern departure retains its on-planet distinction. Eligible off-planet arrivals offer the ordinary Bene Gesserit follow-up, and Arrakis entry resumes territory effects.
+
+## Controls, AI and verification
+
+The table exposes half/full offer buttons to Guild and a typed source/destination/payment panel to the recipient. The same pure quote supplies authoritative calculations, controls and all four AI profiles. AI offers use public state; recipients retain defenders and collecting forces while considering native defense, invasions and Arrakis objectives. Automated Guild receives an opportunity to offer before an earlier-seated automated recipient spends its shipment. No human action is delayed to force an optional offer.
+
+Forty-four new regressions cover pure transport (14), actual engine actions (11), controls and all four AI profiles (9), independent integration review (6), and production SQLite recovery (4). They include duplicate acceptance, offer replacement versus acceptance races, exact typed settlement, no repeat execution on reads, malformed saved offers, private event invariance, advisory locks, and native versus foreign Fremen arrival effects. Independent review found no further core defect. Final broad check evidence is recorded in the newest [implementation checkpoint](IMPLEMENTATION_STATUS.md).
+
+Desktop browser testing exercised real keyboard offer creation and replacement, rejected eleven counters from a ten-counter source, and quoted five counters at three spice. The initial replacement collapsed the sponsor panel; retaining its opportunity identity fixed that, and subsequent keyboard replacements remained visible. At 390×844, the recipient restored the offer after refresh and used keyboard shipment to return five actual starting Atreides counters from Arrakeen to Caladan. Another refresh preserved fifteen native reserves, five counters in Arrakeen, seven spice, zero used movement and the consumed offer. Guild's held Karama remained unspent, with no spurious stop prompt or fee receipt. Desktop selection and phone selection/settlement screenshots were visually inspected; no page errors or horizontal phone overflow occurred. This used genuine setup with only the shipment opportunity staged, not a complete Homeworld game.
+
+The hourly controlled server restart backed up and preserved all **2,802** then-existing room versions/state hashes and restored the prior private QA seat. After the new browser/API checks, all **2,802** pre-existing rooms still matched their baseline with none missing. Four additional in-memory probes verified that every automated difficulty lets a later-seated Guild offer before an earlier-seated recipient spends shipment. The live QA room was never modified by those probes.
+
+## Remaining scope
+
+Occupation lifecycle and its retained low penalties, remaining Homeworld faces, concealed transport, unsponsored foreign departures, generic purchased-Karama scope, ordinary Guild cancellation timing, and complete module games remain unfinished. The high-population predicate does not claim to settle the existing occupation interpretation. Public starts and publication remain gated. Saved games and the removed-automation preference are preserved.

@@ -92,10 +92,15 @@ function action(g: Game, level: (typeof DIFFICULTIES)[number]) {
 }
 
 for (const level of DIFFICULTIES)
-  void test(`${level} explicitly acquires for Ecaz through real entry in Basic/Advanced, with or without an existing ally`, () => {
+  void test(`${level} acquires for Ecaz in Basic/Advanced when an existing alliance rules out a new offer`, () => {
     for (const advanced of [false, true])
       for (const allied of [false, true]) {
-        const g = enter(fixture(advanced, allied));
+        const initial = fixture(advanced, allied);
+        if (!allied) {
+          initial.players[1].ally = 'al';
+          initial.players[2].ally = 'in';
+        }
+        const g = enter(initial);
         assert.deepEqual(viewGame(g, 'ec').ambassadorEntry!.dukeAcquisition, {
           blocked: null,
         });
@@ -165,9 +170,11 @@ const unavailable: [string, (g: Game) => void][] = [
   ],
 ];
 for (const [name, change] of unavailable)
-  void test(`all four profiles leave the token in place when ${name}`, () => {
+  void test(`all four profiles leave the token in place when already allied and ${name}`, () => {
     const state = fixture();
     change(state);
+    state.players[0].ally = 'al';
+    state.players[2].ally = 'ec';
     const g = enter(state);
     assert.ok(viewGame(g, 'ec').ambassadorEntry!.dukeAcquisition!.blocked);
     for (const level of DIFFICULTIES) {
@@ -193,7 +200,7 @@ void test('only the actual owner gets the choice, and bots cannot acquire from a
     }
 });
 void test('all profiles rely on the server descriptor, with safe decline for a missing descriptor', () => {
-  const g = enter(fixture());
+  const g = enter(fixture(false, true));
   for (const level of DIFFICULTIES) {
     const view = botView(g, level);
     Object.defineProperty(view, 'dukeVidal', {
@@ -209,7 +216,7 @@ void test('all profiles rely on the server descriptor, with safe decline for a m
   }
 });
 void test('private opponent hands, resources and traitors do not change acquisition choices or become projected evidence', () => {
-  const g = enter(fixture());
+  const g = enter(fixture(false, true));
   const changed = structuredClone(g);
   changed.players[1].hand.push(changed.deck.shift()!);
   changed.players[1].spice = 1;
