@@ -9,7 +9,7 @@ type TerrorEntry = NonNullable<Game['pendingTerrorEntry']>;
  * This is a consistency receipt, not an authorization token or secret digest. */
 export function terrorEntrySignature(entry: TerrorEntry): string {
   return JSON.stringify([
-    entry.token,
+    entry.candidates === undefined ? entry.token : ['stack', entry.candidates, entry.selectionSignature ?? null],
     entry.entrant,
     entry.territory,
     entry.sector,
@@ -23,14 +23,29 @@ export function terrorEntrySignature(entry: TerrorEntry): string {
   ]);
 }
 
+export function terrorSelectionSignature(entry: TerrorEntry): string {
+  return JSON.stringify(['terrorSelection', entry.candidates, entry.token, entry.entrant,
+    entry.territory, entry.sector, entry.amount, entry.elite, entry.cause,
+    entry.turn, entry.phase, entry.resume, entry.ambassadorEvent ?? null]);
+}
+
 /** Older saves without a receipt remain explicit legacy state. Never invent
  * their original entry count from the destination's present occupants. */
 export function validateTerrorEntrySignature(entry: TerrorEntry): void {
-  if (entry.entrySignature === undefined) return;
+  if (entry.entrySignature === undefined && entry.candidates === undefined && entry.selectionSignature === undefined && entry.stage !== 'select') return;
   if (
     typeof entry.entrySignature !== 'string' ||
     typeof entry.token !== 'string' ||
     !entry.token ||
+    (entry.candidates === undefined
+      ? entry.selectionSignature !== undefined || entry.stage === 'select'
+      : !Array.isArray(entry.candidates) || entry.candidates.length < 2 ||
+        entry.candidates.some((id) => typeof id !== 'string' || !id) ||
+        new Set(entry.candidates).size !== entry.candidates.length ||
+        !entry.candidates.includes(entry.token) ||
+        (entry.stage === 'select'
+          ? entry.token !== entry.candidates[0] || entry.selectionSignature !== undefined
+          : entry.selectionSignature !== terrorSelectionSignature(entry))) ||
     typeof entry.entrant !== 'string' ||
     !entry.entrant ||
     !TERROR_STRONGHOLDS.includes(entry.territory) ||

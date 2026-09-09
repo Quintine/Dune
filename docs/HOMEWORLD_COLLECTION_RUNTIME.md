@@ -1,5 +1,9 @@
 # Giedi collection and low Grumman entry
 
+The later high-Grumman addition and stacked-entry development checkpoint is in
+[GRUMMAN_STACKED_TERROR_RUNTIME.md](GRUMMAN_STACKED_TERROR_RUNTIME.md). Its final
+verification remains separate from the historical checks below.
+
 This checkpoint connects two population effects. The complete Homeworld module,
 Moritani faction and expansion starts remain gated. Printed component evidence,
 the No-Field composition and Grumman's unresolved removal destination are in

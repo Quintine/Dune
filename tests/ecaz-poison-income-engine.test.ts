@@ -12,6 +12,7 @@ import { baseDeck, treacheryDeck, spiceDeck, type Card } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
 import { cashInCards } from '../game/choam-karama';
 import { createHomeworldCustody } from '../game/homeworld-custody';
+import { createTerrorState } from '../game/moritani-terror';
 import {
   homeworldContext,
   homeworldGameIntegrity,
@@ -465,6 +466,7 @@ void test('Moritani delayed Chemistry cleanup preserves its actual weapon or def
       const moritani = newPlayer('mo', 'Moritani', 'moritani');
       moritani.spice = 20;
       g.players.push(moritani);
+      g.moritaniTerror = createTerrorState(() => 0);
       g.order.push('mo');
       player(g, 'other').ally = 'mo';
       moritani.ally = 'other';

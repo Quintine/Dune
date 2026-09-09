@@ -459,6 +459,58 @@ export function MoritaniEntry({
     );
   }
 
+  // Stacked tokens are selected privately before any selected-kind lookup.
+  if (entry.stage === 'select') {
+    if (me.faction !== 'moritani') return null;
+    const selectionDisabled =
+      disabled ||
+      game.status !== 'playing' ||
+      !!game.phaseOpening ||
+      !!game.automaticContinuationPending;
+    return (
+      <section className="notice min-w-0" aria-labelledby={`${formId}-title`}>
+        <h3 id={`${formId}-title`}>Choose a Terror token</h3>
+        <p className="text-sm leading-6">
+          Choose one token in {territory(entry.territory).name} for this
+          arrival. Selecting a token keeps its face private; its reaction
+          choices follow. You may instead leave all tokens hidden and continue
+          the arrival.
+        </p>
+        <div className="flex min-w-0 flex-col gap-3">
+          {entry.candidates?.map((candidate) => (
+            <div key={candidate.token} className="space-y-2">
+              <Button
+                className={controlClass}
+                disabled={selectionDisabled}
+                onClick={() =>
+                  act({ type: 'decision', token: candidate.token })
+                }
+              >
+                Select {TERROR_DEFINITIONS[candidate.kind].name}
+              </Button>
+              {candidate.revealBlocked && (
+                <p className="text-sm leading-6">{candidate.revealBlocked}</p>
+              )}
+              {candidate.canOfferAlliance && (
+                <p className="text-sm leading-6">
+                  An alliance offer is available after selection.
+                </p>
+              )}
+            </div>
+          ))}
+          <Button
+            variant="outline"
+            className={controlClass}
+            disabled={selectionDisabled}
+            onClick={() => act({ type: 'decision', decline: true })}
+          >
+            Leave all tokens hidden
+          </Button>
+        </div>
+      </section>
+    );
+  }
+
   if (me.faction !== 'moritani' || !('kind' in entry) || !entry.kind)
     return null;
 

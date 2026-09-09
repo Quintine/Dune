@@ -21,6 +21,7 @@ const DECISIONS = {
   ecazSpice: true,
   homeworldRevivalDeployment: true,
   caladanReinforcement: true,
+  grummanCollection: true,
   choamStorm: true,
   choamMovement: true,
   choamMentat: true,

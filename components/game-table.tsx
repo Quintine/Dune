@@ -7,6 +7,8 @@ import { ShipmentPromises } from './shipment-promises';
 import { HomeworldShipment } from './homeworld-shipment';
 import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
 import { CaladanReinforcement } from './caladan-reinforcement';
+import { GrummanCollection } from './grumman-collection';
+import { TerrorBoardMarkers } from './terror-board-markers';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
@@ -1287,36 +1289,7 @@ export function GameTable({
                 ));
               })}
               <NoFieldBoardMarkers players={g.players} />
-              {g.moritaniTerror?.tokens
-                .filter((token) => token.status === 'placed' && token.location)
-                .map((token) => {
-                  const t = territory(token.location!);
-                  return (
-                    <g
-                      key={token.id}
-                      transform={`translate(${t.center[0] + 42},${t.center[1] - 22})`}
-                      pointerEvents="none"
-                      aria-label={`Hidden Terror token in ${t.name}`}
-                    >
-                      <title>Hidden Terror token · {t.name}</title>
-                      <circle
-                        r="15"
-                        fill="#392b41"
-                        stroke="#d6b9dc"
-                        strokeWidth="2"
-                      />
-                      <text
-                        y="5"
-                        textAnchor="middle"
-                        fill="#f4e1f1"
-                        fontSize="15"
-                        fontWeight="700"
-                      >
-                        T
-                      </text>
-                    </g>
-                  );
-                })}
+              <TerrorBoardMarkers tokens={g.moritaniTerror?.tokens ?? []} />
               {Object.entries(g.spice)
                 .filter(([, n]) => n > 0)
                 .map(([k, n]) => {
@@ -2030,6 +2003,8 @@ export function GameTable({
               <h2>
                 {g.decision.kind === 'caladanReinforcement'
                   ? 'Caladan victory reinforcement'
+                  : g.decision.kind === 'grummanCollection'
+                  ? 'Grumman Collection'
                   : g.decision.kind === 'homeworldRevivalDeployment'
                   ? 'Revival deployment'
                   : g.decision.kind === 'ecazSpice'
@@ -2308,6 +2283,8 @@ export function GameTable({
                 <HomeworldRevivalDeployment game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'caladanReinforcement' ? (
                 <CaladanReinforcement game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'grummanCollection' ? (
+                <GrummanCollection game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'ecazSpice' ? (
                 g.ecazSpice?.allocation ? (
                   <EcazSpice

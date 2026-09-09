@@ -2,6 +2,8 @@
 
 Primary-source audit, 9 September 2026. This document supplies a bounded implementation contract, not a runtime checkpoint. Occupation lifecycle and the separate low-Guild contributor-rounding questions remain pending; do not duplicate them.
 
+The 10 September source follow-up is [GRUMMAN_STACKED_TERROR_RULES.md](GRUMMAN_STACKED_TERROR_RULES.md); current addition/selection wiring and its pending final verification are in [GRUMMAN_STACKED_TERROR_RUNTIME.md](GRUMMAN_STACKED_TERROR_RUNTIME.md).
+
 ## Evidence inspected
 
 The original high faces were visually read again from `/tmp/dune-card-economy-homeworlds.jpg`, the 3024×4032 original photograph associated with [BGG image 7767034](https://boardgamegeek.com/image/7767034/dune-ecaz-and-moritani), posted by Jaakko/zaksalo on 2 October 2023. Grumman and Giedi Prime are both legible in its bottom row. The photograph is primary component evidence; the photographer's opinions are not rules authority. The [component audit](HOMEWORLD_COMPONENT_AUDIT.md) records all face provenance.

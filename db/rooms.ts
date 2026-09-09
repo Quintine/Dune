@@ -403,10 +403,12 @@ export function needsAutomaticRoomRecovery(
     richeseAuction?: unknown;
     battle?: { revealed: boolean; territory: string } | null;
     automaticContinuationPending?: boolean;
+    grummanCollection?: { event: string; stage?: string } | null;
   },
 ) {
   return (
     state.automaticContinuationPending === true ||
+    state.grummanCollection?.stage === 'waiting' ||
     !!state.pendingTreacheryDiscard ||
     !!state.response ||
     !!state.richeseAuction ||

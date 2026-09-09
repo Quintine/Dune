@@ -1,6 +1,7 @@
 import { biddingEndActions, choamMarketPolicy } from './bidding-end-options';
 import { homeworldRevivalActionBlock, homeworldRevivalDeploymentActions } from './homeworld-revival-deployment-options';
 import { caladanReinforcementActions } from './caladan-reinforcement-options';
+import { grummanCollectionActions } from './grumman-collection-options';
 import { botHomeworldShipmentPaymentAllowed } from './homeworld-payment-options';
 import { guildHomeworldShipmentActions } from './guild-homeworld-shipment-options';
 import { choamSaleGholaTiming } from './choam-market-ghola';
@@ -1471,6 +1472,10 @@ function policyActions(g: GameView): Action[] {
     if (d.kind === 'moritaniTerror') {
       const entry = g.terrorEntry;
       if (!entry) return [];
+      if (entry.stage === 'select') {
+        const candidate = entry.candidates?.find((candidate) => candidate.canReveal || candidate.canOfferAlliance);
+        return [candidate ? { type: 'decision', token: candidate.token } : { type: 'decision', decline: true }];
+      }
       if (entry.stage === 'allianceReply') {
         const moritani = g.players.find(
           (player) => player.faction === 'moritani',
@@ -2378,6 +2383,8 @@ function policyActions(g: GameView): Action[] {
       return homeworldRevivalDeploymentActions(g);
     if (d.kind === 'caladanReinforcement')
       return caladanReinforcementActions(g);
+    if (d.kind === 'grummanCollection')
+      return grummanCollectionActions(g);
     if (d.kind === 'battleCards')
       return [
         {

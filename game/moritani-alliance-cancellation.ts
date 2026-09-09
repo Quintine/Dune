@@ -187,11 +187,7 @@ export function quoteMoritaniAllianceCancellation(
       matches.length === 1 &&
       matches[0].status === 'placed' &&
       matches[0].location === entry.territory &&
-      TERROR_KINDS.includes(matches[0].kind) &&
-      tokens.filter(
-        (token) =>
-          token.status === 'placed' && token.location === entry.territory,
-      ).length === 1,
+      TERROR_KINDS.includes(matches[0].kind),
     'The alliance opportunity no longer has its original hidden Terror token.',
   );
   return {

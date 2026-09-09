@@ -13,6 +13,8 @@ import type { HomeworldForces } from './homeworld-custody';
 import { nativeReserveSources } from './homeworld-options';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
 import { lowGrummanRevealBlock } from './homeworld-collection';
+import { quoteGrummanCollection, quoteGrummanCollectionAction } from './grumman-collection';
+import { grummanCollectionSignature, validateGrummanCollection, type GrummanCollection } from './grumman-collection-return';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
 import { makeHomeworldVictoryReturn, validateHomeworldVictoryReturn, homeworldVictoryOfferSignature,
   homeworldVictoryObligationSignature, type HomeworldVictoryReturn, type HomeworldVictoryObligation } from './homeworld-victory-return';
@@ -34,7 +36,7 @@ import {
   type HomeworldRevivalReturn,
 } from './homeworld-revival-return';
 import { homeworldRevivalDestinations, quoteHomeworldRevivalDestination } from './homeworld-revival-destinations';
-import { terrorEntrySignature, validateTerrorEntrySignature } from './terror-entry-receipt';
+import { terrorEntrySignature, terrorSelectionSignature, validateTerrorEntrySignature } from './terror-entry-receipt';
 import {
   homeworldLowBonus,
   homeworldRevivalKaramaBlock,
@@ -577,6 +579,7 @@ export type Auction = {
 };
 export type Decision =
   | { kind: 'homeworldRevivalDeployment'; player: string; event: string }
+  | { kind: 'grummanCollection'; player: string; event: string }
   | { kind: 'caladanReinforcement'; player: string; event: string }
   | { kind: 'choamAudit'; player: string; event: string }
   | { kind: 'choamAuditPayment'; player: string; event: string }
@@ -1086,6 +1089,8 @@ export type Game = {
   pendingTerrorEntry?: {
     /** Original public arrival, absent only in legacy saves. */
     entrySignature?: string;
+    candidates?: string[];
+    selectionSignature?: string;
     token: string;
     entrant: string;
     territory: string;
@@ -1104,6 +1109,7 @@ export type Game = {
     turn: number;
     phase: number;
     stage:
+      | 'select'
       | 'offer'
       | 'robbery'
       | 'discard'
@@ -1116,6 +1122,7 @@ export type Game = {
     ambassadorEvent?: string;
   } | null;
   moritaniTerror?: TerrorState;
+  grummanCollection?: GrummanCollection;
   pendingMoritaniPlacement?: {
     token: string;
     territory: string;
@@ -2490,6 +2497,7 @@ function ordinaryDiscardSignature(g: Game, next: OrdinaryDiscardContinuation) {
     homeworldRevivalReturn: g.homeworldRevivalReturn,
     ...(g.homeworldRevivalProgress === undefined ? {} : { homeworldRevivalProgress: g.homeworldRevivalProgress }),
     homeworldVictoryReinforcement: g.homeworldVictoryReinforcement,
+    ...(g.grummanCollection === undefined ? {} : { grummanCollection: g.grummanCollection }),
     dukeVidal: g.dukeVidal,
     revivalFreeIncome: g.revivalFreeIncome,
     players: g.players.map((p) => ({
@@ -8715,6 +8723,17 @@ function terrorEntryIntegrity(g: Game) {
       g.players.some((p) => p.id === entry.entrant && p.faction !== 'moritani') &&
       g.players.filter((p) => p.faction === 'moritani').length === 1,
       'The saved Terror entry has lost its original turn or seated participants.');
+    if (entry.candidates) {
+      const committedDiscard = continuation?.kind === 'terrorDiscard' && entry === continuation.entry;
+      const reserved = entry.candidates.filter((id) => id !== entry.token ||
+        (!committedDiscard && ['select', 'offer', 'allianceResponse', 'allianceReply'].includes(entry.stage)));
+      requireRule(reserved.every((id) => g.moritaniTerror?.tokens.filter((token) =>
+        token.id === id && token.status === 'placed' && token.location === entry.territory).length === 1),
+        'The stacked Terror choice has lost an original reserved token.');
+      if (committedDiscard)
+        requireRule(g.moritaniTerror?.tokens.some((token) => token.id === entry.token && token.status === 'removed'),
+          'The stacked Terror discard has lost its consumed token.');
+    }
   }
 }
 /** Public original batch size; concealed No-Field markers count as one. */
@@ -8737,9 +8756,10 @@ function openTerrorEntry(
   ambassadorEvent?: string,
 ) {
   const moritani = byFaction(g, 'moritani');
-  const token = g.moritaniTerror?.tokens.find(
+  const tokens = g.moritaniTerror?.tokens.filter(
     (t) => t.status === 'placed' && t.location === to,
-  );
+  ) ?? [];
+  const token = tokens[0];
   if (
     !moritani ||
     !token ||
@@ -8755,6 +8775,7 @@ function openTerrorEntry(
   );
   g.pendingTerrorEntry = {
     token: token.id,
+    ...(tokens.length > 1 ? { candidates: tokens.map((t) => t.id) } : {}),
     entrant: entrant.id,
     territory: to,
     sector,
@@ -8763,7 +8784,7 @@ function openTerrorEntry(
     cause,
     turn: g.turn,
     phase: g.phase,
-    stage: 'offer',
+    stage: tokens.length > 1 ? 'select' : 'offer',
     resume,
     ...(ambassadorEvent ? { ambassadorEvent } : {}),
   };
@@ -8933,6 +8954,24 @@ function decideTerror(g: Game, p: Player, action: Action) {
         : p.faction === 'moritani'),
     'This Terror entry opportunity is no longer current.',
   );
+  if (entry.stage === 'select') {
+    if (action.decline === true) {
+      requireRule(action.token === undefined, 'Declining leaves every stacked token hidden.');
+      log(g, `${p.name} left all Terror tokens hidden after this entry.`);
+      finishTerrorEntry(g);
+      return;
+    }
+    requireRule(typeof action.token === 'string' && entry.candidates?.includes(action.token),
+      'Choose one of the original stacked Terror tokens.');
+    requireRule(action.reveal === undefined && action.alliance === undefined,
+      'Choose the token before deciding whether to reveal it or offer an alliance.');
+    entry.token = action.token;
+    entry.stage = 'offer';
+    entry.selectionSignature = terrorSelectionSignature(entry);
+    entry.entrySignature = terrorEntrySignature(entry);
+    g.decision = { kind: 'moritaniTerror', player: p.id, entrant: entry.entrant, territory: entry.territory };
+    return;
+  }
   const token = g.moritaniTerror?.tokens.find((t) => t.id === entry.token);
   requireRule(token, 'The entry’s Terror token is unavailable.');
   const entrant = getPlayer(g, entry.entrant);
@@ -9865,6 +9904,11 @@ function finishEcazPlacement(g: Game) {
   completePhase(g);
 }
 function completePhase(g: Game) {
+  if (g.phase === 7 && g.grummanCollection?.turn === g.turn && g.grummanCollection.stage === 'waiting') {
+    g.grummanCollection.stage = 'complete';
+    g.grummanCollection.outcome = 'expired';
+    g.grummanCollection.signature = grummanCollectionSignature(g.grummanCollection);
+  }
   if (g.phase === 8) settleStrongholdOwnership(g);
   g.phase++;
   if (g.phase === 9) {
@@ -10236,6 +10280,77 @@ function creditGiediCollection(g: Game, player: string, desert: number) {
     log(g, 'Harkonnen received 2 spice from the bank: high-population Giedi Prime rewards positive desert collection once this phase.',
       { faction: 'harkonnen', name: 'Giedi Prime collection' });
 }
+function grummanCollectionIntegrity(g: Game) {
+  homeworldRule(() => validateGrummanCollection(g));
+  const frame = g.grummanCollection;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume,
+    g.pendingRicheseGift?.resume, g.pendingRichesePurchaseIncome?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const decisions = contexts.flatMap((context) => context?.decision?.kind === 'grummanCollection' ? [context.decision] : []);
+  requireRule(decisions.every((decision) => frame?.stage === 'choice' && decision.player === frame.player && decision.event === frame.event) &&
+    (frame?.stage !== 'choice' || decisions.length > 0),
+    'The Grumman Collection choice has lost its original phase opportunity.');
+}
+function stageGrummanCollection(g: Game) {
+  const owner = byFaction(g, 'moritani');
+  if (!owner || !g.homeworlds?.custody || g.grummanCollection?.turn === g.turn) return;
+  const frame: GrummanCollection = { event: crypto.randomUUID(), turn: g.turn,
+    player: owner.id, stage: 'waiting', signature: '' };
+  frame.signature = grummanCollectionSignature(frame);
+  g.grummanCollection = frame;
+}
+function grummanCollectionAutomatic(g: Game): boolean {
+  const frame = g.grummanCollection;
+  return !!(frame?.stage === 'waiting' && frame.turn === g.turn && g.phase === 7 &&
+    !g.phaseOpening && !g.decision && !g.response && !g.truthtrance && !g.pendingTreacheryDiscard &&
+    !g.pendingNullentropy && !g.pendingExchange && !g.pendingRicheseGift && !g.pendingKarama &&
+    (!g.ecazCollection || g.ecazCollection.stage === 'complete') &&
+    homeworldRule(() => quoteGrummanCollection(g, frame.player)).high);
+}
+function resumeGrummanCollection(g: Game) {
+  if (!grummanCollectionAutomatic(g)) return;
+  const frame = g.grummanCollection!;
+  frame.stage = 'choice';
+  frame.signature = grummanCollectionSignature(frame);
+  g.decision = { kind: 'grummanCollection', player: frame.player, event: frame.event };
+}
+function decideGrummanCollection(g: Game, p: Player, action: Action) {
+  const frame = g.grummanCollection;
+  requireRule(frame?.stage === 'choice' && frame.player === p.id && frame.event === action.event,
+    'Choose the current Grumman Collection opportunity.');
+  if (action.decline === true) {
+    requireRule(action.token === undefined && action.territory === undefined && action.mode === undefined,
+      'Declining Grumman does not move a token or collect spice.');
+    frame.outcome = 'decline';
+    log(g, `${p.name} declined Grumman’s optional Terror change; no bank spice was collected.`);
+  } else {
+    requireRule(action.mode === 'add' || action.mode === 'remove', 'Choose a Grumman token operation.');
+    requireRule(typeof action.token === 'string', 'Choose a physical Terror token.');
+    const destination = typeof action.territory === 'string' ? action.territory : '';
+    requireRule(action.mode !== 'add' || !!destination, 'Choose a stronghold for the added token.');
+    const intent = action.mode === 'remove'
+      ? { mode: 'remove' as const, token: action.token }
+      : { mode: 'add' as const, token: action.token, destination };
+    const quote = homeworldRule(() => quoteGrummanCollectionAction(g, p.id, intent));
+    requireRule(Number.isSafeInteger(p.spice + quote.amount), 'Grumman income would overflow the spice balance.');
+    g.moritaniTerror = quote.state;
+    p.spice += quote.amount;
+    frame.outcome = 'add'; frame.token = action.token; frame.territory = destination;
+    log(g, `${p.name} added one hidden Terror token to ${territory(frame.territory).name}, which already held Terror, and received 4 spice from the bank. The separate Mentat placement remains available according to its own usage.`,
+      { faction: p.faction, name: 'Grumman Collection' });
+  }
+  frame.stage = 'complete';
+  frame.signature = grummanCollectionSignature(frame);
+}
+function projectedGrummanCollection(g: Game, player: string) {
+  const frame = g.grummanCollection;
+  if (frame?.stage !== 'choice') return null;
+  const quote = homeworldRule(() => quoteGrummanCollection(g, frame.player));
+  return { event: frame.event, player: frame.player, blocked: quote.blocked, removeBlocked: quote.removeBlocked,
+    tokens: player === frame.player ? quote.tokens.map((token) => ({ id: token.id, kind: token.kind })) : [],
+    destinations: player === frame.player ? quote.destinations.map((id) => ({ id, name: territory(id).name })) : [] };
+}
 function commitCollection(
   g: Game,
   quote: ReturnType<typeof quoteSpiceCollection>,
@@ -10295,8 +10410,13 @@ function commitCollection(
   }
   for (const receipt of quote.receipts)
     creditGiediCollection(g, receipt.player, receipt.desert);
+  stageGrummanCollection(g);
 }
 function collect(g: Game) {
+  if (g.grummanCollection?.turn === g.turn) {
+    grummanCollectionIntegrity(g);
+    return;
+  }
   if (g.ecazCollection?.turn === g.turn) {
     ecazCollectionIntegrity(g);
     return;
@@ -11025,6 +11145,7 @@ function gholaOptions(g: Game, p: Player) {
   };
 }
 function marketGholaIntegrity(g: Game) {
+  grummanCollectionIntegrity(g);
   homeworldVictoryReturnIntegrity(g);
   homeworldRevivalReturnIntegrity(g);
   terrorEntryIntegrity(g);
@@ -16013,6 +16134,7 @@ function finishActionContinuations(g: Game) {
   resumeHomeworldRevivalReturn(g);
   resumeHomeworldVictoryReturn(g);
   resumeMarketGhola(g);
+  resumeGrummanCollection(g);
   if (!g.truthtrance && !g.decision && !g.response) advanceSetup(g);
   if (
     !g.truthtrance &&
@@ -16542,6 +16664,10 @@ function applyActionInner(
           passed: [],
         };
       }
+      return g;
+    }
+    if (decision.kind === 'grummanCollection') {
+      decideGrummanCollection(g, p, action);
       return g;
     }
     if (decision.kind === 'moritaniTerror') {
@@ -19411,7 +19537,7 @@ export function viewGame(state: Game, id: string) {
         : null,
     schema: g.schema,
     botsPending: g.botsPending ?? false,
-    automaticContinuationPending: !!g.pendingTreacheryDiscard || homeworldRevealPending(g) || homeworldShipmentAutomatic(g),
+    automaticContinuationPending: !!g.pendingTreacheryDiscard || homeworldRevealPending(g) || homeworldShipmentAutomatic(g) || grummanCollectionAutomatic(g),
     botNextActionAt: g.botNextActionAt ?? null,
     code: g.code,
     version: g.version,
@@ -19428,6 +19554,7 @@ export function viewGame(state: Game, id: string) {
       : null,
     moritaniPendingPlacement:
       me.faction === 'moritani' ? (g.pendingMoritaniPlacement ?? null) : null,
+    grummanCollection: projectedGrummanCollection(g, id),
     terrorEntry: g.pendingTerrorEntry
       ? (() => {
           const entry = g.pendingTerrorEntry!;
@@ -19440,7 +19567,14 @@ export function viewGame(state: Game, id: string) {
             sector: entry.sector,
             cause: entry.cause,
             stage: entry.stage,
-            ...(me.faction === 'moritani' && token
+            ...(me.faction === 'moritani' && entry.stage === 'select'
+              ? { candidates: entry.candidates!.map((id) => {
+                const candidate = g.moritaniTerror!.tokens.find((t) => t.id === id)!;
+                return { token: id, kind: candidate.kind, canReveal: !terrorRevealBlocked(g, entry, candidate.kind),
+                  canOfferAlliance: !terrorAllianceBlocked(g, entry, candidate.kind),
+                  revealBlocked: terrorRevealBlocked(g, entry, candidate.kind) ?? undefined };
+              }) } : {}),
+            ...(me.faction === 'moritani' && token && entry.stage !== 'select'
               ? {
                   kind: token.kind as TerrorKind,
                   canOfferAlliance: !terrorAllianceBlocked(
