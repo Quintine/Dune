@@ -2,6 +2,7 @@ import { nexusCardBotActions } from './nexus-card-options';
 import { nexusTraitorBotActions } from './nexus-traitor-options';
 import { nexusTleilaxuBotActions } from './nexus-tleilaxu-options';
 import { nexusSuboidBotActions } from './nexus-suboid-options';
+import { nexusAdvisorBotActions } from './nexus-advisor-options';
 import { tupileIntelligenceActions } from './tupile-intelligence-options';
 import { biddingEndActions, choamMarketPolicy } from './bidding-end-options';
 import { homeworldRevivalActionBlock, homeworldRevivalDeploymentActions } from './homeworld-revival-deployment-options';
@@ -1325,9 +1326,11 @@ function policyActions(g: GameView): Action[] {
       g.auditor?.opponent === me.id &&
       (g.auditor.count ?? 0) > 0;
     const movementThreat =
-      g.response.kind === 'fremenMovement' &&
+      (g.response.kind === 'fremenMovement' &&
       !!g.response.location &&
-      fighterCount(me, splitLocation(g.response.location).territory) > 0;
+      fighterCount(me, splitLocation(g.response.location).territory) > 0) ||
+      (g.response.kind === 'nexusAdvisorFlip' &&
+        !!g.nexusAdvisors?.pending?.territories.some((territory) => fighterCount(me, territory) > 0));
     const card = me.hand?.find((c) =>
       g.responseControls?.cancelCards.includes(c.id),
     );
@@ -3323,6 +3326,8 @@ export function botActions(g: GameView): Action[] {
       : nexusTraitorBotActions(g);
   if (g.automaticContinuationPending) return [];
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
+  const advisorConversion = nexusAdvisorBotActions(g);
+  if (advisorConversion.length) return advisorConversion;
   const suboids = nexusSuboidBotActions(g);
   if (suboids.length) return suboids;
   const faceDancers = nexusTleilaxuBotActions(g);

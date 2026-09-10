@@ -123,10 +123,12 @@ void test('the owned face highlights its mode from the public roster and all thr
 void test('controls expose public counts and waiting players, disable while busy, and offer no effect play action', () => {
   const view = fixture();
   const html = markup(view, true);
+  assert.match(html, /Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian and Bene Gesserit Cunning/);
+  assert.match(html, /other effects remain unavailable/);
+  assert.doesNotMatch(html, /other card effects are not playable yet/);
   assert.match(html, /10 in deck · 0 discarded · 2 held/);
   assert.match(html, /Waiting for Nexus choices: Harkonnen/);
   assert.match(html, /You do not hold a Nexus card/);
-  assert.match(html, /effects are not playable yet/);
   assert.match(html, /<button[^>]*disabled=""[^>]*>Draw a Nexus card/);
   assert.match(html, /<button[^>]*disabled=""[^>]*>Skip this draw/);
   assert.doesNotMatch(html, />Play |Activate effect|Use Betrayal/);

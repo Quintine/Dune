@@ -80,6 +80,10 @@ const cancellationSources = {
     inspection: g.battle?.nexusInspection ?? null,
     preparation: g.battle?.preparation ?? null,
   }),
+  nexusAdvisorFlip: (g) => ({
+    ...movementSource(g),
+    conversion: g.nexusAdvisorHistory?.find(record => record.stage === 'pending') ?? null,
+  }),
   advisor: (g, response) =>
     response.advisorResume === 'ambassador'
       ? {

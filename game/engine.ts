@@ -2,6 +2,7 @@ import { createNexusInspection, allowNexusInspection, answerNexusInspection, reo
 import { beginNexusTraitorExchange, finishNexusTraitorExchange, validateNexusTraitorExchange, validateNexusTraitorHistory, validateNexusTraitorSnapshot, type NexusTraitorExchange, type NexusTraitorSnapshot } from './nexus-traitor-exchange';
 import { replaceNexusFaceDancers, validateNexusFaceDancerHistory, type NexusFaceDancerReceipt } from './nexus-face-dancers';
 import { createNexusSuboids, validateNexusSuboids, nexusSuboidsActive, type NexusSuboidReceipt } from './nexus-suboids';
+import { quoteNexusAdvisors, createNexusAdvisors, validateNexusAdvisors, type NexusAdvisorReceipt } from './nexus-advisors';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
 import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, nexusCardMode, type NexusState } from './nexus-cards';
 import { createNexusCardPhase, markNexusCardOccurred, validateNexusCardPhase, closeNexusCardPhase, nexusCardChoices, finishNexusCardChoice, type NexusCardPhase, type NexusCardChoice } from './nexus-card-phase';
@@ -791,6 +792,7 @@ export type ResponseWindow = {
     | 'eliteStrength'
     | 'fremenSupport'
     | 'advisorFlip'
+    | 'nexusAdvisorFlip'
     | 'bgCharity'
     | 'choamCharity'
     | 'choamInflation'
@@ -1263,6 +1265,8 @@ export type Game = {
   nexusFaceDancerHistory?: NexusFaceDancerReceipt[];
   nexusSuboidHistory?: NexusSuboidReceipt[];
   nexusSuboidLast?: { event: string; owner: string; turn: number };
+  nexusAdvisorHistory?: { receipt: NexusAdvisorReceipt; stage: 'pending' | 'completed' | 'canceled'; frame: string; signature: string }[];
+  nexusAdvisorLast?: { event: string; stage: 'pending' | 'completed' | 'canceled' };
   nexusTraitorPending?: string | null;
   nexusTraitorParent?: { event: string; signature: string } | null;
   /** Null/absent disables the module; custody is installed at force placement. */
@@ -1744,6 +1748,118 @@ function commitNexusSuboids(g: Game, p: Player) {
   g.nexusSuboidLast = { event: receipt.event, owner: receipt.owner, turn: receipt.turn };
   log(g, `${p.name} used Ixian Cunning. Every Suboid has full strength without spice support in all battles for the rest of this turn. Cyborg strength, support and physical force counts are unchanged.`,
     { faction: p.faction, name: 'Nexus Suboid strength' });
+}
+
+function nexusAdvisorFrame(g: Game, owner: string) {
+  const p = getPlayer(g, owner);
+  return JSON.stringify([g.status, g.turn, g.phase, g.active, g.movementRemaining,
+    p.shipped, p.moved, g.hajr, g.guildTimingGranted, g.guildTimingLocked]);
+}
+function nexusAdvisorRecordSignature(record: NonNullable<Game['nexusAdvisorHistory']>[number]) {
+  return JSON.stringify([record.receipt.signature, record.stage, record.frame]);
+}
+function pendingNexusAdvisors(g: Game) {
+  return g.nexusAdvisorHistory?.find(record => record.stage === 'pending') ?? null;
+}
+function validateNexusAdvisorResponse(g: Game, response: ResponseWindow) {
+  const record = pendingNexusAdvisors(g);
+  requireRule(record && response.kind === 'nexusAdvisorFlip' &&
+    response.owner === record.receipt.owner && response.intent === record.receipt.event &&
+    Object.keys(response).every(key => ['kind', 'owner', 'intent', 'passed'].includes(key)) &&
+    Array.isArray(response.passed) && new Set(response.passed).size === response.passed.length &&
+    response.passed.every(id => g.players.some(p => p.id === id)),
+    'The Nexus advisor conversion has lost its original response.');
+  requireRule(g.status === 'playing' && g.phase === 5 && g.active === record.receipt.owner &&
+    record.receipt.turn === g.turn && record.frame === nexusAdvisorFrame(g, record.receipt.owner),
+    'The Nexus advisor conversion has lost its original Shipment and Movement action.');
+  nexusRule(() => validateNexusAdvisors(g, record.receipt, true));
+}
+function nexusAdvisorIntegrity(g: Game) {
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const responses = contexts.flatMap(context => {
+    const pending = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+    return [context?.response, pending?.use.kind === 'cancel' ? pending.use.response : null];
+  }).filter(response => response?.kind === 'nexusAdvisorFlip');
+  const history = g.nexusAdvisorHistory;
+  if (history === undefined) {
+    requireRule(!g.nexusAdvisorLast && !responses.length, 'The Nexus advisor conversion has lost its saved history.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+    'Nexus advisor history requires its original module and played card.');
+  const turns = new Set<number>();
+  for (const [index, record] of history.entries()) {
+    requireRule(record && record.receipt && typeof record.receipt === 'object' &&
+      Object.keys(record).sort().join(',') === 'frame,receipt,signature,stage' &&
+      ['pending', 'completed', 'canceled'].includes(record.stage) &&
+      typeof record.frame === 'string' && record.signature === nexusAdvisorRecordSignature(record) &&
+      record.receipt.event === JSON.stringify(['nexusAdvisors', record.receipt.turn, record.receipt.owner, index]) &&
+      !turns.has(record.receipt.turn) &&
+      (record.stage !== 'pending' || index === history.length - 1),
+      'The Nexus advisor conversion history is malformed.');
+    nexusRule(() => validateNexusAdvisors(g, record.receipt, record.stage === 'pending'));
+    turns.add(record.receipt.turn);
+  }
+  const last = history.at(-1)!;
+  requireRule(JSON.stringify(g.nexusAdvisorLast) === JSON.stringify({event: last.receipt.event, stage: last.stage}),
+    'The Nexus advisor conversion has lost its latest outcome.');
+  requireRule((last.stage === 'pending') === (responses.length > 0),
+    'The Nexus advisor conversion has lost or reopened its cancellation response.');
+  if (last.receipt.turn === g.turn) requireRule(g.nexusCards.cards.discard.includes('beneGesserit'),
+    'The advisor conversion has lost its spent Nexus card.');
+  for (const response of responses) validateNexusAdvisorResponse(g, response!);
+}
+function projectedNexusAdvisors(g: Game, id: string) {
+  if (!g.nexusCards?.cards) return null;
+  const record = pendingNexusAdvisors(g);
+  const pending = record ? {owner: record.receipt.owner, event: record.receipt.event,
+    territories: record.receipt.selections.map(selection => selection.territory)} : null;
+  const p = getPlayer(g, id);
+  if (p.faction !== 'beneGesserit' || g.nexusCards.cards.hands[id] !== 'beneGesserit') return {offer: null, pending};
+  let blocked: string | null = null;
+  if (!g.advanced) blocked = 'Advisors are available only in the Advanced game.';
+  else if (g.status !== 'playing' || g.phase !== 5 || g.active !== id)
+    blocked = 'Use Cunning during your own Shipment and Movement action.';
+  else if (p.ally) blocked = 'Allied players cannot use a Nexus card.';
+  else if (g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingKarama ||
+    g.pendingTreacheryDiscard || g.pendingNullentropy || pendingNexusTraitors(g) || record)
+    blocked = 'Finish the current interaction before converting advisors.';
+  else if (g.nexusCards.phase?.stage === 'drawing') blocked = 'Finish the closing Nexus draws first.';
+  const territories = nexusRule(() => quoteNexusAdvisors(g, id)).territories;
+  if (!blocked && !territories.some(group => !group.blocked)) blocked = 'No advisor group is currently available to convert.';
+  return {offer: {event: JSON.stringify(['nexusAdvisors', g.turn, id, g.nexusAdvisorHistory?.length ?? 0]), blocked, territories}, pending};
+}
+function playNexusAdvisors(g: Game, p: Player, action: Action) {
+  const offer = projectedNexusAdvisors(g, p.id)?.offer;
+  requireRule(Object.keys(action).every(key => ['type', 'event', 'territories'].includes(key)) &&
+    offer && action.event === offer.event && !offer.blocked,
+    offer?.blocked ?? 'Choose your current Nexus advisor conversion.');
+  requireRule(Array.isArray(action.territories) && action.territories.every(t => typeof t === 'string'),
+    'Select whole advisor territories.');
+  const receipt = nexusRule(() => createNexusAdvisors(g, p.id, offer.event, action.territories as string[]));
+  const record = {receipt, stage: 'pending' as const, frame: nexusAdvisorFrame(g, p.id), signature: ''};
+  record.signature = nexusAdvisorRecordSignature(record);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  (g.nexusAdvisorHistory ??= []).push(record);
+  g.nexusAdvisorLast = {event: receipt.event, stage: record.stage};
+  g.response = {kind: 'nexusAdvisorFlip', owner: p.id, intent: receipt.event, passed: []};
+  log(g, `${p.name} spent Bene Gesserit Nexus Cunning to convert all advisors in ${receipt.selections.map(s => territory(s.territory).name).join(', ')}. Karama may prevent this entire conversion.`,
+    {faction: p.faction, name: 'Nexus advisor conversion declared'});
+}
+function finishNexusAdvisors(g: Game, canceled: boolean) {
+  const record = pendingNexusAdvisors(g)!;
+  const p = getPlayer(g, record.receipt.owner);
+  if (!canceled) for (const selection of record.receipt.selections) delete p.advisors![selection.territory];
+  record.stage = canceled ? 'canceled' : 'completed';
+  record.signature = nexusAdvisorRecordSignature(record);
+  g.nexusAdvisorLast = {event: record.receipt.event, stage: record.stage};
+  log(g, canceled
+    ? 'Karama prevented the entire Nexus advisor conversion. Every selected group remains advisors; the Nexus card stays spent.'
+    : `${p.name} converted every advisor in ${record.receipt.selections.map(s => territory(s.territory).name).join(', ')} to fighters. The forces remain in place and no shipment, movement or spice was spent.`,
+    {faction: p.faction, name: canceled ? 'Nexus advisor conversion prevented' : 'Nexus advisors become fighters'});
 }
 
 function battleInspectionContext(g: Game): BattleInspectionContext {
@@ -6371,6 +6487,7 @@ function validateKaramaUse(
       currentIxAuctionDrawQuote(g, use.response, true, spendingCard);
     moritaniAllianceCancellationQuote(g, use.response);
     if (use.response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, use.response);
+    if (use.response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, use.response);
     if (isCombatResponseKind(use.response.kind))
       currentCombatResponseQuote(g, {
         kind: 'response',
@@ -11760,6 +11877,7 @@ function marketGholaIntegrity(g: Game) {
   nexusTraitorIntegrity(g);
   nexusFaceDancerIntegrity(g);
   nexusSuboidIntegrity(g);
+  nexusAdvisorIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
@@ -14146,6 +14264,7 @@ function finishResponse(g: Game, canceled: boolean) {
   currentFactionPayment(g);
   const response = g.response!;
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
+  if (response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, response);
   const ecazCollectionQuote =
     response.kind === 'ecazCollection'
       ? currentEcazCollectionQuote(g, response, canceled)
@@ -14174,6 +14293,10 @@ function finishResponse(g: Game, canceled: boolean) {
     ? moritaniAllianceCancellationQuote(g, response)
     : null;
   g.response = null;
+  if (response.kind === 'nexusAdvisorFlip') {
+    finishNexusAdvisors(g, canceled);
+    return;
+  }
   if (ecazCollectionQuote) {
     if (canceled)
       log(
@@ -16970,6 +17093,7 @@ function applyActionInner(
   if (t === 'nexusTraitorDraw') { playNexusTraitorDraw(g, p, action); return g; }
   if (t === 'nexusFaceDancers') { playNexusFaceDancers(g, p, action); return g; }
   if (t === 'nexusSuboids') { playNexusSuboids(g, p, action); return g; }
+  if (t === 'nexusAdvisors') { playNexusAdvisors(g, p, action); return g; }
   if (t === 'nexusTraitorReturn') {
     requireRule(!g.truthtrance, 'Finish the active Truthtrance before returning Nexus cards.');
     finishNexusTraitorReturn(g, p, action); return g;
@@ -20439,6 +20563,7 @@ export function viewGame(state: Game, id: string) {
     nexusTraitors: projectedNexusTraitors(g, id),
     nexusTleilaxu: projectedNexusTleilaxu(g, id),
     nexusSuboids: projectedNexusSuboids(g, id),
+    nexusAdvisors: projectedNexusAdvisors(g, id),
     nexusAtreides: nexusAtreidesOffer(g, id),
     homeworldRevivalDeployment: projectedHomeworldRevivalReturn(g, id),
     caladanReinforcement: projectedHomeworldVictoryReturn(g, id),

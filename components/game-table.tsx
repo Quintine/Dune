@@ -13,6 +13,7 @@ import { NexusCards } from './nexus-cards';
 import { NexusTraitors } from './nexus-traitors';
 import { NexusTleilaxu } from './nexus-tleilaxu';
 import { NexusSuboids } from './nexus-suboids';
+import { NexusAdvisors } from './nexus-advisors';
 import { TerrorBoardMarkers } from './terror-board-markers';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
@@ -1153,12 +1154,9 @@ export function GameTable({
                     className="board-player-circle"
                     transform={`translate(${593 + Math.cos(angle) * 562},${587 + Math.sin(angle) * 562})`}
                   >
-                    <title>
-                      Player circle {index + 1}, sector {circleSector}:{' '}
-                      {player
-                        ? `${player.name} · ${faction(player.faction).name}`
-                        : 'Empty'}
-                    </title>
+                    <title>{`Player circle ${index + 1}, sector ${circleSector}: ${player
+                      ? `${player.name} · ${faction(player.faction).name}`
+                      : 'Empty'}`}</title>
                     <circle
                       r="21"
                       fill={player ? faction(player.faction).color : '#171b17'}
@@ -1420,6 +1418,7 @@ export function GameTable({
           <NexusTraitors game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || !!me.autopilot} />
+          <NexusAdvisors game={g} act={act} busy={busy} />
           {!g.nexusCards?.waiting.length && <TupileIntelligence game={g} act={act} busy={busy} />}
           {g.biddingEnd && <BiddingEnd game={g} act={act} busy={busy} />}
           {g.junctionTransport && [g.junctionTransport.owner, g.junctionTransport.recipient].includes(me.id) && (
@@ -1805,6 +1804,7 @@ export function GameTable({
                     choamBattleAid: 'CHOAM allied combat funding',
                     worthlessKarama: 'Worthless card as Karama',
                     advisorFlip: 'Bene Gesserit token flip',
+                    nexusAdvisorFlip: 'Bene Gesserit Nexus advisor conversion',
                     eliteStrength: 'Elite battle strength',
                     fremenSupport: 'Fremen full strength without spice',
                     capture: 'Harkonnen leader capture',
@@ -1977,6 +1977,7 @@ export function GameTable({
               )}
               {g.response.intent &&
                 g.response.source !== 'ambassador' &&
+                g.response.kind !== 'nexusAdvisorFlip' &&
                 g.response.kind !== 'faceDancerReplacement' && (
                   <p className="notice">{g.response.intent}</p>
                 )}
