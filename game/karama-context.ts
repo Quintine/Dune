@@ -75,6 +75,11 @@ const cancellationSources = {
     prescience: g.battle?.prescience ?? null,
     preparation: g.battle?.preparation ?? null,
   }),
+  nexusPrescience: (g) => ({
+    battle: battleSource(g),
+    inspection: g.battle?.nexusInspection ?? null,
+    preparation: g.battle?.preparation ?? null,
+  }),
   advisor: (g, response) =>
     response.advisorResume === 'ambassador'
       ? {

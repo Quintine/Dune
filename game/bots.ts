@@ -626,11 +626,17 @@ function plans(g: GameView): Action[] {
     ? b.opponentForces.normal * (b.opponentForces.normalFixedHalf ? 0.5 : 1) +
       b.opponentForces.elite * b.opponentForces.eliteStrength
     : enemies;
-  const insight = b.insight;
-  const revealedCard =
-    insight && ['weapon', 'defense'].includes(insight.field)
-      ? treacheryDeck(['ix']).find((c) => c.id === insight.value)
-      : undefined;
+  const insights = [
+    ...(b.insight && b.prescience?.player === me.id ? [b.insight] : []),
+    ...(b.nexusInspection?.owner === me.id
+      ? b.nexusInsights.filter((insight) => insight.active)
+      : []),
+  ];
+  const known = (field: string) =>
+    insights.find((insight) => insight.field === field);
+  const knownCards = treacheryDeck(['ix']);
+  const revealedWeapon = knownCards.find((c) => c.id === known('weapon')?.value);
+  const revealedDefense = knownCards.find((c) => c.id === known('defense')?.value);
   const inspected =
     b.fullPlanInsight?.target === other.id ? b.fullPlanInsight : null;
   const enemyWeapon = inspected?.cards.find(
@@ -639,9 +645,13 @@ function plans(g: GameView): Action[] {
   const enemyDefense = inspected?.cards.find(
     (c) => c.id === inspected.plan.defense,
   );
-  const committed = b.prescience?.player !== me.id ? insight : null;
-  const fixed = (field: string, value: string | null) =>
-    committed?.field !== field || committed.value === value;
+  const commitments = b.ownCommitments.filter(
+    (element) => element.target === me.id,
+  );
+  const fixed = (field: string, value: string | number | null) =>
+    commitments.every(
+      (element) => element.field !== field || element.value === value,
+    );
   const weapons = [
     null,
     ...(me.hand ?? []).filter(isWeaponCard).map((c) => c.id),
@@ -670,10 +680,7 @@ function plans(g: GameView): Action[] {
     !!voice &&
     (availableLeaders.length > 0 || heroes.length > 0) &&
     (me.hand ?? []).some((c) => defaultVoiceMatch(c, voice.kind));
-  const knownEnemyLeader =
-    insight?.field === 'leader' && b.prescience?.player === me.id
-      ? g.allLeaders.find((l) => l.id === insight.value)
-      : undefined;
+  const knownEnemyLeader = g.allLeaders.find((l) => l.id === known('leader')?.value);
   const expectedLeader = inspected
     ? (g.allLeaders.find((l) => l.id === inspected.plan.leader)?.strength ??
         0) + (inspected.plan.kwisatz ? 2 : 0)
@@ -688,8 +695,8 @@ function plans(g: GameView): Action[] {
         : 3));
   const expectedDial = inspected
     ? inspected.plan.dial
-    : insight?.field === 'dial' && b.prescience?.player === me.id
-      ? Number(insight.value)
+    : known('dial')
+      ? Number(known('dial')!.value)
       : Math.ceil(enemyCapacity * [0.25, 0.4, 0.6, 0.75][level]);
   const options: { action: Action; score: number }[] = [];
   for (const leader of leaders)
@@ -813,7 +820,11 @@ function plans(g: GameView): Action[] {
             weapon,
             defense,
           };
-          if (committed?.field === 'dial') action.dial = committed.value;
+          const committedDial = commitments.find(
+            (element) => element.field === 'dial',
+          );
+          if (committedDial) action.dial = committedDial.value;
+          if (!fixed('dial', Number(action.dial))) continue;
           const commitment = typedForces
             ? supporting(Number(action.dial))
             : null;
@@ -845,18 +856,13 @@ function plans(g: GameView): Action[] {
           const selfExplosion = battleWeaponsExplode(w, d);
           const correctDefense = inspected
             ? weaponKills(enemyWeapon) && !weaponKills(enemyWeapon, d)
-            : insight?.field === 'weapon' &&
-              !!revealedCard &&
-              weaponKills(revealedCard) &&
-              !weaponKills(revealedCard, d);
+            : !!revealedWeapon &&
+              weaponKills(revealedWeapon) &&
+              !weaponKills(revealedWeapon, d);
           const explosionRisk = inspected
             ? battleWeaponsExplode(w, d, enemyWeapon, enemyDefense)
-            : (insight?.field === 'defense' &&
-                isShield(revealedCard) &&
-                w?.kind === 'lasgun') ||
-              (insight?.field === 'weapon' &&
-                revealedCard?.kind === 'lasgun' &&
-                isShield(d));
+            : (isShield(revealedDefense) && w?.kind === 'lasgun') ||
+              (revealedWeapon?.kind === 'lasgun' && isShield(d));
           const undialed = stoneBattle
             ? Math.min(
                 ...casualtyOptions(
@@ -922,7 +928,9 @@ function plans(g: GameView): Action[] {
         me.hand ?? [],
       ),
     );
-  if (b.compliantPlan) ranked.push({ type: 'battlePlan', ...b.compliantPlan });
+  if (b.compliantPlan && commitments.every(
+    (element) => b.compliantPlan![element.field] === element.value,
+  )) ranked.push({ type: 'battlePlan', ...b.compliantPlan });
   return ranked;
 }
 
@@ -1303,6 +1311,8 @@ function policyActions(g: GameView): Action[] {
       ((g.response.kind === 'voice' && g.battle!.voice?.target === me.id) ||
         (g.response.kind === 'prescience' &&
           g.battle!.prescience?.player !== me.id) ||
+        (g.response.kind === 'nexusPrescience' &&
+          g.battle!.nexusInspection?.target === me.id) ||
         g.response.kind === 'harkonnenTraitor' ||
         g.response.kind === 'eliteStrength' ||
         g.response.kind === 'fremenSupport' ||
@@ -3098,10 +3108,18 @@ function policyActions(g: GameView): Action[] {
           },
         ];
       }
-      const field = b.prescience!.field;
+      const nexus = b.preparation.kind === 'nexusPrescienceAnswer'
+        ? b.nexusInspection
+        : null;
+      if (
+        b.preparation.kind === 'nexusPrescienceAnswer' &&
+        (!nexus || nexus.target !== me.id || nexus.event !== b.event || nexus.stage !== 'answer')
+      ) return [];
+      const field = nexus ? nexus.field : b.prescience!.field;
       // Candidate completions are legal-checked by the server; no rival secrets enter this choice.
       return plans(g).map((p) => ({
-        type: 'prescienceAnswer',
+        type: nexus ? 'nexusPrescienceAnswer' : 'prescienceAnswer',
+        ...(nexus ? { event: nexus.event } : {}),
         value: p[field],
       }));
     }
@@ -3298,6 +3316,22 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 export function botActions(g: GameView): Action[] {
   if (g.automaticContinuationPending) return [];
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
+  const nexus = g.nexusAtreides;
+  if (
+    g.status === 'playing' && g.phase === 6 && nexus && !nexus.blocked &&
+    g.nexusCards?.card === 'atreides' && nexus.event === g.battle?.event &&
+    !g.truthtrance && !g.phaseOpening && !g.decision &&
+    (nexus.mode === 'betrayal' || !g.response)
+  ) {
+    if (nexus.mode === 'betrayal')
+      return [{ type: 'nexusAtreides', event: nexus.event, mode: nexus.mode }];
+    const preferences = nexus.mode === 'cunning' || rank(g) >= 2
+      ? ['weapon', 'defense', 'leader', 'dial'] as const
+      : ['dial', 'weapon', 'defense', 'leader'] as const;
+    const field = preferences.find((field) => nexus.fields.includes(field));
+    if (field)
+      return [{ type: 'nexusAtreides', event: nexus.event, mode: nexus.mode, field }];
+  }
   const intelligence = tupileIntelligenceActions(g);
   if (intelligence.length) return intelligence;
   const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {

@@ -73,6 +73,7 @@ const RESPONSES = {
   moritaniRetention: true,
   voice: true,
   prescience: true,
+  nexusPrescience: true,
   advisor: true,
   emperorIncome: true,
   richesePurchaseIncome: true,

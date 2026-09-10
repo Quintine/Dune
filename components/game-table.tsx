@@ -121,7 +121,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { BattlePreparation } from './battle-preparation';
+import { BattlePreparation, battlePlanCommitments, bindBattlePlanCommitments, NexusInspectionHistory } from './battle-preparation';
 import { PrivateBattlePlan } from './private-battle-plan';
 import { RevealedBattle } from './revealed-battle';
 import { EliteCount } from './elite-count';
@@ -374,13 +374,10 @@ export function GameTable({
   );
   const [discardCards, setDiscardCards] = useState<Record<string, boolean>>({});
   const stormLosses = g.decision?.kind === 'stormLosses' ? g.decision : null;
-  const committed =
-    g.battle?.insight && g.battle.prescience?.player !== me.id
-      ? g.battle.insight
-      : null;
+  const committed = battlePlanCommitments(g);
   const selectedStone = me.hand?.find(
     (c) =>
-      c.id === (committed?.field === 'weapon' ? committed.value : weapon) &&
+      c.id === (committed.weapon ? committed.weapon.value : weapon) &&
       isStoneBurner(c),
   );
   const stoneContext = g.battle?.stoneBurnerContext;
@@ -393,8 +390,8 @@ export function GameTable({
             .map((pool) =>
               stoneBurnerPlanBlock(
                 ownBattleForces,
-                committed?.field === 'dial'
-                  ? Number(committed.value)
+                committed.dial
+                  ? Number(committed.dial?.value)
                   : battleDial,
                 battleSupport,
                 pool,
@@ -1780,6 +1777,7 @@ export function GameTable({
                     faceDancerReplacement: 'Replace an unrevealed Face Dancer',
                     voice: 'The Voice',
                     prescience: 'Prescience',
+                    nexusPrescience: 'Atreides Nexus Cunning',
                     emperorIncome:
                       g.response.source === 'ambassador'
                         ? 'Emperor card-purchase income'
@@ -4038,6 +4036,7 @@ export function GameTable({
                     </p>
                   )}
                   {g.battle.revealed && <RevealedBattle game={g} />}
+                  <NexusInspectionHistory game={g} />
                   {(!g.battle.preLeader || g.battle.preLeader.closed) && (
                     <BattlePromises
                       act={act}
@@ -4062,7 +4061,7 @@ export function GameTable({
                     <BattleLeaderOpportunity game={g} act={act} busy={busy} />
                   ) : g.battle.preparation ? (
                     <BattlePreparation
-                      key={`${g.battle.territory}-${g.battle.preparation.kind}`}
+                      key={`${g.battle.event}-${g.battle.preparation.kind}-${g.battle.preparation.kind === 'nexusPrescienceAnswer' ? g.battle.nexusInspection?.field : g.battle.prescience?.field ?? ''}`}
                       game={g}
                       send={send}
                       busy={busy}
@@ -4106,7 +4105,7 @@ export function GameTable({
                       <>
                         {g.battle.insight && (
                           <p className="notice">
-                            {committed
+                            {committed[g.battle.insight.field]
                               ? 'Your committed element'
                               : 'Prescience'}
                             : {g.battle.insight.field} ={' '}
@@ -4133,11 +4132,11 @@ export function GameTable({
                               max={battleDialMaximum}
                               step={battleDialStep}
                               value={
-                                committed?.field === 'dial'
-                                  ? Number(committed.value)
+                                committed.dial
+                                  ? Number(committed.dial?.value)
                                   : battleDial
                               }
-                              disabled={busy || committed?.field === 'dial'}
+                              disabled={busy || !!committed.dial}
                               onChange={setDial}
                             />
                             <p className="fine">
@@ -4216,11 +4215,11 @@ export function GameTable({
                               <select
                                 id="battle-leader"
                                 value={
-                                  committed?.field === 'leader'
-                                    ? String(committed.value ?? '')
+                                  committed.leader
+                                    ? String(committed.leader?.value ?? '')
                                     : leader
                                 }
-                                disabled={committed?.field === 'leader'}
+                                disabled={!!committed.leader}
                                 onChange={(e) => setLeader(e.target.value)}
                               >
                                 <option value="">No leader</option>
@@ -4263,14 +4262,12 @@ export function GameTable({
                                 <select
                                   id={`battle-${String(name).toLowerCase()}`}
                                   value={
-                                    committed?.field ===
-                                    String(name).toLowerCase()
-                                      ? String(committed.value ?? '')
+                                    committed[name === 'Weapon' ? 'weapon' : 'defense']
+                                      ? String(committed[name === 'Weapon' ? 'weapon' : 'defense']!.value ?? '')
                                       : (v as string)
                                   }
                                   disabled={
-                                    committed?.field ===
-                                    String(name).toLowerCase()
+                                    !!committed[name === 'Weapon' ? 'weapon' : 'defense']
                                   }
                                   onChange={(e) =>
                                     (fn as (s: string) => void)(e.target.value)
@@ -4345,7 +4342,7 @@ export function GameTable({
                               g.battle.fullPlan?.target === me.id
                                 ? 'Commit plan for inspection'
                                 : 'Seal battle plan',
-                              {
+                              bindBattlePlanCommitments(g, {
                                 type: 'battlePlan',
                                 ...(g.aid.available > 0 && allyPayment !== ''
                                   ? { allyPayment: Number(allyPayment) }
@@ -4366,10 +4363,7 @@ export function GameTable({
                                 leader,
                                 weapon,
                                 defense,
-                                ...(committed
-                                  ? { [committed.field]: committed.value }
-                                  : {}),
-                              },
+                              }),
                               !!stonePlanReason,
                             )}
                           </>

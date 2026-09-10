@@ -11,7 +11,62 @@ import {
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { Action, GameView } from '@/game/engine';
+import type { Action, GameView, PlanField } from '@/game/engine';
+import type { CommittedPlanElement } from '@/game/battle-inspections';
+
+/** Read only the recipient's projected commitments, including an explicit null. */
+export function battlePlanCommitments(game: GameView): Partial<Record<PlanField, CommittedPlanElement>> {
+  const battle = game.battle;
+  if (!battle) return {};
+  const commitments = battle.ownCommitments ?? (
+    battle.insight && battle.prescience && battle.prescience.player !== game.me &&
+    [battle.attacker, battle.defender].includes(game.me)
+      ? [{ source: 'native' as const, beneficiary: battle.prescience.player, target: game.me,
+        field: battle.insight.field, value: battle.insight.value }]
+      : []
+  );
+  return Object.fromEntries(commitments.filter((item) => item.target === game.me).map((item) => [item.field, item]));
+}
+
+export function bindBattlePlanCommitments(game: GameView, plan: Action): Action {
+  if (plan.type !== 'battlePlan') return plan;
+  return { ...plan, ...Object.fromEntries(Object.values(battlePlanCommitments(game)).map((item) => [item.field, item.value])) };
+}
+
+export function battlePreparationField(game: GameView): PlanField | null {
+  const battle = game.battle;
+  if (battle?.preparation?.kind === 'nexusPrescienceAnswer') {
+    const inspection = battle.nexusInspection;
+    return inspection?.stage === 'answer' && inspection.event === battle.event &&
+      inspection.target === battle.preparation.owner && inspection.owner === battle.preparation.beneficiary
+      ? inspection.field : null;
+  }
+  return battle?.preparation?.kind === 'prescienceAnswer' ? battle.prescience?.field ?? null : null;
+}
+
+export function battleInspectionAnswerAction(game: GameView, value: string): Action | null {
+  const battle = game.battle;
+  const field = battlePreparationField(game);
+  if (game.status !== 'playing' || game.phase !== 6 || !battle || battle.revealed ||
+    battle.preparation?.owner !== game.me || !field) return null;
+  const answer = field === 'dial' ? Number(value) : value || null;
+  if (field === 'dial' && (value.trim() === '' || !Number.isFinite(answer) || Number(answer) < 0 || !Number.isSafeInteger(Number(answer) * 2))) return null;
+  return battle.preparation.kind === 'nexusPrescienceAnswer'
+    ? { type: 'nexusPrescienceAnswer', event: battle.nexusInspection!.event, value: answer }
+    : { type: 'prescienceAnswer', value: answer };
+}
+
+export function NexusInspectionHistory({ game }: { game: GameView }) {
+  const battle = game.battle;
+  if (!battle?.nexusInspection || ![battle.nexusInspection.owner, battle.nexusInspection.target].includes(game.me) || !battle.nexusInsights?.length) return null;
+  return <section aria-label="Private Nexus inspection history" className="space-y-2">
+    <h4>Nexus inspection</h4>
+    {battle.nexusInsights.map((insight, index) => <p className="notice" key={`${index}-${insight.field}`}>
+      {insight.active ? (battle.nexusInspection!.target === game.me ? 'Your committed element' : 'Current answer') : 'Previous answer'}: {insight.field} = {insight.label}
+      {!insight.active && <span className="fine"> · No longer binding</span>}
+    </p>)}
+  </section>;
+}
 
 export function BattlePreparation({
   game,
@@ -134,7 +189,9 @@ export function BattlePreparation({
         </Button>
       </>
     );
-  const field = b.prescience!.field;
+  const field = battlePreparationField(game);
+  if (!field) return <p className="notice">This inspection is no longer awaiting an answer.</p>;
+  const answerAction = battleInspectionAnswerAction(game, value);
   const stoneReason =
     field === 'weapon' && isStoneBurner(me.hand?.find((c) => c.id === value))
       ? b.stoneBurnerContext?.blocked
@@ -173,6 +230,7 @@ export function BattlePreparation({
       )}
       <label htmlFor="prescience-answer">
         {field === 'dial' ? 'Forces dialed' : field}
+      </label>
         {field === 'dial' ? (
           <Input
             id="prescience-answer"
@@ -197,17 +255,11 @@ export function BattlePreparation({
             ))}
           </select>
         )}
-      </label>
       {stoneReason && <p className="notice">{stoneReason}</p>}
       <Button
         className="game-action"
-        disabled={busy || !!stoneReason || (field === 'dial' && value === '')}
-        onClick={() =>
-          act({
-            type: 'prescienceAnswer',
-            value: field === 'dial' ? Number(value) : value || null,
-          })
-        }
+        disabled={busy || !!stoneReason || !answerAction}
+        onClick={() => { if (!busy && !stoneReason && answerAction) act(answerAction); }}
       >
         Commit this element
       </Button>

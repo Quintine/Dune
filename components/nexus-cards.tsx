@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { faction, type FactionId } from '@/game/catalog';
-import type { Action, GameView } from '@/game/engine';
+import type { Action, GameView, PlanField } from '@/game/engine';
 import { HOMEWORLD_CARDS } from '@/game/homeworld-cards';
 import { nexusCardMode, type NexusCardMode } from '@/game/nexus-cards';
 import type { NexusCardChoice } from '@/game/nexus-card-phase';
@@ -56,7 +56,7 @@ export function NexusCardFace({ card, mode, enlarged = false }: {
                   <DialogTitle>{identity.name} Nexus card</DialogTitle>
                   <DialogClose render={<Button variant="outline" className="min-h-11 min-w-16" />}>Close</DialogClose>
                 </div>
-                <DialogDescription className="sr-only">All three Nexus effects and their faction requirements. Card effects are not playable yet.</DialogDescription>
+                <DialogDescription className="sr-only">All three Nexus effects and their faction requirements. Atreides actions appear when available; other card effects are not playable yet.</DialogDescription>
                 <div className="min-h-0 overflow-y-auto overscroll-contain p-3 sm:p-5"><NexusCardFace card={card} mode={mode} enlarged /></div>
               </DialogPrimitive.Popup>
             </DialogPortal>
@@ -84,6 +84,22 @@ export function nexusCardChoiceAction(game: GameView, choice: NexusCardChoice, o
   return nexusCardAction(game, choice, ownRedraws);
 }
 
+/** The server's private offer defines current fields and timing; no other
+ * player's hand or sealed plan participates in client eligibility. */
+export function nexusAtreidesAction(game: GameView, field?: PlanField): Action | null {
+  const offer = game.nexusAtreides;
+  if (!offer || offer.blocked || game.status !== 'playing' || game.phase !== 6 ||
+    game.nexusCards?.card !== 'atreides') return null;
+  const owner = game.players.find((player) => player.id === game.me);
+  if (!owner || nexusCardMode('atreides', owner.faction, game.players.map((player) => player.faction)) !== offer.mode) return null;
+  const battle = game.battle;
+  if (!battle || battle.event !== offer.event || battle.revealed) return null;
+  if (offer.mode === 'betrayal')
+    return field === undefined ? { type: 'nexusAtreides', event: offer.event, mode: offer.mode } : null;
+  if (!field || !offer.fields.includes(field) || ![battle.attacker, battle.defender].includes(game.me) || battle.submitted.includes(game.me)) return null;
+  return { type: 'nexusAtreides', event: offer.event, mode: offer.mode, field };
+}
+
 export function NexusCards({ game, act, busy }: { game: GameView; act: (action: Action) => void; busy: boolean }) {
   const [ownRedraws, setOwnRedraws] = useState<0 | 1 | 2>(0);
   const offer = game.nexusCards;
@@ -102,8 +118,31 @@ export function NexusCards({ game, act, busy }: { game: GameView; act: (action: 
       <div>
         <h3>Nexus cards</h3>
         <p className="fine">{offer.deckCount} in deck · {offer.discardCount} discarded · {Object.values(offer.held).filter((held) => held === true).length} held</p>
-        <p>Drawing and keeping cards is supported; their effects are not playable yet.</p>
+        <p>Atreides Nexus actions are available at their battle timing; other card effects are not playable yet.</p>
       </div>
+      {game.nexusAtreides && offer.card === 'atreides' && (
+        <div aria-label="Atreides Nexus effect" className="space-y-2">
+          <h4>{NEXUS_PANEL_NAMES[game.nexusAtreides.mode]}</h4>
+          {game.nexusAtreides.blocked ? <p className="fine">{game.nexusAtreides.blocked}</p> : (
+            <>
+              <p className="fine">{game.nexusAtreides.mode === 'betrayal'
+                ? 'Discard this Nexus card to cancel the pending Atreides inspection.'
+                : game.nexusAtreides.mode === 'cunning'
+                  ? 'Discard this Nexus card to inspect a second, different element of your opponent’s plan.'
+                  : 'Discard this Nexus card to inspect one element of your opponent’s plan.'}</p>
+              <div className="flex flex-wrap gap-2">
+                {(game.nexusAtreides.mode === 'betrayal' ? [undefined] : game.nexusAtreides.fields).map((field) => {
+                  const action = nexusAtreidesAction(game, field);
+                  return <Button key={field ?? 'betrayal'} className="game-action min-h-11 whitespace-normal" disabled={busy || !action}
+                    onClick={() => { if (!busy && action) act(action); }}>
+                    {field ? `Use ${NEXUS_PANEL_NAMES[game.nexusAtreides!.mode]}: inspect ${field}` : 'Use Betrayal'}
+                  </Button>;
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      )}
       <div aria-label="Your private Nexus card" className="max-w-xl">
         {offer.card ? <NexusCardFace card={offer.card} mode={mode} /> : <p>You do not hold a Nexus card.</p>}
       </div>

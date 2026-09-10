@@ -1,4 +1,5 @@
-import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, type NexusState } from './nexus-cards';
+import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
+import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, nexusCardMode, type NexusState } from './nexus-cards';
 import { createNexusCardPhase, markNexusCardOccurred, validateNexusCardPhase, closeNexusCardPhase, nexusCardChoices, finishNexusCardChoice, type NexusCardPhase, type NexusCardChoice } from './nexus-card-phase';
 import { createHomeworldOccupationHistory, observeHomeworldOccupation, validateHomeworldOccupationHistory, tupileOccupationStatus, type HomeworldOccupationHistory } from './homeworld-occupation-history';
 import { tupileIntelligenceTargets, quoteTupileIntelligenceRequest, type TupileIntelligenceCategory } from './tupile-intelligence';
@@ -532,6 +533,9 @@ export type PlanField = Exclude<
   'support' | 'kwisatz' | 'allyPayment'
 >;
 export type Battle = {
+  nexusInspection?: NexusInspection;
+  /** Independent presence marker: deleting a spent-card record is not a legacy save. */
+  nexusInspectionUsed?: string;
   homeworldDefensePassed?: string[];
   event?: string;
   strongholdCopy?: StrongholdId;
@@ -561,7 +565,7 @@ export type Battle = {
   revealed: boolean;
   traitorCalls: Record<string, boolean>;
   preparation?: {
-    kind: 'voice' | 'prescience' | 'prescienceAnswer';
+    kind: 'voice' | 'prescience' | 'prescienceAnswer' | 'nexusPrescienceAnswer';
     owner: string;
     beneficiary: string;
   };
@@ -757,6 +761,7 @@ export type ResponseWindow = {
     | 'moritaniRetention'
     | 'voice'
     | 'prescience'
+    | 'nexusPrescience'
     | 'advisor'
     | 'emperorIncome'
     | 'richesePurchaseIncome'
@@ -1483,6 +1488,140 @@ function projectedNexusCards(g: Game, id: string) {
   return { ...projectNexusCards(nexus.cards, id, g.players), turn: nexus.phase?.turn ?? null,
     choices: nexusCardChoices(nexus.phase, nexus.cards, id),
     waiting: nexus.phase?.stage === 'drawing' ? nexus.phase.eligible.filter(owner => !nexus.phase!.done.includes(owner)) : [] };
+}
+function battleInspectionContext(g: Game): BattleInspectionContext {
+  const b = g.battle!;
+  return { event: b.event!, attacker: b.attacker, defender: b.defender,
+    players: g.players.map(({id,faction}) => ({id,faction})), native: b.prescience };
+}
+function nexusInspectionIntegrity(g: Game) {
+  const b = g.battle;
+  if (!b) return;
+  const record = b.nexusInspection;
+  requireRule(!!record === !!b.nexusInspectionUsed, 'The Nexus inspection presence record is missing.');
+  if (!record) return;
+  requireRule(g.phase === 6 && b.event && b.nexusInspectionUsed === b.event &&
+    g.nexusCards?.cards?.discard.includes('atreides'), 'The played Nexus inspection has lost its battle or physical card.');
+  nexusRule(() => validateNexusInspection(battleInspectionContext(g), record));
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const responses = contexts.flatMap(context => {
+    const pending = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+    return [context?.response, pending?.use.kind === 'cancel' ? pending.use.response : null];
+  }).filter(response => response?.kind === 'nexusPrescience');
+  requireRule((record.stage === 'response') === (responses.length > 0),
+    'The extra inspection has lost or reopened its original cancellation response.');
+  for (const response of responses) validateNexusInspectionResponse(g, response!);
+  for (const target of [b.attacker, b.defender]) {
+    const plan = b.plans[target];
+    if (plan) requireRule(committedPlanElements(b, target).every(element => plan[element.field] === element.value),
+      'The sealed plan contradicts its inspected commitment.');
+  }
+  if (record.stage === 'answer' || record.stage === 'response')
+    requireRule(!b.revealed && (b.preparation?.kind === 'nexusPrescienceAnswer' ||
+      (b.preparation?.kind === 'prescienceAnswer' && b.prescience && !Object.hasOwn(b.prescience, 'value'))),
+    'The unanswered Nexus inspection is missing its owned answer.');
+  if (b.preparation?.kind === 'nexusPrescienceAnswer')
+    requireRule((record.stage === 'answer' || record.stage === 'response') && b.preparation.owner === record.target &&
+      b.preparation.beneficiary === record.owner, 'The pending Nexus answer belongs to the wrong player.');
+}
+function nexusAtreidesOffer(g: Game, id: string) {
+  if (g.nexusCards?.cards?.hands[id] !== 'atreides') return null;
+  const p = getPlayer(g, id), b = g.battle;
+  const mode = nexusCardMode('atreides', p.faction, g.players.map(player => player.faction));
+  let blocked: string | null = null;
+  if (g.status !== 'playing' || g.phase !== 6 || !b?.event || b.revealed)
+    blocked = 'Play this Nexus Card before the current battle plans are revealed.';
+  else if (p.ally) blocked = 'Allied players cannot use a Nexus Card.';
+  else if (b.nexusInspection || b.nexusInspectionUsed) blocked = 'This battle already used the Atreides Nexus Card.';
+  else if (g.truthtrance || g.decision || g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard || g.pendingNullentropy)
+    blocked = 'Finish the current interaction before playing this Nexus Card.';
+  else if (mode === 'betrayal') {
+    blocked = 'Betrayal reactions await the private response timing decision.';
+  } else if (![b.attacker, b.defender].includes(id) || b.plans[id])
+    blocked = 'Use this inspection in your own battle before sealing your plan.';
+  else if (g.response || b.preparation || (b.preLeader && !b.preLeader.closed))
+    blocked = 'Finish the preceding battle preparation first.';
+  else if (mode === 'cunning' && (!b.prescience || b.prescience.player !== id || !Object.hasOwn(b.prescience, 'value')))
+    blocked = 'Cunning needs your first completed native inspection.';
+  const target = b && (b.attacker === id ? b.defender : b.attacker);
+  const fields = mode === 'betrayal' ? [] : (['leader', 'weapon', 'defense', 'dial'] as PlanField[])
+    .filter(field => !(mode === 'cunning' && (field === b?.prescience?.field ||
+      (field === 'dial' && target && b?.noFieldPlayers?.includes(target)))));
+  return { event: b?.event ?? '', mode, fields, blocked };
+}
+function finishInspectionAnswers(g: Game) {
+  const b = g.battle!;
+  if (b.prescience && !Object.hasOwn(b.prescience, 'value')) {
+    b.preparation = { kind: 'prescienceAnswer', owner: b.prescience.player === b.attacker ? b.defender : b.attacker,
+      beneficiary: b.prescience.player };
+  } else if (b.nexusInspection?.stage === 'answer') {
+    b.preparation = { kind: 'nexusPrescienceAnswer', owner: b.nexusInspection.target, beneficiary: b.nexusInspection.owner };
+  } else if (b.nexusInspection && b.nexusInspection.mode !== 'betrayal') delete b.preparation;
+  else finishBattlePreparation(g);
+}
+function answerCurrentNexusInspection(g: Game, value: unknown) {
+  const b = g.battle!, record = b.nexusInspection!;
+  const target = getPlayer(g, record.target);
+  requireRule(feasiblePrescience(g, target, record.field, value),
+    'Choose an element that permits a legal battle plan and respects every prior commitment.');
+  b.nexusInspection = nexusRule(() => answerNexusInspection(battleInspectionContext(g), record, value as string | number | null));
+  log(g, `${target.name} committed the requested ${record.field}. Its value is private to the two combatants.`);
+  finishInspectionAnswers(g);
+}
+function validateNexusInspectionResponse(g: Game, response: ResponseWindow) {
+  const b = g.battle, record = b?.nexusInspection;
+  requireRule(response.kind === 'nexusPrescience' && record?.mode === 'cunning' && record.stage === 'response' &&
+    !record.answers.length && response.owner === record.owner && response.intent === b!.event,
+  'The extra Prescience response no longer matches its original attempt.');
+  return record;
+}
+function settleNexusInspectionResponse(g: Game, response: ResponseWindow, canceled: boolean) {
+  const b = g.battle!, record = validateNexusInspectionResponse(g, response);
+  if (canceled) {
+    b!.nexusInspection = nexusRule(() => cancelNexusInspection(battleInspectionContext(g), record));
+    log(g, 'Karama canceled the additional Atreides inspection. The first disclosed element remains binding.');
+    finishInspectionAnswers(g);
+  } else {
+    b.nexusInspection = nexusRule(() => allowNexusInspection(battleInspectionContext(g), record));
+    if (b.plans[record.target]) answerCurrentNexusInspection(g, b.plans[record.target][record.field]);
+  }
+}
+function playNexusAtreides(g: Game, p: Player, action: Action) {
+  const offer = nexusAtreidesOffer(g, p.id);
+  requireRule(offer && !offer.blocked && action.event === offer.event && action.mode === offer.mode,
+    offer?.blocked ?? 'This Atreides Nexus opportunity is stale.');
+  requireRule(Object.keys(action).sort().join(',') === (offer.mode === 'betrayal' ? 'event,mode,type' : 'event,field,mode,type') &&
+    (offer.mode === 'betrayal' || offer.fields.includes(action.field as PlanField)), 'Choose a current Nexus inspection field.');
+  const b = g.battle!;
+  const field = offer.mode === 'betrayal' ? b.prescience!.field : action.field as PlanField;
+  const beneficiary = offer.mode === 'betrayal' ? b.prescience!.player : p.id;
+  const target = beneficiary === b.attacker ? b.defender : b.attacker;
+  const record = nexusRule(() => createNexusInspection(battleInspectionContext(g), { mode: offer.mode, owner: p.id, target, field }));
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  b.nexusInspection = record;
+  b.nexusInspectionUsed = b.event;
+  log(g, `${p.name} played the Atreides Nexus Card: ${offer.mode === 'cunning' ? 'Cunning' : offer.mode === 'secretAlly' ? 'Secret Ally' : 'Betrayal'}.`,
+    { faction: p.faction, name: 'Atreides Nexus' });
+  if (offer.mode === 'betrayal') {
+    g.response = null;
+    delete b.prescience;
+    finishBattlePreparation(g);
+  } else {
+    b.preparation = { kind: 'nexusPrescienceAnswer', owner: target, beneficiary: p.id };
+    if (offer.mode === 'cunning') g.response = { kind: 'nexusPrescience', owner: p.id, intent: b.event, passed: [] };
+    else if (b.plans[target]) answerCurrentNexusInspection(g, b.plans[target][field]);
+  }
+}
+function projectedNexusInsights(g: Game, id: string) {
+  const record = g.battle?.nexusInspection;
+  if (!record || ![record.owner, record.target].includes(id)) return [];
+  return record.answers.map((value, index) => ({ field: record.field, value,
+    label: g.players.flatMap(p => [...p.leaders, ...p.hand]).concat(g.dukeVidal ? [g.dukeVidal.leader] : [])
+      .find(item => item.id === value)?.name ?? String(value ?? 'None'),
+    active: record.stage === 'answered' && index === record.answers.length - 1 }));
 }
 function homeworldRule<T>(quote: () => T): T {
   try {
@@ -5600,8 +5739,7 @@ function karamaSpendingBlock(g: Game, p: Player, card: Card): string | null {
   const plan = g.battle?.plans[p.id];
   if (plan && [plan.weapon, plan.defense, plan.leader].includes(card.id))
     return 'A sealed battle card cannot be spent as Karama.';
-  const insight = g.battle?.prescience;
-  if (insight && insight.player !== p.id && insight.value === card.id)
+  if (g.battle && committedPlanElements(g.battle, p.id).some(element => element.value === card.id))
     return 'The card committed to prescience must remain available.';
   if (card.kind === 'worthless' && g.pendingKarama)
     return 'A Worthless conversion is already pending.';
@@ -5973,6 +6111,7 @@ function validateKaramaUse(
     if (use.response.kind === 'ixAuction')
       currentIxAuctionDrawQuote(g, use.response, true, spendingCard);
     moritaniAllianceCancellationQuote(g, use.response);
+    if (use.response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, use.response);
     if (isCombatResponseKind(use.response.kind))
       currentCombatResponseQuote(g, {
         kind: 'response',
@@ -6105,6 +6244,11 @@ function assertKaramaPromiseFeasibility(
       case 'prescience':
         if (!b) return false;
         delete b.prescience;
+        delete b.preparation;
+        break;
+      case 'nexusPrescience':
+        if (!b?.nexusInspection) return false;
+        b.nexusInspection = cancelNexusInspection(battleInspectionContext(projected), b.nexusInspection);
         delete b.preparation;
         break;
       case 'eliteStrength':
@@ -7219,8 +7363,7 @@ function ambassadorDiscardBlock(g: Game, p: Player, card: Card, effect?: Ambassa
   const plan = g.battle?.plans[p.id];
   if (plan && [plan.weapon, plan.defense, plan.leader].includes(card.id))
     return 'This card is committed to a sealed battle plan.';
-  const insight = g.battle?.prescience;
-  if (insight && insight.player !== p.id && insight.value === card.id)
+  if (g.battle && committedPlanElements(g.battle, p.id).some(element => element.value === card.id))
     return 'This card is committed to prescience.';
   if (effect === 'choam')
     return homeworldRule(() => homeworldWorthlessSaleBlock(g, p.id, card));
@@ -10745,9 +10888,11 @@ function validateResidualPoison(
   );
   requireRule(
     !Object.keys(b.plans).length &&
-      !(b.prescience?.field === 'leader' && 'value' in b.prescience),
+      ![b.attacker, b.defender].some(owner => committedPlanElements(b, owner).some(element => element.field === 'leader')),
     'Residual Poison must be played before either combatant commits a leader.',
   );
+  requireRule(!(b.nexusInspection?.mode === 'cunning' && b.nexusInspection.stage === 'answered'),
+    'Residual Poison after two inspected elements awaits the ruling for incompatible surviving commitments.');
   requireRule(
     !g.truthtrance && !g.response && !g.decision && !g.phaseOpening,
     'Resolve the current interaction before playing Residual Poison.',
@@ -10826,15 +10971,20 @@ function playResidualPoison(
     `${p.name} played Residual Poison against ${target.name}. ${victim.name} was randomly selected from the available leaders and sent to the Tanks. No spice is awarded, no forces are lost, and battle preparation continues.`,
     { faction: p.faction, name: 'Residual Poison' },
   );
-  // Opposing involuntary death may release an impossible answer; it never rerolls the victim.
-  reconcileBattlePromises(g);
+  // First retire an inspection made impossible by the death itself. Testing on
+  // a private copy without Truthtrance avoids releasing a still-feasible truth
+  // answer solely because an obsolete inspection was left in the trial.
   const insight = b.prescience;
   if (insight && 'value' in insight && insight.field !== 'leader') {
+    const trial = structuredClone(g);
+    trial.battle!.truthPromises = [];
     const answering = getPlayer(
-      g,
+      trial,
       insight.player === b.attacker ? b.defender : b.attacker,
     );
-    if (!feasiblePrescience(g, answering, insight.field, insight.value)) {
+    if (!feasiblePrescience(trial, answering, insight.field, insight.value)) {
+      if (b.nexusInspection?.mode === 'cunning')
+        b.nexusInspection = nexusRule(() => reopenNexusNative(battleInspectionContext(g), b.nexusInspection!));
       delete insight.value;
       b.preparation = {
         kind: 'prescienceAnswer',
@@ -10847,6 +10997,17 @@ function playResidualPoison(
       );
     }
   }
+  const nexus = b.nexusInspection;
+  if (nexus?.stage === 'answered' && nexus.field !== 'leader') {
+    const trial = structuredClone(g);
+    trial.battle!.truthPromises = [];
+    if (!findReachableBattlePlan(trial, getPlayer(trial, nexus.target))) {
+      b.nexusInspection = nexusRule(() => reopenNexusInspection(battleInspectionContext(g), nexus));
+      finishInspectionAnswers(g);
+      log(g, 'The leader death made the inspected element impossible. Its owner must answer the same element again; the earlier private observation is retained.');
+    }
+  }
+  reconcileBattlePromises(g);
   if (b.preLeader && !b.preLeader.closed)
     b.preLeader.ready = b.preLeader.ready.filter((id) => id !== p.id);
 }
@@ -11132,11 +11293,10 @@ function validatePlan(
       'Your battle plan must comply with the Voice.',
     );
   }
-  const prescience = b.prescience;
-  if (prescience && prescience.player !== p.id && 'value' in prescience)
+  for (const element of committedPlanElements(b, p.id))
     requireRule(
-      plan[prescience.field] === prescience.value,
-      'The element revealed to Atreides must remain unchanged.',
+      plan[element.field] === element.value,
+      'Every element revealed by a battle inspection must remain unchanged.',
     );
   requireRule(
     respectsBattlePromises(
@@ -11338,6 +11498,7 @@ function gholaOptions(g: Game, p: Player) {
 }
 function marketGholaIntegrity(g: Game) {
   nexusCardsIntegrity(g);
+  nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
   grummanCollectionIntegrity(g);
   homeworldVictoryReturnIntegrity(g);
@@ -11462,7 +11623,10 @@ function findLegalBattlePlan(
   const b = g.battle!;
   const promises = options.promises ?? b.truthPromises ?? [];
   const fixed = options.prescience;
+  const commitments = committedPlanElements(b, p.id);
   const accepts = (plan: Partial<Plan>) =>
+    commitments.every(element =>
+      plan[element.field] === undefined || plan[element.field] === element.value) &&
     respectsBattlePromises(promises, p.id, plan, p.hand) &&
     (!fixed ||
       plan[fixed.field] === undefined ||
@@ -11603,6 +11767,8 @@ function findReachableBattlePlan(
   const pending = pendingBattleRevivalIncome(initial, player);
   if (pending) player.spice += pending;
   // The real table must finish its current window before it can execute a preparation action.
+  if (initial.battle?.nexusInspection?.stage === 'response')
+    initial.battle.nexusInspection = allowNexusInspection(battleInspectionContext(initial), initial.battle.nexusInspection);
   initial.response = null;
   initial.pendingKarama = null;
   // Search after Truthtrance resolves, retaining every existing or proposed
@@ -13708,6 +13874,7 @@ function finishResponse(g: Game, canceled: boolean) {
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
   const response = g.response!;
+  if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
   const ecazCollectionQuote =
     response.kind === 'ecazCollection'
       ? currentEcazCollectionQuote(g, response, canceled)
@@ -14484,6 +14651,8 @@ function finishResponse(g: Game, canceled: boolean) {
       );
     } else log(g, 'CHOAM battle force payments went to the bank.');
     finishBattle(g);
+  } else if (response.kind === 'nexusPrescience') {
+    settleNexusInspectionResponse(g, response, canceled);
   } else if (isCombatResponseKind(response.kind)) {
     commitCombatResponseQuote(
       g,
@@ -16524,6 +16693,7 @@ function applyActionInner(
   if (t === 'advanceBots') return g;
   if (t === 'nexusCardChoice') { decideNexusCard(g, p, action); return g; }
   requireRule(g.nexusCards?.phase?.stage !== 'drawing', 'Finish the closing Nexus card choices first.');
+  if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
     !(
       t === 'card' &&
@@ -19346,7 +19516,7 @@ function applyActionInner(
   if (t === 'declineBattlePower') {
     const b = g.battle;
     requireRule(
-      b?.preparation?.owner === id && b.preparation.kind !== 'prescienceAnswer',
+      b?.preparation?.owner === id && !['prescienceAnswer', 'nexusPrescienceAnswer'].includes(b.preparation.kind),
       'You do not own this battle power decision.',
     );
     const kind = b.preparation.kind;
@@ -19383,6 +19553,20 @@ function applyActionInner(
     g.response = { kind: 'prescience', owner: id, passed: [] };
     return g;
   }
+  if (t === 'nexusPrescienceAnswer') {
+    const b = g.battle, record = b?.nexusInspection;
+    requireRule(b?.preparation?.kind === 'nexusPrescienceAnswer' &&
+      b.preparation.owner === id && record?.stage === 'answer' && record.target === id &&
+      action.event === record.event && Object.keys(action).sort().join(',') === 'event,type,value',
+    'This Nexus answer does not match your current inspection.');
+    requireRule(record.mode !== 'cunning' || record.field !== 'dial' || !b.noFieldPlayers?.includes(id),
+      'Atreides may not inspect the number dialed in a No-Field battle.');
+    const value = record.field === 'dial'
+      ? typeof action.value === 'number' ? action.value : NaN
+      : action.value === null || action.value === '' ? null : stringField(action.value);
+    answerCurrentNexusInspection(g, value);
+    return g;
+  }
   if (t === 'prescienceAnswer') {
     const b = g.battle;
     requireRule(
@@ -19414,8 +19598,10 @@ function applyActionInner(
       feasiblePrescience(g, p, field, value),
       'Choose an element that permits a legal battle plan and obeys the Voice.',
     );
+    if (b.nexusInspection?.mode === 'cunning')
+      b.nexusInspection = nexusRule(() => answerNexusNative(battleInspectionContext(g), b.nexusInspection!, value));
     b.prescience.value = value;
-    finishBattlePreparation(g);
+    finishInspectionAnswers(g);
     return g;
   }
   if (t === 'voice') {
@@ -19714,7 +19900,7 @@ export function viewGame(state: Game, id: string) {
     (b.truthPromises?.some(
       (promise) => promise.player === id && !promise.released,
     ) ||
-      (b.prescience && b.prescience.player !== id && 'value' in b.prescience))
+      committedPlanElements(b, id).length > 0)
       ? findReachableBattlePlan(g, me)
       : null;
   return {
@@ -19965,6 +20151,7 @@ export function viewGame(state: Game, id: string) {
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
     nexusCards: projectedNexusCards(g, id),
+    nexusAtreides: nexusAtreidesOffer(g, id),
     homeworldRevivalDeployment: projectedHomeworldRevivalReturn(g, id),
     caladanReinforcement: projectedHomeworldVictoryReturn(g, id),
     homeworldRevivalBlocks: homeworldRevivalChoiceBlocks(g, me),
@@ -20594,6 +20781,13 @@ export function viewGame(state: Game, id: string) {
           traitorSubmitted: Object.keys(b.traitorCalls),
           traitorVoters: traitorVoters(g, b),
           preparation: b.preparation ?? null,
+          nexusInspection: b.nexusInspection ? {
+            event: b.nexusInspection.event, mode: b.nexusInspection.mode,
+            owner: b.nexusInspection.owner, target: b.nexusInspection.target,
+            field: b.nexusInspection.field, stage: b.nexusInspection.stage,
+          } : null,
+          nexusInsights: projectedNexusInsights(g, id),
+          ownCommitments: committedPlanElements(b, id),
           prescience: b.prescience
             ? {
                 player: b.prescience.player,
