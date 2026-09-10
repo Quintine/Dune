@@ -80,7 +80,12 @@ export function nexusGuildCunningRequest(
     nexus: viewGame(g, f.owner).nexusGuildCunning!.offer!.event,
   };
 }
-export const holdGuildCunningCard = holdNexusRicheseCard;
+export function holdGuildCunningCard(g: Game, owner: string, kind: string) {
+  const held = g.players
+    .find((p) => p.id === owner)!
+    .hand.find((c) => c.kind === kind || c.effect === kind);
+  return held ?? holdNexusRicheseCard(g, owner, kind);
+}
 export function nexusGuildCunningInventory(g: Game) {
   // The shared card census also checks a pre-Homeworld aggregate force total.
   // Count foreign visitors in that detached census; validate actual typed
@@ -106,6 +111,10 @@ export function nexusGuildCunningAllianceFixture(
   seatIds?: [string, string, string],
 ): NexusGuildCunningFixture {
   const f = nexusGuildCunningFixture({ seatIds, opponentFaction: 'moritani' });
+  // Reserve this actual card before the intervening real auction can distribute
+  // all copies. The later scenario reuses this owned identity rather than
+  // assuming a needed card remains in the randomly shuffled draw pile.
+  holdGuildCunningCard(f.g, f.owner, 'hajr');
   let g = f.g;
   while (g.phase === 5) g = applyAction(g, g.active!, { type: 'endMovement' });
   assert.equal(g.phase, 7);

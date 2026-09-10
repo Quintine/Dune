@@ -1,3 +1,4 @@
+import { nexusGuildSecretAllyQuote } from './nexus-guild-secret-ally-options';
 import type { Action, GameView } from './engine';
 import { quoteGuildPaymentRounding } from './homeworld-payment-income';
 import { reserveShipmentCost, guildShipmentCost } from './shipment-price';
@@ -18,12 +19,13 @@ export function homeworldShipmentPaymentBlock(g: GameView, cost: number, allyPay
 
 export function botHomeworldShipmentPaymentAllowed(g: GameView, action: Action): boolean {
   if (!['ship', 'guildShip'].includes(action.type)) return true;
-  if (!g.homeworlds?.worlds?.some(world => world.card === 'junction' && world.side === 'low')) return true;
   const me = g.players.find(p => p.id === g.me)!;
   const to = String(action.territory);
-  const amount = action.noField ? 1 : Number(action.amount);
-  const nexusQuote = action.nexus === undefined ? null : nexusRicheseQuote(g, to, amount);
-  if (action.nexus !== undefined && (!nexusQuote || action.nexus !== g.nexusRichese?.event || action.type !== 'ship' || action.noField !== undefined)) return false;
+  const amount = action.noField ? 1 : action.forces ? Object.values(action.forces as Record<string, number>).reduce((sum, n) => sum + n, 0) : Number(action.amount);
+  const guildSource = action.nexus !== undefined && action.nexus === g.nexusGuildSecretAlly?.event;
+  const nexusQuote = action.nexus === undefined ? null : guildSource ? nexusGuildSecretAllyQuote(g, to, amount) : nexusRicheseQuote(g, to, amount);
+  if (action.nexus !== undefined && (!nexusQuote || (!guildSource && (action.nexus !== g.nexusRichese?.event || action.type !== 'ship')) || action.noField !== undefined)) return false;
+  if (!g.homeworlds?.worlds?.some(world => world.card === 'junction' && world.side === 'low')) return true;
   const cost = nexusQuote ? nexusQuote.cost : action.type === 'ship'
     ? reserveShipmentCost({ faction: me.faction, halfRate: me.faction === 'guild' ||
       g.players.some(p => p.faction === 'guild' && p.id === me.ally) || g.karamaShipping?.player === me.id }, territory(to).type, amount)

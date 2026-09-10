@@ -110,6 +110,7 @@ import { canUseAsKarama } from '@/game/karama';
 import { LeaderPortrait } from './leader-portrait';
 import { ShipmentQuote } from './shipment-quote';
 import { reserveShipmentCost } from '@/game/shipment-price';
+import { nexusGuildSecretAllyAction, nexusGuildSecretAllyQuote } from '@/game/nexus-guild-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from '@/game/nexus-richese-options';
 import { guildTransportQuote } from '@/game/transport-quote';
 import { fremenReserveEntry, botGroundMoveAllowed } from '@/game/bot-mobility';
@@ -253,7 +254,10 @@ export function GameTable({
   const noTraitorReason = traitorPlan?.kwisatz
     ? 'Kwisatz Haderach prevents this leader from turning traitor.'
     : 'You do not hold the opposing leader as a traitor.';
+  const [guildSecretEvent, setGuildSecretEvent] = useState('');
+  const useGuildSecret = !!g.nexusGuildSecretAlly && guildSecretEvent === g.nexusGuildSecretAlly.event;
   const guildTransport =
+    useGuildSecret ||
     me.faction === 'guild' ||
     g.players.some((p) => p.faction === 'guild' && p.id === me.ally);
   const [botFaction, setBotFaction] = useState('');
@@ -414,6 +418,7 @@ export function GameTable({
   const payment =
     !me.ally || allyPayment === '' ? {} : { allyPayment: Number(allyPayment) };
   const shipmentProblems: string[] = [];
+  if (useGuildSecret && g.nexusGuildSecretAlly?.blocked) shipmentProblems.push(g.nexusGuildSecretAlly.blocked);
   if (useRicheseShipment && g.nexusRichese?.blocked) shipmentProblems.push(g.nexusRichese.blocked);
   const shipmentMaximum = useRicheseShipment ? Math.min(me.reserves, 5, g.nexusRichese!.maxForces) : me.reserves;
   if (homeworldSources) {
@@ -441,11 +446,11 @@ export function GameTable({
       'This shipment conflicts with your Truthtrance answer. Choose a count and destination that honor your shipment promises.',
     );
   const selectedDestinationInStorm = sector !== 0 && sector === g.storm;
-  if (selectedDestinationInStorm && !(g.advanced && me.faction === 'fremen'))
+  if (selectedDestinationInStorm && !(!useGuildSecret && g.advanced && me.faction === 'fremen'))
     shipmentProblems.push(
       `Sector ${sector} of ${territory(selected).name} is in the storm. Choose a different sector or territory.`,
     );
-  if (me.faction === 'fremen' && !fremenReserveEntry(selected))
+  if (!useGuildSecret && me.faction === 'fremen' && !fremenReserveEntry(selected))
     shipmentProblems.push(
       `${territory(selected).name} is beyond the Fremen reinforcement area. Choose the Great Flat or a territory within two territories of it.`,
     );
@@ -475,10 +480,11 @@ export function GameTable({
       g.karamaShipping?.player === me.id,
   };
   const shipmentCost = validShipmentAmount
-    ? useRicheseShipment
+    ? useGuildSecret ? (nexusGuildSecretAllyQuote(g, selected, amount)?.cost ?? null) : useRicheseShipment
       ? (nexusRicheseQuote(g, selected, amount)?.cost ?? null)
       : reserveShipmentCost(shipmentRate, territory(selected).type, amount)
     : null;
+  if (useGuildSecret && shipmentCost === null && !g.nexusGuildSecretAlly?.blocked) shipmentProblems.push('Choose a current Guild Secret Ally shipment.');
   if (useRicheseShipment && shipmentCost === null && !g.nexusRichese?.blocked)
     shipmentProblems.push('Choose a current Richese Secret Ally shipment of up to five physical forces.');
   const selectedAllyPayment =
@@ -576,6 +582,7 @@ export function GameTable({
       : physicalMovementGroup;
   const transportAction: Action = {
     type: 'guildShip',
+    ...(useGuildSecret ? {nexus: guildSecretEvent} : {}),
     ...payment,
     ...movementGroup,
     territory: selected,
@@ -593,6 +600,7 @@ export function GameTable({
   };
   const returnTransportAction: Action = {
     type: 'guildShip',
+    ...(useGuildSecret ? {nexus: guildSecretEvent} : {}),
     ...payment,
     ...movementGroup,
     territory: 'reserves',
@@ -603,11 +611,11 @@ export function GameTable({
       ? guildTransportQuote(g, transportAction)
       : null;
   const southernTransportPreview =
-    guildTransport && shipmentAvailable && me.faction === 'fremen'
+    guildTransport && !useGuildSecret && shipmentAvailable && me.faction === 'fremen'
       ? guildTransportQuote(g, southernTransportAction)
       : null;
   const returnTransportPreview =
-    guildTransport && shipmentAvailable && me.faction === 'guild'
+    guildTransport && shipmentAvailable && (me.faction === 'guild' || useGuildSecret)
       ? guildTransportQuote(g, returnTransportAction)
       : null;
   const canceledFremenRouteBlocked =
@@ -3684,6 +3692,19 @@ export function GameTable({
                             />
                           </details>
                         ))}
+                    {!me.shipped && g.nexusGuildSecretAlly && (
+                      <div className="notice">
+                        <label className="decision-checkbox min-h-11">
+                          <input type="checkbox" checked={useGuildSecret} disabled={busy || !!g.nexusGuildSecretAlly.blocked}
+                            onChange={event => setGuildSecretEvent(event.target.checked ? g.nexusGuildSecretAlly!.event : '')} />
+                          Use Guild Nexus Secret Ally
+                        </label>
+                        <p>Spend the Nexus for this shipment at Guild prices: one spice per two forces to a stronghold or reserves, rounded up, or one per force elsewhere. Cross-shipment and return use the same shipment opportunity; normal movement remains available.</p>
+                        {me.faction === 'fremen' && <p>Leave this unchecked for free Fremen reinforcement within its normal range. Selecting the Nexus pays Guild prices and permits destinations beyond that range, outside the storm.</p>}
+                        {g.homeworlds?.worlds?.length && <p>Returning Arrakis forces to native Homeworld reserves with this card awaits a ruling.</p>}
+                        {g.nexusGuildSecretAlly.blocked && <p>{g.nexusGuildSecretAlly.blocked}</p>}
+                      </div>
+                    )}
                     {!me.shipped && g.nexusRichese && (
                       <div className="notice">
                         <label className="decision-checkbox min-h-11">
@@ -3744,7 +3765,7 @@ export function GameTable({
                               territory: selected, sector, amount,
                               ...(homeworldSources ? { homeworldSources } : {}),
                             };
-                            const action = useRicheseShipment
+                            const action = useGuildSecret ? nexusGuildSecretAllyAction(g, guildSecretEvent, shipment) : useRicheseShipment
                               ? nexusRicheseAction(g, richeseShipmentEvent, shipment) : shipment;
                             if (action) act(action);
                           }}

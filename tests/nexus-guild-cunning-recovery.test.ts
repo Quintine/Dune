@@ -47,7 +47,8 @@ async function fixture(
         advanced: selfStop,
         homeworlds,
       });
-  if (alliance) f.karama = holdGuildCunningCard(f.g, f.target, 'karama').id;
+  // The genuine alliance scenario passes whichever actual responders remain;
+  // it does not need to acquire another Karama after its intervening auction.
   const ownKarama = selfStop
     ? holdGuildCunningCard(f.g, f.owner, 'karama').id
     : undefined;

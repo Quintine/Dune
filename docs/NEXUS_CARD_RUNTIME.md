@@ -1,5 +1,7 @@
 # Nexus cards: common lifecycle checkpoint
 
+**Later Guild Secret Ally runtime:** [NEXUS_GUILD_SECRET_ALLY_RUNTIME.md](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) records explicitly selected Guild prices, cross/return routes, typed Homeworld sources, paid Fremen reinforcement and committed shipment history. The card changes one shipment, without creating a native Guild or a real alliance. The Homeworld-return ruling and full module completion remain pending.
+
 The later [Richese Secret Ally checkpoint](NEXUS_RICHESE_RUNTIME.md) adds an ordinary physical reserve shipment priced as one force; its other effects and complete module acceptance remain gated.
 
 The later [Guild Cunning checkpoint](NEXUS_GUILD_CUNNING_RUNTIME.md) adds a separately recorded second shipment and remaining Hajr movement within the native Guild turn. Secret Ally, Betrayal and complete module acceptance remain unfinished.

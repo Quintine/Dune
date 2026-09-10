@@ -1,5 +1,7 @@
 # Spacing Guild Nexus: shipment source contract
 
+**Later runtime checkpoints:** [Guild Cunning](NEXUS_GUILD_CUNNING_RUNTIME.md) implements the extra-shipment continuation. [Guild Secret Ally](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) implements supported paid routes using the [focused source resolution](NEXUS_GUILD_SECRET_ALLY_RULES.md). The original audit below remains historical source evidence; its Homeworld-return question has now been sent to the user.
+
 Source audit, 10 September 2026. This documents the three printed panels and their integration boundaries. It does not implement them or certify complete Guild, Homeworld, Nexus or expansion compliance. [Common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing release gates continue to apply. No user question was sent during this audit.
 
 ## Primary evidence

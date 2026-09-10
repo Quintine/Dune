@@ -1,3 +1,7 @@
+import {
+  nexusGuildSecretAllyCanAct,
+  nexusGuildSecretAllyQuote,
+} from './nexus-guild-secret-ally-options';
 import { nexusGuildShipmentAvailable } from './nexus-guild-cunning-options';
 import type { Action, GameView } from './engine';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
@@ -23,6 +27,7 @@ export function homeworldShipmentChoice(
   destination: string,
   sources: HomeworldShipmentSources,
   allyPayment = 0,
+  nexus?: string,
 ) {
   const result: {
     blocked: string | null;
@@ -87,14 +92,26 @@ export function homeworldShipmentChoice(
       destination,
       sources,
     });
-    result.cost = quote.cost;
+    const nexusQuote =
+      nexus === undefined
+        ? null
+        : nexusGuildSecretAllyQuote(view, destination, quote.amount);
+    if (
+      nexus !== undefined &&
+      (!nexusQuote || nexus !== view.nexusGuildSecretAlly?.event)
+    ) {
+      result.blocked = 'Choose a current Guild Secret Ally shipment offer.';
+      return result;
+    }
+    const cost = nexusQuote?.cost ?? quote.cost;
+    result.cost = cost;
     result.amount = quote.amount;
     result.elite = quote.elite;
-    result.ownPayment = quote.cost - allyPayment;
+    result.ownPayment = cost - allyPayment;
     if (
       !Number.isSafeInteger(allyPayment) ||
       allyPayment < 0 ||
-      allyPayment > quote.cost ||
+      allyPayment > cost ||
       allyPayment > (me.ally ? view.aid.available : 0)
     )
       result.blocked =
@@ -109,6 +126,7 @@ export function homeworldShipmentChoice(
         destination,
         sources,
         allyPayment,
+        ...(nexus === undefined ? {} : { nexus }),
       };
   } catch (error) {
     if (!(error instanceof HomeworldCustodyError)) throw error;
@@ -135,6 +153,7 @@ export function homeworldShipmentActions(
     !nexusGuildShipmentAvailable(view)
   )
     return [];
+  const useNexus = nexusGuildSecretAllyCanAct(view);
   const difficulty = Math.max(0, Math.min(3, level));
   const budget = Math.max(
     0,
@@ -212,7 +231,7 @@ export function homeworldShipmentActions(
       const amount = Math.min(
         pools.reduce((sum, pool) => sum + pool.capacity, 0),
         [3, 5, 7, 9][difficulty],
-        budget * (me.faction === 'guild' ? 2 : 1),
+        budget * (me.faction === 'guild' || useNexus ? 2 : 1),
         Math.max([1, 3, 4, 5][difficulty], required),
       );
       if (amount <= 0) continue;
@@ -245,12 +264,21 @@ export function homeworldShipmentActions(
         target.strength + (difficulty > 0 ? 1 : 0)
       )
         continue;
-      const initial = homeworldShipmentChoice(view, target.world.id, selection);
+      const nexus =
+        useNexus && amount > 1 ? view.nexusGuildSecretAlly!.event : undefined;
+      const initial = homeworldShipmentChoice(
+        view,
+        target.world.id,
+        selection,
+        0,
+        nexus,
+      );
       const quote = homeworldShipmentChoice(
         view,
         target.world.id,
         selection,
         Math.max(0, initial.cost - (me.spice ?? 0)),
+        nexus,
       );
       if (
         quote.action &&

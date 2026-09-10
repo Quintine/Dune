@@ -1,4 +1,5 @@
 import { nexusGuildShipmentAvailable } from './nexus-guild-cunning-options';
+import { nexusGuildSecretAllyCanAct } from './nexus-guild-secret-ally-options';
 import type { Action, GameView } from './engine';
 import { splitLocation, validLocation } from './board';
 import { botEntryAllowed, guildTransportCost } from './bot-mobility';
@@ -10,6 +11,13 @@ import { shipmentPaymentBounds } from './shipment-price';
 export function guildTransportQuote(g: GameView, action: Action) {
   const p = g.players.find((seat) => seat.id === g.me)!;
   const unavailableReasons: string[] = [];
+  const nexus = action.nexus !== undefined;
+  const nexusAllowed =
+    nexus &&
+    nexusGuildSecretAllyCanAct(g) &&
+    action.nexus === g.nexusGuildSecretAlly?.event;
+  if (nexus && !nexusAllowed)
+    unavailableReasons.push('Choose a current Guild Secret Ally offer.');
   const fromReserves = action.from === 'reserves';
   let total = 0;
   let origin: string | undefined;
@@ -51,6 +59,10 @@ export function guildTransportQuote(g: GameView, action: Action) {
       'Guild transport of a concealed No-Field is unavailable. Reveal the marker first or use its movement action.',
     );
   if (fromReserves) {
+    if (nexus)
+      unavailableReasons.push(
+        'Use the paid reserve shipment selector for Guild Secret Ally.',
+      );
     if (p.faction !== 'fremen')
       unavailableReasons.push(
         'Only allied Fremen may cross-ship southern reserves.',
@@ -112,8 +124,12 @@ export function guildTransportQuote(g: GameView, action: Action) {
     sector >= 0 &&
     sector <= 18 &&
     (to === 'reserves' || validLocation(to, sector));
-  if (to === 'reserves' && p.faction !== 'guild')
+  if (to === 'reserves' && p.faction !== 'guild' && !nexusAllowed)
     unavailableReasons.push('Only the Guild may return forces to reserves.');
+  if (to === 'reserves' && nexus && g.homeworlds?.worlds?.length)
+    unavailableReasons.push(
+      'Guild Secret Ally return to native Homeworld reserves awaits a ruling.',
+    );
   if (!validDestination)
     unavailableReasons.push('Choose a sector belonging to the destination.');
   else if (
@@ -124,12 +140,15 @@ export function guildTransportQuote(g: GameView, action: Action) {
       'This destination is unavailable because of the storm, allied forces, stronghold capacity, or your advisor restrictions.',
     );
   if (!fromReserves && to !== 'reserves' && to === origin)
-    unavailableReasons.push('Guild cross-shipment must enter another territory.');
+    unavailableReasons.push(
+      'Guild cross-shipment must enter another territory.',
+    );
   if (
     g.phase !== 5 ||
     g.active !== p.id ||
     !nexusGuildShipmentAvailable(g) ||
     !(
+      nexusAllowed ||
       p.faction === 'guild' ||
       g.players.some((seat) => seat.id === p.ally && seat.faction === 'guild')
     )

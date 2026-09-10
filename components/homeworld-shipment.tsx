@@ -37,6 +37,9 @@ export function HomeworldShipment({
   );
   const [sources, setSources] = useState<HomeworldShipmentSources>({});
   const [allyPayment, setAllyPayment] = useState(0);
+  const [nexusEvent, setNexusEvent] = useState('');
+  const useNexus =
+    !!g.nexusGuildSecretAlly && nexusEvent === g.nexusGuildSecretAlly.event;
   const option = g.homeworldShipment;
   if (!option) return null;
   const imperial = g.advanced && me.faction === 'emperor';
@@ -51,7 +54,13 @@ export function HomeworldShipment({
         : [];
     }),
   );
-  const quote = homeworldShipmentChoice(g, destination, selected, allyPayment);
+  const quote = homeworldShipmentChoice(
+    g,
+    destination,
+    selected,
+    allyPayment,
+    useNexus ? nexusEvent : undefined,
+  );
   const special = specialForceName(me.faction);
   return (
     <details className="rounded-lg border border-[#a88b60]/50 p-3">
@@ -67,11 +76,37 @@ export function HomeworldShipment({
         Allied Homeworlds cannot be destinations.
       </p>
       <p className="fine">
-        {me.faction === 'guild'
-          ? 'Guild pays one spice per two forces, rounded up.'
-          : 'Pay one spice per force.'}{' '}
+        {useNexus
+          ? 'Selected Guild Nexus price: one spice per two forces, rounded up.'
+          : me.faction === 'guild'
+            ? 'Guild pays one spice per two forces, rounded up.'
+            : 'Pay one spice per force.'}{' '}
         This uses your shipment; your normal movement remains available.
       </p>
+      {g.nexusGuildSecretAlly && (
+        <div className="notice">
+          <label className="decision-checkbox min-h-11">
+            <input
+              type="checkbox"
+              checked={useNexus}
+              disabled={busy || !!g.nexusGuildSecretAlly.blocked}
+              onChange={(event) =>
+                setNexusEvent(
+                  event.target.checked ? g.nexusGuildSecretAlly!.event : '',
+                )
+              }
+            />
+            Use Guild Nexus Secret Ally for Homeworld shipment
+          </label>
+          <p>
+            Spend the Nexus to pay one spice per two forces, rounded up.
+            Existing source and destination restrictions still apply.
+          </p>
+          {g.nexusGuildSecretAlly.blocked && (
+            <p>{g.nexusGuildSecretAlly.blocked}</p>
+          )}
+        </div>
+      )}
       {option.blocked && (
         <output className="notice block">{option.blocked}</output>
       )}

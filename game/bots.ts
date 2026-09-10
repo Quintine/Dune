@@ -53,6 +53,7 @@ import { ownedTech } from './tech-tokens';
 import type { StrongholdProgress } from './victory-progress';
 import { canUseAsKarama } from './karama';
 import { reserveShipmentCost } from './shipment-price';
+import { nexusGuildSecretAllyAction, nexusGuildSecretAllyCanAct, nexusGuildSecretAllyQuote } from './nexus-guild-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from './nexus-richese-options';
 import { liveShipmentPromises, matchesShipment } from './shipment-promises';
 import {
@@ -2835,6 +2836,7 @@ function policyActions(g: GameView): Action[] {
       g.players.some((p) => p.faction === 'guild' && p.id === me.ally) ||
       g.karamaShipping?.player === me.id;
     const shipmentBudget = (me.spice ?? 0) + g.aid.available;
+    const guildSecret = nexusGuildSecretAllyCanAct(g);
     const noField = g.richeseNoField;
     const ownNoField = noField?.owner === me.id ? noField.private : null;
     const marker = ownNoField?.deployed;
@@ -2918,6 +2920,23 @@ function policyActions(g: GameView): Action[] {
           });
         }
     }
+    // Generate paid Guild-source candidates before applying ordinary prices or Fremen range.
+    if (shipmentAvailable && guildSecret && me.reserves > 0)
+      for (const to of targets.filter(to => botEntryAllowed(g, me, to.t, to.s, 'guildShip')).slice(0, 24)) {
+        if (marker?.location.territory === to.t) continue;
+        const desired = Math.min(me.reserves, Math.max([3, 4, 5, 6][level], to.enemy + 2));
+        for (const amount of new Set([desired, Math.min(desired, shipmentBudget * (territory(to.t).type === 'stronghold' ? 2 : 1))])) {
+          const quote = nexusGuildSecretAllyQuote(g, to.t, amount);
+          if (!quote || quote.cost > shipmentBudget ||
+            (me.faction === 'fremen' && fremenReserveEntry(to.t)) ||
+            (me.faction !== 'fremen' && quote.cost >= reserveShipmentCost({faction: me.faction, halfRate}, territory(to.t).type, amount))) continue;
+          const candidate = nexusGuildSecretAllyAction(g, g.nexusGuildSecretAlly!.event, {
+            type: 'ship', territory: to.t, sector: to.s, amount,
+            elite: level > 0 ? Math.min(amount, me.elites?.reserves ?? 0) : Math.max(0, amount - (me.reserves - (me.elites?.reserves ?? 0))),
+          });
+          if (candidate) actions.push(candidate);
+        }
+      }
     if (shipmentAvailable && me.reserves > 0)
       for (const to of destinations(g, g.advanced && me.faction === 'fremen')
         .filter(
@@ -2964,6 +2983,7 @@ function policyActions(g: GameView): Action[] {
         }
       }
     const guildTransport =
+      guildSecret ||
       me.faction === 'guild' ||
       g.players.some((p) => p.faction === 'guild' && p.id === me.ally);
     if (shipmentAvailable && guildTransport)
@@ -2972,7 +2992,7 @@ function policyActions(g: GameView): Action[] {
         .slice(0, 16)) {
         if (marker?.location.territory === to.t) continue;
         if (
-          me.faction === 'fremen' &&
+          !guildSecret && me.faction === 'fremen' &&
           me.reserves > 0 &&
           guildTransportCost(
             to.t,
@@ -3007,12 +3027,22 @@ function policyActions(g: GameView): Action[] {
           )
             actions.push({
               type: 'guildShip',
+              ...(guildSecret ? {nexus: g.nexusGuildSecretAlly!.event} : {}),
               from,
               territory: to.t,
               sector: to.s,
               amount,
             });
         }
+      }
+    if (shipmentAvailable && guildSecret && !g.homeworlds?.worlds?.length)
+      for (const [from, amount] of Object.entries(me.forces)) {
+        const source = splitLocation(from);
+        if (source.sector === g.storm || !g.players.some(p => p.id !== me.id && countAt(p, source.territory) > countAt(me, source.territory))) continue;
+        const quote = nexusGuildSecretAllyQuote(g, 'reserves', amount);
+        if (!quote || quote.cost > shipmentBudget) continue;
+        const candidate = nexusGuildSecretAllyAction(g, g.nexusGuildSecretAlly!.event, {type:'guildShip', from, amount, territory:'reserves'});
+        if (candidate) actions.push(candidate);
       }
     const movingSources = Object.entries(me.forces)
       .map(([from, n]) => {
