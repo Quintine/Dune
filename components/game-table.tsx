@@ -1,4 +1,5 @@
 'use client';
+import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
 import {
   matchesShipment,
   liveShipmentPromises,
@@ -169,6 +170,10 @@ export function GameTable({
   onExit: () => void;
 }) {
   const me = g.players.find((p) => p.id === g.me)!;
+  const shipmentAvailable = nexusGuildShipmentAvailable(g);
+  const movementAvailable = nexusGuildMovementAvailable(g);
+  const guildCunning = nexusGuildCunningActive(g);
+  const guildCunningAction = g.nexusGuildCunning?.offer ? nexusGuildCunningAction(g, g.nexusGuildCunning.offer.event) : null;
   const combatName = (id: string) =>
     g.combatLocations?.find((place) => place.id === id)?.name ??
     gameTerritories(g).find((place) => place.id === id)?.name ??
@@ -594,15 +599,15 @@ export function GameTable({
     amount,
   };
   const transportPreview =
-    guildTransport && !me.shipped
+    guildTransport && shipmentAvailable
       ? guildTransportQuote(g, transportAction)
       : null;
   const southernTransportPreview =
-    guildTransport && !me.shipped && me.faction === 'fremen'
+    guildTransport && shipmentAvailable && me.faction === 'fremen'
       ? guildTransportQuote(g, southernTransportAction)
       : null;
   const returnTransportPreview =
-    guildTransport && !me.shipped && me.faction === 'guild'
+    guildTransport && shipmentAvailable && me.faction === 'guild'
       ? guildTransportQuote(g, returnTransportAction)
       : null;
   const canceledFremenRouteBlocked =
@@ -656,7 +661,7 @@ export function GameTable({
     const promises = liveShipmentPromises(g.shipmentPromises, me.id, g.turn);
     const shipmentBlocked =
       g.phase === 5 &&
-      !me.shipped &&
+      shipmentAvailable &&
       ['ship', 'guildShip', 'move', 'endMovement'].includes(a.type) &&
       promises.some(
         (p) =>
@@ -1818,6 +1823,7 @@ export function GameTable({
                     capture: 'Harkonnen leader capture',
                     kwisatz: 'Kwisatz Haderach battle protection',
                     guildTiming: 'Guild shipment and movement timing',
+                    nexusGuildCunning: 'Guild Cunning second shipment',
                     atreidesAuction: 'Atreides auction foresight',
                     atreidesSpice: 'Atreides spice foresight',
                     stormPeek: 'Fremen storm foresight',
@@ -1983,7 +1989,12 @@ export function GameTable({
                   unchanged.
                 </p>
               )}
+              {g.response.kind === 'nexusGuildCunning' && <p className="notice">
+                Allow one second Guild shipment at its normal price, or cancel this extra opportunity.
+                The completed first shipment and movement stay unchanged; the Nexus is already spent.
+              </p>}
               {g.response.intent &&
+                g.response.kind !== 'nexusGuildCunning' &&
                 g.response.source !== 'ambassador' &&
                 g.response.kind !== 'nexusAdvisorFlip' &&
                 g.response.kind !== 'nexusSardaukar' &&
@@ -3594,10 +3605,10 @@ export function GameTable({
               {g.phase === 5 && (
                 <ShipmentPromises game={g} act={act} busy={busy} />
               )}
-              {g.phase === 5 && g.active === me.id && g.homeworldShipment && !me.shipped && (
+              {g.phase === 5 && g.active === me.id && g.homeworldShipment && shipmentAvailable && (
                 <HomeworldShipment key={g.homeworldShipment.event} game={g} act={act} busy={busy} />
               )}
-              {g.phase === 5 && g.active === me.id && g.guildHomeworldShipment && !me.shipped && (
+              {g.phase === 5 && g.active === me.id && g.guildHomeworldShipment && shipmentAvailable && (
                 <GuildHomeworldShipment key={g.guildHomeworldShipment.event} game={g} act={act} busy={busy} />
               )}
               {g.phase === 5 && g.homeworldMove && (
@@ -3694,7 +3705,7 @@ export function GameTable({
                         your shipment below.
                       </p>
                     )}
-                    {!me.shipped && (
+                    {shipmentAvailable && (
                       <>
                         <NativeShipmentChoice
                           game={g}
@@ -3898,6 +3909,7 @@ export function GameTable({
                       busy={busy}
                       move={
                         !source ||
+                        !movementAvailable ||
                         (me.moved ?? 0) >= (me.movesAllowed ?? 1) ||
                         (includesNoField
                           ? !validMarkerGroup
@@ -3916,7 +3928,11 @@ export function GameTable({
                       }
                     />
                     <p className="fine">
-                      {(me.moved ?? 0) < (me.movesAllowed ?? 1)
+                      {guildCunning?.stage === 'secondShipment'
+                        ? 'Choose or decline the second shipment before any Hajr movement.'
+                        : guildCunning?.stage === 'extraMove'
+                          ? `${guildCunning.movesLeft} unused Hajr movement remaining. No ordinary movement is granted.`
+                        : (me.moved ?? 0) < (me.movesAllowed ?? 1)
                         ? `${(me.movesAllowed ?? 1) - (me.moved ?? 0)} movement remaining.`
                         : 'Movement complete. Finish your turn when your shipment is also settled.'}
                     </p>
@@ -3967,9 +3983,24 @@ export function GameTable({
                         )}
                       </>
                     )}
-                    {actionButton('Finish shipment & movement', {
-                      type: 'endMovement',
-                    })}
+                    {g.nexusGuildCunning?.offer && (
+                      <section className="notice">
+                        <p>Guild Cunning ends your ordinary shipment and movement, then offers one second shipment at normal Guild prices. Only an unused Hajr move can follow it. The physical Ornithopter card combination remains unavailable.</p>
+                        {g.nexusGuildCunning.offer.blocked && <p>{g.nexusGuildCunning.offer.blocked}</p>}
+                        {actionButton('Finish ordinary turn and declare Guild Cunning',
+                          guildCunningAction ?? {type: 'endMovement'}, !guildCunningAction)}
+                      </section>
+                    )}
+                    {guildCunning && <p className="notice">{guildCunning.stage === 'secondShipment'
+                      ? 'Guild Cunning: choose your second shipment, or skip it and retain an unused Hajr move. This does not reopen ordinary movement.'
+                      : guildCunning.stage === 'extraMove'
+                        ? 'The second shipment is settled. Use an unused Hajr move or finish your turn.'
+                        : 'Guild Cunning awaits its cancellation response.'}</p>}
+                    {guildCunning?.stage === 'secondShipment' && actionButton('Skip second shipment',
+                      nexusGuildSkipShipmentAction(g, guildCunning.event) ?? {type: 'endMovement'},
+                      !nexusGuildSkipShipmentAction(g, guildCunning.event))}
+                    {actionButton(guildCunning?.stage === 'secondShipment' ? 'Decline second shipment and finish' :
+                      guildCunning ? 'Finish Guild turn' : 'Finish shipment & movement', {type: 'endMovement'})}
                   </>
                 ) : (
                   <p className="muted">
@@ -4922,7 +4953,7 @@ export function GameTable({
                     {canUseAsKarama(g.advanced, me.faction, c) &&
                       g.phase === 5 &&
                       g.active &&
-                      !g.players.find((p) => p.id === g.active)?.shipped && (
+                      (g.active === me.id ? shipmentAvailable : !g.players.find((p) => p.id === g.active)?.shipped) && (
                         <Button
                           variant="outline"
                           disabled={

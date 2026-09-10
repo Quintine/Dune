@@ -1,3 +1,4 @@
+import { shipmentAvailable } from './shipment-opportunity';
 import type { ShipmentClaim } from './shipment-promises';
 import { TERRITORIES } from './board';
 import {
@@ -145,7 +146,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
         g.status === 'playing' &&
         g.phase === 5 &&
         g.active === v.target &&
-        !g.players.find((p) => p.id === v.target)!.shipped &&
+        shipmentAvailable(g,g.players.find((p) => p.id === v.target)!) &&
         !g.response &&
         !g.decision &&
         !g.phaseOpening &&

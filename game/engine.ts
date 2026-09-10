@@ -1,3 +1,5 @@
+import { shipmentAvailable } from './shipment-opportunity';
+import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
 import { createNexusRichese, validateNexusRichese, quoteNexusRicheseShipment, type NexusRicheseReceipt } from './nexus-richese';
 import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
 import { beginNexusTraitorExchange, finishNexusTraitorExchange, validateNexusTraitorExchange, validateNexusTraitorHistory, validateNexusTraitorSnapshot, type NexusTraitorExchange, type NexusTraitorSnapshot } from './nexus-traitor-exchange';
@@ -801,6 +803,7 @@ export type ResponseWindow = {
     | 'advisorFlip'
     | 'nexusAdvisorFlip'
     | 'nexusSardaukar'
+    | 'nexusGuildCunning'
     | 'bgCharity'
     | 'choamCharity'
     | 'choamInflation'
@@ -835,6 +838,7 @@ type KaramaUse =
   | { kind: 'purchase' }
   | { kind: 'auctionPayment' };
 type PendingHomeworldShipment = HomeworldShipmentIntent & {
+  guildNexusEvent?: string;
   /** Absent in older world-to-world declarations. */
   route?: 'arrakis';
   event: string;
@@ -846,6 +850,7 @@ type PendingHomeworldShipment = HomeworldShipmentIntent & {
   pools: ReturnType<typeof quoteHomeworldShipment>['sources'] | ReturnType<typeof quoteGuildHomeworldShipment>['boardSources'];
 };
 type PendingShipment = {
+  guildNexusEvent?: string;
   nexusEvent?: string;
   homeworldSources?: NativeReserveSelections;
   source?: 'ambassador';
@@ -1284,6 +1289,8 @@ export type Game = {
   nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
   nexusChoamHistory?: {receipt: NexusChoamReceipt; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'; frame: string; parent: string; signature: string}[];
   nexusMoritaniHistory?: {receipt:NexusMoritaniReceipt;stage:'pending'|'complete'|'canceled';before:string;frame:string;signature:string}[];
+  nexusGuildCunningHistory?: {receipt:NexusGuildCunningReceipt;stage:'pending'|'secondShipment'|'extraMove'|'completed'|'canceled';parent:string;movesAfter:number;shipment?:{kind:'reserve'|'guild'|'homeworld';frame:string;stage:'pending'|'complete'|'stopped'}|{kind:'declined';stage:'declined'};signature:string}[];
+  nexusGuildCunningLast?: {event:string;stage:'pending'|'secondShipment'|'extraMove'|'completed'|'canceled'};
   nexusRicheseHistory?: {receipt:NexusRicheseReceipt;stage:'pending'|'shipped'|'stopped';frame:string;halfRate:boolean;signature:string}[];
   nexusRicheseLast?: {event:string;stage:'pending'|'shipped'|'stopped'};
   nexusMoritaniLocations?: Record<string,{event:string;territory:string}>;
@@ -6428,6 +6435,7 @@ function karamaOpportunitySignature(
             active: g.active,
             recipient: use.recipient,
             shipped: getPlayer(g, use.recipient).shipped,
+            ...(currentGuildCunning(g,use.recipient) ? {guildCunning:currentGuildCunning(g,use.recipient)} : {}),
             rate: g.karamaShipping ?? null,
             movementRemaining: g.movementRemaining ?? null,
           }
@@ -6758,6 +6766,7 @@ function validateKaramaUse(
       use.response,
       spendingCard ? { player: p.id, card: spendingCard.id } : undefined,
     );
+    if (use.response.kind === 'nexusGuildCunning') validateGuildCunningResponse(g,use.response);
     currentChoamWorthlessCancellationQuote(g, use.response);
     currentPlacementCancellationQuote(g, use.response);
     if (use.response.kind === 'ecazCollection')
@@ -6770,7 +6779,7 @@ function validateKaramaUse(
       g.status === 'playing' &&
         g.phase === 5 &&
         g.active === recipient.id &&
-        !recipient.shipped &&
+        shipmentAvailable(g,recipient) &&
         !g.karamaShipping,
       'Choose the active player before their unused Karama shipment.',
     );
@@ -7315,6 +7324,8 @@ function forceGroup(p: Player, action: Action) {
   };
 }
 function movesAllowed(g: Game, p: Player) {
+  const cunning = currentGuildCunning(g,p.id);
+  if (cunning) return p.moved + (cunning.stage === 'extraMove' ? nexusRule(() => nexusGuildCunningMoves(cunning.receipt,g.hajr.includes(p.id),cunning.movesAfter)) : 0);
   const flight = g.ornithopter;
   return flight?.player === p.id && flight.turn === g.turn
     ? flight.startingMove + (flight.mode === 'twoGroups' ? 2 : 1)
@@ -7387,6 +7398,7 @@ function ornithopterBlock(
     return 'Resolve the current interaction before declaring a movement.';
   if (g.ornithopter)
     return 'Finish the already played Ornithopter movement first.';
+  if (currentGuildCunning(g,p.id)) return 'Guild Cunning combined with the physical Ornithopter card awaits its timing ruling.';
   if (p.moved || g.hajr.includes(p.id))
     return 'Ornithopter combined with prior moves or Hajr awaits its timing ruling.';
   if (
@@ -7827,6 +7839,8 @@ function completeMove(g: Game, move: MovementOrder) {
   finishShipmentPromises(g, p, null);
   p.shipped = true;
   p.moved++;
+  const cunning = currentGuildCunning(g,id);
+  if (cunning) { requireRule(cunning.stage === 'extraMove', 'Guild Cunning permits no movement before the second shipment.'); cunning.movesAfter++; saveGuildCunning(g,cunning); }
   const completed: CompletedMovement = {
     player: id,
     origin,
@@ -7862,6 +7876,8 @@ function finishMovedGroup(g: Game, move: CompletedMovement) {
 /** A played movement card is already retired before queue advancement. */
 function finishMovementTurn(g: Game, id: string) {
   const p = getPlayer(g, id);
+  const cunning = currentGuildCunning(g,id);
+  if (cunning) { requireRule(cunning.stage !== 'pending' && cunning.shipment?.stage !== 'pending', 'Finish the Guild Cunning response or shipment first.'); cunning.stage = 'completed'; saveGuildCunning(g,cunning); }
   g.karamaShipping = null;
   g.movementRemaining ??= g.order.slice(g.order.indexOf(id));
   const shared = p.ally
@@ -12102,6 +12118,7 @@ function marketGholaIntegrity(g: Game) {
   nexusChoamIntegrity(g);
   nexusMoritaniIntegrity(g);
   nexusRicheseIntegrity(g);
+  nexusGuildCunningIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
@@ -12468,7 +12485,7 @@ function shipmentPromiseIntegrity(g: Game) {
           g.status === 'playing' &&
           g.phase === 5 &&
           g.active === promise.player &&
-          !getPlayer(g, promise.player).shipped,
+          shipmentAvailable(g,getPlayer(g,promise.player)),
         'The saved shipment promise does not belong to this unused Basic shipment opportunity.',
       );
   }
@@ -12487,7 +12504,7 @@ function findShipmentCompletion(
     state.status !== 'playing' ||
     state.phase !== 5 ||
     state.active !== owner.id ||
-    owner.shipped
+    !shipmentAvailable(state,owner)
   )
     return null;
   if (!promises.some((p) => p.answer))
@@ -14509,6 +14526,7 @@ function finishResponse(g: Game, canceled: boolean) {
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
   if (response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, response);
   if (response.kind === 'nexusSardaukar') validateNexusSardaukarResponse(g, response);
+  if (response.kind === 'nexusGuildCunning') validateGuildCunningResponse(g,response);
   if (response.kind === 'moritaniPlacement') {
     // Both outcomes need the same physical inventory and declared source.
     // This detached denial quote is only validation here; allowance still
@@ -14548,6 +14566,7 @@ function finishResponse(g: Game, canceled: boolean) {
     ? moritaniAllianceCancellationQuote(g, response)
     : null;
   g.response = null;
+  if (response.kind === 'nexusGuildCunning') { settleGuildCunning(g,response,canceled); return; }
   if (response.kind === 'nexusAdvisorFlip') {
     finishNexusAdvisors(g, canceled);
     return;
@@ -15566,11 +15585,12 @@ function homeworldShipmentEvent(g: Game, p: Player, route?: 'arrakis'): string {
     g.storm, p.forces, p.elites?.forces ?? {}, g.mobileStronghold?.location ?? null]);
   return JSON.stringify([g.turn, g.phase, g.active, p.id, p.shipped,
     homeworldContext(g), g.homeworlds?.custody,
-    g.players.map((seat) => [seat.id, seat.ally])]);
+    g.players.map((seat) => [seat.id, seat.ally]),
+    ...(currentGuildCunning(g,p.id) ? [currentGuildCunning(g,p.id)!.receipt.event] : [])]);
 }
 function homeworldShipmentBlock(g: Game, p: Player, checkPromises = true): string | null {
   if (!g.homeworlds?.custody) return 'Homeworld shipment requires the Homeworld module.';
-  if (g.status !== 'playing' || g.phase !== 5 || g.active !== p.id || p.shipped)
+  if (g.status !== 'playing' || g.phase !== 5 || g.active !== p.id || !shipmentAvailable(g,p))
     return 'Use your unused shipment during your own Shipment and Movement turn.';
   if (g.truthtrance || g.response || g.decision || g.phaseOpening ||
       g.pendingNullentropy || g.pendingTreacheryDiscard || g.pendingShipment ||
@@ -15697,8 +15717,9 @@ function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {rout
     sourceNames: quote.sources.map((s) => combatLocationName(g, s.homeworld))};
 }
 function validateHomeworldShipment(g: Game, shipment: PendingHomeworldShipment) {
+  if (shipment.guildNexusEvent) validateGuildCunningShipment(g,shipment.player,shipment.guildNexusEvent,'homeworld',shipment);
   const p = getPlayer(g, shipment.player);
-  requireRule(g.status === 'playing' && g.phase === 5 && g.active === p.id && !p.shipped &&
+  requireRule(g.status === 'playing' && g.phase === 5 && g.active === p.id && shipmentAvailable(g,p) &&
     shipment.turn === g.turn && (shipment.route === undefined || shipment.route === 'arrakis') &&
     shipment.event === homeworldShipmentEvent(g, p, shipment.route),
     'This Homeworld declaration no longer matches its unused shipment and physical custody.');
@@ -15732,6 +15753,7 @@ function homeworldShipmentIntegrity(g: Game) {
 }
 function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment) {
   const quote = validateHomeworldShipment(g, shipment);
+  if (shipment.guildNexusEvent) finishGuildCunningShipment(g,shipment.player,'homeworld',shipment);
   const p = getPlayer(g, shipment.player);
   payWithAlly(g, p, quote.cost, shipment.allyPayment);
   g.homeworlds!.custody = quote.state;
@@ -15761,9 +15783,10 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment) {
 }
 function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentIntent & {route?: 'arrakis'}, allyPayment?: unknown) {
   const quote = homeworldShipmentQuote(g, intent);
-  const shipment: PendingHomeworldShipment = {...intent, sources: structuredClone(intent.sources),
+  const shipment: PendingHomeworldShipment = {...intent, ...(currentGuildCunning(g,p.id) ? {guildNexusEvent:currentGuildCunning(g,p.id)!.receipt.event} : {}), sources: structuredClone(intent.sources),
     event: homeworldShipmentEvent(g, p, intent.route), turn: g.turn, amount: quote.amount, elite: quote.elite,
     cost: quote.cost, allyPayment: contribution(g, p, quote.cost, allyPayment), pools: quote.sources};
+  bindGuildCunningShipment(g,p,'homeworld',shipment);
   const guild = byFaction(g, 'guild');
   if (g.advanced && guild && !guild.specialKaramaUsed) {
     g.pendingHomeworldShipment = shipment;
@@ -15773,6 +15796,7 @@ function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentI
   } else commitHomeworldShipment(g, shipment);
 }
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
+  if (shipment.guildNexusEvent) validateGuildCunningShipment(g,shipment.player,shipment.guildNexusEvent,'reserve',shipment);
   if (shipment.nexusEvent !== undefined) currentNexusRicheseShipment(g,shipment);
   requireRule(
     !(shipment.noField || shipment.alliedNoField) ||
@@ -15790,7 +15814,7 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
     g.status === 'playing' &&
       g.phase === 5 &&
       g.active === p.id &&
-      !p.shipped &&
+      shipmentAvailable(g,p) &&
       (shipment.turn === undefined || shipment.turn === g.turn),
     'This shipment no longer belongs to the current unused shipment opportunity.',
   );
@@ -15922,6 +15946,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
   }
   validatePhysicalShipment(g, shipment);
   finishNexusRicheseShipment(g,shipment,'shipped');
+  if (shipment.guildNexusEvent) finishGuildCunningShipment(g,shipment.player,'reserve',shipment);
   finishShipmentPromises(
     g,
     getPlayer(g, shipment.player),
@@ -16131,6 +16156,149 @@ function choamWorthlessBlocked(g: Game, card: string) {
     g.choamWorthlessBlocked.phase === g.phase &&
     g.choamWorthlessBlocked.cards.includes(card)
   );
+}
+function currentGuildCunning(g: Game, owner?: string) {
+  const last = g.nexusGuildCunningHistory?.at(-1);
+  return last && last.receipt.turn === g.turn && (!owner || last.receipt.owner === owner) &&
+    ['pending','secondShipment','extraMove'].includes(last.stage) ? last : null;
+}
+function guildCunningParent(g: Game) {
+  return JSON.stringify([g.active,g.order,g.movementRemaining,g.guildTimingGranted,g.guildTimingLocked,g.saphoMovementLast ?? null]);
+}
+function guildCunningSignature(record: NonNullable<Game['nexusGuildCunningHistory']>[number]) {
+  return JSON.stringify([record.receipt.signature,record.stage,record.parent,record.movesAfter,record.shipment ?? null]);
+}
+function saveGuildCunning(g: Game, record: NonNullable<Game['nexusGuildCunningHistory']>[number]) {
+  record.signature = guildCunningSignature(record);
+  g.nexusGuildCunningLast = {event:record.receipt.event,stage:record.stage};
+}
+function projectedNexusGuildCunning(g: Game, owner: string) {
+  const p = g.players.find(p => p.id === owner);
+  if (!p || p.faction !== 'guild') return null;
+  const record = currentGuildCunning(g,owner);
+  if (record) return {offer:null,active:{event:record.receipt.event,stage:record.stage as 'pending'|'secondShipment'|'extraMove',
+    movesLeft:record.stage === 'extraMove' ? nexusRule(() => nexusGuildCunningMoves(record.receipt,g.hajr.includes(owner),record.movesAfter)) : 0,
+    hajrAvailable:record.stage !== 'pending' && !g.hajr.includes(owner)}};
+  if (g.nexusCards?.cards?.hands[owner] !== 'guild') return null;
+  let blocked: string | null = null;
+  if (p.ally) blocked = 'Guild Cunning requires an unallied native Guild player.';
+  else if (g.status !== 'playing' || g.phase !== 5 || g.active !== owner)
+    blocked = 'Use Cunning when finishing your own Shipment and Movement turn.';
+  else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard ||
+    g.pendingNullentropy || g.pendingShipment || g.pendingHomeworldShipment || g.nexusTraitorPending || g.nexusCards.phase?.stage === 'drawing')
+    blocked = 'Finish the current interaction before declaring a second shipment.';
+  else if (g.ornithopter || p.moved > (g.hajr.includes(owner) ? 2 : 1))
+    blocked = 'Cunning combined with the physical Ornithopter movement card awaits its timing ruling.';
+  else if (g.nexusGuildCunningHistory?.some(r => r.receipt.turn === g.turn && r.receipt.owner === owner))
+    blocked = 'This turn’s Guild Cunning opportunity is already used.';
+  return {offer:{event:JSON.stringify(['nexusGuildCunning',g.turn,owner]),blocked},active:null};
+}
+function declareGuildCunning(g: Game, p: Player, event: unknown) {
+  const offer = projectedNexusGuildCunning(g,p.id)?.offer;
+  requireRule(offer && !offer.blocked && event === offer.event,offer?.blocked ?? 'This Guild Cunning opportunity is stale.');
+  const receipt = nexusRule(() => createNexusGuildCunning(g,p.id,{shipped:p.shipped,moved:p.moved,hajrUsed:g.hajr.includes(p.id)}));
+  const record = {receipt,stage:'pending' as const,parent:guildCunningParent(g),movesAfter:0,signature:''};
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
+  (g.nexusGuildCunningHistory ??= []).push(record); saveGuildCunning(g,record);
+  g.karamaShipping = null;
+  g.response = {kind:'nexusGuildCunning',owner:p.id,intent:receipt.event,passed:[]};
+  log(g,`${p.name} finished the ordinary shipment and movement opportunity and played Guild Cunning for an immediate second paid shipment. The Nexus is spent; Hajr is required for any further movement.`);
+}
+function validateGuildCunningResponse(g: Game, response: ResponseWindow) {
+  const record = currentGuildCunning(g,response.owner);
+  requireRule(record?.stage === 'pending' && response.kind === 'nexusGuildCunning' && response.intent === record.receipt.event &&
+    record.parent === guildCunningParent(g), 'Guild Cunning has lost its original combined-turn response.');
+  return record;
+}
+function settleGuildCunning(g: Game, response: ResponseWindow, canceled: boolean) {
+  const record = validateGuildCunningResponse(g,response);
+  record.stage = canceled ? 'canceled' : 'secondShipment'; saveGuildCunning(g,record);
+  log(g,canceled ? 'Karama prevented Guild Cunning. The first shipment and movement remain completed and the Nexus remains spent.' :
+    'Guild Cunning permits one immediate paid shipment using normal Guild routes. Ordinary movement is finished; an unused Hajr move remains possible afterward.',
+    canceled ? undefined : {faction:'guild',name:'Cunning: second shipment'});
+  if (canceled) finishMovementTurn(g,record.receipt.owner);
+}
+function bindGuildCunningShipment(g: Game, p: Player, kind: 'reserve'|'guild'|'homeworld', frame: unknown) {
+  const record = currentGuildCunning(g,p.id);
+  if (!record) return;
+  requireRule(record.stage === 'secondShipment' && !record.shipment, 'Guild Cunning already has its second shipment.');
+  record.shipment = {kind,frame:JSON.stringify(frame),stage:'pending'}; saveGuildCunning(g,record);
+}
+function validateGuildCunningShipment(g: Game, owner: string, event: string, kind: 'reserve'|'guild'|'homeworld', frame: unknown) {
+  const record = currentGuildCunning(g,owner);
+  requireRule(record?.stage === 'secondShipment' && record.receipt.event === event && record.shipment?.stage === 'pending' &&
+    record.shipment.kind === kind && record.shipment.frame === JSON.stringify(frame), 'Guild Cunning has lost its original second shipment.');
+  return record;
+}
+function finishGuildCunningShipment(g: Game, owner: string, kind: 'reserve'|'guild'|'homeworld', frame: unknown, outcome:'complete'|'stopped' = 'complete') {
+  const record = currentGuildCunning(g,owner);
+  if (!record) return;
+  validateGuildCunningShipment(g,owner,record.receipt.event,kind,frame);
+  record.shipment!.stage = outcome; record.stage = 'extraMove'; saveGuildCunning(g,record);
+}
+function nexusGuildCunningIntegrity(g: Game) {
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,g.pendingRichesePurchaseIncome?.resume,g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const responses = contexts.flatMap(c => {
+    if (!c) return [];
+    const karama = 'pendingKarama' in c ? c.pendingKarama as Game['pendingKarama'] : null;
+    return [c.response,karama?.use?.kind === 'cancel' ? karama.use.response : null];
+  }).filter(r => r?.kind === 'nexusGuildCunning');
+  const history = g.nexusGuildCunningHistory;
+  if (history === undefined) {
+    requireRule(!g.nexusGuildCunningLast && !responses.length && !g.pendingShipment?.guildNexusEvent && !g.pendingHomeworldShipment?.guildNexusEvent,
+      'Guild Cunning has lost its saved second-shipment history.'); return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,'Guild Cunning requires its original Nexus module and history.');
+  const events = new Set<string>();
+  for (const [index,record] of history.entries()) {
+    requireRule(record && typeof record === 'object' && Object.keys(record).every(k => ['receipt','stage','parent','movesAfter','shipment','signature'].includes(k)) &&
+      ['pending','secondShipment','extraMove','completed','canceled'].includes(record.stage) && typeof record.parent === 'string' &&
+      record.signature === guildCunningSignature(record) && !events.has(record.receipt?.event) &&
+      Number.isSafeInteger(record.movesAfter) && record.movesAfter >= 0 && record.movesAfter <= 1 &&
+      (['completed','canceled'].includes(record.stage) || index === history.length - 1),'Guild Cunning has a changed or duplicated allowance record.');
+    nexusRule(() => validateNexusGuildCunning(g,record.receipt));
+    if (record.shipment?.kind === 'declined') requireRule(Object.keys(record.shipment).sort().join(',') === 'kind,stage' && record.shipment.stage === 'declined' && ['extraMove','completed'].includes(record.stage), 'Guild Cunning has changed its declined second shipment.');
+    else if (record.shipment) requireRule(Object.keys(record.shipment).sort().join(',') === 'frame,kind,stage' &&
+      ['reserve','guild','homeworld'].includes(record.shipment.kind) && typeof record.shipment.frame === 'string' &&
+      ['pending','complete','stopped'].includes(record.shipment.stage) &&
+      (record.shipment.stage === 'pending' ? record.stage === 'secondShipment' : ['extraMove','completed'].includes(record.stage)),
+      'Guild Cunning has changed its second shipment outcome.');
+    requireRule(record.stage !== 'extraMove' || (record.shipment && record.shipment.stage !== 'pending'), 'Guild Cunning has lost its completed second shipment.');
+    requireRule(record.stage !== 'pending' || (!record.shipment && !record.movesAfter), 'Guild Cunning changed before its response completed.');
+    requireRule(!record.movesAfter || record.stage === 'extraMove' || record.stage === 'completed','Guild Cunning has moved before its second shipment.');
+    events.add(record.receipt.event);
+  }
+  const last = history.at(-1)!;
+  requireRule(JSON.stringify(g.nexusGuildCunningLast) === JSON.stringify({event:last.receipt.event,stage:last.stage}), 'Guild Cunning has lost its latest allowance marker.');
+  const active = currentGuildCunning(g);
+  requireRule(['completed','canceled'].includes(last.stage) || active, 'Guild Cunning has left its original turn unfinished.');
+  requireRule((active?.stage === 'pending') === !!responses.length, 'Guild Cunning has lost or reopened its native response.');
+  if (!active) {
+    requireRule(!g.pendingShipment?.guildNexusEvent && !g.pendingHomeworldShipment?.guildNexusEvent,'Guild Cunning has reopened a completed shipment.'); return;
+  }
+  const owner = getPlayer(g,active.receipt.owner);
+  requireRule(g.status === 'playing' && g.phase === 5 && g.active === owner.id &&
+    active.parent === guildCunningParent(g) && owner.moved === active.receipt.before.moved + active.movesAfter &&
+    owner.shipped === (active.stage === 'extraMove' && (active.shipment?.kind !== 'declined' || active.movesAfter > 0) ? true : active.receipt.before.shipped) && g.nexusCards.cards.discard.includes('guild'),
+    'Guild Cunning changed its original active player, queue, shipment or movement allowance.');
+  nexusRule(() => nexusGuildCunningMoves(active.receipt,g.hajr.includes(owner.id),active.movesAfter));
+  for (const response of responses) validateGuildCunningResponse(g,response!);
+  if (active.shipment?.stage === 'pending') {
+    if (active.shipment.kind === 'reserve') {
+      requireRule(g.pendingShipment?.guildNexusEvent === active.receipt.event, 'Guild Cunning lost its pending reserve shipment.');
+      validateGuildCunningShipment(g,owner.id,active.receipt.event,'reserve',g.pendingShipment);
+      const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'guildShipment');
+      requireRule(decisions.length > 0,'Guild Cunning lost its shipment interception decision.');
+      for (const d of decisions) validateGuildShipmentDecision(g,d);
+    } else if (active.shipment.kind === 'homeworld') {
+      requireRule(g.pendingHomeworldShipment?.guildNexusEvent === active.receipt.event,'Guild Cunning lost its pending Homeworld shipment.');
+      validateGuildCunningShipment(g,owner.id,active.receipt.event,'homeworld',g.pendingHomeworldShipment);
+      homeworldShipmentIntegrity(g);
+    } else throw new RuleError('Guild Cunning retained an unfinished immediate cross-shipment.');
+  } else requireRule(!g.pendingShipment?.guildNexusEvent && !g.pendingHomeworldShipment?.guildNexusEvent,
+    'Guild Cunning has a shipment without its original pending record.');
 }
 function nexusRicheseOffer(g: Game, owner: string) {
   const p = g.players.find(p => p.id === owner);
@@ -17125,6 +17293,7 @@ export function executeSpecialKaramaIntent(
     const shipper = getPlayer(g, intent.target);
     discard(g, p, card.id);
     p.specialKaramaUsed = true;
+    if (g.pendingHomeworldShipment?.guildNexusEvent) finishGuildCunningShipment(g,shipper.id,'homeworld',g.pendingHomeworldShipment,'stopped');
     shipper.shipped = true;
     g.pendingHomeworldShipment = null;
     g.decision = null;
@@ -17145,6 +17314,7 @@ export function executeSpecialKaramaIntent(
       finishAmbassador(g);
       return;
     }
+    if (g.pendingShipment?.guildNexusEvent) finishGuildCunningShipment(g,shipper.id,'reserve',g.pendingShipment,'stopped');
     if (g.pendingShipment) finishNexusRicheseShipment(g,g.pendingShipment,'stopped');
     shipper.shipped = true;
     // Provisional canceled-shipment settlement pending a primary-source
@@ -19969,7 +20139,7 @@ function applyActionInner(
   }
   if (t === 'ship') {
     requireRule(
-      g.phase === 5 && g.active === id && !p.shipped,
+      g.phase === 5 && g.active === id && shipmentAvailable(g,p),
       'You may ship once, before your movement.',
     );
     let nexusEvent: string | undefined;
@@ -20048,6 +20218,7 @@ function applyActionInner(
     );
     const allyPayment = contribution(g, p, cost, action.allyPayment);
     const shipment: PendingShipment = {
+      ...(currentGuildCunning(g,id) ? {guildNexusEvent:currentGuildCunning(g,id)!.receipt.event} : {}),
       ...(nexusEvent ? {nexusEvent} : {}),
       turn: g.turn,
       player: id,
@@ -20067,6 +20238,7 @@ function applyActionInner(
       ...(noField ? { noField } : {}),
     };
     if (nexusEvent) recordNexusRicheseShipment(g,shipment);
+    bindGuildCunningShipment(g,p,'reserve',shipment);
     if (shipment.noField) {
       checkShipmentIncomeRounding(g, p, cost, allyPayment);
       g.pendingShipment = shipment;
@@ -20109,7 +20281,7 @@ function applyActionInner(
     requireRule(
       g.phase === 5 &&
         g.active === id &&
-        !p.shipped &&
+        shipmentAvailable(g,p) &&
         (p.faction === 'guild' || byFaction(g, 'guild')?.id === p.ally),
       'Guild shipment is not available.',
     );
@@ -20144,6 +20316,7 @@ function applyActionInner(
     );
     const to = stringField(action.territory ?? 'reserves');
     const sector = integer(action.sector ?? 0, 0, 18);
+    requireRule(fromReserves || to === 'reserves' || to !== origin, 'Cross-shipment requires a different destination territory.');
     requireRule(
       to !== 'reserves' || p.faction === 'guild',
       'Only the Guild may ship forces back to reserves.',
@@ -20172,6 +20345,8 @@ function applyActionInner(
     );
     const allyPayment = contribution(g, p, cost, action.allyPayment);
     checkShipmentIncomeRounding(g, p, cost, allyPayment);
+    const cunningFrame = {turn:g.turn,player:id,origin,group,eliteGroup,to,sector,amount:n,elite,cost,allyPayment,advisors};
+    bindGuildCunningShipment(g,p,'guild',cunningFrame);
     payWithAlly(g, p, cost, allyPayment);
     const guild = byFaction(g, 'guild');
     const guildPayment = guildShipmentIncome({
@@ -20207,6 +20382,7 @@ function applyActionInner(
       p,
       fromReserves ? { territory: to, amount: n } : null,
     );
+    finishGuildCunningShipment(g,id,'guild',cunningFrame);
     p.shipped = true;
     g.karamaShipping = null;
     log(g, `${p.name} used Guild transport for ${n} forces.`);
@@ -20441,12 +20617,24 @@ function applyActionInner(
     } else offerChoamMovement(g, move);
     return g;
   }
+  if (t === 'nexusGuildSkipShipment') {
+    const record = currentGuildCunning(g,id);
+    requireRule(g.status === 'playing' && g.phase === 5 && g.active === id &&
+      record?.stage === 'secondShipment' && !record.shipment && action.event === record.receipt.event &&
+      Object.keys(action).every(k => ['type','event'].includes(k)), 'Only the current unused Guild Cunning shipment may be declined.');
+    finishShipmentPromises(g,p,null);
+    record.shipment = {kind:'declined',stage:'declined'};
+    record.stage = 'extraMove'; saveGuildCunning(g,record);
+    log(g,`${p.name} declined the second Guild shipment. No forces or spice moved; only an unused Hajr movement remains available.`);
+    return g;
+  }
   if (t === 'endMovement') {
     finishShipmentPromises(g, p, null);
     requireRule(
       g.phase === 5 && g.active === id,
       'Wait for your movement turn.',
     );
+    if (action.nexus !== undefined) { declareGuildCunning(g,p,action.nexus); return g; }
     if (g.ornithopter?.player === id) finishOrnithopter(g, 'end');
     else finishMovementTurn(g, id);
     return g;
@@ -20717,7 +20905,7 @@ function applyActionInner(
     ) {
       const recipient = getPlayer(g, stringField(action.target ?? id));
       requireRule(
-        g.phase === 5 && g.active === recipient.id && !recipient.shipped,
+        g.phase === 5 && g.active === recipient.id && shipmentAvailable(g,recipient),
         'Choose the active player before their shipment.',
       );
       requireRule(
@@ -20761,6 +20949,7 @@ function applyActionInner(
         phase: g.phase,
         active: g.active,
         me: id,
+        nexusGuildCunning: projectedNexusGuildCunning(g,id),
         truthtrance: g.truthtrance,
         phaseOpening: g.phaseOpening,
         response: g.response,
@@ -21139,6 +21328,7 @@ export function viewGame(state: Game, id: string) {
     nexusCards: projectedNexusCards(g, id),
     nexusMoritani: nexusMoritaniOffer(g,id),
     nexusRichese: nexusRicheseOffer(g,id),
+    nexusGuildCunning: projectedNexusGuildCunning(g,id),
     nexusTraitors: projectedNexusTraitors(g, id),
     nexusTleilaxu: projectedNexusTleilaxu(g, id),
     nexusSuboids: projectedNexusSuboids(g, id),

@@ -1,3 +1,4 @@
+import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
 import { nexusCardBotActions } from './nexus-card-options';
@@ -2816,7 +2817,11 @@ function policyActions(g: GameView): Action[] {
     )
       return [choamPowerAction(g, kulon)!];
     if (g.active !== me.id) return [];
-    const cardMoves = ornithopterMoves(g);
+    const shipmentAvailable = nexusGuildShipmentAvailable(g);
+    const movementAvailable = nexusGuildMovementAvailable(g);
+    const hajr = nexusGuildHajrAction(g);
+    if (hajr) return [hajr];
+    const cardMoves = nexusGuildCunningActive(g) ? [] : ornithopterMoves(g);
     if (
       cardMoves.length &&
       (g.ornithopter?.active || me.shipped || me.reserves === 0)
@@ -2913,7 +2918,7 @@ function policyActions(g: GameView): Action[] {
           });
         }
     }
-    if (!me.shipped && me.reserves > 0)
+    if (shipmentAvailable && me.reserves > 0)
       for (const to of destinations(g, g.advanced && me.faction === 'fremen')
         .filter(
           (to) =>
@@ -2961,7 +2966,7 @@ function policyActions(g: GameView): Action[] {
     const guildTransport =
       me.faction === 'guild' ||
       g.players.some((p) => p.faction === 'guild' && p.id === me.ally);
-    if (!me.shipped && guildTransport)
+    if (shipmentAvailable && guildTransport)
       for (const to of targets
         .filter((to) => botEntryAllowed(g, me, to.t, to.s, 'guildShip'))
         .slice(0, 16)) {
@@ -3027,7 +3032,7 @@ function policyActions(g: GameView): Action[] {
         return { from, amount, elite };
       })
       .filter((source) => source.amount > 0);
-    if ((me.moved ?? 0) < (me.movesAllowed ?? 1))
+    if (movementAvailable)
       for (const to of targets
         .filter(
           (to) =>
@@ -3051,6 +3056,15 @@ function policyActions(g: GameView): Action[] {
     if (reveal && !actions.length) actions.push(reveal);
     if (me.shipped || !actions.some((action) => action.type === 'ship' || action.type === 'homeworldShip'))
       actions.unshift(...emperorHomeworldMoveActions(g));
+    const activeCunning = nexusGuildCunningActive(g);
+    if (activeCunning?.stage === 'secondShipment' && activeCunning.hajrAvailable &&
+      me.hand?.some(card => card.effect === 'hajr') &&
+      !actions.some(action => ['ship', 'guildShip', 'homeworldShip', 'guildHomeworldShip'].includes(action.type))) {
+      const skip = nexusGuildSkipShipmentAction(g, activeCunning.event);
+      if (skip) actions.push(skip);
+    }
+    const cunning = g.nexusGuildCunning?.offer && nexusGuildCunningAction(g, g.nexusGuildCunning.offer.event);
+    if (cunning && (me.reserves > 0 || Object.values(me.forces).some(n => n > 0))) actions.push(cunning);
     actions.push({ type: 'endMovement' });
     return g.ornithopter?.active
       ? actions.filter((action) => action.type !== 'move')
@@ -3353,6 +3367,7 @@ export function botActions(g: GameView): Action[] {
   const intelligence = tupileIntelligenceActions(g);
   if (intelligence.length) return intelligence;
   const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {
+    if (action.type === 'move' && nexusGuildCunningActive(g) && !nexusGuildMovementAvailable(g)) return [];
     const sourced = withNativeShipmentSources(g, action);
     return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) ? [sourced] : [];
   });
@@ -3362,7 +3377,7 @@ export function botActions(g: GameView): Action[] {
   if (
     g.phase !== 5 ||
     g.active !== me.id ||
-    me.shipped ||
+    !nexusGuildShipmentAvailable(g) ||
     g.truthtrance ||
     g.response ||
     g.decision ||

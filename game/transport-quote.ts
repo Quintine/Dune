@@ -1,3 +1,4 @@
+import { nexusGuildShipmentAvailable } from './nexus-guild-cunning-options';
 import type { Action, GameView } from './engine';
 import { splitLocation, validLocation } from './board';
 import { botEntryAllowed, guildTransportCost } from './bot-mobility';
@@ -122,10 +123,12 @@ export function guildTransportQuote(g: GameView, action: Action) {
     unavailableReasons.push(
       'This destination is unavailable because of the storm, allied forces, stronghold capacity, or your advisor restrictions.',
     );
+  if (!fromReserves && to !== 'reserves' && to === origin)
+    unavailableReasons.push('Guild cross-shipment must enter another territory.');
   if (
     g.phase !== 5 ||
     g.active !== p.id ||
-    p.shipped ||
+    !nexusGuildShipmentAvailable(g) ||
     !(
       p.faction === 'guild' ||
       g.players.some((seat) => seat.id === p.ally && seat.faction === 'guild')

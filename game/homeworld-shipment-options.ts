@@ -1,3 +1,4 @@
+import { nexusGuildShipmentAvailable } from './nexus-guild-cunning-options';
 import type { Action, GameView } from './engine';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
 import {
@@ -50,7 +51,7 @@ export function homeworldShipmentChoice(
     view.status !== 'playing' ||
     view.phase !== 5 ||
     view.active !== view.me ||
-    me.shipped
+    !nexusGuildShipmentAvailable(view)
   ) {
     result.blocked = 'Use Homeworld shipment during your unused shipment turn.';
     return result;
@@ -131,7 +132,7 @@ export function homeworldShipmentActions(
     view.homeworldShipment.blocked ||
     view.phase !== 5 ||
     view.active !== me.id ||
-    me.shipped
+    !nexusGuildShipmentAvailable(view)
   )
     return [];
   const difficulty = Math.max(0, Math.min(3, level));

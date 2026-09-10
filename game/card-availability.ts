@@ -24,6 +24,7 @@ export type OrdinaryCardState = {
   phase: number;
   active: string | null;
   me: string;
+  nexusGuildCunning?: { active: { hajrAvailable: boolean } | null } | null;
   truthtrance?: { stage: string } | null;
   phaseOpening?: { passed: readonly string[] } | null;
   response?: object | null;
@@ -101,7 +102,7 @@ export function ordinaryCardAvailability(
       if (
         state.phase !== 5 ||
         state.active !== state.me ||
-        own.movesAllowed !== 1
+        (state.nexusGuildCunning?.active ? !state.nexusGuildCunning.active.hajrAvailable : own.movesAllowed !== 1)
       )
         return blocked('Use Hajr during your movement.');
       break;

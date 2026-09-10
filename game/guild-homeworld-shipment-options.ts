@@ -1,3 +1,4 @@
+import { nexusGuildShipmentAvailable } from './nexus-guild-cunning-options';
 import type { Action, GameView } from './engine';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
 import { gameTerritories, MOBILE_LOCATION, splitLocation } from './board';
@@ -43,7 +44,7 @@ export function guildHomeworldShipmentChoice(
     view.status !== 'playing' ||
     view.phase !== 5 ||
     view.active !== me.id ||
-    me.shipped
+    !nexusGuildShipmentAvailable(view)
   ) {
     result.blocked = 'Use Guild transport during your unused shipment turn.';
     return result;
@@ -148,7 +149,7 @@ export function guildHomeworldShipmentActions(
     me.faction !== 'guild' ||
     !view.guildHomeworldShipment ||
     view.guildHomeworldShipment.blocked ||
-    me.shipped ||
+    !nexusGuildShipmentAvailable(view) ||
     view.phase !== 5 ||
     view.active !== me.id
   )

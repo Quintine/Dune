@@ -84,6 +84,7 @@ const cancellationSources = {
     ...movementSource(g),
     conversion: g.nexusAdvisorHistory?.find(record => record.stage === 'pending') ?? null,
   }),
+  nexusGuildCunning: (g) => ({cunning:g.nexusGuildCunningHistory?.at(-1),active:g.active,remaining:g.movementRemaining}),
   nexusSardaukar: (g) => ({
     battle: battleSource(g),
     declaration: g.nexusSardaukarHistory?.find(record => record.stage === 'pending') ?? null,

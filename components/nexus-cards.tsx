@@ -118,7 +118,7 @@ export function NexusCards({ game, act, busy }: { game: GameView; act: (action: 
       <div>
         <h3>Nexus cards</h3>
         <p className="fine">{offer.deckCount} in deck · {offer.discardCount} discarded · {Object.values(offer.held).filter((held) => held === true).length} held</p>
-        <p>Playable effects include Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian, Bene Gesserit, Emperor, CHOAM and Moritani Cunning, plus Richese Secret Ally reserve shipping. Use the controls shown at each effect’s timing. CHOAM’s Kull Wahad effect, Moritani Cunning relocation and Grumman combinations, and other unfinished effects remain unavailable.</p>
+        <p>Playable effects include Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian, Bene Gesserit, Emperor, CHOAM and Moritani Cunning, plus Richese Secret Ally reserve shipping and Guild Cunning’s second shipment. Use the controls shown at each effect’s timing. CHOAM’s Kull Wahad effect, Moritani Cunning relocation and Grumman combinations, and other unfinished effects remain unavailable.</p>
       </div>
       {game.nexusAtreides && offer.card === 'atreides' && (
         <div aria-label="Atreides Nexus effect" className="space-y-2">
