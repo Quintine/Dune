@@ -63,10 +63,7 @@ export function nexusTraitorFixture(
   }
   assert.equal(g.status, 'playing');
   for (const player of g.players) g.deck.push(...player.hand.splice(0));
-  if (
-    options.ix ||
-    (g.advanced && g.players.some((p) => p.faction === 'choam'))
-  ) {
+  if (options.ix || g.players.some((p) => p.faction === 'choam')) {
     // Resolve actual CHOAM markets and Ix phase openings before advancing.
     for (let i = 0; g.phase === 0 && i < 30; i++) {
       let next: Game | undefined;
@@ -88,10 +85,7 @@ export function nexusTraitorFixture(
     assert.equal(g.phase, 1);
   } else g = enterNexusSpice(g);
   orderNexusSpice(g, ['land', 'land']);
-  if (
-    options.ix ||
-    (g.advanced && g.players.some((p) => p.faction === 'choam'))
-  ) {
+  if (options.ix || g.players.some((p) => p.faction === 'choam')) {
     for (let i = 0; g.phase === 1 && i < 40; i++) {
       let next: Game | undefined;
       for (const p of g.players) {

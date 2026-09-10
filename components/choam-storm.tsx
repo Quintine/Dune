@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { ChoamPowerCost, useChoamPower } from './choam-power-cost';
+import { choamPowerAction } from '@/game/choam-power-options';
 import { Button } from '@/components/ui/button';
 import { HelpTip } from './help-tip';
 import type { Action, GameView } from '@/game/engine';
@@ -14,10 +16,10 @@ export function ChoamStorm({
   act: (a: Action) => void;
   busy: boolean;
 }) {
+  const power = useChoamPower(g, 'jubba');
   const [selected, setSelected] = useState('');
   const decision = g.decision?.kind === 'choamStorm' ? g.decision : null;
   if (!decision || decision.player !== g.me) return null;
-  const card = g.choamWorthless?.cards.find((c) => c.name === 'Jubba Cloak');
   const choice =
     decision.territories.find((t) => t.territory === selected) ??
     decision.territories[0];
@@ -51,17 +53,18 @@ export function ChoamStorm({
           ))}
         </select>
       </label>
-      {card ? (
+      <ChoamPowerCost {...power} busy={busy} />
+      {power.play ? (
         <Button
-          disabled={busy || !choice}
-          onClick={() =>
-            act({
-              type: 'card',
-              mode: 'choam',
-              card: card.id,
-              territory: choice.territory,
-            })
+          disabled={
+            busy || !choice || !power.play || !choamPowerAction(g, power.play)
           }
+          onClick={() => {
+            const action = choamPowerAction(g, power.play!, {
+              territory: choice.territory,
+            });
+            if (action) act(action);
+          }}
         >
           Protect this territory
         </Button>

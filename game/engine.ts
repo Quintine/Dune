@@ -4,6 +4,7 @@ import { replaceNexusFaceDancers, validateNexusFaceDancerHistory, type NexusFace
 import { createNexusSuboids, validateNexusSuboids, nexusSuboidsActive, type NexusSuboidReceipt } from './nexus-suboids';
 import { quoteNexusAdvisors, createNexusAdvisors, validateNexusAdvisors, type NexusAdvisorReceipt } from './nexus-advisors';
 import { createNexusSardaukar, validateNexusSardaukar, type NexusSardaukarReceipt } from './nexus-sardaukar';
+import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
 import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, nexusCardMode, type NexusState } from './nexus-cards';
 import { createNexusCardPhase, markNexusCardOccurred, validateNexusCardPhase, closeNexusCardPhase, nexusCardChoices, finishNexusCardChoice, type NexusCardPhase, type NexusCardChoice } from './nexus-card-phase';
@@ -1167,6 +1168,7 @@ export type Game = {
     noFieldEvent?: string;
     target?: string;
     revival: boolean;
+    nexusEvent?: string;
   } | null;
   pendingChoamBattleIncome?: { owner: string; amount: number } | null;
   pendingAuditor?: {
@@ -1273,6 +1275,8 @@ export type Game = {
   nexusSardaukarHistory?: {receipt: NexusSardaukarReceipt; stage: 'pending' | 'active' | 'canceled'; parent: string; signature: string;
     casualties?: {forces: CombatForces; dial: number; support: number; options: Casualties[]; outcome: 'pending' | 'complete'}}[];
   nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
+  nexusChoamHistory?: {receipt: NexusChoamReceipt; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'; frame: string; parent: string; signature: string}[];
+  nexusChoamLast?: {event: string; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'};
   nexusTraitorPending?: string | null;
   nexusTraitorParent?: { event: string; signature: string } | null;
   /** Null/absent disables the module; custody is installed at force placement. */
@@ -12078,6 +12082,7 @@ function marketGholaIntegrity(g: Game) {
   nexusSuboidIntegrity(g);
   nexusAdvisorIntegrity(g);
   nexusSardaukarIntegrity(g);
+  nexusChoamIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
@@ -14546,9 +14551,10 @@ function finishResponse(g: Game, canceled: boolean) {
   }
   if (choamCancellation) {
     const { declaration, storm, revival } = choamCancellation;
+    finishNexusChoam(g,g.pendingChoamWorthless!,'canceled');
     g.pendingChoamWorthless = declaration.pendingChoamWorthless;
     g.choamWorthlessBlocked = declaration.blocked;
-    log(g, 'CHOAM’s Worthless card effect was prevented for this phase.');
+    log(g, 'CHOAM’s Worthless card effect was prevented for this phase. The declared Treachery card is retained. Any Nexus card spent on the declaration remains spent.');
     if (storm) commitChoamStormOffer(g, storm);
     else if (revival) offerRevivalStop(g, revival);
     else if (declaration.resume.kind === 'movement') resumeChoamMovement(g);
@@ -14801,6 +14807,7 @@ function finishResponse(g: Game, canceled: boolean) {
         choamStormOptions(g).some((t) => t.territory === pending.location))
     ) {
       discard(g, choam, pending.card);
+      finishNexusChoam(g,pending,'complete');
       if (pending.effect === 'kulon') {
         g.choamMovement = {
           turn: g.turn,
@@ -14872,11 +14879,13 @@ function finishResponse(g: Game, canceled: boolean) {
           );
         }
       }
-    } else
+    } else {
+      finishNexusChoam(g,pending,'fizzled');
       log(
         g,
         'The declared card or force is no longer available; no Worthless effect occurs.',
       );
+    }
     if (pending.storm && g.stormResolution) offerChoamStorm(g);
     if (pending.revival && g.pendingRevival) offerRevivalStop(g);
     if (pending.movement && g.pendingChoamMove) resumeChoamMovement(g);
@@ -16106,6 +16115,104 @@ function choamWorthlessBlocked(g: Game, card: string) {
     g.choamWorthlessBlocked.cards.includes(card)
   );
 }
+function nexusChoamSignature(record: NonNullable<Game['nexusChoamHistory']>[number]) {
+  return JSON.stringify([record.receipt.signature, record.stage, record.frame, record.parent]);
+}
+function nexusChoamParent(g: Game, pending: NonNullable<Game['pendingChoamWorthless']>) {
+  return JSON.stringify({
+    movement: pending.movement ? g.pendingChoamMove : undefined,
+    revival: pending.revival ? g.pendingRevival : undefined,
+    storm: pending.storm ? g.stormResolution : undefined,
+    mentat: pending.mentat ? g.choamMentatPending : undefined,
+  });
+}
+function nexusChoamIntegrity(g: Game) {
+  const pending = g.pendingChoamWorthless;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const responses = contexts.flatMap(context => {
+    const karama = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+    return [context?.response, karama?.use.kind === 'cancel' ? karama.use.response : null];
+  }).filter(response => response?.kind === 'choamWorthless');
+  const history = g.nexusChoamHistory;
+  if (history === undefined) {
+    requireRule(!g.nexusChoamLast && !pending?.nexusEvent, 'CHOAM Cunning has lost its original saved history.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+    'CHOAM Cunning history requires its original Nexus module.');
+  const events = new Set<string>();
+  for (const [index, record] of history.entries()) {
+    requireRule(record && typeof record === 'object' &&
+      Object.keys(record).sort().join(',') === 'frame,parent,receipt,signature,stage' &&
+      ['pending','canceled','complete','fizzled'].includes(record.stage) && typeof record.frame === 'string' && typeof record.parent === 'string' &&
+      record.signature === nexusChoamSignature(record) && !events.has(record.receipt?.event) &&
+      (record.stage !== 'pending' || index === history.length - 1),
+      'CHOAM Cunning has a changed or duplicated outcome record.');
+    nexusRule(() => validateNexusChoam(g,record.receipt));
+    events.add(record.receipt.event);
+  }
+  const last = history.at(-1)!;
+  requireRule(JSON.stringify(g.nexusChoamLast) === JSON.stringify({event:last.receipt.event,stage:last.stage}),
+    'CHOAM Cunning has lost its latest completed or pending outcome.');
+  requireRule((last.stage === 'pending') === !!pending?.nexusEvent,
+    'CHOAM Cunning has lost or reopened its declared effect.');
+  if (last.stage === 'pending') {
+    requireRule(pending && pending.nexusEvent === last.receipt.event &&
+      pending.owner === last.receipt.owner && pending.card === last.receipt.card && pending.effect === last.receipt.effect &&
+      g.turn === last.receipt.turn && g.phase === last.receipt.phase &&
+      JSON.stringify(pending) === last.frame && nexusChoamParent(g,pending) === last.parent && responses.length > 0 && g.nexusCards.cards.discard.includes('choam'),
+      'CHOAM Cunning no longer matches its original card, selected effect or response.');
+    for (const response of responses) {
+      try { quoteChoamWorthlessCancellation(g,response!); }
+      catch(error) {
+        if (error instanceof ChoamWorthlessCancellationError) throw new RuleError(error.message);
+        throw error;
+      }
+    }
+  }
+}
+function recordNexusChoam(g: Game, p: Player, card: Card, effect: NexusChoamEffect) {
+  const receipt = nexusRule(() => createNexusChoam(g,p.id,g.phase,card.id,effect));
+  const record = {receipt,stage:'pending' as const,frame:JSON.stringify(g.pendingChoamWorthless),parent:nexusChoamParent(g,g.pendingChoamWorthless!),signature:''};
+  record.signature = nexusChoamSignature(record);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
+  (g.nexusChoamHistory ??= []).push(record);
+  g.nexusChoamLast = {event:receipt.event,stage:record.stage};
+}
+function finishNexusChoam(g: Game, pending: NonNullable<Game['pendingChoamWorthless']>, stage: 'canceled' | 'complete' | 'fizzled') {
+  if (!pending.nexusEvent) return;
+  const record = g.nexusChoamHistory?.find(record => record.receipt.event === pending.nexusEvent);
+  requireRule(record?.stage === 'pending' && record.frame === JSON.stringify(pending) && record.parent === nexusChoamParent(g,pending),
+    'CHOAM Cunning has lost its original declared effect.');
+  record.stage = stage; record.signature = nexusChoamSignature(record);
+  g.nexusChoamLast = {event:record.receipt.event,stage};
+}
+function choamPowerPlays(g: Game, p: Player) {
+  const printed = p.hand.filter(card => card.kind === 'worthless' &&
+    Object.values(CHOAM_NEXUS_EFFECTS).includes(card.name as typeof CHOAM_NEXUS_EFFECTS[NexusChoamEffect]) && !choamWorthlessBlocked(g,card.id))
+    .map(card => ({source:'printed' as const,card,effect:Object.entries(CHOAM_NEXUS_EFFECTS).find(([,name]) => name === card.name)![0] as NexusChoamEffect,
+      blocked:card.name === 'Kull Wahad' ? 'Kull Wahad’s reaction and discard sequence is still being implemented.' : null}));
+  if (p.faction !== 'choam' || p.ally || g.nexusCards?.cards?.hands[p.id] !== 'choam') return printed;
+  return [...printed, ...p.hand.flatMap(card => (Object.keys(CHOAM_NEXUS_EFFECTS) as NexusChoamEffect[]).map(effect => {
+    let blocked: string | null = null;
+    if (effect === 'kull') blocked = 'Kull Wahad’s reaction and discard sequence is still being implemented.';
+    else if (g.status !== 'playing' || g.truthtrance || g.response || g.phaseOpening || g.pendingKarama || g.pendingNullentropy || g.pendingTreacheryDiscard || g.choamMarket)
+      blocked = 'Finish the current interaction before declaring CHOAM Cunning.';
+    else if (choamWorthlessBlocked(g,card.id)) blocked = 'This card’s special-effect use is blocked for this phase.';
+    else if (giftReserved(g,p.id,card.id)) blocked = 'This physical card is reserved for a pending gift.';
+    else if (({kulon:5,laLaLa:4,gamont:8,baliset:5,jubba:0} as const)[effect] !== g.phase)
+      blocked = 'Use this special effect in its normal phase.';
+    else if (g.decision && !(g.decision.player === p.id && ['choamStorm','choamFreeRevival','choamMovement','choamMentat'].includes(g.decision.kind)))
+      blocked = 'Finish the current decision before declaring this effect.';
+    else if (effect === 'kulon' && (g.active !== p.id || p.moved >= movesAllowed(g,p))) blocked = 'Use Kulon before an available move on your own turn.';
+    else if (effect === 'kulon' && g.ornithopter?.mode === 'range3' && g.ornithopter.player === p.id) blocked = 'Kulon combined with fixed Ornithopter range awaits a ruling.';
+    else if (effect === 'jubba' && !(g.decision?.kind === 'choamStorm' && g.decision.player === p.id)) blocked = 'Use Jubba Cloak in your moving-storm response.';
+    return {source:'nexus' as const,card,effect,event:JSON.stringify(['nexusChoam',g.turn,g.phase,p.id,card.id,effect]),blocked};
+  }))];
+}
 function gamontAvailable(
   g: Game,
   target: string,
@@ -16154,19 +16261,28 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
       (!g.pendingRevival || reactive),
     'CHOAM must finish the current decision before playing this Worthless effect.',
   );
-  const card = p.hand.find(
-    (c) => c.id === action.card && c.kind === 'worthless',
-  );
+  const nexus = action.nexus !== undefined;
+  const card = p.hand.find((c) => c.id === action.card && (nexus || c.kind === 'worthless'));
   requireRule(
     card && !choamWorthlessBlocked(g, card.id),
     'Choose an owned Worthless card whose effect is not blocked this phase.',
   );
+  let effectName = card.name;
+  if (nexus) {
+    requireRule(Object.keys(action).every(key => ['type','mode','card','nexus','effect','target','territory','amount','from','elite'].includes(key)),
+      'Choose one physical card, special effect and its current target.');
+    const play = choamPowerPlays(g,p).find(play => play.source === 'nexus' && play.card.id === card.id &&
+      play.effect === action.effect && 'event' in play && play.event === action.nexus);
+    requireRule(play && !play.blocked, play?.blocked ?? 'Choose your current CHOAM Nexus Cunning effect.');
+    effectName = CHOAM_NEXUS_EFFECTS[play.effect];
+  }
+  requireRule(!giftReserved(g,p.id,card.id), 'This physical card is reserved for a pending gift.');
   let effect: 'kulon' | 'laLaLa' | 'gamont' | 'baliset' | 'jubba';
   let target: string | undefined;
   let key: string | undefined;
   let elite: number | undefined;
   let noFieldEvent: string | undefined;
-  if (card.name === 'Kulon') {
+  if (effectName === 'Kulon') {
     requireRule(
       g.ornithopter?.mode !== 'range3' || g.ornithopter.player !== p.id,
       'Kulon combined with fixed Ornithopter range awaits a ruling.',
@@ -16176,7 +16292,7 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
       'Use Kulon on your movement turn before an available move.',
     );
     effect = 'kulon';
-  } else if (card.name === 'Jubba Cloak') {
+  } else if (effectName === 'Jubba Cloak') {
     requireRule(
       g.phase === 0 && storming && g.stormResolution,
       'Use Jubba Cloak when CHOAM responds to the moving storm.',
@@ -16192,7 +16308,7 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
     );
     target = p.id;
     effect = 'jubba';
-  } else if (card.name === 'Baliset') {
+  } else if (effectName === 'Baliset') {
     requireRule(
       g.phase === 5,
       'Baliset is played during Shipment and Movement.',
@@ -16220,7 +16336,7 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
       'That player and territory are already restricted.',
     );
     effect = 'baliset';
-  } else if (card.name === 'Trip to Gamont') {
+  } else if (effectName === 'Trip to Gamont') {
     requireRule(
       g.phase === 8 && (action.amount === undefined || action.amount === 1),
       'Trip to Gamont returns exactly one force during Mentat Pause.',
@@ -16261,7 +16377,7 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
     effect = 'gamont';
   } else {
     requireRule(
-      card.name === 'La La La' && g.phase === 4,
+      effectName === 'La La La' && g.phase === 4,
       'This Worthless effect is not available in this phase.',
     );
     effect = 'laLaLa';
@@ -16287,7 +16403,9 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
     elite,
     mentat,
     ...(noFieldEvent ? { noFieldEvent } : {}),
+    ...(nexus ? {nexusEvent:action.nexus as string} : {}),
   };
+  if (nexus) recordNexusChoam(g,p,card,effect);
   if (reactive || mentat || moving || storming) g.decision = null;
   g.ready = [];
   g.response = {
@@ -16312,10 +16430,12 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
           ...(elite !== undefined ? { elite } : {}),
         }
       : {}),
-    intent: card.name,
+    intent: effectName,
     passed: [],
   };
-  log(g, `${p.name} declared ${card.name} for its special effect.`);
+  log(g, nexus
+    ? `${p.name} spent CHOAM Nexus Cunning and declared ${effectName}. Its chosen Treachery card stays private and is discarded only if the effect occurs; Karama may prevent this native advantage.`
+    : `${p.name} declared ${effectName} for its special effect.`);
 }
 /** Internal normalized command; never accept this object directly from a route. */
 export type SpecialKaramaIntent = {
@@ -20944,6 +21064,7 @@ export function viewGame(state: Game, id: string) {
                 ].includes(c.name) &&
                 !choamWorthlessBlocked(g, c.id),
             ),
+            plays: choamPowerPlays(g,me),
           }
         : null,
     balisetRestrictions:

@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { ChoamPowerCost, useChoamPower } from './choam-power-cost';
+import { choamPowerAction, choamPowerPlays } from '@/game/choam-power-options';
 import { HelpTip } from './help-tip';
 import { Button } from '@/components/ui/button';
 import type { Action, GameView } from '@/game/engine';
@@ -13,7 +15,7 @@ export function ChoamWorthless({
   busy: boolean;
 }) {
   const [target, setTarget] = useState('');
-  const me = g.players.find((p) => p.id === g.me)!;
+  const power = useChoamPower(g, g.phase === 4 ? 'laLaLa' : 'kulon');
   const reactive = g.decision?.kind === 'choamFreeRevival';
   if (!g.choamWorthless || ![4, 5].includes(g.phase)) return null;
   const selected = g.choamWorthless.targets.includes(target)
@@ -53,32 +55,34 @@ export function ChoamWorthless({
           force revival.
         </p>
       )}
-      {g.choamWorthless.cards
-        .filter((c) =>
-          g.phase === 4 ? c.name === 'La La La' : c.name === 'Kulon',
-        )
-        .map((c) => (
-          <Button
-            key={c.id}
-            disabled={
-              busy ||
-              (g.phase === 5 &&
-                (g.active !== me.id ||
-                  (me.moved ?? 0) >= (me.movesAllowed ?? 1))) ||
-              (g.phase === 4 && !recipient)
-            }
-            onClick={() =>
-              act({
-                type: 'card',
-                mode: 'choam',
-                card: c.id,
-                target: recipient,
-              })
-            }
-          >
-            Use {c.name}
-          </Button>
-        ))}
+      <ChoamPowerCost {...power} busy={busy} />
+      {power.play && (
+        <Button
+          disabled={
+            busy ||
+            (g.phase === 4 && !recipient) ||
+            !choamPowerAction(g, power.play)
+          }
+          onClick={() => {
+            const action = choamPowerAction(
+              g,
+              power.play!,
+              g.phase === 4 ? { target: recipient } : {},
+            );
+            if (action) act(action);
+          }}
+        >
+          Use {g.phase === 4 ? 'La La La' : 'Kulon'}
+        </Button>
+      )}
+      {choamPowerPlays(g, 'kull').some(
+        (play) => play.source === 'nexus' && play.effect === 'kull',
+      ) && (
+        <p className="fine">
+          Kull Wahad’s Karama prevention effect is not implemented. CHOAM
+          Cunning cannot use it yet.
+        </p>
+      )}
       {reactive && (
         <Button
           variant="outline"

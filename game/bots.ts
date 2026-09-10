@@ -1,3 +1,4 @@
+import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
 import { nexusCardBotActions } from './nexus-card-options';
 import { nexusTraitorBotActions } from './nexus-traitor-options';
 import { nexusTleilaxuBotActions } from './nexus-tleilaxu-options';
@@ -940,8 +941,8 @@ function plans(g: GameView): Action[] {
 // This policy receives a personalized view, never the authoritative decks or rival hands.
 function gamontAction(g: GameView): Action | undefined {
   const me = g.players.find((p) => p.id === g.me)!;
-  const card = g.choamWorthless?.cards.find((c) => c.name === 'Trip to Gamont');
-  if (!card || g.phase !== 8) return;
+  const play = choamPowerBotPlay(g, 'gamont', (card) => technologyCardValue(g, card));
+  if (!play || g.phase !== 8) return;
   const options = g
     .choamWorthless!.gamont.filter((o) => o.target !== me.ally)
     .map((o) => {
@@ -966,14 +967,9 @@ function gamontAction(g: GameView): Action | undefined {
     .sort((a, b) => b.score - a.score);
   const choice = options[0];
   if (choice)
-    return {
-      type: 'card',
-      mode: 'choam',
-      card: card.id,
-      target: choice.target,
-      from: choice.key,
-      elite: choice.elite,
-    };
+    return choamPowerAction(g, play, {
+      target: choice.target, from: choice.key, elite: choice.elite,
+    }) ?? undefined;
 }
 /** Supported, server-derived timing only; no rival hand or sealed bid is inspected. */
 function saphoAction(g: GameView): Action | null {
@@ -1155,10 +1151,10 @@ function policyActions(g: GameView): Action[] {
     const preserve =
       g.choamWorthless?.pending ??
       (g.decision?.kind === 'choamMovement'
-        ? g.choamWorthless?.cards.find((c) => c.name === 'Baliset')?.id
+        ? choamPowerBotPlay(g, 'baliset', (card) => technologyCardValue(g, card))?.card.id
         : g.decision?.kind === 'choamStorm'
-          ? g.choamWorthless?.cards.find((c) => c.name === 'Jubba Cloak')?.id
-          : gamontAction(g)?.card);
+          ? choamPowerBotPlay(g, 'jubba', (card) => technologyCardValue(g, card))?.card.id
+          : (gamontAction(g)?.card ?? g.choamWorthless?.cards.find((card) => card.name === 'Trip to Gamont')?.id));
     const selected = g.choamCashIn.cards.filter(
       (c) => c.kind === 'worthless' && c.id !== card.id && c.id !== preserve,
     );
@@ -1356,7 +1352,7 @@ function policyActions(g: GameView): Action[] {
   }
   if (g.biddingEnd && !g.decision)
     return biddingEndActions(
-      g, level, (card) => technologyCardValue(g, card), gamontAction(g)?.card,
+      g, level, (card) => technologyCardValue(g, card), (gamontAction(g)?.card ?? g.choamWorthless?.cards.find((card) => card.name === 'Trip to Gamont')?.id),
     );
   if (g.decision) {
     if (g.decision.player !== me.id) return [];
@@ -1755,38 +1751,24 @@ function policyActions(g: GameView): Action[] {
         : [{ type: 'decision', decline: true }];
     }
     if (d.kind === 'choamStorm') {
-      const card = g.choamWorthless?.cards.find(
-        (c) => c.name === 'Jubba Cloak',
-      );
+      const play = choamPowerBotPlay(g, 'jubba', (card) => technologyCardValue(g, card));
       const target = [...d.territories].sort(
         (a, b) => b.amount - a.amount || a.territory.localeCompare(b.territory),
       )[0];
-      return [
-        card && target
-          ? {
-              type: 'card',
-              mode: 'choam',
-              card: card.id,
-              territory: target.territory,
-            }
-          : { type: 'decision', decline: true },
-      ];
+      const action = play && target ? choamPowerAction(g, play, { territory: target.territory }) : null;
+      return [action ?? { type: 'decision', decline: true }];
     }
     if (d.kind === 'choamMovement') {
-      const card = g.choamWorthless?.cards.find((c) => c.name === 'Baliset');
-      return [
-        card && d.mover !== me.ally
-          ? { type: 'card', mode: 'choam', card: card.id }
-          : { type: 'decision', decline: true },
-      ];
+      const play = choamPowerBotPlay(g, 'baliset', (card) => technologyCardValue(g, card));
+      const action = play && d.mover !== me.ally ? choamPowerAction(g, play) : null;
+      return [action ?? { type: 'decision', decline: true }];
     }
     if (d.kind === 'choamMentat')
       return [gamontAction(g) ?? { type: 'decision', done: true }];
     if (d.kind === 'choamFreeRevival') {
-      const card = g.choamWorthless?.cards.find((c) => c.name === 'La La La');
-      if (card && d.recipient !== me.ally && level > 0)
-        return [{ type: 'card', mode: 'choam', card: card.id }];
-      return [{ type: 'decision', decline: true }];
+      const play = choamPowerBotPlay(g, 'laLaLa', (card) => technologyCardValue(g, card));
+      const action = play && d.recipient !== me.ally && level > 0 ? choamPowerAction(g, play) : null;
+      return [action ?? { type: 'decision', decline: true }];
     }
     if (d.kind === 'choamBattleFunding') {
       const ally = g.players.find((p) => p.id === me.ally)!;
@@ -1805,7 +1787,7 @@ function policyActions(g: GameView): Action[] {
     }
     if (d.kind === 'choamMarket')
       return [choamMarketPolicy(
-        g, (card) => technologyCardValue(g, card), gamontAction(g)?.card,
+        g, (card) => technologyCardValue(g, card), (gamontAction(g)?.card ?? g.choamWorthless?.cards.find((card) => card.name === 'Trip to Gamont')?.id),
       )];
     if (d.kind === 'choamTradeReply') {
       const returned = [...(me.hand ?? [])].sort(
@@ -2821,14 +2803,14 @@ function policyActions(g: GameView): Action[] {
     return actions;
   }
   if (g.phase === 5) {
-    const kulon = g.choamWorthless?.cards.find((c) => c.name === 'Kulon');
+    const kulon = choamPowerBotPlay(g, 'kulon', (card) => technologyCardValue(g, card));
     if (
       kulon &&
       g.active === me.id &&
       Object.keys(me.forces).length &&
       (me.moved ?? 0) < (me.movesAllowed ?? 1)
     )
-      return [{ type: 'card', mode: 'choam', card: kulon.id }];
+      return [choamPowerAction(g, kulon)!];
     if (g.active !== me.id) return [];
     const cardMoves = ornithopterMoves(g);
     if (

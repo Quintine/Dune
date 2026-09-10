@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { ChoamPowerCost, useChoamPower } from './choam-power-cost';
+import { choamPowerAction } from '@/game/choam-power-options';
 import { Button } from '@/components/ui/button';
 import { HelpTip } from './help-tip';
 import type { Action, GameView } from '@/game/engine';
@@ -14,12 +16,12 @@ export function ChoamBaliset({
   act: (a: Action) => void;
   busy: boolean;
 }) {
+  const power = useChoamPower(g, 'baliset');
   const [target, setTarget] = useState('');
   const [territory, setTerritory] = useState('');
   if (!g.choamWorthless || g.phase !== 5) return null;
   const d = g.decision?.kind === 'choamMovement' ? g.decision : null;
-  const card = g.choamWorthless.cards.find((c) => c.name === 'Baliset');
-  if (!card && !d) return null;
+  if (!power.play && !d) return null;
   const players = g.players.filter((p) => p.faction !== 'choam');
   const selectedPlayer =
     d?.mover ?? players.find((p) => p.id === target)?.id ?? players[0]?.id;
@@ -50,7 +52,7 @@ export function ChoamBaliset({
           forces have moved yet.
         </p>
       ) : (
-        card && (
+        power.play && (
           <>
             <label>
               Player{' '}
@@ -81,23 +83,28 @@ export function ChoamBaliset({
           </>
         )
       )}
-      {card && (
+      <ChoamPowerCost {...power} busy={busy} />
+      {power.play && (
         <Button
-          disabled={busy || !selectedPlayer || !selectedTerritory}
-          onClick={() =>
-            act({
-              type: 'card',
-              mode: 'choam',
-              card: card.id,
+          disabled={
+            busy ||
+            !selectedPlayer ||
+            !selectedTerritory ||
+            !power.play ||
+            !choamPowerAction(g, power.play)
+          }
+          onClick={() => {
+            const action = choamPowerAction(g, power.play!, {
               target: selectedPlayer,
               territory: selectedTerritory,
-            })
-          }
+            });
+            if (action) act(action);
+          }}
         >
           Prevent movement
         </Button>
       )}
-      {!card && d && <p className="fine">No available Baliset play.</p>}
+      {!power.play && d && <p className="fine">No available Baliset play.</p>}
       {d && (
         <Button
           variant="outline"

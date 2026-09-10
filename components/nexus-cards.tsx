@@ -56,7 +56,7 @@ export function NexusCardFace({ card, mode, enlarged = false }: {
                   <DialogTitle>{identity.name} Nexus card</DialogTitle>
                   <DialogClose render={<Button variant="outline" className="min-h-11 min-w-16" />}>Close</DialogClose>
                 </div>
-                <DialogDescription className="sr-only">All three Nexus effects and their faction requirements. Atreides actions appear when available; other card effects are not playable yet.</DialogDescription>
+                <DialogDescription className="sr-only">All three Nexus effects and their faction requirements. Available actions appear at their required timing; unfinished effects remain unavailable.</DialogDescription>
                 <div className="min-h-0 overflow-y-auto overscroll-contain p-3 sm:p-5"><NexusCardFace card={card} mode={mode} enlarged /></div>
               </DialogPrimitive.Popup>
             </DialogPortal>
@@ -118,7 +118,7 @@ export function NexusCards({ game, act, busy }: { game: GameView; act: (action: 
       <div>
         <h3>Nexus cards</h3>
         <p className="fine">{offer.deckCount} in deck · {offer.discardCount} discarded · {Object.values(offer.held).filter((held) => held === true).length} held</p>
-        <p>Playable effects include Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian, Bene Gesserit and Emperor Cunning. Use the controls shown at each effect’s timing; other effects remain unavailable.</p>
+        <p>Playable effects include Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian, Bene Gesserit, Emperor and CHOAM Cunning. Use the controls shown at each effect’s timing. CHOAM’s Kull Wahad effect and other unfinished effects remain unavailable.</p>
       </div>
       {game.nexusAtreides && offer.card === 'atreides' && (
         <div aria-label="Atreides Nexus effect" className="space-y-2">

@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { ChoamPowerCost, useChoamPower } from './choam-power-cost';
+import { choamPowerAction } from '@/game/choam-power-options';
 import { HelpTip } from './help-tip';
 import { Button } from '@/components/ui/button';
 import type { Action, GameView } from '@/game/engine';
@@ -13,9 +15,9 @@ export function ChoamGamont({
   act: (a: Action) => void;
   busy: boolean;
 }) {
+  const power = useChoamPower(g, 'gamont');
   const [selection, setSelection] = useState('');
   if (!g.choamWorthless || g.phase !== 8) return null;
-  const card = g.choamWorthless.cards.find((c) => c.name === 'Trip to Gamont');
   const options = g.choamWorthless.gamont;
   const key = (o: (typeof options)[number]) =>
     `${o.target}/${o.key}/${o.elite}`;
@@ -31,7 +33,8 @@ export function ChoamGamont({
         opportunity. A No-Field in the selected sector must reveal first; the
         card is used even if no force is there to return.
       </p>
-      {card && options.length > 0 && (
+      <ChoamPowerCost {...power} busy={busy} />
+      {power.play && options.length > 0 && (
         <>
           <label>
             Force to return{' '}
@@ -65,23 +68,23 @@ export function ChoamGamont({
             </select>
           </label>
           <Button
-            disabled={busy || !chosen}
-            onClick={() =>
-              act({
-                type: 'card',
-                mode: 'choam',
-                card: card.id,
+            disabled={
+              busy || !chosen || !power.play || !choamPowerAction(g, power.play)
+            }
+            onClick={() => {
+              const action = choamPowerAction(g, power.play!, {
                 target: chosen.target,
                 from: chosen.key,
                 elite: chosen.elite,
-              })
-            }
+              });
+              if (action) act(action);
+            }}
           >
             Return this force
           </Button>
         </>
       )}
-      {(!card || !options.length) && (
+      {(!power.play || !options.length) && (
         <p className="fine">No available Trip to Gamont play.</p>
       )}
       {g.decision?.kind === 'choamMentat' && (
