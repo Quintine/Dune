@@ -6,7 +6,12 @@ import {
 } from './cards';
 import type { FactionId } from './catalog';
 import { battleWeaponsExplode, isStoneBurner } from './battle-cards';
-import { casualtyOptions, type Casualties, type CombatForces } from './combat';
+import {
+  casualtyOptions,
+  validCombatForces,
+  type Casualties,
+  type CombatForces,
+} from './combat';
 import { strongholdBattleEffects } from './stronghold-battle';
 import {
   strongholdBattleIncome,
@@ -160,17 +165,7 @@ function validateCombatant(
       p &&
       f &&
       whole(side.spice) &&
-      whole(f.normal) &&
-      whole(f.elite) &&
-      f.normal + f.elite <= 20 &&
-      (f.eliteStrength === 1 || f.eliteStrength === 2) &&
-      typeof f.freeSupport === 'boolean' &&
-      (f.eliteFreeSupport === undefined ||
-        typeof f.eliteFreeSupport === 'boolean') &&
-      (f.normalFreeSupport === undefined ||
-        typeof f.normalFreeSupport === 'boolean') &&
-      (f.normalFixedHalf === undefined ||
-        typeof f.normalFixedHalf === 'boolean') &&
+      validCombatForces(f) &&
       Number.isFinite(p.dial) &&
       p.dial >= 0 &&
       Number.isSafeInteger(p.dial * 2) &&

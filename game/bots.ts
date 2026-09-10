@@ -3,6 +3,7 @@ import { nexusTraitorBotActions } from './nexus-traitor-options';
 import { nexusTleilaxuBotActions } from './nexus-tleilaxu-options';
 import { nexusSuboidBotActions } from './nexus-suboid-options';
 import { nexusAdvisorBotActions } from './nexus-advisor-options';
+import { nexusSardaukarBotActions } from './nexus-sardaukar-options';
 import { tupileIntelligenceActions } from './tupile-intelligence-options';
 import { biddingEndActions, choamMarketPolicy } from './bidding-end-options';
 import { homeworldRevivalActionBlock, homeworldRevivalDeploymentActions } from './homeworld-revival-deployment-options';
@@ -60,7 +61,7 @@ import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
-import { casualtyOptions, type CombatForces } from './combat';
+import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
 import { stoneBurnerPlanBlock, stoneBurnerComparison } from './stone-burner';
 import {
   applyAction,
@@ -566,8 +567,7 @@ function plans(g: GameView): Action[] {
   const own = forces.normal + forces.elite;
   const typedForces = g.advanced || me.faction === 'ixians';
   const ownStrength = typedForces
-    ? forces.normal * (forces.normalFixedHalf ? 0.5 : 1) +
-      forces.elite * forces.eliteStrength
+    ? maxCombatDial(forces)
     : own;
   const supportCache = new Map<
     number,
@@ -580,7 +580,7 @@ function plans(g: GameView): Action[] {
         length:
           (g.advanced
             ? Math.min(
-                own,
+                maxCombatSupport(forces),
                 (me.spice ?? 0) +
                   g.aid.available +
                   (b.strongholdEffects[me.id] === 'arrakeen' ? 2 : 0),
@@ -627,8 +627,7 @@ function plans(g: GameView): Action[] {
   const ownNativeBonus = b.native === me.id ? b.nativeBattleStrength : 0;
   const enemyNativeBonus = b.native === other.id ? b.nativeBattleStrength : 0;
   const enemyCapacity = b.opponentForces
-    ? b.opponentForces.normal * (b.opponentForces.normalFixedHalf ? 0.5 : 1) +
-      b.opponentForces.elite * b.opponentForces.eliteStrength
+    ? maxCombatDial(b.opponentForces)
     : enemies;
   const insights = [
     ...(b.insight && b.prescience?.player === me.id ? [b.insight] : []),
@@ -1320,6 +1319,7 @@ function policyActions(g: GameView): Action[] {
         g.response.kind === 'harkonnenTraitor' ||
         g.response.kind === 'eliteStrength' ||
         g.response.kind === 'fremenSupport' ||
+        g.response.kind === 'nexusSardaukar' ||
         g.response.kind === 'choamBattleAid');
     const auditThreat =
       g.response.kind === 'choamAudit' &&
@@ -3326,6 +3326,8 @@ export function botActions(g: GameView): Action[] {
       : nexusTraitorBotActions(g);
   if (g.automaticContinuationPending) return [];
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
+  const sardaukar = nexusSardaukarBotActions(g);
+  if (sardaukar.length) return sardaukar;
   const advisorConversion = nexusAdvisorBotActions(g);
   if (advisorConversion.length) return advisorConversion;
   const suboids = nexusSuboidBotActions(g);

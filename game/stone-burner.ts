@@ -1,6 +1,8 @@
 import {
   casualtyOptions,
   validCombatForces,
+  maxCombatDial,
+  maxCombatSupport,
   type CombatForces,
 } from './combat';
 
@@ -28,7 +30,7 @@ function totals(forces: CombatForces, dial: number, support: number): number[] {
     !Number.isInteger(dial * 2) ||
     !Number.isSafeInteger(support) ||
     support < 0 ||
-    support > forces.normal + forces.elite
+    support > maxCombatSupport(forces)
   )
     return [];
   return sorted(
@@ -88,6 +90,7 @@ function allOpposingTotals(
     forces.normal,
     forces.elite,
     forces.eliteStrength,
+    forces.temporaryElite ?? 0,
     !!forces.normalFixedHalf,
     !!forces.normalFreeSupport,
     forces.freeSupport,
@@ -96,14 +99,8 @@ function allOpposingTotals(
   const cached = opposingChoices.get(key);
   if (cached) return cached;
   const result: number[][] = [];
-  const maximumHalfDial =
-    forces.normal *
-      (forces.normalFixedHalf && !forces.normalFreeSupport ? 1 : 2) +
-    forces.elite * forces.eliteStrength * 2;
-  const maximumSupport = forces.freeSupport
-    ? 0
-    : (forces.normalFixedHalf || forces.normalFreeSupport ? 0 : forces.normal) +
-      (forces.eliteFreeSupport ? 0 : forces.elite);
+  const maximumHalfDial = maxCombatDial(forces) * 2;
+  const maximumSupport = maxCombatSupport(forces);
   // Use the same legality and typed-support arithmetic as sealed plans. Cache
   // public pool results so repeated preflights do not repeat this enumeration.
   for (let halfDial = 0; halfDial <= maximumHalfDial; halfDial++)
@@ -158,7 +155,7 @@ export function stoneBurnerCompulsionBlock(
     return 'Choose valid Stone Burner combatant roles.';
   if (!validCombatForces(own) || !validCombatForces(opponent))
     return 'Stone Burner needs valid supported physical force pools of at most 20 tokens.';
-  const maximumStrength = own.normal + own.elite * own.eliteStrength;
+  const maximumStrength = maxCombatDial(own);
   for (let halfDial = 0; halfDial <= maximumStrength * 2; halfDial++) {
     if (!totals(own, halfDial / 2, 0).length) continue;
     if (

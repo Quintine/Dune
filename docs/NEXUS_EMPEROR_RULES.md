@@ -38,6 +38,8 @@ Supported composition:
 
 Karama can suppress Emperor's Sardaukar advantage before plan revelation. Cunning enhances that native advantage, so suppression applies to its temporary Sardaukar too; it does not destroy or move counters. The card supplies no general Karama immunity. [November FAQ, p.7](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=7)
 
+The selected implementation composition treats a Cunning declaration as the new advantage use: allowing it grants the temporary role; canceling it prevents that role entirely. Those ordinary counters consequently gain neither doubled strength nor Salusa's support exemption. This differs from canceling the strength of actual starred Sardaukar, whose physical identity survives that cancellation. Keep the new use and its response separate from the earlier native starred-force response; one Karama must not consume two independently declared uses.
+
 Salusa high names Sardaukar, without limiting support relief to starred tokens. Applying that relief to counters currently counted as Sardaukar is supported composition. Salusa population still uses its physical native starred pool; Cunning cannot raise its threshold. Preserve the existing [mid-battle Salusa threshold guard](HOMEWORLD_BENEFITS_RULES.md). Occupation effects remain subject to their unresolved lifecycle. [Homeworld components](HOMEWORLD_COMPONENT_AUDIT.md)
 
 ## Secret Ally: retain the actual purchase price

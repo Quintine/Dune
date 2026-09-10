@@ -3,6 +3,7 @@ import { beginNexusTraitorExchange, finishNexusTraitorExchange, validateNexusTra
 import { replaceNexusFaceDancers, validateNexusFaceDancerHistory, type NexusFaceDancerReceipt } from './nexus-face-dancers';
 import { createNexusSuboids, validateNexusSuboids, nexusSuboidsActive, type NexusSuboidReceipt } from './nexus-suboids';
 import { quoteNexusAdvisors, createNexusAdvisors, validateNexusAdvisors, type NexusAdvisorReceipt } from './nexus-advisors';
+import { createNexusSardaukar, validateNexusSardaukar, type NexusSardaukarReceipt } from './nexus-sardaukar';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
 import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, nexusCardMode, type NexusState } from './nexus-cards';
 import { createNexusCardPhase, markNexusCardOccurred, validateNexusCardPhase, closeNexusCardPhase, nexusCardChoices, finishNexusCardChoice, type NexusCardPhase, type NexusCardChoice } from './nexus-card-phase';
@@ -451,7 +452,7 @@ import {
   settleAdvisors,
   arrivalAsAdvisor,
 } from './advisors';
-import { casualtyOptions, type Casualties, type CombatForces } from './combat';
+import { casualtyOptions, maxCombatDial, maxCombatSupport, validCombatForces, type Casualties, type CombatForces } from './combat';
 import { FACTIONS, faction, type FactionId } from './catalog';
 import {
   treacheryDeck,
@@ -541,6 +542,7 @@ export type Battle = {
   nexusInspection?: NexusInspection;
   /** Independent presence marker: deleting a spent-card record is not a legacy save. */
   nexusInspectionUsed?: string;
+  nexusSardaukarUsed?: string;
   traitorDeclarationVersion?: 1;
   traitorDeclarations?: Record<string, TraitorDeclaration>;
   homeworldDefensePassed?: string[];
@@ -793,6 +795,7 @@ export type ResponseWindow = {
     | 'fremenSupport'
     | 'advisorFlip'
     | 'nexusAdvisorFlip'
+    | 'nexusSardaukar'
     | 'bgCharity'
     | 'choamCharity'
     | 'choamInflation'
@@ -1267,6 +1270,9 @@ export type Game = {
   nexusSuboidLast?: { event: string; owner: string; turn: number };
   nexusAdvisorHistory?: { receipt: NexusAdvisorReceipt; stage: 'pending' | 'completed' | 'canceled'; frame: string; signature: string }[];
   nexusAdvisorLast?: { event: string; stage: 'pending' | 'completed' | 'canceled' };
+  nexusSardaukarHistory?: {receipt: NexusSardaukarReceipt; stage: 'pending' | 'active' | 'canceled'; parent: string; signature: string;
+    casualties?: {forces: CombatForces; dial: number; support: number; options: Casualties[]; outcome: 'pending' | 'complete'}}[];
+  nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
   nexusTraitorPending?: string | null;
   nexusTraitorParent?: { event: string; signature: string } | null;
   /** Null/absent disables the module; custody is installed at force placement. */
@@ -1385,6 +1391,7 @@ export type Game = {
     cardRolesSignature?: string;
     winnerDiscards?: { cards: string[]; completed: boolean; signature: string };
     caladanReinforcement?: HomeworldVictoryObligation;
+    nexusSardaukarCasualties?: string;
   } | null;
   auction: Auction | null;
   battle: Battle | null;
@@ -1860,6 +1867,182 @@ function finishNexusAdvisors(g: Game, canceled: boolean) {
     ? 'Karama prevented the entire Nexus advisor conversion. Every selected group remains advisors; the Nexus card stays spent.'
     : `${p.name} converted every advisor in ${record.receipt.selections.map(s => territory(s.territory).name).join(', ')} to fighters. The forces remain in place and no shipment, movement or spice was spent.`,
     {faction: p.faction, name: canceled ? 'Nexus advisor conversion prevented' : 'Nexus advisors become fighters'});
+}
+
+function currentNexusSardaukar(g: Game) {
+  return g.battle?.event ? g.nexusSardaukarHistory?.find(record => record.receipt.battle === g.battle!.event) ?? null : null;
+}
+function nexusSardaukarEffective(g: Game, id: string, to: string) {
+  const record = currentNexusSardaukar(g);
+  return record && record.receipt.owner === id && record.receipt.territory === to && record.stage === 'active' ? record.receipt.count : 0;
+}
+function nexusSardaukarParent(g: Game) {
+  const b = g.battle!;
+  return JSON.stringify([b.attacker, b.defender, b.territory, b.preparation ?? null,
+    b.powerChecks ?? null, b.preLeader ?? null, b.plans]);
+}
+function nexusSardaukarSignature(record: NonNullable<Game['nexusSardaukarHistory']>[number]) {
+  return JSON.stringify([record.receipt.signature, record.stage, record.parent, record.casualties ?? null]);
+}
+function validateNexusSardaukarResponse(g: Game, response: ResponseWindow) {
+  const record = currentNexusSardaukar(g), b = g.battle;
+  requireRule(record?.stage === 'pending' && b && !b.revealed &&
+    record.receipt.turn === g.turn && record.receipt.territory === b.territory &&
+    response.kind === 'nexusSardaukar' && response.owner === record.receipt.owner && response.intent === record.receipt.event &&
+    Object.keys(response).every(key => ['kind', 'owner', 'intent', 'passed'].includes(key)) &&
+    Array.isArray(response.passed) && new Set(response.passed).size === response.passed.length &&
+    response.passed.every(id => g.players.some(p => p.id === id)) && record.parent === nexusSardaukarParent(g),
+    'The Nexus Sardaukar response has lost its original battle and preparation.');
+  const p = getPlayer(g, record.receipt.owner), other = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
+  const forces = combatForces(g, p, b.territory, other);
+  requireRule(forces.normal === record.receipt.normal && forces.elite === 0,
+    'The pending Nexus Sardaukar declaration has lost its original eligible forces.');
+}
+function nexusSardaukarIntegrity(g: Game) {
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const responses = contexts.flatMap(context => {
+    const pending = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+    return [context?.response, pending?.use.kind === 'cancel' ? pending.use.response : null];
+  }).filter(response => response?.kind === 'nexusSardaukar');
+  const history = g.nexusSardaukarHistory;
+  if (history === undefined) {
+    requireRule(!g.nexusSardaukarLast && !g.battle?.nexusSardaukarUsed && !g.lastBattleContext?.nexusSardaukarCasualties && !responses.length,
+      'The Nexus Sardaukar use has lost its saved history.');
+    return;
+  }
+  requireRule(g.advanced && g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+    'Nexus Sardaukar history requires its original Advanced module.');
+  const battles = new Set<string>(), turns = new Set<number>();
+  for (const [index, record] of history.entries()) {
+    requireRule(record && record.receipt && typeof record.receipt === 'object' &&
+      Object.keys(record).sort().join(',') === (record.casualties ? 'casualties,parent,receipt,signature,stage' : 'parent,receipt,signature,stage') &&
+      ['pending', 'active', 'canceled'].includes(record.stage) && typeof record.parent === 'string' &&
+      record.signature === nexusSardaukarSignature(record) && !battles.has(record.receipt.battle) &&
+      !turns.has(record.receipt.turn) && (record.stage !== 'pending' || index === history.length - 1),
+      'The Nexus Sardaukar battle history is malformed.');
+    nexusRule(() => validateNexusSardaukar(g, record.receipt));
+    const losses = record.casualties;
+    if (losses) {
+      requireRule(record.stage === 'active' && ['pending','complete'].includes(losses.outcome) &&
+        Object.keys(losses).sort().join(',') === 'dial,forces,options,outcome,support' &&
+        validCombatForces(losses.forces) && losses.forces.temporaryElite === 5 &&
+        Array.isArray(losses.options) && losses.options.length > 0 &&
+        JSON.stringify(losses.options) === JSON.stringify(casualtyOptions(losses.forces,losses.dial,losses.support)),
+        'The Nexus Sardaukar casualties have lost their committed force allocation.');
+      if (losses.outcome === 'pending') {
+        const context = g.lastBattleContext;
+        requireRule(!g.battle && context?.event === record.receipt.battle && context.result === 'normal' &&
+          context.winner === record.receipt.owner && context.nexusSardaukarCasualties === record.receipt.event &&
+          context.territory === record.receipt.territory && context.turn === record.receipt.turn,
+          'The pending Sardaukar casualties have lost their completed battle.');
+        const pool = combatArmy(g,record.receipt.owner,record.receipt.territory);
+        requireRule(pool.normal === losses.forces.normal && pool.elite === losses.forces.elite,
+          'The pending Sardaukar casualties have lost their exact physical army.');
+        const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'battleLosses' && d.player === record.receipt.owner);
+        const committed = continuation?.kind === 'battleResolved' && continuation.event === record.receipt.battle ? continuation.casualties : null;
+        requireRule(decisions.length > 0 || committed, 'The Nexus Sardaukar battle has lost its casualty choice.');
+        for (const decision of decisions) requireRule(decision.kind === 'battleLosses' &&
+          decision.territory === record.receipt.territory && JSON.stringify(decision.options) === JSON.stringify(losses.options),
+          'The casualty choices differ from the committed Nexus Sardaukar plan.');
+        if (committed) requireRule(JSON.stringify(committed) === JSON.stringify({forces:losses.forces,dial:losses.dial,support:losses.support,options:losses.options}),
+          'The suspended Sardaukar casualty allocation was changed.');
+        if (g.homeworldBattleLoss) requireRule(JSON.stringify(g.homeworldBattleLoss.commitment) ===
+          JSON.stringify({forces:losses.forces,dial:losses.dial,support:losses.support}),
+          'The Homeworld Sardaukar casualties have lost their effective combat roles.');
+      }
+    }
+    battles.add(record.receipt.battle); turns.add(record.receipt.turn);
+  }
+  const last = history.at(-1)!;
+  requireRule(JSON.stringify(g.nexusSardaukarLast) === JSON.stringify({event: last.receipt.event, stage: last.stage}),
+    'The Nexus Sardaukar use has lost its latest saved outcome.');
+  if (last.receipt.turn === g.turn) requireRule(g.nexusCards.cards.discard.includes('emperor'),
+    'The Nexus Sardaukar use has lost its spent card.');
+  const record = currentNexusSardaukar(g), b = g.battle;
+  requireRule((record?.stage === 'pending') === (responses.length > 0) &&
+    (last.stage !== 'pending' || record === last), 'The Nexus Sardaukar use has lost or reopened its response.');
+  if (b) requireRule(b.nexusSardaukarUsed === record?.receipt.event,
+    'The battle has lost its original Nexus Sardaukar marker.');
+  if (record) {
+    requireRule(g.phase === 6 && record.receipt.turn === g.turn && b!.territory === record.receipt.territory &&
+      [b!.attacker, b!.defender].includes(record.receipt.owner), 'The temporary Sardaukar belong to another battle.');
+    if (record.stage !== 'canceled') {
+      const p = getPlayer(g, record.receipt.owner), other = getPlayer(g, b!.attacker === p.id ? b!.defender : b!.attacker);
+      const forces = combatForces(g, p, b!.territory, other);
+      requireRule(forces.normal >= 5 && forces.elite === 0, 'The Nexus battle no longer has five eligible ordinary forces.');
+    }
+  }
+  for (const response of responses) validateNexusSardaukarResponse(g, response!);
+  const lastLoss = history.find(record => record.receipt.battle === g.lastBattleContext?.event)?.casualties;
+  const lossEvent = history.find(record => record.receipt.battle === g.lastBattleContext?.event)?.receipt.event;
+  requireRule(g.lastBattleContext?.nexusSardaukarCasualties === (lastLoss ? lossEvent : undefined),
+    'The completed battle has lost its Nexus Sardaukar casualty receipt.');
+}
+function nexusSardaukarEligibility(g: Game, p: Player): string | null {
+  const b = g.battle;
+  if (!g.advanced) return 'Sardaukar are an Advanced advantage.';
+  if (g.status !== 'playing' || g.phase !== 6 || !b?.event || ![b.attacker,b.defender].includes(p.id))
+    return 'Use Cunning in your own battle before submitting your Battle Plan.';
+  if (p.faction !== 'emperor' || p.ally || g.nexusCards?.cards?.hands[p.id] !== 'emperor')
+    return 'Use your own Emperor Nexus card while unallied.';
+  if (b.revealed || b.plans[p.id] || b.nexusSardaukarUsed) return 'This battle has already committed your plan or used Emperor Cunning.';
+  const other = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
+  const forces = combatForces(g, p, b.territory, other);
+  if (forces.elite) return 'Cunning requires a battle containing none of your actual Sardaukar.';
+  if (forces.normal < 5) return 'Using Emperor Cunning with fewer than five eligible forces awaits a ruling.';
+  return null;
+}
+function projectedNexusSardaukar(g: Game, id: string) {
+  if (!g.nexusCards?.cards) return null;
+  const record = currentNexusSardaukar(g);
+  const active = record?.stage === 'active';
+  const pending = record?.stage === 'pending' ? {event: record.receipt.event, owner: record.receipt.owner} : null;
+  const p = getPlayer(g,id);
+  if (p.faction !== 'emperor' || g.nexusCards.cards.hands[id] !== 'emperor') return {offer:null,active,pending};
+  let blocked = nexusSardaukarEligibility(g,p);
+  if (!blocked && (g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingKarama ||
+    g.pendingTreacheryDiscard || g.pendingNullentropy || pendingNexusTraitors(g) || g.nexusCards.phase?.stage === 'drawing'))
+    blocked = 'Finish the current interaction before declaring Nexus Sardaukar.';
+  const event = g.battle?.event ? JSON.stringify(['nexusSardaukar',g.turn,g.battle.event,id]) : '';
+  if (!blocked) {
+    const trial = structuredClone(g);
+    commitNexusSardaukar(trial,getPlayer(trial,id),'active');
+    if (!findReachableBattlePlan(trial,getPlayer(trial,id)))
+      blocked = 'Sardaukar strength would prevent you from honoring an existing Battle Plan commitment.';
+  }
+  return {offer:{event,blocked},active,pending};
+}
+function commitNexusSardaukar(g: Game, p: Player, stage: 'pending' | 'active') {
+  const blocked = nexusSardaukarEligibility(g,p);
+  requireRule(!blocked, blocked ?? 'The Nexus Sardaukar opportunity is unavailable.');
+  const b = g.battle!, other = getPlayer(g,b.attacker === p.id ? b.defender : b.attacker);
+  const receipt = nexusRule(() => createNexusSardaukar(g,p.id,b.event!,b.territory,combatForces(g,p,b.territory,other).normal));
+  const record = {receipt,stage,parent:nexusSardaukarParent(g),signature:''};
+  record.signature = nexusSardaukarSignature(record);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
+  (g.nexusSardaukarHistory ??= []).push(record);
+  g.nexusSardaukarLast = {event:receipt.event,stage}; b.nexusSardaukarUsed = receipt.event;
+  if (stage === 'pending') g.response = {kind:'nexusSardaukar',owner:p.id,intent:receipt.event,passed:[]};
+}
+function playNexusSardaukar(g: Game,p: Player,action: Action) {
+  const offer = projectedNexusSardaukar(g,p.id)?.offer;
+  requireRule(Object.keys(action).every(key => ['type','event'].includes(key)) && offer && !offer.blocked && action.event === offer.event,
+    offer?.blocked ?? 'Choose the current Emperor Cunning opportunity.');
+  commitNexusSardaukar(g,p,'pending');
+  log(g,`${p.name} spent Emperor Nexus Cunning to count five ordinary forces as Sardaukar for this battle. Karama may prevent this use. The physical counters remain ordinary forces.`,
+    {faction:p.faction,name:'Nexus Sardaukar declared'});
+}
+function finishNexusSardaukar(g: Game,canceled: boolean) {
+  const record = currentNexusSardaukar(g)!;
+  record.stage = canceled ? 'canceled' : 'active'; record.signature = nexusSardaukarSignature(record);
+  g.nexusSardaukarLast = {event:record.receipt.event,stage:record.stage};
+  if (canceled) reconcileChangedBattleInspections(g, 'the canceled Sardaukar enhancement');
+  log(g,canceled ? 'Karama prevented Emperor Cunning. These forces remain ordinary in both strength and physical custody; the Nexus card stays spent.'
+    : 'Five ordinary Emperor forces count as Sardaukar in this battle only. They use Sardaukar strength and support, including the Fremen exception, but every casualty remains an ordinary physical counter.',
+    {faction:'emperor',name:canceled ? 'Nexus Sardaukar prevented' : 'Nexus Sardaukar active'});
 }
 
 function battleInspectionContext(g: Game): BattleInspectionContext {
@@ -4014,6 +4197,7 @@ function treacheryDiscardIntegrity(g: Game) {
         requireRule(
           winner &&
             forces &&
+            validCombatForces(forces) &&
             Number.isSafeInteger(forces.normal) &&
             forces.normal >= 0 &&
             Number.isSafeInteger(forces.elite) &&
@@ -4467,6 +4651,7 @@ function combatForces(
   const elite = army.elite;
   return {
     normal: physical + prospective - elite,
+    ...(nexusSardaukarEffective(g,p.id,t) ? {temporaryElite:nexusSardaukarEffective(g,p.id,t)} : {}),
     ...(homeworldSardaukarFreeSupport(g, p.id)
       ? { eliteFreeSupport: true }
       : {}),
@@ -4708,7 +4893,7 @@ export function initializeHomeworldGameForAudit(state: Game): Game {
 export function initializeNexusGameForAudit(state: Game): Game {
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null,
     'Enable Nexus cards in a fresh audit lobby first.');
-  return initializeSetupGameForAudit(state, false, true);
+  return initializeSetupGameForAudit(state, !!state.homeworlds, true);
 }
 function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false): Game {
   nexusCardsIntegrity(state);
@@ -6488,6 +6673,7 @@ function validateKaramaUse(
     moritaniAllianceCancellationQuote(g, use.response);
     if (use.response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, use.response);
     if (use.response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, use.response);
+    if (use.response.kind === 'nexusSardaukar') validateNexusSardaukarResponse(g, use.response);
     if (isCombatResponseKind(use.response.kind))
       currentCombatResponseQuote(g, {
         kind: 'response',
@@ -6626,6 +6812,10 @@ function assertKaramaPromiseFeasibility(
         if (!b?.nexusInspection) return false;
         b.nexusInspection = cancelNexusInspection(battleInspectionContext(projected), b.nexusInspection);
         delete b.preparation;
+        break;
+      case 'nexusSardaukar':
+        if (!b || !currentNexusSardaukar(projected)) return false;
+        finishNexusSardaukar(projected,true);
         break;
       case 'eliteStrength':
         if (!b) return false;
@@ -11347,13 +11537,24 @@ function playResidualPoison(
     `${p.name} played Residual Poison against ${target.name}. ${victim.name} was randomly selected from the available leaders and sent to the Tanks. No spice is awarded, no forces are lost, and battle preparation continues.`,
     { faction: p.faction, name: 'Residual Poison' },
   );
-  // First retire an inspection made impossible by the death itself. Testing on
+  reconcileChangedBattleInspections(g, 'the leader death');
+  if (b.preLeader && !b.preLeader.closed)
+    b.preLeader.ready = b.preLeader.ready.filter((id) => id !== p.id);
+}
+function reconcileChangedBattleInspections(g: Game, cause: string) {
+  const b = g.battle!;
+  // Retire an inspection made impossible by the opposing effect. Testing on
   // a private copy without Truthtrance avoids releasing a still-feasible truth
   // answer solely because an obsolete inspection was left in the trial.
   const insight = b.prescience;
   if (insight && 'value' in insight && insight.field !== 'leader') {
     const trial = structuredClone(g);
     trial.battle!.truthPromises = [];
+    // A different impossible disclosure must not falsely retire this one.
+    // The real extra answer is tested afterward against any retained native
+    // commitment; the trial keeps its signed first-answer relationship.
+    if (trial.battle!.nexusInspection?.mode === 'cunning' && trial.battle!.nexusInspection.stage === 'answered' && trial.battle!.nexusInspection.field !== 'leader')
+      trial.battle!.nexusInspection = nexusRule(() => reopenNexusInspection(battleInspectionContext(trial),trial.battle!.nexusInspection!));
     const answering = getPlayer(
       trial,
       insight.player === b.attacker ? b.defender : b.attacker,
@@ -11369,7 +11570,7 @@ function playResidualPoison(
       };
       log(
         g,
-        'The prior inspected element no longer permits a legal battle plan after the leader death. Its owner must answer that same element again; the earlier private value is not revealed.',
+        `The prior inspected element no longer permits a legal battle plan after ${cause}. Its owner must answer that same element again; the earlier private value is not revealed.`,
       );
     }
   }
@@ -11380,12 +11581,10 @@ function playResidualPoison(
     if (!findReachableBattlePlan(trial, getPlayer(trial, nexus.target))) {
       b.nexusInspection = nexusRule(() => reopenNexusInspection(battleInspectionContext(g), nexus));
       finishInspectionAnswers(g);
-      log(g, 'The leader death made the inspected element impossible. Its owner must answer the same element again; the earlier private observation is retained.');
+      log(g, `After ${cause}, the inspected element became impossible. Its owner must answer the same element again; the earlier private observation is retained.`);
     }
   }
   reconcileBattlePromises(g);
-  if (b.preLeader && !b.preLeader.closed)
-    b.preLeader.ready = b.preLeader.ready.filter((id) => id !== p.id);
 }
 function residualPoisonView(g: Game, p: Player) {
   const card = p.hand.find(
@@ -11525,7 +11724,7 @@ function stoneCompulsionBlock(g: Game, target: Player): string | null {
   const opponents = stonePublicPools(g, other, target);
   for (const own of stonePublicPools(g, target, other)) {
     const supported = Array.from(
-      { length: (own.normal + own.elite * own.eliteStrength) * 2 + 1 },
+      { length: maxCombatDial(own) * 2 + 1 },
       (_, n) => n / 2,
     ).some(
       (dial) =>
@@ -11878,6 +12077,7 @@ function marketGholaIntegrity(g: Game) {
   nexusFaceDancerIntegrity(g);
   nexusSuboidIntegrity(g);
   nexusAdvisorIntegrity(g);
+  nexusSardaukarIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
@@ -12019,17 +12219,14 @@ function findLegalBattlePlan(
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
   const forces = combatForces(g, p, b.territory, opponent);
   const typed = g.advanced || p.faction === 'ixians';
-  const maxDial = typed
-    ? forces.normal * (forces.normalFixedHalf ? 0.5 : 1) +
-      forces.elite * forces.eliteStrength
-    : forces.normal + forces.elite;
+  const maxDial = typed ? maxCombatDial(forces) : forces.normal + forces.elite;
   const numerical: { dial: number; support: number }[] = [];
   for (let dial = 0; dial <= maxDial; dial += typed ? 0.5 : 1)
     for (
       let support = 0;
       support <=
       (g.advanced && !forces.freeSupport
-        ? Math.min(battleSupportBudget(g, p), forces.normal + forces.elite)
+        ? Math.min(battleSupportBudget(g, p), maxCombatSupport(forces))
         : 0);
       support++
     ) {
@@ -12150,6 +12347,7 @@ function findReachableBattlePlan(
   // The real table must finish its current window before it can execute a preparation action.
   if (initial.battle?.nexusInspection?.stage === 'response')
     initial.battle.nexusInspection = allowNexusInspection(battleInspectionContext(initial), initial.battle.nexusInspection);
+  if (currentNexusSardaukar(initial)?.stage === 'pending') finishNexusSardaukar(initial,false);
   initial.response = null;
   initial.pendingKarama = null;
   // Search after Truthtrance resolves, retaining every existing or proposed
@@ -12174,6 +12372,11 @@ function findReachableBattlePlan(
         !nexusSuboidsActive(node.state, node.state.nexusSuboidHistory, actor.id)
         ? [{ type: 'nexusSuboids', event: JSON.stringify(['nexusSuboids', node.state.turn, node.state.battle!.event, actor.id]) } as Action]
         : []),
+      ...(actor.faction === 'emperor' && !nexusSardaukarEligibility(node.state,actor) &&
+        node.state.nexusCards?.phase?.stage !== 'drawing' && !node.state.pendingNullentropy &&
+        !node.state.pendingTreacheryDiscard && !pendingNexusTraitors(node.state)
+        ? [{type:'nexusSardaukar',event:JSON.stringify(['nexusSardaukar',node.state.turn,node.state.battle!.event,actor.id])} as Action]
+        : []),
       ...gholaPreparationActions(node.state, actor),
       ...cashInPreparationActions(node.state, actor),
     ]) {
@@ -12181,6 +12384,7 @@ function findReachableBattlePlan(
         target = getPlayer(trial, p.id);
       try {
         if (action.type === 'nexusSuboids') commitNexusSuboids(trial, target);
+        else if (action.type === 'nexusSardaukar') commitNexusSardaukar(trial,target,'active');
         else if (action.mode === 'special') specialKarama(trial, target, action);
         else {
           applyGholaEffect(trial, target, action);
@@ -12945,6 +13149,11 @@ function resolveBattle(g: Game) {
   };
   const winner = quote.winner ? getPlayer(g, quote.winner) : undefined;
   const casualtyCommitment = quote.casualties ?? undefined;
+  const sardaukar = currentNexusSardaukar(g);
+  if (sardaukar?.stage === 'active' && casualtyCommitment && winner?.id === sardaukar.receipt.owner) {
+    sardaukar.casualties = {...structuredClone(casualtyCommitment),outcome:'pending'};
+    sardaukar.signature = nexusSardaukarSignature(sardaukar);
+  }
   for (const payment of quote.payments) {
     const player = getPlayer(g, payment.player);
     player.spice -= payment.ownPayment;
@@ -13112,6 +13321,7 @@ function resolveBattle(g: Game) {
     winner: winner?.id ?? null,
     result: quote.result,
     ...(playedCardRoles ? { cardRoles: playedCardRoles } : {}),
+    ...(sardaukar?.casualties ? {nexusSardaukarCasualties:sardaukar.receipt.event} : {}),
   };
   if (g.homeworlds?.custody && winner?.faction === 'atreides' &&
       (quote.result === 'normal' || quote.result === 'traitor')) {
@@ -13209,7 +13419,15 @@ function settleWinnerCasualties(
   automatic = false,
 ) {
   if (to.startsWith('homeworld:')) homeworldBattleLossIntegrity(g);
+  const sardaukar = g.nexusSardaukarHistory?.find(record => record.receipt.battle === g.lastBattleContext?.event && record.receipt.owner === p.id);
+  if (sardaukar?.casualties) requireRule(sardaukar.casualties.outcome === 'pending' &&
+    sardaukar.casualties.options.some(option => JSON.stringify(option) === JSON.stringify(choice)),
+    'Choose an original Nexus Sardaukar casualty allocation.');
   const losses = takeBattleLosses(g, p, to, choice);
+  if (sardaukar?.casualties) {
+    sardaukar.casualties.outcome = 'complete';
+    sardaukar.signature = nexusSardaukarSignature(sardaukar);
+  }
   observeOccupation(g);
   if (to.startsWith('homeworld:')) g.homeworldBattleLoss = null;
   log(
@@ -14265,6 +14483,7 @@ function finishResponse(g: Game, canceled: boolean) {
   const response = g.response!;
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
   if (response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, response);
+  if (response.kind === 'nexusSardaukar') validateNexusSardaukarResponse(g, response);
   const ecazCollectionQuote =
     response.kind === 'ecazCollection'
       ? currentEcazCollectionQuote(g, response, canceled)
@@ -14295,6 +14514,10 @@ function finishResponse(g: Game, canceled: boolean) {
   g.response = null;
   if (response.kind === 'nexusAdvisorFlip') {
     finishNexusAdvisors(g, canceled);
+    return;
+  }
+  if (response.kind === 'nexusSardaukar') {
+    finishNexusSardaukar(g,canceled);
     return;
   }
   if (ecazCollectionQuote) {
@@ -17094,6 +17317,7 @@ function applyActionInner(
   if (t === 'nexusFaceDancers') { playNexusFaceDancers(g, p, action); return g; }
   if (t === 'nexusSuboids') { playNexusSuboids(g, p, action); return g; }
   if (t === 'nexusAdvisors') { playNexusAdvisors(g, p, action); return g; }
+  if (t === 'nexusSardaukar') { playNexusSardaukar(g,p,action); return g; }
   if (t === 'nexusTraitorReturn') {
     requireRule(!g.truthtrance, 'Finish the active Truthtrance before returning Nexus cards.');
     finishNexusTraitorReturn(g, p, action); return g;
@@ -20564,6 +20788,7 @@ export function viewGame(state: Game, id: string) {
     nexusTleilaxu: projectedNexusTleilaxu(g, id),
     nexusSuboids: projectedNexusSuboids(g, id),
     nexusAdvisors: projectedNexusAdvisors(g, id),
+    nexusSardaukar: projectedNexusSardaukar(g,id),
     nexusAtreides: nexusAtreidesOffer(g, id),
     homeworldRevivalDeployment: projectedHomeworldRevivalReturn(g, id),
     caladanReinforcement: projectedHomeworldVictoryReturn(g, id),

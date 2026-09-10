@@ -14,6 +14,7 @@ import { NexusTraitors } from './nexus-traitors';
 import { NexusTleilaxu } from './nexus-tleilaxu';
 import { NexusSuboids } from './nexus-suboids';
 import { NexusAdvisors } from './nexus-advisors';
+import { NexusSardaukar } from './nexus-sardaukar';
 import { TerrorBoardMarkers } from './terror-board-markers';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
@@ -27,7 +28,7 @@ import {
 } from './homeworld-table';
 import { nativeShipmentSources } from '@/game/homeworld-options';
 import { botBattleChoices } from '@/game/bot-battle-choices';
-import { specialForceName } from '@/game/combat';
+import { specialForceName, maxCombatDial, maxCombatSupport } from '@/game/combat';
 import type { NativeReserveSelections } from '@/game/homeworld-native-reserves';
 import {
   StrongholdCardGallery,
@@ -325,8 +326,7 @@ export function GameTable({
       ? fighterCount(me, g.battle.territory)
       : 0;
   const battleDialMaximum = ownBattleForces
-    ? ownBattleForces.normal * (ownBattleForces.normalFixedHalf ? 0.5 : 1) +
-      ownBattleForces.elite * ownBattleForces.eliteStrength
+    ? maxCombatDial(ownBattleForces)
     : g.advanced || me.faction === 'ixians'
       ? 40
       : battleForces;
@@ -347,10 +347,7 @@ export function GameTable({
   const battleSupportMaximum = Math.min(
     (me.spice ?? 0) + g.aid.available + strongholdBankSupport,
     ownBattleForces
-      ? ownBattleForces.freeSupport
-        ? 0
-        : (ownBattleForces.normalFixedHalf || ownBattleForces.normalFreeSupport ? 0 : ownBattleForces.normal) +
-          (ownBattleForces.eliteFreeSupport ? 0 : ownBattleForces.elite)
+      ? maxCombatSupport(ownBattleForces)
       : Number.POSITIVE_INFINITY,
   );
   const battleSupport = Number.isFinite(support)
@@ -1419,6 +1416,7 @@ export function GameTable({
           <NexusTleilaxu game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusAdvisors game={g} act={act} busy={busy} />
+          <NexusSardaukar game={g} act={act} busy={busy} />
           {!g.nexusCards?.waiting.length && <TupileIntelligence game={g} act={act} busy={busy} />}
           {g.biddingEnd && <BiddingEnd game={g} act={act} busy={busy} />}
           {g.junctionTransport && [g.junctionTransport.owner, g.junctionTransport.recipient].includes(me.id) && (
@@ -1805,6 +1803,7 @@ export function GameTable({
                     worthlessKarama: 'Worthless card as Karama',
                     advisorFlip: 'Bene Gesserit token flip',
                     nexusAdvisorFlip: 'Bene Gesserit Nexus advisor conversion',
+                    nexusSardaukar: 'Emperor Nexus temporary Sardaukar',
                     eliteStrength: 'Elite battle strength',
                     fremenSupport: 'Fremen full strength without spice',
                     capture: 'Harkonnen leader capture',
@@ -1978,6 +1977,7 @@ export function GameTable({
               {g.response.intent &&
                 g.response.source !== 'ambassador' &&
                 g.response.kind !== 'nexusAdvisorFlip' &&
+                g.response.kind !== 'nexusSardaukar' &&
                 g.response.kind !== 'faceDancerReplacement' && (
                   <p className="notice">{g.response.intent}</p>
                 )}
@@ -4152,6 +4152,11 @@ export function GameTable({
                                 ? `Your concealed No-Field can reveal ${battleForces} physical forces from your current reserves. This estimate is private.`
                                 : `You have ${battleForces} fighting forces here.`}
                             </p>
+                            {!!ownBattleForces?.temporaryElite && (
+                              <p className="notice">
+                                {ownBattleForces.temporaryElite} ordinary counters count as Sardaukar for this battle. Their losses are ordinary counters, not starred Sardaukar.
+                              </p>
+                            )}
                             {ownBattleForces?.normalFreeSupport && (
                               <p className="notice">
                                 Your Suboids fight at full strength without spice support this turn. Spice support here applies only to Cyborgs.

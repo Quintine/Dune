@@ -181,11 +181,13 @@ export function BattlePromises({
               {index + 1}.{' '}
               {action.type === 'nexusSuboids'
                 ? 'Use Ixian Cunning to give Suboids full strength without spice support'
-                : action.mode === 'special'
-                  ? `Spend Karama and discard ${(action.cards as string[]).map(name).join(', ')} to gain ${(action.cards as string[]).length * 3} spice`
-                  : typeof action.leader === 'string'
-                    ? `Play Ghola to revive ${action.leader === 'kwisatz' ? 'Kwisatz Haderach' : name(action.leader)}`
-                    : `Play Ghola to revive ${Number(action.amount)} force${Number(action.amount) === 1 ? '' : 's'}${Number(action.elite) ? `, including ${Number(action.elite)} elite` : ''}`}
+                : action.type === 'nexusSardaukar'
+                  ? 'Declare Emperor Cunning to count five ordinary forces as Sardaukar for this battle'
+                  : action.mode === 'special'
+                    ? `Spend Karama and discard ${(action.cards as string[]).map(name).join(', ')} to gain ${(action.cards as string[]).length * 3} spice`
+                    : typeof action.leader === 'string'
+                      ? `Play Ghola to revive ${action.leader === 'kwisatz' ? 'Kwisatz Haderach' : name(action.leader)}`
+                      : `Play Ghola to revive ${Number(action.amount)} force${Number(action.amount) === 1 ? '' : 's'}${Number(action.elite) ? `, including ${Number(action.elite)} elite` : ''}`}
               .
             </p>
           ))}

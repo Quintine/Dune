@@ -75,6 +75,7 @@ const RESPONSES = {
   prescience: true,
   nexusPrescience: true,
   nexusAdvisorFlip: true,
+  nexusSardaukar: true,
   advisor: true,
   emperorIncome: true,
   richesePurchaseIncome: true,

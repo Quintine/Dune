@@ -84,6 +84,10 @@ const cancellationSources = {
     ...movementSource(g),
     conversion: g.nexusAdvisorHistory?.find(record => record.stage === 'pending') ?? null,
   }),
+  nexusSardaukar: (g) => ({
+    battle: battleSource(g),
+    declaration: g.nexusSardaukarHistory?.find(record => record.stage === 'pending') ?? null,
+  }),
   advisor: (g, response) =>
     response.advisorResume === 'ambassador'
       ? {

@@ -5,6 +5,9 @@ export type CombatForces = {
   /** Normal counters alone retain full strength without support, overriding
    * fixed half strength. Special counters keep their separate support rules. */
   normalFreeSupport?: boolean;
+  /** A battle-only effective role assigned to this many physical normal
+   * counters. It never changes their board or casualty custody. */
+  temporaryElite?: number;
   elite: number;
   eliteStrength: 1 | 2;
   freeSupport: boolean;
@@ -30,6 +33,11 @@ export function validCombatForces(forces: CombatForces): boolean {
     Number.isSafeInteger(forces.elite) &&
     forces.elite >= 0 &&
     forces.normal + forces.elite <= 20 &&
+    (forces.temporaryElite === undefined ||
+      (Number.isSafeInteger(forces.temporaryElite) &&
+        forces.temporaryElite >= 0 &&
+        forces.temporaryElite <= forces.normal &&
+        forces.elite === 0)) &&
     (forces.eliteStrength === 1 || forces.eliteStrength === 2) &&
     typeof forces.freeSupport === 'boolean' &&
     (forces.eliteFreeSupport === undefined ||
@@ -38,6 +46,30 @@ export function validCombatForces(forces: CombatForces): boolean {
       typeof forces.normalFreeSupport === 'boolean') &&
     (forces.normalFixedHalf === undefined ||
       typeof forces.normalFixedHalf === 'boolean')
+  );
+}
+
+/** Maximum supported strength, without making any assertion about funding. */
+export function maxCombatDial(forces: CombatForces): number {
+  if (!validCombatForces(forces)) return 0;
+  const temporary = forces.temporaryElite ?? 0;
+  return (
+    (forces.normal - temporary) *
+      (forces.normalFixedHalf && !forces.normalFreeSupport ? 0.5 : 1) +
+    (forces.elite + temporary) * forces.eliteStrength
+  );
+}
+
+/** Maximum usable spice support; physical normal counters with temporary
+ * elite roles follow elite support rules without becoming starred counters. */
+export function maxCombatSupport(forces: CombatForces): number {
+  if (!validCombatForces(forces) || forces.freeSupport) return 0;
+  const temporary = forces.temporaryElite ?? 0;
+  return (
+    (forces.normalFixedHalf || forces.normalFreeSupport
+      ? 0
+      : forces.normal - temporary) +
+    (forces.eliteFreeSupport ? 0 : forces.elite + temporary)
   );
 }
 
@@ -54,12 +86,33 @@ export function casualtyOptions(
     !Number.isInteger(dial * 2) ||
     !Number.isSafeInteger(support) ||
     support < 0 ||
-    support >
-      (forces.normalFixedHalf || forces.normalFreeSupport ? 0 : forces.normal) +
-        (forces.eliteFreeSupport ? 0 : forces.elite) ||
+    support > maxCombatSupport(forces) ||
     (forces.freeSupport && support !== 0)
   )
     return [];
+  if (forces.temporaryElite) {
+    const effective = casualtyOptions(
+      {
+        ...forces,
+        normal: forces.normal - forces.temporaryElite,
+        elite: forces.temporaryElite,
+        temporaryElite: undefined,
+      },
+      dial,
+      support,
+    );
+    const physical = new Map<number, Casualties>();
+    for (const loss of effective) {
+      const normal = loss.normal + loss.elite;
+      physical.set(normal, {
+        normal,
+        elite: 0,
+        paidNormal: loss.paidNormal + loss.paidElite,
+        paidElite: 0,
+      });
+    }
+    return [...physical.values()].sort((a, b) => a.normal - b.normal);
+  }
   const options: Casualties[] = [];
   for (let elite = 0; elite <= forces.elite; elite++) {
     for (let normal = 0; normal <= forces.normal; normal++) {
