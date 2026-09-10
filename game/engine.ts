@@ -1,3 +1,4 @@
+import { createNexusRichese, validateNexusRichese, quoteNexusRicheseShipment, type NexusRicheseReceipt } from './nexus-richese';
 import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
 import { beginNexusTraitorExchange, finishNexusTraitorExchange, validateNexusTraitorExchange, validateNexusTraitorHistory, validateNexusTraitorSnapshot, type NexusTraitorExchange, type NexusTraitorSnapshot } from './nexus-traitor-exchange';
 import { replaceNexusFaceDancers, validateNexusFaceDancerHistory, type NexusFaceDancerReceipt } from './nexus-face-dancers';
@@ -845,6 +846,7 @@ type PendingHomeworldShipment = HomeworldShipmentIntent & {
   pools: ReturnType<typeof quoteHomeworldShipment>['sources'] | ReturnType<typeof quoteGuildHomeworldShipment>['boardSources'];
 };
 type PendingShipment = {
+  nexusEvent?: string;
   homeworldSources?: NativeReserveSelections;
   source?: 'ambassador';
   ambassadorEvent?: string;
@@ -1282,6 +1284,8 @@ export type Game = {
   nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
   nexusChoamHistory?: {receipt: NexusChoamReceipt; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'; frame: string; parent: string; signature: string}[];
   nexusMoritaniHistory?: {receipt:NexusMoritaniReceipt;stage:'pending'|'complete'|'canceled';before:string;frame:string;signature:string}[];
+  nexusRicheseHistory?: {receipt:NexusRicheseReceipt;stage:'pending'|'shipped'|'stopped';frame:string;halfRate:boolean;signature:string}[];
+  nexusRicheseLast?: {event:string;stage:'pending'|'shipped'|'stopped'};
   nexusMoritaniLocations?: Record<string,{event:string;territory:string}>;
   nexusMoritaniLast?: {event:string;stage:'pending'|'complete'|'canceled'};
   nexusChoamLast?: {event: string; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'};
@@ -12097,6 +12101,7 @@ function marketGholaIntegrity(g: Game) {
   nexusSardaukarIntegrity(g);
   nexusChoamIntegrity(g);
   nexusMoritaniIntegrity(g);
+  nexusRicheseIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
@@ -12524,62 +12529,63 @@ function findShipmentCompletion(
       )
         continue;
       for (const sector of territory(destination).sectors) {
-        const cost = reserveShipmentCost(
-          {
-            faction: p.faction,
-            halfRate:
-              p.faction === 'guild' ||
-              byFaction(g, 'guild')?.id === p.ally ||
-              g.karamaShipping?.player === p.id,
-          },
-          territory(destination).type,
-          amount,
-        );
-        try {
-          const allyPayment = contribution(g, p, cost);
-          const elite = eliteChoice(
-            amount,
-            p.reserves,
-            p.elites?.reserves ?? 0,
-            undefined,
-          );
-          const sources = g.homeworlds?.custody
-            ? nativeReserveSources(
-                homeworldContext(g),
-                g.homeworlds.custody,
-                p.id,
-                { normal: amount - elite, elite },
-              )
-            : null;
-          const nativeSources = sources ? { homeworldSources: sources } : {};
-          validatePhysicalShipment(g, {
-            ...nativeSources,
-            turn: g.turn,
-            player: p.id,
-            territory: destination,
-            sector,
-            amount,
-            elite,
-            cost,
-            allyPayment,
-            advisors: arrivalAsAdvisor(g, p, destination),
-          });
-          return {
-            actions: [
-              ...actions,
-              {
-                type: 'ship',
-                territory: destination,
-                sector,
-                amount,
-                elite,
-                allyPayment,
-                ...nativeSources,
-              },
-            ],
-          };
-        } catch (error) {
-          if (!(error instanceof RuleError)) throw error;
+        const offer = nexusRicheseOffer(g,p.id);
+        for (const nexus of [undefined, ...(offer && !offer.blocked && amount <= offer.maxForces ? [offer.event] : [])]) {
+          const price = {faction:p.faction,halfRate:shipmentHalfRate(g,p)};
+          const cost = nexus
+            ? nexusRule(() => quoteNexusRicheseShipment(price,territory(destination).type,amount)).cost
+            : reserveShipmentCost(price,territory(destination).type,amount);
+          try {
+            const allyPayment = contribution(g, p, cost);
+            const elite = eliteChoice(
+              amount,
+              p.reserves,
+              p.elites?.reserves ?? 0,
+              undefined,
+            );
+            const sources = g.homeworlds?.custody
+              ? nativeReserveSources(
+                  homeworldContext(g),
+                  g.homeworlds.custody,
+                  p.id,
+                  { normal: amount - elite, elite },
+                )
+              : null;
+            const nativeSources = sources ? { homeworldSources: sources } : {};
+            const shipment: PendingShipment = {
+              ...(nexus ? {nexusEvent:nexus} : {}),
+              ...nativeSources,
+              turn: g.turn,
+              player: p.id,
+              territory: destination,
+              sector,
+              amount,
+              elite,
+              cost,
+              allyPayment,
+              advisors: arrivalAsAdvisor(g, p, destination),
+            };
+            const trial = nexus ? structuredClone(g) : g;
+            if (nexus) recordNexusRicheseShipment(trial,shipment);
+            validatePhysicalShipment(trial,shipment);
+            return {
+              actions: [
+                ...actions,
+                {
+                  type: 'ship',
+                  ...(nexus ? {nexus} : {}),
+                  territory: destination,
+                  sector,
+                  amount,
+                  elite,
+                  allyPayment,
+                  ...nativeSources,
+                },
+              ],
+            };
+          } catch (error) {
+            if (!(error instanceof RuleError)) throw error;
+          }
         }
         if (p.faction === 'fremen' && byFaction(g, 'guild')?.id === p.ally) {
           const action: Action = {
@@ -15767,6 +15773,7 @@ function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentI
   } else commitHomeworldShipment(g, shipment);
 }
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
+  if (shipment.nexusEvent !== undefined) currentNexusRicheseShipment(g,shipment);
   requireRule(
     !(shipment.noField || shipment.alliedNoField) ||
       shipment.homeworldSources === undefined,
@@ -15835,17 +15842,10 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
       ),
       'Fremen reinforcements must arrive within two territories of the Great Flat.',
     );
-  const cost = reserveShipmentCost(
-    {
-      faction: p.faction,
-      halfRate:
-        p.faction === 'guild' ||
-        byFaction(g, 'guild')?.id === p.ally ||
-        g.karamaShipping?.player === p.id,
-    },
-    territory(shipment.territory).type,
-    n,
-  );
+  const price = {faction:p.faction,halfRate:shipmentHalfRate(g,p)};
+  const cost = shipment.nexusEvent
+    ? nexusRule(() => quoteNexusRicheseShipment(price,territory(shipment.territory).type,n)).cost
+    : reserveShipmentCost(price,territory(shipment.territory).type,n);
   requireRule(
     Number.isSafeInteger(shipment.cost) && shipment.cost === cost,
     'The declared shipment price is no longer current.',
@@ -15911,7 +15911,7 @@ function offerShipment(g: Game, shipment: PendingShipment) {
     };
     log(
       g,
-      `${p.name} declared a shipment of ${n} forces to ${territory(to).name}, sector ${s}.`,
+      `${p.name} declared a shipment of ${n} forces to ${territory(to).name}, sector ${s}.${shipment.nexusEvent ? ` Richese Secret Ally is spent; the shipment is priced as one force (${shipment.cost} spice) if allowed.` : ''}`,
     );
   } else commitShipment(g, shipment);
 }
@@ -15921,6 +15921,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     return;
   }
   validatePhysicalShipment(g, shipment);
+  finishNexusRicheseShipment(g,shipment,'shipped');
   finishShipmentPromises(
     g,
     getPlayer(g, shipment.player),
@@ -16033,10 +16034,10 @@ function commitShipment(g: Game, shipment: PendingShipment) {
       ? `${getPlayer(g, shipment.alliedNoField.owner).name} shipped ${p.name} with No-Field ${quoteAlliedTokenValue(g, shipment.alliedNoField)}, immediately placing ${n} physical forces (${elite} elite) in ${territory(to).name}, sector ${s}. ${shipment.alliedNoField.payer === 'both' ? 'Each ally paid 1 spice' : `${getPlayer(g, shipment.alliedNoField.payer).name} paid ${cost} spice`}.`
       : shipment.noField
         ? `${p.name} shipped one concealed No-Field to ${territory(to).name}, sector ${s}, for ${cost} spice. It counts as one force; physical reserves remain unchanged until reveal.`
-        : `${p.name} shipped ${n} forces to ${territory(to).name}, sector ${s}.${homeworldOrigins ? ` Homeworld sources: ${homeworldOrigins}. Total shipment cost: ${cost} spice.` : ''}`,
+        : `${p.name} shipped ${n} forces to ${territory(to).name}, sector ${s}.${shipment.nexusEvent ? ` Richese Secret Ally priced the ${n} physical forces as one: ${cost} spice.` : ''}${homeworldOrigins ? ` Homeworld sources: ${homeworldOrigins}. Total shipment cost: ${cost} spice.` : ''}`,
     shipment.noField || shipment.alliedNoField
       ? { faction: 'richese', name: 'No-Field shipment' }
-      : undefined,
+      : shipment.nexusEvent ? {faction:'richese',name:'Secret Ally shipment'} : undefined,
   );
   const bg = byFaction(g, 'beneGesserit');
   const followup =
@@ -16130,6 +16131,92 @@ function choamWorthlessBlocked(g: Game, card: string) {
     g.choamWorthlessBlocked.phase === g.phase &&
     g.choamWorthlessBlocked.cards.includes(card)
   );
+}
+function nexusRicheseOffer(g: Game, owner: string) {
+  const p = g.players.find(p => p.id === owner);
+  if (!p || g.nexusCards?.cards?.hands[owner] !== 'richese' || byFaction(g,'richese')) return null;
+  let blocked: string | null = null;
+  if (p.ally) blocked = 'Richese Secret Ally requires an unallied holder.';
+  else if (g.status !== 'playing' || g.phase !== 5 || g.active !== owner || p.shipped)
+    blocked = 'Use Secret Ally for your unused reserve shipment before moving.';
+  else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingKarama ||
+    g.pendingNullentropy || g.pendingTreacheryDiscard || g.nexusTraitorPending || g.nexusCards.phase?.stage === 'drawing')
+    blocked = 'Finish the current interaction before declaring this shipment.';
+  else if (p.reserves < 1) blocked = 'You need physical forces in reserves.';
+  return {event:JSON.stringify(['nexusRichese',g.turn,owner]),blocked,maxForces:Math.min(5,p.reserves)};
+}
+function shipmentHalfRate(g: Game, p: Player) {
+  return p.faction === 'guild' || byFaction(g,'guild')?.id === p.ally || g.karamaShipping?.player === p.id;
+}
+function nexusRicheseSignature(record: NonNullable<Game['nexusRicheseHistory']>[number]) {
+  return JSON.stringify([record.receipt.signature,record.stage,record.frame,record.halfRate]);
+}
+function currentNexusRicheseShipment(g: Game, shipment: PendingShipment) {
+  const record = g.nexusRicheseHistory?.find(r => r.receipt.event === shipment.nexusEvent);
+  requireRule(record?.stage === 'pending' && record.frame === JSON.stringify(shipment) &&
+    record.receipt.owner === shipment.player && record.receipt.turn === g.turn && !getPlayer(g,shipment.player).ally &&
+    record.signature === nexusRicheseSignature(record) && !shipment.noField && !shipment.alliedNoField && !shipment.source,
+    'Richese Secret Ally has lost its original physical shipment declaration.');
+  nexusRule(() => validateNexusRichese(g,record.receipt));
+  return record;
+}
+function recordNexusRicheseShipment(g: Game, shipment: PendingShipment) {
+  const p = getPlayer(g,shipment.player);
+  const receipt = nexusRule(() => createNexusRichese(g,p.id));
+  requireRule(shipment.nexusEvent === receipt.event, 'This Richese Secret Ally selection is stale.');
+  const record = {receipt,stage:'pending' as const,frame:JSON.stringify(shipment),halfRate:shipmentHalfRate(g,p),signature:''};
+  record.signature = nexusRicheseSignature(record);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
+  (g.nexusRicheseHistory ??= []).push(record);
+  g.nexusRicheseLast = {event:receipt.event,stage:'pending'};
+}
+function finishNexusRicheseShipment(g: Game, shipment: PendingShipment, stage: 'shipped'|'stopped') {
+  if (!shipment.nexusEvent) return;
+  const record = currentNexusRicheseShipment(g,shipment);
+  record.stage = stage;
+  record.signature = nexusRicheseSignature(record);
+  g.nexusRicheseLast = {event:record.receipt.event,stage};
+}
+function nexusRicheseIntegrity(g: Game) {
+  const history = g.nexusRicheseHistory, pending = g.pendingShipment;
+  if (history === undefined) {
+    requireRule(!g.nexusRicheseLast && !pending?.nexusEvent, 'Richese Secret Ally has lost its saved shipment history.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+    'Richese Secret Ally requires its original Nexus module and history.');
+  const events = new Set<string>();
+  for (const [index,record] of history.entries()) {
+    requireRule(record && typeof record === 'object' &&
+      Object.keys(record).sort().join(',') === 'frame,halfRate,receipt,signature,stage' &&
+      ['pending','shipped','stopped'].includes(record.stage) && typeof record.frame === 'string' &&
+      typeof record.halfRate === 'boolean' && record.signature === nexusRicheseSignature(record) &&
+      !events.has(record.receipt?.event) && (record.stage !== 'pending' || index === history.length - 1),
+      'Richese Secret Ally has a changed or duplicated shipment record.');
+    nexusRule(() => validateNexusRichese(g,record.receipt));
+    const frame = nexusRule(() => JSON.parse(record.frame)) as PendingShipment;
+    requireRule(frame && frame.nexusEvent === record.receipt.event && frame.player === record.receipt.owner &&
+      frame.turn === record.receipt.turn && !frame.noField && !frame.alliedNoField && !frame.source &&
+      Object.keys(frame).every(k => ['nexusEvent','turn','player','territory','sector','amount','elite','cost','allyPayment','advisors','homeworldSources'].includes(k)),
+      'Richese Secret Ally has changed its original shipment source.');
+    const quote = nexusRule(() => quoteNexusRicheseShipment({faction:getPlayer(g,frame.player).faction,halfRate:record.halfRate},territory(frame.territory).type,frame.amount));
+    requireRule(frame.cost === quote.cost && frame.allyPayment === 0 && Number.isSafeInteger(frame.elite) &&
+      frame.elite >= 0 && frame.elite <= frame.amount && typeof frame.advisors === 'boolean' &&
+      territory(frame.territory).sectors.includes(frame.sector), 'Richese Secret Ally has changed its original physical allocation or price.');
+    events.add(record.receipt.event);
+  }
+  const last = history.at(-1)!;
+  requireRule(JSON.stringify(g.nexusRicheseLast) === JSON.stringify({event:last.receipt.event,stage:last.stage}) &&
+    (last.stage === 'pending') === !!pending?.nexusEvent,
+    'Richese Secret Ally has lost or reopened its latest shipment.');
+  if (last.stage === 'pending') {
+    requireRule(pending && pending.nexusEvent === last.receipt.event && g.nexusCards.cards.discard.includes('richese'),
+      'Richese Secret Ally has lost its pending shipment or spent Nexus card.');
+    currentNexusRicheseShipment(g,pending);
+    const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'guildShipment');
+    requireRule(decisions.length > 0, 'Richese Secret Ally has lost its Guild interception decision.');
+    for (const decision of decisions) validateGuildShipmentDecision(g,decision);
+  }
 }
 function nexusMoritaniOffer(g: Game, owner: string, decision: Game['decision'] = g.decision) {
   const p = g.players.find(p => p.id === owner);
@@ -17058,6 +17145,7 @@ export function executeSpecialKaramaIntent(
       finishAmbassador(g);
       return;
     }
+    if (g.pendingShipment) finishNexusRicheseShipment(g,g.pendingShipment,'stopped');
     shipper.shipped = true;
     // Provisional canceled-shipment settlement pending a primary-source
     // clarification: retain the attempted shipment's spice and rate card.
@@ -19868,6 +19956,7 @@ function applyActionInner(
     return g;
   }
   if (t === 'homeworldShip' || t === 'guildHomeworldShip') {
+    requireRule(action.nexus === undefined, 'Richese Secret Ally applies only to an ordinary Arrakis reserve shipment.');
     const route = t === 'guildHomeworldShip' ? 'arrakis' as const : undefined;
     const blocked = route ? guildHomeworldShipmentBlock(g, p) : homeworldShipmentBlock(g, p);
     requireRule(!blocked, blocked ?? 'Homeworld shipment is unavailable.');
@@ -19883,6 +19972,15 @@ function applyActionInner(
       g.phase === 5 && g.active === id && !p.shipped,
       'You may ship once, before your movement.',
     );
+    let nexusEvent: string | undefined;
+    if (action.nexus !== undefined) {
+      const offer = nexusRicheseOffer(g,id);
+      requireRule(offer && !offer.blocked && action.nexus === offer.event,
+        offer?.blocked ?? 'This Richese Secret Ally shipment is unavailable or stale.');
+      requireRule(Object.keys(action).every(k => ['type','territory','sector','amount','elite','homeworldSources','allyPayment','nexus'].includes(k)),
+        'Richese Secret Ally requires an ordinary physical reserve shipment.');
+      nexusEvent = offer.event;
+    }
     checkShipmentPromises(g, p, {
       territory: String(action.territory),
       amount: Number(action.amount),
@@ -19929,17 +20027,10 @@ function applyActionInner(
     const elite = noField
       ? 0
       : eliteChoice(n, p.reserves, p.elites?.reserves ?? 0, action.elite);
-    const cost = reserveShipmentCost(
-      {
-        faction: p.faction,
-        halfRate:
-          p.faction === 'guild' ||
-          byFaction(g, 'guild')?.id === p.ally ||
-          g.karamaShipping?.player === id,
-      },
-      territory(to).type,
-      n,
-    );
+    const price = {faction:p.faction,halfRate:shipmentHalfRate(g,p)};
+    const cost = nexusEvent
+      ? nexusRule(() => quoteNexusRicheseShipment(price,territory(to).type,n)).cost
+      : reserveShipmentCost(price,territory(to).type,n);
     if (p.faction === 'fremen') {
       requireRule(
         territory('the_great_flat').sectors.some((fs) =>
@@ -19957,6 +20048,7 @@ function applyActionInner(
     );
     const allyPayment = contribution(g, p, cost, action.allyPayment);
     const shipment: PendingShipment = {
+      ...(nexusEvent ? {nexusEvent} : {}),
       turn: g.turn,
       player: id,
       territory: to,
@@ -19974,6 +20066,7 @@ function applyActionInner(
           }),
       ...(noField ? { noField } : {}),
     };
+    if (nexusEvent) recordNexusRicheseShipment(g,shipment);
     if (shipment.noField) {
       checkShipmentIncomeRounding(g, p, cost, allyPayment);
       g.pendingShipment = shipment;
@@ -19986,6 +20079,7 @@ function applyActionInner(
     return g;
   }
   if (t === 'guildShip') {
+    requireRule(action.nexus === undefined, 'Choose ordinary reserve shipment to use Richese Secret Ally.');
     const homeworldTarget = action.territory ?? 'reserves';
     if (g.homeworlds?.custody && p.faction === 'guild' &&
         (homeworldTarget === 'reserves' || (typeof homeworldTarget === 'string' && homeworldTarget.startsWith('homeworld:')))) {
@@ -21044,6 +21138,7 @@ export function viewGame(state: Game, id: string) {
     strongholdCards: g.strongholdCards ?? null,
     nexusCards: projectedNexusCards(g, id),
     nexusMoritani: nexusMoritaniOffer(g,id),
+    nexusRichese: nexusRicheseOffer(g,id),
     nexusTraitors: projectedNexusTraitors(g, id),
     nexusTleilaxu: projectedNexusTleilaxu(g, id),
     nexusSuboids: projectedNexusSuboids(g, id),

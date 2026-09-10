@@ -52,6 +52,7 @@ import { ownedTech } from './tech-tokens';
 import type { StrongholdProgress } from './victory-progress';
 import { canUseAsKarama } from './karama';
 import { reserveShipmentCost } from './shipment-price';
+import { nexusRicheseAction, nexusRicheseQuote } from './nexus-richese-options';
 import { liveShipmentPromises, matchesShipment } from './shipment-promises';
 import {
   botEntryAllowed,
@@ -2925,6 +2926,18 @@ function policyActions(g: GameView): Action[] {
           me.reserves,
           level === 0 ? 1 : Math.max([1, 3, 4, 5][level], to.enemy + 2),
         );
+        // Quote the discounted candidate independently of ordinary affordability.
+        const richeseAmount = Math.min(me.reserves, 5, g.nexusRichese?.maxForces ?? 0);
+        const richeseQuote = nexusRicheseQuote(g, to.t, richeseAmount);
+        if (richeseQuote && richeseAmount > 1 && richeseQuote.cost <= shipmentBudget &&
+          richeseQuote.cost < reserveShipmentCost({ faction: me.faction, halfRate }, territory(to.t).type, richeseAmount)) {
+          const candidate = nexusRicheseAction(g, g.nexusRichese!.event, {
+            type: 'ship', territory: to.t, sector: to.s, amount: richeseAmount,
+            elite: level > 0 ? Math.min(richeseAmount, me.elites?.reserves ?? 0) :
+              Math.max(0, richeseAmount - (me.reserves - (me.elites?.reserves ?? 0))),
+          });
+          if (candidate) actions.push(candidate);
+        }
         for (const amount of new Set([desired, Math.min(desired, 3), 1])) {
           if (
             reserveShipmentCost(

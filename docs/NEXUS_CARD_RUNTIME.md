@@ -1,5 +1,7 @@
 # Nexus cards: common lifecycle checkpoint
 
+The later [Richese Secret Ally checkpoint](NEXUS_RICHESE_RUNTIME.md) adds an ordinary physical reserve shipment priced as one force; its other effects and complete module acceptance remain gated.
+
 **Historical foundation checkpoint.** Subsequent Atreides inspection integration is recorded in [Atreides runtime](NEXUS_ATREIDES_RUNTIME.md). The counts and effect limitations below describe the original lifecycle checkpoint.
 
 Integration record, 10 September 2026. **Types, lint, all 3,795 offline tests, the production build and 40 HTTP/session tests pass.** This checkpoint implements the optional Nexus card inventory and common draw/keep/replace lifecycle, plus a complete inspectable reference. It does **not** implement the thirty-six card effects, enable a complete public Nexus module, or certify Ecaz & Moritani or all expansions. Source facts, photographed component faces, and unresolved effect interactions are in [NEXUS_CARD_RULES.md](NEXUS_CARD_RULES.md).

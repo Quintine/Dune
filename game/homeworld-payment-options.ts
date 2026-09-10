@@ -2,6 +2,7 @@ import type { Action, GameView } from './engine';
 import { quoteGuildPaymentRounding } from './homeworld-payment-income';
 import { reserveShipmentCost, guildShipmentCost } from './shipment-price';
 import { territory } from './board';
+import { nexusRicheseQuote } from './nexus-richese-options';
 
 /** Own funding and public native population only; no donor balance or hidden card access. */
 export function homeworldShipmentPaymentBlock(g: GameView, cost: number, allyPayment: number): string | null {
@@ -21,7 +22,9 @@ export function botHomeworldShipmentPaymentAllowed(g: GameView, action: Action):
   const me = g.players.find(p => p.id === g.me)!;
   const to = String(action.territory);
   const amount = action.noField ? 1 : Number(action.amount);
-  const cost = action.type === 'ship'
+  const nexusQuote = action.nexus === undefined ? null : nexusRicheseQuote(g, to, amount);
+  if (action.nexus !== undefined && (!nexusQuote || action.nexus !== g.nexusRichese?.event || action.type !== 'ship' || action.noField !== undefined)) return false;
+  const cost = nexusQuote ? nexusQuote.cost : action.type === 'ship'
     ? reserveShipmentCost({ faction: me.faction, halfRate: me.faction === 'guild' ||
       g.players.some(p => p.faction === 'guild' && p.id === me.ally) || g.karamaShipping?.player === me.id }, territory(to).type, amount)
     : guildShipmentCost(to === 'reserves' ? 'reserves' : territory(to).type, amount);

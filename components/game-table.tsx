@@ -109,6 +109,7 @@ import { canUseAsKarama } from '@/game/karama';
 import { LeaderPortrait } from './leader-portrait';
 import { ShipmentQuote } from './shipment-quote';
 import { reserveShipmentCost } from '@/game/shipment-price';
+import { nexusRicheseAction, nexusRicheseQuote } from '@/game/nexus-richese-options';
 import { guildTransportQuote } from '@/game/transport-quote';
 import { fremenReserveEntry, botGroundMoveAllowed } from '@/game/bot-mobility';
 import { location as boardLocation } from '@/game/board';
@@ -270,6 +271,8 @@ export function GameTable({
     : 'arrakeen';
   const [sector, setSector] = useState(10);
   const [amount, setAmount] = useState(1);
+  const [richeseShipmentEvent, setRicheseShipmentEvent] = useState('');
+  const useRicheseShipment = !!g.nexusRichese && richeseShipmentEvent === g.nexusRichese.event;
   const [bidDraft, setBidDraft] = useState({ auction: '', value: 1 });
   const auctionKey = `${g.code}/${g.turn}/${g.auction?.remaining ?? 0}`;
   const minimumBid = (g.auction?.bid ?? 0) + 1;
@@ -406,6 +409,8 @@ export function GameTable({
   const payment =
     !me.ally || allyPayment === '' ? {} : { allyPayment: Number(allyPayment) };
   const shipmentProblems: string[] = [];
+  if (useRicheseShipment && g.nexusRichese?.blocked) shipmentProblems.push(g.nexusRichese.blocked);
+  const shipmentMaximum = useRicheseShipment ? Math.min(me.reserves, 5, g.nexusRichese!.maxForces) : me.reserves;
   if (homeworldSources) {
     const homes = g.homeworlds!.worlds!.filter((w) => w.native === me.id);
     if (
@@ -440,10 +445,10 @@ export function GameTable({
       `${territory(selected).name} is beyond the Fremen reinforcement area. Choose the Great Flat or a territory within two territories of it.`,
     );
   const validShipmentAmount =
-    Number.isInteger(amount) && amount > 0 && amount <= me.reserves;
+    Number.isInteger(amount) && amount > 0 && amount <= shipmentMaximum;
   if (!validShipmentAmount)
     shipmentProblems.push(
-      `Choose a whole number from 1 to ${me.reserves} available reserves.`,
+      `Choose a whole number from 1 to ${shipmentMaximum} available reserves.`,
     );
   if (me.elites && validShipmentAmount) {
     const minimum = Math.max(0, amount - (me.reserves - me.elites.reserves));
@@ -465,8 +470,12 @@ export function GameTable({
       g.karamaShipping?.player === me.id,
   };
   const shipmentCost = validShipmentAmount
-    ? reserveShipmentCost(shipmentRate, territory(selected).type, amount)
+    ? useRicheseShipment
+      ? (nexusRicheseQuote(g, selected, amount)?.cost ?? null)
+      : reserveShipmentCost(shipmentRate, territory(selected).type, amount)
     : null;
+  if (useRicheseShipment && shipmentCost === null && !g.nexusRichese?.blocked)
+    shipmentProblems.push('Choose a current Richese Secret Ally shipment of up to five physical forces.');
   const selectedAllyPayment =
     shipmentCost === null
       ? 0
@@ -719,7 +728,7 @@ export function GameTable({
           id="forces"
           type="number"
           min={includesNoField ? 0 : 1}
-          max={20}
+          max={useRicheseShipment && !me.shipped ? shipmentMaximum : 20}
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value))}
         />
@@ -3664,6 +3673,19 @@ export function GameTable({
                             />
                           </details>
                         ))}
+                    {!me.shipped && g.nexusRichese && (
+                      <div className="notice">
+                        <label className="decision-checkbox min-h-11">
+                          <input type="checkbox" checked={useRicheseShipment}
+                            disabled={busy || !!g.nexusRichese.blocked}
+                            onChange={(event) => setRicheseShipmentEvent(event.target.checked ? g.nexusRichese!.event : '')} />
+                          Use Richese Nexus Secret Ally
+                        </label>
+                        <p>Spend the Nexus to ship up to five physical forces from reserves at the price of one. This uses your ordinary shipment; movement remains available.</p>
+                        {g.nexusRichese.blocked && <p>{g.nexusRichese.blocked}</p>}
+                        {useRicheseShipment && <p>Physical forces selected: {amount}. Forces charged: 1. Ordinary destination and faction restrictions still apply.</p>}
+                      </div>
+                    )}
                     {destination}
                     {amountInput}
                     {g.karamaShipping?.player === me.id && (
@@ -3689,6 +3711,7 @@ export function GameTable({
                         />
                         <ShipmentQuote
                           id="reserve-shipment-quote"
+                          physicalForces={useRicheseShipment ? amount : undefined}
                           quote={shipmentQuote}
                           funding={{
                             ownSpice: me.spice ?? 0,
@@ -3704,17 +3727,16 @@ export function GameTable({
                             !!g.truthtrance ||
                             shipmentProblems.length > 0
                           }
-                          onClick={() =>
-                            act({
-                              type: 'ship',
-                              elite: eliteAmount,
-                              ...payment,
-                              territory: selected,
-                              sector,
-                              amount,
+                          onClick={() => {
+                            const shipment: Action = {
+                              type: 'ship', elite: eliteAmount, ...payment,
+                              territory: selected, sector, amount,
                               ...(homeworldSources ? { homeworldSources } : {}),
-                            })
-                          }
+                            };
+                            const action = useRicheseShipment
+                              ? nexusRicheseAction(g, richeseShipmentEvent, shipment) : shipment;
+                            if (action) act(action);
+                          }}
                         >
                           Ship from reserves <ArrowRight size={15} />
                         </Button>
