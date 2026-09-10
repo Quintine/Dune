@@ -154,13 +154,9 @@ export function quotePlacementCancellation(
         TERROR_STRONGHOLDS.includes(pending.territory),
       'No current physical Terror placement is awaiting cancellation.',
     );
-    const locations = state.tokens
-      .filter((t) => t.status === 'placed')
-      .map((t) => t.location);
-    requirePlacement(
-      new Set(locations).size === locations.length,
-      'Placed Terror markers need distinct strongholds.',
-    );
+    // Grumman may have created legal stacks earlier. Denial validates physical
+    // custody and the pending source receipt, not whether that placement could
+    // still succeed: no token moves, even if its source or target has changed.
     return {
       kind: 'moritaniPlacement',
       terror: {

@@ -14484,6 +14484,17 @@ function finishResponse(g: Game, canceled: boolean) {
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
   if (response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, response);
   if (response.kind === 'nexusSardaukar') validateNexusSardaukarResponse(g, response);
+  if (response.kind === 'moritaniPlacement') {
+    // Both outcomes need the same physical inventory and declared source.
+    // This detached denial quote is only validation here; allowance still
+    // executes placeTerror and checks current placement feasibility below.
+    try {
+      quotePlacementCancellation(g, response);
+    } catch (error) {
+      if (error instanceof PlacementCancellationError) throw new RuleError(error.message);
+      throw error;
+    }
+  }
   const ecazCollectionQuote =
     response.kind === 'ecazCollection'
       ? currentEcazCollectionQuote(g, response, canceled)
