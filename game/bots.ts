@@ -1,3 +1,4 @@
+import { nexusMoritaniBotActions } from './nexus-moritani-options';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
 import { nexusCardBotActions } from './nexus-card-options';
 import { nexusTraitorBotActions } from './nexus-traitor-options';
@@ -1724,6 +1725,8 @@ function policyActions(g: GameView): Action[] {
         : [];
     }
     if (d.kind === 'moritaniPlacement') {
+      const cunning = nexusMoritaniBotActions(g);
+      if (cunning.length) return cunning;
       const tokens = g.moritaniTerror?.tokens ?? [];
       const destinations = TERRITORIES.filter(
         (t) =>

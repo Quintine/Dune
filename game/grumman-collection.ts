@@ -1,3 +1,4 @@
+import { terrorLocationAllowed, type TerrorLocationContext } from './terror-location';
 import type { Game } from './engine';
 import { HomeworldCustodyError } from './homeworld-custody';
 import { homeworldContext } from './homeworld-game';
@@ -12,7 +13,7 @@ import {
 export type GrummanCollectionContext = Pick<
   Game,
   'advanced' | 'players' | 'homeworlds' | 'moritaniTerror'
->;
+> & TerrorLocationContext;
 export type GrummanCollectionQuote = {
   player: string;
   population: number | null;
@@ -76,7 +77,7 @@ function stateFor(
       !['available', 'placed', 'removed', 'extortion'].includes(token.status) ||
       (token.status === 'placed'
         ? typeof token.location !== 'string' ||
-          !TERROR_STRONGHOLDS.includes(token.location)
+          !terrorLocationAllowed(context,token.id,token.location)
         : token.location !== null) ||
       (token.status === 'extortion' && token.kind !== 'extortion')
     )

@@ -1,5 +1,5 @@
 import type { Game } from './engine';
-import { validLocation } from './board';
+import { TERRITORIES, validLocation } from './board';
 import { HomeworldCustodyError } from './homeworld-custody';
 import { TERROR_STRONGHOLDS } from './moritani-terror';
 
@@ -20,19 +20,21 @@ export function terrorEntrySignature(entry: TerrorEntry): string {
     entry.phase,
     entry.resume,
     entry.ambassadorEvent ?? null,
+    ...(entry.nexusPlacements ? [entry.nexusPlacements] : []),
   ]);
 }
 
 export function terrorSelectionSignature(entry: TerrorEntry): string {
   return JSON.stringify(['terrorSelection', entry.candidates, entry.token, entry.entrant,
     entry.territory, entry.sector, entry.amount, entry.elite, entry.cause,
-    entry.turn, entry.phase, entry.resume, entry.ambassadorEvent ?? null]);
+    entry.turn, entry.phase, entry.resume, entry.ambassadorEvent ?? null,
+    ...(entry.nexusPlacements ? [entry.nexusPlacements] : [])]);
 }
 
 /** Older saves without a receipt remain explicit legacy state. Never invent
  * their original entry count from the destination's present occupants. */
 export function validateTerrorEntrySignature(entry: TerrorEntry): void {
-  if (entry.entrySignature === undefined && entry.candidates === undefined && entry.selectionSignature === undefined && entry.stage !== 'select') return;
+  if (entry.entrySignature === undefined && entry.candidates === undefined && entry.selectionSignature === undefined && entry.nexusPlacements === undefined && entry.stage !== 'select') return;
   if (
     typeof entry.entrySignature !== 'string' ||
     typeof entry.token !== 'string' ||
@@ -48,7 +50,12 @@ export function validateTerrorEntrySignature(entry: TerrorEntry): void {
           : entry.selectionSignature !== terrorSelectionSignature(entry))) ||
     typeof entry.entrant !== 'string' ||
     !entry.entrant ||
-    !TERROR_STRONGHOLDS.includes(entry.territory) ||
+    (!TERROR_STRONGHOLDS.includes(entry.territory) &&
+      (!TERRITORIES.some(t => t.id === entry.territory) || !entry.nexusPlacements)) ||
+    (entry.nexusPlacements !== undefined &&
+      (!entry.nexusPlacements || typeof entry.nexusPlacements !== 'object' || Array.isArray(entry.nexusPlacements) ||
+       Object.keys(entry.nexusPlacements).length !== (entry.candidates ?? [entry.token]).length ||
+       (entry.candidates ?? [entry.token]).some(id => typeof entry.nexusPlacements?.[id] !== 'string' || !entry.nexusPlacements[id]))) ||
     !Number.isSafeInteger(entry.sector) ||
     !validLocation(entry.territory, entry.sector) ||
     !Number.isSafeInteger(entry.amount) ||

@@ -1,3 +1,4 @@
+import { nexusMoritaniFixture, nexusMoritaniRequest, nexusMoritaniAllow, nexusMoritaniMovement } from './fixture-nexus-moritani';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -258,22 +259,22 @@ void test('normal movement triggers after moving forces once, while an internal 
   const done = decide(reload(entered), { decline: true });
   assert.deepEqual(done.players, entered.players);
   rejected(done, 'e', action);
-  // Ordinary strongholds each have one sector. This injected historical location exercises
-  // the general same-territory guard independently of present placement restrictions.
-  const internal = fixture();
-  internal.moritaniTerror!.tokens.find(
-    (token) => token.status === 'placed',
-  )!.location = 'imperial_basin';
-  player(internal, 'e').forces = { 'imperial_basin:10': 3 };
-  player(internal, 'e').reserves = 17;
-  const shifted = applyAction(internal, 'e', {
+  // A real Cunning supply placement earns the otherwise unavailable desert
+  // location. Moving between its sectors is still not a new territory entry.
+  const f = nexusMoritaniFixture();
+  const placed = nexusMoritaniAllow(applyAction(f.g,f.owner,
+    nexusMoritaniRequest(f,'robbery','imperial_basin')));
+  const internal = nexusMoritaniMovement(placed);
+  internal.storm = 18;
+  Object.assign(player(internal,f.target), {forces:{'imperial_basin:10':3},reserves:17,shipped:true,moved:0});
+  const shifted = applyAction(internal, f.target, {
     ...action,
     territory: 'imperial_basin',
     sector: 11,
   });
   assert.equal(shifted.pendingTerrorEntry ?? null, null);
   assert.equal(shifted.decision, null);
-  assert.equal(player(shifted, 'e').forces['imperial_basin:11'], 2);
+  assert.equal(player(shifted, f.target).forces['imperial_basin:11'], 2);
 });
 
 void test('overlapping Guild income and Bene Gesserit arrival reactions reject the entire shipment atomically', () => {

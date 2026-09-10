@@ -272,9 +272,9 @@ export type TerrorDefinition = Readonly<{
 
 /** Shared original-language guidance; these paragraphs do not expose token custody. */
 export const TERROR_COMMON_GAMEPLAY: readonly string[] = Object.freeze([
-  'During Mentat Pause, Moritani may place one hidden Terror token from supply or move one placed token. Choose an ordinary stronghold without another Terror token. Storm does not prevent placement; Homeworlds and the Hidden Mobile Stronghold are excluded.',
-  'A token may be revealed when another faction enters its stronghold by shipment or movement. An ally does not qualify, but Bene Gesserit advisors do. Existing occupation alone does not trigger it. Declining the opportunity keeps the token hidden and unspent.',
-  'When a stronghold contains several Terror tokens, Moritani chooses one for that entry before deciding whether to reveal it or offer an alliance. The remaining tokens stay hidden and do not activate from that same entry.',
+  'During Mentat Pause, Moritani may place one hidden Terror token from supply or move one placed token. Choose an ordinary stronghold without another Terror token. Storm does not prevent placement. Moritani Nexus Cunning can expand a supply placement to an ordinary Arrakis territory, including an existing Terror location; unresolved relocation and Homeworld combinations remain unavailable. Homeworlds and the Hidden Mobile Stronghold are excluded.',
+  'A token may be revealed when another faction enters its territory by shipment or movement. An ally does not qualify, but Bene Gesserit advisors do. Existing occupation alone does not trigger it. Declining the opportunity keeps the token hidden and unspent.',
+  'When a territory contains several Terror tokens, Moritani chooses one for that entry before deciding whether to reveal it or offer an alliance. The remaining tokens stay hidden and do not activate from that same entry.',
   'Before revealing a token, Moritani may instead offer the entrant an alliance, except when the entrant is Ecaz. Acceptance ends both previous alliances and returns the token to supply without revealing it. Refusal requires the token to be revealed.',
   'Karama may prevent the placement or relocation opportunity, or prevent Enemy of My Enemy from forming an alliance while leaving revelation available. There is no generic Karama cancellation of a Terror token’s reveal or effect.',
   'Terror tokens survive storm and Lasgun/Shield explosions. A Richese No-Field placement can trigger one even with a zero token; revealing a No-Field or replacing forces with Face Dancers does not.',
@@ -382,7 +382,7 @@ export const TERROR_DEFINITIONS: Readonly<
   sneakAttack: define(
     'sneakAttack',
     'Sneak Attack',
-    'Bring up to five Moritani reserve forces into the stronghold for free.',
+    'Bring up to five Moritani reserve forces into the territory for free.',
     [
       'Bring up to five of Moritani’s reserve forces into this territory for free. Respect the storm and occupancy restrictions.',
       'This entry is permitted even when Atomics Aftermath is present. The effect grants this reserve entry only; it does not grant another ordinary movement or a general shipment exemption.',

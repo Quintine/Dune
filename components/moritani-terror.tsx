@@ -15,12 +15,11 @@ import {
 } from '@/components/ui/dialog';
 import type { Action, GameView } from '@/game/engine';
 import { territory } from '@/game/board';
+import { moritaniPlacementChoices, nexusMoritaniAction } from '@/game/nexus-moritani-options';
 import {
   TERROR_COMMON_GAMEPLAY,
   TERROR_DEFINITIONS,
-  TERROR_STRONGHOLDS,
   type TerrorKind,
-  type TerrorToken,
 } from '@/game/moritani-terror';
 
 type ProjectedToken = NonNullable<GameView['moritaniTerror']>['tokens'][number];
@@ -266,6 +265,7 @@ export function MoritaniPlacement({
   busy: boolean;
 }) {
   const formId = useId();
+  const [useNexus, setUseNexus] = useState(false);
   const [selectedToken, setSelectedToken] = useState('');
   const [selectedTerritory, setSelectedTerritory] = useState('');
   const decision = game.decision;
@@ -276,34 +276,32 @@ export function MoritaniPlacement({
     !game.moritaniTerror
   )
     return null;
-  const tokens = game.moritaniTerror.tokens.filter(
-    (token): token is TerrorToken =>
-      'kind' in token &&
-      (token.status === 'available' || token.status === 'placed'),
-  );
-  const token =
-    tokens.find((candidate) => candidate.id === selectedToken) ?? tokens[0];
-  const destinations = TERROR_STRONGHOLDS.filter(
-    (to) =>
-      to !== token?.location &&
-      !game.moritaniTerror!.tokens.some(
-        (candidate) =>
-          candidate.status === 'placed' && candidate.location === to,
-      ),
-  );
+  const nexus = useNexus && !!game.nexusMoritani;
+  const { tokens, token, destinations } = moritaniPlacementChoices(game, nexus, selectedToken);
   const destination = destinations.includes(selectedTerritory)
     ? selectedTerritory
     : destinations[0];
   const waiting = Boolean(game.response);
   const disabled = busy || waiting;
+  const nexusAction = nexus && token && destination ? nexusMoritaniAction(game, game.nexusMoritani!.event, token.id, destination) : null;
   return (
     <section className="notice min-w-0" aria-labelledby={`${formId}-title`}>
       <h3 id={`${formId}-title`}>Place or relocate Terror</h3>
       <p className="text-sm leading-6">
-        Choose one token and a stronghold without a Terror token for this Mentat
-        Pause. Storm does not prevent placement. Choose privately; the token’s
-        face stays hidden from opponents.
+        {nexus
+          ? 'Choose one available supply token and a projected Arrakis territory for this Mentat Pause. Existing Terror tokens may remain there.'
+          : 'Choose one token and a stronghold without a Terror token for this Mentat Pause.'}{' '}
+        Storm does not prevent placement. Choose privately; the token’s face stays hidden from opponents.
       </p>
+      {game.nexusMoritani && <>
+        <label className="decision-checkbox min-h-11">
+          <input type="checkbox" checked={nexus} disabled={disabled || !!game.nexusMoritani.blocked}
+            onChange={(event) => setUseNexus(event.target.checked)} />
+          Use Moritani Nexus Cunning
+        </label>
+        <p className="fine">Cunning places one available supply token in an Arrakis territory, including one with Terror already present. It spends the Nexus card and this Mentat placement opportunity. Relocation, Grumman use, Homeworlds and the Hidden Mobile Stronghold are unavailable.</p>
+        {game.nexusMoritani.blocked && <p className="fine">{game.nexusMoritani.blocked}</p>}
+      </>}
       <div className="flex min-w-0 flex-col gap-3">
         <label htmlFor={`${formId}-token`} className="text-sm font-medium">
           Your Terror token
@@ -326,7 +324,7 @@ export function MoritaniPlacement({
           ))}
         </select>
         <label htmlFor={`${formId}-territory`} className="text-sm font-medium">
-          Destination stronghold
+          {nexus ? 'Destination territory' : 'Destination stronghold'}
         </label>
         <select
           id={`${formId}-territory`}
@@ -336,7 +334,7 @@ export function MoritaniPlacement({
           onChange={(event) => setSelectedTerritory(event.target.value)}
         >
           {!destinations.length && (
-            <option value="">No empty stronghold</option>
+            <option value="">{nexus ? 'No available territory' : 'No empty stronghold'}</option>
           )}
           {destinations.map((to) => (
             <option key={to} value={to}>
@@ -351,9 +349,10 @@ export function MoritaniPlacement({
         </output>
         <Button
           className="h-auto min-h-11 whitespace-normal motion-reduce:transition-none"
-          disabled={disabled || !token || !destination}
+          disabled={disabled || !token || !destination || (nexus && !nexusAction)}
           onClick={() => {
-            if (token && destination)
+            if (nexusAction) act(nexusAction);
+            else if (!nexus && token && destination)
               act({
                 type: 'decision',
                 token: token.id,
@@ -361,7 +360,7 @@ export function MoritaniPlacement({
               });
           }}
         >
-          {token?.status === 'placed'
+          {nexus ? 'Declare Cunning placement' : token?.status === 'placed'
             ? 'Declare relocation'
             : 'Declare placement'}
         </Button>

@@ -1,3 +1,4 @@
+import { terrorLocationAllowed, type TerrorLocationContext } from './terror-location';
 import type { Game, ResponseWindow } from './engine';
 import { TERRITORIES } from './board';
 import {
@@ -39,7 +40,7 @@ export type PlacementCancellationContext = Pick<
   | 'dukeVidal'
   | 'dukeAcquisitionTurn'
   | 'movementRemaining'
->;
+> & TerrorLocationContext;
 export type PlacementCancellationQuote =
   | {
       kind: 'ecazPlacement';
@@ -146,12 +147,12 @@ export function quotePlacementCancellation(
             ) &&
             (t.status === 'placed'
               ? typeof t.location === 'string' &&
-                TERROR_STRONGHOLDS.includes(t.location)
+                terrorLocationAllowed(g,t.id,t.location)
               : t.location === null) &&
             (t.status !== 'extortion' || t.kind === 'extortion'),
         ) &&
         state.tokens.filter((t) => t.id === pending.token).length === 1 &&
-        TERROR_STRONGHOLDS.includes(pending.territory),
+        (pending.nexusEvent ? terrorLocationAllowed(g,pending.token,pending.territory,pending.nexusEvent,true) : TERROR_STRONGHOLDS.includes(pending.territory)),
       'No current physical Terror placement is awaiting cancellation.',
     );
     // Grumman may have created legal stacks earlier. Denial validates physical

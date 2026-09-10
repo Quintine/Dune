@@ -1,3 +1,4 @@
+import { terrorEntryLocationAllowed, type TerrorLocationContext } from './terror-location';
 import {
   validateGuildAmbassadorArrivalContext,
   GuildAmbassadorContinuationError,
@@ -8,7 +9,7 @@ import {
   validateAmbassadorRelocationContext,
   MovementCancellationError,
 } from './karama-movement-cancellation';
-import { TERROR_KINDS, TERROR_STRONGHOLDS } from './moritani-terror';
+import { TERROR_KINDS } from './moritani-terror';
 import { validateTerrorEntrySignature } from './terror-entry-receipt';
 
 export class MoritaniAllianceCancellationError extends Error {
@@ -27,7 +28,7 @@ export type MoritaniAllianceCancellationContext = Pick<
   | 'moritaniTerror'
   | 'pendingAmbassador'
   | 'ecazAmbassadors'
->;
+> & TerrorLocationContext;
 export type MoritaniAllianceCancellationQuote = {
   kind: 'moritaniAlliance';
   owner: string;
@@ -94,7 +95,7 @@ export function quoteMoritaniAllianceCancellation(
   );
   requireSource(
     typeof entry.territory === 'string' &&
-      TERROR_STRONGHOLDS.includes(entry.territory) &&
+      terrorEntryLocationAllowed(g,entry) &&
       whole(entry.sector) &&
       validLocation(entry.territory, entry.sector) &&
       whole(entry.amount) &&

@@ -123,7 +123,7 @@ void test('the owned face highlights its mode from the public roster and all thr
 void test('controls expose public counts and waiting players, disable while busy, and offer no effect play action', () => {
   const view = fixture();
   const html = markup(view, true);
-  assert.match(html, /Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian, Bene Gesserit, Emperor and CHOAM Cunning/);
+  assert.match(html, /Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian, Bene Gesserit, Emperor, CHOAM and Moritani Cunning/);
   assert.match(html, /other unfinished effects remain unavailable/);
   assert.doesNotMatch(html, /other card effects are not playable yet/);
   assert.match(html, /10 in deck · 0 discarded · 2 held/);

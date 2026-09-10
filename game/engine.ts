@@ -4,6 +4,8 @@ import { replaceNexusFaceDancers, validateNexusFaceDancerHistory, type NexusFace
 import { createNexusSuboids, validateNexusSuboids, nexusSuboidsActive, type NexusSuboidReceipt } from './nexus-suboids';
 import { quoteNexusAdvisors, createNexusAdvisors, validateNexusAdvisors, type NexusAdvisorReceipt } from './nexus-advisors';
 import { createNexusSardaukar, validateNexusSardaukar, type NexusSardaukarReceipt } from './nexus-sardaukar';
+import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement, type NexusMoritaniReceipt } from './nexus-moritani';
+import { nexusMoritaniRecordSignature, terrorLocationAllowed, terrorEntryLocationAllowed } from './terror-location';
 import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
 import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, nexusCardMode, type NexusState } from './nexus-cards';
@@ -375,6 +377,7 @@ import {
   TERROR_DEFINITIONS,
   createTerrorState,
   placeTerror,
+  TERROR_STRONGHOLDS,
   projectTerror,
   revealTerror,
   returnTerror,
@@ -1114,6 +1117,7 @@ export type Game = {
     entrySignature?: string;
     candidates?: string[];
     selectionSignature?: string;
+    nexusPlacements?: Record<string,string>;
     token: string;
     entrant: string;
     territory: string;
@@ -1150,6 +1154,7 @@ export type Game = {
     token: string;
     territory: string;
     turn: number;
+    nexusEvent?: string;
   } | null;
   pendingChoamMove?: MovementOrder | null;
   choamBaliset?: { turn: number; player: string; territory: string }[];
@@ -1276,6 +1281,9 @@ export type Game = {
     casualties?: {forces: CombatForces; dial: number; support: number; options: Casualties[]; outcome: 'pending' | 'complete'}}[];
   nexusSardaukarLast?: {event: string; stage: 'pending' | 'active' | 'canceled'};
   nexusChoamHistory?: {receipt: NexusChoamReceipt; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'; frame: string; parent: string; signature: string}[];
+  nexusMoritaniHistory?: {receipt:NexusMoritaniReceipt;stage:'pending'|'complete'|'canceled';before:string;frame:string;signature:string}[];
+  nexusMoritaniLocations?: Record<string,{event:string;territory:string}>;
+  nexusMoritaniLast?: {event:string;stage:'pending'|'complete'|'canceled'};
   nexusChoamLast?: {event: string; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'};
   nexusTraitorPending?: string | null;
   nexusTraitorParent?: { event: string; signature: string } | null;
@@ -3966,12 +3974,7 @@ function treacheryDiscardIntegrity(g: Game) {
         owner?.faction === 'moritani' &&
         entrant &&
         entrant.id !== owner.id &&
-        TERRITORIES.some(
-          (t) =>
-            t.id === entry.territory &&
-            t.type === 'stronghold' &&
-            t.sectors.includes(entry.sector),
-        ) &&
+        terrorEntryLocationAllowed(g,entry) && validLocation(entry.territory,entry.sector) &&
         [
           'shipment',
           'movement',
@@ -9627,6 +9630,14 @@ function openTerrorEntry(
     resume,
     ...(ambassadorEvent ? { ambassadorEvent } : {}),
   };
+  if (!TERROR_STRONGHOLDS.includes(to)) {
+    const proofs = tokens.map(token => {
+      const record = g.nexusMoritaniHistory?.find(r => r.stage === 'complete' && r.receipt.token === token.id && r.receipt.territory === to);
+      requireRule(record && terrorLocationAllowed(g,token.id,to,record.receipt.event), 'The Terror token has lost its original Cunning placement.');
+      return [token.id,record.receipt.event];
+    });
+    g.pendingTerrorEntry.nexusPlacements = Object.fromEntries(proofs);
+  }
   g.pendingTerrorEntry.entrySignature = terrorEntrySignature(g.pendingTerrorEntry);
   g.decision = {
     kind: 'moritaniTerror',
@@ -9838,6 +9849,7 @@ function decideTerror(g: Game, p: Player, action: Action) {
       requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
       formTerrorAlliance(g, owner, entrant);
       g.moritaniTerror = returnTerror(g.moritaniTerror!, token.id, random);
+      if (g.nexusMoritaniLocations) delete g.nexusMoritaniLocations[token.id];
       log(
         g,
         `${owner.name} and ${entrant.name} formed an alliance through Enemy of My Enemy; their former alliances ended and the Terror token returned hidden to supply.`,
@@ -9881,6 +9893,7 @@ function decideTerror(g: Game, p: Player, action: Action) {
     const blocked = terrorRevealBlocked(g, entry, token.kind);
     requireRule(!blocked, blocked ?? 'This Terror effect is unavailable.');
     g.moritaniTerror = revealTerror(g.moritaniTerror!, token.id);
+    if (g.nexusMoritaniLocations) delete g.nexusMoritaniLocations[token.id];
     log(
       g,
       `${p.name} revealed ${TERROR_DEFINITIONS[token.kind].name} in ${territory(entry.territory).name}.`,
@@ -12083,6 +12096,7 @@ function marketGholaIntegrity(g: Game) {
   nexusAdvisorIntegrity(g);
   nexusSardaukarIntegrity(g);
   nexusChoamIntegrity(g);
+  nexusMoritaniIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
@@ -14761,6 +14775,7 @@ function finishResponse(g: Game, canceled: boolean) {
         placementCancellation?.receipt.kind === 'moritaniPlacement',
         'Missing Terror denial receipt.',
       );
+      finishNexusMoritani(g,true);
       g.moritaniTerror = placementCancellation.receipt.terror;
       log(
         g,
@@ -14768,12 +14783,13 @@ function finishResponse(g: Game, canceled: boolean) {
       );
     } else {
       try {
-        g.moritaniTerror = placeTerror(
-          g.moritaniTerror,
-          pending.token,
-          pending.territory,
-          g.turn,
-        );
+        const placed = pending.nexusEvent
+          ? quoteNexusMoritaniPlacement(g.moritaniTerror,pending.token,pending.territory,g.turn)
+          : placeTerror(g.moritaniTerror,pending.token,pending.territory,g.turn);
+        finishNexusMoritani(g,false);
+        g.moritaniTerror = placed;
+        if (pending.nexusEvent) (g.nexusMoritaniLocations ??= {})[pending.token] = {event:pending.nexusEvent,territory:pending.territory};
+        else if (g.nexusMoritaniLocations) delete g.nexusMoritaniLocations[pending.token];
       } catch (error) {
         throw new RuleError(
           error instanceof Error ? error.message : 'Invalid Terror placement.',
@@ -16114,6 +16130,107 @@ function choamWorthlessBlocked(g: Game, card: string) {
     g.choamWorthlessBlocked.phase === g.phase &&
     g.choamWorthlessBlocked.cards.includes(card)
   );
+}
+function nexusMoritaniOffer(g: Game, owner: string, decision: Game['decision'] = g.decision) {
+  const p = g.players.find(p => p.id === owner);
+  if (!p || p.faction !== 'moritani' || g.nexusCards?.cards?.hands[p.id] !== 'moritani') return null;
+  const tokens = g.moritaniTerror?.tokens.filter(t => t.status === 'available') ?? [];
+  let blocked: string | null = null;
+  if (p.ally) blocked = 'Nexus Cunning requires an unallied Moritani player.';
+  else if (g.status !== 'playing' || g.phase !== 8 || decision?.kind !== 'moritaniPlacement' || decision.player !== p.id)
+    blocked = 'Use Cunning when placing a supply token during your Mentat opportunity.';
+  else if (g.response || g.truthtrance || g.phaseOpening || g.pendingKarama || g.pendingNullentropy || g.pendingTreacheryDiscard)
+    blocked = 'Finish the current interaction before declaring this placement.';
+  else if (g.moritaniTerror?.placementTurn === g.turn) blocked = 'This turn’s placement opportunity is already used.';
+  else if (!tokens.length) blocked = 'No supply token is available. Cunning relocation awaits a ruling.';
+  return {event:JSON.stringify(['nexusMoritani',g.turn,p.id]),blocked,tokens,
+    destinations:TERRITORIES.map(t => t.id)};
+}
+function nexusMoritaniIntegrity(g: Game) {
+  const history = g.nexusMoritaniHistory, pending = g.pendingMoritaniPlacement;
+  if (history === undefined) {
+    requireRule(!g.nexusMoritaniLast && !pending?.nexusEvent,
+      'Moritani Cunning has lost its saved placement history.');
+  } else {
+    requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+      'Moritani Cunning requires its original Nexus module and history.');
+    const events = new Set<string>();
+    for (const [index,record] of history.entries()) {
+      requireRule(record && typeof record === 'object' &&
+        Object.keys(record).sort().join(',') === 'before,frame,receipt,signature,stage' &&
+        ['pending','complete','canceled'].includes(record.stage) &&
+        typeof record.before === 'string' && typeof record.frame === 'string' &&
+        record.signature === nexusMoritaniRecordSignature(record) && !events.has(record.receipt?.event) &&
+        (record.stage !== 'pending' || index === history.length - 1),
+        'Moritani Cunning has a changed or duplicated placement record.');
+      nexusRule(() => validateNexusMoritani(g,record.receipt));
+      const before = nexusRule(() => JSON.parse(record.before)) as TerrorState;
+      nexusRule(() => quoteNexusMoritaniPlacement(before,record.receipt.token,record.receipt.territory,record.receipt.turn));
+      requireRule(record.frame === JSON.stringify({token:record.receipt.token,territory:record.receipt.territory,turn:record.receipt.turn,nexusEvent:record.receipt.event}),
+        'Moritani Cunning has a changed original placement frame.');
+      const original = before.tokens.find(t => t.id === record.receipt.token)!;
+      const current = g.moritaniTerror?.tokens.find(t => t.id === record.receipt.token);
+      requireRule(!current || current.kind === original.kind, 'Moritani Cunning has changed the original physical token face.');
+      events.add(record.receipt.event);
+    }
+    const last = history.at(-1)!;
+    requireRule(JSON.stringify(g.nexusMoritaniLast) === JSON.stringify({event:last.receipt.event,stage:last.stage}) &&
+      (last.stage === 'pending') === !!pending?.nexusEvent,
+      'Moritani Cunning has lost or reopened its latest placement.');
+    if (last.stage === 'pending') {
+      const continuation = g.pendingTreacheryDiscard?.continuation;
+      const contexts = [g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,
+        g.pendingRichesePurchaseIncome?.resume,g.summonedWorm?.resume,
+        continuation && 'resume' in continuation ? continuation.resume : null];
+      const responses = contexts.flatMap(context => {
+        const karama = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+        return [context?.response,karama?.use.kind === 'cancel' ? karama.use.response : null];
+      }).filter(r => r?.kind === 'moritaniPlacement');
+      requireRule(pending && pending.nexusEvent === last.receipt.event && pending.token === last.receipt.token &&
+        pending.territory === last.receipt.territory && pending.turn === last.receipt.turn &&
+        g.turn === last.receipt.turn && g.phase === 8 && JSON.stringify(pending) === last.frame &&
+        JSON.stringify(g.moritaniTerror) === last.before && responses.length > 0 &&
+        responses.every(r => r!.owner === last.receipt.owner) && g.nexusCards.cards.discard.includes('moritani'),
+        'Moritani Cunning no longer matches its original token, target or response.');
+    }
+  }
+  if (g.nexusMoritaniLocations !== undefined) {
+    requireRule(g.nexusMoritaniLocations && typeof g.nexusMoritaniLocations === 'object' && !Array.isArray(g.nexusMoritaniLocations),
+      'Moritani Cunning has an invalid live placement map.');
+    for (const [id,placement] of Object.entries(g.nexusMoritaniLocations)) {
+      const token = g.moritaniTerror?.tokens.find(t => t.id === id);
+      requireRule(placement && Object.keys(placement).sort().join(',') === 'event,territory' && token?.status === 'placed' &&
+        token.location === placement.territory && terrorLocationAllowed(g,id,placement.territory,placement.event),
+        'Moritani Cunning has a stale or changed live placement.');
+    }
+  }
+  for (const token of g.moritaniTerror?.tokens ?? []) {
+    if (token.status === 'placed') requireRule(token.location && terrorLocationAllowed(g,token.id,token.location),
+      'The Terror token has no valid original placement for this territory.');
+  }
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  for (const entry of [g.pendingTerrorEntry,continuation?.kind === 'terrorDiscard' ? continuation.entry : null])
+    if (entry) requireRule(terrorEntryLocationAllowed(g,entry),
+      'The Terror arrival has lost its original Cunning placement permission.');
+}
+function recordNexusMoritani(g: Game, owner: string, token: string, to: string) {
+  const receipt = nexusRule(() => createNexusMoritani(g,owner,token,to));
+  g.pendingMoritaniPlacement = {token,territory:to,turn:g.turn,nexusEvent:receipt.event};
+  const record = {receipt,stage:'pending' as const,before:JSON.stringify(g.moritaniTerror),frame:JSON.stringify(g.pendingMoritaniPlacement),signature:''};
+  record.signature = nexusMoritaniRecordSignature(record);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,owner,g.players));
+  (g.nexusMoritaniHistory ??= []).push(record);
+  g.nexusMoritaniLast = {event:receipt.event,stage:record.stage};
+}
+function finishNexusMoritani(g: Game, canceled: boolean) {
+  const pending = g.pendingMoritaniPlacement;
+  if (!pending?.nexusEvent) return;
+  const record = g.nexusMoritaniHistory?.find(r => r.receipt.event === pending.nexusEvent);
+  requireRule(record?.stage === 'pending' && record.frame === JSON.stringify(pending) && record.before === JSON.stringify(g.moritaniTerror),
+    'Moritani Cunning has lost its original placement outcome.');
+  record.stage = canceled ? 'canceled' : 'complete';
+  record.signature = nexusMoritaniRecordSignature(record);
+  g.nexusMoritaniLast = {event:record.receipt.event,stage:record.stage};
 }
 function nexusChoamSignature(record: NonNullable<Game['nexusChoamHistory']>[number]) {
   return JSON.stringify([record.receipt.signature, record.stage, record.frame, record.parent]);
@@ -17926,8 +18043,17 @@ function applyActionInner(
       } else {
         const token = stringField(action.token);
         const to = stringField(action.territory);
+        const nexus = action.nexus !== undefined;
+        if (nexus) {
+          const offer = nexusMoritaniOffer(g,p.id,decision);
+          requireRule(offer && !offer.blocked && offer.event === action.nexus &&
+            Object.keys(action).every(key => ['type','token','territory','nexus'].includes(key)) &&
+            offer.tokens.some(t => t.id === token) && offer.destinations.includes(to),
+            offer?.blocked ?? 'Choose your current Moritani Cunning supply placement.');
+        }
         try {
-          placeTerror(g.moritaniTerror, token, to, g.turn);
+          if (nexus) quoteNexusMoritaniPlacement(g.moritaniTerror,token,to,g.turn);
+          else placeTerror(g.moritaniTerror, token, to, g.turn);
         } catch (error) {
           throw new RuleError(
             error instanceof Error
@@ -17935,7 +18061,9 @@ function applyActionInner(
               : 'Invalid Terror placement.',
           );
         }
-        g.pendingMoritaniPlacement = { token, territory: to, turn: g.turn };
+        if (nexus) recordNexusMoritani(g,p.id,token,to);
+        else g.pendingMoritaniPlacement = { token, territory: to, turn: g.turn };
+        if (nexus) log(g, `${p.name} played Moritani Nexus Cunning for this hidden Terror placement. Karama may prevent the placement; the Nexus remains spent.`);
         g.response = { kind: 'moritaniPlacement', owner: id, passed: [] };
         log(g, `${p.name} declared a hidden Terror placement or relocation.`);
       }
@@ -20915,6 +21043,7 @@ export function viewGame(state: Game, id: string) {
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
     nexusCards: projectedNexusCards(g, id),
+    nexusMoritani: nexusMoritaniOffer(g,id),
     nexusTraitors: projectedNexusTraitors(g, id),
     nexusTleilaxu: projectedNexusTleilaxu(g, id),
     nexusSuboids: projectedNexusSuboids(g, id),
