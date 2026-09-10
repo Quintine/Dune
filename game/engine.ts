@@ -1,5 +1,7 @@
 import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
 import { beginNexusTraitorExchange, finishNexusTraitorExchange, validateNexusTraitorExchange, validateNexusTraitorHistory, validateNexusTraitorSnapshot, type NexusTraitorExchange, type NexusTraitorSnapshot } from './nexus-traitor-exchange';
+import { replaceNexusFaceDancers, validateNexusFaceDancerHistory, type NexusFaceDancerReceipt } from './nexus-face-dancers';
+import { createNexusSuboids, validateNexusSuboids, nexusSuboidsActive, type NexusSuboidReceipt } from './nexus-suboids';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
 import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, nexusCardMode, type NexusState } from './nexus-cards';
 import { createNexusCardPhase, markNexusCardOccurred, validateNexusCardPhase, closeNexusCardPhase, nexusCardChoices, finishNexusCardChoice, type NexusCardPhase, type NexusCardChoice } from './nexus-card-phase';
@@ -1258,6 +1260,9 @@ export type Game = {
   /** Optional independent module; complete effect coverage is still release-gated. */
   nexusCards?: { cards: NexusState | null; phase: NexusCardPhase | null } | null;
   nexusTraitorExchanges?: NexusTraitorExchange[];
+  nexusFaceDancerHistory?: NexusFaceDancerReceipt[];
+  nexusSuboidHistory?: NexusSuboidReceipt[];
+  nexusSuboidLast?: { event: string; owner: string; turn: number };
   nexusTraitorPending?: string | null;
   nexusTraitorParent?: { event: string; signature: string } | null;
   /** Null/absent disables the module; custody is installed at force placement. */
@@ -1639,6 +1644,106 @@ function projectedNexusTraitors(g: Game, id: string) {
       ? owner!.faceDancers!.filter(card => !card.revealed).map(card => ({id:card.leader, revealed:card.revealed, drawn:pending.drawn.includes(card.leader)}))
       : owner!.traitors.map(card => ({id:card, revealed:false, drawn:pending.drawn.includes(card)}))),
   } : null };
+}
+
+function nexusFaceDancerIntegrity(g: Game) {
+  if (g.nexusFaceDancerHistory === undefined) return;
+  requireRule(g.nexusCards?.cards && Array.isArray(g.nexusFaceDancerHistory),
+    'Face Dancer Nexus history requires its original module.');
+  const universe = nexusTraitorUniverse(g), events = new Set<string>();
+  nexusRule(() => validateNexusTraitorSnapshot(nexusTraitorSnapshot(g), universe));
+  for (const receipt of g.nexusFaceDancerHistory) {
+    requireRule(!events.has(receipt.event) && receipt.turn <= g.turn &&
+      g.players.some(p => p.id === receipt.owner && p.faction === 'tleilaxu'),
+      'The Face Dancer replacement has lost its original owner or turn.');
+    events.add(receipt.event);
+    nexusRule(() => validateNexusFaceDancerHistory(universe, receipt));
+  }
+}
+function projectedNexusTleilaxu(g: Game, id: string) {
+  if (!g.nexusCards?.cards) return null;
+  if (g.nexusCards.cards.hands[id] !== 'tleilaxu') return { cunning: null };
+  const p = getPlayer(g, id);
+  if (p.faction !== 'tleilaxu') return { cunning: null };
+  const count = p.faceDancers?.filter(card => card.revealed).length ?? 0;
+  let blocked: string | null = null;
+  if (g.status !== 'playing') blocked = 'Use Cunning during an active game.';
+  else if (p.ally) blocked = 'Allied players cannot use a Nexus card.';
+  else if (g.truthtrance) blocked = 'Finish Truthtrance before replacing Face Dancers.';
+  else if (g.pendingTreacheryDiscard) blocked = 'Finish the automatic card disposal first.';
+  else if (g.nexusCards.phase?.stage === 'drawing') blocked = 'Finish the closing Nexus draws first.';
+  else if (pendingNexusTraitors(g)) blocked = 'Finish the current private Traitor Deck return first.';
+  else if (!count) blocked = 'No revealed Face Dancers are available to replace.';
+  else if ((g.traitorReserve?.length ?? 0) < count) blocked = 'The Traitor Deck cannot supply the full replacement draw.';
+  return { cunning: { event: JSON.stringify(['nexusFaceDancers', g.turn, g.phase, g.nexusFaceDancerHistory?.length ?? 0, id]), count, blocked } };
+}
+function playNexusFaceDancers(g: Game, p: Player, action: Action) {
+  requireRule(Object.keys(action).every(key => ['type', 'event'].includes(key)),
+    'Cunning replaces every revealed Face Dancer; do not select a subset.');
+  const offer = projectedNexusTleilaxu(g, p.id)?.cunning;
+  requireRule(offer && action.event === offer.event && !offer.blocked,
+    offer?.blocked ?? 'Choose the current owned Face Dancer replacement.');
+  const result = nexusRule(() => replaceNexusFaceDancers(nexusTraitorSnapshot(g), nexusTraitorUniverse(g),
+    { event: offer.event, owner: p.id, turn: g.turn, phase: g.phase }, random));
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  applyNexusTraitorSnapshot(g, result.state);
+  (g.nexusFaceDancerHistory ??= []).push(result.receipt);
+  log(g, `${p.name} set aside ${offer.count} revealed Face Dancer ${offer.count === 1 ? 'Card' : 'Cards'}, secretly drew replacements, then shuffled the set-aside cards into the Traitor Deck. Unrevealed Face Dancers and the normal Mentat replacement allowance are unchanged.`,
+    { faction: p.faction, name: 'Nexus Face Dancer replacement' });
+}
+
+function nexusSuboidIntegrity(g: Game) {
+  if (g.nexusSuboidHistory === undefined) {
+    requireRule(!g.nexusSuboidLast, 'The Suboid Nexus effect has lost its saved history.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards, 'Suboid Nexus history requires its original module.');
+  nexusRule(() => validateNexusSuboids(g, g.nexusSuboidHistory!));
+  const last = g.nexusSuboidHistory.at(-1);
+  requireRule(last && JSON.stringify(g.nexusSuboidLast) === JSON.stringify({ event: last.event, owner: last.owner, turn: last.turn }),
+    'The Suboid Nexus effect has lost its latest committed play.');
+  if (g.nexusSuboidHistory.some(receipt => receipt.turn === g.turn))
+    requireRule(g.nexusCards.cards.discard.includes('ixians'), 'The active Suboid effect has lost its spent Nexus card.');
+}
+function projectedNexusSuboids(g: Game, id: string) {
+  if (!g.nexusCards?.cards) return null;
+  const ixians = byFaction(g, 'ixians');
+  const active = !!ixians && nexusSuboidsActive(g, g.nexusSuboidHistory, ixians.id);
+  if (g.nexusCards.cards.hands[id] !== 'ixians' || ixians?.id !== id) return { offer: null, active };
+  const b = g.battle;
+  let blocked: string | null = null;
+  if (g.status !== 'playing' || g.phase !== 6 || !b || ![b.attacker, b.defender].includes(id))
+    blocked = 'Use Cunning in your battle before submitting your Battle Plan.';
+  else if (ixians.ally) blocked = 'Allied players cannot use a Nexus card.';
+  else if (b.revealed || b.plans[id]) blocked = 'Your Battle Plan is already submitted.';
+  else if (active) blocked = 'Your Suboids already have full strength this turn.';
+  else if (g.truthtrance || g.pendingTreacheryDiscard || pendingNexusTraitors(g)) blocked = 'Finish the current private question or card return first.';
+  else if (g.pendingNullentropy) blocked = 'Finish the paid Nullentropy search first.';
+  else if (g.nexusCards.phase?.stage === 'drawing') blocked = 'Finish the closing Nexus draws first.';
+  const event = b?.event ? JSON.stringify(['nexusSuboids', g.turn, b.event, id]) : '';
+  if (!blocked) {
+    const trial = structuredClone(g);
+    (trial.nexusSuboidHistory ??= []).push(nexusRule(() => createNexusSuboids(trial, id, b!.event!)));
+    trial.nexusSuboidLast = { event, owner: id, turn: g.turn };
+    trial.nexusCards!.cards = nexusRule(() => discardNexusCard(trial.nexusCards!.cards!, id, trial.players));
+    if (!findReachableBattlePlan(trial, getPlayer(trial, id)))
+      blocked = 'Full-strength Suboids would prevent you from honoring an existing Battle Plan commitment.';
+  }
+  return { offer: { event, blocked }, active };
+}
+function playNexusSuboids(g: Game, p: Player, action: Action) {
+  const offer = projectedNexusSuboids(g, p.id)?.offer;
+  requireRule(Object.keys(action).every(key => ['type', 'event'].includes(key)) && offer &&
+    action.event === offer.event && !offer.blocked, offer?.blocked ?? 'Choose your current Ixian Cunning opportunity.');
+  commitNexusSuboids(g, p);
+}
+function commitNexusSuboids(g: Game, p: Player) {
+  const receipt = nexusRule(() => createNexusSuboids(g, p.id, g.battle!.event!));
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  (g.nexusSuboidHistory ??= []).push(receipt);
+  g.nexusSuboidLast = { event: receipt.event, owner: receipt.owner, turn: receipt.turn };
+  log(g, `${p.name} used Ixian Cunning. Every Suboid has full strength without spice support in all battles for the rest of this turn. Cyborg strength, support and physical force counts are unchanged.`,
+    { faction: p.faction, name: 'Nexus Suboid strength' });
 }
 
 function battleInspectionContext(g: Game): BattleInspectionContext {
@@ -4249,7 +4354,8 @@ function combatForces(
     ...(homeworldSardaukarFreeSupport(g, p.id)
       ? { eliteFreeSupport: true }
       : {}),
-    normalFixedHalf: p.faction === 'ixians',
+    normalFixedHalf: p.faction === 'ixians' && !nexusSuboidsActive(g, g.nexusSuboidHistory, p.id),
+    ...(nexusSuboidsActive(g, g.nexusSuboidHistory, p.id) ? { normalFreeSupport: true } : {}),
     elite,
     eliteStrength:
       (!g.advanced && p.faction !== 'ixians') ||
@@ -4548,7 +4654,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
           !p.prediction &&
           !p.advisorSetup &&
           (!p.elites ||
-            (homeworlds &&
+            ((homeworlds || nexus) &&
               p.faction === 'ixians' &&
               p.elites.reserves === 7 &&
               p.elites.tanks === 0 &&
@@ -11652,6 +11758,8 @@ function gholaOptions(g: Game, p: Player) {
 function marketGholaIntegrity(g: Game) {
   nexusCardsIntegrity(g);
   nexusTraitorIntegrity(g);
+  nexusFaceDancerIntegrity(g);
+  nexusSuboidIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
@@ -11941,13 +12049,21 @@ function findReachableBattlePlan(
         return { plan, actions: node.actions, waitingForIncome: pending > 0 };
     }
     for (const action of [
+      ...(node.state.status === 'playing' && node.state.phase === 6 && actor.faction === 'ixians' &&
+        !actor.ally && node.state.nexusCards?.cards?.hands[actor.id] === 'ixians' &&
+        node.state.nexusCards.phase?.stage !== 'drawing' && !node.state.pendingNullentropy &&
+        !node.state.pendingTreacheryDiscard && !pendingNexusTraitors(node.state) &&
+        !nexusSuboidsActive(node.state, node.state.nexusSuboidHistory, actor.id)
+        ? [{ type: 'nexusSuboids', event: JSON.stringify(['nexusSuboids', node.state.turn, node.state.battle!.event, actor.id]) } as Action]
+        : []),
       ...gholaPreparationActions(node.state, actor),
       ...cashInPreparationActions(node.state, actor),
     ]) {
       const trial = structuredClone(node.state),
         target = getPlayer(trial, p.id);
       try {
-        if (action.mode === 'special') specialKarama(trial, target, action);
+        if (action.type === 'nexusSuboids') commitNexusSuboids(trial, target);
+        else if (action.mode === 'special') specialKarama(trial, target, action);
         else {
           applyGholaEffect(trial, target, action);
           discard(trial, target, action.card as string);
@@ -16794,7 +16910,7 @@ function applyActionInner(
   stoneBurnerIntegrity(g);
   strongholdIntegrity(g);
   auditorIntegrity(g);
-  if (g.pendingNullentropy && !['nexusTraitorDraw', 'nexusTraitorReturn'].includes(action?.type)) {
+  if (g.pendingNullentropy && !['nexusTraitorDraw', 'nexusTraitorReturn', 'nexusFaceDancers'].includes(action?.type)) {
     if (action?.type === 'advanceBots') return g;
     requireRule(!pendingNexusTraitors(g), 'Finish the private Nexus card return before continuing the paid search.');
     requireRule(
@@ -16852,6 +16968,8 @@ function applyActionInner(
   if (t === 'nexusCardChoice') { decideNexusCard(g, p, action); return g; }
   requireRule(g.nexusCards?.phase?.stage !== 'drawing', 'Finish the closing Nexus card choices first.');
   if (t === 'nexusTraitorDraw') { playNexusTraitorDraw(g, p, action); return g; }
+  if (t === 'nexusFaceDancers') { playNexusFaceDancers(g, p, action); return g; }
+  if (t === 'nexusSuboids') { playNexusSuboids(g, p, action); return g; }
   if (t === 'nexusTraitorReturn') {
     requireRule(!g.truthtrance, 'Finish the active Truthtrance before returning Nexus cards.');
     finishNexusTraitorReturn(g, p, action); return g;
@@ -20319,6 +20437,8 @@ export function viewGame(state: Game, id: string) {
     strongholdCards: g.strongholdCards ?? null,
     nexusCards: projectedNexusCards(g, id),
     nexusTraitors: projectedNexusTraitors(g, id),
+    nexusTleilaxu: projectedNexusTleilaxu(g, id),
+    nexusSuboids: projectedNexusSuboids(g, id),
     nexusAtreides: nexusAtreidesOffer(g, id),
     homeworldRevivalDeployment: projectedHomeworldRevivalReturn(g, id),
     caladanReinforcement: projectedHomeworldVictoryReturn(g, id),

@@ -89,6 +89,7 @@ function allOpposingTotals(
     forces.elite,
     forces.eliteStrength,
     !!forces.normalFixedHalf,
+    !!forces.normalFreeSupport,
     forces.freeSupport,
     !!forces.eliteFreeSupport,
   ].join(':');
@@ -96,11 +97,12 @@ function allOpposingTotals(
   if (cached) return cached;
   const result: number[][] = [];
   const maximumHalfDial =
-    forces.normal * (forces.normalFixedHalf ? 1 : 2) +
+    forces.normal *
+      (forces.normalFixedHalf && !forces.normalFreeSupport ? 1 : 2) +
     forces.elite * forces.eliteStrength * 2;
   const maximumSupport = forces.freeSupport
     ? 0
-    : (forces.normalFixedHalf ? 0 : forces.normal) +
+    : (forces.normalFixedHalf || forces.normalFreeSupport ? 0 : forces.normal) +
       (forces.eliteFreeSupport ? 0 : forces.elite);
   // Use the same legality and typed-support arithmetic as sealed plans. Cache
   // public pool results so repeated preflights do not repeat this enumeration.

@@ -167,6 +167,8 @@ function validateCombatant(
       typeof f.freeSupport === 'boolean' &&
       (f.eliteFreeSupport === undefined ||
         typeof f.eliteFreeSupport === 'boolean') &&
+      (f.normalFreeSupport === undefined ||
+        typeof f.normalFreeSupport === 'boolean') &&
       (f.normalFixedHalf === undefined ||
         typeof f.normalFixedHalf === 'boolean') &&
       Number.isFinite(p.dial) &&

@@ -11,6 +11,8 @@ import { GrummanCollection } from './grumman-collection';
 import { TupileIntelligence } from './tupile-intelligence';
 import { NexusCards } from './nexus-cards';
 import { NexusTraitors } from './nexus-traitors';
+import { NexusTleilaxu } from './nexus-tleilaxu';
+import { NexusSuboids } from './nexus-suboids';
 import { TerrorBoardMarkers } from './terror-board-markers';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
@@ -346,7 +348,7 @@ export function GameTable({
     ownBattleForces
       ? ownBattleForces.freeSupport
         ? 0
-        : (ownBattleForces.normalFixedHalf ? 0 : ownBattleForces.normal) +
+        : (ownBattleForces.normalFixedHalf || ownBattleForces.normalFreeSupport ? 0 : ownBattleForces.normal) +
           (ownBattleForces.eliteFreeSupport ? 0 : ownBattleForces.elite)
       : Number.POSITIVE_INFINITY,
   );
@@ -1416,6 +1418,8 @@ export function GameTable({
           <PrivateBattlePlan game={g} />
           <NexusCards game={g} act={act} busy={busy} />
           <NexusTraitors game={g} act={act} busy={transportBusy || !!me.autopilot} />
+          <NexusTleilaxu game={g} act={act} busy={transportBusy || !!me.autopilot} />
+          <NexusSuboids game={g} act={act} busy={transportBusy || !!me.autopilot} />
           {!g.nexusCards?.waiting.length && <TupileIntelligence game={g} act={act} busy={busy} />}
           {g.biddingEnd && <BiddingEnd game={g} act={act} busy={busy} />}
           {g.junctionTransport && [g.junctionTransport.owner, g.junctionTransport.recipient].includes(me.id) && (
@@ -4147,6 +4151,11 @@ export function GameTable({
                                 ? `Your concealed No-Field can reveal ${battleForces} physical forces from your current reserves. This estimate is private.`
                                 : `You have ${battleForces} fighting forces here.`}
                             </p>
+                            {ownBattleForces?.normalFreeSupport && (
+                              <p className="notice">
+                                Your Suboids fight at full strength without spice support this turn. Spice support here applies only to Cyborgs.
+                              </p>
+                            )}
                             {ownBattleForces?.eliteFreeSupport && (
                               <p className="notice">
                                 Salusa Secundus is at high population. Your

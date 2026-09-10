@@ -1,5 +1,7 @@
 import { nexusCardBotActions } from './nexus-card-options';
 import { nexusTraitorBotActions } from './nexus-traitor-options';
+import { nexusTleilaxuBotActions } from './nexus-tleilaxu-options';
+import { nexusSuboidBotActions } from './nexus-suboid-options';
 import { tupileIntelligenceActions } from './tupile-intelligence-options';
 import { biddingEndActions, choamMarketPolicy } from './bidding-end-options';
 import { homeworldRevivalActionBlock, homeworldRevivalDeploymentActions } from './homeworld-revival-deployment-options';
@@ -3321,6 +3323,10 @@ export function botActions(g: GameView): Action[] {
       : nexusTraitorBotActions(g);
   if (g.automaticContinuationPending) return [];
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
+  const suboids = nexusSuboidBotActions(g);
+  if (suboids.length) return suboids;
+  const faceDancers = nexusTleilaxuBotActions(g);
+  if (faceDancers.length) return faceDancers;
   const traitorExchange = nexusTraitorBotActions(g);
   if (traitorExchange.length) return traitorExchange;
   const nexus = g.nexusAtreides;

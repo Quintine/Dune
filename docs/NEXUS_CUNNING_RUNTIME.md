@@ -1,0 +1,43 @@
+# Tleilaxu and Ixian Nexus Cunning checkpoint
+
+10 September 2026. Two native Cunning effects extend the existing [Nexus lifecycle](NEXUS_CARD_RUNTIME.md), [Atreides inspections](NEXUS_ATREIDES_RUNTIME.md) and [Harkonnen exchanges](NEXUS_HARKONNEN_RUNTIME.md). The [Tleilaxu source audit](NEXUS_TLEILAXU_RULES.md) and [Ixian source audit](NEXUS_IXIAN_CUNNING_RULES.md) distinguish printed effects from their digital timing composition. Neither this checkpoint nor its focused tests open incomplete mode or expansion starts.
+
+## Tleilaxu replacement
+
+Native Tleilaxu holding its own Nexus card can replace the entire revealed Face Dancer group. The engine sets those identities aside, draws the same number from the existing reserve, then shuffles the set-aside cards into the remaining Traitor Deck. The old revealed identities cannot be among this operation's new draws. Existing unrevealed dancers remain held, and replacement dancers begin unrevealed.
+
+The operation spends the physical Nexus card and records one completed receipt atomically. There is no subset selection, post-draw choice or extra acknowledgement. A nonempty revealed group and sufficient original reserve are required; a missing reserve is not supplied by recycling another player's cards. Canonical source/result evidence binds the physical operation, and reads or retries do not repeat it. These signatures check saved-state consistency, not cryptographic authenticity against a deliberately rewritten save.
+
+The card has no phase restriction. Its engine path preserves the existing response or owned decision, including paid Nullentropy, while replacing the Face Dancers. Live Truthtrance, automatic card disposal, closing common Nexus draws and a pending Harkonnen Traitor Deck return retain priority. This does not authorize rewriting a completed Face Dance or interrupting its mandatory native cycle at an invented point.
+
+Ordinary Mentat replacement and the native all-three-revealed reset remain different operations. Both shuffle returned cards before their draws; Cunning draws before returning its set-aside group. Cunning does not spend or refresh the ordinary Mentat usage counter. A stable third native reveal already performs its mandatory reset, so Cunning normally has one or two revealed cards to replace. No extra native reset follows Cunning.
+
+Only the owner receives new Face Dancer identities. Other seats receive the public effect and count, without the reserve order or historical private replacement snapshot. The owner has one explicit button to play the effect; all four bot profiles use the same event-bound private offer without inspecting another hand.
+
+## Ixian Suboid strength
+
+Native Ixians can play Cunning in their own current battle before submitting their plan. The effect spends the Nexus card and records its native owner, activation battle and turn. Every Ixian Suboid then counts as **one strength instead of one half**, in Basic and Advanced, throughout that turn. Later battles use the same grant; the actual next turn removes the benefit while keeping its history. It does not replay or amend an earlier battle.
+
+The force profile separates free Suboid support from Cyborg support. Suboids cannot be charged support spice while the effect is active; Cyborgs retain their usual strength, support and substitution rules. Counter counts, physical losses, movement and revival remain unchanged. The shared combat solver, Stone Burner comparison and battle resolution consume this typed profile. The table bounds paid support to the remaining eligible Cyborg count and explains the distinction; bot plans use the server's projected forces rather than guessing an effect from the discarded card.
+
+Prior Prescience and Truthtrance commitments remain binding. The engine checks whether the boosted profile still permits a reachable compliant plan before offering activation. A previously promised half-strength dial can make activation impossible; the card is then retained and no promised field is silently released. Compatible commitments do not require the opposing player to unseal a plan. The public active notice identifies Ixian Suboids and never implies that another faction's forces gain the bonus.
+
+Independent review found that the reachability search omitted an available Cunning activation. The corrected search can accept a future full-strength dial commitment while leaving the real Nexus card unspent. It supplies Cunning as the owner's explicit preparation step; the private hint names that effect rather than incorrectly describing an undefined Ghola force count. Actual Truthtrance and Prescience regressions exercise the future-strength commitment, and a separate server-rendered control regression checks its private instruction and subsequent real activation. This follow-up selection passed **3/3**, with focused lint passing. See [reachability tests](../tests/nexus-suboid-reachability.test.ts) and [preparation controls](../tests/nexus-suboid-reachability-controls.test.ts).
+
+The genuine Nexus audit setup now accepts Ixians' initialized seven elite reserves. This fixes setup validation for the existing physical seven-Cyborg/thirteen-Suboid inventory; it does not grant public access to gated modes or migrate existing force custody.
+
+## Verified checkpoint and unfinished work
+
+The latest observed consumer selection passed **17/17** cases: thirteen new Tleilaxu/Ixian controls and bot regressions plus four existing Harkonnen bot cases. It verifies all four profiles, private getter traps, pending-control priorities, zero-spice boosted plans and the actual table's Cyborg-only support bounds. Type-aware lint passed for the owned consumer files. Full-table SSR still emits the preexisting React SVG title-array warning; this is not browser acceptance.
+
+**Types, lint, all 3,936 offline tests, production build and 40 HTTP/session tests pass.** This checkpoint adds 51 cases: eight pure Face Dancer, ten Face Dancer engine, six support solver, seven Suboid engine, thirteen consumer, four production SQLite recovery, two future-plan reachability and one private preparation-control regression.
+
+The SQLite races accept one card spend, draw/shuffle or turn grant. Lost responses restore the same private state, subsequent boosted plans persist, and damaged receipts or a missing last-play marker reject without writes. Engine coverage includes a real completed Face Dance before Cunning, paid Nullentropy and Prescience interruptions, native Mentat replacement in both orders, compatible and impossible prior commitments, a second battle in the same turn and turn expiry.
+
+Two isolated three-seat browser rooms verified desktop/phone play, Tleilaxu's atomic replacement and six private seat refreshes. The Ixian editor allowed seven strength from three Suboids and two Cyborgs, capped support at two, and accepted that sealed plan with an available leader. Opponents saw the public bonus and no sealed plan. The ordinary no-leader rejection remained enforced. Reviewed phone renders show readable controls and no horizontal page overflow; no page errors occurred.
+
+The controlled hourly restart preserved all **3,359** then-existing room versions and hashes, restored both Cunning rooms and the earlier three-seat Atreides inspection checkpoint. Final comparison preserves all **3,327** rooms from this checkpoint's opening baseline. Two browser rooms and sixty isolated HTTP rooms were added across the pre/post-review test runs. No recurring automation was recreated.
+
+Implementation: [Face Dancer operation](../game/nexus-face-dancers.ts), [Suboid grant](../game/nexus-suboids.ts), [combat solver](../game/combat.ts), [Tleilaxu controls](../components/nexus-tleilaxu.tsx), [Ixian controls](../components/nexus-suboids.tsx). Evidence: [Face Dancer engine](../tests/nexus-face-dancer-engine.test.ts), [Suboid engine](../tests/nexus-suboids-engine.test.ts), [support solver](../tests/normal-free-support.test.ts), [Tleilaxu controls](../tests/nexus-tleilaxu-controls.test.ts), [Tleilaxu bots](../tests/nexus-tleilaxu-bots.test.ts), [Ixian controls](../tests/nexus-suboid-controls.test.ts), [Ixian bots](../tests/nexus-suboid-bots.test.ts), [SQLite recovery](../tests/nexus-cunning-recovery.test.ts).
+
+Tleilaxu Secret Ally remains wholly gated pending the question about normal revival accounting, leader prerequisites and whether the combined leader benefit is optional. Its fixed price does not settle those separate permissions. Betrayal retains the existing private response timing gate. Other Ixian modes, unfinished Nexus families and complete module/expansion games remain separate release requirements.

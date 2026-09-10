@@ -2,6 +2,9 @@
 export type CombatForces = {
   normal: number;
   normalFixedHalf?: boolean;
+  /** Normal counters alone retain full strength without support, overriding
+   * fixed half strength. Special counters keep their separate support rules. */
+  normalFreeSupport?: boolean;
   elite: number;
   eliteStrength: 1 | 2;
   freeSupport: boolean;
@@ -31,6 +34,8 @@ export function validCombatForces(forces: CombatForces): boolean {
     typeof forces.freeSupport === 'boolean' &&
     (forces.eliteFreeSupport === undefined ||
       typeof forces.eliteFreeSupport === 'boolean') &&
+    (forces.normalFreeSupport === undefined ||
+      typeof forces.normalFreeSupport === 'boolean') &&
     (forces.normalFixedHalf === undefined ||
       typeof forces.normalFixedHalf === 'boolean')
   );
@@ -49,7 +54,9 @@ export function casualtyOptions(
     !Number.isInteger(dial * 2) ||
     !Number.isSafeInteger(support) ||
     support < 0 ||
-    support > forces.normal + (forces.eliteFreeSupport ? 0 : forces.elite) ||
+    support >
+      (forces.normalFixedHalf || forces.normalFreeSupport ? 0 : forces.normal) +
+        (forces.eliteFreeSupport ? 0 : forces.elite) ||
     (forces.freeSupport && support !== 0)
   )
     return [];
@@ -58,7 +65,8 @@ export function casualtyOptions(
     for (let normal = 0; normal <= forces.normal; normal++) {
       if (forces.freeSupport) {
         if (
-          normal * (forces.normalFixedHalf ? 0.5 : 1) +
+          normal *
+            (forces.normalFixedHalf && !forces.normalFreeSupport ? 0.5 : 1) +
             elite * forces.eliteStrength ===
           dial
         )
@@ -66,14 +74,22 @@ export function casualtyOptions(
         continue;
       }
       for (
-        let paidElite = Math.max(0, support - normal);
+        let paidElite = Math.max(
+          0,
+          support -
+            (forces.normalFixedHalf || forces.normalFreeSupport ? 0 : normal),
+        );
         paidElite <= (forces.eliteFreeSupport ? 0 : Math.min(elite, support));
         paidElite++
       ) {
         const paidNormal = support - paidElite;
-        if (forces.normalFixedHalf && paidNormal !== 0) continue;
+        if (
+          (forces.normalFixedHalf || forces.normalFreeSupport) &&
+          paidNormal !== 0
+        )
+          continue;
         const doubledStrength =
-          normal +
+          normal * (forces.normalFreeSupport ? 2 : 1) +
           paidNormal +
           (forces.eliteFreeSupport ? elite * 2 : elite + paidElite) *
             forces.eliteStrength;
