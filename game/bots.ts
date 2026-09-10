@@ -1,4 +1,5 @@
 import { nexusCardBotActions } from './nexus-card-options';
+import { nexusTraitorBotActions } from './nexus-traitor-options';
 import { tupileIntelligenceActions } from './tupile-intelligence-options';
 import { biddingEndActions, choamMarketPolicy } from './bidding-end-options';
 import { homeworldRevivalActionBlock, homeworldRevivalDeploymentActions } from './homeworld-revival-deployment-options';
@@ -3314,8 +3315,14 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  if (g.nexusTraitors?.pending)
+    return g.truthtrance
+      ? policyActions({ ...g, decision: null })
+      : nexusTraitorBotActions(g);
   if (g.automaticContinuationPending) return [];
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
+  const traitorExchange = nexusTraitorBotActions(g);
+  if (traitorExchange.length) return traitorExchange;
   const nexus = g.nexusAtreides;
   if (
     g.status === 'playing' && g.phase === 6 && nexus && !nexus.blocked &&

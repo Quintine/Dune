@@ -10,6 +10,7 @@ import { CaladanReinforcement } from './caladan-reinforcement';
 import { GrummanCollection } from './grumman-collection';
 import { TupileIntelligence } from './tupile-intelligence';
 import { NexusCards } from './nexus-cards';
+import { NexusTraitors } from './nexus-traitors';
 import { TerrorBoardMarkers } from './terror-board-markers';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
@@ -669,7 +670,7 @@ export function GameTable({
             .filter(Boolean)
             .join(' ') || undefined
         }
-        disabled={busy || !!g.truthtrance || disabled || shipmentBlocked}
+        disabled={busy || !!g.truthtrance || !!g.nexusTraitors?.pending || disabled || shipmentBlocked}
         onClick={() => act(a)}
       >
         {text}
@@ -1414,6 +1415,7 @@ export function GameTable({
           </div>
           <PrivateBattlePlan game={g} />
           <NexusCards game={g} act={act} busy={busy} />
+          <NexusTraitors game={g} act={act} busy={transportBusy || !!me.autopilot} />
           {!g.nexusCards?.waiting.length && <TupileIntelligence game={g} act={act} busy={busy} />}
           {g.biddingEnd && <BiddingEnd game={g} act={act} busy={busy} />}
           {g.junctionTransport && [g.junctionTransport.owner, g.junctionTransport.recipient].includes(me.id) && (

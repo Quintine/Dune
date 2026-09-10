@@ -1,4 +1,6 @@
 import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
+import { beginNexusTraitorExchange, finishNexusTraitorExchange, validateNexusTraitorExchange, validateNexusTraitorHistory, validateNexusTraitorSnapshot, type NexusTraitorExchange, type NexusTraitorSnapshot } from './nexus-traitor-exchange';
+import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
 import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, nexusCardMode, type NexusState } from './nexus-cards';
 import { createNexusCardPhase, markNexusCardOccurred, validateNexusCardPhase, closeNexusCardPhase, nexusCardChoices, finishNexusCardChoice, type NexusCardPhase, type NexusCardChoice } from './nexus-card-phase';
 import { createHomeworldOccupationHistory, observeHomeworldOccupation, validateHomeworldOccupationHistory, tupileOccupationStatus, type HomeworldOccupationHistory } from './homeworld-occupation-history';
@@ -536,6 +538,8 @@ export type Battle = {
   nexusInspection?: NexusInspection;
   /** Independent presence marker: deleting a spent-card record is not a legacy save. */
   nexusInspectionUsed?: string;
+  traitorDeclarationVersion?: 1;
+  traitorDeclarations?: Record<string, TraitorDeclaration>;
   homeworldDefensePassed?: string[];
   event?: string;
   strongholdCopy?: StrongholdId;
@@ -1253,6 +1257,9 @@ export type Game = {
   strongholdCards?: StrongholdState | null;
   /** Optional independent module; complete effect coverage is still release-gated. */
   nexusCards?: { cards: NexusState | null; phase: NexusCardPhase | null } | null;
+  nexusTraitorExchanges?: NexusTraitorExchange[];
+  nexusTraitorPending?: string | null;
+  nexusTraitorParent?: { event: string; signature: string } | null;
   /** Null/absent disables the module; custody is installed at force placement. */
   homeworlds?: { custody: HomeworldCustody | null; historyVersion?: 1 } | null;
   homeworldOccupationHistory?: HomeworldOccupationHistory;
@@ -1489,6 +1496,151 @@ function projectedNexusCards(g: Game, id: string) {
     choices: nexusCardChoices(nexus.phase, nexus.cards, id),
     waiting: nexus.phase?.stage === 'drawing' ? nexus.phase.eligible.filter(owner => !nexus.phase!.done.includes(owner)) : [] };
 }
+function nexusTraitorUniverse(g: Game) {
+  // This describes the printed setup inventory; it never regenerates the deck
+  // from current hands, captured leaders or Face Dancer custody.
+  return traitorDeck(g.players.map(p => ({ leaders: [
+    ...leaders(p.faction), ...(g.advanced && p.faction === 'choam' ? [createAuditorLeader()] : []),
+  ] })), g.expansions.includes('ix'));
+}
+function nexusTraitorSnapshot(g: Game): NexusTraitorSnapshot {
+  return { reserve: [...(g.traitorReserve ?? [])], players: g.players.map(p => ({
+    id: p.id, faction: p.faction, traitors: [...p.traitors],
+    ...(p.faceDancers ? { faceDancers: structuredClone(p.faceDancers) } : {}),
+  })) };
+}
+function pendingNexusTraitors(g: Game) {
+  return g.nexusTraitorExchanges?.find(exchange => exchange.stage === 'return') ?? null;
+}
+function nexusTraitorParentSignature(g: Game, event: string) {
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const context = continuation && 'resume' in continuation ? continuation.resume : g;
+  const resume = { response: context.response ?? null, decision: context.decision ?? null,
+    pendingKarama: 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] ?? null : null,
+    phaseOpening: 'phaseOpening' in context ? context.phaseOpening as Game['phaseOpening'] ?? null : null };
+  const battle = g.battle ? Object.fromEntries(Object.entries(g.battle).filter(([key]) => key !== 'truthPromises')) : null;
+  return JSON.stringify({ event, turn: g.turn, phase: g.phase, status: g.status, active: g.active,
+    order: g.order, ready: g.ready, battle, nullentropy: g.pendingNullentropy ?? null,
+    controls: nullentropyParentSignature(g, resume, event) });
+}
+function traitorDeclarationContext(g: Game): TraitorDeclarationContext {
+  const b = g.battle!;
+  return { event: b.event!, attacker: b.attacker, defender: b.defender, plans: b.plans,
+    players: g.players.map(({id,faction,ally,traitors}) => ({id,faction,ally,traitors})),
+    heroLeaderIds: physicalTreacheryCards(g).filter(c => c.kind === 'hero').map(c => c.id),
+  };
+}
+function traitorDeclarationIntegrity(g: Game) {
+  const b = g.battle;
+  if (!b) return;
+  if (b.traitorDeclarationVersion === undefined && b.traitorDeclarations === undefined) return;
+  nexusRule(() => validateTraitorDeclarations(traitorDeclarationContext(g), b.traitorCalls,
+    b.traitorDeclarations, b.traitorDeclarationVersion));
+}
+function ensureTraitorDeclarations(g: Game) {
+  const b = g.battle;
+  if (!b?.revealed || b.traitorDeclarationVersion) return;
+  requireRule(b.event, 'This battle predates the durable traitor declaration record.');
+  b.traitorDeclarationVersion = 1;
+  b.traitorDeclarations = {};
+  for (const [voter, called] of Object.entries(b.traitorCalls))
+    if (called) b.traitorDeclarations[voter] = nexusRule(() => createTraitorDeclaration(traitorDeclarationContext(g), voter));
+}
+function nexusTraitorIntegrity(g: Game) {
+  const history = g.nexusTraitorExchanges;
+  if (!history) {
+    requireRule(!g.nexusTraitorPending && !g.nexusTraitorParent, 'The pending Nexus exchange has lost its physical draw record.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history), 'Nexus exchanges require the original card module.');
+  const universe = nexusTraitorUniverse(g);
+  nexusRule(() => validateNexusTraitorSnapshot(nexusTraitorSnapshot(g), universe));
+  const events = new Set<string>();
+  for (const exchange of history) {
+    requireRule(!events.has(exchange.event) && exchange.turn <= g.turn,
+      'Nexus exchange history is duplicated or belongs to a future turn.');
+    events.add(exchange.event);
+    if (exchange.stage === 'complete') nexusRule(() => validateNexusTraitorHistory(universe, exchange));
+    else requireRule(exchange.stage === 'return', 'Invalid Nexus exchange progress.');
+  }
+  const pending = history.filter(exchange => exchange.stage === 'return');
+  requireRule(pending.length <= 1 && (pending[0]?.event ?? null) === (g.nexusTraitorPending ?? null),
+    'The Nexus exchange pending marker contradicts its draw history.');
+  if (pending.length) {
+    const exchange = pending[0];
+    requireRule(g.status === 'playing' && exchange === history.at(-1) && exchange.turn === g.turn && exchange.phase === g.phase &&
+      g.nexusCards.cards.discard.includes('harkonnen'), 'The pending Nexus return has lost its turn, phase or spent card.');
+    nexusRule(() => validateNexusTraitorExchange(nexusTraitorSnapshot(g), universe, exchange));
+    requireRule(g.nexusTraitorParent?.event === exchange.event &&
+      g.nexusTraitorParent.signature === nexusTraitorParentSignature(g, exchange.event),
+    'The Nexus exchange has lost or changed its preceding game decision.');
+  } else requireRule(!g.nexusTraitorParent, 'A completed Nexus return cannot retain a suspended decision.');
+  traitorDeclarationIntegrity(g);
+}
+function nexusTraitorOffer(g: Game, id: string) {
+  if (g.nexusCards?.cards?.hands[id] !== 'harkonnen') return null;
+  const player = getPlayer(g, id), mode = nexusCardMode('harkonnen', player.faction, g.players.map(p => p.faction));
+  let blocked: string | null = null;
+  if (g.status !== 'playing') blocked = 'Nexus effects belong to the started game.';
+  else if (player.ally) blocked = 'Allied players cannot retain or play a Nexus card.';
+  else if (g.truthtrance) blocked = 'Finish the active Truthtrance first.';
+  else if (g.nexusCards.phase?.stage === 'drawing') blocked = 'Finish the closing Nexus draws first.';
+  else if (pendingNexusTraitors(g)) blocked = 'Finish the current Nexus return first.';
+  else if (mode === 'betrayal') blocked = 'Betrayal reactions await the private response timing decision.';
+  else if (mode === 'secretAlly' && g.phase !== 8) blocked = 'Use Secret Ally during Mentat Pause.';
+  const draw = mode === 'secretAlly' ? 2 : 1;
+  return { event: JSON.stringify(['nexusTraitors', g.turn, g.phase, g.nexusTraitorExchanges?.length ?? 0, id]), mode, draw, blocked };
+}
+function applyNexusTraitorSnapshot(g: Game, snapshot: NexusTraitorSnapshot) {
+  g.traitorReserve = [...snapshot.reserve];
+  for (const entry of snapshot.players) {
+    const player = getPlayer(g, entry.id);
+    player.traitors = [...entry.traitors];
+    if (entry.faceDancers) player.faceDancers = structuredClone(entry.faceDancers);
+  }
+}
+function playNexusTraitorDraw(g: Game, p: Player, action: Action) {
+  const offer = nexusTraitorOffer(g, p.id);
+  requireRule(offer && !offer.blocked && offer.mode !== 'betrayal' &&
+    action.event === offer.event && action.mode === offer.mode && Object.keys(action).sort().join(',') === 'event,mode,type',
+  offer?.blocked ?? 'This Nexus Traitor draw is stale or belongs to another player.');
+  const result = nexusRule(() => beginNexusTraitorExchange(nexusTraitorSnapshot(g), nexusTraitorUniverse(g), {
+    event: offer.event, owner: p.id, mode: offer.mode as 'cunning' | 'secretAlly', turn: g.turn, phase: g.phase,
+  }));
+  ensureTraitorDeclarations(g);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  applyNexusTraitorSnapshot(g, result.state);
+  (g.nexusTraitorExchanges ??= []).push(result.exchange);
+  g.nexusTraitorPending = result.exchange.event;
+  g.nexusTraitorParent = { event: result.exchange.event, signature: nexusTraitorParentSignature(g, result.exchange.event) };
+  log(g, `${p.name} played the Harkonnen Nexus Card: ${offer.mode === 'cunning' ? 'Cunning' : 'Secret Ally'}. They drew ${offer.draw} private ${p.faction === 'tleilaxu' ? 'Face Dancer' : 'Traitor'} ${offer.draw === 1 ? 'Card' : 'Cards'} and must choose ${offer.draw} to return before play continues.`,
+    { faction: p.faction, name: 'Harkonnen Nexus' });
+}
+function finishNexusTraitorReturn(g: Game, p: Player, action: Action) {
+  const pending = pendingNexusTraitors(g);
+  requireRule(pending?.owner === p.id && action.event === pending.event &&
+    Object.keys(action).sort().join(',') === 'cards,event,type' && Array.isArray(action.cards),
+  'This Nexus return is stale or belongs to another player.');
+  const result = nexusRule(() => finishNexusTraitorExchange(nexusTraitorSnapshot(g), nexusTraitorUniverse(g),
+    pending, action.cards as string[], random));
+  applyNexusTraitorSnapshot(g, result.state);
+  g.nexusTraitorExchanges![g.nexusTraitorExchanges!.length - 1] = result.exchange;
+  g.nexusTraitorPending = null;
+  g.nexusTraitorParent = null;
+  log(g, `${p.name} secretly returned ${result.exchange.returned.length} ${p.faction === 'tleilaxu' ? 'Face Dancer' : 'Traitor'} ${result.exchange.returned.length === 1 ? 'Card' : 'Cards'}. The Traitor Deck was shuffled; their other cards and any prior traitor declaration remain unchanged.`);
+}
+function projectedNexusTraitors(g: Game, id: string) {
+  if (!g.nexusCards?.cards) return null;
+  const pending = pendingNexusTraitors(g);
+  const owner = pending ? getPlayer(g, pending.owner) : null;
+  return { offer: nexusTraitorOffer(g, id), pending: pending ? {
+    event: pending.event, owner: pending.owner, mode: pending.mode, count: pending.drawn.length,
+    choices: pending.owner !== id ? [] : (owner!.faction === 'tleilaxu'
+      ? owner!.faceDancers!.filter(card => !card.revealed).map(card => ({id:card.leader, revealed:card.revealed, drawn:pending.drawn.includes(card.leader)}))
+      : owner!.traitors.map(card => ({id:card, revealed:false, drawn:pending.drawn.includes(card)}))),
+  } : null };
+}
+
 function battleInspectionContext(g: Game): BattleInspectionContext {
   const b = g.battle!;
   return { event: b.event!, attacker: b.attacker, defender: b.defender,
@@ -1536,6 +1688,7 @@ function nexusAtreidesOffer(g: Game, id: string) {
     blocked = 'Play this Nexus Card before the current battle plans are revealed.';
   else if (p.ally) blocked = 'Allied players cannot use a Nexus Card.';
   else if (b.nexusInspection || b.nexusInspectionUsed) blocked = 'This battle already used the Atreides Nexus Card.';
+  else if (pendingNexusTraitors(g)) blocked = 'Finish the private Nexus card return first.';
   else if (g.truthtrance || g.decision || g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard || g.pendingNullentropy)
     blocked = 'Finish the current interaction before playing this Nexus Card.';
   else if (mode === 'betrayal') {
@@ -11498,6 +11651,8 @@ function gholaOptions(g: Game, p: Player) {
 }
 function marketGholaIntegrity(g: Game) {
   nexusCardsIntegrity(g);
+  nexusTraitorIntegrity(g);
+  traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
   homeworldHistoryIntegrity(g);
   grummanCollectionIntegrity(g);
@@ -12484,7 +12639,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
         id,
         beneficiary: traitorBeneficiary(g, b, id)!,
         called: id === canceledVoter ? false : b.traitorCalls[id],
-        traitors: getPlayer(g, id).traitors,
+        traitors: b.traitorDeclarations?.[id] ? [b.traitorDeclarations[id].identity] : getPlayer(g, id).traitors,
       })),
       participants: g.players.map((p) => ({
         id: p.id,
@@ -16508,6 +16663,7 @@ function finishActionContinuations(g: Game) {
   // discard. Retire that next physical batch before exposing optional choices.
   for (let i = 0; g.pendingTreacheryDiscard && i < 16; i++) finishTreacheryDiscard(g);
   requireRule(!g.pendingTreacheryDiscard, 'The automatic discard chain did not finish.');
+  if (pendingNexusTraitors(g)) return;
   observeOccupation(g);
   resumeHomeworldRevivalReturn(g);
   resumeHomeworldVictoryReturn(g);
@@ -16549,6 +16705,7 @@ function finishActionContinuations(g: Game) {
   settleAdvisors(g);
 }
 function settleAutomaticContinuations(g: Game) {
+  if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
   for (let iteration = 0; iteration < 128; iteration++) {
     if (g.truthtrance || g.phaseOpening || g.status === 'finished') return;
@@ -16637,8 +16794,9 @@ function applyActionInner(
   stoneBurnerIntegrity(g);
   strongholdIntegrity(g);
   auditorIntegrity(g);
-  if (g.pendingNullentropy) {
+  if (g.pendingNullentropy && !['nexusTraitorDraw', 'nexusTraitorReturn'].includes(action?.type)) {
     if (action?.type === 'advanceBots') return g;
+    requireRule(!pendingNexusTraitors(g), 'Finish the private Nexus card return before continuing the paid search.');
     requireRule(
       action?.type === 'decision',
       'Finish the paid Nullentropy Box search before another game action.',
@@ -16693,6 +16851,11 @@ function applyActionInner(
   if (t === 'advanceBots') return g;
   if (t === 'nexusCardChoice') { decideNexusCard(g, p, action); return g; }
   requireRule(g.nexusCards?.phase?.stage !== 'drawing', 'Finish the closing Nexus card choices first.');
+  if (t === 'nexusTraitorDraw') { playNexusTraitorDraw(g, p, action); return g; }
+  if (t === 'nexusTraitorReturn') {
+    requireRule(!g.truthtrance, 'Finish the active Truthtrance before returning Nexus cards.');
+    finishNexusTraitorReturn(g, p, action); return g;
+  }
   if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
     !(
@@ -16721,6 +16884,7 @@ function applyActionInner(
       throw new RuleError(error.message);
     throw error;
   }
+  requireRule(!pendingNexusTraitors(g), 'Finish the private Nexus card return before continuing play.');
   if (t === 'card' && action.card === 'richese-juice-of-sapho') {
     playSapho(g, p, action);
     return g;
@@ -19686,6 +19850,7 @@ function applyActionInner(
       'Traitor decision is not available.',
     );
     requireRule(typeof action.call === 'boolean', 'Choose reveal or decline.');
+    if (g.nexusCards?.cards) ensureTraitorDeclarations(g);
     if (action.call) {
       const other =
         b.attacker === traitorBeneficiary(g, b, id) ? b.defender : b.attacker;
@@ -19702,6 +19867,8 @@ function applyActionInner(
         'You do not hold that leader as a traitor.',
       );
     }
+    if (action.call && b.traitorDeclarationVersion)
+      b.traitorDeclarations![id] = nexusRule(() => createTraitorDeclaration(traitorDeclarationContext(g), id));
     b.traitorCalls[id] = action.call;
     if (
       action.call &&
@@ -20151,6 +20318,7 @@ export function viewGame(state: Game, id: string) {
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
     nexusCards: projectedNexusCards(g, id),
+    nexusTraitors: projectedNexusTraitors(g, id),
     nexusAtreides: nexusAtreidesOffer(g, id),
     homeworldRevivalDeployment: projectedHomeworldRevivalReturn(g, id),
     caladanReinforcement: projectedHomeworldVictoryReturn(g, id),
