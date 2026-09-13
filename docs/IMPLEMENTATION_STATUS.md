@@ -1,5 +1,26 @@
 # Dune implementation status
 
+
+## 13 September 2026 — Truthtrance hand size and primary-role facts
+
+Added total physical hand counts and explicit primary-role comparisons, sharing
+classification with component presentation. Canonical Richese roles, Ix alternate
+uses, Worthless faction powers and Ecaz slot-only specials retain their distinct
+semantics. Current facts disclose one aggregate result and create no retention
+promise. The existing count controls, all four bot answer paths and production-room
+continuations are reused; no public mode or publication gate opens.
+
+Eight new focused tests cover the 60-card catalog, actual engine questions,
+privacy, AI and JSON/custody changes. Expanded SQLite cases restore total/category
+and compound answers around an interrupted auction and commit competing answers
+once. Independent review findings were limited to two corrected wording issues.
+Room `LC3E55GY` verifies combined role counts, total size, invalid input and phone
+refresh. Required broad results and aggregate token endpoint belong to the verified
+checkpoint commit and private source-bound report. See
+[hand inventory contract](TRUTHTRANCE_HAND_INVENTORY.md) and
+[efficiency measurements](EFFICIENCY_PILOT.md). Wider Truthtrance and Guild gaps
+remain explicit; preserve all post-reset games.
+
 **Typed Advanced shipment-promise checkpoint, 13 September 2026:** [Shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) now support base Advanced games without Guild or optional modules through the existing authoritative commitment, controls, private guidance, bots and recovery. Ghola preparation reuses canonical eligible normal/elite limits; pending BG conversion preserves feasible promises while retaining real responses and hiding conditional shipment pricing. Cancellation releases only when owned alternatives fail. Genuine Advanced scenarios and production SQLite races cover physical custody and saved continuations. Full validation and browser outcomes are recorded in the checkpoint commit and source-bound verification report. Ordinary Guild settlement, broader commitments, combined modules and complete mode acceptance remain unfinished; no release gate is opened.
 
 **Efficiency setup and fresh local save checkpoint, 13 September 2026:** [Current status](CURRENT_STATUS.md) and the [rule decision index](RULE_DECISIONS.md) consolidate existing evidence without changing mode gates. [Reusable verification](VERIFICATION_WORKFLOW.md) adds private source-bound check logs, read-only saved-game snapshots/online backups and bounded HTTP seat-restoration checks. Focused regressions cover child failure/cancellation, stale source, output protection, WAL backup and seat privacy; the required full-check result is recorded in this checkpoint’s Git commit and external verification report. The user explicitly authorized clearing old local saves: a verified private backup preceded removal of 3,644 rooms and related records, preserving schema/migrations and creating a fresh empty baseline. Future games remain protected. [Pilot measurements](EFFICIENCY_PILOT.md) retain selective subagents, mandatory verified Git pushes and the full game scope; no gameplay or release gate is enabled. Browser setup remains feature-specific, and no live browser acceptance is claimed for this tooling change.

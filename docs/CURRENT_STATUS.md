@@ -18,6 +18,12 @@ offline tests passed. See [pilot measurements](EFFICIENCY_PILOT.md). The current
 Advanced shipment batch extends typed preparation and commitments without Guild
 or optional modules; its validation is recorded in the checkpoint commit.
 
+`32791ed` verified that batch with 4,192 offline tests, build, 40 HTTP tests and
+two isolated browser journeys. The next bounded batch adds [total hand and
+primary-role Truthtrance counts](TRUTHTRANCE_HAND_INVENTORY.md), reusing existing
+private-answer, controls and persisted continuation paths. Its focused browser
+journey verifies two AI answers, invalid-input feedback and phone-width refresh.
+
 ## Remaining readiness
 
 | Area | Established evidence | Remaining gate |

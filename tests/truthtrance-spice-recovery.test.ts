@@ -450,12 +450,45 @@ void test('an existing structured hand fact remains answerable after room-module
   }
 });
 
-void test('hand-count questions restore physical duplicate counts and expose the definite answer only to the target', async () => {
-  for (const [compare, value, answer] of [
-    ['eq', 2, 'yes'],
-    ['gte', 3, 'no'],
-    ['lte', 2, 'yes'],
-  ] as const) {
+void test('hand-count and inventory questions restore physical counts and expose the definite answer only to the target', async () => {
+  const cases: [TruthFact, 'yes' | 'no', 'yes' | 'no'][] = [
+    [
+      { kind: 'handCount', name: 'Shield', compare: 'eq', value: 2 },
+      'yes',
+      'no',
+    ],
+    [
+      { kind: 'handCount', name: 'Shield', compare: 'gte', value: 3 },
+      'no',
+      'no',
+    ],
+    [
+      { kind: 'handCount', name: 'Shield', compare: 'lte', value: 2 },
+      'yes',
+      'yes',
+    ],
+    [
+      { kind: 'handInventory', category: 'all', compare: 'eq', value: 3 },
+      'yes',
+      'yes',
+    ],
+    [
+      { kind: 'handInventory', category: 'defense', compare: 'eq', value: 2 },
+      'yes',
+      'no',
+    ],
+    [
+      { kind: 'handInventory', category: 'weapon', compare: 'gte', value: 1 },
+      'no',
+      'yes',
+    ],
+    [
+      { kind: 'handInventory', category: 'special', compare: 'lte', value: 1 },
+      'yes',
+      'yes',
+    ],
+  ];
+  for (const [fact, answer, alternateAnswer] of cases) {
     const f = await fixture();
     try {
       const secondShield = f.initial.deck.findIndex(
@@ -466,12 +499,6 @@ void test('hand-count questions restore physical duplicate counts and expose the
       f.sqlite
         .prepare('UPDATE rooms SET state=? WHERE code=?')
         .run(JSON.stringify(f.initial), f.code);
-      const fact: TruthFact = {
-        kind: 'handCount',
-        name: 'Shield',
-        compare,
-        value,
-      };
       await ask(f, fact);
       const pending = await restored(f);
       assertSuspended(f, pending);
@@ -502,11 +529,10 @@ void test('hand-count questions restore physical duplicate counts and expose the
           engine.viewGame(alternative, f.seats[index].playerId),
           engine.viewGame(pending, f.seats[index].playerId),
         );
-      if (compare === 'eq')
-        assert.equal(
-          engine.viewGame(alternative, f.seats[1].playerId).truthAnswer,
-          'no',
-        );
+      assert.equal(
+        engine.viewGame(alternative, f.seats[1].playerId).truthAnswer,
+        alternateAnswer,
+      );
 
       const done = await act(f, 1, { type: 'truthAnswer', answer });
       assert.equal(done.truthtrance, null);
@@ -533,99 +559,112 @@ void test('hand-count questions restore physical duplicate counts and expose the
   }
 });
 
-void test('recovered hand-count answers reject dishonest or wrong-seat requests and concurrent truthful answers commit exactly once', async () => {
-  const f = await fixture();
-  try {
-    await ask(f, {
-      kind: 'handCount',
-      name: 'Shield',
-      compare: 'eq',
-      value: 1,
-    });
-    const before = await restored(f);
-    await assertPrivate(f, 'yes');
-    const writeCount = f.writes.length;
-    for (const index of [0, 2])
-      await assert.rejects(
-        f
-          .restart()
-          .act(
-            f.code,
-            f.seats[index],
-            before.version,
-            { type: 'truthAnswer', answer: 'yes' },
-            clock,
-          ),
-        /questioned player/,
-      );
-    for (const answer of ['no', 'unknown'])
-      await assert.rejects(
-        f
-          .restart()
-          .act(
-            f.code,
-            f.seats[1],
-            before.version,
-            { type: 'truthAnswer', answer },
-            clock,
-          ),
-        /truthfully/,
-      );
-    assert.equal(f.writes.length, writeCount);
-    assert.deepEqual(await f.restart().readRoom(f.code), before);
+void test('recovered hand-count and compound inventory answers reject dishonest or wrong-seat requests and concurrent truthful answers commit exactly once', async () => {
+  const facts: TruthFact[] = [
+    { kind: 'handCount', name: 'Shield', compare: 'eq', value: 1 },
+    { kind: 'handInventory', category: 'all', compare: 'eq', value: 2 },
+    {
+      kind: 'and',
+      terms: [
+        {
+          kind: 'handInventory',
+          category: 'defense',
+          compare: 'gte',
+          value: 1,
+        },
+        { kind: 'handInventory', category: 'special', compare: 'eq', value: 1 },
+      ],
+    },
+  ];
+  for (const fact of facts) {
+    const f = await fixture();
+    try {
+      await ask(f, fact);
+      const before = await restored(f);
+      await assertPrivate(f, 'yes');
+      const writeCount = f.writes.length;
+      for (const index of [0, 2])
+        await assert.rejects(
+          f
+            .restart()
+            .act(
+              f.code,
+              f.seats[index],
+              before.version,
+              { type: 'truthAnswer', answer: 'yes' },
+              clock,
+            ),
+          /questioned player/,
+        );
+      for (const answer of ['no', 'unknown'])
+        await assert.rejects(
+          f
+            .restart()
+            .act(
+              f.code,
+              f.seats[1],
+              before.version,
+              { type: 'truthAnswer', answer },
+              clock,
+            ),
+          /truthfully/,
+        );
+      assert.equal(f.writes.length, writeCount);
+      assert.deepEqual(await f.restart().readRoom(f.code), before);
 
-    f.writes.length = 0;
-    f.hooks.beforeWrite = barrier();
-    const action = { type: 'truthAnswer', answer: 'yes' };
-    const outcomes = await Promise.allSettled([
-      f.rooms.act(f.code, f.seats[1], before.version, action, clock),
-      f.restart().act(f.code, f.seats[1], before.version, action, clock),
-    ]);
-    f.hooks.beforeWrite = undefined;
-    assert.equal(
-      outcomes.filter((result) => result.status === 'fulfilled').length,
-      1,
-    );
-    assert.equal(
-      outcomes.filter((result) => result.status === 'rejected').length,
-      1,
-    );
-    assert.deepEqual(
-      f.writes.map((write) => write.changes).sort((a, b) => a - b),
-      [0, 1],
-    );
-    const after = await f.restart().readRoom(f.code);
-    assert.equal(after.version, before.version + 1);
-    assert.equal(after.truthtrance, null);
-    assert.deepEqual(after.truthHistory, [
-      {
-        turn: before.turn,
-        phase: before.phase,
-        asker: f.seats[0].playerId,
-        question: before.truthtrance!.question!,
-        answer: 'yes',
-      },
-    ]);
-    assert.equal(
-      after.discard.filter((card) => card.id === f.card.id).length,
-      1,
-    );
-    assert.equal(
-      after.players[0].hand.some((card) => card.id === f.card.id),
-      false,
-    );
-    assert.deepEqual(inventory(after), inventory(before));
-    assertSuspended(f, after);
-    const committedWrites = f.writes.length;
-    for (const version of [before.version, after.version])
-      await assert.rejects(
-        f.restart().act(f.code, f.seats[1], version, action, clock),
+      f.writes.length = 0;
+      f.hooks.beforeWrite = barrier();
+      const action = { type: 'truthAnswer', answer: 'yes' };
+      const outcomes = await Promise.allSettled([
+        f.rooms.act(f.code, f.seats[1], before.version, action, clock),
+        f.restart().act(f.code, f.seats[1], before.version, action, clock),
+      ]);
+      f.hooks.beforeWrite = undefined;
+      assert.equal(
+        outcomes.filter((result) => result.status === 'fulfilled').length,
+        1,
       );
-    assert.equal(f.writes.length, committedWrites);
-    assert.deepEqual(await restored(f), after);
-    await assertPrivate(f, null);
-  } finally {
-    f.hooks.beforeWrite = undefined;
-    f.sqlite.close();
+      assert.equal(
+        outcomes.filter((result) => result.status === 'rejected').length,
+        1,
+      );
+      assert.deepEqual(
+        f.writes.map((write) => write.changes).sort((a, b) => a - b),
+        [0, 1],
+      );
+      const after = await f.restart().readRoom(f.code);
+      assert.equal(after.version, before.version + 1);
+      assert.equal(after.truthtrance, null);
+      assert.deepEqual(after.truthHistory, [
+        {
+          turn: before.turn,
+          phase: before.phase,
+          asker: f.seats[0].playerId,
+          question: before.truthtrance!.question!,
+          answer: 'yes',
+        },
+      ]);
+      assert.equal(
+        after.discard.filter((card) => card.id === f.card.id).length,
+        1,
+      );
+      assert.equal(
+        after.players[0].hand.some((card) => card.id === f.card.id),
+        false,
+      );
+      assert.deepEqual(inventory(after), inventory(before));
+      assertSuspended(f, after);
+      const committedWrites = f.writes.length;
+      for (const version of [before.version, after.version])
+        await assert.rejects(
+          f.restart().act(f.code, f.seats[1], version, action, clock),
+        );
+      assert.equal(f.writes.length, committedWrites);
+      assert.deepEqual(await restored(f), after);
+      await assertPrivate(f, null);
+    } finally {
+      f.hooks.beforeWrite = undefined;
+      f.sqlite.close();
+    }
   }
 });

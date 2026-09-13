@@ -4,29 +4,56 @@ import { useId } from 'react';
 import { Input } from '@/components/ui/input';
 import { TRUTH_CARD_NAMES } from '@/game/truthtrance';
 import type { CardCountFact } from '@/game/truthtrance-card-count';
+import {
+  HAND_INVENTORY_LABELS,
+  type HandInventoryFact,
+} from '@/game/truthtrance-hand-inventory';
 
-export function CardCountFields({
+export function CardCountFields<T extends CardCountFact | HandInventoryFact>({
   value,
   onChange,
 }: {
-  value: CardCountFact;
-  onChange: (fact: CardCountFact) => void;
+  value: T;
+  onChange: (fact: T) => void;
 }) {
   const id = useId();
   const invalid = !Number.isSafeInteger(value.value) || value.value < 0;
   return (
     <>
-      <label>
-        Card name
-        <select
-          value={value.name}
-          onChange={(event) => onChange({ ...value, name: event.target.value })}
-        >
-          {TRUTH_CARD_NAMES.map((name) => (
-            <option key={name}>{name}</option>
-          ))}
-        </select>
-      </label>
+      {value.kind === 'handCount' ? (
+        <label>
+          Card name
+          <select
+            value={value.name}
+            onChange={(event) =>
+              onChange({ ...value, name: event.target.value })
+            }
+          >
+            {TRUTH_CARD_NAMES.map((name) => (
+              <option key={name}>{name}</option>
+            ))}
+          </select>
+        </label>
+      ) : (
+        <label>
+          Cards to count
+          <select
+            value={value.category}
+            onChange={(event) =>
+              onChange({
+                ...value,
+                category: event.target.value as HandInventoryFact['category'],
+              })
+            }
+          >
+            {Object.entries(HAND_INVENTORY_LABELS).map(([category, label]) => (
+              <option key={category} value={category}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <label>
         Compare card count
         <select
@@ -44,7 +71,7 @@ export function CardCountFields({
         </select>
       </label>
       <label htmlFor={`${id}-count`}>
-        Number of copies
+        {value.kind === 'handCount' ? 'Number of copies' : 'Number of cards'}
         <Input
           id={`${id}-count`}
           type="number"
@@ -61,10 +88,23 @@ export function CardCountFields({
         />
       </label>
       <p id={`${id}-help`} className="fine">
-        Counts copies of this exact named card in the player’s hand now. Cards
-        in the deck, discard pile, or a separate cache do not count. The answer
-        reveals only whether the comparison is true.
+        {value.kind === 'handCount'
+          ? 'Counts copies of this exact named card'
+          : value.category === 'all'
+            ? 'Counts all physical cards'
+            : 'Counts physical cards of the selected primary role'}{' '}
+        in the player’s hand now. Cards in the deck, discard pile, or a separate
+        cache do not count. The answer reveals only whether the comparison is
+        true.
       </p>
+      {value.kind === 'handInventory' && value.category !== 'all' && (
+        <p className="fine">
+          Primary roles follow the cards: Weirding Way is a weapon and Chemistry
+          is a defense. Worthless cards stay separate, including for Bene
+          Gesserit or CHOAM. Alternate uses and faction powers do not change
+          this count.
+        </p>
+      )}
       {invalid && (
         <p id={`${id}-error`} className="notice" role="alert">
           {Number.isInteger(value.value) &&

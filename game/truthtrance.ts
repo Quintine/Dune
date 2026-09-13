@@ -10,6 +10,12 @@ import {
 } from './truthtrance-card-count';
 import { richeseCards } from './richese-cards';
 import {
+  parseHandInventoryFact,
+  handInventoryFactMatches,
+  handInventoryFactText,
+  type HandInventoryFact,
+} from './truthtrance-hand-inventory';
+import {
   parsePlanClaim,
   planClaimText,
   type PlanClaim,
@@ -22,6 +28,7 @@ import { DUKE_VIDAL_ID } from './duke-vidal';
 
 export type TruthFact =
   | CardCountFact
+  | HandInventoryFact
   | { kind: 'hand'; name: string }
   | { kind: 'traitor'; leader: string }
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
@@ -75,9 +82,11 @@ function parseFact(
     'Truthtrance supports at most 16 clauses and four levels of grouping.',
   );
   const v = record(value);
-  if (v.kind === 'handCount') {
+  if (v.kind === 'handCount' || v.kind === 'handInventory') {
     try {
-      return parseCardCountFact(v, TRUTH_CARD_NAMES);
+      return v.kind === 'handCount'
+        ? parseCardCountFact(v, TRUTH_CARD_NAMES)
+        : parseHandInventoryFact(v);
     } catch (error) {
       throw new TruthError(
         error instanceof Error ? error.message : String(error),
@@ -146,7 +155,10 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
         g.status === 'playing' &&
         g.phase === 5 &&
         g.active === v.target &&
-        shipmentAvailable(g,g.players.find((p) => p.id === v.target)!) &&
+        shipmentAvailable(
+          g,
+          g.players.find((p) => p.id === v.target)!,
+        ) &&
         !g.response &&
         !g.decision &&
         !g.phaseOpening &&
@@ -252,6 +264,8 @@ export function truthFactAnswer(
   p: Pick<Player, 'hand' | 'traitors' | 'traitorChoices' | 'spice'>,
   fact: TruthFact,
 ): TruthAnswer {
+  if (fact.kind === 'handInventory')
+    return handInventoryFactMatches(p.hand, fact) ? 'yes' : 'no';
   if (fact.kind === 'handCount')
     return cardCountFactMatches(p.hand, fact) ? 'yes' : 'no';
   if (fact.kind === 'hand')
@@ -293,6 +307,7 @@ export function truthQuestionText(
   if (q.kind === 'battlePlan')
     return `In this battle in ${territory(q.territory).name}, will it be true that ${planClaimText(q.claim, leaderName)}?`;
   const clause = (f: TruthFact): string => {
+    if (f.kind === 'handInventory') return handInventoryFactText(f);
     if (f.kind === 'handCount') return cardCountFactText(f);
     if (f.kind === 'hand') return `you hold ${f.name}`;
     if (f.kind === 'traitor') return `${leaderName(f.leader)} is your traitor`;

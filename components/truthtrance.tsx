@@ -62,7 +62,9 @@ export function Truthtrance({
   ]);
   const factId = useId();
   const invalidSpice = (fact: TruthFact) =>
-    (fact.kind === 'spice' || fact.kind === 'handCount') &&
+    (fact.kind === 'spice' ||
+      fact.kind === 'handCount' ||
+      fact.kind === 'handInventory') &&
     (!Number.isSafeInteger(fact.value) || fact.value < 0);
   const invalidFact = clauses
     .slice(0, join === 'single' ? 1 : 2)
@@ -357,9 +359,10 @@ export function Truthtrance({
                     <p className="notice">
                       Automatic enforcement currently supports the active
                       player’s unused shipment in base Basic games and base
-                      Advanced games without Guild or optional modules. Select that player and finish pending
-                      decisions first. Earlier questions and other rules
-                      configurations remain unfinished.
+                      Advanced games without Guild or optional modules. Select
+                      that player and finish pending decisions first. Earlier
+                      questions and other rules configurations remain
+                      unfinished.
                     </p>
                   )}
                   <p className="notice">
@@ -442,16 +445,23 @@ export function Truthtrance({
                                             compare: 'gte',
                                             value: 2,
                                           }
-                                        : e.target.value === 'spice'
+                                        : e.target.value === 'handInventory'
                                           ? {
-                                              kind: 'spice',
+                                              kind: 'handInventory',
+                                              category: 'all',
                                               compare: 'gte',
-                                              value: 6,
+                                              value: 2,
                                             }
-                                          : {
-                                              kind: 'traitor',
-                                              leader: g.allLeaders[0].id,
-                                            }
+                                          : e.target.value === 'spice'
+                                            ? {
+                                                kind: 'spice',
+                                                compare: 'gte',
+                                                value: 6,
+                                              }
+                                            : {
+                                                kind: 'traitor',
+                                                leader: g.allLeaders[0].id,
+                                              }
                                     : old,
                                 ),
                               )
@@ -460,6 +470,9 @@ export function Truthtrance({
                             <option value="hand">Holds a named card</option>
                             <option value="handCount">
                               Number of a named card
+                            </option>
+                            <option value="handInventory">
+                              Hand size or primary card role
                             </option>
                             <option value="traitor">Selected a traitor</option>
                             <option value="spice">
@@ -487,7 +500,8 @@ export function Truthtrance({
                               ))}
                             </select>
                           </label>
-                        ) : c.kind === 'handCount' ? (
+                        ) : c.kind === 'handCount' ||
+                          c.kind === 'handInventory' ? (
                           <CardCountFields
                             value={c}
                             onChange={(next) =>

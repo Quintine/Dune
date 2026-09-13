@@ -2115,6 +2115,66 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'truthtrance-hand-inventory',
+    title: 'Truthtrance: hand size and primary card roles',
+    category: 'Cards',
+    coverage: 'Partial',
+    summary:
+      'Ask a verified Yes/No question about total hand size or how many held cards have a selected primary role.',
+    steps: [
+      'Declare Truthtrance, choose Verified cards, traitors or spice, then Hand size or primary card role. Select all cards or a primary role, a comparison and a whole count of zero or more. Review the question before asking.',
+      'Count only physical cards currently in the target’s hand, including reserved cards still held there. Decks, discards, separate caches and cards already on the table do not count. Every held physical copy counts once.',
+      'Primary roles are the cards’ default roles. Weirding Way is a weapon; Chemistry is a defense. Alternate battle roles do not change these counts. Worthless cards and Cheap Heroes or Heroines are separate categories. Bene Gesserit and CHOAM powers do not turn held Worthless cards into another category.',
+      'Richese cards use their printed roles: Stone Burner and Mirror Weapon are weapons; Portable Snooper is a defense. Other Special cards belong to the Special category. A classification question does not make an unfinished card effect available.',
+      'Only the target receives the verified answer before answering. Other players see the question and its final aggregate Yes/No answer, without a list of matching cards. An exact comparison answered Yes necessarily confirms that count. AND/OR combinations publish only their combined result.',
+      'These are current facts, not promises to keep cards or to use them in battle. All four AI levels answer from their own verified result. Broader freeform questions and future-action commitments remain unfinished.',
+    ],
+    example:
+      'A hand of Weirding Way, Chemistry and Baliset has three cards: one primary weapon, one primary defense and one Worthless card.',
+    related: [
+      'card-truthtrance',
+      'truthtrance-card-count',
+      'truthtrance-spice',
+      'privacy',
+    ],
+    checklist: [
+      {
+        area: 'Implementation',
+        status: 'Implemented',
+        detail:
+          'Validated total and primary-role physical hand counts share the component classification and aggregate fact evaluator.',
+      },
+      {
+        area: 'Player controls',
+        status: 'Implemented',
+        detail:
+          'Role selection, comparison, accessible count input, invalid-input feedback and the exact public question preview.',
+      },
+      {
+        area: 'AI',
+        status: 'Partial',
+        detail:
+          'All four profiles truthfully answer; strategic choice of these questions remains uncalibrated.',
+      },
+      {
+        area: 'Documentation',
+        status: 'Implemented',
+        detail:
+          'Explains hand custody, default roles, alternate uses, private aggregation and current-fact lifetime.',
+      },
+      {
+        area: 'Verification',
+        status: 'Partial',
+        detail:
+          'Focused role, engine, privacy, AI, JSON and persisted concurrent-answer checks; no complete mode certificate.',
+        evidence: [
+          'tests/truthtrance-hand-inventory.test.ts',
+          'tests/truthtrance-spice-recovery.test.ts',
+        ],
+      },
+    ],
+  },
+  {
     id: 'truthtrance-shipment',
     title: 'Truthtrance: shipment promises',
     category: 'Cards',
@@ -2194,6 +2254,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'privacy',
       'truthtrance-spice',
       'truthtrance-card-count',
+      'truthtrance-hand-inventory',
       'truthtrance-shipment',
     ],
   },

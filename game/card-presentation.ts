@@ -3,6 +3,7 @@ import { BATTLE_CARD_HELP, battleCardLabel } from './battle-cards';
 import { RULE_TOPICS, type RuleTopic } from './reference';
 import { ecazTreacheryDefinition } from './ecaz-cards';
 import { richeseCardDefinition } from './richese-cards';
+import { printedCardCategory } from './card-category';
 
 /** Presentation uses only a card the caller has already been authorized to see. */
 export type VisibleCard = Readonly<
@@ -130,15 +131,13 @@ export function cardPresentation(card: VisibleCard): CardPresentation {
   const topics = topicIds
     .map((id) => RULE_TOPICS.find((topic) => topic.id === id))
     .filter((topic): topic is RuleTopic => !!topic);
-  const role = ['shield', 'snooper', 'shieldSnooper', 'chemistry'].includes(
-    card.kind,
-  )
-    ? 'defense'
-    : card.kind === 'hero'
+  const category = printedCardCategory(card);
+  const role =
+    category === 'hero'
       ? 'leader'
-      : card.kind === 'special' || card.kind === 'worthless'
+      : category === 'special' || category === 'worthless'
         ? 'utility'
-        : 'weapon';
+        : category;
   return {
     category:
       card.kind === 'special'
