@@ -1,6 +1,18 @@
 # Dune implementation status
 
 
+## 14 September — AI ordinary arrival preflight
+
+[AI arrival checks](BOT_ARRIVAL_PREFLIGHT.md) filter known unsupported ordinary
+shipment/movement candidates with the existing authoritative reaction quote.
+All four profiles retain executable alternatives, single reactions, faction
+exemptions and correctly routed Guild contributions. The public-input adapter
+never reads concealed Terror faces or rival private resources. Special routes
+remain on their existing adapters; no simultaneous reaction rule is invented.
+Source-bound same-seed samples, focused regressions, required checks, saved-game
+preservation and delivery are recorded in the private report and Git message.
+
+
 ## 14 September — reusable base player-count samples
 
 The faction sample runner now also selects genuine base Basic/Advanced games

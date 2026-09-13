@@ -87,6 +87,7 @@ import { sandmasterDefaultChoice } from './sandmaster-movement';
 import { faction } from './catalog';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
+import { botArrivalBlock } from './bot-arrival';
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
@@ -3803,7 +3804,7 @@ export function botActions(g: GameView): Action[] {
   const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {
     if (action.type === 'move' && nexusGuildCunningActive(g) && !nexusGuildMovementAvailable(g)) return [];
     const sourced = withNativeShipmentSources(g, action);
-    return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) ? [sourced] : [];
+    return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) && !botArrivalBlock(g, sourced) ? [sourced] : [];
   });
   const me = g.players.find((p) => p.id === g.me)!;
   const ghola = standaloneGholaAction(g, actions);

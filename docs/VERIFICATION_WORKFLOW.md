@@ -60,7 +60,9 @@ has finished; expansion Traitor/Face Dancer zones are not certified by this
 check. Every rejected candidate must leave its input unchanged. Every 37 actions
 checks all private views after JSON restoration and absence of rival hand,
 spice, Traitor and Face Dancer fields. Rejected candidates remain visible in private traces even when
-a later candidate succeeds. Samples are development evidence, not calibration or
+a later candidate succeeds. The [ordinary AI arrival adapter](BOT_ARRIVAL_PREFLIGHT.md)
+filters known supported-scope reaction conflicts before attempting an action;
+remaining rejections are still reported, never hidden by the runner. Samples are development evidence, not calibration or
 complete rules certification.
 
 The output is a new private directory outside the checkout. It contains private
