@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
+import { shipmentPromiseModeSupported } from '@/game/shipment-promises';
 import {
   TRUTH_CARD_NAMES,
   truthQuestionText,
@@ -41,8 +42,7 @@ export function Truthtrance({
     shipmentMinimum < 1 ||
     shipmentMinimum > 20;
   const shipmentAvailable =
-    !g.advanced &&
-    !g.expansions.length &&
+    shipmentPromiseModeSupported(g) &&
     g.phase === 5 &&
     g.active === target &&
     !g.players.find((p) => p.id === target)?.shipped &&
@@ -356,8 +356,8 @@ export function Truthtrance({
                   {!shipmentAvailable && (
                     <p className="notice">
                       Automatic enforcement currently supports the active
-                      player’s unused shipment in the Basic game without
-                      expansions. Select that player and finish pending
+                      player’s unused shipment in base Basic games and base
+                      Advanced games without Guild or optional modules. Select that player and finish pending
                       decisions first. Earlier questions and other rules
                       configurations remain unfinished.
                     </p>

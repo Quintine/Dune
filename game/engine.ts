@@ -273,6 +273,7 @@ import {
 import {
   matchesShipment,
   liveShipmentPromises,
+  shipmentPromiseModeSupported,
   type ShipmentClaim,
   type ShipmentPromise,
 } from './shipment-promises';
@@ -12486,15 +12487,25 @@ function shipmentPromiseIntegrity(g: Game) {
     );
     if (promise.turn === g.turn && !promise.released && !promise.fulfilled)
       requireRule(
-        !g.advanced &&
-          !g.expansions.length &&
+        shipmentPromiseModeSupported(g) &&
           g.status === 'playing' &&
           g.phase === 5 &&
           g.active === promise.player &&
           shipmentAvailable(g,getPlayer(g,promise.player)),
-        'The saved shipment promise does not belong to this unused Basic shipment opportunity.',
+        'The saved shipment promise does not belong to a supported unused shipment opportunity.',
       );
   }
+}
+/** A pending conversion may succeed. Resolve only its shipment effect in the
+ * private reachability copy; the live table retains every opponent response. */
+function projectPendingShipmentKarama(g: Game, player: string) {
+  const pending = g.pendingKarama;
+  if (g.response?.kind !== 'worthlessKarama' || !pending ||
+      g.response.owner !== pending.owner || pending.use.kind !== 'shipment' ||
+      pending.use.recipient !== player) return;
+  g.response = null;
+  g.pendingKarama = null;
+  completeKarama(g, getPlayer(g, pending.owner), pending.use);
 }
 /** Search owned preparation and canonical shipment quotes, never the AI's scored shortlist. */
 function findShipmentCompletion(
@@ -12517,6 +12528,7 @@ function findShipmentCompletion(
     return { actions: [{ type: 'endMovement' }] };
   const initial = structuredClone(state);
   initial.truthtrance = null;
+  projectPendingShipmentKarama(initial, owner.id);
   // Test choices after the interrupt, while leaving the real continuation intact.
   // Every actual action still revalidates its timing, quote and physical custody.
   initial.response = null;
@@ -12628,8 +12640,8 @@ function findShipmentCompletion(
         }
       }
     }
-    // These Basic preparations are deterministic and use only the respondent's
-    // own cards and recoverable escrow. More reserves/lower cost cannot remove
+    // Preparations use only owned cards, recoverable escrow and already-pending
+    // conversion effects. More reserves/lower cost cannot remove
     // a previously available choice of physical shipment count.
     const preparations: Action[] = [];
     if (g.aid[p.id]?.amount > 0)
@@ -12642,16 +12654,18 @@ function findShipmentCompletion(
         mode: 'shipment',
         target: p.id,
       });
-    const ghola = p.hand.find((c) => c.effect === 'ghola');
-    if (ghola && p.tanks > 0)
+    const ghola = gholaOptions(g, p);
+    if (ghola.available && ghola.maxForces > 0)
       preparations.push({
         type: 'card',
-        card: ghola.id,
-        amount: Math.min(5, p.tanks),
+        card: ghola.cards[0],
+        amount: ghola.maxForces,
+        elite: Math.max(0, ghola.maxForces - (p.tanks - (p.elites?.tanks ?? 0))),
       });
     for (const action of preparations) {
       try {
         const next = applyActionInner(g, p.id, action, 'shipmentPreparation');
+        projectPendingShipmentKarama(next, p.id);
         queue.push({ game: next, actions: [...actions, action] });
       } catch (error) {
         if (!(error instanceof RuleError)) throw error;
@@ -21194,6 +21208,7 @@ export function viewGame(state: Game, id: string) {
     shipmentPromises: g.shipmentPromises ?? [],
     shipmentCompletion:
       !g.pendingTreacheryDiscard &&
+      !g.response && !g.pendingKarama &&
       liveShipmentPromises(g.shipmentPromises ?? [], id, g.turn).some(
         (p) => p.answer,
       )

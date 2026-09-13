@@ -91,18 +91,38 @@ function unitStore(runBots = bots.runBots) {
 
 const clock: Rooms.RoomsClock = { now: () => 10000, sleep: async () => {} };
 
-async function fixture() {
+async function fixture(
+  advanced = false,
+  faction: 'emperor' | 'beneGesserit' = 'emperor',
+) {
   const store = unitStore();
   const made = await store.rooms.createRoom('Asker', 'atreides', false, []);
   const code = made.view.code;
-  const target = await store.rooms.joinRoom(code, 'Shipper', 'emperor');
+  const target = await store.rooms.joinRoom(code, 'Shipper', faction);
   const observer = await store.rooms.joinRoom(code, 'Observer', 'harkonnen');
   const seats = await Promise.all(
     [made.token, target.token!, observer.token!].map((token) =>
       store.rooms.authenticate(code, token),
     ),
   );
-  const initial = await store.rooms.readRoom(code);
+  let initial = await store.rooms.readRoom(code);
+  if (advanced) {
+    initial.advanced = true; // Set the requested mode on the still-uninitialized lobby.
+    initial.players.forEach((p) => {
+      p.ready = true;
+    });
+    initial = engine.initializeBaseGameForAudit(initial);
+    for (let n = 0; initial.status === 'setup' && n < 50; n++) {
+      const id = engine.viewGame(initial, initial.host).setupPending[0];
+      assert.ok(id, 'Genuine Advanced setup retains a decision owner.');
+      const view = engine.viewGame(initial, id);
+      view.players.find((p) => p.id === id)!.bot = 'Hard';
+      const action = bots.botActions(view)[0];
+      assert.ok(action, 'Genuine Advanced setup has a legal next decision.');
+      initial = engine.applyAction(initial, id, action);
+    }
+    assert.equal(initial.status, 'playing');
+  }
   Object.assign(initial, {
     status: 'playing',
     phase: 5,
@@ -118,15 +138,24 @@ async function fixture() {
     deck: baseDeck(),
     response: null,
     decision: null,
+    phaseOpening: null,
   });
   for (const p of initial.players) {
     p.hand = [];
     p.spice = 10;
     p.forces = {};
     p.reserves = 20;
+    p.tanks = 0;
+    if (p.elites) {
+      p.elites.forces = {};
+      p.elites.reserves = p.faction === 'emperor' ? 5 : 3;
+      p.elites.tanks = 0;
+      p.elites.revived = 0;
+    }
+    if (p.advisors) p.advisors = {};
     p.shipped = false;
     p.moved = 0;
-    p.traitors = [p.leaders[0].id];
+    if (!advanced) p.traitors = [p.leaders[0].id];
     p.traitorChoices = [];
   }
   initial.players[1].forces = { 'polar_sink:0': 2 };
@@ -514,6 +543,7 @@ void test('corrupt persisted promise records and pending shipment questions reje
       },
       (g) => {
         g.advanced = true;
+        g.players[2].faction = 'guild';
       },
       (g) => {
         g.expansions = ['ix'];
@@ -653,5 +683,146 @@ void test('older-turn and fulfilled shipment promises remain readable without re
     assert.deepEqual(await restored(f), completed);
   } finally {
     f.sqlite.close();
+  }
+});
+
+void test('Advanced typed Ghola preparation and its shipment survive room reload and duplicate submissions', async () => {
+  const f = await fixture(true);
+  try {
+    const staged = await f.restart().readRoom(f.code),
+      p = staged.players[1];
+    p.reserves = 2;
+    p.tanks = 5;
+    p.forces = { 'polar_sink:0': 13 };
+    p.spice = 6;
+    p.elites = {
+      reserves: 0,
+      tanks: 2,
+      forces: { 'polar_sink:0': 3 },
+      revived: 0,
+    };
+    const at = staged.deck.findIndex((c) => c.effect === 'ghola');
+    assert.ok(at >= 0);
+    const ghola = staged.deck.splice(at, 1)[0];
+    p.hand.push(ghola);
+    f.sqlite
+      .prepare('UPDATE rooms SET state=?,version=? WHERE code=?')
+      .run(JSON.stringify(staged), staged.version, f.code);
+    await ask(f);
+    await restored(f);
+    const accepted = await act(f, 1, { type: 'truthAnswer', answer: 'yes' });
+    const preparation = engine.viewGame(accepted, p.id).shipmentCompletion!
+      .actions[0];
+    assert.equal(preparation.card, ghola.id);
+    assert.equal(preparation.amount, 4);
+    assert.equal(preparation.elite, 1);
+    await race(f, 1, accepted.version, [preparation, preparation]);
+    const revived = await restored(f);
+    assert.equal(revived.players[1].reserves, 6);
+    assert.equal(revived.players[1].elites!.revived, 1);
+    assert.equal(revived.discard.filter((c) => c.id === ghola.id).length, 1);
+    const shipment = engine.viewGame(revived, p.id).shipmentCompletion!
+      .actions[0];
+    assert.equal(shipment.type, 'ship');
+    assert.equal(shipment.elite, 1);
+    await race(f, 1, revived.version, [shipment, shipment]);
+    const arrived = await restored(f);
+    assert.equal(arrived.players[1].spice, 0);
+    assert.equal(arrived.players[1].reserves, 0);
+    assert.equal(
+      arrived.players[1].forces[`carthag:${Number(shipment.sector)}`],
+      6,
+    );
+    assert.equal(
+      arrived.players[1].elites!.forces[`carthag:${Number(shipment.sector)}`],
+      1,
+    );
+    assert.equal(arrived.shipmentPromises![0].fulfilled, true);
+    assert.deepEqual(inventory(arrived), inventory(staged));
+    for (const other of [0, 2]) {
+      const view = engine.viewGame(arrived, f.seats[other].playerId);
+      assert.equal(view.shipmentCompletion, null);
+      assert.equal('hand' in view.players[1], false);
+    }
+  } finally {
+    f.sqlite.close();
+  }
+});
+
+void test('Advanced BG pending conversion keeps its promise through restart and commits or releases once', async () => {
+  for (const canceled of [false, true]) {
+    const f = await fixture(true, 'beneGesserit');
+    try {
+      const staged = await f.restart().readRoom(f.code),
+        p = staged.players[1];
+      p.spice = 3;
+      p.forces = { 'carthag:11': 1 };
+      p.reserves = 19;
+      p.advisors = { carthag: {} };
+      const hold = (seat: number, effect: 'worthless' | 'karama') => {
+        const at = staged.deck.findIndex((c) =>
+          effect === 'worthless' ? c.kind === 'worthless' : c.effect === effect,
+        );
+        assert.ok(at >= 0);
+        const card = staged.deck.splice(at, 1)[0];
+        staged.players[seat].hand.push(card);
+        return card.id;
+      };
+      const conversion = hold(1, 'worthless'),
+        cancel = hold(0, 'karama');
+      staged.players[2].forces = { 'carthag:11': 2 };
+      staged.players[2].reserves = 18;
+      f.sqlite
+        .prepare('UPDATE rooms SET state=?,version=? WHERE code=?')
+        .run(JSON.stringify(staged), staged.version, f.code);
+      await ask(f);
+      const accepted = await act(f, 1, { type: 'truthAnswer', answer: 'yes' });
+      await act(
+        f,
+        1,
+        engine.viewGame(accepted, p.id).shipmentCompletion!.actions[0],
+      );
+      let pending = await restored(f);
+      assert.equal(pending.response?.kind, 'worthlessKarama');
+      assert.equal(pending.shipmentPromises![0].released, undefined);
+      assert.equal(
+        engine.viewGame(pending, p.id).shipmentCompletion,
+        null,
+        'A pending discounted route is not yet an executable shipment or a current price.',
+      );
+      await rejectsWithoutWrite(f, 1, { type: 'endMovement' });
+      if (canceled) {
+        const action = { type: 'card', card: cancel, mode: 'cancel' };
+        await race(f, 0, pending.version, [action, action]);
+        pending = await restored(f);
+        assert.equal(pending.shipmentPromises![0].released, true);
+        assert.equal(pending.players[1].spice, 3);
+        assert.equal(pending.players[1].shipped, false);
+      } else {
+        for (let n = 0; pending.response && n < 10; n++) {
+          const seat = pending.players.findIndex(
+            (player) => !pending.response!.passed.includes(player.id),
+          );
+          assert.ok(seat >= 0);
+          pending = await act(f, seat, { type: 'passResponse' });
+        }
+        assert.equal(pending.response, null);
+        await restored(f);
+        const shipment = engine.viewGame(pending, p.id).shipmentCompletion!
+          .actions[0];
+        await race(f, 1, pending.version, [shipment, shipment]);
+        pending = await restored(f);
+        assert.equal(pending.shipmentPromises![0].fulfilled, true);
+        assert.equal(pending.players[1].spice, 0);
+        assert.ok(pending.players[1].advisors!.carthag);
+      }
+      assert.equal(
+        pending.discard.filter((c) => c.id === conversion).length,
+        1,
+      );
+      assert.deepEqual(inventory(pending), inventory(staged));
+    } finally {
+      f.sqlite.close();
+    }
   }
 });

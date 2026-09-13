@@ -2120,14 +2120,14 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Cards',
     coverage: 'Partial',
     summary:
-      'Bind a shipment from reserves to a named territory with a minimum physical force count during the active Basic shipment opportunity.',
+      'Bind a shipment from reserves to a named territory with a minimum physical force count during the active supported shipment opportunity.',
     steps: [
-      'Declare Truthtrance, select the active player and choose Bind a shipment from reserves. Choose a printed destination and minimum of one to twenty forces. Automatic enforcement currently supports the Basic game without expansions, before that player ships and after pending decisions finish.',
+      'Declare Truthtrance, select the active player and choose Bind a shipment from reserves. Choose a printed destination and minimum of one to twenty forces. Automatic enforcement supports base Basic games and base Advanced games without Guild or optional modules, before that player ships and after pending decisions finish.',
       'Yes requires a matching shipment while possible. No prohibits only that matching shipment: a smaller count, different destination, transport of forces already on the board or no shipment remains available. Forces already in the destination and ground movement do not satisfy the question. Fremen reinforcements and Guild transport from southern reserves do count.',
       'The target privately sees feasible answers based on their own resources and earlier promises. Available Ghola revival, Karama discounts, incoming pledged aid and reclaiming their own unused pledge are included. Other players’ unplayed cards and future voluntary gifts are not assumed.',
       'Accepted answers are public and constrain the actual shipment, including any earlier shipment promises. Yes leaves count, sector and legal funding choices open. The shipper cannot move first, finish movement or voluntarily spend away their last way to comply. A completed opposing effect that makes the answer impossible releases it with a public notice.',
       'Your shipment promises remain visible during Movement. Open Suggested next step for a private executable preparation or funded shipment example. It is optional guidance; any legal action sequence honoring the answer is allowed. Shipment fulfillment survives later movement or losses because it records what was shipped.',
-      'All four AI profiles answer supported questions and retain a complete legal preparation route when their normal strategic shortlist misses the required count or destination. Earlier-phase questions, Advanced and expansion shipment promises, combined shipment/fact logic and arbitrary freeform promises remain unfinished.',
+      'All four AI profiles answer supported questions and retain a complete legal preparation route when their normal strategic shortlist misses the required count or destination. Earlier-phase questions, Advanced games with Guild or optional modules, expansion shipment promises, combined shipment/fact logic and arbitrary freeform promises remain unfinished.',
     ],
     example:
       'Yes to at least six forces to Carthag and No to at least eight there leaves a shipment of six or seven. Moving existing forces into Carthag does not fulfill either shipment event.',
@@ -2137,7 +2137,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Authoritative Basic reserve-origin commitments, joint feasibility with owned preparation, actual shipment completion, voluntary-spend guards and opposing release. Broader timing and expansion routes remain unfinished.',
+          'Authoritative base Basic and no-Guild Advanced reserve-origin commitments, joint feasibility with owned preparation, actual shipment completion, voluntary-spend guards and opposing release. Broader timing and expansion routes remain unfinished.',
       },
       {
         area: 'Player controls',
@@ -2184,7 +2184,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The questioned player answers publicly. A definite answer discards the card. If the answer cannot be known, the holder may ask a different question or save Truthtrance for later.',
       'A saved definite answer resumes automatically: its public answer, binding promise and consumed card are recorded once, then the next queued question or interrupted action resumes. Private answer and preparation guidance is unavailable during this automatic recovery.',
       'Freeform questions also accept public Yes, No, or I don’t know answers. Their truthfulness relies on the players. AI answers structured facts and battle-plan questions; it cannot yet interpret freeform questions.',
-      'An answer may bind actions or decisions during the current turn only. The answering player must do everything in their power to comply; if compliance later becomes impossible, the answer is no longer binding. Freeform promises are recorded in the table’s turn history. Arbitrary freeform enforcement and broader action commitments remain unfinished. Structured reserve-shipment promises are enforced for the active unused Basic shipment without expansions; see the shipment promise guide.',
+      'An answer may bind actions or decisions during the current turn only. The answering player must do everything in their power to comply; if compliance later becomes impossible, the answer is no longer binding. Freeform promises are recorded in the table’s turn history. Arbitrary freeform enforcement and broader action commitments remain unfinished. Structured reserve-shipment promises are enforced for the active unused shipment in base Basic and no-Guild Advanced games; see the shipment promise guide.',
       'Battle-plan questions can bind dial values or ranges, named weapon/defense slots, a leader or either Cheap Hero, spice support and Kwisatz use. AND/OR combinations preserve legal alternatives. Only answers with a legal completion now or through available Ghola preparation are offered; a sealed plan fixes its answer. Previous battle commitments, Voice and prescience also apply. Private preparation guidance can play a required Ghola, then a compliant-plan example can fill the form for review before sealing.',
       'If a completed opposing power makes a battle answer impossible, it is publicly released. A pending Voice response resolves before that release. A player cannot voluntarily spend a promised battle card or give away necessary support spice to evade the answer. Feasibility includes available Ghola cards, eligible leader/Kwisatz or force revivals, and possible revival income. Each actual card can be spent only once. Other future card/power sequences and the full timing audit remain unfinished.',
       'Holding both copies lets you declare one or both. Each question resolves separately, and each card is discarded only after its definite answer. Full timing and card-face audits remain pending.',

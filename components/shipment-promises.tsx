@@ -42,12 +42,17 @@ export function ShipmentPromises({
   const share = shipping
     ? Number(next.allyPayment ?? Math.max(0, cost! - (me.spice ?? 0)))
     : 0;
+  const elite = Number(next?.elite ?? 0);
+  const allocation =
+    elite > 0
+      ? `, including ${elite} ${me.faction === 'emperor' ? 'Sardaukar' : me.faction === 'fremen' ? 'Fedaykin' : 'elite force' + (elite === 1 ? '' : 's')}`
+      : '';
   const description = next
     ? shipping
-      ? `Ship ${Number(next.amount)} forces to ${territory(String(next.territory)).name}, sector ${Number(next.sector)}`
+      ? `Ship ${Number(next.amount)} forces${allocation} to ${territory(String(next.territory)).name}, sector ${Number(next.sector)}`
       : next.type === 'pledgeAid'
         ? 'Reclaim your unused ally pledge'
-        : `Play ${me.hand?.find((c) => c.id === next.card)?.name ?? 'your preparation card'}${next.amount ? ` to revive ${Number(next.amount)} forces` : ' for your shipment discount'}`
+        : `Play ${me.hand?.find((c) => c.id === next.card)?.name ?? 'your preparation card'}${next.amount ? ` to revive ${Number(next.amount)} forces${allocation}` : ' for your shipment discount'}`
     : '';
   return (
     <section

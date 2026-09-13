@@ -1,5 +1,6 @@
 import { shipmentAvailable } from './shipment-opportunity';
 import type { ShipmentClaim } from './shipment-promises';
+import { shipmentPromiseModeSupported } from './shipment-promises';
 import { TERRITORIES } from './board';
 import {
   parseCardCountFact,
@@ -141,8 +142,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
   );
   if (v.kind === 'shipment') {
     check(
-      !g.advanced &&
-        !g.expansions.length &&
+      shipmentPromiseModeSupported(g) &&
         g.status === 'playing' &&
         g.phase === 5 &&
         g.active === v.target &&
@@ -151,7 +151,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
         !g.decision &&
         !g.phaseOpening &&
         !g.pendingShipment,
-      'Automatic shipment promises currently support the active unused shipment in the Basic game without expansions. Finish any pending decision first.',
+      'Structured shipment promises currently support base Basic games and base Advanced games without Guild or optional modules, during the active unused shipment. Finish any pending decision first.',
     );
     check(
       typeof v.territory === 'string' &&

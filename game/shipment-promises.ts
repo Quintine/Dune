@@ -1,5 +1,25 @@
 /** A current-turn promise about the player's ordinary physical shipment from reserves. */
 export type ShipmentClaim = { territory: string; minimum: number };
+/** Software readiness boundary; this is not a printed restriction on Truthtrance. */
+export function shipmentPromiseModeSupported(game: {
+  advanced: boolean;
+  expansions: readonly unknown[];
+  players: readonly { faction: string }[];
+  techTokens?: unknown;
+  strongholdCards?: unknown;
+  nexusCards?: unknown;
+  homeworlds?: unknown;
+}): boolean {
+  return (
+    !game.expansions.length &&
+    (!game.advanced ||
+      (!game.players.some((player) => player.faction === 'guild') &&
+        !game.techTokens &&
+        !game.strongholdCards &&
+        !game.nexusCards &&
+        !game.homeworlds))
+  );
+}
 export type ShipmentPromise = ShipmentClaim & {
   turn: number;
   player: string;

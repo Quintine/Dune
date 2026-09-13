@@ -1,5 +1,37 @@
 import test from 'node:test';
+import { shipmentPromiseModeSupported } from '../game/shipment-promises';
 import assert from 'node:assert/strict';
+
+void test('Advanced shipment scope excludes separately enabled optional modules and preserves existing Basic tech scope', () => {
+  const base = {
+    advanced: true,
+    expansions: [],
+    players: [{ faction: 'emperor' }, { faction: 'atreides' }],
+  };
+  assert.equal(shipmentPromiseModeSupported(base), true);
+  assert.equal(
+    shipmentPromiseModeSupported({
+      ...base,
+      players: [...base.players, { faction: 'guild' }],
+    }),
+    false,
+  );
+  for (const option of [
+    'techTokens',
+    'strongholdCards',
+    'nexusCards',
+    'homeworlds',
+  ])
+    assert.equal(
+      shipmentPromiseModeSupported({ ...base, [option]: {} }),
+      false,
+      option,
+    );
+  assert.equal(
+    shipmentPromiseModeSupported({ ...base, advanced: false, techTokens: {} }),
+    true,
+  );
+});
 import {
   applyAction,
   createGame,
@@ -441,7 +473,10 @@ void test('malformed questions and unsupported public scopes reject without disc
     'territory',
   ]) {
     const bad = structuredClone(g);
-    if (change === 'advanced') bad.advanced = true;
+    if (change === 'advanced') {
+      bad.advanced = true;
+      bad.players[2].faction = 'guild';
+    }
     if (change === 'expansion') bad.expansions = ['ix'];
     if (change === 'phase') bad.phase = 4;
     if (change === 'spent') bad.players[1].shipped = true;
@@ -511,6 +546,7 @@ void test('saved malformed promise bindings reject before action or normalizatio
     },
     (g) => {
       g.advanced = true;
+      g.players[2].faction = 'guild';
     },
     (g) => {
       g.phase = 4;
