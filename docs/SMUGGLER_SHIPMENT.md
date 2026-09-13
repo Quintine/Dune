@@ -23,8 +23,9 @@ Flat reinforcements retain their existing rule. See the
 pages 9–11 and 13, and [November 2020 FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf), page 5.
 
 The CHOAM & Richese FAQ explicitly permits a Richese No-Field with a separate
-free Smuggler force into empty territory. That valid combination still needs
-concealed-counter integration here; its current guard is an implementation gap.
+free Smuggler force into empty territory. The [No-Field follow-up](SMUGGLER_NO_FIELD.md)
+now connects that owned-marker combination with one separate actual reserve force
+and the unchanged marker price.
 No new material user ruling was required for the ordinary reserve route.
 
 ## Connected behavior
@@ -72,7 +73,7 @@ exercise the new effect. Required broad check/build/HTTP results and final
 preservation totals are recorded in the checkpoint commit and private report.
 
 Smuggler battle collection still needs its reveal/survival settlement. Combined
-No-Field, Homeworld, Nexus, Discovery, Stronghold and technology routes remain
+allied No-Field, Homeworld, Nexus, Discovery, Stronghold and technology routes remain
 outside this prototype. Mentat questioning, Bureaucrat payments, Sandmaster
 movement collection, Spice Banker and Diplomat also remain incomplete. Reuse
 this ordinary route when integrating those dependencies.

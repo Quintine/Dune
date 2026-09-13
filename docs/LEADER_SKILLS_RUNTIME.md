@@ -12,7 +12,9 @@ Treachery Cards, including Harkonnen's extra card, precede simultaneous private
 two-card skill offers. Every faction selects one physical skill and an eligible
 own leader, returns the other card to the shuffled deck, and publicly assigns
 the selected card before traitor choices. No reduced or duplicate skill deck is
-substituted. Expansion rosters and other optional modules remain separate work.
+substituted. The [No-Field follow-up](SMUGGLER_NO_FIELD.md) adds genuine CHOAM &
+Richese setup for its bounded combination; remaining expansion/skill acceptance
+and other optional modules remain separate work.
 
 Human controls show each permitted card's normal and battle text, select its
 leader, choose battle posture, and handle an optional own-leader revival draw.
@@ -54,7 +56,8 @@ and the lower Mentat, Bureaucrat and Sandmaster effects. Their normal questionin
 payments and movement collection remain missing, along with Spice Banker normal
 income, Diplomat effects and Smuggler battle collection. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
 now connects its lower band with separate sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
-connects its optional normal reserve bonus. Planetologist and Suk Graduate have the connected
+connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).
+Planetologist and Suk Graduate have the connected
 prototypes described below.
 
 Captured-card replacement entitlement remains unresolved. The prototype rejects

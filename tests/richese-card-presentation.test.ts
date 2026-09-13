@@ -154,7 +154,7 @@ void test('the public collection and ten full card topics are searchable, linked
     );
 });
 
-void test('base, Ix and Ecaz presentations and deck activation are unchanged', () => {
+void test('base, Ix and Ecaz presentations stay unchanged as the two CHOAM deck replacements become available', () => {
   for (const card of [...baseDeck(), ...ixDeck()]) {
     const presentation = cardPresentation(card);
     assert.equal(presentation.availability, undefined);
@@ -173,7 +173,7 @@ void test('base, Ix and Ecaz presentations and deck activation are unchanged', (
   }
   assert.equal(treacheryDeck().length, 33);
   assert.equal(treacheryDeck(['ix']).length, 47);
-  assert.throws(() => treacheryDeck(['choam']), /not implemented/);
+  assert.equal(treacheryDeck(['choam']).length, 35);
   assert.throws(() => treacheryDeck(['richese']), /not implemented/);
 });
 

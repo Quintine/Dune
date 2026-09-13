@@ -1,7 +1,11 @@
 import test from 'node:test';
+import { mock } from 'node:test';
 import assert from 'node:assert/strict';
 import type { DatabaseSync } from 'node:sqlite';
-import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
+import {
+  LEADER_SKILL_CARDS,
+  type LeaderSkillId,
+} from '../game/leader-skill-cards';
 import {
   initializeLeaderSkillsGameForAudit,
   type Action,
@@ -9,7 +13,6 @@ import {
 } from '../game/engine';
 import type { RoomsClock } from '../db/rooms';
 import { unitStore } from './fixture-nexus-room-store';
-import { botActions } from '../game/bots';
 
 const clock: RoomsClock = { now: () => 10000, sleep: async () => {} };
 
@@ -42,7 +45,7 @@ function concurrentBarrier() {
   };
 }
 
-async function fixture() {
+async function fixture(firstSkill?: LeaderSkillId) {
   const store = unitStore();
   const sqlite: DatabaseSync = store.sqlite;
   const created = await store.rooms.createRoom(
@@ -69,7 +72,22 @@ async function fixture() {
       .act(code, auth, room.version, { type: 'ready' }, clock);
   }
   const ready = await store.restart().readRoom(code);
-  const initialized = initializeLeaderSkillsGameForAudit(ready);
+  const targetIndex = firstSkill
+    ? LEADER_SKILL_CARDS.findIndex((card) => card.id === firstSkill)
+    : -1;
+  let shuffleIndex = LEADER_SKILL_CARDS.length - 1;
+  if (firstSkill)
+    mock.method(globalThis.crypto, 'getRandomValues', (array: Uint32Array) => {
+      array[0] = shuffleIndex-- === targetIndex ? 0 : 0xffffffff;
+      return array;
+    });
+  let initialized: Game;
+  try {
+    initialized = initializeLeaderSkillsGameForAudit(ready);
+  } finally {
+    mock.restoreAll();
+  }
+  if (firstSkill) assert.equal(initialized.leaderSkills!.deck[0], firstSkill);
   sqlite
     .prepare('UPDATE rooms SET state = ?, version = ? WHERE code = ?')
     .run(JSON.stringify(initialized), initialized.version, code);
@@ -278,13 +296,17 @@ void test('real setup completion preserves prediction, starting hands, assignmen
 });
 
 void test('battle death and Ghola revival preserve one private replacement skill through restart and concurrent selection', async () => {
-  const f = await fixture();
+  const f = await fixture('rihani-decipherer');
   try {
     let game = await act(f, 0, {
       type: 'predict',
       faction: 'atreides',
       turn: 4,
     });
+    assert.equal(
+      game.leaderSkills!.offers[f.auths[0].playerId].cards[0],
+      'rihani-decipherer',
+    );
     for (const [index, auth] of f.auths.entries()) {
       const seat = await f.restart().readSeatView(f.code, auth);
       const offer = seat.leaderSkills!.offer!;
@@ -410,16 +432,20 @@ void test('battle death and Ghola revival preserve one private replacement skill
       1,
     );
     assertSkillCustody(game);
-    // The randomly assigned winning skill can require casualty or Traitor choices
-    // before card cleanup. Resolve those real choices before testing Ghola revival.
-    for (let step = 0; step < 3 && ['rihani', 'sukRescue'].includes(game.decision?.kind ?? ''); step++) {
-      const owner = f.auths.findIndex((auth) => auth.playerId === game.decision!.player);
-      assert.ok(owner >= 0);
-      const seat = await f.restart().readSeatView(f.code, f.auths[owner]);
-      const [choice] = botActions(seat);
-      assert.ok(choice, 'the winning skill must have a legal saved continuation');
-      game = await act(f, owner, choice);
-    }
+    // The seeded winner has a real saved Rihani choice before card cleanup.
+    assert.equal(game.decision?.kind, 'rihani');
+    const owner = f.auths.findIndex(
+      (auth) => auth.playerId === game.decision!.player,
+    );
+    assert.ok(owner >= 0);
+    const seat = await f.restart().readSeatView(f.code, f.auths[owner]);
+    assert.equal(seat.automaticContinuationPending, false);
+    assert.equal(seat.decision?.kind, 'rihani');
+    game = await act(f, owner, {
+      type: 'decision',
+      event: seat.decision.event,
+      draw: false,
+    });
     if (game.decision?.kind === 'battleCards')
       game = await act(
         f,

@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 13 September 2026 — Smuggler with owned Richese No-Field
+
+The [officially permitted combination](SMUGGLER_NO_FIELD.md) now ships one
+separate free physical force alongside a concealed marker at its unchanged price.
+The private panel, shared AI quote, both cancellation/interception stages and saved
+continuation are connected. Revealing zero/three/five tokens preserves all physical
+forces; bots can reveal a zero marker accompanied by a real force before movement.
+Genuine CHOAM & Richese Leader Skills setup uses the sourced two-card deck addition
+or replacement without duplicate Ix cards. Public starts remain gated.
+
+After the outage report, the healthy existing server was reused. All 529 opening
+games and their seat/recovery records matched the private backup. Focused tests,
+independent recovery review, browser evidence, required broad checks and final
+preservation/Git results are recorded in the checkpoint commit and private report.
+Allied No-Field and remaining combined modes are unfinished.
+
+The first broad check exposed two deck/gate expectations and a randomized
+recovery test incorrectly asking an unautomated human seat for an AI action.
+The deck assertions now match the sourced inventory while other audit starts
+retain their gate. The recovery test now submits an explicit legal human choice.
+The failed report is retained separately from final verification.
+
 ## 13 September 2026 — Sandmaster movement collection prototype
 
 [Sandmaster](SANDMASTER_MOVEMENT.md) now collects optional spice from distinct

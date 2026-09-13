@@ -4,6 +4,14 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Smuggler with Richese No-Field](SMUGGLER_NO_FIELD.md) connects the officially
+  permitted free physical companion, unchanged marker price, private controls,
+  all four AI profiles and saved cancellation/interception. Genuine CHOAM &
+  Richese Leader Skills setup now includes its two replacement/additional battle
+  cards. After the latest outage the server was healthy and all 529 opening games
+  and seat records matched the backup. Other combinations and public starts stay
+  gated; final checks and preservation totals are recorded in the checkpoint.
+
 - [Sandmaster movement collection](SANDMASTER_MOVEMENT.md) connects explicit
   ground routes, optional board-spice collection, controls, legal AI and saved
   Fremen cancellation. Special relocation and combined modules remain missing;

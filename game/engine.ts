@@ -10,6 +10,7 @@ import { quoteSukRescue, sukReceiptSignature, sukRescueOptions, type SukForceGro
 import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
+import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFieldCompanion } from './smuggler-no-field';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { quoteSandmasterMovement, validateSandmasterMovement, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
@@ -724,6 +725,8 @@ export type Decision =
   | { kind: 'homeworldShipmentGuild'; player: string; shipper: string; destination: string; amount: number; event: string }
   | {
       kind: 'guildShipment';
+      /** Private original No-Field declaration; never projected to any seat. */
+      noFieldSkillProof?: string;
       player: string;
       shipper: string;
       territory: string;
@@ -794,6 +797,7 @@ export type Decision =
     }
   | { kind: 'battleCards'; player: string; territory: string; cards: string[] };
 export type ResponseWindow = {
+  noFieldSkillProof?: string;
   /** Original optional collection binds a pending ground movement, including saved responses. */
   sandmasterProof?: string;
   /** Original eligible contributor amounts; private routing evidence, not a new payment. */
@@ -900,6 +904,8 @@ type PendingHomeworldShipment = HomeworldShipmentIntent & {
 type PendingShipment = {
   /** Only new declarations use the bonus; legacy quoted shipments retain their original price. */
   smuggler?: SmugglerShipment;
+  smugglerCompanion?: SmugglerNoFieldCompanion;
+  noFieldSkillProof?: string;
   guildSecretEvent?: string;
   guildNexusEvent?: string;
   nexusEvent?: string;
@@ -4921,6 +4927,7 @@ function leaderSkillAssignmentUnavailable(
     : null;
 }
 function leaderSkillsIntegrity(g: Game) {
+  const noFieldShipment = leaderSkillNoFieldIntegrity(g);
   sandmasterIntegrity(g);
   sukRescueIntegrity(g);
   rihaniIntegrity(g);
@@ -4933,7 +4940,7 @@ function leaderSkillsIntegrity(g: Game) {
     nexusRule(() => validateSpiceBankerSpend(battleLeaderSkills(g, p), leader?.id, plan.bankerSpice,
       p.spice, battleSupportCost(g, p, plan.support) - (plan.allyPayment ?? 0)));
   }
-  if (g.leaderSkills || g.pendingShipment?.smuggler) {
+  if (!noFieldShipment && (g.leaderSkills || g.pendingShipment?.smuggler)) {
     const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'guildShipment');
     requireRule(decisions.length === (g.pendingShipment ? 1 : 0),
       'The saved Leader Skills shipment lost its unique Guild interception decision.');
@@ -5356,9 +5363,9 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  return initializeSetupGameForAudit(g, false, false, false, false, true);
+  return initializeSetupGameForAudit(g, false, false, false, false, true, g.expansions.length === 1 && g.expansions[0] === 'choam');
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false): Game {
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false): Game {
   nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -5380,7 +5387,8 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
     'The audit initializer requires two through six distinct ready players and an existing host.',
   );
   requireRule(
-    (homeworlds || nexus || ix || g.expansions.length === 0) &&
+    (homeworlds || nexus || ix || choam || g.expansions.length === 0) &&
+      (choam || !g.expansions.includes('choam')) &&
       (leaderSkills || !g.leaderSkills) &&
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
@@ -5389,10 +5397,12 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(
-          (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base' || (ix && f.expansion === 'ix')),
+          (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base' || (ix && f.expansion === 'ix') || (choam && f.expansion === 'choam')),
         ),
       ),
-    ix
+    choam
+      ? 'The Leader Skills prototype supports base, CHOAM and Richese factions without other expansions or optional modules.'
+      : ix
       ? 'The Ix prototype supports base, Ixian and Tleilaxu factions without optional modules.'
       : homeworlds
       ? 'The Homeworld setup audit supports implemented deck sets without Tech Tokens or Stronghold Cards.'
@@ -17149,7 +17159,81 @@ function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentI
     log(g, `${p.name} declared ${quote.amount} physical forces for ${combatLocationName(g, intent.destination)}. Payment and departure await the Guild interception decision.`);
   } else commitHomeworldShipment(g, shipment);
 }
+function noFieldSkillProof(shipment: PendingShipment): string {
+  return JSON.stringify({ ...shipment, noFieldSkillProof: undefined });
+}
+function validateLeaderSkillNoFieldShipment(g: Game, shipment: PendingShipment) {
+  requireRule(g.leaderSkills && smugglerNoFieldModeSupported(g) && shipment.noField &&
+    !shipment.alliedNoField && !shipment.smuggler && !shipment.source &&
+    !shipment.guildSecretEvent && !shipment.guildNexusEvent && !shipment.nexusEvent &&
+    shipment.homeworldSources === undefined && shipment.ambassadorEvent === undefined,
+    'Smuggler No-Field shipping requires an own Richese marker without other shipment routes or modules.');
+  requireRule(typeof shipment.noFieldSkillProof === 'string' &&
+    shipment.noFieldSkillProof === noFieldSkillProof(shipment),
+    'The saved No-Field shipment changed its original marker or optional Smuggler companion.');
+  const p = getPlayer(g, shipment.player);
+  requireRule(g.status === 'playing' && g.phase === 5 && g.active === p.id &&
+    shipmentAvailable(g, p) && shipment.turn === g.turn && p.faction === 'richese' &&
+    p.noField && p.noFieldEvent === shipment.noField.event && p.noFieldBlockedTurn !== g.turn &&
+    !p.noField.deployed && shipment.amount === 1 && shipment.elite === 0 && shipment.advisors === false,
+    'The saved No-Field shipment lost its current unused opportunity or concealed marker.');
+  integer(shipment.sector, 0, 18, 'No-Field shipment sector');
+  requireRule(shipment.territory !== MOBILE_STRONGHOLD, 'Richese cannot ship into the mobile stronghold.');
+  allowedEntry(g, p, shipment.territory, shipment.sector, false, false);
+  noFieldRule(() => deployRicheseNoField(p.noField!, {
+    tokenId: shipment.noField!.tokenId,
+    controller: p.id,
+    location: { territory: shipment.territory, sector: shipment.sector },
+  }));
+  if (shipment.smugglerCompanion !== undefined) requireRule(
+    JSON.stringify(shipment.smugglerCompanion) === JSON.stringify(quoteSmugglerNoField(g, p.id, shipment.territory)) &&
+      shipment.smugglerCompanion !== null,
+    'The saved Smuggler No-Field companion lost its living trainer, reserve force or empty destination.',
+  );
+  const cost = reserveShipmentCost({ faction: p.faction, halfRate: shipmentHalfRate(g, p) },
+    territory(shipment.territory).type, 1);
+  requireRule(Number.isSafeInteger(shipment.cost) && shipment.cost === cost,
+    'A No-Field with an optional Smuggler force keeps the price of one marker.');
+  integer(p.spice, 0, Number.MAX_SAFE_INTEGER, 'Current No-Field shipment spice');
+  integer(shipment.allyPayment, 0, cost, 'No-Field shipment ally payment');
+  const credit = aidFor(g, p);
+  if (credit) integer(credit.amount, 0, Number.MAX_SAFE_INTEGER, 'Current ally pledge');
+  if (shipment.allyPayment > 0) requireRule(p.ally && getPlayer(g, p.ally).ally === p.id,
+    'The declared No-Field contributor is no longer your mutual ally.');
+  contribution(g, p, cost, shipment.allyPayment);
+}
+/** Bind both private stages, also while a card effect has saved their controls. */
+function leaderSkillNoFieldIntegrity(g: Game): boolean {
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const responses = contexts.flatMap(context => {
+    const karama = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+    return [context?.response, karama?.use.kind === 'cancel' ? karama.use.response : null];
+  }).filter((response): response is ResponseWindow => !!response);
+  const decisions = homeworldSavedDecisions(g);
+  const shipment = g.pendingShipment;
+  if (!(shipment?.smugglerCompanion !== undefined || shipment?.noFieldSkillProof !== undefined ||
+    (g.leaderSkills && shipment?.noField) || responses.some(r => r.noFieldSkillProof !== undefined) ||
+    decisions.some(d => 'noFieldSkillProof' in d))) return false;
+  requireRule(shipment, 'The saved No-Field response lost its original shipment.');
+  validateLeaderSkillNoFieldShipment(g, shipment);
+  const initial = responses.filter(r => r.kind === 'richeseNoField');
+  const guild = decisions.filter(d => d.kind === 'guildShipment');
+  requireRule(initial.length + guild.length === 1 &&
+    responses.every(r => r.noFieldSkillProof === undefined || r.kind === 'richeseNoField') &&
+    decisions.every(d => !('noFieldSkillProof' in d) || d.kind === 'guildShipment'),
+    'The saved No-Field shipment lost its unique cancellation response or Guild decision.');
+  for (const response of initial) requireRule(response.owner === shipment.player &&
+    response.noFieldSkillProof === shipment.noFieldSkillProof,
+    'The No-Field response changed its original declaration.');
+  for (const decision of guild) validateGuildShipmentDecision(g, decision);
+  return true;
+}
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
+  if (shipment.smugglerCompanion !== undefined || shipment.noFieldSkillProof !== undefined ||
+    (g.leaderSkills && shipment.noField)) validateLeaderSkillNoFieldShipment(g, shipment);
   if (shipment.smuggler) requireRule(
     !shipment.source && !shipment.noField && !shipment.alliedNoField &&
     !shipment.guildSecretEvent && !shipment.guildNexusEvent && !shipment.nexusEvent &&
@@ -17271,6 +17355,7 @@ function validateGuildShipmentDecision(
       getPlayer(g, shipment.player).faction !== 'fremen' &&
       decision.territory === shipment.territory &&
       decision.sector === shipment.sector &&
+      decision.noFieldSkillProof === shipment.noFieldSkillProof &&
       decision.amount === (shipment.alliedNoField ? 1 : shipment.amount),
     'The Guild decision does not match the pending shipment.',
   );
@@ -17302,10 +17387,11 @@ function offerShipment(g: Game, shipment: PendingShipment) {
       territory: to,
       sector: s,
       amount: n,
+      ...(shipment.noFieldSkillProof ? { noFieldSkillProof: shipment.noFieldSkillProof } : {}),
     };
     log(
       g,
-      `${p.name} declared a shipment of ${n} forces to ${territory(to).name}, sector ${s}.${shipment.nexusEvent ? ` Richese Secret Ally is spent; the shipment is priced as one force (${shipment.cost} spice) if allowed.` : ''}`,
+      `${p.name} declared a shipment of ${shipment.noField ? `one concealed No-Field${shipment.smugglerCompanion ? ' and one free Smuggler force' : ''}` : `${n} forces`} to ${territory(to).name}, sector ${s}.${shipment.nexusEvent ? ` Richese Secret Ally is spent; the shipment is priced as one force (${shipment.cost} spice) if allowed.` : ''}`,
     );
   } else commitShipment(g, shipment);
 }
@@ -17409,6 +17495,10 @@ function commitShipment(g: Game, shipment: PendingShipment) {
       .join('; ');
     if (n > 0) place(p, to, s, n, elite);
   }
+  if (shipment.smugglerCompanion) {
+    withdrawNativeReserves(g, p, 1, 0);
+    place(p, to, s, 1, 0);
+  }
   if (advisors && n > 0) (p.advisors ??= {})[to] ??= {};
   p.shipped = true;
   if (p.faction !== 'fremen') techIncome(g, 'heighliners', p);
@@ -17429,7 +17519,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     shipment.alliedNoField
       ? `${getPlayer(g, shipment.alliedNoField.owner).name} shipped ${p.name} with No-Field ${quoteAlliedTokenValue(g, shipment.alliedNoField)}, immediately placing ${n} physical forces (${elite} elite) in ${territory(to).name}, sector ${s}. ${shipment.alliedNoField.payer === 'both' ? 'Each ally paid 1 spice' : `${getPlayer(g, shipment.alliedNoField.payer).name} paid ${cost} spice`}.`
       : shipment.noField
-        ? `${p.name} shipped one concealed No-Field to ${territory(to).name}, sector ${s}, for ${cost} spice. It counts as one force; physical reserves remain unchanged until reveal.`
+        ? `${p.name} shipped one concealed No-Field to ${territory(to).name}, sector ${s}, for ${cost} spice. ${shipment.smugglerCompanion ? 'One free Smuggler force left reserves and arrived beside the marker; the concealed token remains unchanged until reveal.' : 'It counts as one force; physical reserves remain unchanged until reveal.'}`
         : `${p.name} shipped ${n} forces to ${territory(to).name}, sector ${s}.${shipment.guildSecretEvent ? ` Guild Secret Ally is spent; Guild shipping prices cost ${cost} spice paid to the bank.` : ''}${shipment.nexusEvent ? ` Richese Secret Ally priced the ${n} physical forces as one: ${cost} spice.` : ''}${homeworldOrigins ? ` Homeworld sources: ${homeworldOrigins}. Total shipment cost: ${cost} spice.` : ''}`,
     shipment.noField || shipment.alliedNoField
       ? { faction: 'richese', name: 'No-Field shipment' }
@@ -17460,7 +17550,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     p,
     to,
     s,
-    shipment.alliedNoField ? Math.max(1, n) : n,
+    shipment.alliedNoField ? Math.max(1, n) : n + (shipment.smugglerCompanion ? 1 : 0),
     elite,
     'shipment',
   );
@@ -21749,8 +21839,10 @@ function applyActionInner(
     requireRule(action.smuggler === undefined || typeof action.smuggler === 'boolean', 'Choose whether to use Smuggler.');
     const smuggler = action.smuggler === true && !noField && !guildSecretEvent && !nexusEvent
       ? quoteSmugglerShipment(g, id, to, n) : null;
-    requireRule(action.smuggler !== true || smuggler,
-      'Smuggler needs a living face-up native trainer and at least two off-planet forces shipping into an empty territory.');
+    const smugglerCompanion = action.smuggler === true && noField && !guildSecretEvent && !nexusEvent
+      ? quoteSmugglerNoField(g, id, to) : null;
+    requireRule(action.smuggler !== true || smuggler || smugglerCompanion,
+      'Smuggler needs a living face-up native trainer and an empty territory, with two ordinary shipment forces or one reserve companion beside your No-Field.');
     const cost = guildSecretEvent ? nexusRule(() => quoteNexusGuildSecretShipment(territory(to).type,n)).cost : nexusEvent
       ? nexusRule(() => quoteNexusRicheseShipment(price,territory(to).type,n)).cost
       : reserveShipmentCost(price,territory(to).type,n - (smuggler ? 1 : 0));
@@ -21772,6 +21864,7 @@ function applyActionInner(
     const allyPayment = contribution(g, p, cost, action.allyPayment);
     const shipment: PendingShipment = {
       ...(smuggler ? { smuggler } : {}),
+      ...(smugglerCompanion ? { smugglerCompanion } : {}),
       ...(currentGuildCunning(g,id) ? {guildNexusEvent:currentGuildCunning(g,id)!.receipt.event} : {}),
       ...(nexusEvent ? {nexusEvent} : {}),
       ...(guildSecretEvent ? {guildSecretEvent} : {}),
@@ -21792,15 +21885,18 @@ function applyActionInner(
           }),
       ...(noField ? { noField } : {}),
     };
+    if (noField && g.leaderSkills) shipment.noFieldSkillProof = noFieldSkillProof(shipment);
+    if (noField && g.leaderSkills) validatePhysicalShipment(g, shipment);
     if (nexusEvent) recordNexusRicheseShipment(g,shipment);
     bindGuildCunningShipment(g,p,'reserve',shipment);
     if (shipment.noField) {
       checkShipmentIncomeRounding(g, p, cost, allyPayment);
       g.pendingShipment = shipment;
-      g.response = { kind: 'richeseNoField', owner: p.id, passed: [] };
+      g.response = { kind: 'richeseNoField', owner: p.id, passed: [],
+        ...(shipment.noFieldSkillProof ? { noFieldSkillProof: shipment.noFieldSkillProof } : {}) };
       log(
         g,
-        `${p.name} declared a concealed No-Field shipment to ${territory(to).name}, sector ${s}.`,
+        `${p.name} declared a concealed No-Field shipment${smugglerCompanion ? ' with one free Smuggler force' : ''} to ${territory(to).name}, sector ${s}.`,
       );
     } else offerShipment(g, shipment);
     return g;
@@ -23146,13 +23242,16 @@ export function viewGame(state: Game, id: string) {
         ? { ...g.decision, leader: '', owner: '' }
         : g.decision?.kind === 'faceDance'
           ? { ...g.decision, ...(faceDanceReturnBlock(g, g.decision.winner) ? {blocked: faceDanceReturnBlock(g, g.decision.winner)!} : {}) }
-          : (g.decision ?? null),
+          : g.decision?.kind === 'guildShipment' && g.decision.noFieldSkillProof !== undefined
+            ? { ...g.decision, noFieldSkillProof: undefined }
+            : (g.decision ?? null),
     response: g.response
       ? {
           ...g.response,
           ...(g.response.guildContributions ? { guildContributions: undefined } : {}),
           ...(g.response.guildPaymentProof ? { guildPaymentProof: undefined } : {}),
           ...(g.response.sandmasterProof ? { sandmasterProof: undefined } : {}),
+          ...(g.response.noFieldSkillProof ? { noFieldSkillProof: undefined } : {}),
           passed: g.response.passed.includes(id) ? [id] : [],
           ...(g.response.kind === 'revivalIncome' &&
           ![g.response.owner, g.response.recipient].includes(id)

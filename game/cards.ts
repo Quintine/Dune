@@ -55,11 +55,16 @@ export function ixStandardCards(): Card[] {
 export function ixDeck(): Card[] {
   return [...ixBattleCards(), ...ixSpecialCards(), ...ixStandardCards()];
 }
-/** Complete currently implemented deck sets. Other expansion decks remain gated. */
+/** CHOAM & Richese p. 4 replaces these Ix cards, or adds them when Ix is absent.
+ * Preserve one physical identity per card across either expansion combination. */
+export function choamDeck(): Card[] {
+  return ixBattleCards().filter(c => c.kind === 'poisonTooth' || c.kind === 'artillery');
+}
+/** Deck assembly does not open the separate faction/module release gates. */
 export function treacheryDeck(expansions: readonly string[] = []): Card[] {
-  if (expansions.some((id) => id !== 'ix'))
+  if (expansions.some((id) => id !== 'ix' && id !== 'choam'))
     throw new Error('This expansion treachery deck is not implemented yet.');
-  return [...baseDeck(), ...(expansions.includes('ix') ? ixDeck() : [])];
+  return [...baseDeck(), ...(expansions.includes('ix') ? ixDeck() : expansions.includes('choam') ? choamDeck() : [])];
 }
 export type Leader = {
   /** Explicit projected custody for a shared disc; null means set aside. */

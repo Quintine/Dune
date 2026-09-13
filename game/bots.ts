@@ -66,6 +66,7 @@ import {
 } from './shrine';
 import { reserveShipmentCost } from './shipment-price';
 import { quoteSmugglerShipment } from './smuggler-shipment';
+import { quoteSmugglerNoField } from './smuggler-no-field';
 import { spiceBankerBattleMaximum, spiceBankerModeSupported } from './spice-banker';
 import { nexusGuildSecretAllyAction, nexusGuildSecretAllyCanAct, nexusGuildSecretAllyQuote } from './nexus-guild-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from './nexus-richese-options';
@@ -2947,11 +2948,21 @@ function policyActions(g: GameView): Action[] {
       (token) => token.id === marker?.tokenId,
     );
     const materialized = Math.min(deployedToken?.value ?? 0, me.reserves);
+    const physicalAlongsideMarker = marker
+      ? countAt(me, marker.location.territory) > 0
+      : false;
     const reveal =
-      noField?.canReveal && marker && materialized > 0
+      noField?.canReveal &&
+      marker &&
+      (materialized > 0 || physicalAlongsideMarker)
         ? { type: 'revealNoField', token: marker.tokenId, event: noField.event }
         : null;
-    if (reveal && (!me.shipped || (me.moved ?? 0) >= (me.movesAllowed ?? 1)))
+    if (
+      reveal &&
+      (physicalAlongsideMarker ||
+        !me.shipped ||
+        (me.moved ?? 0) >= (me.movesAllowed ?? 1))
+    )
       return [reveal];
     const markerTargets = targets.filter(
       (to) =>
@@ -2986,6 +2997,7 @@ function policyActions(g: GameView): Action[] {
             territory: to.t,
             sector: to.s,
             allyPayment: Math.max(0, cost - (me.spice ?? 0)),
+            ...(quoteSmugglerNoField(g, me.id, to.t) ? { smuggler: true } : {}),
           });
         }
     }

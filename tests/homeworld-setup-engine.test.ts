@@ -277,7 +277,7 @@ void test('the eight supported base and Ix faction setup paths conserve native a
       }
 });
 
-void test('the four factions requiring unfinished expansion decks reject genuine Homeworld setup without replacing decks or lobby metadata', () => {
+void test('unprototyped CHOAM/Richese and Ecaz/Moritani combinations reject genuine Homeworld setup without replacing decks or lobby metadata', () => {
   for (const roster of [
     ['choam', 'richese'],
     ['ecaz', 'moritani'],

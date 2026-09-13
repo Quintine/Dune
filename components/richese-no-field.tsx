@@ -7,8 +7,41 @@ import { territory, MOBILE_STRONGHOLD } from '@/game/board';
 import { fighterCount } from '@/game/advisors';
 import { reserveShipmentCost } from '@/game/shipment-price';
 import type { RicheseNoFieldView } from '@/game/richese-no-field';
+import { quoteSmugglerNoField } from '@/game/smuggler-no-field';
 import { ShipmentQuote } from './shipment-quote';
 import { Button } from './ui/button';
+
+export function SmugglerNoFieldChoice({
+  quote,
+  use,
+  busy,
+  onChange,
+}: {
+  quote: ReturnType<typeof quoteSmugglerNoField>;
+  use: boolean;
+  busy: boolean;
+  onChange: (use: boolean) => void;
+}) {
+  if (!quote) return null;
+  return (
+    <div className="rounded border border-[#8e8159] p-3">
+      <label className="flex min-h-11 items-center gap-3">
+        <input
+          type="checkbox"
+          checked={use}
+          disabled={busy}
+          onChange={(event) => onChange(event.target.checked)}
+        />
+        Use Smuggler to add 1 real reserve force at no added cost
+      </label>
+      <p className="fine mt-2">
+        The companion force enters the empty territory immediately. The No-Field
+        token still uses the normal one-force shipment price, and its hidden
+        forces remain in reserves until revelation.
+      </p>
+    </div>
+  );
+}
 
 /** This renderer receives public player data only, never the private token model. */
 export function NoFieldBoardMarkers({
@@ -76,6 +109,7 @@ export function RicheseNoFieldControls({
 }) {
   const id = useId();
   const [selection, setSelection] = useState('');
+  const [useSmuggler, setUseSmuggler] = useState(false);
   const info = game.richeseNoField;
   const me = game.players.find((player) => player.id === game.me);
   if (!info || info.owner !== game.me || !info.private || !me) return null;
@@ -97,6 +131,9 @@ export function RicheseNoFieldControls({
       game.karamaShipping?.player === me.id,
   };
   const cost = reserveShipmentCost(rate, selectedTerritory.type, 1);
+  const smuggler = info.canShip
+    ? quoteSmugglerNoField(game, me.id, destination)
+    : null;
   const share =
     !me.ally || allyPayment === ''
       ? Math.max(0, cost - (me.spice ?? 0))
@@ -137,8 +174,9 @@ export function RicheseNoFieldControls({
       <div className="flex flex-col gap-3 py-3">
         <p className="fine">
           Your token values are private until revealed. A concealed marker
-          counts as one force, even when its value is zero. Physical forces
-          remain in reserves until revelation.
+          counts as one force, even when its value is zero. Its hidden forces
+          remain in reserves until revelation; a Smuggler companion is a
+          separate real force that leaves reserves immediately.
         </p>
         <ul
           className="m-0 flex flex-wrap gap-3 p-0"
@@ -240,6 +278,12 @@ export function RicheseNoFieldControls({
               }}
               unavailableReasons={problems}
             />
+            <SmugglerNoFieldChoice
+              quote={smuggler}
+              use={useSmuggler}
+              busy={busy}
+              onChange={setUseSmuggler}
+            />
             <Button
               className="min-h-11 whitespace-normal"
               disabled={busy || problems.length > 0}
@@ -253,10 +297,12 @@ export function RicheseNoFieldControls({
                     territory: destination,
                     sector,
                     allyPayment: share,
+                    ...(useSmuggler && smuggler ? { smuggler: true } : {}),
                   });
               }}
             >
               Ship concealed No-Field {selected?.value ?? ''} · {cost} spice
+              {useSmuggler && smuggler ? ' · + 1 real force' : ''}
             </Button>
           </>
         )}

@@ -109,8 +109,19 @@ void test('the Ix expansion has fourteen distinct cards and combines into a fort
     baseDeck().some((c) => c.name === 'Basilia Weapon'),
     false,
   );
-  for (const expansion of ['choam', 'ecaz', 'unknown'])
+  for (const expansion of ['ecaz', 'unknown'])
     assert.throws(() => treacheryDeck([expansion]), /not implemented/);
+});
+void test('CHOAM & Richese adds or replaces the same two battle cards without duplicating physical custody', () => {
+  for (const expansions of [['choam'], ['ix', 'choam'], ['choam', 'ix']]) {
+    const cards = treacheryDeck(expansions);
+    assert.equal(cards.length, expansions.includes('ix') ? 47 : 35);
+    assert.equal(new Set(cards.map(c => c.id)).size, cards.length);
+    assert.equal(cards.filter(c => c.kind === 'poisonTooth').length, 1);
+    assert.equal(cards.filter(c => c.kind === 'artillery').length, 1);
+    assert.equal(cards.filter(c => c.effect === 'karama').length, 2);
+    assert.equal(cards.find(c => c.kind === 'poisonTooth')!.id, 'ix-poison-tooth');
+  }
 });
 void test('deck factories return independent physical cards and retain the earlier Ix identifiers', () => {
   const a = treacheryDeck(['ix']),
