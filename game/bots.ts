@@ -1,6 +1,7 @@
 import { discoveryBotActions } from './discovery-options';
 import { discoveryFlightBotActions } from './discovery-flight-options';
 import { discoveryEntryBotActions } from './discovery-entry-options';
+import { discoveryStormActions } from './discovery-storm-options';
 import { greatMakerBotActions } from './great-maker-options';
 import { nexusChoamTradeBotActions } from './nexus-choam-trade-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
@@ -57,6 +58,10 @@ import {
 import { ownedTech } from './tech-tokens';
 import type { StrongholdProgress } from './victory-progress';
 import { canUseAsKarama } from './karama';
+import {
+  canUseAsKaramaRole,
+  shrineTruthtranceBotAction,
+} from './shrine';
 import { reserveShipmentCost } from './shipment-price';
 import { nexusGuildSecretAllyAction, nexusGuildSecretAllyCanAct, nexusGuildSecretAllyQuote } from './nexus-guild-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from './nexus-richese-options';
@@ -1204,7 +1209,11 @@ function policyActions(g: GameView): Action[] {
       (me.faction === 'tleilaxu' && g.decision?.kind === 'revivalStop')) &&
     g.advanced &&
     !me.specialKaramaUsed &&
-    me.hand?.find((c) => c.effect === 'karama');
+    me.hand?.find(
+      (c) =>
+        canUseAsKaramaRole(g, me, c) &&
+        g.richeseGift?.pending?.card?.id !== c.id,
+    );
   if (
     specialCard &&
     me.faction === 'ixians' &&
@@ -2346,6 +2355,7 @@ function policyActions(g: GameView): Action[] {
       ];
     if (d.kind === 'discoveryDiscard') return discoveryBotActions(g);
     if (d.kind === 'discoveryEntry') return discoveryEntryBotActions(g);
+    if (d.kind === 'ecologicalStorm') return discoveryStormActions(g);
     if (d.kind === 'greatMakerVote' || d.kind === 'greatMakerRide') return greatMakerBotActions(g);
     if (d.kind === 'wormProtection')
       return [{ type: 'decision', accept: true }];
@@ -2382,7 +2392,7 @@ function policyActions(g: GameView): Action[] {
     }
     if (d.kind === 'auctionPayment') {
       const karama = me.hand?.find((c) =>
-        canUseAsKarama(g.advanced, me.faction, c),
+        canUseAsKaramaRole(g, me, c),
       );
       const use =
         !!karama &&
@@ -3415,6 +3425,11 @@ export function botActions(g: GameView): Action[] {
     if (field)
       return [{ type: 'nexusAtreides', event: nexus.event, mode: nexus.mode, field }];
   }
+  const shrineTruth = shrineTruthtranceBotAction(
+    g,
+    g.players.find((player) => player.id === g.me)!,
+  );
+  if (shrineTruth) return [shrineTruth];
   const intelligence = tupileIntelligenceActions(g);
   if (intelligence.length) return intelligence;
   const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {

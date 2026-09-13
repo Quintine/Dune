@@ -15,6 +15,7 @@ import { NexusTraitors } from './nexus-traitors';
 import { GreatMakerDecision } from './great-maker';
 import { DiscoveryPanel, DiscoveryDiscardDecision } from './discoveries';
 import { DiscoveryEntryDecision } from './discovery-entry';
+import { DiscoveryStormDecision } from './discovery-storm';
 import { NexusChoamTrade } from './nexus-choam-trade';
 import { NexusTleilaxu } from './nexus-tleilaxu';
 import { NexusSuboids } from './nexus-suboids';
@@ -111,7 +112,10 @@ import {
 import { stoneBurnerPlanBlock } from '@/game/stone-burner';
 import { TECH_TOKENS, ownedTech } from '@/game/tech-tokens';
 import Link from 'next/link';
-import { canUseAsKarama } from '@/game/karama';
+import {
+  canUseAsKaramaRole,
+  canUseAsTruthtranceRole,
+} from '@/game/shrine';
 import { LeaderPortrait } from './leader-portrait';
 import { ShipmentQuote } from './shipment-quote';
 import { reserveShipmentCost } from '@/game/shipment-price';
@@ -295,7 +299,7 @@ export function GameTable({
     bidDraft.auction === auctionKey ? bidDraft.value : minimumBid,
   );
   const maximumBid = me.hand?.some((c) =>
-    canUseAsKarama(g.advanced, me.faction, c),
+    canUseAsKaramaRole(g, me, c),
   )
     ? Number.MAX_SAFE_INTEGER
     : (me.spice ?? 0) + g.aid.available;
@@ -2213,6 +2217,8 @@ export function GameTable({
                                                                                                       .kind ===
                                                                                                     'discoveryEntry'
                                                                                                   ? 'Enter a Discovery location'
+                                                                                                : g.decision.kind === 'ecologicalStorm'
+                                                                                                  ? 'Ecological Testing Station'
                                                                                                 : g
                                                                                                       .decision
                                                                                                       .kind ===
@@ -2408,7 +2414,7 @@ export function GameTable({
                     <p role="status">{g.revival.specialKaramaBlock}</p>
                   )}
                   {me.hand
-                    ?.filter((c) => c.effect === 'karama')
+                    ?.filter((c) => canUseAsKaramaRole(g, me, c))
                     .map((c) => (
                       <div key={c.id}>
                         {actionButton(
@@ -2507,7 +2513,7 @@ export function GameTable({
                   </p>
                   <HelpTip topic="fullPlan" />
                   {me.hand
-                    ?.filter((c) => c.effect === 'karama')
+                    ?.filter((c) => canUseAsKaramaRole(g, me, c))
                     .flatMap((c) =>
                       [g.battle!.attacker, g.battle!.defender].map((id) => (
                         <div key={`${c.id}-${id}`}>
@@ -2540,7 +2546,7 @@ export function GameTable({
                   </p>
                   <HelpTip topic="guildShipment" />
                   {actionButton('Allow Homeworld shipment', { type: 'decision', event: g.decision.event, allow: true })}
-                  {me.hand?.filter((c) => c.effect === 'karama').map((c) => (
+                  {me.hand?.filter((c) => canUseAsKaramaRole(g, me, c)).map((c) => (
                     <div key={c.id}>{actionButton('Spend Karama · stop shipment', { type: 'card', mode: 'special', card: c.id })}</div>
                   ))}
                 </>
@@ -2567,7 +2573,7 @@ export function GameTable({
                     allow: true,
                   })}
                   {me.hand
-                    ?.filter((c) => c.effect === 'karama')
+                    ?.filter((c) => canUseAsKaramaRole(g, me, c))
                     .map((c) => (
                       <div key={c.id}>
                         {actionButton('Spend Karama · stop shipment', {
@@ -2872,7 +2878,7 @@ export function GameTable({
                     (g.auction?.bid ?? 0) > (me.spice ?? 0) + g.aid.available,
                   )}
                   {me.hand
-                    ?.filter((c) => canUseAsKarama(g.advanced, me.faction, c))
+                    ?.filter((c) => canUseAsKaramaRole(g, me, c))
                     .map((c) => (
                       <div key={c.id}>
                         {actionButton(
@@ -2950,6 +2956,8 @@ export function GameTable({
                 </>
               ) : g.decision.kind === 'discoveryEntry' ? (
                 <DiscoveryEntryDecision game={g} act={act} busy={transportBusy || !!me.autopilot} />
+              ) : g.decision.kind === 'ecologicalStorm' ? (
+                <DiscoveryStormDecision game={g} act={act} busy={transportBusy || !!me.autopilot} />
               ) : g.decision.kind === 'discoveryDiscard' ? (
                 <DiscoveryDiscardDecision game={g} act={act} busy={transportBusy || !!me.autopilot} />
               ) : g.decision.kind === 'greatMakerVote' || g.decision.kind === 'greatMakerRide' ? (
@@ -3694,7 +3702,7 @@ export function GameTable({
                       g.mobileStronghold?.location &&
                       (me.forces['hidden_mobile_stronghold:0'] ?? 0) > 0 &&
                       me.hand
-                        ?.filter((c) => c.effect === 'karama')
+                        ?.filter((c) => canUseAsKaramaRole(g, me, c))
                         .slice(0, 1)
                         .map((c) => (
                           <details key={c.id}>
@@ -4607,7 +4615,7 @@ export function GameTable({
                     : richese?.card.effect === 'nullentropyBox'
                       ? 'Use the Nullentropy Box panel above to begin the paid search.'
                       : richeseCardActionBlock(c)) ??
-                  (canUseAsKarama(g.advanced, me.faction, c)
+                  (canUseAsKaramaRole(g, me, c)
                     ? g.response
                       ? !g.responseControls?.cancelCards.includes(c.id)
                         ? 'This card cannot cancel the current power.'
@@ -4705,9 +4713,12 @@ export function GameTable({
                             ? '◇'
                             : '†'}
                     </span>
-                    {c.effect === 'truthtrance' && (
+                    {canUseAsTruthtranceRole(g, me, c) && (
                       <>
                         <p className="fine">
+                          {c.effect === 'karama'
+                            ? 'Shrine lets you use this physical Karama as Truthtrance while you occupy it. '
+                            : ''}
                           Ask another player a public yes/no question, including
                           during another player’s decision. Competing plays
                           follow storm order.
@@ -4719,12 +4730,22 @@ export function GameTable({
                             !!g.truthtrance ||
                             !['setup', 'playing'].includes(g.status)
                           }
-                          onClick={() => act({ type: 'card', card: c.id })}
+                          onClick={() =>
+                            act({
+                              type: 'card',
+                              card: c.id,
+                              ...(c.effect === 'karama'
+                                ? { shrineTruthtrance: [c.id] }
+                                : {}),
+                            })
+                          }
                         >
-                          Declare Truthtrance
+                          {c.effect === 'karama'
+                            ? 'Use Karama as Truthtrance'
+                            : 'Declare Truthtrance'}
                         </Button>
                         {(me.hand?.filter(
-                          (other) => other.effect === 'truthtrance',
+                          (other) => canUseAsTruthtranceRole(g, me, other),
                         ).length ?? 0) > 1 && (
                           <Button
                             variant="outline"
@@ -4740,8 +4761,15 @@ export function GameTable({
                                 cards: me
                                   .hand!.filter(
                                     (other) =>
-                                      other.effect === 'truthtrance' &&
+                                      canUseAsTruthtranceRole(g, me, other) &&
                                       other.id !== c.id,
+                                  )
+                                  .map((other) => other.id),
+                                shrineTruthtrance: me
+                                  .hand!.filter(
+                                    (other) =>
+                                      canUseAsTruthtranceRole(g, me, other) &&
+                                      other.effect === 'karama',
                                   )
                                   .map((other) => other.id),
                               })
@@ -4819,7 +4847,7 @@ export function GameTable({
                       </>
                     )}
                     {g.advanced &&
-                      c.effect === 'karama' &&
+                      canUseAsKaramaRole(g, me, c) &&
                       !me.specialKaramaUsed &&
                       me.faction === 'harkonnen' &&
                       g.phase === 3 && (
@@ -4875,7 +4903,7 @@ export function GameTable({
                         </>
                       )}
                     {g.advanced &&
-                      c.effect === 'karama' &&
+                      canUseAsKaramaRole(g, me, c) &&
                       !me.specialKaramaUsed &&
                       me.faction === 'fremen' &&
                       g.phase === 1 && (
@@ -4926,7 +4954,7 @@ export function GameTable({
                         </>
                       )}
                     {g.advanced &&
-                      c.effect === 'karama' &&
+                      canUseAsKaramaRole(g, me, c) &&
                       !me.specialKaramaUsed &&
                       me.faction === 'emperor' &&
                       g.phase === 4 && (
@@ -5007,7 +5035,7 @@ export function GameTable({
                         />
                       </label>
                     )}
-                    {canUseAsKarama(g.advanced, me.faction, c) &&
+                    {canUseAsKaramaRole(g, me, c) &&
                       g.phase === 5 &&
                       g.active &&
                       (g.active === me.id ? shipmentAvailable : !g.players.find((p) => p.id === g.active)?.shipped) && (
@@ -5033,9 +5061,10 @@ export function GameTable({
                           {g.players.find((p) => p.id === g.active)?.name}
                         </Button>
                       )}
-                    {c.effect !== 'truthtrance' &&
+                    {(c.effect !== 'truthtrance' ||
+                      canUseAsKaramaRole(g, me, c)) &&
                       (c.kind === 'special' ||
-                        canUseAsKarama(g.advanced, me.faction, c)) && (
+                        canUseAsKaramaRole(g, me, c)) && (
                         <Button
                           variant="outline"
                           aria-describedby={
@@ -5052,7 +5081,7 @@ export function GameTable({
                               !(
                                 g.status === 'setup' &&
                                 g.response &&
-                                canUseAsKarama(g.advanced, me.faction, c)
+                                canUseAsKaramaRole(g, me, c)
                               )) ||
                             (!!g.phaseOpening &&
                               (c.effect !== 'amal' ||
@@ -5068,7 +5097,7 @@ export function GameTable({
                               type: 'card',
                               elite: eliteAmount,
                               card: c.id,
-                              mode: canUseAsKarama(g.advanced, me.faction, c)
+                              mode: canUseAsKaramaRole(g, me, c)
                                 ? g.response
                                   ? 'cancel'
                                   : 'purchase'
@@ -5083,7 +5112,7 @@ export function GameTable({
                             })
                           }
                         >
-                          {canUseAsKarama(g.advanced, me.faction, c)
+                          {canUseAsKaramaRole(g, me, c)
                             ? g.response
                               ? 'Cancel this power'
                               : 'Take current auction card'

@@ -92,7 +92,7 @@ export function DiscoveryPanel({ game, act, busy }: Props) {
           );
         })}
       </div>
-      <p className="fine">Inspection and reveal are optional. Next-turn free entry, sole-occupant Cistern income and later-turn Ornithopter movement are available in the development prototype. Jacurutu battle income, Ecological Testing Station, Shrine and Orgiz abilities remain in development.</p>
+      <p className="fine">Inspection and reveal are optional. Next-turn free entry, sole-occupant Cistern income and later-turn Ornithopter movement are available in the development prototype. Jacurutu income, Testing Station storm choices and Shrine card conversion are prototyped. Orgiz, mixed-force Jacurutu rewards and contested Cistern/Testing Station benefits remain pending.</p>
     </section>
   );
 }

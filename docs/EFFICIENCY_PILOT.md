@@ -117,3 +117,22 @@ browser room uses genuine setup followed by explicitly targeted scenarios; the
 156 opening rooms are preserved. Required stable checks and the aggregate endpoint
 are recorded in the checkpoint commit, without counting these prototypes as
 complete Discovery rules compliance.
+
+The next location-effects batch begins at aggregate counter 63,116,444. Two
+workhorse helpers implement Jacurutu and Shrine, then cross-review Shrine and
+review the owner's Testing Station. Reuse of the existing prototype starter,
+card-effect paths and SQLite fixtures connects three bounded functions. Review
+found a reserved-card Shrine deadlock, incomplete alternate-role permission and
+missing physical-card selection; these require fixes before broad verification.
+Station review strengthened restored source and physical-token binding. One
+focused rendered-control assertion was corrected to distinguish the native
+`disabled` attribute from the component's `data-disabled` attribute. A fresh
+browser scenario checks station controls and refresh; all 187 opening rooms
+remain the preservation baseline. The first broad run reached 4,345 offline tests with five failures: two exposed
+an unnecessary hand read before public Shrine entitlement, two old overlay
+fixtures queued nonexistent cards, and one assertion expected older rejection
+wording. The policy now checks public entitlement first; physical fixtures and
+wording are corrected without weakening custody validation. Focused regressions
+pass before the repeated stable broad run. Final aggregate endpoint and stable
+checks belong in the verified checkpoint commit. Pending rulings and complete-mode
+gates remain explicit rather than inflating accepted capability counts.

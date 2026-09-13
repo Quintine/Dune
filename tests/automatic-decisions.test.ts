@@ -9,6 +9,7 @@ import {
   type Game,
 } from '../game/engine';
 import { baseDeck } from '../game/cards';
+import { placeFixtureHand } from './fixture-hand';
 const cards = baseDeck();
 const shield = cards.find((c) => c.kind === 'shield')!;
 const karama = cards.find((c) => c.effect === 'karama')!;
@@ -191,13 +192,16 @@ void test('normalization does not invent an ally split or bypass provisional unf
 void test('Truthtrance, phase opening and genuine responses retain priority over a singleton payment', () => {
   for (const overlay of ['truth', 'opening', 'response'] as const) {
     const g = pendingPayment(auction());
-    if (overlay === 'truth')
+    if (overlay === 'truth') {
+      const truth = cards.find((card) => card.effect === 'truthtrance')!;
+      placeFixtureHand(g, 2, [truth]);
       g.truthtrance = {
         stage: 'ask',
-        queue: [{ player: 'a', card: 'truth' }],
+        queue: [{ player: 'a', card: truth.id }],
         passed: [],
         question: null,
       };
+    }
     if (overlay === 'opening')
       g.phaseOpening = { initialize: false, passed: [] };
     if (overlay === 'response') {

@@ -10,6 +10,7 @@ import {
 } from '../game/engine';
 import { baseDeck, type Card } from '../game/cards';
 import type { FactionId } from '../game/catalog';
+import { placeFixtureHand } from './fixture-hand';
 
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
 const cards = baseDeck();
@@ -264,14 +265,16 @@ void test('pending conversion never offers a nested Worthless conversion; real K
 void test('Truthtrance and phase-opening overlays pause normalization without payment or response alteration', () => {
   for (const overlay of ['truth', 'phase'] as const) {
     const g = fixture();
-    if (overlay === 'truth')
+    if (overlay === 'truth') {
+      const truth = cards.find((card) => card.effect === 'truthtrance')!;
+      placeFixtureHand(g, 1, [truth]);
       g.truthtrance = {
         stage: 'ask',
-        queue: [{ player: 'b', card: 'spent-truth' }],
+        queue: [{ player: 'b', card: truth.id }],
         passed: [],
         question: null,
       };
-    else g.phaseOpening = { initialize: false, passed: [] };
+    } else g.phaseOpening = { initialize: false, passed: [] };
     const next = normalizeAutomaticGame(g);
     assert.deepEqual(next.response, g.response);
     assert.equal(next.players[0].spice, 10);

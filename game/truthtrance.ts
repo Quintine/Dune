@@ -25,6 +25,7 @@ import type { Action, Game, Player } from './engine';
 import { treacheryDeck } from './cards';
 import { CHEAP_HERO_TRAITOR } from './traitors';
 import { DUKE_VIDAL_ID } from './duke-vidal';
+import { canUseAsTruthtranceRole } from './shrine';
 
 export type TruthFact =
   | CardCountFact
@@ -44,9 +45,15 @@ export type TruthQuestion =
       scope: 'fact' | 'currentTurn';
     };
 export type TruthAnswer = 'yes' | 'no' | 'unknown';
+export type TruthQueueEntry = {
+  player: string;
+  card: string;
+  /** Durable authorization for a Karama committed through an occupied Shrine. */
+  source?: 'shrine';
+};
 export type TruthWindow = {
   stage: 'priority' | 'ask' | 'answer' | 'unknown';
-  queue: { player: string; card: string }[];
+  queue: TruthQueueEntry[];
   passed: string[];
   question: TruthQuestion | null;
 };
@@ -234,9 +241,33 @@ export function validateTruthQuestionReceipt(
     'The completed Truthtrance question does not match its recorded opportunity.',
   );
 }
-/** Revalidate the only new persisted future-action question before any write or projection. */
-export function validateSavedShipmentQuestion(g: Game) {
+/** Revalidate persisted physical card receipts before any write or projection. */
+export function validateSavedTruthtrance(g: Game) {
   const window = g.truthtrance;
+  // Older timing-only fixtures may represent the instant before the first
+  // declaration with an empty priority queue. No card is committed there.
+  if (window && window.queue.length > 0) {
+    check(
+      Array.isArray(window.queue) &&
+        window.queue.length > 0 &&
+        new Set(window.queue.map((entry) => entry?.card)).size ===
+          window.queue.length &&
+        window.queue.every((entry) => {
+          if (
+            !entry ||
+            typeof entry.player !== 'string' ||
+            typeof entry.card !== 'string' ||
+            (entry.source !== undefined && entry.source !== 'shrine')
+          )
+            return false;
+          return queuedTruthCardMatches(
+            g.players.find((player) => player.id === entry.player)?.hand ?? [],
+            entry,
+          );
+        }),
+      'The saved Truthtrance must retain each committed physical card in its holder’s hand.',
+    );
+  }
   if (window?.question?.kind !== 'shipment') return;
   check(
     (window.stage === 'answer' || window.stage === 'unknown') &&
@@ -244,20 +275,32 @@ export function validateSavedShipmentQuestion(g: Game) {
       window.queue.length > 0 &&
       new Set(window.queue.map((entry) => entry?.card)).size ===
         window.queue.length &&
-      window.queue.every(
-        (entry) =>
-          entry &&
-          typeof entry.player === 'string' &&
-          typeof entry.card === 'string' &&
-          g.players
-            .find((p) => p.id === entry.player)
-            ?.hand.filter(
-              (c) => c.id === entry.card && c.effect === 'truthtrance',
-            ).length === 1,
+      window.queue.every((entry) =>
+        queuedTruthCardMatches(
+          g.players.find((p) => p.id === entry.player)?.hand ?? [],
+          entry,
+        ),
       ),
     'The saved shipment question must retain each physical Truthtrance in its holder’s hand.',
   );
   parseQuestion(g, window.queue[0].player, window.question);
+}
+
+/** Historical name retained for source references and focused callers. */
+export const validateSavedShipmentQuestion = validateSavedTruthtrance;
+
+/** Receipt validation uses the printed card identity, never current Shrine occupation. */
+export function queuedTruthCardMatches(
+  hand: readonly { id: string; effect?: string }[],
+  entry: TruthQueueEntry,
+): boolean {
+  return (
+    hand.filter(
+      (card) =>
+        card.id === entry.card &&
+        card.effect === (entry.source === 'shrine' ? 'karama' : 'truthtrance'),
+    ).length === 1
+  );
 }
 /** A fact answer never returns which disjunct matched or any underlying private cards. */
 export function truthFactAnswer(
@@ -345,12 +388,23 @@ export function resolveTruthAction(
       answer: boolean,
       asker: string,
     ) => void;
+    cardBlock: (g: Game, p: Player, card: Player['hand'][number]) => string | null;
   },
 ): boolean {
+  const selectedCard =
+    a.type === 'card' && typeof a.card === 'string'
+      ? p.hand.find((card) => card.id === a.card)
+      : undefined;
+  const shrineCards = Array.isArray(a.shrineTruthtrance)
+    ? a.shrineTruthtrance
+    : [];
   const isPlay =
     a.type === 'card' &&
     !a.mode &&
-    p.hand.some((c) => c.id === a.card && c.effect === 'truthtrance');
+    !!selectedCard &&
+    canUseAsTruthtranceRole(g, p, selectedCard) &&
+    (selectedCard.effect === 'truthtrance' ||
+      shrineCards.includes(selectedCard.id));
   if (!g.truthtrance && !isPlay && !a.type.startsWith('truth')) return false;
   check(
     g.status === 'playing' || g.status === 'setup',
@@ -383,12 +437,41 @@ export function resolveTruthAction(
         selected.every(
           (id) =>
             typeof id === 'string' &&
-            p.hand.some((c) => c.id === id && c.effect === 'truthtrance'),
+            p.hand.some(
+              (card) =>
+                card.id === id &&
+                canUseAsTruthtranceRole(g, p, card) &&
+                (card.effect === 'truthtrance' || shrineCards.includes(id)),
+            ),
         ),
       'Each declared Truthtrance must be a different card in your hand.',
     );
+    const selectedCards = selected.map((id) =>
+      p.hand.find((card) => card.id === id),
+    );
+    const reservation = selectedCards
+      .map((card) => (card ? effects.cardBlock(g, p, card) : null))
+      .find((reason): reason is string => !!reason);
+    check(
+      !reservation,
+      reservation ?? 'Choose uncommitted physical cards.',
+    );
+    check(
+      new Set(shrineCards).size === shrineCards.length &&
+        shrineCards.every(
+          (id) =>
+            typeof id === 'string' &&
+            selected.includes(id) &&
+            p.hand.some((card) => card.id === id && card.effect === 'karama'),
+        ),
+      'Choose only selected Karama cards for the Shrine conversion.',
+    );
     for (const card of selected)
-      w.queue.push({ player: p.id, card: card as string });
+      w.queue.push({
+        player: p.id,
+        card: card as string,
+        ...(shrineCards.includes(card) ? { source: 'shrine' as const } : {}),
+      });
     w.passed.push(p.id);
     effects.log(
       g,

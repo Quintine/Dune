@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 13 September 2026 — Discovery location effects prototype
+
+Adds automatic unambiguous Jacurutu battle income, an owned Testing Station
+storm adjustment and physical Shrine card substitution through existing Karama
+and Truthtrance paths. Decisions and committed effects preserve JSON/SQLite
+continuation, physical custody and private information. Testing Station cannot
+change Weather Control; Jacurutu counts opposing physical losses, not the wheel
+alone. See the [prototype scope and rulings](DISCOVERY_PROTOTYPE.md).
+
+Orgiz, contested Cistern/Testing Station and mixed-force Jacurutu remain pending.
+Normal module/Advanced starts and publication stay gated. Targeted browser room
+`A5EJQ2W4` exercises station choice and refresh after real setup/reveal/entry with
+QA positioning. Independent review and focused regressions cover all three
+functions; required broad results, source fingerprint and preservation of all
+187 opening rooms are recorded in the checkpoint commit and private report.
+
+The preceding `ab0ab52` entry/flight checkpoint passed 4,313 offline tests, build
+and 40 HTTP tests. Its outage recovery and 156-room opening baseline are historical
+results; the current batch keeps every game created afterward.
+
 ## 13 September 2026 — First connected Discovery prototype
 
 Connects genuine base-faction Basic/Advanced audit setup to all seven sourced

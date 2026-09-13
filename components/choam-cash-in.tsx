@@ -29,9 +29,9 @@ export function ChoamCashIn({
       <label>
         Karama to spend{' '}
         <select value={card.id} onChange={(e) => setActivation(e.target.value)}>
-          {cash.karamas.map((c, i) => (
+          {cash.karamas.map((c) => (
             <option key={c.id} value={c.id}>
-              Karama {i + 1}
+              {c.name}
             </option>
           ))}
         </select>

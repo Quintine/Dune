@@ -16,6 +16,7 @@ import {
   type TruthQuestion,
 } from '@/game/truthtrance';
 import type { Action, GameView } from '@/game/engine';
+import { canUseAsTruthtranceRole } from '@/game/shrine';
 
 export function Truthtrance({
   game: g,
@@ -29,6 +30,20 @@ export function Truthtrance({
   const w = g.truthtrance!;
   const me = g.players.find((p) => p.id === g.me)!;
   const current = w.queue[0];
+  const truthCards =
+    me.hand?.filter((card) => canUseAsTruthtranceRole(g, me, card)) ?? [];
+  const declaration = (cards: typeof truthCards): Action => ({
+    type: 'card',
+    card: cards[0].id,
+    ...(cards.length > 1 ? { cards: cards.slice(1).map((card) => card.id) } : {}),
+    ...(cards.some((card) => card.effect === 'karama')
+      ? {
+          shrineTruthtrance: cards
+            .filter((card) => card.effect === 'karama')
+            .map((card) => card.id),
+        }
+      : {}),
+  });
   const [target, setTarget] = useState(
     g.players.find((p) => p.id !== me.id)!.id,
   );
@@ -135,27 +150,21 @@ export function Truthtrance({
           </ul>
           {!w.passed.includes(me.id) && (
             <>
-              {me.hand
-                ?.filter((c) => c.effect === 'truthtrance')
-                .slice(0, 1)
-                .map((c) => (
+              {truthCards.map((c) => (
                   <div key={c.id}>
-                    {button('Declare my Truthtrance', {
-                      type: 'card',
-                      card: c.id,
-                    })}
+                    {button(
+                      c.effect === 'karama'
+                        ? 'Use my Karama as Truthtrance'
+                        : 'Declare my Truthtrance',
+                      declaration([c]),
+                    )}
                   </div>
                 ))}
-              {(me.hand?.filter((c) => c.effect === 'truthtrance').length ??
-                0) > 1 &&
-                button('Declare both Truthtrances', {
-                  type: 'card',
-                  card: me.hand!.find((c) => c.effect === 'truthtrance')!.id,
-                  cards: me
-                    .hand!.filter((c) => c.effect === 'truthtrance')
-                    .slice(1)
-                    .map((c) => c.id),
-                })}
+              {truthCards.length > 1 &&
+                button(
+                  `Declare all ${truthCards.length} as Truthtrance`,
+                  declaration(truthCards),
+                )}
               {button('Pass Truthtrance priority', { type: 'truthPass' })}
             </>
           )}

@@ -195,7 +195,7 @@ void test('reserved Black Market Truthtrance cannot hide in the additional queue
     g,
     'r',
     { type: 'card', card: main.id, cards: [offered.id] },
-    /reserved.*Truthtrance/,
+    /card offered for Black Market must remain available/,
   );
   assert.equal(g.truthtrance ?? null, null);
   assert.deepEqual(

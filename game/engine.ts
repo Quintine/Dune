@@ -1,7 +1,9 @@
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
+import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
 import { advanceDiscoveryEntry, beginDiscoveryEntryArrival, createDiscoveryEntryRound, finishDiscoveryEntryArrival, quoteDiscoveryEntry, validateDiscoveryEntryArrivalChild, validateDiscoveryEntryRound, type DiscoveryEntryArrivalChild, type DiscoveryEntryRound, type DiscoveryEntrySelection } from './discovery-entry';
 import { createDiscoveryState, validateDiscoveryState, placeDiscovery, rememberDiscoveryFace, revealDiscoveryToken, isDiscoverySpiceCardId, isDiscoveryTokenId, DISCOVERY_SPICE_CARDS, DISCOVERY_CARD_PLACEMENTS, DISCOVERY_TOKEN_BY_ID, type DiscoveryState } from './discoveries';
+import { quoteJacurutuBattleIncome } from './discovery-battle';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
@@ -273,7 +275,7 @@ import {
   KaramaBattlePreflightError,
 } from './karama-battle-preflight';
 import { canceledResponseSource, KaramaContextError } from './karama-context';
-import { validateSavedShipmentQuestion } from './truthtrance';
+import { validateSavedTruthtrance } from './truthtrance';
 import {
   reorderOrderedOpportunity,
   protectOrderedOpportunityLast,
@@ -424,9 +426,11 @@ import {
 import {
   resolveTruthAction,
   validateTruthQuestionReceipt,
+  queuedTruthCardMatches,
   truthFactAnswer,
   TruthError,
   type TruthWindow,
+  type TruthQueueEntry,
   type TruthRecord,
   type TruthAnswer,
 } from './truthtrance';
@@ -464,7 +468,7 @@ import {
   type TechId,
   type TechState,
 } from './tech-tokens';
-import { canUseAsKarama } from './karama';
+import { canUseAsKaramaRole } from './shrine';
 import {
   isAdvisor,
   fighterCount,
@@ -755,6 +759,7 @@ export type Decision =
   | { kind: 'wormProtection'; player: string; territory: string; ally: string }
   | { kind: 'discoveryDiscard'; player: string; event: string }
   | { kind: 'discoveryEntry'; player: string; event: string }
+  | { kind: 'ecologicalStorm'; player: string; event: string }
   | { kind: 'greatMakerVote'; player: string; event: string }
   | { kind: 'greatMakerRide'; player: string; event: string }
   | { kind: 'wormRide'; player: string; territory: string }
@@ -899,6 +904,8 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  stormMovementSource?: StormMovementSource;
+  ecologicalStorm?: DiscoveryStorm;
   discoveryEnabled?: boolean;
   discoveries?: DiscoveryState;
   discoveryStash?: DiscoveryStash;
@@ -939,7 +946,7 @@ export type Game = {
         }
       | {
           kind: 'truthtranceDiscard';
-          consumed: { player: string; card: string };
+          consumed: TruthQueueEntry;
           historyIndex: number;
           record: TruthRecord;
           remaining: TruthWindow | null;
@@ -1415,6 +1422,7 @@ export type Game = {
   stormCard: number | null;
   stormCardKnown: boolean;
   stormResolution: {
+    discoveryStorm?: string;
     from: number;
     distance: number;
     traversed: number;
@@ -3824,10 +3832,12 @@ function treacheryDiscardIntegrity(g: Game) {
     requireRule(
       c.consumed &&
         typeof c.consumed.player === 'string' &&
+        (c.consumed.source === undefined || c.consumed.source === 'shrine') &&
         batch.cause === 'truthtrance' &&
         batch.entries.length === 1 &&
         entry.publicFace &&
-        entry.card.effect === 'truthtrance' &&
+        entry.card.effect ===
+          (c.consumed.source === 'shrine' ? 'karama' : 'truthtrance') &&
         entry.card.id === c.consumed.card &&
         entry.discardedBy === c.consumed.player &&
         record &&
@@ -3860,11 +3870,10 @@ function treacheryDiscardIntegrity(g: Game) {
               typeof e.card === 'string' &&
               e.card.length > 0 &&
               typeof e.player === 'string' &&
-              g.players
-                .find((p) => p.id === e.player)
-                ?.hand.filter(
-                  (card) => card.id === e.card && card.effect === 'truthtrance',
-                ).length === 1 &&
+              queuedTruthCardMatches(
+                g.players.find((p) => p.id === e.player)?.hand ?? [],
+                e,
+              ) &&
               outside.filter((card) => card.id === e.card).length === 1 &&
               !g.discard.some((card) => card.id === e.card),
           ) &&
@@ -5214,8 +5223,16 @@ function stormExposed(g: Game, key: string) {
   );
 }
 function moveStorm(g: Game, n: number) {
-  g.stormResolution = { from: g.storm, distance: n, traversed: 0, pending: [] };
+  g.stormResolution = { from: g.storm, distance: n, traversed: 0, pending: [],
+    ...(g.ecologicalStorm?.stage === 'traversal' ? {discoveryStorm:g.ecologicalStorm.signature} : {}) };
   offerChoamStorm(g);
+}
+function startStormMovement(g: Game, n: number) {
+  const offer = nexusRule(() => discoveryStormOffer(g));
+  if (offer && !offer.blocked) {
+    g.ecologicalStorm = nexusRule(() => createDiscoveryStorm(g,crypto.randomUUID()));
+    g.decision = {kind:'ecologicalStorm',player:offer.owner,event:g.ecologicalStorm.event};
+  } else moveStorm(g,n);
 }
 function choamStormOptions(g: Game) {
   return choamStormTerritories(g);
@@ -5344,6 +5361,9 @@ function continueStorm(g: Game) {
     for (const key of Object.keys(g.spice))
       if (splitLocation(key).sector === s) delete g.spice[key];
   }
+  if (g.ecologicalStorm?.stage === 'traversal')
+    g.ecologicalStorm = nexusRule(() => finishDiscoveryStorm(g.ecologicalStorm!));
+  delete g.stormMovementSource;
   g.storm = ((resolution.from - 1 + resolution.distance) % 18) + 1;
   stormOrder(g);
   if (g.turn === 1) assignRemainingTech(g);
@@ -5488,6 +5508,7 @@ function afterWorm(g: Game) {
   );
 }
 function discoveryIntegrity(g: Game) {
+  ecologicalStormIntegrity(g);
   discoveryEntryIntegrity(g);
   if (!g.discoveryEnabled) {
     requireRule(!g.discoveries && !g.discoveryStash, 'Discovery custody requires its enabled module.');
@@ -5540,6 +5561,33 @@ function discoveryIntegrity(g: Game) {
     control.decision.player === p.id && control.decision.event === record.event), 'The stash has lost its owned discard choice.');
   if (pending) requireRule(pending.event === record.event && pending.owner === p.id && pending.card === record.discarded,
     'The stash has changed its committed discard.');
+}
+function ecologicalStormIntegrity(g: Game) {
+  const frame = g.ecologicalStorm, continuation = g.pendingTreacheryDiscard?.continuation;
+  if (g.stormMovementSource) {
+    nexusRule(() => validateStormSource(g.stormMovementSource!));
+    const source = g.stormMovementSource;
+    requireRule(g.status === 'playing' && g.phase === 0 && source.turn === g.turn &&
+      g.stormPending === (frame?.stage === 'traversal' ? source.distance+frame.delta! : source.distance),
+      'The storm must retain its current turn and original movement source.');
+  }
+  const controls = [g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume,continuation && 'resume' in continuation ? continuation.resume : null];
+  const choices = controls.flatMap(c => c?.decision?.kind === 'ecologicalStorm' ? [c.decision] : []);
+  if (!frame) {
+    requireRule(!choices.length && !g.stormResolution?.discoveryStorm,'The station storm has lost its original choice.');
+    return;
+  }
+  nexusRule(() => validateDiscoveryStorm(g,frame));
+  if (frame.stage === 'choose') requireRule(choices.length === 1 && choices[0].player === frame.owner && choices[0].event === frame.event &&
+    !g.stormResolution && g.ready.length === g.players.length, 'The station has lost its owned choice before storm movement.');
+  else {
+    requireRule(!choices.length,'A completed station choice cannot remain open.');
+    if (frame.stage === 'traversal') requireRule(g.stormResolution && g.stormResolution.discoveryStorm === frame.signature &&
+      g.stormResolution.from === frame.from && g.stormResolution.distance === frame.base+frame.delta!,
+      'The storm traversal has lost its exact station adjustment.');
+    else requireRule(!g.stormResolution?.discoveryStorm,'The completed station choice cannot retain a traversal.');
+  }
 }
 function discoveryEntryIntegrity(g: Game) {
   const frame = g.discoveryEntry;
@@ -6769,7 +6817,7 @@ function karamaSpendingBlock(g: Game, p: Player, card: Card): string | null {
     return 'This card is reserved for the pending Richese gift.';
   if (
     !p.hand.some((held) => held.id === card.id) ||
-    !canUseAsKarama(g.advanced, p.faction, card)
+    !canUseAsKaramaRole(g, p, card)
   )
     return 'Choose a Karama in your hand.';
   if (retentionReservesCard(g, p.id, card.id))
@@ -6787,7 +6835,7 @@ function karamaCard(g: Game, p: Player, id?: unknown) {
   // Explicit selections retain the specific custody error from spendKarama.
   const available = p.hand.filter(
     (c) =>
-      canUseAsKarama(g.advanced, p.faction, c) &&
+      canUseAsKaramaRole(g, p, c) &&
       (id === undefined ? !karamaSpendingBlock(g, p, c) : c.id === id),
   );
   return available.find((c) => c.effect === 'karama') ?? available[0];
@@ -7371,19 +7419,20 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse) {
       g,
       `${p.name} used ${card.name} as Karama; the faction power awaits responses.`,
     );
-  } else completeKarama(g, p, use);
+  } else completeKarama(g, p, use, card);
 }
-function completeKarama(g: Game, p: Player, use: KaramaUse) {
+function completeKarama(g: Game, p: Player, use: KaramaUse, card?: Card) {
   validateKaramaUse(g, p, use);
+  const played = card?.effect === 'truthtrance' ? 'Truthtrance as Karama' : 'Karama';
   if (use.kind === 'cancel') {
     g.response = use.response;
     finishResponse(g, true);
-    log(g, `${p.name} used Karama to cancel ${use.response.kind}.`);
+    log(g, `${p.name} used ${played} to cancel ${use.response.kind}.`);
   } else if (use.kind === 'shipment') {
     g.karamaShipping = { player: use.recipient, owner: p.id, card: use.card };
     log(
       g,
-      `${p.name} used Karama for ${getPlayer(g, use.recipient).name}’s shipment at Guild rates, paid to the bank.`,
+      `${p.name} used ${played} for ${getPlayer(g, use.recipient).name}’s shipment at Guild rates, paid to the bank.`,
     );
   } else {
     if (use.kind === 'purchase') g.auction!.bidder = p.id;
@@ -11425,6 +11474,7 @@ function beginStormTurn(g: Game) {
   if (g.advanced && byFaction(g, 'fremen')) {
     g.stormDialers = [];
     g.stormPending = g.stormCard ?? shuffle([1, 2, 3, 4, 5, 6])[0];
+    g.stormMovementSource = nexusRule(() => createStormSource(g.turn,'card',g.stormPending!));
     g.stormCard = null;
     g.stormCardKnown = false;
     log(g, `Storm card revealed: ${g.stormPending} sectors.`);
@@ -12863,7 +12913,7 @@ function cashInPreparationActions(g: Game, p: Player): Action[] {
   if (p.faction !== 'choam' || !g.advanced || p.specialKaramaUsed) return [];
   const available = cashInCards(g, p);
   const actions: Action[] = [];
-  for (const card of available.filter((c) => c.effect === 'karama')) {
+  for (const card of available.filter((c) => canUseAsKaramaRole(g, p, c))) {
     const others = available.filter((c) => c.id !== card.id);
     for (let mask = 1; mask < 2 ** others.length; mask++)
       actions.push({
@@ -12958,7 +13008,7 @@ function findReachableBattlePlan(
 }
 function shipmentPromiseIntegrity(g: Game) {
   try {
-    validateSavedShipmentQuestion(g);
+    validateSavedTruthtrance(g);
   } catch (error) {
     if (error instanceof TruthError) throw new RuleError(error.message);
     throw error;
@@ -13152,7 +13202,7 @@ function findShipmentCompletion(
     const preparations: Action[] = [];
     if (g.aid[p.id]?.amount > 0)
       preparations.push({ type: 'pledgeAid', amount: 0 });
-    const karama = p.hand.find((c) => canUseAsKarama(g.advanced, p.faction, c));
+    const karama = p.hand.find((c) => canUseAsKaramaRole(g, p, c));
     if (karama && !g.karamaShipping)
       preparations.push({
         type: 'card',
@@ -13696,6 +13746,34 @@ function resolveBattle(g: Game) {
   const stoneResult = quote.stone;
   const ac = quote.attackerTraitor,
     dc = quote.defenderTraitor;
+  const losingPlayer = quote.winner
+    ? quote.winner === a.id
+      ? d
+      : a
+    : null;
+  const losingForces = losingPlayer
+    ? combatForces(g, losingPlayer, b.territory, losingPlayer === a ? d : a)
+    : null;
+  const losingPlan = losingPlayer ? b.plans[losingPlayer.id] : null;
+  const jacurutuIncome = quoteJacurutuBattleIncome({
+    territory: b.territory,
+    jacurutuRevealed:
+      g.discoveryEnabled === true &&
+      !!g.discoveries?.tokens.some(
+        (token) =>
+          token.face === 'jacurutu-sietch' &&
+          token.status === 'placed' &&
+          token.revealedTurn !== null,
+      ),
+    winner: quote.winner,
+    opponent: losingPlayer?.id ?? null,
+    opponentForces: losingForces,
+    opponentDial: losingPlan?.dial ?? null,
+    opponentSupport: losingPlan?.support ?? null,
+    sentToTanks: losingForces
+      ? { normal: losingForces.normal, elite: losingForces.elite }
+      : null,
+  });
   for (const revelation of quote.revelations) {
     const holder = getPlayer(g, revelation.player),
       identity = revelation.identity;
@@ -13803,6 +13881,22 @@ function resolveBattle(g: Game) {
       stoneResult
         ? { faction: (isStoneBurner(aw) ? a : d).faction, name: 'Stone Burner' }
         : undefined,
+    );
+  }
+  if (jacurutuIncome?.kind === 'income' && jacurutuIncome.amount > 0) {
+    winner!.spice += jacurutuIncome.amount;
+    log(
+      g,
+      `${winner!.name} gained ${jacurutuIncome.amount} spice from the bank at Jacurutu Sietch for ${jacurutuIncome.amount} opposing undialed force${jacurutuIncome.amount === 1 ? '' : 's'} sent to the Tanks.`,
+      { faction: winner!.faction, name: 'Jacurutu Sietch income' },
+    );
+  } else if (jacurutuIncome?.kind === 'allocationRequired') {
+    const amounts = [
+      ...new Set(jacurutuIncome.choices.map((choice) => choice.amount)),
+    ].sort((left, right) => left - right);
+    log(
+      g,
+      `Jacurutu Sietch income remains unpaid: ${losingPlayer!.name}'s revealed dial and support permit ${amounts.join(' or ')} undialed physical forces among the counters sent to the Tanks. The physical dial allocation needs a player choice.`,
     );
   }
   for (const income of quote.strongholdIncome) {
@@ -16102,7 +16196,7 @@ function homeworldShipmentAutomatic(g: Game): boolean {
   homeworldShipmentIntegrity(g);
   const guild = getPlayer(g, decision.player);
   return !guild.hand.some((card) => {
-    if (card.effect !== 'karama') return false;
+    if (!canUseAsKaramaRole(g, guild, card)) return false;
     try { prepareSpecialKaramaIntent(g, guild.id, {type: 'card', mode: 'special', card: card.id}); return true; }
     catch (error) { if (error instanceof RuleError) return false; throw error; }
   });
@@ -17470,7 +17564,7 @@ export function prepareSpecialKaramaIntent(
     'Your special Karama power has already been used this game.',
   );
   const card = p.hand.find(
-    (c) => c.id === action.card && c.effect === 'karama',
+    (c) => c.id === action.card && canUseAsKaramaRole(g, p, c),
   );
   requireRule(card, 'Choose a Karama card in your hand.');
   const base = { owner: p.id, card: card.id, turn: g.turn, phase: g.phase };
@@ -17538,7 +17632,9 @@ export function prepareSpecialKaramaIntent(
       !g.auction ||
         g.auction.bidder !== p.id ||
         g.auction.bid <= p.spice + selected.length * 3 + credit ||
-        p.hand.some((c) => c.effect === 'karama' && !removed.has(c.id)),
+        p.hand.some(
+          (c) => canUseAsKaramaRole(g, p, c) && !removed.has(c.id),
+        ),
       'Retain enough spice or Karama to honor your current winning bid.',
     );
     return { ...base, kind: 'choam', cards: [...selected] };
@@ -17784,7 +17880,13 @@ export function executeSpecialKaramaIntent(
       'The original battle is no longer awaiting special prescience.',
     );
   const p = getPlayer(g, intent.owner);
-  const card = { id: intent.card };
+  const card = p.hand.find((candidate) => candidate.id === intent.card)!;
+  const converted = card.effect === 'truthtrance';
+  if (converted)
+    log(
+      g,
+      `${p.name} used the physical Truthtrance as Karama for their special faction power.`,
+    );
   if (intent.kind === 'richese') {
     const selected = g.richeseCache!.findIndex((c) => c.id === intent.acquire);
     discard(g, p, card.id);
@@ -17995,7 +18097,7 @@ function richeseSpecialKaramaView(g: Game, p: Player) {
     return null;
   const karamas = p.hand.filter(
     (c) =>
-      c.effect === 'karama' &&
+      canUseAsKaramaRole(g, p, c) &&
       !karamaSpendingBlock(g, p, c) &&
       !(
         g.richeseAuction?.source === 'blackMarket' &&
@@ -18466,6 +18568,7 @@ function applyActionInner(
         bindShipment: bindShipmentTruth,
         battleAnswers: battleTruthAnswers,
         bindBattle: bindBattleTruth,
+        cardBlock: transferCardBlock,
       })
     )
       return g;
@@ -19733,6 +19836,13 @@ function applyActionInner(
       decideDiscoveryDiscard(g,p,action);
     } else if (decision.kind === 'discoveryEntry') {
       decideDiscoveryEntry(g,p,action);
+    } else if (decision.kind === 'ecologicalStorm') {
+      requireRule(g.ecologicalStorm && Object.keys(action).every(key => ['type','event','delta'].includes(key)),
+        'Choose only the current station storm adjustment.');
+      g.ecologicalStorm = nexusRule(() => chooseDiscoveryStorm(g,g.ecologicalStorm!,p.id,action.event,action.delta));
+      g.stormPending = g.ecologicalStorm.base+g.ecologicalStorm.delta!;
+      log(g, `${p.name} ${g.ecologicalStorm.delta === 0 ? 'kept' : g.ecologicalStorm.delta === 1 ? 'increased' : 'decreased'} storm movement ${g.ecologicalStorm.delta === 0 ? 'at' : 'by one, to'} ${g.stormPending} sectors using Ecological Testing Station.`, {faction:p.faction,name:'Ecological Testing Station'});
+      moveStorm(g,g.stormPending);
     } else if (decision.kind === 'greatMakerVote') {
       decideGreatMakerVote(g,p,action);
     } else if (decision.kind === 'greatMakerRide') {
@@ -20163,6 +20273,7 @@ function applyActionInner(
     );
     if (g.stormDialers.every((x) => g.stormDials[x] !== undefined)) {
       g.stormPending = Object.values(g.stormDials).reduce((a, b) => a + b, 0);
+      g.stormMovementSource = nexusRule(() => createStormSource(g.turn,'dials',g.stormPending!));
       g.ready = [];
       log(
         g,
@@ -21543,11 +21654,11 @@ function applyActionInner(
   if (t === 'card') {
     const c = p.hand.find((c) => c.id === action.card);
     requireRule(
-      c && (c.kind === 'special' || canUseAsKarama(g.advanced, p.faction, c)),
+      c && (c.kind === 'special' || canUseAsKaramaRole(g, p, c)),
       'Select a special card in your hand.',
     );
     if (
-      canUseAsKarama(g.advanced, p.faction, c) &&
+      canUseAsKaramaRole(g, p, c) &&
       action.mode === 'shipment'
     ) {
       const recipient = getPlayer(g, stringField(action.target ?? id));
@@ -21563,7 +21674,7 @@ function applyActionInner(
       return g;
     }
     if (
-      canUseAsKarama(g.advanced, p.faction, c) &&
+      canUseAsKaramaRole(g, p, c) &&
       action.mode === 'purchase'
     ) {
       requireRule(
@@ -21640,6 +21751,7 @@ function applyActionInner(
     } else if (c.effect === 'weather') {
       // The shared availability check validated this exact numeric selection.
       g.stormPending = action.amount as number;
+      g.stormMovementSource = nexusRule(() => createStormSource(g.turn,'weather',g.stormPending!));
       g.ready = [];
     } else if (c.effect === 'atomics') {
       g.shieldWallDestroyed = true;
@@ -21671,7 +21783,7 @@ function applyActionInner(
     requireRule(!g.ready.includes(id), 'You are already ready.');
     g.ready.push(id);
     if (g.ready.length === g.players.length) {
-      if (g.phase === 0) moveStorm(g, g.stormPending!);
+      if (g.phase === 0) startStormMovement(g, g.stormPending!);
       else if (g.phase === 1 && g.spiceWindow) finishSpiceWindow(g);
       else if (g.phase === 1 && (!g.nexus || g.summonedBeforeBlow))
         blowSpice(g);
@@ -21978,6 +22090,8 @@ export function viewGame(state: Game, id: string) {
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
     discoveries: discoveryChoices(g,id,g.phase === 7 && grummanCollectionAutomatic(g)),
+    ecologicalStorm: g.decision?.kind === 'ecologicalStorm' && g.decision.player === id && g.ecologicalStorm?.stage === 'choose'
+      ? {...nexusRule(() => discoveryStormOffer(g))!,event:g.ecologicalStorm.event} : null,
     discoveryEntry: g.discoveryEntry?.stage === 'choose' && g.decision?.kind === 'discoveryEntry' && g.decision.player === id
       ? {...nexusRule(() => quoteDiscoveryEntry({...g,discoveries:g.discoveries!},g.discoveryEntry!,id)),event:g.decision.event} : null,
     greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,
@@ -22158,7 +22272,9 @@ export function viewGame(state: Game, id: string) {
       !me.specialKaramaUsed
         ? {
             cards: cashInCards(g, me),
-            karamas: cashInCards(g, me).filter((c) => c.effect === 'karama'),
+            karamas: cashInCards(g, me).filter((c) =>
+              canUseAsKaramaRole(g, me, c),
+            ),
           }
         : null,
     choamMarket: g.choamMarket

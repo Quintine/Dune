@@ -1,6 +1,6 @@
 # Discovery functional prototype
 
-13 September 2026. The first connected Discovery batch is **Prototyped**, with
+13 September 2026. The connected Discovery batches are **Prototyped**, with
 partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
@@ -73,7 +73,23 @@ to redeal a started game. The default `ix` profile remains available.
   factions occupy Cistern, the unresolved benefit is withheld without blocking
   Collection; this boundary does not decide which occupant should receive it.
 
-Great Maker vote/ride, Discovery token/discard, next-turn entry and carried
+- **Jacurutu:** winning a battle here automatically grants one bank spice per
+  opposing undialed physical force sent to the Tanks. Winner casualties and
+  pre-existing Tanks do not count. Ordinary and unambiguous Advanced plans are
+  playable. Mixed normal/elite plans with different possible physical counts
+  leave an explicit unpaid gap pending the allocation ruling below.
+- **Ecological Testing Station:** a sole non-advisor occupant receives an owned
+  decrease/keep/increase choice after the ordinary storm-card window closes,
+  before traversal and CHOAM/Fremen protection. The original natural dial/card
+  source, turn, physical station and chosen distance remain bound through saved
+  protection and typed loss continuations. Weather Control bypasses the station.
+- **Shrine:** current non-advisor occupation of the publicly revealed location
+  authorizes Truthtrance as Karama or Karama as Truthtrance in the existing effect
+  paths. Cards retain their physical identity and custody. A committed converted
+  Truthtrance retains its use receipt through departure, answering and discard.
+  This does not implement missing special powers or resolve their pending rules.
+
+Great Maker vote/ride, Discovery token/discard, next-turn entry, station and carried
 Ornithopter controls use the same private legal choices as the four AI profiles.
 Token backs expose only permitted information; authorized faces have readable
 explanations of all eight effects. Busy and autopilot states disable human
@@ -109,6 +125,25 @@ settle whether a stacked board deposit represents one or several collected
 spice blows; contested occupancy and unresolved Ecaz shared collection add
 further unanswered cases.
 
+The Testing Station's two-occupant case leaves ordering and cumulative adjustment
+unresolved. The prototype opens only the sole-occupant path and continues an
+ordinary storm without that contested benefit. Choosing after the ordinary
+storm-card window is an implementation timing interpretation: the printed
+source specifies the Storm phase and excludes Weather Control, but does not
+supply a separate station/card priority order. A legacy pending storm without
+new source metadata keeps its existing movement; a subsequent naturally
+produced storm can use the station. No source is inferred from display logs.
+
+Jacurutu's text says opposing **undialed forces**, not a numeric wheel difference.
+Advanced combat permits different physical allocations: an Emperor with one
+ordinary force and one Sardaukar, dial two and one paid support, can dial the
+supported Sardaukar alone or the supported ordinary plus unsupported Sardaukar.
+Those choices leave one or zero undialed counters. The existing loser resolution
+has no physical allocation choice. The user question asks whether the defeated
+player should select those counters; it remains pending. The prototype records
+the unpaid gap instead of silently choosing a reward. Source: publisher-authored
+Ecaz & Moritani rulebook p13, with no clarification in its bundled Q&A.
+
 ## Evidence and next dependencies
 
 Focused suites cover component inventory and private projection
@@ -124,7 +159,8 @@ engine, saved interaction and human/AI paths are covered by
 and disposal are covered by `tests/discovery-flight.test.ts`. They exercise
 immutable rejections, physical custody, hidden information and JSON restoration.
 They do not certify a complete module, all combined routes or difficulty strength
-ordering. Required broad checkpoint checks are pending for this expanded batch.
+ordering. The free-entry/flight checkpoint `ab0ab52` passed 4,313 offline tests,
+build and 40 HTTP tests, preserving all 156 opening rooms (187 after checks).
 
 Browser room `CA782FQE` began through the genuine Discovery setup with one human
 and two AI seats, then used a targeted QA state to reach the new controls without
@@ -158,11 +194,27 @@ The room is paused at acceptance of that blow. No other saved room was changed
 and no server restart was needed. Required broad verification results and the
 source-bound report are recorded in the checkpoint commit.
 
-1. Connect the four remaining special location benefits: Jacurutu battle income,
-   Ecological Testing Station storm adjustment, Shrine card conversion and Orgiz
-   collection transfer. Ordinary Jacurutu victory counting does not implement its
-   battle income; Orgiz awaits the collected-pile ruling above.
-2. Resolve contested Cistern ownership, then integrate combined modules and
-   complete games before refining or opening gates.
-3. Run the required broad checkpoint, browser and saved-room verification for
-   this expanded prototype. Focused evidence does not open normal public starts.
+The location-effects batch adds focused Jacurutu engine/SQLite tests, Testing
+Station Basic/Advanced producers, Weather exclusion, saved Fremen losses,
+private controls, all four AI paths and concurrent SQLite choices. Shrine tests
+cover ordinary/special card substitution, reserved-card rejection, individual
+physical-card controls and committed JSON/SQLite continuation. Concurrent
+declarations preserve one exact physical discard and resume the prior effect. Independent
+reviews check all three effects and required broad results are recorded in the
+checkpoint commit and its source-bound report.
+
+Browser room `A5EJQ2W4` began as a fresh three-player lobby through the backed-up
+Discovery starter, then used real setup, reveal and free-entry actions in a
+focused QA scenario. Its human Atreides occupant chose to increase an ordinary
+two-sector storm to three; the storm moved from sector six to nine and proceeded
+to Spice Blow. Refresh restored the same station forces and private Snooper.
+This is targeted control/recovery evidence, not an unmodified complete game.
+The 187 opening saved rooms remain preserved; no server restart was needed.
+
+1. Resolve Orgiz's collected-blow interpretation, contested Cistern/Testing
+   Station benefits and Jacurutu's mixed physical dial allocation; complete their
+   remaining controls and effects when settled.
+2. Integrate combined modules and complete games, then refine interaction,
+   strategy and presentation coverage before opening normal start gates.
+3. Use the existing prototype starter and saved-room verification for further
+   batches. Focused evidence does not establish complete module compliance.

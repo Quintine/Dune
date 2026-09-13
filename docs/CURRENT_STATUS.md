@@ -4,17 +4,18 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
-- The current [Discovery prototype](DISCOVERY_PROTOTYPE.md) adds
-  signed next-turn entry, sole-occupant Cistern income and later-turn carried
-  Ornithopter movement to the first batch. Focused lifecycle, engine, recovery,
-  private control and AI paths are present. Targeted browser room `CA782FQE`
-  verified partial free entry and a later range-three token move from a genuine
-  Discovery setup after QA state positioning; it was not an unmodified full-game
-  journey. Refresh and a subsequent power-outage restart restored its forces,
-  private hand, spice and spent token; all 157 saved rooms survived unchanged.
-  Required broad results are recorded in the checkpoint commit. Four location abilities
-  remain unavailable, and contested Cistern and Orgiz collection interpretations
-  remain unresolved. This is still **Prototyped**, not complete-module verification.
+- The current [Discovery prototype](DISCOVERY_PROTOTYPE.md) adds unambiguous
+  Jacurutu battle income, sole-occupant Ecological Testing Station adjustment and
+  Shrine card conversion. They connect engine effects, private controls, legal
+  AI and saved continuation. Orgiz, mixed-force Jacurutu payouts and contested
+  Cistern/Testing Station benefits remain pending. Required broad checkpoint
+  results are recorded in the commit; this is **Prototyped**, not full compliance.
+- Discovery checkpoint `ab0ab52` added signed next-turn entry, sole-occupant
+  Cistern income and later-turn carried Ornithopter movement. It passed **4,313
+  offline tests**, build and **40 HTTP tests**, preserving all 156 opening rooms
+  (187 after QA/checks). Browser room `CA782FQE` exercised free entry and carried
+  flight; refresh and recovery from a user-confirmed power outage retained the
+  private hand, forces, spice and spent token. Those were targeted scenarios.
 - [First Discovery prototype](DISCOVERY_PROTOTYPE.md): genuine base-faction
   Basic/Advanced setup, seven Spice Cards, eight tokens, Great Maker, Collection
   inspection/rewards and revealed nested locations are connected. Checkpoint
@@ -54,7 +55,7 @@ restoration after necessary restarts. No recurring automation is installed.
 | --- | --- | --- |
 | Basic core | Playable loop; shared setup, Fremen movement cancellation, structured Truthtrance facts and bounded Basic/no-Guild Advanced reserve-shipment promises. | Ordinary Guild rate/transport cancellation; wider truthful questions/action commitments; integrated rules and human/AI acceptance. |
 | Six-faction Advanced | Genuine offline setup across 456 configurations; four-profile full-game simulations and JSON continuations. | Base gaps plus provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. Public starts remain disabled. |
-| Twelve factions and optional modules | Many bounded faction, card, Homeworld and Nexus slices have controls, bots and recovery evidence; Discovery now includes free location entry, sole-occupant Cistern income and later-turn carried Ornithopter movement. | Every unfinished effect and interaction, occupation entitlement, four remaining Discovery location abilities, contested collection rulings and complete combined games. Inventory or fixture coverage does not enable a module. |
+| Twelve factions and optional modules | Many bounded faction, card, Homeworld and Nexus slices have controls, bots and recovery evidence; Discovery includes free entry, Cistern, carried flight and bounded Jacurutu, Testing Station and Shrine effects. | Every unfinished effect and interaction, occupation entitlement, Orgiz, mixed physical dial allocation and contested Discovery benefits and complete combined games. Inventory or fixture coverage does not enable a module. |
 | AI difficulty | Four profiles consume private legal views; recorded Basic and Advanced studies complete. | Demonstrate a consistent Medium → Hard → Brutal strength ordering, improve strategic gaps, and repeat targeted studies after relevant policy/rule changes. |
 | Multiplayer | Versioned writes, saved seats, owner recovery kits, uncertain-request retry and voluntary own-seat AI control. | Intentional transfer, unprepared abandoned-seat recovery, unattended continuation and remaining network-failure acceptance. Preserve privacy and existing games. |
 | Player experience | Internal component inspectors and many desktop/phone feature journeys verified. | Complete end-to-end games, accessible controls, responsive layout, clear rules/errors and recovery across all supported combinations. |
@@ -75,9 +76,9 @@ now connects the [sourced components](DISCOVERY_COMPONENTS.md) to Great Maker,
 destructive Discovery blows, private inspection/reveal, stash rewards, carried
 Ornithopter custody and later-turn movement, five revealed nested locations,
 signed free entry on the following turn and sole-occupant Cistern income. Only
-Jacurutu counts toward stronghold victory. Next dependencies are Jacurutu battle
-income, Ecological Testing Station, Shrine and Orgiz, plus unresolved contested
-Cistern and collected-spice-blow interpretations. Complete variant acceptance
+Jacurutu counts toward stronghold victory. Jacurutu income, Testing Station and Shrine now have bounded connected
+prototypes. Next dependencies are Orgiz and the unresolved contested benefits,
+physical dial allocation and collected-spice-blow interpretations. Complete variant acceptance
 and normal public starts remain gated.
 
 The user changed the development order on 13 September: get working prototypes
