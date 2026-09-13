@@ -1,5 +1,20 @@
 # Dune implementation status
 
+## 13 September 2026 — Sandmaster movement collection prototype
+
+[Sandmaster](SANDMASTER_MOVEMENT.md) now collects optional spice from distinct
+territories entered along explicit legal ground routes. Shared human/AI choices
+retain each source sector, path and selected pile. A Fremen movement response
+preserves the original declaration; cancellation collects nothing and successful
+completion transfers each board spice once before arrival reactions. Internal
+saved proofs remain outside player projections.
+
+Independent rules and persistence review, focused legality/custody/privacy tests
+and SQLite continuation cover this boundary. Broad checks, browser and sample-game
+evidence and saved-game preservation are recorded in the checkpoint commit.
+Special relocation, combined modules and multiple-pile collection remain missing;
+no public mode or publication gate is opened.
+
 ## 13 September 2026 — Spice Banker battle commitment prototype
 
 [Spice Banker](SPICE_BANKER_RUNTIME.md) connects one through three sealed own

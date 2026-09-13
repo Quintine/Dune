@@ -55,6 +55,7 @@ import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
+import { SandmasterMovement } from './sandmaster-movement';
 import { ResidualPoison, BattleLeaderOpportunity } from './residual-poison';
 import { PortableSnooper } from './portable-snooper';
 import {
@@ -644,6 +645,16 @@ export function GameTable({
           event: g.richeseNoField!.event,
         }
       : physicalMovementGroup;
+  const ordinaryMovementAction: Action = {
+    type: 'move',
+    fighters:
+      moveAsFighters &&
+      isAdvisor(me, splitLocation(source).territory),
+    ...movementGroup,
+    territory: selected,
+    sector,
+    ...(includesNoField ? {} : { amount }),
+  };
   const transportAction: Action = {
     type: 'guildShip',
     ...(useGuildSecret ? {nexus: guildSecretEvent} : {}),
@@ -3979,16 +3990,7 @@ export function GameTable({
                           includesNoField
                             ? 'Move selected forces and No-Field'
                             : 'Move forces',
-                          {
-                            type: 'move',
-                            fighters:
-                              moveAsFighters &&
-                              isAdvisor(me, splitLocation(source).territory),
-                            ...movementGroup,
-                            territory: selected,
-                            sector,
-                            ...(includesNoField ? {} : { amount }),
-                          },
+                          ordinaryMovementAction,
                           !source ||
                             canceledFremenRouteBlocked ||
                             selectedDestinationInStorm ||
@@ -4025,6 +4027,29 @@ export function GameTable({
                             different sector or territory.
                           </p>
                         )}
+                        <SandmasterMovement
+                          game={g}
+                          move={source ? ordinaryMovementAction : null}
+                          act={act}
+                          busy={busy}
+                          unavailableReason={
+                            !movementAvailable
+                              ? 'No ordinary movement is currently available.'
+                              : (me.moved ?? 0) >= (me.movesAllowed ?? 1)
+                                ? 'No ordinary movement remains this turn.'
+                                : canceledFremenRouteBlocked
+                                  ? 'Choose an ordinary route within your available range.'
+                                  : selectedDestinationInStorm
+                                    ? 'Choose a destination outside the storm.'
+                                    : liveShipmentPromises(
+                                          g.shipmentPromises,
+                                          me.id,
+                                          g.turn,
+                                        ).some((promise) => promise.answer)
+                                      ? 'Complete the promised shipment before moving.'
+                                      : null
+                          }
+                        />
                       </>
                     )}
                     <OrnithopterMovement

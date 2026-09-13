@@ -309,3 +309,7 @@ Root browser review in isolated table QPNV5XJJ confirmed the full Guild row5/3/3
 ## Bene Gesserit portrait checkpoint (2026-09-06)
 
 Four original portraits complete Alia, Wanna Marcus, Reverend Mother Ramallo and Margot Lady Fenring alongside the existing Princess Irulan. All six base-faction rosters now have portraits, totaling30/60 ordinary identities. Thirty ordinary expansion portraits and separate special-disc artwork remain. The new1254px opaqueRGB files, exact prompts/corrections and hashes are in BENE_GESSERIT_PORTRAITS.md and the generation manifest. Root inspected all four final images; the agent inspected full,192px and80px circular views. The four existing asset tests are now registered and verify all six base rosters, identity privacy, physical files and manifest consistency. The final combined1258-case suite passes; this artwork checkpoint does not certify unfinished expansion mechanics.
+
+The [Sandmaster ground-movement follow-up](SANDMASTER_MOVEMENT.md) adds explicit
+routes, optional collection, human/AI controls and saved cancellation. Special
+relocation and combined modules remain unfinished.

@@ -11,6 +11,7 @@ import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-ski
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
+import { quoteSandmasterMovement, validateSandmasterMovement, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
@@ -793,6 +794,8 @@ export type Decision =
     }
   | { kind: 'battleCards'; player: string; territory: string; cards: string[] };
 export type ResponseWindow = {
+  /** Original optional collection binds a pending ground movement, including saved responses. */
+  sandmasterProof?: string;
   /** Original eligible contributor amounts; private routing evidence, not a new payment. */
   guildContributions?: number[];
   guildPaymentProof?: string;
@@ -4918,6 +4921,7 @@ function leaderSkillAssignmentUnavailable(
     : null;
 }
 function leaderSkillsIntegrity(g: Game) {
+  sandmasterIntegrity(g);
   sukRescueIntegrity(g);
   rihaniIntegrity(g);
   for (const [owner, plan] of Object.entries(g.battle?.plans ?? {})) {
@@ -8375,6 +8379,35 @@ function ornithopterView(g: Game, p: Player) {
       : null,
   };
 }
+function sandmasterOrder(g: Game, p: Player, move: MovementOrder): SandmasterOrder {
+  return { group: move.group, eliteGroup: move.eliteGroup, elite: move.elite, origin: move.origin,
+    to: move.to, sector: move.sector, range: movementOrderRange(g, p, move) };
+}
+function validateSandmasterOrder(g: Game, p: Player, move: MovementOrder) {
+  if (move.sandmaster === undefined) return;
+  requireRule(!move.source && !move.noField && !move.planetologist && !move.ornithopterEvent && !move.discoveryFlight,
+    'Sandmaster with special movement routes is still being integrated.');
+  nexusRule(() => validateSandmasterMovement(g, p.id, sandmasterOrder(g, p, move), move.sandmaster!));
+}
+function sandmasterIntegrity(g: Game) {
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null];
+  const responses = contexts.flatMap(context => {
+    const karama = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+    return [context?.response, karama?.use.kind === 'cancel' ? karama.use.response : null];
+  }).filter(r => r?.kind === 'fremenMovement');
+  const move = g.pendingFremenMove?.order;
+  if (move?.sandmaster !== undefined || responses.some(r => r?.sandmasterProof !== undefined)) {
+    requireRule(move && responses.length > 0 && responses.every(r => r!.owner === move.player &&
+      r!.sandmasterProof === JSON.stringify(move.sandmaster)),
+      'The saved Sandmaster route lost its original Fremen response.');
+    validateMovementOrder(g, getPlayer(g, move.player), move);
+  }
+  for (const other of [g.pendingIxMove, g.pendingChoamMove])
+    if (other?.sandmaster !== undefined) validateSandmasterOrder(g, getPlayer(g, other.player), other);
+}
 function movementOrderRange(g: Game, p: Player, move: MovementOrder) {
   return move.discoveryFlight || move.ornithopterRange ? 3 : planetologistRange(movementRange(g, p, move.elite), move.planetologist?.mode);
 }
@@ -8541,6 +8574,7 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
   );
   validateFlightSelection(g, p, move);
   validatePlanetologistMove(g, p, move);
+  validateSandmasterOrder(g, p, move);
   const selected = forceGroup(g, p, {
     type: 'move',
     forces: Object.fromEntries(move.group),
@@ -8677,6 +8711,7 @@ function completeMove(g: Game, move: MovementOrder) {
   validatePlanetologistMove(g, p, move);
   validateFlightSelection(g, p, move);
   validateMovementArrival(g, move);
+  validateSandmasterOrder(g, p, move);
   const flight = g.ornithopter;
   if (
     flight?.player === id &&
@@ -8713,6 +8748,13 @@ function completeMove(g: Game, move: MovementOrder) {
       }),
     );
     p.noFieldEvent = crypto.randomUUID();
+  }
+  for (const pile of move.sandmaster?.piles ?? []) {
+    g.spice[pile.key]--;
+    if (!g.spice[pile.key]) delete g.spice[pile.key];
+    p.spice++;
+    log(g, `${p.name}'s Sandmaster collected 1 spice while moving into or through ${territory(splitLocation(pile.key).territory).name}. This territory grants at most one collection during this movement.`,
+      { faction: p.faction, name: 'Sandmaster collection' });
   }
   removeGroup(p, group, eliteGroup);
   if (n > (move.noField ? 1 : 0))
@@ -18841,6 +18883,7 @@ type CompletedMovement = Pick<
   'player' | 'origin' | 'origins' | 'total' | 'to' | 'sector' | 'elite'
 > & { noField: boolean };
 type MovementOrder = {
+  sandmaster?: SandmasterMovement;
   source?: 'ambassador';
   ambassadorEvent?: string;
   player: string;
@@ -22082,6 +22125,10 @@ function applyActionInner(
       move.discoveryFlight = nexusRule(() => quoteDiscoveryFlight(g, action.discoveryOrnithopter, move));
     validatePlanetologistMove(g, p, move);
     const speed = movementOrderRange(g, p, move);
+    if (action.sandmaster !== undefined) {
+      move.sandmaster = nexusRule(() => quoteSandmasterMovement(g, id, sandmasterOrder(g, p, move), action.sandmaster));
+      validateSandmasterOrder(g, p, move);
+    }
     requireRule(
       sourceKeys.every(
         (key) =>
@@ -22118,16 +22165,16 @@ function applyActionInner(
       p.faction === 'fremen' &&
       !(p.fremenMovementBlocked?.turn === g.turn && p.fremenMovementBlocked.move === p.moved) &&
       !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
-      group.some(
-        ([key]) =>
-          gameDistance(g, key, location(to, s), (k) =>
-            pathBlocked(g, p, k, isAdvisor(p, origin)),
-          ) > planetologistRange(1, planetologist?.mode),
-      )
+      (move.sandmaster
+        ? Object.values(move.sandmaster.routes).some(route => mobileRouteDistance(route) > 1)
+        : group.some(
+          ([key]) => gameDistance(g, key, location(to, s), (k) =>
+            pathBlocked(g, p, k, isAdvisor(p, origin))) > planetologistRange(1, planetologist?.mode)))
     ) {
       g.pendingFremenMove = { turn: g.turn, move: p.moved, order: move };
       g.response = {
         kind: 'fremenMovement',
+        ...(move.sandmaster ? {sandmasterProof: JSON.stringify(move.sandmaster)} : {}),
         owner: id,
         location: location(to, s),
         amount: n,
@@ -23105,6 +23152,7 @@ export function viewGame(state: Game, id: string) {
           ...g.response,
           ...(g.response.guildContributions ? { guildContributions: undefined } : {}),
           ...(g.response.guildPaymentProof ? { guildPaymentProof: undefined } : {}),
+          ...(g.response.sandmasterProof ? { sandmasterProof: undefined } : {}),
           passed: g.response.passed.includes(id) ? [id] : [],
           ...(g.response.kind === 'revivalIncome' &&
           ![g.response.owner, g.response.recipient].includes(id)

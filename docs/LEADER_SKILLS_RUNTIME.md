@@ -149,3 +149,7 @@ game restoration was performed.
 Checkpoint-wide check/build/HTTP results and the final source fingerprint are
 recorded in the commit and private verification report. Full module and combined
 game acceptance remain unfinished.
+
+The [Sandmaster ground-movement follow-up](SANDMASTER_MOVEMENT.md) adds explicit
+routes, optional collection, human/AI controls and saved cancellation. Special
+relocation and combined modules remain unfinished.

@@ -4,6 +4,11 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Sandmaster movement collection](SANDMASTER_MOVEMENT.md) connects explicit
+  ground routes, optional board-spice collection, controls, legal AI and saved
+  Fremen cancellation. Special relocation and combined modules remain missing;
+  multiple-pile collection stays guarded. No mode gate is opened.
+
 - [Spice Banker battle spending](SPICE_BANKER_RUNTIME.md) connects sealed own
   spice, separate support funding, survivor strength, traitor payment precedence,
   private controls, all four AI profiles and saved resolution. Normal income

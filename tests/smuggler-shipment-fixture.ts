@@ -17,6 +17,7 @@ import { botActions } from '../game/bots';
 export function smugglerShipmentGame(
   faction: FactionId = 'emperor',
   advanced = false,
+  skill: 'smuggler' | 'sandmaster' = 'smuggler',
 ): Game {
   let g = createGame('SMUGSHIP', newPlayer('p', 'Smuggler', faction), advanced);
   joinGame(
@@ -24,7 +25,7 @@ export function smugglerShipmentGame(
     newPlayer('h', 'Opponent', faction === 'guild' ? 'emperor' : 'guild'),
   );
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
-  const index = LEADER_SKILL_CARDS.findIndex((c) => c.id === 'smuggler');
+  const index = LEADER_SKILL_CARDS.findIndex((c) => c.id === skill);
   let cursor = LEADER_SKILL_CARDS.length - 1;
   mock.method(globalThis.crypto, 'getRandomValues', (array: Uint32Array) => {
     array[0] = cursor-- === index ? 0 : 0xffffffff;
@@ -46,7 +47,7 @@ export function smugglerShipmentGame(
               {
                 type: 'leaderSkill',
                 event: skills.offer.event,
-                skill: p.id === 'p' ? 'smuggler' : skills.offer.cards[0],
+                skill: p.id === 'p' ? skill : skills.offer.cards[0],
                 leader: skills.eligibleLeaders[0].id,
               },
             ]

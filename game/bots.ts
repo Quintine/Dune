@@ -77,6 +77,7 @@ import {
   guildTransportCost,
 } from './bot-mobility';
 import { planetologistLeader } from './planetologist-movement';
+import { sandmasterDefaultChoice } from './sandmaster-movement';
 import { faction } from './catalog';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
@@ -3303,6 +3304,31 @@ function policyActions(g: GameView): Action[] {
           }
         }
     }
+    const sandmasterMoves = groundMoves.flatMap((candidate) => {
+      const action = candidate.action;
+      if (
+        action.type !== 'move' ||
+        typeof action.from !== 'string' ||
+        action.noField !== undefined ||
+        action.planetologist !== undefined ||
+        action.movementCard !== undefined ||
+        action.ornithopterEvent !== undefined ||
+        action.discoveryOrnithopter !== undefined
+      )
+        return [];
+      const choice = sandmasterDefaultChoice(g, me.id, action);
+      return choice?.collect.length
+        ? [
+            {
+              ...candidate,
+              action: { ...action, sandmaster: choice },
+              destinationScore:
+                candidate.destinationScore + choice.collect.length,
+            },
+          ]
+        : [];
+    });
+    groundMoves.push(...sandmasterMoves);
     groundMoves.sort(
       (a, b) =>
         b.destinationScore - a.destinationScore ||
