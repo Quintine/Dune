@@ -1079,8 +1079,12 @@ function saphoAction(g: GameView): Action | null {
     me.reserves >= 3 &&
     (me.faction === 'fremen' || (me.spice ?? 0) >= 3) &&
     Object.values(g.spice).some((amount) => amount >= 6);
+  const battleFirst = options.some(option => option.scope === 'battleOrder') &&
+    (g.battleChoices ?? []).some(battle =>
+      [battle.attacker, battle.defender].includes(me.id) &&
+      gameTerritories(g).some(t => t.id === battle.territory && t.type === 'stronghold'));
   const preferred =
-    options[0].scope === 'movement' && earlySpice ? 'first' : 'last';
+    (options[0].scope === 'movement' && earlySpice) || battleFirst ? 'first' : 'last';
   const option =
     options.find((candidate) => candidate.mode === preferred) ?? options[0];
   return { type: 'card', card: card.id, ...option };

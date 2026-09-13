@@ -1,6 +1,11 @@
 # Juice of Sapho: finite ordering implementation
 
-Updated 13 September 2026. **Partial card implementation; complete Richese/Advanced starts remain disabled.** This document distinguishes implemented boundaries from printed rules. Sources and unresolved questions remain in [the source audit](JUICE_OF_SAPHO_ENGINE_AUDIT.md). The publisher CHOAM/Richese rulebook p11 confirms Once Around last; the physical face describes first, last (including after Guild), and battle aggressor. No newly discovered official ruling resolves normal cyclic auction duration, partly completed combined turns, or first versus Guild. These three material questions have been sent to the user; no answer has been assumed.
+Updated 14 September 2026. **Partial card implementation; complete Richese/Advanced starts remain disabled.** This document distinguishes implemented boundaries from printed rules. Sources and unresolved questions remain in [the source audit](JUICE_OF_SAPHO_ENGINE_AUDIT.md). The publisher CHOAM/Richese rulebook p11 confirms Once Around last; the physical face describes first, last (including after Guild), and battle aggressor. No newly discovered official ruling resolves normal cyclic auction duration, partly completed combined turns, or first versus Guild. These three material questions have been sent to the user; no answer has been assumed.
+
+The [Battle-phase ordering prototype](SAPHO_BATTLE_ORDER.md) adds first/last
+remaining battle choices. Its separate chooser, phase priority and saved-boundary
+contract supersede the earlier absence of that mode below. Aggressor remains
+unimplemented.
 
 ## Implemented contract
 
@@ -17,7 +22,11 @@ All four AI levels consume the same legal owner projection. They prefer last in 
 
 ## Remaining scope
 
-Battle aggressor, battle-phase first/last, normal/Black Market cyclic bidding, other ordered actions and partly completed movement remain unfinished. Once Around first after an already completed bid and first/Guild competing priority are guarded. Reacquiring and replaying Sapho while an existing movement protection remains is also guarded. Silent submission is simultaneous and receives no fabricated order or tie change.
+The [battle-order follow-up](SAPHO_BATTLE_ORDER.md) connects first/last at a clean
+boundary between actual battles. It does not implement the separate aggressor
+mode discussed below.
+
+Battle aggressor, normal/Black Market cyclic bidding, other ordered actions and partly completed movement remain unfinished. Once Around first after an already completed bid and first/Guild competing priority are guarded. Reacquiring and replaying Sapho while an existing movement protection remains is also guarded. Silent submission is simultaneous and receives no fabricated order or tie change.
 
 The battle audit in [the battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) found a real Stone Burner counterexample: a plan admitted with original aggressor tie priority can become allocation-ambiguous after late Sapho. A complete implementation needs the actual allocation continuation (and a usable, possession-independent late intervention boundary), not rejection based on an opponent's hidden plan. No aggressor handler has been enabled around that defect.
 

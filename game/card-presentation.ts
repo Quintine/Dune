@@ -34,7 +34,7 @@ export function richeseCardActionBlock(card: VisibleCard): string | null {
   if (definition?.card.effect === 'nullentropyBox')
     return 'Use the Nullentropy Box panel to pay for a private search.';
   if (definition?.card.effect === 'juiceOfSapho')
-    return 'Use the Juice of Sapho panel to choose an available Once Around or movement order change.';
+    return 'Use the Juice of Sapho panel to choose an available Once Around, movement or battle-choice order change.';
   if (definition?.card.effect === 'distrans')
     return 'Choose a recipient and card in the Distrans transfer panel.';
   return definition && definition.card.effect !== 'karama'

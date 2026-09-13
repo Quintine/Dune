@@ -90,3 +90,30 @@ No runtime tests were added or claimed for this source task. At this source audi
 now have connected development prototypes. The linked contracts supersede the
 historical runtime-absence statements above within their explicit boundaries.
 Reinforcements and complete combined-module acceptance remain unfinished.
+
+## 14 September Reinforcements cost review
+
+The printed close-up at [4:24](https://www.youtube.com/watch?v=P9ZTV1uZqsM&t=264s)
+and designer explanation at [8:55](https://www.youtube.com/watch?v=iF5E3-LOfhY&t=535s)
+place its effect during Revealing Wheels: increase the calculated dial by two,
+then place three reserve forces in the Tanks. A separate score modifier, without
+extra support or on-board casualties, is the strongest implementation inference.
+Three physical counters pay the cost; an available ordinary/elite mix needs its
+owner's explicit choice.
+
+The [base Traitor outcome](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=10)
+can reasonably be read to waive the sole caller's reserve cost. The later card's
+mandatory transfer can also reasonably override that general protection, using
+the same specificity argument as mandatory after-use card disposal. Neither
+reading is an authoritative Reinforcements ruling. Opposing/mutual Traitors and
+explosions have no directly retrieved combined clarification either. The card
+remains disabled: an eligibility gate based on concealed matching Traitors would
+expose private information or fail after plans were sealed.
+
+The user has been asked whether to retain that gate, always charge three on all
+outcomes, or waive only the sole traitor-call winner's cost. No answer is assumed.
+Separately, the sources do not establish whether these reserve counters count
+toward the Advanced Atreides seven-loss threshold, or the relative order when
+the same plan also plays Harass & Withdraw. Those combinations remain explicit
+boundaries rather than inferred rules. No disconnected quote is recorded as a
+completed card effect.

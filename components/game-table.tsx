@@ -4254,6 +4254,13 @@ export function GameTable({
                     to ship and move.
                   </p>
                 ))}
+              {g.phase === 6 && !g.battle && g.battleOrder && g.battleOrder.uses.length > 0 && (
+                <p className="notice">
+                  Remaining battle-choice order: {g.battleOrder.remaining.map(id =>
+                    g.players.find(player => player.id === id)?.name ?? id).join(' → ')}.
+                  {' '}Only unresolved battles can be chosen. Each battle keeps its own aggressor and tie rules.
+                </p>
+              )}
               {g.phase === 6 && !g.battle && g.active === me.id && (
                 <>
                   <p className="muted">

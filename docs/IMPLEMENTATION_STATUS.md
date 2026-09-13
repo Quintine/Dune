@@ -1,5 +1,26 @@
 # Dune implementation status
 
+## 14 September 2026 — Sapho remaining battle-choice order
+
+[The Sapho battle-order prototype](SAPHO_BATTLE_ORDER.md) adds first/last remaining
+Battle-phase choice through the existing physical card, hand controls, legal AI
+and saved state. The public chooser is separate from physical attacker/defender;
+old battle outcomes, storm order and tie rules remain intact. Accepted priority
+persists through complete aftermath and later changed board eligibility. This
+separation and phase duration are explicit implementation interpretations.
+
+A fresh [Reinforcements cost review](ECAZ_TREACHERY_RULES.md#14-september-reinforcements-cost-review)
+found no authoritative resolution of its reserve payment versus a traitor win.
+The question has been sent to the user; the card remains disabled while independent
+Sapho work proceeds. Advanced Atreides accounting and same-plan Harass ordering
+remain separate unresolved combinations.
+
+The checkpoint uses a 970-room preservation baseline, a separate browser lobby,
+focused rules/controls/AI/SQLite checks and independent review. Final complete-game,
+browser, broad-check and verified Git results belong to the source-bound private
+report and commit message. Public mode and publication gates remain unchanged.
+
+
 ## 14 September 2026 — Harass & Withdraw battle prototype
 
 [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) now connects either physical card

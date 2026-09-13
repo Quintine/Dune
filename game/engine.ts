@@ -58,6 +58,7 @@ import { currentJunctionOffer, junctionOfferEvent, junctionOfferIntegrity, junct
 import { homeworldAllianceBlock } from './homeworld-alliance';
 import { quoteHomeworldSubstitution } from './homeworld-substitution';
 import { combatArmy, combatLocations, combatLocationName, homeworldBattleLocation, quoteCombatBoard, quoteCombatBoardContinuation } from './combat-location';
+import { battleChooserEvent, quoteBattleChoosers, reorderBattleChoosers, validateBattleChooserOrder, BattleChooserOrderError, type BattleChooserOrder } from './battle-chooser-order';
 import { quoteHomeworldCombatLoss } from './homeworld-combat-loss';
 import { quoteHomeworldBattleRules } from './homeworld-battle-rules';
 import type { HomeworldForces } from './homeworld-custody';
@@ -603,6 +604,9 @@ export type DiplomatDefenseReceipt = DiplomatDefenseQuote & {
   signature: string;
 };
 export type Battle = {
+  /** Scheduling owner; physical combat slots and aggressor remain independent. */
+  chooser?: string;
+  chooserEvent?: string;
   /** Only newly created supported battles enter the pre-plan Mentat question. */
   mentatQuestionVersion?: 1;
   mentatQuestionEvent?: string;
@@ -1518,6 +1522,9 @@ export type Game = {
   movementRemaining: string[] | null;
   /** Juice of Sapho's last position lasts only through this combined-turn queue. */
   saphoMovementLast?: { event: string; turn: number; player: string } | null;
+  /** Separate Battle-phase scheduling; never rewrites physical storm order. */
+  battleOrder?: BattleChooserOrder;
+  battleOrderUseEvents?: string[];
   guildTimingGranted: boolean;
   guildTimingLocked: boolean;
   ready: string[];
@@ -12032,7 +12039,51 @@ function applyAdvisorReleases(g: Game, released: AdvisorRelease[]) {
 export function battles(g: Game) {
   const quote = boardResolution(() => quoteCombatBoard(g));
   applyAdvisorReleases(g, quote.released);
-  return quote.battles;
+  return battleOrderRule(() => quoteBattleChoosers(quote.battles, g.order, g.battleOrder?.priority)).choices;
+}
+function battleOrderRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) { if (error instanceof BattleChooserOrderError) throw new RuleError(error.message); throw error; }
+}
+function battleOrderIntegrity(g: Game) {
+  requireRule(!!g.battleOrder === !!g.battleOrderUseEvents,
+    'The saved battle chooser order is missing its independent use events.');
+  if (!g.battleOrder) return;
+  requireRule(g.status === 'playing' && g.phase === 6,
+    'Juice of Sapho battle scheduling expires when the Battle Phase ends.');
+  battleOrderRule(() => validateBattleChooserOrder(g.battleOrder!, g.order, g.turn, g.battleOrderUseEvents!));
+  const cards = physicalTreacheryCards(g).filter(card => card.id === 'richese-juice-of-sapho');
+  requireRule(cards.length === 1 && !!richeseCardDefinition(cards[0]) && cards[0].effect === 'juiceOfSapho',
+    'The played battle scheduling card has lost its unique physical custody.');
+  if (g.battle)
+    requireRule(g.battle.chooser && [g.battle.attacker, g.battle.defender].includes(g.battle.chooser) &&
+      g.battle.chooserEvent === battleChooserEvent(g.turn, battleOrderAfterBattle(g), g.battleOrder.uses.length) &&
+      g.battle.chooser === [g.battle.attacker, g.battle.defender].sort((a, b) =>
+        g.battleOrder!.priority.indexOf(a) - g.battleOrder!.priority.indexOf(b))[0],
+      'The selected battle lost its original scheduling owner.');
+  else if (saphoBattleBoundary(g))
+    requireRule(g.active === battleOrderQuote(g).current,
+      'The active battle chooser contradicts the remaining scheduling priority.');
+}
+function battleOrderAfterBattle(g: Game) {
+  return g.lastBattleContext?.turn === g.turn ? g.lastBattleContext.event : null;
+}
+function battleOrderQuote(g: Game) {
+  return battleOrderRule(() => quoteBattleChoosers(quoteCombatBoard(g).battles, g.order, g.battleOrder?.priority));
+}
+function saphoBattleBoundary(g: Game) {
+  return g.phase === 6 && saphoCleanWindow(g) && !g.battle &&
+    !g.pendingTreacheryDiscard && !g.pendingRichesePurchaseIncome && !g.pendingCapture &&
+    !g.pendingAuditor && !g.pendingFaceDance && !g.pendingTech && !g.pendingChoamBattleIncome &&
+    !g.moritaniRetention && !g.choamMarket;
+}
+function projectedBattleOrder(g: Game) {
+  if (g.status !== 'playing' || g.phase !== 6) return null;
+  const quote = battleOrderQuote(g);
+  return {event: battleChooserEvent(g.turn, battleOrderAfterBattle(g), g.battleOrder?.uses.length ?? 0),
+    phaseEvent: `battleOrder:${g.turn}`, remaining: quote.remaining,
+    current: saphoBattleBoundary(g) ? quote.current : null,
+    uses: g.battleOrder?.uses.map(({event, player, mode}) => ({event, player, mode})) ?? []};
 }
 /** Evaluate only at the committed end of movement, using the normal battle geometry. */
 function offerMoritaniDuke(g: Game) {
@@ -12076,7 +12127,7 @@ function offerMoritaniDuke(g: Game) {
   return true;
 }
 type SaphoOption = {
-  scope: 'onceAround' | 'movement';
+  scope: 'onceAround' | 'movement' | 'battleOrder';
   event: string;
   mode: 'first' | 'last';
 };
@@ -12181,6 +12232,13 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
   )
     return [];
   const options: SaphoOption[] = [];
+  if (saphoBattleBoundary(g)) {
+    const order = projectedBattleOrder(g)!;
+    if (order.remaining.includes(p.id)) {
+      if (order.current !== p.id) options.push({scope: 'battleOrder', event: order.event, mode: 'first'});
+      if (order.remaining.at(-1) !== p.id) options.push({scope: 'battleOrder', event: order.event, mode: 'last'});
+    }
+  }
   const lot = g.richeseAuction;
   if (
     g.phase === 3 &&
@@ -12257,6 +12315,16 @@ function playSapho(g: Game, p: Player, action: Action) {
       { faction: p.faction, name: 'Juice of Sapho' },
     );
     settleRicheseLot(g);
+  } else if (option.scope === 'battleOrder') {
+    const next = battleOrderRule(() => reorderBattleChoosers({state: g.battleOrder, physicalOrder: g.order,
+      turn: g.turn, afterBattle: battleOrderAfterBattle(g), pairs: quoteCombatBoard(g).battles,
+      event: option.event, player: p.id, mode: option.mode}));
+    discard(g, p, 'richese-juice-of-sapho');
+    g.battleOrder = next;
+    (g.battleOrderUseEvents ??= []).push(option.event);
+    g.active = battleOrderQuote(g).current;
+    log(g, `${p.name} discarded Juice of Sapho to choose their remaining battles ${option.mode} this Battle Phase. Other players may still choose to fight them earlier. Physical storm order and battle aggressor are unchanged.`,
+      {faction: p.faction, name: 'Juice of Sapho'});
   } else {
     const queue = saphoMovementQueue(g)!;
     const next =
@@ -12715,6 +12783,10 @@ function finishEcazPlacement(g: Game) {
 }
 function completePhase(g: Game) {
   if (closeNexusCards(g)) return;
+  if (g.phase === 6) {
+    delete g.battleOrder;
+    delete g.battleOrderUseEvents;
+  }
   if (g.phase === 7 && g.grummanCollection?.turn === g.turn && g.grummanCollection.stage === 'waiting') {
     g.grummanCollection.stage = 'complete';
     g.grummanCollection.outcome = 'expired';
@@ -12779,7 +12851,7 @@ function beginPhase(g: Game) {
   }
   if (g.phase === 6) {
     const b = battles(g);
-    if (b.length) g.active = b[0].attacker;
+    if (b.length) g.active = b[0].chooser;
     else {
       nextPhase(g);
       return;
@@ -14157,6 +14229,7 @@ function gholaOptions(g: Game, p: Player) {
   };
 }
 function marketGholaIntegrity(g: Game) {
+  battleOrderIntegrity(g);
   nexusCardsIntegrity(g);
   nexusEmperorSecretIntegrity(g);
   nexusTraitorIntegrity(g);
@@ -16291,7 +16364,7 @@ function finishBattle(g: Game) {
     g.decision = { ...next };
   } else {
     const remaining = battles(g);
-    if (remaining.length) g.active = remaining[0].attacker;
+    if (remaining.length) g.active = remaining[0].chooser;
     else nextPhase(g);
   }
 }
@@ -23593,9 +23666,9 @@ function applyActionInner(
     );
     const choice = battles(g).find(
       (b) =>
-        b.attacker === id &&
+        b.chooser === id &&
         b.territory === action.territory &&
-        b.defender === action.target,
+        (b.attacker === id ? b.defender : b.attacker) === action.target,
     );
     requireRule(choice, 'Choose one of your unresolved battles.');
     g.auditorInsight = null;
@@ -23614,6 +23687,7 @@ function applyActionInner(
     const battleEvent = crypto.randomUUID();
     g.battle = {
       ...choice,
+      chooserEvent: battleChooserEvent(g.turn, battleOrderAfterBattle(g), g.battleOrder?.uses.length ?? 0),
       event: battleEvent,
       ...(g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
       ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 1 as const } : {}),
@@ -23630,7 +23704,7 @@ function applyActionInner(
     beginStrongholdBattle(g);
     log(
       g,
-      `${p.name} attacks ${getPlayer(g, choice.defender).name} in ${combatLocationName(g, choice.territory)}.`,
+      `${p.name} chose the battle between ${getPlayer(g, choice.attacker).name} and ${getPlayer(g, choice.defender).name} in ${combatLocationName(g, choice.territory)}. ${getPlayer(g, choice.attacker).name} remains the aggressor.`,
     );
     return g;
   }
@@ -24051,7 +24125,8 @@ export function viewGame(state: Game, id: string) {
       canAct: biddingEndQuiet(g) && g.biddingEnd.owners.includes(id), kaitain: { owner: byFaction(g, 'emperor')!.id,
         eligible: homeworldRule(() => highKaitainDiscardsAvailable(g, byFaction(g, 'emperor')!.id)) } } : null,
     combatLocations: combatLocations(g),
-    battleChoices: g.status === 'playing' && g.phase === 6 ? quoteCombatBoard(g).battles : [],
+    battleChoices: g.status === 'playing' && g.phase === 6 ? battleOrderQuote(g).choices : [],
+    battleOrder: projectedBattleOrder(g),
     guildAmbassadorAdvisorChoices: guildAdvisorChoices(g, id),
     truthShipmentAnswers:
       g.truthtrance?.stage === 'answer' &&
@@ -24946,6 +25021,7 @@ export function viewGame(state: Game, id: string) {
           preLeader: b.preLeader ?? null,
           territory: b.territory,
           attacker: b.attacker,
+          chooser: b.chooser ?? b.attacker,
           defender: b.defender,
           revealed: b.revealed,
           kwisatzBlocked: b.kwisatzBlocked ?? false,

@@ -8,17 +8,18 @@ import {
   splitLocation,
 } from './board';
 
-/** Public fighter locations and storm order determine which battle may be chosen. */
+/** Use the authoritative chooser, which can differ from the physical attacker. */
 export function botBattleChoices(g: GameView): Action[] {
   const me = g.players.find((p) => p.id === g.me)!;
   if (g.active !== me.id) return [];
   if (Array.isArray(g.battleChoices))
     return g.battleChoices
-      .filter((battle) => battle.attacker === me.id)
+      .filter((battle) => (battle.chooser ?? battle.attacker) === me.id &&
+        [battle.attacker, battle.defender].includes(me.id))
       .map((battle) => ({
         type: 'chooseBattle',
         territory: battle.territory,
-        target: battle.defender,
+        target: battle.attacker === me.id ? battle.defender : battle.attacker,
       }));
   // Legacy component fixtures may predate the authoritative combat frontier.
   const ownLocations = Object.keys(presenceByLocation(me));

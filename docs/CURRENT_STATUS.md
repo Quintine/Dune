@@ -6,14 +6,16 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Previous verified checkpoint: `c04cb93`, [Recruits](RECRUITS_RUNTIME.md).
-Types, lint, **4,743 offline tests**, build and **43 HTTP tests** passed.
-Eight fixed Basic/Advanced six-seat samples finished in 7,995 actions with no
-rejected candidates and three actual Recruits plays. All opening games and
-seat/recovery records were preserved, with 936 rooms after verification.
+Latest verified checkpoint: `0450156`, [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md).
+Types, lint, **4,776 offline tests**, build and **43 HTTP tests** passed.
+Eight fixed Basic/Advanced six-seat samples finished in 9,956 actions with no
+rejected candidates, three Harass withdrawals and 266 periodic save/restore
+checks. Browser controls, private restoration and the final engine replay passed.
+All 937 games present before verification and their original seat/recovery
+records were preserved, with 970 rooms after HTTP checks.
 Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
 
-Current prototype: [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) connects either
+The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
 battle-card slot, private category inspections, exact undialed normal/elite
 returns, opponent-Traitor cancellation, mandatory disposal, controls and all
 four AI profiles. Physical allocation must be unique. Richese card combinations
@@ -22,12 +24,18 @@ card-specific discard precedence are explicitly labeled inferences. The Stone
 Burner timing question is pending; no user answer is assumed. Reinforcements
 remains unfinished. This does not open variant, mode or publication gates.
 
-After the latest reported power failure, the existing server responds normally.
-All **936 rooms**, **1,959 seats** and original recovery/entry/handover records
-match the opening backup; SQLite integrity and foreign-key checks pass. Browser
-refresh restores the existing test seat. No restart, database reset or recurring
-automation was needed. Current checkpoint verification and delivery are recorded
-with the final source-bound report and Git message.
+The existing server remained healthy after the reported power failures. Saved
+games and original recovery/entry/handover records survived; SQLite integrity
+and foreign-key checks passed, and refresh restored the test seat. No restart,
+database reset or recurring automation was needed. Exact verification, source
+fingerprints and delivery are recorded in the private report and Git message.
+
+Current work: [Sapho Battle-phase order](SAPHO_BATTLE_ORDER.md) connects first/last
+remaining battle choices without rewriting storm order or tie roles. The browser completed a reordered
+battle and restored its next choice; independent review and an actual Basic/Advanced
+Face Dance continuation passed. Reinforcements
+remains disabled while its reserve-cost question is pending; see the
+[latest source review](ECAZ_TREACHERY_RULES.md#14-september-reinforcements-cost-review).
 
 ## Authoritative navigation
 

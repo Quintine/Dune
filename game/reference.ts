@@ -263,7 +263,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A player whose hand becomes full is automatically passed, or submits zero in an unfinished Silent lot. A full-hand owner’s unbid cache card is removed automatically. If every hand is full, preparing the normal pool does not draw and lose unseen cards.',
       'AI supports cache choices and all three offered bidding methods using its own projected information. It currently skips the optional Black Market prelude. A seller in an already offered Black Market lot passes or submits zero.',
       'Some unresolved rules are explicitly blocked: changing the normal card count after cache-auction cancellation, exhausted-cache arithmetic, positive Black Market self-bids, and advanced Ixian Technology substitution on special lots. These are implementation guards while the rules are resolved, not claims of official prohibitions.',
-      'Juice of Sapho now supports bounded first/last Once Around and movement ordering; see its timing guide for current limits. Richese’s Karama uses the existing generic handler, Distrans supports a separate private hand transfer, Nullentropy Box supports a paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment in development fixtures. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon and Semuta Drug remain unfinished, as do the other Sapho timing modes; this does not certify every Karama interaction. Richese expansion starts remain disabled. Each component guide identifies its currently available action. Independent continuation and persisted-room checks pass. Desktop checks confirmed all ten enlarged guides, direct topic links, Once Around payment and restored private Silent bidding. Mobile and full Richese-game verification remain unfinished.',
+      'Juice of Sapho now supports bounded first/last Once Around, movement and remaining battle-choice ordering; see its timing guide for current limits. Richese’s Karama uses the existing generic handler, Distrans supports a separate private hand transfer, Nullentropy Box supports a paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment in development fixtures. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon and Semuta Drug remain unfinished, as do the other Sapho timing modes; this does not certify every Karama interaction. Richese expansion starts remain disabled. Each component guide identifies its currently available action. Independent continuation and persisted-room checks pass. Desktop checks confirmed all ten enlarged guides, direct topic links, Once Around payment and restored private Silent bidding. Mobile and full Richese-game verification remain unfinished.',
     ],
     related: [
       'choam-modules',
@@ -328,11 +328,12 @@ export const RULE_TOPICS: RuleTopic[] = [
     coverage: 'Partial',
     developmentStage: 'Prototyped',
     summary:
-      'Choose one available first or last position, then discard Sapho. Battle aggressor and other timing modes remain unfinished.',
+      'Choose an available first or last position in Once Around bidding, movement or remaining battle choices, then discard Sapho. Battle aggressor and other timing modes remain unfinished.',
     steps: [
       'In a current Once Around auction, first is available before anyone bids. Last is available before your own bid, including after Richese. You still get only one bidding opportunity and must outbid the current high bid to win.',
       'Discarding Sapho frees a hand slot. A full-hand holder can join a still-open lot through this order change. A completed bid or pass cannot be repeated, and a finished lot cannot reopen.',
       'The movement controls change complete shipment and movement turns at a boundary before the current player begins. First moves you ahead of the remaining unstarted turns, including after earlier players have fully finished. In Advanced, the Guild must have finished or be absent. Last stays after the Guild even if the Guild later chooses to wait.',
+      'Between completed battles, choose first or last among remaining battle choosers. The priority lasts for the rest of the Battle phase. You still need a real unresolved battle. Others may choose battles against you before your own turn; last is not immunity. This scope changes the chooser, not each battle’s aggressor or tie advantage.',
       'Finish existing shipment, movement, card preparation and pending decisions before changing order. Your hand panel lists only currently available choices. A reserved card or a position you already hold cannot be selected.',
       'Completed bids and turns stay completed. Storm order, committed funding and movement counters do not reset. Refreshing preserves the same remaining opportunities and any declared last position.',
       'These are the supported development controls, not additional printed restrictions. Battle aggressor, ordinary cyclic auction scope, other phase ordering and intervention during a partly completed combined turn remain unfinished. Silent bids are simultaneous; their storm-order tie rule is unchanged.',
@@ -350,13 +351,13 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Finite Once Around and clean combined-turn ordering, including first after completed movement turns; physical discard, full-hand eligibility and persisted last-over-Guild protection. Remaining timing modes are guarded.',
+          'Finite Once Around, clean combined-turn and remaining Battle-phase ordering; authoritative chooser/participant separation, phase priority, physical discard, full-hand auction eligibility and persisted last-over-Guild movement protection. Remaining timing modes are guarded.',
       },
       {
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Owner-only first/last actions, readable inspector and timing explanations. No aggressor or cyclic-auction controls yet.',
+          'Owner-only first/last actions, public remaining battle order, owner-relative battle targets, readable inspector and timing explanations. No aggressor or cyclic-auction controls yet.',
       },
       {
         area: 'AI',
@@ -374,7 +375,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Finite-order, engine, all-profile and real persisted-room tests cover once-only play, funding, full-hand eligibility, privacy and Guild deferral. Full expansion games remain unverified.',
+          'Finite-order, engine, all-profile and real persisted-room tests cover once-only play, funding, full-hand eligibility, privacy, Guild deferral and battle scheduling through actual outcomes. Full expansion compliance remains unverified.',
         evidence: [
           'tests/ordered-opportunity.test.ts',
           'tests/juice-of-sapho-engine.test.ts',
@@ -382,6 +383,10 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/juice-of-sapho-bots.test.ts',
           'tests/juice-of-sapho-recovery.test.ts',
           'tests/juice-of-sapho-boundary-recovery.test.ts',
+          'tests/sapho-battle-order.test.ts',
+          'tests/sapho-battle-order-bots.test.ts',
+          'tests/sapho-battle-order-controls.test.tsx',
+          'tests/sapho-battle-order-recovery.test.ts',
         ],
       },
     ],
