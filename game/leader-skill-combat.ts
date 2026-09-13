@@ -24,7 +24,7 @@ export type BattleLeaderSkill = {
 };
 
 export type AppliedLeaderSkill = {
-  skill: DirectLeaderSkillId | 'planetologist' | 'mentat';
+  skill: DirectLeaderSkillId | 'planetologist' | 'mentat' | 'spice-banker';
   amount: 1 | 2 | 3;
   mode: 'normal' | 'skilled';
 };
@@ -165,9 +165,13 @@ export function leaderSkillBattleBonus(input: {
   weapon: Card | undefined;
   defense: Card | undefined;
   skilledLeaderSurvives: boolean;
+  bankerSpice?: number;
 }): LeaderSkillBattleBonus {
   if (!input.selectedLeader) return { bonus: 0, applied: [] };
   const applied: AppliedLeaderSkill[] = [];
+  if (input.bankerSpice && Number.isSafeInteger(input.bankerSpice) && input.bankerSpice >= 1 && input.bankerSpice <= 3 &&
+    input.selectedLeader.kind === 'disc' && usesSurvivingSkilledLeader(input.assignments, 'spice-banker', input.selectedLeader.id, input.skilledLeaderSurvives))
+    applied.push({ skill: 'spice-banker', amount: input.bankerSpice as 1 | 2 | 3, mode: 'skilled' });
   if (input.selectedLeader.kind === 'disc' && usesSurvivingSkilledLeader(
     input.assignments, 'mentat', input.selectedLeader.id, input.skilledLeaderSurvives,
   )) applied.push({ skill: 'mentat', amount: 2, mode: 'skilled' });

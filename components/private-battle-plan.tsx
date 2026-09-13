@@ -46,6 +46,10 @@ export function PrivateBattlePlan({ game }: { game: GameView }) {
           <dd>{insight.plan.support}</dd>
         </div>
         <div>
+          <dt>Spice Banker commitment</dt>
+          <dd>{insight.plan.bankerSpice ?? 0}</dd>
+        </div>
+        <div>
           <dt>Leader</dt>
           <dd>{name(insight.plan.leader)}</dd>
         </div>

@@ -51,8 +51,9 @@ publisher instruction to announce a name.
 
 [Battle-effects follow-up](LEADER_BATTLE_EFFECTS.md) connects both Rihani bands
 and the lower Mentat, Bureaucrat and Sandmaster effects. Their normal questioning,
-payments and movement collection remain missing, along with all Spice Banker,
-Diplomat effects and Smuggler battle collection. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
+payments and movement collection remain missing, along with Spice Banker normal
+income, Diplomat effects and Smuggler battle collection. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
+now connects its lower band with separate sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus. Planetologist and Suk Graduate have the connected
 prototypes described below.
 

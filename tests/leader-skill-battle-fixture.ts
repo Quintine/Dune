@@ -25,7 +25,7 @@ export function advancedAtreidesSukOffer(): Game {
 }
 
 /** Genuine module setup, then a conserved, explicitly staged battle position. */
-export function leaderSkillBattle({ skill = 'suk-graduate' as LeaderSkillId, hide = true, advanced = false, elite = false, bluff = false, captured = false, capturedNativeSkill = undefined as LeaderSkillId | undefined, weaponKills = false, dial = 4, atreides = false, territory = 'arrakeen', sector = 10 } = {}): Game {
+export function leaderSkillBattle({ skill = 'suk-graduate' as LeaderSkillId, unsealed = false, hide = true, advanced = false, elite = false, bluff = false, captured = false, capturedNativeSkill = undefined as LeaderSkillId | undefined, weaponKills = false, dial = 4, atreides = false, territory = 'arrakeen', sector = 10 } = {}): Game {
   const native = captured ? 'harkonnen' : atreides ? 'atreides' : 'emperor';
   let game = dealtSkillGame(native, advanced, skill);
   for (const id of ['a', 'd']) {
@@ -89,6 +89,7 @@ export function leaderSkillBattle({ skill = 'suk-graduate' as LeaderSkillId, hid
     game = applyAction(game, game.battle.preparation.owner, { type: 'declineBattlePower' });
   if (game.decision?.kind === 'fullPlanOffer')
     game = applyAction(game, game.decision.player, { type: 'decision', decline: true });
+  if (unsealed) return game;
   game = applyAction(game, 'a', { type: 'battlePlan', dial, support: advanced ? 3 : 0,
     leader: captured ? 'guild-0' : hide && !bluff ? `${native}-0` : `${native}-1`, weapon: played.id });
   game = applyAction(game, 'd', { type: 'battlePlan', dial: 0, leader: 'guild-1', weapon: enemyWeapon });

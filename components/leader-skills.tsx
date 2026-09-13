@@ -113,7 +113,7 @@ export function LeaderSkillsPanel({
           modifiers for Warmaster, Master of Assassins, Swordmaster of Ginaz,
           Killer Medic and Prana-Bindu Adept, plus Planetologist movement and
           Special-card battle use, Suk Graduate force rescue, Mentat and Bureaucrat
-          battle scores, Sandmaster victory spice, Rihani inspections/exchanges and optional Smuggler reserve shipping. Other Leader Skill effects are
+          battle scores, Sandmaster victory spice, Rihani inspections/exchanges, optional Smuggler reserve shipping and Spice Banker battle spending. Other Leader Skill effects are
           unfinished.
         </p>
       </div>

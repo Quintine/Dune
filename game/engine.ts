@@ -11,6 +11,7 @@ import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-ski
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
+import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
@@ -561,6 +562,8 @@ export type Player = {
   prediction?: { faction: FactionId; turn: number };
 };
 export type Plan = {
+  /** Separate own-spice commitment for the selected Spice Banker; absent is zero. */
+  bankerSpice?: number;
   dial: number;
   leader: string | null;
   weapon: string | null;
@@ -571,7 +574,7 @@ export type Plan = {
 };
 export type PlanField = Exclude<
   keyof Plan,
-  'support' | 'kwisatz' | 'allyPayment'
+  'support' | 'kwisatz' | 'allyPayment' | 'bankerSpice'
 >;
 export type Battle = {
   /** Public face-up/behind-shield choice precedes faction battle powers. */
@@ -4917,6 +4920,15 @@ function leaderSkillAssignmentUnavailable(
 function leaderSkillsIntegrity(g: Game) {
   sukRescueIntegrity(g);
   rihaniIntegrity(g);
+  for (const [owner, plan] of Object.entries(g.battle?.plans ?? {})) {
+    if (plan.bankerSpice === undefined) continue;
+    const p = getPlayer(g, owner);
+    if (plan.bankerSpice) requireRule(spiceBankerModeSupported(g), 'Spice Banker with expansion modules is still being integrated.');
+    const leader = controlledLeaders(g, p).find(l => l.id === plan.leader && !l.dead);
+    requireRule([g.battle!.attacker, g.battle!.defender].includes(owner), 'Spice Banker belongs to a current combatant.');
+    nexusRule(() => validateSpiceBankerSpend(battleLeaderSkills(g, p), leader?.id, plan.bankerSpice,
+      p.spice, battleSupportCost(g, p, plan.support) - (plan.allyPayment ?? 0)));
+  }
   if (g.leaderSkills || g.pendingShipment?.smuggler) {
     const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'guildShipment');
     requireRule(decisions.length === (g.pendingShipment ? 1 : 0),
@@ -6950,6 +6962,7 @@ function uncommittedSpice(g: Game, p: Player) {
       : 0) -
     (battleSupportCost(g, p, g.battle?.plans[p.id]?.support ?? 0) -
       (g.battle?.plans[p.id]?.allyPayment ?? 0)) -
+    (g.battle?.plans[p.id]?.bankerSpice ?? 0) -
     (g.pendingHomeworldShipment?.player === p.id
       ? g.pendingHomeworldShipment.cost - g.pendingHomeworldShipment.allyPayment : 0)
   );
@@ -12723,6 +12736,9 @@ function validatePlan(
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
   const forces = combatForces(g, p, b.territory, opponent);
   const typedForces = g.advanced || p.faction === 'ixians';
+  const bankerSpice = input.bankerSpice === undefined ? 0 : input.bankerSpice;
+  requireRule(typeof bankerSpice === 'number' && Number.isSafeInteger(bankerSpice) && bankerSpice >= 0 && bankerSpice <= 3,
+    'Choose zero to decline, or one through three spice for Spice Banker.');
   const dial = typedForces
     ? Number(input.dial)
     : integer(input.dial, 0, forces.normal + forces.elite, 'Forces dialed');
@@ -12737,12 +12753,13 @@ function validatePlan(
   );
   const allyPayment = integer(
     input.allyPayment ??
-      Math.max(0, battleSupportCost(g, p, support) - p.spice),
-    Math.max(0, battleSupportCost(g, p, support) - p.spice),
+      Math.max(0, battleSupportCost(g, p, support) - (p.spice - bankerSpice)),
+    Math.max(0, battleSupportCost(g, p, support) - (p.spice - bankerSpice)),
     Math.min(battleSupportCost(g, p, support), battleAidFor(g, p)?.amount ?? 0),
     'Battle ally payment',
   );
   const plan: Plan = {
+    ...(bankerSpice ? { bankerSpice } : {}),
     ...(allyPayment ? { allyPayment } : {}),
     dial,
     leader:
@@ -12777,6 +12794,10 @@ function validatePlan(
     (l) => !l.dead && (!l.usedAt || l.usedAt === b.territory),
   );
   const l = available.find((l) => l.id === plan.leader);
+  nexusRule(() => validateSpiceBankerSpend(battleLeaderSkills(g, p), l?.id, bankerSpice,
+    p.spice, battleSupportCost(g, p, support) - allyPayment));
+  if (bankerSpice) requireRule(spiceBankerModeSupported(g),
+    'Spice Banker with expansion modules is still being integrated.');
   requireRule(!l || !g.leaderSkills?.assignments.some((assignment) => assignment.owner === p.id && assignment.leader === l.id) || !!b.leaderSkillHidden?.[p.id], 'Move your skilled leader behind the shield before using it in your battle plan.');
   const hero = cardOf(p, plan.leader)?.kind === 'hero';
   requireRule(
@@ -14228,6 +14249,14 @@ function resolveBattle(g: Game) {
         `${player.name}'s Stronghold Card paid ${payment.bankSupport} spice from the bank toward force support.`,
         { faction: player.faction, name: 'Stronghold support' },
       );
+  }
+  for (const payment of quote.spiceBankerPayments ?? []) {
+    const player = getPlayer(g, payment.player);
+    player.spice -= payment.amount;
+    log(g, payment.waivedByTraitor
+      ? `${player.name}'s successful traitor call waived the committed Spice Banker payment along with other Battle Plan spice.`
+      : `${player.name} paid ${payment.amount} committed Spice Banker spice to the bank, separate from force support. The payment is spent win or lose; only a surviving skilled leader receives its strength bonus.`,
+      { faction: player.faction, name: 'Spice Banker payment' });
   }
   if (quote.choamIncome) g.pendingChoamBattleIncome = { ...quote.choamIncome };
   const explosion = quote.explosion;

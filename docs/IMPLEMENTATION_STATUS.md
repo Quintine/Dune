@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 13 September 2026 — Spice Banker battle commitment prototype
+
+[Spice Banker](SPICE_BANKER_RUNTIME.md) connects one through three sealed own
+spice to a selected skilled leader's surviving battle strength. Funds remain
+separate from force support and unavailable for other spending. A sole successful
+traitor caller keeps the commitment; other outcomes pay the Bank even on leader
+death, while death removes the bonus. Printed disc values and bounties stay fixed.
+
+Owner/full-plan inspection and public reveal display the amount at their proper
+times; all four AI profiles submit funded choices. Independent source and
+persistence review, private SQLite restart, rejected diversion, concurrent final
+resolution and legacy omitted-field continuation cover this boundary. Two seeded
+Basic/Advanced samples finished without rejected candidates but did not use
+Banker spending; targeted tests establish the effect. The browser checked a
+three-spice commitment, pending refresh, actual +3 strength and payment, then
+restored one board force, fifteen reserves, four Tanks, two spice and the same
+private cards. Broad results and final preservation are in the checkpoint commit.
+
+Normal income remains pending a user ruling about already-earned public spice
+when the trainer dies or is captured before Mentat Pause. Combined modules and
+complete skill acceptance remain unfinished; no mode/publication gate is opened.
+
 ## 13 September 2026 — Smuggler reserve shipment prototype
 
 [Smuggler shipping](SMUGGLER_SHIPMENT.md) connects one optional free accompanying

@@ -4,6 +4,12 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Spice Banker battle spending](SPICE_BANKER_RUNTIME.md) connects sealed own
+  spice, separate support funding, survivor strength, traitor payment precedence,
+  private controls, all four AI profiles and saved resolution. Normal income
+  remains pending the recorded custody question. Broad results and browser
+  evidence are recorded in the checkpoint; no mode gate is opened.
+
 - [Smuggler reserve shipment](SMUGGLER_SHIPMENT.md) connects the optional free
   companion, total physical count, Guild rounding, controls, all four AI profiles
   and saved interception. Independent review added missing-decision rejection.

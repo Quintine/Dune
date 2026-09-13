@@ -147,6 +147,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BattlePreparation, battlePlanCommitments, bindBattlePlanCommitments, NexusInspectionHistory } from './battle-preparation';
 import { PrivateBattlePlan } from './private-battle-plan';
+import { SpiceBankerControl, spiceBankerControlState } from './spice-banker';
 import { canUsePlanetologistBattleSpecial, validLeaderSkillBattleCardPair } from '../game/leader-skill-combat';
 import type { Card } from '../game/cards';
 import { RevealedBattle } from './revealed-battle';
@@ -379,6 +380,7 @@ export function GameTable({
       )
     : 0;
   const [support, setSupport] = useState(0);
+  const [bankerSpice, setBankerSpice] = useState(0);
   const strongholdBankSupport =
     g.battle?.strongholdEffects[me.id] === 'arrakeen' ? 2 : 0;
   const battleSupportMaximum = Math.min(
@@ -413,6 +415,34 @@ export function GameTable({
   const [discardCards, setDiscardCards] = useState<Record<string, boolean>>({});
   const stormLosses = g.decision?.kind === 'stormLosses' ? g.decision : null;
   const committed = battlePlanCommitments(g);
+  const selectedBattleLeader = committed.leader
+    ? String(committed.leader.value ?? '')
+    : leader;
+  const paidBattleSupport = Math.max(0, battleSupport - strongholdBankSupport);
+  const selectedBattleAllyPayment =
+    allyPayment === ''
+      ? Math.max(0, paidBattleSupport - (me.spice ?? 0))
+      : Math.max(
+          0,
+          Math.min(
+            Math.trunc(Number(allyPayment)),
+            paidBattleSupport,
+            g.aid.available,
+          ),
+        );
+  const ownBattleSupport = Math.max(
+    0,
+    paidBattleSupport - selectedBattleAllyPayment,
+  );
+  const bankerControl = spiceBankerControlState(
+    g,
+    selectedBattleLeader,
+    ownBattleSupport,
+  );
+  const battleBankerSpice = Math.max(
+    0,
+    Math.min(Math.trunc(bankerSpice), bankerControl.maximum),
+  );
   const planetologistSpecial = (card: Card) => canUsePlanetologistBattleSpecial({
     assignments: g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [],
     selectedLeader: committed.leader ? String(committed.leader.value ?? '') : leader,
@@ -4239,6 +4269,7 @@ export function GameTable({
                       fill={(plan) => {
                         setDial(plan.dial);
                         setSupport(plan.support);
+                        setBankerSpice(plan.bankerSpice ?? 0);
                         setAllyPayment(
                           plan.allyPayment === undefined
                             ? ''
@@ -4450,6 +4481,14 @@ export function GameTable({
                                   ))}
                               </select>
                             </label>
+                            <SpiceBankerControl
+                              game={g}
+                              selectedLeader={selectedBattleLeader}
+                              ownSupport={ownBattleSupport}
+                              value={battleBankerSpice}
+                              onChange={setBankerSpice}
+                              disabled={busy}
+                            />
                             {[
                               ['Weapon', weapon, setWeapon],
                               ['Defense', defense, setDefense],
@@ -4556,6 +4595,9 @@ export function GameTable({
                                 : 'Seal battle plan',
                               bindBattlePlanCommitments(g, {
                                 type: 'battlePlan',
+                                ...(battleBankerSpice
+                                  ? { bankerSpice: battleBankerSpice }
+                                  : {}),
                                 ...(g.aid.available > 0 && allyPayment !== ''
                                   ? { allyPayment: Number(allyPayment) }
                                   : {}),
@@ -4580,9 +4622,17 @@ export function GameTable({
                             )}
                           </>
                         ) : (
-                          <p className="muted">
-                            Your plan is sealed. Waiting for your opponent.
-                          </p>
+                          <>
+                            <p className="muted">
+                              Your plan is sealed. Waiting for your opponent.
+                            </p>
+                            {!!g.battle.plans[me.id]?.bankerSpice && (
+                              <p className="fine">
+                                Spice Banker: {g.battle.plans[me.id].bankerSpice}{' '}
+                                spice committed.
+                              </p>
+                            )}
+                          </>
                         )}
                       </>
                     )

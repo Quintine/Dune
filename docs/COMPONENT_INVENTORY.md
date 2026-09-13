@@ -9,8 +9,9 @@ Planetologist now also has movement and base green-Special battle controls;
 through readable rescue choices without creating counters. [Battle effects](LEADER_BATTLE_EFFECTS.md)
 now connect Rihani inspection/exchange, Mentat/Bureaucrat scoring and Sandmaster
 victory spice. [Smuggler shipping](SMUGGLER_SHIPMENT.md) now connects its normal reserve bonus
-without adding any physical component. Other unfinished bands, Spice Banker and Diplomat remain
-missing. This supersedes the historical missing-inventory
+without adding any physical component. [Spice Banker battle spending](SPICE_BANKER_RUNTIME.md) uses a separate sealed
+spice amount and the same original skill inspector. Other unfinished bands and
+Diplomat remain missing. This supersedes the historical missing-inventory
 rows below only for Leader Skills. See [source inventory](LEADER_SKILLS_RULES.md),
 [capture interpretation](LEADER_SKILLS_CAPTURE.md) and [prototype evidence](LEADER_SKILLS_RUNTIME.md).
 

@@ -29,6 +29,7 @@ import {
 import { matchingTraitor } from './traitors';
 import { auditCount } from './choam-auditor';
 import { sukGraduateSkill, type SukGraduateSkill } from './suk-graduate';
+import { validateSpiceBankerSpend } from './spice-banker';
 import { rihaniVictorySkill, type RihaniSkill } from './rihani-decipherer';
 import {
   quoteHomeworldBattleRules,
@@ -53,6 +54,7 @@ export class BattleResolutionQuoteError extends Error {
   }
 }
 export type ResolutionPlan = {
+  bankerSpice?: number;
   dial: number;
   support: number;
   allyPayment?: number;
@@ -136,6 +138,7 @@ export type BattleResolutionQuote = {
   effects: ReturnType<typeof strongholdBattleEffects> | null;
   explosion: boolean;
   payments: BattleSupportPayment[];
+  spiceBankerPayments?: { player: string; amount: number; waivedByTraitor: boolean }[];
   choamIncome: { owner: string; amount: number } | null;
   bounty: { player: string; amount: number } | null;
   strongholdIncome: { player: string; amount: number }[];
@@ -197,6 +200,12 @@ function validateCombatant(
       whole(p.allyPayment ?? 0),
     'The revealed battle needs valid force, dial and payment quantities.',
   );
+  try {
+    validateSpiceBankerSpend(side.leaderSkills ?? [], side.leader && !side.leader.dead ? side.leader.id : undefined,
+      p.bankerSpice, side.spice, strongholdSupportCost(side.stronghold, p.support) - (p.allyPayment ?? 0));
+  } catch (error) {
+    throw new BattleResolutionQuoteError(error instanceof Error ? error.message : 'Invalid Spice Banker commitment.');
+  }
   const selected = [p.weapon, p.defense, p.leader, side.lateDefense].filter(
     (value): value is string => value != null,
   );
@@ -406,6 +415,10 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       (v) => v.called && !a.plan.kwisatz && v.beneficiary === d.id,
     );
   const payments: BattleSupportPayment[] = [];
+  const spiceBankerPayments = [a, d].filter(side => (side.plan.bankerSpice ?? 0) > 0).map(side => {
+    const waivedByTraitor = side === a ? ac && !dc : dc && !ac;
+    return { player: side.id, amount: waivedByTraitor ? 0 : side.plan.bankerSpice!, waivedByTraitor };
+  });
   const credits = new Map<string, number>();
   if (input.advanced)
     for (const [side, free] of [
@@ -524,6 +537,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         weapon: aw,
         defense: ad,
         skilledLeaderSurvives: !deaths.attacker,
+        bankerSpice: a.plan.bankerSpice,
       }),
       defender: leaderSkillBattleBonus({
         assignments: d.leaderSkills ?? [],
@@ -531,6 +545,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         weapon: dw,
         defense: dd,
         skilledLeaderSurvives: !deaths.defender,
+        bankerSpice: d.plan.bankerSpice,
       }),
     };
     const attackerPenalty = bureaucratBattlePenalty(d.leaderSkills ?? [], d.leader?.id,
@@ -759,6 +774,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     effects,
     explosion,
     payments,
+    ...(spiceBankerPayments.length ? { spiceBankerPayments } : {}),
     choamIncome:
       choam && choamAmount > 0
         ? { owner: choam.id, amount: choamAmount }

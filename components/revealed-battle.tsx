@@ -51,6 +51,9 @@ export function RevealedBattle({ game }: { game: GameView }) {
               {game.advanced ? ` · ${plan.support} spice support` : ''}
               {!!plan.allyPayment && ` (${plan.allyPayment} from CHOAM)`}
             </span>
+            {!!plan.bankerSpice && (
+              <span>Spice Banker: {plan.bankerSpice} spice committed</span>
+            )}
             {battle.native === id && !battle.cards.some(isStoneBurner) && (
               <span>
                 Native Homeworld bonus: +{battle.nativeBattleStrength} to the

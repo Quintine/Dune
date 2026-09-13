@@ -66,6 +66,7 @@ import {
 } from './shrine';
 import { reserveShipmentCost } from './shipment-price';
 import { quoteSmugglerShipment } from './smuggler-shipment';
+import { spiceBankerBattleMaximum, spiceBankerModeSupported } from './spice-banker';
 import { nexusGuildSecretAllyAction, nexusGuildSecretAllyCanAct, nexusGuildSecretAllyQuote } from './nexus-guild-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from './nexus-richese-options';
 import { liveShipmentPromises, matchesShipment } from './shipment-promises';
@@ -551,6 +552,9 @@ function ornithopterMoves(g: GameView): Action[] {
 }
 function candidatePlan(a: Action): Plan {
   return {
+    ...(Number(a.bankerSpice ?? 0)
+      ? { bankerSpice: Number(a.bankerSpice) }
+      : {}),
     dial: Number(a.dial),
     support: Number(a.support ?? 0),
     leader: typeof a.leader === 'string' ? a.leader : null,
@@ -676,6 +680,7 @@ function plans(g: GameView): Action[] {
       (element) => element.field !== field || element.value === value,
     );
   const battleSkills = g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [];
+  const bankerPrototypeAvailable = spiceBankerModeSupported(g);
   const specialForLeader = (card: Card | undefined, leader: string | null) =>
     canUsePlanetologistBattleSpecial({assignments:battleSkills, selectedLeader:leader, card});
   const weapons = [
@@ -818,7 +823,7 @@ function plans(g: GameView): Action[] {
         const enemySurvivingStrength =
           effects.stunned || (inspected && effects.defenderDead)
             ? 0
-            : expectedEnemyStrength;
+            : expectedEnemyStrength + (inspected?.plan.bankerSpice ?? 0);
         const opponentPenalty = stoneBattle ? 0 : bureaucratBattlePenalty(
           battleSkills, myLeader?.id, !effects.attackerDead,
           leaderSkillStrongholdCount(g, other),
@@ -843,6 +848,7 @@ function plans(g: GameView): Action[] {
           ideal,
           ...bankSupportedDials,
           ...freeEliteDials,
+          ...[1, 2, 3].map((bonus) => Math.max(0, ideal - bonus)),
           0,
           ...(typedForces ? [0.5] : []),
           Math.max(0, ownStrength - 1),
@@ -866,6 +872,32 @@ function plans(g: GameView): Action[] {
             : null;
           if (typedForces && !commitment) continue;
           if (commitment) action.support = commitment.support;
+          const supportCost = Math.max(
+            0,
+            Number(action.support ?? 0) -
+              (b.strongholdEffects[me.id] === 'arrakeen' ? 2 : 0),
+          );
+          const ordinaryAllyPayment = Math.max(
+            0,
+            supportCost - (me.spice ?? 0),
+          );
+          const ownSupportCost = Math.max(
+            0,
+            supportCost - ordinaryAllyPayment,
+          );
+          const bankerSpice = Math.min(
+            level + 1,
+            3,
+            bankerPrototypeAvailable
+              ? spiceBankerBattleMaximum(
+                  battleSkills,
+                  myLeader?.id,
+                  me.spice ?? 0,
+                  ownSupportCost,
+                )
+              : 0,
+          );
+          if (bankerSpice) action.bankerSpice = bankerSpice;
           const stonePlan = isStoneBurner(
             me.hand?.find((c) => c.id === action.weapon),
           );
@@ -938,18 +970,25 @@ function plans(g: GameView): Action[] {
               (effectiveDefense ? 2 : 0)
             : level === 0
               ? variation(g, `${leader}-${weapon}-${defense}-${dial}`) * 100
-              : ownSurvivingStrength * 2 + opponentPenalty * 2 +
+              : (ownSurvivingStrength +
+                  (!effects.attackerDead && !effects.stunned
+                    ? bankerSpice
+                    : 0)) * 2 +
+                opponentPenalty * 2 +
                 (inspected && enemySurvivingStrength === 0 ? 10 : 0) +
                 effectiveWeapon +
                 effectiveDefense +
                 (safeLeader && level >= 2 ? 5 : 0) -
-                Math.abs(Number(action.dial) - ideal) * 2 +
+                Math.abs(
+                  Number(action.dial) - Math.max(0, ideal - bankerSpice),
+                ) * 2 +
                 (correctDefense ? 10 : 0) -
                 (selfExplosion || explosionRisk ? 80 : 0) -
                 (exposedLeader ? 100 : 0);
           options.push({
             action,
-            score: score - (commitment?.cost ?? 0) * 0.2,
+            score:
+              score - (commitment?.cost ?? 0) * 0.2 - bankerSpice * 0.2,
           });
         }
       }
