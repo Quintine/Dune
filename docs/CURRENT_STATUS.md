@@ -45,6 +45,12 @@ Likewise, the [Truthtrance readiness audit](TRUTHTRANCE_NONBATTLE_READINESS_2026
 
 ## Next milestone: rapid functional coverage
 
+The first connected batch is the [Ixians & Tleilaxu prototype](IX_PROTOTYPE.md):
+genuine setup, both expansion factions, full Ix deck and Sandtrout, shared human/AI
+controls and saved continuation. The checklist now distinguishes its Prototyped
+development stage from Partial rules coverage. Discoveries remain missing; their
+seven spice cards and eight token faces need a verified inventory and adapters.
+
 The user changed the development order on 13 September: get working prototypes
 of all remaining functions into the game, then use integration and play to find
 issues and refine them. Complete core certification no longer precedes independent

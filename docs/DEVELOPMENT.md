@@ -8,6 +8,9 @@ Start with [current status](CURRENT_STATUS.md) and [rule decisions](RULE_DECISIO
 Use [repeatable verification](VERIFICATION_WORKFLOW.md) for compact source-bound
 logs, private saved-game backups/comparisons and HTTP seat restoration.
 The [three-milestone pilot](EFFICIENCY_PILOT.md) records measurement limits.
+Use the [Ix prototype workflow](IX_PROTOTYPE.md) to connect a fresh local ready
+lobby to genuine expansion setup with a private backup and preserved sessions.
+It does not open normal mode gates or require restarting the server.
 
 ## Architecture map
 

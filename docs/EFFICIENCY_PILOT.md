@@ -49,6 +49,15 @@ goal-steering overhead. It is an audit batch, not a new gameplay capability.
 
 ## User-directed rapid prototyping, 13 September 2026
 
+The first batch starts at aggregate counter 59,524,858 and connects genuine Ix
+setup to the existing faction/card gameplay and saved browser table. One bounded
+helper inventoried existing work and implemented focused tests; a second reviewed
+setup privacy and the local database writer. The owner integrates the prototype
+entry, reusable backed-up starter, checklist and browser journey. Six added tests
+include two fixed-seed complete games without a calibration study. A saved-version
+review finding and a test typing error were fixed before the stable broad check;
+final results and counter endpoint are recorded in the checkpoint commit.
+
 Prioritize functional coverage of the entire remaining game before exhaustive
 per-feature refinement. Use the existing checklist to distinguish missing,
 prototyped, integrated, verified and polished functions, and choose connected

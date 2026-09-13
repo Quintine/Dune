@@ -4919,7 +4919,14 @@ export function initializeNexusGameForAudit(state: Game): Game {
     'Enable Nexus cards in a fresh audit lobby first.');
   return initializeSetupGameForAudit(state, !!state.homeworlds, true);
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false): Game {
+/** Offline prototype entry through real Ix setup, including both expansion factions.
+ * No player action or room API bypasses the normal release gates. */
+export function initializeIxGameForAudit(state: Game): Game {
+  requireRule(state.expansions.length === 1 && state.expansions[0] === 'ix',
+    'The Ix prototype requires exactly the Ixians & Tleilaxu expansion.');
+  return initializeSetupGameForAudit(state, false, false, true);
+}
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false): Game {
   nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -4941,17 +4948,19 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
     'The audit initializer requires two through six distinct ready players and an existing host.',
   );
   requireRule(
-    (homeworlds || nexus || g.expansions.length === 0) &&
+    (homeworlds || nexus || ix || g.expansions.length === 0) &&
       (nexus || !g.nexusCards) &&
       !g.techTokens &&
       !g.strongholdCards &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(
-          (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base'),
+          (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base' || (ix && f.expansion === 'ix')),
         ),
       ),
-    homeworlds
+    ix
+      ? 'The Ix prototype supports base, Ixian and Tleilaxu factions without optional modules.'
+      : homeworlds
       ? 'The Homeworld setup audit supports implemented deck sets without Tech Tokens or Stronghold Cards.'
       : 'The audit initializer supports base factions without expansions or optional modules.',
   );
@@ -4979,7 +4988,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
           !p.prediction &&
           !p.advisorSetup &&
           (!p.elites ||
-            ((homeworlds || nexus) &&
+            ((homeworlds || nexus || ix) &&
               p.faction === 'ixians' &&
               p.elites.reserves === 7 &&
               p.elites.tanks === 0 &&

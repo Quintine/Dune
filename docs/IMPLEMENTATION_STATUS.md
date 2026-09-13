@@ -1,5 +1,24 @@
 # Dune implementation status
 
+## 13 September 2026 — Genuine Ix expansion prototype
+
+Connected Basic/Advanced Ix setup with both expansion factions, the complete
+47-card Treachery Deck and Sandtrout through the existing game pipeline. A local
+prototype command backs up the named fresh lobby, starts it once with a version
+comparison, and preserves every seat and other room. The normal start gates
+remain closed. The checklist now separates Prototyped progress from Partial
+rules coverage. See [Ix prototype](IX_PROTOTYPE.md).
+
+Six new focused tests cover private setup at all four profiles, exact starting
+forces, Face Dancers, cards, JSON restoration, immutable rejection and the local
+SQLite writer. Two reproducible full games use seeds 2026091301 (Basic) and
+2026091302 (Advanced), including both expansion factions and physical inventory
+checks. Review caught a saved JSON version mismatch, now corrected and covered.
+Browser room `W5LE6VFB` verifies genuine human Ixian setup, private refresh,
+Weather Control and mobile stronghold placement; owned autopilot then continues
+the same game. Final broad checks, later browser outcome and preservation results
+belong to the verified checkpoint. No complete expansion certification is claimed.
+
 
 ## 13 September 2026 — Atreides full-plan interaction verification
 

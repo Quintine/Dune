@@ -29,6 +29,8 @@ export type RuleTopic = {
     | 'Factions'
     | 'Advanced & expansions';
   coverage: 'Implemented' | 'Partial' | 'Planned';
+  /** Development progress is separate from the scope of verified rules coverage. */
+  developmentStage?: 'Missing' | 'Prototyped' | 'Integrated' | 'Verified' | 'Polished';
   summary: string;
   searchText?: string;
   steps: string[];
@@ -192,6 +194,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     steps: [
       'The linked topics contain a five-part checklist. Implemented describes only the stated feature boundary; Partial identifies remaining work and Planned means it is not active.',
       'Verification entries identify focused regression suites. Passing those checks does not certify every interaction, browser journey or complete expansion game.',
+      'Development stages distinguish Missing functions, working Prototypes, Integrated functions, Verified behavior and Polished presentation. A prototype stage does not certify complete rules coverage; check the stated limits and evidence.',
       'This checklist is being extended across the rules. Features without a checklist still have a topic-level coverage label and are not implicitly complete.',
       'Advanced and full expansion faction starts remain disabled. Development fixture coverage is not permission to start an unsupported mode.',
     ],
@@ -1382,6 +1385,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'Ixians & Tleilaxu treachery deck',
     category: 'Advanced & expansions',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'Fourteen expansion cards join the thirty-three base cards; matching names still represent distinct physical cards.',
     steps: [
@@ -1390,7 +1394,14 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The additional Shield and Snooper behave like their base copies, including the Shield’s lasgun interaction. Kull Wahad is a Worthless card and can be played in a battle plan or converted with advanced Bene Gesserit’s Karama advantage.',
       'The second Harvester is a separate card. Each available copy can be played while the fresh blow window remains open; the current implementation doubles that blow again, without multiplying pre-existing spice. Neither copy can restore a worm-destroyed blow or create spice in storm. Multiple-copy timing and multiplier interpretation remain under card-face audit.',
       'With this expansion the combined deck has forty-seven distinct card identities: five ordinary projectile weapons, five ordinary poison weapons, five ordinary Shields, five ordinary Snoopers, six Worthless cards and two Harvesters, in addition to the other base and special expansion cards.',
-      'The complete inventory is assembled in the engine, with internal guidance and AI card recognition. Expansion starts remain disabled pending remaining rule and interaction audits; this is not a claim of complete expansion compliance.',
+      'The local development prototype uses genuine setup with the complete deck, Sandtrout, Ixians and Tleilaxu in Basic or Advanced play. Starting cards, private choices, controls, AI and saved continuation use the normal game paths. Public expansion starts remain disabled pending complete rule and interaction acceptance.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Working prototype with the actual 47-card setup, both expansion factions and Sandtrout. Optional module combinations and remaining printed-card interpretations are unfinished.', evidence: ['game/cards.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Prototype rooms use the existing private setup, faction, battle-card and special-card controls. Local development initialization preserves the normal release gate.', evidence: ['components/game-table.tsx', 'tools/start-prototype.ts'] },
+      { area: 'AI', status: 'Partial', detail: 'All four profiles share the existing legal private actions. Complete-game prototype runs exercise both expansion factions; comprehensive strength calibration remains later work.', evidence: ['game/bots.ts', 'tests/ix-prototype.test.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'The prototype setup record separates functional progress, source interpretations and final acceptance.', evidence: ['docs/IX_PROTOTYPE.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Genuine setup, complete prototype games, private views, physical-card custody and saved continuation have targeted checks. This does not certify every combination.', evidence: ['tests/ix-prototype.test.ts', 'tests/prototype-room.test.ts'] },
     ],
     related: [
       'ix-battle-cards',
@@ -1648,7 +1659,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Advanced & expansions',
     coverage: 'Partial',
     summary:
-      'A pending spice-card effect that can cross phases and turns. Tested support exists; the expansion spice deck remains unavailable in live rooms.',
+      'A pending spice-card effect that can cross phases and turns. It is included in local Ix prototype setup; normal expansion starts remain gated.',
     steps: [
       'Drawing Sandtrout immediately breaks existing alliances and clears pending alliance offers. It is then held aside while spice draws continue. A territory drawn before the next active Shai-Hulud receives its usual spice amount.',
       'The next active Shai-Hulud drawn is suppressed: it does not devour the previous territory, offer Fremen protection or a ride, or trigger its own Nexus. Discard the consumed Sandtrout with that suppressed worm.',
@@ -1670,7 +1681,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Cards',
     coverage: 'Partial',
     summary:
-      'A poison weapon with an optional attack on both leaders. Engine support exists; expansion decks remain unavailable.',
+      'A poison weapon with an optional attack on both leaders. It is included in the local Ix prototype deck; normal expansion starts remain gated.',
     steps: [
       'Commit Poison Tooth in your weapon slot. After both plans are revealed, its owner chooses whether to activate it before traitor decisions proceed. Committing the card does not yet activate its poison.',
       'When activated, the tooth attacks both leaders, including its owner’s leader. Chemistry in the defense slot protects that leader. Snooper and Shield Snooper do not protect against the tooth. A Chemistry card used as a weapon supplies no defense.',
@@ -1712,7 +1723,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Voice can name one of these special cards directly or use a matching generic attack or defense type. A prohibition uses the role the card actually plays. For example, forbidding poison weapons still allows Chemistry as poison defense.',
       'Compulsion uses the default role. Requiring a projectile weapon can compel Weirding Way as a weapon. Requiring a projectile defense cannot force a player to turn Weirding Way into that defense. Likewise, requiring a poison weapon cannot force Chemistry out of its default defense role.',
       'Prescience reveals the card occupying the requested slot. With a poison weapon and Weirding Way, a weapon question reveals the poison weapon; a defense question reveals Weirding Way. The other card remains private, and the revealed slot must remain unchanged.',
-      'These cards are not yet added to live room decks. Poison Tooth and Artillery Strike also have tested effects described in their own topics. Remaining Ix treachery cards, complete deck setup and expansion interactions are still in development.',
+      'The local Ix prototype deals the full expansion deck through genuine setup. Poison Tooth and Artillery Strike have their own topics. Complete rules compliance and combined expansion interactions remain unfinished; prototype access does not open normal expansion starts.',
     ],
     related: [
       'battle',

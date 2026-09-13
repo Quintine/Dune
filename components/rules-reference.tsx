@@ -72,6 +72,7 @@ function RulesReferenceContent() {
           t.title,
           t.summary,
           t.searchText ?? '',
+          t.developmentStage ?? '',
           ...t.steps,
           t.example ?? '',
           ...(t.checklist ?? []).flatMap((item) => [
@@ -173,6 +174,11 @@ function RulesReferenceContent() {
                   >
                     {topic.coverage}
                   </span>
+                  {topic.developmentStage && (
+                    <span className="coverage-label">
+                      Development: {topic.developmentStage}
+                    </span>
+                  )}
                   <p>{topic.summary}</p>
                 </summary>
                 <div className="rule-topic-content">
