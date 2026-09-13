@@ -42,7 +42,7 @@ void test('the verified Ecaz variant has one physical special of each identity a
     assert.throws(() => treacheryDeck([unsupported]), /not implemented/);
   assert.equal(ECAZ_TREACHERY_VARIANT.independentOfFactions, true);
   assert.equal(ECAZ_TREACHERY_VARIANT.independentOfOtherVariants, true);
-  assert.equal(ECAZ_TREACHERY_VARIANT.activation, 'not-implemented');
+  assert.equal(ECAZ_TREACHERY_VARIANT.activation, 'audit-prototype');
 });
 
 void test('Ecaz faction selection preserves each ordinary deck and never includes its separate unfinished variant', () => {
@@ -121,7 +121,10 @@ void test('verified inventory and source rules remain distinct from unimplemente
     assert.equal(definition.quantity, 1);
     assert.equal(definition.verification.inventory, 'verified');
     assert.equal(definition.verification.sourceRules, 'verified');
-    assert.equal(definition.verification.runtime, 'not-implemented');
+    assert.equal(
+      definition.verification.runtime,
+      definition.card.effect === 'recruits' ? 'prototype' : 'not-implemented',
+    );
     assert.equal(definition.verification.combinedInteractions, 'incomplete');
     assert.ok(definition.verification.unresolved.length > 0);
     assert.ok(definition.summary.length > 20);
@@ -139,6 +142,7 @@ void test('every canonical Ecaz face receives its full original gameplay guide a
     assert.equal(presentation.category, 'Special treachery');
     assert.equal(presentation.role, 'utility');
     assert.deepEqual(Object.keys(presentation).sort(), [
+      'availability',
       'category',
       'gameplay',
       'guidance',
@@ -150,7 +154,9 @@ void test('every canonical Ecaz face receives its full original gameplay guide a
       assert.equal(serialized.includes(note), false);
     assert.equal(serialized.includes('sourceRules'), false);
     assert.equal(serialized.includes('not-implemented'), false);
-    assert.deepEqual(presentation.topics, []);
+    assert.deepEqual(presentation.topics.map((topic) => topic.id), ['card-recruits']);
+    assert.match(presentation.availability ?? '', card.effect === 'recruits'
+      ? /development controls during Revival/ : /battle effect is still being implemented/);
   }
 });
 

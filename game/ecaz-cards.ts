@@ -26,7 +26,7 @@ export type EcazTreacheryDefinition = Readonly<{
   verification: Readonly<{
     inventory: 'verified';
     sourceRules: 'verified';
-    runtime: 'not-implemented';
+    runtime: 'prototype' | 'not-implemented';
     combinedInteractions: 'incomplete';
     unresolved: readonly string[];
   }>;
@@ -39,7 +39,7 @@ export const ECAZ_TREACHERY_VARIANT = Object.freeze({
   physicalCards: 3,
   independentOfFactions: true,
   independentOfOtherVariants: true,
-  activation: 'not-implemented',
+  activation: 'audit-prototype',
   audit: 'docs/ECAZ_TREACHERY_RULES.md',
 } as const);
 
@@ -86,7 +86,7 @@ export const ECAZ_TREACHERY_DEFINITIONS: readonly EcazTreacheryDefinition[] =
       verification: {
         inventory: 'verified',
         sourceRules: 'verified',
-        runtime: 'not-implemented',
+        runtime: 'prototype',
         combinedInteractions: 'incomplete',
         unresolved: [
           'Timing after earlier completed revivals, refunds, reopening opportunities and any already pending transaction.',
@@ -170,11 +170,12 @@ export function ecazTreacheryCards(): EcazTreacheryCard[] {
 
 /** Resolve a canonical physical identity, not an arbitrary special with a similar name. */
 export function ecazTreacheryDefinition(
-  card: Pick<Card, 'id' | 'kind' | 'effect'>,
+  card: Pick<Card, 'id' | 'name' | 'kind' | 'effect'>,
 ): EcazTreacheryDefinition | undefined {
   return ECAZ_TREACHERY_DEFINITIONS.find(
     (definition) =>
       definition.card.id === card.id &&
+      definition.card.name === card.name &&
       definition.card.kind === card.kind &&
       definition.card.effect === card.effect,
   );

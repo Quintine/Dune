@@ -77,6 +77,8 @@ import { VictoryProgress } from './victory-progress';
 import { tableActionOwner } from '@/game/table-turn';
 import { DukeVidal } from './duke-vidal';
 import { CardInspector, CardRules } from './card-inspector';
+import { Recruits } from './recruits';
+import { ecazTreacheryDefinition } from '@/game/ecaz-cards';
 import { ordinaryCardAvailability } from '@/game/card-availability';
 import {
   cardPresentation,
@@ -1526,6 +1528,7 @@ export function GameTable({
           </div>
           <PrivateBattlePlan game={g} />
           <NexusCards game={g} act={act} busy={busy} />
+          <Recruits game={g} act={act} busy={busy} />
           <NexusTraitors game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <DiscoveryPanel game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || !!me.autopilot} />
@@ -3575,11 +3578,14 @@ export function GameTable({
                     !g.freeRevival.includes(me.ally) &&
                     actionButton('Grant ally three free revivals', {
                       type: 'grantRevival',
-                    })}
+                    }, !!g.recruitsPreview?.grantRevivalBlocked,
+                    g.recruitsPreview?.grantRevivalBlocked ? 'recruits-grant-unavailable' : undefined)}
+                  {me.faction === 'fremen' && me.ally && !g.freeRevival.includes(me.ally) && g.recruitsPreview?.grantRevivalBlocked && (
+                    <p className="notice" id="recruits-grant-unavailable">{g.recruitsPreview.grantRevivalBlocked}</p>
+                  )}
                   {g.freeRevival.includes(me.id) && !g.revival.freeBlocked && (
                     <p className="muted">
-                      Fremen allow you up to three free force revivals this
-                      phase.
+                      Fremen allow you up to {g.recruitsPreview?.active ? 'six' : 'three'} free force revivals this phase.
                     </p>
                   )}
                   {amountInput}
@@ -4803,7 +4809,13 @@ export function GameTable({
               {me.hand?.map((c) => {
                 const richese = richeseCardDefinition(c);
                 const presentation = cardPresentation(c);
+                const ecaz = ecazTreacheryDefinition(c);
                 const block =
+                  (ecaz
+                    ? ecaz.card.effect === 'recruits'
+                      ? g.recruitsPreview?.play?.blocked ?? 'Use the Recruits panel during Revival to play this card.'
+                      : 'This card’s battle effect is still being implemented.'
+                    : null) ??
                   (richese?.card.effect === 'distrans'
                     ? 'Use the Distrans transfer panel above to choose a recipient and another card.'
                     : richese?.card.effect === 'nullentropyBox'

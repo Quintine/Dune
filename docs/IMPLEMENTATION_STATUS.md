@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 14 September 2026 — Recruits independent-card preview
+
+[Recruits](RECRUITS_RUNTIME.md) is connected in an explicit development preview.
+Genuine Basic/Advanced faction setup includes all three independent Ecaz Treachery
+Cards before shuffle and deal. Physical play/discard, public effective rates,
+shared revival quotes, exact free-use tracking, existing CHOAM/Tleilaxu response
+continuation, owner controls and all four AI profiles share the authoritative
+contract. Inactive games retain their earlier free-use arithmetic. The other two
+battle effects and public variant starts remain unfinished.
+
+Source review supports the bounded clean-case contract. The independent seven-force
+cap after faction cancellation remains an explicit inference. Earlier-paid returns,
+late grants, pending repricing and same-turn recovered-card replay remain gated;
+the user's late-paid question is pending. Focused rules, controls, genuine local
+setup and authenticated recovery tests accompany the implementation. Complete-game
+and browser evidence, required broad checks and Git delivery are recorded with
+the checkpoint; this does not certify complete variant or combined-mode compliance.
+
+All 902 opening rooms and original seat/recovery records survived the latest power
+failure unchanged. The healthy server was reused; integrity and foreign keys pass.
+No database reset, server restart or recurring automation was needed.
+
+Final independent review's 37-case union and four SQLite recovery cases pass.
+Review closed normal-auction sale aliasing, malformed canonical cards, known-zero
+legacy ledger initialization, seat-control validation and ordinary-start bypasses.
+Eight genuine six-seat Basic/Advanced samples finish in 7,995 accepted actions,
+with zero rejected candidates and three Recruits plays. Every action preserves
+physical card/Traitor/force/elite custody; 212 periodic all-seat JSON restores and
+terminal views pass. The conserved browser exercise verifies play/discard, global
+rates, four free returns, explanatory chronicle, private seat and refresh. Earlier
+harness attempts remain preserved; JSON comparison normalizes undefined properties
+on both sides without dropping defined values.
+
 ## 14 September 2026 — Fremen/Ecaz final-turn victory and deferred shipment repair
 
 The [explicit Sietch Tabr FAQ](ECAZ_VICTORY_RULES.md#fremen-final-turn-runtime-follow-up)

@@ -49,6 +49,25 @@ function fixture(t: test.TestContext) {
   return { db, game };
 }
 
+void test('Ecaz Treachery preview saves the complete independent inventory before genuine setup once', (t) => {
+  const { db } = fixture(t);
+  const beforeSeats = db.prepare('SELECT * FROM seats').all();
+  const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+  const result = startPrototypeRoom(db, 'PROTOTYP', 7, 'ecaz-treachery');
+  const row = db.prepare('SELECT state FROM rooms WHERE code=?').get('PROTOTYP')!;
+  const g = JSON.parse(row.state as string) as Game;
+  assert.equal(result.version, 8);
+  assert.equal(g.ecazTreachery, true);
+  const cards = [...g.deck, ...g.players.flatMap((p) => p.hand), ...(g.ixSetupCards ?? [])];
+  assert.deepEqual(cards.filter((c) => c.id.startsWith('ecaz-')).map((c) => c.id).sort(),
+    ['ecaz-harass-withdraw', 'ecaz-recruits', 'ecaz-reinforcements']);
+  assert.deepEqual(db.prepare('SELECT * FROM seats').all(), beforeSeats);
+  assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+  const rows = db.prepare('SELECT * FROM rooms').all();
+  assert.throws(() => startPrototypeRoom(db, 'PROTOTYP', 8, 'ecaz-treachery'), /cannot redeal/);
+  assert.deepEqual(db.prepare('SELECT * FROM rooms').all(), rows);
+});
+
 void test('local prototype starts the named ready lobby once, retaining every seat and other room', (t) => {
   const { db } = fixture(t);
   const seats = db.prepare('SELECT * FROM seats').all();

@@ -470,6 +470,7 @@ import {
   forceRevivalQuote,
   forceRevivalRemaining,
   freeRevivalRemaining,
+  normalRevivalAllowance,
   leaderRevivalOptions,
   type RevivalRules,
   type PendingRevival,
@@ -509,6 +510,11 @@ import {
   type Leader,
   type SpiceCard,
 } from './cards';
+import { ecazTreacheryCards, ecazTreacheryDefinition } from './ecaz-cards';
+import {
+  RECRUITS_CARD_ID,
+  type RecruitsPreview,
+} from './recruits';
 import {
   TERRITORIES,
   MOBILE_STRONGHOLD,
@@ -1594,6 +1600,14 @@ export type Game = {
   spiceResolution: { skipped: SpiceCard[] } | null;
   spiceSequence: { pile: 0 | 1; skipped: SpiceCard[] } | null;
   freeRevival: string[];
+  /** Presence enables the independently selected three-card Ecaz variant. */
+  ecazTreachery?: true;
+  /** Public, turn-scoped receipt for the discarded Recruits card. */
+  recruits?: {
+    turn: number;
+    player: string;
+    card: typeof RECRUITS_CARD_ID;
+  } | null;
   emperorExtra: Record<string, number>;
   aid: Record<string, { recipient: string; amount: number }>;
 };
@@ -5589,7 +5603,10 @@ function initializeSetup(g: Game) {
   stormOrder(g);
   g.stormDialers = [g.order[0], g.order.at(-1)!];
   g.lastBattle = [...g.stormDialers];
-  g.deck = shuffle(treacheryDeck(g.expansions));
+  g.deck = shuffle([
+    ...treacheryDeck(g.expansions),
+    ...(g.ecazTreachery ? ecazTreacheryCards() : []),
+  ]);
   g.spiceDeck = shuffle([...spiceDeck(g.expansions.includes('ix')), ...(g.discoveryEnabled ? [...DISCOVERY_SPICE_CARDS, {worm:true as const, greatMaker:true as const}] : [])]);
   g.sandtrout = false;
   g.status = 'setup';
@@ -5830,7 +5847,14 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   g.leaderSkills = createLeaderSkills(random);
   return initializeSetupGameForAudit(g, false, false, false, false, true, g.expansions.length === 1 && g.expansions[0] === 'choam');
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false): Game {
+/** Gated development setup for the independent three-card Ecaz variant. */
+export function initializeEcazTreacheryGameForAudit(state: Game): Game {
+  requireRule(!state.ecazTreachery, 'Ecaz Treachery Cards cannot redeal an existing inventory.');
+  const g = structuredClone(state);
+  g.ecazTreachery = true;
+  return initializeSetupGameForAudit(g, false, false, false, false, false, false, true, true);
+}
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false): Game {
   nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -5858,6 +5882,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (leaderSkills || !g.leaderSkills) &&
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
+      (ecazTreachery || !g.ecazTreachery) &&
       !g.techTokens &&
       !g.strongholdCards &&
       (homeworlds || !g.homeworlds) &&
@@ -8033,8 +8058,134 @@ function physicalTreacheryCards(g: Game) {
     ...(g.ixSetupCards ?? []),
     ...(g.ixAuction?.cards ?? []),
     ...(g.ornithopter ? [g.ornithopter.card] : []),
-    ...(g.auction?.cards.slice(g.auction.index) ?? []),
+    ...(g.auction?.cards.slice(
+      g.auction.index + Number(g.currentAuctionSale?.origin === 'normal'),
+    ) ?? []),
   ];
+}
+function ecazTreacheryIntegrity(g: Game) {
+  if (!g.ecazTreachery) {
+    requireRule(!g.recruits, 'Recruits requires the independent Ecaz Treachery Cards variant.');
+    return;
+  }
+  requireRule(g.ecazTreachery === true, 'Invalid Ecaz Treachery Cards module marker.');
+  if (g.status === 'lobby') {
+    throw new RuleError(
+      'Ecaz Treachery Cards can begin only through their gated audit initializer.',
+    );
+  }
+  const physical = physicalTreacheryCards(g);
+  for (const expected of ecazTreacheryCards()) {
+    const matching = physical.filter((card) => card.id === expected.id);
+    requireRule(
+      matching.length === 1 &&
+        !!ecazTreacheryDefinition(matching[0]) &&
+        Object.keys(matching[0]).sort().join(',') === 'effect,id,kind,name',
+      'The Ecaz Treachery Cards inventory is missing, duplicated or malformed.',
+    );
+  }
+  requireRule(
+    physical.filter((card) => card.id.startsWith('ecaz-')).length === 3,
+    'The Ecaz Treachery Cards inventory contains an unknown physical card.',
+  );
+  if (g.recruits) {
+    requireRule(
+      Object.keys(g.recruits).sort().join(',') === 'card,player,turn' &&
+        g.recruits.card === RECRUITS_CARD_ID &&
+        g.recruits.turn === g.turn &&
+        g.players.some((player) => player.id === g.recruits!.player),
+      'The Recruits effect has a malformed or expired receipt.',
+    );
+    requireRule(
+      g.players.every(
+        (player) =>
+          Number.isSafeInteger(player.revived) &&
+          player.revived >= 0 &&
+          Number.isSafeInteger(player.freeForcesRevived) &&
+          player.freeForcesRevived! >= 0 &&
+          player.freeForcesRevived! <= player.revived,
+      ),
+      'The active Recruits effect has inconsistent normal revival ledgers.',
+    );
+  }
+}
+function recruitsModeSupported(g: Game) {
+  return (
+    !g.homeworlds &&
+    !g.nexusCards &&
+    !g.leaderSkills &&
+    !g.techTokens &&
+    !g.strongholdCards &&
+    !g.discoveryEnabled
+  );
+}
+function recruitsInteractionPending(g: Game) {
+  return !!(
+    g.response ||
+    g.decision ||
+    g.truthtrance ||
+    g.phaseOpening ||
+    g.pendingRevival ||
+    g.pendingKarama ||
+    g.pendingTreacheryDiscard ||
+    g.pendingNullentropy ||
+    g.pendingExchange ||
+    g.pendingRicheseGift ||
+    g.pendingRichesePurchaseIncome ||
+    g.pendingAmbassador ||
+    g.pendingCapture ||
+    g.battle
+  );
+}
+function recruitsPlayBlock(g: Game, owner: Player, card: Card): string | null {
+  if (!g.ecazTreachery || !ecazTreacheryDefinition(card) || card.id !== RECRUITS_CARD_ID)
+    return 'Choose the physical Recruits card from the enabled Ecaz Treachery Cards variant.';
+  if (!recruitsModeSupported(g))
+    return 'This Recruits prototype currently requires a faction-only game without other optional modules.';
+  if (g.status !== 'playing' || g.phase !== 4)
+    return 'Play Recruits during Revival.';
+  if (g.recruits?.turn === g.turn)
+    return 'Recruits is already active this turn; a recovered copy cannot be played again.';
+  const reserved = transferCardBlock(g, owner, card);
+  if (reserved) return reserved;
+  if (recruitsInteractionPending(g))
+    return 'Finish the current transaction or priority window before playing Recruits.';
+  for (const player of g.players) {
+    if (
+      player.freeForcesRevived !== undefined &&
+      (!Number.isSafeInteger(player.freeForcesRevived) ||
+        player.freeForcesRevived < 0 ||
+        player.freeForcesRevived > player.revived)
+    )
+      return 'Normal force revival history is inconsistent; Recruits cannot safely reprice it.';
+    if (player.revived > 0 && player.freeForcesRevived === undefined)
+      return 'Earlier normal force revival history is incomplete; Recruits cannot safely reprice it.';
+    if (player.revived > (player.freeForcesRevived ?? 0))
+      return 'Recruits after a paid normal force revival awaits a rules ruling.';
+  }
+  return null;
+}
+function recruitsPreview(g: Game, viewer: Player): RecruitsPreview | null {
+  if (!g.ecazTreachery) return null;
+  ecazTreacheryIntegrity(g);
+  const held = viewer.hand.find((card) => card.id === RECRUITS_CARD_ID);
+  const play = held
+    ? { type: 'card' as const, card: RECRUITS_CARD_ID, blocked: recruitsPlayBlock(g, viewer, held) }
+    : null;
+  const active = g.recruits?.turn === g.turn;
+  return {
+    active,
+    ...(active ? { playedTurn: g.recruits!.turn, playedBy: g.recruits!.player } : {}),
+    play,
+    rates: g.order.map((player) => {
+      const target = getPlayer(g, player);
+      const allowance = normalRevivalAllowance(g, target);
+      return { player, freeRate: allowance.freeRate, limit: allowance.limit };
+    }),
+    grantRevivalBlocked: active
+      ? 'Grant Fremen ally revival before Recruits; changing the free rate after activation awaits a rules ruling.'
+      : null,
+  };
 }
 /** Pure normal-lot prerequisites; free payment deliberately does not require spice. */
 function normalKaramaAuction(
@@ -12553,6 +12704,7 @@ function completePhase(g: Game) {
     if (g.dukeVidal) g.dukeVidal = expireDuke(g.dukeVidal, g.turn);
     observeOccupation(g, 'turnEnd');
     g.turn++;
+    g.recruits = null;
     g.phase = 0;
     observeOccupation(g, 'turnStart');
   }
@@ -19930,6 +20082,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   discoveryIntegrity(state);
@@ -20192,6 +20345,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   discoveryIntegrity(state);
@@ -20243,6 +20397,7 @@ function applyActionInner(
   action: Action,
   execution: 'live' | 'shipmentPreparation' = 'live',
 ): Game {
+  ecazTreacheryIntegrity(state);
   const g = structuredClone(state);
   if (g.biddingEnd && action.type !== 'advanceBots' &&
       !(action.type === 'biddingEnd' && action.mode === 'ready'))
@@ -20354,6 +20509,25 @@ function applyActionInner(
     throw error;
   }
   requireRule(!pendingNexusTraitors(g), 'Finish the private Nexus card return before continuing play.');
+  if (t === 'card' && action.card === RECRUITS_CARD_ID) {
+    requireRule(
+      Object.keys(action).sort().join(',') === 'card,type',
+      'Play Recruits without an additional mode or selection.',
+    );
+    const card = p.hand.find((held) => held.id === RECRUITS_CARD_ID);
+    requireRule(card, 'The physical Recruits card is not in your hand.');
+    const blocked = recruitsPlayBlock(g, p, card);
+    requireRule(!blocked, blocked ?? 'Recruits is unavailable.');
+    discard(g, p, card.id);
+    for (const player of g.players) player.freeForcesRevived ??= 0;
+    g.recruits = { turn: g.turn, player: p.id, card: RECRUITS_CARD_ID };
+    log(
+      g,
+      `${p.name} played Recruits. Current free revival rates are doubled and the ordinary force revival limit is seven for this turn.`,
+      { faction: p.faction, name: 'Recruits' },
+    );
+    return g;
+  }
   if (t === 'card' && action.card === 'richese-juice-of-sapho') {
     playSapho(g, p, action);
     return g;
@@ -22396,6 +22570,10 @@ function applyActionInner(
       !g.freeRevival.includes(p.ally),
       'Free revival has already been granted.',
     );
+    requireRule(
+      g.recruits?.turn !== g.turn,
+      'Grant Fremen ally revival before Recruits; changing the free rate after activation awaits a rules ruling.',
+    );
     g.freeRevival.push(p.ally);
     log(
       g,
@@ -22593,7 +22771,8 @@ function applyActionInner(
     requireRule(quote.cost <= p.spice, 'Not enough spice for revival.');
     const checks: PendingRevival['checks'] = [];
     const choamBenefit = p.faction === 'choam' && !g.revivalRules?.choamBlocked;
-    const uncancelableLimit = Math.max(3, freeRevivalRate(g, p));
+    const uncancelableLimit =
+      g.recruits?.turn === g.turn ? 7 : Math.max(3, freeRevivalRate(g, p));
     if (choamBenefit && (n > quote.free || p.revived + n > uncancelableLimit))
       checks.push('choamRevival');
     if (!choamBenefit && p.revived + n > uncancelableLimit)
@@ -23715,6 +23894,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   discoveryFlightIntegrity(state);
@@ -24303,6 +24483,7 @@ export function viewGame(state: Game, id: string) {
       g.revivalPrevention?.turn === g.turn ? g.revivalPrevention : null,
     emperorExtra: g.emperorExtra ?? {},
     freeRevival: g.freeRevival ?? [],
+    recruitsPreview: recruitsPreview(g, me),
     revivalRules: {
       ...(g.revivalRules ?? newRevivalRules()),
       earlyBlocked: (g.revivalRules?.earlyBlocked ?? []).filter(

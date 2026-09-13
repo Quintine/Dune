@@ -154,7 +154,7 @@ void test('the public collection and ten full card topics are searchable, linked
     );
 });
 
-void test('base, Ix and Ecaz presentations stay unchanged as the two CHOAM deck replacements become available', () => {
+void test('base, Ix and Ecaz guides remain separate from Richese replacement-card guidance', () => {
   for (const card of [...baseDeck(), ...ixDeck()]) {
     const presentation = cardPresentation(card);
     assert.equal(presentation.availability, undefined);
@@ -168,8 +168,9 @@ void test('base, Ix and Ecaz presentations stay unchanged as the two CHOAM deck 
     const presentation = cardPresentation(card);
     assert.equal(presentation.category, 'Special treachery');
     assert.ok(presentation.gameplay!.length >= 4);
-    assert.equal(presentation.availability, undefined);
-    assert.deepEqual(presentation.topics, []);
+    assert.match(presentation.availability ?? '', card.effect === 'recruits'
+      ? /development controls during Revival/ : /battle effect is still being implemented/);
+    assert.deepEqual(presentation.topics.map((topic) => topic.id), ['card-recruits']);
   }
   assert.equal(treacheryDeck().length, 33);
   assert.equal(treacheryDeck(['ix']).length, 47);

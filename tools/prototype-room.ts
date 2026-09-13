@@ -6,6 +6,7 @@ import {
   initializeFactionExpansionsGameForAudit,
   initializeNexusGameForAudit,
   initializeMoritaniAssassinateGameForAudit,
+  initializeEcazTreacheryGameForAudit,
   viewGame,
   type Game,
 } from '../game/engine';
@@ -17,6 +18,7 @@ export const PROTOTYPE_PROFILES = [
   'factions',
   'nexus',
   'moritani-assassinate',
+  'ecaz-treachery',
 ] as const;
 export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
@@ -59,6 +61,8 @@ export function startPrototypeRoom(
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)
+      : profile === 'ecaz-treachery'
+        ? initializeEcazTreacheryGameForAudit(initial)
       : profile === 'moritani-assassinate'
         ? initializeMoritaniAssassinateGameForAudit(initial)
       : profile === 'factions'

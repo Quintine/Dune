@@ -2,9 +2,16 @@ import type { Game, Player } from './engine';
 import { faction, type FactionId } from './catalog';
 import { isAuditorLeader } from './choam-auditor';
 import { homeworldLowBonus } from './homeworld-benefits';
+import { recruitsRevivalAllowance } from './recruits';
 type RevivalRateContext = Pick<
   Game,
-  'advanced' | 'players' | 'homeworlds' | 'revivalRules' | 'freeRevival'
+  | 'advanced'
+  | 'players'
+  | 'homeworlds'
+  | 'revivalRules'
+  | 'freeRevival'
+  | 'turn'
+  | 'recruits'
 >;
 export type RevivalRules = {
   expanded: string[];
@@ -57,19 +64,35 @@ export function freeRevivalRate(
  * the extra free rate never creates an additional paid allowance. */
 export function normalForceRevivalLimit(
   g: RevivalRateContext,
-  p: Pick<Player, 'id' | 'faction'>,
+  p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived'>,
 ) {
-  return Math.max(forceRevivalLimit(g, p), freeRevivalRate(g, p));
+  return normalRevivalAllowance(g, p).limit;
+}
+export function normalRevivalAllowance(
+  g: RevivalRateContext,
+  p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived'>,
+) {
+  const currentFreeRate = freeRevivalRate(g, p);
+  return recruitsRevivalAllowance(g, {
+    currentFreeRate,
+    currentLimit: Math.max(forceRevivalLimit(g, p), currentFreeRate),
+    revived: p.revived,
+    // A Recruits activation is rejected when this ledger is absent and use is
+    // nonzero. The fallback preserves old-room behavior while the card is idle.
+    freeAllowanceUsed:
+      g.recruits?.turn === g.turn ? (p.freeForcesRevived ?? p.revived) : p.revived,
+    freeRateCap: 20,
+  });
 }
 export function freeRevivalRemaining(
   g: RevivalRateContext,
-  p: Pick<Player, 'id' | 'faction' | 'revived'>,
+  p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived'>,
 ) {
-  return Math.max(0, freeRevivalRate(g, p) - p.revived);
+  return normalRevivalAllowance(g, p).freeRemaining;
 }
 export function forceRevivalQuote(
   g: RevivalRateContext,
-  p: Pick<Player, 'id' | 'faction' | 'revived'>,
+  p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived'>,
   amount: number,
   elite = 0,
   freeElite?: number,
@@ -89,7 +112,7 @@ export function forceRevivalQuote(
 /** Normal force returns only; Emperor-funded extra revivals and card effects are separate. */
 export function forceRevivalRemaining(
   g: RevivalRateContext,
-  p: Pick<Player, 'id' | 'faction' | 'revived' | 'tanks'>,
+  p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived' | 'tanks'>,
 ) {
   return Math.max(
     0,

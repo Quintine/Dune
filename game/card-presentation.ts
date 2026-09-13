@@ -109,7 +109,10 @@ export function cardPresentation(card: VisibleCard): CardPresentation {
       role: 'utility',
       guidance: ecaz.summary,
       gameplay: ecaz.gameplay,
-      topics: [],
+      availability: ecaz.card.effect === 'recruits'
+        ? 'Recruits has development controls during Revival. Earlier paid revivals, pending transactions, later free-rate changes and repeated use this turn remain guarded pending their rulings.'
+        : 'This battle effect is still being implemented.',
+      topics: RULE_TOPICS.filter((topic) => topic.id === 'card-recruits'),
     };
   const topicIds =
     card.kind === 'special'

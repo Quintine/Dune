@@ -1,5 +1,27 @@
 /** A global card effect expires when the authoritative turn changes. */
 export type RecruitsEffect = Readonly<{ turn: number }>;
+export const RECRUITS_CARD_ID = 'ecaz-recruits' as const;
+export type RecruitsPlay = Readonly<{
+  type: 'card';
+  card: typeof RECRUITS_CARD_ID;
+  blocked: string | null;
+}>;
+export type RecruitsPreview = Readonly<{
+  active: boolean;
+  playedTurn?: number;
+  playedBy?: string;
+  play: RecruitsPlay | null;
+  rates: ReadonlyArray<Readonly<{ player: string; freeRate: number; limit: number }>>;
+  grantRevivalBlocked: string | null;
+}>;
+
+/** A single shared control adapter for UI and bots; blocked details stay display-only. */
+export function recruitsPlayAction(
+  preview?: Pick<RecruitsPreview, 'play'> | null,
+): { type: 'card'; card: typeof RECRUITS_CARD_ID } | null {
+  const play = preview?.play;
+  return play && !play.blocked ? { type: 'card', card: play.card } : null;
+}
 export type RecruitsScope = Readonly<{
   turn: number;
   recruits?: RecruitsEffect | null;

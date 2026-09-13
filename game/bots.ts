@@ -1,4 +1,5 @@
 import { discoveryBotActions } from './discovery-options';
+import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
 import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, validLeaderSkillBattleCardPair } from './leader-skill-combat';
 import { leaderSkillStrongholdCount } from './leader-skill-battle-board';
@@ -2870,7 +2871,8 @@ function policyActions(g: GameView): Action[] {
           actions.push({ type: 'requestLeaderRevival', leader: dead.id });
       }
     }
-    if (me.faction === 'fremen' && me.ally && !g.freeRevival.includes(me.ally))
+    if (me.faction === 'fremen' && me.ally && !g.freeRevival.includes(me.ally) &&
+        !g.recruitsPreview?.grantRevivalBlocked)
       actions.push({ type: 'grantRevival' });
     if (me.faction === 'emperor' && me.ally && level > 0) {
       const ally = g.players.find((p) => p.id === me.ally)!;
@@ -3722,6 +3724,19 @@ export function botActions(g: GameView): Action[] {
       ? policyActions({ ...g, decision: null })
       : nexusTraitorBotActions(g);
   if (g.automaticContinuationPending) return [];
+  const recruits = recruitsPlayAction(g.recruitsPreview);
+  if (recruits) {
+    const own = g.players.find((player) => player.id === g.me)!;
+    const rates = g.recruitsPreview!.rates;
+    const ownRate = rates.find((rate) => rate.player === own.id)!;
+    const ally = g.players.find((player) => player.id === own.ally);
+    const allyRate = rates.find((rate) => rate.player === ally?.id);
+    const freeBenefit = ownRate.freeRate > 0 && own.tanks > g.revival.freeRemaining;
+    const paidBenefit = ownRate.limit < 7 && own.tanks > g.revival.forcesRemaining &&
+      (own.spice ?? 0) >= 2;
+    const allyBenefit = ally && allyRate && allyRate.freeRate > 0 && ally.tanks > allyRate.freeRate;
+    if (freeBenefit || paidBenefit || allyBenefit) return [recruits];
+  }
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
   const discoveryEntry = discoveryEntryBotActions(g);
   if (discoveryEntry.length) return discoveryEntry;
