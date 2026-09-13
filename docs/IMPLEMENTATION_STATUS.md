@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 13 September 2026 — Sapho first after completed movement turns
+
+Extends the existing clean-boundary movement contract to let Sapho's holder
+act first among remaining unstarted turns after earlier players fully finish.
+Completed shipment resources, forces, cards and counters stay intact. Advanced
+Guild priority remains guarded until Guild finishes. Current private controls,
+all four AI profiles and persisted room actions reuse the same legality check;
+the card is discarded once. Other Sapho modes and release gates remain pending.
+See [runtime scope](JUICE_OF_SAPHO_RUNTIME.md).
+
+Four new engine tests include genuine Advanced setup and owner-only rendered
+controls. One independent SQLite test exercises real completed shipment,
+restart, concurrent claims, physical custody and replay rejection. Independent
+review found no blocker. Checkpoint-wide results and the final source fingerprint
+are recorded in the commit and private report.
+
+The user reported a power outage during this work. The existing server was
+healthy, all 291 rooms were present, SQLite integrity/foreign-key checks passed,
+and all 218 rooms in the prior opening baseline matched. QA room `2EMYG4CY`
+restored its same private hand, resources and pending Storm choice after refresh.
+All 291 rooms were backed up before further work; no reset or restart occurred.
+
+The independent [Leader Skills source contract](LEADER_SKILLS_RULES.md) supplies
+the complete fourteen-card inventory and shared lifecycle for the next batch.
+It records unresolved edges and establishes no runtime prototype or mode gate.
+
 ## 13 September 2026 — Discovery location effects prototype
 
 Adds automatic unambiguous Jacurutu battle income, an owned Testing Station

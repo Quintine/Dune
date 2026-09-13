@@ -10726,6 +10726,17 @@ function saphoCleanWindow(g: Game) {
     !g.currentAuctionSale
   );
 }
+function saphoMovementStarted(g: Game, p: Player): boolean {
+  // A paid/reserved movement preparation also starts the combined turn.
+  return !!(
+    p.shipped ||
+    p.moved > 0 ||
+    g.hajr.includes(p.id) ||
+    g.karamaShipping ||
+    g.ornithopter ||
+    (g.choamMovement?.turn === g.turn && p.faction === 'choam')
+  );
+}
 function saphoMovementQueue(g: Game): OrderedOpportunity | null {
   let remaining = g.movementRemaining;
   if (
@@ -10743,21 +10754,13 @@ function saphoMovementQueue(g: Game): OrderedOpportunity | null {
       return null;
     remaining = [g.active, ...remaining.filter((id) => id !== g.active)];
   }
-  // A paid/reserved movement preparation also starts the combined turn.
-  const started =
-    active.shipped ||
-    active.moved > 0 ||
-    g.hajr.includes(active.id) ||
-    !!g.karamaShipping ||
-    !!g.ornithopter ||
-    (g.choamMovement?.turn === g.turn && active.faction === 'choam');
   const state: OrderedOpportunity = {
     event: `movement:${g.turn}`,
     eligible: g.order,
     completed: g.order.filter((id) => !remaining.includes(id)),
     remaining,
     current: g.active,
-    currentStarted: !!started,
+    currentStarted: saphoMovementStarted(g, active),
     protectedLast: g.saphoMovementLast?.player ?? null,
   };
   validateOrderedOpportunity(state);
@@ -10800,9 +10803,11 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
     !g.saphoMovementLast
   ) {
     if (
-      !queue.completed.length &&
-      !g.players.some((other) => other.shipped || other.moved > 0) &&
-      !(g.advanced && byFaction(g, 'guild')) &&
+      !queue.remaining.some((id) => saphoMovementStarted(g, getPlayer(g, id))) &&
+      !(
+        g.advanced &&
+        queue.remaining.some((id) => getPlayer(g, id).faction === 'guild')
+      ) &&
       queue.current !== p.id
     )
       options.push({ scope: 'movement', event: queue.event, mode: 'first' });

@@ -1,13 +1,13 @@
 # Juice of Sapho: finite ordering implementation
 
-7 September 2026. **Partial card implementation; complete Richese/Advanced starts remain disabled.** This document distinguishes implemented boundaries from printed rules. Sources and unresolved questions remain in [the source audit](JUICE_OF_SAPHO_ENGINE_AUDIT.md). The publisher CHOAM/Richese rulebook p11 confirms Once Around last; the physical face describes first, last (including after Guild), and battle aggressor. No newly discovered official ruling resolves normal cyclic auction duration, partly completed combined turns, or first versus Guild. These three material questions have been sent to the user; no answer has been assumed.
+Updated 13 September 2026. **Partial card implementation; complete Richese/Advanced starts remain disabled.** This document distinguishes implemented boundaries from printed rules. Sources and unresolved questions remain in [the source audit](JUICE_OF_SAPHO_ENGINE_AUDIT.md). The publisher CHOAM/Richese rulebook p11 confirms Once Around last; the physical face describes first, last (including after Guild), and battle aggressor. No newly discovered official ruling resolves normal cyclic auction duration, partly completed combined turns, or first versus Guild. These three material questions have been sent to the user; no answer has been assumed.
 
 ## Implemented contract
 
 `{type:'card',card:'richese-juice-of-sapho',scope,event,mode}` accepts one of these current opportunities and discards the actual held card once:
 
 - `scope:'onceAround'`: first before any bidder acts; last while the holder has not acted. The intervention applies to this lot only. Prior bids, funding, completed participants, physical lot, event and storm tie order remain intact. Richese is not restored to last after Sapho. A holder excluded initially by a full hand gains a slot and eligibility by discarding Sapho, provided this lot is still open. Completed passes never reopen. Every purchase still requires a strict outbid.
-- `scope:'movement'`: reorder entire remaining combined shipment/movement turns at a clean boundary. First requires no combined turn yet begun and no Advanced Guild. Last remains after Guild, including later Guild deferrals. No movement counters, Hajr, transport pricing, concealed tokens, resources or completed turns reset. Existing shipment/movement/preparation, reaction, Truthtrance, paid Box and gift commitments block the intervention. The next actor retains an already settled Guild timing choice when their identity is unchanged. An already granted, unstarted early Guild turn is lifted to the front of the local remaining queue before applying last, without changing physical order; this also permits Guild itself to declare last. A player now actually last cannot spend the card on a no-op.
+- `scope:'movement'`: reorder entire remaining combined shipment/movement turns at a clean boundary. First requires every remaining turn to be unstarted; previously completed turns may retain their spent shipment/movement counters. In Advanced, Guild must be absent or have fully completed its turn and left the remaining queue. Last remains after Guild, including later Guild deferrals. No movement counters, Hajr, transport pricing, concealed tokens, resources or completed turns reset. Existing shipment/movement/preparation, reaction, Truthtrance, paid Box and gift commitments block the intervention. The next actor retains an already settled Guild timing choice when their identity is unchanged. An already granted, unstarted early Guild turn is lifted to the front of the local remaining queue before applying last, without changing physical order; this also permits Guild itself to declare last. A player now actually last cannot spend the card on a no-op.
 
 The reusable immutable `ordered-opportunity` helper checks unique IDs, exact remaining/completed partition, stable event and locked current/protected-last positions. It never defines card scope or cyclic timing. Movement protection persists as `saphoMovementLast:{event,turn,player}`, checked on action, normalization and projection, and cleared when its owner finishes. Normal storm order is never rewritten. Invalid records are rejected, not repaired by replaying turns.
 
@@ -17,7 +17,7 @@ All four AI levels consume the same legal owner projection. They prefer last in 
 
 ## Remaining scope
 
-Battle aggressor, battle-phase first/last, normal/Black Market cyclic bidding, other ordered actions and partly completed movement remain unfinished. First after an already completed opportunity and first/Guild competing priority are guarded. Reacquiring and replaying Sapho while an existing movement protection remains is also guarded. Silent submission is simultaneous and receives no fabricated order or tie change.
+Battle aggressor, battle-phase first/last, normal/Black Market cyclic bidding, other ordered actions and partly completed movement remain unfinished. Once Around first after an already completed bid and first/Guild competing priority are guarded. Reacquiring and replaying Sapho while an existing movement protection remains is also guarded. Silent submission is simultaneous and receives no fabricated order or tie change.
 
 The battle audit in [the battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) found a real Stone Burner counterexample: a plan admitted with original aggressor tie priority can become allocation-ambiguous after late Sapho. A complete implementation needs the actual allocation continuation (and a usable, possession-independent late intervention boundary), not rejection based on an opponent's hidden plan. No aggressor handler has been enabled around that defect.
 
@@ -25,7 +25,25 @@ The battle audit in [the battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) found a
 
 New source contribution review covers the pure helper and all four new rules test files (33 test cases including 960 helper reorder cases), plus four real room/SQLite recovery cases. Recovery exercises simultaneous duplicate Sapho requests with one successful CAS and one failed CAS, old/new-version replay, strict outbid sale, exact physical inventory, private projections, actual phase entry and Guild deferral through phase completion.
 
-Browser and final regression outcomes are recorded in the final checkpoint below after completion. The hourly maintenance automation remains removed; the explicitly authorized manual backup and controlled development-server restart continue during active work.
+Browser and final regression outcomes from 7 September are recorded in the historical checkpoint below. The hourly maintenance automation remains removed. Reuse the server; restart only when an observed condition or change requires it, preserving saved games and verifying restoration.
+
+## 13 September: first at a later clean movement boundary
+
+The [existing source contract](JUICE_OF_SAPHO_SOURCE_UPDATE.md#movement-firstlast)
+already permits reordering the remaining unstarted participants between complete
+combined turns. The old global completed/shipped guard was narrower than that
+contract. The engine now checks only remaining participants and only retains the
+Advanced Guild-first guard while Guild is among them. No new timing ruling,
+saved field, player action shape or separate AI legality calculation is added.
+
+Four new engine tests cover a real completed shipment before first, a genuine
+Advanced Guild turn that fully finishes, rejected partly started/queued turns,
+and all four private AI profiles. The existing Advanced engine fixtures now use
+the shared Advanced initializer instead of flipping a Basic game. A separate
+production-room SQLite test races duplicate first requests after a real completed
+shipment and proves one discard, private projections and intact completed-player
+custody. Focused checks pass; broad results are recorded in the checkpoint commit
+and private source-bound report. This is a bounded connected prototype.
 
 ## Final checkpoint
 

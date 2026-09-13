@@ -20,7 +20,7 @@ function unavailableReason(game: GameView) {
     return 'No order change is available for you in this lot. You must still be eligible and have not bid; first is available only before bidding begins. A card already committed elsewhere cannot be used.';
   }
   if (game.phase === 5)
-    return 'Movement order can change only before the current combined shipment and movement turn begins. First also requires that nobody has begun a turn this phase and that Advanced Guild timing is absent. Already-held positions and committed cards are unavailable.';
+    return 'Movement order can change only before the current combined shipment and movement turn begins. First requires all remaining turns to be unstarted and the Advanced Guild to have finished or be absent. Completed turns stay completed. Already-held positions and committed cards are unavailable.';
   return 'These controls support Once Around bidding and movement order. Battle aggressor and other phase or auction modes remain unfinished.';
 }
 

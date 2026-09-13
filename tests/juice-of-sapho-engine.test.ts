@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import {
   applyAction,
   createGame,
+  initializeBaseGameForAudit,
   joinGame,
   newPlayer,
   normalizeAutomaticGame,
@@ -12,17 +15,26 @@ import {
 } from '../game/engine';
 import { baseDeck, leaders } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
+import { botActions } from '../game/bots';
+import { DIFFICULTIES } from '../game/bot-profiles';
+import { JuiceOfSapho } from '../components/juice-of-sapho';
 
 const card = 'richese-juice-of-sapho';
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
-function initial() {
-  let g = createGame('SAPHOENGINE', newPlayer('a', 'Atreides', 'atreides'));
+function initial(advanced = false) {
+  let g = createGame(
+    'SAPHOENGINE',
+    newPlayer('a', 'Atreides', 'atreides'),
+    advanced,
+  );
   joinGame(g, newPlayer('e', 'Emperor', 'emperor'));
   joinGame(g, newPlayer('g', 'Guild', 'guild'));
   g.players.forEach((p) => {
     p.ready = true;
   });
-  g = applyAction(g, 'a', { type: 'start' });
+  g = advanced
+    ? initializeBaseGameForAudit(g)
+    : applyAction(g, 'a', { type: 'start' });
   for (const p of g.players)
     if (p.traitorChoices.length)
       g = applyAction(g, p.id, {
@@ -58,8 +70,7 @@ function hold(g: Game, id: string) {
     .hand.push(g.richeseCache!.splice(at, 1)[0]);
 }
 function movement(owner = 'e', advanced = false) {
-  let g = initial();
-  g.advanced = advanced;
+  let g = initial(advanced);
   g.phase = 4;
   hold(g, owner);
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
@@ -206,12 +217,153 @@ void test('Basic movement first/last preserve physical order and give each facti
   }
 });
 
-void test('Movement first is unavailable after another combined turn finishes, while last still works at the next clean boundary', () => {
+void test('The already-current player cannot spend Sapho on first, while last works at the next clean boundary', () => {
   let g = end(movement());
   reject(g, 'e', action(g, 'first'));
   g = applyAction(g, 'e', action(g, 'last'));
   assert.deepEqual(g.movementRemaining, ['g', 'e']);
   assert.equal(g.active, 'g');
+});
+
+void test('Sapho first reorders only the unstarted movement suffix after a real completed shipment', () => {
+  let g = movement('g');
+  g = applyAction(g, 'a', {
+    type: 'ship',
+    territory: 'polar_sink',
+    sector: 0,
+    amount: 2,
+  });
+  g = end(g);
+  assert.equal(g.active, 'e');
+  const completed = reload(g).players[0];
+  assert.equal(completed.shipped, true);
+  assert.equal(completed.reserves, 18);
+  const before = reload(g);
+  const controls = renderToStaticMarkup(
+    createElement(JuiceOfSapho, {
+      game: viewGame(g, 'g'),
+      act: () => {},
+      busy: false,
+    }),
+  );
+  assert.match(
+    controls,
+    /Take your movement turn first and discard Juice of Sapho/,
+  );
+  assert.match(controls, /Completed turns stay completed/);
+  assert.equal(
+    renderToStaticMarkup(
+      createElement(JuiceOfSapho, {
+        game: viewGame(g, 'e'),
+        act: () => {},
+        busy: false,
+      }),
+    ),
+    '',
+  );
+  const request = action(g, 'first');
+  g = applyAction(reload(g), 'g', request);
+  assert.deepEqual(g.movementRemaining, ['g', 'e']);
+  assert.equal(g.active, 'g');
+  assert.deepEqual(g.order, before.order);
+  assert.deepEqual(g.players[0], completed);
+  assert.deepEqual(g.players[1], before.players[1]);
+  assert.equal(g.discard.filter((c) => c.id === card).length, 1);
+  assert.equal(
+    g.players[2].hand.some((c) => c.id === card),
+    false,
+  );
+  reject(g, 'g', request);
+  g = end(reload(g));
+  assert.equal(g.active, 'e');
+  g = end(reload(g));
+  assert.notEqual(g.phase, 5);
+  assert.deepEqual(g.movementRemaining, []);
+  assert.deepEqual(g.players[0], completed);
+
+  const startedNext = applyAction(before, 'e', {
+    type: 'ship',
+    territory: 'polar_sink',
+    sector: 0,
+    amount: 1,
+  });
+  assert.deepEqual(viewGame(startedNext, 'g').saphoOptions, []);
+  reject(startedNext, 'g', request);
+});
+
+void test('Genuine Advanced setup permits Sapho first after Guild finishes, retaining unspent Guild priority beforehand', () => {
+  let g = movement('e', true);
+  assert.equal(g.players[1].elites!.reserves, 5);
+  assert.equal(g.decision?.kind, 'guildTiming');
+  reject(g, 'e', action(g, 'first'));
+  const deferred = applyAction(reload(g), 'g', {
+    type: 'decision',
+    take: false,
+  });
+  assert.equal(deferred.active, 'a');
+  reject(deferred, 'e', action(deferred, 'first'));
+
+  g = applyAction(g, 'g', { type: 'decision', take: true });
+  assert.equal(g.active, 'g');
+  reject(g, 'e', action(g, 'first'));
+  g = applyAction(g, 'g', {
+    type: 'ship',
+    territory: 'polar_sink',
+    sector: 0,
+    amount: 2,
+  });
+  assert.equal(g.decision?.kind, 'guildShipment');
+  g = applyAction(g, 'g', { type: 'decision', allow: true });
+  g = end(g);
+  const completed = reload(g).players[2];
+  assert.equal(g.active, 'a');
+  assert.deepEqual(g.movementRemaining, ['a', 'e']);
+  g = applyAction(reload(g), 'e', action(g, 'first'));
+  assert.equal(g.active, 'e');
+  assert.deepEqual(g.movementRemaining, ['e', 'a']);
+  assert.deepEqual(g.players[2], completed);
+  g = end(reload(g));
+  assert.equal(g.active, 'a');
+  g = end(reload(g));
+  assert.notEqual(g.phase, 5);
+  assert.deepEqual(g.players[2], completed);
+  assert.equal(g.discard.filter((c) => c.id === card).length, 1);
+});
+
+void test('Sapho first cannot move a queued participant with a spent shipment, movement or preparation', () => {
+  for (const kind of ['shipment', 'movement', 'hajr'] as const) {
+    const g = end(movement('g'));
+    if (kind === 'shipment') g.players[2].shipped = true;
+    if (kind === 'movement') g.players[2].moved = 1;
+    if (kind === 'hajr') g.hajr.push('g');
+    assert.deepEqual(viewGame(g, 'g').saphoOptions, []);
+    reject(g, 'g', action(g, 'first'));
+  }
+});
+
+void test('All four AI profiles use the private Sapho first option after a completed movement prefix', () => {
+  for (const difficulty of DIFFICULTIES) {
+    let g = movement('g');
+    g = applyAction(g, 'a', {
+      type: 'ship',
+      territory: 'polar_sink',
+      sector: 0,
+      amount: 2,
+    });
+    g = end(g);
+    const view = viewGame(g, 'g');
+    view.players.find((p) => p.id === 'g')!.bot = difficulty;
+    const untouched = structuredClone(view);
+    const proposals = botActions(view);
+    assert.deepEqual(view, untouched);
+    assert.deepEqual(proposals, [action(g, 'first')]);
+    for (const id of ['a', 'e'])
+      assert.deepEqual(viewGame(g, id).saphoOptions, []);
+    const next = applyAction(reload(g), 'g', proposals[0]);
+    assert.equal(next.active, 'g');
+    assert.deepEqual(next.players[0], g.players[0]);
+    assert.equal(next.discard.filter((c) => c.id === card).length, 1);
+  }
 });
 
 void test('Shipment and movement commitments both prevent splitting the active combined turn', () => {
