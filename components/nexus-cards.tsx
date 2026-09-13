@@ -11,6 +11,7 @@ import type { NexusCardChoice } from '@/game/nexus-card-phase';
 import { nexusCardAction } from '@/game/nexus-card-options';
 import { NEXUS_CARD_REFERENCE, NEXUS_PANEL_NAMES, nexusCardReference } from '@/game/nexus-card-reference';
 import { Button } from './ui/button';
+import { NexusEmperorSecretAlly } from './nexus-emperor-secret-ally';
 import { Dialog, DialogClose, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from './ui/dialog';
 
 const panels: NexusCardMode[] = ['betrayal', 'cunning', 'secretAlly'];
@@ -118,7 +119,7 @@ export function NexusCards({ game, act, busy }: { game: GameView; act: (action: 
       <div>
         <h3>Nexus cards</h3>
         <p className="fine">{offer.deckCount} in deck · {offer.discardCount} discarded · {Object.values(offer.held).filter((held) => held === true).length} held</p>
-        <p>Playable effects include Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian, Bene Gesserit, Emperor, CHOAM and Moritani Cunning, plus Richese Secret Ally reserve shipping and Guild Cunning’s second shipment or absent-Guild Secret Ally shipping. Use the controls shown at each effect’s timing. CHOAM’s Kull Wahad effect, Moritani Cunning relocation and Grumman combinations, and other unfinished effects remain unavailable.</p>
+        <p>Playable effects include Atreides inspections, Harkonnen exchanges, and Tleilaxu, Ixian, Bene Gesserit, Emperor, CHOAM and Moritani Cunning, plus Emperor Secret Ally’s three extra free revivals, Richese Secret Ally reserve shipping and Guild Cunning’s second shipment or absent-Guild Secret Ally shipping. Use the controls shown at each effect’s timing. CHOAM’s Kull Wahad effect, Moritani Cunning relocation and Grumman combinations, and other unfinished effects remain unavailable.</p>
       </div>
       {game.nexusAtreides && offer.card === 'atreides' && (
         <div aria-label="Atreides Nexus effect" className="space-y-2">
@@ -143,6 +144,7 @@ export function NexusCards({ game, act, busy }: { game: GameView; act: (action: 
           )}
         </div>
       )}
+      <NexusEmperorSecretAlly game={game} act={act} busy={busy} />
       <div aria-label="Your private Nexus card" className="max-w-xl">
         {offer.card ? <NexusCardFace card={offer.card} mode={mode} /> : <p>You do not hold a Nexus card.</p>}
       </div>

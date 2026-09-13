@@ -70,6 +70,7 @@ import { quoteSmugglerShipment } from './smuggler-shipment';
 import { quoteSmugglerNoField } from './smuggler-no-field';
 import { spiceBankerBattleMaximum, spiceBankerModeSupported } from './spice-banker';
 import { nexusGuildSecretAllyAction, nexusGuildSecretAllyCanAct, nexusGuildSecretAllyQuote } from './nexus-guild-secret-ally-options';
+import { nexusEmperorRevivalAction } from './nexus-emperor-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from './nexus-richese-options';
 import { liveShipmentPromises, matchesShipment } from './shipment-promises';
 import {
@@ -3659,6 +3660,15 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  const emperorRevival = g.nexusEmperorSecretAlly?.revival;
+  if (emperorRevival && !emperorRevival.blocked && emperorRevival.eliteOptions.length) {
+    const own = g.players.find((player) => player.id === g.me);
+    const elite = own?.bot === 'Easy'
+      ? Math.min(...emperorRevival.eliteOptions)
+      : Math.max(...emperorRevival.eliteOptions);
+    const action = nexusEmperorRevivalAction(g, elite);
+    if (action) return [action];
+  }
   const bureaucrat = g.bureaucrat?.pending;
   if (bureaucrat) {
     if (bureaucrat.owner !== g.me || g.decision?.kind !== 'bureaucratPayment' ||

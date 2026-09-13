@@ -1,7 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { createGame, joinGame, newPlayer } from '../game/engine';
+import {
+  createGame,
+  joinGame,
+  newPlayer,
+  viewGame,
+  type Game,
+} from '../game/engine';
 import {
   startIxPrototypeRoom,
   startPrototypeRoom,
@@ -140,6 +146,51 @@ void test('Leader Skills prototype saves the real private setup once without cha
     db.prepare('SELECT * FROM rooms ORDER BY code').all(),
     rooms,
   );
+  assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+  assert.deepEqual(
+    db.prepare('SELECT * FROM rooms WHERE code = ?').get('KEEPME00'),
+    other,
+  );
+});
+
+void test('Nexus prototype initializes all twelve hidden cards once and preserves unrelated saved state', (t) => {
+  const { db } = fixture(t);
+  const game = createGame(
+    'PROTOTYP',
+    newPlayer('i', 'Atreides', 'atreides'),
+    true,
+  );
+  joinGame(game, newPlayer('h', 'Harkonnen', 'harkonnen'));
+  game.players.forEach((player) => {
+    player.ready = true;
+  });
+  db.prepare('UPDATE rooms SET state = ? WHERE code = ?').run(
+    JSON.stringify(game),
+    game.code,
+  );
+  const seats = db.prepare('SELECT * FROM seats').all();
+  const other = db
+    .prepare('SELECT * FROM rooms WHERE code = ?')
+    .get('KEEPME00');
+  startPrototypeRoom(db, game.code, 7, 'nexus');
+  const saved = JSON.parse(
+    db.prepare('SELECT state FROM rooms WHERE code = ?').get(game.code)!
+      .state as string,
+  ) as Game;
+  assert.equal(saved.version, 8);
+  assert.equal(saved.status, 'setup');
+  assert.equal(saved.nexusCards!.cards!.deck.length, 12);
+  assert.equal(new Set(saved.nexusCards!.cards!.deck).size, 12);
+  for (const player of saved.players) {
+    const view = viewGame(saved, player.id);
+    assert.equal(view.nexusCards!.card, null);
+    assert.equal(view.nexusCards!.deckCount, 12);
+    assert.equal('deck' in view.nexusCards!, false);
+  }
+  const rows = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+  assert.throws(() => startPrototypeRoom(db, game.code, 7, 'nexus'), /changed/);
+  assert.throws(() => startPrototypeRoom(db, game.code, 8, 'nexus'));
+  assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), rows);
   assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
   assert.deepEqual(
     db.prepare('SELECT * FROM rooms WHERE code = ?').get('KEEPME00'),

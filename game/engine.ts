@@ -26,6 +26,7 @@ import { createDiscoveryState, validateDiscoveryState, placeDiscovery, rememberD
 import { quoteJacurutuBattleIncome } from './discovery-battle';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
+import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
@@ -975,6 +976,8 @@ export type Game = {
   greatMaker?: GreatMaker;
   nexusChoamTrades?: NexusChoamTrade[];
   nexusChoamTradeLast?: { event: string; stage: NexusChoamTrade['stage'] };
+  nexusEmperorSecretHistory?: NexusEmperorRevival[];
+  nexusEmperorSecretEvents?: string[];
   treacheryDiscardSequence?: number;
   resolvedTreacheryDiscardSequence?: number;
   /** Committed discard receipts are evidence, not additional card custody. */
@@ -1646,6 +1649,60 @@ function nexusChoamTradeIntegrity(g: Game) {
 function currentNexusChoamTrade(g: Game, owner: string) {
   return nexusRule(() => quoteNexusChoamTrade(g, owner,
     g.phase === 7 && grummanCollectionAutomatic(g)));
+}
+function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
+  const p = g.players.find(p => p.id === owner);
+  if (!p || g.nexusCards?.cards?.hands[owner] !== 'emperor' || byFaction(g,'emperor')) return null;
+  const event = emperorNexusEvent(g.turn,g.phase,owner,g.nexusEmperorSecretHistory?.length ?? 0);
+  let blocked:string|null = null;
+  if (p.ally) blocked = 'Emperor Nexus Secret Ally requires an unallied holder.';
+  else if (!emperorNexusModeSupported(g)) blocked = 'Emperor Nexus Secret Ally currently requires base factions and Nexus alone; expansion and other module combinations remain pending.';
+  else if (g.status !== 'playing' || g.phase !== 4) blocked = 'Use the three-force Emperor Nexus return during Revival.';
+  else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingRevival || g.pendingKarama ||
+    g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange || g.pendingRicheseGift ||
+    g.pendingRichesePurchaseIncome || g.pendingAmbassador || g.pendingCapture || g.battle ||
+    g.nexusTraitorPending || g.nexusCards.phase?.stage === 'drawing') blocked = 'Finish the current interaction before using Emperor Nexus revival.';
+  else if ((g.revivalPrevention?.turn === g.turn && g.revivalPrevention.player === owner) || g.revivalRules?.freeBlocked?.includes(owner) ||
+    g.revivalRules?.expanded.includes(owner) || g.freeRevival.includes(owner))
+    blocked = 'Emperor Nexus revival with free-revival suppression or expanded revival effects remains pending.';
+  const eliteOptions = emperorNexusRevivalElites(p,g.advanced);
+  if (!blocked && !eliteOptions.length) blocked = 'Emperor Nexus needs exactly three eligible forces in Tanks; a smaller return remains pending.';
+  return {event,revival:{blocked,eliteOptions},purchase:null};
+}
+function nexusEmperorSecretIntegrity(g:Game) {
+  const history = g.nexusEmperorSecretHistory, events = g.nexusEmperorSecretEvents;
+  if (history === undefined) {
+    requireRule(events === undefined,'Emperor Nexus has lost its saved use history.'); return;
+  }
+  requireRule(g.nexusCards?.cards && emperorNexusModeSupported(g) && Array.isArray(history) && history.length > 0 &&
+    Array.isArray(events) && events.length === history.length && new Set(events).size === events.length,
+    'Emperor Nexus has lost its physical module or independent use markers.');
+  for (const [index,record] of history.entries()) {
+    nexusRule(() => validateEmperorNexusRevival(g,record));
+    requireRule(record.sequence === index && events[index] === record.event,
+      'Emperor Nexus has duplicated or reordered a completed use.');
+  }
+  const last = history.at(-1)!;
+  if (last.turn === g.turn) requireRule(g.nexusCards.cards.discard.includes('emperor'),
+    'Emperor Nexus has reopened its already spent physical card.');
+}
+function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
+  const offer = nexusEmperorSecretAllyOffer(g,p.id);
+  requireRule(offer && !offer.revival.blocked && action.event === offer.event &&
+    Object.keys(action).sort().join(',') === 'elite,event,type' && offer.revival.eliteOptions.includes(action.elite as number),
+    offer?.revival.blocked ?? 'Choose the current Emperor Nexus revival and an eligible exact three-force group.');
+  const elite = action.elite as number, before = emperorNexusPools(p);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
+  addRevivedReserves(g,p,EMPEROR_NEXUS_REVIVALS,elite); p.tanks -= EMPEROR_NEXUS_REVIVALS;
+  if (p.elites) {p.elites.tanks -= elite;p.elites.revived += elite;}
+  const record:NexusEmperorRevival = {kind:'revival',event:offer.event,owner:p.id,turn:g.turn,phase:4,
+    faction:p.faction,advanced:g.advanced,
+    sequence:g.nexusEmperorSecretHistory?.length ?? 0,elite,before,after:emperorNexusPools(p),signature:''};
+  record.signature = emperorNexusSignature(record);
+  (g.nexusEmperorSecretHistory ??= []).push(record);
+  (g.nexusEmperorSecretEvents ??= []).push(record.event);
+  log(g,`${p.name} spent Emperor Nexus Secret Ally to return three forces${elite ? `, including ${elite} Fedaykin` : ''} from Tanks to reserves for free. Ordinary force and free-revival allowances are unchanged.`,
+    {faction:p.faction,name:'Emperor Nexus revival'});
 }
 function playNexusChoamTrade(g: Game, p: Player, action: Action) {
   const offer = currentNexusChoamTrade(g, p.id);
@@ -13593,6 +13650,7 @@ function gholaOptions(g: Game, p: Player) {
 }
 function marketGholaIntegrity(g: Game) {
   nexusCardsIntegrity(g);
+  nexusEmperorSecretIntegrity(g);
   nexusTraitorIntegrity(g);
   nexusFaceDancerIntegrity(g);
   nexusSuboidIntegrity(g);
@@ -19972,6 +20030,7 @@ function applyActionInner(
   }
   if (t === 'discovery') { playDiscovery(g, p, action); return g; }
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
+  if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
   if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
     !(
@@ -23646,6 +23705,7 @@ export function viewGame(state: Game, id: string) {
     greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,
     nexusCards: projectedNexusCards(g, id),
     nexusChoamTrade: currentNexusChoamTrade(g, id),
+    nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
     nexusMoritani: nexusMoritaniOffer(g,id),
     nexusRichese: nexusRicheseOffer(g,id),
     nexusGuildSecretAlly: nexusGuildSecretAllyOffer(g,id),

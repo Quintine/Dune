@@ -1,5 +1,32 @@
 # Dune implementation status
 
+
+## 14 September 2026 — Emperor Nexus revival prototype and outage recovery
+
+[Emperor Secret Ally](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) now connects exactly
+three additional free force returns in Basic/Advanced base-faction Nexus games.
+It preserves ordinary force/free allowances, shared Advanced Fedaykin caps and
+physical card custody, without a public pause or forced pass. Private legal
+controls, four AI profiles, JSON continuation and production SQLite recovery are
+connected. Independent review validates phase-wide timing and private receipts;
+17 focused effect tests cover illegal/stale/competing requests and later Ghola.
+The separate purchase alternative remains pending its uniform payment UX question.
+
+Two genuine-start samples finish (Basic 715 actions/19 periodic JSON rounds;
+Advanced 263/7), with no Emperor use. Two explicitly staged continuations finish
+in 18 and 17 actions with one normal-force return each. All candidates are legal;
+exact Treachery, force, elite and Nexus custody holds, and all 14 final seat views
+restore unchanged. These samples retain their setup and coverage limitations.
+The separate staged browser game exercises a Fedaykin return, then three ordinary
+revivals, unchanged spice, readable inspection and refresh recovery. The reusable
+local prototype writer adds genuine Nexus setup without opening public starts.
+
+All 733 opening games and original seat/recovery records survived the reported
+power failure unchanged. Integrity/foreign keys pass and the healthy server is
+reused. A new snapshot protects all 734 rooms before final checks. The verified
+commit and private report record required broad checks, source fingerprint,
+post-HTTP preservation and Git delivery. Full module and publication gates remain.
+
 ## 14 September 2026 — Bureaucrat payment prototype and outage preservation
 
 [Bureaucrat](BUREAUCRAT_PAYMENTS.md) now connects optional two-spice redirection

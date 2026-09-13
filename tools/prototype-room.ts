@@ -4,6 +4,7 @@ import {
   initializeDiscoveryGameForAudit,
   initializeLeaderSkillsGameForAudit,
   initializeFactionExpansionsGameForAudit,
+  initializeNexusGameForAudit,
   viewGame,
   type Game,
 } from '../game/engine';
@@ -13,6 +14,7 @@ export const PROTOTYPE_PROFILES = [
   'discovery',
   'leader-skills',
   'factions',
+  'nexus',
 ] as const;
 export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
@@ -57,12 +59,17 @@ export function startPrototypeRoom(
       ? initializeIxGameForAudit(initial)
       : profile === 'factions'
         ? initializeFactionExpansionsGameForAudit(initial)
-        : profile === 'leader-skills'
-          ? initializeLeaderSkillsGameForAudit(initial)
-          : initializeDiscoveryGameForAudit({
+        : profile === 'nexus'
+          ? initializeNexusGameForAudit({
               ...initial,
-              discoveryEnabled: true,
-            });
+              nexusCards: initial.nexusCards ?? { cards: null, phase: null },
+            })
+          : profile === 'leader-skills'
+            ? initializeLeaderSkillsGameForAudit(initial)
+            : initializeDiscoveryGameForAudit({
+                ...initial,
+                discoveryEnabled: true,
+              });
   // Exercise the same player projection before accepting the new saved state.
   for (const player of game.players) viewGame(game, player.id);
   const version = expectedVersion + 1;

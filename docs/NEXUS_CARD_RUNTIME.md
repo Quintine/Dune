@@ -1,5 +1,7 @@
 # Nexus cards: common lifecycle checkpoint
 
+The later [Emperor Secret Ally revival prototype](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) adds exactly three additional free force returns, separate ordinary allowances, private controls and saved continuation. Its purchase alternative and full module acceptance remain pending.
+
 **Later Guild Secret Ally runtime:** [NEXUS_GUILD_SECRET_ALLY_RUNTIME.md](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) records explicitly selected Guild prices, cross/return routes, typed Homeworld sources, paid Fremen reinforcement and committed shipment history. The card changes one shipment, without creating a native Guild or a real alliance. The Homeworld-return ruling and full module completion remain pending.
 
 The later [Richese Secret Ally checkpoint](NEXUS_RICHESE_RUNTIME.md) adds an ordinary physical reserve shipment priced as one force; its other effects and complete module acceptance remain gated.
