@@ -59,6 +59,6 @@ See [AI calibration](docs/AI_CALIBRATION.md), [multiplayer audit](docs/MULTIPLAY
 
 The user-authorized 13 September 2026 local reset established a fresh saved-game baseline; see the [reset record](docs/VERIFICATION_WORKFLOW.md#authorized-reset-13-september-2026). Preserve all games created after that checkpoint.
 
-During active development, preserve database state and perform a controlled server restart approximately hourly. Warn before interrupting human play and defer until a safe decision point. Verify server health and restoration afterward. No recurring automation is installed; the user requested leaving it removed. Fix causes of crashes and lost progress rather than relying on restarts.
+Reuse the running development server. Restart only when a code or configuration change, or an observed server condition, makes leaving it running likely to cause issues; use judgment rather than an hourly schedule. Preserve database state, warn before interrupting human play, and defer until a safe decision point. Verify server health and restoration after a necessary restart. No recurring automation is installed; the user requested leaving it removed. Fix causes of crashes and lost progress rather than relying on restarts.
 
 The application bundles its artwork, fonts and rules guidance. Source provenance and third-party notices live in developer documentation; the player-facing reference uses internal links. Publication remains gated on completion and integrated verification of the requested rules, expansions and critical player journeys.

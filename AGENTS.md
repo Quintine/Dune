@@ -51,9 +51,11 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
   `docs/VERIFICATION_WORKFLOW.md`. Preserve all games created afterward.
 - Keep `.wrangler/state` and all saved games. Never reset a database to fix a
   test, migration, connection or gameplay problem. Migrations are additive.
-- Reuse a running dev server. Warn before interrupting human play, defer to a
-  safe point, and verify restoration after a necessary restart. No recurring
-  maintenance automation is installed; do not recreate it without a request.
+- Reuse a running dev server. Restart only when a code/configuration change or
+  observed server condition warrants it; there is no hourly restart schedule.
+  Warn before interrupting human play, defer to a safe point, and verify
+  restoration after a necessary restart. No recurring maintenance automation
+  is installed; do not recreate it without a request.
 - `.openai/hosting.json` identifies the existing Sites project. Preserve it.
   Follow the applicable Sites skills for site work; publication has existing
   completion and verification gates documented in `README.md`.

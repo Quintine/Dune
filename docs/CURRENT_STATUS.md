@@ -5,7 +5,7 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 ## Evidence and source of truth
 
 - [Rules implementation checklist](../game/reference.ts): `RULE_TOPICS`, topic `implementation-checklist`, and each feature's implementation, controls, AI, documentation and verification entries. Coverage is per stated boundary, not an implicit whole-game certificate.
-- [Latest gameplay checkpoint before this batch](IMPLEMENTATION_STATUS.md): Guild Nexus Secret Ally, 10 September 2026 (checkpoint `06d0a66`), records types, lint, **4,162 offline tests**, production build and **40 HTTP/session tests** passing, two browser rooms and preserved opening saved games. These are recorded results, not checks rerun for this dashboard.
+- [Latest verified gameplay checkpoint](IMPLEMENTATION_STATUS.md): Truthtrance hand inventory, 13 September 2026 (`7454456`): types, lint, **4,200 offline tests**, production build and **40 HTTP tests** passed, with a phone/browser refresh journey and preserved saved games. These are recorded results, not checks rerun for this dashboard.
 - [Development guide](DEVELOPMENT.md) defines focused verification; [rule decisions](RULE_DECISIONS.md) locates settled contracts and pending interpretations. Read the newest checkpoint and relevant feature document before consulting older log entries.
 
 The user authorized a one-time local reset on 13 September: the 3,644 historical
@@ -13,16 +13,19 @@ rooms were archived privately and cleared. [Fresh checkpoint and preservation
 policy](VERIFICATION_WORKFLOW.md#authorized-reset-13-september-2026) now apply to
 new games; historical room IDs are no longer active local fixtures.
 
-The efficiency setup was verified and pushed as `6e26ba5`: types, lint and 4,177
-offline tests passed. See [pilot measurements](EFFICIENCY_PILOT.md). The current
-Advanced shipment batch extends typed preparation and commitments without Guild
-or optional modules; its validation is recorded in the checkpoint commit.
+The first three efficiency milestones are pushed: tooling `6e26ba5`, typed
+Advanced shipment commitments `32791ed`, and [hand inventory facts](TRUTHTRANCE_HAND_INVENTORY.md)
+`7454456`. See [pilot measurements](EFFICIENCY_PILOT.md).
 
-`32791ed` verified that batch with 4,192 offline tests, build, 40 HTTP tests and
-two isolated browser journeys. The next bounded batch adds [total hand and
-primary-role Truthtrance counts](TRUTHTRANCE_HAND_INVENTORY.md), reusing existing
-private-answer, controls and persisted continuation paths. Its focused browser
-journey verifies two AI answers, invalid-input feedback and phone-width refresh.
+The current [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md) verifies
+Truthtrance/Voice/Prescience/Ghola interactions from genuine Advanced setup,
+replacing the old Basic-then-flip test fixture. These existing paths pass without
+a runtime change. Exact special-offer timing and target-first ordering remain
+source interpretations; they are not settled by test results.
+
+The development server is reused until a change or observed condition warrants
+a restart. The user removed hourly restarts; preserve saved games and verify
+restoration after necessary restarts. No recurring automation is installed.
 
 ## Remaining readiness
 
@@ -43,6 +46,6 @@ Likewise, the [Truthtrance readiness audit](TRUTHTRANCE_NONBATTLE_READINESS_2026
 
 1. Reconcile the remaining base-only gaps against current helpers, consumers and tests, using the existing [Guild cancellation contract](GUILD_RATE_KARAMA_RULES.md) and [special-Karama findings](BASE_ADVANCED_READINESS_20260907.md#explicit-unresolved-base-interpretations). Keep already-asked interpretations pending; tests are not rulings.
 2. Ordinary Guild cancellation remains the next dependent gameplay batch around an exact saved shipment intent. Keep discount, cross/return permission and income separate; preserve contributors, independent Karama rates and original typed forces. Establish the unresolved affordability/settlement contract before implementing those outcomes. Verify sufficient-funds paths, nested responses, rejected-action immutability, private controls, all four bots and saved continuations together.
-3. Close remaining core Truthtrance and Advanced timing gaps, then run genuine Basic/Advanced setup-to-finish multiplayer and browser acceptance before reconsidering mode gates. Expansion completion remains a subsequent part of the same overall goal.
+3. Continue remaining core Truthtrance and Advanced timing gaps. The [full-plan interaction audit](ATREIDES_FULL_PLAN_TIMING.md) closes the named native card-interaction evidence gap while preserving unresolved timing interpretations. Run genuine Basic/Advanced setup-to-finish multiplayer and browser acceptance before reconsidering mode gates. Expansion completion remains a subsequent part of the same overall goal.
 
 Consult [AI calibration](AI_CALIBRATION.md), [multiplayer audit](MULTIPLAYER_AUDIT.md), [autopilot](AUTOPILOT.md), [component inventory](COMPONENT_INVENTORY.md) and [visual playtest](VISUAL_PLAYTEST.md) for their measured scope and follow-ups. Use current code and later checkpoints to interpret historical results. Publication still requires the completion and integrated verification gates in [README](../README.md).

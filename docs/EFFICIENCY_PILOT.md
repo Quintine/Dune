@@ -10,7 +10,7 @@ The removed recurring automation stays removed.
 | --- | --- | --- |
 | 1: setup | Current status, decision index, reusable checks, saved-game snapshots/backups and HTTP seat restoration | Accepted checkpoint `6e26ba5`. Aggregate counters 57,957,554 → 58,124,416: 166,862 tokens including planning, coordination and the user-requested save reset. Two bounded helpers. Fifteen added regressions; 4,177 offline tests passed. Three broad attempts: two stopped before tests on type/lint errors; final check passed in 130.147s. One cancellation defect found and fixed in review. |
 | 2: core readiness batch | Typed Advanced reserve-shipment commitments without Guild or optional modules | Accepted checkpoint `32791ed`. Aggregate counters 58,124,416 → 58,695,053: 570,637 tokens. Two bounded helpers: regression implementation and independent rules/privacy review. Fifteen added tests; 4,192 offline and 40 HTTP tests plus build passed. One stable broad run; focused checks resolved setup mistakes and two review findings before it. Two browser rooms verified distinct AI and human paths. Pending Guild settlement remains explicit. |
-| 3: next dependency batch | Truthtrance total hand size and primary-role counts, controls, bots and recovery | Start aggregate counter 58,695,053. Two bounded helpers on the cheaper workhorse model for regression implementation and independent review. Reuses the existing count panel and persisted-room fixtures; eight added tests and expanded SQLite cases. Two copy issues resolved before broad verification. One isolated browser room covers combined role counts, total size, invalid input and phone refresh. Confirmed endpoint and final results are recorded in the checkpoint commit. |
+| 3: next dependency batch | Truthtrance total hand size and primary-role counts, controls, bots and recovery | Accepted checkpoint `7454456`. Aggregate counter 58,695,053 → 59,144,653 at completed verification: 449,600 tokens, before final Git/push overhead. Two workhorse-model helpers for regression implementation and independent review. Reused count panel and SQLite fixtures; eight added tests and expanded recovery cases. Two copy issues fixed before the single stable broad run: 4,200 offline tests, build and 40 HTTP tests passed. One browser room covered combined roles, total size, invalid input and phone refresh. |
 
 The aggregate counter may update only between turns. Record a confirmed endpoint
 when available rather than estimating missing usage. It includes coordination and
@@ -23,10 +23,26 @@ the reusable HTTP restoration helper does not automate browser setup or visual Q
 
 Milestone 2 cost more than the tooling baseline and cannot establish a saving.
 Its larger rules/interaction scope, browser setup and context recovery contribute
-to that total. Keep the third batch bounded, reuse fixtures and avoid repeatedly
-loading old audits. Compare concrete capabilities and reopened defects alongside
-token counts before choosing the next budget; three different deliverables alone
-cannot support a reliable percentage estimate.
+to that total. Milestone 3 was smaller and reused more existing structure; its lower
+count cannot isolate the effect of model choice or establish a savings rate.
+Avoid repeatedly loading old audits. Three different deliverables alone cannot
+support a reliable percentage estimate.
+
+For initial planning, allow roughly **450,000–575,000 aggregate tokens for a
+similarly sized reviewed gameplay batch**, based on milestones 2 and 3. This is a
+low-confidence planning estimate, not a dollar quote, token-budget setting or a
+reason to stop required work. Larger interaction sets need a revised estimate.
+The tooling baseline was about 167,000 and is not a gameplay cost target. Reassess
+after the next few comparable batches, including defects found after acceptance.
+
+Next adjustment: use the owner plus one bounded helper for source research and
+independent review when the existing implementation needs verification. Reuse
+the same helper for its follow-up review, existing fixtures and applicable checks.
+Avoid adding runtime code merely to make an audit appear to be implementation.
+The full-plan interaction audit starts at aggregate counter 59,151,671, uses that
+one-helper pattern and changes tests/documentation. It therefore requires the
+full offline check, but can reuse the unchanged application's earlier build;
+browser/restart acceptance supplies direct recovery evidence.
 
 Check account usage after each verified checkpoint. The user explicitly confirmed
 the stop point as **80% weekly usage consumed (20% remaining)**. Keep the goal

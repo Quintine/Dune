@@ -1,6 +1,25 @@
 # Dune implementation status
 
 
+## 13 September 2026 — Atreides full-plan interaction verification
+
+Replaced the full-plan suite's Basic-then-flip fixture with genuine Advanced
+initialization and added five tests for Truthtrance, Voice, ordinary Prescience,
+Ghola preparation and private full-plan inspection. Seventeen focused tests pass,
+including seven interruption windows and all four profiles. The tested native
+runtime paths needed no change. Independent source and test review found no
+publisher-backed defect, while preserving the unresolved special offer/deadline
+and target-first interpretation. See the [timing audit](ATREIDES_FULL_PLAN_TIMING.md)
+for exact evidence and limits. Browser room `AZC4HGLB` verifies human special
+inspection, Medium AI Ghola preparation and a restricted sealed plan; desktop
+and phone inspection are readable. Refresh after the already-completed restart
+restores that private view and the earlier inventory seat. All 64 saved room
+versions/hashes remain unchanged. The user removed hourly restarts: restart
+only when warranted, preserving games and verifying restoration. Final required
+checks and aggregate usage belong to the verified checkpoint; no mode gate is
+opened and no recurring automation is installed.
+
+
 ## 13 September 2026 — Truthtrance hand size and primary-role facts
 
 Added total physical hand counts and explicit primary-role comparisons, sharing

@@ -37,6 +37,18 @@ These are actual recorded implementation choices, not missing expansion componen
 
 The broad Truthtrance language creates an engineering and guidance gap even if some natural-language enforcement requires a later user interpretation. It should not be disguised as an ambiguity that excuses all knowable structured questions.
 
+## 13 September full-plan interaction follow-up
+
+The [full-plan interaction audit](ATREIDES_FULL_PLAN_TIMING.md) now verifies the
+native Voice/ordinary Prescience/Truthtrance/Ghola paths discussed above, including
+seven interruption windows, all four AI profiles, private inspection and JSON
+continuation. `tests/full-plan.test.ts` uses actual Advanced setup before staging
+the battle. No runtime change was required for those paths. The special offer's
+precise deadline and target-first ordering remain implementation choices not
+settled by the retrieved GF9 text. Keep those source limitations and all wider
+mode gates; the old statement that this particular interaction audit remains
+undone is superseded by the linked record.
+
 ## Implemented mechanisms to preserve and verify in integration
 
 | Requirement                                    | Current authoritative evidence                                                                                                                                                                                                                                                                                                                                                                    | What that evidence does and does not prove                                                                                                                                                                                                                                                                                                    |

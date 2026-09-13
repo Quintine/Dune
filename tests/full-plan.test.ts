@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   applyAction,
   createGame,
+  initializeBaseGameForAudit,
   newPlayer,
   joinGame,
   viewGame,
@@ -12,6 +13,7 @@ import {
 import { baseDeck } from '../game/cards';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
+import type { PlanClaim } from '../game/battle-promises';
 const cards = baseDeck();
 const karama = cards.find((c) => c.effect === 'karama')!;
 const poison = cards.find((c) => c.kind === 'poison')!;
@@ -19,12 +21,12 @@ const shield = cards.find((c) => c.kind === 'shield')!;
 const snooper = cards.find((c) => c.kind === 'snooper')!;
 const worthless = cards.find((c) => c.kind === 'worthless')!;
 function fixture(outsider = false) {
-  let g = createGame('FULLPLAN', newPlayer('a', 'Atreides', 'atreides'));
+  let g = createGame('FULLPLAN', newPlayer('a', 'Atreides', 'atreides'), true);
   joinGame(g, newPlayer('e', 'Emperor', 'emperor'));
   joinGame(g, newPlayer('g', 'Guild', 'guild'));
   joinGame(g, newPlayer('b', 'Bene Gesserit', 'beneGesserit'));
   g.players.forEach((p) => (p.ready = true));
-  g = applyAction(g, 'a', { type: 'start' });
+  g = initializeBaseGameForAudit(g);
   g = applyAction(g, 'b', { type: 'predict', faction: 'atreides', turn: 3 });
   for (const p of g.players)
     if (p.traitorChoices.length)
@@ -32,7 +34,13 @@ function fixture(outsider = false) {
         type: 'traitor',
         leader: p.traitorChoices[0],
       });
-  g.advanced = true;
+  g = applyAction(g, 'b', {
+    type: 'advisorSetup',
+    territory: 'polar_sink',
+    sector: 0,
+  });
+  assert.equal(g.status, 'playing');
+  assert.equal(g.advanced, true);
   g.phase = 6;
   g.active = outsider ? 'e' : 'a';
   g.order = outsider ? ['e', 'g', 'a', 'b'] : ['a', 'e', 'g', 'b'];
@@ -44,10 +52,19 @@ function fixture(outsider = false) {
     p.spice = 10;
     p.hand = [];
     p.traitors = [];
+    p.advisors = {};
+    if (p.elites) {
+      p.elites.reserves = 5;
+      p.elites.tanks = 0;
+      p.elites.forces = {};
+    }
   }
   g.players[0].hand = [karama, snooper];
   g.players[1].hand = [poison, shield, worthless];
   g.discard = [];
+  const held = new Set(g.players.flatMap((p) => p.hand.map((c) => c.id)));
+  g.deck = baseDeck().filter((c) => !held.has(c.id));
+  g.traitorReserve = g.players.flatMap((p) => p.leaders.map((l) => l.id));
   return g;
 }
 function responses(state: Game) {
@@ -380,4 +397,237 @@ void test('full inspection includes KH and can target either combatant under any
   g = applyAction(g, 'e', targetPlan);
   assert.equal(g.battle?.revealed, true);
   assert.equal(viewGame(g, 'g').battle?.plans.a.kwisatz, true);
+});
+
+function take(g: Game, id: string, name: string) {
+  const index = g.deck.findIndex((card) => card.name === name);
+  assert.ok(index >= 0, name);
+  const card = g.deck.splice(index, 1)[0];
+  g.players.find((p) => p.id === id)!.hand.push(card);
+  return card.id;
+}
+function question(g: Game, claim: PlanClaim) {
+  g = applyAction(g, 'a', {
+    type: 'card',
+    card: g.players[0].hand.find((c) => c.effect === 'truthtrance')!.id,
+  });
+  while (g.truthtrance?.stage === 'priority')
+    g = applyAction(
+      g,
+      g.players.find((p) => !g.truthtrance!.passed.includes(p.id))!.id,
+      { type: 'truthPass' },
+    );
+  return applyAction(g, 'a', {
+    type: 'truthAsk',
+    question: { kind: 'battlePlan', target: 'e', claim },
+  });
+}
+function answer(g: Game, value: 'yes' | 'no' = 'yes') {
+  return applyAction(JSON.parse(JSON.stringify(g)), 'e', {
+    type: 'truthAnswer',
+    answer: value,
+  });
+}
+function unchanged(g: Game, id: string, action: Action) {
+  const copy = structuredClone(g);
+  assert.throws(() => applyAction(g, id, action));
+  assert.deepEqual(g, copy);
+}
+function custody(g: Game) {
+  const all = [...g.deck, ...g.discard, ...g.players.flatMap((p) => p.hand)]
+    .map((c) => c.id)
+    .sort();
+  assert.equal(all.length, new Set(all).size);
+  return all;
+}
+
+void test('Truthtrance and Ghola survive Voice, ordinary prescience and full-plan inspection from genuine Advanced setup', () => {
+  for (const level of DIFFICULTIES) {
+    const initial = fixture();
+    initial.players[0].ally = 'b';
+    initial.players[3].ally = 'a';
+    initial.players[1].bot = level;
+    initial.players[1].leaders[0].dead = true;
+    initial.players[1].leaders[0].deaths = 1;
+    take(initial, 'a', 'Truthtrance');
+    const ghola = take(initial, 'e', 'Tleilaxu Ghola');
+    const ids = custody(initial);
+    let g = responses(choose(initial));
+    assert.equal(g.battle?.preparation?.kind, 'voice');
+    const originalPreparation = structuredClone(g.battle!.preparation);
+    g = question(g, {
+      kind: 'and',
+      terms: [
+        { kind: 'leader', leader: 'emperor-0' },
+        { kind: 'weapon', name: poison.name },
+      ],
+    });
+    assert.deepEqual(viewGame(g, 'e').truthBattleAnswers, ['yes', 'no']);
+    assert.deepEqual(g.battle!.preparation, originalPreparation);
+    unchanged(g, 'e', { type: 'card', card: ghola, leader: 'emperor-0' });
+    g = answer(g);
+    g = responses(
+      applyAction(g, 'b', { type: 'voice', kind: 'snooper', must: false }),
+    );
+    g = responses(applyAction(g, 'a', { type: 'prescience', field: 'leader' }));
+    g = applyAction(g, 'e', { type: 'prescienceAnswer', value: 'emperor-0' });
+    assert.equal(g.decision?.kind, 'fullPlanOffer');
+    assert.equal(g.battle!.truthPromises![0].released, undefined);
+    assert.equal(g.players[1].leaders[0].dead, true);
+    g = inspect(g);
+    const actions = botActions(viewGame(g, 'e'));
+    assert.equal(actions[0].type, 'card', level);
+    assert.equal(actions[0].card, ghola, level);
+    assert.equal(actions[0].leader, 'emperor-0', level);
+    for (const id of ['a', 'g', 'b'])
+      assert.equal(viewGame(g, id).battle!.compliantPreparation, null);
+    g = applyAction(g, 'e', actions[0]);
+    unchanged(g, 'e', { ...targetPlan, leader: 'emperor-1' });
+    unchanged(g, 'e', { ...targetPlan, weapon: null });
+    g = applyAction(g, 'e', targetPlan);
+    assert.equal(
+      viewGame(g, 'a').battle!.fullPlanInsight?.plan.leader,
+      'emperor-0',
+    );
+    assert.equal(g.battle!.revealed, false);
+    assert.equal(g.decision, null);
+    g = applyAction(JSON.parse(JSON.stringify(g)), 'a', ownPlan);
+    assert.equal(g.battle!.revealed, true);
+    assert.deepEqual(custody(g), ids);
+    assert.equal(g.discard.filter((c) => c.id === ghola).length, 1);
+  }
+});
+
+void test('Truthtrance at the special offer preserves the offer and both revival-dependent answers until a real plan is sealed', () => {
+  for (const useSpecial of [false, true]) {
+    const before = fixture();
+    take(before, 'a', 'Truthtrance');
+    const ghola = take(before, 'e', 'Tleilaxu Ghola');
+    before.players[1].leaders[0].dead = true;
+    before.players[1].leaders[0].deaths = 1;
+    let g = offer(before);
+    const offered = structuredClone(g.decision);
+    g = question(g, { kind: 'leader', leader: 'emperor-0' });
+    assert.deepEqual(viewGame(g, 'e').truthBattleAnswers, ['yes', 'no']);
+    g = answer(g);
+    assert.deepEqual(g.decision, offered);
+    unchanged(g, 'e', targetPlan);
+    g = useSpecial
+      ? inspect(g)
+      : applyAction(g, 'a', { type: 'decision', decline: true });
+    assert.equal(g.battle!.truthPromises![0].released, undefined);
+    g = applyAction(g, 'e', { type: 'card', card: ghola, leader: 'emperor-0' });
+    g = applyAction(g, 'e', targetPlan);
+    assert.equal(!!viewGame(g, 'a').battle!.fullPlanInsight, useSpecial);
+    assert.equal(!!g.players[0].specialKaramaUsed, useSpecial);
+  }
+});
+
+void test('Truthtrance after inspection reports only the sealed plan and cannot reopen its fields or physical card custody', () => {
+  const before = fixture();
+  take(before, 'a', 'Truthtrance');
+  take(before, 'a', 'Truthtrance');
+  let g = applyAction(inspect(offer(before)), 'e', targetPlan);
+  const sealed = structuredClone(g.battle!.plans.e),
+    ids = custody(g);
+  for (const [claim, expected] of [
+    [{ kind: 'weapon', name: poison.name }, 'yes'],
+    [{ kind: 'dial', compare: 'eq', value: 1 }, 'no'],
+  ] as const) {
+    g = question(g, claim);
+    assert.deepEqual(viewGame(g, 'e').truthBattleAnswers, [expected]);
+    unchanged(g, 'e', {
+      type: 'truthAnswer',
+      answer: expected === 'yes' ? 'no' : 'yes',
+    });
+    g = answer(g, expected);
+    assert.deepEqual(g.battle!.plans.e, sealed);
+    assert.equal(g.battle!.truthPromises?.length ?? 0, 0);
+    assert.deepEqual(viewGame(g, 'a').battle!.fullPlanInsight?.plan, sealed);
+    for (const id of ['g', 'b']) {
+      assert.equal(viewGame(g, id).battle!.fullPlanInsight, null);
+      assert.equal(viewGame(g, id).battle!.plans.e, undefined);
+    }
+  }
+  unchanged(g, 'e', { ...targetPlan, defense: null });
+  unchanged(g, 'e', { type: 'bribe', target: 'g', amount: 9 });
+  assert.deepEqual(custody(g), ids);
+  g = applyAction(g, 'a', ownPlan);
+  assert.equal(g.battle!.revealed, true);
+  assert.deepEqual(g.battle!.plans.e, sealed);
+});
+
+void test('Truthtrance suspends and restores every native pre-plan window without choosing or dropping another power', () => {
+  const initial = fixture();
+  initial.players[0].ally = 'b';
+  initial.players[3].ally = 'a';
+  take(initial, 'a', 'Truthtrance');
+  take(initial, 'g', 'Karama');
+  let g = responses(choose(initial));
+  const frames = [g]; // Voice selection.
+  g = applyAction(g, 'b', { type: 'voice', kind: 'snooper', must: false });
+  frames.push(g); // Voice cancellation response.
+  g = responses(g);
+  frames.push(g); // Prescience selection.
+  g = applyAction(g, 'a', { type: 'prescience', field: 'defense' });
+  frames.push(g); // Prescience cancellation response.
+  g = responses(g);
+  frames.push(g); // Prescience answer.
+  g = applyAction(g, 'e', { type: 'prescienceAnswer', value: shield.id });
+  frames.push(g); // Special full-plan offer.
+  frames.push(inspect(g)); // Special chosen; target has not sealed.
+  for (const frame of frames) {
+    const copy = structuredClone(frame);
+    const asked = question(frame, { kind: 'defense', name: 'Shield' });
+    assert.ok(viewGame(asked, 'e').truthBattleAnswers!.includes('yes'));
+    const resumed = answer(asked);
+    for (const key of [
+      'response',
+      'decision',
+      'active',
+      'phase',
+      'turn',
+    ] as const)
+      assert.deepEqual(resumed[key], frame[key], key);
+    for (const key of [
+      'preparation',
+      'prescience',
+      'voice',
+      'fullPlan',
+      'plans',
+    ] as const)
+      assert.deepEqual(resumed.battle![key], frame.battle![key], key);
+    assert.deepEqual(frame, copy);
+    assert.equal(resumed.battle!.truthPromises![0].released, undefined);
+    assert.equal(
+      resumed.players[0].specialKaramaUsed,
+      frame.players[0].specialKaramaUsed,
+    );
+    assert.deepEqual(custody(resumed), custody(frame));
+  }
+});
+
+void test('Atreides may revive its own leader after reading the target plan without changing or redisclosing that plan', () => {
+  const initial = fixture();
+  const ghola = take(initial, 'a', 'Tleilaxu Ghola');
+  initial.players[0].leaders[0].dead = true;
+  initial.players[0].leaders[0].deaths = 1;
+  let g = applyAction(inspect(offer(initial)), 'e', targetPlan);
+  const inspected = structuredClone(viewGame(g, 'a').battle!.fullPlanInsight);
+  const ids = custody(g);
+  g = applyAction(JSON.parse(JSON.stringify(g)), 'a', {
+    type: 'card',
+    card: ghola,
+    leader: 'atreides-0',
+  });
+  assert.equal(g.players[0].leaders[0].dead, false);
+  assert.equal(g.players[0].leaderRevived, false);
+  assert.deepEqual(viewGame(g, 'a').battle!.fullPlanInsight, inspected);
+  for (const id of ['e', 'g', 'b'])
+    assert.equal(viewGame(g, id).battle!.fullPlanInsight, null);
+  assert.equal(g.discard.filter((c) => c.id === ghola).length, 1);
+  assert.deepEqual(custody(g), ids);
+  g = applyAction(g, 'a', ownPlan);
+  assert.equal(g.battle!.plans.a.leader, 'atreides-0');
+  assert.equal(g.battle!.revealed, true);
 });
