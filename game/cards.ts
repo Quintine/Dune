@@ -253,8 +253,8 @@ export const SPICE_CARDS = [
   ['sihaya_ridge', 6, 9],
 ] as const;
 export type SpiceCard =
-  | { territory: string; amount: number; sector: number }
-  | { worm: true; suppressed?: true; thumper?: true }
+  | { territory: string; amount: number; sector: number; discovery?: string }
+  | { worm: true; suppressed?: true; thumper?: true; greatMaker?: true }
   | { sandtrout: true };
 export function spiceDeck(includeSandtrout = false): SpiceCard[] {
   return [

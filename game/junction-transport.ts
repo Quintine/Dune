@@ -1,8 +1,10 @@
 import {
   MOBILE_LOCATION,
   splitLocation,
+  TERRITORIES,
   territory,
-  validLocation,
+  validGameLocation,
+  type MobileBoard,
 } from './board';
 import {
   HomeworldCustodyError,
@@ -28,6 +30,7 @@ export type JunctionTransportContext = HomeworldShipmentContext & {
   >;
   /** Ordinary Arrakis pointer, never the mobile interior itself. */
   mobileStronghold?: string | null;
+  discoveries?: MobileBoard['discoveries'];
 };
 export type JunctionTransportIntent = {
   player: string;
@@ -51,9 +54,21 @@ function requireTransport(
 ): asserts condition {
   if (!condition) throw new HomeworldCustodyError(message);
 }
-function canonicalSector(key: string) {
+function canonicalSector(context: JunctionTransportContext, key: string) {
   const { territory: id, sector } = splitLocation(key);
-  return key === `${id}:${sector}` && validLocation(id, sector);
+  return (
+    key === `${id}:${sector}` &&
+    validGameLocation({ discoveries: context.discoveries }, id, sector)
+  );
+}
+function printedSector(key: string) {
+  const { territory: id, sector } = splitLocation(key);
+  return (
+    key === `${id}:${sector}` &&
+    TERRITORIES.some(
+      (territory) => territory.id === id && territory.sectors.includes(sector),
+    )
+  );
 }
 const eliteLimit = (faction: string) =>
   faction === 'emperor'
@@ -133,15 +148,13 @@ export function quoteJunctionTransport(
   requireTransport(
     pointer === undefined ||
       pointer === null ||
-      (typeof pointer === 'string' &&
-        canonicalSector(pointer) &&
-        pointer !== MOBILE_LOCATION),
+      (typeof pointer === 'string' && printedSector(pointer)),
     'The mobile stronghold needs a canonical Arrakis pointer.',
   );
   const destinationWorld = worlds.find((w) => w.id === intent.destination);
   requireTransport(
     destinationWorld ||
-      (canonicalSector(intent.destination) &&
+      (canonicalSector(context, intent.destination) &&
         (intent.destination !== MOBILE_LOCATION || !!pointer)),
     'Choose an active Homeworld or canonical Arrakis destination.',
   );
@@ -175,7 +188,7 @@ export function quoteJunctionTransport(
   let boardElite = 0;
   for (const [key, count] of Object.entries(board.forces)) {
     requireTransport(
-      canonicalSector(key) &&
+      canonicalSector(context, key) &&
         whole(count) &&
         count <= 20 &&
         (key !== MOBILE_LOCATION || !!pointer),
@@ -185,7 +198,7 @@ export function quoteJunctionTransport(
   }
   for (const [key, count] of Object.entries(board.eliteForces)) {
     requireTransport(
-      canonicalSector(key) &&
+      canonicalSector(context, key) &&
         whole(count) &&
         count <= (Object.hasOwn(board.forces, key) ? board.forces[key] : 0),
       'Special counters must be a subset of the physical force group.',
@@ -260,7 +273,7 @@ export function quoteJunctionTransport(
       origin ??= key;
     } else {
       requireTransport(
-        canonicalSector(key) && (key !== MOBILE_LOCATION || !!pointer),
+        canonicalSector(context, key) && (key !== MOBILE_LOCATION || !!pointer),
         'Choose a canonical, active Arrakis source sector.',
       );
       const source = splitLocation(key);

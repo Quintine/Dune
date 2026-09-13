@@ -4,6 +4,11 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [First Discovery prototype](DISCOVERY_PROTOTYPE.md): genuine base-faction
+  Basic/Advanced setup, seven Spice Cards, eight tokens, Great Maker, Collection
+  inspection/rewards and revealed nested locations are connected. Focused checks
+  pass; final broad checkpoint evidence is pending. Free entry, special location
+  benefits and Ornithopter spending remain missing.
 - Ix prototype checkpoint `5a76ae0`: types, lint, **4,211 offline tests**, build and **40 HTTP tests** passed. Genuine Basic/Advanced setup and two seeded complete simulations were exercised; a short browser game finished with private hand restoration. All 64 opening saved rooms were preserved; 31 QA rooms were added. This is bounded prototype evidence, not complete Ix compliance.
 
 - [Rules implementation checklist](../game/reference.ts): `RULE_TOPICS`, topic `implementation-checklist`, and each feature's implementation, controls, AI, documentation and verification entries. Coverage is per stated boundary, not an implicit whole-game certificate.
@@ -36,7 +41,7 @@ restoration after necessary restarts. No recurring automation is installed.
 | --- | --- | --- |
 | Basic core | Playable loop; shared setup, Fremen movement cancellation, structured Truthtrance facts and bounded Basic/no-Guild Advanced reserve-shipment promises. | Ordinary Guild rate/transport cancellation; wider truthful questions/action commitments; integrated rules and human/AI acceptance. |
 | Six-faction Advanced | Genuine offline setup across 456 configurations; four-profile full-game simulations and JSON continuations. | Base gaps plus provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. Public starts remain disabled. |
-| Twelve factions and optional modules | Many bounded faction, card, Homeworld and Nexus slices have controls, bots and recovery evidence. | Every unfinished effect and interaction, occupation entitlement, Discoveries and complete combined games. Inventory or fixture coverage does not enable a module. |
+| Twelve factions and optional modules | Many bounded faction, card, Homeworld and Nexus slices have controls, bots and recovery evidence; the first Discovery actions now have a connected prototype. | Every unfinished effect and interaction, occupation entitlement, remaining Discovery effects and complete combined games. Inventory or fixture coverage does not enable a module. |
 | AI difficulty | Four profiles consume private legal views; recorded Basic and Advanced studies complete. | Demonstrate a consistent Medium → Hard → Brutal strength ordering, improve strategic gaps, and repeat targeted studies after relevant policy/rule changes. |
 | Multiplayer | Versioned writes, saved seats, owner recovery kits, uncertain-request retry and voluntary own-seat AI control. | Intentional transfer, unprepared abandoned-seat recovery, unattended continuation and remaining network-failure acceptance. Preserve privacy and existing games. |
 | Player experience | Internal component inspectors and many desktop/phone feature journeys verified. | Complete end-to-end games, accessible controls, responsive layout, clear rules/errors and recovery across all supported combinations. |
@@ -52,9 +57,13 @@ genuine setup, both expansion factions, full Ix deck and Sandtrout, shared human
 controls and saved continuation. The checklist now distinguishes its Prototyped
 development stage from Partial rules coverage. The next connected action is the [CHOAM Nexus Collection trade](NEXUS_CHOAM_SECRET_ALLY.md),
 with private controls, all four AI profiles and a saved payment/discard continuation.
-Its after-victory inspection remains missing. [Discovery components](DISCOVERY_COMPONENTS.md)
-now records all seven spice cards, eight tokens and exact card placements;
-Discovery runtime and controls remain missing.
+Its after-victory inspection remains missing. The [first Discovery batch](DISCOVERY_PROTOTYPE.md)
+now connects the [sourced components](DISCOVERY_COMPONENTS.md) to Great Maker,
+destructive Discovery blows, private inspection/reveal, stash rewards, carried
+Ornithopter custody and five revealed nested locations. Only Jacurutu counts
+toward stronghold victory. Next dependencies are free entry at the next turn,
+the five special location benefits, and spending Ornithopter on a later move;
+complete variant acceptance and normal public starts remain gated.
 
 The user changed the development order on 13 September: get working prototypes
 of all remaining functions into the game, then use integration and play to find

@@ -5,7 +5,8 @@ import {
   location,
   MOBILE_STRONGHOLD,
   splitLocation,
-  validLocation,
+  TERRITORIES,
+  validGameLocation,
 } from './board';
 import { presenceAt } from './force-presence';
 import { territoryEntryBlock } from './occupancy';
@@ -45,8 +46,15 @@ function usableLocation(g: Game, key: string) {
   const at = splitLocation(key);
   return (
     location(at.territory, at.sector) === key &&
-    validLocation(at.territory, at.sector) &&
+    validGameLocation(g, at.territory, at.sector) &&
     (at.territory !== MOBILE_STRONGHOLD || !!g.mobileStronghold?.location)
+  );
+}
+function printedLocation(key: string) {
+  const at = splitLocation(key);
+  return TERRITORIES.some(
+    (territory) =>
+      territory.id === at.territory && territory.sectors.includes(at.sector),
   );
 }
 /** Only public board custody and the beneficiary's physical reserves are read.
@@ -65,8 +73,7 @@ function beneficiary(g: Game, id: string) {
   requireShipment(
     !g.mobileStronghold?.location ||
       (usableLocation(g, g.mobileStronghold.location) &&
-        splitLocation(g.mobileStronghold.location).territory !==
-          MOBILE_STRONGHOLD),
+        printedLocation(g.mobileStronghold.location)),
     'The mobile stronghold must point to a board location.',
   );
   for (const p of g.players) {
@@ -285,7 +292,7 @@ export function quoteGuildAmbassadorAdvisor(
       typeof shipment.advisors === 'boolean' &&
       typeof shipment.territory === 'string' &&
       count(shipment.sector) &&
-      validLocation(shipment.territory, shipment.sector) &&
+      validGameLocation(g, shipment.territory, shipment.sector) &&
       !Object.hasOwn(shipment, 'noField') &&
       !Object.hasOwn(shipment, 'alliedNoField'),
     'BG accompaniment needs the completed physical Guild Ambassador shipment by another off-planet faction.',

@@ -11,7 +11,11 @@ import {
   type AdvisorRelease,
 } from './board-resolution-quote';
 import { TECH_TOKENS, techStronghold } from './tech-tokens';
-import { strongholdProgress, VictoryProgressError } from './victory-progress';
+import {
+  countsForStrongholdVictory,
+  strongholdProgress,
+  VictoryProgressError,
+} from './victory-progress';
 import {
   settleStrongholdCards,
   strongholdControllers,
@@ -146,6 +150,7 @@ export function quoteVictory(g: VictoryContext): VictoryQuote {
     gameTerritories(g).filter(
       (t) =>
         t.type === 'stronghold' &&
+        countsForStrongholdVictory(t.id) &&
         ids.some((id) => fighterCount(player(id), t.id) > 0) &&
         players.every((p) => ids.includes(p.id) || fighterCount(p, t.id) === 0),
     ).length;

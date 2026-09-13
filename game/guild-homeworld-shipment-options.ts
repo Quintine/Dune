@@ -70,6 +70,7 @@ export function guildHomeworldShipmentChoice(
         advanced: view.advanced,
         storm: view.storm,
         mobileStronghold: view.mobileStronghold?.location ?? null,
+        discoveries: view.discoveries,
         players: view.players.map((player) => ({
           id: player.id,
           faction: player.faction,

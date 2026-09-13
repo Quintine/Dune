@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 13 September 2026 — First connected Discovery prototype
+
+Connects genuine base-faction Basic/Advanced audit setup to all seven sourced
+Spice Cards and eight opaque physical tokens. Great Maker resolves worm effects,
+an ordered majority vote and a free Fremen reserve ride. The six Discovery blows
+destroy prior forces/spice before their new blow and separate token placement.
+Private faction peeks and Collection inspection/reveal lead to exact stash
+rewards, a saved full-hand draw/discard choice, carried Ornithopter custody and
+five public nested locations; only Jacurutu contributes stronghold victory.
+Shared human/AI controls and JSON continuations accompany the actions.
+
+This is Prototyped progress with Partial coverage. Next-turn free entry, the
+five special location benefits and Ornithopter spending remain missing. The
+normal public module start gate stays closed. Great Maker first-turn skipping,
+Sandtrout suppression and empty-token-supply behavior remain identified source
+inferences for refinement, not new confirmed rulings. See the
+[prototype boundary and dependency queue](DISCOVERY_PROTOTYPE.md).
+
+Focused component, runtime, Great Maker, board/admission, private-control and
+SQLite recovery checks pass. Two seeded Basic/Advanced games finish while
+preserving components; browser `3RJBH26Y` verifies genuine Fremen setup, a real
+Discovery blow, native private peek and enlarged card guidance. Review repaired
+lost encounter/arrival controls and an unfinished overflow discard. Broad
+verification and preservation results are recorded in the checkpoint commit
+and private source-bound report. No complete-module certification is claimed.
+
 ## 13 September 2026 — CHOAM Nexus Collection prototype and Discovery inventory
 
 Adds the missing absent-CHOAM Secret Ally Collection trade through the engine,

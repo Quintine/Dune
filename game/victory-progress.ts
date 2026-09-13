@@ -8,6 +8,7 @@ import { ecazOccupancyIdentity } from './ecaz-occupy';
 import { gameTerritories } from './board';
 import { fighterCount } from './advisors';
 import { TECH_TOKENS } from './tech-tokens';
+import { isDiscoveryLocationId, JACURUTU_SIETCH } from './discoveries';
 
 export type StrongholdProgress = {
   player: string;
@@ -32,6 +33,12 @@ function requireProgress(
   message: string,
 ): asserts condition {
   if (!condition) throw new VictoryProgressError(message);
+}
+
+/** Discovery locations use stronghold shipping and occupancy rules, but only
+ * Jacurutu Sietch counts toward the normal stronghold victory. */
+export function countsForStrongholdVictory(id: string) {
+  return !isDiscoveryLocationId(id) || id === JACURUTU_SIETCH;
 }
 
 /** Public prospective stronghold victory only. No prediction, special endgame
@@ -81,7 +88,9 @@ export function strongholdProgress(
         'Victory progress requires the complete technology token ownership map.',
       );
     }
-    const sites = boardTerritories.filter((t) => t.type === 'stronghold');
+    const sites = boardTerritories.filter(
+      (t) => t.type === 'stronghold' && countsForStrongholdVictory(t.id),
+    );
     const progress = g.order.map((id) => {
       const p = players.find((p) => p.id === id)!;
       const members = g.order.filter(

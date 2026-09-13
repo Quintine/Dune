@@ -4,13 +4,14 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { captureSavedGames } from './saved-game-verification';
-import { startIxPrototypeRoom } from './prototype-room';
+import { startPrototypeRoom } from './prototype-room';
 import { sourceSnapshot } from './verification';
 
 async function main() {
   const { values } = parseArgs({
     options: {
       db: { type: 'string' },
+      profile: { type: 'string', default: 'ix' },
       room: { type: 'string' },
       version: { type: 'string' },
       out: { type: 'string' },
@@ -19,11 +20,12 @@ async function main() {
   });
   if (values.help) {
     console.log(
-      'Usage: node --import tsx tools/start-prototype.ts --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready Ix expansion lobby for local prototyping. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
+      'Usage: node --import tsx tools/start-prototype.ts --profile ix|discovery --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready Ix expansion or base-faction Discovery lobby for local prototyping. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
     );
     return;
   }
   if (
+    !['ix', 'discovery'].includes(values.profile) ||
     !values.db ||
     !values.room ||
     !values.out ||
@@ -44,14 +46,19 @@ async function main() {
     throw new Error('The requested lobby version is absent from the backup.');
   const db = new DatabaseSync(values.db);
   try {
-    const result = startIxPrototypeRoom(db, values.room, version);
+    const result = startPrototypeRoom(
+      db,
+      values.room,
+      version,
+      values.profile as 'ix' | 'discovery',
+    );
     writeFileSync(
       resolve(values.out, 'prototype.json'),
       JSON.stringify(
         {
           format: 1,
           startedAt: new Date().toISOString(),
-          profile: 'ix',
+          profile: values.profile,
           source,
           beforeVersion: version,
           ...result,

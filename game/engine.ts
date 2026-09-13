@@ -1,3 +1,6 @@
+import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
+import { createDiscoveryState, validateDiscoveryState, placeDiscovery, rememberDiscoveryFace, revealDiscoveryToken, isDiscoverySpiceCardId, isDiscoveryTokenId, DISCOVERY_SPICE_CARDS, DISCOVERY_CARD_PLACEMENTS, DISCOVERY_TOKEN_BY_ID, type DiscoveryState } from './discoveries';
+import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
@@ -484,7 +487,7 @@ import {
   location,
   splitLocation,
   distance,
-  validLocation,
+  validGameLocation,
 } from './board';
 export type Player = {
   id: string;
@@ -743,6 +746,9 @@ export type Decision =
     }
   | { kind: 'wormPlacement'; player: string }
   | { kind: 'wormProtection'; player: string; territory: string; ally: string }
+  | { kind: 'discoveryDiscard'; player: string; event: string }
+  | { kind: 'greatMakerVote'; player: string; event: string }
+  | { kind: 'greatMakerRide'; player: string; event: string }
   | { kind: 'wormRide'; player: string; territory: string }
   | {
       kind: 'moritaniRetention';
@@ -884,6 +890,10 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  discoveryEnabled?: boolean;
+  discoveries?: DiscoveryState;
+  discoveryStash?: DiscoveryStash;
+  greatMaker?: GreatMaker;
   nexusChoamTrades?: NexusChoamTrade[];
   nexusChoamTradeLast?: { event: string; stage: NexusChoamTrade['stage'] };
   treacheryDiscardSequence?: number;
@@ -894,6 +904,7 @@ export type Game = {
     batch: FreshDiscardBatch;
     continuation:
       | { kind: 'ambassador'; entry: NonNullable<Game['pendingAmbassador']> }
+      | { kind: 'discoveryStash'; event: string; owner: string; card: string }
       | { kind: 'nexusChoamTrade'; event: string; owner: string; card: string; spiceAfter: number }
       | { kind: 'kaitainDiscard'; owner: string; event: string; cost: number; spiceAfter: number }
       | { kind: 'winnerMandatoryDiscard'; event: string; player: string; territory: string; optional: string[]; commitment: NonNullable<Game['pendingWinnerDiscards']> }
@@ -2464,7 +2475,7 @@ function alliedNoFieldQuote(
   );
   requireRule(
     offer.territory !== MOBILE_STRONGHOLD &&
-      validLocation(offer.territory, offer.sector),
+      validGameLocation(g, offer.territory, offer.sector),
     'Choose a printed planet sector for the allied No-Field shipment.',
   );
   // Test the compulsory old-marker reveal without exposing or mutating it before acceptance.
@@ -3963,7 +3974,7 @@ function treacheryDiscardIntegrity(g: Game) {
           m.player === owner.id &&
           owner.shipped &&
           gameTerritories(g).some((t) => t.id === m.origin) &&
-          validLocation(m.to, m.sector) &&
+          validGameLocation(g, m.to, m.sector) &&
           Number.isSafeInteger(m.total) &&
           m.total > 0 &&
           typeof m.noField === 'boolean' &&
@@ -4050,7 +4061,7 @@ function treacheryDiscardIntegrity(g: Game) {
         owner?.faction === 'moritani' &&
         entrant &&
         entrant.id !== owner.id &&
-        terrorEntryLocationAllowed(g,entry) && validLocation(entry.territory,entry.sector) &&
+        terrorEntryLocationAllowed(g,entry) && validGameLocation(g, entry.territory,entry.sector) &&
         [
           'shipment',
           'movement',
@@ -4315,6 +4326,12 @@ function treacheryDiscardIntegrity(g: Game) {
       Array.isArray(c.optional) && new Set(c.optional).size === c.optional.length &&
       c.optional.every((id) => getPlayer(g, c.player).hand.some((card) => card.id === id)),
       'The mandatory winning card discard no longer matches its resolved battle.');
+  } else if (continuation?.kind === 'discoveryStash') {
+    const c = continuation;
+    discoveryIntegrity(g);
+    requireRule(batch.cause === 'discovery:stash' && batch.entries.length === 1 &&
+      batch.entries[0].discardedBy === c.owner && batch.entries[0].publicFace && batch.entries[0].card.id === c.card,
+      'The Treachery Card Stash has lost its chosen discard.');
   } else if (continuation?.kind === 'nexusChoamTrade') {
     const c = continuation;
     nexusChoamTradeIntegrity(g);
@@ -4368,6 +4385,11 @@ function finishTreacheryDiscard(g: Game) {
   g.pendingTreacheryDiscard = null;
   if (next.kind === 'winnerMandatoryDiscard') {
     finishWinner(g, getPlayer(g, next.player), next.territory, next.optional);
+    return;
+  }
+  if (next.kind === 'discoveryStash') {
+    g.discoveryStash!.stage = 'complete';
+    g.discoveryStash!.signature = discoveryStashSignature(g.discoveryStash!);
     return;
   }
   if (next.kind === 'nexusChoamTrade') {
@@ -4799,6 +4821,7 @@ function start(g: Game) {
   requireRule(!g.advanced, 'Advanced rules are still being implemented.');
   requireRule(!g.homeworlds, 'Homeworld gameplay is still being implemented.');
   requireRule(!g.nexusCards, 'Nexus card effects are still being implemented.');
+  requireRule(!g.discoveryEnabled, 'Discoveries are still being implemented.');
   requireRule(
     g.players.every((p) => faction(p.faction).expansion === 'base'),
     'Expansion factions are still being implemented.',
@@ -4810,6 +4833,7 @@ function start(g: Game) {
   initializeSetup(g);
 }
 function initializeSetup(g: Game) {
+  if (g.discoveryEnabled) g.discoveries = createDiscoveryState(random);
   if (g.nexusCards) g.nexusCards = { cards: createNexusCards(g.players, random), phase: null };
   const choam = byFaction(g, 'choam');
   if (choam && g.advanced && !choam.leaders.some(isAuditorLeader))
@@ -4835,7 +4859,7 @@ function initializeSetup(g: Game) {
   g.stormDialers = [g.order[0], g.order.at(-1)!];
   g.lastBattle = [...g.stormDialers];
   g.deck = shuffle(treacheryDeck(g.expansions));
-  g.spiceDeck = shuffle(spiceDeck(g.expansions.includes('ix')));
+  g.spiceDeck = shuffle([...spiceDeck(g.expansions.includes('ix')), ...(g.discoveryEnabled ? [...DISCOVERY_SPICE_CARDS, {worm:true as const, greatMaker:true as const}] : [])]);
   g.sandtrout = false;
   g.status = 'setup';
   g.setupStage = 'prediction';
@@ -4998,7 +5022,13 @@ export function initializeIxGameForAudit(state: Game): Game {
     'The Ix prototype requires exactly the Ixians & Tleilaxu expansion.');
   return initializeSetupGameForAudit(state, false, false, true);
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false): Game {
+/** Prototype-only Discovery setup. Public starts stay gated while remaining effects are connected. */
+export function initializeDiscoveryGameForAudit(state: Game): Game {
+  requireRule(state.discoveryEnabled === true && !state.discoveries && !state.discoveryStash && !state.greatMaker,
+    'Enable Discoveries in a fresh audit lobby first.');
+  return initializeSetupGameForAudit(state, false, false, false, true);
+}
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false): Game {
   nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -5021,6 +5051,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   );
   requireRule(
     (homeworlds || nexus || ix || g.expansions.length === 0) &&
+      (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
       !g.techTokens &&
       !g.strongholdCards &&
@@ -5341,7 +5372,7 @@ function refillSpice(g: Game) {
       g.spiceDiscard
         .flat()
         .filter((c) => !('worm' in c && c.thumper))
-        .map((c) => ('worm' in c ? { worm: true as const } : c)),
+        .map((c) => ('worm' in c ? { worm: true as const, ...(c.greatMaker ? {greatMaker: true as const} : {}) } : c)),
     );
     g.spiceDiscard = [[], []];
   }
@@ -5395,6 +5426,11 @@ function wormSurvival(g: Game, t: string, protectedAlly?: string) {
   }
 }
 function afterWorm(g: Game) {
+  if (g.greatMaker?.stage === 'worm') {
+    g.wormRides = [...g.greatMaker.ridesBefore];
+    openGreatMakerVote(g);
+    return;
+  }
   const pending = g.summonedWorm;
   if (!pending) {
     continueSpice(g);
@@ -5440,6 +5476,226 @@ function afterWorm(g: Game) {
     g,
     'The summoned worm has resolved. Its Nexus occurs after the spice blow.',
   );
+}
+function discoveryIntegrity(g: Game) {
+  if (!g.discoveryEnabled) {
+    requireRule(!g.discoveries && !g.discoveryStash, 'Discovery custody requires its enabled module.');
+    return;
+  }
+  if (g.status === 'lobby') {
+    requireRule(!g.discoveries && !g.discoveryStash, 'Discovery components are dealt during setup.');
+    return;
+  }
+  requireRule(g.discoveries, 'The Discovery module has lost its physical tokens.');
+  nexusRule(() => validateDiscoveryState(g.discoveries!));
+  for (const token of g.discoveries.tokens) requireRule(
+    (token.revealedTurn === null || token.revealedTurn <= g.turn) &&
+    (token.acquiredTurn === null || token.acquiredTurn <= g.turn) &&
+    (token.owner === null || g.players.some(player => player.id === token.owner)),
+    'A Discovery token has lost its receiving player or original turn.');
+  const record = g.discoveryStash, continuation = g.pendingTreacheryDiscard?.continuation;
+  const pending = continuation?.kind === 'discoveryStash' ? continuation : null;
+  const controls = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, continuation && 'resume' in continuation ? continuation.resume : null];
+  if (!record) {
+    requireRule(!pending && !controls.some(control => control?.decision?.kind === 'discoveryDiscard'),
+      'The Discovery discard has lost its original draw.');
+    return;
+  }
+  const p = g.players.find(player => player.id === record.owner);
+  requireRule(p && Object.keys(record).sort().join(',') === 'card,discarded,event,hand,owner,signature,stage,token,turn' &&
+    typeof record.event === 'string' && record.event && Number.isSafeInteger(record.turn) && record.turn >= 1 && record.turn <= g.turn &&
+    ['choose','discard','complete'].includes(record.stage) && Array.isArray(record.hand) &&
+    record.hand.every(id => typeof id === 'string') && new Set(record.hand).size === record.hand.length && record.hand.includes(record.card) &&
+    g.discoveries.tokens.some(token => token.id === record.token && token.face === 'treachery-card-stash' &&
+      token.status === 'removed' && token.revealedTurn === record.turn) &&
+    record.signature === discoveryStashSignature(record) &&
+    (record.stage === 'choose' ? record.discarded === null : record.discarded === null || record.hand.includes(record.discarded)) &&
+    (record.stage === 'discard') === !!pending,
+    'The Treachery Card Stash has lost its original draw or selected discard.');
+  const overflow = record.hand.length === handLimit(p) + 1;
+  requireRule(record.hand.length >= 1 && record.hand.length <= handLimit(p) + 1 &&
+    (record.stage !== 'complete' ? overflow : overflow === (record.discarded !== null)),
+    'The Treachery Card Stash must complete its original overflow discard.');
+  if (record.stage === 'complete') {
+    requireRule(!controls.some(control => control?.decision?.kind === 'discoveryDiscard'),
+      'The completed stash cannot retain a discard choice.');
+    return;
+  }
+  requireRule(g.status === 'playing' && g.turn === record.turn && g.phase === 7 &&
+    JSON.stringify(p.hand.map(card => card.id).sort()) === JSON.stringify(record.hand.filter(id => id !== record.discarded).sort()),
+    'Finish the original Treachery Card Stash hand before another card change.');
+  if (record.stage === 'choose') requireRule(controls.some(control => control?.decision?.kind === 'discoveryDiscard' &&
+    control.decision.player === p.id && control.decision.event === record.event), 'The stash has lost its owned discard choice.');
+  if (pending) requireRule(pending.event === record.event && pending.owner === p.id && pending.card === record.discarded,
+    'The stash has changed its committed discard.');
+}
+function resolveDiscoveryBlow(g: Game, card: Extract<SpiceCard, {territory:string}>) {
+  requireRule(g.discoveryEnabled && g.discoveries && isDiscoverySpiceCardId(card.discovery), 'This Discovery card requires its physical module.');
+  const printed = DISCOVERY_SPICE_CARDS.find(value => value.discovery === card.discovery)!;
+  requireRule(card.territory === printed.territory && card.sector === printed.sector && card.amount === printed.amount,
+    'The Discovery spice blow has changed its printed territory, sector or amount.');
+  disasterPreflight(() => validateWormDevouring(g,card.territory,undefined,false));
+  for (const p of g.players) killTerritory(g,p,card.territory);
+  for (const key of Object.keys(g.spice)) if (splitLocation(key).territory === card.territory) delete g.spice[key];
+  log(g, `A Discovery spice blow destroyed all previous spice and forces in ${territory(card.territory).name}, including Fremen forces. The new spice is placed afterward.`);
+  const placement = DISCOVERY_CARD_PLACEMENTS[card.discovery];
+  if (g.discoveries.tokens.some(token => token.type === placement.type && token.status === 'supply')) {
+    g.discoveries = nexusRule(() => placeDiscovery(g.discoveries!,card.discovery as Parameters<typeof placeDiscovery>[1],random));
+    log(g, `A face-down ${placement.type === 'hiereg' ? 'Hiereg' : 'Smuggler'} Discovery was placed in ${territory(placement.territory).name}, sector ${placement.sector}.`);
+  } else log(g, `The ${placement.type} Discovery supply is empty; no additional physical token can be placed.`);
+}
+function playDiscovery(g: Game, p: Player, action: Action) {
+  const offer = discoveryChoices(g,p.id,g.phase === 7 && grummanCollectionAutomatic(g));
+  requireRule(offer && !offer.blocked && typeof action.reveal === 'boolean' && isDiscoveryTokenId(action.token) &&
+    Object.keys(action).every(key => ['type','token','reveal'].includes(key)) &&
+    (action.reveal ? offer.canReveal : offer.canInspect).includes(action.token),
+    offer?.blocked ?? 'Choose an eligible hidden Discovery in a territory containing your non-advisor forces.');
+  if (!action.reveal) {
+    g.discoveries = nexusRule(() => rememberDiscoveryFace(g.discoveries!,action.token as Parameters<typeof rememberDiscoveryFace>[1],p.faction));
+    return;
+  }
+  const token = g.discoveries!.tokens.find(token => token.id === action.token)!;
+  if (token.face === 'spice-stash') requireRule(Number.isSafeInteger(p.spice) && p.spice >= 0 && Number.isSafeInteger(p.spice+7), 'The stash needs a valid spice balance.');
+  if (token.face === 'treachery-card-stash') requireRule(g.deck.length + g.discard.length > 0, 'No Treachery card is available to draw.');
+  const revealed = nexusRule(() => revealDiscoveryToken(g.discoveries!,token.id,g.turn,p.id));
+  g.discoveries = revealed.state;
+  g.ready = [];
+  log(g, `${p.name} revealed ${DISCOVERY_TOKEN_BY_ID[token.face].name} in ${territory(token.territory!).name}.`);
+  if (revealed.outcome.kind === 'spice-stash') {
+    p.spice += revealed.outcome.amount;
+    log(g, `${p.name} gained 7 spice from the bank. The Spice Stash was removed from the game.`);
+  } else if (revealed.outcome.kind === 'treachery-card-stash') {
+    const card = draw(g)!;
+    p.hand.push(card);
+    const overflow = p.hand.length > handLimit(p);
+    g.discoveryStash = {event:crypto.randomUUID(), token:token.id, owner:p.id, turn:g.turn, card:card.id,
+      hand:p.hand.map(card => card.id), stage:overflow ? 'choose' : 'complete', discarded:null, signature:''};
+    g.discoveryStash.signature = discoveryStashSignature(g.discoveryStash);
+    if (overflow) g.decision = {kind:'discoveryDiscard',player:p.id,event:g.discoveryStash.event};
+    log(g, `${p.name} drew one private Treachery card from the stash${overflow ? ' and must now discard any one card from the full hand' : ''}. The stash was removed from the game.`);
+  } else if (revealed.outcome.kind === 'ornithopter') {
+    log(g, `${p.name} took the Ornithopter token; it can be spent on a later turn for one movement action.`);
+  } else log(g, `${DISCOVERY_TOKEN_BY_ID[token.face].name} is now a separate, initially unoccupied location within ${territory(token.territory!).name}.`);
+}
+function decideDiscoveryDiscard(g: Game, p: Player, action: Action) {
+  const record = g.discoveryStash;
+  requireRule(record?.stage === 'choose' && record.owner === p.id && action.event === record.event &&
+    typeof action.card === 'string' && record.hand.includes(action.card) &&
+    Object.keys(action).every(key => ['type','event','card'].includes(key)), 'Choose any card from your original stash hand to discard.');
+  const card = discard(g,p,action.card);
+  record.discarded = card.id; record.stage = 'discard'; record.signature = discoveryStashSignature(record);
+  stageTreacheryDiscard(g,'discovery:stash',[{card,discardedBy:p.id,publicFace:true}],
+    {kind:'discoveryStash',event:record.event,owner:p.id,card:card.id});
+  log(g, `${p.name} discarded ${card.name} after opening the Treachery Card Stash.`);
+}
+
+function greatMakerRideOptions(g: Game, owner: string) {
+  const p = getPlayer(g,owner), frame = g.greatMaker;
+  if (frame?.stage !== 'ride' || p.faction !== 'fremen') return null;
+  const destinations = gameTerritories(g).flatMap(t => t.sectors.flatMap(sector => {
+    try { allowedEntry(g,p,t.id,sector); return [{territory:t.id,name:t.name,sector}]; }
+    catch (error) { if (error instanceof RuleError) return []; throw error; }
+  }));
+  return {max:p.reserves,eliteMax:p.elites?.reserves ?? 0,destinations};
+}
+function stampGreatMaker(g: Game) {
+  g.greatMaker!.signature = greatMakerSignature(g.greatMaker!);
+}
+function greatMakerIntegrity(g: Game) {
+  const frame = g.greatMaker, continuation = g.pendingTreacheryDiscard?.continuation;
+  const controls = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, continuation && 'resume' in continuation ? continuation.resume : null];
+  const owned = controls.filter(control => control?.decision?.kind === 'greatMakerVote' || control?.decision?.kind === 'greatMakerRide');
+  if (!frame) {
+    requireRule(owned.length === 0, 'The Great Maker has lost its original encounter.');
+    return;
+  }
+  requireRule(g.discoveryEnabled && g.discoveries, 'The Great Maker requires its physical Discovery module.');
+  nexusRule(() => validateGreatMaker(frame, g.turn, g.players));
+  if (frame.stage === 'complete') {
+    requireRule(owned.length === 0, 'The completed Great Maker cannot retain another vote or reserve ride.');
+    return;
+  }
+  if (frame.arrival) requireRule(validGameLocation(g,frame.arrival.territory,frame.arrival.sector), 'The Great Maker has lost its declared reserve destination.');
+  const card = g.spiceDiscard[frame.pile][frame.index];
+  requireRule(g.phase === 1 && frame.turn === g.turn && g.spiceSequence?.pile === frame.pile &&
+    card && 'worm' in card && card.greatMaker && !card.suppressed &&
+    frame.order.join('|') === g.order.join('|'), 'The Great Maker has lost its current spice encounter.');
+  if (frame.stage === 'vote' || frame.stage === 'ride') {
+    const kind = frame.stage === 'vote' ? 'greatMakerVote' : 'greatMakerRide';
+    const owner = frame.stage === 'vote' ? frame.order[frame.votes.length] : byFaction(g, 'fremen')?.id;
+    requireRule(owned.length === 1 && owned[0]?.decision?.kind === kind && owned[0].decision.player === owner && owned[0].decision.event === frame.event,
+      'The Great Maker has lost its owned vote or reserve ride.');
+  } else {
+    requireRule(owned.length === 0, 'Resolve the current Great Maker interaction before voting or riding.');
+    const responses = controls.flatMap(control => {
+      const pending = control && 'pendingKarama' in control ? control.pendingKarama as Game['pendingKarama'] : null;
+      return [control?.response, pending?.use.kind === 'cancel' ? pending.use.response : null];
+    });
+    if (frame.stage === 'worm') requireRule(
+      controls.some(control => control?.decision?.kind === 'wormProtection' && control.decision.territory === frame.territory && control.decision.player === byFaction(g,'fremen')?.id && control.decision.ally === byFaction(g,'fremen')?.ally) ||
+      responses.some(response => (response?.kind === 'wormSurvival' || response?.kind === 'wormAllyProtection') && response.location === frame.territory && response.owner === byFaction(g,'fremen')?.id &&
+        (!response.recipient || response.recipient === byFaction(g,'fremen')?.ally)),
+      'The Great Maker has lost its pending worm survival or protection interaction.');
+    if (frame.stage === 'arrival') requireRule(
+      controls.some(control => control?.decision?.kind === 'intrusion' && control.decision.wormRide && control.decision.player === byFaction(g,'beneGesserit')?.id && control.decision.territory === frame.arrival!.territory) ||
+      responses.some(response => response?.kind === 'advisorFlip' && response.advisorResume === 'wormRide' && response.owner === byFaction(g,'beneGesserit')?.id && response.location === frame.arrival!.territory) ||
+      (g.pendingAmbassador?.resume === 'wormRide' && g.pendingAmbassador.territory === frame.arrival!.territory && g.pendingAmbassador.sector === frame.arrival!.sector) ||
+      (g.pendingTerrorEntry?.resume === 'wormRide' && g.pendingTerrorEntry.territory === frame.arrival!.territory && g.pendingTerrorEntry.sector === frame.arrival!.sector),
+      'The Great Maker has lost its reserve arrival interaction.');
+  }
+}
+function openGreatMakerVote(g: Game) {
+  const frame = g.greatMaker!;
+  frame.stage = 'vote'; stampGreatMaker(g);
+  g.decision = {kind:'greatMakerVote', player:frame.order[frame.votes.length], event:frame.event};
+}
+function completeGreatMaker(g: Game) {
+  g.greatMaker!.stage = 'complete'; stampGreatMaker(g);
+  continueSpice(g);
+}
+function decideGreatMakerVote(g: Game, p: Player, action: Action) {
+  const frame = g.greatMaker!;
+  requireRule(frame?.stage === 'vote' && frame.event === action.event &&
+    frame.order[frame.votes.length] === p.id && typeof action.yes === 'boolean' &&
+    Object.keys(action).every(key => ['type','event','yes'].includes(key)), 'Cast the current Great Maker vote in storm order.');
+  frame.votes.push({player:p.id, yes:action.yes});
+  log(g, `${p.name} voted ${action.yes ? 'yes' : 'no'} to a Great Maker Nexus.`);
+  if (frame.votes.length < frame.order.length) { openGreatMakerVote(g); return; }
+  if (greatMakerMajority(frame)) {
+    g.nexus = true; markNexusOccurred(g);
+    log(g, 'A majority voted yes: the Great Maker produces a Nexus.');
+  } else log(g, 'The Great Maker vote has no yes majority, so this encounter adds no Nexus.');
+  const fremen = byFaction(g, 'fremen');
+  if (fremen && fremen.reserves > 0) {
+    frame.stage = 'ride'; stampGreatMaker(g);
+    g.decision = {kind:'greatMakerRide', player:fremen.id, event:frame.event};
+  } else completeGreatMaker(g);
+}
+function decideGreatMakerRide(g: Game, p: Player, action: Action) {
+  const frame = g.greatMaker!;
+  requireRule(frame?.stage === 'ride' && frame.event === action.event && p.faction === 'fremen' && typeof action.accept === 'boolean',
+    'Choose the current Great Maker reserve ride.');
+  if (!action.accept) {
+    requireRule(Object.keys(action).every(key => ['type','event','accept'].includes(key)), 'Declining a ride selects no forces or destination.');
+    log(g, `${p.name} left the optional Great Maker riders in reserves.`);
+    completeGreatMaker(g); return;
+  }
+  requireRule(Object.keys(action).every(key => ['type','event','accept','territory','sector','amount','elite'].includes(key)),
+    'Choose only a destination and your Great Maker reserve forces.');
+  const to = stringField(action.territory), sector = integer(action.sector,0,18,'Sector');
+  const amount = integer(action.amount,1,p.reserves,'Riding forces');
+  const elite = eliteChoice(amount,p.reserves,p.elites?.reserves ?? 0,action.elite);
+  allowedEntry(g,p,to,sector);
+  withdrawNativeReserves(g,p,amount,elite);
+  place(p,to,sector,amount,elite);
+  frame.arrival = {territory:to,sector,amount,elite};
+  frame.stage = 'arrival'; stampGreatMaker(g);
+  log(g, `${p.name} rode the Great Maker with ${amount} reserve forces to ${territory(to).name}. This spends no shipment, movement or spice.`);
+  const intruded = intrusion(g,p,to,{wormRide:true});
+  if (openTerritoryEntry(g,p,to,sector,amount,elite,'wormRide','wormRide') || intruded) return;
+  completeGreatMaker(g);
 }
 function blowSpice(g: Game, thumper = false) {
   g.nexus = !!g.summonedBeforeBlow;
@@ -5490,6 +5746,16 @@ function continueSpice(g: Game, injected?: SpiceCard) {
         g,
         'Sandtrout suppressed Shai-Hulud. Only an immediate territory replacement receives double spice.',
       );
+    } else if (card.greatMaker) {
+      g.spiceDiscard[sequence.pile].push(card);
+      g.greatMaker = {arrival:null,event:crypto.randomUUID(),turn:g.turn,pile:sequence.pile,
+        index:g.spiceDiscard[sequence.pile].length-1,
+        territory:previous && 'territory' in previous ? previous.territory : null,
+        stage:'worm',order:[...g.order],votes:[],ridesBefore:[...g.wormRides],signature:''};
+      stampGreatMaker(g);
+      if (g.greatMaker.territory) beginWorm(g,g.greatMaker.territory);
+      else openGreatMakerVote(g);
+      return;
     } else {
       g.nexus = true;
       markNexusOccurred(g);
@@ -5510,6 +5776,7 @@ function continueSpice(g: Game, injected?: SpiceCard) {
     card = drawSpice(g);
   }
   if (card && 'territory' in card) {
+    if (card.discovery) resolveDiscoveryBlow(g, card);
     g.spiceDiscard[sequence.pile].push(card);
     const amount = card.amount * (doubleNext ? 2 : 1);
     g.spiceWindow = { ...card, amount, harvested: false };
@@ -5545,6 +5812,7 @@ function finishSpicePass(g: Game) {
   }
 }
 function nextWormRide(g: Game) {
+  if (g.greatMaker?.stage === 'arrival') { completeGreatMaker(g); return; }
   if (g.summonedNexusBeforeRides) {
     g.summonedNexusBeforeRides = false;
     g.nexus = true;
@@ -7311,7 +7579,7 @@ function allowedEntry(
     'The mobile stronghold has not been placed.',
   );
   requireRule(
-    validLocation(t, s),
+    validGameLocation(g, t, s),
     'Choose a sector belonging to this territory.',
   );
   requireRule(
@@ -7337,7 +7605,7 @@ function eliteChoice(
     'Elite forces',
   );
 }
-function forceGroup(p: Player, action: Action) {
+function forceGroup(g: Game, p: Player, action: Action) {
   let entries: [string, unknown][];
   if (action.forces !== undefined) {
     requireRule(
@@ -7371,7 +7639,7 @@ function forceGroup(p: Player, action: Action) {
   for (const [key, value] of entries) {
     const src = splitLocation(key);
     requireRule(
-      validLocation(src.territory, src.sector),
+      validGameLocation(g, src.territory, src.sector),
       'Invalid source sector.',
     );
     const n = integer(value, 0, p.forces[key] ?? 0, 'Forces');
@@ -7739,7 +8007,7 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
     'The movement is no longer available.',
   );
   validateFlightSelection(g, p, move);
-  const selected = forceGroup(p, {
+  const selected = forceGroup(g, p, {
     type: 'move',
     forces: Object.fromEntries(move.group),
     eliteForces: move.eliteGroup,
@@ -8526,7 +8794,7 @@ function currentGuildAmbassador(g: Game, event?: string) {
       entrant &&
       entrant.id !== owner.id &&
       entrant.id !== beneficiary.id &&
-      validLocation(entry.territory, entry.sector) &&
+      validGameLocation(g, entry.territory, entry.sector) &&
       territory(entry.territory).type === 'stronghold' &&
       validAmbassadorResume(g, entry) &&
       entry.relocation === undefined &&
@@ -15734,7 +16002,7 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
     ['type', 'event', 'offer', 'destination', 'sources', 'allyPayment'].includes(key)),
     'Use the offered tariff and explicit physical forces without concealed tokens.');
   const destination = stringField(action.destination);
-  const context = {...homeworldContext(g), storm: g.storm,
+  const context = {...homeworldContext(g), storm: g.storm, discoveries:g.discoveries,
     players: homeworldContext(g).players.map((seat) => ({...seat, ally: getPlayer(g, seat.id).ally})),
     mobileStronghold: g.mobileStronghold?.location ?? null,
     board: {[p.id]: {forces: p.forces, eliteForces: p.elites?.forces ?? {}, advisors: p.advisors}}};
@@ -15809,7 +16077,7 @@ function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {rout
   };
   const order = {player: intent.player, destination: intent.destination, sources: intent.sources};
   if (intent.route === 'arrakis') {
-    const quote = homeworldRule(() => quoteGuildHomeworldShipment({...context, storm: g.storm,
+    const quote = homeworldRule(() => quoteGuildHomeworldShipment({...context, storm: g.storm, discoveries:g.discoveries,
       mobileStronghold: g.mobileStronghold?.location ?? null,
       board: Object.fromEntries(g.players.map((p) => [p.id, {forces: p.forces, eliteForces: p.elites?.forces ?? {}}])),
     }, g.homeworlds!.custody!, order));
@@ -16905,7 +17173,7 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
       !!marker &&
       location(marker.location.territory, marker.location.sector) === key;
     requireRule(
-      validLocation(loc.territory, loc.sector) &&
+      validGameLocation(g, loc.territory, loc.sector) &&
         ((other.forces[key] ?? 0) > 0 || concealed),
       'Choose an occupied board sector.',
     );
@@ -17646,6 +17914,8 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  discoveryIntegrity(state);
+  greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -17797,6 +18067,8 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileShipmentPromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
   observeOccupation(g);
+  discoveryIntegrity(g);
+  greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -17892,6 +18164,8 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  discoveryIntegrity(state);
+  greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -17920,6 +18194,8 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileShipmentPromises(g);
   settleAutomaticContinuations(g);
   observeOccupation(g);
+  discoveryIntegrity(g);
+  greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -18011,6 +18287,7 @@ function applyActionInner(
     requireRule(!g.truthtrance, 'Finish the active Truthtrance before returning Nexus cards.');
     finishNexusTraitorReturn(g, p, action); return g;
   }
+  if (t === 'discovery') { playDiscovery(g, p, action); return g; }
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
   if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
@@ -18393,7 +18670,7 @@ function applyActionInner(
       requireRule(
         TERRITORIES.some((t) => t.id === to) &&
           to !== MOBILE_STRONGHOLD &&
-          validLocation(to, sector),
+          validGameLocation(g, to, sector),
         'Choose a printed territory and sector.',
       );
       requireRule(
@@ -18869,7 +19146,7 @@ function applyActionInner(
           'You cannot replace more forces than the winner has remaining.',
         );
         const sector = home ? 0 : integer(action.sector, 0, 18, 'Sector');
-        requireRule(home || validLocation(decision.territory, sector), 'Choose a sector in the battle territory.');
+        requireRule(home || validGameLocation(g, decision.territory, sector), 'Choose a sector in the battle territory.');
         // This is replacement, not shipment or movement: no transport cost or worm/storm transit.
         for (const source of selected) {
           if (source.key === 'reserves') { if (!home) p.reserves -= source.count; }
@@ -19292,6 +19569,12 @@ function applyActionInner(
           passed: [],
         };
       } else wormSurvival(g, decision.territory);
+    } else if (decision.kind === 'discoveryDiscard') {
+      decideDiscoveryDiscard(g,p,action);
+    } else if (decision.kind === 'greatMakerVote') {
+      decideGreatMakerVote(g,p,action);
+    } else if (decision.kind === 'greatMakerRide') {
+      decideGreatMakerRide(g,p,action);
     } else if (decision.kind === 'wormRide') {
       requireRule(
         typeof action.accept === 'boolean',
@@ -19317,7 +19600,7 @@ function applyActionInner(
           const source = splitLocation(key);
           requireRule(
             source.territory === decision.territory &&
-              validLocation(source.territory, source.sector),
+              validGameLocation(g, source.territory, source.sector),
             'Ride only from the territory where the worm appeared.',
           );
           const n = integer(value, 0, p.forces[key] ?? 0, 'Forces');
@@ -19535,7 +19818,7 @@ function applyActionInner(
       const to = stringField(action.territory);
       const sector = integer(action.sector, 0, 18, 'Sector');
       requireRule(
-        to !== MOBILE_STRONGHOLD && validLocation(to, sector),
+        to !== MOBILE_STRONGHOLD && validGameLocation(g, to, sector),
         'Choose a printed board sector; the mobile stronghold is not yet placed.',
       );
       requireRule(
@@ -19583,7 +19866,7 @@ function applyActionInner(
               };
           requireRule(
             FREMEN_START.includes(loc.territory) &&
-              validLocation(loc.territory, loc.sector),
+              validGameLocation(g, loc.territory, loc.sector),
             'Starting forces belong in sectors of Sietch Tabr, False Wall South or False Wall West.',
           );
           return { ...loc, amount: integer(value, 0, 10, 'Starting forces') };
@@ -20452,7 +20735,7 @@ function applyActionInner(
       requireRule(!blocked, blocked ?? 'Guild Homeworld shipment is unavailable.');
       requireRule(action.noField === undefined && (action.sector === undefined || action.sector === 0),
         'A Homeworld arrival has no planet sector or concealed token.');
-      const group = forceGroup(p, action);
+      const group = forceGroup(g, p, action);
       const sources = Object.fromEntries(group.group.map(([key, amount]) => [key,
         {normal: amount - (group.eliteGroup[key] ?? 0), elite: group.eliteGroup[key] ?? 0}]));
       declareHomeworldShipment(g, p, {route: 'arrakis', player: id,
@@ -20503,7 +20786,7 @@ function applyActionInner(
           ),
           total: integer(action.amount, 1, p.reserves, 'Forces'),
         }
-      : forceGroup(p, action);
+      : forceGroup(g, p, action);
     requireRule(
       group.every(([key]) => splitLocation(key).sector !== g.storm),
       'The source is in storm.',
@@ -20662,7 +20945,7 @@ function applyActionInner(
       total: n,
       noField,
       sourceKeys,
-    } = forceGroup(p, action);
+    } = forceGroup(g, p, action);
     const to = stringField(action.territory),
       s = integer(action.sector, 0, 18, 'Sector');
     const advisors = arrivalAsAdvisor(g, p, to, origin);
@@ -21234,6 +21517,8 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  discoveryIntegrity(state);
+  greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -21525,6 +21810,8 @@ export function viewGame(state: Game, id: string) {
       : null,
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
+    discoveries: discoveryChoices(g,id,g.phase === 7 && grummanCollectionAutomatic(g)),
+    greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,
     nexusCards: projectedNexusCards(g, id),
     nexusChoamTrade: currentNexusChoamTrade(g, id),
     nexusMoritani: nexusMoritaniOffer(g,id),

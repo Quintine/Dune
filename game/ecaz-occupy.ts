@@ -1,3 +1,4 @@
+import { isDiscoveryLocationId } from './discoveries';
 import { FACTIONS, type FactionId } from './catalog';
 import { MOBILE_STRONGHOLD, TERRITORIES, validLocation } from './board';
 
@@ -67,7 +68,7 @@ function validate(
   if (at.kind === 'homeworld') return;
   requireOccupancy(
     at.kind === 'territory' &&
-      (at.id === MOBILE_STRONGHOLD ||
+      (at.id === MOBILE_STRONGHOLD || isDiscoveryLocationId(at.id) ||
         TERRITORIES.some((t) => t.id === at.id)) &&
       (at.sector === undefined ||
         (Number.isSafeInteger(at.sector) && validLocation(at.id, at.sector))),

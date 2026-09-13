@@ -1,3 +1,5 @@
+import { discoveryBotActions } from './discovery-options';
+import { greatMakerBotActions } from './great-maker-options';
 import { nexusChoamTradeBotActions } from './nexus-choam-trade-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
@@ -2340,6 +2342,8 @@ function policyActions(g: GameView): Action[] {
           ? [{ type: 'decision', accept: true, amount: level === 0 ? 1 : (g.homeworldMobility?.advisorSinkMaximum ?? 1) }] : []),
         { type: 'decision', accept: false },
       ];
+    if (d.kind === 'discoveryDiscard') return discoveryBotActions(g);
+    if (d.kind === 'greatMakerVote' || d.kind === 'greatMakerRide') return greatMakerBotActions(g);
     if (d.kind === 'wormProtection')
       return [{ type: 'decision', accept: true }];
     if (d.kind === 'stormLosses')
@@ -3369,6 +3373,8 @@ export function botActions(g: GameView): Action[] {
       : nexusTraitorBotActions(g);
   if (g.automaticContinuationPending) return [];
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
+  const discovery = discoveryBotActions(g);
+  if (discovery.length) return discovery;
   const trade = nexusChoamTradeBotActions(g);
   if (trade.length) return trade;
   const sardaukar = nexusSardaukarBotActions(g);

@@ -1,5 +1,5 @@
 import type { Game, Player, ResponseWindow } from './engine';
-import { MOBILE_STRONGHOLD, validLocation } from './board';
+import { MOBILE_STRONGHOLD, validGameLocation } from './board';
 import { validateRicheseNoField } from './richese-no-field';
 
 export class NoFieldCancellationError extends Error {}
@@ -13,6 +13,7 @@ export type NoFieldCancellationContext = Pick<
   | 'richeseAllyOffer'
   | 'richeseAllyOpportunity'
   | 'richeseAllyBlocked'
+  | 'discoveries'
 > & {
   players: readonly Pick<
     Player,
@@ -75,7 +76,7 @@ export function quoteNoFieldCancellation(
   );
   requireDeclaration(
     shipment.territory !== MOBILE_STRONGHOLD &&
-      validLocation(shipment.territory, shipment.sector) &&
+      validGameLocation(g, shipment.territory, shipment.sector) &&
       whole(shipment.amount) &&
       shipment.amount <= 5 &&
       whole(shipment.elite) &&

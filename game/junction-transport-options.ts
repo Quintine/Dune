@@ -176,6 +176,7 @@ export function junctionTransportChoice(
         advanced: view.advanced,
         storm: view.storm,
         mobileStronghold: view.mobileStronghold?.location ?? null,
+        discoveries: view.discoveries,
         players: view.players.map((p) => ({
           id: p.id,
           faction: p.faction,

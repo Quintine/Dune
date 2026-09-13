@@ -10,7 +10,8 @@ import {
   gameTerritories,
   MOBILE_LOCATION,
   splitLocation,
-  validLocation,
+  TERRITORIES,
+  validGameLocation,
   type MobileBoard,
 } from './board';
 
@@ -29,10 +30,11 @@ export type BoardContext = MobileBoard & {
   players: readonly BoardSeat[];
 };
 export type AdvisorRelease = { player: string; territory: string };
-function validKey(key: string) {
+function validKey(g: MobileBoard, key: string) {
   const p = splitLocation(key);
   return (
-    key === `${p.territory}:${p.sector}` && validLocation(p.territory, p.sector)
+    key === `${p.territory}:${p.sector}` &&
+    validGameLocation(g, p.territory, p.sector)
   );
 }
 /** A public board projection: no leader, hand, secret No-Field value or resource
@@ -48,22 +50,28 @@ export function settledBoard(g: BoardContext) {
       g.players.every((p) => g.order.includes(p.id)),
     'Board resolution needs the current distinct player order and storm sector.',
   );
-  if (g.mobileStronghold?.location)
+  if (g.mobileStronghold?.location) {
+    const pointer = splitLocation(g.mobileStronghold.location);
     requireBoard(
-      validKey(g.mobileStronghold.location) &&
-        g.mobileStronghold.location !== MOBILE_LOCATION,
+      validKey(g, g.mobileStronghold.location) &&
+        TERRITORIES.some(
+          (t) =>
+            t.id === pointer.territory && t.sectors.includes(pointer.sector),
+        ),
       'The mobile stronghold needs its board pointer.',
     );
+  }
   for (const p of g.players) {
     requireBoard(
-      Object.entries(p.forces).every(([key, n]) => validKey(key) && whole(n)) &&
-        whole(Object.values(p.forces).reduce((a, n) => a + n, 0)),
+      Object.entries(p.forces).every(
+        ([key, n]) => validKey(g, key) && whole(n),
+      ) && whole(Object.values(p.forces).reduce((a, n) => a + n, 0)),
       'Board resolution needs valid physical force locations and counts.',
     );
     const marker = p.noField?.deployed?.location;
     if (marker)
       requireBoard(
-        validLocation(marker.territory, marker.sector),
+        validGameLocation(g, marker.territory, marker.sector),
         'The No-Field needs a valid board location.',
       );
   }
@@ -206,7 +214,7 @@ export function quoteSpiceCollection(
           record(p.elites.forces) &&
           Object.entries(p.elites.forces).every(
             ([key, n]) =>
-              validKey(key) && whole(n) && n <= (p.forces[key] ?? 0),
+              validKey(g, key) && whole(n) && n <= (p.forces[key] ?? 0),
           ),
         'Collection needs valid physical elite groups.',
       );
@@ -214,7 +222,7 @@ export function quoteSpiceCollection(
   const { players, released } = settledBoard(g);
   const spice = { ...g.spice };
   requireBoard(
-    Object.entries(spice).every(([key, n]) => validKey(key) && whole(n)),
+    Object.entries(spice).every(([key, n]) => validKey(g, key) && whole(n)),
     'Collection needs valid spice locations and quantities.',
   );
   const capacities = new Map<string, Map<string, number>>();

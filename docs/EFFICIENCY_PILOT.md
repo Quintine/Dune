@@ -91,3 +91,16 @@ connects runtime, private controls, AI and SQLite recovery. The battle inspectio
 alternative stays explicitly missing instead of holding the independent trade
 for an exhaustive battle-cleanup design. Final checks, counter endpoint and
 checkpoint scope are recorded in the commit.
+
+The Discovery batch starts at aggregate counter 60,591,430. Three bounded helpers
+cover physical inventory, nested board/admission, and private controls/docs;
+reusing them adds deterministic playthroughs and independent review of the
+owner's encounter/reward integration. New playable functions are Great Maker's
+vote/reserve ride, six Discovery blows, private Collection inspection/reveal,
+and both immediate stash rewards with saved overflow discard. Token custody
+and board destinations prepare the following location/flight batch. Reused
+room-start tooling now selects the Discovery profile. Reviews found and repaired
+lost saved controls, a retargetable arrival and skipped overflow discard before
+the stable broad check. The implementation adds no calibration study or server
+restart. Final aggregate endpoint, source-bound checks and push belong in the
+checkpoint commit; whole-module completion remains unclaimed.

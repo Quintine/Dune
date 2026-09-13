@@ -1,7 +1,7 @@
 import { nexusGuildShipmentAvailable } from './nexus-guild-cunning-options';
 import { nexusGuildSecretAllyCanAct } from './nexus-guild-secret-ally-options';
 import type { Action, GameView } from './engine';
-import { splitLocation, validLocation } from './board';
+import { splitLocation, validGameLocation } from './board';
 import { botEntryAllowed, guildTransportCost } from './bot-mobility';
 import { shipmentPaymentBounds } from './shipment-price';
 
@@ -86,7 +86,7 @@ export function guildTransportQuote(g: GameView, action: Action) {
         : [];
     for (const [key, count] of entries) {
       const source = splitLocation(key);
-      if (!validLocation(source.territory, source.sector)) {
+      if (!validGameLocation(g, source.territory, source.sector)) {
         validForces = false;
         continue;
       }
@@ -123,7 +123,7 @@ export function guildTransportQuote(g: GameView, action: Action) {
     Number.isInteger(sector) &&
     sector >= 0 &&
     sector <= 18 &&
-    (to === 'reserves' || validLocation(to, sector));
+    (to === 'reserves' || validGameLocation(g, to, sector));
   if (to === 'reserves' && p.faction !== 'guild' && !nexusAllowed)
     unavailableReasons.push('Only the Guild may return forces to reserves.');
   if (to === 'reserves' && nexus && g.homeworlds?.worlds?.length)

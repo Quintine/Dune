@@ -12,6 +12,8 @@ import { GrummanCollection } from './grumman-collection';
 import { TupileIntelligence } from './tupile-intelligence';
 import { NexusCards } from './nexus-cards';
 import { NexusTraitors } from './nexus-traitors';
+import { GreatMakerDecision } from './great-maker';
+import { DiscoveryPanel, DiscoveryDiscardDecision } from './discoveries';
 import { NexusChoamTrade } from './nexus-choam-trade';
 import { NexusTleilaxu } from './nexus-tleilaxu';
 import { NexusSuboids } from './nexus-suboids';
@@ -1436,6 +1438,7 @@ export function GameTable({
           <PrivateBattlePlan game={g} />
           <NexusCards game={g} act={act} busy={busy} />
           <NexusTraitors game={g} act={act} busy={transportBusy || !!me.autopilot} />
+          <DiscoveryPanel game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusChoamTrade game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || !!me.autopilot} />
@@ -2938,6 +2941,10 @@ export function GameTable({
                     accept: false,
                   })}
                 </>
+              ) : g.decision.kind === 'discoveryDiscard' ? (
+                <DiscoveryDiscardDecision game={g} act={act} busy={transportBusy || !!me.autopilot} />
+              ) : g.decision.kind === 'greatMakerVote' || g.decision.kind === 'greatMakerRide' ? (
+                <GreatMakerDecision game={g} act={act} busy={transportBusy || !!me.autopilot} />
               ) : g.decision.kind === 'wormProtection' ? (
                 <>
                   <p className="muted">

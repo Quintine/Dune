@@ -1,4 +1,10 @@
-import { MOBILE_LOCATION, splitLocation, validLocation } from './board';
+import {
+  MOBILE_LOCATION,
+  splitLocation,
+  TERRITORIES,
+  validGameLocation,
+  type MobileBoard,
+} from './board';
 import {
   HomeworldCustodyError,
   homeworldForceGroups,
@@ -16,6 +22,7 @@ export type GuildHomeworldShipmentContext = HomeworldShipmentContext & {
   >;
   /** The mobile stronghold's ordinary Arrakis pointer, not its interior. */
   mobileStronghold?: string | null;
+  discoveries?: MobileBoard['discoveries'];
 };
 export type GuildHomeworldShipmentIntent = {
   player: string;
@@ -32,9 +39,21 @@ function requireShipment(
 ): asserts condition {
   if (!condition) throw new HomeworldCustodyError(message);
 }
-function canonicalSector(key: string) {
+function canonicalSector(context: GuildHomeworldShipmentContext, key: string) {
   const { territory, sector } = splitLocation(key);
-  return key === `${territory}:${sector}` && validLocation(territory, sector);
+  return (
+    key === `${territory}:${sector}` &&
+    validGameLocation({ discoveries: context.discoveries }, territory, sector)
+  );
+}
+function printedSector(key: string) {
+  const { territory: id, sector } = splitLocation(key);
+  return (
+    key === `${id}:${sector}` &&
+    TERRITORIES.some(
+      (territory) => territory.id === id && territory.sectors.includes(sector),
+    )
+  );
 }
 
 /** Guild's own special shipment from one Arrakis territory to a Homeworld.
@@ -92,14 +111,12 @@ export function quoteGuildHomeworldShipment(
   requireShipment(
     pointer === undefined ||
       pointer === null ||
-      (typeof pointer === 'string' &&
-        canonicalSector(pointer) &&
-        pointer !== MOBILE_LOCATION),
+      (typeof pointer === 'string' && printedSector(pointer)),
     'The mobile stronghold needs a canonical Arrakis pointer.',
   );
   for (const [key, amount] of Object.entries(board.forces))
     requireShipment(
-      canonicalSector(key) &&
+      canonicalSector(context, key) &&
         whole(amount) &&
         amount <= 20 &&
         (key !== MOBILE_LOCATION || !!pointer),
@@ -107,7 +124,7 @@ export function quoteGuildHomeworldShipment(
     );
   for (const [key, amount] of Object.entries(board.eliteForces))
     requireShipment(
-      canonicalSector(key) && whole(amount) && amount === 0,
+      canonicalSector(context, key) && whole(amount) && amount === 0,
       'Guild counters cannot acquire special force identities.',
     );
   const boardTotal = Object.values(board.forces).reduce((sum, n) => sum + n, 0);
@@ -138,7 +155,7 @@ export function quoteGuildHomeworldShipment(
   }[] = [];
   for (const [key, selected] of entries) {
     requireShipment(
-      canonicalSector(key) && (key !== MOBILE_LOCATION || !!pointer),
+      canonicalSector(context, key) && (key !== MOBILE_LOCATION || !!pointer),
       'Choose a canonical, active Arrakis source sector.',
     );
     const source = splitLocation(key);

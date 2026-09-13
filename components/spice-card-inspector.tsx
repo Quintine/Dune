@@ -15,6 +15,10 @@ import {
 } from '@/components/ui/dialog';
 import type { SpiceCard } from '@/game/cards';
 import { territory } from '@/game/board';
+import {
+  isDiscoverySpiceCardId,
+  DISCOVERY_CARD_PLACEMENTS,
+} from '@/game/discoveries';
 import { PHASE_HELP } from '@/game/reference';
 
 /** Only the supplied visible face is read. No deck, discard pile or game is accepted. */
@@ -25,9 +29,9 @@ export type SpiceCardInspectorProps = {
 
 export function spiceCardTitle(card: Readonly<SpiceCard>): string {
   if ('territory' in card)
-    return `${territory(card.territory).name} · ${card.amount} spice · sector ${card.sector}`;
+    return `${card.discovery ? 'Discovery · ' : ''}${territory(card.territory).name} · ${card.amount} spice · sector ${card.sector}`;
   if ('sandtrout' in card) return 'Sandtrout';
-  return `Shai-Hulud${card.thumper ? ' · Thumper encounter' : ''}${card.suppressed ? ' · suppressed' : ''}`;
+  return `${card.greatMaker ? 'Great Maker' : 'Shai-Hulud'}${card.thumper ? ' · Thumper encounter' : ''}${card.suppressed ? ' · suppressed' : ''}`;
 }
 
 /** Original vector illustration, with no claim to reproduce a printed card face. */
@@ -122,13 +126,23 @@ export function SpiceCardInspector({ card, context }: SpiceCardInspectorProps) {
     'territory' in card
       ? territory(card.territory).name
       : kind === 'worm'
-        ? 'Shai-Hulud'
+        ? 'worm' in card && card.greatMaker
+          ? 'Great Maker'
+          : 'Shai-Hulud'
         : 'Sandtrout';
+  const placement =
+    'territory' in card && isDiscoverySpiceCardId(card.discovery)
+      ? DISCOVERY_CARD_PLACEMENTS[card.discovery]
+      : null;
   const description =
     kind === 'territory'
-      ? 'This spice blow names the territory, sector and base spice amount. The storm and card effects can change how much spice actually appears.'
+      ? placement
+        ? `Destroy all previous spice and forces in the named territory, including Fremen, then place six spice in the indicated sector. Draw a random ${placement.type === 'hiereg' ? 'Hiereg' : 'Smuggler'} Discovery token and place it face down in ${territory(placement.territory).name}, sector ${placement.sector}. The storm can destroy the new spice.`
+        : 'This spice blow names the territory, sector and base spice amount. The storm and card effects can change how much spice actually appears.'
       : kind === 'worm'
-        ? 'A Shai-Hulud encounter can consume forces and spice in the territory identified by the preceding card in its spice discard pile. Resolve protection, Nexus and riding decisions through the table.'
+        ? 'worm' in card && card.greatMaker
+          ? 'Resolve the normal worm destruction, then vote in storm order. A strict yes majority creates a Nexus; a tie does not. Fremen may afterward ride with any number of reserve forces, following storm and occupancy rules. Preventing Fremen survival in the devoured territory does not prevent this reserve ride.'
+          : 'A Shai-Hulud encounter can consume forces and spice in the territory identified by the preceding card in its spice discard pile. Resolve protection, Nexus and riding decisions through the table.'
         : 'Sandtrout breaks existing alliances and waits for the next active drawn Shai-Hulud. It suppresses that encounter, then the immediate replacement determines whether a spice blow is doubled.';
   return (
     <Dialog>
@@ -168,7 +182,9 @@ export function SpiceCardInspector({ card, context }: SpiceCardInspectorProps) {
               <article className="min-w-0 rounded-xl border border-[#a58b5c] bg-gradient-to-br from-[#493d29] via-[#2f3023] to-[#171b17] p-5 shadow-lg sm:p-6">
                 <p className="m-0 text-sm font-semibold tracking-wider text-[#f1d79f] uppercase">
                   {kind === 'territory'
-                    ? 'Spice blow'
+                    ? placement
+                      ? 'Discovery spice blow'
+                      : 'Spice blow'
                     : kind === 'worm'
                       ? 'Worm encounter'
                       : 'Sandtrout'}

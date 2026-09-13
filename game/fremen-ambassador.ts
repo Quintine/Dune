@@ -4,7 +4,8 @@ import {
   location,
   MOBILE_STRONGHOLD,
   splitLocation,
-  validLocation,
+  TERRITORIES,
+  validGameLocation,
 } from './board';
 import { arrivalAsAdvisor } from './advisors';
 import { presenceAt } from './force-presence';
@@ -62,8 +63,15 @@ function usableLocation(g: Game, key: string) {
   const at = splitLocation(key);
   return (
     location(at.territory, at.sector) === key &&
-    validLocation(at.territory, at.sector) &&
+    validGameLocation(g, at.territory, at.sector) &&
     (at.territory !== MOBILE_STRONGHOLD || !!g.mobileStronghold?.location)
+  );
+}
+function printedLocation(key: string) {
+  const at = splitLocation(key);
+  return TERRITORIES.some(
+    (territory) =>
+      territory.id === at.territory && territory.sectors.includes(at.sector),
   );
 }
 function playerFor(g: Game, id: string) {
@@ -85,8 +93,7 @@ function playerFor(g: Game, id: string) {
   requireMove(
     !g.mobileStronghold?.location ||
       (usableLocation(g, g.mobileStronghold.location) &&
-        splitLocation(g.mobileStronghold.location).territory !==
-          MOBILE_STRONGHOLD),
+        printedLocation(g.mobileStronghold.location)),
     'The mobile stronghold must point to a board territory.',
   );
   for (const p of g.players) {
