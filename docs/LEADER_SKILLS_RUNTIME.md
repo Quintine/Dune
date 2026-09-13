@@ -49,10 +49,11 @@ publisher instruction to announce a name.
 
 ## Missing and guarded work
 
-Seven cards still have readable inventory entries but **missing effects**:
-Bureaucrat, Spice Banker, Diplomat, Mentat, Rihani Decipherer, Sandmaster and
-Smuggler. They are not completed features. Planetologist and Suk Graduate now
-have connected prototypes described below.
+[Battle-effects follow-up](LEADER_BATTLE_EFFECTS.md) connects both Rihani bands
+and the lower Mentat, Bureaucrat and Sandmaster effects. Their normal questioning,
+payments and movement collection remain missing, along with all Spice Banker,
+Diplomat and Smuggler effects. Planetologist and Suk Graduate have the connected
+prototypes described below.
 
 Captured-card replacement entitlement remains unresolved. The prototype rejects
 own-leader revival while its original skill is captured, before beginning a
@@ -63,8 +64,8 @@ Before enabling them, add response-driven automatic revival continuation
 coverage; the current before/after revival observer does not certify deferred
 Tleilaxu response chains. The other source-contract timing questions also remain
 open. Planetologist now has bounded movement and battle controls as described below.
-The other seven skills still need their payments, information, rescues, retreats
-and other effects connected.
+Remaining normal-band payments, questions, collection and the three missing
+skill families still need connected effects.
 
 ## Planetologist follow-up
 
@@ -78,8 +79,8 @@ continuation and revalidate source custody before a response is spent.
 Six base factions remain the supported roster. Mixed BG origins are supported
 where ordinary rules determine the destination stance. Enemy-only mixed arrival
 still needs a combined flip response. Expansion faction/card/module combinations
-and full integrated acceptance remain unfinished. Seven other skill effects are
-still missing; this is partial prototype coverage.
+and full integrated acceptance remain unfinished. The remaining bands and skill families are
+listed above; this is partial prototype coverage.
 
 ## Suk Graduate follow-up
 

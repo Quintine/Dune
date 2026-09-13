@@ -112,7 +112,8 @@ export function LeaderSkillsPanel({
           This development-only module currently connects the card-role strength
           modifiers for Warmaster, Master of Assassins, Swordmaster of Ginaz,
           Killer Medic and Prana-Bindu Adept, plus Planetologist movement and
-          Special-card battle use and Suk Graduate force rescue. Other Leader Skill effects are
+          Special-card battle use, Suk Graduate force rescue, Mentat and Bureaucrat
+          battle scores, Sandmaster victory spice and Rihani inspections/exchanges. Other Leader Skill effects are
           unfinished.
         </p>
       </div>

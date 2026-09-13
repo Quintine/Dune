@@ -24,7 +24,7 @@ export type BattleLeaderSkill = {
 };
 
 export type AppliedLeaderSkill = {
-  skill: DirectLeaderSkillId | 'planetologist';
+  skill: DirectLeaderSkillId | 'planetologist' | 'mentat';
   amount: 1 | 2 | 3;
   mode: 'normal' | 'skilled';
 };
@@ -114,6 +114,30 @@ function isDirectSkill(skill: string): skill is DirectLeaderSkillId {
   return directSkills.has(skill as LeaderSkillId);
 }
 
+/** A captive grants only this actual disc's lower effect, never a normal effect. */
+export function usesSurvivingSkilledLeader(
+  assignments: readonly BattleLeaderSkill[],
+  skill: LeaderSkillId,
+  leader: string | undefined | null,
+  survives: boolean,
+): boolean {
+  return survives && !!leader && assignments.some((a) =>
+    a.skill === skill && a.leader === leader && (!a.faceUp || a.captured));
+}
+
+/** Bureaucrat changes the opponent's total, not either leader disc or bounty. */
+export function bureaucratBattlePenalty(
+  assignments: readonly BattleLeaderSkill[],
+  leader: string | undefined | null,
+  survives: boolean,
+  opponentStrongholds: number | undefined,
+): number {
+  if (!usesSurvivingSkilledLeader(assignments, 'bureaucrat', leader, survives)) return 0;
+  if (opponentStrongholds === undefined || !Number.isSafeInteger(opponentStrongholds) || opponentStrongholds < 0)
+    throw new Error('Bureaucrat needs a valid occupied stronghold count.');
+  return opponentStrongholds;
+}
+
 function qualifies(
   skill: DirectLeaderSkillId,
   weapon: Card | undefined,
@@ -144,6 +168,9 @@ export function leaderSkillBattleBonus(input: {
 }): LeaderSkillBattleBonus {
   if (!input.selectedLeader) return { bonus: 0, applied: [] };
   const applied: AppliedLeaderSkill[] = [];
+  if (input.selectedLeader.kind === 'disc' && usesSurvivingSkilledLeader(
+    input.assignments, 'mentat', input.selectedLeader.id, input.skilledLeaderSurvives,
+  )) applied.push({ skill: 'mentat', amount: 2, mode: 'skilled' });
   if (
     input.selectedLeader.kind === 'disc' &&
     input.skilledLeaderSurvives &&

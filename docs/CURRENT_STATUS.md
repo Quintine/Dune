@@ -4,6 +4,14 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Leader battle effects](LEADER_BATTLE_EFFECTS.md) now connect both Rihani bands
+  and lower Mentat, Bureaucrat and Sandmaster effects. Private controls, all four
+  AI profiles, JSON/SQLite continuation and concurrent exchanges are covered.
+  A new browser room exercised separate inspection, draw, public return and refresh.
+  Three normal bands and Spice Banker, Diplomat and Smuggler remain missing.
+  The server responded after the outage; a fresh backup captured 393 rooms.
+  Broad check results and final preservation are recorded in the checkpoint commit.
+
 - [Suk Graduate](SUK_GRADUATE_RULES.md) now connects both casualty-rescue bands,
   ordinary/elite counter routing, player controls, all four AI profiles and saved
   continuation. Targeted browser rescue and refresh preserved two board forces,
@@ -29,8 +37,9 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 - The [first Leader Skills prototype](LEADER_SKILLS_RUNTIME.md) connects all
   fourteen physical cards, private setup, five battle disciplines, skilled capture,
   death and own revival through controls, legal AI and saved choices. The [Planetologist follow-up](PLANETOLOGIST_RULES.md) adds movement and
-  Special-card battle controls, and Suk Graduate adds casualty rescue; the other
-  seven skills remain **Missing**. The user-requested [capture search](LEADER_SKILLS_CAPTURE.md)
+  Special-card battle controls, and Suk Graduate adds casualty rescue. The
+  battle-effects follow-up adds Rihani and three lower bands; remaining work is
+  listed in its contract. The user-requested [capture search](LEADER_SKILLS_CAPTURE.md)
   resolves publicity through the known physical card; captured replacement and
   broader combinations remain pending. No mode gate is opened.
 - Following the reported power outage, the existing server responded normally,

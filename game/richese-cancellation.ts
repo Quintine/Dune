@@ -7,6 +7,7 @@ const DECISIONS = {
   leaderSkillVisibility: true,
   leaderSkillRevival: true,
   sukRescue: true,
+  rihani: true,
   choamAudit: true,
   choamAuditPayment: true,
   strongholdCopy: true,

@@ -66,7 +66,11 @@ void test('renders nothing when the projected module is absent and never invents
     publicOnly,
     /Your private offer|Choose one private skill/,
   );
-  assert.doesNotMatch(publicOnly, /Bureaucrat|Spice Banker|Diplomat/);
+  assert.deepEqual(
+    [...publicOnly.matchAll(/aria-label="([^"]+) Leader Skill card"/g)].map((match) => match[1]),
+    ['Warmaster'],
+    'General guidance may name skills; only the public assignment gets a card face.',
+  );
 });
 
 void test('every public assignment card exposes its complete canonical normal and battle text', () => {
@@ -160,7 +164,7 @@ void test('revival asks before preview and does not offer a decline after cards 
   assert.match(undrawn, /before seeing either private card/);
   assert.match(undrawn, /Draw two skills/);
   assert.match(undrawn, /Continue without a skill/);
-  assert.doesNotMatch(undrawn, /Bureaucrat|Diplomat|Your private offer/);
+  assert.doesNotMatch(undrawn, /Leader Skill card"|Your private offer/);
   assert.equal(
     disabledControls(
       markup(

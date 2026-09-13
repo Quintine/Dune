@@ -29,6 +29,7 @@ import {
 import { matchingTraitor } from './traitors';
 import { auditCount } from './choam-auditor';
 import { sukGraduateSkill, type SukGraduateSkill } from './suk-graduate';
+import { rihaniVictorySkill, type RihaniSkill } from './rihani-decipherer';
 import {
   quoteHomeworldBattleRules,
   type HomeworldBattleRules,
@@ -39,6 +40,8 @@ import {
   canUsePlanetologistBattleSpecial,
   isPlanetologistBattleSpecialCard,
   leaderSkillBattleBonus,
+  bureaucratBattlePenalty,
+  usesSurvivingSkilledLeader,
   type BattleLeaderSkill,
   type LeaderSkillBattleBonus,
 } from './leader-skill-combat';
@@ -79,6 +82,8 @@ export type ResolutionCombatant = ResolutionParticipant & {
   stoneMode?: 'kill' | 'ignore';
   /** Current authorized assignments only; captured assignments grant no normal band. */
   leaderSkills?: readonly BattleLeaderSkill[];
+  /** Public distinct occupation, including contested strongholds but excluding advisors. */
+  occupiedStrongholds?: number;
   /** The current aidFor result: this escrow has already left the donor's balance. */
   aid?: { donor: string; amount: number };
 };
@@ -141,7 +146,10 @@ export type BattleResolutionQuote = {
   homeworldExplosion?: HomeworldExplosionLosses;
   /** Basic ordinary winners lose their dial immediately; Advanced/Ix defer typed losses. */
   basicWinnerLosses: number | null;
+  leaderSkillPenalties?: { attacker: number; defender: number };
   sukGraduate?: SukGraduateSkill;
+  rihani?: RihaniSkill;
+  sandmaster?: string;
   casualties: {
     forces: CombatForces;
     dial: number;
@@ -473,6 +481,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   let scores: BattleResolutionQuote['scores'] = null;
   let deaths = { attacker: false, defender: false };
   let bounty: BattleResolutionQuote['bounty'] = null;
+  let leaderSkillPenalties: BattleResolutionQuote['leaderSkillPenalties'];
   let leaderSkillBonuses: BattleResolutionQuote['leaderSkillBonuses'] = {
     attacker: { bonus: 0, applied: [] },
     defender: { bonus: 0, applied: [] },
@@ -524,9 +533,15 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         skilledLeaderSurvives: !deaths.defender,
       }),
     };
+    const attackerPenalty = bureaucratBattlePenalty(d.leaderSkills ?? [], d.leader?.id,
+      !deaths.defender, a.occupiedStrongholds);
+    const defenderPenalty = bureaucratBattlePenalty(a.leaderSkills ?? [], a.leader?.id,
+      !deaths.attacker, d.occupiedStrongholds);
+    if (attackerPenalty || defenderPenalty)
+      leaderSkillPenalties = { attacker: attackerPenalty, defender: defenderPenalty };
     scores = {
       attacker:
-        a.plan.dial +
+        a.plan.dial - attackerPenalty +
         (a.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.attacker || effects.stunned
           ? 0
@@ -534,7 +549,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
             leaderSkillBonuses.attacker.bonus +
             (a.plan.kwisatz ? 2 : 0)),
       defender:
-        d.plan.dial +
+        d.plan.dial - defenderPenalty +
         (d.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.defender || effects.stunned
           ? 0
@@ -576,6 +591,10 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     ? sukGraduateSkill(winner.leaderSkills ?? [], winner.leader,
         !(winner === a ? deaths.attacker : deaths.defender))
     : null;
+  const rihani = winner ? rihaniVictorySkill(winner.leaderSkills ?? [], winner.leader?.id,
+    !(winner === a ? deaths.attacker : deaths.defender)) : null;
+  const sandmaster = winner && usesSurvivingSkilledLeader(winner.leaderSkills ?? [], 'sandmaster', winner.leader?.id,
+    !(winner === a ? deaths.attacker : deaths.defender)) ? winner.leader!.id : null;
   if (winner && result === 'normal') {
     if (
       input.advanced ||
@@ -751,7 +770,10 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       ? { homeworldExplosion: homeworld.explosion }
       : {}),
     basicWinnerLosses,
+    ...(leaderSkillPenalties ? { leaderSkillPenalties } : {}),
     ...(sukGraduate ? { sukGraduate } : {}),
+    ...(rihani ? { rihani } : {}),
+    ...(sandmaster ? { sandmaster } : {}),
     casualties,
     played,
     discarded,

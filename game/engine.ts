@@ -7,6 +7,8 @@ import {
   type BattleLeaderSkill,
 } from './leader-skill-combat';
 import { quoteSukRescue, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
+import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-skill-battle-board';
+import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
@@ -711,6 +713,7 @@ export type Decision =
   | { kind: 'poisonTooth'; player: string }
   | { kind: 'stoneBurner'; player: string; event: string }
   | { kind: 'sukRescue'; player: string; event: string; territory: string; mode: 'normal' | 'skilled'; options: SukRescueOption[] }
+  | { kind: 'rihani'; player: string; event: string; stage: 'offer' | 'return' }
   | { kind: 'fullPlanOffer'; player: string }
   | { kind: 'fullPlanRead'; player: string; target: string }
   | { kind: 'homeworldShipmentGuild'; player: string; shipper: string; destination: string; amount: number; event: string }
@@ -1255,6 +1258,7 @@ export type Game = {
   ecazPoisonIncome?: { player: string; turn: number; phase: number; amount: number; count: number }[];
   pendingWinnerDiscards?: { event: string; turn: number; territory: string; player: string; cards: string[]; optional: string[]; signature: string } | null;
   pendingSukRescue?: SukRescueReceipt | null;
+  rihaniHistory?: RihaniReceipt[];
   pendingChoamMarketGhola?: ChoamMarketGhola | null;
   choamTradeTurn?: number;
   inflation?: Inflation | null;
@@ -1469,6 +1473,8 @@ export type Game = {
     cardRolesSignature?: string;
     winnerDiscards?: { cards: string[]; completed: boolean; signature: string };
     sukRescue?: { signature: string; completed: boolean };
+    rihani?: { skill: RihaniSkill; cards: string[]; signature: string; completed: boolean };
+    sandmaster?: { leader: string; key: string; before: number; after: number };
     caladanReinforcement?: HomeworldVictoryObligation;
     nexusSardaukarCasualties?: string;
   } | null;
@@ -4907,6 +4913,7 @@ function leaderSkillAssignmentUnavailable(
 }
 function leaderSkillsIntegrity(g: Game) {
   sukRescueIntegrity(g);
+  rihaniIntegrity(g);
   if (!g.leaderSkills) return;
   requireRule(g.leaderSkills.assignments.every((assignment) =>
     g.players.find((p) => p.id === assignment.owner)?.leaders.some((leader) => leader.id === assignment.leader && !leader.dead)),
@@ -14054,6 +14061,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       plan,
       leader: controlledLeaders(g, p).find((l) => l.id === plan.leader),
       leaderSkills: battleLeaderSkills(g, p),
+      occupiedStrongholds: leaderSkillStrongholdCount(g, p),
       forces: combatForces(g, p, b.territory, opponent),
       stronghold: strongholdEffect(g, p.id),
       lateDefense: b.lateDefense?.[p.id],
@@ -14095,6 +14103,17 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       !g.homeworlds && !g.nexusCards && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens && !g.expansions.length &&
       g.players.every((p) => faction(p.faction).expansion === 'base'),
       'Suk Graduate rescue with expansion factions or other optional modules is still being implemented.');
+    if (quote.rihani || quote.sandmaster) requireRule(
+      !g.homeworlds && !g.nexusCards && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens && !g.expansions.length &&
+      g.players.every((p) => faction(p.faction).expansion === 'base'),
+      'These Leader Skill victory effects with expansion factions or other optional modules are still being integrated.');
+    if (quote.sandmaster) nexusRule(() => sandmasterVictorySpice(b.territory, g.spice));
+    if (quote.rihani) {
+      const winner = getPlayer(g, quote.winner!);
+      nexusRule(() => beginRihani(nexusTraitorSnapshot(g), nexusTraitorUniverse(g),
+        { event: b.event!, turn: g.turn, owner: winner.id, skill: quote.rihani! },
+        [...new Set([...(winner.revealedTraitors ?? []), ...quote.revelations.filter((r) => r.player === winner.id).map((r) => r.identity)])], () => 0));
+    }
     for (const id of quote.destroyedArmies)
       if (b.territory.startsWith('homeworld:')) quoteHomeworldLoss(g, id, b.territory, combatArmy(g, id, b.territory));
       else validateBattleForceLoss(getPlayer(g, id), b.territory, Infinity);
@@ -14252,6 +14271,9 @@ function resolveBattle(g: Game) {
     if (dk) dead(dl);
     const av = quote.scores!.attacker,
       dv = quote.scores!.defender;
+    if (!stoneResult && quote.leaderSkillPenalties)
+      for (const [target, amount] of [[a, quote.leaderSkillPenalties.attacker], [d, quote.leaderSkillPenalties.defender]] as const)
+        if (amount) log(g, `${target.name}'s battle total fell by ${amount} because the opposing Bureaucrat counted ${amount} occupied strongholds. Advisors do not count; the leader's printed strength and bounty are unchanged.`, { faction: (target === a ? d : a).faction, name: 'Bureaucrat' });
     if (!stoneResult && !quote.effects?.stunned)
       for (const [player, receipt, died] of [[a, quote.leaderSkillBonuses.attacker, ak], [d, quote.leaderSkillBonuses.defender, dk]] as const)
         for (const bonus of died ? [] : receipt.applied)
@@ -14376,6 +14398,18 @@ function resolveBattle(g: Game) {
     ...(playedCardRoles ? { cardRoles: playedCardRoles } : {}),
     ...(sardaukar?.casualties ? {nexusSardaukarCasualties:sardaukar.receipt.event} : {}),
   };
+  if (winner && quote.sandmaster) {
+    const placement = nexusRule(() => sandmasterVictorySpice(b.territory, g.spice));
+    if (placement) {
+      g.spice[placement.key] = placement.after;
+      g.lastBattleContext.sandmaster = { leader: quote.sandmaster, ...placement };
+      log(g, `${winner.name}'s surviving Sandmaster added 3 spice to the existing pile in ${combatLocationName(g, b.territory)}, sector ${splitLocation(placement.key).sector}. The territory now contains ${placement.after} spice; this is board spice, not income.`, { faction: winner.faction, name: 'Sandmaster' });
+    }
+  }
+  if (winner && quote.rihani) {
+    g.lastBattleContext.rihani = { skill: quote.rihani, cards: [...quote.winnerCards], completed: false, signature: '' };
+    g.lastBattleContext.rihani.signature = rihaniObligationSignature(g.lastBattleContext);
+  }
   if (winner && quote.sukGraduate && casualtyCommitment) {
     requireRule(!g.pendingSukRescue, 'Finish the preceding Suk Graduate rescue.');
     g.pendingSukRescue = {
@@ -14646,7 +14680,117 @@ function winnerDiscardsIntegrity(g: Game) {
     [...pending.cards, ...pending.optional].every((id) => typeof id === 'string' && owner.hand.some((card) => card.id === id)),
     'The saved mandatory winner discards no longer match their battle or physical cards.');
 }
+function rihaniObligationSignature(context: NonNullable<Game['lastBattleContext']>) {
+  return JSON.stringify([context.event, context.turn, context.winner, context.territory,
+    context.rihani?.skill, context.rihani?.cards, context.rihani?.completed]);
+}
+function pendingRihani(g: Game) {
+  return g.rihaniHistory?.find((r) => r.stage !== 'complete') ?? null;
+}
+function rihaniIntegrity(g: Game) {
+  const context = g.lastBattleContext, obligation = context?.rihani;
+  const decisions = homeworldSavedDecisions(g).filter((d) => d.kind === 'rihani');
+  const history = g.rihaniHistory ?? [], pending = pendingRihani(g);
+  if (history.length) {
+    requireRule(g.leaderSkills && new Set(history.map((r) => r.event)).size === history.length,
+      'Rihani history requires its original skill module and distinct battles.');
+    const universe = nexusTraitorUniverse(g);
+    for (const receipt of history) nexusRule(() => validateRihani(receipt, universe));
+  }
+  requireRule(history.filter((r) => r.stage !== 'complete').length <= 1,
+    'Finish the preceding Rihani exchange.');
+  if (pending) {
+    requireRule(obligation && !obligation.completed && context.event === pending.event &&
+      context.winner === pending.owner && context.turn === pending.turn && g.turn === pending.turn &&
+      g.status === 'playing' && g.phase === 6 && !g.battle &&
+      JSON.stringify(obligation.skill) === JSON.stringify(pending.skill) &&
+      JSON.stringify(getPlayer(g, pending.owner).revealedTraitors ?? []) === JSON.stringify(pending.used) &&
+      decisions.length === 1 && decisions[0].event === pending.event && decisions[0].player === pending.owner &&
+      decisions[0].stage === pending.stage, 'The saved Rihani exchange lost its battle or owned choice.');
+    nexusRule(() => validateRihani(pending, nexusTraitorUniverse(g), nexusTraitorSnapshot(g)));
+  } else requireRule(!decisions.length, 'The Rihani choice has lost its physical draw receipt.');
+  if (!obligation) return;
+  requireRule(obligation.signature === rihaniObligationSignature(context!), 'The saved Rihani victory obligation changed.');
+  const receipt = history.find((r) => r.event === context!.event);
+  if (obligation.completed) {
+    requireRule(receipt?.stage === 'complete' && receipt.owner === context!.winner &&
+      receipt.turn === context!.turn && JSON.stringify(receipt.skill) === JSON.stringify(obligation.skill),
+      'The completed Rihani victory lost its receipt.');
+    if (g.phase === 6 && context!.turn === g.turn && !g.battle)
+      nexusRule(() => validateRihani(receipt, nexusTraitorUniverse(g), nexusTraitorSnapshot(g)));
+  } else {
+    const winner = g.players.find((p) => p.id === context!.winner);
+    requireRule(winner && g.status === 'playing' && g.phase === 6 && !g.battle && context!.turn === g.turn &&
+      g.leaderSkills?.assignments.some((a) => a.skill === 'rihani-decipherer' && a.leader === obligation.skill.leader) &&
+      obligation.cards.every((id) => winner.hand.some((c) => c.id === id)) &&
+      (receipt ? receipt === pending : !!g.pendingTreacheryDiscard || !!g.pendingSukRescue ||
+        homeworldSavedDecisions(g).some((d) => d.kind === 'battleLosses' && d.player === winner.id)),
+      'The Rihani victory lost its skilled leader, cards or preceding casualty settlement.');
+  }
+}
+function completeRihaniObligation(g: Game) {
+  g.lastBattleContext!.rihani!.completed = true;
+  g.lastBattleContext!.rihani!.signature = rihaniObligationSignature(g.lastBattleContext!);
+}
+function startRihaniVictory(g: Game, winner: Player, territory: string, cards: string[]): boolean {
+  const context = g.lastBattleContext, obligation = context?.rihani;
+  if (!obligation || obligation.completed) return false;
+  requireRule(context.winner === winner.id && context.territory === territory &&
+    JSON.stringify(obligation.cards) === JSON.stringify(cards) && !g.rihaniHistory?.some((r) => r.event === context.event),
+    'Resume the original Rihani victory before winner card cleanup.');
+  const receipt = nexusRule(() => beginRihani(nexusTraitorSnapshot(g), nexusTraitorUniverse(g),
+    { event: context.event, turn: g.turn, owner: winner.id, skill: obligation.skill }, winner.revealedTraitors ?? [], random));
+  (g.rihaniHistory ??= []).push(receipt);
+  applyNexusTraitorSnapshot(g, receipt.state);
+  if (receipt.peeked.length) log(g, `${winner.name}'s Rihani Decipherer privately inspected two random Traitor Deck cards and shuffled them back. The identities are in that player's private skill history.`, { faction: winner.faction, name: 'Rihani Decipherer' });
+  if (receipt.stage === 'complete') {
+    completeRihaniObligation(g);
+    if (receipt.skill.skilled && !receipt.eligible.length) log(g, `${winner.name} has no unused held Traitor Card to exchange, so Rihani offers no draw.`);
+    return false;
+  }
+  g.decision = { kind: 'rihani', event: receipt.event, player: winner.id, stage: 'offer' };
+  return true;
+}
+function actRihani(g: Game, player: Player, decision: Extract<Decision, { kind: 'rihani' }>, action: Action) {
+  const receipt = pendingRihani(g), context = g.lastBattleContext!;
+  requireRule(receipt?.owner === player.id && receipt.event === action.event && receipt.event === decision.event,
+    'Choose only the current Rihani exchange.');
+  let next: RihaniReceipt;
+  if (decision.stage === 'offer') {
+    requireRule(typeof action.draw === 'boolean' && Object.keys(action).every((key) => ['type', 'event', 'draw'].includes(key)),
+      'Decide whether to draw before seeing the two new Traitors.');
+    next = nexusRule(() => chooseRihaniDraw(receipt, nexusTraitorUniverse(g), nexusTraitorSnapshot(g), action.draw as boolean));
+  } else {
+    requireRule(Array.isArray(action.cards) && action.cards.length === 2 && action.cards.every((id) => typeof id === 'string') &&
+      Object.keys(action).every((key) => ['type', 'event', 'cards'].includes(key)), 'Choose one newly drawn and one unused old Traitor.');
+    const cards = action.cards as string[];
+    next = nexusRule(() => finishRihani(receipt, nexusTraitorUniverse(g), nexusTraitorSnapshot(g), cards[0], cards[1], random));
+  }
+  g.rihaniHistory![g.rihaniHistory!.findIndex((r) => r.event === receipt.event)] = next;
+  applyNexusTraitorSnapshot(g, next.state);
+  if (next.stage === 'return') {
+    g.decision = { kind: 'rihani', event: next.event, player: player.id, stage: 'return' };
+    log(g, `${player.name} drew two private Traitor Cards through Rihani and must keep one by revealing an unused old card.`);
+  } else {
+    completeRihaniObligation(g);
+    if (next.given) {
+      const name = next.given === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine' : g.players.flatMap((p) => p.leaders).find((l) => l.id === next.given)?.name;
+      log(g, `${player.name} revealed the unused ${name ?? next.given} Traitor Card for Rihani and returned it with the unkept new card to the shuffled Traitor Deck. The kept card remains private.`);
+    } else log(g, `${player.name} declined Rihani's optional Traitor exchange.`);
+    finishWinner(g, player, context.territory, context.rihani!.cards);
+  }
+}
+function projectedRihani(g: Game, owner: string) {
+  if (!g.leaderSkills) return null;
+  const pending = pendingRihani(g);
+  return { history: (g.rihaniHistory ?? []).filter((r) => r.owner === owner).map((r) => ({
+    event: r.event, turn: r.turn, peeked: [...r.peeked], drawn: [...r.drawn], kept: r.kept, given: r.given,
+  })), pending: pending ? { event: pending.event, owner: pending.owner, stage: pending.stage,
+    ...(pending.owner === owner && pending.stage === 'return' ? { drawn: [...pending.drawn], eligible: [...pending.eligible] } : {}),
+  } : null };
+}
 function finishWinner(g: Game, winner: Player, t: string, cards: string[]) {
+  if (startRihaniVictory(g, winner, t, cards)) return;
   if (g.pendingWinnerDiscards) {
     winnerDiscardsIntegrity(g);
     const pending = g.pendingWinnerDiscards;
@@ -20210,6 +20354,8 @@ function applyActionInner(
         'Choose only the current Suk Graduate rescue.');
       const option = decision.options[integer(action.choice, 0, decision.options.length - 1, 'Rescue choice')];
       settleSukRescue(g, option, false);
+    } else if (decision.kind === 'rihani') {
+      actRihani(g, p, decision, action);
     } else if (decision.kind === 'battleLosses') {
       const choice =
         decision.options[
@@ -22446,6 +22592,7 @@ export function viewGame(state: Game, id: string) {
     setupStage: g.status === 'setup' ? (g.setupStage ?? null) : null,
     setupPending: setupPending(g),
     leaderSkills: projectedLeaderSkills(g, id),
+    rihani: projectedRihani(g, id),
     advanced: g.advanced,
     dukeVidal: g.dukeVidal
       ? { ...g.dukeVidal, leader: projectLeader(g, g.dukeVidal.leader, id) }

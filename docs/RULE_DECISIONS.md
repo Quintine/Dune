@@ -6,6 +6,7 @@ Updated 13 September 2026. This is the authoritative navigation index for existi
 
 | Topic | Decision to preserve | Detailed authority and evidence |
 | --- | --- | --- |
+| Leader battle effects | Rihani normal peek and reshuffle precede a separate committed optional draw; ordering is an explicit printed-order inference. Unused excludes actual calls, not mere disclosure. Mentat/Bureaucrat change scores; Sandmaster adds board spice. Multiple piles and Face Dancer composition stay guarded. | [Source contract and prototype](LEADER_BATTLE_EFFECTS.md) |
 | Source and readiness | Separate published rules, explicit implementation choices and unfinished interpretations; Advanced/expansion gates stay closed. | [Base/Advanced audit](BASE_ADVANCED_READINESS_20260907.md), [checklist](../game/reference.ts) |
 | Setup and Fremen movement | Preserve source-ordered setup and the distinct declared-movement cancellation; do not recreate fixed historical gaps. | [Setup contract](ADVANCED_SETUP_TEST_SEAM.md), [Fremen Karama](FREMEN_MOVEMENT_KARAMA_RULES.md) |
 | Guild payment | Rate, transport permission and income are distinct; power owner, shipper, contributors and independent rate-card beneficiary remain distinct. | [Rate/cancellation sources](GUILD_RATE_KARAMA_RULES.md), [implemented payment routing](GUILD_SHIPMENT_PAYMENTS.md) |

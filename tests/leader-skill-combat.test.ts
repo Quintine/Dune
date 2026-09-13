@@ -187,6 +187,23 @@ function play(
   return card;
 }
 
+void test('Mentat and Bureaucrat change the winner at the score boundary without changing printed strength', () => {
+  const mentat = battle();
+  assert.equal(quoteBattleResolution(mentat).winner, 'a');
+  mentat.defender.leaderSkills = [{ skill: 'mentat', leader: mentat.defender.leader!.id, faceUp: false, captured: false }];
+  const boosted = quoteBattleResolution(mentat);
+  assert.equal(boosted.winner, 'd');
+  assert.deepEqual(boosted.scores, { attacker: 5, defender: 6 });
+  assert.deepEqual(boosted.leaderStrengths, { attacker: 3, defender: 2 });
+  const bureau = battle();
+  bureau.defender.leaderSkills = [{ skill: 'bureaucrat', leader: bureau.defender.leader!.id, faceUp: false, captured: false }];
+  bureau.attacker.occupiedStrongholds = 2;
+  const penalized = quoteBattleResolution(bureau);
+  assert.equal(penalized.winner, 'd');
+  assert.deepEqual(penalized.scores, { attacker: 3, defender: 4 });
+  assert.deepEqual(penalized.leaderStrengths, { attacker: 3, defender: 2 });
+});
+
 void test('battle quote adds only surviving skill receipts to scores while preserving printed strength and bounty', () => {
   const input = battle();
   const worthless = play(

@@ -9,6 +9,7 @@ import {
 } from '../game/engine';
 import type { RoomsClock } from '../db/rooms';
 import { unitStore } from './fixture-nexus-room-store';
+import { botActions } from '../game/bots';
 
 const clock: RoomsClock = { now: () => 10000, sleep: async () => {} };
 
@@ -409,6 +410,16 @@ void test('battle death and Ghola revival preserve one private replacement skill
       1,
     );
     assertSkillCustody(game);
+    // The randomly assigned winning skill can require casualty or Traitor choices
+    // before card cleanup. Resolve those real choices before testing Ghola revival.
+    for (let step = 0; step < 3 && ['rihani', 'sukRescue'].includes(game.decision?.kind ?? ''); step++) {
+      const owner = f.auths.findIndex((auth) => auth.playerId === game.decision!.player);
+      assert.ok(owner >= 0);
+      const seat = await f.restart().readSeatView(f.code, f.auths[owner]);
+      const [choice] = botActions(seat);
+      assert.ok(choice, 'the winning skill must have a legal saved continuation');
+      game = await act(f, owner, choice);
+    }
     if (game.decision?.kind === 'battleCards')
       game = await act(
         f,

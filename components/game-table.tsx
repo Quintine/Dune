@@ -48,6 +48,8 @@ import { RicheseGift } from './richese-gift';
 import { Distrans } from './distrans';
 import { JuiceOfSapho } from './juice-of-sapho';
 import { LeaderSkillsPanel } from './leader-skills';
+import { LeaderSkillBattleGuide } from './leader-skill-battle-guide';
+import { RihaniChoice, RihaniHistory } from './rihani-decipherer';
 import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
@@ -1464,6 +1466,7 @@ export function GameTable({
           <NexusTraitors game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <DiscoveryPanel game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || !!me.autopilot} />
+          <RihaniHistory game={g} />
           <NexusChoamTrade game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || !!me.autopilot} />
@@ -2081,6 +2084,8 @@ export function GameTable({
                     ? 'Position your skilled leader'
                   : g.decision.kind === 'leaderSkillRevival'
                     ? 'Choose a skill for the revived leader'
+                  : g.decision.kind === 'rihani'
+                    ? g.decision.stage === 'offer' ? 'Rihani Decipherer — optional draw' : 'Choose your Traitor exchange'
                   : g.decision.kind === 'sukRescue'
                     ? 'Save your battle casualties'
                   : g.decision.kind === 'homeworldRevivalDeployment'
@@ -2883,6 +2888,8 @@ export function GameTable({
                 </>
               ) : g.decision.kind === 'sukRescue' ? (
                 <SukGraduatePanel key={g.decision.event} decision={g.decision} act={act} busy={transportBusy || !!me.autopilot} />
+              ) : g.decision.kind === 'rihani' ? (
+                <RihaniChoice key={g.decision.event} game={g} act={act} busy={transportBusy || !!me.autopilot} />
               ) : g.decision.kind === 'battleLosses' ? (
                 <>
                   <p className="muted">
@@ -4282,6 +4289,7 @@ export function GameTable({
                       </>
                     ) : (
                       <>
+                        <LeaderSkillBattleGuide game={g} leader={committed.leader ? String(committed.leader.value ?? '') : leader} />
                         {g.battle.insight && (
                           <p className="notice">
                             {committed[g.battle.insight.field]

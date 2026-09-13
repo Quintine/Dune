@@ -1,5 +1,26 @@
 # Dune implementation status
 
+## 13 September 2026 — Leader battle effects prototype
+
+[Battle effects](LEADER_BATTLE_EFFECTS.md) connects lower Mentat +2 strength,
+Bureaucrat occupation penalties and automatic Sandmaster board spice, plus both
+Rihani private inspection and committed optional exchange. Shared quotes, owner
+controls, all four AI profiles and saved continuation form usable prototypes.
+Three normal bands and Spice Banker, Diplomat and Smuggler remain missing.
+
+Independent review found a completed Rihani receipt was not bound to current
+custody during battle cleanup. Decline/exchange now preserve and validate exact
+deck order; regressions cover corruption, replay and SQLite concurrent writes.
+A fresh genuine browser setup followed by a conserved staged battle exercised
+private inspection, separate draw, pending refresh, public return and completion.
+Two Basic/Advanced samples finished with no rejected candidates but did not
+trigger Rihani; they do not certify its integrated full-game behavior.
+
+The server remained healthy after the outage report. An online backup preserved
+393 opening rooms; no restart or reset was needed. Broad results and final
+preservation are in the checkpoint commit and private source-bound report.
+No rules-mode or publication gate is opened.
+
 ## 13 September 2026 — Suk Graduate casualty rescue prototype
 
 [Suk Graduate](SUK_GRADUATE_RULES.md) connects both printed bands through shared

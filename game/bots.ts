@@ -1,6 +1,7 @@
 import { discoveryBotActions } from './discovery-options';
 import type { Card } from './cards';
-import { canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, validLeaderSkillBattleCardPair } from './leader-skill-combat';
+import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, validLeaderSkillBattleCardPair } from './leader-skill-combat';
+import { leaderSkillStrongholdCount } from './leader-skill-battle-board';
 import { discoveryFlightBotActions } from './discovery-flight-options';
 import { discoveryEntryBotActions } from './discovery-entry-options';
 import { discoveryStormActions } from './discovery-storm-options';
@@ -817,6 +818,10 @@ function plans(g: GameView): Action[] {
           effects.stunned || (inspected && effects.defenderDead)
             ? 0
             : expectedEnemyStrength;
+        const opponentPenalty = stoneBattle ? 0 : bureaucratBattlePenalty(
+          battleSkills, myLeader?.id, !effects.attackerDead,
+          leaderSkillStrongholdCount(g, other),
+        );
         const ideal = stoneBattle
           ? 0
           : level === 0
@@ -825,7 +830,7 @@ function plans(g: GameView): Action[] {
                 ownStrength,
                 Math.max(
                   0,
-                  enemySurvivingStrength +
+                  enemySurvivingStrength - opponentPenalty +
                     expectedDial -
                     ownSurvivingStrength +
                     enemyNativeBonus -
@@ -932,7 +937,7 @@ function plans(g: GameView): Action[] {
               (effectiveDefense ? 2 : 0)
             : level === 0
               ? variation(g, `${leader}-${weapon}-${defense}-${dial}`) * 100
-              : ownSurvivingStrength * 2 +
+              : ownSurvivingStrength * 2 + opponentPenalty * 2 +
                 (inspected && enemySurvivingStrength === 0 ? 10 : 0) +
                 effectiveWeapon +
                 effectiveDefense +
@@ -2400,6 +2405,18 @@ function policyActions(g: GameView): Action[] {
           (option.kept ? 1 + (option.kept.kind === 'elite' && level > 0 ? 0.5 : 0) : 0),
       })).sort((a, b) => b.score - a.score)
         .map(({ choice }) => ({ type: 'decision', event: d.event, choice }));
+    }
+    if (d.kind === 'rihani') {
+      if (d.stage === 'offer') return [{ type: 'decision', event: d.event, draw: true }];
+      const pending = g.rihani?.pending;
+      if (!pending || pending.owner !== me.id || pending.event !== d.event || !pending.drawn?.length || !pending.eligible?.length) return [];
+      const value = (id: string) => {
+        const leader = g.allLeaders.find((l) => l.id === id);
+        return (leader?.strength ?? 0) + (leader?.faction === me.faction ? -10 : 10);
+      };
+      const drawn = level === 0 ? pending.drawn : [...pending.drawn].sort((a,b) => value(b) - value(a));
+      const old = level === 0 ? pending.eligible : [...pending.eligible].sort((a,b) => value(a) - value(b));
+      return [{ type: 'decision', event: d.event, cards: [drawn[0], old[0]] }];
     }
     if (d.kind === 'battleLosses') {
       const choices = d.options

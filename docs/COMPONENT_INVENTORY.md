@@ -6,7 +6,9 @@ inspectors, private two-card offers and one-card assignment custody. Five role
 bonuses, public skilled capture, death return and own revival are connected;
 Planetologist now also has movement and base green-Special battle controls;
 [Suk Graduate](SUK_GRADUATE_RULES.md) redirects actual ordinary/elite casualties
-through readable rescue choices without creating counters. Seven effects remain
+through readable rescue choices without creating counters. [Battle effects](LEADER_BATTLE_EFFECTS.md)
+now connect Rihani inspection/exchange, Mentat/Bureaucrat scoring and Sandmaster
+victory spice. Their other bands and Spice Banker, Diplomat and Smuggler remain
 missing. This supersedes the historical missing-inventory
 rows below only for Leader Skills. See [source inventory](LEADER_SKILLS_RULES.md),
 [capture interpretation](LEADER_SKILLS_CAPTURE.md) and [prototype evidence](LEADER_SKILLS_RUNTIME.md).
