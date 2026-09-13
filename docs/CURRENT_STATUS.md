@@ -6,6 +6,7 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 - [Rules implementation checklist](../game/reference.ts): `RULE_TOPICS`, topic `implementation-checklist`, and each feature's implementation, controls, AI, documentation and verification entries. Coverage is per stated boundary, not an implicit whole-game certificate.
 - [Latest verified gameplay checkpoint](IMPLEMENTATION_STATUS.md): Truthtrance hand inventory, 13 September 2026 (`7454456`): types, lint, **4,200 offline tests**, production build and **40 HTTP tests** passed, with a phone/browser refresh journey and preserved saved games. These are recorded results, not checks rerun for this dashboard.
+- Latest verification checkpoint `4a0b1ee`: genuine Advanced full-plan interaction tests; types, lint and **4,205 offline tests** passed. Private inspection restored after restart, with desktop/phone checks and all 64 saved games unchanged. No runtime change; prior build/HTTP evidence applies.
 - [Development guide](DEVELOPMENT.md) defines focused verification; [rule decisions](RULE_DECISIONS.md) locates settled contracts and pending interpretations. Read the newest checkpoint and relevant feature document before consulting older log entries.
 
 The user authorized a one-time local reset on 13 September: the 3,644 historical
@@ -42,10 +43,16 @@ The [base/Advanced audit](BASE_ADVANCED_READINESS_20260907.md) includes historic
 
 Likewise, the [Truthtrance readiness audit](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md) predates [spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card-count facts](TRUTHTRANCE_CARD_COUNT.md) and [Basic shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md). Current `TruthFact` already includes these facts; do not rebuild them. Typed preparation and BG conversion now support the active reserve-shipment scope in base Advanced without Guild or optional modules. Broader facts, earlier-phase promises, remaining Advanced/expansion commitment scope and freeform interpretation remain incomplete.
 
-## Next milestone: core readiness
+## Next milestone: rapid functional coverage
 
-1. Reconcile the remaining base-only gaps against current helpers, consumers and tests, using the existing [Guild cancellation contract](GUILD_RATE_KARAMA_RULES.md) and [special-Karama findings](BASE_ADVANCED_READINESS_20260907.md#explicit-unresolved-base-interpretations). Keep already-asked interpretations pending; tests are not rulings.
-2. Ordinary Guild cancellation remains the next dependent gameplay batch around an exact saved shipment intent. Keep discount, cross/return permission and income separate; preserve contributors, independent Karama rates and original typed forces. Establish the unresolved affordability/settlement contract before implementing those outcomes. Verify sufficient-funds paths, nested responses, rejected-action immutability, private controls, all four bots and saved continuations together.
-3. Continue remaining core Truthtrance and Advanced timing gaps. The [full-plan interaction audit](ATREIDES_FULL_PLAN_TIMING.md) closes the named native card-interaction evidence gap while preserving unresolved timing interpretations. Run genuine Basic/Advanced setup-to-finish multiplayer and browser acceptance before reconsidering mode gates. Expansion completion remains a subsequent part of the same overall goal.
+The user changed the development order on 13 September: get working prototypes
+of all remaining functions into the game, then use integration and play to find
+issues and refine them. Complete core certification no longer precedes independent
+expansion prototyping. Final rules compliance and release requirements still apply.
+
+1. Reconcile the existing checklist with current helpers, controls, AI and saved-state paths. Mark remaining work as missing, prototyped, integrated, verified or polished; retain explicit blockers and reuse completed features.
+2. Implement the next connected batch across Basic, Advanced, factions or modules according to dependencies. Include real actions, usable controls, a legal AI path and saved continuation. Keep fast checks for crashes, deadlocks, legality, custody, privacy and save integrity; avoid exhaustive refinement of each small feature before broad coverage exists.
+3. Continue independent functions while [material rulings](RULE_DECISIONS.md) are pending. Ordinary Guild repricing/settlement and special Karama interpretations remain unresolved; do not invent their outcomes to fill the inventory.
+4. Integrate prototypes and play complete games to discover issues, then deepen combination coverage, multiplayer recovery, AI calibration and visual polish. Required checkpoint checks, reviewed Git pushes, selective subagents and the 80%-used weekly stop remain in force. Keep unfinished modes and publication gated until acceptance.
 
 Consult [AI calibration](AI_CALIBRATION.md), [multiplayer audit](MULTIPLAYER_AUDIT.md), [autopilot](AUTOPILOT.md), [component inventory](COMPONENT_INVENTORY.md) and [visual playtest](VISUAL_PLAYTEST.md) for their measured scope and follow-ups. Use current code and later checkpoints to interpret historical results. Publication still requires the completion and integrated verification gates in [README](../README.md).

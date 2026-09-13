@@ -42,7 +42,28 @@ Avoid adding runtime code merely to make an audit appear to be implementation.
 The full-plan interaction audit starts at aggregate counter 59,151,671, uses that
 one-helper pattern and changes tests/documentation. It therefore requires the
 full offline check, but can reuse the unchanged application's earlier build;
-browser/restart acceptance supplies direct recovery evidence.
+browser/restart acceptance supplies direct recovery evidence. Checkpoint `4a0b1ee`
+passed all 4,205 offline tests in one stable broad check. Its aggregate endpoint
+was 59,509,237 at completed verification: 357,566 tokens before final Git and new
+goal-steering overhead. It is an audit batch, not a new gameplay capability.
+
+## User-directed rapid prototyping, 13 September 2026
+
+Prioritize functional coverage of the entire remaining game before exhaustive
+per-feature refinement. Use the existing checklist to distinguish missing,
+prototyped, integrated, verified and polished functions, and choose connected
+batches by dependency across core and expansion systems. A prototype includes
+a working action, usable controls, legal AI participation and saved continuation.
+Track functions newly playable and issues discovered during integration, alongside
+tokens and rework; do not count placeholders as delivered functions.
+
+Keep focused invariant and smoke checks during prototyping and required checks
+at stable checkpoints. Use integrated games to find defects; defer exhaustive
+combination testing, AI calibration and final visual polish to refinement unless
+an active defect requires them sooner. Preserve material rule questions, mode
+gates, selective subagents and automatic verified Git pushes. The earlier batch
+estimates remain historical planning evidence and should be reassessed for this
+broader prototyping workflow, without an assumed savings percentage.
 
 Check account usage after each verified checkpoint. The user explicitly confirmed
 the stop point as **80% weekly usage consumed (20% remaining)**. Keep the goal

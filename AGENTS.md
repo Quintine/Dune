@@ -20,6 +20,23 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
 - Do not read `github.md` for routine development: it is ignored private local
   credential material. Do not put secrets in logs or tracked files.
 
+## Prototype the remaining scope first
+
+- The user prioritizes working first versions of all remaining functions across
+  Basic, Advanced and every expansion, followed by integration, refinement and
+  polish. Reuse existing capabilities; batch related functions by dependency.
+- Track missing, prototyped, integrated, verified and polished work in the
+  existing checklist. Prototypes need usable controls, a legal AI path and saved
+  continuation; placeholders and disconnected helpers are not completed features.
+- Keep focused checks for crashes, deadlocks, legality, custody, privacy and save
+  integrity. Defer exhaustive combinations, AI calibration and visual polish
+  until broader functional coverage, unless current failures require them.
+- Preserve required checkpoint checks, selective subagents and independent
+  review for complex rules/privacy/persistence. Commit and push verified
+  checkpoints under standing authorization; stop at 80% weekly usage consumed.
+- Keep material rulings explicit and prototype independent work while pending.
+  Prototype evidence does not open mode or publication gates.
+
 ## Implement and verify
 
 - Keep rule calculations/validation in focused `game/` modules; integrate them
