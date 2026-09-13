@@ -4,6 +4,19 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Expansion-faction development games](EXPANSION_FACTIONS_PROTOTYPE.md) connect
+  genuine setup for all seven expansion selections, using existing faction
+  controls, all four AI profiles and saved continuation. Ecaz now places its six
+  starting forces in Imperial Basin and keeps fourteen in reserve. The optional
+  three-card Ecaz variant remains separate and unfinished. Advanced Ixians have
+  an explicit saved per-lot decline for Richese offers; the actual exchange still
+  awaits its replacement-custody ruling. Complete-game samples
+  finish five of six games; combined Advanced reaches turn three, then stops
+  on the existing CHOAM movement/Ambassador arrival guard. That interaction is
+  the next integration gap. Setup evidence does not open public starts or
+  establish full faction compliance. Saved-game checks passed after a necessary
+  restart for a stale server module cache.
+
 - [Diplomat defense copying](DIPLOMAT_DEFENSE.md) connects one committed Worthless
   card to an opposing base Shield or Snooper, with optional controls, all four AI
   profiles, native trained-leader self-protection and mandatory discard. Saved

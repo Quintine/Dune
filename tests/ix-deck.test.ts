@@ -109,7 +109,7 @@ void test('the Ix expansion has fourteen distinct cards and combines into a fort
     baseDeck().some((c) => c.name === 'Basilia Weapon'),
     false,
   );
-  for (const expansion of ['ecaz', 'unknown'])
+  for (const expansion of ['ecaz-treachery', 'unknown'])
     assert.throws(() => treacheryDeck([expansion]), /not implemented/);
 });
 void test('CHOAM & Richese adds or replaces the same two battle cards without duplicating physical custody', () => {

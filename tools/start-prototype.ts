@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { captureSavedGames } from './saved-game-verification';
-import { startPrototypeRoom } from './prototype-room';
+import { isPrototypeProfile, startPrototypeRoom } from './prototype-room';
 import { sourceSnapshot } from './verification';
 
 async function main() {
@@ -20,12 +20,12 @@ async function main() {
   });
   if (values.help) {
     console.log(
-      'Usage: node --import tsx tools/start-prototype.ts --profile ix|discovery|leader-skills --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready lobby for the selected development prototype. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
+      'Usage: node --import tsx tools/start-prototype.ts --profile ix|discovery|leader-skills|factions --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready lobby for the selected development prototype. Factions supports selected expansion factions without optional modules; the separate Ecaz Treachery variant stays disabled. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
     );
     return;
   }
   if (
-    !['ix', 'discovery', 'leader-skills'].includes(values.profile) ||
+    !isPrototypeProfile(values.profile) ||
     !values.db ||
     !values.room ||
     !values.out ||
@@ -46,12 +46,7 @@ async function main() {
     throw new Error('The requested lobby version is absent from the backup.');
   const db = new DatabaseSync(values.db);
   try {
-    const result = startPrototypeRoom(
-      db,
-      values.room,
-      version,
-      values.profile as 'ix' | 'discovery' | 'leader-skills',
-    );
+    const result = startPrototypeRoom(db, values.room, version, values.profile);
     writeFileSync(
       resolve(values.out, 'prototype.json'),
       JSON.stringify(

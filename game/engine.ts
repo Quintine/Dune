@@ -15,6 +15,7 @@ import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipmen
 import { quoteSandmasterMovement, validateSandmasterMovement, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
+import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
@@ -710,6 +711,7 @@ export type Decision =
   | { kind: 'ixSetup'; player: string }
   | { kind: 'ixAuction'; player: string }
   | { kind: 'ixTechnology'; player: string }
+  | { kind: 'ixRicheseTechnology'; player: string; event: string; source: 'cache' | 'blackMarket' }
   | { kind: 'ixAllyCard'; player: string }
   | { kind: 'mobileStronghold'; player: string; placement: boolean }
   | {
@@ -1124,6 +1126,22 @@ export type Game = {
   richesePeekKnown?: boolean;
   richeseOfferedCard?: Card | null;
   richeseClaim?: string | null;
+  /** Private pre-lot offer. The public Ixian choice contains no Black Market card identity. */
+  pendingIxRicheseTechnology?: {
+    event: string;
+    player: string;
+    owner: string;
+    round: string;
+    turn: number;
+    source: 'cache' | 'blackMarket';
+    card: Card;
+    method: RicheseAuction['method'];
+    direction: 'clockwise' | 'counterclockwise' | null;
+    claim: string | null;
+    frame: string;
+    signature: string;
+  };
+  ixRicheseTechnologyEvent?: string;
   currentAuctionSale?: {
     winner: string;
     amount: number;
@@ -2870,6 +2888,8 @@ function savedTransferResponses(g: Game) {
   ];
 }
 function transferCardBlock(g: Game, owner: Player, card: Card) {
+  if (g.pendingIxRicheseTechnology?.owner === owner.id && g.pendingIxRicheseTechnology.card.id === card.id)
+    return 'This card is reserved for the pending Richese lot and Ixian choice.';
   if (isPortableSnooper(card) && homeworldSavedDecisions(g).some((d) => d.kind === 'homeworldDefense' && d.player === owner.id))
     return 'Resolve the Homeworld late-defense choice before transferring its Portable Snooper.';
 
@@ -3322,6 +3342,8 @@ function draw(g: Game) {
   return g.deck.shift();
 }
 function discard(g: Game, p: Player, id: string, role?: Omit<EcazPoisonDiscard, 'card'>) {
+  requireRule(g.pendingIxRicheseTechnology?.card.id !== id,
+    'The card reserved for the pending Richese lot cannot be discarded.');
   requireRule(
     !g.pendingTreacheryDiscard,
     'Finish the committed discard continuation before another discard.',
@@ -5290,6 +5312,8 @@ function setupPending(g: Game): string[] {
       .map((p) => p.id);
   const fremen = byFaction(g, 'fremen');
   if (fremen?.reserves === 20) return [fremen.id];
+  const ecaz = byFaction(g, 'ecaz');
+  if (ecaz?.reserves === 20) return [ecaz.id];
   const bg = byFaction(g, 'beneGesserit');
   return g.advanced && bg && !bg.advisorSetup ? [bg.id] : [];
 }
@@ -5371,6 +5395,33 @@ export function initializeIxGameForAudit(state: Game): Game {
     'The Ix prototype requires exactly the Ixians & Tleilaxu expansion.');
   return initializeSetupGameForAudit(state, false, false, true);
 }
+/** Genuine faction-only development setup. Optional variants and public starts remain gated. */
+export function initializeFactionExpansionsGameForAudit(state: Game): Game {
+  requireRule(typeof state.advanced === 'boolean', 'Choose Basic or Advanced rules for the faction prototype.');
+  requireRule(Array.isArray(state.expansions) && state.expansions.length > 0 &&
+    state.expansions.every(id => ['ix', 'choam', 'ecaz'].includes(id)) &&
+    new Set(state.expansions).size === state.expansions.length,
+    'The faction prototype needs a nonempty selection of distinct known expansions.');
+  requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
+    !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
+    !state.techTokens && !state.strongholdCards,
+    'The faction prototype excludes optional modules, including Leader Skills and Discoveries.');
+  requireRule(state.richeseCache === undefined && state.richeseRemoved === undefined &&
+    state.ecazAmbassadors === undefined && state.moritaniTerror === undefined && state.dukeVidal === undefined &&
+    state.mobileStronghold === undefined && state.ixSetupCards === undefined &&
+    state.players.every(p => {
+      const original = leaders(p.faction);
+      return p.noField === undefined && p.noFieldEvent === undefined && p.faceDancers === undefined &&
+        p.revived === 0 && p.freeForcesRevived === 0 && !p.leaderRevived && p.revivalCycle === 0 &&
+        p.battleLosses === 0 && p.ally === null && p.bribes === 0 &&
+        p.leaders.length === original.length && original.every(expected => {
+          const actual = p.leaders.find(l => l.id === expected.id);
+          return actual && Object.keys(actual).length === Object.keys(expected).length &&
+            Object.entries(expected).every(([key, value]) => actual[key as keyof Leader] === value);
+        });
+    }), 'The faction initializer cannot overwrite existing inventories, leader custody or revival history.');
+  return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
+}
 /** Prototype-only Discovery setup. Public starts stay gated while remaining effects are connected. */
 export function initializeDiscoveryGameForAudit(state: Game): Game {
   requireRule(state.discoveryEnabled === true && !state.discoveries && !state.discoveryStash && !state.greatMaker,
@@ -5384,7 +5435,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   g.leaderSkills = createLeaderSkills(random);
   return initializeSetupGameForAudit(g, false, false, false, false, true, g.expansions.length === 1 && g.expansions[0] === 'choam');
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false): Game {
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false): Game {
   nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -5406,8 +5457,9 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
     'The audit initializer requires two through six distinct ready players and an existing host.',
   );
   requireRule(
-    (homeworlds || nexus || ix || choam || g.expansions.length === 0) &&
-      (choam || !g.expansions.includes('choam')) &&
+    (homeworlds || nexus || ix || choam || factions || g.expansions.length === 0) &&
+      (choam || factions || !g.expansions.includes('choam')) &&
+      (factions || !g.expansions.includes('ecaz')) &&
       (leaderSkills || !g.leaderSkills) &&
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
@@ -5416,10 +5468,12 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(
-          (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base' || (ix && f.expansion === 'ix') || (choam && f.expansion === 'choam')),
+          (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base' || (ix && f.expansion === 'ix') || (choam && f.expansion === 'choam') || (factions && g.expansions.includes(f.expansion))),
         ),
       ),
-    choam
+    factions
+      ? 'The faction prototype supports base factions and the selected expansion factions without optional modules.'
+      : choam
       ? 'The Leader Skills prototype supports base, CHOAM and Richese factions without other expansions or optional modules.'
       : ix
       ? 'The Ix prototype supports base, Ixian and Tleilaxu factions without optional modules.'
@@ -5451,7 +5505,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
           !p.prediction &&
           !p.advisorSetup &&
           (!p.elites ||
-            ((homeworlds || nexus || ix) &&
+            ((homeworlds || nexus || ix || factions) &&
               p.faction === 'ixians' &&
               p.elites.reserves === 7 &&
               p.elites.tanks === 0 &&
@@ -5470,6 +5524,10 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   initializeSetup(g);
   return normalizeAutomaticGame(g);
 }
+function ecazStartingForcesComplete(p: Player): boolean {
+  if (p.reserves !== 20 - ECAZ_START_FORCES) return false;
+  try { quoteEcazStartingForces(p.forces); return true; } catch { return false; }
+}
 function otherSetupComplete(g: Game) {
   return (
     !g.setupStage &&
@@ -5478,6 +5536,7 @@ function otherSetupComplete(g: Game) {
       (p) =>
         (p.faction === 'tleilaxu' || p.traitors.length > 0) &&
         (p.faction !== 'fremen' || p.reserves === 10) &&
+        (p.faction !== 'ecaz' || ecazStartingForcesComplete(p)) &&
         (p.faction !== 'beneGesserit' ||
           (p.prediction && (!g.advanced || p.advisorSetup))),
     )
@@ -6528,10 +6587,47 @@ function richeseOfferBlock(g: Game): string | null {
     ? 'Ixian Technology on Richese lots is awaiting a ruling on replacement-card custody.'
     : null;
 }
+function ixRicheseTechnologyFrame(g: Game): string {
+  return JSON.stringify({ round: g.richeseBidding, order: g.order, positions: normalizedPlayerPositions(g) });
+}
+function ixRicheseTechnologySignature(pending: NonNullable<Game['pendingIxRicheseTechnology']>): string {
+  return JSON.stringify({ ...pending, signature: undefined });
+}
+function ixRicheseTechnologyIntegrity(g: Game) {
+  const pending = g.pendingIxRicheseTechnology;
+  const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'ixRicheseTechnology');
+  if (pending === undefined && g.ixRicheseTechnologyEvent === undefined && !decisions.length) return;
+  const round = g.richeseBidding, ixians = byFaction(g, 'ixians'), owner = byFaction(g, 'richese');
+  requireRule(pending && g.status === 'playing' && g.phase === 3 && g.advanced &&
+    ixians && g.ixTechnologyTurn !== g.turn && owner && round &&
+    pending.player === ixians.id && pending.owner === owner.id && pending.round === round.event &&
+    pending.turn === g.turn && round.turn === g.turn && round.owner === owner.id &&
+    typeof pending.event === 'string' && pending.event.length > 0 && pending.event === g.ixRicheseTechnologyEvent &&
+    ['cache', 'blackMarket'].includes(pending.source) &&
+    round.stage === (pending.source === 'cache' ? 'cacheOffer' : 'blackMarketOffer') &&
+    !g.auction && !g.richeseAuction && !g.ixAuction && !g.currentAuctionSale && !g.richeseOfferedCard &&
+    pending.frame === ixRicheseTechnologyFrame(g) && pending.signature === ixRicheseTechnologySignature(pending),
+    'The saved Ixian Richese-lot choice lost or changed its original offer, round or event.');
+  requireRule(['normal', 'onceAround', 'silent'].includes(pending.method) &&
+    (pending.source !== 'cache' || pending.method !== 'normal') &&
+    (pending.direction === null || ['clockwise', 'counterclockwise'].includes(pending.direction)) &&
+    (pending.method !== 'onceAround' || pending.direction !== null) &&
+    (pending.source === 'cache' ? pending.claim === null : pending.claim === null ||
+      typeof pending.claim === 'string' && pending.claim === pending.claim.trim() && pending.claim.length <= 300),
+    'The saved Ixian Richese-lot choice has invalid auction terms.');
+  const held = (pending.source === 'cache' ? g.richeseCache : owner.hand)?.filter(c => c.id === pending.card?.id);
+  requireRule(held?.length === 1 && JSON.stringify(held[0]) === JSON.stringify(pending.card) &&
+    physicalTreacheryCards(g).filter(c => c.id === pending.card.id).length === 1,
+    'The pending Richese offer must retain its exact unique card in the original custody.');
+  requireRule(decisions.length === 1 && decisions[0].player === pending.player && decisions[0].event === pending.event &&
+    decisions[0].source === pending.source && Object.keys(decisions[0]).every(key => ['kind', 'player', 'event', 'source'].includes(key)),
+    'The saved Ixian Richese-lot choice lost or duplicated its original decision.');
+}
 function beginRicheseLot(
   g: Game,
   source: 'cache' | 'blackMarket',
   action: Action,
+  technologyDeclined = false,
 ) {
   const round = g.richeseBidding!,
     owner = getPlayer(g, round.owner);
@@ -6558,8 +6654,25 @@ function beginRicheseLot(
     action.method !== 'onceAround' || action.direction !== undefined,
     'Choose a physical bidding direction.',
   );
-  const blocked = richeseOfferBlock(g);
-  requireRule(!blocked, blocked ?? 'This Richese lot is unavailable.');
+  if (richeseOfferBlock(g) && !technologyDeclined) {
+    requireRule(!g.pendingIxRicheseTechnology && g.ixRicheseTechnologyEvent === undefined,
+      'Finish the existing Ixian choice before declaring another Richese offer.');
+    const event = crypto.randomUUID(), player = byFaction(g, 'ixians')!.id;
+    const pending: NonNullable<Game['pendingIxRicheseTechnology']> = {
+      event, player, owner: owner.id, round: round.event, turn: g.turn, source, card: structuredClone(card),
+      method: action.method as RicheseAuction['method'],
+      direction: (action.direction as 'clockwise' | 'counterclockwise' | undefined) ?? null,
+      claim: source === 'blackMarket' && typeof action.claim === 'string' ? action.claim.trim().slice(0, 300) : null,
+      frame: ixRicheseTechnologyFrame(g), signature: '',
+    };
+    pending.signature = ixRicheseTechnologySignature(pending);
+    g.pendingIxRicheseTechnology = pending;
+    g.ixRicheseTechnologyEvent = event;
+    g.decision = { kind: 'ixRicheseTechnology', player, event, source };
+    g.active = player;
+    log(g, `${getPlayer(g, player).name} must choose whether to continue without exchanging this Richese ${source === 'cache' ? 'cache' : 'Black Market'} lot. The exchange is not yet implemented; Technology remains available for later lots.`);
+    return;
+  }
   const positions = normalizedPlayerPositions(g);
   let order = [...g.order];
   if (action.method === 'onceAround') {
@@ -7172,6 +7285,8 @@ function nextAuction(g: Game) {
 }
 /** Physical custody only: promise feasibility remains conservatively checked at commit. */
 function karamaSpendingBlock(g: Game, p: Player, card: Card): string | null {
+  if (g.pendingIxRicheseTechnology?.card.id === card.id)
+    return 'This card is reserved for the pending Richese lot and Ixian choice.';
   if (g.battle?.lateDefense?.[p.id] === card.id)
     return 'This Portable Snooper is already played and reserved for battle cleanup.';
   if (giftReserved(g, p.id, card.id))
@@ -18533,6 +18648,8 @@ export function prepareSpecialKaramaIntent(
       'Resolve the previous purchase income first.',
     );
     const acquire = stringField(action.acquire);
+    requireRule(g.pendingIxRicheseTechnology?.card.id !== acquire,
+      'The card reserved for the pending Richese lot cannot be acquired by another effect.');
     const chosen = g.richeseCache?.find((c) => c.id === acquire);
     requireRule(
       chosen && richeseCardDefinition(chosen),
@@ -18723,6 +18840,11 @@ export function prepareSpecialKaramaIntent(
     requireRule(
       g.pendingRicheseGift?.intent.owner !== target.id,
       'Resolve the reserved Richese gift before randomly exchanging that hand.',
+    );
+    requireRule(
+      g.pendingIxRicheseTechnology?.source !== 'blackMarket' ||
+        g.pendingIxRicheseTechnology.owner !== target.id,
+      'Resolve the pending Black Market Ixian choice before randomly exchanging that hand.',
     );
     const count = integer(
       action.amount,
@@ -19117,6 +19239,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
@@ -19283,6 +19406,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   homeworldSubstitutionIntegrity(g);
   homeworldDefenseIntegrity(g);
   homeworldShipmentIntegrity(g);
+  ixRicheseTechnologyIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
@@ -19377,6 +19501,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
@@ -19417,6 +19542,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   homeworldSubstitutionIntegrity(g);
   homeworldDefenseIntegrity(g);
   homeworldShipmentIntegrity(g);
+  ixRicheseTechnologyIntegrity(g);
   return g;
 }
 
@@ -19805,6 +19931,19 @@ function applyActionInner(
     );
     g.decision = null;
     requireRule(decision.kind !== 'leaderSkillVisibility' && decision.kind !== 'leaderSkillRevival', 'Use the Leader Skills controls for this decision.');
+    if (decision.kind === 'ixRicheseTechnology') {
+      const pending = g.pendingIxRicheseTechnology!;
+      requireRule(action.event === pending.event && action.decline === true &&
+        Object.keys(action).every(key => ['type', 'event', 'decline'].includes(key)),
+        'Ixian exchange custody for Richese lots is not implemented. Explicitly continue without this exchange.');
+      delete g.pendingIxRicheseTechnology;
+      delete g.ixRicheseTechnologyEvent;
+      log(g, `${p.name} continued without exchanging this Richese lot; Technology remains available for later lots.`);
+      beginRicheseLot(g, pending.source, { type: 'decision', card: pending.card.id, method: pending.method,
+        ...(pending.direction !== null ? { direction: pending.direction } : {}),
+        ...(pending.claim !== null ? { claim: pending.claim } : {}) }, true);
+      return g;
+    }
     if (decision.kind === 'homeworldRevivalDeployment') {
       decideHomeworldRevivalReturn(g, p, action);
       return g;
@@ -21080,7 +21219,7 @@ function applyActionInner(
             ? ['traitor']
             : g.setupStage === 'leaderSkills'
               ? ['leaderSkill']
-            : ['fremenSetup', 'advisorSetup'];
+            : ['fremenSetup', 'ecazSetup', 'advisorSetup'];
       requireRule(
         expected.includes(t) && setupPending(g).includes(id),
         `Wait for the current setup step: ${g.setupStage}.`,
@@ -21130,6 +21269,18 @@ function applyActionInner(
         );
       p.traitors = [String(action.leader)];
       p.traitorChoices = [];
+    } else if (t === 'ecazSetup') {
+      requireRule(g.setupStage === 'forces' && p.faction === 'ecaz' && p.reserves === 20 &&
+        Object.keys(p.forces).length === 0 && Object.keys(action).every(key => ['type', 'placements'].includes(key)),
+        'Place Ecaz starting forces once during the current force setup.');
+      const placements = nexusRule(() => quoteEcazStartingForces(action.placements));
+      for (const [key, amount] of Object.entries(placements)) {
+        const loc = splitLocation(key);
+        place(p, loc.territory, loc.sector, amount);
+      }
+      p.reserves -= ECAZ_START_FORCES;
+      log(g, `${p.name} placed six starting forces in Imperial Basin and retained fourteen in reserves.`,
+        { faction: p.faction, name: 'Starting forces' });
     } else if (t === 'fremenSetup') {
       requireRule(
         p.faction === 'fremen' && p.reserves === 20,
@@ -22823,6 +22974,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   discoveryFlightIntegrity(state);
   discoveryIntegrity(state);
@@ -23636,6 +23788,13 @@ export function viewGame(state: Game, id: string) {
         }
       : null,
     richeseSpecialKarama: richeseSpecialKaramaView(g, me),
+    ixRicheseTechnology: g.pendingIxRicheseTechnology ? {
+      event: g.pendingIxRicheseTechnology.event,
+      player: g.pendingIxRicheseTechnology.player,
+      owner: g.pendingIxRicheseTechnology.owner,
+      source: g.pendingIxRicheseTechnology.source,
+      exchangeBlocked: 'Ixian exchange custody for Richese lots is not implemented. You can explicitly continue without this exchange; Technology remains available for later lots.',
+    } : null,
     richeseBidding:
       g.richeseBidding?.turn === g.turn
         ? {
@@ -23644,7 +23803,7 @@ export function viewGame(state: Game, id: string) {
             stage: g.richeseBidding.stage,
             position: g.richeseBidding.position,
             normalCount: g.richeseBidding.normalCount,
-            offerBlocked: richeseOfferBlock(g),
+            offerBlocked: null,
             cache:
               g.richeseBidding.owner === id ? (g.richeseCache ?? []) : null,
           }

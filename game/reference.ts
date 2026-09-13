@@ -3591,6 +3591,30 @@ export const RULE_TOPICS: RuleTopic[] = [
       { area:'Verification',status:'Partial',detail:'Focused inventory, scoring, Voice, capture, saved private setup/revival Planetologist movement/cancellation and Suk Graduate casualty/SQLite checks, plus Rihani privacy/concurrent recovery battle-effect regressions and Smuggler quote/decision/legacy recovery and Banker funding, death, traitor, privacy and concurrent settlement checks cover this boundary. Diplomat checks cover self-protection, mandatory discard, public-choice privacy, concurrent saved decisions and legacy continuation. Sample games and browser continuation are recorded separately; full module acceptance remains open.',evidence:['tests/leader-skills-engine.test.ts','tests/leader-skills-capture.test.ts','tests/leader-skills-recovery.test.ts','tests/leader-skills-controls.test.ts','tests/suk-graduate.test.ts','tests/suk-graduate-recovery.test.ts','tests/leader-battle-effects.test.ts','tests/leader-battle-effects-recovery.test.ts','tests/leader-battle-effects-controls.test.tsx','tests/smuggler-shipment.test.ts','tests/smuggler-shipment-controls.test.tsx','tests/smuggler-shipment-recovery.test.ts','tests/smuggler-no-field.test.ts','tests/smuggler-no-field-controls.test.tsx','tests/smuggler-no-field-recovery.test.ts','tests/spice-banker.test.ts','tests/spice-banker-recovery.test.ts','tests/spice-banker-controls.test.tsx','tests/sandmaster-movement.test.ts','tests/sandmaster-movement-recovery.test.ts','tests/sandmaster-movement-controls.test.tsx','tests/diplomat-defense.test.ts','tests/diplomat-defense-controls.test.tsx','tests/diplomat-defense-recovery.test.ts'] },
     ],
   },
+  {
+    id: 'expansion-faction-games',
+    title: 'Expansion faction development games',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Genuine setup connects selected expansion factions to development tables. Complete faction rules and combined-game acceptance remain unfinished.',
+    steps: [
+      'Development setup supports two through six distinct seats from the base factions and selected expansion sets. Expansion selection and optional modules are separate; public expansion starts remain disabled.',
+      'Ecaz places six starting forces in Imperial Basin, allocated among sectors 9, 10 and 11, and keeps fourteen in reserve. Finish Fremen placement first; Bene Gesserit then places its Advanced starting advisor. Moritani places its six forces in an unoccupied territory after all other setup is complete.',
+      'Ixians keep their private starting-card selection and physical cyborg/suboid forces. Tleilaxu receives three private Face Dancers. Advanced CHOAM receives its Auditor. Richese has a separate ten-card cache and three private No-Fields. Ecaz and Moritani receive their Ambassador and Terror inventories and share one Duke Vidal disc.',
+      'Without Ix, CHOAM adds Poison Tooth and Artillery Strike to the 33-card ordinary deck. With Ix, its 47-card deck contains those physical cards once. Ecaz faction selection adds no Treachery Cards: Recruits, Reinforcements and Harass & Withdraw form a separate unfinished optional variant.',
+      'Advanced Ixians may explicitly decline Technology for one Richese special lot. Their once-per-round use remains available later. The special-lot exchange itself is unfinished pending replacement-card custody interpretation.',
+      'Remaining abilities and combined timing can still encounter explicit development guards. Setup and saved-continuation evidence does not certify complete expansion play.',
+    ],
+    related: ['setup', 'ix-modules', 'choam-modules', 'ecaz-modules', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Genuine setup for seven expansion selections reuses existing faction effects and corrects Ecaz starting placement. Saved per-lot Ixian decline resumes Richese bidding without changing card custody or consuming Technology. Optional variants and unfinished interactions remain separate.', evidence: ['game/engine.ts', 'game/cards.ts', 'game/ecaz-setup.ts', 'tools/prototype-room.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Existing faction choices and private hands are reused. Ecaz has an owned sector-allocation control and setup waiting messages; Ixians have an explicit per-lot decline control. Public starts and full acceptance remain gated.', evidence: ['components/ecaz-setup.tsx', 'components/ix-richese-technology.tsx', 'components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'All four profiles use genuine setup choices and the shared Ecaz allocation quote, and can decline this Richese lot without using Technology. Combined gameplay strategy, guarded interactions and full-game reliability remain unfinished.', evidence: ['game/bots.ts', 'game/ecaz-setup.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'The faction profile records ordinary deck composition, independent variants, Ecaz territory allocation and deterministic setup-order interpretations, with unfinished play explicit.', evidence: ['docs/EXPANSION_FACTIONS_PROTOTYPE.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Setup, inventory, private views, JSON/SQLite continuation, concurrent start and dirty-lobby rejection have focused checks. Ixian per-lot decline has ownership, stale/corrupt decision, private card custody and concurrent recovery checks. Sample gameplay and browser evidence are recorded separately, with remaining guards retained.', evidence: ['tests/expansion-factions-prototype.test.ts', 'tests/expansion-factions-recovery.test.ts', 'tests/ecaz-setup-controls.test.tsx', 'tests/ecaz-cards.test.ts', 'tests/ix-richese-technology.test.ts', 'tests/ix-richese-technology-controls.test.tsx', 'tests/ix-richese-technology-recovery.test.ts'] },
+    ],
+  },
   ...[
     [
       'ix-modules',

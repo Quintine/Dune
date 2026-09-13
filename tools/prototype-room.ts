@@ -3,9 +3,21 @@ import {
   initializeIxGameForAudit,
   initializeDiscoveryGameForAudit,
   initializeLeaderSkillsGameForAudit,
+  initializeFactionExpansionsGameForAudit,
   viewGame,
   type Game,
 } from '../game/engine';
+
+export const PROTOTYPE_PROFILES = [
+  'ix',
+  'discovery',
+  'leader-skills',
+  'factions',
+] as const;
+export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
+export function isPrototypeProfile(value: string): value is PrototypeProfile {
+  return PROTOTYPE_PROFILES.some((profile) => profile === value);
+}
 
 /** Local development only. This cannot create a seat, change its owner, or
  * redeal a started game. The caller backs up the database before invoking it. */
@@ -20,7 +32,7 @@ export function startPrototypeRoom(
   db: DatabaseSync,
   code: string,
   expectedVersion: number,
-  profile: 'ix' | 'discovery' | 'leader-skills',
+  profile: PrototypeProfile,
 ) {
   if (
     !/^[A-Z0-9]{8}$/.test(code) ||
@@ -38,17 +50,19 @@ export function startPrototypeRoom(
   const initial = JSON.parse(row.state) as Game;
   if (initial.code !== code)
     throw new Error('The room identity is inconsistent.');
-  if (!['ix', 'discovery', 'leader-skills'].includes(profile))
+  if (!isPrototypeProfile(profile))
     throw new Error('Unknown prototype profile.');
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)
-      : profile === 'leader-skills'
-        ? initializeLeaderSkillsGameForAudit(initial)
-        : initializeDiscoveryGameForAudit({
-            ...initial,
-            discoveryEnabled: true,
-          });
+      : profile === 'factions'
+        ? initializeFactionExpansionsGameForAudit(initial)
+        : profile === 'leader-skills'
+          ? initializeLeaderSkillsGameForAudit(initial)
+          : initializeDiscoveryGameForAudit({
+              ...initial,
+              discoveryEnabled: true,
+            });
   // Exercise the same player projection before accepting the new saved state.
   for (const player of game.players) viewGame(game, player.id);
   const version = expectedVersion + 1;

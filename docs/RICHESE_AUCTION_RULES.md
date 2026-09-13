@@ -149,3 +149,35 @@ Root’s global run passed 1,106 rules and 81 recovery tests, production build, 
 Desktop QA confirmed all ten readable enlarged guides and working direct catalog topic links. Room `63NJ822S` completed first-position declaration, cache offer, Once Around self-purchase for 3 and automatic payment, leaving 17 spice, one card and two normal lots. A Silent bid of 4 remained private; fresh browser tab 23 restored two-of-three submitted status and the viewer’s own bid of 4. A final synthetic zero submission produced the storm-order tie winner Harkonnen, paid 4 and awarded its bonus, with Richese at 24 spice. Root records the exact screenshots and synthetic/manual distinction in `docs/VISUAL_PLAYTEST.md`.
 
 Remaining boundaries are unchanged: cache-cancellation count, empty-cache arithmetic, seller-positive Black Market bidding, advanced Ixian Technology special-lot custody, remaining card effects and actual Juice of Sapho play. Full starts remain gated. The hand’s disabled-effect fix and pre-offer guard explanation are implemented. The final browser recheck in QA room63NJ822S version9 confirmed the printed category, disabled unsupported Play card control, visible reason and available inspector. This is bounded desktop/persistence evidence, not mobile QA, a full Richese game, every advanced interaction or durable hosted-worker certification.
+
+
+## 13 September: saved per-lot Technology decline
+
+Genuine combined Advanced faction play exposed the previous pre-offer guard as
+a deadlock when Ixians retained their optional Technology use. A validated Richese
+cache or Black Market offer now creates a saved decision for Ixians before opening
+that lot. The development continuation supports an explicit **decline for this lot**;
+it does not implement a card exchange or adjudicate the pending seller, income or
+unsold-card questions described above.
+
+The exact offered card stays in its original hand or cache. The pending receipt
+binds the current round, turn, offer terms, owner, independent event and physical
+custody. The public decision contains no card identity; the owner-facing control
+explains the unfinished exchange and uses the matching event. Declining opens the
+same lot once, preserves the normal pool count, and leaves `ixTechnologyTurn`
+unchanged. Ixians can still use Technology on a later normal lot or separately
+decline another Richese lot. All four AI profiles have this legal continuation.
+
+This opt-out is the ordinary exercise of an optional ability, not a publisher
+prohibition on exchanging special lots. The pending offer is kept private until
+the normal lot-opening point; this saved staging order is an implementation
+boundary rather than a separate official timing clarification. Public starts and
+full combined compliance remain gated.
+
+The focused engine and UI tests are
+`tests/ix-richese-technology.test.ts`,
+`tests/ix-richese-technology-controls.test.tsx`, and
+`tests/ix-richese-technology-recovery.test.ts`. Final checkpoint verification is
+recorded in the implementation log and source-bound private report. Historical
+absence claims about ordinary Richese technology cards above are superseded by
+their later runtime contracts, including [Juice of Sapho](JUICE_OF_SAPHO_RUNTIME.md).

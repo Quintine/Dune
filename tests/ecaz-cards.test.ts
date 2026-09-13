@@ -37,11 +37,32 @@ void test('the verified Ecaz variant has one physical special of each identity a
   assert.equal(new Set(combined.map((card) => card.id)).size, 50);
   assert.equal(treacheryDeck().length, 33);
   assert.equal(treacheryDeck(['ix']).length, 47);
-  for (const unsupported of ['ecaz', ECAZ_TREACHERY_VARIANT.id])
+  assert.equal(treacheryDeck(['ecaz']).length, 33);
+  for (const unsupported of [ECAZ_TREACHERY_VARIANT.id, 'unknown'])
     assert.throws(() => treacheryDeck([unsupported]), /not implemented/);
   assert.equal(ECAZ_TREACHERY_VARIANT.independentOfFactions, true);
   assert.equal(ECAZ_TREACHERY_VARIANT.independentOfOtherVariants, true);
   assert.equal(ECAZ_TREACHERY_VARIANT.activation, 'not-implemented');
+});
+
+void test('Ecaz faction selection preserves each ordinary deck and never includes its separate unfinished variant', () => {
+  for (const other of [[], ['ix'], ['choam'], ['ix', 'choam']]) {
+    const cards = treacheryDeck([...other, 'ecaz']);
+    assert.deepEqual(cards, treacheryDeck(other));
+    assert.equal(new Set(cards.map((card) => card.id)).size, cards.length);
+    assert.equal(
+      cards.some((card) => card.id.startsWith('ecaz-')),
+      false,
+    );
+    assert.equal(
+      cards.length,
+      other.includes('ix') ? 47 : other.includes('choam') ? 35 : 33,
+    );
+  }
+  assert.throws(
+    () => treacheryDeck(['ecaz', ECAZ_TREACHERY_VARIANT.id]),
+    /not implemented/,
+  );
 });
 
 void test('factory instances and their mutable cards are independent of canonical definitions', () => {

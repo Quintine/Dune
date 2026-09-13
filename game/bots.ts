@@ -9,6 +9,7 @@ import { greatMakerBotActions } from './great-maker-options';
 import { nexusChoamTradeBotActions } from './nexus-choam-trade-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
+import { ECAZ_START_FORCES, ECAZ_START_LOCATIONS, quoteEcazStartingForces } from './ecaz-setup';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
 import { nexusCardBotActions } from './nexus-card-options';
 import { nexusTraitorBotActions } from './nexus-traitor-options';
@@ -1190,12 +1191,15 @@ function policyActions(g: GameView): Action[] {
           },
         },
       ];
+    if (placingForces && me.faction === 'ecaz' && me.reserves === 20 && g.setupStage === 'forces' && g.setupPending.includes(me.id))
+      return [{ type: 'ecazSetup', placements: quoteEcazStartingForces({ [ECAZ_START_LOCATIONS[0]]: ECAZ_START_FORCES }) }];
     if (
       placingForces &&
       g.advanced &&
       me.faction === 'beneGesserit' &&
       !me.advisorSetup &&
       me.reserves === 20 &&
+      (!g.setupStage || g.setupPending.includes(me.id)) &&
       g.players.every((p) => p.faction !== 'fremen' || p.reserves === 10)
     )
       return destinations(g, true)
@@ -1658,6 +1662,8 @@ function policyActions(g: GameView): Action[] {
       const card = cards.find((c) => c.kind === 'worthless') ?? cards[0];
       return card ? [{ type: 'decision', card: card.id }] : [];
     }
+    if (d.kind === 'ixRicheseTechnology')
+      return [{ type: 'decision', event: d.event, decline: true }];
     if (d.kind === 'richeseBlackMarket')
       return [
         { type: 'decision', event: g.richeseBidding!.event, decline: true },

@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 13 September 2026 — Expansion faction setup and saved Ixian auction decline
+
+The [faction development profile](EXPANSION_FACTIONS_PROTOTYPE.md) connects
+all seven nonempty expansion selections to genuine Basic/Advanced setup and
+existing faction controls, AI and saved continuation. Ecaz now allocates six
+starting forces within Imperial Basin, keeping fourteen in reserve; Fremen,
+Advanced Bene Gesserit and Moritani placement ordering is preserved with its
+printed and inferred boundaries documented. The optional Ecaz Treachery variant
+stays separate, ordinary decks contain 33/35/47 cards, and Richese keeps its
+separate ten-card cache. Public starts remain gated.
+
+Combined play exposed an existing Ixian Technology/Richese special-lot deadlock.
+A saved explicit per-lot decline now opens the original cache or Black Market lot
+without using Technology, changing its card custody or revealing a concealed
+card. Exact event, round, declaration and custody validation protects view,
+normalization and actions, including Gift/Truthtrance interruptions. Competing
+uses of the reserved offered card are rejected before creating responses.
+The actual exchange still needs its recorded replacement-custody interpretation.
+
+Focused setup, controls, legal AI, private JSON/SQLite continuation and concurrent
+write checks pass, with independent review of rules, custody and persistence.
+Five of six genuine mixed-profile samples finish. Combined Advanced progresses
+past three special-lot declines to turn three, then stops on an existing CHOAM
+movement/Ambassador arrival guard. Guarded arrival candidates also occur in the
+Ecaz samples. These are explicit remaining integration limits, not full expansion
+acceptance. The detailed feature document retains exact sample metrics.
+
+The browser verified genuine Ecaz traitor/force setup and refresh, then a separate
+Advanced development game's saved Ixian decline, unchanged offered card, legal
+bidding and private hand restoration. After the reported outage, all 597 opening
+games and original seat/recovery records matched the backup. A stale server module
+cache required a restart after a fresh 598-room backup; every room matched before
+QA resumed. Required broad checks, final preservation totals and source fingerprint
+are recorded in the checkpoint commit and private report. No database reset,
+recurring automation or publication was performed.
+
 ## 13 September 2026 — Diplomat base-defense copying prototype
 
 [Diplomat](DIPLOMAT_DEFENSE.md) now optionally counts one committed Worthless as

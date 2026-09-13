@@ -1,4 +1,6 @@
 'use client';
+import { EcazSetup } from './ecaz-setup';
+import { IxRicheseTechnology } from './ix-richese-technology';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
 import {
   matchesShipment,
@@ -206,6 +208,7 @@ export function GameTable({
   const turnOwnerName = g.players.find((p) => p.id === turnOwner)?.name;
   const setupStage = g.setupStage;
   const setupFremen = g.players.find((p) => p.faction === 'fremen');
+  const setupEcaz = g.players.find((p) => p.faction === 'ecaz');
   const setupSisterhood = g.players.find((p) => p.faction === 'beneGesserit');
   const setupPendingNames = (g.setupPending ?? [])
     .filter((id) => id !== me.id)
@@ -213,6 +216,7 @@ export function GameTable({
     .filter(Boolean)
     .join(', ');
   const waitingForFremen = !!setupFremen && setupFremen.reserves !== 10;
+  const waitingForEcaz = setupStage === 'forces' && !!setupEcaz && setupEcaz.reserves === 20;
   const setupStatus =
     setupStage === 'leaderSkills'
       ? g.leaderSkills?.offer
@@ -235,6 +239,10 @@ export function GameTable({
                 ? 'Place your ten starting forces. Bene Gesserit places its advisor afterward.'
                 : g.leaderSkills ? 'Place your ten starting forces. Starting cards were already dealt before skill assignment.' : 'Place your ten starting forces. Starting cards are dealt automatically after placement.'
               : `Waiting for ${setupFremen.name} to place the Fremen starting forces.`
+            : waitingForEcaz
+              ? setupEcaz.id === me.id
+                ? 'Place your six starting forces among the sectors of Imperial Basin. Fourteen remain in reserves.'
+                : `Waiting for ${setupEcaz.name} to place the Ecaz starting forces.`
             : g.advanced && setupSisterhood && !setupSisterhood.advisorSetup
               ? setupSisterhood.id === me.id
                 ? 'Choose a printed board territory and sector for your starting advisor.'
@@ -1643,20 +1651,21 @@ export function GameTable({
                     : 'Setup order: prediction, traitors, starting forces, then the automatic treachery-card deal and Storm phase.'}
                 </p>
               )}
+              <EcazSetup game={g} act={act} busy={busy} />
               {(!setupStage || setupStage === 'forces') &&
                 g.advanced &&
                 me.faction === 'beneGesserit' &&
                 !me.advisorSetup && (
                   <>
                     <p className="muted">
-                      After Fremen placement, choose a territory and sector on
+                      After the other starting force choices, choose a territory and sector on
                       the map for your starting advisor. It becomes a fighter if
                       alone.
                     </p>
                     {destination}
-                    {waitingForFremen && (
+                    {(waitingForFremen || waitingForEcaz) && (
                       <p className="fine" id="advisor-setup-wait">
-                        {setupFremen.name} must finish placing the Fremen forces
+                        {waitingForFremen ? setupFremen!.name : setupEcaz!.name} must finish placing starting forces
                         before you place an advisor.
                       </p>
                     )}
@@ -1670,9 +1679,10 @@ export function GameTable({
                       'Place starting advisor',
                       { type: 'advisorSetup', territory: selected, sector },
                       waitingForFremen ||
+                        waitingForEcaz ||
                         me.reserves !== 20 ||
                         selected === MOBILE_STRONGHOLD,
-                      waitingForFremen ? 'advisor-setup-wait' : undefined,
+                      waitingForFremen || waitingForEcaz ? 'advisor-setup-wait' : undefined,
                     )}
                   </>
                 )}
@@ -2124,7 +2134,9 @@ export function GameTable({
             <>
               <span className="eyebrow">Player decision</span>
               <h2>
-                {g.decision.kind === 'caladanReinforcement'
+                {g.decision.kind === 'ixRicheseTechnology'
+                  ? 'Ixian Technology · Richese lot'
+                  : g.decision.kind === 'caladanReinforcement'
                   ? 'Caladan victory reinforcement'
                   : g.decision.kind === 'grummanCollection'
                   ? 'Grumman Collection'
@@ -2373,6 +2385,8 @@ export function GameTable({
                   act={act}
                   busy={busy}
                 />
+              ) : g.decision.kind === 'ixRicheseTechnology' ? (
+                <IxRicheseTechnology game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'richeseBlackMarket' ||
                 g.decision.kind === 'richeseDeclaration' ||
                 g.decision.kind === 'richeseCache' ||

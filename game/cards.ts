@@ -62,8 +62,10 @@ export function choamDeck(): Card[] {
 }
 /** Deck assembly does not open the separate faction/module release gates. */
 export function treacheryDeck(expansions: readonly string[] = []): Card[] {
-  if (expansions.some((id) => id !== 'ix' && id !== 'choam'))
+  if (expansions.some((id) => !['ix', 'choam', 'ecaz'].includes(id)))
     throw new Error('This expansion treachery deck is not implemented yet.');
+  // Ecaz/Moritani factions are independent of the optional three-card variant.
+  // Selecting those factions does not activate its still-unimplemented effects.
   return [...baseDeck(), ...(expansions.includes('ix') ? ixDeck() : expansions.includes('choam') ? choamDeck() : [])];
 }
 export type Leader = {
