@@ -1,5 +1,6 @@
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
 import { leaderSkillCard, type LeaderSkillId } from './leader-skill-cards';
+import { MENTAT_EMPTY_HAND, MentatQuestionError, mentatQuestionModeSupported, mentatWeaponNames, mentatHand, quoteMentatReveal, mentatSignature, type MentatQuestionReceipt, type MentatObservation, type MentatView } from './mentat-question';
 import {
   canUsePlanetologistBattleSpecial,
   isPlanetologistBattleSpecialCard,
@@ -593,6 +594,10 @@ export type DiplomatDefenseReceipt = DiplomatDefenseQuote & {
   signature: string;
 };
 export type Battle = {
+  /** Only newly created supported battles enter the pre-plan Mentat question. */
+  mentatQuestionVersion?: 1;
+  mentatQuestionEvent?: string;
+  mentatQuestion?: MentatQuestionReceipt;
   /** New battles opt into the revealed Diplomat step; legacy battles are not reopened. */
   diplomatDefenseVersion?: 1;
   diplomatDefenseEvent?: string;
@@ -741,6 +746,7 @@ export type Decision =
   | { kind: 'sukRescue'; player: string; event: string; territory: string; mode: 'normal' | 'skilled'; options: SukRescueOption[] }
   | { kind: 'rihani'; player: string; event: string; stage: 'offer' | 'return' }
   | { kind: 'fullPlanOffer'; player: string }
+  | { kind: 'mentatQuestion'; player: string; event: string; owner: string; target: string; stage: 'name' | 'reveal'; weapon: string | null }
   | { kind: 'fullPlanRead'; player: string; target: string }
   | { kind: 'homeworldShipmentGuild'; player: string; shipper: string; destination: string; amount: number; event: string }
   | {
@@ -1461,6 +1467,10 @@ export type Game = {
   /** Absent on legacy rooms whose starting cards were already dealt. */
   setupStage?: 'prediction' | 'skillTreachery' | 'leaderSkills' | 'traitors' | 'forces';
   leaderSkills?: LeaderSkillsState;
+  /** Private development opt-in pending the uniform Mentat response UX decision. */
+  mentatQuestionPreview?: true;
+  mentatHistory?: MentatObservation[];
+  mentatHistoryEvents?: string[];
   advanced: boolean;
   expansions: string[];
   players: Player[];
@@ -4967,6 +4977,7 @@ function leaderSkillAssignmentUnavailable(
     : null;
 }
 function leaderSkillsIntegrity(g: Game) {
+  mentatQuestionIntegrity(g);
   diplomatDefenseIntegrity(g);
   const noFieldShipment = leaderSkillNoFieldIntegrity(g);
   sandmasterIntegrity(g);
@@ -6906,8 +6917,155 @@ function strongholdCopyChoices(g: Game, player: string): StrongholdId[] {
     (card) => card.id !== MOBILE_STRONGHOLD && controllers[card.id] === player,
   ).map((card) => card.id);
 }
+function mentatRule<T>(quote: () => T): T {
+  try { return quote(); } catch (error) {
+    if (error instanceof MentatQuestionError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function createMentatQuestion(g: Game) {
+  const b = g.battle!;
+  if (b.mentatQuestionVersion !== 1) return;
+  const owner = [b.attacker,b.defender].find(id => nativeLeaderSkill(g,id)?.skill === 'mentat');
+  if (!owner) return;
+  const trained = nativeLeaderSkill(g,owner)!, target = b.attacker === owner ? b.defender : b.attacker;
+  const event = crypto.randomUUID();
+  const receipt: MentatQuestionReceipt = {event,battle:b.event!,turn:g.turn,territory:b.territory,
+    owner,target,leader:trained.leader,stage:'name',weapon:null,card:null,
+    hand:mentatRule(() => mentatHand(getPlayer(g,target).hand,g.expansions)),signature:''};
+  if (!receipt.hand.length) {receipt.stage = 'unavailable';log(g,MENTAT_EMPTY_HAND,{faction:getPlayer(g,owner).faction,name:'Mentat'});}
+  receipt.signature = mentatSignature(receipt);
+  b.mentatQuestion = receipt;
+  b.mentatQuestionEvent = event;
+}
+function mentatQuestionIntegrity(g: Game) {
+  requireRule(g.mentatQuestionPreview === undefined || g.mentatQuestionPreview === true,
+    'The private Mentat preview flag is invalid.');
+  const history = g.mentatHistory, events = g.mentatHistoryEvents;
+  requireRule(history === undefined && events === undefined || Array.isArray(history) && Array.isArray(events) &&
+    history.length === events.length && new Set(events).size === events.length && new Set(history.map(observation => observation?.event)).size === history.length,
+    'The saved Mentat observations lost their independent event history.');
+  for (const observation of history ?? []) {
+    requireRule(observation && typeof observation === 'object' && typeof observation.event === 'string' && observation.event.length > 0 &&
+      events!.filter(event => event === observation.event).length === 1 &&
+      typeof observation.battle === 'string' && observation.battle.length > 0 &&
+      Number.isSafeInteger(observation.turn) && observation.turn >= 1 && observation.turn <= g.turn &&
+      typeof observation.territory === 'string' && observation.territory.length > 0 &&
+      observation.owner !== observation.target && g.players.some(p => p.id === observation.target) &&
+      g.players.some(p => p.id === observation.owner && p.leaders.some(l => l.id === observation.leader)) &&
+      mentatWeaponNames(g.expansions).includes(observation.weapon) && observation.signature === mentatSignature(observation),
+      'The saved Mentat observation changed its question, audience or event.');
+    mentatRule(() => mentatHand([observation.card],g.expansions));
+  }
+  const b = g.battle, receipt = b?.mentatQuestion;
+  const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'mentatQuestion');
+  if (!receipt) {
+    requireRule(receipt === undefined && !b?.mentatQuestionEvent && !decisions.length,
+      'The saved Mentat question lost its original receipt.');
+    requireRule(b?.mentatQuestionVersion === undefined || b.mentatQuestionVersion === 1 && g.mentatQuestionPreview === true && !!g.leaderSkills,
+      'The saved Mentat question has an invalid battle version.');
+    return;
+  }
+  requireRule(b && b.mentatQuestionVersion === 1 && g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) &&
+    g.status === 'playing' && g.phase === 6 && receipt.battle === b.event && receipt.turn === g.turn && receipt.territory === b.territory &&
+    typeof receipt.event === 'string' && receipt.event.length > 0 && receipt.event === b.mentatQuestionEvent &&
+    [b.attacker,b.defender].includes(receipt.owner) && [b.attacker,b.defender].includes(receipt.target) && receipt.owner !== receipt.target &&
+    receipt.signature === mentatSignature(receipt),
+    'The saved Mentat question changed its battle, audience or original event.');
+  mentatRule(() => mentatHand(receipt.hand,g.expansions));
+  requireRule(['name','reveal','answered','declined','unavailable'].includes(receipt.stage), 'The saved Mentat question has an invalid stage.');
+  requireRule(receipt.stage === 'unavailable' ? receipt.hand.length === 0 : receipt.hand.length > 0,
+    'The saved Mentat opportunity changed its empty-hand boundary.');
+  if (receipt.stage === 'name' || receipt.stage === 'declined' || receipt.stage === 'unavailable')
+    requireRule(receipt.weapon === null && receipt.card === null, 'The unasked Mentat question cannot contain an answer.');
+  else {
+    requireRule(typeof receipt.weapon === 'string', 'The saved Mentat weapon question is missing.');
+    const quote = mentatRule(() => quoteMentatReveal(receipt.hand,receipt.weapon!,g.expansions));
+    requireRule(receipt.stage === 'reveal' ? receipt.card === null :
+      receipt.card && quote.cards.some(card => JSON.stringify(card) === JSON.stringify(receipt.card)),
+      'The saved Mentat disclosure does not answer its exact original question.');
+  }
+  const pending = receipt.stage === 'name' || receipt.stage === 'reveal';
+  requireRule(decisions.length === (pending ? 1 : 0), 'The saved Mentat question lost or reopened its unique decision.');
+  if (pending) {
+    const assignment = nativeLeaderSkill(g,receipt.owner);
+    requireRule(!b.revealed && !Object.keys(b.plans).length && !Object.keys(b.leaderSkillHidden ?? {}).length &&
+      !b.preparation && !g.response && assignment?.skill === 'mentat' && assignment.leader === receipt.leader &&
+      getPlayer(g,receipt.owner).leaders.some(l => l.id === receipt.leader && !l.dead && !l.capturedBy && !l.gholaBy) &&
+      JSON.stringify(getPlayer(g,receipt.target).hand) === JSON.stringify(receipt.hand),
+      'The pending Mentat question changed its trainer, timing or reserved private hand.');
+    for (const card of receipt.hand) requireRule(physicalTreacheryCards(g).filter(c => c.id === card.id).length === 1,
+      'The pending Mentat response must retain unique physical card custody.');
+    const decision = decisions[0];
+    requireRule(decision === g.decision && decision.event === receipt.event && decision.owner === receipt.owner && decision.target === receipt.target &&
+      decision.player === (receipt.stage === 'name' ? receipt.owner : receipt.target) && decision.stage === receipt.stage && decision.weapon === receipt.weapon,
+      'The Mentat decision no longer matches its atomic question and answering player.');
+  }
+  const observations = (history ?? []).filter(observation => observation.event === receipt.event);
+  requireRule(observations.length === (receipt.stage === 'answered' ? 1 : 0),
+    'The completed Mentat question lost or duplicated its private observation.');
+  if (observations.length) {
+    const {stage: _stage,hand: _hand,signature: _signature,...answer} = receipt;
+    const {signature: _observationSignature,...observation} = observations[0];
+    requireRule(JSON.stringify(answer) === JSON.stringify(observation), 'The Mentat historical answer changed after disclosure.');
+  }
+}
+function projectedMentat(g: Game, viewer: string): MentatView {
+  const receipt = g.battle?.mentatQuestion;
+  const pending = receipt && (receipt.stage === 'name' || receipt.stage === 'reveal') ? receipt : null;
+  return {pending: pending ? {event:pending.event,owner:pending.owner,target:pending.target,
+    player:pending.stage === 'name' ? pending.owner : pending.target,stage:pending.stage as 'name'|'reveal',weapon:pending.weapon,
+    weapons:pending.stage === 'name' && viewer === pending.owner && pending.hand.length ? mentatWeaponNames(g.expansions) : [],
+    cards:pending.stage === 'reveal' && viewer === pending.target ?
+      mentatRule(() => quoteMentatReveal(pending.hand,pending.weapon!,g.expansions)).cards : [],
+    blocked:pending.stage === 'name' && !pending.hand.length ? MENTAT_EMPTY_HAND : null} : null,
+    history:(g.mentatHistory ?? []).filter(observation => [observation.owner,observation.target].includes(viewer))
+      .map(({signature: _signature,...observation}) => structuredClone(observation))};
+}
+function actMentatQuestion(g: Game, decision: Extract<Decision,{kind:'mentatQuestion'}>, action: Action) {
+  const receipt = g.battle!.mentatQuestion!;
+  requireRule(action.event === receipt.event, 'Choose the current Mentat question event.');
+  if (decision.stage === 'name') {
+    if (action.decline === true) {
+      requireRule(Object.keys(action).every(key => ['type','event','decline'].includes(key)), 'Decline only this Mentat question.');
+      receipt.stage = 'declined';
+      log(g,`${getPlayer(g,receipt.owner).name} declined the optional Mentat question.`);
+    } else {
+      requireRule(Object.keys(action).every(key => ['type','event','weapon'].includes(key)), 'Name only one specific Mentat weapon.');
+      const weapon = stringField(action.weapon);
+      mentatRule(() => quoteMentatReveal(receipt.hand,weapon,g.expansions));
+      receipt.weapon = weapon;
+      log(g,`${getPlayer(g,receipt.owner).name} asked ${getPlayer(g,receipt.target).name} about ${weapon} with Mentat. The card shown is private and need not be played.`);
+      // Every question uses the same target-owned response, so public timing
+      // cannot reveal whether the named weapon was actually held.
+      receipt.stage = 'reveal';
+    }
+  } else {
+    requireRule(Object.keys(action).every(key => ['type','event','card'].includes(key)), 'Show exactly one held Treachery Card for Mentat.');
+    const quote = mentatRule(() => quoteMentatReveal(receipt.hand,receipt.weapon!,g.expansions));
+    const card = quote.cards.find(card => card.id === action.card);
+    requireRule(card, 'Choose a held card that answers this Mentat question.');
+    receipt.card = {...card}; receipt.stage = 'answered';
+  }
+  if (receipt.stage === 'answered') {
+    const {stage: _stage,hand: _hand,signature: _signature,...answer} = receipt;
+    const observation = {...answer,weapon:receipt.weapon!,card:receipt.card!,signature:''};
+    observation.signature = mentatSignature(observation);
+    (g.mentatHistory ??= []).push(observation);
+    (g.mentatHistoryEvents ??= []).push(observation.event);
+    log(g,`${getPlayer(g,receipt.target).name} privately showed one Treachery Card to ${getPlayer(g,receipt.owner).name}.`);
+  }
+  receipt.signature = mentatSignature(receipt);
+  beginBattlePowers(g);
+}
 function beginBattlePowers(g: Game) {
   const b = g.battle!;
+  if (b.mentatQuestion?.stage === 'name' || b.mentatQuestion?.stage === 'reveal') {
+    const receipt = b.mentatQuestion;
+    g.decision = {kind:'mentatQuestion',player:receipt.stage === 'name' ? receipt.owner : receipt.target,
+      event:receipt.event,owner:receipt.owner,target:receipt.target,stage:receipt.stage as 'name'|'reveal',weapon:receipt.weapon};
+    return;
+  }
   if (g.leaderSkills) {
     b.leaderSkillHidden ??= {};
     const pending = [b.attacker, b.defender].find((id) =>
@@ -19634,6 +19792,8 @@ function applyActionInner(
   requireRule(g.status !== 'finished', 'This game has ended.');
   const t = action.type;
   if (t === 'advanceBots') return g;
+  requireRule(!(g.battle?.mentatQuestion?.stage === 'name' || g.battle?.mentatQuestion?.stage === 'reveal') || t === 'decision',
+    'Resolve the current Mentat question before another action.');
   if (t === 'nexusCardChoice') { decideNexusCard(g, p, action); return g; }
   requireRule(g.nexusCards?.phase?.stage !== 'drawing', 'Finish the closing Nexus card choices first.');
   if (t === 'nexusTraitorDraw') { playNexusTraitorDraw(g, p, action); return g; }
@@ -19949,6 +20109,10 @@ function applyActionInner(
     );
     g.decision = null;
     requireRule(decision.kind !== 'leaderSkillVisibility' && decision.kind !== 'leaderSkillRevival', 'Use the Leader Skills controls for this decision.');
+    if (decision.kind === 'mentatQuestion') {
+      actMentatQuestion(g, decision, action);
+      return g;
+    }
     if (decision.kind === 'ixRicheseTechnology') {
       const pending = g.pendingIxRicheseTechnology!;
       requireRule(action.event === pending.event && action.decline === true &&
@@ -22628,6 +22792,7 @@ function applyActionInner(
     g.battle = {
       ...choice,
       event: battleEvent,
+      ...(g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
       ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 1 as const } : {}),
       ...(byFaction(g, 'richese')
         ? { preLeader: { event: battleEvent, ready: [], closed: false } }
@@ -22638,6 +22803,7 @@ function applyActionInner(
       revealed: false,
       traitorCalls: {},
     };
+    createMentatQuestion(g);
     beginStrongholdBattle(g);
     log(
       g,
@@ -23096,6 +23262,7 @@ export function viewGame(state: Game, id: string) {
     setupStage: g.status === 'setup' ? (g.setupStage ?? null) : null,
     setupPending: setupPending(g),
     leaderSkills: projectedLeaderSkills(g, id),
+    mentat: projectedMentat(g, id),
     rihani: projectedRihani(g, id),
     advanced: g.advanced,
     dukeVidal: g.dukeVidal

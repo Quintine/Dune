@@ -52,8 +52,11 @@ publisher instruction to announce a name.
 ## Missing and guarded work
 
 [Battle-effects follow-up](LEADER_BATTLE_EFFECTS.md) connects both Rihani bands
-and the lower Mentat, Bureaucrat and Sandmaster effects. Their normal questioning,
-payment redirection and Spice Banker income remain missing. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
+and the lower Mentat, Bureaucrat and Sandmaster effects. A separate
+[Mentat question preview](MENTAT_QUESTION.md) connects private naming/disclosure,
+posture and saved history under an explicit private opt-in. The uniform mandatory
+response step awaits the user's UX decision; ordinary activation remains disabled.
+Bureaucrat payment redirection and Spice Banker income remain missing. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
 now connects its lower band with separate sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).
 [Diplomat defense](DIPLOMAT_DEFENSE.md) connects its normal band for a physical
@@ -72,7 +75,7 @@ Before enabling them, add response-driven automatic revival continuation
 coverage; the current before/after revival observer does not certify deferred
 Tleilaxu response chains. The other source-contract timing questions also remain
 open. Planetologist now has bounded movement and battle controls as described below.
-Remaining normal-band payments and questions, Smuggler battle collection,
+Remaining normal-band payments, ordinary Mentat activation, Smuggler battle collection,
 Diplomat retreat and the other guarded skill combinations still need connected
 effects.
 

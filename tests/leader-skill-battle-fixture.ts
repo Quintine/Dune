@@ -80,8 +80,12 @@ export function leaderSkillBattle({ skill = 'suk-graduate' as LeaderSkillId, uns
   }
   Object.assign(game, { phase: 6, storm: 18, order: ['a', 'd'], active: 'a', ready: [], decision: null, response: null, phaseOpening: null });
   game = applyAction(game, 'a', { type: 'chooseBattle', territory, target: 'd' });
-  while (game.decision?.kind === 'leaderSkillVisibility') {
+  while (game.decision?.kind === 'leaderSkillVisibility' || game.decision?.kind === 'mentatQuestion') {
     const decision = game.decision;
+    if (decision.kind === 'mentatQuestion') {
+      game = applyAction(game, decision.player, { type: 'decision', event: decision.event, decline: true });
+      continue;
+    }
     game = applyAction(game, decision.player, { type: 'leaderSkillVisibility', event: decision.event,
       hide: decision.player === 'a' ? hide : false });
   }

@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 13 September 2026 — Private Mentat question preview and outage recovery
+
+[Mentat](MENTAT_QUESTION.md) has a connected private pre-plan question preview:
+canonical named weapons, a uniform target-owned card-show step, owner/target-only
+historical observations and subsequent leader concealment before faction powers.
+The shown card stays in hand and does not bind a plan. The private opt-in is absent
+from player views and cannot be enabled through actions. Ordinary Leader Skills
+games remain unchanged pending the user's forced-response UX exception decision;
+empty hands skip with an explicit unavailable receipt and no fabricated answer.
+
+Independent review and 22 focused tests cover legality, custody, sequencing,
+private controls, all four AI profiles, JSON/SQLite restoration and stale/competing
+writes. Two complete genuine-setup samples deliberately deal Mentat through a
+controlled initial skill shuffle: Basic 100 actions/3 JSON restores, Advanced
+507/14, each with one private observation and no rejected candidate. These are
+bounded preview paths, not complete skill or expansion acceptance. The separate
+browser QA uses a staged conserved battle and verifies private disclosure, a
+readable inspector, refresh recovery and the right to conceal after asking.
+
+After another reported power failure, all 665 opening rooms and original seat,
+recovery and receipt rows matched the backup. A fresh backup captured 666 rooms,
+including the isolated preview; database integrity and foreign keys passed. The
+existing server responded at localhost:3000, and its lock prevented a duplicate
+start. The saved Mentat browser seat restored its hand, resources, observation and
+pending posture. No reset, recurring automation or publication was introduced.
+The verified Git checkpoint records final broad results and preservation counts.
+
 ## 13 September 2026 — Deferred movement arrival safety and reusable samples
 
 [Deferred movement](DEFERRED_MOVEMENT_ARRIVAL.md) fixes the combined Advanced

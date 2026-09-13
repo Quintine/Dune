@@ -37,8 +37,8 @@ export const LEADER_SKILL_CARDS = [
     id: 'mentat',
     name: 'Mentat',
     normal: [
-      'Before Battle Plans, name a specific weapon and ask whether your opponent holds it. They reveal that card if held, or a different Treachery Card otherwise.',
-      'Revealing the named weapon does not require your opponent to use it.',
+      'Before Battle Plans, you may name a specific weapon and ask whether your opponent holds it. They privately show you that card if held, or choose another Treachery Card to show you otherwise.',
+      'The shown card stays in their hand and need not be used in battle. You may then move your Mentat behind the shield for possible use.',
     ],
     battle: ['Add 2 to this leader’s strength.'],
   },

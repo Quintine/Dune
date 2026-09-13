@@ -52,6 +52,7 @@ import { JuiceOfSapho } from './juice-of-sapho';
 import { LeaderSkillsPanel } from './leader-skills';
 import { LeaderSkillBattleGuide } from './leader-skill-battle-guide';
 import { RihaniChoice, RihaniHistory } from './rihani-decipherer';
+import { MentatQuestion, MentatHistory } from './mentat-question';
 import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
@@ -1523,6 +1524,7 @@ export function GameTable({
           <DiscoveryPanel game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || !!me.autopilot} />
           <RihaniHistory game={g} />
+          <MentatHistory game={g} />
           <NexusChoamTrade game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || !!me.autopilot} />
@@ -2142,6 +2144,8 @@ export function GameTable({
                   ? 'Grumman Collection'
                   : g.decision.kind === 'leaderSkillVisibility'
                     ? 'Position your skilled leader'
+                  : g.decision.kind === 'mentatQuestion'
+                    ? g.decision.stage === 'name' ? 'Mentat · name a weapon' : 'Mentat · privately show a card'
                   : g.decision.kind === 'leaderSkillRevival'
                     ? 'Choose a skill for the revived leader'
                   : g.decision.kind === 'rihani'
@@ -2433,6 +2437,8 @@ export function GameTable({
                   act={act}
                   busy={busy}
                 />
+              ) : g.decision.kind === 'mentatQuestion' ? (
+                <MentatQuestion key={`${g.decision.event}-${g.decision.stage}-${g.me}`} game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'leaderSkillVisibility' || g.decision.kind === 'leaderSkillRevival' ? (
                 <p className="muted">Use the Leader Skills controls above to make your choice.</p>
               ) : g.decision.kind === 'homeworldRevivalDeployment' ? (

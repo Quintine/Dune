@@ -83,7 +83,11 @@ void test('named economic, custody and information effects retain their source n
   );
   assert.match(
     leaderSkillCard('mentat').normal.join(' '),
-    /specific weapon.*different Treachery Card.*does not require/,
+    /may name a specific weapon.*privately show.*if held.*choose another Treachery Card/,
+  );
+  assert.match(
+    leaderSkillCard('mentat').normal.join(' '),
+    /stays in their hand.*need not be used in battle.*then move.*behind the shield/,
   );
 });
 

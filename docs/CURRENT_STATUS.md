@@ -1,206 +1,98 @@
 # Current development status
 
-Updated 13 September 2026. This is the short navigation dashboard; detailed evidence remains in the linked records. **The complete twelve-faction goal is unfinished. Basic is playable; Advanced and unfinished expansion starts remain gated.** No completion or publication gate is opened by this document.
+Updated 13 September 2026. **The full twelve-faction goal is unfinished. Basic
+is playable; public Advanced and unfinished expansion/module starts remain
+gated.** Prototypes do not open completion or publication gates.
 
-## Evidence and source of truth
+## Current checkpoint and work
 
-- [Deferred movement arrival safety](DEFERRED_MOVEMENT_ARRIVAL.md) repairs the
-  combined Advanced sample's saved CHOAM decline deadlock. New unsupported moves
-  reject before prevention windows or card commitment; an old saved decline
-  returns the uncommitted move while preserving any existing Ornithopter escrow.
-  Simultaneous Ambassador/Terror priority remains a pending source question.
-  Focused rules and saved concurrency checks retain supported arrivals and
-  Karama's validation before payment. The reusable offline faction harness records
-  private traces, incomplete snapshots and source-bound reports. All six fresh
-  samples now finish; combined Advanced uses 1,303 actions and 35 JSON restores.
-  The exact earlier failed save also finishes after its recovered decline.
-  Guarded candidates still occur; broad verification is recorded in the checkpoint. Both existing
-  browser QA seats restored their hands and decisions after refresh. The server
-  was healthy and all 632 opening games and original seat records were preserved.
+Latest verified checkpoint: `903d861`, deferred movement arrival safety.
+Types, lint, **4,583 offline tests**, build and **43 HTTP tests** passed.
+All **632 opening games** and original seat/recovery records were preserved
+(665 after HTTP checks). The healthy server was reused; both existing Ecaz and
+Ixian browser QA seats restored their private hands and pending decisions.
 
-- [Expansion-faction development games](EXPANSION_FACTIONS_PROTOTYPE.md) connect
-  genuine setup for all seven expansion selections, using existing faction
-  controls, all four AI profiles and saved continuation. Ecaz now places its six
-  starting forces in Imperial Basin and keeps fourteen in reserve. The optional
-  three-card Ecaz variant remains separate and unfinished. Advanced Ixians have
-  an explicit saved per-lot decline for Richese offers; the actual exchange still
-  awaits its replacement-custody ruling. Complete-game samples
-  finish five of six games; combined Advanced reaches turn three, then stops
-  on the then-existing CHOAM movement/Ambassador arrival guard. The deferred
-  movement follow-up above repairs that saved deadlock while retaining the
-  unresolved simultaneous-arrival gate. Setup evidence does not open public starts or
-  establish full faction compliance. Saved-game checks passed after a necessary
-  restart for a stale server module cache.
+[Deferred movement](DEFERRED_MOVEMENT_ARRIVAL.md) now rejects unsupported arrivals
+before prevention windows or new card commitment. A legacy CHOAM decline returns
+an uncommitted move for another choice while preserving reserved Ornithopter
+custody. All six genuine faction sample games finish; combined Advanced completes
+1,303 actions and 35 JSON restorations. Guarded arrival candidates still occur.
+The exact prior failed save also finishes. Simultaneous Ambassador/Terror priority
+remains unresolved, so these paths do not prove complete combined rules support.
 
-- [Diplomat defense copying](DIPLOMAT_DEFENSE.md) connects one committed Worthless
-  card to an opposing base Shield or Snooper, with optional controls, all four AI
-  profiles, native trained-leader self-protection and mandatory discard. Saved
-  choices and concurrent resolution have focused recovery evidence. Lower retreat
-  and combined modules remain unfinished; no public gate opens. After the latest
-  outage, the existing server was healthy and all 563 opening games and original
-  seat records matched the backup. Final checks are recorded in the checkpoint.
+The [Mentat question preview](MENTAT_QUESTION.md) now connects private naming and
+card disclosure before leader posture and faction powers, with human controls,
+all four AI profiles and saved continuation. Independent review and 22 focused
+tests pass; two controlled-shuffle genuine-setup samples finish. Ordinary games
+remain unactivated while the uniform private response UX question is pending.
+Final broad results and Git delivery are recorded with the verified checkpoint.
 
-- [Smuggler with Richese No-Field](SMUGGLER_NO_FIELD.md) connects the officially
-  permitted free physical companion, unchanged marker price, private controls,
-  all four AI profiles and saved cancellation/interception. Genuine CHOAM &
-  Richese Leader Skills setup now includes its two replacement/additional battle
-  cards. After the latest outage the server was healthy and all 529 opening games
-  and seat records matched the backup. Other combinations and public starts stay
-  gated; final checks and preservation totals are recorded in the checkpoint.
+After the latest power failure, all 665 opening rooms and original seat/recovery
+records matched the backup; the new Mentat QA room brings the total to 666 before
+HTTP checks. Database integrity and foreign keys passed. The existing server
+responds at localhost:3000 and is reused; its lock prevented a duplicate start.
+The Mentat browser seat restored its private history and pending leader choice.
 
-- [Sandmaster movement collection](SANDMASTER_MOVEMENT.md) connects explicit
-  ground routes, optional board-spice collection, controls, legal AI and saved
-  Fremen cancellation. Special relocation and combined modules remain missing;
-  multiple-pile collection stays guarded. No mode gate is opened.
+## Authoritative navigation
 
-- [Spice Banker battle spending](SPICE_BANKER_RUNTIME.md) connects sealed own
-  spice, separate support funding, survivor strength, traitor payment precedence,
-  private controls, all four AI profiles and saved resolution. Normal income
-  remains pending the recorded custody question. Broad results and browser
-  evidence are recorded in the checkpoint; no mode gate is opened.
+- [Rules checklist](../game/reference.ts), topic `implementation-checklist` and
+  each feature's entries: track implementation, controls, AI, documentation and
+  verification, plus Missing, Prototyped, Integrated, Verified and Polished stages.
+- [Rule decision index](RULE_DECISIONS.md): settled contracts, source precedence
+  and pending material interpretations. Consult it before reopening research.
+- [Development guide](DEVELOPMENT.md) and [verification tools](VERIFICATION_WORKFLOW.md):
+  architecture, focused checks, source-bound reports, reusable faction samples,
+  private backup and saved-seat restoration.
+- [Implementation history](IMPLEMENTATION_STATUS.md): newest first. Historical
+  evidence and outage records stay there and in feature documents; read bounded
+  relevant sections and verify old absence claims against current code/tests.
+- [Efficiency pilot](EFFICIENCY_PILOT.md): the first three milestones are pushed;
+  measurement limits remain explicit. Reuse tools and checks, without promising
+  an unmeasured savings percentage.
 
-- [Smuggler reserve shipment](SMUGGLER_SHIPMENT.md) connects the optional free
-  companion, total physical count, Guild rounding, controls, all four AI profiles
-  and saved interception. Independent review added missing-decision rejection.
-  Browser opt-out, actual shipment and refresh are exercised in a new room.
-  Battle collection and combined routes remain missing. After the latest outage,
-  the server was healthy and all 427 opening rooms remained unchanged; a fresh
-  backup captured 428. Broad results and final preservation are in the commit.
+## Connected development capabilities
 
-- [Leader battle effects](LEADER_BATTLE_EFFECTS.md) now connect both Rihani bands
-  and lower Mentat, Bureaucrat and Sandmaster effects. Private controls, all four
-  AI profiles, JSON/SQLite continuation and concurrent exchanges are covered.
-  A new browser room exercised separate inspection, draw, public return and refresh.
-  Three normal bands and Spice Banker, Diplomat and Smuggler remain missing.
-  The server responded after the outage; a fresh backup captured 393 rooms.
-  Broad check results and final preservation are recorded in the checkpoint commit.
+These links define bounded working behavior, not complete module certification.
 
-- [Suk Graduate](SUK_GRADUATE_RULES.md) now connects both casualty-rescue bands,
-  ordinary/elite counter routing, player controls, all four AI profiles and saved
-  continuation. Targeted browser rescue and refresh preserved two board forces,
-  seventeen reserves, one Tank and the private hand. Two Basic/Advanced samples
-  finished but did not encounter an eligible rescue; targeted tests cover that
-  effect. Advanced Atreides selection remains unavailable pending the recorded
-  Kwisatz Haderach question. After the latest reported outage, the server was
-  healthy and all 360 rooms were backed up; the 359 opening rooms and their seat
-  records were unchanged. Checkpoint-wide results are in the commit.
-- [Planetologist](PLANETOLOGIST_RULES.md) now has bounded movement and Special-card
-  battle prototypes. Independent review and **84 focused tests** pass. Two genuine
-  four-profile Basic/Advanced samples finished with saved continuations and no
-  rejected actions; the Basic sample used both movement alternatives. Browser
-  gather, Special substitution and refresh were exercised in a new isolated room.
-  All 325 opening games remain preserved. The existing server was healthy after
-  the outage report, so it was reused. Broad results are in the checkpoint commit.
-- [Juice of Sapho](JUICE_OF_SAPHO_RUNTIME.md#13-september-first-at-a-later-clean-movement-boundary)
-  now connects first among remaining unstarted movement turns after earlier
-  turns finish, including after Advanced Guild completes its turn. Existing
-  private controls, all four AI profiles and saved continuation use the same
-  server option. Other Sapho timing questions remain pending. Independent
-  review and focused checks pass; broad results are in the checkpoint commit.
-- The [first Leader Skills prototype](LEADER_SKILLS_RUNTIME.md) connects all
-  fourteen physical cards, private setup, five battle disciplines, skilled capture,
-  death and own revival through controls, legal AI and saved choices. The [Planetologist follow-up](PLANETOLOGIST_RULES.md) adds movement and
-  Special-card battle controls, and Suk Graduate adds casualty rescue. The
-  battle-effects follow-up adds Rihani and three lower bands; remaining work is
-  listed in its contract. The user-requested [capture search](LEADER_SKILLS_CAPTURE.md)
-  resolves publicity through the known physical card; captured replacement and
-  broader combinations remain pending. No mode gate is opened.
-- Following the reported power outage, the existing server responded normally,
-  the database integrity check passed with 291 rooms, and all 218 rooms in the
-  preceding handover baseline were unchanged. The saved QA seat restored its
-  same private hand and pending Storm decision after refresh. A new private
-  backup protects all 291 rooms. No server restart or database reset was needed.
-- A second reported outage later stopped the server. All 292 rooms survived
-  integrity and preservation checks. A fresh backup preceded the necessary
-  server start; the Leader Skills QA seat restored its same private hand,
-  assignments and pending Storm choice. No database reset was performed.
-- The current [Discovery prototype](DISCOVERY_PROTOTYPE.md) adds unambiguous
-  Jacurutu battle income, sole-occupant Ecological Testing Station adjustment and
-  Shrine card conversion. They connect engine effects, private controls, legal
-  AI and saved continuation. Orgiz, mixed-force Jacurutu payouts and contested
-  Cistern/Testing Station benefits remain pending. Required broad checkpoint
-  results are recorded in the commit; this is **Prototyped**, not full compliance.
-- Discovery checkpoint `ab0ab52` added signed next-turn entry, sole-occupant
-  Cistern income and later-turn carried Ornithopter movement. It passed **4,313
-  offline tests**, build and **40 HTTP tests**, preserving all 156 opening rooms
-  (187 after QA/checks). Browser room `CA782FQE` exercised free entry and carried
-  flight; refresh and recovery from a user-confirmed power outage retained the
-  private hand, forces, spice and spent token. Those were targeted scenarios.
-- [First Discovery prototype](DISCOVERY_PROTOTYPE.md): genuine base-faction
-  Basic/Advanced setup, seven Spice Cards, eight tokens, Great Maker, Collection
-  inspection/rewards and revealed nested locations are connected. Checkpoint
-  `f0256c1` passed 4,264 offline tests, build and 40 HTTP tests; two seeded games
-  finished and the Fremen browser view restored its private token face. All 125
-  opening saved rooms remained unchanged. That checkpoint predates the current
-  free-entry, Cistern and carried-Ornithopter additions.
-- Ix prototype checkpoint `5a76ae0`: types, lint, **4,211 offline tests**, build and **40 HTTP tests** passed. Genuine Basic/Advanced setup and two seeded complete simulations were exercised; a short browser game finished with private hand restoration. All 64 opening saved rooms were preserved; 31 QA rooms were added. This is bounded prototype evidence, not complete Ix compliance.
-
-- [Rules implementation checklist](../game/reference.ts): `RULE_TOPICS`, topic `implementation-checklist`, and each feature's implementation, controls, AI, documentation and verification entries. Coverage is per stated boundary, not an implicit whole-game certificate.
-- [Latest verified gameplay checkpoint](IMPLEMENTATION_STATUS.md): Truthtrance hand inventory, 13 September 2026 (`7454456`): types, lint, **4,200 offline tests**, production build and **40 HTTP tests** passed, with a phone/browser refresh journey and preserved saved games. These are recorded results, not checks rerun for this dashboard.
-- Latest verification checkpoint `4a0b1ee`: genuine Advanced full-plan interaction tests; types, lint and **4,205 offline tests** passed. Private inspection restored after restart, with desktop/phone checks and all 64 saved games unchanged. No runtime change; prior build/HTTP evidence applies.
-- [Development guide](DEVELOPMENT.md) defines focused verification; [rule decisions](RULE_DECISIONS.md) locates settled contracts and pending interpretations. Read the newest checkpoint and relevant feature document before consulting older log entries.
-
-The user authorized a one-time local reset on 13 September: the 3,644 historical
-rooms were archived privately and cleared. [Fresh checkpoint and preservation
-policy](VERIFICATION_WORKFLOW.md#authorized-reset-13-september-2026) now apply to
-new games; historical room IDs are no longer active local fixtures.
-
-The first three efficiency milestones are pushed: tooling `6e26ba5`, typed
-Advanced shipment commitments `32791ed`, and [hand inventory facts](TRUTHTRANCE_HAND_INVENTORY.md)
-`7454456`. See [pilot measurements](EFFICIENCY_PILOT.md).
-
-The current [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md) verifies
-Truthtrance/Voice/Prescience/Ghola interactions from genuine Advanced setup,
-replacing the old Basic-then-flip test fixture. These existing paths pass without
-a runtime change. Exact special-offer timing and target-first ordering remain
-source interpretations; they are not settled by test results.
-
-The development server is reused until a change or observed condition warrants
-a restart. The user removed hourly restarts; preserve saved games and verify
-restoration after necessary restarts. No recurring automation is installed.
+| Area | Current connected work and evidence |
+| --- | --- |
+| Base/Advanced setup | [Genuine setup](ADVANCED_SETUP_TEST_SEAM.md), [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md), [Fremen cancellation](FREMEN_MOVEMENT_KARAMA_RULES.md), [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md). Earlier Basic-then-flip fixtures do not establish current setup coverage. |
+| Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement, separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
+| Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md) and [No-Field](SMUGGLER_NO_FIELD.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md). Remaining bands and combinations are explicit in those contracts. |
+| Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Jacurutu income, Testing Station and Shrine. Orgiz and contested/mixed cases remain pending. |
+| Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) is connected; its after-victory inspection remains pending. A source audit or helper alone is not a completed effect. |
+| Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
+| Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. Richese card contracts and the checklist identify the other connected effects and explicit gaps. |
+| Multiplayer | Saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
 
 ## Remaining readiness
 
-| Area | Established evidence | Remaining gate |
-| --- | --- | --- |
-| Basic core | Playable loop; shared setup, Fremen movement cancellation, structured Truthtrance facts and bounded Basic/no-Guild Advanced reserve-shipment promises. | Ordinary Guild rate/transport cancellation; wider truthful questions/action commitments; integrated rules and human/AI acceptance. |
-| Six-faction Advanced | Genuine offline setup across 456 configurations; four-profile full-game simulations and JSON continuations. | Base gaps plus provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. Public starts remain disabled. |
-| Twelve factions and optional modules | Many bounded faction, card, Homeworld and Nexus slices have controls, bots and recovery evidence; Discovery includes free entry, Cistern, carried flight and bounded Jacurutu, Testing Station and Shrine effects. | Every unfinished effect and interaction, occupation entitlement, Orgiz, mixed physical dial allocation and contested Discovery benefits and complete combined games. Inventory or fixture coverage does not enable a module. |
-| AI difficulty | Four profiles consume private legal views; recorded Basic and Advanced studies complete. | Demonstrate a consistent Medium → Hard → Brutal strength ordering, improve strategic gaps, and repeat targeted studies after relevant policy/rule changes. |
-| Multiplayer | Versioned writes, saved seats, owner recovery kits, uncertain-request retry, voluntary own-seat AI control and a [voluntary seat handover prototype](SEAT_HANDOVER.md). | Broader handover/disconnection acceptance, unprepared abandoned-seat recovery, unattended continuation and remaining network-failure acceptance. Preserve privacy and existing games. |
-| Player experience | Internal component inspectors and many desktop/phone feature journeys verified. | Complete end-to-end games, accessible controls, responsive layout, clear rules/errors and recovery across all supported combinations. |
+| Area | Remaining gate |
+| --- | --- |
+| Basic core | Ordinary Guild repricing/transport settlement, broader truthful commitments, unresolved special timing and integrated rules/human/AI acceptance. |
+| Six-faction Advanced | Base gaps, provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. Setup matrices and complete samples do not open public starts. |
+| Twelve factions and all optional modules | Every missing effect, remaining skill bands, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. Detailed boundaries remain in the checklist/decision index. |
+| AI | Legal continuation for every supported function and distinct Easy/Medium/Hard/Brutal strategy; consistent upper-level strength ordering remains unproven. Defer broad calibration until functional coverage warrants it. |
+| Multiplayer | Broader disconnected/abandoned-seat recovery, unattended continuation and network-failure acceptance, while preserving authoritative versioning, custody, privacy and saves. |
+| Components and experience | Full component inventory/text verification, all readable inspectors, original artwork, animation/sound/accessibility/mobile polish, complete internal guidance and end-to-end human play. |
 
-The [base/Advanced audit](BASE_ADVANCED_READINESS_20260907.md) includes historical missing-feature rows. Its follow-ups supersede the Fremen cancellation and BG setup findings; [genuine setup](ADVANCED_SETUP_TEST_SEAM.md) and the [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md) supersede the old Basic-then-flip testing concern. They do not settle the remaining rules.
+[AI calibration](AI_CALIBRATION.md), [multiplayer audit](MULTIPLAYER_AUDIT.md),
+[component inventory](COMPONENT_INVENTORY.md) and [visual playtest](VISUAL_PLAYTEST.md)
+record their measured scope. [README](../README.md) retains publication gates.
 
-Likewise, the [Truthtrance readiness audit](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md) predates [spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card-count facts](TRUTHTRANCE_CARD_COUNT.md) and [Basic shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md). Current `TruthFact` already includes these facts; do not rebuild them. Typed preparation and BG conversion now support the active reserve-shipment scope in base Advanced without Guild or optional modules. Broader facts, earlier-phase promises, remaining Advanced/expansion commitment scope and freeform interpretation remain incomplete.
+## Working sequence and preservation
 
-The voluntary [seat handover prototype](SEAT_HANDOVER.md) connects private one-time offers, recipient controls, exact saved retry proof and active-token custody fencing. It preserves existing game state and revokes previous owner recovery authority. Full disconnected-seat acceptance remains open. CHOAM Nexus after-victory inspection awaits the [private-window decision](NEXUS_CHOAM_SECRET_ALLY.md#after-victory-inspection-audit); development continues independently.
+Prototype every remaining function in dependency order, using existing controls,
+legal AI and the saved-state model. Continue independent functions while material
+rulings are pending. Then run integrated games, repair failures, deepen combination
+and recovery coverage, calibrate AI and polish. Keep focused checks for crashes,
+deadlocks, legality, custody and privacy; complete required broad checkpoint checks.
+Use selective subagents and independent review for complex rules/privacy/persistence.
+Commit and push verified checkpoints under **“Push all from now on”**, verify push
+success, and stop pursuit at **80% weekly usage consumed** with the goal unfinished.
 
-## Next milestone: rapid functional coverage
-
-The first connected batch is the [Ixians & Tleilaxu prototype](IX_PROTOTYPE.md):
-genuine setup, both expansion factions, full Ix deck and Sandtrout, shared human/AI
-controls and saved continuation. The checklist now distinguishes its Prototyped
-development stage from Partial rules coverage. The next connected action is the [CHOAM Nexus Collection trade](NEXUS_CHOAM_SECRET_ALLY.md),
-with private controls, all four AI profiles and a saved payment/discard continuation.
-Its after-victory inspection remains missing. The [first Discovery batch](DISCOVERY_PROTOTYPE.md)
-now connects the [sourced components](DISCOVERY_COMPONENTS.md) to Great Maker,
-destructive Discovery blows, private inspection/reveal, stash rewards, carried
-Ornithopter custody and later-turn movement, five revealed nested locations,
-signed free entry on the following turn and sole-occupant Cistern income. Only
-Jacurutu counts toward stronghold victory. Jacurutu income, Testing Station and Shrine now have bounded connected
-prototypes. Next dependencies are Orgiz and the unresolved contested benefits,
-physical dial allocation and collected-spice-blow interpretations. Complete variant acceptance
-and normal public starts remain gated.
-
-The user changed the development order on 13 September: get working prototypes
-of all remaining functions into the game, then use integration and play to find
-issues and refine them. Complete core certification no longer precedes independent
-expansion prototyping. Final rules compliance and release requirements still apply.
-
-1. Reconcile the existing checklist with current helpers, controls, AI and saved-state paths. Mark remaining work as missing, prototyped, integrated, verified or polished; retain explicit blockers and reuse completed features.
-2. Implement the next connected batch across Basic, Advanced, factions or modules according to dependencies. Include real actions, usable controls, a legal AI path and saved continuation. Keep fast checks for crashes, deadlocks, legality, custody, privacy and save integrity; avoid exhaustive refinement of each small feature before broad coverage exists.
-3. Continue independent functions while [material rulings](RULE_DECISIONS.md) are pending. Ordinary Guild repricing/settlement and special Karama interpretations remain unresolved; do not invent their outcomes to fill the inventory.
-4. Integrate prototypes and play complete games to discover issues, then deepen combination coverage, multiplayer recovery, AI calibration and visual polish. Required checkpoint checks, reviewed Git pushes, selective subagents and the 80%-used weekly stop remain in force. Keep unfinished modes and publication gated until acceptance.
-
-Consult [AI calibration](AI_CALIBRATION.md), [multiplayer audit](MULTIPLAYER_AUDIT.md), [autopilot](AUTOPILOT.md), [component inventory](COMPONENT_INVENTORY.md) and [visual playtest](VISUAL_PLAYTEST.md) for their measured scope and follow-ups. Use current code and later checkpoints to interpret historical results. Publication still requires the completion and integrated verification gates in [README](../README.md).
+The user-authorized 13 September reset happened once; preserve all games created
+since it. Keep `.wrangler/state`, credentials and private backup artifacts out of
+Git. Reuse a healthy server; restart only for a relevant change or observed problem,
+with a fresh backup, safe human-play boundary and verified restoration. No hourly
+restart or recurring maintenance automation is installed; do not recreate one.

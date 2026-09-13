@@ -1438,7 +1438,7 @@ function policyActions(g: GameView): Action[] {
   if (g.decision) {
     if (g.decision.player !== me.id) return [];
     const d = g.decision;
-    if (d.kind === 'leaderSkillVisibility' || d.kind === 'leaderSkillRevival') return [];
+    if (d.kind === 'leaderSkillVisibility' || d.kind === 'leaderSkillRevival' || d.kind === 'mentatQuestion') return [];
     if (d.kind === 'choamAudit')
       return [{ type: 'decision', event: d.event, audit: true }];
     if (d.kind === 'choamAuditPayment') {
@@ -3659,6 +3659,24 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  const mentat = g.mentat?.pending;
+  if (mentat) {
+    if (mentat.player !== g.me || g.decision?.kind !== 'mentatQuestion' ||
+        g.decision.player !== g.me || g.decision.event !== mentat.event ||
+        g.truthtrance || g.response || g.automaticContinuationPending) return [];
+    if (mentat.stage === 'name') {
+      if (mentat.blocked || !mentat.weapons.length)
+        return [{ type: 'decision', event: mentat.event, decline: true }];
+      const preferred = rank(g) === 0 ? mentat.weapons :
+        ['Poison Tooth', 'Lasgun', 'Crysknife', 'Chaumas', ...mentat.weapons];
+      const weapon = preferred.find((name) => mentat.weapons.includes(name))!;
+      return [{ type: 'decision', event: mentat.event, weapon }];
+    }
+    const card = [...mentat.cards].sort((a, b) =>
+      technologyCardValue(g, a) - technologyCardValue(g, b) || a.id.localeCompare(b.id),
+    )[0];
+    return card ? [{ type: 'decision', event: mentat.event, card: card.id }] : [];
+  }
   const skill = g.leaderSkills;
   if (skill && !g.truthtrance && !g.response && !g.phaseOpening) {
     if (skill.battleChoice)
