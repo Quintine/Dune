@@ -109,7 +109,17 @@ void test('Collection look remains private, deferred reveal survives reload, and
 void test('Treachery Card Stash draws past a full hand, keeps the draw private and accepts every held discard through recovery', () => {
   let g = discoveryFixture();
   const token = enterDiscoveryCollection(g, 'treachery-card-stash');
+  // Exercise the previously flaky ID prefix collision with two distinct cards.
+  const take = (id: string) => {
+    const pile = [g.deck, g.discard, ...g.players.map((p) => p.hand)]
+      .find((cards) => cards.some((card) => card.id === id))!;
+    return pile.splice(pile.findIndex((card) => card.id === id), 1)[0];
+  };
+  const privateCard = take('treachery-3');
+  const visibleSibling = take('treachery-32');
+  g.players.find((p) => p.id === 'f')!.hand.push(visibleSibling);
   while (g.players[0].hand.length < 4) g.players[0].hand.push(g.deck.shift()!);
+  g.deck.unshift(privateCard);
   const original = g.players[0].hand.map((c) => c.id),
     drawn = g.deck[0];
   g = applyAction(g, 'a', {
@@ -120,7 +130,9 @@ void test('Treachery Card Stash draws past a full hand, keeps the draw private a
   g = applyAction(g, 'a', { type: 'discovery', token: token.id, reveal: true });
   assert.equal(g.decision?.kind, 'discoveryDiscard');
   assert.equal(g.players[0].hand.length, 5);
-  assert.equal(JSON.stringify(viewGame(g, 'f')).includes(drawn.id), false);
+  const otherView = JSON.stringify(viewGame(g, 'f'));
+  assert.equal(otherView.includes(JSON.stringify(visibleSibling.id)), true);
+  assert.equal(otherView.includes(JSON.stringify(drawn.id)), false);
   assert.deepEqual(
     g.players[0].hand.map((c) => c.id),
     [...original, drawn.id],

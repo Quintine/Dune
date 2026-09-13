@@ -1,8 +1,9 @@
 # Leader Skills source contract
 
 Updated 13 September 2026. This is a primary-source contract for the optional
-Leader Skills module from *CHOAM & Richese*. It does not record a runtime
-prototype, enable the module, or certify its combinations.
+Leader Skills module from *CHOAM & Richese*. The later [first runtime prototype](LEADER_SKILLS_RUNTIME.md)
+records connected behavior and remaining gaps. This contract does not enable
+the module or certify its combinations.
 
 ## Sources and local evidence
 
@@ -58,7 +59,7 @@ also alternatives rather than a cumulative four-force rescue
 | 2 | **Spice Banker** | Once in each phase, when another player pays at least 4 spice to the Spice Bank, place 1 spice in front of this faction's shield for collection in the Mentat Pause. | Commit 1–3 spice with the Battle Plan and add the same amount to this leader's strength. This payment is separate from spice used to make forces full strength. |
 | 3 | **Diplomat** | A single Worthless card in the owner's Battle Plan may stand in for the defense used by the opponent in that battle, provided the owner played no defense; discard the Worthless card afterward. | If this faction loses, retreat up to this leader's strength in **undialed** forces to one empty adjacent territory that is not a stronghold. |
 | 4 | **Mentat** | Before Battle Plans, name a specific weapon and ask whether the opponent holds it. They reveal that card if held; otherwise they reveal a different Treachery Card. Revealing the named weapon does not commit it to the plan. | Add 2 to this leader's strength. |
-| 5 | **Suk Graduate** | After winning a battle in which the winner loses forces, return 1 such force to reserves instead of the Tleilaxu Tanks. | After winning and losing forces, save up to 3 from the Tanks: leave 1 in the battle territory and return the remainder to reserves. |
+| 5 | **Suk Graduate** | After winning a battle in which the winner loses forces, return 1 such force to reserves instead of the Tleilaxu Tanks. | After winning and losing forces, prevent up to 3 from going to the Tanks: leave 1 in the battle territory and return the remainder to reserves. |
 | 6 | **Rihani Decipherer** | After winning a battle, secretly inspect 2 random cards from the Traitor Deck, then reshuffle them into that deck. | After winning, draw 2 Traitor Cards. Keep 1 by revealing an unused Traitor Card already held, then shuffle that revealed card and the unkept drawn card into the deck. |
 | 7 | **Sandmaster** | When moving any forces into or through a territory containing spice, the faction may immediately collect 1 spice there, once for each territory traversed. | After winning a battle in a territory that contains spice, add 3 spice to that territory. |
 | 8 | **Smuggler** | When shipping forces from off-planet to an empty territory, one additional force may accompany that shipment for free. | When Battle Plans are revealed, collect spice from the battle territory equal to this leader's strength, limited by the spice present. The general survival rule still applies. |
@@ -117,6 +118,11 @@ precedes faction abilities; the printed example orders Mentat before Atreides
 Prescience.
 
 ## Capture and official clarifications
+
+The user's requested fresh search resolves the skilled capture's public state
+through its unique, publicly assigned card's required movement. See the
+[capture interpretation and its precise limits](LEADER_SKILLS_CAPTURE.md).
+Captured-card replacement entitlement remains a separate unresolved question.
 
 When Harkonnen captures a skilled leader, the skill card travels with that
 leader. The captor may use only the lower battle effect and only when using
@@ -191,6 +197,5 @@ Keep the six unresolved boundaries above gated or represented as explicit
 pending decisions. In particular, do not pay Smuggler spice irreversibly at
 plan reveal, transfer Spice Banker escrow on capture, or issue a replacement
 skill while the original card is captured without a recorded ruling. This
-source contract is ready for breadth-first implementation; it is not evidence
-that Leader Skills is already prototyped or that the optional module can be
-enabled publicly.
+source contract supports the bounded [runtime prototype](LEADER_SKILLS_RUNTIME.md);
+it is not evidence that the optional module can be enabled publicly.

@@ -47,6 +47,7 @@ import { RicheseSpecialKarama } from './richese-special-karama';
 import { RicheseGift } from './richese-gift';
 import { Distrans } from './distrans';
 import { JuiceOfSapho } from './juice-of-sapho';
+import { LeaderSkillsPanel } from './leader-skills';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
@@ -202,7 +203,11 @@ export function GameTable({
     .join(', ');
   const waitingForFremen = !!setupFremen && setupFremen.reserves !== 10;
   const setupStatus =
-    setupStage === 'prediction'
+    setupStage === 'leaderSkills'
+      ? g.leaderSkills?.offer
+        ? 'Keep one of your two Leader Skill cards and assign it to an eligible leader. Traitor selection follows when every faction has chosen.'
+        : `Your skill is assigned. Waiting for ${setupPendingNames || 'the remaining players'} to choose.`
+      : setupStage === 'prediction'
       ? setupSisterhood?.id === me.id
         ? 'Seal your secret prediction before traitors or treachery cards are dealt.'
         : `Waiting for ${setupSisterhood?.name ?? 'Bene Gesserit'} to seal the secret prediction.`
@@ -217,13 +222,13 @@ export function GameTable({
             ? setupFremen.id === me.id
               ? g.advanced && setupSisterhood
                 ? 'Place your ten starting forces. Bene Gesserit places its advisor afterward.'
-                : 'Place your ten starting forces. Starting cards are dealt automatically after placement.'
+                : g.leaderSkills ? 'Place your ten starting forces. Starting cards were already dealt before skill assignment.' : 'Place your ten starting forces. Starting cards are dealt automatically after placement.'
               : `Waiting for ${setupFremen.name} to place the Fremen starting forces.`
             : g.advanced && setupSisterhood && !setupSisterhood.advisorSetup
               ? setupSisterhood.id === me.id
                 ? 'Choose a printed board territory and sector for your starting advisor.'
                 : `Waiting for ${setupSisterhood.name} to place the starting advisor.`
-              : 'Starting placements are finishing. Cards are dealt and the Storm phase opens automatically.'
+              : g.leaderSkills ? 'Starting placements are finishing. The Storm phase opens automatically.' : 'Starting placements are finishing. Cards are dealt and the Storm phase opens automatically.'
           : 'Complete your starting choices. Play begins when everyone is ready.';
   const automaticEvents = g.log.flatMap((entry) =>
     entry.automatic
@@ -1448,6 +1453,7 @@ export function GameTable({
           <NexusCards game={g} act={act} busy={busy} />
           <NexusTraitors game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <DiscoveryPanel game={g} act={act} busy={transportBusy || !!me.autopilot} />
+          <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusChoamTrade game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || !!me.autopilot} />
@@ -1556,7 +1562,9 @@ export function GameTable({
           ) : g.status === 'setup' && !g.decision ? (
             <>
               <h2>
-                {setupStage === 'prediction'
+                {setupStage === 'leaderSkills'
+                  ? 'Assign your Leader Skill'
+                  : setupStage === 'prediction'
                   ? 'Seal the prediction'
                   : setupStage === 'traitors'
                     ? 'Choose your traitor'
@@ -1569,8 +1577,9 @@ export function GameTable({
               </p>
               {setupStage && (
                 <p className="fine">
-                  Setup order: prediction, traitors, starting forces, then the
-                  automatic treachery-card deal and Storm phase.
+                  {g.leaderSkills
+                    ? 'Setup order: prediction, starting Treachery Cards, Leader Skills, traitors, starting forces, then Storm.'
+                    : 'Setup order: prediction, traitors, starting forces, then the automatic treachery-card deal and Storm phase.'}
                 </p>
               )}
               {(!setupStage || setupStage === 'forces') &&
@@ -2058,6 +2067,10 @@ export function GameTable({
                   ? 'Caladan victory reinforcement'
                   : g.decision.kind === 'grummanCollection'
                   ? 'Grumman Collection'
+                  : g.decision.kind === 'leaderSkillVisibility'
+                    ? 'Position your skilled leader'
+                  : g.decision.kind === 'leaderSkillRevival'
+                    ? 'Choose a skill for the revived leader'
                   : g.decision.kind === 'homeworldRevivalDeployment'
                   ? 'Revival deployment'
                   : g.decision.kind === 'ecazSpice'
@@ -2339,6 +2352,8 @@ export function GameTable({
                   act={act}
                   busy={busy}
                 />
+              ) : g.decision.kind === 'leaderSkillVisibility' || g.decision.kind === 'leaderSkillRevival' ? (
+                <p className="muted">Use the Leader Skills controls above to make your choice.</p>
               ) : g.decision.kind === 'homeworldRevivalDeployment' ? (
                 <HomeworldRevivalDeployment game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'caladanReinforcement' ? (
@@ -5128,7 +5143,7 @@ export function GameTable({
               {!me.hand?.length && (
                 <p className="muted">
                   {setupStage
-                    ? 'Your starting Treachery cards remain undealt until all starting force placement is complete.'
+                    ? g.leaderSkills ? 'Starting Treachery Cards are dealt after prediction and before skill assignment.' : 'Your starting Treachery cards remain undealt until all starting force placement is complete.'
                     : g.status === 'lobby'
                       ? 'Your opening cards are dealt after starting force placement.'
                       : 'Your Treachery hand is empty.'}

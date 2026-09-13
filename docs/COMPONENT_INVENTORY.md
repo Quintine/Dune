@@ -1,5 +1,13 @@
 # Component inventory and verification ledger
 
+**Leader Skills update, 13 September 2026:** all fourteen unique physical cards
+now have sourced names and complete paraphrased normal/battle text, shared
+inspectors, private two-card offers and one-card assignment custody. Five role
+bonuses, public skilled capture, death return and own revival are connected;
+nine effects remain missing. This supersedes the historical missing-inventory
+rows below only for Leader Skills. See [source inventory](LEADER_SKILLS_RULES.md),
+[capture interpretation](LEADER_SKILLS_CAPTURE.md) and [prototype evidence](LEADER_SKILLS_RUNTIME.md).
+
 **Guild Nexus Secret Ally update, 10 September 2026:** the existing card now supplies an explicit paid shipment choice, including physical cross/return selection and typed reserve or world-to-world sources. The holder keeps its own faction identity, forces and ordinary movement. No component is duplicated; existing full-card inspection remains shared. [NEXUS_GUILD_SECRET_ALLY_RUNTIME.md](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) records the supported routes and verification. Homeworld-return interpretation, concealed transport, Betrayal and complete module acceptance remain unfinished.
 
 **Guild Nexus Cunning update, 10 September 2026:** the existing native card now offers an immediate second paid shipment after the original combined turn. No new forces, markers or cards are created; the normal physical reserve, cross/return and Homeworld controls retain their source counts and price. A separate skip choice and unused Hajr control preserve actual movement history. [NEXUS_GUILD_CUNNING_RUNTIME.md](NEXUS_GUILD_CUNNING_RUNTIME.md) records runtime, interruption and recovery evidence. Guild Secret Ally, Betrayal, physical Ornithopter combinations and full module acceptance remain unfinished.

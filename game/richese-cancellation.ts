@@ -4,6 +4,8 @@ import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
 // Exhaustive typed discriminants for the existing engine control unions. These
 // are envelope checks, not a duplicate implementation of each future choice.
 const DECISIONS = {
+  leaderSkillVisibility: true,
+  leaderSkillRevival: true,
   choamAudit: true,
   choamAuditPayment: true,
   strongholdCopy: true,

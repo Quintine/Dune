@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 13 September 2026 — Leader Skills setup, five disciplines and skilled capture
+
+The [first connected prototype](LEADER_SKILLS_RUNTIME.md) adds all fourteen
+physical cards and readable faces, source-ordered private setup, public battle
+posture, five card-role strength modifiers, death return and own-leader revival
+through controls, all four AI profiles and saved actions. The other nine effects
+remain missing; combined modules and public starts remain gated.
+
+The user's requested [capture research](LEADER_SKILLS_CAPTURE.md) resolved
+publicity through the known card's required movement with the leader. Harkonnen
+gets only its lower battle effect; surviving return and death retain physical
+custody. This is a component-based source inference. Captured replacement
+entitlement stays separately unresolved and explicitly guarded.
+
+Independent review found and fixed a Voice/mandatory-leader deadlock and invalid
+simultaneous assignment/offer custody. Focused capture review found no remaining
+blocker. The focused union passed **66 tests**, including genuine setup, scoring,
+capture and SQLite restart/concurrent setup and revival selections. Three sample
+games finished; their exact scope and source fingerprints are recorded separately.
+Browser setup, card inspection, AI assignment and refresh were exercised in new
+room `REF6YHN7`; narrow sidebar cards were made readable. All 291 opening rooms
+were backed up before QA. Final preservation and broad check results are recorded
+in the checkpoint commit and private report.
+
+The first broad run passed types/lint and 4,410 of 4,411 offline tests. Its one
+failure was an existing Discovery privacy test treating `treachery-32` as a
+substring match for hidden `treachery-3`. The exact physical pair now forms a
+deterministic scenario and assertions compare complete JSON string identities;
+the opponent's own card remains visible. Independent review and all six
+Discovery runtime tests pass. The broad run was repeated after this correction.
+During the follow-up, another user-reported outage stopped the server. All 292
+games survived; a fresh backup and necessary server start restored the same
+private prototype seat and pending Storm choice.
+
+The first broad run also exposed a pre-existing random Discovery test failure:
+the hidden identifier `treachery-3` matched the viewer's distinct `treachery-32`
+through a substring assertion. The regression now stages both physical cards
+and checks their complete identifiers; no production privacy behavior changed.
+
 ## 13 September 2026 — Sapho first after completed movement turns
 
 Extends the existing clean-boundary movement contract to let Sapho's holder

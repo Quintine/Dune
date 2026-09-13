@@ -2,6 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import {
   initializeIxGameForAudit,
   initializeDiscoveryGameForAudit,
+  initializeLeaderSkillsGameForAudit,
   viewGame,
   type Game,
 } from '../game/engine';
@@ -19,7 +20,7 @@ export function startPrototypeRoom(
   db: DatabaseSync,
   code: string,
   expectedVersion: number,
-  profile: 'ix' | 'discovery',
+  profile: 'ix' | 'discovery' | 'leader-skills',
 ) {
   if (
     !/^[A-Z0-9]{8}$/.test(code) ||
@@ -37,12 +38,17 @@ export function startPrototypeRoom(
   const initial = JSON.parse(row.state) as Game;
   if (initial.code !== code)
     throw new Error('The room identity is inconsistent.');
-  if (!['ix', 'discovery'].includes(profile))
+  if (!['ix', 'discovery', 'leader-skills'].includes(profile))
     throw new Error('Unknown prototype profile.');
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)
-      : initializeDiscoveryGameForAudit({ ...initial, discoveryEnabled: true });
+      : profile === 'leader-skills'
+        ? initializeLeaderSkillsGameForAudit(initial)
+        : initializeDiscoveryGameForAudit({
+            ...initial,
+            discoveryEnabled: true,
+          });
   // Exercise the same player projection before accepting the new saved state.
   for (const player of game.players) viewGame(game, player.id);
   const version = expectedVersion + 1;

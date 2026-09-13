@@ -10,14 +10,21 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
   private controls, all four AI profiles and saved continuation use the same
   server option. Other Sapho timing questions remain pending. Independent
   review and focused checks pass; broad results are in the checkpoint commit.
-- The [Leader Skills source contract](LEADER_SKILLS_RULES.md) records all fourteen
-  cards, setup/lifecycle and printed clarifications for the next prototype batch.
-  Runtime, controls and AI remain **Missing**; unresolved edge cases stay explicit.
+- The [first Leader Skills prototype](LEADER_SKILLS_RUNTIME.md) connects all
+  fourteen physical cards, private setup, five battle disciplines, skilled capture,
+  death and own revival through controls, legal AI and saved choices. The other
+  nine effects remain **Missing**. The user-requested [capture search](LEADER_SKILLS_CAPTURE.md)
+  resolves publicity through the known physical card; captured replacement and
+  broader combinations remain pending. No mode gate is opened.
 - Following the reported power outage, the existing server responded normally,
   the database integrity check passed with 291 rooms, and all 218 rooms in the
   preceding handover baseline were unchanged. The saved QA seat restored its
   same private hand and pending Storm decision after refresh. A new private
   backup protects all 291 rooms. No server restart or database reset was needed.
+- A second reported outage later stopped the server. All 292 rooms survived
+  integrity and preservation checks. A fresh backup preceded the necessary
+  server start; the Leader Skills QA seat restored its same private hand,
+  assignments and pending Storm choice. No database reset was performed.
 - The current [Discovery prototype](DISCOVERY_PROTOTYPE.md) adds unambiguous
   Jacurutu battle income, sole-occupant Ecological Testing Station adjustment and
   Shrine card conversion. They connect engine effects, private controls, legal

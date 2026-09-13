@@ -20,12 +20,12 @@ async function main() {
   });
   if (values.help) {
     console.log(
-      'Usage: node --import tsx tools/start-prototype.ts --profile ix|discovery --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready Ix expansion or base-faction Discovery lobby for local prototyping. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
+      'Usage: node --import tsx tools/start-prototype.ts --profile ix|discovery|leader-skills --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready lobby for the selected development prototype. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
     );
     return;
   }
   if (
-    !['ix', 'discovery'].includes(values.profile) ||
+    !['ix', 'discovery', 'leader-skills'].includes(values.profile) ||
     !values.db ||
     !values.room ||
     !values.out ||
@@ -50,7 +50,7 @@ async function main() {
       db,
       values.room,
       version,
-      values.profile as 'ix' | 'discovery',
+      values.profile as 'ix' | 'discovery' | 'leader-skills',
     );
     writeFileSync(
       resolve(values.out, 'prototype.json'),

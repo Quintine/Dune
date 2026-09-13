@@ -1375,6 +1375,7 @@ function policyActions(g: GameView): Action[] {
   if (g.decision) {
     if (g.decision.player !== me.id) return [];
     const d = g.decision;
+    if (d.kind === 'leaderSkillVisibility' || d.kind === 'leaderSkillRevival') return [];
     if (d.kind === 'choamAudit')
       return [{ type: 'decision', event: d.event, audit: true }];
     if (d.kind === 'choamAuditPayment') {
@@ -3387,6 +3388,19 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  const skill = g.leaderSkills;
+  if (skill && !g.truthtrance && !g.response && !g.phaseOpening) {
+    if (skill.battleChoice)
+      return [{type:'leaderSkillVisibility',event:skill.battleChoice.event,hide:true}];
+    if (skill.offer && ((g.status === 'setup' && g.setupStage === 'leaderSkills') || (g.decision?.kind === 'leaderSkillRevival' && g.decision.player === g.me))) {
+      const offer = skill.offer;
+      if (!offer.cards.length) return [{type:'leaderSkill',event:offer.event,mode:'draw'}];
+      const direct = ['warmaster','master-of-assassins','swordmaster-of-ginaz','killer-medic','prana-bindu-adept'];
+      const chosen = offer.cards.find((card) => direct.includes(card)) ?? offer.cards[0];
+      const leader = offer.leader ?? [...skill.eligibleLeaders].sort((a,b) => (g.allLeaders.find((l) => l.id === b.id)?.strength ?? 0) - (g.allLeaders.find((l) => l.id === a.id)?.strength ?? 0))[0]?.id;
+      if (leader) return [{type:'leaderSkill',event:offer.event,skill:chosen,leader}];
+    }
+  }
   if (g.nexusTraitors?.pending)
     return g.truthtrance
       ? policyActions({ ...g, decision: null })

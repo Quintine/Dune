@@ -1,3 +1,5 @@
+import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
+import { leaderSkillCard } from './leader-skill-cards';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
@@ -562,6 +564,8 @@ export type PlanField = Exclude<
   'support' | 'kwisatz' | 'allyPayment'
 >;
 export type Battle = {
+  /** Public face-up/behind-shield choice precedes faction battle powers. */
+  leaderSkillHidden?: Record<string, boolean>;
   nexusInspection?: NexusInspection;
   /** Independent presence marker: deleting a spent-card record is not a legacy save. */
   nexusInspectionUsed?: string;
@@ -620,6 +624,8 @@ export type Auction = {
   allyPayment?: number;
 };
 export type Decision =
+  | { kind: 'leaderSkillVisibility'; player: string; event: string; resumePowers?: boolean }
+  | { kind: 'leaderSkillRevival'; player: string; event: string }
   | { kind: 'homeworldRevivalDeployment'; player: string; event: string }
   | { kind: 'grummanCollection'; player: string; event: string }
   | { kind: 'caladanReinforcement'; player: string; event: string }
@@ -1389,7 +1395,8 @@ export type Game = {
   host: string;
   status: 'lobby' | 'setup' | 'playing' | 'finished';
   /** Absent on legacy rooms whose starting cards were already dealt. */
-  setupStage?: 'prediction' | 'traitors' | 'forces';
+  setupStage?: 'prediction' | 'skillTreachery' | 'leaderSkills' | 'traitors' | 'forces';
+  leaderSkills?: LeaderSkillsState;
   advanced: boolean;
   expansions: string[];
   players: Player[];
@@ -4841,6 +4848,7 @@ function start(g: Game) {
   requireRule(!g.homeworlds, 'Homeworld gameplay is still being implemented.');
   requireRule(!g.nexusCards, 'Nexus card effects are still being implemented.');
   requireRule(!g.discoveryEnabled, 'Discoveries are still being implemented.');
+  requireRule(!g.leaderSkills, 'Leader Skills are still being implemented.');
   requireRule(
     g.players.every((p) => faction(p.faction).expansion === 'base'),
     'Expansion factions are still being implemented.',
@@ -4851,6 +4859,185 @@ function start(g: Game) {
   );
   initializeSetup(g);
 }
+function skillRule<T>(operation: () => T): T {
+  try {
+    return operation();
+  } catch (error) {
+    if (error instanceof LeaderSkillError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function skillEligibleLeaders(g: Game, owner: string): string[] {
+  return getPlayer(g, owner)
+    .leaders.filter(
+      (leader) =>
+        !leader.dead &&
+        !leader.capturedBy &&
+        !leader.gholaBy &&
+        !isAuditorLeader(leader) &&
+        !g.leaderSkills?.assignments.some(
+          (assignment) => assignment.leader === leader.id,
+        ),
+    )
+    .map((leader) => leader.id);
+}
+function leaderSkillsIntegrity(g: Game) {
+  if (!g.leaderSkills) return;
+  skillRule(() => validateLeaderSkills(g.leaderSkills!, g.players));
+  requireRule(
+    !g.players.some((p) => p.leaders.some((l) => l.gholaBy)),
+    'Leader Skills with foreign gholas await their custody integration.',
+  );
+  if (g.battle?.leaderSkillHidden)
+    requireRule(
+      Object.entries(g.battle.leaderSkillHidden).every(
+        ([id, hidden]) =>
+          [g.battle!.attacker, g.battle!.defender].includes(id) &&
+          typeof hidden === 'boolean',
+      ),
+      'Invalid saved skilled-leader visibility.',
+    );
+  if (g.decision?.kind === 'leaderSkillVisibility')
+    requireRule(
+      g.battle?.event === g.decision.event &&
+        g.leaderSkills.assignments.some((a) => a.owner === g.decision!.player),
+      'The saved skilled-leader choice lost its battle or assigned leader.',
+    );
+  if (g.decision?.kind === 'leaderSkillRevival')
+    requireRule(
+      g.leaderSkills.offers[g.decision.player]?.event === g.decision.event,
+      'The saved revival choice lost its physical skill offer.',
+    );
+}
+function leaderSkillController(
+  g: Game,
+  assignment: { owner: string; leader: string },
+): string {
+  return (
+    getPlayer(g, assignment.owner).leaders.find(
+      (l) => l.id === assignment.leader,
+    )!.capturedBy ?? assignment.owner
+  );
+}
+function nativeLeaderSkill(g: Game, owner: string) {
+  return g.leaderSkills?.assignments.find(
+    (a) => a.owner === owner && leaderSkillController(g, a) === owner,
+  );
+}
+function requireLeaderSkillRevival(g: Game, owner: string) {
+  requireRule(
+    !g.leaderSkills?.assignments.some(
+      (a) => a.owner === owner && leaderSkillController(g, a) !== owner,
+    ),
+    'Reviving another leader while your Leader Skill is captured awaits the replacement-skill ruling.',
+  );
+}
+function finishLeaderSkillCustody(g: Game, before?: Game) {
+  if (!g.leaderSkills) return;
+  const result = skillRule(() =>
+    returnDeadLeaderSkills(g.leaderSkills!, g.players, random),
+  );
+  g.leaderSkills = result.state;
+  for (const assignment of result.returned) {
+    if (g.battle?.leaderSkillHidden)
+      delete g.battle.leaderSkillHidden[assignment.owner];
+    log(
+      g,
+      `${leaderSkillCard(assignment.skill).name} returned to the shuffled skill deck because its assigned leader died.`,
+      {
+        faction: getPlayer(g, assignment.owner).faction,
+        name: 'Leader Skill lost',
+      },
+    );
+  }
+  if (before?.leaderSkills)
+    for (const player of g.players)
+      for (const leader of player.leaders)
+        if (
+          !leader.dead &&
+          !leader.capturedBy &&
+          !leader.gholaBy &&
+          !isAuditorLeader(leader) &&
+          before.players
+            .find((p) => p.id === player.id)
+            ?.leaders.find((l) => l.id === leader.id)?.dead
+        ) {
+          requireLeaderSkillRevival(g, player.id);
+          g.leaderSkills = skillRule(() =>
+            offerRevivedLeaderSkill(
+              g.leaderSkills!,
+              player.id,
+              leader.id,
+              crypto.randomUUID(),
+            ),
+          );
+        }
+}
+function projectedLeaderSkills(
+  g: Game,
+  owner: string,
+): LeaderSkillsView | null {
+  if (!g.leaderSkills) return null;
+  const offer = g.leaderSkills.offers[owner] ?? null;
+  const eligible = skillEligibleLeaders(g, owner);
+  const assignment = nativeLeaderSkill(g, owner);
+  return {
+    assignments: g.leaderSkills.assignments.map((a) => {
+      const controller = leaderSkillController(g, a);
+      return {
+        ...a,
+        controller,
+        captured: controller !== a.owner,
+        faceUp:
+          controller === a.owner && !g.battle?.leaderSkillHidden?.[a.owner],
+      };
+    }),
+    offer,
+    eligibleLeaders: getPlayer(g, owner)
+      .leaders.filter((l) => eligible.includes(l.id))
+      .map((l) => ({ id: l.id, name: l.name })),
+    battleChoice:
+      assignment &&
+      g.decision?.kind === 'leaderSkillVisibility' &&
+      g.decision.player === owner
+        ? {
+            event: g.decision.event,
+            leader: assignment.leader,
+            skill: assignment.skill,
+          }
+        : null,
+  };
+}
+/** Later Voice/card use can remove the last alternative to the skilled disc. */
+function finishMandatorySkillVisibility(g: Game) {
+  const b = g.battle;
+  if (!g.leaderSkills || !b || b.revealed) return;
+  for (const owner of [b.attacker, b.defender]) {
+    if (b.plans[owner] || b.leaderSkillHidden?.[owner] !== false) continue;
+    const assignment = nativeLeaderSkill(g, owner);
+    if (!assignment) continue;
+    const p = getPlayer(g, owner);
+    const available = controlledLeaders(g, p).filter(
+      (l) => !l.dead && (!l.usedAt || l.usedAt === b.territory),
+    );
+    const heroAvailable =
+      p.hand.some((c) => c.kind === 'hero') &&
+      !(b.voice?.target === owner && b.voice.kind === 'hero' && !b.voice.must);
+    if (
+      available.length === 1 &&
+      available[0].id === assignment.leader &&
+      !heroAvailable
+    ) {
+      b.leaderSkillHidden![owner] = true;
+      log(
+        g,
+        `${p.name} moved the skilled leader behind the shield because the remaining legal Battle Plan must use that leader.`,
+        { faction: p.faction, name: 'Leader Skill' },
+      );
+    }
+  }
+}
+
 function initializeSetup(g: Game) {
   if (g.discoveryEnabled) g.discoveries = createDiscoveryState(random);
   if (g.nexusCards) g.nexusCards = { cards: createNexusCards(g.players, random), phase: null };
@@ -4887,7 +5074,9 @@ function initializeSetup(g: Game) {
     g,
     byFaction(g, 'beneGesserit')
       ? 'Player positions are fixed. Bene Gesserit must lock its prediction before private cards are dealt.'
-      : 'Player positions are fixed. Private traitor selection comes before force placement and starting Treachery Cards.',
+      : g.leaderSkills
+        ? 'Player positions are fixed. Starting Treachery Cards and Leader Skills precede traitor selection in this variant.'
+        : 'Player positions are fixed. Private traitor selection comes before force placement and starting Treachery Cards.',
   );
 }
 function initializeStartingForces(g: Game) {
@@ -4955,7 +5144,7 @@ function dealStartingTreachery(g: Game) {
       }
       log(
         g,
-        `${p.name} received ${quantity} starting Treachery Card${quantity === 1 ? '' : 's'} after force placement.`,
+        `${p.name} received ${quantity} starting Treachery Card${quantity === 1 ? '' : 's'} ${g.leaderSkills ? 'before Leader Skill assignment' : 'after force placement'}.`,
         { faction: p.faction, name: 'Starting cards' },
       );
     }
@@ -4963,7 +5152,9 @@ function dealStartingTreachery(g: Game) {
   if (ixians)
     log(
       g,
-      'Starting force placement is complete. Ixians must choose their starting card before the remaining cards are dealt.',
+      g.leaderSkills
+        ? 'Ixians must choose their starting card before the remaining cards and Leader Skills are dealt.'
+        : 'Starting force placement is complete. Ixians must choose their starting card before the remaining cards are dealt.',
     );
 }
 function setupPending(g: Game): string[] {
@@ -4972,6 +5163,8 @@ function setupPending(g: Game): string[] {
     const bg = byFaction(g, 'beneGesserit');
     return bg && !bg.prediction ? [bg.id] : [];
   }
+  if (g.setupStage === 'skillTreachery') return g.ixSetupCards ? [byFaction(g, 'ixians')!.id] : [];
+  if (g.setupStage === 'leaderSkills') return Object.keys(g.leaderSkills!.offers);
   if (g.setupStage === 'traitors')
     return g.players
       .filter((p) => p.traitorChoices.length > 0)
@@ -4985,6 +5178,20 @@ function advanceSetup(g: Game) {
   if (!g.setupStage || g.status !== 'setup') return;
   if (g.setupStage === 'prediction') {
     if (setupPending(g).length) return;
+    if (g.leaderSkills) {
+      g.setupStage = 'skillTreachery';
+      dealStartingTreachery(g);
+      if (g.decision) return;
+    }
+  }
+  if (g.setupStage === 'skillTreachery') {
+    if (g.ixSetupCards || g.decision) return;
+    g.leaderSkills = skillRule(() => dealLeaderSkills(g.leaderSkills!, g.players.map((p) => p.id), crypto.randomUUID()));
+    g.setupStage = 'leaderSkills';
+    log(g, 'Each faction received two private Leader Skill cards. Keep one and assign an eligible leader before traitors are dealt.');
+  }
+  if (g.setupStage === 'leaderSkills' && setupPending(g).length) return;
+  if (g.setupStage === 'prediction' || g.setupStage === 'leaderSkills') {
     const traitors = shuffle(
       traitorDeck(g.players, g.expansions.includes('ix')),
     );
@@ -4999,7 +5206,9 @@ function advanceSetup(g: Game) {
     g.setupStage = 'traitors';
     log(
       g,
-      'Traitor Cards were dealt privately. Choose traitors before starting force placement; Treachery Cards remain undealt.',
+      g.leaderSkills
+        ? 'Leader Skills are assigned publicly. Traitor Cards were dealt privately; choose before starting force placement.'
+        : 'Traitor Cards were dealt privately. Choose traitors before starting force placement; Treachery Cards remain undealt.',
     );
   }
   if (g.setupStage === 'traitors') {
@@ -5008,12 +5217,14 @@ function advanceSetup(g: Game) {
     g.setupStage = 'forces';
     log(
       g,
-      'Traitor choices are complete. Starting spice and fixed forces are placed; complete faction force placement before receiving Treachery Cards.',
+      g.leaderSkills
+        ? 'Traitor choices are complete. Starting spice and fixed forces are placed; complete faction force placement to begin play.'
+        : 'Traitor choices are complete. Starting spice and fixed forces are placed; complete faction force placement before receiving Treachery Cards.',
     );
   }
   if (g.setupStage === 'forces' && !setupPending(g).length) {
     delete g.setupStage;
-    dealStartingTreachery(g);
+    if (!g.leaderSkills) dealStartingTreachery(g);
   }
 }
 /** Offline-only test seam. No player action or room API dispatches this function. */
@@ -5047,7 +5258,14 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
     'Enable Discoveries in a fresh audit lobby first.');
   return initializeSetupGameForAudit(state, false, false, false, true);
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false): Game {
+/** Gated development setup; never dispatched by a player action or room route. */
+export function initializeLeaderSkillsGameForAudit(state: Game): Game {
+  requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
+  const g = structuredClone(state);
+  g.leaderSkills = createLeaderSkills(random);
+  return initializeSetupGameForAudit(g, false, false, false, false, true);
+}
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false): Game {
   nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -5070,6 +5288,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   );
   requireRule(
     (homeworlds || nexus || ix || g.expansions.length === 0) &&
+      (leaderSkills || !g.leaderSkills) &&
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
       !g.techTokens &&
@@ -6454,6 +6673,25 @@ function strongholdCopyChoices(g: Game, player: string): StrongholdId[] {
 }
 function beginBattlePowers(g: Game) {
   const b = g.battle!;
+  if (g.leaderSkills) {
+    b.leaderSkillHidden ??= {};
+    const pending = [b.attacker, b.defender].find((id) =>
+      nativeLeaderSkill(g,id) && b.leaderSkillHidden![id] === undefined,
+    );
+    if (pending) {
+      const p = getPlayer(g, pending);
+      const trained = nativeLeaderSkill(g,pending)!;
+      const available = controlledLeaders(g, p).filter((l) => !l.dead && (!l.usedAt || l.usedAt === b.territory));
+      if (available.length === 1 && available[0].id === trained.leader && !p.hand.some((c) => c.kind === 'hero')) {
+        b.leaderSkillHidden[pending] = true;
+        log(g, `${p.name} moved the skilled leader behind the shield because it is their only available battle leader.`, {faction:p.faction,name:'Leader Skill'});
+        beginBattlePowers(g);
+        return;
+      }
+      g.decision = {kind:'leaderSkillVisibility',player:pending,event:b.event!};
+      return;
+    }
+  }
   const choam = byFaction(g, 'choam');
   if (
     g.advanced &&
@@ -12413,6 +12651,7 @@ function validatePlan(
     (l) => !l.dead && (!l.usedAt || l.usedAt === b.territory),
   );
   const l = available.find((l) => l.id === plan.leader);
+  requireRule(!l || !g.leaderSkills?.assignments.some((assignment) => assignment.owner === p.id && assignment.leader === l.id) || !!b.leaderSkillHidden?.[p.id], 'Move your skilled leader behind the shield before using it in your battle plan.');
   const hero = cardOf(p, plan.leader)?.kind === 'hero';
   requireRule(
     !plan.leader || l || hero,
@@ -12755,6 +12994,7 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
       `${p.name} revived Kwisatz Haderach with Ghola for use again this turn. No spice or normal leader-revival allowance was spent.`,
     );
   } else if (action.leader) {
+    requireLeaderSkillRevival(g,p.id);
     requireRule(
       action.leader !== DUKE_VIDAL_ID || p.faction === 'ecaz',
       'Only Ecaz may revive Duke Vidal, including with Ghola.',
@@ -13680,6 +13920,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       hand: p.hand,
       plan,
       leader: controlledLeaders(g, p).find((l) => l.id === plan.leader),
+      leaderSkills: g.leaderSkills?.assignments.filter((assignment) => leaderSkillController(g,assignment) === p.id).map((assignment) => ({skill:assignment.skill,leader:assignment.leader,faceUp:assignment.owner === p.id && !b.leaderSkillHidden?.[p.id],captured:assignment.owner !== p.id})),
       forces: combatForces(g, p, b.territory, opponent),
       stronghold: strongholdEffect(g, p.id),
       lateDefense: b.lateDefense?.[p.id],
@@ -13871,6 +14112,10 @@ function resolveBattle(g: Game) {
     if (dk) dead(dl);
     const av = quote.scores!.attacker,
       dv = quote.scores!.defender;
+    if (!stoneResult && !quote.effects?.stunned)
+      for (const [player, receipt, died] of [[a, quote.leaderSkillBonuses.attacker, ak], [d, quote.leaderSkillBonuses.defender, dk]] as const)
+        for (const bonus of died ? [] : receipt.applied)
+          log(g, `${player.name} gained ${bonus.amount} battle strength from ${leaderSkillCard(bonus.skill).name}${bonus.mode === 'normal' ? ' while their skilled leader remained face up' : ' by using their surviving skilled leader'}.`, {faction:player.faction,name:'Leader Skill'});
     const loser = winner === a ? d : a;
     if (quote.bounty) winner!.spice += quote.bounty.amount;
     killTerritory(g, loser, b.territory, Infinity, true);
@@ -14964,6 +15209,7 @@ function finishRevival(
   if (quote.nextResponse) g.response = quote.nextResponse;
 }
 function beginRevival(g: Game, revival: PendingRevival) {
+  if (revival.kind === 'leader') requireLeaderSkillRevival(g,revival.player);
   requireRule(
     !revivalPrevented(g, revival.player),
     'Tleilaxu prevented this faction’s normal revivals for this turn.',
@@ -15908,6 +16154,10 @@ function finishResponse(g: Game, canceled: boolean) {
         usedAt: l.usedAt,
       };
       l.capturedBy = capture.player;
+      const capturedSkill = g.leaderSkills?.assignments.find((a) => a.leader === l.id);
+      // This unique card and its leader were publicly assigned. The expansion
+      // requires the card to accompany the captive, identifying that capture.
+      if (capturedSkill) delete l.concealed;
       g.decision = {
         kind: 'capturedLeader',
         player: capture.player,
@@ -15917,7 +16167,9 @@ function finishResponse(g: Game, canceled: boolean) {
       };
       log(
         g,
-        `${getPlayer(g, capture.player).name} captured a leader from ${getPlayer(g, capture.loser).name}.`,
+        capturedSkill
+          ? `${getPlayer(g, capture.player).name} captured ${l.name} with ${leaderSkillCard(capturedSkill.skill).name}. Its known skill travels with the leader; only its battle effect is available to the captor.`
+          : `${getPlayer(g, capture.player).name} captured a leader from ${getPlayer(g, capture.loser).name}.`,
       );
     }
   } else if (response.kind === 'choamAudit') {
@@ -17759,6 +18011,7 @@ export function prepareSpecialKaramaIntent(
       'The Emperor special Karama is used during Revival.',
     );
     if (action.leader) {
+      requireLeaderSkillRevival(g,p.id);
       const l = p.leaders.find((l) => l.id === action.leader);
       requireRule(
         l?.dead && !l.capturedBy && !l.gholaBy,
@@ -18178,6 +18431,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  leaderSkillsIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -18238,6 +18492,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  finishLeaderSkillCustody(g, state);
   observeOccupation(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -18327,6 +18582,8 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     }
   }
   finishActionContinuations(g);
+  finishLeaderSkillCustody(g, state);
+  leaderSkillsIntegrity(g);
   reconcileBattlePromises(g, { actor: id, action });
   reconcileShipmentPromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
@@ -18343,6 +18600,8 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   return g;
 }
 function finishActionContinuations(g: Game) {
+  finishLeaderSkillCustody(g);
+  finishMandatorySkillVisibility(g);
   if (g.pendingNullentropy) return;
   // Losing cleanup may finish casualties and produce the winner's mandatory
   // discard. Retire that next physical batch before exposing optional choices.
@@ -18355,6 +18614,10 @@ function finishActionContinuations(g: Game) {
   resumeMarketGhola(g);
   resumeGrummanCollection(g);
   if (!g.truthtrance && !g.decision && !g.response) advanceSetup(g);
+  if (g.status === 'playing' && g.leaderSkills && !g.decision && !g.response && !g.truthtrance && !g.phaseOpening) {
+    const owner = g.order.find((id) => g.leaderSkills!.offers[id]);
+    if (owner) g.decision = {kind:'leaderSkillRevival',player:owner,event:g.leaderSkills.offers[owner].event};
+  }
   if (
     !g.truthtrance &&
     g.pendingTerrorEntry?.stage === 'discard' &&
@@ -18428,6 +18691,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  leaderSkillsIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -18818,6 +19082,32 @@ function applyActionInner(
     g.decision.player === id
   )
     g.decision = null;
+  if (t === 'leaderSkillVisibility' || (t === 'leaderSkill' && g.status === 'playing')) {
+    const decision = g.decision;
+    requireRule(decision && (decision.kind === 'leaderSkillVisibility' || decision.kind === 'leaderSkillRevival') && decision.player === id && decision.event === action.event, 'This Leader Skill decision is not waiting for you.');
+    if (t === 'leaderSkillVisibility') {
+      requireRule(decision.kind === 'leaderSkillVisibility' && g.battle?.event === decision.event && typeof action.hide === 'boolean', 'Choose whether your skilled leader remains face up or moves behind the shield.');
+      requireRule(Object.keys(action).every((key) => ['type','event','hide'].includes(key)), 'Choose only the current skill visibility decision.');
+      (g.battle.leaderSkillHidden ??= {})[id] = action.hide;
+      g.decision = null;
+      log(g, `${p.name} ${action.hide ? 'moved their skilled leader and card behind the shield; it may still be a bluff' : 'kept their skilled leader and card face up; that leader cannot be in their Battle Plan'}.`, {faction:p.faction,name:'Leader Skill'});
+      if (decision.resumePowers !== false) beginBattlePowers(g);
+    } else {
+      requireRule(decision.kind === 'leaderSkillRevival' && g.leaderSkills, 'No revived leader is awaiting a skill choice.');
+      requireRule(Object.keys(action).every((key) => ['type','event','mode','skill','leader'].includes(key)), 'Choose only the current revival skill action.');
+      if (action.mode === 'draw') g.leaderSkills = skillRule(() => drawRevivedLeaderSkills(g.leaderSkills!, id, stringField(action.event)));
+      else if (action.mode === 'decline') g.leaderSkills = skillRule(() => declineRevivedLeaderSkill(g.leaderSkills!, id, stringField(action.event)));
+      else {
+        requireRule(action.mode === undefined, 'Choose draw, decline or a dealt skill.');
+        g.leaderSkills = skillRule(() => chooseLeaderSkill(g.leaderSkills!, id, stringField(action.event), stringField(action.skill), stringField(action.leader), skillEligibleLeaders(g,id), random));
+        log(g, `${p.name} assigned ${leaderSkillCard(action.skill as Parameters<typeof leaderSkillCard>[0]).name} to a newly revived leader.`, {faction:p.faction,name:'Leader Skill'});
+      }
+      g.decision = null;
+      if (g.battle && !g.battle.revealed && !g.battle.plans[id] && [g.battle.attacker,g.battle.defender].includes(id) && g.leaderSkills.assignments.some((a) => a.owner === id) && g.battle.leaderSkillHidden?.[id] === undefined)
+        g.decision = {kind:'leaderSkillVisibility',player:id,event:g.battle.event!,resumePowers:false};
+    }
+    return g;
+  }
   if (g.decision) {
     const decision = g.decision;
     requireRule(
@@ -18825,6 +19115,7 @@ function applyActionInner(
       'Waiting for the player with the pending decision.',
     );
     g.decision = null;
+    requireRule(decision.kind !== 'leaderSkillVisibility' && decision.kind !== 'leaderSkillRevival', 'Use the Leader Skills controls for this decision.');
     if (decision.kind === 'homeworldRevivalDeployment') {
       decideHomeworldRevivalReturn(g, p, action);
       return g;
@@ -20077,13 +20368,20 @@ function applyActionInner(
           ? ['predict']
           : g.setupStage === 'traitors'
             ? ['traitor']
+            : g.setupStage === 'leaderSkills'
+              ? ['leaderSkill']
             : ['fremenSetup', 'advisorSetup'];
       requireRule(
         expected.includes(t) && setupPending(g).includes(id),
         `Wait for the current setup step: ${g.setupStage}.`,
       );
     }
-    if (t === 'advisorSetup') {
+    if (t === 'leaderSkill') {
+      requireRule(Object.keys(action).every((key) => ['type','event','skill','leader'].includes(key)), 'Choose only your dealt skill and its eligible leader.');
+      const skill = stringField(action.skill), leader = stringField(action.leader);
+      g.leaderSkills = skillRule(() => chooseLeaderSkill(g.leaderSkills!, id, stringField(action.event), skill, leader, skillEligibleLeaders(g, id), random));
+      log(g, `${p.name} assigned ${leaderSkillCard(skill as Parameters<typeof leaderSkillCard>[0]).name} to ${p.leaders.find((l) => l.id === leader)!.name}.`, { faction: p.faction, name: 'Leader Skill' });
+    } else if (t === 'advisorSetup') {
       requireRule(
         g.advanced && p.faction === 'beneGesserit' && !p.advisorSetup,
         'Advisor setup is not available.',
@@ -21800,6 +22098,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  leaderSkillsIntegrity(state);
   discoveryFlightIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
@@ -21895,6 +22194,7 @@ export function viewGame(state: Game, id: string) {
     status: g.status,
     setupStage: g.status === 'setup' ? (g.setupStage ?? null) : null,
     setupPending: setupPending(g),
+    leaderSkills: projectedLeaderSkills(g, id),
     advanced: g.advanced,
     dukeVidal: g.dukeVidal
       ? { ...g.dukeVidal, leader: projectLeader(g, g.dukeVidal.leader, id) }
@@ -22333,6 +22633,7 @@ export function viewGame(state: Game, id: string) {
       : null,
     decision:
       g.decision?.kind === 'capturedLeader' &&
+      !g.leaderSkills?.assignments.some((a) => a.leader === (g.decision as Extract<Decision,{kind:'capturedLeader'}>).leader) &&
       ![g.decision.player, g.decision.controller ?? g.decision.owner].includes(
         id,
       )

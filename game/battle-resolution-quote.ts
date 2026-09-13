@@ -33,6 +33,11 @@ import {
   type HomeworldBattleRules,
   type HomeworldExplosionLosses,
 } from './homeworld-battle-rules';
+import {
+  leaderSkillBattleBonus,
+  type BattleLeaderSkill,
+  type LeaderSkillBattleBonus,
+} from './leader-skill-combat';
 
 export class BattleResolutionQuoteError extends Error {
   constructor(message: string) {
@@ -68,6 +73,8 @@ export type ResolutionCombatant = ResolutionParticipant & {
   lateDefense?: string;
   poisonTooth?: boolean;
   stoneMode?: 'kill' | 'ignore';
+  /** Current authorized assignments only; captured assignments grant no normal band. */
+  leaderSkills?: readonly BattleLeaderSkill[];
   /** The current aidFor result: this escrow has already left the donor's balance. */
   aid?: { donor: string; amount: number };
 };
@@ -110,6 +117,10 @@ export type BattleResolutionQuote = {
   defenderTraitor: boolean;
   revelations: { player: string; identity: string }[];
   leaderStrengths: { attacker: number; defender: number };
+  leaderSkillBonuses: {
+    attacker: LeaderSkillBattleBonus;
+    defender: LeaderSkillBattleBonus;
+  };
   leaderDeaths: { attacker: boolean; defender: boolean };
   scores: { attacker: number; defender: number } | null;
   stone: StoneBurnerComparison | null;
@@ -428,6 +439,10 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   let scores: BattleResolutionQuote['scores'] = null;
   let deaths = { attacker: false, defender: false };
   let bounty: BattleResolutionQuote['bounty'] = null;
+  let leaderSkillBonuses: BattleResolutionQuote['leaderSkillBonuses'] = {
+    attacker: { bonus: 0, applied: [] },
+    defender: { bonus: 0, applied: [] },
+  };
   if (result === 'mutualTraitors' || result === 'explosion')
     deaths = { attacker: true, defender: true };
   else if (result === 'traitor') {
@@ -453,19 +468,45 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       attacker: effects.attackerDead || stoneKills,
       defender: effects.defenderDead || stoneKills,
     };
+    const selectedLeader = (side: ResolutionCombatant) =>
+      side.leader
+        ? { id: side.leader.id, kind: 'disc' as const }
+        : card(side, side.plan.leader)?.kind === 'hero'
+          ? { id: side.plan.leader!, kind: 'hero' as const }
+          : undefined;
+    leaderSkillBonuses = {
+      attacker: leaderSkillBattleBonus({
+        assignments: a.leaderSkills ?? [],
+        selectedLeader: selectedLeader(a),
+        weapon: aw,
+        defense: ad,
+        skilledLeaderSurvives: !deaths.attacker,
+      }),
+      defender: leaderSkillBattleBonus({
+        assignments: d.leaderSkills ?? [],
+        selectedLeader: selectedLeader(d),
+        weapon: dw,
+        defense: dd,
+        skilledLeaderSurvives: !deaths.defender,
+      }),
+    };
     scores = {
       attacker:
         a.plan.dial +
         (a.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.attacker || effects.stunned
           ? 0
-          : strengths.attacker + (a.plan.kwisatz ? 2 : 0)),
+          : strengths.attacker +
+            leaderSkillBonuses.attacker.bonus +
+            (a.plan.kwisatz ? 2 : 0)),
       defender:
         d.plan.dial +
         (d.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.defender || effects.stunned
           ? 0
-          : strengths.defender + (d.plan.kwisatz ? 2 : 0)),
+          : strengths.defender +
+            leaderSkillBonuses.defender.bonus +
+            (d.plan.kwisatz ? 2 : 0)),
     };
     winner = stone
       ? stone.winner === 'attacker'
@@ -636,6 +677,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     defenderTraitor: dc,
     revelations,
     leaderStrengths: strengths,
+    leaderSkillBonuses,
     leaderDeaths: deaths,
     scores,
     stone,
