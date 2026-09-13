@@ -113,7 +113,7 @@ export function LeaderSkillsPanel({
           modifiers for Warmaster, Master of Assassins, Swordmaster of Ginaz,
           Killer Medic and Prana-Bindu Adept, plus Planetologist movement and
           Special-card battle use, Suk Graduate force rescue, Mentat’s private
-          weapon-question preview and battle bonus, Bureaucrat battle scores, Sandmaster ground-route collection and
+          weapon-question preview and battle bonus, Bureaucrat payment redirection and battle scores, Sandmaster ground-route collection and
           victory spice, Rihani inspections and exchanges, optional Smuggler
           reserve shipping, Spice Banker battle spending, and Diplomat copying
           an opposing base defense with a committed Worthless card after plans

@@ -56,7 +56,10 @@ and the lower Mentat, Bureaucrat and Sandmaster effects. A separate
 [Mentat question preview](MENTAT_QUESTION.md) connects private naming/disclosure,
 posture and saved history under an explicit private opt-in. The uniform mandatory
 response step awaits the user's UX decision; ordinary activation remains disabled.
-Bureaucrat payment redirection and Spice Banker income remain missing. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
+[Bureaucrat payment redirection](BUREAUCRAT_PAYMENTS.md) connects the ordinary
+auction, shipment, Richese sale and paid-bribe families within its recorded
+boundary. Other payments and split funding remain incomplete. Spice Banker
+income remains missing. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
 now connects its lower band with separate sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).
 [Diplomat defense](DIPLOMAT_DEFENSE.md) connects its normal band for a physical

@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 14 September 2026 — Bureaucrat payment prototype and outage preservation
+
+[Bureaucrat](BUREAUCRAT_PAYMENTS.md) now connects optional two-spice redirection
+for ordinary auction, Guild shipment, Richese auction and actual bribe payments
+in the bounded base/CHOAM Leader Skills profile. Native income cancellation
+resolves before the offer; the payer is charged once and the original callback
+resumes once. Decline leaves later opportunities available, and bribe proceeds
+remain unspendable until Mentat Pause. The physical-card use ledger survives
+ownership changes. Payment-unit guards, composition inferences and missing
+families remain explicit; no public mode or publication gate is opened.
+
+Owner controls and all four AI profiles use public payment information. Independent
+review covers saved receipts, private projection, costs, custody and callback
+ordering. Review found and fixed duplicate use-event corruption and an overly
+broad guard on Bank-bound independent Karama shipments. Focused regressions
+cover those defects, auction/card delivery, real Bene Gesserit advisor continuation,
+bribe escrow, private SQLite restoration and competing version writes.
+
+Four controlled-shuffle genuine-setup games complete with zero rejected actions:
+base Basic 718 actions/20 JSON restores, base Advanced 551/15, CHOAM Basic 681/19,
+and CHOAM Advanced 174/5. Full physical card, force and skill custody is checked.
+None reaches a Bureaucrat payment decision, so those samples establish bounded
+regression continuation only. A separate conserved staged browser game allows
+one five-spice bribe and redirects two from a second: ten is paid, eight stays in
+bribe escrow, and only one skill use is recorded. Both pending and resolved states
+restore after refresh with unchanged physical custody and private projections.
+
+After the reported power failure, all 699 opening games and original seat/recovery
+records matched the private backup. The database passed integrity and foreign-key
+checks and the server remained healthy. No restart or reset was needed. Final
+broad results, source fingerprint, Git delivery and post-HTTP preservation totals
+are recorded in the checkpoint commit and private verification report.
+
 ## 13 September 2026 — Private Mentat question preview and outage recovery
 
 [Mentat](MENTAT_QUESTION.md) has a connected private pre-plan question preview:

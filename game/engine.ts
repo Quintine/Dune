@@ -1,5 +1,6 @@
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
 import { leaderSkillCard, type LeaderSkillId } from './leader-skill-cards';
+import { bureaucratPaymentModeSupported, bureaucratPaymentSignature, bureaucratUsed, quoteBureaucratPayment, type BureaucratPaymentSource, type BureaucratPaymentUse, type BureaucratPaymentView } from './bureaucrat-payment';
 import { MENTAT_EMPTY_HAND, MentatQuestionError, mentatQuestionModeSupported, mentatWeaponNames, mentatHand, quoteMentatReveal, mentatSignature, type MentatQuestionReceipt, type MentatObservation, type MentatView } from './mentat-question';
 import {
   canUsePlanetologistBattleSpecial,
@@ -746,6 +747,7 @@ export type Decision =
   | { kind: 'sukRescue'; player: string; event: string; territory: string; mode: 'normal' | 'skilled'; options: SukRescueOption[] }
   | { kind: 'rihani'; player: string; event: string; stage: 'offer' | 'return' }
   | { kind: 'fullPlanOffer'; player: string }
+  | {kind:'bureaucratPayment';player:string;event:string}
   | { kind: 'mentatQuestion'; player: string; event: string; owner: string; target: string; stage: 'name' | 'reveal'; weapon: string | null }
   | { kind: 'fullPlanRead'; player: string; target: string }
   | { kind: 'homeworldShipmentGuild'; player: string; shipper: string; destination: string; amount: number; event: string }
@@ -823,6 +825,8 @@ export type Decision =
     }
   | { kind: 'battleCards'; player: string; territory: string; cards: string[] };
 export type ResponseWindow = {
+  bureaucratPayment?: BureaucratPaymentSource;
+  bureaucratPaymentEvent?: string;
   noFieldSkillProof?: string;
   /** Original optional collection binds a pending ground movement, including saved responses. */
   sandmasterProof?: string;
@@ -1149,6 +1153,8 @@ export type Game = {
   };
   ixRicheseTechnologyEvent?: string;
   currentAuctionSale?: {
+    bureaucratPayment?: BureaucratPaymentSource;
+    bureaucratPaymentEvent?: string;
     winner: string;
     amount: number;
     free: boolean;
@@ -1467,6 +1473,14 @@ export type Game = {
   /** Absent on legacy rooms whose starting cards were already dealt. */
   setupStage?: 'prediction' | 'skillTreachery' | 'leaderSkills' | 'traitors' | 'forces';
   leaderSkills?: LeaderSkillsState;
+  bureaucratPayments?: {used:BureaucratPaymentUse[];pending?:{
+    source:BureaucratPaymentSource;owner:string;leader:string;
+    resume:{response:ResponseWindow|null;decision:Decision|null};
+    continuation:{kind:'response'}|{kind:'auction';quote:AuctionContinuationQuote}|{kind:'bribe'};
+    frame:string;signature:string;
+  }};
+  bureaucratPaymentEvent?: string;
+  bureaucratUseEvents?: string[];
   /** Private development opt-in pending the uniform Mentat response UX decision. */
   mentatQuestionPreview?: true;
   mentatHistory?: MentatObservation[];
@@ -1985,7 +1999,7 @@ function validateNexusAdvisorResponse(g: Game, response: ResponseWindow) {
 function nexusAdvisorIntegrity(g: Game) {
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
-    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,g.bureaucratPayments?.pending?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
   const responses = contexts.flatMap(context => {
     const pending = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
@@ -4977,6 +4991,7 @@ function leaderSkillAssignmentUnavailable(
     : null;
 }
 function leaderSkillsIntegrity(g: Game) {
+  bureaucratPaymentIntegrity(g);
   mentatQuestionIntegrity(g);
   diplomatDefenseIntegrity(g);
   const noFieldShipment = leaderSkillNoFieldIntegrity(g);
@@ -5068,6 +5083,138 @@ function nativeLeaderSkill(g: Game, owner: string) {
   return g.leaderSkills?.assignments.find(
     (a) => a.owner === owner && leaderSkillController(g, a) === owner,
   );
+}
+function nativeBureaucrat(g: Game) {
+  return g.leaderSkills?.assignments.find(a => a.skill === 'bureaucrat' &&
+    getPlayer(g,a.owner).leaders.some(l => l.id === a.leader && !l.dead && !l.capturedBy && !l.gholaBy) &&
+    !g.battle?.leaderSkillHidden?.[a.owner]);
+}
+function bureaucratPaymentQuote(g: Game,source: Pick<BureaucratPaymentSource,'payer'|'payee'|'amount'>) {
+  const owner = nativeBureaucrat(g)?.owner ?? null;
+  return quoteBureaucratPayment({...source,owner,turn:g.turn,phase:g.phase,used:g.bureaucratPayments?.used ?? []});
+}
+function checkBureaucratContributors(g: Game,payee:string|undefined,shares:{payer:string;amount:number}[],privateFunding=false) {
+  if (!g.leaderSkills || !payee) return;
+  const paid = shares.filter(share => share.amount > 0);
+  const owner = nativeBureaucrat(g)?.owner;
+  if (!owner || owner === payee || bureaucratUsed(g.bureaucratPayments?.used ?? [],g.turn,g.phase) ||
+    paid.reduce((total,share) => total+share.amount,0) < 5 || !paid.some(share => share.payer !== owner && share.payer !== payee)) return;
+  requireRule(bureaucratPaymentModeSupported(g),'Bureaucrat with other optional modules is still being integrated.');
+  requireRule(paid.length === 1 && !privateFunding,'Bureaucrat on allied funding or multiple payer contributions is awaiting private payment-split integration.');
+}
+function stampBureaucratPayment(g: Game,kind:BureaucratPaymentSource['kind'],payer:string,payee:string,amount:number):
+  {bureaucratPayment?:BureaucratPaymentSource;bureaucratPaymentEvent?:string} {
+  if (!g.leaderSkills || !bureaucratPaymentModeSupported(g) || amount < 5 || payer === payee) return {};
+  const source:BureaucratPaymentSource = {event:crypto.randomUUID(),turn:g.turn,phase:g.phase,kind,payer,payee,amount,signature:''};
+  source.signature = bureaucratPaymentSignature(source);
+  return {bureaucratPayment:source,bureaucratPaymentEvent:source.event};
+}
+function bureaucratPaymentFrame(g: Game): string {
+  return JSON.stringify({turn:g.turn,phase:g.phase,active:g.active,order:g.order,
+    players:g.players.map(p => ({id:p.id,spice:p.spice,bribes:p.bribes,hand:p.hand,leaders:p.leaders,forces:p.forces,
+      elites:p.elites,reserves:p.reserves,tanks:p.tanks,ally:p.ally,shipped:p.shipped,moved:p.moved})),
+    aid:g.aid,auction:g.auction,sale:g.currentAuctionSale,richeseAuction:g.richeseAuction,richeseBidding:g.richeseBidding,
+    richeseFunding:g.richeseFunding,richeseCache:g.richeseCache,pendingIxAlly:g.pendingIxAlly,
+    battle:g.battle,leaderSkills:g.leaderSkills,phaseOpening:g.phaseOpening});
+}
+function validateBureaucratSource(g: Game,source:BureaucratPaymentSource) {
+  requireRule(source && typeof source === 'object' && typeof source.event === 'string' && source.event.length > 0 &&
+    source.turn === g.turn && source.phase === g.phase && ['auction','shipment','bribe'].includes(source.kind) &&
+    g.players.some(p => p.id === source.payer) && g.players.some(p => p.id === source.payee) && source.payer !== source.payee &&
+    Number.isSafeInteger(source.amount) && source.amount >= 5 && source.signature === bureaucratPaymentSignature(source),
+    'The saved Bureaucrat payment changed its actual payer, payee, amount or event.');
+}
+function bureaucratPaymentIntegrity(g: Game) {
+  const state = g.bureaucratPayments,events = g.bureaucratUseEvents ?? [];
+  requireRule(!state || Array.isArray(state.used),'The saved Bureaucrat usage ledger is invalid.');
+  requireRule(Array.isArray(events) && events.length === (state?.used.length ?? 0) && new Set(events).size === events.length &&
+    new Set((state?.used ?? []).map(use => use?.event)).size === (state?.used.length ?? 0),
+    'The physical Bureaucrat card lost its independent usage events.');
+  const phases = new Set<string>();
+  for (const use of state?.used ?? []) {
+    const phase = `${use.turn}:${use.phase}`;
+    requireRule(use && typeof use.event === 'string' && events.includes(use.event) && !phases.has(phase) &&
+      Number.isSafeInteger(use.turn) && use.turn >= 1 && use.turn <= g.turn && Number.isSafeInteger(use.phase) && use.phase >= 0 && use.phase <= 8 &&
+      (use.turn < g.turn || use.phase <= g.phase) && g.players.some(p => p.id === use.owner) && use.signature === bureaucratPaymentSignature(use),
+      'The physical Bureaucrat skill cannot gain a second use in the same phase.');
+    phases.add(phase);
+  }
+  const pending = state?.pending;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const contexts = [g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,g.pendingRichesePurchaseIncome?.resume,
+    g.summonedWorm?.resume,continuation && 'resume' in continuation ? continuation.resume : null,pending?.resume];
+  const responses = contexts.flatMap(context => context?.response ? [context.response] : []);
+  if (g.pendingKarama?.use.kind === 'cancel') responses.push(g.pendingKarama.use.response);
+  for (const carrier of [g.currentAuctionSale,...responses].filter((value): value is NonNullable<typeof value> => !!value)) {
+    const source = carrier.bureaucratPayment;
+    if (!source) {requireRule(!carrier.bureaucratPaymentEvent,'The saved payment lost its original Bureaucrat source.');continue;}
+    requireRule(g.leaderSkills && bureaucratPaymentModeSupported(g) && carrier.bureaucratPaymentEvent === source.event,
+      'The saved Bureaucrat payment lost its module or independent event.');
+    validateBureaucratSource(g,source);
+    if ('winner' in carrier) requireRule(source.kind === 'auction' && !carrier.free && source.amount === carrier.amount &&
+      (source.payer === carrier.winner || getPlayer(g,carrier.winner).ally === source.payer) &&
+      source.payee === (carrier.origin !== 'normal' && carrier.seller !== carrier.winner ? carrier.seller : byFaction(g,'emperor')?.id),
+      'The Bureaucrat source no longer matches its paid auction sale.');
+    else requireRule(source.payee === carrier.owner &&
+      (carrier.kind === 'guildIncome' && source.kind === 'shipment' && source.amount === carrier.amount ||
+        carrier.kind === 'emperorIncome' && source.kind === 'auction' && g.currentAuctionSale?.bureaucratPaymentEvent === source.event),
+      'The Bureaucrat source no longer matches its original native income.');
+  }
+  const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'bureaucratPayment');
+  if (!pending) {requireRule(!g.bureaucratPaymentEvent && !decisions.length,'The saved Bureaucrat decision lost its original payment.');return;}
+  validateBureaucratSource(g,pending.source);
+  const assignment = nativeBureaucrat(g);
+  requireRule(g.status === 'playing' && g.leaderSkills && bureaucratPaymentModeSupported(g) && !g.response &&
+    g.bureaucratPaymentEvent === pending.source.event && pending.signature === bureaucratPaymentSignature(pending) &&
+    pending.frame === bureaucratPaymentFrame(g) && assignment?.owner === pending.owner && assignment.leader === pending.leader &&
+    bureaucratPaymentQuote(g,pending.source) && decisions.length === 1 && decisions[0] === g.decision &&
+    decisions[0].player === pending.owner && decisions[0].event === pending.source.event,
+    'The pending Bureaucrat payment changed its trainer, resources, callback or unique decision.');
+  if (pending.continuation.kind === 'response') requireRule(pending.resume.response?.bureaucratPaymentEvent === pending.source.event,
+    'The Bureaucrat income lost its uncanceled response continuation.');
+  else if (pending.continuation.kind === 'auction') requireRule(g.currentAuctionSale?.bureaucratPaymentEvent === pending.source.event &&
+    JSON.stringify(pending.continuation.quote) === JSON.stringify(currentAuctionContinuationQuote(g,{kind:'sale',free:false})),
+    'The Bureaucrat sale lost its original seller-credit continuation.');
+  else requireRule(pending.continuation.kind === 'bribe' && pending.source.kind === 'bribe',
+    'The Bureaucrat payment has an invalid continuation.');
+}
+function offerBureaucratPayment(g: Game,source:BureaucratPaymentSource|undefined,
+  continuation:NonNullable<NonNullable<Game['bureaucratPayments']>['pending']>['continuation']): boolean {
+  if (!source || !bureaucratPaymentQuote(g,source)) return false;
+  requireRule(!g.bureaucratPayments?.pending,'Finish the current Bureaucrat payment first.');
+  validateBureaucratSource(g,source);
+  const assignment = nativeBureaucrat(g)!;
+  const pending = {source,owner:assignment.owner,leader:assignment.leader,
+    resume:{response:g.response,decision:g.decision},continuation,frame:bureaucratPaymentFrame(g),signature:''};
+  pending.signature = bureaucratPaymentSignature(pending);
+  (g.bureaucratPayments ??= {used:[]}).pending = pending;
+  g.bureaucratPaymentEvent = source.event;
+  g.response = null;
+  g.decision = {kind:'bureaucratPayment',player:assignment.owner,event:source.event};
+  return true;
+}
+function projectedBureaucrat(g: Game): BureaucratPaymentView {
+  const pending = g.bureaucratPayments?.pending;
+  return {pending:pending ? {event:pending.source.event,owner:pending.owner,payer:pending.source.payer,payee:pending.source.payee,
+    amount:pending.source.amount,kind:pending.source.kind,redirect:2} : null,
+    usedThisPhase:bureaucratUsed(g.bureaucratPayments?.used ?? [],g.turn,g.phase)};
+}
+function actBureaucratPayment(g: Game,action:Action) {
+  const pending = g.bureaucratPayments!.pending!;
+  requireRule(action.event === pending.source.event && typeof action.redirect === 'boolean' &&
+    Object.keys(action).every(key => ['type','event','redirect'].includes(key)), 'Choose whether to redirect this exact Bureaucrat payment.');
+  const redirected = action.redirect ? 2 : 0;
+  if (redirected) {
+    const use:BureaucratPaymentUse = {event:pending.source.event,owner:pending.owner,turn:g.turn,phase:g.phase,signature:''};
+    use.signature = bureaucratPaymentSignature(use);
+    g.bureaucratPayments!.used.push(use);(g.bureaucratUseEvents ??= []).push(use.event);
+    log(g,`${getPlayer(g,pending.owner).name} used Bureaucrat to redirect 2 spice of the ${pending.source.amount}-spice payment to the Bank.`);
+  }
+  delete g.bureaucratPayments!.pending;delete g.bureaucratPaymentEvent;
+  g.response = pending.resume.response;g.decision = pending.resume.decision;
+  if (pending.continuation.kind === 'response') finishResponse(g,false,redirected);
+  else if (pending.continuation.kind === 'auction') commitAuctionContinuation(g,pending.continuation.quote,redirected);
+  else getPlayer(g,pending.source.payee).bribes += pending.source.amount-redirected;
 }
 function requireLeaderSkillRevival(g: Game, owner: string) {
   requireRule(
@@ -6580,6 +6727,7 @@ function settleRicheseLot(g: Game) {
     free: false,
     origin: lot.source,
     seller: owner.id,
+    ...stampAuctionBureaucrat(g,winner,quote.amount,quote.allyPayment,owner.id),
   };
   log(
     g,
@@ -7286,6 +7434,14 @@ function payWithAlly(g: Game, p: Player, cost: number, allyPayment: number) {
   p.spice -= cost - allyPayment;
   if (credit) credit.amount -= allyPayment;
 }
+function auctionBureaucratParties(g:Game,p:Player,amount:number,allyPayment:number,seller?:string) {
+  return {payee:seller && seller !== p.id ? seller : byFaction(g,'emperor')?.id,
+    shares:[{payer:p.id,amount:amount-allyPayment},...(allyPayment ? [{payer:p.ally!,amount:allyPayment}] : [])].filter(share => share.amount > 0)};
+}
+function stampAuctionBureaucrat(g:Game,p:Player,amount:number,allyPayment:number,seller?:string) {
+  const {payee,shares} = auctionBureaucratParties(g,p,amount,allyPayment,seller);
+  return payee && !allyPayment && shares.length === 1 ? stampBureaucratPayment(g,'auction',shares[0].payer,payee,amount) : {};
+}
 function auctionNext(g: Game) {
   const a = g.auction!;
   const eligible = g.order.filter((id) => {
@@ -7323,6 +7479,7 @@ function settleAuction(g: Game, free = false, automatic = false) {
     free,
     origin: 'normal',
     seller: null,
+    ...(!free ? stampAuctionBureaucrat(g,winner,a.bid,a.allyPayment ?? 0) : {}),
   };
   log(
     g,
@@ -7393,21 +7550,24 @@ function validateAuctionContinuationCancellation(
     );
   return null;
 }
-function commitAuctionContinuation(g: Game, quote: AuctionContinuationQuote) {
+function commitAuctionContinuation(g: Game, quote: AuctionContinuationQuote,bureaucratDiversion?:number) {
+  if (bureaucratDiversion === undefined && quote.steps.some(step => step.kind === 'sellerCredit') &&
+    offerBureaucratPayment(g,g.currentAuctionSale?.bureaucratPayment,{kind:'auction',quote})) return;
   for (const step of quote.steps) {
     if (step.kind === 'clearIxAlly') g.pendingIxAlly = null;
     else {
       const seller = getPlayer(g, step.player);
-      seller.spice = step.balance;
+      seller.spice = step.balance-(bureaucratDiversion ?? 0);
       log(
         g,
-        `${seller.name} collected ${step.amount} spice from the ${quote.sale.origin === 'cache' ? 'Richese cache' : 'Black Market'} sale.`,
+        `${seller.name} collected ${step.amount-(bureaucratDiversion ?? 0)} spice from the ${quote.sale.origin === 'cache' ? 'Richese cache' : 'Black Market'} sale.`,
         { faction: 'richese', name: 'Auction income' },
       );
     }
   }
   const next = quote.next;
-  if (next.kind === 'response') g.response = next.response;
+  if (next.kind === 'response') g.response = {...next.response,...(next.response.kind === 'emperorIncome' && g.currentAuctionSale?.bureaucratPayment ?
+    {bureaucratPayment:g.currentAuctionSale.bureaucratPayment,bureaucratPaymentEvent:g.currentAuctionSale.bureaucratPaymentEvent} : {})};
   else if (next.kind === 'richeseEnd') finishRicheseLot(g);
   else {
     g.currentAuctionSale = null;
@@ -10378,13 +10538,16 @@ function checkShipmentIncomeRounding(g: Game, p: Player, cost: number, allyPayme
   const guild = byFaction(g, 'guild');
   if (!guild) return;
   const amounts = shipmentIncomeContributions(g, p, cost, allyPayment);
+  checkBureaucratContributors(g,g.karamaShipping?.player === p.id ? undefined : guild.id,[{payer:p.id,amount:p.id === guild.id ? 0 : cost-allyPayment},
+    ...(allyPayment ? [{payer:p.ally!,amount:p.ally === guild.id ? 0 : allyPayment}] : [])],allyPayment > 0);
   validateGuildPaymentRounding(g, guild.id, amounts.reduce((sum, amount) => sum + amount, 0), amounts);
 }
-function guildPaymentResponse(g: Game, owner: string, amounts: number[]): ResponseWindow {
+function guildPaymentResponse(g: Game, owner: string, amounts: number[],payer?:string): ResponseWindow {
   const contributions = amounts.filter(amount => amount > 0);
   const amount = contributions.reduce((sum, value) => sum + value, 0);
   validateGuildPaymentRounding(g, owner, amount, contributions);
   return { kind: 'guildIncome', owner, amount, passed: [],
+    ...(contributions.length === 1 && payer ? stampBureaucratPayment(g,'shipment',payer,owner,amount) : {}),
     ...(g.homeworlds?.custody ? { guildContributions: contributions,
       guildPaymentProof: guildPaymentSignature(g, owner, amount, contributions) } : {}) };
 }
@@ -16271,7 +16434,7 @@ function currentPlacementCancellationQuote(g: Game, response: ResponseWindow) {
     throw error;
   }
 }
-function finishResponse(g: Game, canceled: boolean) {
+function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) {
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
   const response = g.response!;
@@ -16317,6 +16480,7 @@ function finishResponse(g: Game, canceled: boolean) {
   const allianceCancellation = canceled
     ? moritaniAllianceCancellationQuote(g, response)
     : null;
+  if (!canceled && bureaucratDiversion === undefined && offerBureaucratPayment(g,response.bureaucratPayment,{kind:'response'})) return;
   g.response = null;
   if (response.kind === 'nexusGuildCunning') { settleGuildCunning(g,response,canceled); return; }
   if (response.kind === 'nexusAdvisorFlip') {
@@ -17200,7 +17364,7 @@ function finishResponse(g: Game, canceled: boolean) {
       );
     }
   } else if (response.kind === 'guildIncome') {
-    const payment = !canceled ? creditFactionPayment(g, response.owner, 'shipment', response.amount!) : null;
+    const payment = !canceled ? creditFactionPayment(g, response.owner, 'shipment', response.amount!-(bureaucratDiversion ?? 0)) : null;
     log(
       g,
       canceled
@@ -17251,7 +17415,7 @@ function finishResponse(g: Game, canceled: boolean) {
     if (!canceled) {
       const owner = getPlayer(g, response.owner);
       const amount = g.currentAuctionSale?.amount ?? g.auction!.bid;
-      const payment = creditFactionPayment(g, owner.id, 'treachery', amount);
+      const payment = creditFactionPayment(g, owner.id, 'treachery', amount-(bureaucratDiversion ?? 0));
       log(
         g,
         `${owner.name} received ${payment.income} spice from another faction’s ${amount}-spice paid auction bid.${payment.bank ? ` Low-population Kaitain leaves ${payment.bank} spice in the bank.` : ''}`,
@@ -17912,7 +18076,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     bankOnly: g.karamaShipping?.player === p.id,
   });
   if (guild && guildPayment > 0)
-    g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment));
+    g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),allyPayment ? undefined : p.id);
   g.karamaShipping = null;
   log(
     g,
@@ -19792,6 +19956,7 @@ function applyActionInner(
   requireRule(g.status !== 'finished', 'This game has ended.');
   const t = action.type;
   if (t === 'advanceBots') return g;
+  requireRule(!g.bureaucratPayments?.pending || t === 'decision','Resolve the pending Bureaucrat payment before another action.');
   requireRule(!(g.battle?.mentatQuestion?.stage === 'name' || g.battle?.mentatQuestion?.stage === 'reveal') || t === 'decision',
     'Resolve the current Mentat question before another action.');
   if (t === 'nexusCardChoice') { decideNexusCard(g, p, action); return g; }
@@ -20113,6 +20278,7 @@ function applyActionInner(
       actMentatQuestion(g, decision, action);
       return g;
     }
+    if (decision.kind === 'bureaucratPayment') {actBureaucratPayment(g,action);return g;}
     if (decision.kind === 'ixRicheseTechnology') {
       const pending = g.pendingIxRicheseTechnology!;
       requireRule(action.event === pending.event && action.decline === true &&
@@ -21596,12 +21762,14 @@ function applyActionInner(
       'Bribes are between different, non-allied factions.',
     );
     const n = integer(action.amount, 1, uncommittedSpice(g, p), 'Spice');
+    checkBureaucratContributors(g,target.id,[{payer:p.id,amount:n}]);
     p.spice -= n;
-    target.bribes += n;
     log(
       g,
       `${p.name} promised ${n} spice to ${target.name}; collect it at the Mentat pause.`,
     );
+    const source = stampBureaucratPayment(g,'bribe',p.id,target.id,n).bureaucratPayment;
+    if (!offerBureaucratPayment(g,source,{kind:'bribe'})) target.bribes += n;
     return g;
   }
   if (t === 'stormDial') {
@@ -21735,6 +21903,10 @@ function applyActionInner(
           );
     if (amount !== null)
       validateRicheseFunding(amount, allyPayment, ownAvailable, allyAvailable);
+    if (amount !== null) {
+      const parties = auctionBureaucratParties(g,p,amount,allyPayment,lot.owner);
+      checkBureaucratContributors(g,parties.payee,parties.shares,allyPayment > 0);
+    }
     g.richeseAuction = submitRicheseBid(
       lot,
       { event: stringField(action.event), actor: p.id, amount },
@@ -21780,6 +21952,8 @@ function applyActionInner(
         a.bid <= p.spice + (aidFor(g, p)?.amount ?? 0)
           ? contribution(g, p, a.bid, action.allyPayment)
           : 0;
+      const parties = auctionBureaucratParties(g,p,a.bid,a.allyPayment);
+      checkBureaucratContributors(g,parties.payee,parties.shares,a.allyPayment > 0);
       a.bidder = id;
       a.passed = [];
     } else if (!a.passed.includes(id)) a.passed.push(id);
@@ -22471,7 +22645,7 @@ function applyActionInner(
       bankOnly: g.karamaShipping?.player === id,
     });
     if (guild && guildPayment > 0)
-      g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment));
+      g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),allyPayment ? undefined : p.id);
     if (fromReserves) {
       p.reserves -= n;
       if (p.elites) p.elites.reserves -= elite;
@@ -23262,6 +23436,7 @@ export function viewGame(state: Game, id: string) {
     setupStage: g.status === 'setup' ? (g.setupStage ?? null) : null,
     setupPending: setupPending(g),
     leaderSkills: projectedLeaderSkills(g, id),
+    bureaucrat: projectedBureaucrat(g),
     mentat: projectedMentat(g, id),
     rihani: projectedRihani(g, id),
     advanced: g.advanced,
@@ -23715,6 +23890,7 @@ export function viewGame(state: Game, id: string) {
     response: g.response
       ? {
           ...g.response,
+          ...(g.response.bureaucratPayment ? {bureaucratPayment:undefined,bureaucratPaymentEvent:undefined} : {}),
           ...(g.response.guildContributions ? { guildContributions: undefined } : {}),
           ...(g.response.guildPaymentProof ? { guildPaymentProof: undefined } : {}),
           ...(g.response.sandmasterProof ? { sandmasterProof: undefined } : {}),

@@ -7,6 +7,7 @@ const DECISIONS = {
   leaderSkillVisibility: true,
   leaderSkillRevival: true,
   mentatQuestion: true,
+  bureaucratPayment: true,
   sukRescue: true,
   rihani: true,
   diplomatDefense: true,

@@ -1438,7 +1438,7 @@ function policyActions(g: GameView): Action[] {
   if (g.decision) {
     if (g.decision.player !== me.id) return [];
     const d = g.decision;
-    if (d.kind === 'leaderSkillVisibility' || d.kind === 'leaderSkillRevival' || d.kind === 'mentatQuestion') return [];
+    if (d.kind === 'leaderSkillVisibility' || d.kind === 'leaderSkillRevival' || d.kind === 'mentatQuestion' || d.kind === 'bureaucratPayment') return [];
     if (d.kind === 'choamAudit')
       return [{ type: 'decision', event: d.event, audit: true }];
     if (d.kind === 'choamAuditPayment') {
@@ -3659,6 +3659,14 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  const bureaucrat = g.bureaucrat?.pending;
+  if (bureaucrat) {
+    if (bureaucrat.owner !== g.me || g.decision?.kind !== 'bureaucratPayment' ||
+        g.decision.player !== g.me || g.decision.event !== bureaucrat.event ||
+        g.truthtrance || g.response || g.automaticContinuationPending) return [];
+    const ally = g.players.find((player) => player.id === g.me)?.ally;
+    return [{ type: 'decision', event: bureaucrat.event, redirect: bureaucrat.payee !== ally }];
+  }
   const mentat = g.mentat?.pending;
   if (mentat) {
     if (mentat.player !== g.me || g.decision?.kind !== 'mentatQuestion' ||

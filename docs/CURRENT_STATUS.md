@@ -1,37 +1,33 @@
 # Current development status
 
-Updated 13 September 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 14 September 2026. **The full twelve-faction goal is unfinished. Basic
 is playable; public Advanced and unfinished expansion/module starts remain
 gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest verified checkpoint: `903d861`, deferred movement arrival safety.
-Types, lint, **4,583 offline tests**, build and **43 HTTP tests** passed.
-All **632 opening games** and original seat/recovery records were preserved
-(665 after HTTP checks). The healthy server was reused; both existing Ecaz and
-Ixian browser QA seats restored their private hands and pending decisions.
+Latest verified checkpoint: `9f1f783`, private Mentat question preview.
+Types, lint, **4,605 offline tests**, build and **43 HTTP tests** passed.
+All 665 opening rooms and original seat/recovery records were preserved
+(699 after HTTP checks). The existing server was reused after the outage;
+Ecaz, Ixian and Mentat browser seats restored their private state and decisions.
+The only post-verification edit removed an extra newline in a developer document.
 
-[Deferred movement](DEFERRED_MOVEMENT_ARRIVAL.md) now rejects unsupported arrivals
-before prevention windows or new card commitment. A legacy CHOAM decline returns
-an uncommitted move for another choice while preserving reserved Ornithopter
-custody. All six genuine faction sample games finish; combined Advanced completes
-1,303 actions and 35 JSON restorations. Guarded arrival candidates still occur.
-The exact prior failed save also finishes. Simultaneous Ambassador/Terror priority
-remains unresolved, so these paths do not prove complete combined rules support.
+[Mentat](MENTAT_QUESTION.md) connects private naming/disclosure before posture
+and faction powers, all four AI profiles and saved continuation in explicitly
+opted-in previews. Two controlled-shuffle genuine-setup samples finish. Ordinary
+activation still awaits the uniform private response UX decision.
 
-The [Mentat question preview](MENTAT_QUESTION.md) now connects private naming and
-card disclosure before leader posture and faction powers, with human controls,
-all four AI profiles and saved continuation. Independent review and 22 focused
-tests pass; two controlled-shuffle genuine-setup samples finish. Ordinary games
-remain unactivated while the uniform private response UX question is pending.
-Final broad results and Git delivery are recorded with the verified checkpoint.
-
-After the latest power failure, all 665 opening rooms and original seat/recovery
-records matched the backup; the new Mentat QA room brings the total to 666 before
-HTTP checks. Database integrity and foreign keys passed. The existing server
-responds at localhost:3000 and is reused; its lock prevented a duplicate start.
-The Mentat browser seat restored its private history and pending leader choice.
+The current milestone connects [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md):
+ordinary auctions, shipment income, Richese sale proceeds and actual bribe
+transfers, with a once-per-phase optional redirection and preserved continuation.
+Qualifying allied funding, other payment families and combined-module acceptance
+stay explicit. Independent review and focused controls/AI/recovery checks pass.
+Four genuine-setup games finish without rejected candidates, but contain no payment
+choice; a separate staged browser exercise verifies both choices and refresh.
+All 699 opening rooms and original seat/recovery records survived the reported
+outage. The healthy server was reused. The completed checkpoint's Git record
+contains final broad verification and post-HTTP preservation totals.
 
 ## Authoritative navigation
 
@@ -58,7 +54,7 @@ These links define bounded working behavior, not complete module certification.
 | --- | --- |
 | Base/Advanced setup | [Genuine setup](ADVANCED_SETUP_TEST_SEAM.md), [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md), [Fremen cancellation](FREMEN_MOVEMENT_KARAMA_RULES.md), [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md). Earlier Basic-then-flip fixtures do not establish current setup coverage. |
 | Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement, separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
-| Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md) and [No-Field](SMUGGLER_NO_FIELD.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md). Remaining bands and combinations are explicit in those contracts. |
+| Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md) and [No-Field](SMUGGLER_NO_FIELD.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Jacurutu income, Testing Station and Shrine. Orgiz and contested/mixed cases remain pending. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) is connected; its after-victory inspection remains pending. A source audit or helper alone is not a completed effect. |
 | Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |

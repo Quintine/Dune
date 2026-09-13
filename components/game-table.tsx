@@ -53,6 +53,7 @@ import { LeaderSkillsPanel } from './leader-skills';
 import { LeaderSkillBattleGuide } from './leader-skill-battle-guide';
 import { RihaniChoice, RihaniHistory } from './rihani-decipherer';
 import { MentatQuestion, MentatHistory } from './mentat-question';
+import { BureaucratPayment } from './bureaucrat-payment';
 import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
@@ -2146,6 +2147,8 @@ export function GameTable({
                     ? 'Position your skilled leader'
                   : g.decision.kind === 'mentatQuestion'
                     ? g.decision.stage === 'name' ? 'Mentat · name a weapon' : 'Mentat · privately show a card'
+                  : g.decision.kind === 'bureaucratPayment'
+                    ? 'Bureaucrat · redirect a payment'
                   : g.decision.kind === 'leaderSkillRevival'
                     ? 'Choose a skill for the revived leader'
                   : g.decision.kind === 'rihani'
@@ -2439,6 +2442,8 @@ export function GameTable({
                 />
               ) : g.decision.kind === 'mentatQuestion' ? (
                 <MentatQuestion key={`${g.decision.event}-${g.decision.stage}-${g.me}`} game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'bureaucratPayment' ? (
+                <BureaucratPayment game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'leaderSkillVisibility' || g.decision.kind === 'leaderSkillRevival' ? (
                 <p className="muted">Use the Leader Skills controls above to make your choice.</p>
               ) : g.decision.kind === 'homeworldRevivalDeployment' ? (
