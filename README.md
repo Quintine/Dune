@@ -1,6 +1,6 @@
 # Dune — Arrakis Table
 
-An unofficial multiplayer adaptation of Gale Force Nine’s classic 2019 Dune, built with React, TypeScript, Vinext, and Cloudflare Workers/D1. **Development is ongoing; this is not yet a complete rules implementation.** Advanced and unfinished expansion starts remain disabled. See [implementation status](docs/IMPLEMENTATION_STATUS.md) for implemented systems, evidence, outstanding rules questions and release gates.
+An unofficial multiplayer adaptation of Gale Force Nine’s classic 2019 Dune, built with React, TypeScript, Vinext, and Cloudflare Workers/D1. **Development is ongoing; this is not yet a complete rules implementation.** Advanced and unfinished expansion starts remain disabled. Start with [current status](docs/CURRENT_STATUS.md) for implemented systems, remaining requirements and release gates; detailed historical evidence remains in the [implementation log](docs/IMPLEMENTATION_STATUS.md).
 
 ## Run locally
 
@@ -31,7 +31,7 @@ An uncertain saved-kit recovery keeps its exact retry details in memory and prev
 ## Verify changes
 
 Use the [development guide](docs/DEVELOPMENT.md) for architecture, focused tests
-and the verification workflow. Tests are discovered automatically; the default
+and the [repeatable verification tools](docs/VERIFICATION_WORKFLOW.md). Tests are discovered automatically; the default
 suite includes in-memory persistence recovery and needs no server:
 
 ```sh
@@ -56,6 +56,8 @@ node --import tsx tools/ai-calibration.ts --games 120 --seed 20260907 --out /tmp
 See [AI calibration](docs/AI_CALIBRATION.md), [multiplayer audit](docs/MULTIPLAYER_AUDIT.md), [component inventory](docs/COMPONENT_INVENTORY.md), and [visual playtest](docs/VISUAL_PLAYTEST.md) for scope and limitations. Passing subsystem tests does not certify every rules combination.
 
 ## Development maintenance
+
+The user-authorized 13 September 2026 local reset established a fresh saved-game baseline; see the [reset record](docs/VERIFICATION_WORKFLOW.md#authorized-reset-13-september-2026). Preserve all games created after that checkpoint.
 
 During active development, preserve database state and perform a controlled server restart approximately hourly. Warn before interrupting human play and defer until a safe decision point. Verify server health and restoration afterward. No recurring automation is installed; the user requested leaving it removed. Fix causes of crashes and lost progress rather than relying on restarts.
 

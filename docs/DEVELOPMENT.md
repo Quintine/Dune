@@ -4,6 +4,11 @@ Start with [README](../README.md) for installation and saved-game behavior and
 [AGENTS.md](../AGENTS.md) for project invariants. This page is a navigation and
 verification guide, not a second implementation-status log.
 
+Start with [current status](CURRENT_STATUS.md) and [rule decisions](RULE_DECISIONS.md).
+Use [repeatable verification](VERIFICATION_WORKFLOW.md) for compact source-bound
+logs, private saved-game backups/comparisons and HTTP seat restoration.
+The [three-milestone pilot](EFFICIENCY_PILOT.md) records measurement limits.
+
 ## Architecture map
 
 | Concern                            | Entry points                                                                                       |

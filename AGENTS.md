@@ -8,6 +8,8 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
 
 - Read `README.md` and this guide first. See `docs/DEVELOPMENT.md` for the
   architecture map and focused verification commands.
+- Read `docs/CURRENT_STATUS.md` for current gates and `docs/RULE_DECISIONS.md`
+  for existing rulings before reopening research.
 - Run `git status --short` before editing; preserve other work.
 - Search the relevant feature in `game/`, `components/`, `tests/`, and `docs/`.
   Use `rg -n` and bounded reads for `game/engine.ts` and
@@ -45,6 +47,8 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
 
 ## Preserve development state
 
+- The user-authorized 2026-09-13 reset cleared old local games once; see
+  `docs/VERIFICATION_WORKFLOW.md`. Preserve all games created afterward.
 - Keep `.wrangler/state` and all saved games. Never reset a database to fix a
   test, migration, connection or gameplay problem. Migrations are additive.
 - Reuse a running dev server. Warn before interrupting human play, defer to a
@@ -55,3 +59,12 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
   completion and verification gates documented in `README.md`.
 - Keep generated builds, caches and editor backups out of version control.
   Avoid mass formatting, unrelated dependency updates and broad engine rewrites.
+
+## Efficient checkpoints
+
+- Use `docs/VERIFICATION_WORKFLOW.md` for compact source-bound check reports
+  and private saved-game/seat checks. Keep artifacts outside the checkout.
+- Use subagents selectively for bounded independent tasks and complex reviews;
+  they remain explicitly authorized. Share concise briefs and file ownership.
+- Review, verify, commit and push completed checkpoints automatically under
+  “Push all from now on.” Confirm push success; never force-push or expose secrets.

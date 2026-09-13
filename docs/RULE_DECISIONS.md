@@ -1,0 +1,33 @@
+# Rule decision index
+
+Updated 13 September 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+
+## Recorded contracts and implementation boundaries
+
+| Topic | Decision to preserve | Detailed authority and evidence |
+| --- | --- | --- |
+| Source and readiness | Separate published rules, explicit implementation choices and unfinished interpretations; Advanced/expansion gates stay closed. | [Base/Advanced audit](BASE_ADVANCED_READINESS_20260907.md), [checklist](../game/reference.ts) |
+| Setup and Fremen movement | Preserve source-ordered setup and the distinct declared-movement cancellation; do not recreate fixed historical gaps. | [Setup contract](ADVANCED_SETUP_TEST_SEAM.md), [Fremen Karama](FREMEN_MOVEMENT_KARAMA_RULES.md) |
+| Guild payment | Rate, transport permission and income are distinct; power owner, shipper, contributors and independent rate-card beneficiary remain distinct. | [Rate/cancellation sources](GUILD_RATE_KARAMA_RULES.md), [implemented payment routing](GUILD_SHIPMENT_PAYMENTS.md) |
+| Truthtrance | Current facts are boolean disclosures, not promises to preserve resources. Structured Basic active-opportunity shipment promises bind within their documented scope; prose is not automatically enforced. | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card facts](TRUTHTRANCE_CARD_COUNT.md), [shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md), [remaining audit](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md) |
+| Nexus lifecycle | Twelve physical cards, phase draw/replacement and alliance forfeiture; native Cunning, absent-faction Secret Ally and Betrayal have separate effects. No blanket Karama immunity. | [Common source contract](NEXUS_CARD_RULES.md), [lifecycle runtime](NEXUS_CARD_RUNTIME.md) |
+| Nexus faction effects | Preserve physical custody, original faction identity and durable effect receipts; use each printed family instead of borrowing another faction's rules by analogy. | [Atreides](NEXUS_ATREIDES_RULES.md), [Harkonnen](NEXUS_HARKONNEN_RULES.md), [BG](NEXUS_BENE_GESSERIT_RULES.md), [Emperor](NEXUS_EMPEROR_RULES.md), [Fremen](NEXUS_FREMEN_RULES.md), [Guild](NEXUS_GUILD_RULES.md) |
+| Expansion Nexus families | Source audit coverage does not imply every panel is playable; consult later runtime records in the status log. | [Ixian Cunning](NEXUS_IXIAN_CUNNING_RULES.md), [Ixian replacement](NEXUS_IXIAN_REPLACEMENT_RULES.md), [Tleilaxu](NEXUS_TLEILAXU_RULES.md), [CHOAM](NEXUS_CHOAM_RULES.md), [Richese](NEXUS_RICHESE_RULES.md), [Ecaz](NEXUS_ECAZ_RULES.md), [Moritani](NEXUS_MORITANI_RULES.md) |
+| Guild Secret Ally | One explicit Guild-priced ordinary shipment; borrowed prices/routes preserve native identity. Free Fremen reinforcement remains a separate choice. | [Route contract](NEXUS_GUILD_SECRET_ALLY_RULES.md), [verified runtime](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) |
+| Homeworld custody and mobility | Physical home/visitor groups, population thresholds, tariffs and transport permissions retain distinct sources; Homeworld immunity is not universal immunity. | [Homeworld rules](HOMEWORLD_RULES.md), [benefits](HOMEWORLD_BENEFITS_RULES.md), [mobility](HOMEWORLD_MOBILITY_RULES.md), [invasion](HOMEWORLD_INVASION_RULES.md), [Guild transport](GUILD_HOMEWORLD_TRANSPORT_RULES.md) |
+| Homeworld effects | Keep original payment/revival/placement identities and qualification observations; observations alone do not choose an occupied-benefit owner. | [Payments](HOMEWORLD_PAYMENT_INCOME_RULES.md), [card economy](HOMEWORLD_CARD_ECONOMY_RULES.md), [Collection](HOMEWORLD_COLLECTION_RULES.md), [revival deployment](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md), [victory reinforcement](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md), [replacement](HOMEWORLD_REPLACEMENT_RULES.md), [Tupile](HOMEWORLD_TUPILE_INTELLIGENCE_RULES.md) |
+
+## Pending interpretations: preserve existing questions
+
+These are unresolved in the cited records. Do not infer an answer from elapsed time, a fixture, a related card or this index. Check subsequent recorded user/source decisions before proceeding; do not send duplicate questions.
+
+| Boundary | Still unresolved | Existing record |
+| --- | --- | --- |
+| Ordinary Guild cancellation | Unaffordable repricing, replacement/retry/decline, consumed opportunity, contributor adjustment and ordering with special shipment-stop. The affordability question was already sent. | [Material timing](GUILD_RATE_KARAMA_RULES.md#material-unresolved-timing) |
+| Base special Karama | Unfunded auction recovery, stopped-shipment settlement and Atreides full-plan commitment order remain provisional or require interaction audit. | [Explicit base interpretations](BASE_ADVANCED_READINESS_20260907.md#explicit-unresolved-base-interpretations) |
+| Guild Secret Ally/Homeworlds | Whether the reserve-return grant overrides the Homeworld return restriction. The question was already sent; that route stays guarded. | [Homeworld return](NEXUS_GUILD_SECRET_ALLY_RULES.md#homeworld-prices-and-the-unresolved-return), [checkpoint](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) |
+| Occupied Homeworlds | Entitlement/expiry after departure, replacement or contest; unique powers and shared income. The first-occupier/current-occupier question was already sent. | [Occupation questions](HOMEWORLD_OCCUPATION_RULES.md#questions-the-retrieved-sources-do-not-settle), [lifecycle audit](HOMEWORLD_OCCUPATION_LIFECYCLE_AUDIT.md) |
+| Nexus responses and composition | Betrayal private-response timing, partial revival/payment choices, Emperor fewer-than-five, fresh advisor/storm cases, Duke restoration and remaining faction-specific combinations. | [Common boundaries](NEXUS_CARD_RULES.md#remaining-source-questions-and-release-boundaries) and the individual faction source/runtime documents above |
+| Other Homeworld combinations | Population/force splitting, removal custody, replacement shortages, income accounting and placement ordering remain local to their detailed contracts. | [Homeworld rules](HOMEWORLD_RULES.md), [occupation](HOMEWORLD_OCCUPATION_RULES.md) and the effect documents above |
+
+When a decision changes, record the exact source or user ruling in its detailed feature document, update affected implementation guidance/tests, and adjust this index and [current status](CURRENT_STATUS.md). Retain historical evidence without presenting a superseded proposal as current behavior.
