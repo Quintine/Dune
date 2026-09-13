@@ -4,6 +4,14 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Smuggler reserve shipment](SMUGGLER_SHIPMENT.md) connects the optional free
+  companion, total physical count, Guild rounding, controls, all four AI profiles
+  and saved interception. Independent review added missing-decision rejection.
+  Browser opt-out, actual shipment and refresh are exercised in a new room.
+  Battle collection and combined routes remain missing. After the latest outage,
+  the server was healthy and all 427 opening rooms remained unchanged; a fresh
+  backup captured 428. Broad results and final preservation are in the commit.
+
 - [Leader battle effects](LEADER_BATTLE_EFFECTS.md) now connect both Rihani bands
   and lower Mentat, Bureaucrat and Sandmaster effects. Private controls, all four
   AI profiles, JSON/SQLite continuation and concurrent exchanges are covered.

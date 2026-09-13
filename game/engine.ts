@@ -10,6 +10,7 @@ import { quoteSukRescue, sukReceiptSignature, sukRescueOptions, type SukForceGro
 import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
+import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
@@ -891,6 +892,8 @@ type PendingHomeworldShipment = HomeworldShipmentIntent & {
   pools: ReturnType<typeof quoteHomeworldShipment>['sources'] | ReturnType<typeof quoteGuildHomeworldShipment>['boardSources'];
 };
 type PendingShipment = {
+  /** Only new declarations use the bonus; legacy quoted shipments retain their original price. */
+  smuggler?: SmugglerShipment;
   guildSecretEvent?: string;
   guildNexusEvent?: string;
   nexusEvent?: string;
@@ -4914,6 +4917,12 @@ function leaderSkillAssignmentUnavailable(
 function leaderSkillsIntegrity(g: Game) {
   sukRescueIntegrity(g);
   rihaniIntegrity(g);
+  if (g.leaderSkills || g.pendingShipment?.smuggler) {
+    const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'guildShipment');
+    requireRule(decisions.length === (g.pendingShipment ? 1 : 0),
+      'The saved Leader Skills shipment lost its unique Guild interception decision.');
+    for (const decision of decisions) validateGuildShipmentDecision(g, decision);
+  }
   if (!g.leaderSkills) return;
   requireRule(g.leaderSkills.assignments.every((assignment) =>
     g.players.find((p) => p.id === assignment.owner)?.leaders.some((leader) => leader.id === assignment.leader && !leader.dead)),
@@ -13504,9 +13513,10 @@ function findShipmentCompletion(
         for (const nexus of [undefined, ...(offer && !offer.blocked && amount <= offer.maxForces ? [offer.event] : []), ...(guildOffer && !guildOffer.blocked ? [guildOffer.event] : [])]) {
           const guildSecretEvent = nexus && nexus === guildOffer?.event ? nexus : undefined;
           const price = {faction:p.faction,halfRate:shipmentHalfRate(g,p)};
+          const smuggler = nexus ? null : quoteSmugglerShipment(g, p.id, destination, amount);
           const cost = guildSecretEvent ? nexusRule(() => quoteNexusGuildSecretShipment(territory(destination).type,amount)).cost : nexus
             ? nexusRule(() => quoteNexusRicheseShipment(price,territory(destination).type,amount)).cost
-            : reserveShipmentCost(price,territory(destination).type,amount);
+            : reserveShipmentCost(price,territory(destination).type,amount - (smuggler ? 1 : 0));
           try {
             const allyPayment = contribution(g, p, cost);
             const elite = eliteChoice(
@@ -13525,6 +13535,7 @@ function findShipmentCompletion(
               : null;
             const nativeSources = sources ? { homeworldSources: sources } : {};
             const shipment: PendingShipment = {
+              ...(smuggler ? { smuggler } : {}),
               ...(guildSecretEvent ? {guildSecretEvent} : nexus ? {nexusEvent:nexus} : {}),
               ...nativeSources,
               turn: g.turn,
@@ -13545,6 +13556,7 @@ function findShipmentCompletion(
                 ...actions,
                 {
                   type: 'ship',
+                  ...(smuggler ? { smuggler: true } : {}),
                   ...(nexus ? {nexus} : {}),
                   territory: destination,
                   sector,
@@ -17067,6 +17079,12 @@ function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentI
   } else commitHomeworldShipment(g, shipment);
 }
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
+  if (shipment.smuggler) requireRule(
+    !shipment.source && !shipment.noField && !shipment.alliedNoField &&
+    !shipment.guildSecretEvent && !shipment.guildNexusEvent && !shipment.nexusEvent &&
+    !g.expansions.length && !g.homeworlds && !g.nexusCards && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens,
+    'Smuggler shipping with expansion modules is still being integrated.',
+  );
   if (shipment.guildSecretEvent) {
     validateGuildSecretDeclaration(g,shipment.player,shipment.guildSecretEvent);
     requireRule(!shipment.nexusEvent && !shipment.guildNexusEvent && !shipment.noField && !shipment.alliedNoField && !shipment.source,
@@ -17143,9 +17161,14 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
       'Fremen reinforcements must arrive within two territories of the Great Flat.',
     );
   const price = {faction:p.faction,halfRate:shipmentHalfRate(g,p)};
+  if (shipment.smuggler) requireRule(
+    !shipment.guildSecretEvent && !shipment.nexusEvent &&
+    JSON.stringify(shipment.smuggler) === JSON.stringify(quoteSmugglerShipment(g, p.id, shipment.territory, n)),
+    'The saved Smuggler shipment lost its living trainer, empty destination or physical amount.',
+  );
   const cost = shipment.guildSecretEvent ? nexusRule(() => quoteNexusGuildSecretShipment(territory(shipment.territory).type,n)).cost : shipment.nexusEvent
     ? nexusRule(() => quoteNexusRicheseShipment(price,territory(shipment.territory).type,n)).cost
-    : reserveShipmentCost(price,territory(shipment.territory).type,n);
+    : reserveShipmentCost(price,territory(shipment.territory).type,n - (shipment.smuggler ? 1 : 0));
   requireRule(
     Number.isSafeInteger(shipment.cost) && shipment.cost === cost,
     'The declared shipment price is no longer current.',
@@ -17341,6 +17364,9 @@ function commitShipment(g: Game, shipment: PendingShipment) {
       ? { faction: 'richese', name: 'No-Field shipment' }
       : shipment.guildSecretEvent ? {faction:'guild',name:'Secret Ally shipment'} : shipment.nexusEvent ? {faction:'richese',name:'Secret Ally shipment'} : undefined,
   );
+  if (shipment.smuggler) log(g,
+    `${p.name}'s Smuggler included one free accompanying force: ${n} physical forces left reserves, priced as ${n - 1} for ${cost} spice. The destination was empty before arrival.`,
+    { faction: p.faction, name: 'Smuggler shipment' });
   const bg = byFaction(g, 'beneGesserit');
   const followup =
     p.faction !== 'fremen' && bg && bg.id !== p.id && spiritualAdvisorMaximum(g, bg.id) > 0
@@ -21648,9 +21674,14 @@ function applyActionInner(
       ? 0
       : eliteChoice(n, p.reserves, p.elites?.reserves ?? 0, action.elite);
     const price = {faction:p.faction,halfRate:shipmentHalfRate(g,p)};
+    requireRule(action.smuggler === undefined || typeof action.smuggler === 'boolean', 'Choose whether to use Smuggler.');
+    const smuggler = action.smuggler === true && !noField && !guildSecretEvent && !nexusEvent
+      ? quoteSmugglerShipment(g, id, to, n) : null;
+    requireRule(action.smuggler !== true || smuggler,
+      'Smuggler needs a living face-up native trainer and at least two off-planet forces shipping into an empty territory.');
     const cost = guildSecretEvent ? nexusRule(() => quoteNexusGuildSecretShipment(territory(to).type,n)).cost : nexusEvent
       ? nexusRule(() => quoteNexusRicheseShipment(price,territory(to).type,n)).cost
-      : reserveShipmentCost(price,territory(to).type,n);
+      : reserveShipmentCost(price,territory(to).type,n - (smuggler ? 1 : 0));
     if (p.faction === 'fremen' && !guildSecretEvent) {
       requireRule(
         territory('the_great_flat').sectors.some((fs) =>
@@ -21668,6 +21699,7 @@ function applyActionInner(
     );
     const allyPayment = contribution(g, p, cost, action.allyPayment);
     const shipment: PendingShipment = {
+      ...(smuggler ? { smuggler } : {}),
       ...(currentGuildCunning(g,id) ? {guildNexusEvent:currentGuildCunning(g,id)!.receipt.event} : {}),
       ...(nexusEvent ? {nexusEvent} : {}),
       ...(guildSecretEvent ? {guildSecretEvent} : {}),

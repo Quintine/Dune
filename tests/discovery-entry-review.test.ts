@@ -20,6 +20,29 @@ import { enterDiscoveryCollection } from './fixture-discovery';
 
 const reload = (game: Game): Game => JSON.parse(JSON.stringify(game)) as Game;
 
+function giveExistingCard(
+  game: Game,
+  owner: string,
+  predicate: (card: Game['deck'][number]) => boolean,
+) {
+  const recipient = game.players.find((player) => player.id === owner)!;
+  const zones = [game.deck, game.discard, ...game.players.map((p) => p.hand)];
+  for (const zone of zones) {
+    const index = zone.findIndex(predicate);
+    if (index < 0) continue;
+    const [card] = zone.splice(index, 1);
+    recipient.hand.push(card);
+    return card;
+  }
+  assert.fail('The initialized physical deck has no Karama card.');
+}
+
+function physicalCardIds(game: Game) {
+  return [...game.deck, ...game.discard, ...game.players.flatMap((p) => p.hand)]
+    .map((card) => card.id)
+    .sort();
+}
+
 function initialized(
   factions: [FactionId, FactionId, FactionId],
   expansions: string[] = [],
@@ -116,10 +139,9 @@ function pendingAdvisorEntry(
   const beneGesserit = game.players[1];
   beneGesserit.reserves--;
   beneGesserit.forces['cistern:0'] = 1;
-  const karama = game.deck.find((card) => card.effect === 'karama');
-  assert.ok(karama);
-  game.deck = game.deck.filter((card) => card.id !== karama.id);
-  actor.hand.push(karama);
+  const custody = physicalCardIds(game);
+  giveExistingCard(game, actor.id, (card) => card.effect === 'karama');
+  assert.deepEqual(physicalCardIds(game), custody);
   game = nextTurn(game);
   game = applyAction(game, actor.id, entryAction(game));
   assert.equal(game.discoveryEntry?.stage, 'arrival');

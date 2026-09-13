@@ -65,6 +65,7 @@ import {
   shrineTruthtranceBotAction,
 } from './shrine';
 import { reserveShipmentCost } from './shipment-price';
+import { quoteSmugglerShipment } from './smuggler-shipment';
 import { nexusGuildSecretAllyAction, nexusGuildSecretAllyCanAct, nexusGuildSecretAllyQuote } from './nexus-guild-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from './nexus-richese-options';
 import { liveShipmentPromises, matchesShipment } from './shipment-promises';
@@ -3010,7 +3011,7 @@ function policyActions(g: GameView): Action[] {
         if (marker?.location.territory === to.t) continue;
         const desired = Math.min(
           me.reserves,
-          level === 0 ? 1 : Math.max([1, 3, 4, 5][level], to.enemy + 2),
+          level === 0 ? (quoteSmugglerShipment(g, me.id, to.t, 2) ? 2 : 1) : Math.max([1, 3, 4, 5][level], to.enemy + 2),
         );
         // Quote the discounted candidate independently of ordinary affordability.
         const richeseAmount = Math.min(me.reserves, 5, g.nexusRichese?.maxForces ?? 0);
@@ -3024,12 +3025,13 @@ function policyActions(g: GameView): Action[] {
           });
           if (candidate) actions.push(candidate);
         }
-        for (const amount of new Set([desired, Math.min(desired, 3), 1])) {
+        for (const amount of new Set([desired, Math.min(desired, 3),
+          ...(me.reserves >= 2 && quoteSmugglerShipment(g, me.id, to.t, 2) ? [2] : []), 1])) {
           if (
             reserveShipmentCost(
               { faction: me.faction, halfRate },
               territory(to.t).type,
-              amount,
+              amount - (quoteSmugglerShipment(g, me.id, to.t, amount) ? 1 : 0),
             ) > shipmentBudget
           )
             continue;
@@ -3038,6 +3040,7 @@ function policyActions(g: GameView): Action[] {
             territory: to.t,
             sector: to.s,
             amount,
+            ...(quoteSmugglerShipment(g, me.id, to.t, amount) ? { smuggler: true } : {}),
             ...(level > 0
               ? { elite: Math.min(amount, me.elites?.reserves ?? 0) }
               : {}),

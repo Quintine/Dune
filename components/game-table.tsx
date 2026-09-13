@@ -124,6 +124,8 @@ import {
 import { LeaderPortrait } from './leader-portrait';
 import { ShipmentQuote } from './shipment-quote';
 import { reserveShipmentCost } from '@/game/shipment-price';
+import { quoteSmugglerShipment } from '@/game/smuggler-shipment';
+import { SmugglerShipmentChoice } from './smuggler-shipment';
 import { nexusGuildSecretAllyAction, nexusGuildSecretAllyQuote } from '@/game/nexus-guild-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from '@/game/nexus-richese-options';
 import { guildTransportQuote } from '@/game/transport-quote';
@@ -304,6 +306,7 @@ export function GameTable({
   const [amount, setAmount] = useState(1);
   const [richeseShipmentEvent, setRicheseShipmentEvent] = useState('');
   const useRicheseShipment = !!g.nexusRichese && richeseShipmentEvent === g.nexusRichese.event;
+  const [useSmuggler, setUseSmuggler] = useState(true);
   const [bidDraft, setBidDraft] = useState({ auction: '', value: 1 });
   const auctionKey = `${g.code}/${g.turn}/${g.auction?.remaining ?? 0}`;
   const minimumBid = (g.auction?.bid ?? 0) + 1;
@@ -507,10 +510,13 @@ export function GameTable({
       g.players.some((p) => p.faction === 'guild' && p.id === me.ally) ||
       g.karamaShipping?.player === me.id,
   };
+  const smugglerOffer = validShipmentAmount && !useGuildSecret && !useRicheseShipment
+    ? quoteSmugglerShipment(g, me.id, selected, amount) : null;
+  const smugglerShipment = useSmuggler ? smugglerOffer : null;
   const shipmentCost = validShipmentAmount
     ? useGuildSecret ? (nexusGuildSecretAllyQuote(g, selected, amount)?.cost ?? null) : useRicheseShipment
       ? (nexusRicheseQuote(g, selected, amount)?.cost ?? null)
-      : reserveShipmentCost(shipmentRate, territory(selected).type, amount)
+      : reserveShipmentCost(shipmentRate, territory(selected).type, amount - (smugglerShipment ? 1 : 0))
     : null;
   if (useGuildSecret && shipmentCost === null && !g.nexusGuildSecretAlly?.blocked) shipmentProblems.push('Choose a current Guild Secret Ally shipment.');
   if (useRicheseShipment && shipmentCost === null && !g.nexusRichese?.blocked)
@@ -3808,7 +3814,7 @@ export function GameTable({
                         />
                         <ShipmentQuote
                           id="reserve-shipment-quote"
-                          physicalForces={useRicheseShipment ? amount : undefined}
+                          physicalForces={useRicheseShipment || smugglerShipment ? amount : undefined}
                           quote={shipmentQuote}
                           funding={{
                             ownSpice: me.spice ?? 0,
@@ -3816,6 +3822,7 @@ export function GameTable({
                           }}
                           unavailableReasons={shipmentProblems}
                         />
+                        <SmugglerShipmentChoice quote={smugglerOffer} use={useSmuggler} busy={busy || !!g.truthtrance} onChange={setUseSmuggler} />
                         <Button
                           className="game-action"
                           aria-describedby="reserve-shipment-quote"
@@ -3828,6 +3835,7 @@ export function GameTable({
                             const shipment: Action = {
                               type: 'ship', elite: eliteAmount, ...payment,
                               territory: selected, sector, amount,
+                              ...(smugglerOffer ? { smuggler: useSmuggler } : {}),
                               ...(homeworldSources ? { homeworldSources } : {}),
                             };
                             const action = useGuildSecret ? nexusGuildSecretAllyAction(g, guildSecretEvent, shipment) : useRicheseShipment

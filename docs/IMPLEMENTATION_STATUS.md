@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 13 September 2026 — Smuggler reserve shipment prototype
+
+[Smuggler shipping](SMUGGLER_SHIPMENT.md) connects one optional free accompanying
+force for an empty-territory off-planet shipment. The shared quote preserves
+actual reserve/elite custody, Guild rounding and real recipient payments. UI
+controls and all four AI profiles explicitly choose the bonus; declining and
+legacy unstamped declarations preserve ordinary pricing.
+
+Independent review found saved quotes could lose their required Guild decision.
+Read/action integrity now binds the declaration to its unique current or saved
+interception, rejecting missing/mismatched decisions or removed discounts.
+The first broad run also exposed a random Discovery fixture that searched only
+the undealt deck for Karama. It now relocates an existing card from its actual
+zone and asserts the complete physical card inventory is unchanged.
+SQLite restart, concurrent allowance, stale replay and old quote recovery pass.
+The browser exercised the price toggle, three physical arrivals for two spice
+and refresh with the same private hand. Two Basic/Advanced samples finished
+without rejected candidates but did not use Smuggler; targeted checks cover it.
+
+The latest outage left the existing server healthy. All 427 opening rooms were
+unchanged and a new backup captured 428 rooms. No restart or reset was needed.
+Broad results and final preservation are in the checkpoint commit and private
+source-bound report. The lower battle effect and combined routes remain missing;
+no rules-mode or publication gate is opened.
+
 ## 13 September 2026 — Leader battle effects prototype
 
 [Battle effects](LEADER_BATTLE_EFFECTS.md) connects lower Mentat +2 strength,
