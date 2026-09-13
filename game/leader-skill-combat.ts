@@ -142,6 +142,7 @@ function qualifies(
   skill: DirectLeaderSkillId,
   weapon: Card | undefined,
   defense: Card | undefined,
+  effectiveDefense: Card | undefined,
 ) {
   if (skill === 'warmaster')
     return [weapon, defense].some((card) => card?.kind === 'worthless');
@@ -150,8 +151,8 @@ function qualifies(
   if (skill === 'swordmaster-of-ginaz')
     return weaponTypes(weapon).includes('projectile');
   if (skill === 'killer-medic')
-    return defenseTypes(defense).includes('snooper');
-  return defenseTypes(defense).includes('shield');
+    return defenseTypes(effectiveDefense ?? defense).includes('snooper');
+  return defenseTypes(effectiveDefense ?? defense).includes('shield');
 }
 
 /**
@@ -164,6 +165,8 @@ export function leaderSkillBattleBonus(input: {
   selectedLeader: { id: string; kind: 'disc' | 'hero' } | undefined;
   weapon: Card | undefined;
   defense: Card | undefined;
+  /** A copied defense role leaves the played Worthless card available to Warmaster. */
+  effectiveDefense?: Card;
   skilledLeaderSurvives: boolean;
   bankerSpice?: number;
 }): LeaderSkillBattleBonus {
@@ -191,7 +194,7 @@ export function leaderSkillBattleBonus(input: {
     });
   for (const assignment of input.assignments) {
     if (!isDirectSkill(assignment.skill)) continue;
-    if (!qualifies(assignment.skill, input.weapon, input.defense)) continue;
+    if (!qualifies(assignment.skill, input.weapon, input.defense, input.effectiveDefense)) continue;
     if (
       input.selectedLeader.kind === 'disc' &&
       assignment.leader === input.selectedLeader.id &&

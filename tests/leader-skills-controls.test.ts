@@ -222,7 +222,7 @@ void test('battle visibility choice names the skilled leader and disables both a
   assert.equal(disabledControls(markup(skills, true)), 2);
 });
 
-void test('the panel states the exact five connected role modifiers and unfinished boundary', () => {
+void test('the panel states the connected role modifiers, Diplomat copy and unfinished boundary', () => {
   const html = markup(view());
   for (const name of [
     'Warmaster',
@@ -233,5 +233,9 @@ void test('the panel states the exact five connected role modifiers and unfinish
   ])
     assert.match(html, new RegExp(name));
   assert.match(html, /development-only module/);
+  assert.match(
+    html,
+    /Diplomat copying an opposing base defense with a committed Worthless card after plans are revealed/,
+  );
   assert.match(html, /Other Leader Skill effects are unfinished/);
 });

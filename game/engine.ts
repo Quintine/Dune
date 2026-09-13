@@ -14,6 +14,7 @@ import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFiel
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { quoteSandmasterMovement, validateSandmasterMovement, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
+import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
@@ -578,7 +579,23 @@ export type PlanField = Exclude<
   keyof Plan,
   'support' | 'kwisatz' | 'allyPayment' | 'bankerSpice'
 >;
+export type DiplomatDefenseReceipt = DiplomatDefenseQuote & {
+  event: string;
+  player: string;
+  battle: string;
+  turn: number;
+  territory: string;
+  /** Only the revealed plans, played cards and public skill stance are bound. */
+  frame: string;
+  stage: 'offered' | 'copied' | 'declined';
+  card: string | null;
+  signature: string;
+};
 export type Battle = {
+  /** New battles opt into the revealed Diplomat step; legacy battles are not reopened. */
+  diplomatDefenseVersion?: 1;
+  diplomatDefenseEvent?: string;
+  diplomatDefense?: DiplomatDefenseReceipt;
   /** Public face-up/behind-shield choice precedes faction battle powers. */
   leaderSkillHidden?: Record<string, boolean>;
   nexusInspection?: NexusInspection;
@@ -639,6 +656,7 @@ export type Auction = {
   allyPayment?: number;
 };
 export type Decision =
+  | { kind: 'diplomatDefense'; player: string; event: string; cards: string[]; source: string }
   | { kind: 'leaderSkillVisibility'; player: string; event: string; resumePowers?: boolean }
   | { kind: 'leaderSkillRevival'; player: string; event: string }
   | { kind: 'homeworldRevivalDeployment'; player: string; event: string }
@@ -4927,6 +4945,7 @@ function leaderSkillAssignmentUnavailable(
     : null;
 }
 function leaderSkillsIntegrity(g: Game) {
+  diplomatDefenseIntegrity(g);
   const noFieldShipment = leaderSkillNoFieldIntegrity(g);
   sandmasterIntegrity(g);
   sukRescueIntegrity(g);
@@ -14072,8 +14091,95 @@ function stoneBurnerIntegrity(g: Game) {
     );
   }
 }
+function diplomatDefenseOffer(g: Game): (DiplomatDefenseQuote & { player: string }) | null {
+  const b = g.battle;
+  if (!b?.revealed || !g.leaderSkills || !diplomatDefenseModeSupported(g) ||
+    b.lateDefense && Object.keys(b.lateDefense).length) return null;
+  for (const player of [b.attacker, b.defender]) {
+    const p = getPlayer(g, player), plan = b.plans[player];
+    const other = getPlayer(g, b.attacker === player ? b.defender : b.attacker);
+    const opposingPlan = b.plans[other.id];
+    if (!plan || !opposingPlan) continue;
+    const quote = quoteDiplomatDefense({
+      assignments: g.leaderSkills.assignments.filter(a => a.owner === player && a.skill === 'diplomat' &&
+        p.leaders.some(l => l.id === a.leader && !l.dead && !l.capturedBy && !l.gholaBy))
+        .map(a => ({ skill: a.skill, leader: a.leader, faceUp: !b.leaderSkillHidden?.[player], captured: false })),
+      selectedLeader: plan.leader,
+      weapon: cardOf(p, plan.weapon), defense: cardOf(p, plan.defense),
+      opposingDefense: cardOf(other, opposingPlan.defense),
+    });
+    if (quote) return { ...quote, player };
+  }
+  return null;
+}
+function diplomatDefenseFrame(g: Game): string {
+  const b = g.battle!;
+  return JSON.stringify({ event: b.event, turn: g.turn, territory: b.territory,
+    attacker: b.attacker, defender: b.defender, plans: b.plans, hidden: b.leaderSkillHidden,
+    cards: [b.attacker, b.defender].map(id => {
+      const p = getPlayer(g, id), plan = b.plans[id];
+      return [plan.weapon, plan.defense, plan.leader].map(selected => cardOf(p, selected) ?? null);
+    }) });
+}
+function diplomatDefenseSignature(receipt: DiplomatDefenseReceipt): string {
+  return JSON.stringify({ ...receipt, signature: undefined });
+}
+function diplomatDefenseIntegrity(g: Game) {
+  const b = g.battle;
+  const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'diplomatDefense');
+  if (b?.diplomatDefenseVersion === undefined && b?.diplomatDefense === undefined &&
+    b?.diplomatDefenseEvent === undefined && !decisions.length) return;
+  requireRule(b && b.diplomatDefenseVersion === 1,
+    'The saved Diplomat choice lost its original battle version.');
+  const receipt = b.diplomatDefense;
+  const offer = diplomatDefenseOffer(g);
+  if (!receipt) {
+    requireRule(receipt === undefined && b.diplomatDefenseEvent === undefined && !decisions.length && !offer,
+      'The revealed Diplomat defense lost its original choice.');
+    return;
+  }
+  requireRule(g.status === 'playing' && g.phase === 6 && b.revealed && offer &&
+    receipt.battle === b.event && receipt.turn === g.turn && receipt.territory === b.territory &&
+    typeof receipt.event === 'string' && receipt.event.length > 0 && receipt.event === b.diplomatDefenseEvent &&
+    receipt.frame === diplomatDefenseFrame(g) && receipt.signature === diplomatDefenseSignature(receipt) &&
+    JSON.stringify({leader: receipt.leader, cards: receipt.cards, source: receipt.source, kind: receipt.kind, player: receipt.player}) === JSON.stringify(offer),
+    'The saved Diplomat defense changed its revealed plans, trainer, source or physical card choices.');
+  requireRule(['offered', 'copied', 'declined'].includes(receipt.stage) &&
+    (receipt.stage === 'copied' ? typeof receipt.card === 'string' && receipt.cards.includes(receipt.card) : receipt.card === null),
+    'The saved Diplomat defense changed its optional choice or selected Worthless card.');
+  const physical = physicalTreacheryCards(g);
+  for (const card of [...receipt.cards, receipt.source]) requireRule(physical.filter(c => c.id === card).length === 1,
+    'The committed Diplomat cards must retain unique physical custody.');
+  requireRule(decisions.length === (receipt.stage === 'offered' ? 1 : 0),
+    'The saved Diplomat defense lost or reopened its unique public decision.');
+  if (receipt.stage === 'offered') requireRule(Object.keys(b.traitorCalls).length === 0,
+    'Diplomat defense must be chosen before any traitor decisions.');
+  for (const decision of decisions) requireRule(decision.player === receipt.player &&
+    decision.event === receipt.event && decision.source === receipt.source &&
+    JSON.stringify(decision.cards) === JSON.stringify(receipt.cards),
+    'The Diplomat decision no longer matches its original public choices.');
+}
+function offerDiplomatDefense(g: Game): boolean {
+  const b = g.battle!;
+  if (b.diplomatDefenseVersion !== 1 || b.diplomatDefense) return false;
+  const offer = diplomatDefenseOffer(g);
+  if (!offer) return false;
+  requireRule(b.event && !Object.keys(b.traitorCalls).length,
+    'Diplomat defense needs the current revealed battle before traitor decisions.');
+  const event = crypto.randomUUID();
+  const receipt: DiplomatDefenseReceipt = { ...offer, event, battle: b.event, turn: g.turn,
+    territory: b.territory, frame: diplomatDefenseFrame(g), stage: 'offered', card: null, signature: '' };
+  receipt.signature = diplomatDefenseSignature(receipt);
+  b.diplomatDefense = receipt;
+  b.diplomatDefenseEvent = event;
+  g.decision = { kind: 'diplomatDefense', player: offer.player, event, cards: [...offer.cards], source: offer.source };
+  log(g, `${getPlayer(g, offer.player).name} may use Diplomat to make one committed Worthless card copy the opposing ${offer.kind === 'shield' ? 'Shield' : 'Snooper'} before traitor decisions.`,
+    { faction: getPlayer(g, offer.player).faction, name: 'Diplomat defense' });
+  return true;
+}
 function nextRevealedDecision(g: Game) {
   const b = g.battle!;
+  if (offerDiplomatDefense(g)) return;
   const stoneOwner = [b.attacker, b.defender].find(
     (id) =>
       isStoneBurner(cardOf(getPlayer(g, id), b.plans[id].weapon)) &&
@@ -14150,6 +14256,9 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       forces: combatForces(g, p, b.territory, opponent),
       stronghold: strongholdEffect(g, p.id),
       lateDefense: b.lateDefense?.[p.id],
+      ...(b.diplomatDefense?.stage === 'copied' && b.diplomatDefense.player === p.id
+        ? { diplomatDefense: { leader: b.diplomatDefense.leader, card: b.diplomatDefense.card!,
+          source: b.diplomatDefense.source, kind: b.diplomatDefense.kind } } : {}),
       poisonTooth: b.poisonTooth?.[p.id],
       stoneMode: b.stoneBurner?.[p.id],
       ...(aid ? { aid: { donor: p.ally!, amount: aid.amount } } : {}),
@@ -20350,6 +20459,20 @@ function applyActionInner(
       if (harkonnen) returnCaptives(g, harkonnen);
       settleAdvisors(g);
       finishBattle(g);
+    } else if (decision.kind === 'diplomatDefense') {
+      const receipt = g.battle?.diplomatDefense;
+      requireRule(Object.keys(action).every(key => ['type', 'event', 'card'].includes(key)) &&
+        action.event === decision.event && receipt?.event === decision.event && receipt.player === id &&
+        receipt.stage === 'offered' && (action.card === null || typeof action.card === 'string' && receipt.cards.includes(action.card)),
+        'Choose one offered Worthless card or decline this exact Diplomat defense.');
+      receipt.card = action.card as string | null;
+      receipt.stage = receipt.card ? 'copied' : 'declined';
+      receipt.signature = diplomatDefenseSignature(receipt);
+      log(g, receipt.card
+        ? `${p.name} used Diplomat: ${cardOf(p, receipt.card)!.name} copies the opposing ${receipt.kind === 'shield' ? 'Shield' : 'Snooper'} for this battle and must be discarded afterward. The original plans and physical card identities remain unchanged.`
+        : `${p.name} declined to copy the opposing defense with Diplomat.`,
+        { faction: p.faction, name: 'Diplomat defense' });
+      nextRevealedDecision(g);
     } else if (decision.kind === 'stoneBurner') {
       requireRule(
         Object.keys(action).every((key) =>
@@ -22330,6 +22453,7 @@ function applyActionInner(
     g.battle = {
       ...choice,
       event: battleEvent,
+      ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 1 as const } : {}),
       ...(byFaction(g, 'richese')
         ? { preLeader: { event: battleEvent, ready: [], closed: false } }
         : {}),
@@ -23609,6 +23733,12 @@ export function viewGame(state: Game, id: string) {
               }
             : null,
           lateDefense: b.revealed ? (b.lateDefense ?? {}) : {},
+          diplomatDefense: b.revealed && b.diplomatDefense
+            ? { player: b.diplomatDefense.player, event: b.diplomatDefense.event,
+              leader: b.diplomatDefense.leader, cards: [...b.diplomatDefense.cards],
+              source: b.diplomatDefense.source, kind: b.diplomatDefense.kind,
+              stage: b.diplomatDefense.stage, card: b.diplomatDefense.card }
+            : null,
           fullPlan: b.fullPlan ?? null,
           fullPlanInsight:
             b.fullPlan?.owner === id &&

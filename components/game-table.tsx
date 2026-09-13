@@ -152,6 +152,7 @@ import { SpiceBankerControl, spiceBankerControlState } from './spice-banker';
 import { canUsePlanetologistBattleSpecial, validLeaderSkillBattleCardPair } from '../game/leader-skill-combat';
 import type { Card } from '../game/cards';
 import { RevealedBattle } from './revealed-battle';
+import { DiplomatDefense } from './diplomat-defense';
 import { EliteCount } from './elite-count';
 import { HelpTip } from './help-tip';
 import { PHASE_HELP, phaseRuleId } from '@/game/reference';
@@ -2135,6 +2136,8 @@ export function GameTable({
                     ? g.decision.stage === 'offer' ? 'Rihani Decipherer — optional draw' : 'Choose your Traitor exchange'
                   : g.decision.kind === 'sukRescue'
                     ? 'Save your battle casualties'
+                  : g.decision.kind === 'diplomatDefense'
+                    ? 'Copy an opposing defense'
                   : g.decision.kind === 'homeworldRevivalDeployment'
                   ? 'Revival deployment'
                   : g.decision.kind === 'ecazSpice'
@@ -2545,6 +2548,11 @@ export function GameTable({
                     event: g.decision.event,
                     mode: 'ignore',
                   })}
+                </>
+              ) : g.decision.kind === 'diplomatDefense' ? (
+                <>
+                  <RevealedBattle game={g} />
+                  <DiplomatDefense game={g} act={act} busy={busy} />
                 </>
               ) : g.decision.kind === 'poisonTooth' ? (
                 <>

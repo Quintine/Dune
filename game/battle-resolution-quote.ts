@@ -31,6 +31,7 @@ import { auditCount } from './choam-auditor';
 import { sukGraduateSkill, type SukGraduateSkill } from './suk-graduate';
 import { validateSpiceBankerSpend } from './spice-banker';
 import { rihaniVictorySkill, type RihaniSkill } from './rihani-decipherer';
+import { copiedDiplomatDefense, quoteDiplomatDefense, type DiplomatDefenseQuote } from './diplomat-defense';
 import {
   quoteHomeworldBattleRules,
   type HomeworldBattleRules,
@@ -71,6 +72,7 @@ export type ResolutionParticipant = {
   noFieldAtTerritory?: boolean;
 };
 export type ResolutionCombatant = ResolutionParticipant & {
+  diplomatDefense?: Pick<DiplomatDefenseQuote, 'leader' | 'source' | 'kind'> & { card: string };
   spice: number;
   hand: readonly Card[];
   plan: ResolutionPlan;
@@ -346,6 +348,19 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     dw = card(d, d.plan.weapon),
     ad = card(a, a.lateDefense ?? a.plan.defense),
     dd = card(d, d.lateDefense ?? d.plan.defense);
+  const effectiveDefense = (side: ResolutionCombatant, other: ResolutionCombatant, defense: Card | undefined) => {
+    const copy = side.diplomatDefense;
+    if (copy === undefined) return defense;
+    const quote = quoteDiplomatDefense({ assignments: side.leaderSkills ?? [], selectedLeader: side.plan.leader,
+      weapon: card(side, side.plan.weapon), defense: card(side, side.plan.defense),
+      opposingDefense: card(other, other.plan.defense) });
+    requireQuote(copy && quote && !side.lateDefense && !other.lateDefense &&
+      !side.stronghold && !other.stronghold && !input.homeworld &&
+      copy.leader === quote.leader && copy.source === quote.source && copy.kind === quote.kind && quote.cards.includes(copy.card),
+      'The copied Diplomat defense lost its native trainer, committed Worthless or opposing base defense.');
+    return copiedDiplomatDefense(quote, copy.card);
+  };
+  const effectiveAd = effectiveDefense(a, d, ad), effectiveDd = effectiveDefense(d, a, dd);
   const tie =
     d.stronghold === 'habbanya_ridge_sietch' ? 'defender' : 'attacker';
   const stone =
@@ -511,9 +526,9 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   } else {
     effects = strongholdBattleEffects(
       aw,
-      ad,
+      effectiveAd,
       dw,
-      dd,
+      effectiveDd,
       a.poisonTooth,
       d.poisonTooth,
       a.stronghold,
@@ -536,6 +551,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         selectedLeader: selectedLeader(a),
         weapon: aw,
         defense: ad,
+        effectiveDefense: effectiveAd,
         skilledLeaderSurvives: !deaths.attacker,
         bankerSpice: a.plan.bankerSpice,
       }),
@@ -544,6 +560,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         selectedLeader: selectedLeader(d),
         weapon: dw,
         defense: dd,
+        effectiveDefense: effectiveDd,
         skilledLeaderSurvives: !deaths.defender,
         bankerSpice: d.plan.bankerSpice,
       }),
@@ -697,12 +714,14 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       selectedLeader: side.plan.leader,
       card: card(side, selected),
     });
+  const mandatorySkillDiscard = (side: ResolutionCombatant, selected: string) =>
+    mandatoryPlanetologistDiscard(side, selected) || side.diplomatDefense?.card === selected;
   const moritani = input.participants.find((p) => p.faction === 'moritani');
   if (winner && moritani) {
     const loser = winner === a ? d : a,
       loserPlayed = loser === a ? played.attacker : played.defender;
     const retainablePlayed = loserPlayed.filter(
-      (selected) => !mandatoryPlanetologistDiscard(loser, selected),
+      (selected) => !mandatorySkillDiscard(loser, selected),
     );
     const eligible = retainablePlayed.filter(
       (selected) =>
@@ -740,9 +759,9 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
           !(
             retention?.player === s.id &&
             retention.played.includes(selected) &&
-            !mandatoryPlanetologistDiscard(s, selected)
+            !mandatorySkillDiscard(s, selected)
           ) &&
-          (mandatoryPlanetologistDiscard(s, selected) ||
+          (mandatorySkillDiscard(s, selected) ||
             winner !== s ||
             !canRetainBattleCard(
               card(s, selected)!,

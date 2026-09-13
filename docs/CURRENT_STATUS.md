@@ -4,6 +4,14 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Diplomat defense copying](DIPLOMAT_DEFENSE.md) connects one committed Worthless
+  card to an opposing base Shield or Snooper, with optional controls, all four AI
+  profiles, native trained-leader self-protection and mandatory discard. Saved
+  choices and concurrent resolution have focused recovery evidence. Lower retreat
+  and combined modules remain unfinished; no public gate opens. After the latest
+  outage, the existing server was healthy and all 563 opening games and original
+  seat records matched the backup. Final checks are recorded in the checkpoint.
+
 - [Smuggler with Richese No-Field](SMUGGLER_NO_FIELD.md) connects the officially
   permitted free physical companion, unchanged marker price, private controls,
   all four AI profiles and saved cancellation/interception. Genuine CHOAM &

@@ -1481,6 +1481,32 @@ function policyActions(g: GameView): Action[] {
         stronghold,
       }));
     }
+    if (d.kind === 'diplomatDefense') {
+      const battle = g.battle;
+      const opponent = battle
+        ? battle.attacker === me.id
+          ? battle.defender
+          : battle.attacker
+        : null;
+      const enemyWeapon = battle?.cards.find(
+        (card) => card.id === (opponent ? battle.plans[opponent]?.weapon : null),
+      );
+      const copiedDefense = battle?.cards.find(
+        (card) => card.id === d.source,
+      );
+      const useful =
+        !!enemyWeapon &&
+        !!copiedDefense &&
+        weaponKills(enemyWeapon) &&
+        !weaponKills(enemyWeapon, copiedDefense);
+      return [
+        {
+          type: 'decision',
+          event: d.event,
+          card: useful ? (d.cards[0] ?? null) : null,
+        },
+      ];
+    }
     if (d.kind === 'richeseAllyOpportunity') {
       const offer = alliedNoFieldOffer(g);
       return offer

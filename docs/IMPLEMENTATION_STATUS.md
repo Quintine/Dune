@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 13 September 2026 — Diplomat base-defense copying prototype
+
+[Diplomat](DIPLOMAT_DEFENSE.md) now optionally counts one committed Worthless as
+an opposing base Shield or Snooper, including to save its native trained leader.
+The owner chooses after public plan reveal and before traitor decisions. Exact
+physical plans and cards stay in place; the selected Worthless is discarded after
+battle even on a win. This timing and explicit-discard precedence over ordinary
+traitor retention are recorded implementation inferences, not additional printed
+rulings. Lower retreat and modified/combined defenses remain unfinished.
+
+Player controls, all four legal AI paths, public projection and saved decisions
+are connected. Independent review and focused SQLite restart, concurrent copy or
+decline, corruption rejection, self-protection and traitor-preempted discard
+checks cover this boundary. Two genuine four-profile samples completed without
+rejected candidates: Basic used 210 actions and six JSON restores; Advanced used
+223 actions and seven restores. Neither encountered an eligible Diplomat offer;
+targeted battle checks establish the effect. A fresh browser scenario restored
+the pending copy, saved native Hasimir from poison, discarded Baliset exactly
+once, kept Crysknife and restored the private hand/traitor plus four board forces,
+fifteen reserves, one Tank and eight spice. Required broad results are recorded
+in the checkpoint commit and private report.
+
+After the new outage report the server responded normally, database integrity and
+foreign keys passed, and all 563 opening rooms plus their original seat/recovery
+records matched the backup. No restart, reset or automation was required. Public
+mode and publication gates stay closed.
+
 ## 13 September 2026 — Smuggler with owned Richese No-Field
 
 The [officially permitted combination](SMUGGLER_NO_FIELD.md) now ships one

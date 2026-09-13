@@ -53,10 +53,13 @@ publisher instruction to announce a name.
 
 [Battle-effects follow-up](LEADER_BATTLE_EFFECTS.md) connects both Rihani bands
 and the lower Mentat, Bureaucrat and Sandmaster effects. Their normal questioning,
-payments and movement collection remain missing, along with Spice Banker normal
-income, Diplomat effects and Smuggler battle collection. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
+payment redirection and Spice Banker income remain missing. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
 now connects its lower band with separate sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).
+[Diplomat defense](DIPLOMAT_DEFENSE.md) connects its normal band for a physical
+Worthless card copying a canonical base Shield or Snooper; the lower retreat
+and modified-defense inheritance remain guarded. Smuggler battle collection
+also remains missing.
 Planetologist and Suk Graduate have the connected
 prototypes described below.
 
@@ -69,8 +72,9 @@ Before enabling them, add response-driven automatic revival continuation
 coverage; the current before/after revival observer does not certify deferred
 Tleilaxu response chains. The other source-contract timing questions also remain
 open. Planetologist now has bounded movement and battle controls as described below.
-Remaining normal-band payments, questions, collection and the remaining
-skill bands still need connected effects.
+Remaining normal-band payments and questions, Smuggler battle collection,
+Diplomat retreat and the other guarded skill combinations still need connected
+effects.
 
 ## Planetologist follow-up
 

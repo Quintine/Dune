@@ -35,6 +35,8 @@ export function RevealedBattle({ game }: { game: GameView }) {
     <div className="revealed-plans" aria-label="Revealed battle plans">
       {Object.entries(battle.plans).map(([id, plan]) => {
         const leader = game.allLeaders.find((l) => l.id === plan.leader);
+        const diplomat =
+          battle.diplomatDefense?.player === id ? battle.diplomatDefense : null;
         const undialed = [
           ...new Set(
             comparisons.flatMap(
@@ -91,6 +93,15 @@ export function RevealedBattle({ game }: { game: GameView }) {
               </span>
             )}
             <span>Defense in original plan: {name(plan.defense)}</span>
+            {diplomat?.stage === 'copied' && diplomat.card && (
+              <span>
+                Diplomat: {name(diplomat.card)} copies {name(diplomat.source)} ·
+                discard after battle
+              </span>
+            )}
+            {diplomat?.stage === 'declined' && (
+              <span>Diplomat: defense copy declined</span>
+            )}
             {battle.lateDefense[id] && (
               <span>Added after reveal: {name(battle.lateDefense[id])}</span>
             )}

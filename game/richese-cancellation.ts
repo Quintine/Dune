@@ -8,6 +8,7 @@ const DECISIONS = {
   leaderSkillRevival: true,
   sukRescue: true,
   rihani: true,
+  diplomatDefense: true,
   choamAudit: true,
   choamAuditPayment: true,
   strongholdCopy: true,
