@@ -6,10 +6,10 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest verified checkpoint: `8906b41`, Truthtrance recorded knowledge.
-Types, lint, **4,662 offline tests**, build and **43 HTTP tests** passed.
-All 767 opening rooms and original seat/recovery records were preserved
-(801 after HTTP checks); all 768 present immediately before verification also
+Previous verified checkpoint: `58ae84f`, Moritani Assassinate Leaders preview.
+Types, lint, **4,690 offline tests**, build and **43 HTTP tests** passed.
+All 801 opening rooms and original seat/recovery records were preserved
+(835 after HTTP checks); all 802 present immediately before verification also
 remained unchanged. The healthy server was reused.
 
 [Mentat](MENTAT_QUESTION.md) connects private naming/disclosure before posture
@@ -56,7 +56,7 @@ the healthy server is reused. A new snapshot protects all 768 rooms before broad
 verification. Final checks, preservation totals and Git delivery are recorded in
 the checkpoint commit and private report; full mode/publication gates remain.
 
-Current checkpoint: [Moritani Assassinate Leaders](MORITANI_ASSASSINATE_LEADERS.md)
+Completed prototype: [Moritani Assassinate Leaders](MORITANI_ASSASSINATE_LEADERS.md)
 connects a qualifying battle loss to a private reveal/continue choice, living/dead
 targets, bank bounty, public markers and automatic Mentat replacement. All four
 AI profiles and saved continuation are connected in the bounded Advanced preview.
@@ -69,6 +69,37 @@ UX question remain pending; exceptional custody and combined modules stay gated.
 All 801 opening games remain unchanged after the reported outage; the healthy
 server is reused. Required broad checks, source fingerprint, final preservation
 and Git delivery are recorded in the checkpoint commit and private report.
+
+Current checkpoint: [Fremen/Ecaz final-turn victory](ECAZ_VICTORY_RULES.md#fremen-final-turn-runtime-follow-up).
+The explicit Sietch Tabr exception is connected to the same public board quote
+used by automatic victory and the table guide. Reciprocal allies must both be
+present; solitary/non-allied Ecaz and third-party fighters still block. Ordinary
+stronghold/BG precedence, the other protected sietch and Tuek conditions, Guild
+fallback and private No-Field identity remain intact. Independent review and
+17 focused cases pass, including all-profile final readiness and authenticated
+SQLite restart/concurrent writes. Final-turn fixtures are staged after genuine
+setup; they do not establish naturally reached allied special wins. Habbanya
+symmetry and complete mode/expansion acceptance remain unfinished. Broad checks,
+browser/sample evidence, saved-game preservation and Git delivery are recorded
+with the checkpoint.
+
+The same checkpoint repairs a pre-existing [deferred Guild shipment deadlock](DEFERRED_SHIPMENT_ARRIVAL.md)
+found after 90 accepted Advanced actions. Fresh ordinary and No-Field declarations
+preflight unsupported arrivals; an eligible saved ordinary Guild allowance returns
+unspent for another choice. Special card/parent receipts retain their own gates.
+Independent review and its 149-case union pass. The exact failed snapshot now
+finishes in 842 further accepted actions. The original Basic/Advanced seeds finish
+in 563/806 actions, with 14/81 guarded candidates; the resume has 109. All physical
+custody, 58 periodic JSON rounds and 12 terminal private views pass. The Advanced
+runs form Ecaz/Fremen alliances but do not exercise the shared-Tabr exception.
+These are bounded playability checks, not complete arrival-order acceptance.
+
+After the latest reported outage, the server responds normally, all 835 opening
+rooms and original seat/recovery records remain unchanged, and integrity/foreign-key
+checks pass. A new backup protects all 869 rooms before final checks. The completed
+browser game restores its result and private seat; no restart, reset or automation
+is required. Final broad verification, preservation totals and Git delivery are
+recorded with the checkpoint.
 
 ## Authoritative navigation
 

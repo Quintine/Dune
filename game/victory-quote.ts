@@ -2,7 +2,7 @@ import type { Game, Player } from './engine';
 import { FACTIONS } from './catalog';
 import { gameTerritories, validLocation } from './board';
 import { fighterCount } from './advisors';
-import { presenceAt } from './force-presence';
+import { fremenSpecialVictory } from './fremen-victory';
 import {
   settledBoard,
   BoardResolutionError,
@@ -165,25 +165,7 @@ export function quoteVictory(g: VictoryContext): VictoryQuote {
   if (!winner.length && g.turn === 10) {
     const fremen = players.find((p) => p.faction === 'fremen');
     const guild = players.find((p) => p.faction === 'guild');
-    if (
-      fremen &&
-      players.every(
-        (p) =>
-          p.id === fremen.id ||
-          (!fighterCount(p, 'sietch_tabr') &&
-            !fighterCount(p, 'habbanya_ridge_sietch')),
-      ) &&
-      players
-        .filter((p) =>
-          [
-            'atreides',
-            'harkonnen',
-            'emperor',
-            ...(g.advanced ? ['richese'] : []),
-          ].includes(p.faction),
-        )
-        .every((p) => !presenceAt(p, 'tueks_sietch'))
-    )
+    if (fremen && fremenSpecialVictory(g)?.qualifies)
       winner = fremen.ally ? [fremen.id, fremen.ally] : [fremen.id];
     else if (guild) winner = guild.ally ? [guild.id, guild.ally] : [guild.id];
     else if (fremen)

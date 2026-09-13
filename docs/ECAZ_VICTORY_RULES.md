@@ -1,5 +1,9 @@
 # Ecaz victory implementation contract
 
+The [14 September runtime follow-up](#fremen-final-turn-runtime-follow-up) connects
+the explicit Fremen/Ecaz Sietch Tabr exception. The original audit and its
+unimplemented Habbanya inference remain below as source context.
+
 Primary-source review, 2026-09-07. This separates the explicit three-stronghold rule from its ordinary control and prediction consequences. No combat-rounding decision is needed for a victory predicate operating on an already-settled board. The unrelated rounding conflict remains as corrected in [Ecaz Occupy rules](ECAZ_OCCUPY_RULES.md).
 
 ## Ordinary victory and the Ecaz exception
@@ -47,6 +51,47 @@ The supported narrow implementation requires an actual reciprocal Ecaz/Fremen al
 The Habbanya symmetry is well-supported by the common general rule but is not an explicit second FAQ sentence. No further publisher or attributable designer statement answering Ecaz-alone or Habbanya was recovered in this bounded search. This audit recommends the narrow co-occupation interpretation and does not request another user ruling.
 
 Keep the other Fremen checks unchanged: no earlier stronghold winner; final turn; excluded factions in Tuek's Sietch. Advanced Richese is added to Tuek's prohibited list by E2 p.6. Effective No-Field presence matters there too. If the Fremen special condition succeeds, its ally shares that special win; the Guild fallback only follows an unsuccessful earlier victory condition. [Base pp.16,19](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf), [E2 p.6](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=6)
+
+## Fremen final-turn runtime follow-up
+
+14 September 2026. The publisher's indexed p.15 FAQ was freshly checked and agrees
+with the original source record. `game/fremen-victory.ts` now supplies one shared,
+public settled-board description to the authoritative victory quote and player
+guide. It applies the explicit Sietch Tabr exception only when reciprocal Ecaz
+and Fremen allies both have fighters there. It preserves third-faction blockers,
+mandatory advisor conversion, accompanied advisors and concealed No-Field presence
+without reading hidden marker value. Habbanya symmetry remains outside this
+implemented exception; that is an implementation limit, not a new printed ban.
+
+The final-turn quote retains ordinary stronghold victory and applicable prediction
+first, then the Fremen special condition, then existing fallback behavior. A
+successful Fremen special win includes its ally and cannot be intercepted by a
+Bene Gesserit prediction. No new action, acknowledgement, saved decision or schema
+is added. The public guide names territory blockers before the check; a successful
+special victory receives an explanatory chronicle entry.
+
+Independent rules/privacy review found no blocker. Seventeen focused cases cover
+Basic/Advanced outcome, earlier-turn and normal-winner precedence, all four AI
+profiles, absent/nonallied/solitary/third-party counterexamples, Habbanya scope,
+advisor and marker handling, identical public controls, JSON and authenticated
+SQLite restoration. Competing final readiness commits once; finished or stale
+actions cannot write again. Cards, Traitors, forces, elites and seat records remain
+unchanged through the final transition. The endgame fixture explicitly stages a
+conserved final-turn board and alliance after genuine setup, including a BG
+prediction of Fremen for turn ten; it does not claim natural arrival at that board.
+
+The checkpoint records browser and complete-sample observations, required broad
+checks, source fingerprint, live saved-game preservation and verified Git delivery.
+Full faction, optional-module and publication gates remain unchanged.
+
+The expanded victory regression union passes 83 cases. The browser exercise uses
+a fresh four-seat lobby and the same explicitly staged genuine-setup final board.
+The public guide displays the permitted Tabr co-occupation, the existing Ready
+action reaches the allied win, and the chronicle gives its reason. Pending and
+finished refresh preserve the human seat, private hand and exact physical state.
+Independent read-only database comparison confirms unchanged spice, cards,
+Traitors, leaders, forces and elites; one victory log is present. This remains a
+targeted endgame exercise, not a ten-turn human game.
 
 ## Bene Gesserit prediction and implementation order
 

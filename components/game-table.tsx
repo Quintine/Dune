@@ -5439,7 +5439,7 @@ export function GameTable({
           </div>
         )}
       </section>
-      <VictoryProgress progress={g.victoryProgress} players={g.players} />
+      <VictoryProgress progress={g.victoryProgress} players={g.players} fremen={g.fremenVictory} />
       {g.strongholdCards && (
         <details className="m-4 rounded-xl border border-[#a88b60] p-4">
           <summary className="cursor-pointer text-lg">

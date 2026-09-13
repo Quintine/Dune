@@ -168,6 +168,7 @@ import {
   VictoryQuoteError,
   type VictoryQuote,
 } from './victory-quote';
+import { fremenSpecialVictory, type FremenVictoryProgress } from './fremen-victory';
 import {
   createSpiceAllocation,
   quoteSpiceAllocation,
@@ -9405,6 +9406,95 @@ function validateMovementArrival(g: Game, move: MovementOrder, cancelingChoam = 
     throw error;
   }
 }
+function quoteShipmentArrival(
+  g: Game,
+  shipment: PendingShipment,
+  ignoreGuildDecision = false,
+) {
+  // Guild Ambassador arrivals have a staged continuation which deliberately
+  // owns pendingAmbassador throughout shipment, Terror and accompaniment.
+  // Its source-specific validator handles those gates in their settled order.
+  if (shipment.source === 'ambassador') return;
+  const p = getPlayer(g, shipment.player);
+  const amount = shipment.alliedNoField
+    ? Math.max(1, shipment.amount)
+    : shipment.amount + (shipment.smugglerCompanion ? 1 : 0);
+  const guild = byFaction(g, 'guild');
+  const guildPayment = guildShipmentIncome({
+    guild: guild?.id,
+    shipper: p.id,
+    ally: p.ally,
+    cost: shipment.cost,
+    allyPayment: shipment.allyPayment,
+    bankOnly: g.karamaShipping?.player === p.id,
+  });
+  const bg = byFaction(g, 'beneGesserit');
+  const advisorFollowup = !!(
+    p.faction !== 'fremen' &&
+    bg &&
+    bg.id !== p.id &&
+    spiritualAdvisorMaximum(g, bg.id) > 0
+  );
+  const currentDecision = !!(
+    g.decision &&
+    !(
+      ignoreGuildDecision &&
+      g.decision.kind === 'guildShipment' &&
+      g.decision.player === guild?.id &&
+      g.decision.shipper === shipment.player &&
+      g.decision.territory === shipment.territory &&
+      g.decision.sector === shipment.sector
+    )
+  );
+  return quoteCompletedMovementArrival({
+    advanced: g.advanced,
+    players: g.players,
+    order: {
+      player: p.id,
+      origin: 'reserves',
+      to: shipment.territory,
+      advisors: shipment.advisors,
+      wantsFighters: false,
+    },
+    ambassadors: g.ecazAmbassadors?.tokens ?? [],
+    terror: homeworldTerrorEntryBlock(g, amount)
+      ? []
+      : (g.moritaniTerror?.tokens ?? []),
+    controls: {
+      response:
+        !!g.response ||
+        guildPayment > 0 ||
+        (g.advanced && p.faction === 'fremen' && shipment.sector === g.storm),
+      decision: currentDecision || advisorFollowup,
+      pendingTerror: !!g.pendingTerrorEntry,
+      pendingAmbassador: !!g.pendingAmbassador,
+      paidBox: !!g.pendingNullentropy,
+    },
+    flight: null,
+  });
+}
+function validateShipmentArrival(g: Game, shipment: PendingShipment) {
+  try {
+    return quoteShipmentArrival(g, shipment);
+  } catch (error) {
+    if (error instanceof MovementArrivalError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function recoverableUnsupportedShipment(shipment: PendingShipment) {
+  return (
+    shipment.source === undefined &&
+    shipment.ambassadorEvent === undefined &&
+    shipment.noField === undefined &&
+    shipment.noFieldSkillProof === undefined &&
+    shipment.alliedNoField === undefined &&
+    shipment.smuggler === undefined &&
+    shipment.smugglerCompanion === undefined &&
+    shipment.nexusEvent === undefined &&
+    shipment.guildNexusEvent === undefined &&
+    shipment.guildSecretEvent === undefined
+  );
+}
 function completeMove(g: Game, move: MovementOrder) {
   if (move.noField) {
     const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, move.player));
@@ -13152,16 +13242,24 @@ function victory(g: Game, quote: VictoryQuote = currentVictoryQuote(g)) {
   g.status = quote.status;
   if (g.winner.length) {
     g.status = 'finished';
-    const occupy = strongholdProgress(g).progress.find(
+    const progress = strongholdProgress(g).progress;
+    const occupy = progress.find(
       (row) =>
         row.occupyTarget !== null &&
         row.jointlyOccupied.length >= row.occupyTarget &&
         row.members.length === g.winner.length &&
         row.members.every((id) => g.winner.includes(id)),
     );
+    const fremen = g.turn === 10 && !progress.some((row) => row.qualifies)
+      ? fremenSpecialVictory(g) : null;
+    const fremenWon = fremen?.qualifies && fremen.members.length === g.winner.length &&
+      fremen.members.every((id) => g.winner.includes(id));
+    const specialReason = fremenWon
+      ? ` Fremen special victory: both protected sietches meet the occupation condition and no prohibited faction occupies Tuek’s Sietch.${fremen.sietches.some((site) => site.ecazCooccupation) ? ' Allied Ecaz and Fremen may co-occupy Sietch Tabr without blocking this victory.' : ''}`
+      : '';
     log(
       g,
-      `${g.winner.map((id) => faction(getPlayer(g, id).faction).name).join(' and ')} won the game.${occupy ? ` Ecaz Occupy: both allies occupy ${occupy.jointlyOccupied.map((id) => territory(id).name).join(', ')} without opposing fighters, meeting the three-stronghold alliance target.` : ''}`,
+      `${g.winner.map((id) => faction(getPlayer(g, id).faction).name).join(' and ')} won the game.${occupy ? ` Ecaz Occupy: both allies occupy ${occupy.jointlyOccupied.map((id) => territory(id).name).join(', ')} without opposing fighters, meeting the three-stronghold alliance target.` : ''}${specialReason}`,
     );
   } else if (g.status === 'finished')
     log(g, 'The tenth turn ended without a winner.');
@@ -18179,6 +18277,7 @@ function validateGuildShipmentDecision(
 }
 function offerShipment(g: Game, shipment: PendingShipment) {
   validatePhysicalShipment(g, shipment);
+  validateShipmentArrival(g, shipment);
   checkShipmentIncomeRounding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
   const p = getPlayer(g, shipment.player),
     id = p.id;
@@ -18216,6 +18315,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     return;
   }
   validatePhysicalShipment(g, shipment);
+  validateShipmentArrival(g, shipment);
   if (shipment.guildSecretEvent) recordGuildSecretShipment(g,shipment.player,shipment.guildSecretEvent,'reserve',shipment);
   finishNexusRicheseShipment(g,shipment,'shipped');
   if (shipment.guildNexusEvent) finishGuildCunningShipment(g,shipment.player,'reserve',shipment);
@@ -21287,6 +21387,22 @@ function applyActionInner(
         'Allow the shipment, or play the Guild special Karama.',
       );
       const shipment = validateGuildShipmentDecision(g, decision);
+      try {
+        quoteShipmentArrival(g, shipment, true);
+      } catch (error) {
+        if (!(error instanceof MovementArrivalError)) throw error;
+        requireRule(
+          recoverableUnsupportedShipment(shipment),
+          error.message,
+        );
+        g.pendingShipment = null;
+        g.decision = null;
+        log(
+          g,
+          `${getPlayer(g, shipment.player).name}'s uncommitted shipment returned for another choice. ${error.message} No forces, spice, cards or shipment allowance were spent.`,
+        );
+        return g;
+      }
       g.pendingShipment = null;
       commitShipment(g, shipment);
     } else if (decision.kind === 'nullentropy') {
@@ -22773,6 +22889,9 @@ function applyActionInner(
     if (nexusEvent) recordNexusRicheseShipment(g,shipment);
     bindGuildCunningShipment(g,p,'reserve',shipment);
     if (shipment.noField) {
+      // This cancellation window bypasses offerShipment, so reject known
+      // unsupported arrival combinations before saving its private intent.
+      validateShipmentArrival(g, shipment);
       checkShipmentIncomeRounding(g, p, cost, allyPayment);
       g.pendingShipment = shipment;
       g.response = { kind: 'richeseNoField', owner: p.id, passed: [],
@@ -23621,9 +23740,11 @@ export function viewGame(state: Game, id: string) {
   normalizeBattle(g);
   const me = getPlayer(g, id);
   let victoryProgress: StrongholdProgress[] = [];
+  let fremenVictory: FremenVictoryProgress | null = null;
   if (g.status === 'playing' || g.status === 'finished') {
     try {
       victoryProgress = strongholdProgress(state).progress;
+      fremenVictory = fremenSpecialVictory(state);
     } catch (error) {
       // A malformed restored board has no reliable preview. Authoritative
       // victory still rejects it through its strict quote.
@@ -23993,6 +24114,7 @@ export function viewGame(state: Game, id: string) {
         : null,
     winner: g.winner,
     victoryProgress,
+    fremenVictory,
     shieldWallDestroyed: g.shieldWallDestroyed,
     stormDialers: g.stormDialers,
     stormSubmitted: Object.keys(g.stormDials),

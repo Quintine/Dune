@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 14 September 2026 — Fremen/Ecaz final-turn victory and deferred shipment repair
+
+The [explicit Sietch Tabr FAQ](ECAZ_VICTORY_RULES.md#fremen-final-turn-runtime-follow-up)
+now reaches automatic victory resolution: reciprocal Ecaz/Fremen allies with
+fighters there may satisfy the Fremen final-turn condition. The same public quote
+drives territory/blocker guidance; the chronicle explains a successful special
+win. Solitary/nonallied Ecaz, unrelated fighters and the unsupported Habbanya
+extension retain their existing exclusions. Effective advisor and concealed-marker
+presence, ordinary stronghold/prediction precedence, Guild fallback and existing
+no-Guild behavior are preserved. This adds no mandatory confirmation or schema.
+
+Independent source/privacy review found no blocker. Seventeen focused cases pass,
+including Basic/Advanced outcomes, all four AI profiles, JSON/private views and
+authenticated SQLite restoration before and after final readiness. Concurrent
+last-ready requests commit once; stale/finished requests do not write. Exact cards,
+Traitors, forces, elites and seat records are preserved. Final-turn positions are
+explicitly staged after genuine setup, including the reciprocal alliance and a
+turn-ten Fremen prediction, rather than claimed as natural full-game outcomes.
+The broader existing victory regression union passes 83 cases. A fresh browser
+room verifies the public guide, actual Ready-to-win transition, explanatory log
+and pending/finished refresh. Private read-only comparison confirms unchanged
+spice, cards, Traitors, leaders, forces, elites and seat records.
+
+A genuine Advanced sample also exposed the pre-existing [Guild shipment
+deadlock](DEFERRED_SHIPMENT_ARRIVAL.md): an accepted declaration could not pass
+an Ambassador/BG arrival overlap. Prior HEAD replay reproduced all 90 actions.
+Fresh ordinary/No-Field preflight and narrow, typed saved-declaration recovery
+now avoid the trap while preserving unresolved reaction-order gates. Independent
+review resolved an early No-Field window bypass and malformed special-marker
+handling; its 149-case union passes, including three authenticated SQLite cases.
+
+The exact failed snapshot finishes after 842 further accepted actions, with
+109 guarded candidates, on turn ten for Guild. The original Basic/Advanced seeds
+finish in 563/806 accepted actions with 14/81 guards, on turns seven/nine for
+Guild/BG. All 58 periodic JSON rounds, twelve terminal private views and physical
+custody checks pass against unchanged gameplay source. The Advanced runs form
+Ecaz/Fremen alliances, but neither uses shared Tabr or its special victory.
+The saved continuation uses a documented new random stream; no failed seed or
+snapshot was silently replaced. Simultaneous arrival integration remains open.
+
+The latest reported outage preserved all 835 opening games and original seat
+records. All 869 current rooms are backed up before final verification, and the
+finished browser seat restores correctly. The healthy server is reused.
+
+Browser and complete-sample evidence, types/lint/offline/build/HTTP results,
+source fingerprint, saved-game preservation and verified Git push are recorded
+with this checkpoint. The running server is reused; complete rules coverage,
+all combinations and publication remain gated.
+
 ## 14 September 2026 — Moritani Assassinate Leaders prototype and outage preservation
 
 [Assassinate Leaders](MORITANI_ASSASSINATE_LEADERS.md) connects native Advanced
