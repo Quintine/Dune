@@ -1,5 +1,22 @@
 # Dune implementation status
 
+## 13 September 2026 — CHOAM Nexus Collection prototype and Discovery inventory
+
+Adds the missing absent-CHOAM Secret Ally Collection trade through the engine,
+private physical-card selector/inspector, all four AI profiles and JSON discard
+continuation. Both cards are spent for exactly two bank spice; stale actions,
+competing SQL writes and saved replay cannot duplicate the payment. The separate
+battle inspection remains missing. See [contract and scope](NEXUS_CHOAM_SECRET_ALLY.md).
+Independent review found a queued Grumman Collection lock mismatch; the server
+and private offer now share that automatic-continuation block.
+
+A bounded acquisition helper resolved [all Discovery component identities and
+card placements](DISCOVERY_COMPONENTS.md). No Discovery runtime is claimed.
+Focused trade tests pass; checkpoint-wide check/build/HTTP results are recorded
+in the verified commit and private source-bound report. Existing mode and
+publication gates remain closed. No server restart or saved-game reset is needed.
+
+
 ## 13 September 2026 — Genuine Ix expansion prototype
 
 Connected Basic/Advanced Ix setup with both expansion factions, the complete

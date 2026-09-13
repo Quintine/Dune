@@ -4,6 +4,8 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- Ix prototype checkpoint `5a76ae0`: types, lint, **4,211 offline tests**, build and **40 HTTP tests** passed. Genuine Basic/Advanced setup and two seeded complete simulations were exercised; a short browser game finished with private hand restoration. All 64 opening saved rooms were preserved; 31 QA rooms were added. This is bounded prototype evidence, not complete Ix compliance.
+
 - [Rules implementation checklist](../game/reference.ts): `RULE_TOPICS`, topic `implementation-checklist`, and each feature's implementation, controls, AI, documentation and verification entries. Coverage is per stated boundary, not an implicit whole-game certificate.
 - [Latest verified gameplay checkpoint](IMPLEMENTATION_STATUS.md): Truthtrance hand inventory, 13 September 2026 (`7454456`): types, lint, **4,200 offline tests**, production build and **40 HTTP tests** passed, with a phone/browser refresh journey and preserved saved games. These are recorded results, not checks rerun for this dashboard.
 - Latest verification checkpoint `4a0b1ee`: genuine Advanced full-plan interaction tests; types, lint and **4,205 offline tests** passed. Private inspection restored after restart, with desktop/phone checks and all 64 saved games unchanged. No runtime change; prior build/HTTP evidence applies.
@@ -48,8 +50,11 @@ Likewise, the [Truthtrance readiness audit](TRUTHTRANCE_NONBATTLE_READINESS_2026
 The first connected batch is the [Ixians & Tleilaxu prototype](IX_PROTOTYPE.md):
 genuine setup, both expansion factions, full Ix deck and Sandtrout, shared human/AI
 controls and saved continuation. The checklist now distinguishes its Prototyped
-development stage from Partial rules coverage. Discoveries remain missing; their
-seven spice cards and eight token faces need a verified inventory and adapters.
+development stage from Partial rules coverage. The next connected action is the [CHOAM Nexus Collection trade](NEXUS_CHOAM_SECRET_ALLY.md),
+with private controls, all four AI profiles and a saved payment/discard continuation.
+Its after-victory inspection remains missing. [Discovery components](DISCOVERY_COMPONENTS.md)
+now records all seven spice cards, eight tokens and exact card placements;
+Discovery runtime and controls remain missing.
 
 The user changed the development order on 13 September: get working prototypes
 of all remaining functions into the game, then use integration and play to find

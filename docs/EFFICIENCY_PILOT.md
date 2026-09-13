@@ -82,3 +82,12 @@ leave the removed recurring automation absent. After `32791ed`, usage was 3% use
 Use [current status](CURRENT_STATUS.md), [rule decisions](RULE_DECISIONS.md) and
 [verification workflow](VERIFICATION_WORKFLOW.md) as short entry points. Historical
 logs remain references, not mandatory full-context input on every turn.
+
+The next rapid prototype batch begins at aggregate counter 59,982,405 and adds
+one missing action: CHOAM Nexus Secret Ally Collection trade. A workhorse helper
+acquires the complete Discovery inventory for the following batch; a reused
+independent reviewer checks this trade and its queued-Collection lock. The owner
+connects runtime, private controls, AI and SQLite recovery. The battle inspection
+alternative stays explicitly missing instead of holding the independent trade
+for an exhaustive battle-cleanup design. Final checks, counter endpoint and
+checkpoint scope are recorded in the commit.

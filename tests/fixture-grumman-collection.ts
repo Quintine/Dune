@@ -3,6 +3,7 @@ import {
   applyAction,
   createGame,
   initializeHomeworldGameForAudit,
+  initializeNexusGameForAudit,
   joinGame,
   newPlayer,
   viewGame,
@@ -13,6 +14,11 @@ import { baseDeck, type Card } from '../game/cards';
 import { botActions } from '../game/bots';
 import { homeworldGameIntegrity } from '../game/homeworld-game';
 import { placeTerror, type TerrorKind } from '../game/moritani-terror';
+import {
+  enterNexusSpice,
+  finishNexusSpice,
+  orderNexusSpice,
+} from './fixture-nexus-cards';
 
 export const grummanPlayer = (g: Game, id: string) =>
   g.players.find((p) => p.id === id)!;
@@ -25,6 +31,7 @@ export function grummanCollectionFixture(
   options: {
     native?: number;
     advanced?: boolean;
+    nexus?: boolean;
     seatIds?: [string, string, string];
   } = {},
 ): Game {
@@ -38,8 +45,11 @@ export function grummanCollectionFixture(
   joinGame(g, newPlayer(a, 'Atreides', 'atreides'));
   joinGame(g, newPlayer(h, 'Harkonnen', 'harkonnen'));
   g = applyAction(g, m, { type: 'homeworlds', enabled: true });
+  if (options.nexus) g.nexusCards = { cards: null, phase: null };
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
-  g = initializeHomeworldGameForAudit(g);
+  g = options.nexus
+    ? initializeNexusGameForAudit(g)
+    : initializeHomeworldGameForAudit(g);
   for (let n = 0; g.status === 'setup' && n < 60; n++) {
     let next: Game | undefined;
     for (const p of g.players) {
@@ -65,6 +75,11 @@ export function grummanCollectionFixture(
       shipped: true,
       moved: 0,
     });
+  }
+  if (options.nexus) {
+    g = enterNexusSpice(g);
+    orderNexusSpice(g, ['land', 'land']);
+    g = finishNexusSpice(g);
   }
   const owner = grummanPlayer(g, m);
   owner.reserves = options.native ?? 8;

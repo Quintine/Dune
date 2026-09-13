@@ -1,3 +1,4 @@
+import { nexusChoamTradeBotActions } from './nexus-choam-trade-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
@@ -3368,6 +3369,8 @@ export function botActions(g: GameView): Action[] {
       : nexusTraitorBotActions(g);
   if (g.automaticContinuationPending) return [];
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
+  const trade = nexusChoamTradeBotActions(g);
+  if (trade.length) return trade;
   const sardaukar = nexusSardaukarBotActions(g);
   if (sardaukar.length) return sardaukar;
   const advisorConversion = nexusAdvisorBotActions(g);

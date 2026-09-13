@@ -12,6 +12,7 @@ import { GrummanCollection } from './grumman-collection';
 import { TupileIntelligence } from './tupile-intelligence';
 import { NexusCards } from './nexus-cards';
 import { NexusTraitors } from './nexus-traitors';
+import { NexusChoamTrade } from './nexus-choam-trade';
 import { NexusTleilaxu } from './nexus-tleilaxu';
 import { NexusSuboids } from './nexus-suboids';
 import { NexusAdvisors } from './nexus-advisors';
@@ -1435,6 +1436,7 @@ export function GameTable({
           <PrivateBattlePlan game={g} />
           <NexusCards game={g} act={act} busy={busy} />
           <NexusTraitors game={g} act={act} busy={transportBusy || !!me.autopilot} />
+          <NexusChoamTrade game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || !!me.autopilot} />
           <NexusAdvisors game={g} act={act} busy={busy} />

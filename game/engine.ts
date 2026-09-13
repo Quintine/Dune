@@ -1,3 +1,4 @@
+import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
@@ -883,6 +884,8 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  nexusChoamTrades?: NexusChoamTrade[];
+  nexusChoamTradeLast?: { event: string; stage: NexusChoamTrade['stage'] };
   treacheryDiscardSequence?: number;
   resolvedTreacheryDiscardSequence?: number;
   /** Committed discard receipts are evidence, not additional card custody. */
@@ -891,6 +894,7 @@ export type Game = {
     batch: FreshDiscardBatch;
     continuation:
       | { kind: 'ambassador'; entry: NonNullable<Game['pendingAmbassador']> }
+      | { kind: 'nexusChoamTrade'; event: string; owner: string; card: string; spiceAfter: number }
       | { kind: 'kaitainDiscard'; owner: string; event: string; cost: number; spiceAfter: number }
       | { kind: 'winnerMandatoryDiscard'; event: string; player: string; territory: string; optional: string[]; commitment: NonNullable<Game['pendingWinnerDiscards']> }
       | {
@@ -1481,6 +1485,61 @@ function nexusCardsIntegrity(g: Game) {
       !g.spiceResolution && !g.summonedWorm && !g.wormRides.length && !g.choamMarket &&
       !g.truthtrance && !g.pendingKarama && !g.pendingTreacheryDiscard,
     'Finish the preceding phase interaction before drawing Nexus cards.');
+}
+function nexusChoamTradeIntegrity(g: Game) {
+  const history = g.nexusChoamTrades;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const pending = continuation?.kind === 'nexusChoamTrade' ? continuation : null;
+  if (history === undefined) {
+    requireRule(!g.nexusChoamTradeLast && !pending, 'The CHOAM Nexus trade has lost its saved history.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+    'The CHOAM Nexus trade requires its physical module and history.');
+  const events = new Set<string>(), turns = new Set<number>();
+  const physical = physicalTreacheryCards(g);
+  for (const [index, record] of history.entries()) {
+    nexusRule(() => validateNexusChoamTrade(g, record, physical));
+    requireRule(!events.has(record.event) && !turns.has(record.turn) &&
+      (record.stage === 'complete' || index === history.length - 1),
+      'The CHOAM Nexus trade has a duplicated or unfinished prior payment.');
+    events.add(record.event); turns.add(record.turn);
+  }
+  const last = history.at(-1)!;
+  requireRule(JSON.stringify(g.nexusChoamTradeLast) === JSON.stringify({event: last.event, stage: last.stage}) &&
+    (last.stage === 'discard') === !!pending,
+    'The CHOAM Nexus trade has lost or reopened its committed discard.');
+  if (last.turn === g.turn)
+    requireRule(g.nexusCards.cards.discard.includes('choam'), 'The CHOAM Nexus trade has lost its spent Nexus card.');
+  if (pending) requireRule(g.status === 'playing' && g.phase === 7 && last.turn === g.turn &&
+    pending.event === last.event && pending.owner === last.owner && pending.card === last.card &&
+    pending.spiceAfter === last.spiceBefore + 2 && getPlayer(g, last.owner).spice === pending.spiceAfter,
+    'The CHOAM Nexus trade no longer matches its committed payment.');
+}
+function currentNexusChoamTrade(g: Game, owner: string) {
+  return nexusRule(() => quoteNexusChoamTrade(g, owner,
+    g.phase === 7 && grummanCollectionAutomatic(g)));
+}
+function playNexusChoamTrade(g: Game, p: Player, action: Action) {
+  const offer = currentNexusChoamTrade(g, p.id);
+  requireRule(Object.keys(action).every(key => ['type', 'event', 'card'].includes(key)) &&
+    offer && !offer.blocked && action.event === offer.event &&
+    offer.cards.some(card => card.id === action.card),
+    offer?.blocked ?? 'Choose your current CHOAM Nexus trade and one held Worthless card.');
+  requireRule(Number.isSafeInteger(p.spice) && p.spice >= 0 && Number.isSafeInteger(p.spice + 2),
+    'The CHOAM Nexus trade needs a valid spice balance.');
+  const record: NexusChoamTrade = { event: offer.event, turn: g.turn, owner: p.id,
+    card: action.card as string, spiceBefore: p.spice, stage: 'discard', signature: '' };
+  record.signature = nexusChoamTradeSignature(record);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  const card = discard(g, p, record.card);
+  p.spice += 2;
+  (g.nexusChoamTrades ??= []).push(record);
+  g.nexusChoamTradeLast = { event: record.event, stage: record.stage };
+  stageTreacheryDiscard(g, 'nexus:choamTrade', [{card, discardedBy: p.id, publicFace: true}],
+    {kind: 'nexusChoamTrade', event: record.event, owner: p.id, card: card.id, spiceAfter: p.spice});
+  log(g, `${p.name} spent CHOAM Nexus Secret Ally and discarded ${card.name} during Spice Collection to receive 2 spice from the bank. Both cards are spent.`,
+    {faction: p.faction, name: 'CHOAM Nexus trade'});
 }
 function markNexusOccurred(g: Game) {
   if (!g.nexusCards) return;
@@ -4256,6 +4315,13 @@ function treacheryDiscardIntegrity(g: Game) {
       Array.isArray(c.optional) && new Set(c.optional).size === c.optional.length &&
       c.optional.every((id) => getPlayer(g, c.player).hand.some((card) => card.id === id)),
       'The mandatory winning card discard no longer matches its resolved battle.');
+  } else if (continuation?.kind === 'nexusChoamTrade') {
+    const c = continuation;
+    nexusChoamTradeIntegrity(g);
+    requireRule(batch.cause === 'nexus:choamTrade' && batch.entries.length === 1 &&
+      batch.entries[0].discardedBy === c.owner && batch.entries[0].publicFace &&
+      batch.entries[0].card.id === c.card && batch.entries[0].card.kind === 'worthless',
+      'The CHOAM Nexus trade has changed its discarded Worthless card.');
   } else if (continuation?.kind === 'kaitainDiscard') {
     const c = continuation;
     requireRule(g.phase === 3 && g.biddingEnd?.event === c.event &&
@@ -4302,6 +4368,12 @@ function finishTreacheryDiscard(g: Game) {
   g.pendingTreacheryDiscard = null;
   if (next.kind === 'winnerMandatoryDiscard') {
     finishWinner(g, getPlayer(g, next.player), next.territory, next.optional);
+    return;
+  }
+  if (next.kind === 'nexusChoamTrade') {
+    const record = g.nexusChoamTrades!.at(-1)!;
+    record.stage = 'complete'; record.signature = nexusChoamTradeSignature(record);
+    g.nexusChoamTradeLast = { event: record.event, stage: record.stage };
     return;
   }
   if (next.kind === 'kaitainDiscard') return;
@@ -12157,6 +12229,7 @@ function resumeMarketGhola(g: Game) {
   if (!pending || pending.stage !== 'complete' || g.pendingTreacheryDiscard || g.pendingNullentropy ||
       g.response || g.decision || g.pendingKarama || g.truthtrance ||
       g.phaseOpening || g.pendingRicheseGift || g.pendingExchange) return;
+  nexusChoamTradeIntegrity(g);
   marketGholaIntegrity(g);
   g.response = structuredClone(pending.response);
   g.pendingChoamMarketGhola = null;
@@ -17573,6 +17646,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  nexusChoamTradeIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -17723,6 +17797,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   reconcileShipmentPromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
   observeOccupation(g);
+  nexusChoamTradeIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -17817,6 +17892,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  nexusChoamTradeIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -17844,6 +17920,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileShipmentPromises(g);
   settleAutomaticContinuations(g);
   observeOccupation(g);
+  nexusChoamTradeIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -17934,6 +18011,7 @@ function applyActionInner(
     requireRule(!g.truthtrance, 'Finish the active Truthtrance before returning Nexus cards.');
     finishNexusTraitorReturn(g, p, action); return g;
   }
+  if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
   if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
     !(
@@ -21156,6 +21234,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  nexusChoamTradeIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -21447,6 +21526,7 @@ export function viewGame(state: Game, id: string) {
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
     nexusCards: projectedNexusCards(g, id),
+    nexusChoamTrade: currentNexusChoamTrade(g, id),
     nexusMoritani: nexusMoritaniOffer(g,id),
     nexusRichese: nexusRicheseOffer(g,id),
     nexusGuildSecretAlly: nexusGuildSecretAllyOffer(g,id),
