@@ -699,3 +699,487 @@ export async function recoverSeat(
     replayed: false,
   };
 }
+
+export const SEAT_HANDOVER_TTL_MS = 24 * 60 * 60 * 1000;
+const controlUuid = (value: unknown, message: string) => {
+  if (
+    typeof value !== 'string' ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+      value,
+    )
+  )
+    throw new SeatControlError(message, 'INVALID_HANDOVER_REQUEST', 400);
+  return value;
+};
+type HandoverClock = Pick<RoomsClock, 'now'>;
+type HandoverOfferRow = Readonly<{
+  offer_hash: string;
+  secret_hash: string;
+  issuer_session_hash: string;
+  expires_at: number;
+  claim_operation_hash: string | null;
+  session_hash: string | null;
+  claimed_at: number | null;
+}>;
+async function handoverOffer(code: string, playerId: string) {
+  return db()
+    .prepare(
+      'SELECT offer_hash,secret_hash,issuer_session_hash,expires_at,claim_operation_hash,session_hash,claimed_at FROM seat_handover_offers WHERE room_code = ? AND player_id = ?',
+    )
+    .bind(code, playerId)
+    .first<HandoverOfferRow>();
+}
+async function replayCreatedHandover(
+  code: string,
+  auth: SeatAuth,
+  offerHash: string,
+  secretHashValue: string,
+  now: number,
+) {
+  const row = await db()
+    .prepare(
+      'SELECT offers.expires_at FROM seat_handover_offers AS offers JOIN seats ON seats.room_code = offers.room_code AND seats.player_id = offers.player_id AND seats.token_hash = offers.issuer_session_hash WHERE offers.room_code = ? AND offers.player_id = ? AND offers.offer_hash = ? AND offers.secret_hash = ? AND offers.issuer_session_hash = ? AND offers.claim_operation_hash IS NULL AND seats.revoked = 0',
+    )
+    .bind(code, auth.playerId, offerHash, secretHashValue, auth.tokenHash)
+    .first<{ expires_at: number }>();
+  if (!row) return null;
+  if (row.expires_at <= now)
+    throw new SeatControlError(
+      'This handover offer has expired. Create a new private offer.',
+      'HANDOVER_EXPIRED',
+      410,
+    );
+  return {
+    view: await readSeatView(code, auth),
+    expiresAt: row.expires_at,
+    replayed: true,
+  };
+}
+
+export async function createSeatHandover(
+  code: string,
+  auth: SeatAuth,
+  version: unknown,
+  input: { offerId: unknown; handoverSecret: unknown },
+  clock: HandoverClock = roomsClock,
+) {
+  controlVersion(version);
+  const offerId = controlUuid(
+    input.offerId,
+    'Generate a new handover offer identifier.',
+  );
+  const [offerHash, handoverHash] = await Promise.all([
+    hash(offerId),
+    secretHash(input.handoverSecret),
+  ]);
+  if (handoverHash === auth.tokenHash)
+    throw new SeatControlError(
+      'The handover secret must differ from the current session credential.',
+      'INVALID_HANDOVER_REQUEST',
+      400,
+    );
+  const now = clock.now();
+  const replay = await replayCreatedHandover(
+    code,
+    auth,
+    offerHash,
+    handoverHash,
+    now,
+  );
+  if (replay) return replay;
+  const expiresAt = now + SEAT_HANDOVER_TTL_MS;
+  try {
+    const results = await db().batch([
+      db()
+        .prepare(
+          'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_handover_offers WHERE offer_hash = ? AND (room_code != ? OR player_id != ?))',
+        )
+        .bind(
+          now,
+          code,
+          version,
+          code,
+          auth.playerId,
+          auth.tokenHash,
+          offerHash,
+          code,
+          auth.playerId,
+        ),
+      db()
+        .prepare(
+          'INSERT INTO seat_handover_offers(room_code,player_id,offer_hash,secret_hash,issuer_session_hash,expires_at,claim_operation_hash,session_hash,claimed_at) SELECT ?,?,?,?,?,?,NULL,NULL,NULL WHERE changes() = 1 ON CONFLICT(room_code,player_id) DO UPDATE SET offer_hash = excluded.offer_hash, secret_hash = excluded.secret_hash, issuer_session_hash = excluded.issuer_session_hash, expires_at = excluded.expires_at, claim_operation_hash = NULL, session_hash = NULL, claimed_at = NULL',
+        )
+        .bind(
+          code,
+          auth.playerId,
+          offerHash,
+          handoverHash,
+          auth.tokenHash,
+          expiresAt,
+        ),
+    ]);
+    if (results[0].meta.changes !== 1) {
+      const won = await replayCreatedHandover(
+        code,
+        auth,
+        offerHash,
+        handoverHash,
+        now,
+      );
+      if (won) return won;
+      throw new SeatControlError(
+        'The table, seat, or handover offer changed. Reconnect before creating the offer.',
+        'STALE_VERSION',
+      );
+    }
+  } catch (error) {
+    const won = await replayCreatedHandover(
+      code,
+      auth,
+      offerHash,
+      handoverHash,
+      now,
+    );
+    if (won) return won;
+    throw error;
+  }
+  return {
+    view: await readSeatView(code, auth),
+    expiresAt,
+    replayed: false,
+  };
+}
+
+export async function revokeSeatHandover(
+  code: string,
+  auth: SeatAuth,
+  version: unknown,
+  offerIdValue: unknown,
+  clock: HandoverClock = roomsClock,
+) {
+  controlVersion(version);
+  const offerHash = await hash(
+    controlUuid(offerIdValue, 'Choose the handover offer to revoke.'),
+  );
+  const existing = await handoverOffer(code, auth.playerId);
+  if (!existing || existing.claim_operation_hash !== null) {
+    return {
+      view: await readSeatView(code, auth),
+      revoked: true as const,
+      replayed: true,
+    };
+  }
+  if (existing.offer_hash !== offerHash)
+    throw new SeatControlError(
+      'A different handover offer is now current for this seat.',
+      'HANDOVER_CHANGED',
+    );
+  const results = await db().batch([
+    db()
+      .prepare(
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND claim_operation_hash IS NULL)',
+      )
+      .bind(
+        clock.now(),
+        code,
+        version,
+        code,
+        auth.playerId,
+        auth.tokenHash,
+        code,
+        auth.playerId,
+        offerHash,
+      ),
+    db()
+      .prepare(
+        'DELETE FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND claim_operation_hash IS NULL AND changes() = 1',
+      )
+      .bind(code, auth.playerId, offerHash),
+  ]);
+  if (results[0].meta.changes !== 1) {
+    const current = await handoverOffer(code, auth.playerId);
+    if (!current)
+      return {
+        view: await readSeatView(code, auth),
+        revoked: true as const,
+        replayed: true,
+      };
+    throw new SeatControlError(
+      'The table, seat, or handover offer changed. Reconnect before revoking it.',
+      current.offer_hash === offerHash ? 'STALE_VERSION' : 'HANDOVER_CHANGED',
+    );
+  }
+  return {
+    view: await readSeatView(code, auth),
+    revoked: true as const,
+    replayed: false,
+  };
+}
+
+type HandoverClaimReceiptRow = Readonly<{
+  offer_hash: string;
+  secret_hash: string;
+  session_hash: string;
+}>;
+async function handoverClaimReceipt(
+  code: string,
+  playerId: string,
+  operationHash: string,
+) {
+  return db()
+    .prepare(
+      'SELECT offer_hash,secret_hash,session_hash FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?',
+    )
+    .bind(code, playerId, operationHash)
+    .first<HandoverClaimReceiptRow>();
+}
+async function replayClaimedHandover(
+  code: string,
+  playerId: string,
+  offerHash: string,
+  secretHashValue: string,
+  operationHash: string,
+  sessionHash: string,
+  newSessionToken: unknown,
+) {
+  const row = await db()
+    .prepare(
+      'SELECT rooms.state,rooms.version FROM rooms JOIN seat_handover_claim_receipts AS receipts ON receipts.room_code = rooms.code JOIN seats ON seats.room_code = receipts.room_code AND seats.player_id = receipts.player_id WHERE rooms.code = ? AND receipts.player_id = ? AND receipts.offer_hash = ? AND receipts.secret_hash = ? AND receipts.operation_hash = ? AND receipts.session_hash = ? AND seats.token_hash = ? AND seats.revoked = 0',
+    )
+    .bind(
+      code,
+      playerId,
+      offerHash,
+      secretHashValue,
+      operationHash,
+      sessionHash,
+      sessionHash,
+    )
+    .first<{ state: string; version: number }>();
+  if (!row) return null;
+  const game: Game = JSON.parse(row.state);
+  game.version = row.version;
+  return {
+    view: viewGame(game, playerId),
+    token: newSessionToken as string,
+    transferred: true as const,
+    replayed: true,
+  };
+}
+
+export async function claimSeatHandover(
+  code: string,
+  input: {
+    playerId: unknown;
+    offerId: unknown;
+    handoverSecret: unknown;
+    operationId: unknown;
+    newSessionToken: unknown;
+  },
+  clock: HandoverClock = roomsClock,
+) {
+  if (
+    typeof input.playerId !== 'string' ||
+    !input.playerId ||
+    input.playerId.length > 100
+  )
+    throw new SeatControlError(
+      'Provide a valid private handover kit.',
+      'INVALID_HANDOVER_REQUEST',
+      400,
+    );
+  const playerId = input.playerId;
+  const offerId = controlUuid(
+    input.offerId,
+    'Provide a valid private handover kit.',
+  );
+  const operationId = controlUuid(
+    input.operationId,
+    'Generate a handover claim operation identifier.',
+  );
+  const [offerHash, handoverHash, operationHash, sessionHash] =
+    await Promise.all([
+      hash(offerId),
+      secretHash(input.handoverSecret),
+      hash(operationId),
+      secretHash(input.newSessionToken),
+    ]);
+  if (sessionHash === handoverHash)
+    throw new SeatControlError(
+      'The recipient session credential must differ from the handover secret.',
+      'INVALID_SESSION_TOKEN',
+      400,
+    );
+  const replay = await replayClaimedHandover(
+    code,
+    playerId,
+    offerHash,
+    handoverHash,
+    operationHash,
+    sessionHash,
+    input.newSessionToken,
+  );
+  if (replay) return replay;
+  if (await handoverClaimReceipt(code, playerId, operationHash))
+    throw new SeatControlError(
+      'This handover claim operation is no longer active or was reused with different details.',
+      'HANDOVER_RECEIPT_INVALID',
+    );
+  const offer = await handoverOffer(code, playerId);
+  if (
+    !offer ||
+    offer.offer_hash !== offerHash ||
+    offer.secret_hash !== handoverHash
+  ) {
+    const claimed = await db()
+      .prepare(
+        'SELECT 1 AS present FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND secret_hash = ?',
+      )
+      .bind(code, playerId, offerHash, handoverHash)
+      .first();
+    throw new SeatControlError(
+      claimed
+        ? 'This handover offer has already been claimed.'
+        : 'The handover proof could not be verified.',
+      claimed ? 'HANDOVER_ALREADY_CLAIMED' : 'INVALID_HANDOVER_PROOF',
+    );
+  }
+  if (offer.claim_operation_hash !== null)
+    throw new SeatControlError(
+      'This handover offer has already been claimed.',
+      'HANDOVER_ALREADY_CLAIMED',
+    );
+  const now = clock.now();
+  if (offer.expires_at <= now)
+    throw new SeatControlError(
+      'This handover offer has expired.',
+      'HANDOVER_EXPIRED',
+      410,
+    );
+  const issuer = await db()
+    .prepare(
+      'SELECT 1 AS present FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0',
+    )
+    .bind(code, playerId, offer.issuer_session_hash)
+    .first();
+  if (!issuer)
+    throw new SeatControlError(
+      'The handover proof could not be verified.',
+      'INVALID_HANDOVER_PROOF',
+    );
+  if (
+    await db()
+      .prepare('SELECT 1 AS present FROM seats WHERE token_hash = ?')
+      .bind(sessionHash)
+      .first()
+  )
+    throw new SeatControlError(
+      'Generate a new recipient session credential; this token has already been used.',
+      'INVALID_SESSION_TOKEN',
+    );
+  const current = await readRoom(code);
+  const claimFence = await hash(crypto.randomUUID());
+  const results = await db().batch([
+    db()
+      .prepare(
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND secret_hash = ? AND issuer_session_hash = ? AND expires_at > ? AND claim_operation_hash IS NULL) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?) AND NOT EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?)',
+      )
+      .bind(
+        now,
+        code,
+        current.version,
+        code,
+        playerId,
+        offerHash,
+        handoverHash,
+        offer.issuer_session_hash,
+        now,
+        code,
+        playerId,
+        offer.issuer_session_hash,
+        sessionHash,
+        code,
+        playerId,
+        operationHash,
+      ),
+    db()
+      .prepare(
+        'INSERT INTO seat_handover_claim_receipts(room_code,player_id,operation_hash,offer_hash,secret_hash,session_hash,claim_fence,claimed_at) SELECT ?,?,?,?,?,?,?,? WHERE changes() = 1',
+      )
+      .bind(
+        code,
+        playerId,
+        operationHash,
+        offerHash,
+        handoverHash,
+        sessionHash,
+        claimFence,
+        now,
+      ),
+    db()
+      .prepare(
+        'DELETE FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND secret_hash = ? AND EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND claim_fence = ?)',
+      )
+      .bind(
+        code,
+        playerId,
+        offerHash,
+        handoverHash,
+        code,
+        playerId,
+        claimFence,
+      ),
+    db()
+      .prepare(
+        'UPDATE seats SET revoked = 1 WHERE room_code = ? AND player_id = ? AND revoked = 0 AND EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND claim_fence = ?)',
+      )
+      .bind(code, playerId, code, playerId, claimFence),
+    db()
+      .prepare(
+        'INSERT INTO seats(token_hash,room_code,player_id) SELECT ?,?,? WHERE EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND claim_fence = ?)',
+      )
+      .bind(sessionHash, code, playerId, code, playerId, claimFence),
+    db()
+      .prepare(
+        'DELETE FROM seat_recovery_receipts WHERE room_code = ? AND player_id = ? AND EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND claim_fence = ?)',
+      )
+      .bind(code, playerId, code, playerId, claimFence),
+    db()
+      .prepare(
+        'DELETE FROM seat_recovery_keys WHERE room_code = ? AND player_id = ? AND EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND claim_fence = ?)',
+      )
+      .bind(code, playerId, code, playerId, claimFence),
+  ]);
+  if (results[0].meta.changes !== 1) {
+    const won = await replayClaimedHandover(
+      code,
+      playerId,
+      offerHash,
+      handoverHash,
+      operationHash,
+      sessionHash,
+      input.newSessionToken,
+    );
+    if (won) return won;
+    const claimed = await db()
+      .prepare(
+        'SELECT 1 AS present FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND secret_hash = ?',
+      )
+      .bind(code, playerId, offerHash, handoverHash)
+      .first();
+    throw new SeatControlError(
+      claimed
+        ? 'This handover offer has already been claimed.'
+        : 'The table or handover offer changed. Retry the exact claim request.',
+      claimed
+        ? 'HANDOVER_ALREADY_CLAIMED'
+        : 'STALE_VERSION',
+    );
+  }
+  return {
+    view: await readSeatView(code, { playerId, tokenHash: sessionHash }),
+    token: input.newSessionToken as string,
+    transferred: true as const,
+    replayed: false,
+  };
+}

@@ -3,6 +3,11 @@ import Link from 'next/link';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameTable } from '@/components/game-table';
 import {
+  SeatHandoverSetup,
+  SeatHandoverClaim,
+} from '@/components/seat-handover';
+import { HANDOVER_CLAIM_STORAGE_KEY } from '@/lib/seat-handover';
+import {
   SeatRecoverySetup,
   SeatRecoveryClaim,
 } from '@/components/seat-recovery';
@@ -73,6 +78,8 @@ export default function Home() {
   );
   const [entryProblem, setEntryProblem] = useState('');
   const [showEntryRecovery, setShowEntryRecovery] = useState(false);
+  const [showHandover, setShowHandover] = useState(false);
+  const [handoverPending, setHandoverPending] = useState(true);
   const [abandonAcknowledged, setAbandonAcknowledged] = useState(false);
   const f = faction(selected);
   const roomCode = game?.code;
@@ -228,6 +235,19 @@ export default function Home() {
   );
 
   useEffect(() => {
+    // A one-use handover needs its exact receipt before any other seat flow.
+    try {
+      if (window.sessionStorage.getItem(HANDOVER_CLAIM_STORAGE_KEY) !== null) {
+        // oxlint-disable-next-line react/react-compiler -- Restore private tab-scoped continuation after SSR.
+        setShowHandover(true);
+        setRestoring(false);
+        return;
+      }
+    } catch {
+      setShowHandover(true);
+      setRestoring(false);
+      return;
+    }
     // A saved entry always gets an explicit retry screen. A GET with another
     // seat's cookie cannot prove which create/join operation completed.
     try {
@@ -348,6 +368,7 @@ export default function Home() {
       }
       activeRoom.current = data.code;
       activeSeat.current = data.me;
+      setHandoverPending(true);
       knownVersions.current.set(data.code, data.version);
       recovery.current = null;
       botAttempt.current = null;
@@ -425,12 +446,14 @@ export default function Home() {
 
   function exitTable() {
     if (
+      handoverPending ||
       mutationPending.current ||
       reconnectPending.current ||
       seatClaimUncertain.current
     )
       return;
     activeRoom.current = null;
+    setHandoverPending(true);
     activeSeat.current = null;
     ++epoch.current;
     recovery.current = null;
@@ -566,6 +589,7 @@ export default function Home() {
     )
       return;
     if (claim) {
+      setHandoverPending(true);
       activeRoom.current = view.code;
       activeSeat.current = view.me;
       ++epoch.current;
@@ -623,6 +647,18 @@ export default function Home() {
     } catch {}
     return () => lifecycle.abort();
   }, [roomCode, refresh]);
+  if (showHandover)
+    return (
+      <main className="table-shell">
+        <SeatHandoverClaim
+          onCancel={() => window.location.reload()}
+          onRestored={(view) => {
+            restoredSeat(view, true);
+            setShowHandover(false);
+          }}
+        />
+      </main>
+    );
   if (game)
     return (
       <>
@@ -631,6 +667,7 @@ export default function Home() {
           send={send}
           busy={busy || needsReconcile}
           onExit={exitTable}
+          exitDisabled={handoverPending}
         />
         <div className="table-shell">
           {(entryAttempt || entryProblem) && (
@@ -641,7 +678,7 @@ export default function Home() {
               </p>
               <Button
                 variant="outline"
-                disabled={busy || checkingConnection}
+                disabled={busy || checkingConnection || handoverPending}
                 onClick={exitTable}
               >
                 Review saved room request
@@ -653,6 +690,14 @@ export default function Home() {
             game={game}
             disabled={busy || needsReconcile || checkingConnection}
             onPending={controlPending}
+            onRestored={(view) => restoredSeat(view)}
+          />
+          <SeatHandoverSetup
+            key={`handover:${game.code}:${game.me}`}
+            game={game}
+            disabled={busy || needsReconcile || checkingConnection}
+            onPending={controlPending}
+            onUncertain={setHandoverPending}
             onRestored={(view) => restoredSeat(view)}
           />
         </div>
@@ -1019,6 +1064,15 @@ export default function Home() {
             onUncertain={controlUncertain}
             onRestored={(view) => restoredSeat(view, true)}
           />
+          <Button
+            variant="outline"
+            disabled={
+              busy || claimUncertain || needsReconcile || checkingConnection
+            }
+            onClick={() => setShowHandover(true)}
+          >
+            Accept a seat handover
+          </Button>
           {claimUncertain && (
             <output className="notice">
               Seat recovery may have completed. Retry the current recovery

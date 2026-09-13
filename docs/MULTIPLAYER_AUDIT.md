@@ -59,9 +59,9 @@ Normal waiting for a temporarily disconnected player is legitimate; it should no
 - Seven passing persisted tests cover the scenarios above, not all valid player counts, official module combinations, every sealed interaction, or full release readiness.
 - No server, engine, or existing test file was modified during this audit. The new test must be included in the coordinating agent's multiplayer test command.
 
-## Proposed disconnected-seat contract (design only)
+## Proposed disconnected-seat contract (historical design)
 
-This proposal changes operational control of a seat, not board-game rules. It is not implemented or included in the passing test count. Preserve the same player ID, faction, resources, hand, traitors, promises, submitted plans, decision ownership and history throughout every transition. Never restart setup or reveal a sealed plan merely because its controller changes.
+This broader proposal changes operational control of a seat, not board-game rules. Owner recovery and [voluntary handover](SEAT_HANDOVER.md) now have bounded implementations using exact active-token fencing. The separate generation/delegation schema below is historical design and has not been adopted; unattended or host-driven substitution remains unfinished. The passing test count above predates these additions. Preserve the same player ID, faction, resources, hand, traitors, promises, submitted plans, decision ownership and history throughout every transition. Never restart setup or reveal a sealed plan merely because its controller changes.
 
 ### Distinguish three cases
 

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { requestJson, requestMayHaveCompleted } from '@/lib/client-request';
+import { clearHandoverOwner } from '@/lib/seat-handover';
 import {
   createRecoveryAttempt,
   createRecoveryKit,
@@ -284,6 +285,11 @@ export function SeatRecoveryClaim({
         result.view.me !== prepared.attempt.playerId
       )
         throw new Error('The server did not confirm the recovered seat.');
+      clearHandoverOwner(
+        sessionStorage,
+        prepared.room,
+        prepared.attempt.playerId,
+      );
       setKitText('');
       setPrepared(null);
       setShowKit(false);

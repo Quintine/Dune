@@ -1,5 +1,8 @@
 import {
   authenticate,
+  createSeatHandover,
+  revokeSeatHandover,
+  claimSeatHandover,
   recoverSeat,
   SeatControlError,
   setRecoveryKey,
@@ -37,36 +40,78 @@ export async function POST(req: Request) {
         400,
       );
     const input = body as Record<string, unknown>;
-    if (input.type === 'setRecoveryKey') {
-      const token =
-        req.headers
-          .get('cookie')
-          ?.split(';')
-          .map((part) => part.trim())
-          .find((part) => part.startsWith(`dune_${code}=`))
-          ?.split('=')[1] ?? '';
+    const token =
+      req.headers
+        .get('cookie')
+        ?.split(';')
+        .map((part) => part.trim())
+        .find((part) => part.startsWith(`dune_${code}=`))
+        ?.split('=')[1] ?? '';
+    if (
+      input.type === 'setRecoveryKey' ||
+      input.type === 'createSeatHandover' ||
+      input.type === 'revokeSeatHandover'
+    ) {
       const auth = await authenticate(code, token);
+      if (input.type === 'createSeatHandover')
+        return Response.json(
+          await createSeatHandover(code, auth, input.version, {
+            offerId: input.offerId,
+            handoverSecret: input.handoverSecret,
+          }),
+          { headers: noStore },
+        );
+      if (input.type === 'revokeSeatHandover')
+        return Response.json(
+          await revokeSeatHandover(code, auth, input.version, input.offerId),
+          { headers: noStore },
+        );
       return Response.json(
         await setRecoveryKey(code, auth, input.version, input.recoverySecret),
         { headers: noStore },
       );
     }
-    if (input.type !== 'recoverSeat')
+    if (input.type !== 'recoverSeat' && input.type !== 'claimSeatHandover')
       throw new SeatControlError(
         'Choose a recovery operation.',
         'INVALID_CONTROL_REQUEST',
         400,
       );
-    const result = await recoverSeat(code, {
-      playerId: input.playerId,
-      recoverySecret: input.recoverySecret,
-      operationId: input.operationId,
-      newSessionToken: input.newSessionToken,
-    });
+    if (input.type === 'claimSeatHandover' && token) {
+      let existing;
+      try {
+        existing = await authenticate(code, token);
+      } catch (error) {
+        if (!(error instanceof RuleError)) throw error;
+      }
+      if (existing && existing.playerId !== input.playerId)
+        throw new SeatControlError(
+          'This browser already controls another seat in this room. Use a separate browser profile to accept the handover.',
+          'ALREADY_SEATED',
+          409,
+        );
+    }
+    const result =
+      input.type === 'claimSeatHandover'
+        ? await claimSeatHandover(code, {
+            playerId: input.playerId,
+            offerId: input.offerId,
+            handoverSecret: input.handoverSecret,
+            operationId: input.operationId,
+            newSessionToken: input.newSessionToken,
+          })
+        : await recoverSeat(code, {
+            playerId: input.playerId,
+            recoverySecret: input.recoverySecret,
+            operationId: input.operationId,
+            newSessionToken: input.newSessionToken,
+          });
     return Response.json(
       {
         view: result.view,
-        recovered: result.recovered,
+        ...('transferred' in result
+          ? { transferred: result.transferred }
+          : { recovered: result.recovered }),
         replayed: result.replayed,
       },
       {
@@ -84,7 +129,7 @@ export async function POST(req: Request) {
             ? error.message
             : error instanceof SyntaxError
               ? 'Invalid JSON.'
-              : 'The server could not complete seat recovery.',
+              : 'The server could not complete this seat request.',
         code:
           error instanceof SeatControlError
             ? error.code

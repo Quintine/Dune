@@ -173,11 +173,13 @@ export function GameTable({
   send,
   busy: transportBusy,
   onExit,
+  exitDisabled = false,
 }: {
   game: GameView;
   send: (a: Action) => Promise<void>;
   busy: boolean;
   onExit: () => void;
+  exitDisabled?: boolean;
 }) {
   const me = g.players.find((p) => p.id === g.me)!;
   const shipmentAvailable = nexusGuildShipmentAvailable(g);
@@ -802,6 +804,7 @@ export function GameTable({
         <button
           className="wordmark wordmark-button"
           onClick={onExit}
+          disabled={transportBusy || exitDisabled}
           aria-label="Return to lobby"
         >
           DUNE<span>ARRAKIS TABLE</span>

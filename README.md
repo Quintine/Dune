@@ -28,6 +28,8 @@ New create/join requests save a private, tab-scoped retry record before sending.
 
 An uncertain saved-kit recovery keeps its exact retry details in memory and prevents conflicting navigation. If that recovery has become obsolete, deliberate abandonment releases the controls after explaining that it cannot undo a completed recovery. Keep a valid saved kit before discarding retry details.
 
+Use **Pass your seat to another player** for a voluntary one-time transfer. The private offer lasts 24 hours; acceptance preserves progress and revokes the old owner’s sessions and recovery kits. The recipient uses **Accept a seat handover** on the home page, then creates their own recovery kit. Keep the tab open until acceptance is confirmed; exact private retry details survive refresh in that tab. See [seat handover](docs/SEAT_HANDOVER.md) for cancellation, retry behavior and current limits.
+
 ## Verify changes
 
 Use the [development guide](docs/DEVELOPMENT.md) for architecture, focused tests

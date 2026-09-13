@@ -40,6 +40,44 @@ combinations remain part of the later integration pass.
   server restart is required. Recovery validates the already-paid outcome and
   retires the discard; it never credits spice a second time.
 
+## After-victory inspection audit
+
+The other printed Secret Ally choice applies only after its holder wins a
+battle. It inspects exactly one random Treachery Card held by the opposing
+combatant that the opponent did not use in that battle. Normal and traitor
+wins qualify. Mutual-traitor and Lasgun-shield explosion results have no winner
+and do not. “Used” is the physical set already produced by the battle quote for
+the opponent, including a Cheap Hero, cards played in weapon or defense slots
+and a late Portable Snooper. A used card remains excluded if another effect
+later retains it. The effect neither transfers nor discards the inspected card.
+
+The battle engine must preserve the opposing used-card IDs with the resolved
+battle event before mandatory loser disposal. The existing Auditor candidate
+filter is reusable because it removes exact physical used IDs from the current
+opposing hand. The Nexus effect still needs its own one-card sampler and receipt;
+it must not borrow Auditor survival, payment or cancellation behavior. A
+successful use discards the held CHOAM Nexus card once, records the sampled
+snapshot once and projects the face only to its holder. The public chronicle may
+name the use, winner and opponent, but not the inspected face.
+
+The safe continuation point is the existing final `finishBattle` board boundary:
+after mandatory and optional battle-card cleanup, Moritani retention, battle
+income, technology, capture, Auditor, Face Dance and Caladan reinforcement, and
+before another battle or phase begins. No existing choice occurs at that point
+for every possible winner. Opening a pause only when the winner secretly holds
+the CHOAM Nexus card would reveal that hidden identity. Precommitting a
+conditional use before the result would remove the printed after-victory choice.
+A universal use-or-pass window would preserve secrecy and the full choice, but
+would also ask winners without the card to pass. The user has been asked which
+product exception to adopt; no timing policy is implemented while that answer
+is pending.
+
+The retrieved Nexus sources neither establish an ordinary Karama response to
+this Secret Ally play nor grant blanket Nexus immunity. The Collection trade is
+currently direct and this inspection must not inherit the native Auditor's
+Karama/payment window by analogy. Cancellation remains an explicit later audit
+boundary rather than an invented prototype rule.
+
 ## Focused evidence and remaining scope
 
 Run `npm test -- nexus-choam-trade`. Focused cases cover Basic/Advanced payment,

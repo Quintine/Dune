@@ -8,12 +8,16 @@ import * as bots from '../game/bots';
 import type * as Rooms from '../db/rooms';
 
 /** Execute the production room module and SQL, with a hook immediately before its CAS. */
-export function unitStore(runBots = bots.runBots) {
+export function unitStore(runBots = bots.runBots, migrationThrough?: string) {
   const sqlite = new DatabaseSync(':memory:');
-  const hooks: { beforeWrite?: () => Promise<void> } = {};
+  const hooks: {
+    beforeWrite?: () => Promise<void>;
+    beforeBatch?: () => Promise<void>;
+  } = {};
   const writes: { expected: number; changes: number }[] = [];
   for (const file of readdirSync(new URL('../drizzle/', import.meta.url))
     .filter((f) => f.endsWith('.sql'))
+    .filter((f) => !migrationThrough || f <= migrationThrough)
     .sort())
     sqlite.exec(
       readFileSync(new URL('../drizzle/' + file, import.meta.url), 'utf8'),
@@ -42,6 +46,7 @@ export function unitStore(runBots = bots.runBots) {
   const database = {
     prepare: (sql: string) => new Statement(sql),
     batch: async (statements: Statement[]) => {
+      await hooks.beforeBatch?.();
       sqlite.exec('BEGIN');
       try {
         const results = [];
