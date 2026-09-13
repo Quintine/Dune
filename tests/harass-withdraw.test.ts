@@ -445,8 +445,9 @@ void test('co-present reciprocal Ecaz allies are publicly guarded before sealing
   }
 });
 
-void test('ambiguous unit mixes and sector allocations reject before sealing without hidden opponent dependence', () => {
+void test('legacy ambiguous unit mixes and sector allocations reject before sealing without hidden opponent dependence', () => {
   let g = harassWithdrawGame({ advanced: true, normal: 3, elite: 1 });
+  delete g.battle!.harassAllocationVersion;
   reject(
     g,
     'a',
@@ -454,6 +455,7 @@ void test('ambiguous unit mixes and sector allocations reject before sealing wit
     /ambiguous regular\/elite/,
   );
   g = harassWithdrawGame({ territory: 'imperial_basin', sector: 9 });
+  delete g.battle!.harassAllocationVersion;
   g.players[0].forces = { 'imperial_basin:9': 2, 'imperial_basin:10': 3 };
   const preview = viewGame(g, 'a').battle!.harassWithdraw!;
   assert.throws(
@@ -686,6 +688,7 @@ void test('Reinforcements and public Richese/optional-module contexts remain gua
 
 void test('malformed sealed withdrawal allocations reject private reads and both ordinary/autopilot actions', () => {
   let g = harassWithdrawGame({ advanced: true, normal: 3, elite: 1 });
+  delete g.battle!.harassAllocationVersion;
   g = applyAction(g, 'a', ownPlan(g, { dial: 0, support: 0 }));
   g.battle!.plans.a.dial = 2;
   g.battle!.plans.a.support = 1;

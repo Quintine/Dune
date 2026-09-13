@@ -28,7 +28,7 @@ import {
   type StoneBurnerComparison,
 } from './stone-burner';
 import { matchingTraitor } from './traitors';
-import { HARASS_WITHDRAW_CARD, isHarassWithdraw, quoteHarassWithdraw, type HarassWithdrawContext, type HarassWithdrawQuote } from './harass-withdraw';
+import { HARASS_WITHDRAW_CARD, isHarassWithdraw, quoteHarassWithdraw, type HarassWithdrawContext, type HarassWithdrawQuote, type HarassWithdrawSelection } from './harass-withdraw';
 import { auditCount } from './choam-auditor';
 import { sukGraduateSkill, type SukGraduateSkill } from './suk-graduate';
 import { validateSpiceBankerSpend } from './spice-banker';
@@ -75,6 +75,7 @@ export type ResolutionParticipant = {
 };
 export type ResolutionCombatant = ResolutionParticipant & {
   harassWithdraw?: HarassWithdrawContext;
+  harassSelection?: HarassWithdrawSelection;
   diplomatDefense?: Pick<DiplomatDefenseQuote, 'leader' | 'source' | 'kind'> & { card: string };
   spice: number;
   hand: readonly Card[];
@@ -371,7 +372,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     requireQuote(!slots.some(c => c?.id === 'ecaz-reinforcements'),
       'Reinforcements battle effects are still being implemented.');
     const harass = slots.some(isHarassWithdraw);
-    requireQuote(!side.harassWithdraw || harass, 'The withdrawal context requires the physical Harass & Withdraw card.');
+    requireQuote((!side.harassWithdraw && side.harassSelection === undefined) || harass, 'The withdrawal context requires the physical Harass & Withdraw card.');
     if (harass) {
       requireQuote(validBattleSlotPair(slots[0], slots[1]),
         'The Harass & Withdraw plan has an invalid weapon and defense pair.');
@@ -379,7 +380,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         'Harass & Withdraw needs its supported physical context; Homeworld and Stone Burner combinations remain unfinished.');
       requireQuote(JSON.stringify(side.harassWithdraw.forces) === JSON.stringify(side.forces),
         'The withdrawal context must match the current battle force roles.');
-      withdrawals.set(side.id, quoteHarassWithdraw(side.harassWithdraw, side.plan.dial, side.plan.support));
+      withdrawals.set(side.id, quoteHarassWithdraw(side.harassWithdraw, side.plan.dial, side.plan.support, side.harassSelection));
     }
   }
   const tie =
@@ -662,11 +663,15 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       homeworld ||
       winner.faction === 'ixians'
     ) {
+      const withdrawal = harassWithdraw.find(entry => entry.player === winner.id);
+      // Withdrawal already identifies every undialed counter. Do not choose a
+      // smaller physical commitment a second time after returning its complement.
       const options = casualtyOptions(
-        harassWithdraw.find(entry => entry.player === winner.id)?.remaining ?? winner.forces,
+        withdrawal?.remaining ?? winner.forces,
         winner.plan.dial,
         winner.plan.support,
-      );
+      ).filter(option => !withdrawal ||
+        option.normal === withdrawal.remaining.normal && option.elite === withdrawal.remaining.elite);
       requireQuote(
         options.length > 0,
         'No valid casualty choice remains for this battle.',

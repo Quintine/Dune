@@ -3,7 +3,7 @@ import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
 import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus } from './leader-skill-combat';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, type BattlePlanInspectionField } from './battle-card-slots';
-import { quoteHarassWithdraw } from './harass-withdraw';
+import { defaultHarassWithdrawAllocation, quoteHarassWithdraw } from './harass-withdraw';
 import { leaderSkillStrongholdCount } from './leader-skill-battle-board';
 import { discoveryFlightBotActions } from './discovery-flight-options';
 import { discoveryEntryBotActions } from './discovery-entry-options';
@@ -936,7 +936,10 @@ function plans(g: GameView): Action[] {
           if (harass) {
             if (!b.harassWithdraw) continue;
             try {
-              const quote = quoteHarassWithdraw(b.harassWithdraw, Number(action.dial), Number(action.support ?? 0));
+              const allocation = b.harassWithdraw.allowAllocation
+                ? defaultHarassWithdrawAllocation(b.harassWithdraw, Number(action.dial), Number(action.support ?? 0))
+                : undefined;
+              const quote = quoteHarassWithdraw(b.harassWithdraw, Number(action.dial), Number(action.support ?? 0), allocation);
               withdrawn = quote.returned.normal + quote.returned.elite;
             } catch { continue; }
           }
@@ -1465,6 +1468,12 @@ function policyActions(g: GameView): Action[] {
     if (g.decision.player !== me.id) return [];
     const d = g.decision;
     if (d.kind === 'leaderSkillVisibility' || d.kind === 'leaderSkillRevival' || d.kind === 'mentatQuestion' || d.kind === 'bureaucratPayment') return [];
+    if (d.kind === 'harassWithdraw') {
+      const offer = g.battle?.harassAllocation;
+      if (!offer || offer.event !== d.event) return [];
+      return [{ type: 'decision', event: d.event,
+        returns: offer.selection ?? defaultHarassWithdrawAllocation(offer.context, offer.dial, offer.support) }];
+    }
     if (d.kind === 'choamAudit')
       return [{ type: 'decision', event: d.event, audit: true }];
     if (d.kind === 'choamAuditPayment') {

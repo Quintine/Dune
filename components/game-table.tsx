@@ -153,6 +153,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BattlePreparation, battlePlanCommitments, battlePlanCardValue, battlePlanCardOptions, bindBattlePlanCommitments, NexusInspectionHistory } from './battle-preparation';
 import { HarassWithdrawGuide, harassWithdrawControlState } from './harass-withdraw';
+import { HarassWithdrawChoice } from './harass-withdraw-choice';
 import { PrivateBattlePlan } from './private-battle-plan';
 import { SpiceBankerControl, spiceBankerControlState } from './spice-banker';
 import { canUsePlanetologistBattleSpecial } from '../game/leader-skill-combat';
@@ -2172,6 +2173,8 @@ export function GameTable({
                     ? g.decision.stage === 'offer' ? 'Rihani Decipherer — optional draw' : 'Choose your Traitor exchange'
                   : g.decision.kind === 'sukRescue'
                     ? 'Save your battle casualties'
+                  : g.decision.kind === 'harassWithdraw'
+                    ? 'Choose undialed forces to return'
                   : g.decision.kind === 'diplomatDefense'
                     ? 'Copy an opposing defense'
                   : g.decision.kind === 'homeworldRevivalDeployment'
@@ -2594,6 +2597,11 @@ export function GameTable({
                     event: g.decision.event,
                     mode: 'ignore',
                   })}
+                </>
+              ) : g.decision.kind === 'harassWithdraw' ? (
+                <>
+                  <RevealedBattle game={g} />
+                  <HarassWithdrawChoice key={g.decision.event} game={g} act={act} busy={busy} />
                 </>
               ) : g.decision.kind === 'diplomatDefense' ? (
                 <>

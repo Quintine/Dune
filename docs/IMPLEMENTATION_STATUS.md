@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 14 September 2026 — Harass revealed physical allocation
+
+Connected ordinary/elite and multi-sector choices after public plan reveal,
+before Traitor declarations. Unique returns remain automatic; selected counters
+are public but stay on board until atomic Traitor settlement. The shared quote,
+player controls, four AI profiles and versioned saved decision preserve exact
+custody and existing mode gates. Winner casualties cannot choose a smaller
+physical commitment after its undialed complement has returned. See
+[the allocation contract](HARASS_ALLOCATION.md) for source timing and limits;
+source-bound final evidence and delivery remain in the private report/Git message.
+
+
 
 ## 14 September — AI ordinary arrival preflight
 

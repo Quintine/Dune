@@ -17,7 +17,7 @@ import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-bank
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
 import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair } from './battle-card-slots';
-import { HARASS_WITHDRAW_CARD, HarassWithdrawError, isHarassWithdraw, quoteHarassWithdraw, type HarassWithdrawContext, type HarassWithdrawPreview } from './harass-withdraw';
+import { HARASS_WITHDRAW_CARD, HarassWithdrawError, isHarassWithdraw, quoteHarassWithdraw, defaultHarassWithdrawAllocation, harassWithdrawNeedsAllocation, type HarassWithdrawSelection, type HarassWithdrawContext, type HarassWithdrawPreview } from './harass-withdraw';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
@@ -606,7 +606,15 @@ export type DiplomatDefenseReceipt = DiplomatDefenseQuote & {
   card: string | null;
   signature: string;
 };
+export type HarassAllocationReceipt = {
+  player: string; event: string; battle: string; turn: number; frame: string;
+  stage: 'offered' | 'selected'; selection: HarassWithdrawSelection | null; signature: string;
+};
 export type Battle = {
+  /** New battles allow physical withdrawal choice after reveal, never in the sealed plan. */
+  harassAllocationVersion?: 1;
+  harassAllocationEvent?: string;
+  harassAllocation?: HarassAllocationReceipt;
   /** Scheduling owner; physical combat slots and aggressor remain independent. */
   chooser?: string;
   chooserEvent?: string;
@@ -678,6 +686,7 @@ export type Auction = {
   allyPayment?: number;
 };
 export type Decision =
+  | { kind: 'harassWithdraw'; player: string; event: string }
   | { kind: 'diplomatDefense'; player: string; event: string; cards: string[]; source: string }
   | { kind: 'leaderSkillVisibility'; player: string; event: string; resumePowers?: boolean }
   | { kind: 'leaderSkillRevival'; player: string; event: string }
@@ -5250,6 +5259,7 @@ function leaderSkillsIntegrity(g: Game) {
   bureaucratPaymentIntegrity(g);
   mentatQuestionIntegrity(g);
   diplomatDefenseIntegrity(g);
+  harassAllocationIntegrity(g);
   const noFieldShipment = leaderSkillNoFieldIntegrity(g);
   sandmasterIntegrity(g);
   sukRescueIntegrity(g);
@@ -13550,7 +13560,11 @@ function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
 }
 function currentHarassWithdrawQuote(g: Game, p: Player, plan: Pick<Plan, 'dial' | 'support'>) {
   try {
-    const quote = quoteHarassWithdraw(harassWithdrawContext(g, p), plan.dial, plan.support);
+    const context = harassWithdrawContext(g, p);
+    const receipt = g.battle?.harassAllocation;
+    const selection = receipt?.player === p.id && receipt.stage === 'selected' ? receipt.selection! :
+      g.battle?.harassAllocationVersion === 1 ? defaultHarassWithdrawAllocation(context, plan.dial, plan.support) : undefined;
+    const quote = quoteHarassWithdraw(context, plan.dial, plan.support, selection);
     validateHarassReturnCounters(p, quote.returned);
     return quote;
   }
@@ -13567,7 +13581,7 @@ function harassWithdrawPreview(g: Game, p: Player): HarassWithdrawPreview | null
   const b = g.battle;
   if (!b || ![b.attacker, b.defender].includes(p.id) || !p.hand.some(isHarassWithdraw)) return null;
   const context = harassWithdrawContext(g, p);
-  return { ...context, card: HARASS_WITHDRAW_CARD,
+  return { ...context, card: HARASS_WITHDRAW_CARD, allowAllocation: b.harassAllocationVersion === 1,
     blocked: context.blocked ?? (b.revealed || b.plans[p.id] ? 'Your Battle Plan is already sealed.' : null) };
 }
 function validateResidualPoison(
@@ -15267,8 +15281,76 @@ function offerDiplomatDefense(g: Game): boolean {
     { faction: getPlayer(g, offer.player).faction, name: 'Diplomat defense' });
   return true;
 }
+function harassAllocationOffer(g: Game) {
+  const b = g.battle;
+  if (!b?.revealed || b.harassAllocationVersion !== 1) return null;
+  for (const id of [b.attacker, b.defender]) {
+    const p = getPlayer(g, id), plan = b.plans[id];
+    if (![plan.weapon, plan.defense].includes(HARASS_WITHDRAW_CARD)) continue;
+    const context = harassWithdrawContext(g, p);
+    try {
+      if (harassWithdrawNeedsAllocation(context, plan.dial, plan.support))
+        return { player: id, context, dial: plan.dial, support: plan.support };
+    } catch (error) { if (error instanceof HarassWithdrawError) throw new RuleError(error.message); throw error; }
+  }
+  return null;
+}
+function harassAllocationFrame(g: Game): string {
+  const b = g.battle!;
+  return JSON.stringify({ battle: b.event, turn: g.turn, territory: b.territory,
+    attacker: b.attacker, defender: b.defender, plans: b.plans, offer: harassAllocationOffer(g) });
+}
+function harassAllocationSignature(receipt: HarassAllocationReceipt): string {
+  return JSON.stringify({ ...receipt, signature: undefined });
+}
+function harassAllocationIntegrity(g: Game) {
+  const b = g.battle, decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'harassWithdraw');
+  if (b?.harassAllocationVersion === undefined && b?.harassAllocation === undefined &&
+    b?.harassAllocationEvent === undefined && !decisions.length) return;
+  requireRule(b && b.harassAllocationVersion === 1, 'The saved withdrawal choice lost its original battle version.');
+  const receipt = b.harassAllocation, offer = harassAllocationOffer(g);
+  if (!receipt) {
+    requireRule(receipt === undefined && b.harassAllocationEvent === undefined && !decisions.length && !offer,
+      'The revealed Harass & Withdraw plan lost its physical allocation choice.');
+    return;
+  }
+  requireRule(g.status === 'playing' && g.phase === 6 && b.revealed && offer &&
+    receipt.player === offer.player && receipt.battle === b.event && receipt.turn === g.turn &&
+    typeof receipt.event === 'string' && receipt.event.length > 0 && receipt.event === b.harassAllocationEvent &&
+    receipt.frame === harassAllocationFrame(g) && receipt.signature === harassAllocationSignature(receipt) &&
+    ['offered', 'selected'].includes(receipt.stage),
+    'The saved withdrawal choice changed its revealed plan, force locations or event.');
+  requireRule(decisions.length === (receipt.stage === 'offered' ? 1 : 0),
+    'The saved withdrawal choice lost or reopened its unique decision.');
+  if (receipt.stage === 'offered') requireRule(receipt.selection === null && !Object.keys(b.traitorCalls).length,
+    'Choose undialed forces before any traitor declarations.');
+  else {
+    requireRule(receipt.selection !== null, 'The saved withdrawal choice lost its selected counters.');
+    try { quoteHarassWithdraw(offer.context, offer.dial, offer.support, receipt.selection); }
+    catch (error) { if (error instanceof HarassWithdrawError) throw new RuleError(error.message); throw error; }
+  }
+  for (const decision of decisions) requireRule(decision.player === receipt.player && decision.event === receipt.event &&
+    Object.keys(decision).every(key => ['kind', 'player', 'event'].includes(key)),
+    'The withdrawal decision no longer matches its original owner and event.');
+}
+function offerHarassAllocation(g: Game): boolean {
+  const b = g.battle!;
+  if (b.harassAllocation || b.harassAllocationVersion !== 1) return false;
+  const offer = harassAllocationOffer(g);
+  if (!offer) return false;
+  requireRule(b.event && !Object.keys(b.traitorCalls).length, 'Choose withdrawal counters immediately after reveal.');
+  const event = crypto.randomUUID();
+  const receipt: HarassAllocationReceipt = { player: offer.player, event, battle: b.event, turn: g.turn,
+    frame: harassAllocationFrame(g), stage: 'offered', selection: null, signature: '' };
+  receipt.signature = harassAllocationSignature(receipt);
+  b.harassAllocation = receipt; b.harassAllocationEvent = event;
+  g.decision = { kind: 'harassWithdraw', player: offer.player, event };
+  log(g, `${getPlayer(g, offer.player).name} must identify all undialed forces returned by Harass & Withdraw before traitor declarations.`);
+  return true;
+}
 function nextRevealedDecision(g: Game) {
   const b = g.battle!;
+  if (offerHarassAllocation(g)) return;
   if (offerDiplomatDefense(g)) return;
   const stoneOwner = [b.attacker, b.defender].find(
     (id) =>
@@ -15345,7 +15427,9 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       occupiedStrongholds: leaderSkillStrongholdCount(g, p),
       forces: combatForces(g, p, b.territory, opponent),
       ...([cardOf(p, plan.weapon), cardOf(p, plan.defense)].some(isHarassWithdraw)
-        ? { harassWithdraw: harassWithdrawContext(g, p) } : {}),
+        ? { harassWithdraw: harassWithdrawContext(g, p),
+          ...(b.harassAllocation?.player === p.id && b.harassAllocation.stage === 'selected'
+            ? { harassSelection: b.harassAllocation.selection! } : {}) } : {}),
       stronghold: strongholdEffect(g, p.id),
       lateDefense: b.lateDefense?.[p.id],
       ...(b.diplomatDefense?.stage === 'copied' && b.diplomatDefense.player === p.id
@@ -21643,6 +21727,20 @@ function applyActionInner(
       if (harkonnen) returnCaptives(g, harkonnen);
       settleAdvisors(g);
       finishBattle(g);
+    } else if (decision.kind === 'harassWithdraw') {
+      const receipt = g.battle?.harassAllocation, offer = harassAllocationOffer(g);
+      requireRule(Object.keys(action).every(key => ['type', 'event', 'returns'].includes(key)) &&
+        action.event === decision.event && receipt?.event === decision.event && receipt.player === id &&
+        receipt.stage === 'offered' && offer && action.returns !== undefined,
+        'Choose all undialed forces for this exact revealed Harass & Withdraw plan.');
+      let quote;
+      try { quote = quoteHarassWithdraw(offer.context, offer.dial, offer.support, action.returns as HarassWithdrawSelection); }
+      catch (error) { if (error instanceof HarassWithdrawError) throw new RuleError(error.message); throw error; }
+      validateHarassReturnCounters(p, quote.returned);
+      receipt.selection = structuredClone(quote.locations); receipt.stage = 'selected';
+      receipt.signature = harassAllocationSignature(receipt);
+      log(g, `${p.name} selected ${quote.returned.normal} ordinary and ${quote.returned.elite} elite undialed forces for Harass & Withdraw: ${Object.entries(quote.locations).map(([key, group]) => `${key} (${group.normal} ordinary, ${group.elite} elite)`).join('; ')}. The return waits for traitor declarations; an opposing successful call cancels it.`);
+      nextRevealedDecision(g);
     } else if (decision.kind === 'diplomatDefense') {
       const receipt = g.battle?.diplomatDefense;
       requireRule(Object.keys(action).every(key => ['type', 'event', 'card'].includes(key)) &&
@@ -23690,6 +23788,7 @@ function applyActionInner(
       event: battleEvent,
       ...(g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
       ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 1 as const } : {}),
+      ...(g.ecazTreachery ? { harassAllocationVersion: 1 as const } : {}),
       ...(byFaction(g, 'richese')
         ? { preLeader: { event: battleEvent, ready: [], closed: false } }
         : {}),
@@ -24999,6 +25098,12 @@ export function viewGame(state: Game, id: string) {
               leader: b.diplomatDefense.leader, cards: [...b.diplomatDefense.cards],
               source: b.diplomatDefense.source, kind: b.diplomatDefense.kind,
               stage: b.diplomatDefense.stage, card: b.diplomatDefense.card }
+            : null,
+          harassAllocation: b.revealed && b.harassAllocation &&
+            (b.harassAllocation.player === id || b.harassAllocation.stage === 'selected')
+            ? { event: b.harassAllocation.event, context: harassWithdrawContext(g, getPlayer(g, b.harassAllocation.player)),
+              dial: b.plans[b.harassAllocation.player].dial, support: b.plans[b.harassAllocation.player].support,
+              selection: b.harassAllocation.selection ? structuredClone(b.harassAllocation.selection) : null }
             : null,
           fullPlan: b.fullPlan ?? null,
           fullPlanInsight:

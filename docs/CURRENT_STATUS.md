@@ -6,19 +6,19 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest verified checkpoint: `368a7a5`, [reusable game samples](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games).
-Types, lint and **4,823 offline tests** passed. Ten genuine base samples and
-six expansion samples completed in 6,746 accepted actions with 175 periodic
-save/restore checks. Base samples had no rejected candidates; expansion samples
-retained 82 guarded arrival candidates before legal alternatives. The tooling
-checkpoint changed no application, dependency, HTTP or database code.
-All 1,038 opening games and original seat/recovery records were unchanged.
+Latest verified checkpoint: `6403425`, [AI arrival preflight](BOT_ARRIVAL_PREFLIGHT.md).
+Types, lint and **4,829 offline tests** passed. Eighteen genuine base and expansion
+samples completed in 9,470 accepted actions with 247 periodic save/restore checks
+and no rejected candidates. Accepted gameplay matched the prior same-seed runs
+apart from random event identifiers. All 1,038 opening games and original
+seat/recovery records were unchanged; the browser test seat reconnected.
 Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
 battle-card slot, private category inspections, exact undialed normal/elite
 returns, opponent-Traitor cancellation, mandatory disposal, controls and all
-four AI profiles. Physical allocation must be unique. Richese card combinations
+four AI profiles. New battles also have [revealed physical allocation](HARASS_ALLOCATION.md) for
+ordinary/elite mixtures and multi-sector returns. Richese card combinations
 and additional optional modules stay gated. Withdrawal before explosion and
 card-specific discard precedence are explicitly labeled inferences. The Stone
 Burner timing question is pending; no user answer is assumed. Reinforcements
@@ -30,12 +30,11 @@ and foreign-key checks passed, and refresh restored the test seat. No restart,
 database reset or recurring automation was needed. Exact verification, source
 fingerprints and delivery are recorded in the private report and Git message.
 
-Current work: [AI arrival preflight](BOT_ARRIVAL_PREFLIGHT.md) reuses the engine's
-existing reaction quote to avoid repeatedly proposing guarded ordinary entries.
-The adapter preserves legal single reactions, faction exemptions, contribution
-routing and private information; specialized routes retain their own adapters.
-The Moritani Secret Ally audit retains the shared pending hidden-reaction UX
-question. No arrival-order ruling or module/publication gate is changed.
+Current work: [Harass force allocation](HARASS_ALLOCATION.md) connects the missing
+player choice after reveal, with shared legal AI, exact winner losses and saved
+continuation. Unique returns stay automatic and sealed plans stay unchanged.
+The remaining Leader Skill bands retain their existing pending rulings; this
+checkpoint introduces no new arrival-order or hidden-reaction policy.
 
 ## Authoritative navigation
 

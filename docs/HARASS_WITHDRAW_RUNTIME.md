@@ -46,7 +46,7 @@ plan still contains its exact ID. Complete-plan inspection reveals the actual
 physical plan; Truthtrance's existing literal slot-occupancy promises keep their
 meaning. An empty-category answer is not a promise that the physical slot is empty.
 
-The shared physical quote derives dialed counters from `casualtyOptions`, then
+The shared physical quote validates dialed counters from `casualtyOptions`, then
 returns the undialed normal and elite counters to their owner's reserves. The
 leader resolves normally. An opponent's successful Traitor call, including mutual
 calls, cancels withdrawal. Returned reserves are outside subsequent board losses
@@ -54,7 +54,9 @@ and Face Dancer replacement. Harass is discarded once and excluded from ordinary
 winner retention and Moritani ally retention.
 
 Both selectors enforce the complete pair in either selection order. The private
-guide shows the exact return and a reason for an unsupported choice. All four AI
+guide explains unique returns or the later revealed allocation choice. The
+[physical allocation follow-up](HARASS_ALLOCATION.md) connects typed and sector
+selection after reveal, with exact committed winner losses. All four AI
 profiles use the same physical quote and category-aware inspection comparison;
 the card adds no fictitious weapon or defense value. Stronger profiles value
 saved forces when expecting defeat and discourage use when expecting to win.
@@ -62,10 +64,9 @@ This is a legal strategy path, not strength calibration.
 
 ## Current boundaries
 
-- Basic and Advanced physical allocations must identify one normal/elite
-  commitment and one return allocation among sectors. Zero/all returns and
-  unique typed allocations are supported. Ambiguous allocations reject before
-  sealing; explicit private allocation controls remain unfinished.
+- Basic and Advanced now support explicit ordinary/elite and sector allocation
+  after reveal. Unique returns are automatic; previously valid legacy battles
+  retain unique-only derivation. See the [allocation contract](HARASS_ALLOCATION.md).
 - Additional optional modules remain gated, including Homeworlds, Nexus,
   Leader Skills, Tech Tokens, Stronghold Cards and Discoveries. This includes
   the printed own-Homeworld prohibition without claiming other Homeworld
