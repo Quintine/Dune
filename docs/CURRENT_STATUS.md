@@ -4,6 +4,15 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Suk Graduate](SUK_GRADUATE_RULES.md) now connects both casualty-rescue bands,
+  ordinary/elite counter routing, player controls, all four AI profiles and saved
+  continuation. Targeted browser rescue and refresh preserved two board forces,
+  seventeen reserves, one Tank and the private hand. Two Basic/Advanced samples
+  finished but did not encounter an eligible rescue; targeted tests cover that
+  effect. Advanced Atreides selection remains unavailable pending the recorded
+  Kwisatz Haderach question. After the latest reported outage, the server was
+  healthy and all 360 rooms were backed up; the 359 opening rooms and their seat
+  records were unchanged. Checkpoint-wide results are in the commit.
 - [Planetologist](PLANETOLOGIST_RULES.md) now has bounded movement and Special-card
   battle prototypes. Independent review and **84 focused tests** pass. Two genuine
   four-profile Basic/Advanced samples finished with saved continuations and no
@@ -20,7 +29,8 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 - The [first Leader Skills prototype](LEADER_SKILLS_RUNTIME.md) connects all
   fourteen physical cards, private setup, five battle disciplines, skilled capture,
   death and own revival through controls, legal AI and saved choices. The [Planetologist follow-up](PLANETOLOGIST_RULES.md) adds movement and
-  Special-card battle controls; the other eight skills remain **Missing**. The user-requested [capture search](LEADER_SKILLS_CAPTURE.md)
+  Special-card battle controls, and Suk Graduate adds casualty rescue; the other
+  seven skills remain **Missing**. The user-requested [capture search](LEADER_SKILLS_CAPTURE.md)
   resolves publicity through the known physical card; captured replacement and
   broader combinations remain pending. No mode gate is opened.
 - Following the reported power outage, the existing server responded normally,

@@ -49,9 +49,10 @@ publisher instruction to announce a name.
 
 ## Missing and guarded work
 
-The other nine cards have readable inventory entries but **missing effects**:
-Bureaucrat, Spice Banker, Diplomat, Mentat, Suk Graduate, Rihani Decipherer,
-Sandmaster, Smuggler and Planetologist. They are not completed features.
+Seven cards still have readable inventory entries but **missing effects**:
+Bureaucrat, Spice Banker, Diplomat, Mentat, Rihani Decipherer, Sandmaster and
+Smuggler. They are not completed features. Planetologist and Suk Graduate now
+have connected prototypes described below.
 
 Captured-card replacement entitlement remains unresolved. The prototype rejects
 own-leader revival while its original skill is captured, before beginning a
@@ -62,7 +63,7 @@ Before enabling them, add response-driven automatic revival continuation
 coverage; the current before/after revival observer does not certify deferred
 Tleilaxu response chains. The other source-contract timing questions also remain
 open. Planetologist now has bounded movement and battle controls as described below.
-The other eight skills still need their payments, information, rescues, retreats
+The other seven skills still need their payments, information, rescues, retreats
 and other effects connected.
 
 ## Planetologist follow-up
@@ -77,8 +78,18 @@ continuation and revalidate source custody before a response is spent.
 Six base factions remain the supported roster. Mixed BG origins are supported
 where ordinary rules determine the destination stance. Enemy-only mixed arrival
 still needs a combined flip response. Expansion faction/card/module combinations
-and full integrated acceptance remain unfinished. Eight other skill effects are
+and full integrated acceptance remain unfinished. Seven other skill effects are
 still missing; this is partial prototype coverage.
+
+## Suk Graduate follow-up
+
+[Suk Graduate](SUK_GRADUATE_RULES.md) connects the mandatory one-counter
+normal rescue and the surviving selected leader’s optional rescue of up to three
+physical casualties. Normal and elite identity, original sector, paid support,
+private hands and captured-leader return survive the saved continuation. Human
+controls and all four AI profiles use the same server-projected legal choices.
+Advanced Atreides awaits the loss-count ruling; expansion factions and combined
+optional modules remain guarded.
 
 ## Local prototype entry and evidence
 

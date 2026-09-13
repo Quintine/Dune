@@ -1,11 +1,12 @@
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
-import { leaderSkillCard } from './leader-skill-cards';
+import { leaderSkillCard, type LeaderSkillId } from './leader-skill-cards';
 import {
   canUsePlanetologistBattleSpecial,
   isPlanetologistBattleSpecialCard,
   validLeaderSkillBattleCardPair,
   type BattleLeaderSkill,
 } from './leader-skill-combat';
+import { quoteSukRescue, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
 import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
@@ -709,6 +710,7 @@ export type Decision =
   | { kind: 'techToken'; player: string; loser: string; choices: TechId[] }
   | { kind: 'poisonTooth'; player: string }
   | { kind: 'stoneBurner'; player: string; event: string }
+  | { kind: 'sukRescue'; player: string; event: string; territory: string; mode: 'normal' | 'skilled'; options: SukRescueOption[] }
   | { kind: 'fullPlanOffer'; player: string }
   | { kind: 'fullPlanRead'; player: string; target: string }
   | { kind: 'homeworldShipmentGuild'; player: string; shipper: string; destination: string; amount: number; event: string }
@@ -1252,6 +1254,7 @@ export type Game = {
   biddingEnd?: BiddingEnd | null;
   ecazPoisonIncome?: { player: string; turn: number; phase: number; amount: number; count: number }[];
   pendingWinnerDiscards?: { event: string; turn: number; territory: string; player: string; cards: string[]; optional: string[]; signature: string } | null;
+  pendingSukRescue?: SukRescueReceipt | null;
   pendingChoamMarketGhola?: ChoamMarketGhola | null;
   choamTradeTurn?: number;
   inflation?: Inflation | null;
@@ -1465,6 +1468,7 @@ export type Game = {
     cardRoles?: Record<string, Record<string, Omit<EcazPoisonDiscard, 'card'>>>;
     cardRolesSignature?: string;
     winnerDiscards?: { cards: string[]; completed: boolean; signature: string };
+    sukRescue?: { signature: string; completed: boolean };
     caladanReinforcement?: HomeworldVictoryObligation;
     nexusSardaukarCasualties?: string;
   } | null;
@@ -4309,6 +4313,7 @@ function treacheryDiscardIntegrity(g: Game) {
           !!c.casualties ===
             (c.result === 'normal' &&
               (g.advanced ||
+                !!g.pendingSukRescue ||
                 !!g.homeworlds ||
                 g.players.find((p) => p.id === c.winner)?.faction ===
                   'ixians')),
@@ -4887,8 +4892,25 @@ function skillEligibleLeaders(g: Game, owner: string): string[] {
     )
     .map((leader) => leader.id);
 }
+const ADVANCED_ATREIDES_SUK_ASSIGNMENT_BLOCK =
+  'Suk Graduate is unavailable to Advanced Atreides while the Kwisatz Haderach loss-count ruling is pending.';
+function leaderSkillAssignmentUnavailable(
+  g: Game,
+  owner: string,
+  skill: string,
+): string | null {
+  return g.advanced &&
+    getPlayer(g, owner).faction === 'atreides' &&
+    skill === 'suk-graduate'
+    ? ADVANCED_ATREIDES_SUK_ASSIGNMENT_BLOCK
+    : null;
+}
 function leaderSkillsIntegrity(g: Game) {
+  sukRescueIntegrity(g);
   if (!g.leaderSkills) return;
+  requireRule(g.leaderSkills.assignments.every((assignment) =>
+    g.players.find((p) => p.id === assignment.owner)?.leaders.some((leader) => leader.id === assignment.leader && !leader.dead)),
+    'A saved Leader Skill cannot remain assigned to a dead or missing leader.');
   skillRule(() => validateLeaderSkills(g.leaderSkills!, g.players));
   requireRule(
     !g.players.some((p) => p.leaders.some((l) => l.gholaBy)),
@@ -5013,6 +5035,12 @@ function projectedLeaderSkills(
   const offer = g.leaderSkills.offers[owner] ?? null;
   const eligible = skillEligibleLeaders(g, owner);
   const assignment = nativeLeaderSkill(g, owner);
+  const unavailableSkills = Object.fromEntries(
+    (offer?.cards ?? []).flatMap((skill) => {
+      const reason = leaderSkillAssignmentUnavailable(g, owner, skill);
+      return reason ? [[skill, reason]] : [];
+    }),
+  ) as Partial<Record<LeaderSkillId, string>>;
   return {
     assignments: g.leaderSkills.assignments.map((a) => {
       const controller = leaderSkillController(g, a);
@@ -5025,6 +5053,7 @@ function projectedLeaderSkills(
       };
     }),
     offer,
+    ...(Object.keys(unavailableSkills).length ? { unavailableSkills } : {}),
     eligibleLeaders: getPlayer(g, owner)
       .leaders.filter((l) => eligible.includes(l.id))
       .map((l) => ({ id: l.id, name: l.name })),
@@ -14059,6 +14088,13 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       pendingAuditorPresent: !!g.pendingAuditor,
       pendingRetentionPresent: !!g.moritaniRetention,
     });
+    if (quote.sukGraduate) requireRule(
+      !g.advanced || getPlayer(g, quote.winner!).faction !== 'atreides',
+      'Suk Graduate rescue for Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.');
+    if (quote.sukGraduate) requireRule(
+      !g.homeworlds && !g.nexusCards && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens && !g.expansions.length &&
+      g.players.every((p) => faction(p.faction).expansion === 'base'),
+      'Suk Graduate rescue with expansion factions or other optional modules is still being implemented.');
     for (const id of quote.destroyedArmies)
       if (b.territory.startsWith('homeworld:')) quoteHomeworldLoss(g, id, b.territory, combatArmy(g, id, b.territory));
       else validateBattleForceLoss(getPlayer(g, id), b.territory, Infinity);
@@ -14340,6 +14376,16 @@ function resolveBattle(g: Game) {
     ...(playedCardRoles ? { cardRoles: playedCardRoles } : {}),
     ...(sardaukar?.casualties ? {nexusSardaukarCasualties:sardaukar.receipt.event} : {}),
   };
+  if (winner && quote.sukGraduate && casualtyCommitment) {
+    requireRule(!g.pendingSukRescue, 'Finish the preceding Suk Graduate rescue.');
+    g.pendingSukRescue = {
+      event: g.lastBattleContext.event, turn: g.turn, player: winner.id,
+      territory: b.territory, skill: quote.sukGraduate,
+      commitment: structuredClone(casualtyCommitment), pool: sukForcePool(winner, b.territory),
+      cards: [...quote.winnerCards], physical: sukPhysicalSignature(winner), losses: null, signature: '',
+    };
+    updateSukReceipt(g);
+  }
   if (g.homeworlds?.custody && winner?.faction === 'atreides' &&
       (quote.result === 'normal' || quote.result === 'traitor')) {
     requireRule(!g.homeworldVictoryReinforcement || g.homeworldVictoryReinforcement.stage === 'complete',
@@ -14435,6 +14481,20 @@ function settleWinnerCasualties(
   choice: Casualties,
   automatic = false,
 ) {
+  if (g.pendingSukRescue) {
+    const pending = g.pendingSukRescue;
+    requireRule(pending.player === p.id && pending.territory === to &&
+      JSON.stringify(cards) === JSON.stringify(pending.cards) && !pending.losses &&
+      pending.commitment.options.some((o) => JSON.stringify(o) === JSON.stringify(choice)),
+      'Choose the original Suk Graduate casualty allocation.');
+    pending.losses = { ...choice };
+    updateSukReceipt(g);
+    const options = sukRescueOptions(pending.skill, pending.pool, choice);
+    if (options.length === 1) settleSukRescue(g, options[0], true);
+    else g.decision = { kind: 'sukRescue', player: p.id, event: pending.event,
+      territory: to, mode: pending.skill.mode, options };
+    return;
+  }
   if (to.startsWith('homeworld:')) homeworldBattleLossIntegrity(g);
   const sardaukar = g.nexusSardaukarHistory?.find(record => record.receipt.battle === g.lastBattleContext?.event && record.receipt.owner === p.id);
   if (sardaukar?.casualties) requireRule(sardaukar.casualties.outcome === 'pending' &&
@@ -14472,6 +14532,85 @@ function settleWinnerCasualties(
       losses,
     };
   } else finishWinner(g, p, to, cards);
+}
+function sukForcePool(p: Player, territory: string): SukForceGroup[] {
+  return Object.entries(p.forces).filter(([key]) => splitLocation(key).territory === territory)
+    .map(([key, total]) => ({ key, normal: total - (p.elites?.forces[key] ?? 0), elite: p.elites?.forces[key] ?? 0 }));
+}
+function sukPhysicalSignature(p: Player) {
+  return JSON.stringify({ forces: p.forces, elites: p.elites ?? null,
+    reserves: p.reserves, tanks: p.tanks, battleLosses: p.battleLosses });
+}
+function updateSukReceipt(g: Game) {
+  const pending = g.pendingSukRescue!;
+  pending.signature = sukReceiptSignature(pending);
+  g.lastBattleContext!.sukRescue = { signature: pending.signature, completed: false };
+}
+function sukRescueIntegrity(g: Game) {
+  const pending = g.pendingSukRescue, context = g.lastBattleContext;
+  const decisions = homeworldSavedDecisions(g).filter((d) => d.kind === 'sukRescue');
+  if (!pending) {
+    requireRule(!decisions.length && (!context?.sukRescue || context.sukRescue.completed),
+      'The saved Suk Graduate rescue receipt is missing.');
+    return;
+  }
+  const player = g.players.find((p) => p.id === pending.player);
+  requireRule(player && g.leaderSkills && g.phase === 6 && !g.battle &&
+    g.leaderSkills.assignments.some((a) => a.skill === 'suk-graduate' && a.leader === pending.skill.leader) &&
+    context?.event === pending.event && context.turn === pending.turn && g.turn === pending.turn &&
+    context.result === 'normal' && context.winner === pending.player && context.territory === pending.territory &&
+    context.sukRescue?.signature === pending.signature && !context.sukRescue.completed &&
+    pending.signature === sukReceiptSignature(pending) &&
+    pending.physical === sukPhysicalSignature(player) &&
+    JSON.stringify(pending.pool) === JSON.stringify(sukForcePool(player, pending.territory)) &&
+    pending.commitment.forces.normal === pending.pool.reduce((sum, group) => sum + group.normal, 0) &&
+    pending.commitment.forces.elite === pending.pool.reduce((sum, group) => sum + group.elite, 0) &&
+    JSON.stringify(pending.commitment.options) === JSON.stringify(casualtyOptions(pending.commitment.forces, pending.commitment.dial, pending.commitment.support)) &&
+    pending.commitment.options.length > 0 && pending.cards.every((id) => player.hand.some((c) => c.id === id)),
+    'The saved Suk Graduate rescue no longer matches its battle, cards or physical forces.');
+  if (pending.losses) {
+    requireRule(pending.commitment.options.some((o) => JSON.stringify(o) === JSON.stringify(pending.losses)) &&
+      decisions.length === 1 && decisions.every((d) => d.player === pending.player && d.event === pending.event &&
+        d.territory === pending.territory && d.mode === pending.skill.mode &&
+        JSON.stringify(d.options) === JSON.stringify(sukRescueOptions(pending.skill, pending.pool, pending.losses!))),
+      'The saved Suk Graduate rescue choices differ from the committed casualties.');
+  } else {
+    const lossDecision = homeworldSavedDecisions(g).find((d) => d.kind === 'battleLosses' && d.player === pending.player);
+    const discard = g.pendingTreacheryDiscard?.continuation;
+    requireRule(!decisions.length && (lossDecision ? lossDecision.kind === 'battleLosses' &&
+      lossDecision.territory === pending.territory && JSON.stringify(lossDecision.options) === JSON.stringify(pending.commitment.options) &&
+      JSON.stringify(lossDecision.cards) === JSON.stringify(pending.cards) :
+      discard?.kind === 'battleResolved' && discard.event === pending.event &&
+      JSON.stringify(discard.casualties) === JSON.stringify(pending.commitment)),
+      'The Suk Graduate rescue lost its casualty continuation.');
+  }
+}
+function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
+  const pending = g.pendingSukRescue!;
+  const player = getPlayer(g, pending.player);
+  requireRule(pending.losses && pending.physical === sukPhysicalSignature(player),
+    'The Suk Graduate rescue no longer has its committed physical counters.');
+  const quote = quoteSukRescue(pending.skill, pending.pool, pending.losses, option);
+  for (const group of quote.removed) {
+    player.forces[group.key] -= group.normal + group.elite;
+    if (!player.forces[group.key]) delete player.forces[group.key];
+    if (player.elites) {
+      player.elites.forces[group.key] = (player.elites.forces[group.key] ?? 0) - group.elite;
+      if (!player.elites.forces[group.key]) delete player.elites.forces[group.key];
+    }
+  }
+  player.reserves += quote.reserves.normal + quote.reserves.elite;
+  player.tanks += quote.tanks.normal + quote.tanks.elite;
+  player.battleLosses += quote.tanks.normal + quote.tanks.elite;
+  if (player.elites) {
+    player.elites.reserves += quote.reserves.elite;
+    player.elites.tanks += quote.tanks.elite;
+  }
+  g.pendingSukRescue = null;
+  g.lastBattleContext!.sukRescue!.completed = true;
+  log(g, `${player.name}'s Suk Graduate saved ${option.normal} ordinary and ${option.elite} elite forces: ${option.kept ? `1 remained in sector ${splitLocation(option.kept.key).sector}` : 'none remained in the battle territory'}, ${quote.reserves.normal + quote.reserves.elite} returned to reserves, and ${quote.tanks.normal + quote.tanks.elite} casualties went to the Tanks.${automatic ? ' The only legal rescue was applied automatically.' : ''}`, { faction: player.faction, name: 'Suk Graduate rescue' });
+  observeOccupation(g);
+  finishWinner(g, player, pending.territory, pending.cards);
 }
 function winnerDiscardSignature(pending: NonNullable<Game['pendingWinnerDiscards']>) {
   const { event, turn, territory, player, cards, optional } = pending;
@@ -19205,7 +19344,10 @@ function applyActionInner(
       else if (action.mode === 'decline') g.leaderSkills = skillRule(() => declineRevivedLeaderSkill(g.leaderSkills!, id, stringField(action.event)));
       else {
         requireRule(action.mode === undefined, 'Choose draw, decline or a dealt skill.');
-        g.leaderSkills = skillRule(() => chooseLeaderSkill(g.leaderSkills!, id, stringField(action.event), stringField(action.skill), stringField(action.leader), skillEligibleLeaders(g,id), random));
+        const skill = stringField(action.skill);
+        const unavailable = leaderSkillAssignmentUnavailable(g, id, skill);
+        requireRule(!unavailable, unavailable ?? 'This Leader Skill is unavailable.');
+        g.leaderSkills = skillRule(() => chooseLeaderSkill(g.leaderSkills!, id, stringField(action.event), skill, stringField(action.leader), skillEligibleLeaders(g,id), random));
         log(g, `${p.name} assigned ${leaderSkillCard(action.skill as Parameters<typeof leaderSkillCard>[0]).name} to a newly revived leader.`, {faction:p.faction,name:'Leader Skill'});
       }
       g.decision = null;
@@ -20063,6 +20205,11 @@ function applyActionInner(
       requireRule(action.event === decision.event, 'This Homeworld casualty choice belongs to a different battle.');
       const choice = decision.options[integer(action.choice, 0, decision.options.length - 1, 'Casualty choice')];
       settleHomeworldExplosion(g, choice, false);
+    } else if (decision.kind === 'sukRescue') {
+      requireRule(action.event === decision.event && Object.keys(action).every((key) => ['type', 'event', 'choice'].includes(key)),
+        'Choose only the current Suk Graduate rescue.');
+      const option = decision.options[integer(action.choice, 0, decision.options.length - 1, 'Rescue choice')];
+      settleSukRescue(g, option, false);
     } else if (decision.kind === 'battleLosses') {
       const choice =
         decision.options[
@@ -20485,6 +20632,8 @@ function applyActionInner(
     if (t === 'leaderSkill') {
       requireRule(Object.keys(action).every((key) => ['type','event','skill','leader'].includes(key)), 'Choose only your dealt skill and its eligible leader.');
       const skill = stringField(action.skill), leader = stringField(action.leader);
+      const unavailable = leaderSkillAssignmentUnavailable(g, id, skill);
+      requireRule(!unavailable, unavailable ?? 'This Leader Skill is unavailable.');
       g.leaderSkills = skillRule(() => chooseLeaderSkill(g.leaderSkills!, id, stringField(action.event), skill, leader, skillEligibleLeaders(g, id), random));
       log(g, `${p.name} assigned ${leaderSkillCard(skill as Parameters<typeof leaderSkillCard>[0]).name} to ${p.leaders.find((l) => l.id === leader)!.name}.`, { faction: p.faction, name: 'Leader Skill' });
     } else if (t === 'advisorSetup') {

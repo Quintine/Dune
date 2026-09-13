@@ -28,6 +28,7 @@ import {
 } from './stone-burner';
 import { matchingTraitor } from './traitors';
 import { auditCount } from './choam-auditor';
+import { sukGraduateSkill, type SukGraduateSkill } from './suk-graduate';
 import {
   quoteHomeworldBattleRules,
   type HomeworldBattleRules,
@@ -140,6 +141,7 @@ export type BattleResolutionQuote = {
   homeworldExplosion?: HomeworldExplosionLosses;
   /** Basic ordinary winners lose their dial immediately; Advanced/Ix defer typed losses. */
   basicWinnerLosses: number | null;
+  sukGraduate?: SukGraduateSkill;
   casualties: {
     forces: CombatForces;
     dial: number;
@@ -570,10 +572,15 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   );
   let casualties: BattleResolutionQuote['casualties'] = null;
   let basicWinnerLosses: number | null = null;
+  const sukGraduate = winner && result === 'normal' && winner.plan.dial > 0
+    ? sukGraduateSkill(winner.leaderSkills ?? [], winner.leader,
+        !(winner === a ? deaths.attacker : deaths.defender))
+    : null;
   if (winner && result === 'normal') {
     if (
       input.advanced ||
       input.typedCasualties ||
+      sukGraduate ||
       homeworld ||
       winner.faction === 'ixians'
     ) {
@@ -744,6 +751,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       ? { homeworldExplosion: homeworld.explosion }
       : {}),
     basicWinnerLosses,
+    ...(sukGraduate ? { sukGraduate } : {}),
     casualties,
     played,
     discarded,

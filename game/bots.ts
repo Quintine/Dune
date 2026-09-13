@@ -2394,6 +2394,13 @@ function policyActions(g: GameView): Action[] {
         { type: 'decision', accept: false },
       ];
     }
+    if (d.kind === 'sukRescue') {
+      return d.options.map((option, choice) => ({ choice,
+        score: option.normal + option.elite * (level > 0 ? 2.5 : 1) +
+          (option.kept ? 1 + (option.kept.kind === 'elite' && level > 0 ? 0.5 : 0) : 0),
+      })).sort((a, b) => b.score - a.score)
+        .map(({ choice }) => ({ type: 'decision', event: d.event, choice }));
+    }
     if (d.kind === 'battleLosses') {
       const choices = d.options
         .map((o, choice) => ({
@@ -3530,10 +3537,11 @@ export function botActions(g: GameView): Action[] {
     if (skill.offer && ((g.status === 'setup' && g.setupStage === 'leaderSkills') || (g.decision?.kind === 'leaderSkillRevival' && g.decision.player === g.me))) {
       const offer = skill.offer;
       if (!offer.cards.length) return [{type:'leaderSkill',event:offer.event,mode:'draw'}];
+      const available = offer.cards.filter((card) => !skill.unavailableSkills?.[card]);
       const direct = ['warmaster','master-of-assassins','swordmaster-of-ginaz','killer-medic','prana-bindu-adept'];
-      const chosen = offer.cards.find((card) => direct.includes(card)) ?? offer.cards[0];
+      const chosen = available.find((card) => direct.includes(card)) ?? available[0];
       const leader = offer.leader ?? [...skill.eligibleLeaders].sort((a,b) => (g.allLeaders.find((l) => l.id === b.id)?.strength ?? 0) - (g.allLeaders.find((l) => l.id === a.id)?.strength ?? 0))[0]?.id;
-      if (leader) return [{type:'leaderSkill',event:offer.event,skill:chosen,leader}];
+      if (leader && chosen) return [{type:'leaderSkill',event:offer.event,skill:chosen,leader}];
     }
   }
   if (g.nexusTraitors?.pending)

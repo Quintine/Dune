@@ -24,6 +24,8 @@ export type LeaderSkillsView = {
     faceUp: boolean;
   })[];
   offer: LeaderSkillOffer | null;
+  /** Private reasons that this owner cannot select a card in the current offer. */
+  unavailableSkills?: Partial<Record<LeaderSkillId, string>>;
   eligibleLeaders: { id: string; name: string }[];
   /** Only this player's genuine public choice is included. */
   battleChoice: { event: string; leader: string; skill: LeaderSkillId } | null;

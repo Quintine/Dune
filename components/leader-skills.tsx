@@ -85,9 +85,11 @@ export function LeaderSkillsPanel({
   if (!skills) return null;
 
   const offer = skills.offer;
+  const availableSkills =
+    offer?.cards.filter((skill) => !skills.unavailableSkills?.[skill]) ?? [];
   const activeSkill =
-    offer?.cards.find((skill) => skill === selectedSkill) ??
-    offer?.cards[0] ??
+    availableSkills.find((skill) => skill === selectedSkill) ??
+    availableSkills[0] ??
     null;
   const activeLeader =
     offer?.leader ??
@@ -110,7 +112,7 @@ export function LeaderSkillsPanel({
           This development-only module currently connects the card-role strength
           modifiers for Warmaster, Master of Assassins, Swordmaster of Ginaz,
           Killer Medic and Prana-Bindu Adept, plus Planetologist movement and
-          Special-card battle use. Other Leader Skill effects are
+          Special-card battle use and Suk Graduate force rescue. Other Leader Skill effects are
           unfinished.
         </p>
       </div>
@@ -197,6 +199,7 @@ export function LeaderSkillsPanel({
             <div className="grid gap-3">
               {offer.cards.map((skill) => {
                 const card = leaderSkillCard(skill);
+                const unavailable = skills.unavailableSkills?.[skill];
                 return (
                   <div key={skill} className="space-y-2">
                     <label className="flex min-h-11 items-center gap-2">
@@ -205,14 +208,15 @@ export function LeaderSkillsPanel({
                         name="leader-skill-card"
                         value={skill}
                         checked={activeSkill === skill}
-                        disabled={busy}
+                        disabled={busy || !!unavailable}
                         onChange={() => setSelectedSkill(skill)}
                       />
                       Keep {card.name}
                     </label>
+                    {unavailable && <p className="fine">{unavailable}</p>}
                     <LeaderSkillCard
                       skill={skill}
-                      context="Your private offer"
+                      context={unavailable ? 'Your private offer · Unavailable' : 'Your private offer'}
                     />
                   </div>
                 );

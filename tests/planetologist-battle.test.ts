@@ -509,6 +509,6 @@ void test('a skilled disc that dies between traitor votes cannot supply a stale 
     game,
     'd',
     { type: 'traitorCall', call: false },
-    /assigned Planetologist leader’s weapon/,
+    /dead or missing leader/,
   );
 });

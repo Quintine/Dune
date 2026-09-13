@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 13 September 2026 — Suk Graduate casualty rescue prototype
+
+[Suk Graduate](SUK_GRADUATE_RULES.md) connects both printed bands through shared
+physical casualty quotes, owner controls, all four bot profiles and durable
+battle continuation. A face-up trainer returns exactly one casualty to reserves;
+a surviving selected leader may save up to three, keeping one in its original
+sector and returning the others. Raw casualty choice and paid support remain
+unchanged. Elites retain their identity. Sole legal normal rescues are automatic.
+
+Independent rules and implementation review found two custody defects: a stale
+dead face-up trainer could retain a skill, and a pending rescue was not bound to
+its actual skill assignment. Both now reject before mutation, with regressions.
+Saved receipt, missing continuation, replay, killed/returned captives, ordinary
+and elite rescue, JSON restore and SQLite concurrent submission are covered.
+The final Suk/Leader Skills focused union passed **46 tests**, including the
+private assignment restriction, usable alternate selection and all four bots.
+New Advanced Atreides selection is unavailable while the existing Kwisatz
+Haderach loss-count question is pending; old assigned saves retain preflight
+protection. Seven other skill effects and combined modules remain unfinished.
+
+Genuine module setup in fresh browser room `BD33WTTV` assigned Suk Graduate to
+Hasimir Fenring. A separately staged conserved battle then exercised the actual
+rescue control: three casualties saved, one kept in sector 10, two returned to
+reserves. Refresh preserved two board forces, seventeen reserves, one Tank, the
+private Crysknife/Baliset/Burseg and winner card cleanup. Two four-profile samples
+completed Basic/Advanced games with 92/188 actions and 3/6 JSON restorations,
+respectively. Neither encountered an eligible rescue; targeted tests and browser
+play establish that effect. These are bounded prototype samples, not calibration
+or full rules acceptance.
+
+The latest reported outage left the existing server healthy. A fresh online
+backup captured all 360 rooms. All 359 opening rooms and their seat/recovery
+records remained unchanged; the new QA seat restored after refresh. No restart
+or reset was needed. Required broad checks and final preservation are recorded
+in the checkpoint commit and source-bound private report. Public Advanced,
+expansion, module and publication gates remain closed.
+
 ## 13 September 2026 — Planetologist movement and green-Special battle prototype
 
 [Planetologist](PLANETOLOGIST_RULES.md) now connects capped extra range, a single

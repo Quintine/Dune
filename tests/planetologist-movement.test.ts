@@ -353,7 +353,7 @@ void test('captured or dead Planetologist gives neither side a native movement b
   delete leader.capturedBy;
   leader.dead = true;
   assert.equal(planetologistLeader(g, 'p'), null);
-  unchanged(g, move(2, 'range'), /available Planetologist/);
+  unchanged(g, move(2, 'range'), /dead or missing leader/);
 });
 
 void test('Bene Gesserit gather resolves determined mixed-source stances and preserves advisor locks', () => {

@@ -5,7 +5,9 @@ now have sourced names and complete paraphrased normal/battle text, shared
 inspectors, private two-card offers and one-card assignment custody. Five role
 bonuses, public skilled capture, death return and own revival are connected;
 Planetologist now also has movement and base green-Special battle controls;
-eight effects remain missing. This supersedes the historical missing-inventory
+[Suk Graduate](SUK_GRADUATE_RULES.md) redirects actual ordinary/elite casualties
+through readable rescue choices without creating counters. Seven effects remain
+missing. This supersedes the historical missing-inventory
 rows below only for Leader Skills. See [source inventory](LEADER_SKILLS_RULES.md),
 [capture interpretation](LEADER_SKILLS_CAPTURE.md) and [prototype evidence](LEADER_SKILLS_RUNTIME.md).
 

@@ -48,6 +48,7 @@ import { RicheseGift } from './richese-gift';
 import { Distrans } from './distrans';
 import { JuiceOfSapho } from './juice-of-sapho';
 import { LeaderSkillsPanel } from './leader-skills';
+import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
@@ -2080,6 +2081,8 @@ export function GameTable({
                     ? 'Position your skilled leader'
                   : g.decision.kind === 'leaderSkillRevival'
                     ? 'Choose a skill for the revived leader'
+                  : g.decision.kind === 'sukRescue'
+                    ? 'Save your battle casualties'
                   : g.decision.kind === 'homeworldRevivalDeployment'
                   ? 'Revival deployment'
                   : g.decision.kind === 'ecazSpice'
@@ -2878,6 +2881,8 @@ export function GameTable({
                     </div>
                   ))}
                 </>
+              ) : g.decision.kind === 'sukRescue' ? (
+                <SukGraduatePanel key={g.decision.event} decision={g.decision} act={act} busy={transportBusy || !!me.autopilot} />
               ) : g.decision.kind === 'battleLosses' ? (
                 <>
                   <p className="muted">

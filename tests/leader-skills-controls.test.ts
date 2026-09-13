@@ -129,6 +129,26 @@ void test('a private setup offer renders only its two physical cards and eligibl
   assert.equal(disabledControls(disabled), 4);
 });
 
+void test('an unavailable offered skill remains inspectable while the other card is selected', () => {
+  const reason = 'Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.';
+  const html = markup(view({
+    offer: { event: 'guarded-offer', cards: ['suk-graduate', 'warmaster'], leader: null },
+    eligibleLeaders: [leaders[0]],
+    unavailableSkills: { 'suk-graduate': reason },
+  }));
+  const blocked = html.match(/<input\b[^>]*value="suk-graduate"[^>]*>/)?.[0];
+  const available = html.match(/<input\b[^>]*value="warmaster"[^>]*>/)?.[0];
+  assert.ok(blocked && available);
+  assert.match(blocked, /disabled=""/);
+  assert.doesNotMatch(blocked, /checked=""/);
+  assert.match(available, /checked=""/);
+  assert.doesNotMatch(available, /disabled=""/);
+  assert.ok(html.includes(reason));
+  assert.match(html, /Inspect Suk Graduate/);
+  assert.match(html, /Assign selected skill/);
+  assert.equal(disabledControls(html), 1, 'the legal assignment remains usable');
+});
+
 void test('revival asks before preview and does not offer a decline after cards are drawn', () => {
   const undrawn = markup(
     view({
