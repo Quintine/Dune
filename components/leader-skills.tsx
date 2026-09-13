@@ -109,7 +109,8 @@ export function LeaderSkillsPanel({
         <p className="fine">
           This development-only module currently connects the card-role strength
           modifiers for Warmaster, Master of Assassins, Swordmaster of Ginaz,
-          Killer Medic and Prana-Bindu Adept. Other Leader Skill effects are
+          Killer Medic and Prana-Bindu Adept, plus Planetologist movement and
+          Special-card battle use. Other Leader Skill effects are
           unfinished.
         </p>
       </div>

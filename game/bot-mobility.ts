@@ -3,6 +3,11 @@ import { guildShipmentCost } from './shipment-price';
 import { fighterCount, isAdvisor } from './advisors';
 import { presenceAt } from './force-presence';
 import { EcazOccupancyError } from './ecaz-occupy';
+import {
+  planetologistLeader,
+  planetologistRange,
+  type PlanetologistMoveMode,
+} from './planetologist-movement';
 import { territoryEntryBlock, strongholdPathBlocked } from './occupancy';
 import {
   distance,
@@ -66,7 +71,12 @@ export function botEntryAllowed(
     throw error;
   }
 }
-export function botMovementRange(g: GameView, p: Seat, elite: number) {
+export function botMovementRange(
+  g: GameView,
+  p: Seat,
+  elite: number,
+  planetologist?: PlanetologistMoveMode,
+) {
   const base =
     fighterCount(p, 'arrakeen') || fighterCount(p, 'carthag')
       ? 3
@@ -74,7 +84,10 @@ export function botMovementRange(g: GameView, p: Seat, elite: number) {
           (p.faction === 'ixians' && elite > 0 && !p.ixMovementBlocked)
         ? 2
         : 1;
-  return base + (p.faction === 'choam' ? g.choamMovementBonus : 0);
+  const ordinary = base + (p.faction === 'choam' ? g.choamMovementBonus : 0);
+  return planetologist && planetologistLeader(g, p.id)
+    ? planetologistRange(ordinary, planetologist)
+    : ordinary;
 }
 export function botGroundMoveAllowed(
   g: GameView,
@@ -82,6 +95,7 @@ export function botGroundMoveAllowed(
   from: string,
   to: string,
   elite: number,
+  planetologist?: PlanetologistMoveMode,
 ) {
   const source = splitLocation(from),
     target = splitLocation(to);
@@ -117,7 +131,7 @@ export function botGroundMoveAllowed(
         (loc.sector !== 0 && loc.sector === g.storm) ||
         strongholdPathBlocked(g.players, p.id, loc.territory, advisors)
       );
-    }) <= botMovementRange(g, p, elite)
+    }) <= botMovementRange(g, p, elite, planetologist)
   );
 }
 /** Fremen reinforcement radius is static territory geometry, not a ground route. */

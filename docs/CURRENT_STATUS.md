@@ -4,6 +4,13 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Planetologist](PLANETOLOGIST_RULES.md) now has bounded movement and Special-card
+  battle prototypes. Independent review and **84 focused tests** pass. Two genuine
+  four-profile Basic/Advanced samples finished with saved continuations and no
+  rejected actions; the Basic sample used both movement alternatives. Browser
+  gather, Special substitution and refresh were exercised in a new isolated room.
+  All 325 opening games remain preserved. The existing server was healthy after
+  the outage report, so it was reused. Broad results are in the checkpoint commit.
 - [Juice of Sapho](JUICE_OF_SAPHO_RUNTIME.md#13-september-first-at-a-later-clean-movement-boundary)
   now connects first among remaining unstarted movement turns after earlier
   turns finish, including after Advanced Guild completes its turn. Existing
@@ -12,8 +19,8 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
   review and focused checks pass; broad results are in the checkpoint commit.
 - The [first Leader Skills prototype](LEADER_SKILLS_RUNTIME.md) connects all
   fourteen physical cards, private setup, five battle disciplines, skilled capture,
-  death and own revival through controls, legal AI and saved choices. The other
-  nine effects remain **Missing**. The user-requested [capture search](LEADER_SKILLS_CAPTURE.md)
+  death and own revival through controls, legal AI and saved choices. The [Planetologist follow-up](PLANETOLOGIST_RULES.md) adds movement and
+  Special-card battle controls; the other eight skills remain **Missing**. The user-requested [capture search](LEADER_SKILLS_CAPTURE.md)
   resolves publicity through the known physical card; captured replacement and
   broader combinations remain pending. No mode gate is opened.
 - Following the reported power outage, the existing server responded normally,

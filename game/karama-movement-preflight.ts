@@ -27,6 +27,7 @@ export type CompletedMovementArrivalInput = Readonly<{
   order: Readonly<{
     player: string;
     origin: string;
+    origins?: readonly string[];
     to: string;
     advisors: boolean;
     wantsFighters: boolean;
@@ -91,7 +92,7 @@ export function quoteCompletedMovementArrival(
   );
   const base = { intrusion, retiresOrnithopter };
   // Intrusion also runs between sectors of one territory; entry does not.
-  if (order.origin === order.to) return { ...base, reaction: null };
+  if ((order.origins ?? [order.origin]).every(origin => origin === order.to)) return { ...base, reaction: null };
 
   const ecaz = players.find((p) => p.faction === 'ecaz');
   const ambassador = input.ambassadors.find(

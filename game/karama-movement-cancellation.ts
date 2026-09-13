@@ -15,6 +15,7 @@ import {
   MOBILE_STRONGHOLD,
 } from './board';
 import { presenceAt } from './force-presence';
+import { planetologistLeader } from './planetologist-movement';
 import { validateAmbassadors } from './ecaz-ambassadors';
 import {
   homeworldMobileStrongholdMovementBlock,
@@ -115,7 +116,7 @@ function movementDeclaration(
         Array.isArray(entry) &&
         entry.length === 2 &&
         sectorKey(g, entry[0]) &&
-        splitLocation(entry[0]).territory === move.origin &&
+        (move.origins ?? [move.origin]).includes(splitLocation(entry[0]).territory) &&
         integer(entry[1]) &&
         entry[1] > 0,
     ) &&
@@ -131,6 +132,18 @@ function movementDeclaration(
         move.total,
     'The canceled movement has invalid declared physical groups.',
   );
+  if (move.planetologist || move.origins) {
+    requireContext(move.planetologist &&
+      move.planetologist.leader === planetologistLeader(g, owner.id) &&
+      !move.noField && !move.ornithopterEvent && !move.discoveryFlight &&
+      (move.planetologist.mode === 'range'
+        ? move.origins === undefined
+        : move.planetologist.mode === 'gather' && Array.isArray(move.origins) &&
+          move.origins.length === 2 && new Set(move.origins).size === 2 &&
+          move.origins[0] === move.origin &&
+          JSON.stringify([...new Set(move.group.map(([key]) => splitLocation(key).territory))]) === JSON.stringify(move.origins)),
+      'The canceled Planetologist movement lost its skilled leader or exact origins.');
+  }
   if (move.noField)
     requireContext(
       record(move.noField) &&

@@ -51,6 +51,7 @@ import { LeaderSkillsPanel } from './leader-skills';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
+import { PlanetologistMovement } from './planetologist-movement';
 import { ResidualPoison, BattleLeaderOpportunity } from './residual-poison';
 import { PortableSnooper } from './portable-snooper';
 import {
@@ -141,6 +142,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BattlePreparation, battlePlanCommitments, bindBattlePlanCommitments, NexusInspectionHistory } from './battle-preparation';
 import { PrivateBattlePlan } from './private-battle-plan';
+import { canUsePlanetologistBattleSpecial, validLeaderSkillBattleCardPair } from '../game/leader-skill-combat';
+import type { Card } from '../game/cards';
 import { RevealedBattle } from './revealed-battle';
 import { EliteCount } from './elite-count';
 import { HelpTip } from './help-tip';
@@ -404,6 +407,12 @@ export function GameTable({
   const [discardCards, setDiscardCards] = useState<Record<string, boolean>>({});
   const stormLosses = g.decision?.kind === 'stormLosses' ? g.decision : null;
   const committed = battlePlanCommitments(g);
+  const planetologistSpecial = (card: Card) => canUsePlanetologistBattleSpecial({
+    assignments: g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [],
+    selectedLeader: committed.leader ? String(committed.leader.value ?? '') : leader,
+    card,
+  });
+  const selectedBattleWeapon = me.hand?.find(c => c.id === (committed.weapon ? committed.weapon.value : weapon));
   const selectedStone = me.hand?.find(
     (c) =>
       c.id === (committed.weapon ? committed.weapon.value : weapon) &&
@@ -4010,6 +4019,28 @@ export function GameTable({
                             }
                       }
                     />
+                    <PlanetologistMovement
+                      game={g}
+                      act={act}
+                      busy={busy}
+                      destination={selected}
+                      sector={sector}
+                      unavailableReason={
+                        !movementAvailable
+                          ? 'No ordinary movement is currently available.'
+                          : (me.moved ?? 0) >= (me.movesAllowed ?? 1)
+                            ? 'No ordinary movement remains this turn.'
+                            : selectedDestinationInStorm
+                              ? 'Choose a destination outside the storm.'
+                              : liveShipmentPromises(
+                                    g.shipmentPromises,
+                                    me.id,
+                                    g.turn,
+                                  ).some((promise) => promise.answer)
+                                ? 'Complete the promised shipment before moving.'
+                                : null
+                      }
+                    />
                     <p className="fine">
                       {guildCunning?.stage === 'secondShipment'
                         ? 'Choose or decline the second shipment before any Hajr movement.'
@@ -4430,17 +4461,24 @@ export function GameTable({
                                   {me.hand
                                     ?.filter((c) =>
                                       name === 'Defense'
-                                        ? isDefenseCard(c)
-                                        : isWeaponCard(c),
+                                        ? isDefenseCard(c) && (!selectedBattleWeapon || !planetologistSpecial(selectedBattleWeapon) || validLeaderSkillBattleCardPair(selectedBattleWeapon,c,true))
+                                        : isWeaponCard(c) || planetologistSpecial(c),
                                     )
                                     .map((c) => (
                                       <option key={c.id} value={c.id}>
-                                        {c.name}
+                                        {c.name}{name === 'Weapon' && planetologistSpecial(c) ? ' · Planetologist +2, discard after battle' : ''}
                                       </option>
                                     ))}
                                 </select>
                               </label>
                             ))}
+                            {selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon) && (
+                              <p className="notice">
+                                {selectedBattleWeapon.name} adds 2 to the surviving Planetologist leader.
+                                It makes no weapon attack and does not use its normal effect.
+                                Discard it after this battle, even if you win.
+                              </p>
+                            )}
                             {selectedStone && (
                               <div className="my-3 flex flex-col gap-3">
                                 <p>

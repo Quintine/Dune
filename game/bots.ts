@@ -1,4 +1,6 @@
 import { discoveryBotActions } from './discovery-options';
+import type { Card } from './cards';
+import { canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, validLeaderSkillBattleCardPair } from './leader-skill-combat';
 import { discoveryFlightBotActions } from './discovery-flight-options';
 import { discoveryEntryBotActions } from './discovery-entry-options';
 import { discoveryStormActions } from './discovery-storm-options';
@@ -48,7 +50,6 @@ import {
   isWeaponCard,
   isStoneBurner,
   isDefenseCard,
-  validBattleCardPair,
   defaultVoiceMatch,
   playedVoiceMatch,
   weaponKills,
@@ -72,6 +73,8 @@ import {
   fremenReserveEntry,
   guildTransportCost,
 } from './bot-mobility';
+import { planetologistLeader } from './planetologist-movement';
+import { faction } from './catalog';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
@@ -670,9 +673,13 @@ function plans(g: GameView): Action[] {
     commitments.every(
       (element) => element.field !== field || element.value === value,
     );
+  const battleSkills = g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [];
+  const specialForLeader = (card: Card | undefined, leader: string | null) =>
+    canUsePlanetologistBattleSpecial({assignments:battleSkills, selectedLeader:leader, card});
   const weapons = [
     null,
-    ...(me.hand ?? []).filter(isWeaponCard).map((c) => c.id),
+    ...(me.hand ?? []).filter(c => isWeaponCard(c) ||
+      me.leaders.some(l => !l.dead && controlsLeader(me,l) && (!l.usedAt || l.usedAt === b.territory) && specialForLeader(c,l.id))).map(c => c.id),
   ].filter((id) => fixed('weapon', id));
   const defenses = [
     null,
@@ -752,9 +759,10 @@ function plans(g: GameView): Action[] {
           ) + (kwisatz ? 2 : 0);
         const w = me.hand?.find((c) => c.id === weapon);
         const d = me.hand?.find((c) => c.id === defense);
+        if (w && !isWeaponCard(w) && !specialForLeader(w,leader)) continue;
         const stoneBattle =
           isStoneBurner(w) || (inspected && isStoneBurner(enemyWeapon));
-        if ((!leader && (weapon || defense)) || !validBattleCardPair(w, d))
+        if ((!leader && (weapon || defense)) || !validLeaderSkillBattleCardPair(w, d, specialForLeader(w,leader)))
           continue;
         if (voice) {
           const used =
@@ -800,7 +808,11 @@ function plans(g: GameView): Action[] {
           b.strongholdEffects[other.id],
         );
         const ownSurvivingStrength =
-          effects.stunned || effects.attackerDead ? 0 : strength;
+          effects.stunned || effects.attackerDead ? 0 : strength + leaderSkillBattleBonus({
+            assignments:battleSkills,
+            selectedLeader:leader ? {id:leader,kind:myLeader?'disc':'hero'} : undefined,
+            weapon:w,defense:d,skilledLeaderSurvives:true,
+          }).bonus;
         const enemySurvivingStrength =
           effects.stunned || (inspected && effects.defenderDead)
             ? 0
@@ -869,7 +881,7 @@ function plans(g: GameView): Action[] {
               ))
           )
             continue;
-          const effectiveWeapon = w && w.kind !== 'worthless' ? 6 : 0;
+          const effectiveWeapon = w && w.kind !== 'worthless' && !specialForLeader(w,leader) ? 6 : 0;
           const effectiveDefense = d && d.kind !== 'worthless' ? 4 : 0;
           const selfExplosion = battleWeaponsExplode(w, d);
           const correctDefense = inspected
@@ -3088,6 +3100,13 @@ function policyActions(g: GameView): Action[] {
         return { from, amount, elite };
       })
       .filter((source) => source.amount > 0);
+    const planetologist = planetologistLeader(g, me.id);
+    const groundMoves: {
+      action: Action;
+      destinationScore: number;
+      amount: number;
+      gather: boolean;
+    }[] = [];
     if (movementAvailable)
       for (const to of targets
         .filter(
@@ -3100,15 +3119,131 @@ function policyActions(g: GameView): Action[] {
         .slice(0, 24))
         for (const { from, amount, elite } of movingSources) {
           if (botGroundMoveAllowed(g, me, from, to.key, elite))
-            actions.push({
-              type: 'move',
-              from,
-              territory: to.t,
-              sector: to.s,
+            groundMoves.push({
+              action: {
+                type: 'move',
+                from,
+                territory: to.t,
+                sector: to.s,
+                amount,
+                elite,
+              },
+              destinationScore: to.score,
               amount,
-              elite,
+              gather: false,
             });
         }
+    if (
+      movementAvailable &&
+      planetologist &&
+      !g.ornithopter?.active &&
+      g.players.every((player) => faction(player.faction).expansion === 'base')
+    ) {
+      const usefulTargets = targets
+        .filter(
+          (to) =>
+            marker?.location.territory !== to.t && to.score > -1000,
+        );
+      for (const to of usefulTargets
+        .filter((target) =>
+          movingSources.some(
+            ({ from, elite }) =>
+              botGroundMoveAllowed(
+                g,
+                me,
+                from,
+                target.key,
+                elite,
+                'range',
+              ) && !botGroundMoveAllowed(g, me, from, target.key, elite),
+          ),
+        )
+        .slice(0, 24))
+        for (const { from, amount, elite } of movingSources) {
+          if (
+            botGroundMoveAllowed(g, me, from, to.key, elite, 'range') &&
+            !botGroundMoveAllowed(g, me, from, to.key, elite)
+          )
+            groundMoves.push({
+              action: {
+                type: 'move',
+                planetologist: 'range',
+                from,
+                territory: to.t,
+                sector: to.s,
+                amount,
+                elite,
+              },
+              destinationScore: to.score,
+              amount,
+              gather: false,
+            });
+        }
+      const gatherSources = movingSources.slice(0, 12);
+      for (let first = 0; first < gatherSources.length; first += 1)
+        for (let second = first + 1; second < gatherSources.length; second += 1) {
+          const a = gatherSources[first],
+            b = gatherSources[second],
+            aTerritory = splitLocation(a.from).territory,
+            bTerritory = splitLocation(b.from).territory;
+          if (
+            aTerritory === bTerritory ||
+            (g.advanced &&
+              me.faction === 'beneGesserit' &&
+              isAdvisor(me, aTerritory) !== isAdvisor(me, bTerritory))
+          )
+            continue;
+          for (const to of usefulTargets
+            .filter(
+              (target) =>
+                botGroundMoveAllowed(
+                  g,
+                  me,
+                  a.from,
+                  target.key,
+                  a.elite,
+                  'gather',
+                ) &&
+                botGroundMoveAllowed(
+                  g,
+                  me,
+                  b.from,
+                  target.key,
+                  b.elite,
+                  'gather',
+                ),
+            )
+            .slice(0, 24)) {
+            groundMoves.push({
+              action: {
+                type: 'move',
+                planetologist: 'gather',
+                forces: { [a.from]: a.amount, [b.from]: b.amount },
+                ...(me.elites
+                  ? {
+                      eliteForces: {
+                        [a.from]: a.elite,
+                        [b.from]: b.elite,
+                      },
+                    }
+                  : {}),
+                territory: to.t,
+                sector: to.s,
+              },
+              destinationScore: to.score,
+              amount: a.amount + b.amount,
+              gather: true,
+            });
+          }
+        }
+    }
+    groundMoves.sort(
+      (a, b) =>
+        b.destinationScore - a.destinationScore ||
+        b.amount - a.amount ||
+        Number(b.gather) - Number(a.gather),
+    );
+    actions.push(...groundMoves.map((candidate) => candidate.action));
     if (reveal && !actions.length) actions.push(reveal);
     if (me.shipped || !actions.some((action) => action.type === 'ship' || action.type === 'homeworldShip'))
       actions.unshift(...emperorHomeworldMoveActions(g));

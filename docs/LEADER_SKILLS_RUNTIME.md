@@ -18,7 +18,7 @@ Human controls show each permitted card's normal and battle text, select its
 leader, choose battle posture, and handle an optional own-leader revival draw.
 An undrawn revival offer shows no preview; drawing obliges a selection. All four
 AI profiles follow the same private offers and legal actions, prioritizing the
-five connected disciplines and hiding the assigned leader for battle. This
+five battle disciplines during skill selection and hiding the assigned leader for battle. This
 simple policy is not calibrated skill strategy.
 
 Warmaster, Master of Assassins, Swordmaster of Ginaz, Killer Medic and
@@ -61,8 +61,24 @@ Foreign gholas, expansion rosters and combined optional modules remain gated.
 Before enabling them, add response-driven automatic revival continuation
 coverage; the current before/after revival observer does not certify deferred
 Tleilaxu response chains. The other source-contract timing questions also remain
-open. Skill-specific movement, payments, information, rescues and retreats need
-their own connected controls and saved choices.
+open. Planetologist now has bounded movement and battle controls as described below.
+The other eight skills still need their payments, information, rescues, retreats
+and other effects connected.
+
+## Planetologist follow-up
+
+[Planetologist](PLANETOLOGIST_RULES.md) connects the explicit capped range bonus,
+two-origin movement to one destination, Fremen cancellation/replacement and a
+surviving skilled leader's +2 green-Special substitution with mandatory discard.
+The movement panel and weapon selector expose those choices; all four AI profiles
+can use the same physical action paths. Pending movement receipts survive JSON
+continuation and revalidate source custody before a response is spent.
+
+Six base factions remain the supported roster. Mixed BG origins are supported
+where ordinary rules determine the destination stance. Enemy-only mixed arrival
+still needs a combined flip response. Expansion faction/card/module combinations
+and full integrated acceptance remain unfinished. Eight other skill effects are
+still missing; this is partial prototype coverage.
 
 ## Local prototype entry and evidence
 

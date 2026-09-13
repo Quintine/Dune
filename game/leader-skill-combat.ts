@@ -1,5 +1,10 @@
 import type { Card } from './cards';
-import { defenseTypes, weaponTypes } from './battle-cards';
+import {
+  defenseTypes,
+  isDefenseCard,
+  validBattleCardPair,
+  weaponTypes,
+} from './battle-cards';
 import type { LeaderSkillId } from './leader-skill-cards';
 
 export type DirectLeaderSkillId =
@@ -19,8 +24,8 @@ export type BattleLeaderSkill = {
 };
 
 export type AppliedLeaderSkill = {
-  skill: DirectLeaderSkillId;
-  amount: 1 | 3;
+  skill: DirectLeaderSkillId | 'planetologist';
+  amount: 1 | 2 | 3;
   mode: 'normal' | 'skilled';
 };
 
@@ -36,6 +41,74 @@ const directSkills = new Set<LeaderSkillId>([
   'killer-medic',
   'prana-bindu-adept',
 ]);
+
+/**
+ * Canonical GF9 base-deck green Special cards. Persisted IDs distinguish these
+ * physical components from expansion cards sharing the engine's broad
+ * `special` bucket. Cheap Hero and Cheap Heroine occupy the leader slot and
+ * are deliberately absent.
+ */
+export const PLANETOLOGIST_BASE_SPECIALS = [
+  { id: 'treachery-24', name: 'Family Atomics', effect: 'atomics' },
+  { id: 'treachery-25', name: 'Weather Control', effect: 'weather' },
+  { id: 'treachery-26', name: 'Hajr', effect: 'hajr' },
+  { id: 'treachery-27', name: 'Tleilaxu Ghola', effect: 'ghola' },
+  { id: 'treachery-28', name: 'Harvester', effect: 'harvester' },
+  { id: 'treachery-29', name: 'Karama', effect: 'karama' },
+  { id: 'treachery-30', name: 'Karama', effect: 'karama' },
+  { id: 'treachery-31', name: 'Truthtrance', effect: 'truthtrance' },
+  { id: 'treachery-32', name: 'Truthtrance', effect: 'truthtrance' },
+] as const;
+
+const planetologistBaseSpecialById = new Map<
+  string,
+  (typeof PLANETOLOGIST_BASE_SPECIALS)[number]
+>(
+  PLANETOLOGIST_BASE_SPECIALS.map((card) => [card.id, card]),
+);
+
+/** Shared engine/UI/bot eligibility: exact printed base component, no native use. */
+export function isPlanetologistBattleSpecialCard(
+  card: Pick<Card, 'id' | 'name' | 'kind' | 'effect'> | undefined,
+): boolean {
+  if (!card || card.kind !== 'special') return false;
+  const canonical = planetologistBaseSpecialById.get(card.id);
+  return (
+    canonical?.name === card.name &&
+    canonical.effect === card.effect
+  );
+}
+
+/** The substitute role belongs only to the actual assigned leader in battle. */
+export function canUsePlanetologistBattleSpecial(input: {
+  assignments: readonly BattleLeaderSkill[];
+  selectedLeader: string | null | undefined;
+  card: Pick<Card, 'id' | 'name' | 'kind' | 'effect'> | undefined;
+}): boolean {
+  return (
+    isPlanetologistBattleSpecialCard(input.card) &&
+    !!input.selectedLeader &&
+    input.assignments.some(
+      (assignment) =>
+        assignment.skill === 'planetologist' &&
+        assignment.leader === input.selectedLeader &&
+        (!assignment.faceUp || assignment.captured),
+    )
+  );
+}
+
+/** Planetologist fills the slot without becoming an actual Weapon card. */
+export function validLeaderSkillBattleCardPair(
+  weapon: Card | undefined,
+  defense: Card | undefined,
+  planetologistWeapon: boolean,
+): boolean {
+  if (!planetologistWeapon) return validBattleCardPair(weapon, defense);
+  return (
+    (!defense || isDefenseCard(defense)) &&
+    defense?.kind !== 'weirdingWay'
+  );
+}
 
 function isDirectSkill(skill: string): skill is DirectLeaderSkillId {
   return directSkills.has(skill as LeaderSkillId);
@@ -71,6 +144,20 @@ export function leaderSkillBattleBonus(input: {
 }): LeaderSkillBattleBonus {
   if (!input.selectedLeader) return { bonus: 0, applied: [] };
   const applied: AppliedLeaderSkill[] = [];
+  if (
+    input.selectedLeader.kind === 'disc' &&
+    input.skilledLeaderSurvives &&
+    canUsePlanetologistBattleSpecial({
+      assignments: input.assignments,
+      selectedLeader: input.selectedLeader.id,
+      card: input.weapon,
+    })
+  )
+    applied.push({
+      skill: 'planetologist',
+      amount: 2,
+      mode: 'skilled',
+    });
   for (const assignment of input.assignments) {
     if (!isDirectSkill(assignment.skill)) continue;
     if (!qualifies(assignment.skill, input.weapon, input.defense)) continue;

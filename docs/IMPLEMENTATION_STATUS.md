@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 13 September 2026 — Planetologist movement and green-Special battle prototype
+
+[Planetologist](PLANETOLOGIST_RULES.md) now connects capped extra range, a single
+movement from two territories to one destination, and the surviving skilled
+leader's +2 green-Special battle substitution. Fremen cancellation preserves the
+independent skill bonus and both saved origins. Human controls, all four bot
+profiles and authoritative saved continuations use shared eligibility/range rules.
+The exact nine base Specials retain physical custody and never activate their
+normal effects through the battle slot. Mandatory discard includes traitor wins;
+that later-card-specific reading remains explicitly identified as an inference.
+
+Independent review fixed stale saved battle plans accepting an already-dead skill
+leader; the original reproducer now rejects without mutation. Another integration
+check found appended skill moves were bypassed by ordinary candidates: they now
+share the existing public destination ordering. All four profiles actually choose
+and legally execute range and gather moves in targeted first-choice fixtures.
+The final focused union passed **84 tests**. The first broad run stopped at
+lint because six new test declarations lacked the required explicit promise
+marker; those declarations were corrected before repeating the checkpoint check. Two four-profile sample games finished:
+Basic seed 20260916, 194 accepted actions and six JSON restorations (range and gather
+both executed); Advanced seed 20260917, 186 accepted actions and six restorations
+(range executed). Neither rejected a proposed action. These are bounded samples,
+not AI calibration or complete module/combination acceptance.
+
+Fresh browser room `TQWK5AEY` used genuine Fremen/Emperor setup and selected
+Planetologist/Stilgar. The range-three control became available, then a real gather
+moved two Sietch Tabr forces and one False Wall West force to Wind Pass using one
+movement. Refresh restored 5/2/3 forces, the private Crysknife/Burseg and the skill.
+A separate targeted battle fixture in this new QA room relocated one physical
+Family Atomics from the deck and placed Emperor reserve forces. The actual weapon
+selector, plan reveal, traitor loss and mandatory discard were exercised. The
+Shield Wall remained intact; dead Stilgar returned the skill, and refresh preserved
+the remaining hand and losses. This fixture is not a naturally reached full game.
+
+The server remained healthy after the user's outage report; no restart was needed.
+All 325 opening rooms were privately backed up and unchanged after browser QA;
+one new test room was added. Required broad checks and final preservation counts
+are recorded in the checkpoint commit and source-bound private report. Eight
+other skill effects, enemy-only mixed BG gather arrival, expansion rosters/cards
+and optional-module combinations remain unfinished. No public gate is opened.
+
 ## 13 September 2026 — Leader Skills setup, five disciplines and skilled capture
 
 The [first connected prototype](LEADER_SKILLS_RUNTIME.md) adds all fourteen

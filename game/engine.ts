@@ -1,5 +1,12 @@
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
 import { leaderSkillCard } from './leader-skill-cards';
+import {
+  canUsePlanetologistBattleSpecial,
+  isPlanetologistBattleSpecialCard,
+  validLeaderSkillBattleCardPair,
+  type BattleLeaderSkill,
+} from './leader-skill-combat';
+import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
@@ -459,7 +466,6 @@ import {
   isDefenseCard,
   isPortableSnooper,
   VOICE_KINDS,
-  validBattleCardPair,
   defaultVoiceMatch,
   playedVoiceMatch,
 } from './battle-cards';
@@ -4919,6 +4925,32 @@ function leaderSkillController(
     )!.capturedBy ?? assignment.owner
   );
 }
+function battleLeaderSkills(g: Game, player: Player): BattleLeaderSkill[] {
+  return (
+    g.leaderSkills?.assignments
+      .filter((assignment) => leaderSkillController(g, assignment) === player.id)
+      .map((assignment) => ({
+        skill: assignment.skill,
+        leader: assignment.leader,
+        faceUp:
+          assignment.owner === player.id &&
+          !g.battle?.leaderSkillHidden?.[player.id],
+        captured: assignment.owner !== player.id,
+      })) ?? []
+  );
+}
+function canUsePlanetologistWeapon(
+  g: Game,
+  player: Player,
+  leader: string | null,
+  card: Card | undefined,
+) {
+  return canUsePlanetologistBattleSpecial({
+    assignments: battleLeaderSkills(g, player),
+    selectedLeader: leader,
+    card,
+  });
+}
 function nativeLeaderSkill(g: Game, owner: string) {
   return g.leaderSkills?.assignments.find(
     (a) => a.owner === owner && leaderSkillController(g, a) === owner,
@@ -7997,7 +8029,7 @@ function eliteChoice(
     'Elite forces',
   );
 }
-function forceGroup(g: Game, p: Player, action: Action) {
+function forceGroup(g: Game, p: Player, action: Action, maxOrigins = 1) {
   let entries: [string, unknown][];
   if (action.forces !== undefined) {
     requireRule(
@@ -8011,6 +8043,7 @@ function forceGroup(g: Game, p: Player, action: Action) {
   const group: [string, number][] = [];
   const eliteGroup: Record<string, number> = {};
   let origin: string | undefined;
+  const origins = new Set<string>();
   let noField: { tokenId: string; event: string; from: string } | undefined;
   if (action.noField !== undefined) {
     const marker = p.noField?.deployed;
@@ -8022,6 +8055,7 @@ function forceGroup(g: Game, p: Player, action: Action) {
       'This concealed No-Field movement selection is stale.',
     );
     origin = marker.location.territory;
+    origins.add(origin);
     noField = {
       tokenId: marker.tokenId,
       event: p.noFieldEvent!,
@@ -8036,11 +8070,10 @@ function forceGroup(g: Game, p: Player, action: Action) {
     );
     const n = integer(value, 0, p.forces[key] ?? 0, 'Forces');
     if (!n) continue;
-    requireRule(
-      !origin || origin === src.territory,
-      'A force group must come from one territory.',
-    );
-    origin = src.territory;
+    origins.add(src.territory);
+    requireRule(origins.size <= maxOrigins,
+      maxOrigins === 1 ? 'A force group must come from one territory.' : 'Planetologist gathers forces from exactly two territories.');
+    origin ??= src.territory;
     group.push([key, n]);
     const selectedElite =
       action.forces !== undefined
@@ -8062,6 +8095,7 @@ function forceGroup(g: Game, p: Player, action: Action) {
     eliteGroup,
     elite: Object.values(eliteGroup).reduce((a, b) => a + b, 0),
     origin: origin!,
+    origins: [...origins],
     total: group.reduce((n, [, count]) => n + count, 0) + (noField ? 1 : 0),
     noField,
     sourceKeys: [
@@ -8284,7 +8318,45 @@ function ornithopterView(g: Game, p: Player) {
   };
 }
 function movementOrderRange(g: Game, p: Player, move: MovementOrder) {
-  return move.discoveryFlight || move.ornithopterRange ? 3 : movementRange(g, p, move.elite);
+  return move.discoveryFlight || move.ornithopterRange ? 3 : planetologistRange(movementRange(g, p, move.elite), move.planetologist?.mode);
+}
+function validatePlanetologistMove(g: Game, p: Player, move: Pick<MovementOrder, 'planetologist' | 'origins' | 'origin' | 'noField' | 'ornithopterEvent' | 'discoveryFlight'>) {
+  const skill = move.planetologist;
+  if (!skill) {
+    requireRule(move.origins === undefined, 'Two movement origins require Planetologist.');
+    return;
+  }
+  requireRule(g.phase === 5 && skill && typeof skill === 'object' &&
+    (skill.mode === 'range' || skill.mode === 'gather') &&
+    skill.leader === planetologistLeader(g, p.id),
+    'This Planetologist movement no longer has its living, uncaptured skilled leader.');
+  requireRule(g.players.every(player => faction(player.faction).expansion === 'base'),
+    'Planetologist movement combined with expansion factions is still being implemented.');
+  requireRule(!move.noField && !move.ornithopterEvent && !move.discoveryFlight,
+    'Planetologist combined with special movement cards or No-Field is still being implemented.');
+  requireRule(skill.mode === 'gather'
+    ? Array.isArray(move.origins) && move.origins.length === 2 && new Set(move.origins).size === 2 && move.origins[0] === move.origin
+    : move.origins === undefined,
+    'Choose the extra range or exactly two origins, not both.');
+}
+function movementOrigins(move: Pick<MovementOrder, 'origin' | 'origins'>): string[] {
+  return move.origins ?? [move.origin];
+}
+function movementStance(g: Game, p: Player, origins: string[], to: string, fighters: boolean) {
+  requireRule(!g.advanced || p.faction !== 'beneGesserit' ||
+    at(p, to) > 0 || !g.players.some(other => other.id !== p.id && at(other, to)) ||
+    origins.every(origin => isAdvisor(p, origin) === isAdvisor(p, origins[0])),
+    'Gathering advisors and fighters into an enemy-only territory still needs the combined flip response. Choose sources with the same stance or a destination with a determined stance.');
+  const advisors = arrivalAsAdvisor(g, p, to, origins[0]);
+  const lockedTurn = Math.max(0, ...origins.map(origin => p.advisors?.[origin]?.lockedTurn ?? 0)) || undefined;
+  requireRule(advisors || lockedTurn !== g.turn ||
+    !g.players.some(other => other.id !== p.id && at(other, to)),
+    'New advisors cannot become fighters this turn.');
+  const wantsFighters = advisors && fighters;
+  requireRule(!wantsFighters || (lockedTurn !== g.turn && !at(p, to) &&
+    (!(p.ally && at(getPlayer(g, p.ally), to)) || sharesEcazOccupation(g, p, to))),
+    'These advisors cannot flip to fighters on arrival.');
+  return {advisors, lockedTurn, wantsFighters};
 }
 function validateFlightSelection(g: Game, p: Player, move: MovementOrder) {
   if (move.discoveryFlight)
@@ -8355,7 +8427,7 @@ function offerChoamMovement(g: Game, move: MovementOrder) {
     g.phase === 5 &&
     choam &&
     move.player !== choam.id &&
-    move.origin !== move.to &&
+    movementOrigins(move).some(origin => origin !== move.to) &&
     at(choam, move.to) > 0
   ) {
     g.pendingChoamMove = move;
@@ -8410,6 +8482,7 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
     'The movement is no longer available.',
   );
   validateFlightSelection(g, p, move);
+  validatePlanetologistMove(g, p, move);
   const selected = forceGroup(g, p, {
     type: 'move',
     forces: Object.fromEntries(move.group),
@@ -8417,16 +8490,22 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
     ...(move.noField
       ? { noField: move.noField.tokenId, event: move.noField.event }
       : {}),
-  });
+  }, move.planetologist?.mode === 'gather' ? 2 : 1);
   requireRule(
     selected.origin === move.origin &&
       selected.total === move.total &&
       selected.elite === move.elite &&
-      selected.group.length === move.group.length,
+      selected.group.length === move.group.length &&
+      JSON.stringify(selected.origins) === JSON.stringify(movementOrigins(move)),
     'The declared force group no longer matches its movement.',
   );
+  if (move.planetologist) {
+    const stance = movementStance(g, p, selected.origins, move.to, move.wantsFighters);
+    requireRule(stance.advisors === move.advisors && stance.wantsFighters === move.wantsFighters &&
+      stance.lockedTurn === move.lockedTurn, 'The declared Planetologist arrival stance is no longer current.');
+  }
   requireRule(
-    !balisetPrevents(g, p.id, move.origin, move.to),
+    movementOrigins(move).every(origin => !balisetPrevents(g, p.id, origin, move.to)),
     'Baliset prevents that movement.',
   );
   allowedEntry(
@@ -8444,7 +8523,7 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
     ].every(
       (key) =>
         gameDistance(g, key, location(move.to, move.sector), (k) =>
-          pathBlocked(g, p, k, isAdvisor(p, move.origin)),
+          pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
         ) <= movementOrderRange(g, p, move),
     ),
     'The movement route is no longer available.',
@@ -8537,6 +8616,7 @@ function completeMove(g: Game, move: MovementOrder) {
     player: id,
   } = move;
   const p = getPlayer(g, id);
+  validatePlanetologistMove(g, p, move);
   validateFlightSelection(g, p, move);
   validateMovementArrival(g, move);
   const flight = g.ornithopter;
@@ -8606,6 +8686,7 @@ function completeMove(g: Game, move: MovementOrder) {
   const completed: CompletedMovement = {
     player: id,
     origin,
+    ...(move.origins ? {origins: move.origins} : {}),
     total: n,
     to,
     sector: s,
@@ -8630,10 +8711,10 @@ function finishMovedGroup(g: Game, move: CompletedMovement) {
     g,
     move.noField
       ? `${p.name} moved a concealed No-Field${n > 1 ? ` with ${n - 1} physical forces` : ''} from ${territory(origin).name} to ${territory(to).name}. Its value remains concealed.`
-      : `${p.name} moved ${n} forces from ${territory(origin).name} to ${territory(to).name}.`,
+      : `${p.name} moved ${n} forces from ${movementOrigins(move).map(source => territory(source).name).join(' and ')} to ${territory(to).name}.`,
   );
   intrusion(g, p, to);
-  if (origin !== to) openTerritoryEntry(g, p, to, s, n, elite, 'movement');
+  if (movementOrigins(move).some(source => source !== to)) openTerritoryEntry(g, p, to, s, n, elite, 'movement');
 }
 /** A played movement card is already retired before queue advancement. */
 function finishMovementTurn(g: Game, id: string) {
@@ -12668,9 +12749,15 @@ function validatePlan(
   );
   const w = cardOf(p, plan.weapon),
     d = cardOf(p, plan.defense);
+  const planetologistWeapon = canUsePlanetologistWeapon(
+    g,
+    p,
+    plan.leader,
+    w,
+  );
   requireRule(
-    !plan.weapon || (w && isWeaponCard(w)),
-    'Choose a weapon or worthless card.',
+    !plan.weapon || (w && (isWeaponCard(w) || planetologistWeapon)),
+    'Choose a weapon, worthless card, or eligible Planetologist Special.',
   );
   requireRule(
     !plan.defense || (d && isDefenseCard(d)),
@@ -12685,7 +12772,7 @@ function validatePlan(
     'Without a leader, no battle cards can be played.',
   );
   requireRule(
-    validBattleCardPair(w, d),
+    validLeaderSkillBattleCardPair(w, d, planetologistWeapon),
     'Chemistry as a weapon needs another defense; Weirding Way as a defense needs another weapon.',
   );
   if (isStoneBurner(w)) {
@@ -13094,7 +13181,15 @@ function findLegalBattlePlan(
       .map((l) => l.id),
     ...p.hand.filter((c) => c.kind === 'hero').map((c) => c.id),
   ];
-  const weapons = [null, ...p.hand.filter(isWeaponCard).map((c) => c.id)];
+  const weapons = [
+    null,
+    ...p.hand
+      .filter(
+        (card) =>
+          isWeaponCard(card) || isPlanetologistBattleSpecialCard(card),
+      )
+      .map((card) => card.id),
+  ];
   const defenses = [
     null,
     ...p.hand.filter((c) => isDefenseCard(c)).map((c) => c.id),
@@ -13106,7 +13201,11 @@ function findLegalBattlePlan(
       for (const defense of defenses) {
         if (
           !accepts({ leader, weapon, defense }) ||
-          !validBattleCardPair(cardOf(p, weapon), cardOf(p, defense))
+          !validLeaderSkillBattleCardPair(
+            cardOf(p, weapon),
+            cardOf(p, defense),
+            canUsePlanetologistWeapon(g, p, leader, cardOf(p, weapon)),
+          )
         )
           continue;
         for (const kwisatz of [false, true]) {
@@ -13657,7 +13756,12 @@ function feasiblePrescience(
   ];
   const weapons: (string | null)[] = [
     null,
-    ...p.hand.filter(isWeaponCard).map((c) => c.id),
+    ...p.hand
+      .filter(
+        (card) =>
+          isWeaponCard(card) || isPlanetologistBattleSpecialCard(card),
+      )
+      .map((card) => card.id),
   ];
   const defenses: (string | null)[] = [
     null,
@@ -13920,7 +14024,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       hand: p.hand,
       plan,
       leader: controlledLeaders(g, p).find((l) => l.id === plan.leader),
-      leaderSkills: g.leaderSkills?.assignments.filter((assignment) => leaderSkillController(g,assignment) === p.id).map((assignment) => ({skill:assignment.skill,leader:assignment.leader,faceUp:assignment.owner === p.id && !b.leaderSkillHidden?.[p.id],captured:assignment.owner !== p.id})),
+      leaderSkills: battleLeaderSkills(g, p),
       forces: combatForces(g, p, b.territory, opponent),
       stronghold: strongholdEffect(g, p.id),
       lateDefense: b.lateDefense?.[p.id],
@@ -15924,7 +16028,7 @@ function finishResponse(g: Game, canceled: boolean) {
       player.fremenMovementBlocked = { turn: quote.turn, move: quote.move };
       log(
         g,
-        `${player.name}'s two-territory movement advantage was canceled for this move. The forces remain in place and no movement was spent. Choose a one-territory move; available ornithopters still apply.`,
+        `${player.name}'s two-territory movement advantage was canceled for this move. The forces remain in place and no movement was spent. Choose a legal replacement; independent ornithopters and Planetologist still apply.`,
       );
     } else {
       log(
@@ -18396,7 +18500,7 @@ function richeseSpecialKaramaView(g: Game, p: Player) {
 
 type CompletedMovement = Pick<
   MovementOrder,
-  'player' | 'origin' | 'total' | 'to' | 'sector' | 'elite'
+  'player' | 'origin' | 'origins' | 'total' | 'to' | 'sector' | 'elite'
 > & { noField: boolean };
 type MovementOrder = {
   source?: 'ambassador';
@@ -18406,6 +18510,8 @@ type MovementOrder = {
   eliteGroup: Record<string, number>;
   elite: number;
   origin: string;
+  origins?: string[];
+  planetologist?: PlanetologistMovement;
   total: number;
   to: string;
   sector: number;
@@ -21515,36 +21621,28 @@ function applyActionInner(
       g.phase === 5 && g.active === id && p.moved < movesAllowed(g, p),
       'Your movement is not available.',
     );
+    const skillLeader = planetologistLeader(g, id);
+    requireRule(action.origins === undefined &&
+      (action.planetologist === undefined || (skillLeader &&
+        (action.planetologist === 'range' || action.planetologist === 'gather'))),
+      'Choose an available Planetologist movement mode.');
+    const planetologist: PlanetologistMovement | undefined = action.planetologist === undefined
+      ? undefined : {leader: skillLeader!, mode: action.planetologist as PlanetologistMovement['mode']};
     const {
       group,
       eliteGroup,
       elite,
       origin,
+      origins,
       total: n,
       noField,
       sourceKeys,
-    } = forceGroup(g, p, action);
+    } = forceGroup(g, p, action, planetologist?.mode === 'gather' ? 2 : 1);
     const to = stringField(action.territory),
       s = integer(action.sector, 0, 18, 'Sector');
-    const advisors = arrivalAsAdvisor(g, p, to, origin);
-    const lockedTurn = p.advisors?.[origin]?.lockedTurn;
+    const {advisors, lockedTurn, wantsFighters} = movementStance(g, p, origins, to, action.fighters === true);
     requireRule(
-      advisors ||
-        lockedTurn !== g.turn ||
-        !g.players.some((other) => other.id !== id && at(other, to)),
-      'New advisors cannot become fighters this turn.',
-    );
-    const wantsFighters = advisors && action.fighters === true;
-    requireRule(
-      !wantsFighters ||
-        (lockedTurn !== g.turn &&
-          !at(p, to) &&
-          (!(p.ally && at(getPlayer(g, p.ally), to)) ||
-            sharesEcazOccupation(g, p, to))),
-      'These advisors cannot flip to fighters on arrival.',
-    );
-    requireRule(
-      !balisetPrevents(g, id, origin, to),
+      origins.every(source => !balisetPrevents(g, id, source, to)),
       'Baliset prevents movement into this CHOAM territory; shipment remains possible.',
     );
     allowedEntry(g, p, to, s, false, advisors && !wantsFighters);
@@ -21608,6 +21706,8 @@ function applyActionInner(
       eliteGroup,
       elite,
       origin,
+      ...(planetologist ? {planetologist} : {}),
+      ...(planetologist?.mode === 'gather' ? {origins} : {}),
       total: n,
       to,
       sector: s,
@@ -21624,12 +21724,13 @@ function applyActionInner(
     };
     if (action.discoveryOrnithopter !== undefined)
       move.discoveryFlight = nexusRule(() => quoteDiscoveryFlight(g, action.discoveryOrnithopter, move));
+    validatePlanetologistMove(g, p, move);
     const speed = movementOrderRange(g, p, move);
     requireRule(
       sourceKeys.every(
         (key) =>
           gameDistance(g, key, location(to, s), (k) =>
-            pathBlocked(g, p, k, isAdvisor(p, origin)),
+            pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
           ) <= speed,
       ),
       `That destination is blocked or more than ${speed} territories away.`,
@@ -21657,14 +21758,15 @@ function applyActionInner(
         passed: [],
       };
     } else if (
-      !move.ornithopterRange &&
+      !move.ornithopterRange && !move.discoveryFlight &&
       p.faction === 'fremen' &&
-      speed === 2 &&
+      !(p.fremenMovementBlocked?.turn === g.turn && p.fremenMovementBlocked.move === p.moved) &&
+      !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
       group.some(
         ([key]) =>
           gameDistance(g, key, location(to, s), (k) =>
             pathBlocked(g, p, k, isAdvisor(p, origin)),
-          ) > 1,
+          ) > planetologistRange(1, planetologist?.mode),
       )
     ) {
       g.pendingFremenMove = { turn: g.turn, move: p.moved, order: move };

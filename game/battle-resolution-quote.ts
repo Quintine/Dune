@@ -34,6 +34,9 @@ import {
   type HomeworldExplosionLosses,
 } from './homeworld-battle-rules';
 import {
+  PLANETOLOGIST_BASE_SPECIALS,
+  canUsePlanetologistBattleSpecial,
+  isPlanetologistBattleSpecialCard,
   leaderSkillBattleBonus,
   type BattleLeaderSkill,
   type LeaderSkillBattleBonus,
@@ -212,6 +215,35 @@ function validateCombatant(
     !side.leader ||
       (side.leader.id === p.leader && Number.isFinite(side.leader.strength)),
     'The controlled leader must match the revealed plan.',
+  );
+  const selectedPlanetologistCards = [
+    p.weapon,
+    p.defense,
+    p.leader,
+    side.lateDefense,
+  ].filter(
+    (selectedId): selectedId is string =>
+      !!selectedId &&
+      PLANETOLOGIST_BASE_SPECIALS.some(
+        (card) => card.id === selectedId,
+      ),
+  );
+  requireQuote(
+    selectedPlanetologistCards.every((selectedId) => {
+      const selectedCard = side.hand.find((card) => card.id === selectedId);
+      return (
+        selectedId === p.weapon &&
+        side.leader?.id === p.leader &&
+        !side.leader.dead &&
+        isPlanetologistBattleSpecialCard(selectedCard) &&
+        canUsePlanetologistBattleSpecial({
+          assignments: side.leaderSkills ?? [],
+          selectedLeader: p.leader,
+          card: selectedCard,
+        })
+      );
+    }),
+    'A green Special may replace only the assigned Planetologist leader’s weapon.',
   );
   return played;
 }
@@ -614,16 +646,30 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     auditCount(other.hand, auditor.usedCards, auditor.survived);
   }
   let retention: MoritaniRetention | null = null;
+  const mandatoryPlanetologistDiscard = (
+    side: ResolutionCombatant,
+    selected: string,
+  ) =>
+    selected === side.plan.weapon &&
+    canUsePlanetologistBattleSpecial({
+      assignments: side.leaderSkills ?? [],
+      selectedLeader: side.plan.leader,
+      card: card(side, selected),
+    });
   const moritani = input.participants.find((p) => p.faction === 'moritani');
   if (winner && moritani) {
     const loser = winner === a ? d : a,
       loserPlayed = loser === a ? played.attacker : played.defender;
-    const eligible = loserPlayed.filter((selected) =>
-      canRetainBattleCard(
-        card(loser, selected)!,
-        ac || dc,
-        !!loser.poisonTooth,
-      ),
+    const retainablePlayed = loserPlayed.filter(
+      (selected) => !mandatoryPlanetologistDiscard(loser, selected),
+    );
+    const eligible = retainablePlayed.filter(
+      (selected) =>
+        canRetainBattleCard(
+          card(loser, selected)!,
+          ac || dc,
+          !!loser.poisonTooth,
+        ),
     );
     if (
       loser.id !== moritani.id &&
@@ -640,7 +686,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         player: loser.id,
         territory: input.territory,
         turn: input.turn,
-        played: [...loserPlayed],
+        played: [...retainablePlayed],
         eligible,
         stage: 'choose',
       };
@@ -651,9 +697,12 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       .filter(
         (selected) =>
           !(
-            retention?.player === s.id && retention.played.includes(selected)
+            retention?.player === s.id &&
+            retention.played.includes(selected) &&
+            !mandatoryPlanetologistDiscard(s, selected)
           ) &&
-          (winner !== s ||
+          (mandatoryPlanetologistDiscard(s, selected) ||
+            winner !== s ||
             !canRetainBattleCard(
               card(s, selected)!,
               ac || dc,
