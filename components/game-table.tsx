@@ -184,6 +184,7 @@ import {
 } from './moritani-terror';
 import { TERROR_DEFINITIONS } from '@/game/moritani-terror';
 import { MoritaniRetention } from './moritani-retention';
+import { MoritaniAssassinate, MoritaniAssassinateHistory } from './moritani-assassinate';
 export function GameTable({
   game: g,
   send,
@@ -742,8 +743,11 @@ export function GameTable({
   };
   const inspectIdentity = (id: string, kind: LeaderInspectorProps['kind']) => {
     const identity = identityFor(id);
+    const assassination = kind === 'traitor'
+      ? g.moritaniAssassinate?.history.find(entry => entry.card === id) : undefined;
     return identity ? (
-      <LeaderInspector kind={kind} identity={identity} />
+      <LeaderInspector kind={kind} identity={identity}
+        assassination={assassination ? assassination.stage === 'replaced' ? 'retired' : 'revealed' : undefined} />
     ) : null;
   };
   const actionButton = (
@@ -975,6 +979,7 @@ export function GameTable({
       <SeatAutopilot game={g} act={act} busy={transportBusy} />
       <DukeVidal game={g} />
       <MoritaniTerrorSupply game={g} />
+      <MoritaniAssassinateHistory game={g} />
       <AmbassadorSupply game={g} />
       <AmbassadorInsights key={`${g.code}-${g.me}`} game={g} />
       <AuditorInsight game={g} />
@@ -2180,7 +2185,9 @@ export function GameTable({
                               ? 'Ecaz · Ambassador entry effect'
                               : g.decision.kind === 'ecazPlacement'
                                 ? 'Ecaz · Ambassador placement'
-                                : g.decision.kind === 'moritaniRetention'
+                                : g.decision.kind === 'moritaniAssassinate'
+                                  ? 'Moritani · Assassinate Leaders'
+                                  : g.decision.kind === 'moritaniRetention'
                                   ? 'Moritani · allied card retention'
                                   : g.decision.kind === 'moritaniTerror'
                                     ? 'Moritani · Terror entry reaction'
@@ -2404,6 +2411,8 @@ export function GameTable({
                   act={act}
                   busy={busy}
                 />
+              ) : g.decision.kind === 'moritaniAssassinate' ? (
+                <MoritaniAssassinate key={g.decision.event} game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'moritaniRetention' ? (
                 <MoritaniRetention game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'moritaniTerror' ? (

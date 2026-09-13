@@ -197,3 +197,22 @@ void test('Nexus prototype initializes all twelve hidden cards once and preserve
     other,
   );
 });
+
+void test('Moritani assassination preview starts only the fresh opted-in Advanced profile and preserves seats', (t) => {
+  const {db}=fixture(t);
+  const game=createGame('PROTOTYP',newPlayer('i','Moritani','moritani'),true,['ecaz']);
+  joinGame(game,newPlayer('g','Guild','guild'));for(const p of game.players)p.ready=true;
+  db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game),game.code);
+  const seats=db.prepare('SELECT * FROM seats').all(),other=db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+  startPrototypeRoom(db,game.code,7,'moritani-assassinate');
+  const saved=JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(game.code)!.state as string) as Game;
+  assert.equal(saved.status,'setup');assert.equal(saved.version,8);assert.equal(saved.advanced,true);
+  assert.equal(saved.moritaniAssassinatePreview,true);assert.equal(saved.moritaniAssassinate!.owner,'i');
+  assert.deepEqual(saved.moritaniAssassinate!.opportunities,[]);assert.deepEqual(saved.moritaniAssassinateCallEvents,[]);
+  for(const p of saved.players)assert.equal('moritaniAssassinatePreview' in viewGame(saved,p.id),false);
+  const rows=db.prepare('SELECT * FROM rooms ORDER BY code').all();
+  assert.throws(()=>startPrototypeRoom(db,game.code,7,'moritani-assassinate'));
+  assert.throws(()=>startPrototypeRoom(db,game.code,8,'moritani-assassinate'));
+  assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(),rows);
+  assert.deepEqual(db.prepare('SELECT * FROM seats').all(),seats);assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'),other);
+});

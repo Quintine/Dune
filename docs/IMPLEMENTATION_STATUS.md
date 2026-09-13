@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 14 September 2026 — Moritani Assassinate Leaders prototype and outage preservation
+
+[Assassinate Leaders](MORITANI_ASSASSINATE_LEADERS.md) connects native Advanced
+Moritani's qualifying battle loss to private reveal/continue controls, a different
+opposing-faction Traitor Card, live-target death and bank bounty, and automatic
+Mentat replacement with a public set-aside marker. Dead targets remain legal with
+zero bounty. All four AI profiles use the owner's legal choices; one use per
+faction and physical held/reserve/retired custody persist across saves.
+
+The explicit local preview excludes exceptional captured/foreign leaders and
+combined modules. A uniform private step prevents hidden eligibility leaks but
+awaits the user's UX decision. Normal traitor-call duration also remains unresolved;
+a recorded call guards later use without declaring a publisher ruling. No ordinary
+start or publication gate opens. The checklist records the bounded prototype.
+
+Independent source/privacy/persistence review and 32 focused cases pass. Separate
+battle obligations bind cleanup, normal-call logs wait for public revelation, and
+replacement custody rejects missing cards and forged same-turn consumption chains.
+Five SQLite cases cover authenticated pending/resolved restoration, Truthtrance
+interruption, competing writes, stale/duplicate actions and corrupt saved receipts.
+
+Two genuine Advanced four-profile games finish in 296/101 accepted actions, with
+zero rejected candidates, ten periodic JSON rounds and all eight final seat views
+restored. Exact physical custody holds. Two opportunities are declined; these
+samples do not exercise an assassination reveal. A separate conserved, staged
+browser battle verifies Master Bewt's death, three-spice bounty, retained card,
+automatic Mentat replacement, public marker, context-correct readable inspection,
+and pending/resolved refresh. The QA game remains at human Terror placement.
+
+After the reported power failure, all 801 opening games remain unchanged and the
+healthy server is reused. Final types/lint/offline/build/HTTP results, source
+fingerprint, preservation of room and seat/recovery records, and Git delivery are
+recorded in the verified commit and private report. The full goal remains unfinished.
+
 ## 14 September 2026 — Truthtrance recorded knowledge and outage preservation
 
 [Truthtrance knowledge](TRUTHTRANCE_KNOWLEDGE.md) connects stored Bene Gesserit

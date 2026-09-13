@@ -20,7 +20,7 @@ async function main() {
   });
   if (values.help) {
     console.log(
-      'Usage: node --import tsx tools/start-prototype.ts --profile ix|discovery|leader-skills|factions|nexus --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready lobby for the selected development prototype. Nexus enables the existing private Nexus setup. Factions supports selected expansion factions without optional modules; the separate Ecaz Treachery variant stays disabled. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
+      'Usage: node --import tsx tools/start-prototype.ts --profile ix|discovery|leader-skills|factions|nexus|moritani-assassinate --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready lobby for the selected development prototype. Nexus enables the existing private Nexus setup. Moritani-assassinate explicitly opts into the bounded Advanced assassination preview. Factions supports selected expansion factions without optional modules; the separate Ecaz Treachery variant stays disabled. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
     );
     return;
   }

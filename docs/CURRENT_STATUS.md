@@ -6,10 +6,10 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest verified checkpoint: `8e1cd7b`, Emperor Nexus extra revival.
-Types, lint, **4,649 offline tests**, build and **43 HTTP tests** passed.
-All 733 opening rooms and original seat/recovery records were preserved
-(767 after HTTP checks); all 734 present immediately before verification also
+Latest verified checkpoint: `8906b41`, Truthtrance recorded knowledge.
+Types, lint, **4,662 offline tests**, build and **43 HTTP tests** passed.
+All 767 opening rooms and original seat/recovery records were preserved
+(801 after HTTP checks); all 768 present immediately before verification also
 remained unchanged. The healthy server was reused.
 
 [Mentat](MENTAT_QUESTION.md) connects private naming/disclosure before posture
@@ -43,7 +43,7 @@ forced spice payments. No answer or purchase policy is assumed. All 733 opening
 rooms and seat/recovery records survived the latest outage unchanged; a new snapshot
 protects all 734 rooms before final verification. The healthy server is reused.
 
-Current checkpoint: [Truthtrance recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), connecting
+Completed prototype: [Truthtrance recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), connecting
 stored BG prediction faction/turn, submitted current Storm dials and actually known
 Fremen forecasts. The same private verified answer drives controls, all four bots
 and saved continuation. Independent source/privacy review and 44 focused cases pass,
@@ -55,6 +55,20 @@ All 767 opening rooms and seat/recovery records survived the latest reported out
 the healthy server is reused. A new snapshot protects all 768 rooms before broad
 verification. Final checks, preservation totals and Git delivery are recorded in
 the checkpoint commit and private report; full mode/publication gates remain.
+
+Current checkpoint: [Moritani Assassinate Leaders](MORITANI_ASSASSINATE_LEADERS.md)
+connects a qualifying battle loss to a private reveal/continue choice, living/dead
+targets, bank bounty, public markers and automatic Mentat replacement. All four
+AI profiles and saved continuation are connected in the bounded Advanced preview.
+Independent source/privacy/persistence review and 32 focused cases pass. Two genuine
+four-profile games finish in 296/101 actions with no rejections; both observed
+opportunities are declined. A separate conserved, staged browser battle verifies
+the reveal, three-spice payment, automatic physical replacement, readable inspectors
+and pending/resolved refresh. Normal-traitor-call duration and the uniform private
+UX question remain pending; exceptional custody and combined modules stay gated.
+All 801 opening games remain unchanged after the reported outage; the healthy
+server is reused. Required broad checks, source fingerprint, final preservation
+and Git delivery are recorded in the checkpoint commit and private report.
 
 ## Authoritative navigation
 

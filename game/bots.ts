@@ -1586,6 +1586,14 @@ function policyActions(g: GameView): Action[] {
       }
       return [{ type: 'decision', decline: true }];
     }
+    if (d.kind === 'moritaniAssassinate') {
+      const pending = g.moritaniAssassinate?.pending;
+      if (!pending || pending.event !== d.event) return [];
+      const cards = [...pending.cards].sort((a,b) => b.bounty-a.bounty || a.card.localeCompare(b.card));
+      return [cards.length && !pending.blocked
+        ? {type:'decision',event:d.event,card:cards[0].card}
+        : {type:'decision',event:d.event,decline:true}];
+    }
     if (d.kind === 'moritaniRetention') {
       const candidates = (me.hand ?? [])
         .filter((card) => d.cards.includes(card.id))

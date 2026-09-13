@@ -26,6 +26,7 @@ export type LeaderDisplayIdentity = Readonly<
 export type LeaderInspectorProps = {
   identity: LeaderDisplayIdentity;
   kind?: 'leader' | 'traitor' | 'faceDancer';
+  assassination?: 'choice' | 'revealed' | 'retired';
 };
 
 /** An original geometric medallion, not a portrait or a printed component reproduction. */
@@ -104,12 +105,15 @@ function IdentityMedallion({ traitor }: { traitor: boolean }) {
 export function LeaderInspector({
   identity,
   kind = 'leader',
+  assassination,
 }: LeaderInspectorProps) {
   const traitor = kind === 'traitor';
   const faceDancer = kind === 'faceDancer';
   const label = faceDancer ? 'Face Dancer' : kind;
   const cheapHero = identity.cheapHero === true;
-  const description = faceDancer
+  const description = traitor && assassination === 'retired'
+    ? 'This face-up card marks the faction against which Moritani has already used Assassinate Leaders. It is set aside, separate from held Traitor Cards.'
+    : faceDancer
     ? cheapHero
       ? 'This Face Dancer identity matches either Cheap Hero or Cheap Heroine used as the winning battle leader, regardless of the hero card’s name or the player’s faction.'
       : 'This Face Dancer identity matches the named winning leader. Tleilaxu can reveal an unrevealed match after that battle and its rewards are settled.'
@@ -254,6 +258,19 @@ export function LeaderInspector({
                         components.
                       </p>
                     )}
+                  </>
+                ) : traitor && assassination ? (
+                  <>
+                    <p className="m-0 text-base leading-7 text-[#e0e4d8]">
+                      {assassination === 'choice' ? 'Inspection does not reveal this card. Use the assassination controls to reveal it publicly or decline.' : 'This identity has already been revealed publicly through Assassinate Leaders.'}
+                    </p>
+                    <p className="m-0 text-base leading-7 text-[#e0e4d8]">
+                      After a qualifying lost battle, Moritani may reveal a different opposing-faction leader’s Traitor Card. A living target goes to the Tanks and pays its printed strength; a target already in the Tanks pays no spice.
+                    </p>
+                    <p className="m-0 text-base leading-7 text-[#e0e4d8]">
+                      {assassination === 'retired' ? 'This physical card no longer belongs to a hand and cannot be called as a held traitor. Moritani has drawn its private replacement.' : 'The revealed card is set aside face up during Mentat Pause, when Moritani draws one private replacement.'}
+                      {' '}The marker records the faction’s once-per-game assassination use. Karama cannot cancel this advantage.
+                    </p>
                   </>
                 ) : traitor ? (
                   <>

@@ -28,6 +28,7 @@ import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type Great
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
+import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, moritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
@@ -750,6 +751,7 @@ export type Decision =
   | { kind: 'rihani'; player: string; event: string; stage: 'offer' | 'return' }
   | { kind: 'fullPlanOffer'; player: string }
   | {kind:'bureaucratPayment';player:string;event:string}
+  | { kind: 'moritaniAssassinate'; player: string; event: string }
   | { kind: 'mentatQuestion'; player: string; event: string; owner: string; target: string; stage: 'name' | 'reveal'; weapon: string | null }
   | { kind: 'fullPlanRead'; player: string; target: string }
   | { kind: 'homeworldShipmentGuild'; player: string; shipper: string; destination: string; amount: number; event: string }
@@ -1487,6 +1489,15 @@ export type Game = {
   bureaucratUseEvents?: string[];
   /** Private development opt-in pending the uniform Mentat response UX decision. */
   mentatQuestionPreview?: true;
+  /** Private development opt-in while uniform hidden-eligibility UX is pending. */
+  moritaniAssassinatePreview?: true;
+  moritaniAssassinate?: MoritaniAssassinateState;
+  moritaniAssassinateCallEvents?: string[];
+  moritaniAssassinateResume?: {
+    event: string;
+    continuation: Extract<NonNullable<Game['pendingTreacheryDiscard']>['continuation'], {kind:'battleResolved'}>;
+    signature: string;
+  };
   mentatHistory?: MentatObservation[];
   mentatHistoryEvents?: string[];
   advanced: boolean;
@@ -1556,6 +1567,7 @@ export type Game = {
     sandmaster?: { leader: string; key: string; before: number; after: number };
     caladanReinforcement?: HomeworldVictoryObligation;
     nexusSardaukarCasualties?: string;
+    moritaniAssassinate?: {event:string;signature:string;continuation?:string};
   } | null;
   auction: Auction | null;
   battle: Battle | null;
@@ -5048,7 +5060,162 @@ function leaderSkillAssignmentUnavailable(
     ? ADVANCED_ATREIDES_SUK_ASSIGNMENT_BLOCK
     : null;
 }
+function moritaniAssassinateModeSupported(g: Game) {
+  return g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
+    g.players.some(p => p.faction === 'moritani') &&
+    g.players.every(p => ['moritani','atreides','beneGesserit','guild','emperor','fremen'].includes(p.faction)) &&
+    !g.nexusCards && !g.leaderSkills && !g.strongholdCards && !g.homeworlds &&
+    !g.discoveryEnabled && !g.discoveries && !g.techTokens;
+}
+function moritaniAssassinateContext(g: Game, receipt: MoritaniAssassinateReceipt) {
+  const p = getPlayer(g,receipt.owner), opponent = getPlayer(g,receipt.opponent);
+  return {state:g.moritaniAssassinate!,receipt,held:p.traitors,
+    normallyRevealed:p.revealedTraitors ?? [],leaders:opponent.leaders};
+}
+function moritaniAssassinateIntegrity(g: Game) {
+  const state = g.moritaniAssassinate, resume = g.moritaniAssassinateResume;
+  requireRule(g.moritaniAssassinatePreview === undefined || g.moritaniAssassinatePreview === true,
+    'Invalid assassination preview setting.');
+  if (!state) {
+    requireRule(!g.moritaniAssassinatePreview && !resume && !g.moritaniAssassinateCallEvents && !g.lastBattleContext?.moritaniAssassinate &&
+      g.decision?.kind !== 'moritaniAssassinate', 'The assassination preview lost its original state.');
+    return;
+  }
+  requireRule(g.moritaniAssassinatePreview === true && moritaniAssassinateModeSupported(g) &&
+    state.owner === byFaction(g,'moritani')?.id, 'This assassination preview no longer matches its original faction profile.');
+  nexusRule(() => validateMoritaniAssassinate(state,{turn:g.turn,held:getPlayer(g,state.owner).traitors,
+    removed:Array.isArray(state.opportunities) ? state.opportunities.filter(r => r?.stage === 'replaced').map(r => r.card!) : []}));
+  const calls = g.moritaniAssassinateCallEvents;
+  requireRule(Array.isArray(calls) && calls.every(event => typeof event === 'string' && event.length > 0) &&
+    new Set(calls).size === calls.length && state.normalTraitorCall === (calls.length > 0),
+    'The assassination normal-traitor-call guard lost its original event record.');
+  for (const receipt of state.opportunities) {
+    const opponent = getPlayer(g,receipt.opponent);
+    requireRule(receipt.turn <= g.turn && opponent.faction === receipt.faction &&
+      receipt.owner === state.owner && TERRITORIES.some(t => t.id === receipt.territory),
+      'The assassination history no longer matches its original battle participants.');
+  }
+  const pending = state.opportunities.filter(r => r.stage === 'choice');
+  requireRule(pending.length <= 1, 'Finish the current assassination opportunity first.');
+  const obligation = g.lastBattleContext?.moritaniAssassinate;
+  if (obligation) {
+    const receipt = state.opportunities.find(r => r.event === obligation.event);
+    requireRule(receipt && receipt.signature === obligation.signature && receipt.event === g.lastBattleContext!.event,
+      'The completed battle lost or changed its assassination obligation.');
+  }
+  if (pending.length) {
+    const r = pending[0];
+    requireRule(g.status === 'playing' && g.phase === 6 && g.turn === r.turn && !g.battle &&
+      g.lastBattleContext?.event === r.event && g.lastBattleContext.winner === r.opponent &&
+      g.lastBattleContext.result === 'normal' && g.lastBattleContext.territory === r.territory &&
+      obligation?.event === r.event, 'The assassination choice lost its resolved battle.');
+    requireRule(resume && resume.event === r.event && resume.continuation.event === r.event &&
+      resume.continuation.winner === r.opponent && resume.continuation.territory === r.territory &&
+      resume.continuation.result === 'normal' && JSON.stringify(resume.continuation.combatants) === JSON.stringify(g.lastBattleContext.combatants) &&
+      resume.signature === JSON.stringify(resume.continuation) && resume.signature === obligation.continuation,
+      'The assassination choice lost or changed its saved cleanup.');
+    const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'moritaniAssassinate');
+    requireRule(decisions.length === 1 && decisions[0].player === r.owner &&
+      (decisions[0] as Extract<Decision,{kind:'moritaniAssassinate'}>).event === r.event,
+      'The assassination choice lost its owning decision.');
+  } else requireRule(!resume && g.decision?.kind !== 'moritaniAssassinate', 'A settled assassination cannot retain its decision.');
+  if (g.status === 'playing' || g.status === 'finished') {
+    const retired = state.opportunities.filter(r => r.stage === 'replaced').map(r => r.card!);
+    const physical = [...(g.traitorReserve ?? []),...g.players.flatMap(p => p.traitors),...retired].sort();
+    requireRule(JSON.stringify(physical) === JSON.stringify([...nexusTraitorUniverse(g)].sort()),
+      'Assassination must preserve every physical Traitor Card in hand, deck or face-up set-aside custody.');
+    for (const r of state.opportunities.filter(r => r.stage === 'revealed'))
+      requireRule(getPlayer(g,r.owner).traitors.includes(r.card!), 'The revealed assassination card must remain held until Mentat replacement.');
+    const replacements = new Set<string>();
+    for (const [index,r] of state.opportunities.entries()) if (r.stage === 'replaced') {
+      const laterUses = state.opportunities.slice(index+1).filter(next => next.card === r.replacement &&
+        (next.stage === 'revealed' || next.stage === 'replaced'));
+      const ownedReplacement = laterUses.length ? laterUses.every(next => next.turn > r.turn)
+        : getPlayer(g,r.owner).traitors.includes(r.replacement!);
+      requireRule(!replacements.has(r.replacement!) && ownedReplacement,
+        'Each assassination replacement must stay with Moritani or be consumed by its later assassination.');
+      replacements.add(r.replacement!);
+    }
+  }
+}
+function syncMoritaniAssassinateReceipt(g: Game, receipt: MoritaniAssassinateReceipt) {
+  receipt.signature = moritaniAssassinateSignature(receipt);
+  if (g.lastBattleContext?.event === receipt.event)
+    g.lastBattleContext.moritaniAssassinate = {...g.lastBattleContext.moritaniAssassinate,event:receipt.event,signature:receipt.signature};
+}
+function recordMoritaniAssassinateOpportunity(g: Game, b: Battle, winner: Player | undefined, loser: Player | null) {
+  const state = g.moritaniAssassinate;
+  if (!state || state.normalTraitorCall || !winner || loser?.id !== state.owner ||
+    state.opportunities.some(r => r.faction === winner.faction && ['revealed','replaced'].includes(r.stage))) return;
+  const opposingLeader = winner.leaders.find(l => l.id === b.plans[winner.id].leader);
+  const trigger = {advanced:g.advanced,owner:state.owner,ownerFaction:loser.faction,opponent:winner.id,
+    faction:winner.faction,event:g.lastBattleContext!.event,turn:g.turn,territory:b.territory,
+    opposingLeader:opposingLeader?.id ?? null,opposingLeaderSurvived:!!opposingLeader && !opposingLeader.dead,
+    normalBattle:g.lastBattleContext!.result === 'normal',lostBattle:true,
+    traitorCalled:Object.values(b.traitorCalls).some(Boolean)};
+  if (!moritaniAssassinateTrigger(trigger)) return;
+  const receipt = createMoritaniAssassinateOpportunity(trigger);
+  state.opportunities.push(receipt);
+  syncMoritaniAssassinateReceipt(g,receipt);
+}
+function projectedMoritaniAssassinate(g: Game, viewer: string) {
+  const state = g.moritaniAssassinate;
+  if (!state) return null;
+  const pending = state.opportunities.find(r => r.stage === 'choice');
+  const own = viewer === state.owner;
+  const choices = pending && own ? nexusRule(() => moritaniAssassinateChoices(moritaniAssassinateContext(g,pending))) : null;
+  return {owner:state.owner,blocked:own && state.normalTraitorCall
+    ? 'Assassinate Leaders after a normal traitor call awaits clarification of the printed loss-of-advantage rule.' : null,
+    pending:pending ? {event:pending.event,opponent:pending.opponent,territory:pending.territory,
+      cards:choices?.cards ?? [],blocked:choices?.blocked ?? null} : null,
+    history:state.opportunities.filter(r => r.stage === 'revealed' || r.stage === 'replaced').map(r => ({
+      event:r.event,turn:r.turn,opponent:r.opponent,faction:r.faction,territory:r.territory,
+      card:r.card!,bounty:r.bounty,stage:r.stage as 'revealed'|'replaced',
+    }))};
+}
+function actMoritaniAssassinate(g: Game, decision: Extract<Decision,{kind:'moritaniAssassinate'}>, action: Action) {
+  const state = g.moritaniAssassinate!, r = state.opportunities.find(r => r.stage === 'choice')!;
+  requireRule(r && action.event === r.event && decision.event === r.event && decision.player === r.owner,
+    'This assassination opportunity has already changed.');
+  const resume = g.moritaniAssassinateResume!;
+  requireRule(resume?.event === r.event, 'The original assassination cleanup is missing.');
+  if (action.decline === true) {
+    requireRule(Object.keys(action).every(k => ['type','event','decline'].includes(k)), 'Continue without selecting an assassination card.');
+    r.stage = 'declined';
+    log(g, `${getPlayer(g,r.owner).name} finished the Assassinate Leaders opportunity without revealing a card.`, {faction:'moritani',name:'Assassinate Leaders'});
+  } else {
+    requireRule(Object.keys(action).every(k => ['type','event','card'].includes(k)), 'Choose one assassination Traitor Card or continue.');
+    const quote = nexusRule(() => quoteMoritaniAssassinate(moritaniAssassinateContext(g,r),stringField(action.card)));
+    const target = getPlayer(g,r.opponent).leaders.find(l => l.id === quote.leader)!;
+    if (quote.kill) {target.dead = true;target.deaths++;delete target.usedAt;}
+    const owner = getPlayer(g,r.owner);
+    requireRule(Number.isSafeInteger(owner.spice + quote.bounty), 'Assassination income exceeds the supported spice balance.');
+    owner.spice += quote.bounty;
+    owner.revealedTraitors = [...new Set([...(owner.revealedTraitors ?? []),quote.leader])];
+    Object.assign(r,quote.receipt);
+    log(g, `${owner.name} revealed ${target.name} as a traitor of ${faction(r.faction).name}. ${quote.kill ? `${target.name} was sent to the Tanks and ${owner.name} collected ${quote.bounty} spice from the bank.` : 'That leader was already in the Tanks; no new death or spice was awarded.'} This uses Assassinate Leaders against that faction for the game. The revealed card will be set aside and replaced during Mentat Pause.`, {faction:'moritani',name:'Assassinate Leaders'});
+  }
+  syncMoritaniAssassinateReceipt(g,r);
+  delete g.moritaniAssassinateResume;
+  continueResolvedBattle(g,resume.continuation);
+}
+function replaceMoritaniAssassinationTraitors(g: Game) {
+  const state = g.moritaniAssassinate;
+  if (!state) return;
+  for (const r of state.opportunities.filter(r => r.stage === 'revealed')) {
+    const owner = getPlayer(g,r.owner);
+    requireRule(r.turn === g.turn && owner.traitors.includes(r.card!) && (g.traitorReserve?.length ?? 0) > 0,
+      'Mentat replacement needs the original revealed card and one remaining physical Traitor Card.');
+    owner.traitors = owner.traitors.filter(id => id !== r.card);
+    r.replacement = g.traitorReserve!.shift()!;
+    owner.traitors.push(r.replacement);
+    r.stage = 'replaced';
+    syncMoritaniAssassinateReceipt(g,r);
+    log(g, `${owner.name} set the revealed ${faction(r.faction).name} Traitor Card aside face up and drew one private replacement during Mentat Pause. The set-aside card records this faction's used assassination.`, {faction:'moritani',name:'Assassination replacement'});
+  }
+}
 function leaderSkillsIntegrity(g: Game) {
+  moritaniAssassinateIntegrity(g);
   bureaucratPaymentIntegrity(g);
   mentatQuestionIntegrity(g);
   diplomatDefenseIntegrity(g);
@@ -5637,6 +5804,17 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
         });
     }), 'The faction initializer cannot overwrite existing inventories, leader custody or revival history.');
   return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
+}
+/** Genuine, explicitly opted-in preview; no player action enables this profile. */
+export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
+  requireRule(!state.moritaniAssassinatePreview && !state.moritaniAssassinate && !state.moritaniAssassinateResume && !state.moritaniAssassinateCallEvents,
+    'The assassination preview starts only from a fresh lobby.');
+  requireRule(moritaniAssassinateModeSupported(state), 'The assassination preview needs Advanced Moritani with ordinary base opponents except Harkonnen, the Ecaz expansion and no optional modules.');
+  const g = initializeFactionExpansionsGameForAudit(state);
+  g.moritaniAssassinatePreview = true;
+  g.moritaniAssassinate = {version:1,owner:byFaction(g,'moritani')!.id,normalTraitorCall:false,opportunities:[]};
+  g.moritaniAssassinateCallEvents = [];
+  return g;
 }
 /** Prototype-only Discovery setup. Public starts stay gated while remaining effects are connected. */
 export function initializeDiscoveryGameForAudit(state: Game): Game {
@@ -12347,6 +12525,7 @@ function beginPhase(g: Game) {
     collect(g);
   }
   if (g.phase === 8) {
+    replaceMoritaniAssassinationTraitors(g);
     if (g.inflation && g.inflation.updatedTurn < g.turn) {
       if (g.inflation.flipped) {
         g.inflation = null;
@@ -14898,6 +15077,8 @@ function resolveBattle(g: Game) {
         : (g.players.flatMap((p) => p.leaders).find((l) => l.id === identity)
             ?.name ?? identity);
     log(g, `${holder.name} revealed ${name} as a traitor.`);
+    if (holder.id === g.moritaniAssassinate?.owner)
+      log(g, `${holder.name} called a traitor normally. Further Assassinate Leaders use awaits clarification of the printed loss-of-advantage rule.`, {faction:'moritani',name:'Assassinate Leaders boundary'});
   }
   const dead = (l: Leader | undefined) => {
     if (l) {
@@ -15113,6 +15294,7 @@ function resolveBattle(g: Game) {
     ...(playedCardRoles ? { cardRoles: playedCardRoles } : {}),
     ...(sardaukar?.casualties ? {nexusSardaukarCasualties:sardaukar.receipt.event} : {}),
   };
+  recordMoritaniAssassinateOpportunity(g, b, winner, losingPlayer);
   if (winner && quote.sandmaster) {
     const placement = nexusRule(() => sandmasterVictorySpice(b.territory, g.spice));
     if (placement) {
@@ -15185,6 +15367,8 @@ function resolveBattle(g: Game) {
     cards,
     ...(casualtyCommitment ? { casualties: casualtyCommitment } : {}),
   };
+  if (g.lastBattleContext.moritaniAssassinate)
+    g.lastBattleContext.moritaniAssassinate.continuation = JSON.stringify(continuation);
   if (discarded.length)
     stageTreacheryDiscard(g, 'battle:mandatory', discarded, continuation);
   else continueResolvedBattle(g, continuation);
@@ -15196,6 +15380,14 @@ function continueResolvedBattle(
     { kind: 'battleResolved' }
   >,
 ) {
+  const assassination = g.moritaniAssassinate?.opportunities.find(r => r.stage === 'choice');
+  if (assassination) {
+    requireRule(assassination.event === continuation.event && !g.moritaniAssassinateResume,
+      'The assassination opportunity must preserve its original battle cleanup.');
+    g.moritaniAssassinateResume = {event:assassination.event,continuation:structuredClone(continuation),signature:JSON.stringify(continuation)};
+    g.decision = {kind:'moritaniAssassinate',player:assassination.owner,event:assassination.event};
+    return;
+  }
   const { cards, territory: to } = continuation;
   const winner = continuation.winner ? getPlayer(g, continuation.winner) : null;
   const losses = continuation.casualties?.options;
@@ -20334,6 +20526,7 @@ function applyActionInner(
     );
     g.decision = null;
     requireRule(decision.kind !== 'leaderSkillVisibility' && decision.kind !== 'leaderSkillRevival', 'Use the Leader Skills controls for this decision.');
+    if (decision.kind === 'moritaniAssassinate') {actMoritaniAssassinate(g,decision,action);return g;}
     if (decision.kind === 'mentatQuestion') {
       actMentatQuestion(g, decision, action);
       return g;
@@ -23238,6 +23431,11 @@ function applyActionInner(
     if (action.call && b.traitorDeclarationVersion)
       b.traitorDeclarations![id] = nexusRule(() => createTraitorDeclaration(traitorDeclarationContext(g), id));
     b.traitorCalls[id] = action.call;
+    if (action.call && g.moritaniAssassinate?.owner === id) {
+      requireRule(b.event && !g.moritaniAssassinateCallEvents!.includes(b.event), 'This normal traitor call was already recorded.');
+      g.moritaniAssassinate.normalTraitorCall = true;
+      g.moritaniAssassinateCallEvents!.push(b.event);
+    }
     if (
       action.call &&
       p.faction === 'harkonnen' &&
@@ -23929,6 +24127,7 @@ export function viewGame(state: Game, id: string) {
       incomeCanceled:
         g.choamCharity?.turn === g.turn && g.choamCharity.canceled,
     },
+    moritaniAssassinate: projectedMoritaniAssassinate(g,id),
     moritaniRetention: g.moritaniRetention ?? null,
     moritaniRetentionCard: g.moritaniRetention?.keep
       ? (cardOf(

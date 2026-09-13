@@ -6,6 +6,7 @@ import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
 const DECISIONS = {
   leaderSkillVisibility: true,
   leaderSkillRevival: true,
+  moritaniAssassinate: true,
   mentatQuestion: true,
   bureaucratPayment: true,
   sukRescue: true,

@@ -2558,16 +2558,24 @@ export const RULE_TOPICS: RuleTopic[] = [
     id: 'moritani-assassinate-leaders',
     title: 'Moritani: advanced Assassinate Leaders',
     category: 'Advanced & expansions',
-    coverage: 'Planned',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
-      'A battle-loss advantage using a different Traitor Card, separate from Terror Assassination.',
+      'An opted-in Advanced Moritani preview reveals a different opposing-faction Traitor Card after a loss and replaces it during Mentat Pause.',
     steps: [
       'After you lose a battle, this advanced advantage is available only if the opposing leader disc survived and no Traitor was called.',
       'You may reveal a Traitor Card for that opposing faction, but it must name a different leader from the one you just fought. If that named leader is not in the Tanks, kill it and collect spice for its value.',
-      'During Mentat Pause, set the revealed card aside face up as a marker and draw a new Traitor Card. You can use this advantage only once against each faction in the game.',
-      'You may instead reveal a traitor normally in battle, but doing so loses this advanced advantage. The cancellation table gives Karama no effect against Assassinate Leaders.',
+      'An already-dead named leader remains a legal reveal, awarding no death or spice. During Mentat Pause, set the revealed card aside face up as a marker and draw a new Traitor Card. You can use this advantage only once against each faction in the game.',
+      'The printed rule says a normal traitor reveal loses this advantage, but its duration remains unresolved. The preview guards further assassination after a normal call. Karama has no effect against Assassinate Leaders.',
       'If Harkonnen has captured your own leader and you hold its Traitor Card, you may call that traitor normally; you may not use Assassinate Leaders on that basis.',
       'Terror Assassination chooses a random leader when its token is triggered. It does not use this battle-loss condition, different-leader Traitor Card or once-per-faction allowance. Advanced starts and Moritani starts remain unavailable.',
+    ],
+    checklist: [
+      {area:'Implementation',status:'Partial',detail:'Explicit Advanced Moritani/base-opponent preview before any normal traitor call; native disc deaths, printed bounty, dead-target zero bounty and exact Mentat replacement.',evidence:['game/moritani-assassinate.ts','game/engine.ts']},
+      {area:'Player controls',status:'Partial',detail:'Uniform private choice/decline, named target and bounty, public face-up markers and readable inspection; normal activation awaits private-step UX decision.',evidence:['components/moritani-assassinate.tsx','components/game-table.tsx']},
+      {area:'AI',status:'Partial',detail:'All four profiles choose from the owner-only quote or decline; no hidden rival data or strength-calibration claim.',evidence:['game/bots.ts','tests/moritani-assassinate-engine.test.ts']},
+      {area:'Documentation',status:'Partial',detail:'Official authority, dead-target conditional, normal-call ambiguity, exceptional custody and optional-module boundaries remain explicit.',evidence:['docs/MORITANI_ASSASSINATE_LEADERS.md']},
+      {area:'Verification',status:'Partial',detail:'Rules, controls, genuine-setup staged battles, private views, authenticated recovery, concurrent writes and physical replacement chains; full faction acceptance remains open.',evidence:['tests/moritani-assassinate-quote.test.ts','tests/moritani-assassinate-engine.test.ts','tests/moritani-assassinate-controls.test.tsx','tests/moritani-assassinate-recovery.test.ts']},
     ],
     related: [
       'faction-moritani',
