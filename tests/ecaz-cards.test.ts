@@ -123,7 +123,7 @@ void test('verified inventory and source rules remain distinct from unimplemente
     assert.equal(definition.verification.sourceRules, 'verified');
     assert.equal(
       definition.verification.runtime,
-      definition.card.effect === 'recruits' ? 'prototype' : 'not-implemented',
+      definition.card.effect === 'reinforcements' ? 'not-implemented' : 'prototype',
     );
     assert.equal(definition.verification.combinedInteractions, 'incomplete');
     assert.ok(definition.verification.unresolved.length > 0);
@@ -154,9 +154,10 @@ void test('every canonical Ecaz face receives its full original gameplay guide a
       assert.equal(serialized.includes(note), false);
     assert.equal(serialized.includes('sourceRules'), false);
     assert.equal(serialized.includes('not-implemented'), false);
-    assert.deepEqual(presentation.topics.map((topic) => topic.id), ['card-recruits']);
+    assert.deepEqual(presentation.topics.map((topic) => topic.id), [card.effect === 'harassWithdraw' ? 'card-harass-withdraw' : 'card-recruits']);
     assert.match(presentation.availability ?? '', card.effect === 'recruits'
-      ? /development controls during Revival/ : /battle effect is still being implemented/);
+      ? /development controls during Revival/ : card.effect === 'harassWithdraw'
+        ? /development controls in either battle-card slot/ : /battle effect is still being implemented/);
   }
 });
 

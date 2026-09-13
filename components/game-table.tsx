@@ -117,10 +117,9 @@ import { FaceDanceDecision } from './face-dance-decision';
 import { CHEAP_HERO_TRAITOR, matchingTraitor } from '@/game/traitors';
 import {
   battleCardLabel,
-  isWeaponCard,
   isStoneBurner,
-  isDefenseCard,
 } from '@/game/battle-cards';
+import { validBattleSlotPair } from '@/game/battle-card-slots';
 import { stoneBurnerPlanBlock } from '@/game/stone-burner';
 import { TECH_TOKENS, ownedTech } from '@/game/tech-tokens';
 import Link from 'next/link';
@@ -152,10 +151,11 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { BattlePreparation, battlePlanCommitments, bindBattlePlanCommitments, NexusInspectionHistory } from './battle-preparation';
+import { BattlePreparation, battlePlanCommitments, battlePlanCardValue, battlePlanCardOptions, bindBattlePlanCommitments, NexusInspectionHistory } from './battle-preparation';
+import { HarassWithdrawGuide, harassWithdrawControlState } from './harass-withdraw';
 import { PrivateBattlePlan } from './private-battle-plan';
 import { SpiceBankerControl, spiceBankerControlState } from './spice-banker';
-import { canUsePlanetologistBattleSpecial, validLeaderSkillBattleCardPair } from '../game/leader-skill-combat';
+import { canUsePlanetologistBattleSpecial } from '../game/leader-skill-combat';
 import type { Card } from '../game/cards';
 import { RevealedBattle } from './revealed-battle';
 import { DiplomatDefense } from './diplomat-defense';
@@ -463,10 +463,19 @@ export function GameTable({
     selectedLeader: committed.leader ? String(committed.leader.value ?? '') : leader,
     card,
   });
-  const selectedBattleWeapon = me.hand?.find(c => c.id === (committed.weapon ? committed.weapon.value : weapon));
+  const selectedWeaponId = battlePlanCardValue(g, 'weapon', weapon);
+  const selectedDefenseId = battlePlanCardValue(g, 'defense', defense);
+  const selectedBattleWeapon = me.hand?.find(c => c.id === selectedWeaponId);
+  const selectedBattleDefense = me.hand?.find(c => c.id === selectedDefenseId);
+  const battlePairValid = validBattleSlotPair(selectedBattleWeapon, selectedBattleDefense,
+    !!selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon));
+  const harassControl = harassWithdrawControlState(g.battle?.harassWithdraw,
+    selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw',
+    committed.dial ? Number(committed.dial.value) : battleDial,
+    me.faction === 'fremen' && !g.battle?.fremenSupportBlocked ? 0 : battleSupport);
   const selectedStone = me.hand?.find(
     (c) =>
-      c.id === (committed.weapon ? committed.weapon.value : weapon) &&
+      c.id === selectedWeaponId &&
       isStoneBurner(c),
   );
   const stoneContext = g.battle?.stoneBurnerContext;
@@ -4579,24 +4588,19 @@ export function GameTable({
                                 <select
                                   id={`battle-${String(name).toLowerCase()}`}
                                   value={
-                                    committed[name === 'Weapon' ? 'weapon' : 'defense']
-                                      ? String(committed[name === 'Weapon' ? 'weapon' : 'defense']!.value ?? '')
-                                      : (v as string)
+                                    battlePlanCardValue(g, name === 'Weapon' ? 'weapon' : 'defense', v as string)
                                   }
                                   disabled={
-                                    !!committed[name === 'Weapon' ? 'weapon' : 'defense']
+                                    !!committed[name === 'Weapon' ? 'weapon' : 'defense'] &&
+                                    committed[name === 'Weapon' ? 'weapon' : 'defense']!.value !== null
                                   }
                                   onChange={(e) =>
                                     (fn as (s: string) => void)(e.target.value)
                                   }
                                 >
                                   <option value="">None</option>
-                                  {me.hand
-                                    ?.filter((c) =>
-                                      name === 'Defense'
-                                        ? isDefenseCard(c) && (!selectedBattleWeapon || !planetologistSpecial(selectedBattleWeapon) || validLeaderSkillBattleCardPair(selectedBattleWeapon,c,true))
-                                        : isWeaponCard(c) || planetologistSpecial(c),
-                                    )
+                                  {battlePlanCardOptions(g, name === 'Weapon' ? 'weapon' : 'defense',
+                                    selectedBattleLeader, selectedWeaponId, selectedDefenseId)
                                     .map((c) => (
                                       <option key={c.id} value={c.id}>
                                         {c.name}{name === 'Weapon' && planetologistSpecial(c) ? ' · Planetologist +2, discard after battle' : ''}
@@ -4605,6 +4609,8 @@ export function GameTable({
                                 </select>
                               </label>
                             ))}
+                            <HarassWithdrawGuide preview={g.battle.harassWithdraw} state={harassControl} />
+                            {!battlePairValid && <p role="status" className="notice">Choose two compatible battle cards. A single physical card cannot fill both slots.</p>}
                             {selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon) && (
                               <p className="notice">
                                 {selectedBattleWeapon.name} adds 2 to the surviving Planetologist leader.
@@ -4691,7 +4697,7 @@ export function GameTable({
                                 weapon,
                                 defense,
                               }),
-                              !!stonePlanReason,
+                              !!stonePlanReason || !!harassControl.blocked || !battlePairValid,
                             )}
                           </>
                         ) : (
@@ -4814,7 +4820,9 @@ export function GameTable({
                   (ecaz
                     ? ecaz.card.effect === 'recruits'
                       ? g.recruitsPreview?.play?.blocked ?? 'Use the Recruits panel during Revival to play this card.'
-                      : 'This card’s battle effect is still being implemented.'
+                      : ecaz.card.effect === 'harassWithdraw'
+                        ? g.battle?.harassWithdraw?.blocked ?? 'Use either battle-card slot to play Harass & Withdraw.'
+                        : 'This card’s battle effect is still being implemented.'
                     : null) ??
                   (richese?.card.effect === 'distrans'
                     ? 'Use the Distrans transfer panel above to choose a recipient and another card.'

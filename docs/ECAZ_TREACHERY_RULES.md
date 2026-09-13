@@ -83,3 +83,10 @@ A persistent battle-resolution continuation should preserve withdrawal intent th
 - Harass & Withdraw: winner and loser, zero dial, Traitor cancellation, returned reserves versus Face Dancer replacement, independent ally groups and prohibited own-Homeworld use.
 
 No runtime tests were added or claimed for this source task. At this source audit’s initial snapshot the repository had no factory entries for these names. The subsequent isolated definitions and inspector guides in `game/ecaz-cards.ts` are now tracked in `CARD_INVENTORY.md`; they do not activate the variant. Existing revival and battle helpers remain integration foundations, not evidence of complete card effects.
+
+## 14 September runtime follow-up
+
+[Recruits](RECRUITS_RUNTIME.md) and [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md)
+now have connected development prototypes. The linked contracts supersede the
+historical runtime-absence statements above within their explicit boundaries.
+Reinforcements and complete combined-module acceptance remain unfinished.

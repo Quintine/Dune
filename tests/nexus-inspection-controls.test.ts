@@ -155,11 +155,16 @@ void test('every simultaneous own commitment overrides plan submission, includin
   assert.deepEqual(battlePlanCommitments(view), {});
 });
 
-void test('the actual battle table locks each native-plus-Nexus field pair to the same values used by submission', () => {
+void test('the actual table binds native-plus-Nexus values while category-None selectors exclude ordinary cards', () => {
   for (const fields of [['dial', 'defense'], ['leader', 'weapon']] as const) {
     const view = fixture('h');
     view.nexusAtreides = null;
     view.nexusCards = null;
+    // An empty selector must follow the inspected category, not merely an empty hand.
+    view.players.find((p) => p.id === 'h')!.hand = [
+      baseDeck().find((card) => card.kind === 'projectile')!,
+      baseDeck().find((card) => card.kind === 'shield')!,
+    ];
     const values = { dial: 0, defense: null, leader: view.players.find((p) => p.id === 'h')!.leaders[0].id, weapon: null };
     view.battle!.ownCommitments = fields.map((field, index) => ({ source: index ? 'nexus' : 'native', beneficiary: 'a', target: 'h', field, value: values[field] }));
     const html = tableHtml(view);
@@ -167,12 +172,15 @@ void test('the actual battle table locks each native-plus-Nexus field pair to th
       const id = field === 'dial' ? 'forces-dialed' : `battle-${field}`;
       const control = html.match(new RegExp(`<[^>]+id="${id}"[^>]*>`))?.[0];
       assert.ok(control, `${field} control is visible`);
-      assert.match(control, /disabled=""|aria-disabled="true"/);
+      const categoryNone = (field === 'weapon' || field === 'defense') && values[field] === null;
+      if (categoryNone) assert.doesNotMatch(control, /disabled=""|aria-disabled="true"/);
+      else assert.match(control, /disabled=""|aria-disabled="true"/);
       if (field === 'dial') assert.match(control, /value="0"/);
       else {
         const select = html.match(new RegExp(`<select[^>]+id="${id}"[^>]*>[\\s\\S]*?</select>`))?.[0];
         assert.ok(select);
         assert.match(select, new RegExp(`<option[^>]+value="${values[field] ?? ''}"[^>]+selected=""`));
+        if (categoryNone) assert.equal((select.match(/<option\b/g) ?? []).length, 1, 'only None is legal without a supported slot-only special');
       }
     }
     for (const field of ['leader', 'weapon', 'defense'] as const) if (!(fields as readonly string[]).includes(field)) {

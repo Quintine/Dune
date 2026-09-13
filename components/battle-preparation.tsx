@@ -13,6 +13,32 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { Action, GameView, PlanField } from '@/game/engine';
 import type { CommittedPlanElement } from '@/game/battle-inspections';
+import {
+  battleCardSlotEligible,
+  fixedBattleInspectionMatches,
+  validBattleSlotPair,
+  type BattleCardSlot,
+} from '@/game/battle-card-slots';
+import { canUsePlanetologistBattleSpecial } from '@/game/leader-skill-combat';
+
+/** Both selectors evaluate the complete physical pair, in either selection order. */
+export function battlePlanCardOptions(game: GameView, slot: BattleCardSlot, leader: string, weapon: string, defense: string) {
+  const me = game.players.find(player => player.id === game.me)!;
+  const fixed = battlePlanCommitments(game)[slot];
+  return (me.hand ?? []).filter(card => {
+    const w = slot === 'weapon' ? card : me.hand?.find(c => c.id === weapon);
+    const d = slot === 'defense' ? card : me.hand?.find(c => c.id === defense);
+    const planetologistWeapon = canUsePlanetologistBattleSpecial({
+      assignments: game.leaderSkills?.assignments.filter(a => a.controller === game.me) ?? [],
+      selectedLeader: leader, card: w,
+    });
+    return card.id !== 'ecaz-reinforcements' &&
+      (card.id !== 'ecaz-harass-withdraw' || (!!game.battle?.harassWithdraw && !game.battle.harassWithdraw.blocked)) &&
+      battleCardSlotEligible(slot, card, { planetologistWeapon }) &&
+      (!fixed || fixedBattleInspectionMatches(slot, fixed.value, card.id, card)) &&
+      validBattleSlotPair(w, d, planetologistWeapon);
+  });
+}
 
 /** Read only the recipient's projected commitments, including an explicit null. */
 export function battlePlanCommitments(game: GameView): Partial<Record<PlanField, CommittedPlanElement>> {
@@ -30,7 +56,19 @@ export function battlePlanCommitments(game: GameView): Partial<Record<PlanField,
 
 export function bindBattlePlanCommitments(game: GameView, plan: Action): Action {
   if (plan.type !== 'battlePlan') return plan;
-  return { ...plan, ...Object.fromEntries(Object.values(battlePlanCommitments(game)).map((item) => [item.field, item.value])) };
+  return { ...plan, ...Object.fromEntries(Object.values(battlePlanCommitments(game)).map((item) => [item.field,
+    item.field === 'weapon' || item.field === 'defense'
+      ? battlePlanCardValue(game, item.field, typeof plan[item.field] === 'string' ? plan[item.field] as string : '') || null
+      : item.value])) };
+}
+
+/** An inspected absence of a category still permits a legal slot-only Special. */
+export function battlePlanCardValue(game: GameView, slot: BattleCardSlot, selected: string): string {
+  const commitment = battlePlanCommitments(game)[slot];
+  if (!commitment) return selected;
+  if (commitment.value !== null) return String(commitment.value);
+  const card = game.players.find((player) => player.id === game.me)?.hand?.find((card) => card.id === selected);
+  return card && fixedBattleInspectionMatches(slot, null, card.id, card) ? card.id : '';
 }
 
 export function battlePreparationField(game: GameView): PlanField | null {
@@ -222,6 +260,12 @@ export function BattlePreparation({
         {beneficiary.name} will see this element. You may still change the rest
         of your plan before sealing it.
       </p>
+      {(field === 'weapon' || field === 'defense') && b.harassWithdraw && !b.harassWithdraw.blocked && (
+        <p className="fine">
+          Harass &amp; Withdraw is neither a weapon nor a defense. Choose None
+          for the category it will occupy; its identity stays private until plans are revealed.
+        </p>
+      )}
       {b.voice && (
         <p className="notice">
           Voice: {b.voice.must ? 'must play' : 'cannot play'}{' '}

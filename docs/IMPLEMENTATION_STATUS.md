@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 14 September 2026 — Harass & Withdraw battle prototype
+
+[Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) now connects either physical card
+slot, category-aware private inspections, unique typed undialed returns before
+battle losses, successful opponent-Traitor cancellation and mandatory disposal.
+Both selectors, all four AI profiles and saved continuation use the shared
+physical quote. Existing Planetologist inspection and literal Truthtrance slot
+promises remain unchanged. Richese/Stone Burner timing, ambiguous allocations
+and optional-module combinations remain gated; public starts stay closed.
+
+Focused rules, controls, bot and authenticated recovery evidence is paired with
+independent review. Final complete-game samples, browser checks, preservation,
+required broad checks and Git delivery are recorded in the source-bound checkpoint
+report and commit message. This is a connected prototype, not full rules certification.
+All 936 opening games and 1,959 seats survived the reported outage unchanged; the
+healthy server was reused without resetting saved state or recreating automation.
+
+
 ## 14 September 2026 — Recruits independent-card preview
 
 [Recruits](RECRUITS_RUNTIME.md) is connected in an explicit development preview.

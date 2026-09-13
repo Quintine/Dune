@@ -4,8 +4,6 @@ import { bureaucratPaymentModeSupported, bureaucratPaymentSignature, bureaucratU
 import { MENTAT_EMPTY_HAND, MentatQuestionError, mentatQuestionModeSupported, mentatWeaponNames, mentatHand, quoteMentatReveal, mentatSignature, type MentatQuestionReceipt, type MentatObservation, type MentatView } from './mentat-question';
 import {
   canUsePlanetologistBattleSpecial,
-  isPlanetologistBattleSpecialCard,
-  validLeaderSkillBattleCardPair,
   type BattleLeaderSkill,
 } from './leader-skill-combat';
 import { quoteSukRescue, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
@@ -18,6 +16,8 @@ import { quoteSandmasterMovement, validateSandmasterMovement, type SandmasterMov
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
 import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
+import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair } from './battle-card-slots';
+import { HARASS_WITHDRAW_CARD, HarassWithdrawError, isHarassWithdraw, quoteHarassWithdraw, type HarassWithdrawContext, type HarassWithdrawPreview } from './harass-withdraw';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
 import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
@@ -477,9 +477,7 @@ import {
 } from './revival';
 import { traitorDeck, matchingTraitor, CHEAP_HERO_TRAITOR } from './traitors';
 import {
-  isWeaponCard,
   isStoneBurner,
-  isDefenseCard,
   isPortableSnooper,
   VOICE_KINDS,
   defaultVoiceMatch,
@@ -2353,6 +2351,14 @@ function battleInspectionContext(g: Game): BattleInspectionContext {
 function nexusInspectionIntegrity(g: Game) {
   const b = g.battle;
   if (!b) return;
+  // Native Prescience is binding even when this battle used no Nexus card.
+  // Check all sealed plans so removing a slot-only special cannot evade it.
+  for (const target of [b.attacker, b.defender]) {
+    const plan = b.plans[target];
+    if (plan) requireRule(committedPlanElements(b, target).every(element => plan[element.field] !== undefined &&
+      inspectedPlanMatches(getPlayer(g, target), element.field, element.value, plan[element.field])),
+      'The sealed plan contradicts its inspected commitment.');
+  }
   const record = b.nexusInspection;
   requireRule(!!record === !!b.nexusInspectionUsed, 'The Nexus inspection presence record is missing.');
   if (!record) return;
@@ -2370,11 +2376,6 @@ function nexusInspectionIntegrity(g: Game) {
   requireRule((record.stage === 'response') === (responses.length > 0),
     'The extra inspection has lost or reopened its original cancellation response.');
   for (const response of responses) validateNexusInspectionResponse(g, response!);
-  for (const target of [b.attacker, b.defender]) {
-    const plan = b.plans[target];
-    if (plan) requireRule(committedPlanElements(b, target).every(element => plan[element.field] === element.value),
-      'The sealed plan contradicts its inspected commitment.');
-  }
   if (record.stage === 'answer' || record.stage === 'response')
     requireRule(!b.revealed && (b.preparation?.kind === 'nexusPrescienceAnswer' ||
       (b.preparation?.kind === 'prescienceAnswer' && b.prescience && !Object.hasOwn(b.prescience, 'value'))),
@@ -2443,7 +2444,8 @@ function settleNexusInspectionResponse(g: Game, response: ResponseWindow, cancel
     finishInspectionAnswers(g);
   } else {
     b.nexusInspection = nexusRule(() => allowNexusInspection(battleInspectionContext(g), record));
-    if (b.plans[record.target]) answerCurrentNexusInspection(g, b.plans[record.target][record.field]);
+    if (b.plans[record.target]) answerCurrentNexusInspection(g,
+      inspectedPlanValue(getPlayer(g, record.target), record.field, b.plans[record.target][record.field]));
   }
 }
 function playNexusAtreides(g: Game, p: Player, action: Action) {
@@ -2469,16 +2471,20 @@ function playNexusAtreides(g: Game, p: Player, action: Action) {
   } else {
     b.preparation = { kind: 'nexusPrescienceAnswer', owner: target, beneficiary: p.id };
     if (offer.mode === 'cunning') g.response = { kind: 'nexusPrescience', owner: p.id, intent: b.event, passed: [] };
-    else if (b.plans[target]) answerCurrentNexusInspection(g, b.plans[target][field]);
+    else if (b.plans[target]) answerCurrentNexusInspection(g,
+      inspectedPlanValue(getPlayer(g, target), field, b.plans[target][field]));
   }
 }
 function projectedNexusInsights(g: Game, id: string) {
   const record = g.battle?.nexusInspection;
   if (!record || ![record.owner, record.target].includes(id)) return [];
-  return record.answers.map((value, index) => ({ field: record.field, value,
+  return record.answers.map((answer, index) => {
+    const value = inspectedPlanValue(getPlayer(g, record.target), record.field, answer);
+    return { field: record.field, value,
     label: g.players.flatMap(p => [...p.leaders, ...p.hand]).concat(g.dukeVidal ? [g.dukeVidal.leader] : [])
       .find(item => item.id === value)?.name ?? String(value ?? 'None'),
-    active: record.stage === 'answered' && index === record.answers.length - 1 }));
+    active: record.stage === 'answered' && index === record.answers.length - 1 };
+  });
 }
 function homeworldRule<T>(quote: () => T): T {
   try {
@@ -8088,6 +8094,22 @@ function ecazTreacheryIntegrity(g: Game) {
     physical.filter((card) => card.id.startsWith('ecaz-')).length === 3,
     'The Ecaz Treachery Cards inventory contains an unknown physical card.',
   );
+  for (const [player, plan] of Object.entries(g.battle?.plans ?? {})) {
+    requireRule(![plan.weapon, plan.defense].includes('ecaz-reinforcements'),
+      'Reinforcements battle effects are still being implemented.');
+    requireRule(plan.leader !== HARASS_WITHDRAW_CARD && g.battle?.lateDefense?.[player] !== HARASS_WITHDRAW_CARD &&
+      !(plan.weapon === HARASS_WITHDRAW_CARD && plan.defense === HARASS_WITHDRAW_CARD),
+      'Harass & Withdraw occupies exactly one ordinary Battle Plan card slot.');
+    if ([plan.weapon, plan.defense].includes(HARASS_WITHDRAW_CARD)) {
+      const owner = getPlayer(g, player);
+      requireRule(owner.hand.some(isHarassWithdraw),
+        'The sealed Harass & Withdraw card must remain in its owner’s hand.');
+      requireRule([plan.weapon, plan.defense].every(id => id === null || !!cardOf(owner, id)) &&
+        validBattleSlotPair(cardOf(owner, plan.weapon), cardOf(owner, plan.defense)),
+        'The sealed Harass & Withdraw plan has an invalid weapon and defense pair.');
+      currentHarassWithdrawQuote(g, owner, plan);
+    }
+  }
   if (g.recruits) {
     requireRule(
       Object.keys(g.recruits).sort().join(',') === 'card,player,turn' &&
@@ -13420,6 +13442,59 @@ function victory(g: Game, quote: VictoryQuote = currentVictoryQuote(g)) {
 function cardOf(p: Player, id: string | null) {
   return p.hand.find((c) => c.id === id);
 }
+function inspectedPlanValue(p: Player, field: PlanField, value: string | number | null | undefined) {
+  return battleCategoryInspectionValue(field, value,
+    (field === 'weapon' || field === 'defense') && typeof value === 'string' ? cardOf(p, value) : undefined);
+}
+function inspectedPlanMatches(p: Player, field: PlanField, fixed: unknown, candidate: string | number | null | undefined) {
+  return fixedBattleInspectionMatches(field, fixed as string | number | null, candidate,
+    (field === 'weapon' || field === 'defense') && typeof candidate === 'string' ? cardOf(p, candidate) : undefined);
+}
+function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
+  const b = g.battle!;
+  const other = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
+  let blocked: string | null = null;
+  if (!g.ecazTreachery) blocked = 'Enable the independent Ecaz Treachery Cards variant before using Harass & Withdraw.';
+  else if (g.status !== 'playing' || g.phase !== 6 || ![b.attacker, b.defender].includes(p.id))
+    blocked = 'Use Harass & Withdraw in your own battle.';
+  else if (g.homeworlds || g.nexusCards || g.leaderSkills || g.techTokens || g.strongholdCards || g.discoveryEnabled)
+    blocked = 'Harass & Withdraw with other optional modules, including Homeworlds, is still being implemented.';
+  else if (g.players.some(player => player.faction === 'richese') || g.richeseCache !== undefined || g.richeseRemoved !== undefined)
+    blocked = 'Harass & Withdraw with the Richese card family awaits the Stone Burner timing ruling.';
+  else if ([p, other].some(side => {
+    const ally = g.players.find(player => player.id === side.ally && player.ally === side.id);
+    return ally && (side.faction === 'ecaz' || ally.faction === 'ecaz') &&
+      Object.entries(ally.forces).some(([key, amount]) => amount > 0 && splitLocation(key).territory === b.territory);
+  })) blocked = 'Harass & Withdraw with co-present Ecaz allies awaits combined-army battle integration.';
+  else if (p.noField?.deployed?.location.territory === b.territory)
+    blocked = 'Reveal your No-Field before using Harass & Withdraw.';
+  const locations = Object.fromEntries(Object.entries(p.forces)
+    .filter(([key, amount]) => amount > 0 && splitLocation(key).territory === b.territory)
+    .map(([key, amount]) => [key, { normal: amount - (p.elites?.forces[key] ?? 0), elite: p.elites?.forces[key] ?? 0 }]));
+  return { blocked, forces: combatForces(g, p, b.territory, other), locations };
+}
+function currentHarassWithdrawQuote(g: Game, p: Player, plan: Pick<Plan, 'dial' | 'support'>) {
+  try {
+    const quote = quoteHarassWithdraw(harassWithdrawContext(g, p), plan.dial, plan.support);
+    validateHarassReturnCounters(p, quote.returned);
+    return quote;
+  }
+  catch (error) { if (error instanceof HarassWithdrawError) throw new RuleError(error.message); throw error; }
+}
+function validateHarassReturnCounters(p: Player, returned: { normal: number; elite: number }) {
+  requireRule(Number.isSafeInteger(p.reserves) && p.reserves >= 0 &&
+    Number.isSafeInteger(p.reserves + returned.normal + returned.elite) &&
+    (!p.elites || (Number.isSafeInteger(p.elites.reserves) && p.elites.reserves >= 0 &&
+      p.elites.reserves <= p.reserves && Number.isSafeInteger(p.elites.reserves + returned.elite))),
+    'Harass & Withdraw needs valid reserve and elite counters before any forces return.');
+}
+function harassWithdrawPreview(g: Game, p: Player): HarassWithdrawPreview | null {
+  const b = g.battle;
+  if (!b || ![b.attacker, b.defender].includes(p.id) || !p.hand.some(isHarassWithdraw)) return null;
+  const context = harassWithdrawContext(g, p);
+  return { ...context, card: HARASS_WITHDRAW_CARD,
+    blocked: context.blocked ?? (b.revealed || b.plans[p.id] ? 'Your Battle Plan is already sealed.' : null) };
+}
 function validateResidualPoison(
   g: Game,
   p: Player,
@@ -13834,12 +13909,12 @@ function validatePlan(
     w,
   );
   requireRule(
-    !plan.weapon || (w && (isWeaponCard(w) || planetologistWeapon)),
-    'Choose a weapon, worthless card, or eligible Planetologist Special.',
+    !plan.weapon || (w && battleCardSlotEligible('weapon', w, { planetologistWeapon })),
+    'Choose a weapon, worthless card, eligible Planetologist Special, or Harass & Withdraw.',
   );
   requireRule(
-    !plan.defense || (d && isDefenseCard(d)),
-    'Choose a defense or worthless card.',
+    !plan.defense || (d && battleCardSlotEligible('defense', d)),
+    'Choose a defense, worthless card, or Harass & Withdraw.',
   );
   requireRule(
     !plan.weapon || plan.weapon !== plan.defense,
@@ -13850,9 +13925,12 @@ function validatePlan(
     'Without a leader, no battle cards can be played.',
   );
   requireRule(
-    validLeaderSkillBattleCardPair(w, d, planetologistWeapon),
+    validBattleSlotPair(w, d, planetologistWeapon),
     'Chemistry as a weapon needs another defense; Weirding Way as a defense needs another weapon.',
   );
+  requireRule(![w, d].some(card => card?.id === 'ecaz-reinforcements'),
+    'Reinforcements battle effects are still being implemented.');
+  if ([w, d].some(isHarassWithdraw)) currentHarassWithdrawQuote(g, p, plan);
   if (isStoneBurner(w)) {
     const blocked = stonePlanBlock(g, p, dial, support);
     requireRule(
@@ -13877,7 +13955,7 @@ function validatePlan(
   }
   for (const element of committedPlanElements(b, p.id))
     requireRule(
-      plan[element.field] === element.value,
+      inspectedPlanMatches(p, element.field, element.value, plan[element.field]),
       'Every element revealed by a battle inspection must remain unchanged.',
     );
   requireRule(
@@ -13996,7 +14074,7 @@ function normalizeBattle(g: Game) {
   if (b.prescience && !('value' in b.prescience)) {
     const target = b.prescience.player === b.attacker ? b.defender : b.attacker;
     const priorPlan = b.plans[target];
-    if (priorPlan) b.prescience.value = priorPlan[b.prescience.field];
+    if (priorPlan) b.prescience.value = inspectedPlanValue(getPlayer(g, target), b.prescience.field, priorPlan[b.prescience.field]) as string | number | null;
     else
       b.preparation = {
         kind: 'prescienceAnswer',
@@ -14222,11 +14300,9 @@ function findLegalBattlePlan(
   const commitments = committedPlanElements(b, p.id);
   const accepts = (plan: Partial<Plan>) =>
     commitments.every(element =>
-      plan[element.field] === undefined || plan[element.field] === element.value) &&
+      inspectedPlanMatches(p, element.field, element.value, plan[element.field])) &&
     respectsBattlePromises(promises, p.id, plan, p.hand) &&
-    (!fixed ||
-      plan[fixed.field] === undefined ||
-      plan[fixed.field] === fixed.value);
+    (!fixed || inspectedPlanMatches(p, fixed.field, fixed.value, plan[fixed.field]));
   if (b.plans[p.id]) {
     const sealed = { ...b.plans[p.id], kwisatz: !!b.plans[p.id].kwisatz };
     return accepts(sealed) ? sealed : null;
@@ -14265,13 +14341,13 @@ function findLegalBattlePlan(
     ...p.hand
       .filter(
         (card) =>
-          isWeaponCard(card) || isPlanetologistBattleSpecialCard(card),
+          battleCardSlotEligible('weapon', card, { planetologistWeapon: true }),
       )
       .map((card) => card.id),
   ];
   const defenses = [
     null,
-    ...p.hand.filter((c) => isDefenseCard(c)).map((c) => c.id),
+    ...p.hand.filter((c) => battleCardSlotEligible('defense', c)).map((c) => c.id),
   ];
   for (const leader of leaderIds) {
     if (!accepts({ leader })) continue;
@@ -14280,7 +14356,7 @@ function findLegalBattlePlan(
       for (const defense of defenses) {
         if (
           !accepts({ leader, weapon, defense }) ||
-          !validLeaderSkillBattleCardPair(
+          !validBattleSlotPair(
             cardOf(p, weapon),
             cardOf(p, defense),
             canUsePlanetologistWeapon(g, p, leader, cardOf(p, weapon)),
@@ -14841,17 +14917,17 @@ function feasiblePrescience(
     ...p.hand
       .filter(
         (card) =>
-          isWeaponCard(card) || isPlanetologistBattleSpecialCard(card),
+          battleCardSlotEligible('weapon', card, { planetologistWeapon: true }),
       )
       .map((card) => card.id),
   ];
   const defenses: (string | null)[] = [
     null,
-    ...p.hand.filter((c) => isDefenseCard(c)).map((c) => c.id),
+    ...p.hand.filter((c) => battleCardSlotEligible('defense', c)).map((c) => c.id),
   ];
   for (const leader of field === 'leader' ? [value] : leaderIds)
-    for (const weapon of field === 'weapon' ? [value] : weapons)
-      for (const defense of field === 'defense' ? [value] : defenses) {
+    for (const weapon of field === 'weapon' ? weapons.filter(candidate => inspectedPlanMatches(p, field, value, candidate)) : weapons)
+      for (const defense of field === 'defense' ? defenses.filter(candidate => inspectedPlanMatches(p, field, value, candidate)) : defenses) {
         const maxSupport =
           g.advanced && field === 'dial'
             ? Math.min(battleSupportBudget(g, p), (combatArmy(g, p.id, b.territory).normal + combatArmy(g, p.id, b.territory).elite))
@@ -14865,7 +14941,7 @@ function feasiblePrescience(
               support,
               dial: field === 'dial' ? value : 0,
             });
-            if (plan[field] === value) return true;
+            if (inspectedPlanMatches(p, field, value, plan[field])) return true;
           } catch (error) {
             if (!(error instanceof RuleError)) throw error;
           }
@@ -15196,6 +15272,8 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       leaderSkills: battleLeaderSkills(g, p),
       occupiedStrongholds: leaderSkillStrongholdCount(g, p),
       forces: combatForces(g, p, b.territory, opponent),
+      ...([cardOf(p, plan.weapon), cardOf(p, plan.defense)].some(isHarassWithdraw)
+        ? { harassWithdraw: harassWithdrawContext(g, p) } : {}),
       stronghold: strongholdEffect(g, p.id),
       lateDefense: b.lateDefense?.[p.id],
       ...(b.diplomatDefense?.stage === 'copied' && b.diplomatDefense.player === p.id
@@ -15232,6 +15310,8 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       pendingAuditorPresent: !!g.pendingAuditor,
       pendingRetentionPresent: !!g.moritaniRetention,
     });
+    for (const withdrawal of quote.harassWithdraw ?? [])
+      validateHarassReturnCounters(getPlayer(g, withdrawal.player), withdrawal.returned);
     if (quote.sukGraduate) requireRule(
       !g.advanced || getPlayer(g, quote.winner!).faction !== 'atreides',
       'Suk Graduate rescue for Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.');
@@ -15364,6 +15444,24 @@ function resolveBattle(g: Game) {
       { faction: player.faction, name: 'Spice Banker payment' });
   }
   if (quote.choamIncome) g.pendingChoamBattleIncome = { ...quote.choamIncome };
+  for (const [player, plan, canceled] of [[a, ap, dc], [d, dp, ac]] as const)
+    if (canceled && [cardOf(player, plan.weapon), cardOf(player, plan.defense)].some(isHarassWithdraw))
+      log(g, `${player.name}'s Harass & Withdraw was canceled by an opposing traitor. No forces returned through this card.`);
+  for (const withdrawal of quote.harassWithdraw ?? []) {
+    const player = getPlayer(g, withdrawal.player);
+    for (const [key, group] of Object.entries(withdrawal.locations)) {
+      player.forces[key] -= group.normal + group.elite;
+      if (!player.forces[key]) delete player.forces[key];
+      if (group.elite && player.elites) {
+        player.elites.forces[key] -= group.elite;
+        if (!player.elites.forces[key]) delete player.elites.forces[key];
+      }
+    }
+    player.reserves += withdrawal.returned.normal + withdrawal.returned.elite;
+    if (player.elites) player.elites.reserves += withdrawal.returned.elite;
+    log(g, `${player.name} used Harass & Withdraw to return ${withdrawal.returned.normal + withdrawal.returned.elite} undialed physical forces (${withdrawal.returned.elite} elite) to reserves before battle losses. Their leader still resolves normally.`);
+  }
+  if (quote.harassWithdraw?.length) observeOccupation(g);
   const explosion = quote.explosion;
   if (ac && dc) {
     dead(al);
@@ -24882,6 +24980,7 @@ export function viewGame(state: Game, id: string) {
             field: b.nexusInspection.field, stage: b.nexusInspection.stage,
           } : null,
           nexusInsights: projectedNexusInsights(g, id),
+          harassWithdraw: harassWithdrawPreview(g, me),
           ownCommitments: committedPlanElements(b, id),
           prescience: b.prescience
             ? {
@@ -24894,18 +24993,15 @@ export function viewGame(state: Game, id: string) {
           insight:
             b.prescience &&
             'value' in b.prescience &&
-            (b.prescience.player === id ||
-              [b.attacker, b.defender].includes(id))
-              ? {
-                  field: b.prescience.field,
-                  value: b.prescience.value,
-                  label:
-                    g.players
-                      .flatMap((p) => [...p.leaders, ...p.hand])
+            (b.prescience.player === id || [b.attacker, b.defender].includes(id))
+              ? (() => {
+                  const target = getPlayer(g, b.prescience!.player === b.attacker ? b.defender : b.attacker);
+                  const value = inspectedPlanValue(target, b.prescience!.field, b.prescience!.value);
+                  return { field: b.prescience!.field, value,
+                    label: g.players.flatMap(p => [...p.leaders, ...p.hand])
                       .concat(g.dukeVidal ? [g.dukeVidal.leader] : [])
-                      .find((item) => item.id === b.prescience!.value)?.name ??
-                    String(b.prescience.value ?? 'None'),
-                }
+                      .find(item => item.id === value)?.name ?? String(value ?? 'None') };
+                })()
               : null,
         }
       : null,

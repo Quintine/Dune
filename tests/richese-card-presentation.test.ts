@@ -169,8 +169,9 @@ void test('base, Ix and Ecaz guides remain separate from Richese replacement-car
     assert.equal(presentation.category, 'Special treachery');
     assert.ok(presentation.gameplay!.length >= 4);
     assert.match(presentation.availability ?? '', card.effect === 'recruits'
-      ? /development controls during Revival/ : /battle effect is still being implemented/);
-    assert.deepEqual(presentation.topics.map((topic) => topic.id), ['card-recruits']);
+      ? /development controls during Revival/ : card.effect === 'harassWithdraw'
+        ? /development controls in either battle-card slot/ : /battle effect is still being implemented/);
+    assert.deepEqual(presentation.topics.map((topic) => topic.id), [card.effect === 'harassWithdraw' ? 'card-harass-withdraw' : 'card-recruits']);
   }
   assert.equal(treacheryDeck().length, 33);
   assert.equal(treacheryDeck(['ix']).length, 47);

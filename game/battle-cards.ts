@@ -66,9 +66,9 @@ export const BATTLE_CARD_HELP: Partial<Record<Card['kind'], string>> = {
   shieldSnooper:
     'Both projectile and poison defense. This is a shield and triggers a lasgun explosion.',
   weirdingWay:
-    'A projectile weapon by default. With another card in the weapon slot, play it as a projectile defense. It is not a shield and does not trigger a lasgun explosion.',
+    'A projectile weapon by default. With another weapon or Worthless card in the weapon slot, play it as a projectile defense. It is not a shield and does not trigger a lasgun explosion.',
   chemistry:
-    'A poison defense by default. With another card in the defense slot, play it as a poison weapon. It has only the role selected for this battle.',
+    'A poison defense by default. With another defense or Worthless card in the defense slot, play it as a poison weapon. It has only the role selected for this battle.',
 };
 
 /** Roles refer to the selected slot; alternate roles need the other slot occupied. */

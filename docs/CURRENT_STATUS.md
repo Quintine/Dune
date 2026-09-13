@@ -6,38 +6,28 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Previous verified checkpoint: `9ca17a6`, [Fremen/Ecaz final-turn victory](ECAZ_VICTORY_RULES.md#fremen-final-turn-runtime-follow-up)
-and [deferred shipment repair](DEFERRED_SHIPMENT_ARRIVAL.md). Types, lint,
-**4,716 offline tests**, build and **43 HTTP tests** passed. All 835 opening games
-and the 869 present after the outage, including their seat/recovery records,
-were preserved (902 after verification). Three source-stable samples finish,
-including the exact failed shipment resumption; full scope remains unfinished.
-Detailed earlier capabilities and evidence are linked below and retained in the
-[implementation history](IMPLEMENTATION_STATUS.md).
+Previous verified checkpoint: `c04cb93`, [Recruits](RECRUITS_RUNTIME.md).
+Types, lint, **4,743 offline tests**, build and **43 HTTP tests** passed.
+Eight fixed Basic/Advanced six-seat samples finished in 7,995 actions with no
+rejected candidates and three actual Recruits plays. All opening games and
+seat/recovery records were preserved, with 936 rooms after verification.
+Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
 
-Current prototype: [Recruits](RECRUITS_RUNTIME.md) connects the independent complete
-three-card inventory before genuine Basic/Advanced faction setup, owned card
-play/discard, public current revival rates, existing CHOAM/Tleilaxu decisions,
-four AI profiles and saved continuation. Exact free usage and physical custody
-are retained. Prior-free activation is supported; prior-paid or unknown accounting,
-later grants, pending repricing, same-turn replay and other optional modules stay
-gated. Reinforcements and Harass & Withdraw are present but their effects remain
-unfinished. Independent-cap precedence is explicitly labeled as an inference.
-
-Independent review's 37-case union and four authenticated recovery cases pass.
-Eight fixed Basic/Advanced six-seat samples finish in 7,995 actions with no
-rejected candidates and three actual Recruits plays. Exact custody, 212 periodic
-all-seat JSON restores and terminal private views pass. A separate conserved
-browser fixture verifies inspection, play/discard, public rates, four free returns
-and refresh. Final broad-check totals, source fingerprints and Git delivery are
-recorded with the checkpoint; these are bounded playability results.
+Current prototype: [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) connects either
+battle-card slot, private category inspections, exact undialed normal/elite
+returns, opponent-Traitor cancellation, mandatory disposal, controls and all
+four AI profiles. Physical allocation must be unique. Richese card combinations
+and additional optional modules stay gated. Withdrawal before explosion and
+card-specific discard precedence are explicitly labeled inferences. The Stone
+Burner timing question is pending; no user answer is assumed. Reinforcements
+remains unfinished. This does not open variant, mode or publication gates.
 
 After the latest reported power failure, the existing server responds normally.
-All **902 rooms**, **1,888 seats** and original recovery/entry/handover records
-match the opening backup; SQLite integrity and foreign-key checks pass. No server
-restart, database reset or recurring automation is needed. Final review, sample and
-browser evidence, broad verification and Git delivery are recorded with this
-checkpoint before handoff. Public mode and publication gates remain closed.
+All **936 rooms**, **1,959 seats** and original recovery/entry/handover records
+match the opening backup; SQLite integrity and foreign-key checks pass. Browser
+refresh restores the existing test seat. No restart, database reset or recurring
+automation was needed. Current checkpoint verification and delivery are recorded
+with the final source-bound report and Git message.
 
 ## Authoritative navigation
 
@@ -68,7 +58,7 @@ These links define bounded working behavior, not complete module certification.
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Jacurutu income, Testing Station and Shrine. Orgiz and contested/mixed cases remain pending. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected; CHOAM inspection and Emperor purchase remain pending. A source audit or helper alone is not a completed effect. |
 | Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
-| Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play in its independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
+| Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) connects the bounded battle return in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
 | Multiplayer | Saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
 
 ## Remaining readiness

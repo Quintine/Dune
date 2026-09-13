@@ -152,12 +152,12 @@ export const ECAZ_TREACHERY_DEFINITIONS: readonly EcazTreacheryDefinition[] =
       verification: {
         inventory: 'verified',
         sourceRules: 'verified',
-        runtime: 'not-implemented',
+        runtime: 'prototype',
         combinedInteractions: 'incomplete',
         unresolved: [
-          'Withdrawal ordering with Lasgun/Shield explosions and other instant outcomes.',
-          'Physical dialed/undialed accounting for advanced half-strength and double-strength units, Ecaz support, zero commitments and multiple sectors.',
-          'Whether a traitor-canceled special counts as used for mandatory disposal or winner retention.',
+          'Stone Burner comparison before or after withdrawal; its public card-family configuration remains guarded.',
+          'Ambiguous physical dialed/undialed allocations among regular/elite forces or multiple sectors, and Ecaz allied support.',
+          'Additional optional modules, Homeworld battles and complete integrated acceptance.',
         ],
       },
     }),

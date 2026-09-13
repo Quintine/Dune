@@ -1,7 +1,9 @@
 import { discoveryBotActions } from './discovery-options';
 import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
-import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, validLeaderSkillBattleCardPair } from './leader-skill-combat';
+import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus } from './leader-skill-combat';
+import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, type BattlePlanInspectionField } from './battle-card-slots';
+import { quoteHarassWithdraw } from './harass-withdraw';
 import { leaderSkillStrongholdCount } from './leader-skill-battle-board';
 import { discoveryFlightBotActions } from './discovery-flight-options';
 import { discoveryEntryBotActions } from './discovery-entry-options';
@@ -680,22 +682,26 @@ function plans(g: GameView): Action[] {
   const commitments = b.ownCommitments.filter(
     (element) => element.target === me.id,
   );
-  const fixed = (field: string, value: string | number | null) =>
+  const fixed = (field: BattlePlanInspectionField, value: string | number | null) =>
     commitments.every(
-      (element) => element.field !== field || element.value === value,
+      (element) => element.field !== field || fixedBattleInspectionMatches(field, element.value, value,
+        me.hand?.find(card => card.id === value)),
     );
   const battleSkills = g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [];
   const bankerPrototypeAvailable = spiceBankerModeSupported(g);
   const specialForLeader = (card: Card | undefined, leader: string | null) =>
     canUsePlanetologistBattleSpecial({assignments:battleSkills, selectedLeader:leader, card});
+  const prototypeCardAllowed = (card: Card) => card.id !== 'ecaz-reinforcements' &&
+    (card.id !== 'ecaz-harass-withdraw' || (!!b.harassWithdraw && !b.harassWithdraw.blocked));
   const weapons = [
     null,
-    ...(me.hand ?? []).filter(c => isWeaponCard(c) ||
-      me.leaders.some(l => !l.dead && controlsLeader(me,l) && (!l.usedAt || l.usedAt === b.territory) && specialForLeader(c,l.id))).map(c => c.id),
+    ...(me.hand ?? []).filter(c => prototypeCardAllowed(c) && battleCardSlotEligible('weapon', c, {
+      planetologistWeapon: me.leaders.some(l => !l.dead && controlsLeader(me,l) && (!l.usedAt || l.usedAt === b.territory) && specialForLeader(c,l.id)),
+    })).map(c => c.id),
   ].filter((id) => fixed('weapon', id));
   const defenses = [
     null,
-    ...(me.hand ?? []).filter(isDefenseCard).map((c) => c.id),
+    ...(me.hand ?? []).filter(c => prototypeCardAllowed(c) && battleCardSlotEligible('defense', c)).map((c) => c.id),
   ].filter((id) => fixed('defense', id));
   const availableLeaders = me.leaders.filter(
     (l) =>
@@ -771,10 +777,10 @@ function plans(g: GameView): Action[] {
           ) + (kwisatz ? 2 : 0);
         const w = me.hand?.find((c) => c.id === weapon);
         const d = me.hand?.find((c) => c.id === defense);
-        if (w && !isWeaponCard(w) && !specialForLeader(w,leader)) continue;
+        if (!battleCardSlotEligible('weapon', w, {planetologistWeapon: specialForLeader(w, leader)})) continue;
         const stoneBattle =
           isStoneBurner(w) || (inspected && isStoneBurner(enemyWeapon));
-        if ((!leader && (weapon || defense)) || !validLeaderSkillBattleCardPair(w, d, specialForLeader(w,leader)))
+        if ((!leader && (weapon || defense)) || !validBattleSlotPair(w, d, specialForLeader(w,leader)))
           continue;
         if (voice) {
           const used =
@@ -924,8 +930,17 @@ function plans(g: GameView): Action[] {
               ))
           )
             continue;
-          const effectiveWeapon = w && w.kind !== 'worthless' && !specialForLeader(w,leader) ? 6 : 0;
-          const effectiveDefense = d && d.kind !== 'worthless' ? 4 : 0;
+          let withdrawn = 0;
+          const harass = weapon === 'ecaz-harass-withdraw' || defense === 'ecaz-harass-withdraw';
+          if (harass) {
+            if (!b.harassWithdraw) continue;
+            try {
+              const quote = quoteHarassWithdraw(b.harassWithdraw, Number(action.dial), Number(action.support ?? 0));
+              withdrawn = quote.returned.normal + quote.returned.elite;
+            } catch { continue; }
+          }
+          const effectiveWeapon = w && isWeaponCard(w) && w.kind !== 'worthless' ? 6 : 0;
+          const effectiveDefense = d && isDefenseCard(d) && d.kind !== 'worthless' ? 4 : 0;
           const selfExplosion = battleWeaponsExplode(w, d);
           const correctDefense = inspected
             ? weaponKills(enemyWeapon) && !weaponKills(enemyWeapon, d)
@@ -993,7 +1008,12 @@ function plans(g: GameView): Action[] {
           options.push({
             action,
             score:
-              score - (commitment?.cost ?? 0) * 0.2 - bankerSpice * 0.2,
+              score - (commitment?.cost ?? 0) * 0.2 - bankerSpice * 0.2 +
+              (harass && level > 0 && !exposedLeader
+                ? (ownSurvivingStrength + Number(action.dial) + bankerSpice + ownNativeBonus <
+                    enemySurvivingStrength - opponentPenalty + expectedDial + enemyNativeBonus
+                    ? withdrawn * (1 + level * 0.5) : -10)
+                : 0),
           });
         }
       }
@@ -1009,7 +1029,7 @@ function plans(g: GameView): Action[] {
       ),
     );
   if (b.compliantPlan && commitments.every(
-    (element) => b.compliantPlan![element.field] === element.value,
+    (element) => fixed(element.field, b.compliantPlan![element.field]),
   )) ranked.push({ type: 'battlePlan', ...b.compliantPlan });
   return ranked;
 }
@@ -3476,7 +3496,7 @@ function policyActions(g: GameView): Action[] {
       return plans(g).map((p) => ({
         type: nexus ? 'nexusPrescienceAnswer' : 'prescienceAnswer',
         ...(nexus ? { event: nexus.event } : {}),
-        value: p[field],
+        value: battleCategoryInspectionValue(field, candidatePlan(p)[field], me.hand?.find(card => card.id === p[field])),
       }));
     }
     if (b.revealed) {
