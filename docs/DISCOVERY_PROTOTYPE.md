@@ -52,19 +52,33 @@ to redeal a started game. The default `ix` profile remains available.
   an owned discard choice, including the new card; its saved draw/discard receipt
   prevents replay. Both stashes then retain removed physical custody.
 - **Carried token:** revealing Ornithopter records its owner and acquisition
-  turn. Spending it for movement is not implemented in this batch.
+  turn. On a later turn, its owner may spend it on one ordinary movement action
+  to give the selected group a fixed range of three. It grants no extra action
+  or shipment. The physical token remains carried through pending movement and
+  arrival interactions, then leaves play once the selected movement commits.
 - **Nested locations:** the five revealed location tokens become separate,
   initially empty board territories inside their printed surroundings. Public
   reveal controls admission; a private peek alone cannot create a destination.
   Ordinary movement uses the parent territory, shipment uses stronghold prices,
   no more than two factions enter, and occupants are protected from storm and
   sandworms. Only Jacurutu Sietch contributes a stronghold toward victory.
+- **Next-turn free entry:** before the next Storm phase and Ixian Hidden Mobile
+  Stronghold movement, each eligible faction receives an optional signed choice
+  for a location revealed on the prior turn. It may move any positive subset of
+  ordinary and elite non-advisor forces across eligible sectors of the enclosing
+  territory into sector zero of that location. This spends no spice, shipment or
+  normal movement. Empty, storm-blocked and occupancy-blocked offers skip without
+  holding up the turn. Accepted groups and arrival reactions survive restoration.
+- **Cistern:** during Collection, a sole occupant receives two bank spice. If two
+  factions occupy Cistern, the unresolved benefit is withheld without blocking
+  Collection; this boundary does not decide which occupant should receive it.
 
-Great Maker vote/ride controls and Discovery token/discard controls use the same
-private legal choices as the four AI profiles. Token backs expose only permitted
-information; authorized faces have readable explanations of all eight effects.
-Busy and autopilot states disable human actions. Those explanations include
-remaining printed effects and explicitly distinguish them from available play.
+Great Maker vote/ride, Discovery token/discard, next-turn entry and carried
+Ornithopter controls use the same private legal choices as the four AI profiles.
+Token backs expose only permitted information; authorized faces have readable
+explanations of all eight effects. Busy and autopilot states disable human
+actions. Those explanations include remaining printed effects and explicitly
+distinguish them from available play.
 
 ## Interpretations retained for refinement
 
@@ -81,6 +95,20 @@ empty-supply resolution remains an implementation interpretation to refine,
 rather than a certified additional rule. Existing unrelated pending rulings in
 the [decision index](RULE_DECISIONS.md) remain pending.
 
+The printed next-turn entry text specifies neither an order among simultaneous
+locations and factions nor whether the ordinary source-sector storm restriction
+applies to this exceptional movement. Processing tokens in reveal order and
+factions in storm order, while excluding source groups in storm, are **source
+inferences** retained for deterministic legal play. They are not publisher
+answers or newly approved table rulings.
+
+The printed Cistern text names an occupant but permits two factions to occupy a
+revealed location. The prototype pays an ordinary sole occupant and withholds
+the contested bonus. Orgiz remains disabled because the source also does not
+settle whether a stacked board deposit represents one or several collected
+spice blows; contested occupancy and unresolved Ecaz shared collection add
+further unanswered cases.
+
 ## Evidence and next dependencies
 
 Focused suites cover component inventory and private projection
@@ -88,9 +116,28 @@ Focused suites cover component inventory and private projection
 (`tests/discovery-runtime.test.ts`), ordered Great Maker continuations
 (`tests/great-maker.test.ts`), nested board and admission rules
 (`tests/discovery-board.test.ts`, `tests/discovery-admission.test.ts`), and private
-human/AI controls (`tests/discovery-controls.test.ts`). They exercise immutable
-rejections, physical custody, hidden information and JSON restoration. They do
-not certify a complete module, all combined routes or difficulty strength ordering.
+human/AI controls (`tests/discovery-controls.test.ts`). Signed free entry and its
+engine, saved interaction and human/AI paths are covered by
+`tests/discovery-entry.test.ts`, `tests/discovery-entry-runtime.test.ts` and
+`tests/discovery-entry-controls.test.ts`. Cistern composition is covered by
+`tests/discovery-collection.test.ts`; carried token selection, delayed spending
+and disposal are covered by `tests/discovery-flight.test.ts`. They exercise
+immutable rejections, physical custody, hidden information and JSON restoration.
+They do not certify a complete module, all combined routes or difficulty strength
+ordering. Required broad checkpoint checks are pending for this expanded batch.
+
+Browser room `CA782FQE` began through the genuine Discovery setup with one human
+and two AI seats, then used a targeted QA state to reach the new controls without
+playing a full game. It verified a partial one-force free entry into Cistern with
+no spice or movement cost and a later three-territory Ornithopter move that spent
+the carried token once. This is targeted browser evidence; it does not represent
+an unmodified complete-game journey. Refresh restored the same forces, private
+hand, ten spice, one spent movement and removed token. All 156 opening saved
+rooms remain part of the preservation baseline. A user-confirmed power outage
+subsequently stopped the server and verification process. After backing up all
+157 current rooms, restarting the absent server restored the same browser seat,
+forces, private Stunner, spice and spent token. All 157 saved rooms were unchanged.
+Required broad results are recorded in the checkpoint commit.
 
 SQLite recovery tests (`tests/discovery-recovery.test.ts`) verify competing
 reveals pay only once, the private overflow choice survives restoration, and an
@@ -111,11 +158,11 @@ The room is paused at acceptance of that blow. No other saved room was changed
 and no server restart was needed. Required broad verification results and the
 source-bound report are recorded in the checkpoint commit.
 
-1. Add the next-turn free entry into newly revealed locations, preserving typed
-   groups, occupancy, turn order and saved pending choices.
-2. Connect the five special location benefits: Jacurutu battle income, Cistern
-   Collection income, Ecological Testing Station storm adjustment, Shrine card
-   conversion and Orgiz collection transfer. Ordinary Jacurutu victory counting
-   does not implement its battle income.
-3. Connect later-turn Ornithopter spending to one actual movement action, then
-   integrate combined modules and complete games before refining or opening gates.
+1. Connect the four remaining special location benefits: Jacurutu battle income,
+   Ecological Testing Station storm adjustment, Shrine card conversion and Orgiz
+   collection transfer. Ordinary Jacurutu victory counting does not implement its
+   battle income; Orgiz awaits the collected-pile ruling above.
+2. Resolve contested Cistern ownership, then integrate combined modules and
+   complete games before refining or opening gates.
+3. Run the required broad checkpoint, browser and saved-room verification for
+   this expanded prototype. Focused evidence does not open normal public starts.

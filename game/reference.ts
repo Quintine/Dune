@@ -3413,7 +3413,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Advanced & expansions',
     coverage: 'Partial',
     developmentStage: 'Prototyped',
-    summary: 'A development prototype connects Great Maker, six Discovery spice blows, private token inspection, stash rewards and revealed locations. Remaining token abilities and normal public starts stay unavailable.',
+    summary: 'A development prototype connects Great Maker, six Discovery spice blows, private token inspection, stash rewards, revealed locations, next-turn entry, Cistern income and later-turn Ornithopter movement. Remaining location abilities and normal public starts stay unavailable.',
     searchText: 'Hiereg Smuggler Jacurutu Sietch Cistern Ecological Testing Station Shrine Orgiz Processing Station Treachery Card Stash Spice Stash Ornithopter',
     steps: [
       'The Discovery prototype starts through genuine base-faction setup in Basic or Advanced, with seven extra Spice Cards and eight physical tokens. Its normal public start gate stays closed while the remaining effects are connected and verified.',
@@ -3421,37 +3421,38 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Each of the six Discovery territory cards destroys prior spice and forces in the named blow territory, including Fremen forces, before placing six new spice subject to the storm. It also places a random available face-down token of the printed type at the card’s separate token destination.',
       'Fremen privately see placed Hiereg tokens; Guild privately sees placed Smuggler tokens. During Spice Collection, non-advisor forces in a token’s surrounding territory may inspect it privately, then choose whether to reveal it. The Discovery panel shows only authorized faces. Reading an already visible token’s rules does not reveal or use it.',
       'Spice Stash grants seven bank spice and leaves play. Treachery Card Stash draws one private Treachery Card and leaves play; if the new hand is too large, choose any held card to discard, including the newly drawn card. The owned discard panel includes a card inspector.',
-      'Revealing Ornithopter records who carries it and the turn it was gained. Its later-turn movement action remains in development; acquiring the token does not grant an immediate extra move.',
+      'Revealing Ornithopter records who carries it and the turn it was gained. On a later turn, its owner may spend it on one ordinary movement action to give that selected group a fixed range of three. It grants no extra action, adds no shipment and is removed only after the movement commits; saved arrival interactions retain the exact selected group.',
       'The five revealed location tokens become separate, initially empty territories inside their surroundings. A private peek does not open the location. Normal ground movement enters through the surrounding territory, shipment uses stronghold prices, at most two factions may occupy it, and forces inside are protected from storms and sandworms. Only Jacurutu Sietch counts toward stronghold victory.',
-      'Next-turn free entry and all five special location benefits remain missing: Jacurutu battle income, Cistern income, Ecological Testing Station storm adjustment, Shrine card conversion and Orgiz collection transfer. Full token explanations describe these printed effects, but their action controls are not yet available.',
-      'All four AI profiles use the same offered inspection, reveal, stash-discard and Great Maker choices as the player controls. Private knowledge and unfinished decisions survive saved JSON continuations. These focused paths do not establish complete variant compliance or combined-module acceptance.',
+      'At the start of the next turn, before the storm and mobile stronghold movement, each eligible faction may move any positive subset of its non-advisor groups from the surrounding territory into the newly revealed location. The signed choice preserves ordinary and elite forces across sectors, normal source storm and occupancy restrictions, and costs no spice, shipment or normal movement. The printed text gives no sequence and does not restate the source-storm restriction; processing tokens in reveal order and factions in storm order while excluding storm sources are source inferences.',
+      'A sole occupant of Cistern receives two bank spice during Collection. The printed text does not settle which of two occupants receives this benefit, so the contested bonus is withheld without blocking the phase. Jacurutu battle income, Ecological Testing Station storm adjustment, Shrine card conversion and Orgiz collection transfer remain unavailable; Orgiz also awaits a ruling on what counts as each collected spice blow.',
+      'All four AI profiles use the same offered inspection, reveal, stash-discard, Great Maker, free-entry and Ornithopter choices as the player controls. Private knowledge and unfinished decisions survive saved JSON continuations. These focused paths do not establish complete variant compliance or combined-module acceptance.',
     ],
     related: ['ecaz-modules', 'spice-blow', 'collection', 'movement', 'mentat', 'implementation-checklist'],
     checklist: [
       {
         area: 'Implementation', status: 'Partial',
-        detail: 'First functions are prototyped: genuine setup, physical inventory, destructive blows, Great Maker vote/ride, private inspection/reveal, stash rewards, carried custody and public nested locations. Free entry, special location benefits and Ornithopter spending remain missing.',
-        evidence: ['game/discoveries.ts', 'game/discovery-actions.ts', 'game/great-maker.ts', 'game/board.ts', 'game/engine.ts'],
+        detail: 'Working prototypes cover genuine setup, physical inventory, destructive blows, Great Maker vote/ride, private inspection/reveal, stash rewards, public nested locations, signed next-turn entry, sole-occupant Cistern income and later-turn Ornithopter spending. Four location abilities remain missing.',
+        evidence: ['game/discoveries.ts', 'game/discovery-actions.ts', 'game/discovery-entry.ts', 'game/discovery-collection.ts', 'game/discovery-flight.ts', 'game/great-maker.ts', 'game/board.ts', 'game/engine.ts'],
       },
       {
         area: 'Player controls', status: 'Partial',
-        detail: 'Private backs and readable authorized faces, optional inspection/reveal, owned stash discard with card inspection, and ordered Great Maker vote/typed reserve-ride controls. Remaining effects have no action controls.',
-        evidence: ['components/discoveries.tsx', 'components/great-maker.tsx', 'components/spice-card-inspector.tsx'],
+        detail: 'Private backs and readable authorized faces, optional inspection/reveal, owned stash discard with card inspection, ordered Great Maker controls, multi-sector free entry and carried-Ornithopter movement use shared table controls. Four location effects have no action controls.',
+        evidence: ['components/discoveries.tsx', 'components/discovery-entry.tsx', 'components/discovery-flight-movement.tsx', 'components/great-maker.tsx', 'components/spice-card-inspector.tsx', 'components/game-table.tsx'],
       },
       {
         area: 'AI', status: 'Partial',
-        detail: 'Four profiles share the private quoted token, discard, vote and reserve-ride actions. Complete Discovery strategy, combined games and strength calibration remain unfinished.',
-        evidence: ['game/discovery-options.ts', 'game/great-maker-options.ts', 'game/bots.ts'],
+        detail: 'Four profiles share the private quoted token, discard, vote, reserve-ride, free-entry and carried-Ornithopter actions. Complete Discovery strategy, combined games and strength calibration remain unfinished.',
+        evidence: ['game/discovery-options.ts', 'game/discovery-entry-options.ts', 'game/discovery-flight-options.ts', 'game/great-maker-options.ts', 'game/bots.ts'],
       },
       {
         area: 'Documentation', status: 'Partial',
-        detail: 'Sourced identities, connected behavior and the remaining dependency queue are recorded. Great Maker first-turn/Sandtrout handling and exhausted token supply remain identified interpretations for refinement.',
+        detail: 'Sourced identities, connected behavior and the remaining dependency queue are recorded. Great Maker first-turn/Sandtrout handling, exhausted token supply, free-entry order and source-storm handling remain identified interpretations for refinement; contested Cistern and Orgiz collection cases remain unresolved.',
         evidence: ['docs/DISCOVERY_COMPONENTS.md', 'docs/DISCOVERY_PROTOTYPE.md'],
       },
       {
         area: 'Verification', status: 'Partial',
-        detail: 'Focused offline checks cover physical custody, private views, legal human/AI actions, immutable rejection, board admission and saved JSON continuation. Broad checkpoint results and complete module/browser/multiplayer acceptance remain separate gates.',
-        evidence: ['tests/discoveries.test.ts', 'tests/discovery-runtime.test.ts', 'tests/great-maker.test.ts', 'tests/discovery-board.test.ts', 'tests/discovery-admission.test.ts', 'tests/discovery-controls.test.ts'],
+        detail: 'Focused offline checks cover physical custody, private views, legal human/AI actions, immutable rejection, board admission, signed free entry, Cistern collection, carried flight and saved continuation. Broad checkpoint results and complete module/browser/multiplayer acceptance remain separate gates.',
+        evidence: ['tests/discoveries.test.ts', 'tests/discovery-runtime.test.ts', 'tests/great-maker.test.ts', 'tests/discovery-board.test.ts', 'tests/discovery-admission.test.ts', 'tests/discovery-controls.test.ts', 'tests/discovery-entry.test.ts', 'tests/discovery-entry-runtime.test.ts', 'tests/discovery-entry-controls.test.ts', 'tests/discovery-entry-review.test.ts', 'tests/discovery-collection.test.ts', 'tests/discovery-flight.test.ts', 'tests/discovery-flight-engine.test.ts', 'tests/discovery-flight-recovery.test.ts'],
       },
     ],
   },
@@ -3563,7 +3564,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         ...(id === 'ecaz-modules'
           ? [
               'Ecaz inventory, public Ambassador inspection, end-of-Revival placement, six entry effects with Bene Gesserit copies and direct Ecaz Duke acquisition have focused support. Storm/explosion token returns are supported. Other effects and competing arrival ordering remain unfinished. See the linked feature checklist; full expansion starts remain disabled.',
-              'The first Discovery prototype connects seven Spice Cards, eight tokens, Great Maker, private Collection inspection/reveal, stash rewards and revealed nested locations. Free entry, special location benefits and Ornithopter spending remain missing; see the Discovery checklist.',
+              'The Discovery prototype connects seven Spice Cards, eight tokens, Great Maker, private Collection inspection/reveal, stash rewards, revealed nested locations, next-turn free entry, sole-occupant Cistern income and later-turn Ornithopter movement. Four location abilities and contested collection interpretations remain unfinished; see the Discovery checklist.',
             ]
           : []),
         'The expansion catalog is present. Expansion faction mechanics, remaining modules and their full interaction reference remain in development.',

@@ -1,4 +1,6 @@
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
+import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
+import { advanceDiscoveryEntry, beginDiscoveryEntryArrival, createDiscoveryEntryRound, finishDiscoveryEntryArrival, quoteDiscoveryEntry, validateDiscoveryEntryArrivalChild, validateDiscoveryEntryRound, type DiscoveryEntryArrivalChild, type DiscoveryEntryRound, type DiscoveryEntrySelection } from './discovery-entry';
 import { createDiscoveryState, validateDiscoveryState, placeDiscovery, rememberDiscoveryFace, revealDiscoveryToken, isDiscoverySpiceCardId, isDiscoveryTokenId, DISCOVERY_SPICE_CARDS, DISCOVERY_CARD_PLACEMENTS, DISCOVERY_TOKEN_BY_ID, type DiscoveryState } from './discoveries';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
@@ -228,6 +230,10 @@ import {
   BoardResolutionError,
   type AdvisorRelease,
 } from './board-resolution-quote';
+import {
+  quoteDiscoveryCollection,
+  DiscoveryCollectionError,
+} from './discovery-collection';
 import {
   quoteMovementCancellation,
   validateAmbassadorRelocationContext,
@@ -731,6 +737,7 @@ export type Decision =
       player: string;
       territory: string;
       wormRide?: boolean;
+      discoveryEntry?: DiscoveryEntryArrivalChild;
       ambassadorEvent?: string;
       followup?: { shipment: string; destination: string };
     }
@@ -747,6 +754,7 @@ export type Decision =
   | { kind: 'wormPlacement'; player: string }
   | { kind: 'wormProtection'; player: string; territory: string; ally: string }
   | { kind: 'discoveryDiscard'; player: string; event: string }
+  | { kind: 'discoveryEntry'; player: string; event: string }
   | { kind: 'greatMakerVote'; player: string; event: string }
   | { kind: 'greatMakerRide'; player: string; event: string }
   | { kind: 'wormRide'; player: string; territory: string }
@@ -767,7 +775,8 @@ export type ResponseWindow = {
   source?: 'ambassador';
   intent?: string;
   advisors?: boolean;
-  advisorResume?: 'wormRide' | 'declaration' | 'ambassador';
+  advisorResume?: 'wormRide' | 'declaration' | 'ambassador' | 'discoveryEntry';
+  discoveryEntry?: DiscoveryEntryArrivalChild;
   advisorAmbassadorEvent?: string;
   advisorRemaining?: string[];
   advisorFollowup?: { shipment: string; destination: string };
@@ -893,6 +902,7 @@ export type Game = {
   discoveryEnabled?: boolean;
   discoveries?: DiscoveryState;
   discoveryStash?: DiscoveryStash;
+  discoveryEntry?: DiscoveryEntryRound;
   greatMaker?: GreatMaker;
   nexusChoamTrades?: NexusChoamTrade[];
   nexusChoamTradeLast?: { event: string; stage: NexusChoamTrade['stage'] };
@@ -5478,6 +5488,7 @@ function afterWorm(g: Game) {
   );
 }
 function discoveryIntegrity(g: Game) {
+  discoveryEntryIntegrity(g);
   if (!g.discoveryEnabled) {
     requireRule(!g.discoveries && !g.discoveryStash, 'Discovery custody requires its enabled module.');
     return;
@@ -5529,6 +5540,100 @@ function discoveryIntegrity(g: Game) {
     control.decision.player === p.id && control.decision.event === record.event), 'The stash has lost its owned discard choice.');
   if (pending) requireRule(pending.event === record.event && pending.owner === p.id && pending.card === record.discarded,
     'The stash has changed its committed discard.');
+}
+function discoveryEntryIntegrity(g: Game) {
+  const frame = g.discoveryEntry;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const controls = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, continuation && 'resume' in continuation ? continuation.resume : null];
+  const choices = controls.flatMap(control => control?.decision?.kind === 'discoveryEntry' ? [control.decision] : []);
+  const children = controls.flatMap(control => {
+    const pending = control && 'pendingKarama' in control ? control.pendingKarama as Game['pendingKarama'] : null;
+    return [control?.response, pending?.use.kind === 'cancel' ? pending.use.response : null]
+      .filter(response => response?.advisorResume === 'discoveryEntry' || response?.discoveryEntry)
+      .map(response => ({receipt:response!.discoveryEntry, actor:response!.owner,
+        territory:response!.location, valid:response!.kind === 'advisorFlip' &&
+          response!.advisorResume === 'discoveryEntry' && response!.advisors === true &&
+          response!.advisorAmbassadorEvent === undefined && response!.advisorFollowup === undefined &&
+          response!.advisorRemaining === undefined}));
+  });
+  for (const control of controls) if (control?.decision?.kind === 'intrusion' && control.decision.discoveryEntry)
+    children.push({receipt:control.decision.discoveryEntry, actor:control.decision.player,
+      territory:control.decision.territory, valid:control.decision.wormRide === undefined &&
+        control.decision.ambassadorEvent === undefined && control.decision.followup === undefined});
+  if (!frame) {
+    requireRule(!choices.length && !children.length, 'The Discovery entry has lost its original turn-opening round.');
+    return;
+  }
+  requireRule(g.discoveryEnabled && g.discoveries && g.status === 'playing' && g.phase === 0 &&
+    frame.stage !== 'complete', 'Discovery entry must finish before the Storm Phase begins.');
+  nexusRule(() => validateDiscoveryEntryRound({...g, discoveries:g.discoveries!},frame));
+  if (frame.stage === 'choose') {
+    const owner = frame.order[frame.cursor % frame.order.length];
+    requireRule(!children.length && choices.length === 1 && choices[0].player === owner &&
+      choices[0].event === `${frame.event}:${frame.cursor}`, 'The Discovery entry has lost its owned choice.');
+  } else {
+    requireRule(!choices.length && children.length === 1, 'The Discovery entry has lost its pending arrival interaction.');
+    const arrival = frame.arrival!, owner = getPlayer(g, arrival.owner), key = `${arrival.destination}:0`;
+    requireRule(owner.forces[key] === arrival.destinationBefore + arrival.amount &&
+      (owner.elites?.forces[key] ?? 0) === arrival.destinationEliteBefore + arrival.elite,
+      'The Discovery arrival has lost its transferred ordinary or elite force custody.');
+    for (const child of children) {
+      requireRule(child.valid && child.actor === byFaction(g,'beneGesserit')?.id &&
+        child.territory === frame.arrival!.destination && child.receipt,
+        'The Discovery arrival must retain its original Bene Gesserit interaction.');
+      nexusRule(() => validateDiscoveryEntryArrivalChild(frame, child.receipt!));
+    }
+  }
+}
+function continueDiscoveryEntry(g: Game) {
+  requireRule(g.discoveryEntry && g.discoveries, 'No Discovery entry round is pending.');
+  while (g.discoveryEntry!.stage === 'choose') {
+    const frame: DiscoveryEntryRound = g.discoveryEntry!, owner = frame.order[frame.cursor % frame.order.length];
+    const offer = nexusRule(() => quoteDiscoveryEntry({...g,discoveries:g.discoveries!},frame,owner));
+    if (!offer.blocked) {
+      g.decision = {kind:'discoveryEntry',player:owner,event:`${frame.event}:${frame.cursor}`};
+      return;
+    }
+    g.discoveryEntry = nexusRule(() => advanceDiscoveryEntry({...g,discoveries:g.discoveries!},frame,owner));
+  }
+  requireRule(g.discoveryEntry!.stage === 'complete', 'Finish the Discovery arrival before the next entry.');
+  g.discoveries = {...g.discoveries,newlyRevealed:[]};
+  delete g.discoveryEntry;
+  beginTurnBoardMovement(g);
+}
+function completeDiscoveryEntryArrival(g: Game, child: DiscoveryEntryArrivalChild) {
+  requireRule(g.discoveryEntry && g.discoveries, 'The Discovery arrival has lost its round.');
+  nexusRule(() => validateDiscoveryEntryArrivalChild(g.discoveryEntry!,child));
+  g.discoveryEntry = nexusRule(() => finishDiscoveryEntryArrival({...g,discoveries:g.discoveries!},g.discoveryEntry!));
+  continueDiscoveryEntry(g);
+}
+function decideDiscoveryEntry(g: Game, p: Player, action: Action) {
+  const frame = g.discoveryEntry;
+  requireRule(frame && g.discoveries && typeof action.accept === 'boolean' &&
+    action.event === `${frame.event}:${frame.cursor}` &&
+    Object.keys(action).every(key => ['type','event','accept','groups'].includes(key)),
+    'Choose the current Discovery entry and explicit physical force groups.');
+  if (!action.accept) {
+    requireRule(action.groups === undefined, 'Declining Discovery entry must not select forces.');
+    g.discoveryEntry = nexusRule(() => advanceDiscoveryEntry({...g,discoveries:g.discoveries!},frame,p.id));
+    log(g, `${p.name} declined this optional free Discovery entry.`);
+    continueDiscoveryEntry(g);
+    return;
+  }
+  g.discoveryEntry = nexusRule(() => beginDiscoveryEntryArrival({...g,discoveries:g.discoveries!},frame,p.id,
+    {groups:action.groups as DiscoveryEntrySelection['groups']}));
+  const arrival = g.discoveryEntry.arrival!;
+  const advisors = arrivalAsAdvisor(g,p,arrival.destination,arrival.parent);
+  removeGroup(p,arrival.groups.map(group => [group.source,group.normal+group.elite]),
+    Object.fromEntries(arrival.groups.map(group => [group.source,group.elite])));
+  place(p,arrival.destination,0,arrival.amount,arrival.elite);
+  if (advisors) (p.advisors ??= {})[arrival.destination] = {};
+  else if (p.advisors) delete p.advisors[arrival.destination];
+  log(g, `${p.name} moved ${arrival.amount} ${arrival.amount === 1 ? 'force' : 'forces'}${arrival.elite ? `, including ${arrival.elite} elite ${arrival.elite === 1 ? 'force' : 'forces'},` : ''} from ${territory(arrival.parent).name} into ${territory(arrival.destination).name} before the storm. This one-time Discovery entry spends no spice or normal movement.`);
+  const child: DiscoveryEntryArrivalChild = {owner:p.id,territory:arrival.destination,sector:0,
+    amount:arrival.amount,elite:arrival.elite,discoveryEntry:arrival.signature};
+  if (!intrusion(g,p,arrival.destination,{discoveryEntry:child})) completeDiscoveryEntryArrival(g,child);
 }
 function resolveDiscoveryBlow(g: Game, card: Extract<SpiceCard, {territory:string}>) {
   requireRule(g.discoveryEnabled && g.discoveries && isDiscoverySpiceCardId(card.discovery), 'This Discovery card requires its physical module.');
@@ -7765,7 +7870,16 @@ function ornithopterBlock(
     return 'Kulon combined with the fixed three-territory card range awaits a ruling.';
   return null;
 }
+function discoveryFlightIntegrity(g: Game) {
+  const pendingFlights = [g.pendingChoamMove, g.pendingIxMove, g.pendingFremenMove?.order]
+    .filter((move): move is MovementOrder => !!move && move.discoveryFlight !== undefined);
+  requireRule(pendingFlights.length <= 1,
+    'One Discovery Ornithopter cannot be reserved for multiple pending movements.');
+  for (const move of pendingFlights)
+    nexusRule(() => validateDiscoveryFlight(g, move.discoveryFlight!, move));
+}
 function ornithopterIntegrity(g: Game) {
+  discoveryFlightIntegrity(g);
   const flight = g.ornithopter;
   if (!flight) return;
   const owner = getPlayer(g, flight.player);
@@ -7883,9 +7997,11 @@ function ornithopterView(g: Game, p: Player) {
   };
 }
 function movementOrderRange(g: Game, p: Player, move: MovementOrder) {
-  return move.ornithopterRange ? 3 : movementRange(g, p, move.elite);
+  return move.discoveryFlight || move.ornithopterRange ? 3 : movementRange(g, p, move.elite);
 }
 function validateFlightSelection(g: Game, p: Player, move: MovementOrder) {
+  if (move.discoveryFlight)
+    nexusRule(() => validateDiscoveryFlight(g, move.discoveryFlight!, move));
   const flight = g.ornithopter;
   requireRule(
     !flight || flight.player !== p.id || move.ornithopterEvent === flight.event,
@@ -8194,6 +8310,10 @@ function completeMove(g: Game, move: MovementOrder) {
   finishShipmentPromises(g, p, null);
   p.shipped = true;
   p.moved++;
+  if (move.discoveryFlight) {
+    g.discoveries = nexusRule(() => completeDiscoveryFlight(g, move.discoveryFlight!, move));
+    log(g, `${p.name} used the carried Discovery Ornithopter for this movement and removed its token.`);
+  }
   const cunning = currentGuildCunning(g,id);
   if (cunning) { requireRule(cunning.stage === 'extraMove', 'Guild Cunning permits no movement before the second shipment.'); cunning.movesAfter++; saveGuildCunning(g,cunning); }
   const completed: CompletedMovement = {
@@ -10805,7 +10925,8 @@ function beginAdvisorBattle(g: Game, remaining = advisorBattleOptions(g)) {
 function finishAdvisorReaction(
   g: Game,
   details: {
-    advisorResume?: 'wormRide' | 'declaration' | 'ambassador';
+    advisorResume?: 'wormRide' | 'declaration' | 'ambassador' | 'discoveryEntry';
+    discoveryEntry?: DiscoveryEntryArrivalChild;
     advisorAmbassadorEvent?: string;
     advisorRemaining?: string[];
     advisorFollowup?: { shipment: string; destination: string };
@@ -10819,6 +10940,10 @@ function finishAdvisorReaction(
     beginAdvisorBattle(g, details.advisorRemaining ?? []);
   else if (details.advisorResume === 'ambassador')
     continueAmbassadorArrival(g, details.advisorAmbassadorEvent!);
+  else if (details.advisorResume === 'discoveryEntry') {
+    requireRule(details.discoveryEntry, 'The advisor reaction has lost its Discovery arrival.');
+    completeDiscoveryEntryArrival(g, details.discoveryEntry);
+  }
 }
 function intrusion(
   g: Game,
@@ -10826,6 +10951,7 @@ function intrusion(
   t: string,
   options: {
     wormRide?: boolean;
+    discoveryEntry?: DiscoveryEntryArrivalChild;
     ambassadorEvent?: string;
     followup?: { shipment: string; destination: string };
   } = {},
@@ -11235,6 +11361,13 @@ function beginPhase(g: Game) {
     } else if (!byFaction(g, 'choam')) victory(g);
   }
   if (g.phase === 0 && g.turn > 1) {
+    if (g.discoveryEnabled && g.discoveries) {
+      g.discoveryEntry = nexusRule(() => createDiscoveryEntryRound({...g,discoveries:g.discoveries!},crypto.randomUUID()));
+      continueDiscoveryEntry(g);
+    } else beginTurnBoardMovement(g);
+  }
+}
+function beginTurnBoardMovement(g: Game) {
     const ixians = byFaction(g, 'ixians');
     if (
       g.mobileStronghold?.location &&
@@ -11250,7 +11383,6 @@ function beginPhase(g: Game) {
       return;
     }
     beginStormTurn(g);
-  }
 }
 /** Transfer actual charity only after its applicable power response. */
 function payCharity(g: Game, player: Player, amount: number, homeworld = 0) {
@@ -11649,10 +11781,19 @@ function commitCollection(
   quote: ReturnType<typeof quoteSpiceCollection>,
   canceled = false,
 ) {
+  let discovery: ReturnType<typeof quoteDiscoveryCollection>;
+  try {
+    // Orgiz remains disabled pending a source ruling on stacked spice blows.
+    discovery = quoteDiscoveryCollection(g, quote);
+  } catch (error) {
+    if (error instanceof DiscoveryCollectionError)
+      throw new RuleError(error.message);
+    throw error;
+  }
   const sourceSpice = { ...g.spice };
   applyAdvisorReleases(g, quote.released);
   g.spice = quote.spice;
-  for (const receipt of quote.receipts) {
+  for (const receipt of discovery.receipts) {
     const p = getPlayer(g, receipt.player);
     p.spice = receipt.balance;
     if (receipt.strongholds)
@@ -11664,6 +11805,21 @@ function commitCollection(
       log(
         g,
         `${faction(p.faction).name} collected ${receipt.collected} spice.`,
+      );
+  }
+  for (const effect of discovery.effects) {
+    const p = getPlayer(g, effect.player);
+    if (effect.kind === 'cistern')
+      log(
+        g,
+        `${faction(p.faction).name} received ${effect.amount} spice from the bank for occupying Cistern.`,
+        { faction: p.faction, name: 'Cistern' },
+      );
+    else
+      log(
+        g,
+        `${faction(p.faction).name} took ${effect.amount} spice from ${faction(getPlayer(g, effect.from).faction).name} through Orgiz Processing Station.`,
+        { faction: p.faction, name: 'Orgiz Processing Station' },
       );
   }
   const allocation = collectionAllocation(() =>
@@ -11701,7 +11857,7 @@ function commitCollection(
       `Ecaz and its ally collected ${quote.shared.reduce((sum, lot) => sum + lot.amount, 0)} shared desert spice. Allocate each territory by agreement, or split it equally with any odd spice going to the ally.`,
     );
   }
-  for (const receipt of quote.receipts)
+  for (const receipt of discovery.receipts)
     creditGiediCollection(g, receipt.player, receipt.desert);
   stageGrummanCollection(g);
 }
@@ -17899,6 +18055,7 @@ type MovementOrder = {
   noField?: { tokenId: string; event: string; from: string };
   ornithopterEvent?: string;
   ornithopterRange?: boolean;
+  discoveryFlight?: DiscoveryFlightReceipt;
 };
 export type Action = { type: string; [key: string]: unknown };
 function normalizeCardNames(g: Game) {
@@ -19432,10 +19589,13 @@ function applyActionInner(
         advisorFollowup: decision.followup,
         advisorResume: decision.ambassadorEvent
           ? ('ambassador' as const)
+          : decision.discoveryEntry
+            ? ('discoveryEntry' as const)
           : decision.wormRide
             ? ('wormRide' as const)
             : undefined,
         advisorAmbassadorEvent: decision.ambassadorEvent,
+        discoveryEntry: decision.discoveryEntry,
       };
       if (action.accept)
         g.response = {
@@ -19571,6 +19731,8 @@ function applyActionInner(
       } else wormSurvival(g, decision.territory);
     } else if (decision.kind === 'discoveryDiscard') {
       decideDiscoveryDiscard(g,p,action);
+    } else if (decision.kind === 'discoveryEntry') {
+      decideDiscoveryEntry(g,p,action);
     } else if (decision.kind === 'greatMakerVote') {
       decideGreatMakerVote(g,p,action);
     } else if (decision.kind === 'greatMakerRide') {
@@ -20928,6 +21090,8 @@ function applyActionInner(
     return g;
   }
   if (t === 'move') {
+    requireRule(action.discoveryFlight === undefined,
+      'Choose a carried Discovery Ornithopter token; saved flight receipts are internal.');
     if (action.noField !== undefined) {
       const blocked = homeworldRule(() => homeworldNoFieldMovementBlock(g, id));
       requireRule(!blocked, blocked ?? 'The No-Field cannot move.');
@@ -21024,16 +21188,6 @@ function applyActionInner(
       !flight || !isAdvisor(p, origin),
       'Advanced advisor use of the Ornithopter card awaits its ruling.',
     );
-    const speed = flight?.mode === 'range3' ? 3 : movementRange(g, p, elite);
-    requireRule(
-      sourceKeys.every(
-        (key) =>
-          gameDistance(g, key, location(to, s), (k) =>
-            pathBlocked(g, p, k, isAdvisor(p, origin)),
-          ) <= speed,
-      ),
-      `That destination is blocked or more than ${speed} territories away.`,
-    );
     const move: MovementOrder = {
       player: id,
       group,
@@ -21054,6 +21208,18 @@ function applyActionInner(
           }
         : {}),
     };
+    if (action.discoveryOrnithopter !== undefined)
+      move.discoveryFlight = nexusRule(() => quoteDiscoveryFlight(g, action.discoveryOrnithopter, move));
+    const speed = movementOrderRange(g, p, move);
+    requireRule(
+      sourceKeys.every(
+        (key) =>
+          gameDistance(g, key, location(to, s), (k) =>
+            pathBlocked(g, p, k, isAdvisor(p, origin)),
+          ) <= speed,
+      ),
+      `That destination is blocked or more than ${speed} territories away.`,
+    );
     validateFlightSelection(g, p, move);
     if (
       !move.ornithopterRange &&
@@ -21517,6 +21683,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  discoveryFlightIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -21811,6 +21978,8 @@ export function viewGame(state: Game, id: string) {
     techTokens: g.techTokens ?? null,
     strongholdCards: g.strongholdCards ?? null,
     discoveries: discoveryChoices(g,id,g.phase === 7 && grummanCollectionAutomatic(g)),
+    discoveryEntry: g.discoveryEntry?.stage === 'choose' && g.decision?.kind === 'discoveryEntry' && g.decision.player === id
+      ? {...nexusRule(() => quoteDiscoveryEntry({...g,discoveries:g.discoveries!},g.discoveryEntry!,id)),event:g.decision.event} : null,
     greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,
     nexusCards: projectedNexusCards(g, id),
     nexusChoamTrade: currentNexusChoamTrade(g, id),
@@ -22290,6 +22459,12 @@ export function viewGame(state: Game, id: string) {
     distrans: distransView(g, me),
     nullentropy: nullentropyView(g, me),
     ornithopter: ornithopterView(g, me),
+    discoveryOrnithopter: discoveryFlightOffer(g, id, {
+      movesAllowed: movesAllowed(g, me),
+      blocked: g.response || g.decision || g.pendingKarama || g.phaseOpening ||
+        g.pendingTreacheryDiscard || g.pendingNullentropy
+        ? 'Finish the current response or decision before declaring movement.' : null,
+    }),
     residualPoison: residualPoisonView(g, me),
     portableSnooper: portableSnooperView(g, me),
     saphoOptions: saphoOptions(g, me),

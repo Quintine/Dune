@@ -1,4 +1,5 @@
 import { validAmbassadorResume } from './ambassador-resume';
+import { validateDiscoveryEntryArrivalChild, validateDiscoveryEntryRound } from './discovery-entry';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
 import {
   validateGuildAmbassadorArrivalContext,
@@ -50,6 +51,7 @@ export type MovementCancellationQuote =
         | 'advisor'
         | 'advisorBattle'
         | 'movementTurn'
+        | 'discoveryEntry'
         | 'ambassador';
     };
 
@@ -405,9 +407,25 @@ export function quoteMovementCancellation(
       (response.advisorResume === undefined ||
         response.advisorResume === 'declaration' ||
         response.advisorResume === 'wormRide' ||
+        response.advisorResume === 'discoveryEntry' ||
         response.advisorResume === 'ambassador'),
     'This advisor cancellation has no valid owner, territory or continuation.',
   );
+  if (response.advisorResume === 'discoveryEntry') {
+    requireContext(g.phase === 0 && g.discoveryEnabled && g.discoveries && g.discoveryEntry &&
+      response.discoveryEntry && response.advisors === true &&
+      response.location === g.discoveryEntry.arrival?.destination &&
+      response.advisorAmbassadorEvent === undefined && response.advisorFollowup === undefined &&
+      response.advisorRemaining === undefined,
+      'The advisor cancellation has lost its Discovery entry continuation.');
+    try {
+      validateDiscoveryEntryRound({...g,discoveries:g.discoveries},g.discoveryEntry);
+      validateDiscoveryEntryArrivalChild(g.discoveryEntry,response.discoveryEntry);
+    } catch (error) {
+      throw new MovementCancellationError(error instanceof Error ? error.message : 'Invalid Discovery arrival.');
+    }
+    return {kind:'advisorFlip',successor:'discoveryEntry'};
+  }
   if (response.advisorResume === 'ambassador') {
     if (g.pendingAmbassador?.effect === 'guild') {
       try {

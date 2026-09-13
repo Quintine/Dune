@@ -14,6 +14,7 @@ import { NexusCards } from './nexus-cards';
 import { NexusTraitors } from './nexus-traitors';
 import { GreatMakerDecision } from './great-maker';
 import { DiscoveryPanel, DiscoveryDiscardDecision } from './discoveries';
+import { DiscoveryEntryDecision } from './discovery-entry';
 import { NexusChoamTrade } from './nexus-choam-trade';
 import { NexusTleilaxu } from './nexus-tleilaxu';
 import { NexusSuboids } from './nexus-suboids';
@@ -47,6 +48,7 @@ import { Distrans } from './distrans';
 import { JuiceOfSapho } from './juice-of-sapho';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
+import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { ResidualPoison, BattleLeaderOpportunity } from './residual-poison';
 import { PortableSnooper } from './portable-snooper';
 import {
@@ -2209,6 +2211,11 @@ export function GameTable({
                                                                                                 : g
                                                                                                       .decision
                                                                                                       .kind ===
+                                                                                                    'discoveryEntry'
+                                                                                                  ? 'Enter a Discovery location'
+                                                                                                : g
+                                                                                                      .decision
+                                                                                                      .kind ===
                                                                                                     'wormRide'
                                                                                                   ? 'Ride the sandworm'
                                                                                                   : 'Spoils of battle'}
@@ -2941,6 +2948,8 @@ export function GameTable({
                     accept: false,
                   })}
                 </>
+              ) : g.decision.kind === 'discoveryEntry' ? (
+                <DiscoveryEntryDecision game={g} act={act} busy={transportBusy || !!me.autopilot} />
               ) : g.decision.kind === 'discoveryDiscard' ? (
                 <DiscoveryDiscardDecision game={g} act={act} busy={transportBusy || !!me.autopilot} />
               ) : g.decision.kind === 'greatMakerVote' || g.decision.kind === 'greatMakerRide' ? (
@@ -3950,6 +3959,24 @@ export function GameTable({
                               fighters:
                                 moveAsFighters &&
                                 isAdvisor(me, splitLocation(source).territory),
+                              ...movementGroup,
+                              territory: selected,
+                              sector,
+                              ...(includesNoField ? {} : { amount }),
+                            }
+                      }
+                    />
+                    <DiscoveryOrnithopterMovement
+                      game={g}
+                      act={act}
+                      busy={busy}
+                      move={
+                        !source || !movementAvailable ||
+                        (includesNoField ? !validMarkerGroup : (me.forces[source] ?? 0) === 0)
+                          ? null
+                          : {
+                              type: 'move',
+                              fighters: moveAsFighters && isAdvisor(me, splitLocation(source).territory),
                               ...movementGroup,
                               territory: selected,
                               sector,

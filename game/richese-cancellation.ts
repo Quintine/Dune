@@ -61,6 +61,7 @@ const DECISIONS = {
   wormPlacement: true,
   wormProtection: true,
   discoveryDiscard: true,
+  discoveryEntry: true,
   greatMakerVote: true,
   greatMakerRide: true,
   wormRide: true,

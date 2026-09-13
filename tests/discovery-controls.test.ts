@@ -104,7 +104,8 @@ void test('all eight authorized faces have readable rules while shared location 
     'Receive seven spice', 'On a later turn', 'separate territory inside', 'At most two factions',
     'protected from storms and sandworms', 'before the storm and the mobile stronghold move']) assert.ok(markup.includes(text), text);
   assert.doesNotMatch(markup, /href="https?:/);
-  assert.match(markup, /still in development/);
+  assert.ok(markup.includes('Next-turn free entry, sole-occupant Cistern income and later-turn Ornithopter movement are available in the development prototype.'));
+  assert.ok(markup.includes('Jacurutu battle income, Ecological Testing Station, Shrine and Orgiz abilities remain in development.'));
 });
 
 void test('all four AI profiles inspect and then reveal through fresh private views and actual saved actions', () => {

@@ -104,3 +104,16 @@ lost saved controls, a retargetable arrival and skipped overflow discard before
 the stable broad check. The implementation adds no calibration study or server
 restart. Final aggregate endpoint, source-bound checks and push belong in the
 checkpoint commit; whole-module completion remains unclaimed.
+
+The following Discovery batch starts at aggregate counter 61,819,586 and connects
+three more functions: next-turn free entry, Cistern Collection income and
+later-turn Ornithopter movement. Three reused helpers build separate quotes and
+controls, then integrate Collection/flight and independently review entry/flight;
+the owner integrates entry, persistence tests and browser acceptance. Entry review
+repaired arrival custody and conflicting saved continuations; targeted browser
+play found an incorrect decision heading. Orgiz's unresolved stacked-blow
+interpretation remains disabled while the independent functions advance. One new
+browser room uses genuine setup followed by explicitly targeted scenarios; the
+156 opening rooms are preserved. Required stable checks and the aggregate endpoint
+are recorded in the checkpoint commit, without counting these prototypes as
+complete Discovery rules compliance.

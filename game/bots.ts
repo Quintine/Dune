@@ -1,4 +1,6 @@
 import { discoveryBotActions } from './discovery-options';
+import { discoveryFlightBotActions } from './discovery-flight-options';
+import { discoveryEntryBotActions } from './discovery-entry-options';
 import { greatMakerBotActions } from './great-maker-options';
 import { nexusChoamTradeBotActions } from './nexus-choam-trade-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
@@ -2343,6 +2345,7 @@ function policyActions(g: GameView): Action[] {
         { type: 'decision', accept: false },
       ];
     if (d.kind === 'discoveryDiscard') return discoveryBotActions(g);
+    if (d.kind === 'discoveryEntry') return discoveryEntryBotActions(g);
     if (d.kind === 'greatMakerVote' || d.kind === 'greatMakerRide') return greatMakerBotActions(g);
     if (d.kind === 'wormProtection')
       return [{ type: 'decision', accept: true }];
@@ -2828,6 +2831,13 @@ function policyActions(g: GameView): Action[] {
     const hajr = nexusGuildHajrAction(g);
     if (hajr) return [hajr];
     const cardMoves = nexusGuildCunningActive(g) ? [] : ornithopterMoves(g);
+    const discoveryMoves = g.discoveryOrnithopter && !g.discoveryOrnithopter.blocked
+      ? discoveryFlightBotActions(g,
+        destinations(g).filter(target => target.score > -1000)
+          .map(target => ({ territory: target.t, sector: target.s })))
+      : [];
+    if (discoveryMoves.length && (me.shipped || me.reserves === 0))
+      return discoveryMoves;
     if (
       cardMoves.length &&
       (g.ornithopter?.active || me.shipped || me.reserves === 0)
@@ -3373,6 +3383,8 @@ export function botActions(g: GameView): Action[] {
       : nexusTraitorBotActions(g);
   if (g.automaticContinuationPending) return [];
   if (g.nexusCards?.waiting.length) return nexusCardBotActions(g);
+  const discoveryEntry = discoveryEntryBotActions(g);
+  if (discoveryEntry.length) return discoveryEntry;
   const discovery = discoveryBotActions(g);
   if (discovery.length) return discovery;
   const trade = nexusChoamTradeBotActions(g);
