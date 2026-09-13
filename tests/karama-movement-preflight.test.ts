@@ -471,7 +471,7 @@ function balisetFlight(mode: 'range3' | 'twoGroups', conflict = false) {
   const baliset = holdCard(g, 'c', 'Baliset');
   const printed = holdCard(g, 'p', 'Karama');
   const worthless = holdCard(g, 'b', 'Jubba Cloak');
-  if (conflict) {
+  const addLegacyConflict = () => {
     g.ecazAmbassadors = createAmbassadors(() => 0);
     g.ecazAmbassadors = placeAmbassador(
       g.ecazAmbassadors,
@@ -494,7 +494,7 @@ function balisetFlight(mode: 'range3' | 'twoGroups', conflict = false) {
       territory,
       1,
     );
-  }
+  };
   const inventory = physical(g);
   if (mode === 'twoGroups') {
     g = applyAction(g, 'p', {
@@ -535,6 +535,9 @@ function balisetFlight(mode: 'range3' | 'twoGroups', conflict = false) {
   });
   assert.equal(g.response?.kind, 'choamWorthless');
   assert.equal(g.pendingChoamWorthless?.movement, true);
+  // Fresh declarations now reject this topology before opening CHOAM. Model
+  // an already-persisted window (or changed topology) to retain cost preflight coverage.
+  if (conflict) addLegacyConflict();
   assert.deepEqual(physical(g), inventory);
   return { g, orni, baliset, printed, worthless, destination };
 }

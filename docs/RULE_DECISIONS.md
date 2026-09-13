@@ -35,6 +35,7 @@ These are unresolved in the cited records. Do not infer an answer from elapsed t
 
 | Boundary | Still unresolved | Existing record |
 | --- | --- | --- |
+| Ambassador/Terror arrival priority | Both optionally react to the same entry, but no publisher/designer priority was found. The order can change Fremen relocation versus Atomics losses. A user question has been sent: keep the overlap gated pending an official ruling, or use explicitly provisional storm order. No answer is assumed; Baliset remains a separate pre-entry prevention effect. | [Reproduction and source boundary](DEFERRED_MOVEMENT_ARRIVAL.md) |
 | Sapho remaining timing | First versus unspent Advanced Guild priority, partly completed combined turns, cyclic auction duration and remaining battle timing stay guarded. Prior questions remain unanswered. | [Source audit](JUICE_OF_SAPHO_SOURCE_UPDATE.md), [battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) |
 | Mirror Weapon | Whether copied Tooth/Artillery mandatory-discard rules attach to the physical Mirror remains unanswered; arithmetic helpers do not admit the full battle card. | [Engine audit](MIRROR_WEAPON_ENGINE_AUDIT.md) |
 | Semuta Drug | Full-hand take-before-discard and the privacy-neutral immediate reaction protocol remain unresolved. Typed discard continuations already exist; they are not activation. | [Source update](SEMUTA_SOURCE_UPDATE_20260907.md), [privacy review](SEMUTA_PRIVACY_REVIEW.md) |

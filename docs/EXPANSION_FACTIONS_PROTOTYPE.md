@@ -176,6 +176,10 @@ complete games with every printed effect or public mode acceptance.
 
 ## Integrated sample games and browser evidence
 
+The following historical `cab2f1c` samples predate the
+[deferred movement repair](DEFERRED_MOVEMENT_ARRIVAL.md). New source-bound
+samples use [the reusable harness](VERIFICATION_WORKFLOW.md#reusable-faction-sample-games).
+
 Six deterministic samples used genuine faction setup, all four AI levels,
 unchanged physical inventories and JSON continuations every 37 accepted actions.
 No pieces were staged or phases skipped in these samples.

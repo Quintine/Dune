@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 13 September 2026 — Deferred movement arrival safety and reusable samples
+
+[Deferred movement](DEFERRED_MOVEMENT_ARRIVAL.md) fixes the combined Advanced
+sample's accepted CHOAM decline deadlock. The actual conflict was a qualifying
+Ambassador and Terror at the same destination. Fresh movement checks existing
+arrival guards before native prevention windows or new Ornithopter commitment.
+A saved explicit CHOAM decline can return an uncommitted unsupported move for
+another choice; its existing reserved card remains available and retires once
+when the replacement use finishes. Unrelated exceptions still reject atomically,
+and Karama cancellation still validates arrival before spending its cost.
+No simultaneous-arrival order is invented; that material question remains pending.
+
+Independent review covers rules, custody and private continuation. Focused
+regressions exercise native Ixian/Fremen declarations, ordinary single-token
+arrivals, saved legacy choices and Ornithopter escrow. In-memory production-room
+checks cover authenticated decline, restoration, stale/duplicate ownership and
+concurrent version races. The final checkpoint records actual broad results.
+
+`tools/faction-games.ts` replaces repeated private simulation copies with six
+fixed genuine-setup scenarios, all four profiles, physical custody checks and
+JSON restoration. It records private traces, failed snapshots, source fingerprints
+and explicit nonzero failure. Snapshot resume records provenance and starts a new
+seeded continuation stream. Full-game samples remain evidence of their particular
+paths; rejection counts and any later guards are retained in the checkpoint.
+All six fresh samples completed. Combined Advanced finished at turn six with
+1,303 actions, 35 JSON restores and 46 guarded arrival candidates. The exact
+prior failed save separately finished after 691 additional actions, 18 restores
+and 39 guarded candidates. The detailed feature document records the limitation.
+
+After the reported outage the server was healthy, all 632 opening games and their
+original seat/recovery records matched the private backup, and existing Ecaz and
+Ixian QA seats restored their private hands and pending choices in the browser.
+No restart or reset was needed. Public starts and publication remain gated.
+
+
 ## 13 September 2026 — Expansion faction setup and saved Ixian auction decline
 
 The [faction development profile](EXPANSION_FACTIONS_PROTOTYPE.md) connects

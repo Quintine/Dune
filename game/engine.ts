@@ -8657,6 +8657,8 @@ function balisetPrevents(g: Game, player: string, origin: string, to: string) {
   );
 }
 function offerChoamMovement(g: Game, move: MovementOrder) {
+  if (move.source === 'ambassador') validateAmbassadorRelocationArrival(g, move);
+  else validateMovementArrival(g, move);
   const choam = byFaction(g, 'choam');
   if (
     g.phase === 5 &&
@@ -8785,7 +8787,7 @@ function pendingFremenMovement(g: Game, response: ResponseWindow) {
   validateMovementOrder(g, p, pending.order);
   return pending;
 }
-function resumeChoamMovement(g: Game) {
+function resumeChoamMovement(g: Game, retryUnsupportedArrival = false) {
   const move = g.pendingChoamMove!;
   if (move.source === 'ambassador')
     currentFremenAmbassador(g, move.ambassadorEvent);
@@ -8802,16 +8804,28 @@ function resumeChoamMovement(g: Game) {
     if (move.source === 'ambassador') offerAmbassadorRelocation(g);
     return;
   }
+  if (retryUnsupportedArrival) {
+    try {
+      if (move.source === 'ambassador') {
+        const blocked = ambassadorRelocationArrivalBlock(g, move.player, move.origin, move.to, move.total);
+        if (blocked) throw new MovementArrivalError(blocked);
+      } else quoteMovementArrival(g, move);
+    } catch (error) {
+      if (!(error instanceof MovementArrivalError)) throw error;
+      log(g, `${p.name}'s uncommitted movement returned for another choice. ${error.message} No additional forces, spice, cards or movement allowance were spent.`);
+      if (move.source === 'ambassador') offerAmbassadorRelocation(g);
+      return;
+    }
+  }
   if (move.source === 'ambassador') commitAmbassadorRelocation(g, move);
   else completeMove(g, move);
 }
-function validateMovementArrival(
+function quoteMovementArrival(
   g: Game,
   move: MovementOrder,
   cancelingChoam = false,
 ) {
-  try {
-    return quoteCompletedMovementArrival({
+  return quoteCompletedMovementArrival({
       advanced: g.advanced,
       players: g.players,
       order: move,
@@ -8826,7 +8840,11 @@ function validateMovementArrival(
         pendingAmbassador: !!g.pendingAmbassador,
         paidBox: !!g.pendingNullentropy,
       },
-    });
+  });
+}
+function validateMovementArrival(g: Game, move: MovementOrder, cancelingChoam = false) {
+  try {
+    return quoteMovementArrival(g, move, cancelingChoam);
   } catch (error) {
     if (error instanceof MovementArrivalError)
       throw new RuleError(error.message);
@@ -20185,7 +20203,7 @@ function applyActionInner(
         action.decline === true,
         'Allow the movement or declare Baliset.',
       );
-      resumeChoamMovement(g);
+      resumeChoamMovement(g, true);
       return g;
     }
     if (
@@ -22419,6 +22437,12 @@ function applyActionInner(
       sourceKeys.every((key) => key !== location(to, s)),
       'Choose a different destination.',
     );
+    // Reject known unsupported arrivals before any movement-card event or
+    // native movement-prevention window can commit this declaration.
+    validateMovementArrival(g, {
+      player: id, group, eliteGroup, elite, origin, origins, total: n,
+      to, sector: s, advisors, wantsFighters, lockedTurn,
+    });
     let flight = g.ornithopter?.player === id ? g.ornithopter : null;
     if (action.movementCard !== undefined) {
       const mode = action.ornithopter;

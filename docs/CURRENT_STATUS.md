@@ -4,6 +4,20 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
 
 ## Evidence and source of truth
 
+- [Deferred movement arrival safety](DEFERRED_MOVEMENT_ARRIVAL.md) repairs the
+  combined Advanced sample's saved CHOAM decline deadlock. New unsupported moves
+  reject before prevention windows or card commitment; an old saved decline
+  returns the uncommitted move while preserving any existing Ornithopter escrow.
+  Simultaneous Ambassador/Terror priority remains a pending source question.
+  Focused rules and saved concurrency checks retain supported arrivals and
+  Karama's validation before payment. The reusable offline faction harness records
+  private traces, incomplete snapshots and source-bound reports. All six fresh
+  samples now finish; combined Advanced uses 1,303 actions and 35 JSON restores.
+  The exact earlier failed save also finishes after its recovered decline.
+  Guarded candidates still occur; broad verification is recorded in the checkpoint. Both existing
+  browser QA seats restored their hands and decisions after refresh. The server
+  was healthy and all 632 opening games and original seat records were preserved.
+
 - [Expansion-faction development games](EXPANSION_FACTIONS_PROTOTYPE.md) connect
   genuine setup for all seven expansion selections, using existing faction
   controls, all four AI profiles and saved continuation. Ecaz now places its six
@@ -12,8 +26,9 @@ Updated 13 September 2026. This is the short navigation dashboard; detailed evid
   an explicit saved per-lot decline for Richese offers; the actual exchange still
   awaits its replacement-custody ruling. Complete-game samples
   finish five of six games; combined Advanced reaches turn three, then stops
-  on the existing CHOAM movement/Ambassador arrival guard. That interaction is
-  the next integration gap. Setup evidence does not open public starts or
+  on the then-existing CHOAM movement/Ambassador arrival guard. The deferred
+  movement follow-up above repairs that saved deadlock while retaining the
+  unresolved simultaneous-arrival gate. Setup evidence does not open public starts or
   establish full faction compliance. Saved-game checks passed after a necessary
   restart for a stale server module cache.
 

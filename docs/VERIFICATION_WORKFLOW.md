@@ -28,6 +28,34 @@ An interrupted or incomplete report is never evidence of success.
 
 ## Saved games and online backups
 
+### Reusable faction sample games
+
+```sh
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-faction-games
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined --profile combined --rules advanced --seed 20260926
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json
+```
+
+This offline tool runs six fixed CHOAM/Richese, Ecaz/Moritani and combined
+Basic/Advanced samples from genuine setup, using all four AI profiles. Filters
+retain each scenario's seed offset. `--seed` defaults to 20260926;
+`--max-actions` defaults to 3500 accepted actions per game. Every action checks
+physical card and force custody; every 37 actions checks all private views after
+JSON restoration. Rejected candidates remain visible in private traces even when
+a later candidate succeeds. Samples are development evidence, not calibration or
+complete rules certification.
+
+The output is a new private directory outside the checkout. It contains private
+traces, incomplete-game snapshots, `results.json` and a source-bound `report.json`.
+An incomplete game or changed source exits nonzero. Resume requires a matching
+fixed-scenario snapshot with saved AI profiles and records its SHA-256; it cannot
+be combined with profile/rules filters. Its action budget starts at the snapshot,
+and its random stream restarts from the supplied seed plus scenario offset.
+Check setup provenance against the original report: accepting a supplied snapshot
+does not prove it came from genuine setup. No live room or database is accessed.
+
+### Preservation commands
+
 ```sh
 node --import tsx tools/saved-games.ts snapshot --db /absolute/games.sqlite --out /private/new-baseline --backup
 node --import tsx tools/saved-games.ts compare --db /absolute/games.sqlite --baseline /private/new-baseline/snapshot.json
