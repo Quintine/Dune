@@ -2,6 +2,8 @@
 import { TERRITORIES } from '@/game/board';
 import { BattleClaimFields } from './battle-promises';
 import { CardCountFields } from './truthtrance-card-count';
+import { KnowledgeFactFields } from './truthtrance-knowledge';
+import { isKnowledgeFact, knowledgeFactInputError } from '@/game/truthtrance-knowledge';
 import type { PlanClaim } from '@/game/battle-promises';
 import { useId, useState } from 'react';
 import Link from 'next/link';
@@ -83,7 +85,7 @@ export function Truthtrance({
     (!Number.isSafeInteger(fact.value) || fact.value < 0);
   const invalidFact = clauses
     .slice(0, join === 'single' ? 1 : 2)
-    .some(invalidSpice);
+    .some((fact) => invalidSpice(fact) || (isKnowledgeFact(fact) && !!knowledgeFactInputError(fact)));
   const leaderName = (id: string) =>
     id === CHEAP_HERO_TRAITOR
       ? 'Cheap Hero / Heroine'
@@ -312,7 +314,7 @@ export function Truthtrance({
                   onChange={(e) => setKind(e.target.value as typeof kind)}
                 >
                   <option value="fact">
-                    Verified cards, traitors or spice
+                    Verified current facts
                   </option>
                   <option value="shipment">
                     Bind a shipment from reserves
@@ -440,7 +442,7 @@ export function Truthtrance({
                         <label>
                           Fact type
                           <select
-                            value={c.kind}
+                            value={c.kind === 'prediction' ? c.field === 'faction' ? 'predictionFaction' : 'predictionTurn' : c.kind}
                             onChange={(e) =>
                               setClauses(
                                 clauses.map((old, n) =>
@@ -461,6 +463,14 @@ export function Truthtrance({
                                               compare: 'gte',
                                               value: 2,
                                             }
+                                          : e.target.value === 'predictionFaction'
+                                            ? { kind: 'prediction', field: 'faction', faction: 'atreides' }
+                                            : e.target.value === 'predictionTurn'
+                                              ? { kind: 'prediction', field: 'turn', compare: 'gte', value: 1 }
+                                              : e.target.value === 'stormDial'
+                                                ? { kind: 'stormDial', compare: 'gte', value: 0 }
+                                                : e.target.value === 'stormForecast'
+                                                  ? { kind: 'stormForecast', compare: 'gte', value: 1 }
                                           : e.target.value === 'spice'
                                             ? {
                                                 kind: 'spice',
@@ -484,6 +494,10 @@ export function Truthtrance({
                               Hand size or primary card role
                             </option>
                             <option value="traitor">Selected a traitor</option>
+                            <option value="predictionFaction">Stored faction prediction</option>
+                            <option value="predictionTurn">Stored turn prediction</option>
+                            <option value="stormDial">Known storm dial</option>
+                            <option value="stormForecast">Known storm forecast</option>
                             <option value="spice">
                               Current personal spice
                             </option>
@@ -519,6 +533,13 @@ export function Truthtrance({
                                   n === index ? next : old,
                                 ),
                               )
+                            }
+                          />
+                        ) : c.kind === 'prediction' || c.kind === 'stormDial' || c.kind === 'stormForecast' ? (
+                          <KnowledgeFactFields
+                            value={c}
+                            onChange={(next) =>
+                              setClauses(clauses.map((old, n) => n === index ? next : old))
                             }
                           />
                         ) : c.kind === 'spice' ? (

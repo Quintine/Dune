@@ -6,11 +6,11 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Previous verified checkpoint: `d0dc700`, Bureaucrat payment redirection.
-Types, lint, **4,631 offline tests**, build and **43 HTTP tests** passed.
-All 699 opening rooms and original seat/recovery records were preserved
-(733 after HTTP checks). All 700 rooms present immediately before verification
-also remained unchanged. The healthy server was reused after the outage.
+Latest verified checkpoint: `8e1cd7b`, Emperor Nexus extra revival.
+Types, lint, **4,649 offline tests**, build and **43 HTTP tests** passed.
+All 733 opening rooms and original seat/recovery records were preserved
+(767 after HTTP checks); all 734 present immediately before verification also
+remained unchanged. The healthy server was reused.
 
 [Mentat](MENTAT_QUESTION.md) connects private naming/disclosure before posture
 and faction powers, all four AI profiles and saved continuation in explicitly
@@ -28,7 +28,7 @@ All 699 opening rooms and original seat/recovery records survived the reported
 outage. The healthy server was reused. The completed checkpoint's Git record
 contains final broad verification and post-HTTP preservation totals.
 
-Current checkpoint: [Emperor Nexus Secret Ally revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md).
+Completed prototype: [Emperor Nexus Secret Ally revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md).
 Exactly three free returns, independent ordinary allowances, shared Fedaykin caps,
 private controls, four AI profiles and saved continuation are connected. Independent
 review and 17 focused effect tests pass. Two genuine-start and two explicitly staged
@@ -42,6 +42,19 @@ question asks whether to allow a uniform winner payment step, including otherwis
 forced spice payments. No answer or purchase policy is assumed. All 733 opening
 rooms and seat/recovery records survived the latest outage unchanged; a new snapshot
 protects all 734 rooms before final verification. The healthy server is reused.
+
+Current checkpoint: [Truthtrance recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), connecting
+stored BG prediction faction/turn, submitted current Storm dials and actually known
+Fremen forecasts. The same private verified answer drives controls, all four bots
+and saved continuation. Independent source/privacy review and 44 focused cases pass,
+including five authenticated SQLite recovery cases. Two genuine-setup games finish
+in 192/518 actions with zero rejections and three scripted, naturally held-card
+questions; forecast coverage comes from the separate conserved browser exercise.
+Browser controls, unknown/rephrasing, compound answers and resolved refresh pass.
+All 767 opening rooms and seat/recovery records survived the latest reported outage;
+the healthy server is reused. A new snapshot protects all 768 rooms before broad
+verification. Final checks, preservation totals and Git delivery are recorded in
+the checkpoint commit and private report; full mode/publication gates remain.
 
 ## Authoritative navigation
 
@@ -71,7 +84,7 @@ These links define bounded working behavior, not complete module certification.
 | Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md) and [No-Field](SMUGGLER_NO_FIELD.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Jacurutu income, Testing Station and Shrine. Orgiz and contested/mixed cases remain pending. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected; CHOAM inspection and Emperor purchase remain pending. A source audit or helper alone is not a completed effect. |
-| Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
+| Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
 | Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. Richese card contracts and the checklist identify the other connected effects and explicit gaps. |
 | Multiplayer | Saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
 

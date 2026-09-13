@@ -26,8 +26,10 @@ import { treacheryDeck } from './cards';
 import { CHEAP_HERO_TRAITOR } from './traitors';
 import { DUKE_VIDAL_ID } from './duke-vidal';
 import { canUseAsTruthtranceRole } from './shrine';
+import { isKnowledgeFact, parseKnowledgeFact, knowledgeFactAnswer, knowledgeFactText, truthKnowledgeOf, type KnowledgeFact, type TruthKnowledge } from './truthtrance-knowledge';
 
 export type TruthFact =
+  | KnowledgeFact
   | CardCountFact
   | HandInventoryFact
   | { kind: 'hand'; name: string }
@@ -89,6 +91,10 @@ function parseFact(
     'Truthtrance supports at most 16 clauses and four levels of grouping.',
   );
   const v = record(value);
+  if (isKnowledgeFact(v)) {
+    try { return parseKnowledgeFact(v); }
+    catch (error) { throw new TruthError(error instanceof Error ? error.message : String(error)); }
+  }
   if (v.kind === 'handCount' || v.kind === 'handInventory') {
     try {
       return v.kind === 'handCount'
@@ -306,7 +312,9 @@ export function queuedTruthCardMatches(
 export function truthFactAnswer(
   p: Pick<Player, 'hand' | 'traitors' | 'traitorChoices' | 'spice'>,
   fact: TruthFact,
+  knowledge?: TruthKnowledge,
 ): TruthAnswer {
+  if (isKnowledgeFact(fact)) return knowledgeFactAnswer(fact, knowledge);
   if (fact.kind === 'handInventory')
     return handInventoryFactMatches(p.hand, fact) ? 'yes' : 'no';
   if (fact.kind === 'handCount')
@@ -327,7 +335,7 @@ export function truthFactAnswer(
           : p.spice <= fact.value;
     return matches ? 'yes' : 'no';
   }
-  const answers = fact.terms.map((term) => truthFactAnswer(p, term));
+  const answers = fact.terms.map((term) => truthFactAnswer(p, term, knowledge));
   if (fact.kind === 'and')
     return answers.includes('no')
       ? 'no'
@@ -350,6 +358,7 @@ export function truthQuestionText(
   if (q.kind === 'battlePlan')
     return `In this battle in ${territory(q.territory).name}, will it be true that ${planClaimText(q.claim, leaderName)}?`;
   const clause = (f: TruthFact): string => {
+    if (isKnowledgeFact(f)) return knowledgeFactText(f);
     if (f.kind === 'handInventory') return handInventoryFactText(f);
     if (f.kind === 'handCount') return cardCountFactText(f);
     if (f.kind === 'hand') return `you hold ${f.name}`;
@@ -525,7 +534,7 @@ export function resolveTruthAction(
         );
         if (q.kind === 'fact')
           check(
-            a.answer === truthFactAnswer(p, q.fact),
+            a.answer === truthFactAnswer(p, q.fact, truthKnowledgeOf(g, p)),
             'Answer this fact question truthfully.',
           );
         if (q.kind === 'shipment') {

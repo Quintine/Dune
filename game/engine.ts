@@ -27,6 +27,7 @@ import { quoteJacurutuBattleIncome } from './discovery-battle';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
+import { truthKnowledgeOf } from './truthtrance-knowledge';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
@@ -23482,7 +23483,7 @@ export function viewGame(state: Game, id: string) {
       g.truthtrance?.stage === 'answer' &&
       g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'fact'
-        ? truthFactAnswer(me, g.truthtrance.question.fact)
+        ? truthFactAnswer(me, g.truthtrance.question.fact, truthKnowledgeOf(g, me))
         : null,
     schema: g.schema,
     botsPending: g.botsPending ?? false,

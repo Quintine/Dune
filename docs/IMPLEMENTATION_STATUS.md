@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 14 September 2026 — Truthtrance recorded knowledge and outage preservation
+
+[Truthtrance knowledge](TRUTHTRANCE_KNOWLEDGE.md) connects stored Bene Gesserit
+prediction faction/turn, a respondent's active submitted storm dial and the card
+actually known to native Advanced Fremen. Server validation, target-only answer
+projection, compound controls, all four AI profiles and saved continuation share
+the same eligible facts. Missing knowledge stays unknown; only the aggregate
+answer becomes public and a definite answer consumes the physical card once.
+This does not implement general future commitments or AI question strategy.
+
+Independent source/privacy review and 13 new cases pass; the focused union passes
+44, including five authenticated SQLite recovery cases. Review fixed missing
+comparison controls, parent selector mapping and the invalid-input submission
+guard. Recovery covers pending questions and interrupted storm peeks, private
+seat views, dishonest/stale/duplicate requests, competing writes and malformed
+saved predicates without state or physical-custody corruption.
+
+Two genuine-setup games using all four profiles finish with zero rejections:
+Basic 192 actions/five periodic JSON rounds; Advanced 518/fourteen. Exact card and
+force custody holds, including all eight restored final seat views. Three scripted
+questions use naturally held cards and cover prediction faction, prediction turn
+and submitted dial. Forecast coverage comes from the separate browser exercise,
+whose only staged acquisition relocates two physical Truthtrances. That exercise
+verifies invalid input, unknown/rephrasing, both compound clauses, a forecast
+comparison and refresh following submission and final resolution.
+
+After the reported power failure, all 767 opening rooms and original seat/recovery
+records match the backup. Integrity and foreign keys pass; the healthy server is
+reused. A fresh snapshot protects all 768 rooms before broad checks. Final broad
+results, source fingerprint, post-HTTP preservation and Git delivery are recorded
+in the verified commit and private report. Completion/publication gates remain.
+
 
 ## 14 September 2026 — Emperor Nexus revival prototype and outage recovery
 
