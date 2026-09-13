@@ -6,13 +6,14 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest verified checkpoint: `0450156`, [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md).
-Types, lint, **4,776 offline tests**, build and **43 HTTP tests** passed.
-Eight fixed Basic/Advanced six-seat samples finished in 9,956 actions with no
-rejected candidates, three Harass withdrawals and 266 periodic save/restore
-checks. Browser controls, private restoration and the final engine replay passed.
-All 937 games present before verification and their original seat/recovery
-records were preserved, with 970 rooms after HTTP checks.
+Latest verified checkpoint: `cb691e1`, [Sapho Battle-phase order](SAPHO_BATTLE_ORDER.md).
+Types, lint, **4,792 offline tests**, build and **43 HTTP tests** passed.
+Six fixed genuine Basic/Advanced faction samples finished in 3,672 accepted actions
+with 97 periodic save/restore checks. They retained 82 rejected candidates at
+existing guarded arrival combinations and completed through legal fallbacks.
+Browser battle ordering, tie preservation and private refresh/replay passed.
+All 970 opening games and their original seat/recovery records were preserved,
+with 1,004 rooms after checks.
 Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
@@ -30,12 +31,10 @@ and foreign-key checks passed, and refresh restored the test seat. No restart,
 database reset or recurring automation was needed. Exact verification, source
 fingerprints and delivery are recorded in the private report and Git message.
 
-Current work: [Sapho Battle-phase order](SAPHO_BATTLE_ORDER.md) connects first/last
-remaining battle choices without rewriting storm order or tie roles. The browser completed a reordered
-battle and restored its next choice; independent review and an actual Basic/Advanced
-Face Dance continuation passed. Reinforcements
-remains disabled while its reserve-cost question is pending; see the
-[latest source review](ECAZ_TREACHERY_RULES.md#14-september-reinforcements-cost-review).
+Current work: [compound shipment promises](COMPOUND_SHIPMENT_PROMISES.md) connects
+shipment-only AND/OR questions, whole-expression enforcement, usable controls,
+legal AI answers and saved continuation. Reinforcements and the other recorded
+material rule questions remain pending.
 
 ## Authoritative navigation
 

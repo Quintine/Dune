@@ -1129,19 +1129,18 @@ function policyActions(g: GameView): Action[] {
       if (w.question.kind === 'shipment') {
         const question = w.question;
         const choices = g.truthShipmentAnswers ?? [];
-        const target = gameTerritories(g).find(
-          (t) => t.id === question.territory,
-        );
-        const spice = Object.entries(g.spice)
-          .filter(
-            ([key]) => splitLocation(key).territory === question.territory,
-          )
-          .reduce((sum, [, amount]) => sum + amount, 0);
-        // Destination value and own reserve commitment guide strategy. The
-        // server's complete answer set, never sampled moves, decides feasibility.
-        const preferYes =
-          (target?.type === 'stronghold' || spice >= question.minimum) &&
-          question.minimum <= Math.max(0, me.reserves - [0, 1, 2, 3][level]);
+        const reserveBudget = Math.min(20, Math.max(0, me.reserves - [0, 1, 2, 3][level]));
+        // This only ranks the server's feasible answers. It never proves
+        // impossibility or assumes a hidden hand, future ally funds or a branch.
+        const preferYes = gameTerritories(g).some(destination => {
+          const spice = Object.entries(g.spice)
+            .filter(([key]) => splitLocation(key).territory === destination.id)
+            .reduce((sum, [, amount]) => sum + amount, 0);
+          for (let amount = 1; amount <= reserveBudget; amount++)
+            if ((destination.type === 'stronghold' || spice >= amount) &&
+              matchesShipment(question, { territory: destination.id, amount })) return true;
+          return false;
+        });
         const preferred = preferYes ? 'yes' : 'no';
         const answer = choices.includes(preferred)
           ? preferred

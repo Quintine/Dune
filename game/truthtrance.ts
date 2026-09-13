@@ -1,7 +1,11 @@
 import { shipmentAvailable } from './shipment-opportunity';
 import type { ShipmentClaim } from './shipment-promises';
-import { shipmentPromiseModeSupported } from './shipment-promises';
-import { TERRITORIES } from './board';
+import {
+  shipmentPromiseModeSupported,
+  parseShipmentClaim,
+  shipmentClaimText,
+  ShipmentClaimError,
+} from './shipment-promises';
 import {
   parseCardCountFact,
   cardCountFactMatches,
@@ -178,24 +182,13 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
         !g.pendingShipment,
       'Structured shipment promises currently support base Basic games and base Advanced games without Guild or optional modules, during the active unused shipment. Finish any pending decision first.',
     );
-    check(
-      typeof v.territory === 'string' &&
-        TERRITORIES.some((t) => t.id === v.territory),
-      'Choose a printed destination territory.',
-    );
-    check(
-      typeof v.minimum === 'number' &&
-        Number.isSafeInteger(v.minimum) &&
-        v.minimum >= 1 &&
-        v.minimum <= 20,
-      'Choose a minimum of one to twenty physical forces.',
-    );
-    return {
-      kind: 'shipment',
-      target: v.target,
-      territory: v.territory,
-      minimum: v.minimum,
-    };
+    try {
+      return { kind: 'shipment', target: v.target, ...parseShipmentClaim(v) };
+    } catch (error) {
+      if (error instanceof ShipmentClaimError)
+        throw new TruthError(error.message);
+      throw error;
+    }
   }
   if (v.kind === 'battlePlan') {
     check(
@@ -354,7 +347,7 @@ export function truthQuestionText(
 ): string {
   if (q.kind === 'freeform') return q.text;
   if (q.kind === 'shipment')
-    return `Will you ship at least ${q.minimum} physical forces from your reserves to ${territory(q.territory).name} this turn?`;
+    return `Will you ${shipmentClaimText(q)} this turn?`;
   if (q.kind === 'battlePlan')
     return `In this battle in ${territory(q.territory).name}, will it be true that ${planClaimText(q.claim, leaderName)}?`;
   const clause = (f: TruthFact): string => {

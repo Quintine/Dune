@@ -1,5 +1,5 @@
 'use client';
-import { TERRITORIES } from '@/game/board';
+import { ShipmentClaimFields, invalidShipmentClause, type ShipmentClauseInput } from './shipment-claim-fields';
 import { BattleClaimFields } from './battle-promises';
 import { CardCountFields } from './truthtrance-card-count';
 import { KnowledgeFactFields } from './truthtrance-knowledge';
@@ -52,12 +52,12 @@ export function Truthtrance({
   const [kind, setKind] = useState<
     'fact' | 'freeform' | 'battlePlan' | 'shipment'
   >('fact');
-  const [shipmentTerritory, setShipmentTerritory] = useState('carthag');
-  const [shipmentMinimum, setShipmentMinimum] = useState(6);
-  const invalidShipment =
-    !Number.isSafeInteger(shipmentMinimum) ||
-    shipmentMinimum < 1 ||
-    shipmentMinimum > 20;
+  const [shipmentJoin, setShipmentJoin] = useState<'single' | 'and' | 'or'>('single');
+  const [shipmentClauses, setShipmentClauses] = useState<ShipmentClauseInput[]>([
+    { territory: 'carthag', minimum: 6 },
+    { territory: 'arrakeen', minimum: 4 },
+  ]);
+  const invalidShipment = shipmentClauses.slice(0, shipmentJoin === 'single' ? 1 : 2).some(invalidShipmentClause);
   const shipmentAvailable =
     shipmentPromiseModeSupported(g) &&
     g.phase === 5 &&
@@ -112,8 +112,7 @@ export function Truthtrance({
           ? {
               kind,
               target,
-              territory: shipmentTerritory,
-              minimum: shipmentMinimum,
+              ...(shipmentJoin === 'single' ? shipmentClauses[0] : { claim: { op: shipmentJoin, terms: shipmentClauses } }),
             }
           : { kind, target, text, scope };
   const button = (label: string, action: Action, disabled = false) => (
@@ -195,8 +194,10 @@ export function Truthtrance({
                       A definite answer binds your shipment from reserves this
                       turn. Available preparation includes your Ghola, Karama
                       and recoverable allied funding. Yes leaves the exact
-                      count, sector and payment yours to choose; No allows a
-                      different shipment or none.
+                      count, sector and payment yours to choose within the
+                      complete statement. No requires that statement to be false;
+                      for AND, at least one condition must be false; for OR,
+                      every condition must be false.
                     </p>
                     {(g.truthShipmentAnswers ?? []).map((answer) => (
                       <div key={answer}>
@@ -329,39 +330,9 @@ export function Truthtrance({
               </label>
               {kind === 'shipment' ? (
                 <>
-                  <label>
-                    Shipment destination
-                    <select
-                      value={shipmentTerritory}
-                      onChange={(e) => setShipmentTerritory(e.target.value)}
-                    >
-                      {TERRITORIES.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label htmlFor={`${factId}-shipment-minimum`}>
-                    Minimum physical forces
-                    <Input
-                      id={`${factId}-shipment-minimum`}
-                      type="number"
-                      min={1}
-                      max={20}
-                      step={1}
-                      required
-                      value={
-                        Number.isNaN(shipmentMinimum) ? '' : shipmentMinimum
-                      }
-                      aria-invalid={invalidShipment}
-                      aria-describedby={`${factId}-shipment-help`}
-                      onChange={(e) =>
-                        setShipmentMinimum(e.currentTarget.valueAsNumber)
-                      }
-                    />
-                  </label>
-                  <p className="fine" id={`${factId}-shipment-help`}>
+                  <ShipmentClaimFields id={`${factId}-shipment`} clauses={shipmentClauses}
+                    join={shipmentJoin} onClauses={setShipmentClauses} onJoin={setShipmentJoin} />
+                  <p className="fine">
                     Includes Fremen reinforcements and Guild transport from
                     southern reserves. Ground movement and transport of forces
                     already on the board do not count.

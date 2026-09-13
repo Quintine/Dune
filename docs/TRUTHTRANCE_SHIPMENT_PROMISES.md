@@ -1,6 +1,6 @@
 # Truthtrance reserve-shipment promises
 
-Original checkpoint, 7 September 2026; Advanced follow-up, 13 September 2026. This implements a bounded reserve-shipment future-action predicate. It does not certify complete Truthtrance, Advanced play or expansion interactions, and opens no new mode gate.
+Original checkpoint, 7 September 2026; Advanced follow-up, 13 September 2026. The [14 September compound follow-up](COMPOUND_SHIPMENT_PROMISES.md) adds shipment-only AND/OR while retaining the boundaries below. This implements a bounded reserve-shipment future-action predicate. It does not certify complete Truthtrance, Advanced play or expansion interactions, and opens no new mode gate.
 
 ## Authority and supported meaning
 

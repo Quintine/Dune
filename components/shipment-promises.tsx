@@ -1,6 +1,6 @@
 'use client';
 import type { Action, GameView } from '@/game/engine';
-import { liveShipmentPromises } from '@/game/shipment-promises';
+import { liveShipmentPromises, shipmentClaimText } from '@/game/shipment-promises';
 import { territory } from '@/game/board';
 import { reserveShipmentCost, guildShipmentCost } from '@/game/shipment-price';
 import { Button } from './ui/button';
@@ -64,8 +64,8 @@ export function ShipmentPromises({
       <ul>
         {promises.map((p, index) => (
           <li key={index}>
-            {p.answer ? 'Ship' : 'Do not ship'} at least {p.minimum} physical
-            forces from reserves to {territory(p.territory).name} this turn.
+            You answered {p.answer ? 'Yes' : 'No'} to: Will you{' '}
+            {shipmentClaimText(p)} this turn?
           </li>
         ))}
       </ul>

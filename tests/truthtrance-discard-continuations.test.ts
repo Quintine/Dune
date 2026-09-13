@@ -899,7 +899,10 @@ void test('the already-bound shipment promise cannot be deleted, replaced, relea
       g.shipmentPromises![0].fulfilled = true;
     },
     (g) => {
-      g.shipmentPromises![0].minimum++;
+      const promise = g.shipmentPromises![0];
+      assert.equal(promise.claim, undefined);
+      assert.ok(typeof promise.minimum === 'number');
+      promise.minimum++;
     },
     (g) => {
       g.shipmentPromises![0].player = 'p';

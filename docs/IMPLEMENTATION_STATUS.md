@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 14 September 2026 — Compound shipment promises
+
+[Shipment-only AND/OR](COMPOUND_SHIPMENT_PROMISES.md) extends the existing Truthtrance
+shipment question with whole-expression truth, complete destination search,
+controls and private AI answers. Earlier separate promises remain jointly binding,
+and legacy flat records retain their meaning. The existing timing/module gates
+and unresolved material questions stay in place. Source-bound final checks,
+browser continuation, private preservation and verified Git delivery are recorded
+in the checkpoint report and commit message. The opening baseline is 1,004 rooms.
+
 ## 14 September 2026 — Sapho remaining battle-choice order
 
 [The Sapho battle-order prototype](SAPHO_BATTLE_ORDER.md) adds first/last remaining

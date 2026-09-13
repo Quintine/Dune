@@ -309,6 +309,9 @@ import {
 } from './ordered-opportunity';
 import {
   matchesShipment,
+  parseShipmentClaim,
+  validShipmentClaim,
+  shipmentClaimDestinations,
   liveShipmentPromises,
   shipmentPromiseModeSupported,
   type ShipmentClaim,
@@ -14601,10 +14604,7 @@ function shipmentPromiseIntegrity(g: Game) {
         g.players.some(
           (p) => p.id === promise.asker && p.id !== promise.player,
         ) &&
-        TERRITORIES.some((t) => t.id === promise.territory) &&
-        Number.isSafeInteger(promise.minimum) &&
-        promise.minimum >= 1 &&
-        promise.minimum <= 20 &&
+        validShipmentClaim(promise) &&
         typeof promise.answer === 'boolean' &&
         (promise.released === undefined ||
           typeof promise.released === 'boolean') &&
@@ -14652,7 +14652,7 @@ function findShipmentCompletion(
     !shipmentAvailable(state,owner)
   )
     return null;
-  if (!promises.some((p) => p.answer))
+  if (promises.every(p => matchesShipment(p, null) === p.answer))
     return { actions: [{ type: 'endMovement' }] };
   const initial = structuredClone(state);
   initial.truthtrance = null;
@@ -14667,6 +14667,7 @@ function findShipmentCompletion(
     { game: initial, actions: [] },
   ];
   const visited = new Set<string>();
+  const destinations = [...new Set(promises.flatMap(shipmentClaimDestinations))];
   for (let index = 0; index < queue.length; index++) {
     const { game: g, actions } = queue[index];
     const p = getPlayer(g, owner.id);
@@ -14682,8 +14683,7 @@ function findShipmentCompletion(
     ]);
     if (visited.has(signature)) continue;
     visited.add(signature);
-    const destination = promises.find((p) => p.answer)!.territory;
-    for (let amount = 1; amount <= p.reserves; amount++) {
+    for (const destination of destinations) for (let amount = 1; amount <= p.reserves; amount++) {
       if (
         !promises.every(
           (p) =>
@@ -14833,8 +14833,7 @@ function bindShipmentTruth(
     turn: g.turn,
     player: p.id,
     asker,
-    territory: claim.territory,
-    minimum: claim.minimum,
+    ...parseShipmentClaim(claim),
     answer,
   });
 }

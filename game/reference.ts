@@ -2249,8 +2249,8 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary:
       'Bind a shipment from reserves to a named territory with a minimum physical force count during the active supported shipment opportunity.',
     steps: [
-      'Declare Truthtrance, select the active player and choose Bind a shipment from reserves. Choose a printed destination and minimum of one to twenty forces. Automatic enforcement supports base Basic games and base Advanced games without Guild or optional modules, before that player ships and after pending decisions finish.',
-      'Yes requires a matching shipment while possible. No prohibits only that matching shipment: a smaller count, different destination, transport of forces already on the board or no shipment remains available. Forces already in the destination and ground movement do not satisfy the question. Fremen reinforcements and Guild transport from southern reserves do count.',
+      'Declare Truthtrance, select the active player and choose Bind a shipment from reserves. Choose a printed destination and minimum of one to twenty forces, or combine two shipment conditions using AND or OR. Each describes the same shipment. Automatic enforcement supports base Basic games and base Advanced games without Guild or optional modules, before that player ships and after pending decisions finish.',
+      'Yes requires the complete statement to match while possible: all AND conditions or at least one OR condition. No requires the whole statement to be false: at least one AND condition false, or every OR condition false. A smaller count, different destination, transport of forces already on the board or no shipment may satisfy No. Forces already in the destination and ground movement do not satisfy the question. Fremen reinforcements and Guild transport from southern reserves do count.',
       'The target privately sees feasible answers based on their own resources and earlier promises. Available Ghola revival, Karama discounts, incoming pledged aid and reclaiming their own unused pledge are included. Other players’ unplayed cards and future voluntary gifts are not assumed.',
       'Accepted answers are public and constrain the actual shipment, including any earlier shipment promises. Yes leaves count, sector and legal funding choices open. The shipper cannot move first, finish movement or voluntarily spend away their last way to comply. A completed opposing effect that makes the answer impossible releases it with a public notice.',
       'Your shipment promises remain visible during Movement. Open Suggested next step for a private executable preparation or funded shipment example. It is optional guidance; any legal action sequence honoring the answer is allowed. Shipment fulfillment survives later movement or losses because it records what was shipped.',
@@ -2264,13 +2264,13 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Authoritative base Basic and no-Guild Advanced reserve-origin commitments, joint feasibility with owned preparation, actual shipment completion, voluntary-spend guards and opposing release. Broader timing and expansion routes remain unfinished.',
+          'Authoritative base Basic and no-Guild Advanced reserve-origin commitments, shipment-only AND/OR, joint feasibility with owned preparation across all destination branches, actual shipment completion, voluntary-spend guards and opposing release. Broader timing and expansion routes remain unfinished.',
       },
       {
         area: 'Player controls',
         status: 'Implemented',
         detail:
-          'Destination/count question, target-private feasible answers, visible accepted promises and private next-step guidance with costs.',
+          'Single or AND/OR destination/count questions, target-private feasible answers, visible accepted promises and private next-step guidance with costs.',
       },
       {
         area: 'AI',
@@ -2293,6 +2293,10 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/shipment-promises.test.ts',
           'tests/shipment-promises-bots.test.ts',
           'tests/shipment-promises-recovery.test.ts',
+          'tests/compound-shipment-promises.test.ts',
+          'tests/compound-shipment-bots.test.ts',
+          'tests/compound-shipment-controls.test.tsx',
+          'tests/compound-shipment-recovery.test.ts',
         ],
       },
     ],
@@ -2303,7 +2307,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Cards',
     coverage: 'Partial',
     summary:
-      'Ask another player a public yes/no question. Verified facts, current-battle plan commitments, freeform answers and saving an unanswered card are supported; arbitrary promise enforcement is unfinished.',
+      'Ask another player a public yes/no question. Verified facts, supported shipment promises, current-battle plan commitments, freeform answers and saving an unanswered card are supported; arbitrary promise enforcement is unfinished.',
     steps: [
       'Declare the card from your hand at any time after cards are dealt. Other players may declare a competing Truthtrance or pass; questions are then asked in storm order. The interrupted phase, response, or battle decision resumes afterward.',
       'Ask a game-related yes/no question. Named-card, selected-traitor and current personal-spice questions are checked by the server. AND and OR combine facts; only the combined answer is published, with no extra inventory details or separate answer for each clause.',

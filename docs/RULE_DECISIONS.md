@@ -37,6 +37,12 @@ Updated 14 September 2026. This is the authoritative navigation index for existi
 | Homeworld custody and mobility | Physical home/visitor groups, population thresholds, tariffs and transport permissions retain distinct sources; Homeworld immunity is not universal immunity. | [Homeworld rules](HOMEWORLD_RULES.md), [benefits](HOMEWORLD_BENEFITS_RULES.md), [mobility](HOMEWORLD_MOBILITY_RULES.md), [invasion](HOMEWORLD_INVASION_RULES.md), [Guild transport](GUILD_HOMEWORLD_TRANSPORT_RULES.md) |
 | Homeworld effects | Keep original payment/revival/placement identities and qualification observations; observations alone do not choose an occupied-benefit owner. | [Payments](HOMEWORLD_PAYMENT_INCOME_RULES.md), [card economy](HOMEWORLD_CARD_ECONOMY_RULES.md), [Collection](HOMEWORLD_COLLECTION_RULES.md), [revival deployment](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md), [victory reinforcement](HOMEWORLD_VICTORY_REINFORCEMENT_RULES.md), [replacement](HOMEWORLD_REPLACEMENT_RULES.md), [Tupile](HOMEWORLD_TUPILE_INTELLIGENCE_RULES.md) |
 
+Shipment-only AND/OR now follows the FAQ's whole-question truth: Yes to AND
+requires all conditions, Yes to OR requires one, and No negates the whole
+expression. One eventual shipment or skip is evaluated against every separate
+promise. See [compound shipment promises](COMPOUND_SHIPMENT_PROMISES.md); mixed
+present/future predicates and existing timing/module gates remain unfinished.
+
 ## Pending interpretations: preserve existing questions
 
 These are unresolved in the cited records. Do not infer an answer from elapsed time, a fixture, a related card or this index. Check subsequent recorded user/source decisions before proceeding; do not send duplicate questions.
