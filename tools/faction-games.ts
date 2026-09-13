@@ -5,11 +5,11 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { botActions } from '../game/bots';
-import { treacheryDeck } from '../game/cards';
 import type { FactionId } from '../game/catalog';
 import {
   applyAction,
   createGame,
+  initializeBaseGameForAudit,
   initializeFactionExpansionsGameForAudit,
   joinGame,
   newPlayer,
@@ -18,13 +18,13 @@ import {
   type Action,
   type Game,
 } from '../game/engine';
-import { richeseCards } from '../game/richese-cards';
+import { sampleInventory, verifySampleCustody } from './sample-custody';
 import { privateOutputDirectory, sourceSnapshot } from './verification';
 
 const DEFAULT_SEED = 20_260_926;
 const DEFAULT_MAX_ACTIONS = 3_500;
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard', 'Brutal'] as const;
-type Profile = 'choam' | 'ecaz' | 'combined';
+type Profile = 'base' | 'choam' | 'ecaz' | 'combined';
 type Rules = 'basic' | 'advanced';
 
 type Scenario = {
@@ -80,6 +80,25 @@ const SCENARIOS: readonly Scenario[] = [
   },
 ];
 
+// Keep the original six expansion ordinals and defaults stable.
+const BASE_ROSTER: readonly FactionId[] = [
+  'atreides',
+  'harkonnen',
+  'fremen',
+  'emperor',
+  'guild',
+  'beneGesserit',
+];
+const BASE_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].flatMap((players) =>
+  (['basic', 'advanced'] as const).map((rules, index) => ({
+    ordinal: 6 + (players - 2) * 2 + index,
+    profile: 'base' as const,
+    rules,
+    expansions: [],
+    roster: BASE_ROSTER.slice(0, players),
+  })),
+);
+
 type TraceEntry = {
   attempt: number;
   accepted: number;
@@ -116,10 +135,10 @@ type Result = {
 function usage() {
   return (
     'Usage: node --import tsx tools/faction-games.ts --out NEW_PRIVATE_DIR ' +
-    '[--seed UINT32] [--profile all|choam|ecaz|combined] ' +
-    '[--rules both|basic|advanced] [--max-actions POSITIVE] ' +
+    '[--seed UINT32] [--profile all|base|choam|ecaz|combined] ' +
+    '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
-    'Runs genuine faction-expansion setup and gameplay offline. Output must be a new private directory outside the checkout.'
+    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base defaults to all 2–6-player samples. --players requires --profile base. Output must be a new private directory outside the checkout.'
   );
 }
 
@@ -150,13 +169,15 @@ function positive(value: string | undefined) {
 }
 
 function scenarioName(scenario: Scenario) {
-  return `${scenario.profile}-${scenario.rules}`;
+  return scenario.profile === 'base'
+    ? `base-${scenario.roster.length}-${scenario.rules}`
+    : `${scenario.profile}-${scenario.rules}`;
 }
 
 function parseProfile(value: string | undefined) {
   const profile = value ?? 'all';
-  if (!['all', 'choam', 'ecaz', 'combined'].includes(profile))
-    throw new Error('--profile must be all, choam, ecaz or combined.');
+  if (!['all', 'base', 'choam', 'ecaz', 'combined'].includes(profile))
+    throw new Error('--profile must be all, base, choam, ecaz or combined.');
   return profile as Profile | 'all';
 }
 
@@ -165,6 +186,13 @@ function parseRules(value: string | undefined) {
   if (!['both', 'basic', 'advanced'].includes(rules))
     throw new Error('--rules must be both, basic or advanced.');
   return rules as Rules | 'both';
+}
+
+function parsePlayers(value: string | undefined) {
+  if (value === undefined || value === 'all') return 'all';
+  if (!/^[2-6]$/.test(value))
+    throw new Error('--players must be all or 2 through 6.');
+  return Number(value);
 }
 
 function privateWrite(directory: string, name: string, value: unknown) {
@@ -177,49 +205,6 @@ function privateWrite(directory: string, name: string, value: unknown) {
       mode: 0o600,
     },
   );
-}
-
-function gameCards(g: Game) {
-  return [
-    ...g.players.flatMap((player) => player.hand),
-    ...g.deck,
-    ...g.discard,
-    ...(g.richeseCache ?? []),
-    ...(g.richeseRemoved ?? []),
-    ...(g.ixSetupCards ?? []),
-    ...(g.ixAuction?.cards ?? []),
-    ...(g.ornithopter ? [g.ornithopter.card] : []),
-    ...(g.auction?.cards.slice(
-      g.auction.index + Number(g.currentAuctionSale?.origin === 'normal'),
-    ) ?? []),
-  ];
-}
-
-function expectedCards(g: Game, roster: readonly FactionId[]) {
-  return [
-    ...treacheryDeck(g.expansions),
-    ...(roster.includes('richese') ? richeseCards() : []),
-  ]
-    .map((card) => card.id)
-    .sort();
-}
-
-function verifyCustody(g: Game, expected: readonly string[]) {
-  assert.deepEqual(
-    gameCards(g)
-      .map((card) => card.id)
-      .sort(),
-    expected,
-    'physical card custody',
-  );
-  for (const player of g.players)
-    assert.equal(
-      player.reserves +
-        player.tanks +
-        Object.values(player.forces).reduce((sum, amount) => sum + amount, 0),
-      20,
-      `force custody ${player.faction}`,
-    );
 }
 
 function freshGame(scenario: Scenario) {
@@ -236,7 +221,9 @@ function freshGame(scenario: Scenario) {
     player.bot = DIFFICULTIES[index % DIFFICULTIES.length];
     player.ready = true;
   }
-  return initializeFactionExpansionsGameForAudit(game);
+  return scenario.profile === 'base'
+    ? initializeBaseGameForAudit(game)
+    : initializeFactionExpansionsGameForAudit(game);
 }
 
 function resumedGame(path: string) {
@@ -270,7 +257,25 @@ function resumedGame(path: string) {
     throw new Error(
       '--resume is not an incomplete faction-games snapshot with saved AI profiles.',
     );
-  const scenario = SCENARIOS.find(
+  if (
+    game.homeworlds ||
+    game.nexusCards ||
+    game.leaderSkills ||
+    game.discoveryEnabled ||
+    game.discoveries ||
+    game.discoveryStash ||
+    game.greatMaker ||
+    game.techTokens ||
+    game.strongholdCards ||
+    game.ecazTreachery ||
+    game.mentatQuestionPreview ||
+    game.moritaniAssassinatePreview ||
+    game.moritaniAssassinate ||
+    game.moritaniAssassinateResume ||
+    game.moritaniAssassinateCallEvents
+  )
+    throw new Error('--resume sample scenarios exclude optional modules.');
+  const scenario = [...SCENARIOS, ...BASE_SCENARIOS].find(
     (candidate) =>
       candidate.rules === (game.advanced ? 'advanced' : 'basic') &&
       JSON.stringify(candidate.expansions) ===
@@ -280,7 +285,7 @@ function resumedGame(path: string) {
   );
   if (!scenario)
     throw new Error(
-      '--resume does not match one of the six fixed faction-games scenarios.',
+      '--resume does not match a fixed base or expansion sample scenario.',
     );
   // Projection validates the engine-facing shape and every private seat boundary.
   for (const player of game.players) viewGame(game, player.id);
@@ -295,14 +300,14 @@ function simulate(
   resumed: boolean,
 ) {
   let game = initial;
-  const expected = expectedCards(game, scenario.roster);
+  const expected = sampleInventory(game);
   const trace: TraceEntry[] = [];
   const used: Record<string, number> = {};
   const rejected: Record<string, number> = {};
   let actions = 0;
   let restores = 0;
   try {
-    verifyCustody(game, expected);
+    verifySampleCustody(game, expected);
     while (actions < maxActions && game.status !== 'finished') {
       let next: Game | undefined;
       for (const player of game.players) {
@@ -318,6 +323,7 @@ function simulate(
             response: game.response?.kind ?? null,
             action,
           };
+          const unchanged = JSON.stringify(game);
           try {
             next = applyAction(game, player.id, action);
             const label =
@@ -330,6 +336,11 @@ function simulate(
             actions++;
             break;
           } catch (error) {
+            assert.equal(
+              JSON.stringify(game),
+              unchanged,
+              'rejected-action immutability',
+            );
             if (!(error instanceof RuleError)) throw error;
             const message = error.message;
             const label = `${action.type}: ${message}`;
@@ -351,7 +362,7 @@ function simulate(
           })}`,
         );
       game = next;
-      verifyCustody(game, expected);
+      verifySampleCustody(game, expected);
       if (actions % 37 === 0) {
         const restored = JSON.parse(JSON.stringify(game)) as Game;
         for (const player of game.players)
@@ -360,6 +371,18 @@ function simulate(
             viewGame(game, player.id),
             'restored view',
           );
+        for (const player of game.players) {
+          const view = viewGame(restored, player.id);
+          for (const other of view.players.filter(
+            (seat) => seat.id !== player.id,
+          ))
+            for (const field of ['hand', 'spice', 'traitors', 'faceDancers'])
+              assert.equal(
+                field in other,
+                false,
+                `private rival field ${field}`,
+              );
+        }
         game = restored;
         restores++;
       }
@@ -419,6 +442,7 @@ async function main() {
       seed: { type: 'string' },
       profile: { type: 'string' },
       rules: { type: 'string' },
+      players: { type: 'string' },
       'max-actions': { type: 'string' },
       resume: { type: 'string' },
       help: { type: 'boolean', short: 'h' },
@@ -433,19 +457,28 @@ async function main() {
   if (positionals.length)
     throw new Error(`Unexpected argument: ${positionals[0]}`);
   if (!values.out) throw new Error('--out is required.\n' + usage());
-  if (values.resume && (supplied('profile') || supplied('rules')))
-    throw new Error('--resume cannot be combined with --profile or --rules.');
+  if (
+    values.resume &&
+    (supplied('profile') || supplied('rules') || supplied('players'))
+  )
+    throw new Error(
+      '--resume cannot be combined with --profile, --rules or --players.',
+    );
   const seed = unsigned32(values.seed);
   const maxActions = positive(values['max-actions']);
   const profile = parseProfile(values.profile);
   const rules = parseRules(values.rules);
+  const players = parsePlayers(values.players);
+  if (supplied('players') && profile !== 'base')
+    throw new Error('--players requires --profile base.');
   const resume = values.resume ? resumedGame(values.resume) : null;
   const selected = resume
     ? [resume.scenario]
-    : SCENARIOS.filter(
+    : (profile === 'base' ? BASE_SCENARIOS : SCENARIOS).filter(
         (scenario) =>
           (profile === 'all' || scenario.profile === profile) &&
-          (rules === 'both' || scenario.rules === rules),
+          (rules === 'both' || scenario.rules === rules) &&
+          (players === 'all' || scenario.roster.length === players),
       );
   const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
   const directory = privateOutputDirectory(root, values.out);
@@ -528,7 +561,7 @@ async function main() {
     status,
     setup: resume
       ? 'Resume supplied private snapshot; its setup provenance must be checked against the original report. Saved AI profiles choose every continuation action.'
-      : 'Genuine faction-only setup; no cards, forces, factions, phases or statistics staged. Real saved AI profiles choose every setup and gameplay action.',
+      : 'Genuine base or faction-expansion setup; no cards, forces, factions, phases or statistics staged. Real saved AI profiles choose every setup and gameplay action.',
     randomness: resume
       ? 'Continuation restarts the random stream at seed plus scenario ordinal; it does not reconstruct the pre-snapshot random stream.'
       : 'Each scenario starts its random stream at seed plus scenario ordinal.',
@@ -537,6 +570,7 @@ async function main() {
       profile: resume ? resume.scenario.profile : profile,
       rules: resume ? resume.scenario.rules : rules,
       maxActions,
+      players: resume ? resume.scenario.roster.length : players,
       ...(resume ? { resume: { path: resume.path, sha256: resume.hash } } : {}),
     },
     results: results.map(

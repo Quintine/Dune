@@ -28,28 +28,46 @@ An interrupted or incomplete report is never evidence of success.
 
 ## Saved games and online backups
 
-### Reusable faction sample games
+### Reusable base and faction sample games
 
 ```sh
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-faction-games
+# Ten genuine base samples: Basic and Advanced at each player count.
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-base-games --profile base
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-base-three --profile base --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined --profile combined --rules advanced --seed 20260926
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json
 ```
 
-This offline tool runs six fixed CHOAM/Richese, Ecaz/Moritani and combined
-Basic/Advanced samples from genuine setup, using all four AI profiles. Filters
-retain each scenario's seed offset. `--seed` defaults to 20260926;
+Default and `--profile all` retain the original six fixed CHOAM/Richese,
+Ecaz/Moritani and combined Basic/Advanced samples. `--profile base` selects ten
+additional samples: Basic and Advanced with two through six players.
+`--players 2..6` narrows only that base profile; omission or `all` retains all
+five counts. The fixed base roster adds Atreides, Harkonnen, Fremen, Emperor,
+Guild and Bene Gesserit in that order. These are sample rosters, not an assertion
+that these are the only rules-permitted player-count configurations.
+
+All samples use genuine setup and saved AI profiles, cycling Easy, Medium,
+Hard and Brutal by seat. Smaller games necessarily contain fewer profiles;
+the matrix collectively exercises all four. Filters retain each scenario's
+seed offset: the original six use 0–5; base uses
+`6 + 2 × (players − 2) + Advanced`, where Advanced is 0 or 1. `--seed` defaults to 20260926;
 `--max-actions` defaults to 3500 accepted actions per game. Every action checks
-physical card and force custody; every 37 actions checks all private views after
-JSON restoration. Rejected candidates remain visible in private traces even when
+physical card custody (including unsold auction cards), nonnegative integer
+forces/spice, twenty-force totals and the distinct Fremen/Emperor/Ixian elite totals
+and subsets. Base samples also check the exact Traitor inventory after dealing
+has finished; expansion Traitor/Face Dancer zones are not certified by this
+check. Every rejected candidate must leave its input unchanged. Every 37 actions
+checks all private views after JSON restoration and absence of rival hand,
+spice, Traitor and Face Dancer fields. Rejected candidates remain visible in private traces even when
 a later candidate succeeds. Samples are development evidence, not calibration or
 complete rules certification.
 
 The output is a new private directory outside the checkout. It contains private
 traces, incomplete-game snapshots, `results.json` and a source-bound `report.json`.
 An incomplete game or changed source exits nonzero. Resume requires a matching
-fixed-scenario snapshot with saved AI profiles and records its SHA-256; it cannot
-be combined with profile/rules filters. Its action budget starts at the snapshot,
+fixed base or expansion scenario snapshot with saved AI profiles and records its
+SHA-256; it cannot be combined with profile/rules/player-count filters. Its action budget starts at the snapshot,
 and its random stream restarts from the supplied seed plus scenario offset.
 Check setup provenance against the original report: accepting a supplied snapshot
 does not prove it came from genuine setup. No live room or database is accessed.

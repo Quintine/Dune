@@ -77,3 +77,19 @@ Later focused source contracts cover [Emperor strength, purchases and revival](N
 - A complete twelve-card reference/inventory and common lifecycle are substantial first work, but do not alone make all thirty-six panels playable. Keep the public module release gated until every face's supported timing, secrecy, custody, bots, UI, rejection, multiplayer CAS and saved continuation paths are verified. If development supports only Atreides' family first, other faces must remain accurately represented and explicitly unavailable in the audit mode; they must not silently act as blanks in a released module.
 
 No user question was sent during this audit. No tournament rule, fan effect, public predeal reveal, extra Nexus identity or Discoveries prerequisite has been adopted.
+
+## Moritani Secret Ally retention timing
+
+14 September follow-up. The recorded physical card permits retaining one
+otherwise retainable played Treachery Card after losing a battle with a winner;
+mandatory discards stay excluded. The existing Moritani alliance retention
+quote, card selection and saved discard continuation can supply the physical
+operation, but do not supply a private opportunity to use a hidden Nexus card.
+
+Automatically continuing a loser without the card while pausing a holder
+reveals custody through the table's progress. Calling both paths the same
+cleanup boundary does not hide that difference. Committing before the result
+moves the printed after-loss choice earlier. A universal loser confirmation
+requires the same pending product exception as other hidden optional reactions.
+Keep this effect unavailable until that shared response policy is resolved;
+no new outcome ruling or duplicate user question is introduced by this audit.

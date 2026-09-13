@@ -1,5 +1,23 @@
 # Dune implementation status
 
+
+## 14 September — reusable base player-count samples
+
+The faction sample runner now also selects genuine base Basic/Advanced games
+at every player count from two through six. Original expansion defaults and
+seed offsets remain stable. A shared inventory check includes unsold auctions,
+nonnegative force/spice values, exact elite totals and subsets, and post-setup
+base Traitor custody. Rejected-action immutability and restored private rival
+boundaries are checked. Failed traces and snapshots remain replayable through
+explicit resume. This consolidates the repeated private harness corrections;
+it does not certify complete player-count rules or open any mode gate.
+
+The Moritani Secret Ally source audit also records why a holder-only retention
+pause would leak its hidden Nexus. The existing shared UX question remains
+pending; no duplicate question or new timing policy was introduced. Focused
+and full-run results, source identity and delivery are recorded in the private
+checkpoint report and Git message.
+
 ## 14 September 2026 — Compound shipment promises
 
 [Shipment-only AND/OR](COMPOUND_SHIPMENT_PROMISES.md) extends the existing Truthtrance

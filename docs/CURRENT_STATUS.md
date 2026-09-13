@@ -6,14 +6,14 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest verified checkpoint: `cb691e1`, [Sapho Battle-phase order](SAPHO_BATTLE_ORDER.md).
-Types, lint, **4,792 offline tests**, build and **43 HTTP tests** passed.
-Six fixed genuine Basic/Advanced faction samples finished in 3,672 accepted actions
-with 97 periodic save/restore checks. They retained 82 rejected candidates at
-existing guarded arrival combinations and completed through legal fallbacks.
-Browser battle ordering, tie preservation and private refresh/replay passed.
-All 970 opening games and their original seat/recovery records were preserved,
-with 1,004 rooms after checks.
+Latest verified checkpoint: `9f4de64`, [compound shipment promises](COMPOUND_SHIPMENT_PROMISES.md).
+Types, lint, **4,815 offline tests**, build and **43 HTTP tests** passed.
+Genuine Basic/Advanced samples finished in 1,534 accepted actions, with 41
+periodic save/restore checks and no rejected candidates. Each used one actual
+held Truthtrance at a legal opportunity for a scenario-directed compound question.
+Browser second-OR-branch fulfillment and private refresh/replay passed.
+All 1,004 opening games and original seat/recovery records were preserved,
+with 1,038 rooms after checks.
 Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
@@ -31,10 +31,12 @@ and foreign-key checks passed, and refresh restored the test seat. No restart,
 database reset or recurring automation was needed. Exact verification, source
 fingerprints and delivery are recorded in the private report and Git message.
 
-Current work: [compound shipment promises](COMPOUND_SHIPMENT_PROMISES.md) connects
-shipment-only AND/OR questions, whole-expression enforcement, usable controls,
-legal AI answers and saved continuation. Reinforcements and the other recorded
-material rule questions remain pending.
+Current work: [reusable base samples](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games)
+connect genuine two-through-six-player Basic/Advanced verification to the existing
+source-bound runner. Fixed seeds, exact card/force/elite custody, private JSON
+restoration and retained failure snapshots replace repeated private harness copies.
+The Moritani Secret Ally audit identified the same pending hidden-reaction UX
+boundary as CHOAM inspection; the physical retention helper does not resolve it.
 
 ## Authoritative navigation
 
