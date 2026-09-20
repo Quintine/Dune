@@ -1,5 +1,11 @@
 # AI calibration: supported basic games
 
+**Current plan:** full AI implementation, strategic refinement and calibration
+wait until all non-AI game features are complete. Then target approximately 75%
+higher-tier wins for Medium/Easy, Hard/Medium and Brutal/Hard. See the
+[AI development plan](AI_DEVELOPMENT_PLAN.md). The studies below remain historical
+evidence and do not establish those pairwise targets.
+
 Measured 6 September 2026 (Australia/ACT), using the local engine and bot policy in this checkout. **All 120 seeded games completed; no deadlock, action-limit, exception, or checked invariant failure occurred.** Easy won once in 120 seat appearances. Medium and Brutal each won 41 times, and Hard won 37 times. These observations do **not** establish an increasing Medium → Hard → Brutal strength ladder.
 
 This is a bounded simulation study of the current implementation, not a verification of the published game's complete rules, a browser/recovery test, or a human skill benchmark. No bot, engine, UI, or package configuration was changed for this study.

@@ -14,6 +14,12 @@ npm run dev -- --host 0.0.0.0
 
 Open `http://localhost:3000`. Create a room, share its eight-character invitation, and add human or AI seats. The host can configure Easy, Medium, Hard and Brutal AI opponents. Current calibration demonstrates a substantially weaker Easy policy; it does not yet demonstrate a consistent ordering among the upper three levels.
 
+Full AI implementation and tuning wait until all non-AI game features are
+complete. The [AI development plan](docs/AI_DEVELOPMENT_PLAN.md) then targets
+approximately 75% higher-tier wins for Medium/Easy, Hard/Medium and Brutal/Hard.
+Until that stage, AI work focuses on minimal legal participation and critical
+playability fixes.
+
 Choose **Learn to play** for the [interactive introduction](docs/INTERACTIVE_INTRODUCTION.md)
 at `/learn`. Practice shipping, battle plans and collection before entering a
 room; lesson progress stays in your browser and does not change saved games.

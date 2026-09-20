@@ -29,11 +29,17 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
   existing checklist. Prototypes need usable controls, a legal AI path and saved
   continuation; placeholders and disconnected helpers are not completed features.
 - Keep focused checks for crashes, deadlocks, legality, custody, privacy and save
-  integrity. Defer exhaustive combinations, AI calibration and visual polish
-  until broader functional coverage, unless current failures require them.
+  integrity. Defer exhaustive combinations and visual polish until broader
+  functional coverage, unless current failures require them.
+- Defer full AI implementation, strategic refinement and difficulty calibration
+  until all non-AI game features are complete. Until then, maintain only minimal
+  legal participation and fix critical playability/correctness issues. Afterward,
+  target approximately 75% higher-tier wins for each adjacent pair: Medium/Easy,
+  Hard/Medium and Brutal/Hard. See `docs/AI_DEVELOPMENT_PLAN.md` for evaluation.
 - Preserve required checkpoint checks, selective subagents and independent
   review for complex rules/privacy/persistence. Commit and push verified
-  checkpoints under standing authorization; stop at 80% weekly usage consumed.
+  checkpoints under standing authorization. No user-imposed usage cutoff or
+  routine account-usage check remains.
 - Keep material rulings explicit and prototype independent work while pending.
   Prototype evidence does not open mode or publication gates.
 

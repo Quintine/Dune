@@ -89,7 +89,7 @@ These links define bounded working behavior, not complete module certification.
 | Basic core | Ordinary Guild repricing/transport settlement, broader truthful commitments, unresolved special timing and integrated rules/human/AI acceptance. |
 | Six-faction Advanced | Base gaps, provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. Setup matrices and complete samples do not open public starts. |
 | Twelve factions and all optional modules | Every missing effect, remaining skill bands, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. Detailed boundaries remain in the checklist/decision index. |
-| AI | Legal continuation for every supported function and distinct Easy/Medium/Hard/Brutal strategy; consistent upper-level strength ordering remains unproven. Defer broad calibration until functional coverage warrants it. |
+| AI | Maintain minimal legal participation and critical correctness fixes while game features are unfinished. Full implementation, strategy refinement and calibration wait until all non-AI features are complete; then target approximately 75% higher-tier wins for Medium/Easy, Hard/Medium and Brutal/Hard. See the [AI development plan](AI_DEVELOPMENT_PLAN.md). These targets remain unverified. |
 | Multiplayer | Broader disconnected/abandoned-seat recovery, unattended continuation and network-failure acceptance, while preserving authoritative versioning, custody, privacy and saves. |
 | Components and experience | Full component inventory/text verification, all readable inspectors, original artwork, animation/sound/accessibility/mobile polish, complete internal guidance and end-to-end human play. |
 
@@ -102,11 +102,14 @@ record their measured scope. [README](../README.md) retains publication gates.
 Prototype every remaining function in dependency order, using existing controls,
 legal AI and the saved-state model. Continue independent functions while material
 rulings are pending. Then run integrated games, repair failures, deepen combination
-and recovery coverage, calibrate AI and polish. Keep focused checks for crashes,
-deadlocks, legality, custody and privacy; complete required broad checkpoint checks.
+and recovery coverage, and complete all non-AI features. Only then fully implement
+and refine AI strategy and calibrate the adjacent difficulty pairs. Keep focused
+checks for crashes, deadlocks, legality, custody and privacy; complete required
+broad checkpoint checks.
 Use selective subagents and independent review for complex rules/privacy/persistence.
 Commit and push verified checkpoints under **“Push all from now on”**, verify push
-success, and stop pursuit at **80% weekly usage consumed** with the goal unfinished.
+success. The user removed the usage cutoff and routine account-usage checks;
+efficient work, Git delivery and selective subagents remain required.
 
 The user-authorized 13 September reset happened once; preserve all games created
 since it. Keep `.wrangler/state`, credentials and private backup artifacts out of

@@ -64,20 +64,24 @@ prototyped, integrated, verified and polished functions, and choose connected
 batches by dependency across core and expansion systems. A prototype includes
 a working action, usable controls, legal AI participation and saved continuation.
 Track functions newly playable and issues discovered during integration, alongside
-tokens and rework; do not count placeholders as delivered functions.
+rework; do not count placeholders as delivered functions. Earlier token counters
+remain historical measurements, not a required per-checkpoint task.
 
 Keep focused invariant and smoke checks during prototyping and required checks
 at stable checkpoints. Use integrated games to find defects; defer exhaustive
-combination testing, AI calibration and final visual polish to refinement unless
-an active defect requires them sooner. Preserve material rule questions, mode
-gates, selective subagents and automatic verified Git pushes. The earlier batch
+combination testing and final visual polish to refinement unless an active defect
+requires them sooner. Full AI implementation, strategic refinement and calibration
+wait until all non-AI features are complete; earlier AI work is limited to minimal
+legal participation and critical correctness fixes. Then pursue the three
+approximately 75% adjacent-pair targets in the [AI plan](AI_DEVELOPMENT_PLAN.md).
+Preserve material rule questions, mode gates, selective subagents and automatic
+verified Git pushes. The earlier batch
 estimates remain historical planning evidence and should be reassessed for this
 broader prototyping workflow, without an assumed savings percentage.
 
-Check account usage after each verified checkpoint. The user explicitly confirmed
-the stop point as **80% weekly usage consumed (20% remaining)**. Keep the goal
-unfinished when stopping for usage, preserve Git and subagent requirements, and
-leave the removed recurring automation absent. After `32791ed`, usage was 3% used.
+On 20 September the user removed the prior usage cutoff and routine account-usage
+checks. Preserve Git and subagent requirements and leave the removed recurring
+automation absent. Earlier usage counters in this log are historical only.
 
 Use [current status](CURRENT_STATUS.md), [rule decisions](RULE_DECISIONS.md) and
 [verification workflow](VERIFICATION_WORKFLOW.md) as short entry points. Historical
