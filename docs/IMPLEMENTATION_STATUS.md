@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 20 September 2026 — Movement and Traitor introduction exercises
+
+The [introduction](INTERACTIVE_INTRODUCTION.md) now connects seven lessons and
+five Basic practice positions. Movement uses shared geometry/occupancy; Traitor
+call, decline and mutual betrayal use the production battle quote. Version 2
+browser saves explicitly migrate every old lesson and preserve its previous
+choices. A hot-update state mismatch found in the browser is corrected by
+remounting the lesson component on schema change. Focused comparisons exercise
+96 actual engine moves and all offered Traitor outcomes. Independent review and
+final browser/check/build, preservation and Git evidence belong to the private
+source-bound checkpoint. Full curriculum remains unfinished; mode/publication gates stay closed.
+
 ## 20 September 2026 — Sandmaster worm-ride prototype
 
 [Native Fremen worm rides](SANDMASTER_WORM.md) collect one optional destination

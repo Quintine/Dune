@@ -6,20 +6,26 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered gameplay checkpoint: `20cc605`, [Smuggler battle collection](SMUGGLER_BATTLE.md).
-Types, lint, **4,884 offline tests**, production build and **43 HTTP tests** passed.
-The surviving unmodified leader collects even after losing or capture, with saved
-settlement before Sandmaster. All 1,106 baseline rooms and 2,314 seats stayed
-unchanged; isolated checks added 34 rooms and 71 seats. No restart was needed.
-The subsequent `8f7a62c` policy checkpoint removed the usage cutoff and deferred
-AI refinement until feature completion, with three adjacent 75% win-rate targets.
-Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
+Latest delivered gameplay checkpoint: `54c8030`, [Sandmaster worm rides](SANDMASTER_WORM.md).
+Types, lint, **4,894 offline tests**, production build and **43 HTTP tests** passed.
+Optional native Fremen destination collection connects multi-sector forces,
+controls, minimal legal AI and saved Bene Gesserit arrival continuation. All 1,140
+baseline rooms and 2,385 seats stayed unchanged; isolated checks added 34 rooms
+and 71 seats. No restart was needed. The `8f7a62c` policy checkpoint removed the
+usage cutoff and deferred AI refinement until feature completion, with three
+adjacent 75% win-rate targets. Earlier evidence remains in the
+[implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: [Sandmaster worm rides](SANDMASTER_WORM.md) connect optional native
-Fremen destination collection, multi-sector forces, controls, minimal legal AI
-participation and saved Bene Gesserit arrival continuation. Multiple piles and
-combined modules remain guarded. Final verification and delivery belong to the
-source-bound private report and Git message.
+Current work: the [interactive introduction](INTERACTIVE_INTRODUCTION.md) adds
+movement and Traitor practice through shared rules, legal controls and migrated
+browser-local saves. Broader curriculum remains unfinished. Final verification
+and delivery belong to the source-bound private report and Git message.
+
+A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
+still cross recorded pending rulings. Continue independent features rather than
+inventing answers. Durable unattended bot resumption is the next clear backend
+capability: it needs a platform scheduler and saved due-work metadata; current
+request/reconnect continuation does not establish it.
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
 battle-card slot, private category inspections, exact undialed normal/elite

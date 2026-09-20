@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { BattleWheel } from './battle-wheel';
 import { CardInspector, CardRules } from './card-inspector';
 import { PHASES } from '@/game/catalog';
+import { MovementLesson, TraitorLesson } from './introduction-practice';
 import {
   INTRODUCTION_CARDS, INTRODUCTION_LEADERS, INTRODUCTION_STEPS, INTRODUCTION_STORAGE_KEY,
   introductionBattle, introductionCollection, introductionShipment, newIntroduction, restoreIntroduction,
@@ -23,9 +24,10 @@ export function Introduction() {
       <Link href="/">← Return to Arrakis</Link>
       <p className="eyebrow">LEARN TO PLAY · BASIC GAME</p>
       <h1>A first turn on Arrakis</h1>
-      <p>Try three small examples, then take a seat at a real table. These are separate practice positions; they do not change any saved game.</p>
+      <p>Practice shipping, movement, battle plans, Traitor calls and collection, then take a seat at a real table. These are separate examples; they do not change any saved game.</p>
     </header>
-    {hydrated ? <IntroductionLessons /> : <output>Restoring your lesson…</output>}
+    {/* Remount on schema changes so a development hot update also migrates old state. */}
+    {hydrated ? <IntroductionLessons key="v2" /> : <output>Restoring your lesson…</output>}
   </main>;
 }
 
@@ -97,7 +99,8 @@ function IntroductionLessons() {
           </div>
           <p className="fine">Ordinary movement reaches an adjacent territory. Ornithopters and faction powers can extend its range. Inspect the live destination guide before committing.</p>
         </>}
-        {state.step === 2 && <>
+        {state.step === 2 && <MovementLesson state={state} update={update} />}
+        {state.step === 3 && <>
           <p>A separate battle: you are the aggressor in Wind Pass with six ordinary forces and {INTRODUCTION_LEADERS.you.name}, strength {INTRODUCTION_LEADERS.you.strength}. Your opponent also has six forces. Neither side calls a Traitor or uses a faction power in this example.</p>
           <div className={styles.columns}>
             <div className={styles.controls}>
@@ -125,7 +128,8 @@ function IntroductionLessons() {
             </div>
           </div>
         </>}
-        {state.step === 3 && <>
+        {state.step === 4 && <TraitorLesson state={state} update={update} />}
+        {state.step === 5 && <>
           <p>A fresh position has 8 spice in Wind Pass, sector 14. You have surviving forces in that same sector, outside the storm. Collection uses the forces still on the board after battles.</p>
           <div className={styles.columns}>
             <div className={styles.controls}>
@@ -141,8 +145,8 @@ function IntroductionLessons() {
             </div>
           </div>
         </>}
-        {state.step === 4 && <>
-          <p>You can revisit any example. This introduction covers the core resource and battle choices; it does not teach every faction, card, alliance, storm exception or expansion.</p>
+        {state.step === 6 && <>
+          <p>You can revisit any example. This introduction covers core resources, movement and battle choices; it does not teach bidding or every faction, card, alliance, storm exception or expansion.</p>
           <ul>
             <li>Create a private room, choose a faction, and add friends or AI players. Share the room invitation.</li>
             <li>Mark yourself ready after reviewing the selected rules. The host begins once all seats are ready.</li>

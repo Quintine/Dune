@@ -41,11 +41,11 @@ void test('collection practice caps actual income at the pile and applies the ci
   assert.deepEqual(introductionCollection({ collectors: 6, city: false }), { amount: 8, remaining: 0 });
 });
 void test('saved practice restores sealed choices, rejects corrupt versions and strips unrelated data', () => {
-  const saved = { ...newIntroduction(), step: 2, dial: 3, revealed: true, shipped: true };
+  const saved = { ...newIntroduction(), step: 3, dial: 3, revealed: true, shipped: true };
   assert.deepEqual(restoreIntroduction(JSON.stringify(saved)), saved);
   assert.deepEqual(restoreIntroduction(JSON.stringify({ ...saved, token: 'not-a-real-token', hand: ['private'] })), saved);
-  for (const raw of [null, '', '{', 'null', '[]', JSON.stringify({ ...saved, version: 2 }),
-    JSON.stringify({ ...saved, step: -1 }), JSON.stringify({ ...saved, step: 5 }),
+  for (const raw of [null, '', '{', 'null', '[]', JSON.stringify({ ...saved, version: 3 }),
+    JSON.stringify({ ...saved, step: -1 }), JSON.stringify({ ...saved, step: 7 }),
     JSON.stringify({ ...saved, defense: 'lasgun' }), JSON.stringify({ ...saved, dial: 2.5 }),
     JSON.stringify({ ...saved, collectors: 99 }), JSON.stringify({ ...saved, revealed: 'true' }),
     JSON.stringify({ ...saved, shipment: 6, destination: 'sand', shipped: true })]) {
