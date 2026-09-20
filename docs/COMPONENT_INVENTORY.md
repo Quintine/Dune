@@ -1,5 +1,13 @@
 # Component inventory and verification ledger
 
+**Kwisatz Haderach inspection, 21 September 2026:** original companion artwork,
+readable enlargement, private loss tracking and availability guidance now connect
+to Atreides controls, authorized plan inspection and the internal reference.
+Public plan inclusion never exposes the loss count, current death state or
+territory usage. This closes the historical missing inspection/portrait gap;
+exact manufactured component layout and combined-rule certification remain open.
+See [scope and evidence](KWISATZ_INSPECTION.md).
+
 **Storm Card inspection, 21 September 2026:** six numeric reference faces,
 authorized private Fremen forecasts and structured public reveal receipts now
 share an enlarged inspector. The actual card value survives separately from

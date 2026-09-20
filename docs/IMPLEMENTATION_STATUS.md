@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 21 September 2026 — Kwisatz Haderach component inspection
+
+The [companion inspector](KWISATZ_INSPECTION.md) connects original artwork, private
+battle-loss tracking and availability guidance, permitted full-plan and public
+revealed-plan components, and static reference inspection. Existing server
+projection remains the privacy boundary; no rules calculation, save migration
+or AI tuning changes. Focused rendering/projection/JSON tests supplement the
+existing battle/death/revival checks. Independent review and source-bound
+check/build/browser/preservation/Git evidence belong to the private checkpoint.
+Manufactured-layout verification and full Advanced acceptance remain open.
+
 ## 21 September 2026 — Storm Card inspection
 
 The [Storm Card inspector](STORM_CARD_INSPECTION.md) connects six numeric reference

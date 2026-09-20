@@ -106,6 +106,7 @@ export function RevealedBattle({ game }: { game: GameView }) {
               <span>Added after reveal: {name(battle.lateDefense[id])}</span>
             )}
             <BattleComponentInspection
+              kwisatz={plan.kwisatz}
               playerName={
                 game.players.find((p) => p.id === id)?.name ?? 'Player'
               }

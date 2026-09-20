@@ -5,6 +5,7 @@ import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
 import { NEXUS_CARD_REFERENCE } from './nexus-card-reference';
 import { LEADER_SKILL_CARDS } from './leader-skill-cards';
+import { KWISATZ_RULES } from './kwisatz-display';
 
 export const RULE_CHECKLIST_AREAS = [
   'Implementation',
@@ -203,6 +204,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'setup',
       'interactive-introduction',
       'storm-cards',
+      'kwisatz-haderach',
       'truthtrance-spice',
       'ecaz-ambassadors',
       'richese-cards',
@@ -2753,7 +2755,24 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
     example:
       'An Emperor army with one Sardaukar and five ordinary forces dials 3 and spends 1 spice. It may lose the supported Sardaukar and two unsupported ordinary forces, or one supported ordinary force and four unsupported ordinary forces.',
-    related: ['battle', 'revival', 'automatic-casualties'],
+    related: ['battle', 'revival', 'automatic-casualties', 'kwisatz-haderach'],
+  },
+  {
+    id: 'kwisatz-haderach',
+    title: 'Kwisatz Haderach: companion and loss track',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Inspect the Atreides battle companion, its rules and your private battle-loss progress.',
+    steps: [...KWISATZ_RULES],
+    related: ['faction-atreides', 'advanced-combat', 'revival', 'card-ghola', 'card-karama'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Existing activation, battle inclusion and revival remain authoritative. The original component face and private loss track connect to inspection; combined-module and final physical-component verification remain open.', evidence: ['game/kwisatz-display.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Private Atreides status and battle composition, authorized full-plan inspection, public revealed plans and the reference share an enlarged component inspector.', evidence: ['components/kwisatz-inspector.tsx', 'components/game-table.tsx', 'components/battle-component-inspection.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing legal battle and revival participation is unchanged. Strength tuning remains deferred until all non-AI features are complete.', evidence: ['game/bots.ts', 'tests/kwisatz.test.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'Internal guidance explains activation, territory limits, conditional strength, protection, death and separate revival. Private progress is never inferred from a public plan.', evidence: ['game/kwisatz-display.ts', 'docs/KWISATZ_INSPECTION.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused checks cover private versus public views, sealed/revealed plan inspection, JSON restoration, availability labels and the separate companion asset. Full Advanced and combination acceptance remains open.', evidence: ['tests/kwisatz.test.ts', 'tests/kwisatz-inspection.test.tsx'] },
+    ],
   },
   {
     id: 'advanced-storm-spice',

@@ -1,6 +1,7 @@
 'use client';
 import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
+import { KwisatzInspector } from './kwisatz-inspector';
 import { LobbyBotControls } from './lobby-bot-controls';
 import { IxRicheseTechnology } from './ix-richese-technology';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
@@ -1198,7 +1199,7 @@ export function GameTable({
             </p>
           )}
           {me.kwisatz && (
-            <p className="fine">
+            <div className="space-y-2"><p className="fine">
               Kwisatz Haderach:{' '}
               {me.kwisatz.dead
                 ? 'awaiting revival'
@@ -1209,6 +1210,8 @@ export function GameTable({
                 ? ` · used in ${combatName(me.kwisatz.usedAt)} this turn`
                 : ''}
             </p>
+            <KwisatzInspector state={me.kwisatz} usedTerritoryName={me.kwisatz.usedAt ? combatName(me.kwisatz.usedAt) : undefined} />
+            </div>
           )}
           {g.stormForecast !== null && (
             <div className="space-y-2">
@@ -4688,7 +4691,7 @@ export function GameTable({
                               </p>
                             )}
                             {me.kwisatz && (
-                              <label>
+                              <div className="space-y-2"><label>
                                 <input
                                   type="checkbox"
                                   checked={kwisatz}
@@ -4703,6 +4706,8 @@ export function GameTable({
                                 />
                                 Use Kwisatz Haderach (+2; prevents traitors)
                               </label>
+                              <KwisatzInspector state={me.kwisatz} usedTerritoryName={me.kwisatz.usedAt ? combatName(me.kwisatz.usedAt) : undefined} battle={{ territory: g.battle.territory, blocked: g.battle.kwisatzBlocked }} />
+                              </div>
                             )}
                             {g.battle.fullPlan?.target === me.id && (
                               <p className="notice">

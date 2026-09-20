@@ -71,6 +71,7 @@ export function PrivateBattlePlan({ game }: { game: GameView }) {
           game.players.find((p) => p.id === insight.target)?.name ?? 'Player'
         }
         cards={insight.cards}
+        kwisatz={insight.plan.kwisatz}
         leader={
           leader
             ? {

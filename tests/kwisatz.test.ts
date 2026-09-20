@@ -10,6 +10,57 @@ import {
   type Game,
 } from '../game/engine';
 import { baseDeck } from '../game/cards';
+import { registerHooks } from 'node:module';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+const aliases = registerHooks({ resolve(specifier, context, next) {
+  return next(specifier === 'next/image' ? 'vinext/shims/image' : specifier, context);
+} });
+const { RevealedBattle } = await import('../components/revealed-battle');
+const { PrivateBattlePlan } = await import('../components/private-battle-plan');
+const { BattleComponentInspection } = await import('../components/battle-component-inspection');
+const { KwisatzPrivateStatus } = await import('../components/kwisatz-inspector');
+aliases.deregister();
+
+void test('KH component inspection follows real sealed and revealed projections without exposing private status', () => {
+  let g = prepared(fixture(true));
+  g.players[0].ally = 'g';
+  g.players[2].ally = 'a';
+  g = applyAction(g, 'a', { type: 'battlePlan', dial: 0, leader: 'atreides-0', kwisatz: true });
+  for (const id of ['a', 'e', 'g']) {
+    const v = viewGame(g, id);
+    assert.equal(renderToStaticMarkup(createElement(RevealedBattle, { game: v })), '');
+    assert.equal(Boolean(v.players[0].kwisatz), id === 'a');
+  }
+  g = applyAction(g, 'e', { type: 'battlePlan', dial: 0, leader: 'emperor-0' });
+  const before = JSON.stringify(g);
+  for (const id of ['a', 'e', 'g']) {
+    const v = viewGame(g, id);
+    const html = renderToStaticMarkup(createElement(RevealedBattle, { game: v }));
+    assert.match(html, /Inspect Kwisatz Haderach · plan component/);
+    assert.doesNotMatch(html, /Your private status|<progress|of 7 battle losses/);
+    assert.equal(renderToStaticMarkup(createElement(RevealedBattle, { game: viewGame(JSON.parse(before), id) })), html);
+  }
+  const own = viewGame(g, 'a').players[0].kwisatz!;
+  assert.match(renderToStaticMarkup(createElement(KwisatzPrivateStatus, { state: own })), /7 of 7 battle losses/);
+  assert.equal(JSON.stringify(g), before);
+  const basic = structuredClone(g);
+  basic.advanced = false;
+  assert.equal(viewGame(basic, 'a').players[0].kwisatz, undefined);
+});
+
+void test('authorized full-plan KH inspection needs only inclusion and never accepts another viewer', () => {
+  const v = viewGame(prepared(fixture(true)), 'a');
+  const plan = { dial: 0, support: 0, leader: null, weapon: null, defense: null, kwisatz: true };
+  // A constructed authorized view isolates the component boundary; timing is covered elsewhere.
+  const inspected = { ...v, battle: { ...v.battle!, fullPlan: { owner: 'a', target: 'a', stage: 'inspected' as const }, fullPlanInsight: { target: 'a', plan, cards: [] } } };
+  const html = renderToStaticMarkup(createElement(PrivateBattlePlan, { game: inspected }));
+  assert.match(html, /Inspect Kwisatz Haderach · plan component/);
+  assert.doesNotMatch(html, /Your private status|<progress|of 7 battle losses/);
+  assert.equal(renderToStaticMarkup(createElement(PrivateBattlePlan, { game: { ...inspected, me: 'g' } })), '');
+  assert.equal(renderToStaticMarkup(createElement(PrivateBattlePlan, { game: { ...inspected, battle: { ...inspected.battle, revealed: true } } })), '');
+  assert.equal(renderToStaticMarkup(createElement(BattleComponentInspection, { cards: [], playerName: 'Atreides', kwisatz: false })), '');
+});
 /** Transfer fixture cards from the actual deck; never duplicate another seat's hand. */
 function setBattleHand(g: Game, id: string, ids: string[]) {
   const owner = g.players.find((p) => p.id === id)!;

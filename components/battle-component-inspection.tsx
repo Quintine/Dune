@@ -1,6 +1,7 @@
 'use client';
 
 import { CardInspector } from './card-inspector';
+import { KwisatzInspector } from './kwisatz-inspector';
 import {
   LeaderInspector,
   type LeaderDisplayIdentity,
@@ -12,16 +13,19 @@ export function BattleComponentInspection({
   cards,
   leader,
   playerName,
+  kwisatz,
 }: {
   cards: readonly VisibleCard[];
   leader?: LeaderDisplayIdentity;
   playerName: string;
+  kwisatz?: boolean;
 }) {
-  if (!cards.length && !leader) return null;
+  if (!cards.length && !leader && !kwisatz) return null;
   return (
     <details className="battle-component-inspection">
       <summary>Inspect {playerName}’s plan components</summary>
       <div className="visible-component-list">
+        {kwisatz && <KwisatzInspector context="plan" />}
         {leader && (
           <div>
             <strong>{leader.name}</strong>
