@@ -51,6 +51,12 @@ An uncertain saved-kit recovery keeps its exact retry details in memory and prev
 
 Use **Pass your seat to another player** for a voluntary one-time transfer. The private offer lasts 24 hours; acceptance preserves progress and revokes the old owner’s sessions and recovery kits. The recipient uses **Accept a seat handover** on the home page, then creates their own recovery kit. Keep the tab open until acceptance is confirmed; exact private retry details survive refresh in that tab. See [seat handover](docs/SEAT_HANDOVER.md) for cancellation, retry behavior and current limits.
 
+Use **Table discussion** below the board for public conversation or private
+messages to another human seat. Messages survive refresh; exact retries avoid
+duplicates. Private history follows the seat through recovery or handover.
+Messages do not execute game actions, and AI opponents do not answer them yet.
+See [table discussion](docs/TABLE_DISCUSSION.md).
+
 The table header offers optional **Sound effects**, with mute, volume and a test
 sample. Short cues mark phase changes and automatic action notices. Sound starts
 off; preferences stay in your browser. See [table sounds](docs/TABLE_SOUNDS.md)

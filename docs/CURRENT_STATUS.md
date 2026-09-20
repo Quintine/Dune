@@ -6,26 +6,24 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `66c41b2`, [Kwisatz Haderach inspection](KWISATZ_INSPECTION.md).
-Types, lint, **4,950 offline tests** and production build passed. All 1,373 rooms,
+Latest delivered checkpoint: `b2fcef8`, [Storm and Spice Blow practice](INTERACTIVE_INTRODUCTION.md).
+Types, lint, **4,954 offline tests** and production build passed. All 1,373 rooms,
 2,883 seats and existing auxiliary rows stayed unchanged. The running server was
-reused. Earlier checkpoints include `ed53eb7` for Storm Cards, `67e429e` for
-Charity/Revival practice, `c4ff75a` for alliances, `b7ec940` for bidding,
-`b9718ac` for lobby AI configuration and `b21b2bc` for one-use AI permission.
+reused. Earlier checkpoints include `66c41b2` for Kwisatz Haderach inspection,
+`ed53eb7` for Storm Cards and `67e429e` for Charity/Revival practice.
 The `8f7a62c` policy checkpoint removed the usage cutoff and deferred AI refinement
 until feature completion, with three adjacent 75% targets. See the
 [implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: [Storm and Spice Blow practice](INTERACTIVE_INTRODUCTION.md) expands
-the introduction to thirteen lessons and eleven independent Basic examples.
-Sealed dials, reveal, sector traversal, shelter, spice accumulation/storm loss,
-first-turn worm return and later-worm Nexus timing reuse shared live calculations.
-Version 6 preserves old lesson identities and outcomes. Full faction, Fremen-ride,
-Advanced and expansion teaching remain unfinished. Source-bound checks, review,
-browser and preservation/Git evidence belong to the private checkpoint.
-A bounded Duke review confirmed revival/loan paths still cross recorded custody,
-return and cycle questions; no duplicate ruling or invented outcome was added.
-Broader multiplayer and component acceptance remain unfinished.
+Current work: [table discussion](TABLE_DISCUSSION.md) adds public conversation and
+private human-seat messages, separate from game state and decision continuation.
+Durable history, audience-filtered pagination, exact retries and active-session
+fences support communication through refresh and seat recovery. AI conversation
+and prose-deal enforcement remain unfinished. Source-bound checks, independent
+review, browser and preservation/Git evidence belong to the private checkpoint.
+A fresh bounded Terror/Kull audit confirmed existing pending rulings; independent
+multiplayer communication proceeds without inventing their outcomes. The full
+rules, multiplayer and component acceptance gates remain open.
 
 A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
 still cross recorded pending rulings. Continue independent features rather than
@@ -95,7 +93,7 @@ These links define bounded working behavior, not complete module certification.
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected; CHOAM inspection and Emperor purchase remain pending. A source audit or helper alone is not a completed effect. |
 | Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
 | Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) connects the bounded battle return in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
-| Multiplayer | Saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), [named-player AI permission](SEAT_AI_PERMISSION.md) and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
+| Multiplayer | [Public and private discussion](TABLE_DISCUSSION.md), saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), [named-player AI permission](SEAT_AI_PERMISSION.md) and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
 
 ## Remaining readiness
 

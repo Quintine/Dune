@@ -13,6 +13,8 @@ export function unitStore(runBots = bots.runBots, migrationThrough?: string) {
   const sqlite = new DatabaseSync(':memory:');
   const hooks: {
     beforeWrite?: () => Promise<void>;
+    beforeStatement?: (sql: string) => Promise<void>;
+    afterStatement?: (sql: string) => Promise<void>;
     beforeBatch?: () => Promise<void>;
   } = {};
   const writes: { expected: number; changes: number }[] = [];
@@ -34,6 +36,7 @@ export function unitStore(runBots = bots.runBots, migrationThrough?: string) {
       return sqlite.prepare(this.sql).get(...this.values) ?? null;
     }
     async run() {
+      await hooks.beforeStatement?.(this.sql);
       const continuation = this.sql.startsWith('UPDATE rooms SET state');
       if (continuation) await hooks.beforeWrite?.();
       const changes = Number(
@@ -41,6 +44,7 @@ export function unitStore(runBots = bots.runBots, migrationThrough?: string) {
       );
       if (continuation)
         writes.push({ expected: Number(this.values[3]), changes });
+      await hooks.afterStatement?.(this.sql);
       return { meta: { changes } };
     }
   }
@@ -90,5 +94,12 @@ export function unitStore(runBots = bots.runBots, migrationThrough?: string) {
     );
     return exports as typeof Rooms;
   }
-  return { rooms: loadRooms(), restart: loadRooms, sqlite, hooks, writes };
+  return {
+    rooms: loadRooms(),
+    restart: loadRooms,
+    sqlite,
+    hooks,
+    writes,
+    database,
+  };
 }

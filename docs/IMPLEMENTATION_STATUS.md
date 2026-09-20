@@ -1,5 +1,19 @@
 # Dune implementation status
 
+## 21 September 2026 — durable table discussion prototype
+
+Public table conversation and direct human-seat messages now have usable controls,
+plain-text rendering, durable history and exact retries. Message SQL independently
+fences current credentials and membership, filters private channels before paging,
+and leaves game JSON/version, sealed choices and bot continuation unchanged.
+Recovery/handover transfers access to the seat's history; old credentials stop
+working. Independent review found and fixed committed-write/rotation and late
+unmounted-response retry races, with regressions. See [table discussion](TABLE_DISCUSSION.md)
+for the complete boundary. Final source-bound checks, browser observations,
+preservation and delivery records belong to the private checkpoint. AI messaging,
+prose-contract enforcement and full acceptance remain open; no mode gate changes.
+
+
 ## 21 September 2026 — Storm and Spice Blow practice
 
 The [interactive introduction](INTERACTIVE_INTRODUCTION.md) now has thirteen

@@ -3,6 +3,8 @@ import {
   text,
   integer,
   primaryKey,
+  index,
+  uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
 export const rooms = sqliteTable('rooms', {
   code: text('code').primaryKey(),
@@ -118,3 +120,35 @@ export const roomEntryReceipts = sqliteTable('room_entry_receipts', {
     .references(() => rooms.code, { onDelete: 'cascade' }),
   playerId: text('player_id').notNull(),
 });
+
+export const roomMessages = sqliteTable(
+  'room_messages',
+  {
+    sequence: integer('sequence').primaryKey({ autoIncrement: true }),
+    roomCode: text('room_code')
+      .notNull()
+      .references(() => rooms.code, { onDelete: 'cascade' }),
+    id: text('id').notNull(),
+    senderId: text('sender_id').notNull(),
+    senderSessionHash: text('sender_session_hash').notNull(),
+    senderName: text('sender_name').notNull(),
+    senderFaction: text('sender_faction').notNull(),
+    recipientId: text('recipient_id'),
+    recipientName: text('recipient_name'),
+    body: text('body').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    uniqueIndex('room_messages_room_id').on(table.roomCode, table.id),
+    index('room_messages_channel').on(
+      table.roomCode,
+      table.recipientId,
+      table.sequence,
+    ),
+    index('room_messages_sender').on(
+      table.roomCode,
+      table.senderId,
+      table.createdAt,
+    ),
+  ],
+);

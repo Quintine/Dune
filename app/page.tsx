@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { TableTalk } from '@/components/table-talk';
 import { GameTable } from '@/components/game-table';
 import {
   SeatHandoverSetup,
@@ -675,6 +676,7 @@ export default function Home() {
           exitDisabled={handoverPending || aiPermissionPending}
         />
         <div className="table-shell">
+          <TableTalk key={`talk:${game.code}:${game.me}`} game={game} />
           {(entryAttempt || entryProblem) && (
             <section className="notice">
               <p>
