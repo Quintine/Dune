@@ -201,6 +201,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
     related: [
       'setup',
+      'interactive-introduction',
       'truthtrance-spice',
       'ecaz-ambassadors',
       'richese-cards',
@@ -220,6 +221,29 @@ export const RULE_TOPICS: RuleTopic[] = [
       'discoveries',
       'homeworlds',
       'advanced-combat',
+    ],
+  },
+  {
+    id: 'interactive-introduction',
+    title: 'Interactive introduction',
+    category: 'Getting started',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Practice shipping, sealed battle plans and spice collection before joining a table.',
+    steps: [
+      'Choose Learn to play in the lobby or at the top of this reference. Five lessons introduce table information, shipping budgets, battle choices, collection and saved-seat recovery.',
+      'The three practice positions are separate Basic examples. Adjust the forces or destination, seal a plan with a defense, and compare collection with and without Arrakeen. Calculations use the same rule quotes as live games.',
+      'The opponent uses a fixed teaching plan, revealed only after you seal yours. Try another plan to compare a Shield with a Snooper, or a low dial with the aggressor’s winning tie. This is an exercise, not an AI match.',
+      'Lesson progress stays in this browser, including a revealed plan. No room, multiplayer action or saved-seat credential is created or read. If browser storage is unavailable, practice still works for the current visit.',
+      'Faction lessons, Advanced combat, alliances, storm exceptions and expansions remain outside this first introduction. The full reference and phase guidance explain more; existing mode gates still apply.',
+    ],
+    related: ['setup', 'movement', 'battle', 'collection', 'privacy', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Five lessons and three interactive Basic examples reuse production shipment, combat and collection quotes. The complete teaching curriculum remains unfinished.', evidence: ['game/introduction.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Lesson navigation, keyboard force sliders and battle wheel, card inspectors, seal/reveal, retry and browser-local continuation are connected.', evidence: ['components/introduction.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'A fixed opponent plan provides a reproducible teaching example. The introduction is not an AI game and does not demonstrate opponent strategy or calibration.' },
+      { area: 'Documentation', status: 'Partial', detail: 'Internal links connect each lesson to existing rules; the setup and saved-seat guidance distinguish practice from a live multiplayer game.', evidence: ['docs/INTERACTIVE_INTRODUCTION.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused checks cover pricing, all offered plans, weapon survival, ties, losses, collection limits and saved-choice validation. This does not certify all rules or the complete learning journey.', evidence: ['tests/introduction.test.ts'] },
     ],
   },
   {

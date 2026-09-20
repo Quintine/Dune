@@ -103,6 +103,7 @@ function RulesReferenceContent() {
           Find a phase, card or faction. Follow the action guides, inspect
           examples and move directly between related rules.
         </p>
+        <p><Link href="/learn">New to Dune? Try the interactive introduction →</Link></p>
         <p className="reference-status">
           This reference is growing with the game. Advanced play and expansion
           rules are unfinished.{' '}

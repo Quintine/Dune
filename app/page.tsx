@@ -892,6 +892,7 @@ export default function Home() {
         </div>
         <div className="masthead-right">
           <span className="status-dot" /> Multiplayer table{' '}
+          <Link href="/learn">Learn to play</Link>
           <Link href="/rules">
             <BookOpen size={17} />
             Rulebook

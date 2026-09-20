@@ -1,5 +1,20 @@
 # Dune implementation status
 
+## 20 September 2026 — Interactive introduction prototype
+
+[Five guided lessons](INTERACTIVE_INTRODUCTION.md) connect shipping budgets,
+sealed battle plans and spice collection to shared production rule quotes, with
+keyboard controls, card inspection and browser-local saved progress. The fixed
+opponent is a teaching example, not an AI match. The wider faction, movement,
+bidding, Advanced and expansion curriculum remains unfinished. Focused checks
+cover combat outcomes and saved-choice validation; final browser/check/build,
+preservation and Git evidence belong to the private source-bound report and
+commit message. No mode or publication gate is opened.
+
+Independent Smuggler review supports the deferred survival receipt but found no
+official modifier-strength ruling. That single new question remains explicit in
+the decision register; no pending answer was inferred to enable collection.
+
 ## 20 September 2026 — Sapho early battle aggressor
 
 [Early aggressor](SAPHO_AGGRESSOR.md) connects the held physical card, existing

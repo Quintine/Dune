@@ -14,6 +14,10 @@ npm run dev -- --host 0.0.0.0
 
 Open `http://localhost:3000`. Create a room, share its eight-character invitation, and add human or AI seats. The host can configure Easy, Medium, Hard and Brutal AI opponents. Current calibration demonstrates a substantially weaker Easy policy; it does not yet demonstrate a consistent ordering among the upper three levels.
 
+Choose **Learn to play** for the [interactive introduction](docs/INTERACTIVE_INTRODUCTION.md)
+at `/learn`. Practice shipping, battle plans and collection before entering a
+room; lesson progress stays in your browser and does not change saved games.
+
 Local games persist in `.wrangler/state`. Keep this directory across restarts. Apply new additive migrations before running code that depends on them. Never delete the local database to resolve a connection or rules problem. `.openai/hosting.json` belongs to the existing Sites project; do not recreate the hosting project.
 
 ## Saved seats and reconnecting

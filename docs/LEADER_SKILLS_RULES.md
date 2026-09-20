@@ -184,6 +184,29 @@ designer expressly presents the latter as useful to Fremen, but does not
 publish a general stacking order for every expansion movement modifier
 ([designer example, 19:13](https://www.youtube.com/watch?v=XT_azRVLq_0&t=1153s)).
 
+## 20 September Smuggler follow-up
+
+A bounded renewed check of the GF9 CHOAM & Richese rules/Q&A, the
+[core FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf),
+Future Pastimes expansion page and Jack Reda walkthrough found no ruling defining
+Smuggler's leader strength with Kwisatz, another face-up trainer or Stunner. The
+walkthrough at 12:19–12:46 repeats reveal timing and survival with an unmodified
+strength-five example. It does not settle those modifiers. A user question now
+asks whether to keep those combinations gated, use printed/copied disc value,
+or include leader bonuses with a stunned leader counted as zero. No answer is
+assumed; this is not a publisher ruling.
+
+The prior pending-receipt contract remains viable: bind the original battle,
+controller, leader and spice pile at reveal, then transfer only after survival is
+known. The printed card has no victory requirement; the designer's winning
+example does not add one. A captive's lower effect belongs to its controller.
+Resolving this reveal-time collection logically before Sandmaster's after-win
+addition is an explicit timing inference. A drained pile leaves no existing spice
+for Sandmaster to augment. Multiple-pile allocation remains unresolved. Pending
+spice is not spendable personal custody; this provisional timing must remain
+explicit when the collection function is connected. Runtime collection is still
+missing; the independent introduction proceeded while the modifier answer waits.
+
 ## Implementation readiness contract
 
 A bounded prototype can now use the exact fourteen-card inventory, modified

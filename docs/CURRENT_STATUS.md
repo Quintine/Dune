@@ -6,12 +6,19 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `bfa24b0`, [optional table sounds](TABLE_SOUNDS.md).
-Types, lint, **4,856 offline tests** and production build passed. Browser controls
-verified mute, keyboard volume, refresh and cross-tab preferences; physical audio
-and screenshot acceptance remain open. All 1,072 games and original seat/recovery
-records were preserved, and the server remained healthy after the outage.
+Latest delivered checkpoint: `9b67a78`, [early Sapho aggressor](SAPHO_AGGRESSOR.md).
+Types, lint, **4,866 offline tests**, production build and **43 HTTP tests** passed.
+Two genuine CHOAM/Richese samples completed; focused and browser evidence exercised
+the new priority effect. After the next outage all 1,106 rooms were present, the
+original baseline rows and latest QA save were unchanged, and a private seat
+restored after browser refresh. The healthy server was reused without a reset.
 Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
+
+Current work: the [interactive introduction](INTERACTIVE_INTRODUCTION.md) adds
+five lessons with shared-rule shipping, sealed battle and collection exercises,
+card inspection and browser-local continuation. Broader faction/expansion
+teaching remains unfinished. Final verification and delivery belong to the
+source-bound report and Git message.
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
 battle-card slot, private category inspections, exact undialed normal/elite
@@ -23,7 +30,7 @@ card-specific discard precedence are explicitly labeled inferences. The Stone
 Burner timing question is pending; no user answer is assumed. Reinforcements
 remains unfinished. This does not open variant, mode or publication gates.
 
-Current checkpoint: [early Sapho aggressor](SAPHO_AGGRESSOR.md) connects the
+The preceding [early Sapho aggressor](SAPHO_AGGRESSOR.md) connects the
 printed battle-priority effect during the existing shared pre-plan opportunity.
 Physical attacker/defender/chooser stay stable; Habbanya takes precedence in either
 slot. Shared priority feeds Stone admission, ordinary/Stone resolution, public
@@ -37,6 +44,11 @@ Richese setup contains the unresolved copied weapons. Ordinary-only activation
 cannot safely depend on hidden custody or alter the printed deck. Mirror remains
 gated pending the existing disposal ruling and copied-choice work. Continue with
 independent missing faction/card functions, then integrated play and refinement.
+
+The Smuggler follow-up review supports a saved reveal-time receipt with settlement
+only on leader survival, but located no official ruling on modified leader
+strength. The user has been asked about Kwisatz/trainer/Stunner composition; no
+answer is assumed. See the [source follow-up](LEADER_SKILLS_RULES.md#20-september-smuggler-follow-up).
 
 ## Authoritative navigation
 
