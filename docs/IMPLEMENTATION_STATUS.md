@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 21 September 2026 — Charity and Revival practice
+
+The [introduction](INTERACTIVE_INTRODUCTION.md) expands to eleven lessons and nine
+Basic examples. Charity teaches the top-up to two spice; Revival teaches shared
+free allowances, paid force returns, the ordinary cap, leader eligibility and
+separate leader/force limits. Existing production calculations supply the costs
+and choices; a legal saved action history preserves cumulative spending and custody.
+All previous lesson identities and outcomes migrate to version 5. No live AI
+strategy or rules mode changes. Focused engine comparisons, independent review,
+browser controls and source-bound checks/preservation/Git evidence belong to the
+private checkpoint. Duke revival/loans retain their existing unresolved custody
+boundaries; the full curriculum and game remain unfinished.
+
 ## 21 September 2026 — Interactive Nexus alliance practice
 
 The [introduction](INTERACTIVE_INTRODUCTION.md) now connects nine lessons and seven

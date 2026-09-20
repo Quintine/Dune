@@ -82,7 +82,7 @@ void test('v3 migration preserves all eight lesson identities, completed auction
       shipped: true, moved: true, moveCity: true, revealed: true, collected: true,
       traitorStage: 'resolved', traitorCall: true, allianceActions: ['invalid'], allianceChecked: true, token: 'discarded' };
     const restored = restoreIntroduction(JSON.stringify(old))!;
-    assert.equal(restored.version, 4);
+    assert.equal(restored.version, 5);
     assert.equal(INTRODUCTION_STEPS[restored.step].title, title);
     assert.deepEqual(restored.auctionActions, [null, 4]);
     assert.ok(restored.shipped && restored.moved && restored.revealed && restored.collected && restored.traitorCall);

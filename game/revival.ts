@@ -140,7 +140,27 @@ export function normalRevivalCycle(
  * Shared discs are deliberately separate: Ecaz's six-disc cycle is not implemented here.
  * This is a pure quote; committing an action, not reading a view, advances the cycle.
  */
-export function leaderRevivalOptions(g: Game, p: Player) {
+export function leaderRevivalOptions(
+  g: Pick<
+    Game,
+    | 'advanced'
+    | 'phase'
+    | 'turn'
+    | 'revivalPrevention'
+    | 'players'
+    | 'revivalRules'
+  >,
+  p: Pick<
+    Player,
+    | 'id'
+    | 'faction'
+    | 'leaders'
+    | 'revivalCycle'
+    | 'leaderRevived'
+    | 'spice'
+    | 'kwisatz'
+  >,
+) {
   const cycle = normalRevivalCycle(p);
   const enabled = g.phase === 4 && !revivalPrevented(g, p.id);
   const discount = revivalDiscount(g, p);

@@ -4,9 +4,9 @@
 from the lobby and rules reference. It adds the previously missing guided
 introduction alongside the reference's existing standalone practice wheel.
 
-Nine navigable lessons cover public/private table information and the phase
-sequence, ordinary Nexus alliances, bidding, shipment budgets, movement, sealed battle plans, Traitor calls, spice
-collection and joining or recovering a saved table. Seven independent Basic practice positions let a player
+Eleven navigable lessons cover public/private table information and the phase
+sequence, ordinary Nexus alliances, charity, bidding, revival, shipment budgets, movement, sealed battle plans, Traitor calls, spice
+collection and joining or recovering a saved table. Nine independent Basic practice positions let a player
 change inputs, commit, inspect results and retry. These positions are deliberately
 separate examples rather than a complete game or an authoritative live room.
 
@@ -59,7 +59,7 @@ The base rulebook's Alliances (Nexus) and Mentat Pause sections remain the rule
 authority; fresh publisher-indexed rulebook/quick-start results confirm the
 ordinary two-member/four-stronghold contract. No new ambiguous ruling is inferred.
 
-The version 4 save whitelists alliance choices and validates the bounded
+The saved state whitelists alliance choices and validates the bounded
 opening/offer/withdraw/break sequence and phase order. Prior lesson identities,
 auction history and every other accepted practice choice remain intact.
 `tests/introduction-alliance.test.ts` compares all 24 offered scenario/holding/
@@ -69,6 +69,35 @@ JSON continuation, closed-Nexus rejection and every version 3 lesson migration.
 existing Nexus Card forfeiture tests cover the retained expansion side effects.
 Final independent review, browser, source-bound checks and saved-game preservation
 are recorded in the private checkpoint and Git message.
+
+The Charity and Revival lessons connect two further missing Basic phase exercises.
+Charity compares starting balances zero through three, pays the ordinary bank
+amount once and distinguishes a top-up to two from a flat two-spice payment.
+Revival uses Atreides, Emperor or Fremen, with five ordinary forces in the Tanks
+and fifteen in reserves. Separate batches share the per-turn free allowance and
+three-force cap. Eligible leader returns use the same spice balance but a separate
+one-leader allowance. Full first-death, one-survivor and repeat-death rosters show
+why a selected leader may be unavailable; the existing portrait and inspector
+remain readable without exposing any live private information.
+
+The exercises reuse `charityQuote`, the force revival rate/remaining/price helpers
+and `leaderRevivalOptions`. Only the latter's TypeScript input types are narrowed;
+its live rule behavior is unchanged. A bounded legal action history recomputes
+balances, Tanks, reserves, leader custody and usage counters after refresh rather
+than trusting saved totals. Changing starting conditions resets this independent
+position. No Tleilaxu, elites, cards, allies, capture or expansion interactions are
+simulated, and no AI strategy changes. Source authority is the same classic
+GF9 base rulebook, Charity and Revival (printed pp.7 and 9). The official indexed
+Revival text and [GF9 Quick Start Guide, Charity, p.6](https://www.gf9games.com/dunegame/wp-content/uploads/Quick-start-Guide.pdf#page=6)
+were freshly retrieved on 21 September. The similarly named 2021
+movie game returned by search is a different ruleset and was not used.
+
+Resource regressions compare ordinary claims/returns against actual engine
+actions, preserve inputs, check cumulative spending and allowances, reject
+impossible saves and retain all nine v4 lesson identities and prior commitments.
+Final source-bound browser/check/build/preservation and review evidence belongs
+to this checkpoint's private report and Git delivery. Storm/spice-blow hazards,
+full faction/Advanced/expansion teaching and the complete curriculum remain open.
 
 The movement position starts with five ordinary forces in Red Chasm. It compares
 range one with range three from a separate Arrakeen occupant, exact sectors,
@@ -81,9 +110,10 @@ actual authoritative `applyAction` transitions; no live movement rule changed.
 The existing wheel, keyboard controls and card inspectors remain available.
 Lesson changes focus the heading; responsive columns stack on small screens.
 Browser storage contains only a versioned, validated set of lesson choices under
-`dune-introduction-v1`. Version 4 payloads explicitly migrate all five version 1,
-seven version 2 and eight version 3 lesson positions to the same lesson after insertion,
-preserving prior choices and committed outcomes. New alliance fields start at their defaults for every older version.
+`dune-introduction-v1`. Version 5 payloads explicitly migrate all five version 1,
+seven version 2, eight version 3 and nine version 4 lesson positions to the same lesson after insertion,
+preserving prior choices and committed outcomes. New resource fields start at defaults for every older version. Versions 1–3
+receive alliance defaults.
 Versions 1 and 2 receive bidding defaults; version 1 also receives movement/Traitor defaults. Hot updates
 remount the lesson state to apply this migration. Only the player's bid/pass
 history is saved; deterministic replay validates the complete auction and rejects

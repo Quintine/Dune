@@ -69,7 +69,7 @@ void test('all five v1 lessons migrate by identity and retain prior committed ch
   for (const [step, title] of titles.entries()) {
     const result = restoreIntroduction(JSON.stringify({ ...old, step, token: 'excluded', moved: true, traitorCall: true }))!;
     assert.equal(INTRODUCTION_STEPS[result.step].title, title);
-    assert.equal(result.version, 4); assert.equal(result.shipped, true); assert.equal(result.revealed, true);
+    assert.equal(result.version, 5); assert.equal(result.shipped, true); assert.equal(result.revealed, true);
     assert.equal(result.dial, 3); assert.equal(result.collected, true); assert.equal(result.collectors, 2);
     assert.equal(result.moved, false); assert.equal(result.traitorCall, false); assert.equal('token' in result, false);
     assert.deepEqual(restoreIntroduction(JSON.stringify(result)), result);
@@ -86,7 +86,7 @@ void test('new practice choices survive all stages and reject impossible saved c
   }
   for (const patch of [{ moveDestination: 'invented:7' }, { moveForces: 0 }, { moveCity: 'yes' },
     { moved: true, moveStorm: true }, { moved: true, moveDestination: 'imperial_basin:9' },
-    { traitorStage: 'later' }, { traitorCall: true }, { opponentTraitor: 1 }, { version: 5 }]) {
+    { traitorStage: 'later' }, { traitorCall: true }, { opponentTraitor: 1 }, { version: 6 }]) {
     assert.equal(restoreIntroduction(JSON.stringify({ ...newIntroduction(), ...patch })), null);
   }
 });

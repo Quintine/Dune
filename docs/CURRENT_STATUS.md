@@ -6,22 +6,27 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `b7ec940`, [interactive bidding](INTERACTIVE_INTRODUCTION.md).
-Types, lint, **4,925 offline tests** and production build passed. All 1,337 rooms,
+Latest delivered checkpoint: `c4ff75a`, [interactive alliance practice](INTERACTIVE_INTRODUCTION.md).
+Types, lint, **4,934 offline tests** and production build passed. All 1,337 rooms,
 2,805 seats and existing recovery/entry/handover/delegation rows stayed unchanged.
-The preceding `b9718ac` connects [lobby AI configuration](LOBBY_AI_CONFIGURATION.md)
-and `b21b2bc` connects [one-use AI permission](SEAT_AI_PERMISSION.md).
-The `8f7a62c` policy checkpoint removed the usage cutoff and deferred AI refinement
-until feature completion, with three adjacent 75% win-rate targets. Earlier
-evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
+The stopped server was started against existing state; an existing QA seat restored.
+The preceding `b7ec940` connects bidding practice, `b9718ac` connects
+[lobby AI configuration](LOBBY_AI_CONFIGURATION.md), and `b21b2bc` connects
+[one-use AI permission](SEAT_AI_PERMISSION.md). The `8f7a62c` policy checkpoint
+removed the usage cutoff and deferred AI refinement until feature completion,
+with three adjacent 75% targets. Earlier evidence remains in the
+[implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: [interactive alliance practice](INTERACTIVE_INTRODUCTION.md) adds
-the ninth lesson, ordinary Nexus consent/break choices and later shared stronghold
-victory through production quotes. Versioned practice migrates all earlier lesson
-positions and choices. No AI strategy is changed. Final independent review,
+Current work: [Charity and Revival practice](INTERACTIVE_INTRODUCTION.md) adds two
+Basic phase lessons, cumulative free/paid returns, leader eligibility and shared
+spending through existing production calculations. Saved choices migrate every
+earlier lesson and commitment. No AI strategy changes. Final independent review,
 browser/check/build/preservation and Git evidence belong to its private report.
-Alliance powers, faction/Advanced/expansion teaching and broader disconnected-seat
-acceptance remain unfinished.
+A bounded current-state Duke review confirmed revival/loan paths still cross
+recorded custody, return and cycle questions; existing identity/price helpers and
+non-Ecaz guards are already present. No duplicate ruling or invented outcome.
+Storm/spice-blow, full faction/Advanced/expansion teaching and broader
+multiplayer acceptance remain unfinished.
 
 A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
 still cross recorded pending rulings. Continue independent features rather than
