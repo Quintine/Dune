@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 20 September 2026 — Configure existing lobby AI seats
+
+[Lobby AI configuration](LOBBY_AI_CONFIGURATION.md) connects host-only difficulty,
+faction and player-circle controls to a shared strict quote and authoritative
+lobby action. Seat identity persists, faction rosters follow existing setup,
+actual changes clear human readiness, and public history explains each change.
+Focused engine, SQLite/restart/concurrent-start and HTTP tests cover the bounded
+contract. Final independent review, browser, source-bound check/build/HTTP and
+saved-game preservation evidence belong to the private checkpoint and Git message.
+Existing AI strategies and mode/publication gates remain unchanged.
+
 ## 20 September 2026 — One-use named-player AI permission
 
 The [AI permission prototype](SEAT_AI_PERMISSION.md) connects optional owner

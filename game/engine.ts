@@ -506,6 +506,7 @@ import {
 } from './advisors';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, validCombatForces, type Casualties, type CombatForces } from './combat';
 import { FACTIONS, faction, type FactionId } from './catalog';
+import { quoteLobbyBotConfiguration } from './lobby-bot-configuration';
 import {
   treacheryDeck,
   normalizeLegacyCardNames,
@@ -22370,6 +22371,59 @@ function applyActionInner(
     return g;
   }
   if (g.status === 'lobby') {
+    if (t === 'configureBot') {
+      const positions = normalizedPlayerPositions(g);
+      const quote = quoteLobbyBotConfiguration(
+        {
+          status: g.status,
+          host: g.host,
+          players: g.players,
+          expansions: g.expansions,
+          positions,
+        },
+        id,
+        action,
+      );
+      if (!quote.ok) requireRule(false, quote.reason);
+      if (!quote.changed) return g;
+      const configuration = quote.configuration;
+      const bot = getPlayer(g, configuration.target);
+      const previous = {
+        name: bot.name,
+        difficulty: bot.bot!,
+        faction: bot.faction,
+        position: positions[bot.id],
+      };
+      bot.bot = configuration.difficulty;
+      if (bot.faction !== configuration.faction) {
+        bot.faction = configuration.faction;
+        bot.name = `${faction(bot.faction).name} AI`;
+        bot.elites =
+          bot.faction === 'ixians'
+            ? { reserves: 7, tanks: 0, forces: {}, revived: 0 }
+            : undefined;
+        bot.leaders = leaders(bot.faction);
+      }
+      positions[bot.id] = configuration.position;
+      g.playerPositions = positions;
+      g.players.forEach((player) => (player.ready = !!player.bot));
+      const changes: string[] = [];
+      if (previous.difficulty !== bot.bot)
+        changes.push(`difficulty ${previous.difficulty} to ${bot.bot}`);
+      if (previous.faction !== bot.faction)
+        changes.push(
+          `faction ${faction(previous.faction).name} to ${faction(bot.faction).name}`,
+        );
+      if (previous.position !== configuration.position)
+        changes.push(
+          `player circle ${previous.position} to ${configuration.position}`,
+        );
+      log(
+        g,
+        `${p.name} configured ${previous.name}: ${changes.join('; ')}. Human readiness was cleared; AI seats remain ready.`,
+      );
+      return g;
+    }
     if (t === 'seatPosition') {
       requireRule(
         action.target === undefined || action.target === id,

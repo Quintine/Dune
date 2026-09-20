@@ -1904,11 +1904,12 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary:
       'The host can fill open faction seats with Easy, Medium, Hard or Brutal AI players.',
     steps: [
-      'In the lobby, choose an unoccupied faction and difficulty, then select Add AI player. The host can remove an AI seat before starting. AI seats mark themselves ready.',
+      'In the lobby, choose an unoccupied faction and difficulty, then select Add AI player. Open Configure on an AI seat to change its difficulty, faction or player circle, or remove it before starting. Changes save immediately, keep the same seat and clear human readiness; AI seats remain ready.',
       'Easy uses varied destinations, small deployments and low bids. Medium balances strongholds and spice. Hard uses more conservative battle estimates and targeted Karama responses. Brutal spends more and prioritizes disrupting rivals holding several strongholds.',
       'AI decisions use the same private player view and legal-action checks as human decisions. Difficulty never grants extra spice, hidden cards or access to an opponent’s sealed plan.',
       'Online rooms schedule one AI action at a time with a 1.5-second interval. A response that needs your input waits for you, even when every other seat is AI. Reconnecting preserves the saved AI deadline and seat control; see Online AI action pacing for its verification boundary.',
       'These policies complete Basic games. A balanced study found Easy weaker than the other levels, but did not establish a reliable strength ordering among Medium, Hard and Brutal. Advanced and expansion decisions are still being developed.',
+      'Full AI strategy development and strength tuning wait until all other game features are complete. Final targets are approximately 75% wins for Medium against Easy, Hard against Medium, and Brutal against Hard in balanced pairwise matches; these targets have not yet been demonstrated.',
     ],
     related: [
       'setup',
@@ -1916,6 +1917,43 @@ export const RULE_TOPICS: RuleTopic[] = [
       'battle',
       'ai-pacing',
       'implementation-checklist',
+    ],
+    checklist: [
+      {
+        area: 'Implementation',
+        status: 'Partial',
+        detail:
+          'Integrated: lobby AI seats keep their identity and saved settings. Basic legal participation is connected; final strategies across every faction and module remain unfinished.',
+      },
+      {
+        area: 'Player controls',
+        status: 'Implemented',
+        detail:
+          'Integrated: hosts add, remove and configure permanent AI seats in the lobby. Shared validation preserves identity, available factions/circles and readiness. Final AI strategy and calibration remain missing.',
+      },
+      {
+        area: 'AI',
+        status: 'Partial',
+        detail:
+          'Existing four profiles remain available. Full strategic implementation and adjacent 75% strength targets wait until all non-AI features are complete.',
+      },
+      {
+        area: 'Documentation',
+        status: 'Implemented',
+        detail:
+          'Lobby configuration, readiness resets and the distinction between current profiles and final strength targets are explained here.',
+      },
+      {
+        area: 'Verification',
+        status: 'Partial',
+        detail:
+          'Focused host authority, private views, saved settings, JSON restoration and concurrent-start checks cover configuration. Full AI strategy, multiplayer and calibrated strength acceptance remain unfinished.',
+        evidence: [
+          'tests/lobby-bot-configuration.test.ts',
+          'tests/lobby-bot-configuration-recovery.test.ts',
+          'tests/lobby-bot-configuration-http.test.ts',
+        ],
+      },
     ],
   },
   {

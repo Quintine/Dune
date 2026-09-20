@@ -1,5 +1,6 @@
 'use client';
 import { EcazSetup } from './ecaz-setup';
+import { LobbyBotControls } from './lobby-bot-controls';
 import { IxRicheseTechnology } from './ix-richese-technology';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
 import {
@@ -1085,15 +1086,7 @@ export function GameTable({
                 </div>
               )}
               {p.bot && g.status === 'lobby' && g.host === me.id && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={busy}
-                  aria-label={`Remove ${p.name}`}
-                  onClick={() => act({ type: 'removeBot', target: p.id })}
-                >
-                  Remove AI
-                </Button>
+                <LobbyBotControls g={g} target={p.id} busy={busy} act={act} />
               )}
               <div className="player-stats">
                 <span>{p.reserves} reserves</span>

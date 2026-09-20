@@ -1167,6 +1167,9 @@ footer {
     border: 1px solid var(--border);
     padding: 14px;
   }
+  .player-card:has(.lobby-bot-configuration[open]) {
+    flex: 0 0 min(20rem, calc(100vw - 3rem));
+  }
   .resource-readout {
     margin: 0;
     min-width: 120px;
@@ -1654,6 +1657,13 @@ footer {
 }
 .bot-controls select {
   width: 100%;
+  background: #18201d;
+  color: #eee4ce;
+  border: 1px solid #50432d;
+  border-radius: 5px;
+  padding: 8px;
+}
+.lobby-bot-configuration select {
   background: #18201d;
   color: #eee4ce;
   border: 1px solid #50432d;

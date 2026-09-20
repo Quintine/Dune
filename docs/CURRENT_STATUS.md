@@ -6,21 +6,22 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `e13ad45`, [movement and Traitor practice](INTERACTIVE_INTRODUCTION.md).
-Types, lint, **4,899 offline tests** and production build passed. Seven lessons
-and five exercises connect shared rules and migrated browser-local saves. All
-1,174 baseline rooms and 2,456 seats stayed unchanged; no restart was needed.
-The preceding `54c8030` connects [Sandmaster worm rides](SANDMASTER_WORM.md).
+Latest delivered checkpoint: `b21b2bc`, [one-use AI permission](SEAT_AI_PERMISSION.md).
+Types, lint, **4,906 offline tests**, production build and **45 HTTP tests** passed.
+All 1,174 baseline rooms and 2,456 seats stayed unchanged; the new preservation
+baseline contains 1,262 rooms and 2,644 seats. No restart was needed.
+The preceding `e13ad45` connects [movement and Traitor practice](INTERACTIVE_INTRODUCTION.md).
 The `8f7a62c` policy checkpoint removed the
 usage cutoff and deferred AI refinement until feature completion, with three
 adjacent 75% win-rate targets. Earlier evidence remains in the
 [implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: [one-use AI permission](SEAT_AI_PERMISSION.md) connects optional
-named-player activation at the owner's chosen difficulty, retained ownership,
-both session fences and saved exact retries. Final independent review,
-verification and delivery belong to the source-bound private report and Git
-message. Broader disconnected-seat acceptance remains unfinished.
+Current work: [lobby AI configuration](LOBBY_AI_CONFIGURATION.md) connects
+host controls for an existing AI seat's difficulty, faction and player circle,
+preserving identity and resetting human readiness. It uses the existing profiles
+without strategic refinement. Final independent review, verification and delivery
+belong to the source-bound private report and Git message. Broader disconnected-seat
+acceptance remains unfinished.
 
 A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
 still cross recorded pending rulings. Continue independent features rather than
