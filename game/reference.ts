@@ -352,15 +352,16 @@ export const RULE_TOPICS: RuleTopic[] = [
     coverage: 'Partial',
     developmentStage: 'Prototyped',
     summary:
-      'Choose an available first or last position in Once Around bidding, movement or remaining battle choices, then discard Sapho. Battle aggressor and other timing modes remain unfinished.',
+      'Choose an available order change or become battle aggressor before plans, then discard Sapho. Later intervention and other timing modes remain unfinished.',
     steps: [
       'In a current Once Around auction, first is available before anyone bids. Last is available before your own bid, including after Richese. You still get only one bidding opportunity and must outbid the current high bid to win.',
       'Discarding Sapho frees a hand slot. A full-hand holder can join a still-open lot through this order change. A completed bid or pass cannot be repeated, and a finished lot cannot reopen.',
       'The movement controls change complete shipment and movement turns at a boundary before the current player begins. First moves you ahead of the remaining unstarted turns, including after earlier players have fully finished. In Advanced, the Guild must have finished or be absent. Last stays after the Guild even if the Guild later chooses to wait.',
       'Between completed battles, choose first or last among remaining battle choosers. The priority lasts for the rest of the Battle phase. You still need a real unresolved battle. Others may choose battles against you before your own turn; last is not immunity. This scope changes the chooser, not each battle’s aggressor or tie advantage.',
+      'During your open pre-plan preparation, use Sapho to become the current battle’s aggressor before declaring ready. You win ordinary ties, while the Habbanya Stronghold advantage still takes precedence. Physical participants, plans and later battle-choice order do not swap. The accepted priority survives refresh.',
       'Finish existing shipment, movement, card preparation and pending decisions before changing order. Your hand panel lists only currently available choices. A reserved card or a position you already hold cannot be selected.',
       'Completed bids and turns stay completed. Storm order, committed funding and movement counters do not reset. Refreshing preserves the same remaining opportunities and any declared last position.',
-      'These are the supported development controls, not additional printed restrictions. Battle aggressor, ordinary cyclic auction scope, other phase ordering and intervention during a partly completed combined turn remain unfinished. Silent bids are simultaneous; their storm-order tie rule is unchanged.',
+      'These are the supported development controls, not additional printed restrictions. Later aggressor intervention, ordinary cyclic auction scope, other phase ordering and intervention during a partly completed combined turn remain unfinished. Silent bids are simultaneous; their storm-order tie rule is unchanged.',
     ],
     example:
       'Atreides bids 2. Before taking its bid, the Emperor uses Sapho to go last. Richese bids 3, then the Emperor must bid at least 4 to win. Atreides does not receive another bid.',
@@ -381,7 +382,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Owner-only first/last actions, public remaining battle order, owner-relative battle targets, readable inspector and timing explanations. No aggressor or cyclic-auction controls yet.',
+          'Owner-only first/last and pre-plan aggressor actions, public aggressor/tie priority and remaining battle order, owner-relative targets, readable inspector and timing explanations. Later aggressor and cyclic-auction controls remain unfinished.',
       },
       {
         area: 'AI',
@@ -411,6 +412,8 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/sapho-battle-order-bots.test.ts',
           'tests/sapho-battle-order-controls.test.tsx',
           'tests/sapho-battle-order-recovery.test.ts',
+          'tests/sapho-aggressor.test.ts',
+          'tests/sapho-aggressor-recovery.test.ts',
         ],
       },
     ],
@@ -1007,7 +1010,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       steps: [
         ...definition.gameplay,
         definition.card.effect === 'juiceOfSapho'
-          ? 'Use the Juice of Sapho panel for an available first or last Once Around or movement position. Battle aggressor and other timing modes remain unfinished; consult the timing guide.'
+          ? 'Use the Juice of Sapho panel for an available order change or pre-plan aggressor. Later intervention and other timing modes remain unfinished; consult the timing guide.'
           : definition.card.effect === 'karama'
             ? 'This physical Karama uses the existing generic handler in development fixtures. Full Richese starts and complete interaction verification remain unavailable.'
             : definition.card.effect === 'distrans'

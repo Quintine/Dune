@@ -210,6 +210,8 @@ void test('a clean later boundary accepts remaining battles without reopening th
   const current = structuredClone(g.battle);
   reject(g, 'b', expired);
   assert.deepEqual(g.battle, current);
+  // This human saves Sapho for the next boundary instead of taking the new AI aggressor option.
+  g = applyAction(g, 'b', {type:'battlePreparationReady', event:g.battle!.event});
   g = resolveSaphoBattle(g);
   assert.ok(g.players[1].hand.some((c) => c.id === SAPHO_BATTLE_CARD));
   reject(g, 'b', expired);
@@ -217,6 +219,7 @@ void test('a clean later boundary accepts remaining battles without reopening th
   const mode = viewGame(g, 'b').saphoOptions.find(
     (o) => o.scope === 'battleOrder',
   )!.mode;
+  assert.ok(mode === 'first' || mode === 'last');
   g = applyAction(g, 'b', saphoBattleOrderAction(g, 'b', mode));
   assert.deepEqual(g.lastBattleContext, completed);
   restore(g);

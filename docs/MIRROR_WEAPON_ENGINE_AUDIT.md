@@ -61,6 +61,17 @@ Portable Snooper is concurrently being integrated by the parent. Consume its fin
 
 ## Genuine unresolved boundaries and recommended scope
 
+**20 September admission review:** the ordinary-copy arithmetic remains useful,
+but cannot alone open a genuine setup. CHOAM's Treachery deck supplies Poison
+Tooth and Artillery even without Ix, while the full Richese cache supplies Stone
+Burner. A public configuration gate therefore cannot isolate ordinary copies.
+Rejecting according to a concealed opposing hand/plan would leak information;
+rejecting after commitments could strand the battle. Do not remove physical
+cards or manufacture a restricted deck to claim complete-game support. Mirror
+remains gated pending the existing copied-disposal ruling and copied-choice work.
+This qualifies the earlier ordinary-slice recommendation below; it does not
+invalidate the existing focused arithmetic evidence or answer the user question.
+
 - **Copied compulsory disposal:** the FAQ names physical Tooth/Artillery, while Mirror copies a weapon. The retrieved primary sources do not explicitly say whether their disposal exception also applies to the physical Mirror. Separate combat effects from cleanup and obtain a ruling before certifying those pairings. This does not justify blocking ordinary projectile/poison/Lasgun/Poison Blade/selected-role copies.
 - **Stone Burner foundation:** the full effect is presently unsupported. Basic undialed counts follow physical forces minus dialed losses; ties use ordinary aggressor priority unless overridden. Advanced mixed/support-dependent dials can permit different physical casualty allocations, which now affect who wins; the present engine chooses those only for an already determined winner. Stone's original choice and allocation timing must be implemented/audited before its copied form. This is an underlying special-outcome problem, not uncertainty over whether Mirror copies a valid weapon.
 - **Higher modules:** inactive leader skills may modify attacks, defenses or card roles. No combined leader-skill certification follows from the matrix. Two physical Mirrors are outside the verified inventory rather than a normal supported interaction.

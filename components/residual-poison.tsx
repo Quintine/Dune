@@ -84,6 +84,7 @@ export function BattleLeaderOpportunity({ game, act, busy }: PreparationProps) {
       <p>
         Both combatants have an opportunity to use available preparations before
         either commits a leader. Continue when you are ready to choose leaders.
+        {' '}A held Juice of Sapho can make you aggressor during this opportunity.
       </p>
       <ul>
         {combatants.map((player) => (

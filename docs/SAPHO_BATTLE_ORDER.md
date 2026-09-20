@@ -27,6 +27,10 @@ Burner allocation work. No new confirmation-only window is introduced here.
 
 ## Connected behavior
 
+20 September follow-up: [early aggressor](SAPHO_AGGRESSOR.md) now connects the
+separate pre-plan effect. References below to unavailable intervention concern
+later or suspended battle timing; chooser ordering retains the contract here.
+
 The existing Richese development configuration supplies the physical card. Its
 holder receives private `battleOrder` first/last options at a clean boundary.
 The command binds the current opportunity and discards the exact unreserved card

@@ -8,6 +8,7 @@ import { applyAction, viewGame, type GameView } from '../game/engine';
 import { JuiceOfSapho } from '../components/juice-of-sapho';
 import { botBattleChoices } from '../game/bot-battle-choices';
 import { saphoBattleOrderGame, saphoBattleOrderAction } from './fixture-sapho-battle-order';
+import { saphoAggressorGame, aggressorAction } from './fixture-sapho-aggressor';
 
 const aliases = registerHooks({
   resolve(specifier, context, next) {
@@ -25,6 +26,21 @@ aliases.deregister();
 const panel = (game: GameView, busy = false) => renderToStaticMarkup(createElement(JuiceOfSapho, { game, act() {}, busy }));
 const table = (game: GameView) => renderToStaticMarkup(createElement(GameTable, { game, send: async () => {}, onExit() {}, busy: false }));
 
+void test('early aggressor control explains ties and the table keeps its public physical identities', () => {
+  const g = saphoAggressorGame();
+  const view = viewGame(g, 'b');
+  assert.match(panel(view), /Become aggressor and discard Juice of Sapho/);
+  assert.match(panel(view), /Habbanya Stronghold advantage still takes precedence/);
+  assert.match(panel(view, true), /<button[^>]*disabled=""[^>]*>Become aggressor/);
+  assert.equal(panel(viewGame(g, 'r')), '');
+  const changed = applyAction(g, 'b', aggressorAction(g));
+  const html = table(viewGame(changed, 'a'));
+  assert.match(html, /Aggressor: guild/);
+  assert.match(html, /Tied battle: guild/);
+  assert.equal(changed.battle!.attacker, 'a');
+  assert.equal(changed.battle!.chooser, 'a');
+});
+
 void test('held Sapho exposes the legal battle-order action with its actual timing and limits', () => {
   for (const [holder, mode] of [['c', 'first'], ['a', 'last']] as const) {
     const game = saphoBattleOrderGame({ holder, geometry: 'shared' });
@@ -33,7 +49,7 @@ void test('held Sapho exposes the legal battle-order action with its actual timi
     assert.match(html, new RegExp(`Choose battles ${mode} and`));
     assert.match(html, /Other players may still choose battles against you/);
     assert.match(html, /not the aggressor or tie advantage/);
-    assert.match(html, /Battle aggressor[\s\S]*unfinished/);
+    assert.match(html, /Later aggressor intervention[\s\S]*unfinished/);
     assert.match(panel(view, true), /<button[^>]*disabled=""[^>]*>Choose battles/);
     const observer = game.players.find(player => player.id !== holder)!;
     assert.equal(panel(viewGame(game, observer.id)), '');

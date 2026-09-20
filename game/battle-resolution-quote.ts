@@ -28,6 +28,7 @@ import {
   type StoneBurnerComparison,
 } from './stone-burner';
 import { matchingTraitor } from './traitors';
+import { battleTieOwner } from './sapho-aggressor';
 import { HARASS_WITHDRAW_CARD, isHarassWithdraw, quoteHarassWithdraw, type HarassWithdrawContext, type HarassWithdrawQuote, type HarassWithdrawSelection } from './harass-withdraw';
 import { auditCount } from './choam-auditor';
 import { sukGraduateSkill, type SukGraduateSkill } from './suk-graduate';
@@ -96,6 +97,8 @@ export type ResolutionCombatant = ResolutionParticipant & {
   aid?: { donor: string; amount: number };
 };
 export type BattleResolutionInput = {
+  /** Stable physical slots remain unchanged when Sapho changes aggressor. */
+  aggressor?: string;
   advanced: boolean;
   /** Preserve physical counter choices in Basic Homeworlds without granting Advanced strength. */
   typedCasualties?: boolean;
@@ -383,8 +386,9 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       withdrawals.set(side.id, quoteHarassWithdraw(side.harassWithdraw, side.plan.dial, side.plan.support, side.harassSelection));
     }
   }
-  const tie =
-    d.stronghold === 'habbanya_ridge_sietch' ? 'defender' : 'attacker';
+  const tie = battleTieOwner(a.id, d.id, input.aggressor ?? a.id,
+    [a, d].filter(side => side.stronghold === 'habbanya_ridge_sietch').map(side => side.id)) === a.id
+    ? 'attacker' : 'defender';
   const stone =
     isStoneBurner(aw) || isStoneBurner(dw)
       ? stoneBurnerComparison(

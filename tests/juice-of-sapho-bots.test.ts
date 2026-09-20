@@ -218,7 +218,7 @@ void test('Sapho presentation directs players to the bounded controls and explic
   assert.match(richeseCardActionBlock(card)!, /Juice of Sapho panel/);
   const presentation = cardPresentation(card);
   assert.match(presentation.availability!, /Once Around first/);
-  assert.match(presentation.availability!, /Battle aggressor.*unfinished/);
+  assert.match(presentation.availability!, /Later aggressor intervention.*unfinished/);
   assert.match(presentation.gameplay!.join(' '), /Discard Juice of Sapho/);
   assert.equal(richeseCardActionBlock({ ...card, id: 'forged' }), null);
 });

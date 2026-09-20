@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 20 September 2026 — Sapho early battle aggressor
+
+[Early aggressor](SAPHO_AGGRESSOR.md) connects the held physical card, existing
+pre-plan opportunity, shared tie priority, controls, four AI profiles and private
+saved continuation. It preserves participant slots and chooser, respects Habbanya
+in either slot, and checks Stone finishability before commitments. Later battle
+intervention and its unresolved allocation/response protocol remain unfinished.
+Independent review found no material rules/privacy blocker after final integration.
+Focused engine/control/SQLite evidence is paired with final source-bound checks,
+browser/sample reports, preservation and verified Git delivery in the private
+checkpoint report and commit message. Public mode and publication gates stay closed.
+
+The Mirror admission audit supersedes its earlier ordinary-slice recommendation:
+every genuine CHOAM/Richese setup includes the unresolved copy candidates. A
+synthetic restricted deck, hidden eligibility gate or reveal-time rejection cannot
+establish playable full-game support. Existing user/source rulings remain pending.
+
+
 ## 20 September 2026 — Optional table sound prototype
 
 [Table sound controls](TABLE_SOUNDS.md) add local mute, keyboard volume and a test

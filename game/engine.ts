@@ -59,6 +59,7 @@ import { homeworldAllianceBlock } from './homeworld-alliance';
 import { quoteHomeworldSubstitution } from './homeworld-substitution';
 import { combatArmy, combatLocations, combatLocationName, homeworldBattleLocation, quoteCombatBoard, quoteCombatBoardContinuation } from './combat-location';
 import { battleChooserEvent, quoteBattleChoosers, reorderBattleChoosers, validateBattleChooserOrder, BattleChooserOrderError, type BattleChooserOrder } from './battle-chooser-order';
+import { battleTieOwner, changeSaphoAggressor, saphoAggressorEvent, validateSaphoAggressor, SaphoAggressorError, type SaphoAggressorState } from './sapho-aggressor';
 import { quoteHomeworldCombatLoss } from './homeworld-combat-loss';
 import { quoteHomeworldBattleRules } from './homeworld-battle-rules';
 import type { HomeworldForces } from './homeworld-custody';
@@ -618,6 +619,8 @@ export type Battle = {
   /** Scheduling owner; physical combat slots and aggressor remain independent. */
   chooser?: string;
   chooserEvent?: string;
+  saphoAggressor?: SaphoAggressorState;
+  saphoAggressorEvents?: string[];
   /** Only newly created supported battles enter the pre-plan Mentat question. */
   mentatQuestionVersion?: 1;
   mentatQuestionEvent?: string;
@@ -7340,9 +7343,28 @@ function battleSupportBudget(g: Game, p: Player) {
 }
 function battleTieWinner(g: Game) {
   const b = g.battle!;
-  return strongholdEffect(g, b.defender) === 'habbanya_ridge_sietch'
-    ? b.defender
-    : b.attacker;
+  const owners = [b.attacker, b.defender].filter(id => strongholdEffect(g, id) === 'habbanya_ridge_sietch');
+  return saphoAggressorRule(() => battleTieOwner(b.attacker, b.defender, battleAggressor(g), owners));
+}
+function saphoAggressorRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) { if (error instanceof SaphoAggressorError) throw new RuleError(error.message); throw error; }
+}
+function battleAggressor(g: Game) {
+  const b = g.battle!;
+  return saphoAggressorRule(() => validateSaphoAggressor(b.saphoAggressor, b.saphoAggressorEvents, b, g.turn));
+}
+function saphoAggressorIntegrity(g: Game) {
+  const b = g.battle;
+  if (!b) return;
+  battleAggressor(g);
+  if (!b.saphoAggressor) return;
+  requireRule(g.status === 'playing' && g.phase === 6 && b.preLeader?.event === b.event &&
+    g.players.some(p => p.id === b.attacker) && g.players.some(p => p.id === b.defender),
+  'The saved Sapho aggressor needs its original battle preparation.');
+  const cards = physicalTreacheryCards(g).filter(card => card.id === 'richese-juice-of-sapho');
+  requireRule(cards.length === 1 && richeseCardDefinition(cards[0])?.card.effect === 'juiceOfSapho',
+    'The played Sapho aggressor card has lost its unique physical custody.');
 }
 function strongholdCopyChoices(g: Game, player: string): StrongholdId[] {
   const controllers = strongholdControllers(
@@ -12143,7 +12165,7 @@ type SaphoOption = {
   scope: 'onceAround' | 'movement' | 'battleOrder';
   event: string;
   mode: 'first' | 'last';
-};
+} | { scope: 'battleAggressor'; event: string; mode: 'aggressor' };
 function saphoMovementIntegrity(g: Game) {
   const last = g.saphoMovementLast;
   if (last === undefined || last === null) return;
@@ -12245,6 +12267,15 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
   )
     return [];
   const options: SaphoOption[] = [];
+  const battle = g.battle;
+  if (g.phase === 6 && battle?.event && battle.preLeader?.event === battle.event &&
+    !battle.preLeader.closed && !battle.preLeader.ready.includes(p.id) &&
+    !battle.revealed && Object.keys(battle.plans).length === 0 &&
+    !battle.voice && !battle.prescience && !battle.fullPlan && !battle.nexusInspection && !battle.truthPromises?.length &&
+    !g.pendingTreacheryDiscard && [battle.attacker, battle.defender].includes(p.id) &&
+    battleAggressor(g) !== p.id)
+    options.push({scope: 'battleAggressor',
+      event: saphoAggressorEvent(battle.event, g.turn, battle.saphoAggressor?.uses.length ?? 0), mode: 'aggressor'});
   if (saphoBattleBoundary(g)) {
     const order = projectedBattleOrder(g)!;
     if (order.remaining.includes(p.id)) {
@@ -12293,7 +12324,7 @@ function playSapho(g: Game, p: Player, action: Action) {
     Object.keys(action).every((key) =>
       ['type', 'card', 'scope', 'event', 'mode'].includes(key),
     ),
-    'Choose only Juice of Sapho, one supported scope, its event and first or last.',
+    'Choose only Juice of Sapho, one supported scope, its event and an available mode.',
   );
   const option = saphoOptions(g, p).find(
     (choice) =>
@@ -12305,7 +12336,16 @@ function playSapho(g: Game, p: Player, action: Action) {
     option,
     'This Juice of Sapho opportunity is unavailable, already completed or expired.',
   );
-  if (option.scope === 'onceAround') {
+  if (option.scope === 'battleAggressor') {
+    const b = g.battle!;
+    const next = saphoAggressorRule(() => changeSaphoAggressor(b.saphoAggressor,
+      b.saphoAggressorEvents, b, g.turn, p.id, option.event));
+    discard(g, p, 'richese-juice-of-sapho');
+    b.saphoAggressor = next;
+    (b.saphoAggressorEvents ??= []).push(option.event);
+    log(g, `${p.name} discarded Juice of Sapho to become this battle’s aggressor before plans. They now win ordinary ties; a Habbanya Stronghold advantage still takes precedence. Battle participants and later battle choices stay unchanged.`,
+      {faction: p.faction, name: 'Juice of Sapho'});
+  } else if (option.scope === 'onceAround') {
     const lot = g.richeseAuction!;
     // Discarding this card frees a slot even when a full hand excluded its holder
     // at opening. Only this still-open finite lot gains that unacted bidder.
@@ -14247,6 +14287,7 @@ function gholaOptions(g: Game, p: Player) {
 }
 function marketGholaIntegrity(g: Game) {
   battleOrderIntegrity(g);
+  saphoAggressorIntegrity(g);
   nexusCardsIntegrity(g);
   nexusEmperorSecretIntegrity(g);
   nexusTraitorIntegrity(g);
@@ -15443,6 +15484,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
   try {
     const quote = quoteBattleResolution({
       advanced: g.advanced,
+      aggressor: battleAggressor(g),
       typedCasualties: !!g.homeworlds,
       ...(homeworldBattleLocation(g, b.territory) ? { homeworld: currentHomeworldBattleRules(g, b.territory)! } : {}),
       turn: g.turn,
@@ -15688,7 +15730,7 @@ function resolveBattle(g: Game) {
     log(
       g,
       stoneResult
-        ? `${faction(winner!.faction).name} won in ${combatLocationName(g, b.territory)} by Stone Burner’s undialed physical tokens (aggressor ${stoneResult.attacker.join(' or ')}, defender ${stoneResult.defender.join(' or ')}; ${strongholdEffect(g, battleTieWinner(g)) === 'habbanya_ridge_sietch' ? 'Habbanya Stronghold advantage wins ties' : 'aggressor wins ties'}). Leader strength and Kwisatz Haderach’s bonus do not affect this comparison; the winner loses its dialed forces normally.`
+        ? `${faction(winner!.faction).name} won in ${combatLocationName(g, b.territory)} by Stone Burner’s undialed physical tokens (${a.name} ${stoneResult.attacker.join(' or ')}, ${d.name} ${stoneResult.defender.join(' or ')}; ${strongholdEffect(g, battleTieWinner(g)) === 'habbanya_ridge_sietch' ? 'Habbanya Stronghold advantage wins ties' : 'aggressor wins ties'}). Leader strength and Kwisatz Haderach’s bonus do not affect this comparison; the winner loses its dialed forces normally.`
         : `${faction(winner!.faction).name} won in ${combatLocationName(g, b.territory)} (${av}–${dv}${av === dv ? (strongholdEffect(g, winner!.id) === 'habbanya_ridge_sietch' ? ', Habbanya Stronghold advantage wins ties' : ', aggressor wins ties') : ''}).`,
       stoneResult
         ? { faction: (isStoneBurner(aw) ? a : d).faction, name: 'Stone Burner' }
@@ -20410,6 +20452,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
   stoneBurnerIntegrity(g);
+  saphoAggressorIntegrity(g);
   strongholdIntegrity(g);
   auditorIntegrity(g);
   if (g.pendingNullentropy) {
@@ -25125,6 +25168,7 @@ export function viewGame(state: Game, id: string) {
           preLeader: b.preLeader ?? null,
           territory: b.territory,
           attacker: b.attacker,
+          aggressor: battleAggressor(g),
           chooser: b.chooser ?? b.attacker,
           defender: b.defender,
           revealed: b.revealed,

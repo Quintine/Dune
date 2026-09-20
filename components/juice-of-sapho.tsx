@@ -23,9 +23,9 @@ function unavailableReason(game: GameView) {
     return 'Movement order can change only before the current combined shipment and movement turn begins. First requires all remaining turns to be unstarted and the Advanced Guild to have finished or be absent. Completed turns stay completed. Already-held positions and committed cards are unavailable.';
   if (game.phase === 6)
     return game.battle
-      ? 'Finish the current battle and its aftermath before changing the order of remaining battle choices. This does not change the current battle’s aggressor.'
+      ? 'Become aggressor only during your open pre-plan opportunity, before declaring ready or committing a plan. Already-held priority and committed cards are unavailable. Finish the current battle and its aftermath before changing remaining battle-choice order.'
       : 'You need an unresolved battle and an available first or last position. Completed battles stay resolved, and a card committed elsewhere cannot be used.';
-  return 'These controls support Once Around bidding, movement order and remaining battle-choice order. Battle aggressor and other phase or auction modes remain unfinished.';
+  return 'These controls support Once Around bidding, movement order, remaining battle-choice order and pre-plan aggressor. Later battle intervention and other phase or auction modes remain unfinished.';
 }
 
 export function JuiceOfSapho({
@@ -47,7 +47,7 @@ export function JuiceOfSapho({
   return (
     <details className="my-4 min-w-0">
       <summary className="min-h-11 cursor-pointer py-3">
-        Juice of Sapho: change turn order
+        Juice of Sapho: change order or become aggressor
       </summary>
       <div className="flex min-w-0 flex-col gap-4 py-3">
         <p>
@@ -59,13 +59,16 @@ export function JuiceOfSapho({
           options.map((option) => {
             const once = option.scope === 'onceAround';
             const battle = option.scope === 'battleOrder';
+            const aggressor = option.scope === 'battleAggressor';
             return (
               <div
                 key={`${option.scope}-${option.event}-${option.mode}`}
                 className="flex min-w-0 flex-col gap-2"
               >
                 <p>
-                  {once
+                  {aggressor
+                    ? 'Become this battle’s aggressor before plans. You win ordinary ties; a Habbanya Stronghold advantage still takes precedence. The participants and later battle choices stay unchanged.'
+                    : once
                     ? `Bid ${option.mode} in the current Once Around lot. Each eligible player still has only one bidding opportunity.`
                     : battle
                       ? `Choose your remaining battles ${option.mode}. Completed battles stay resolved. This changes who chooses next, not the aggressor or tie advantage of a battle. Other players may still choose battles against you before your turn.`
@@ -78,8 +81,8 @@ export function JuiceOfSapho({
                     if (!busy) act({ type: 'card', card: card.id, ...option });
                   }}
                 >
-                  {once ? 'Bid' : battle ? 'Choose battles' : 'Take your movement turn'} {option.mode} and
-                  discard Juice of Sapho
+                  {aggressor ? 'Become aggressor and discard Juice of Sapho' :
+                    `${once ? 'Bid' : battle ? 'Choose battles' : 'Take your movement turn'} ${option.mode} and discard Juice of Sapho`}
                 </Button>
               </div>
             );
@@ -90,8 +93,7 @@ export function JuiceOfSapho({
           </p>
         )}
         <p className="text-sm">
-          Battle aggressor and other phase or auction modes are still
-          unfinished.
+          Later aggressor intervention and other phase or auction modes are still unfinished.
         </p>
       </div>
     </details>

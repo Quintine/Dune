@@ -4328,6 +4328,11 @@ export function GameTable({
                     <Swords size={17} />
                     {g.battle.locationName ?? combatName(g.battle.territory)}
                   </p>
+                  <p className="fine">
+                    Aggressor: {g.players.find(p => p.id === g.battle!.aggressor)?.name}.
+                    {' '}Tied battle: {g.players.find(p => p.id === g.battle!.tieWinner)?.name}
+                    {g.battle.tieWinner !== g.battle.aggressor ? ' (Habbanya Stronghold advantage)' : ''}.
+                  </p>
                   {!!g.battle.native && (
                     <p className="notice">
                       Only the native faction may reveal Traitors or Face

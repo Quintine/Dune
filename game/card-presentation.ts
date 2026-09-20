@@ -34,7 +34,7 @@ export function richeseCardActionBlock(card: VisibleCard): string | null {
   if (definition?.card.effect === 'nullentropyBox')
     return 'Use the Nullentropy Box panel to pay for a private search.';
   if (definition?.card.effect === 'juiceOfSapho')
-    return 'Use the Juice of Sapho panel to choose an available Once Around, movement or battle-choice order change.';
+    return 'Use the Juice of Sapho panel to choose an available order change or become battle aggressor before plans.';
   if (definition?.card.effect === 'distrans')
     return 'Choose a recipient and card in the Distrans transfer panel.';
   return definition && definition.card.effect !== 'karama'
@@ -86,7 +86,7 @@ export function cardPresentation(card: VisibleCard): CardPresentation {
       gameplay: richese.gameplay,
       availability:
         richese.card.effect === 'juiceOfSapho'
-          ? 'Richese effect integration and verification are incomplete. Supported controls cover Once Around first before bidding begins, Once Around last before your bid, and bounded movement order changes. Battle aggressor and other phase or auction modes remain unfinished; expansion starts remain disabled.'
+          ? 'Richese effect integration and verification are incomplete. Supported controls cover Once Around first before bidding begins, Once Around last before your bid, bounded movement and battle-choice ordering, and aggressor during the shared pre-plan opportunity. Later aggressor intervention and other phase or auction modes remain unfinished; expansion starts remain disabled.'
           : richese.card.effect === 'stoneBurner'
             ? 'Stone Burner has development battle controls. Combined allocation timing and Ix timing remain guarded; full expansion starts stay disabled.'
             : 'Richese effect integration and verification are incomplete. Karama, Distrans, Nullentropy Box, Ornithopter, Residual Poison, Portable Snooper and Stone Burner have card handlers in development fixtures; full expansion starts remain disabled.',

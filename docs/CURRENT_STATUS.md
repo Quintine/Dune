@@ -6,12 +6,11 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered rules checkpoint: `62e87d2`, [Harass allocation](HARASS_ALLOCATION.md).
-Types, lint, **4,850 offline tests**, production build and 43 HTTP checks passed.
-Eight genuine card-variant games completed in 9,956 accepted actions with 266
-periodic save/restore checks and no rejected candidates. Focused and browser
-cases exercised ambiguous allocation. All 1,038 opening games and original
-seat/recovery records were unchanged; 1,072 rooms remained after isolated QA.
+Latest delivered checkpoint: `bfa24b0`, [optional table sounds](TABLE_SOUNDS.md).
+Types, lint, **4,856 offline tests** and production build passed. Browser controls
+verified mute, keyboard volume, refresh and cross-tab preferences; physical audio
+and screenshot acceptance remain open. All 1,072 games and original seat/recovery
+records were preserved, and the server remained healthy after the outage.
 Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
@@ -24,22 +23,20 @@ card-specific discard precedence are explicitly labeled inferences. The Stone
 Burner timing question is pending; no user answer is assumed. Reinforcements
 remains unfinished. This does not open variant, mode or publication gates.
 
-Current checkpoint: [optional table sounds](TABLE_SOUNDS.md) connects local mute,
-volume, a test sample and short public phase/automatic-action cues. Initial and
-background updates stay silent; preferences survive refresh and synchronize
-between tabs. This adds no gameplay actions, private eligibility checks or game
-storage. Final source-bound checks and delivery are recorded in the private
-report and Git message; physical audio and screenshot acceptance remain open.
+Current checkpoint: [early Sapho aggressor](SAPHO_AGGRESSOR.md) connects the
+printed battle-priority effect during the existing shared pre-plan opportunity.
+Physical attacker/defender/chooser stay stable; Habbanya takes precedence in either
+slot. Shared priority feeds Stone admission, ordinary/Stone resolution, public
+controls and all four AI profiles. Battle-bound history survives private saved
+continuation. Later intervention remains unfinished; no new ruling is assumed.
+Final checks, samples, browser evidence and delivery belong to the source-bound
+private report and Git message.
 
-On 20 September, the stopped server was started after backing up all 1,072 rooms.
-Following another reported outage, the server responded normally and every saved
-game still matched that baseline. The isolated browser seat restored successfully.
-No database reset or recurring automation was needed.
-
-Next: prototype ordinary Mirror Weapon copies using the existing shared resolver,
-while retaining explicit gates for unresolved copied Tooth/Artillery disposal and
-Stone Burner choices. Sapho battle aggressor is the next independent candidate.
-The remaining Leader Skill bands retain their existing pending rulings.
+The [Mirror admission review](MIRROR_WEAPON_ENGINE_AUDIT.md) found that every genuine
+Richese setup contains the unresolved copied weapons. Ordinary-only activation
+cannot safely depend on hidden custody or alter the printed deck. Mirror remains
+gated pending the existing disposal ruling and copied-choice work. Continue with
+independent missing faction/card functions, then integrated play and refinement.
 
 ## Authoritative navigation
 
