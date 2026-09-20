@@ -1,3 +1,4 @@
+import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
 import { leaderSkillCard, type LeaderSkillId } from './leader-skill-cards';
@@ -6082,12 +6083,7 @@ function stormOrder(g: Game) {
     .sort((a, b) => distance(a) - distance(b));
 }
 function stormExposed(g: Game, key: string) {
-  const t = territory(splitLocation(key).territory);
-  return (
-    (t.type === 'sand' && t.id !== 'imperial_basin') ||
-    (g.shieldWallDestroyed &&
-      ['arrakeen', 'carthag', 'imperial_basin'].includes(t.id))
-  );
+  return stormExposesTerritory(splitLocation(key).territory, g.shieldWallDestroyed);
 }
 function moveStorm(g: Game, n: number) {
   g.stormResolution = { from: g.storm, distance: n, traversed: 0, pending: [],
@@ -6186,7 +6182,7 @@ function continueStorm(g: Game) {
     }
     if (resolution.traversed === resolution.distance) break;
     resolution.traversed++;
-    const s = ((resolution.from - 1 + resolution.traversed) % 18) + 1;
+    const s = stormSectorAfter(resolution.from, resolution.traversed);
     if (g.shieldWallDestroyed)
       for (const city of ['arrakeen', 'carthag'])
         if (territory(city).sectors.includes(s))
@@ -6196,9 +6192,7 @@ function continueStorm(g: Game) {
       if (marker && marker.sector === s) {
         const t = territory(marker.territory);
         if (
-          (t.type === 'sand' && t.id !== 'imperial_basin') ||
-          (g.shieldWallDestroyed &&
-            ['arrakeen', 'carthag', 'imperial_basin'].includes(t.id))
+          stormExposesTerritory(t.id, g.shieldWallDestroyed)
         )
           revealPlayerNoField(g, p, 'storm');
       }
@@ -6206,9 +6200,7 @@ function continueStorm(g: Game) {
         const loc = splitLocation(key),
           t = territory(loc.territory);
         const exposed =
-          (t.type === 'sand' && t.id !== 'imperial_basin') ||
-          (g.shieldWallDestroyed &&
-            ['arrakeen', 'carthag', 'imperial_basin'].includes(t.id));
+          stormExposesTerritory(t.id, g.shieldWallDestroyed);
         if (loc.sector === s && exposed) {
           if (
             p.faction === 'choam' &&
@@ -6231,7 +6223,7 @@ function continueStorm(g: Game) {
   if (g.ecologicalStorm?.stage === 'traversal')
     g.ecologicalStorm = nexusRule(() => finishDiscoveryStorm(g.ecologicalStorm!));
   delete g.stormMovementSource;
-  g.storm = ((resolution.from - 1 + resolution.distance) % 18) + 1;
+  g.storm = stormSectorAfter(resolution.from, resolution.distance);
   stormOrder(g);
   if (g.turn === 1) assignRemainingTech(g);
   log(g, `Storm moved ${resolution.distance} sectors to sector ${g.storm}.`);
@@ -6288,7 +6280,7 @@ function devour(
     validateWormDevouring(g, t, protectedAlly, protectFremen),
   );
   for (const p of g.players)
-    if ((!protectFremen || p.faction !== 'fremen') && p.id !== protectedAlly)
+    if (wormConsumesForces(p, protectedAlly, protectFremen))
       killTerritory(g, p, t, Infinity, false, 'worm');
   for (const k of Object.keys(g.spice))
     if (splitLocation(k).territory === t) delete g.spice[k];
@@ -6800,9 +6792,9 @@ function continueSpice(g: Game, injected?: SpiceCard) {
     g.spiceDiscard[sequence.pile].push(card);
     const amount = card.amount * (doubleNext ? 2 : 1);
     g.spiceWindow = { ...card, amount, harvested: false };
-    if (card.sector !== g.storm) {
-      const k = location(card.territory, card.sector);
-      g.spice[k] = (g.spice[k] ?? 0) + amount;
+    const placement = quoteSpicePlacement(g.spice, g.storm, { ...card, amount });
+    if (!placement.blocked) {
+      g.spice[placement.key] = placement.total;
       log(g, `${amount} spice appeared in ${territory(card.territory).name}.`);
     } else log(g, 'The spice blow was lost to the storm.');
   }

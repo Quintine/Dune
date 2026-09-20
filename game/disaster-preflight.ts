@@ -1,3 +1,4 @@
+import { stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import type { Game, Player, ResponseWindow } from './engine';
 import { splitLocation, territory, validLocation } from './board';
 import { SPICE_CARDS } from './cards';
@@ -22,12 +23,7 @@ function boardKey(key: string) {
   return loc;
 }
 function exposed(g: Game, key: string) {
-  const t = territory(boardKey(key).territory);
-  return (
-    (t.type === 'sand' && t.id !== 'imperial_basin') ||
-    (!!g.shieldWallDestroyed &&
-      ['arrakeen', 'carthag', 'imperial_basin'].includes(t.id))
-  );
+  return stormExposesTerritory(boardKey(key).territory, g.shieldWallDestroyed);
 }
 /** Validate only physical groups that this disaster can destroy. Concealed
  * materialization is quoted without allocating its actual reveal event. */
@@ -104,7 +100,7 @@ export function validateStormTraversal(g: Game) {
       new Set(r.pending).size === r.pending.length,
     'The pending storm needs a valid, finite traversal.',
   );
-  const current = ((r.from - 1 + r.traversed) % 18) + 1;
+  const current = stormSectorAfter(r.from, r.traversed);
   requireDisaster(
     r.pending.every(
       (key) =>
@@ -115,7 +111,7 @@ export function validateStormTraversal(g: Game) {
   const crossed = new Set(
     Array.from(
       { length: r.distance - r.traversed },
-      (_, i) => ((r.from + r.traversed + i) % 18) + 1,
+      (_, i) => stormSectorAfter(r.from, r.traversed + i + 1),
     ),
   );
   for (const p of g.players)
@@ -185,7 +181,7 @@ export function validateWormDevouring(
 ) {
   requireDisaster(validTerritory(t), 'The worm needs a valid territory.');
   for (const p of g.players)
-    if ((!protectFremen || p.faction !== 'fremen') && p.id !== protectedAlly)
+    if (wormConsumesForces(p, protectedAlly, protectFremen))
       casualtyCustody(
         g,
         p,

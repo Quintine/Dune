@@ -4,11 +4,45 @@
 from the lobby and rules reference. It adds the previously missing guided
 introduction alongside the reference's existing standalone practice wheel.
 
-Eleven navigable lessons cover public/private table information and the phase
-sequence, ordinary Nexus alliances, charity, bidding, revival, shipment budgets, movement, sealed battle plans, Traitor calls, spice
-collection and joining or recovering a saved table. Nine independent Basic practice positions let a player
+Thirteen navigable lessons cover public/private table information and the phase
+sequence, Storm, Spice Blow, ordinary Nexus alliances, charity, bidding, revival, shipment budgets, movement, sealed battle plans, Traitor calls, spice
+collection and joining or recovering a saved table. Eleven independent Basic practice positions let a player
 change inputs, commit, inspect results and retry. These positions are deliberately
 separate examples rather than a complete game or an authoritative live room.
+
+## Storm and Spice Blow practice
+
+The Storm exercise separates draft, sealed, publicly revealed and moved stages.
+The first-turn example uses the printed Storm Start, 0–20 dials and sheltered
+Atreides starting forces. The later Basic position starts at sector 16, combines
+the learner's 1–3 with a fixed opposing three, and compares exposed forces in
+Cielago South/North with rock and stronghold shelter across the sector-18 wrap.
+Shared sector/exposure calculations supply the result; changing options resets
+only this example. The Battle Wheel now accepts an optional minimum and slider
+label; existing combat defaults remain zero and “Forces dialed slider”.
+
+Spice Blow offers four deterministic sequences: add eight Broken Land spice to
+three already there; lose the card's spice to its storm sector; resolve one later
+Shai-Hulud at the previous Great Flat territory then draw Broken Land; or ignore
+and set aside a first-turn worm until the completed blow shuffles it back.
+The normal examples have three Emperor forces in The Great Flat. A later worm
+destroys those forces and all six spice there, then the replacement blow opens.
+Finishing that window opens Nexus negotiations. There are no Fremen forces or
+reacting cards in these examples; interactive riding, consecutive worms and
+Advanced/expansion teaching remain separate unfinished curriculum work.
+
+`game/disaster-rules.ts` extracts the unchanged live storm-sector, territory
+exposure, worm-protection and spice-placement expressions for shared teaching.
+The engine and disaster preflight reuse them. No state schema or timing changes.
+The lessons compute results from validated choices; they never load live rooms.
+Tests compare every offered storm dial and spice scenario against real actions,
+check exact first-turn worm return, preserve all eleven v5 lesson identities and
+validate every saved stage. The existing v1–v4 migrations remain covered.
+
+Authority remains the classic GF9 base rulebook, printed pp.4 and 6–7, and
+November 2020 FAQ p.1 as recorded in `tests/first-storm.test.ts` and the current
+engine contracts. This checkpoint changes teaching and factors calculations;
+it does not claim a new rules interpretation or complete rules certification.
 
 The examples call `reserveShipmentCost`, `quoteBattleResolution`,
 `quoteSpiceCollection` and the shared board distance/occupancy helpers. Battle uses six ordinary forces, real Atreides/Guild
@@ -96,7 +130,7 @@ Resource regressions compare ordinary claims/returns against actual engine
 actions, preserve inputs, check cumulative spending and allowances, reject
 impossible saves and retain all nine v4 lesson identities and prior commitments.
 Final source-bound browser/check/build/preservation and review evidence belongs
-to this checkpoint's private report and Git delivery. Storm/spice-blow hazards,
+to this checkpoint's private report and Git delivery. Broader storm/spice-blow exceptions,
 full faction/Advanced/expansion teaching and the complete curriculum remain open.
 
 The movement position starts with five ordinary forces in Red Chasm. It compares
@@ -110,9 +144,9 @@ actual authoritative `applyAction` transitions; no live movement rule changed.
 The existing wheel, keyboard controls and card inspectors remain available.
 Lesson changes focus the heading; responsive columns stack on small screens.
 Browser storage contains only a versioned, validated set of lesson choices under
-`dune-introduction-v1`. Version 5 payloads explicitly migrate all five version 1,
-seven version 2, eight version 3 and nine version 4 lesson positions to the same lesson after insertion,
-preserving prior choices and committed outcomes. New resource fields start at defaults for every older version. Versions 1–3
+`dune-introduction-v1`. Version 6 payloads explicitly migrate all five version 1,
+seven version 2, eight version 3, nine version 4 and eleven version 5 lesson positions to the same lesson after insertion,
+preserving prior choices and committed outcomes. All older versions receive fresh opening-phase defaults. Resource fields start at defaults for versions 1–4; version 5 keeps its resource history. Versions 1–3
 receive alliance defaults.
 Versions 1 and 2 receive bidding defaults; version 1 also receives movement/Traitor defaults. Hot updates
 remount the lesson state to apply this migration. Only the player's bid/pass

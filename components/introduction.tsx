@@ -9,6 +9,7 @@ import { MovementLesson, TraitorLesson } from './introduction-practice';
 import { BiddingLesson } from './introduction-bidding';
 import { AllianceLesson } from './introduction-alliance';
 import { CharityLesson, RevivalLesson } from './introduction-resources';
+import { StormLesson, SpiceBlowLesson } from './introduction-opening';
 import {
   INTRODUCTION_CARDS, INTRODUCTION_LEADERS, INTRODUCTION_STEPS, INTRODUCTION_STORAGE_KEY,
   introductionBattle, introductionCollection, introductionShipment, newIntroduction, restoreIntroduction,
@@ -27,10 +28,10 @@ export function Introduction() {
       <Link href="/">← Return to Arrakis</Link>
       <p className="eyebrow">LEARN TO PLAY · BASIC GAME</p>
       <h1>Your first steps on Arrakis</h1>
-      <p>Practice the Basic phases, from alliances and resources to bidding, movement, battle and collection, then take a seat at a real table. These are separate examples; they do not change any saved game.</p>
+      <p>Practice the Basic phases, from the storm and spice blow to alliances, resources, bidding, movement, battle and collection, then take a seat at a real table. These are separate examples; they do not change any saved game.</p>
     </header>
     {/* Remount on schema changes so a development hot update also migrates old state. */}
-    {hydrated ? <IntroductionLessons key="v5" /> : <output>Restoring your lesson…</output>}
+    {hydrated ? <IntroductionLessons key="v6" /> : <output>Restoring your lesson…</output>}
   </main>;
 }
 
@@ -78,11 +79,13 @@ function IntroductionLessons() {
           <ol className={styles.phases}>{PHASES.map(phase => <li key={phase}>{phase}</li>)}</ol>
           <p>The table tells you who must act. Your decisions can wait while another player seals a plan or answers a power. Automatic effects show in the chronicle.</p>
         </>}
-        {state.step === 1 && <AllianceLesson state={state} update={update} />}
-        {state.step === 2 && <CharityLesson state={state} update={update} />}
-        {state.step === 3 && <BiddingLesson state={state} update={update} />}
-        {state.step === 4 && <RevivalLesson state={state} update={update} />}
-        {state.step === 5 && <>
+        {state.step === 1 && <StormLesson state={state} update={update} />}
+        {state.step === 2 && <SpiceBlowLesson state={state} update={update} />}
+        {state.step === 3 && <AllianceLesson state={state} update={update} />}
+        {state.step === 4 && <CharityLesson state={state} update={update} />}
+        {state.step === 5 && <BiddingLesson state={state} update={update} />}
+        {state.step === 6 && <RevivalLesson state={state} update={update} />}
+        {state.step === 7 && <>
           <p>You have <strong>8 spice</strong> and six available reserve forces. Ship from reserves before moving on the board. This example has no discount, storm, occupancy restriction or reacting faction power.</p>
           <div className={styles.columns}>
             <div className={styles.controls}>
@@ -106,8 +109,8 @@ function IntroductionLessons() {
           </div>
           <p className="fine">Ordinary movement reaches an adjacent territory. Ornithopters and faction powers can extend its range. Inspect the live destination guide before committing.</p>
         </>}
-        {state.step === 6 && <MovementLesson state={state} update={update} />}
-        {state.step === 7 && <>
+        {state.step === 8 && <MovementLesson state={state} update={update} />}
+        {state.step === 9 && <>
           <p>A separate battle: you are the aggressor in Wind Pass with six ordinary forces and {INTRODUCTION_LEADERS.you.name}, strength {INTRODUCTION_LEADERS.you.strength}. Your opponent also has six forces. Neither side calls a Traitor or uses a faction power in this example.</p>
           <div className={styles.columns}>
             <div className={styles.controls}>
@@ -135,8 +138,8 @@ function IntroductionLessons() {
             </div>
           </div>
         </>}
-        {state.step === 8 && <TraitorLesson state={state} update={update} />}
-        {state.step === 9 && <>
+        {state.step === 10 && <TraitorLesson state={state} update={update} />}
+        {state.step === 11 && <>
           <p>A fresh position has 8 spice in Wind Pass, sector 14. You have surviving forces in that same sector, outside the storm. Collection uses the forces still on the board after battles.</p>
           <div className={styles.columns}>
             <div className={styles.controls}>
@@ -152,7 +155,7 @@ function IntroductionLessons() {
             </div>
           </div>
         </>}
-        {state.step === 10 && <>
+        {state.step === 12 && <>
           <p>You can revisit any example. This introduction covers ordinary alliances, bidding, core resources, movement and battle choices; it does not teach every faction, card, alliance power, storm exception or expansion.</p>
           <ul>
             <li>Create a private room, choose a faction, and add friends or AI players. Share the room invitation.</li>

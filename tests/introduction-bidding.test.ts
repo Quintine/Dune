@@ -214,7 +214,7 @@ void test('all seven v2 lessons keep their identity and prior decisions when bid
       unrelated: 'removed',
     };
     const result = restoreIntroduction(JSON.stringify(old))!;
-    assert.equal(result.version, 5);
+    assert.equal(result.version, 6);
     assert.equal(INTRODUCTION_STEPS[result.step].title, title);
     assert.equal(result.shipped, true);
     assert.equal(result.revealed, true);

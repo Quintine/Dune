@@ -13,7 +13,7 @@ void test('all nine v4 lessons retain their identity and prior commitments when 
       allianceChecked: true, charitySpice: 'ignore', charityClaimed: true, revivalActions: ['ignore'],
       token: 'discarded' };
     const restored = restoreIntroduction(JSON.stringify(old))!;
-    assert.equal(restored.version, 5);
+    assert.equal(restored.version, 6);
     assert.equal(INTRODUCTION_STEPS[restored.step].title, title);
     assert.ok(restored.shipped && restored.moved && restored.revealed && restored.collected && restored.traitorCall);
     assert.deepEqual(restored.auctionActions, [null, 4]);

@@ -7,6 +7,8 @@ export type BattleWheelProps = {
   value: number;
   onChange: (value: number) => void;
   max: number;
+  min?: number;
+  sliderLabel?: string;
   step: number;
   disabled?: boolean;
   id?: string;
@@ -22,6 +24,8 @@ export function BattleWheel({
   value,
   onChange,
   max,
+  min = 0,
+  sliderLabel = 'Forces dialed slider',
   step,
   disabled = false,
   id = 'forces-dialed',
@@ -29,14 +33,14 @@ export function BattleWheel({
   const graphicId = useId();
   const rimId = `${graphicId}-rim`;
   const faceId = `${graphicId}-face`;
-  const fraction = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0;
+  const fraction = max > min ? Math.min(1, Math.max(0, (value - min) / (max - min))) : 0;
   const angle = -135 + fraction * 270;
   // This caps decorative detail only; the native controls keep the supplied step.
-  const divisions = Math.min(80, Math.max(1, Math.ceil(max / step)));
+  const divisions = Math.min(80, Math.max(1, Math.ceil((max - min) / step)));
   const labels = [
     ...new Set(
       [0, 0.25, 0.5, 0.75, 1].map((position) =>
-        Math.min(max, Math.round((max * position) / step) * step),
+        Math.min(max, min + Math.round(((max - min) * position) / step) * step),
       ),
     ),
   ];
@@ -91,7 +95,7 @@ export function BattleWheel({
           );
         })}
         {labels.map((mark) => {
-          const label = point(-135 + (max > 0 ? mark / max : 0) * 270, 62);
+          const label = point(-135 + (max > min ? (mark - min) / (max - min) : 0) * 270, 62);
           return (
             <text
               key={mark}
@@ -156,16 +160,16 @@ export function BattleWheel({
           <input
             className={styles.range}
             type="range"
-            min={0}
+            min={min}
             max={max}
             step={step}
             value={value}
             disabled={disabled}
-            aria-label="Forces dialed slider"
+            aria-label={sliderLabel}
             onChange={(event) => onChange(Number(event.target.value))}
           />
           <div className={styles.bounds} aria-hidden="true">
-            <span>0</span>
+            <span>{min}</span>
             <span>{max}</span>
           </div>
         </div>
@@ -173,7 +177,7 @@ export function BattleWheel({
           className={styles.number}
           id={id}
           type="number"
-          min={0}
+          min={min}
           max={max}
           step={step}
           value={value}

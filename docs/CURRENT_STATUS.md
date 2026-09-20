@@ -6,28 +6,26 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `ed53eb7`, [Storm Card inspection](STORM_CARD_INSPECTION.md).
-Types, lint, **4,946 offline tests**, production build and **46 HTTP tests** passed.
-All 1,337 original rooms, 2,805 original seats and existing auxiliary rows stayed
-unchanged; HTTP checks created their own additional records. The current baseline
-contains 1,373 rooms and 2,883 seats. The running server was reused.
-Earlier delivered checkpoints include `67e429e` for Charity/Revival practice,
-`c4ff75a` for alliances, `b7ec940` for bidding, `b9718ac` for lobby AI configuration
-and `b21b2bc` for one-use AI permission. The `8f7a62c` policy checkpoint removed
-the usage cutoff and deferred AI refinement until feature completion, with three
-adjacent 75% targets. See the [implementation history](IMPLEMENTATION_STATUS.md).
+Latest delivered checkpoint: `66c41b2`, [Kwisatz Haderach inspection](KWISATZ_INSPECTION.md).
+Types, lint, **4,950 offline tests** and production build passed. All 1,373 rooms,
+2,883 seats and existing auxiliary rows stayed unchanged. The running server was
+reused. Earlier checkpoints include `ed53eb7` for Storm Cards, `67e429e` for
+Charity/Revival practice, `c4ff75a` for alliances, `b7ec940` for bidding,
+`b9718ac` for lobby AI configuration and `b21b2bc` for one-use AI permission.
+The `8f7a62c` policy checkpoint removed the usage cutoff and deferred AI refinement
+until feature completion, with three adjacent 75% targets. See the
+[implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: [Kwisatz Haderach inspection](KWISATZ_INSPECTION.md) connects an
-original companion face, private battle-loss progress and availability guidance,
-authorized private/public plan components and a static internal reference.
-Rules calculations, sealed choices, save shape and mode gates remain unchanged.
-Source-bound checks, independent review, browser and preservation/Git evidence
-belong to the private checkpoint. Full Advanced acceptance, exact manufactured
-component verification and the remaining component inventory are unfinished.
+Current work: [Storm and Spice Blow practice](INTERACTIVE_INTRODUCTION.md) expands
+the introduction to thirteen lessons and eleven independent Basic examples.
+Sealed dials, reveal, sector traversal, shelter, spice accumulation/storm loss,
+first-turn worm return and later-worm Nexus timing reuse shared live calculations.
+Version 6 preserves old lesson identities and outcomes. Full faction, Fremen-ride,
+Advanced and expansion teaching remain unfinished. Source-bound checks, review,
+browser and preservation/Git evidence belong to the private checkpoint.
 A bounded Duke review confirmed revival/loan paths still cross recorded custody,
 return and cycle questions; no duplicate ruling or invented outcome was added.
-Storm/spice-blow teaching, full faction/Advanced/expansion teaching and broader
-multiplayer acceptance remain unfinished.
+Broader multiplayer and component acceptance remain unfinished.
 
 A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
 still cross recorded pending rulings. Continue independent features rather than

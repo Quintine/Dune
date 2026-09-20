@@ -1,3 +1,4 @@
+import { introductionStorm, introductionSpiceBlow, OPENING_DEFAULTS, type IntroductionOpeningChoice } from './introduction-opening';
 import { baseDeck, leaders } from './cards';
 import { reserveShipmentCost } from './shipment-price';
 import { quoteBattleResolution, type ResolutionCombatant } from './battle-resolution-quote';
@@ -11,6 +12,8 @@ import { introductionCharity, introductionRevival, RESOURCE_DEFAULTS, type Intro
 export const INTRODUCTION_STORAGE_KEY = 'dune-introduction-v1';
 export const INTRODUCTION_STEPS = [
   { title: 'Your place at the table', topic: 'setup' },
+  { title: 'Dial and move the storm', topic: 'storm' },
+  { title: 'Reveal spice and Shai-Hulud', topic: 'spice-blow' },
   { title: 'Choose an ally at the Nexus', topic: 'spice-blow' },
   { title: 'Claim CHOAM Charity', topic: 'charity' },
   { title: 'Bid for a hidden card', topic: 'bidding' },
@@ -22,8 +25,8 @@ export const INTRODUCTION_STEPS = [
   { title: 'Collect the spice', topic: 'collection' },
   { title: 'Join a table', topic: 'privacy' },
 ] as const;
-export type IntroductionState = IntroductionMovementChoice & IntroductionBiddingChoice & IntroductionAllianceChoice & IntroductionResourceChoice & {
-  version: 5;
+export type IntroductionState = IntroductionMovementChoice & IntroductionBiddingChoice & IntroductionAllianceChoice & IntroductionResourceChoice & IntroductionOpeningChoice & {
+  version: 6;
   step: number;
   shipment: number;
   destination: 'stronghold' | 'sand';
@@ -40,7 +43,7 @@ export type IntroductionState = IntroductionMovementChoice & IntroductionBidding
   opponentTraitor: boolean;
 };
 export function newIntroduction(): IntroductionState {
-  return { ...RESOURCE_DEFAULTS, revivalActions: [], ...INTRODUCTION_ALLIANCE_DEFAULTS, allianceActions: [], version: 5, step: 0, shipment: 4, destination: 'sand', shipped: false,
+  return { ...OPENING_DEFAULTS, ...RESOURCE_DEFAULTS, revivalActions: [], ...INTRODUCTION_ALLIANCE_DEFAULTS, allianceActions: [], version: 6, step: 0, shipment: 4, destination: 'sand', shipped: false,
     dial: 2, defense: 'shield', revealed: false, collectors: 3, city: false, collected: false,
     moveDestination: 'pasty_mesa:5', moveForces: 3, moveCity: false, moveStorm: false,
     moved: false, traitorStage: 'plans', traitorCall: false, opponentTraitor: false,
@@ -52,23 +55,25 @@ export function restoreIntroduction(raw: string | null): IntroductionState | nul
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
-    if (!parsed || ![1, 2, 3, 4, 5].includes(parsed.version)) return null;
+    if (!parsed || ![1, 2, 3, 4, 5, 6].includes(parsed.version)) return null;
     // Keep the existing browser key and translate old positions, not just indices.
     if (parsed.version === 1 && !integer(parsed.step, 0, 4)) return null;
     if (parsed.version === 2 && !integer(parsed.step, 0, 6)) return null;
     if (parsed.version === 3 && !integer(parsed.step, 0, 7)) return null;
     if (parsed.version === 4 && !integer(parsed.step, 0, 8)) return null;
+    if (parsed.version === 5 && !integer(parsed.step, 0, 10)) return null;
     const resourceDefaults = { ...RESOURCE_DEFAULTS, revivalActions: [] };
     const auctionDefaults = { auctionScenario: 'contest', auctionHandFull: false, auctionBid: 1, auctionActions: [] };
     const allianceDefaults = { ...INTRODUCTION_ALLIANCE_DEFAULTS, allianceActions: [] };
-    const s = (parsed.version === 1 ? { ...newIntroduction(), ...parsed, version: 5,
+    const previous = (parsed.version === 1 ? { ...newIntroduction(), ...parsed, version: 5,
       step: [0, 5, 7, 9, 10][parsed.step],
       moveDestination: 'pasty_mesa:5', moveForces: 3, moveCity: false, moveStorm: false,
       moved: false, traitorStage: 'plans', traitorCall: false, opponentTraitor: false, ...auctionDefaults, ...allianceDefaults, ...resourceDefaults }
       : parsed.version === 2 ? { ...parsed, version: 5, step: [0, 5, 6, 7, 8, 9, 10][parsed.step], ...auctionDefaults, ...allianceDefaults, ...resourceDefaults }
       : parsed.version === 3 ? { ...parsed, version: 5, step: [0, 3, 5, 6, 7, 8, 9, 10][parsed.step], ...allianceDefaults, ...resourceDefaults }
       : parsed.version === 4 ? { ...parsed, version: 5, step: [0, 1, 3, 5, 6, 7, 8, 9, 10][parsed.step], ...resourceDefaults }
-      : parsed) as IntroductionState;
+      : parsed);
+    const s = (previous.version === 5 ? { ...previous, version: 6, step: [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][previous.step], ...OPENING_DEFAULTS } : previous) as IntroductionState;
     if (!integer(s.step, 0, INTRODUCTION_STEPS.length - 1) ||
       !integer(s.shipment, 1, 6) || !['stronghold', 'sand'].includes(s.destination) ||
       !integer(s.dial, 0, 6) || !['shield', 'snooper'].includes(s.defense) ||
@@ -84,8 +89,10 @@ export function restoreIntroduction(raw: string | null): IntroductionState | nul
     introductionAlliance(s);
     introductionCharity(s);
     introductionRevival(s);
+    introductionStorm(s);
+    introductionSpiceBlow(s);
     // Whitelist fields; never retain credentials or arbitrary imported properties.
-    return { version: 5, step: s.step, shipment: s.shipment, destination: s.destination,
+    return { version: 6, stormExample: s.stormExample, stormDial: s.stormDial, stormStage: s.stormStage, blowExample: s.blowExample, blowStage: s.blowStage, step: s.step, shipment: s.shipment, destination: s.destination,
       shipped: s.shipped, dial: s.dial, defense: s.defense, revealed: s.revealed,
       collectors: s.collectors, city: s.city, collected: s.collected,
       moveDestination: s.moveDestination, moveForces: s.moveForces, moveCity: s.moveCity,

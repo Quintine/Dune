@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 21 September 2026 — Storm and Spice Blow practice
+
+The [interactive introduction](INTERACTIVE_INTRODUCTION.md) now has thirteen
+lessons and eleven independent Basic examples. Storm separates sealed dials,
+reveal and movement, using both first-turn and later-turn ranges. Spice Blow
+compares accumulation, storm loss, later Shai-Hulud and first-turn worm return,
+with Nexus beginning after the replacement blow. Shared live calculations keep
+exposure and placement consistent; no rules or save-schema change. Version 6
+preserves all prior lesson identities and results. Focused engine comparisons,
+independent review and source-bound check/build/browser/preservation/Git evidence
+belong to the private checkpoint. Full faction, worm-ride and expansion teaching
+and complete game acceptance remain open.
+
 ## 21 September 2026 — Kwisatz Haderach component inspection
 
 The [companion inspector](KWISATZ_INSPECTION.md) connects original artwork, private
