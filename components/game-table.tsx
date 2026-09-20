@@ -61,6 +61,8 @@ import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
 import { SandmasterMovement } from './sandmaster-movement';
+import { SandmasterWormChoice } from './sandmaster-worm';
+import { sandmasterWormCollection } from '@/game/sandmaster-worm';
 import { ResidualPoison, BattleLeaderOpportunity } from './residual-poison';
 import { PortableSnooper } from './portable-snooper';
 import {
@@ -427,6 +429,8 @@ export function GameTable({
   const [moveNoField, setMoveNoField] = useState(false);
   const [moveForces, setMoveForces] = useState<Record<string, number>>({});
   const [rideForces, setRideForces] = useState<Record<string, number>>({});
+  const [collectSandmasterRide, setCollectSandmasterRide] = useState(true);
+  const sandmasterRide = sandmasterWormCollection(g, me.id, selected, sector);
   const [exchangeCards, setExchangeCards] = useState<Record<string, boolean>>(
     {},
   );
@@ -3193,8 +3197,11 @@ export function GameTable({
                           }
                         />
                       ))}
+                  <SandmasterWormChoice quote={sandmasterRide} collect={collectSandmasterRide}
+                    onChange={setCollectSandmasterRide} />
                   {actionButton('Ride Shai-Hulud', {
                     type: 'decision',
+                    ...(sandmasterRide?.blocked === null ? { sandmasterCollect: collectSandmasterRide } : {}),
                     eliteForces,
                     accept: true,
                     territory: selected,

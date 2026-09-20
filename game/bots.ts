@@ -85,6 +85,7 @@ import {
 } from './bot-mobility';
 import { planetologistLeader } from './planetologist-movement';
 import { sandmasterDefaultChoice } from './sandmaster-movement';
+import { sandmasterWormCollection } from './sandmaster-worm';
 import { faction } from './catalog';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
@@ -2591,6 +2592,8 @@ function policyActions(g: GameView): Action[] {
             accept: true,
             territory: to.t,
             sector: to.s,
+            ...(sandmasterWormCollection(g, me.id, to.t, to.s)?.blocked === null
+              ? { sandmasterCollect: true } : {}),
             forces: Object.fromEntries(
               Object.entries(me.forces).filter(
                 ([key]) =>

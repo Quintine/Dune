@@ -69,7 +69,8 @@ reserves, no Tanks and the same private Crysknife and Caid. Movement completion
 awaited the human. This is targeted browser evidence, not a complete human game.
 Broad checkpoint results are recorded with the checkpoint. These checks do not certify every skill or combined module.
 
-Remaining work includes worm riding and other nonordinary relocation, special
-movement cards, expansion/module integration, multiple-pile adjudication and
+The [worm-ride follow-up](SANDMASTER_WORM.md) connects native Fremen destination
+collection, including saved arrival reactions. Remaining work includes other
+nonordinary relocation, special movement cards, expansion/module integration, multiple-pile adjudication and
 wider interaction and strategy acceptance. The lower battle band remains in
 [the battle-effects contract](LEADER_BATTLE_EFFECTS.md).

@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 20 September 2026 — Sandmaster worm-ride prototype
+
+[Native Fremen worm rides](SANDMASTER_WORM.md) collect one optional destination
+spice after legal placement and before faction arrival reactions. Shared server,
+control and minimal AI paths preserve source exclusion, typed force custody and
+normal movement. Existing atomic room writes and saved arrival decisions prevent
+repeated payment after concurrent requests or restoration. Empty/ambiguous piles,
+unsupported combinations and legacy actions preserve ordinary riding. Ten focused
+engine/control/SQLite checks and independent review cover the bounded contract;
+final check/build/HTTP, browser/sample and preservation results belong to the
+source-bound private checkpoint and Git message. No release gate is opened.
+
 ## 20 September 2026 — Smuggler battle collection prototype
 
 [Unmodified Smuggler collection](SMUGGLER_BATTLE.md) binds the reveal-time pile

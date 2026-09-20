@@ -14,6 +14,7 @@ import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFiel
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, type SmugglerBattleReceipt } from './smuggler-battle';
 import { quoteSandmasterMovement, validateSandmasterMovement, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
+import { sandmasterWormCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
 import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
@@ -22257,6 +22258,10 @@ function applyActionInner(
         typeof action.accept === 'boolean',
         'Choose whether to ride Shai-Hulud.',
       );
+      requireRule(action.sandmasterCollect === undefined || typeof action.sandmasterCollect === 'boolean',
+        'Choose whether to collect spice with Sandmaster.');
+      requireRule(action.accept || !action.sandmasterCollect,
+        'Sandmaster collection requires an accepted worm ride.');
       if (action.accept) {
         const to = stringField(action.territory);
         const sector = integer(action.sector, 0, 18, 'Sector');
@@ -22265,6 +22270,9 @@ function applyActionInner(
           'Choose another destination territory.',
         );
         allowedEntry(g, p, to, sector);
+        const sandmaster = action.sandmasterCollect ? sandmasterWormCollection(g, p.id, to, sector, decision) : null;
+        if (action.sandmasterCollect) requireRule(sandmaster && !sandmaster.blocked,
+          sandmaster?.blocked ?? 'Sandmaster collection needs the living native trainer.');
         requireRule(
           action.forces &&
             typeof action.forces === 'object' &&
@@ -22302,6 +22310,12 @@ function applyActionInner(
           g,
           `${p.name} rode Shai-Hulud with ${total} forces to ${territory(to).name}.`,
         );
+        if (sandmaster) {
+          g.spice[sandmaster.key!] = sandmaster.before - 1;
+          p.spice++;
+          log(g, `${p.name}'s Sandmaster collected 1 spice on arriving in ${territory(to).name} by worm. ${sandmaster.before - 1} spice remains in that pile. This ride does not consume normal movement.`,
+            { faction: p.faction, name: 'Sandmaster collection' });
+        }
         const intruded = intrusion(g, p, to, { wormRide: true });
         if (
           openTerritoryEntry(

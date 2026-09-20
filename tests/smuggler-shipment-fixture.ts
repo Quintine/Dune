@@ -18,11 +18,12 @@ export function smugglerShipmentGame(
   faction: FactionId = 'emperor',
   advanced = false,
   skill: 'smuggler' | 'sandmaster' = 'smuggler',
+  opponentFaction?: FactionId,
 ): Game {
   let g = createGame('SMUGSHIP', newPlayer('p', 'Smuggler', faction), advanced);
   joinGame(
     g,
-    newPlayer('h', 'Opponent', faction === 'guild' ? 'emperor' : 'guild'),
+    newPlayer('h', 'Opponent', opponentFaction ?? (faction === 'guild' ? 'emperor' : 'guild')),
   );
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   const index = LEADER_SKILL_CARDS.findIndex((c) => c.id === skill);
@@ -54,7 +55,7 @@ export function smugglerShipmentGame(
           : g.setupStage === 'traitors' && p.traitorChoices.length
             ? [{ type: 'traitor', leader: p.traitorChoices[0] }]
             : g.setupStage === 'prediction' && p.faction === 'beneGesserit'
-              ? [{ type: 'predict', faction: g.players[1].faction, turn: 3 }]
+              ? [{ type: 'predict', faction: g.players.find(other => other.id !== p.id)!.faction, turn: 3 }]
               : g.setupStage === 'forces' &&
                   p.faction === 'fremen' &&
                   p.reserves === 20
@@ -114,7 +115,8 @@ export function smugglerShipmentGame(
     p.shipped = false;
     p.moved = 0;
     p.advisors = {};
-    if (p.elites) p.elites = { ...p.elites, forces: {}, reserves: 5, tanks: 0 };
+    if (p.elites) p.elites = { ...p.elites, forces: {},
+      reserves: p.elites.reserves + p.elites.tanks + Object.values(p.elites.forces).reduce((sum, n) => sum + n, 0), tanks: 0 };
   }
   return g;
 }

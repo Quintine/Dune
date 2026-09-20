@@ -6,19 +6,20 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `9be7dfb`, the [interactive introduction](INTERACTIVE_INTRODUCTION.md).
-Types, lint, **4,872 offline tests** and production build passed. Five lessons
-connect shared-rule shipping, sealed battle and collection exercises, card
-inspection and browser-local continuation. Broader teaching remains unfinished.
-After the reported outage all 1,106 games matched the prior backup and a private
-QA seat restored after refresh. The healthy server was reused without a reset.
+Latest delivered gameplay checkpoint: `20cc605`, [Smuggler battle collection](SMUGGLER_BATTLE.md).
+Types, lint, **4,884 offline tests**, production build and **43 HTTP tests** passed.
+The surviving unmodified leader collects even after losing or capture, with saved
+settlement before Sandmaster. All 1,106 baseline rooms and 2,314 seats stayed
+unchanged; isolated checks added 34 rooms and 71 seats. No restart was needed.
+The subsequent `8f7a62c` policy checkpoint removed the usage cutoff and deferred
+AI refinement until feature completion, with three adjacent 75% win-rate targets.
 Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: [Smuggler battle collection](SMUGGLER_BATTLE.md) connects the
-unmodified lower band, automatic survival settlement, losing/captured leaders,
-Sandmaster order, shared controls and bots, and saved continuation. Modified
-strength and combined modules remain guarded. Final verification and delivery
-belong to the source-bound private report and Git message.
+Current work: [Sandmaster worm rides](SANDMASTER_WORM.md) connect optional native
+Fremen destination collection, multi-sector forces, controls, minimal legal AI
+participation and saved Bene Gesserit arrival continuation. Multiple piles and
+combined modules remain guarded. Final verification and delivery belong to the
+source-bound private report and Git message.
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
 battle-card slot, private category inspections, exact undialed normal/elite
@@ -75,7 +76,7 @@ These links define bounded working behavior, not complete module certification.
 | --- | --- |
 | Base/Advanced setup | [Genuine setup](ADVANCED_SETUP_TEST_SEAM.md), [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md), [Fremen cancellation](FREMEN_MOVEMENT_KARAMA_RULES.md), [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md). Earlier Basic-then-flip fixtures do not establish current setup coverage. |
 | Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement, separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
-| Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md). Remaining bands and combinations are explicit in those contracts. |
+| Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md) and [worm rides](SANDMASTER_WORM.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Jacurutu income, Testing Station and Shrine. Orgiz and contested/mixed cases remain pending. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected; CHOAM inspection and Emperor purchase remain pending. A source audit or helper alone is not a completed effect. |
 | Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |

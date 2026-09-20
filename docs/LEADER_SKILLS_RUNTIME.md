@@ -165,5 +165,7 @@ recorded in the commit and private verification report. Full module and combined
 game acceptance remain unfinished.
 
 The [Sandmaster ground-movement follow-up](SANDMASTER_MOVEMENT.md) adds explicit
-routes, optional collection, human/AI controls and saved cancellation. Special
-relocation and combined modules remain unfinished.
+routes, optional collection, human/AI controls and saved cancellation. The
+[worm-ride follow-up](SANDMASTER_WORM.md) adds native Fremen destination collection
+and saved arrival reactions. Other special relocation and combined modules
+remain unfinished.
