@@ -1,5 +1,20 @@
 # Dune implementation status
 
+## 20 September 2026 — Optional table sound prototype
+
+[Table sound controls](TABLE_SOUNDS.md) add local mute, keyboard volume and a test
+sample, with short synthesized cues for public phase changes and tagged automatic
+actions. Silent baseline consumption, coalescing and background suppression avoid
+replaying old updates. Preferences survive refresh and synchronize between tabs;
+game actions, AI timing and saved state are unchanged. Focused audio/cursor checks
+and browser controls cover the connected prototype. Physical output, screenshot
+acceptance and final event coverage remain unfinished. Required check/build,
+preservation and verified Git delivery belong to the source-bound private report
+and commit message. No mode or publication gate is opened.
+
+The reported outage left all 1,072 baseline games unchanged. The responding server
+was reused and the existing isolated seat reconnected without a database reset.
+
 ## 14 September 2026 — Harass revealed physical allocation
 
 Connected ordinary/elite and multi-sector choices after public plan reveal,

@@ -1,17 +1,17 @@
 # Current development status
 
-Updated 14 September 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 20 September 2026. **The full twelve-faction goal is unfinished. Basic
 is playable; public Advanced and unfinished expansion/module starts remain
 gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest verified checkpoint: `6403425`, [AI arrival preflight](BOT_ARRIVAL_PREFLIGHT.md).
-Types, lint and **4,829 offline tests** passed. Eighteen genuine base and expansion
-samples completed in 9,470 accepted actions with 247 periodic save/restore checks
-and no rejected candidates. Accepted gameplay matched the prior same-seed runs
-apart from random event identifiers. All 1,038 opening games and original
-seat/recovery records were unchanged; the browser test seat reconnected.
+Latest delivered rules checkpoint: `62e87d2`, [Harass allocation](HARASS_ALLOCATION.md).
+Types, lint, **4,850 offline tests**, production build and 43 HTTP checks passed.
+Eight genuine card-variant games completed in 9,956 accepted actions with 266
+periodic save/restore checks and no rejected candidates. Focused and browser
+cases exercised ambiguous allocation. All 1,038 opening games and original
+seat/recovery records were unchanged; 1,072 rooms remained after isolated QA.
 Earlier evidence remains in the [implementation history](IMPLEMENTATION_STATUS.md).
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
@@ -24,17 +24,22 @@ card-specific discard precedence are explicitly labeled inferences. The Stone
 Burner timing question is pending; no user answer is assumed. Reinforcements
 remains unfinished. This does not open variant, mode or publication gates.
 
-The existing server remained healthy after the reported power failures. Saved
-games and original recovery/entry/handover records survived; SQLite integrity
-and foreign-key checks passed, and refresh restored the test seat. No restart,
-database reset or recurring automation was needed. Exact verification, source
-fingerprints and delivery are recorded in the private report and Git message.
+Current checkpoint: [optional table sounds](TABLE_SOUNDS.md) connects local mute,
+volume, a test sample and short public phase/automatic-action cues. Initial and
+background updates stay silent; preferences survive refresh and synchronize
+between tabs. This adds no gameplay actions, private eligibility checks or game
+storage. Final source-bound checks and delivery are recorded in the private
+report and Git message; physical audio and screenshot acceptance remain open.
 
-Current work: [Harass force allocation](HARASS_ALLOCATION.md) connects the missing
-player choice after reveal, with shared legal AI, exact winner losses and saved
-continuation. Unique returns stay automatic and sealed plans stay unchanged.
-The remaining Leader Skill bands retain their existing pending rulings; this
-checkpoint introduces no new arrival-order or hidden-reaction policy.
+On 20 September, the stopped server was started after backing up all 1,072 rooms.
+Following another reported outage, the server responded normally and every saved
+game still matched that baseline. The isolated browser seat restored successfully.
+No database reset or recurring automation was needed.
+
+Next: prototype ordinary Mirror Weapon copies using the existing shared resolver,
+while retaining explicit gates for unresolved copied Tooth/Artillery disposal and
+Stone Burner choices. Sapho battle aggressor is the next independent candidate.
+The remaining Leader Skill bands retain their existing pending rulings.
 
 ## Authoritative navigation
 

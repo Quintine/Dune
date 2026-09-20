@@ -72,6 +72,7 @@ import {
 } from './richese-allied-no-field';
 import { presenceByLocation } from '@/game/force-presence';
 import { AutomaticActionNotice } from './automatic-action-notice';
+import { TableSounds } from './table-sounds';
 import { EcazSpice } from './ecaz-spice';
 import { VictoryProgress } from './victory-progress';
 import { tableActionOwner } from '@/game/table-turn';
@@ -902,6 +903,12 @@ export function GameTable({
         </button>
         <div className="masthead-right">
           <AutomaticActionNotice key={g.code} events={automaticEvents} />
+          <TableSounds key={`sound:${g.code}`} frame={{
+            room: g.code,
+            phase: `${g.status}:${g.turn}:${g.phase}`,
+            sequence: g.log.reduce((last, entry) => Math.max(last, entry.seq), -1),
+            automaticSequence: automaticEvents.reduce((last, entry) => Math.max(last, entry.seq), -1),
+          }} />
           <span className="status-dot" />
           {g.status === 'lobby' ? 'Gathering players' : `Turn ${g.turn} / 10`}
           <Button

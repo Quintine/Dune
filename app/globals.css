@@ -105,6 +105,24 @@ a:focus-visible {
   align-items: center;
   margin-left: 28px;
 }
+.table-sounds { position: relative; max-width: 100%; font-size: 14px; }
+.table-sounds summary { display: flex; align-items: center; gap: 8px; }
+.table-sounds summary:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.table-sounds-panel {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 45;
+  display: grid; gap: 12px; width: min(280px, calc(100vw - 48px));
+  padding: 16px; border: 1px solid var(--border); border-radius: 8px;
+  background: #141814; color: #f5ecda; box-shadow: 0 8px 28px #0008;
+  font-size: 14px; line-height: 1.5;
+}
+.table-sounds-panel p { margin: 0; }
+.live-table .masthead { flex-wrap: wrap; gap: 12px; }
+.live-table .masthead-right { flex-wrap: wrap; }
+@media (max-width: 950px) {
+  .live-table .masthead-right { position: relative; }
+  .table-sounds { position: static; }
+  .table-sounds-panel { left: 0; right: auto; }
+}
 .status-dot {
   width: 6px;
   height: 6px;
