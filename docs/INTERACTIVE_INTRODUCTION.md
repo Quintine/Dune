@@ -1,12 +1,12 @@
 # Interactive introduction
 
-20 September 2026. **Prototyped; partial teaching coverage.** `/learn` is linked
+21 September 2026. **Prototyped; partial teaching coverage.** `/learn` is linked
 from the lobby and rules reference. It adds the previously missing guided
 introduction alongside the reference's existing standalone practice wheel.
 
-Eight navigable lessons cover public/private table information and the phase
-sequence, bidding, shipment budgets, movement, sealed battle plans, Traitor calls, spice
-collection and joining or recovering a saved table. Six independent Basic practice positions let a player
+Nine navigable lessons cover public/private table information and the phase
+sequence, ordinary Nexus alliances, bidding, shipment budgets, movement, sealed battle plans, Traitor calls, spice
+collection and joining or recovering a saved table. Seven independent Basic practice positions let a player
 change inputs, commit, inspect results and retry. These positions are deliberately
 separate examples rather than a complete game or an authoritative live room.
 
@@ -40,6 +40,36 @@ that a prior passer can bid again. Direct PDF retrieval returned 403, so no new
 binary/visual source inspection is claimed. Links remain developer provenance;
 the player lesson links only to internal rules.
 
+The Nexus position uses four base factions and two or one Emperor strongholds.
+Players accept an incoming offer, make an offer to a fixed accepting/waiting
+partner, stay unallied, withdraw an unanswered offer or break a formed alliance.
+Closing the Nexus locks these decisions. A separate explicit teaching step
+checks the unchanged board at a later Mentat Pause; it does not simulate the
+intervening phases or award a victory at the moment of alliance formation.
+Three shared strongholds fall short; four qualify for both allies.
+
+`quoteNexusAlliance` extracts existing ordinary offer/pairing behavior into a
+shared pure quote. The live engine retains phase authorization, Homeworld
+restrictions, alliance dates, Nexus Card forfeiture, readiness and history.
+`strongholdProgress` and `quoteVictory` supply the teaching result. Physical
+forces stay with their original owner. The response scripts are local teaching
+scenarios, not changes to live AI. Funding, alliance powers, movement restrictions,
+special victory and expansion exceptions are not simulated in this example.
+The base rulebook's Alliances (Nexus) and Mentat Pause sections remain the rule
+authority; fresh publisher-indexed rulebook/quick-start results confirm the
+ordinary two-member/four-stronghold contract. No new ambiguous ruling is inferred.
+
+The version 4 save whitelists alliance choices and validates the bounded
+opening/offer/withdraw/break sequence and phase order. Prior lesson identities,
+auction history and every other accepted practice choice remain intact.
+`tests/introduction-alliance.test.ts` compares all 24 offered scenario/holding/
+action combinations with actual engine alliance transitions, checks later victory,
+JSON continuation, closed-Nexus rejection and every version 3 lesson migration.
+`tests/nexus-alliance.test.ts` checks pure immutability and live-engine integration;
+existing Nexus Card forfeiture tests cover the retained expansion side effects.
+Final independent review, browser, source-bound checks and saved-game preservation
+are recorded in the private checkpoint and Git message.
+
 The movement position starts with five ordinary forces in Red Chasm. It compares
 range one with range three from a separate Arrakeen occupant, exact sectors,
 storm exclusion and a stronghold already occupied by two other factions. Accepted
@@ -51,10 +81,10 @@ actual authoritative `applyAction` transitions; no live movement rule changed.
 The existing wheel, keyboard controls and card inspectors remain available.
 Lesson changes focus the heading; responsive columns stack on small screens.
 Browser storage contains only a versioned, validated set of lesson choices under
-`dune-introduction-v1`. Version 3 payloads explicitly migrate all five version 1
-and seven version 2 lesson positions to the same lesson after insertion,
-preserving prior choices and committed outcomes. New bidding fields start at
-their defaults; version 1 also receives movement/Traitor defaults. Hot updates
+`dune-introduction-v1`. Version 4 payloads explicitly migrate all five version 1,
+seven version 2 and eight version 3 lesson positions to the same lesson after insertion,
+preserving prior choices and committed outcomes. New alliance fields start at their defaults for every older version.
+Versions 1 and 2 receive bidding defaults; version 1 also receives movement/Traitor defaults. Hot updates
 remount the lesson state to apply this migration. Only the player's bid/pass
 history is saved; deterministic replay validates the complete auction and rejects
 underbids, overspending, full-hand actions and actions after the auction ends.
@@ -87,7 +117,7 @@ re-entry, finite termination and integer/funding limits. Final source-bound
 browser/check/build and preservation evidence for bidding belongs to its private
 checkpoint and Git message.
 
-This does not replace a full interactive curriculum. Alliances, broader movement/arrival powers, faction lessons, Advanced
+This does not replace a full interactive curriculum. Alliance powers, broader movement/arrival powers, faction lessons, Advanced
 support and expansion lessons remain future work. The expanded lessons retain
 Partial/Prototyped coverage. Final browser/check/build, preservation and Git
 evidence for this follow-up belong to its source-bound private checkpoint. No rules mode, expansion or publication gate is opened.

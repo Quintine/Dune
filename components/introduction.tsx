@@ -7,6 +7,7 @@ import { CardInspector, CardRules } from './card-inspector';
 import { PHASES } from '@/game/catalog';
 import { MovementLesson, TraitorLesson } from './introduction-practice';
 import { BiddingLesson } from './introduction-bidding';
+import { AllianceLesson } from './introduction-alliance';
 import {
   INTRODUCTION_CARDS, INTRODUCTION_LEADERS, INTRODUCTION_STEPS, INTRODUCTION_STORAGE_KEY,
   introductionBattle, introductionCollection, introductionShipment, newIntroduction, restoreIntroduction,
@@ -25,10 +26,10 @@ export function Introduction() {
       <Link href="/">← Return to Arrakis</Link>
       <p className="eyebrow">LEARN TO PLAY · BASIC GAME</p>
       <h1>A first turn on Arrakis</h1>
-      <p>Practice bidding, shipping, movement, battle plans, Traitor calls and collection, then take a seat at a real table. These are separate examples; they do not change any saved game.</p>
+      <p>Practice alliances, bidding, shipping, movement, battle plans, Traitor calls and collection, then take a seat at a real table. These are separate examples; they do not change any saved game.</p>
     </header>
     {/* Remount on schema changes so a development hot update also migrates old state. */}
-    {hydrated ? <IntroductionLessons key="v3" /> : <output>Restoring your lesson…</output>}
+    {hydrated ? <IntroductionLessons key="v4" /> : <output>Restoring your lesson…</output>}
   </main>;
 }
 
@@ -76,8 +77,9 @@ function IntroductionLessons() {
           <ol className={styles.phases}>{PHASES.map(phase => <li key={phase}>{phase}</li>)}</ol>
           <p>The table tells you who must act. Your decisions can wait while another player seals a plan or answers a power. Automatic effects show in the chronicle.</p>
         </>}
-        {state.step === 1 && <BiddingLesson state={state} update={update} />}
-        {state.step === 2 && <>
+        {state.step === 1 && <AllianceLesson state={state} update={update} />}
+        {state.step === 2 && <BiddingLesson state={state} update={update} />}
+        {state.step === 3 && <>
           <p>You have <strong>8 spice</strong> and six available reserve forces. Ship from reserves before moving on the board. This example has no discount, storm, occupancy restriction or reacting faction power.</p>
           <div className={styles.columns}>
             <div className={styles.controls}>
@@ -101,8 +103,8 @@ function IntroductionLessons() {
           </div>
           <p className="fine">Ordinary movement reaches an adjacent territory. Ornithopters and faction powers can extend its range. Inspect the live destination guide before committing.</p>
         </>}
-        {state.step === 3 && <MovementLesson state={state} update={update} />}
-        {state.step === 4 && <>
+        {state.step === 4 && <MovementLesson state={state} update={update} />}
+        {state.step === 5 && <>
           <p>A separate battle: you are the aggressor in Wind Pass with six ordinary forces and {INTRODUCTION_LEADERS.you.name}, strength {INTRODUCTION_LEADERS.you.strength}. Your opponent also has six forces. Neither side calls a Traitor or uses a faction power in this example.</p>
           <div className={styles.columns}>
             <div className={styles.controls}>
@@ -130,8 +132,8 @@ function IntroductionLessons() {
             </div>
           </div>
         </>}
-        {state.step === 5 && <TraitorLesson state={state} update={update} />}
-        {state.step === 6 && <>
+        {state.step === 6 && <TraitorLesson state={state} update={update} />}
+        {state.step === 7 && <>
           <p>A fresh position has 8 spice in Wind Pass, sector 14. You have surviving forces in that same sector, outside the storm. Collection uses the forces still on the board after battles.</p>
           <div className={styles.columns}>
             <div className={styles.controls}>
@@ -147,8 +149,8 @@ function IntroductionLessons() {
             </div>
           </div>
         </>}
-        {state.step === 7 && <>
-          <p>You can revisit any example. This introduction covers bidding, core resources, movement and battle choices; it does not teach every faction, card, alliance, storm exception or expansion.</p>
+        {state.step === 8 && <>
+          <p>You can revisit any example. This introduction covers ordinary alliances, bidding, core resources, movement and battle choices; it does not teach every faction, card, alliance power, storm exception or expansion.</p>
           <ul>
             <li>Create a private room, choose a faction, and add friends or AI players. Share the room invitation.</li>
             <li>Mark yourself ready after reviewing the selected rules. The host begins once all seats are ready.</li>

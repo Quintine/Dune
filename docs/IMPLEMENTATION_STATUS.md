@@ -1,5 +1,18 @@
 # Dune implementation status
 
+## 21 September 2026 — Interactive Nexus alliance practice
+
+The [introduction](INTERACTIVE_INTRODUCTION.md) now connects nine lessons and seven
+Basic examples. A four-player Nexus teaches mutual consent, unanswered offers,
+withdrawal and unilateral alliance breaks. An explicit later Mentat check contrasts
+three shared strongholds with the ordinary four-stronghold joint victory. Shared
+production pairing, progress and victory quotes preserve physical force ownership.
+The live engine retains phase/expansion checks and card forfeiture. Version 4
+practice saves preserve all prior lesson identities and committed choices.
+Focused engine comparisons, migration and rejection checks accompany independent
+review and final source-bound browser/check/build/preservation/Git evidence in the
+private checkpoint. Broader teaching and all mode/publication gates remain open work.
+
 ## 20 September 2026 — Interactive ordinary bidding practice
 
 The [introduction](INTERACTIVE_INTRODUCTION.md) now connects eight lessons and six

@@ -58,6 +58,7 @@ import { quoteJunctionTransport } from './junction-transport';
 import { homeworldMovementForesightBlock, homeworldSpiritualAdvisorLimit, homeworldMobileStrongholdMovementBlock, homeworldNoFieldMovementBlock } from './homeworld-mobility';
 import { currentJunctionOffer, junctionOfferEvent, junctionOfferIntegrity, junctionSponsor, type JunctionOffer } from './junction-offer';
 import { homeworldAllianceBlock } from './homeworld-alliance';
+import { quoteNexusAlliance } from './nexus-alliance';
 import { quoteHomeworldSubstitution } from './homeworld-substitution';
 import { combatArmy, combatLocations, combatLocationName, homeworldBattleLocation, quoteCombatBoard, quoteCombatBoardContinuation } from './combat-location';
 import { battleChooserEvent, quoteBattleChoosers, reorderBattleChoosers, validateBattleChooserOrder, BattleChooserOrderError, type BattleChooserOrder } from './battle-chooser-order';
@@ -22790,30 +22791,36 @@ function applyActionInner(
       g.phase === 1 && g.nexus && !g.spiceWindow && !g.spiceResolution,
       'Alliances change only during a Nexus.',
     );
-    if (!action.target) {
-      if (p.ally) getPlayer(g, p.ally).ally = null;
-      p.ally = null;
-      delete g.allianceOffers[id];
-      log(g, `${p.name} is unallied.`);
-    } else {
-      const other = getPlayer(g, stringField(action.target));
+    const target = action.target ? stringField(action.target) : null;
+    let other: Player | null = null;
+    if (target !== null) {
+      other = getPlayer(g, target);
       requireRule(other.id !== id, 'Choose another player.');
       const blocked = homeworldAllianceReason(g, id, other.id);
       requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
-      requireRule(
-        !p.ally && !other.ally,
-        'Break existing alliances before forming a new one.',
-      );
-      g.allianceOffers[id] = other.id;
-      if (g.allianceOffers[other.id] === id) {
-        p.ally = other.id;
-        other.ally = id;
-        p.allySinceTurn = other.allySinceTurn = g.turn;
-        discardAllianceNexusCards(g, p, other);
-        delete g.allianceOffers[id];
-        delete g.allianceOffers[other.id];
-        log(g, `${p.name} and ${other.name} formed an alliance.`);
-      }
+    }
+    const quote = nexusRule(() =>
+      quoteNexusAlliance(
+        {
+          players: g.players.map((player) => ({
+            id: player.id,
+            ally: player.ally,
+          })),
+          offers: g.allianceOffers,
+          actor: id,
+          target,
+        },
+      ),
+    );
+    for (const player of g.players) player.ally = quote.allies[player.id];
+    g.allianceOffers = quote.offers;
+    if (target === null) {
+      log(g, `${p.name} is unallied.`);
+    } else if (quote.formed) {
+      requireRule(other, 'The alliance partner is no longer seated.');
+      p.allySinceTurn = other.allySinceTurn = g.turn;
+      discardAllianceNexusCards(g, p, other);
+      log(g, `${p.name} and ${other.name} formed an alliance.`);
     }
     g.ready = [];
     return g;
