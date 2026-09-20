@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 21 September 2026 — Storm Card inspection
+
+The [Storm Card inspector](STORM_CARD_INSPECTION.md) connects six numeric reference
+faces, the existing private Fremen forecast and actual public reveal receipts in
+the chronicle. Inspection is read-only. Saved public records retain their original
+face after movement or Weather Control, separately from effective storm distance.
+Earlier text-only history remains valid; unknown component metadata fails closed.
+No AI strategy or rules mode changes. Focused projection/provenance checks,
+independent review, browser controls and final check/build/HTTP/preservation/Git
+evidence belong to the private checkpoint. Complete physical face/artwork and
+broader component acceptance remain unfinished.
+
 ## 21 September 2026 — Charity and Revival practice
 
 The [introduction](INTERACTIVE_INTRODUCTION.md) expands to eleven lessons and nine

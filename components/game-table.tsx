@@ -1,5 +1,6 @@
 'use client';
 import { EcazSetup } from './ecaz-setup';
+import { StormCardInspector, StormCardLogInspector } from './storm-cards';
 import { LobbyBotControls } from './lobby-bot-controls';
 import { IxRicheseTechnology } from './ix-richese-technology';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
@@ -1210,9 +1211,10 @@ export function GameTable({
             </p>
           )}
           {g.stormForecast !== null && (
-            <p className="fine">
-              Your storm forecast: {g.stormForecast} sectors next turn.
-            </p>
+            <div className="space-y-2">
+              <p className="fine">Your storm forecast: {g.stormForecast} sectors next turn.</p>
+              <StormCardInspector distance={g.stormForecast} context="forecast" />
+            </div>
           )}
           <div className="resource-readout">
             <Coins size={18} />
@@ -5469,10 +5471,13 @@ export function GameTable({
             {[...g.log].reverse().map((e) => (
               <li key={e.seq}>
                 <span>{String(e.seq).padStart(3, '0')}</span>
-                {e.text.replace(
-                  /used Karama to cancel fremenMovement\.$/,
-                  'used Karama to cancel Fremen movement.',
-                )}
+                <div className="min-w-0 space-y-2">
+                  <p className="m-0">{e.text.replace(
+                    /used Karama to cancel fremenMovement\.$/,
+                    'used Karama to cancel Fremen movement.',
+                  )}</p>
+                  <StormCardLogInspector component={e.component} />
+                </div>
               </li>
             ))}
           </ol>

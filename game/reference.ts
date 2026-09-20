@@ -202,6 +202,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     related: [
       'setup',
       'interactive-introduction',
+      'storm-cards',
       'truthtrance-spice',
       'ecaz-ambassadors',
       'richese-cards',
@@ -2003,9 +2004,34 @@ export const RULE_TOPICS: RuleTopic[] = [
               ? ['ecaz-ambassadors', 'tleilaxu-revival']
               : phase === 1
                 ? ['card-harvester', 'faction-fremen']
-                : undefined,
+                : phase === 0
+                  ? ['storm-cards', 'advanced-storm-spice', 'faction-fremen']
+                  : undefined,
     }),
   ),
+  {
+    id: 'storm-cards',
+    title: 'Storm Cards: forecast and revealed faces',
+    category: 'Cards',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Inspect the six possible faces, your permitted private forecast, and a card already revealed to the table.',
+    steps: [
+      'The gallery shows the six possible values, one through six. It does not identify a live draw.',
+      'When the table grants Fremen its private forecast, Inspect Storm Card opens that exact face. Other players do not receive the private forecast.',
+      'When the card is publicly revealed, its chronicle entry gains an inspector. The recorded face remains available while that entry remains in the chronicle, including after refresh.',
+      'The card value and actual movement can differ. Weather Control and Ecological Testing Station do not rewrite the recorded card face. Read the current storm result for the distance actually moved.',
+      'Earlier saved chronicle entries without a recorded face retain their text. Inspection is read-only and never draws, plays or reveals another card.',
+    ],
+    related: ['storm', 'advanced-storm-spice', 'faction-fremen', 'privacy', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Six numeric faces and a public reveal record connect existing Storm Card state to inspection. Movement, draws and mode gates are unchanged; full component artwork and printed-face verification remain open.', evidence: ['game/storm-cards.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Private forecasts, public revealed-card chronicle entries and the six-face reference gallery share a keyboard-accessible enlarged inspector.', evidence: ['components/storm-cards.tsx', 'components/game-table.tsx', 'components/rules-reference.tsx'] },
+      { area: 'AI', status: 'Implemented', detail: 'Inspection adds no game action or AI decision. Existing forecast authorization, legal choices and profiles remain unchanged.' },
+      { area: 'Documentation', status: 'Partial', detail: 'Guidance distinguishes private forecasts, public history, reference examples and modified storm distance. This is not complete physical-component certification.', evidence: ['docs/STORM_CARD_INSPECTION.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused checks cover private forecast authorization, public reveal records, saved continuation, original versus modified distance and malformed component rejection. Broader rules and visual acceptance remain separate.', evidence: ['tests/storm-card-inspection.test.ts'] },
+    ],
+  },
   {
     id: 'alliance-funding',
     title: 'Fund an ally’s bid or shipment',

@@ -1,3 +1,4 @@
+import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
 import { leaderSkillCard, type LeaderSkillId } from './leader-skill-cards';
 import { bureaucratPaymentModeSupported, bureaucratPaymentSignature, bureaucratUsed, quoteBureaucratPayment, type BureaucratPaymentSource, type BureaucratPaymentUse, type BureaucratPaymentView } from './bureaucrat-payment';
@@ -1564,6 +1565,8 @@ export type Game = {
     seq: number;
     text: string;
     automatic?: { faction: FactionId; name: string };
+    /** Public at the actual card reveal; never populated from a private forecast. */
+    component?: StormCardComponent;
   }[];
   stormDials: Record<string, number>;
   stormPending: number | null;
@@ -2570,11 +2573,13 @@ const log = (
   g: Game,
   text: string,
   automatic?: { faction: FactionId; name: string },
+  component?: StormCardComponent,
 ) => {
   g.log.push({
     seq: (g.log.at(-1)?.seq ?? 0) + 1,
     text,
     ...(automatic ? { automatic } : {}),
+    ...(component ? { component } : {}),
   });
   if (g.log.length > 250) g.log.shift();
 };
@@ -13026,7 +13031,8 @@ function beginStormTurn(g: Game) {
     g.stormMovementSource = nexusRule(() => createStormSource(g.turn,'card',g.stormPending!));
     g.stormCard = null;
     g.stormCardKnown = false;
-    log(g, `Storm card revealed: ${g.stormPending} sectors.`);
+    log(g, `Storm card revealed: ${g.stormPending} sectors.`, undefined,
+      isStormCardDistance(g.stormPending) ? { kind: 'stormCard', distance: g.stormPending } : undefined);
   }
   for (const p of g.players) {
     for (const l of p.leaders) {

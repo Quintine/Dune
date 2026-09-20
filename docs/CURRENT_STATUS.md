@@ -6,22 +6,23 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `c4ff75a`, [interactive alliance practice](INTERACTIVE_INTRODUCTION.md).
-Types, lint, **4,934 offline tests** and production build passed. All 1,337 rooms,
+Latest delivered checkpoint: `67e429e`, [Charity and Revival practice](INTERACTIVE_INTRODUCTION.md).
+Types, lint, **4,941 offline tests** and production build passed. All 1,337 rooms,
 2,805 seats and existing recovery/entry/handover/delegation rows stayed unchanged.
-The stopped server was started against existing state; an existing QA seat restored.
-The preceding `b7ec940` connects bidding practice, `b9718ac` connects
+The running server was reused; prior lesson results and paid returns restore.
+The preceding `c4ff75a` connects alliance practice, `b7ec940` connects bidding,
+and `b9718ac` connects
 [lobby AI configuration](LOBBY_AI_CONFIGURATION.md), and `b21b2bc` connects
 [one-use AI permission](SEAT_AI_PERMISSION.md). The `8f7a62c` policy checkpoint
 removed the usage cutoff and deferred AI refinement until feature completion,
 with three adjacent 75% targets. Earlier evidence remains in the
 [implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: [Charity and Revival practice](INTERACTIVE_INTRODUCTION.md) adds two
-Basic phase lessons, cumulative free/paid returns, leader eligibility and shared
-spending through existing production calculations. Saved choices migrate every
-earlier lesson and commitment. No AI strategy changes. Final independent review,
-browser/check/build/preservation and Git evidence belong to its private report.
+Current work: [Storm Card inspection](STORM_CARD_INSPECTION.md) connects six
+reference faces, the permitted Fremen forecast and public chronicle receipts to
+enlarged inspection. Original card values stay separate from modified movement;
+legacy text logs remain valid. No rules or AI strategy changes. Independent review,
+browser/check/build/HTTP/preservation and Git evidence belong to its private report.
 A bounded current-state Duke review confirmed revival/loan paths still cross
 recorded custody, return and cycle questions; existing identity/price helpers and
 non-Ecaz guards are already present. No duplicate ruling or invented outcome.

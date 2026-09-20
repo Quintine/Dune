@@ -1,5 +1,13 @@
 # Component inventory and verification ledger
 
+**Storm Card inspection, 21 September 2026:** six numeric reference faces,
+authorized private Fremen forecasts and structured public reveal receipts now
+share an enlarged inspector. The actual card value survives separately from
+Weather Control or Testing Station movement changes. Existing text-only logs
+remain readable; no private draw is inferred from public movement. This updates
+the historical Storm Card enlargement gap, not complete manufactured-face or
+artwork certification. See [scope and evidence](STORM_CARD_INSPECTION.md).
+
 **Leader Skills update, 13 September 2026:** all fourteen unique physical cards
 now have sourced names and complete paraphrased normal/battle text, shared
 inspectors, private two-card offers and one-card assignment custody. Five role
