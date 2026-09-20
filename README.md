@@ -25,7 +25,7 @@ Until that stage, AI work focuses on minimal legal participation and critical
 playability fixes.
 
 Choose **Learn to play** for the [interactive introduction](docs/INTERACTIVE_INTRODUCTION.md)
-at `/learn`. Practice shipping, movement, battle plans, Traitor calls and collection before entering a
+at `/learn`. Practice bidding, shipping, movement, battle plans, Traitor calls and collection before entering a
 room; lesson progress stays in your browser and does not change saved games.
 
 Local games persist in `.wrangler/state`. Keep this directory across restarts. Apply new additive migrations before running code that depends on them. Never delete the local database to resolve a connection or rules problem. `.openai/hosting.json` belongs to the existing Sites project; do not recreate the hosting project.

@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 20 September 2026 — Interactive ordinary bidding practice
+
+The [introduction](INTERACTIVE_INTRODUCTION.md) now connects eight lessons and six
+Basic examples. The new Fremen bidding position teaches raising, passing and
+re-entry, full hands, all-pass termination, winner-only payment and private card
+inspection. Shared ordinary-auction quotes also serve the live engine without
+changing its funding, payment or reaction layers. Version 3 practice saves migrate
+every prior lesson by identity and validate exact bid history through replay.
+Focused engine comparisons and independent review are paired with final browser,
+source-bound checks, preservation and Git evidence in the private checkpoint.
+Broader teaching, rules and mode/publication gates remain unfinished.
+
 ## 20 September 2026 — Configure existing lobby AI seats
 
 [Lobby AI configuration](LOBBY_AI_CONFIGURATION.md) connects host-only difficulty,

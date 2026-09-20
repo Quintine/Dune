@@ -4,9 +4,9 @@
 from the lobby and rules reference. It adds the previously missing guided
 introduction alongside the reference's existing standalone practice wheel.
 
-Seven navigable lessons cover public/private table information and the phase
-sequence, shipment budgets, movement, sealed battle plans, Traitor calls, spice
-collection and joining or recovering a saved table. Five independent Basic practice positions let a player
+Eight navigable lessons cover public/private table information and the phase
+sequence, bidding, shipment budgets, movement, sealed battle plans, Traitor calls, spice
+collection and joining or recovering a saved table. Six independent Basic practice positions let a player
 change inputs, commit, inspect results and retry. These positions are deliberately
 separate examples rather than a complete game or an authoritative live room.
 
@@ -23,6 +23,23 @@ production combat quote. The private Traitor has the existing full inspector.
 These fixed teaching scenarios are not AI policy or hidden-information tests
 of the four live difficulty levels.
 
+The bidding example gives Fremen six spice and a three-card hand, with a full-hand
+variant and two deterministic opponent scripts. Players raise, pass, re-enter on
+a later turn or end an unbid auction. The winner pays once; losing bids spend
+nothing, and only the player's own purchase exposes a card face/inspector.
+Ordinary bid validation and next-seat/all-pass decisions use
+`quoteNormalAuctionBid` and `quoteNormalAuctionNext`, extracted from the existing
+live engine. The engine retains ally funding, Karama, payment, card custody and
+reaction handling. No strategic bot policy changes. Scripted lessons omit those
+special interactions and are checked against actual `applyAction` outcomes.
+
+Source authority is the [GF9 base rulebook, Bidding](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
+and [November 2020 FAQ, p.2](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2).
+The publisher-indexed FAQ text was freshly retrieved on 20 September; it confirms
+that a prior passer can bid again. Direct PDF retrieval returned 403, so no new
+binary/visual source inspection is claimed. Links remain developer provenance;
+the player lesson links only to internal rules.
+
 The movement position starts with five ordinary forces in Red Chasm. It compares
 range one with range three from a separate Arrakeen occupant, exact sectors,
 storm exclusion and a stronghold already occupied by two other factions. Accepted
@@ -34,10 +51,13 @@ actual authoritative `applyAction` transitions; no live movement rule changed.
 The existing wheel, keyboard controls and card inspectors remain available.
 Lesson changes focus the heading; responsive columns stack on small screens.
 Browser storage contains only a versioned, validated set of lesson choices under
-`dune-introduction-v1`. Version 2 payloads explicitly migrate each of the five old
-version 1 lesson indices to the same lesson after insertion, preserving every
-prior choice and committed outcome. New movement and Traitor fields start at
-their defaults; hot updates remount the lesson state to apply this migration.
+`dune-introduction-v1`. Version 3 payloads explicitly migrate all five version 1
+and seven version 2 lesson positions to the same lesson after insertion,
+preserving prior choices and committed outcomes. New bidding fields start at
+their defaults; version 1 also receives movement/Traitor defaults. Hot updates
+remount the lesson state to apply this migration. Only the player's bid/pass
+history is saved; deterministic replay validates the complete auction and rejects
+underbids, overspending, full-hand actions and actions after the auction ends.
 Future lesson insertions must update the schema and mapping again. The save
 includes movement commitments and the before-reveal, revealed and resolved
 Traitor stages. Unknown versions,
@@ -59,7 +79,15 @@ and new lobby link stayed within the page bounds. Screenshot capture timed out,
 so visual screenshot acceptance remains open; DOM bounds are narrower evidence.
 Final source-bound reports and Git delivery record required check/build results.
 
-This does not replace a full interactive curriculum. Bidding, alliances, broader movement/arrival powers, faction lessons, Advanced
+`tests/introduction-bidding.test.ts` compares offered openings and re-entry with
+actual engine payment and physical card custody, checks all-pass/full-hand paths,
+all seven version 2 lesson migrations and exact saved bidding continuation.
+`tests/normal-auction.test.ts` exercises shared turn order, eligibility, pass
+re-entry, finite termination and integer/funding limits. Final source-bound
+browser/check/build and preservation evidence for bidding belongs to its private
+checkpoint and Git message.
+
+This does not replace a full interactive curriculum. Alliances, broader movement/arrival powers, faction lessons, Advanced
 support and expansion lessons remain future work. The expanded lessons retain
 Partial/Prototyped coverage. Final browser/check/build, preservation and Git
 evidence for this follow-up belong to its source-bound private checkpoint. No rules mode, expansion or publication gate is opened.

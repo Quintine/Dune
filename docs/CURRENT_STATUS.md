@@ -6,22 +6,22 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `b21b2bc`, [one-use AI permission](SEAT_AI_PERMISSION.md).
-Types, lint, **4,906 offline tests**, production build and **45 HTTP tests** passed.
-All 1,174 baseline rooms and 2,456 seats stayed unchanged; the new preservation
-baseline contains 1,262 rooms and 2,644 seats. No restart was needed.
-The preceding `e13ad45` connects [movement and Traitor practice](INTERACTIVE_INTRODUCTION.md).
+Latest delivered checkpoint: `b9718ac`, [lobby AI configuration](LOBBY_AI_CONFIGURATION.md).
+Types, lint, **4,916 offline tests**, production build and **46 HTTP tests** passed.
+All 1,262 baseline rooms and 2,644 seats stayed unchanged; the new preservation
+baseline contains 1,337 rooms and 2,805 seats. No restart was needed.
+The preceding `b21b2bc` connects [one-use AI permission](SEAT_AI_PERMISSION.md).
 The `8f7a62c` policy checkpoint removed the
 usage cutoff and deferred AI refinement until feature completion, with three
 adjacent 75% win-rate targets. Earlier evidence remains in the
 [implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: [lobby AI configuration](LOBBY_AI_CONFIGURATION.md) connects
-host controls for an existing AI seat's difficulty, faction and player circle,
-preserving identity and resetting human readiness. It uses the existing profiles
-without strategic refinement. Final independent review, verification and delivery
-belong to the source-bound private report and Git message. Broader disconnected-seat
-acceptance remains unfinished.
+Current work: [interactive bidding](INTERACTIVE_INTRODUCTION.md) connects the
+eighth lesson to shared ordinary-auction calculations, private purchase inspection
+and versioned saved practice. No AI strategy is changed. Independent review and
+final browser/check/build/preservation evidence belong to the source-bound private
+report and Git message. Alliances, faction/Advanced/expansion teaching and broader
+disconnected-seat acceptance remain unfinished.
 
 A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
 still cross recorded pending rulings. Continue independent features rather than

@@ -214,6 +214,10 @@ import {
   type AuctionContinuationQuote,
 } from './auction-continuation-quote';
 import {
+  quoteNormalAuctionBid,
+  quoteNormalAuctionNext,
+} from './normal-auction';
+import {
   quoteNormalAuctionPeek,
   quoteIxTechnologyCancellation,
   IxTechnologyCancellationError,
@@ -7766,24 +7770,27 @@ function auctionNext(g: Game) {
     const p = getPlayer(g, id);
     return p.hand.length < handLimit(p);
   });
-  const others = eligible.filter((id) => id !== a.bidder);
-  if (others.every((id) => a.passed.includes(id))) {
-    if (!a.bidder) {
+  const next = quoteNormalAuctionNext({
+    order: g.order,
+    eligible,
+    active: a.active,
+    bid: a.bid,
+    bidder: a.bidder,
+    passed: a.passed,
+  });
+  if (next.kind !== 'bid') {
+    if (next.kind === 'unbid') {
       g.deck = [...a.cards.slice(a.index), ...g.deck];
       g.auction = null;
       finishNormalBidding(g);
       return;
     }
-    g.decision = { kind: 'auctionPayment', player: a.bidder };
-    g.active = a.bidder;
-    recoverAuctionPayment(g, getPlayer(g, a.bidder));
+    g.decision = { kind: 'auctionPayment', player: next.player };
+    g.active = next.player;
+    recoverAuctionPayment(g, getPlayer(g, next.player));
     return;
   }
-  let i = g.order.indexOf(a.active);
-  do {
-    i = (i + 1) % g.order.length;
-  } while (!eligible.includes(g.order[i]) || g.order[i] === a.bidder);
-  a.active = g.order[i];
+  a.active = next.player;
   g.active = a.active;
 }
 function settleAuction(g: Game, free = false, automatic = false) {
@@ -22920,14 +22927,15 @@ function applyActionInner(
     );
     const a = g.auction;
     if (t === 'bid') {
-      a.bid = integer(
-        action.amount,
-        a.bid + 1,
-        karamaCard(g, p)
+      const quotedBid = quoteNormalAuctionBid({
+        currentBid: a.bid,
+        amount: action.amount,
+        maximum: karamaCard(g, p)
           ? Number.MAX_SAFE_INTEGER
           : p.spice + (aidFor(g, p)?.amount ?? 0),
-        'Bid',
-      );
+      });
+      if (!quotedBid.ok) throw new RuleError(quotedBid.reason);
+      a.bid = quotedBid.amount;
       a.allyPayment =
         a.bid <= p.spice + (aidFor(g, p)?.amount ?? 0)
           ? contribution(g, p, a.bid, action.allyPayment)

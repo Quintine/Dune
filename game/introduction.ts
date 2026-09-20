@@ -3,11 +3,13 @@ import { reserveShipmentCost } from './shipment-price';
 import { quoteBattleResolution, type ResolutionCombatant } from './battle-resolution-quote';
 import { quoteSpiceCollection } from './board-resolution-quote';
 import { INTRODUCTION_MOVE_DESTINATIONS, introductionMovement, type IntroductionMovementChoice } from './introduction-movement';
+import { introductionBidding, type IntroductionBiddingChoice } from './introduction-bidding';
 
 /** Fixed teaching examples, never a room, seat or multiplayer save. */
 export const INTRODUCTION_STORAGE_KEY = 'dune-introduction-v1';
 export const INTRODUCTION_STEPS = [
   { title: 'Your place at the table', topic: 'setup' },
+  { title: 'Bid for a hidden card', topic: 'bidding' },
   { title: 'Ship within your budget', topic: 'movement' },
   { title: 'Move across the board', topic: 'movement' },
   { title: 'Seal a battle plan', topic: 'battle' },
@@ -15,8 +17,8 @@ export const INTRODUCTION_STEPS = [
   { title: 'Collect the spice', topic: 'collection' },
   { title: 'Join a table', topic: 'privacy' },
 ] as const;
-export type IntroductionState = IntroductionMovementChoice & {
-  version: 2;
+export type IntroductionState = IntroductionMovementChoice & IntroductionBiddingChoice & {
+  version: 3;
   step: number;
   shipment: number;
   destination: 'stronghold' | 'sand';
@@ -33,10 +35,11 @@ export type IntroductionState = IntroductionMovementChoice & {
   opponentTraitor: boolean;
 };
 export function newIntroduction(): IntroductionState {
-  return { version: 2, step: 0, shipment: 4, destination: 'sand', shipped: false,
+  return { version: 3, step: 0, shipment: 4, destination: 'sand', shipped: false,
     dial: 2, defense: 'shield', revealed: false, collectors: 3, city: false, collected: false,
     moveDestination: 'pasty_mesa:5', moveForces: 3, moveCity: false, moveStorm: false,
-    moved: false, traitorStage: 'plans', traitorCall: false, opponentTraitor: false };
+    moved: false, traitorStage: 'plans', traitorCall: false, opponentTraitor: false,
+    auctionScenario: 'contest', auctionHandFull: false, auctionBid: 1, auctionActions: [] };
 }
 const integer = (value: unknown, min: number, max: number): value is number =>
   Number.isSafeInteger(value) && (value as number) >= min && (value as number) <= max;
@@ -44,13 +47,17 @@ export function restoreIntroduction(raw: string | null): IntroductionState | nul
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
-    if (!parsed || (parsed.version !== 1 && parsed.version !== 2)) return null;
+    if (!parsed || ![1, 2, 3].includes(parsed.version)) return null;
     // Keep the existing browser key and translate old positions, not just indices.
     if (parsed.version === 1 && !integer(parsed.step, 0, 4)) return null;
-    const s = (parsed.version === 1 ? { ...newIntroduction(), ...parsed, version: 2,
-      step: [0, 1, 3, 5, 6][parsed.step],
+    if (parsed.version === 2 && !integer(parsed.step, 0, 6)) return null;
+    const auctionDefaults = { auctionScenario: 'contest', auctionHandFull: false, auctionBid: 1, auctionActions: [] };
+    const s = (parsed.version === 1 ? { ...newIntroduction(), ...parsed, version: 3,
+      step: [0, 2, 4, 6, 7][parsed.step],
       moveDestination: 'pasty_mesa:5', moveForces: 3, moveCity: false, moveStorm: false,
-      moved: false, traitorStage: 'plans', traitorCall: false, opponentTraitor: false } : parsed) as IntroductionState;
+      moved: false, traitorStage: 'plans', traitorCall: false, opponentTraitor: false, ...auctionDefaults }
+      : parsed.version === 2 ? { ...parsed, version: 3, step: [0, 2, 3, 4, 5, 6, 7][parsed.step], ...auctionDefaults }
+      : parsed) as IntroductionState;
     if (!integer(s.step, 0, INTRODUCTION_STEPS.length - 1) ||
       !integer(s.shipment, 1, 6) || !['stronghold', 'sand'].includes(s.destination) ||
       !integer(s.dial, 0, 6) || !['shield', 'snooper'].includes(s.defense) ||
@@ -62,13 +69,16 @@ export function restoreIntroduction(raw: string | null): IntroductionState | nul
       !['plans', 'revealed', 'resolved'].includes(s.traitorStage) ||
       (s.traitorStage !== 'resolved' && s.traitorCall) ||
       (s.moved && !introductionMovement(s).allowed)) return null;
+    introductionBidding(s);
     // Whitelist fields; never retain credentials or arbitrary imported properties.
-    return { version: 2, step: s.step, shipment: s.shipment, destination: s.destination,
+    return { version: 3, step: s.step, shipment: s.shipment, destination: s.destination,
       shipped: s.shipped, dial: s.dial, defense: s.defense, revealed: s.revealed,
       collectors: s.collectors, city: s.city, collected: s.collected,
       moveDestination: s.moveDestination, moveForces: s.moveForces, moveCity: s.moveCity,
       moveStorm: s.moveStorm, moved: s.moved, traitorStage: s.traitorStage,
-      traitorCall: s.traitorCall, opponentTraitor: s.opponentTraitor };
+      traitorCall: s.traitorCall, opponentTraitor: s.opponentTraitor,
+      auctionScenario: s.auctionScenario, auctionHandFull: s.auctionHandFull,
+      auctionBid: s.auctionBid, auctionActions: [...s.auctionActions] };
   } catch { return null; }
 }
 export function introductionShipment(s: Pick<IntroductionState, 'shipment' | 'destination'>) {
