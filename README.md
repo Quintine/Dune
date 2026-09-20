@@ -34,6 +34,13 @@ Use **Protect your saved seat** to generate and privately save a recovery kit be
 
 If recovery receives no confirmed response, keep the page open and retry the same recovery request. The server recognizes the receipt and does not rotate twice. Replacing the recovery key invalidates the older kit. Host-initiated takeover remains unfinished. An owning human seat can enable or disable its own AI control during a started game.
 
+For a planned absence, **Let a player start AI for your seat** grants one named
+human player permission to start your chosen difficulty once within 24 hours.
+They can activate it while you are online, but receive no private seat access.
+You can revoke unused permission or take back control. Recovering or transferring
+either seat invalidates the grant. See [AI permission](docs/SEAT_AI_PERMISSION.md)
+for saved retries and limits.
+
 New create/join requests save a private, tab-scoped retry record before sending. If the response is uncertain, keep the tab open and use the explicit retry; refresh preserves the same request. Confirmed success removes that record. Clearly rejected first requests return to the form for correction. A retry can recover the original room and seat without creating duplicates, but closing the tab or clearing its data can lose the proof. This record is separate from the long-term seat recovery kit.
 
 An uncertain saved-kit recovery keeps its exact retry details in memory and prevents conflicting navigation. If that recovery has become obsolete, deliberate abandonment releases the controls after explaining that it cannot undo a completed recovery. Keep a valid saved kit before discarding retry details.

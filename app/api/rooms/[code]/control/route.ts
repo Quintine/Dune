@@ -6,8 +6,15 @@ import {
   recoverSeat,
   SeatControlError,
   setRecoveryKey,
+  setSeatAiDelegate,
+  revokeSeatAiDelegate,
+  useSeatAiDelegate as activateSeatAiDelegate,
+  needsAutomaticRoomRecovery,
 } from '@/db/rooms';
 import { RuleError } from '@/game/engine';
+import { validSeatAiDelegateRequest } from '@/lib/seat-ai-delegation';
+import { resumeRoom } from '@/db/room-continuation';
+import { waitUntil } from 'cloudflare:workers';
 const noStore = { 'Cache-Control': 'no-store' };
 export async function POST(req: Request) {
   try {
@@ -47,6 +54,40 @@ export async function POST(req: Request) {
         .map((part) => part.trim())
         .find((part) => part.startsWith(`dune_${code}=`))
         ?.split('=')[1] ?? '';
+    if (
+      input.type === 'setSeatAiDelegate' ||
+      input.type === 'revokeSeatAiDelegate' ||
+      input.type === 'useSeatAiDelegate'
+    ) {
+      if (!validSeatAiDelegateRequest(input))
+        throw new SeatControlError(
+          'The AI permission request is invalid.',
+          'INVALID_CONTROL_REQUEST',
+          400,
+        );
+      const auth = await authenticate(code, token);
+      const result =
+        input.type === 'setSeatAiDelegate'
+          ? await setSeatAiDelegate(code, auth, input.version, {
+              grantId: input.grantId,
+              delegateId: input.delegateId,
+              difficulty: input.difficulty,
+            })
+          : input.type === 'revokeSeatAiDelegate'
+            ? await revokeSeatAiDelegate(
+                code,
+                auth,
+                input.version,
+                input.grantId,
+              )
+            : await activateSeatAiDelegate(code, auth, input.version, {
+                ownerId: input.ownerId,
+                grantId: input.grantId,
+              });
+      if (result.view.botsPending || needsAutomaticRoomRecovery(result.view))
+        waitUntil(resumeRoom(code));
+      return Response.json(result, { headers: noStore });
+    }
     if (
       input.type === 'setRecoveryKey' ||
       input.type === 'createSeatHandover' ||

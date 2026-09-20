@@ -1,5 +1,20 @@
 # Dune implementation status
 
+## 20 September 2026 — One-use named-player AI permission
+
+The [AI permission prototype](SEAT_AI_PERMISSION.md) connects optional owner
+consent to a named human and fixed difficulty for one activation within 24 hours.
+It retains ownership and private information, uses both exact session fences,
+atomic versioned activation/consumption, owner takeback invalidation and saved
+exact retries. Additive migration 0006 preserves existing rooms and seats.
+Independent review, focused SQLite/client/HTTP checks, browser acceptance and
+final source-bound check/build/HTTP/preservation evidence belong to the private
+checkpoint and Git message. No AI strategy or mode/publication gate changes.
+
+The [Sites platform audit](AUTOPILOT.md#platform-audit-20-september-2026) found no
+supported durable trigger or alarm binding. Unattended resumption remains a
+platform blocker; no inert scheduler was added or claimed complete.
+
 ## 20 September 2026 — Movement and Traitor introduction exercises
 
 The [introduction](INTERACTIVE_INTRODUCTION.md) now connects seven lessons and

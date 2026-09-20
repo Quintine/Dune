@@ -7,6 +7,7 @@ import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 import * as engine from '../game/engine';
 import * as bots from '../game/bots';
+import * as seatAiDelegation from '../lib/seat-ai-delegation';
 import { baseDeck } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
 import {
@@ -87,6 +88,7 @@ function unitStore(runBots = bots.runBots) {
           if (name === 'cloudflare:workers') return { env: { DB: database } };
           if (name === '@/game/engine') return engine;
           if (name === '@/game/bots') return { ...bots, runBots };
+          if (name === '@/lib/seat-ai-delegation') return seatAiDelegation;
           throw new Error('Unexpected module ' + name);
         },
       },

@@ -18,7 +18,31 @@ An accepted API action processes a bounded AI batch. If more work is pending, th
 
 The current continuation has a sixteen-batch budget. It is **best effort, not a durable scheduler**. Cloudflare permits work after response/disconnect for a bounded period; runtime interruption or exhaustion can leave the persisted `botsPending` flag for a later explicit continuation. The existing browser reconnect/resume flow can resume it. No automatic platform alarm resumes a room after an unattended server restart. That remaining reliability requirement must be implemented and verified before claiming fully unattended operation. [Cloudflare duration limits](https://developers.cloudflare.com/workers/platform/limits/#duration), [module waitUntil export](https://blog.cloudflare.com/nodejs-workers-2025/).
 
-GET remains a private read and does not advance a game. The all-controlled HTTP acceptance case polls only GET after the final delegation request, proving the observed completion came from the request's server continuation.
+GET returns the caller's private view and can schedule pending automatic/AI work
+through the same bounded continuation used by POST. Polling or reopening can
+therefore wake persisted work. It does not establish unattended recovery after
+all requests stop.
+
+### Platform audit, 20 September 2026
+
+The current Sites integration exposes no supported Cron Trigger or Durable
+Object provisioning contract. Vinext can compile a custom Worker entry with a
+`scheduled` handler, but that export does nothing without an installed trigger.
+The generated local Wrangler configuration is not a Sites deployment contract.
+No inert handler or pretend scheduler has been added.
+
+Cloudflare Cron requires a separately configured trigger and has minute-level
+scheduling. It could enforce a minimum interval, but cannot provide regular
+1.5-second wakeups. Durable Object alarms provide finer scheduling, but this
+project has no supported binding/provisioning path. D1 due metadata alone cannot
+wake a Worker. This milestone is blocked on an available durable scheduler;
+independent multiplayer work continues. See [Cron configuration](https://developers.cloudflare.com/workers/configuration/cron-triggers/)
+and [Durable Object alarms](https://developers.cloudflare.com/durable-objects/api/alarms/).
+
+The optional [named-player permission](SEAT_AI_PERMISSION.md) now connects a
+one-use, fixed-difficulty activation without transferring the owner's seat or
+private information. It uses the same best-effort continuation and does not
+remove the scheduling limitation.
 
 ## Coverage ledger
 
@@ -30,7 +54,7 @@ GET remains a private read and does not advance a game. The all-controlled HTTP 
 | Background batches cannot overwrite takeback      | Current-state read and version-fenced update per batch                     | Normal reconnect/resume controls                                | Only persisted bot/autopilot seats run        | Five SQLite `bot-continuation.test.ts` cases, including real authenticated takeover race |
 | Complete an all-controlled game                   | POST schedules background continuation                                     | Final outcome remains inspectable                               | Three original human credentials preserved    | HTTP final opt-in returned playing, later GET finished; no subsequent gameplay POST      |
 | Responsive and refresh flow                       | Saved mode read after refresh                                              | Mobile 44px takeback, separate opt-in, keyboard-native controls | Inspection remains readable during delegation | Browser room2SG3ZS3E; details in `VISUAL_PLAYTEST.md`                                    |
-| Durable unattended restart scheduling             | Missing                                                                    | Reopen/resume available                                         | No automatic host takeover                    | Not certified; next reliability work                                                     |
+| Durable unattended restart scheduling             | Blocked on supported platform trigger/binding                              | Reopen/resume available                                         | No automatic host takeover                    | Current Sites capability audit; no unattended certification                               |
 
 ## Validation checkpoint
 

@@ -6,26 +6,29 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered gameplay checkpoint: `54c8030`, [Sandmaster worm rides](SANDMASTER_WORM.md).
-Types, lint, **4,894 offline tests**, production build and **43 HTTP tests** passed.
-Optional native Fremen destination collection connects multi-sector forces,
-controls, minimal legal AI and saved Bene Gesserit arrival continuation. All 1,140
-baseline rooms and 2,385 seats stayed unchanged; isolated checks added 34 rooms
-and 71 seats. No restart was needed. The `8f7a62c` policy checkpoint removed the
+Latest delivered checkpoint: `e13ad45`, [movement and Traitor practice](INTERACTIVE_INTRODUCTION.md).
+Types, lint, **4,899 offline tests** and production build passed. Seven lessons
+and five exercises connect shared rules and migrated browser-local saves. All
+1,174 baseline rooms and 2,456 seats stayed unchanged; no restart was needed.
+The preceding `54c8030` connects [Sandmaster worm rides](SANDMASTER_WORM.md).
+The `8f7a62c` policy checkpoint removed the
 usage cutoff and deferred AI refinement until feature completion, with three
 adjacent 75% win-rate targets. Earlier evidence remains in the
 [implementation history](IMPLEMENTATION_STATUS.md).
 
-Current work: the [interactive introduction](INTERACTIVE_INTRODUCTION.md) adds
-movement and Traitor practice through shared rules, legal controls and migrated
-browser-local saves. Broader curriculum remains unfinished. Final verification
-and delivery belong to the source-bound private report and Git message.
+Current work: [one-use AI permission](SEAT_AI_PERMISSION.md) connects optional
+named-player activation at the owner's chosen difficulty, retained ownership,
+both session fences and saved exact retries. Final independent review,
+verification and delivery belong to the source-bound private report and Git
+message. Broader disconnected-seat acceptance remains unfinished.
 
 A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
 still cross recorded pending rulings. Continue independent features rather than
-inventing answers. Durable unattended bot resumption is the next clear backend
-capability: it needs a platform scheduler and saved due-work metadata; current
-request/reconnect continuation does not establish it.
+inventing answers. The [platform audit](AUTOPILOT.md#platform-audit-20-september-2026)
+found no supported Sites scheduler or Durable Object provisioning contract.
+Durable unattended bot resumption remains blocked on that capability; current
+request/reconnect continuation does not establish it. Continue independent
+player-facing features and integration while preserving pending rules questions.
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
 battle-card slot, private category inspections, exact undialed normal/elite
@@ -87,7 +90,7 @@ These links define bounded working behavior, not complete module certification.
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected; CHOAM inspection and Emperor purchase remain pending. A source audit or helper alone is not a completed effect. |
 | Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
 | Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) connects the bounded battle return in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
-| Multiplayer | Saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
+| Multiplayer | Saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), [named-player AI permission](SEAT_AI_PERMISSION.md) and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
 
 ## Remaining readiness
 

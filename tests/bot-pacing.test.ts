@@ -7,7 +7,9 @@ import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 import * as engine from '../game/engine';
 import * as bots from '../game/bots';
+import * as seatAiDelegation from '../lib/seat-ai-delegation';
 import type * as Rooms from '../db/rooms';
+import { loadRoomContinuation } from './fixture-room-continuation';
 
 /** Execute the production room module and SQL, with a hook immediately before its CAS. */
 function unitStore(runBots = bots.runBots) {
@@ -80,6 +82,7 @@ function unitStore(runBots = bots.runBots) {
         if (name === 'cloudflare:workers') return { env: { DB: database } };
         if (name === '@/game/engine') return engine;
         if (name === '@/game/bots') return { ...bots, runBots };
+        if (name === '@/lib/seat-ai-delegation') return seatAiDelegation;
         throw new Error('Unexpected module ' + name);
       },
     },
@@ -323,6 +326,11 @@ void test('authenticated GET schedules the persisted queue after reconnect while
   const f = await fixture();
   try {
     const pending: Promise<unknown>[] = [];
+    const continuation = loadRoomContinuation({
+      continueRoomAutomatic: async () => {},
+      continueRoomBots: (code: string) =>
+        f.rooms.continueRoomBots(code, 1, f.clock),
+    });
     const exports: { GET?: (req: Request) => Promise<Response> } = {};
     runInNewContext(
       ts.transpileModule(
@@ -349,6 +357,7 @@ void test('authenticated GET schedules the persisted queue after reconnect while
               continueRoomBots: (code: string) =>
                 f.rooms.continueRoomBots(code, 1, f.clock),
             };
+          if (name === '@/db/room-continuation') return continuation;
           if (name === '@/game/engine') return engine;
           if (name === 'cloudflare:workers')
             return {

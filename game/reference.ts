@@ -217,6 +217,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'ai-pacing',
       'table-sounds',
       'seat-handover',
+      'seat-ai-permission',
       'ecaz-modules',
       'discoveries',
       'homeworlds',
@@ -267,6 +268,29 @@ export const RULE_TOPICS: RuleTopic[] = [
       { area: 'AI', status: 'Implemented', detail: 'Existing projected human and AI updates share the same cosmetic cues without changing legal actions or pacing.' },
       { area: 'Documentation', status: 'Implemented', detail: 'This guide explains preferences, browser activation, background silence and unavailable audio.' },
       { area: 'Verification', status: 'Partial', detail: 'Focused cursor/audio checks and browser preference controls; physical output and broader browser acceptance remain open.', evidence: ['tests/table-sound.test.tsx'] },
+    ],
+  },
+  {
+    id: 'seat-ai-permission',
+    title: 'Let a player start AI for your seat',
+    category: 'Getting started',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Authorize one named human player to start your chosen AI once while keeping your seat and private information.',
+    steps: [
+      'After the game starts, open Let a player start AI for your seat below the table. Choose another human and a difficulty, then grant permission. It expires after 24 hours and can be used even while you are online.',
+      'The named player can start only the authorized difficulty. They do not receive your hand, seat credentials or recovery kit. Public history records who activated AI.',
+      'You can replace or revoke unused permission. Changing your own AI control or recovering or transferring either seat invalidates unused permission. Take back control stops future AI decisions, but completed choices remain.',
+      'An uncertain permission request stays in this tab for exact retry, including after refresh. Retrying cannot renew consent or activate AI twice. Discarding a retry record cannot cancel an operation that reached the server.',
+      'Host status and disconnection alone never grant permission. A lost unprepared seat and unattended server recovery remain outside this feature.',
+    ],
+    related: ['privacy', 'ai-players', 'ai-pacing', 'seat-handover', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Implemented', detail: 'One-use, fixed-profile permission with expiry, both credential fences, atomic activation and owner takeback invalidation.' },
+      { area: 'Player controls', status: 'Implemented', detail: 'Named owner consent/replacement/revocation and delegate activation; exact tab-scoped retry continuation.' },
+      { area: 'AI', status: 'Implemented', detail: 'Uses the existing legal private-view autopilot and saved 1.5-second pacing; no strategy changes.' },
+      { area: 'Documentation', status: 'Implemented', detail: 'Explains consent, expiry, retained ownership, private-information boundaries and uncertain replies.' },
+      { area: 'Verification', status: 'Partial', detail: 'Focused SQLite races, recovery, HTTP privacy and browser controls; broader network-failure acceptance remains open.', evidence: ['tests/seat-ai-delegation-client.test.ts', 'tests/seat-ai-delegation-recovery.test.ts', 'tests/seat-ai-delegation-http.test.ts'] },
     ],
   },
   {
@@ -1914,7 +1938,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'After the game starts, Let AI play for me lets you delegate your own seat to Easy, Medium, Hard or Brutal AI. It uses only your seat’s information and can complete setup, spend resources and commit plans. Your seat, saved choices and recovery kit remain yours. Take back control stops future AI decisions without undoing completed actions.',
       'The table displays which human seats are on autopilot. AI stops when another human must decide. Online progress is saved one AI action at a time; if processing is interrupted, reopen the table and use its reconnect or resume control when offered. Autopilot does not automatically start because a player disconnects.',
     ],
-    related: ['battle', 'alliance-funding', 'ai-pacing'],
+    related: ['battle', 'alliance-funding', 'ai-pacing', 'seat-ai-permission'],
   },
   ...PHASES.map(
     (title, phase): RuleTopic => ({

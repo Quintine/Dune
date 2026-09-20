@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import { baseDeck } from '../game/cards';
+import { createGame, newPlayer } from '../game/engine';
 import { unitStore } from './fixture-nexus-room-store';
 
 const UUID = {
@@ -301,16 +302,43 @@ void test('claim invalidates the issuer entry receipt that still controlled the 
 });
 
 void test('0005 backfills an active 0004 claim for exact replay after upgrade', async () => {
-  const f = await fixture(false, '0004_flippant_archangel.sql');
+  const f = unitStore(undefined, '0004_flippant_archangel.sql');
   try {
-    const body = claim(f.created.view.me);
-    const offered = await f.rooms.createSeatHandover(
-      f.code,
-      f.auth,
-      f.view.version,
-      offer(),
-      clock(1000),
+    const code = 'LEGACY05';
+    const playerId = UUID.rival;
+    const oldSessionHash = digest(secret('10'));
+    const handover = offer();
+    const body = claim(playerId);
+    const game = createGame(
+      code,
+      newPlayer(playerId, 'Original owner', 'atreides'),
+      false,
+      [],
     );
+    game.players[0].hand = [baseDeck()[0]];
+    game.players[0].traitors = ['emperor-0'];
+    f.sqlite
+      .prepare(
+        'INSERT INTO rooms(code,state,version,updated_at) VALUES(?,?,1,?)',
+      )
+      .run(code, JSON.stringify(game), 1000);
+    f.sqlite
+      .prepare(
+        'INSERT INTO seats(token_hash,room_code,player_id) VALUES(?,?,?)',
+      )
+      .run(oldSessionHash, code, playerId);
+    f.sqlite
+      .prepare(
+        'INSERT INTO seat_handover_offers(room_code,player_id,offer_hash,secret_hash,issuer_session_hash,expires_at,claim_operation_hash,session_hash,claimed_at) VALUES(?,?,?,?,?,?,NULL,NULL,NULL)',
+      )
+      .run(
+        code,
+        playerId,
+        digest(handover.offerId),
+        digest(handover.handoverSecret),
+        oldSessionHash,
+        301000,
+      );
     const operationHash = digest(body.operationId);
     const sessionHash = digest(body.newSessionToken);
     f.sqlite.exec('BEGIN');
@@ -319,22 +347,22 @@ void test('0005 backfills an active 0004 claim for exact replay after upgrade', 
         .prepare(
           'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ?',
         )
-        .run(2000, f.code, offered.view.version);
+        .run(2000, code, 1);
       f.sqlite
         .prepare(
           'UPDATE seat_handover_offers SET claim_operation_hash = ?, session_hash = ?, claimed_at = ? WHERE room_code = ? AND player_id = ?',
         )
-        .run(operationHash, sessionHash, 2000, f.code, f.created.view.me);
+        .run(operationHash, sessionHash, 2000, code, playerId);
       f.sqlite
         .prepare(
           'UPDATE seats SET revoked = 1 WHERE room_code = ? AND player_id = ? AND revoked = 0',
         )
-        .run(f.code, f.created.view.me);
+        .run(code, playerId);
       f.sqlite
         .prepare(
           'INSERT INTO seats(token_hash,room_code,player_id) VALUES (?,?,?)',
         )
-        .run(sessionHash, f.code, f.created.view.me);
+        .run(sessionHash, code, playerId);
       f.sqlite.exec('COMMIT');
     } catch (error) {
       f.sqlite.exec('ROLLBACK');
@@ -342,7 +370,7 @@ void test('0005 backfills an active 0004 claim for exact replay after upgrade', 
     }
     const stateBeforeUpgrade = f.sqlite
       .prepare('SELECT state FROM rooms WHERE code = ?')
-      .get(f.code)!.state;
+      .get(code)!.state;
     f.sqlite.exec(
       readFileSync(
         new URL('../drizzle/0005_salty_alice.sql', import.meta.url),
@@ -353,7 +381,7 @@ void test('0005 backfills an active 0004 claim for exact replay after upgrade', 
       .prepare(
         'SELECT operation_hash,session_hash,claim_fence FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ?',
       )
-      .get(f.code, f.created.view.me)!;
+      .get(code, playerId)!;
     assert.equal(receipt.operation_hash, operationHash);
     assert.equal(receipt.session_hash, sessionHash);
     assert.match(receipt.claim_fence as string, /^legacy:/);
@@ -361,17 +389,19 @@ void test('0005 backfills an active 0004 claim for exact replay after upgrade', 
       (receipt.claim_fence as string).includes(body.newSessionToken),
       false,
     );
-    const replay = await f.restart().claimSeatHandover(
-      f.code,
-      body,
-      clock(3000),
+    f.sqlite.exec(
+      readFileSync(
+        new URL('../drizzle/0006_thick_imperial_guard.sql', import.meta.url),
+        'utf8',
+      ),
     );
+    const replay = await f.restart().claimSeatHandover(code, body, clock(3000));
     assert.equal(replay.replayed, true);
     assert.equal(replay.token, body.newSessionToken);
-    assert.equal(replay.view.me, f.created.view.me);
+    assert.equal(replay.view.me, playerId);
     assert.equal(replay.view.players[0].hand![0].id, baseDeck()[0].id);
     assert.equal(
-      f.sqlite.prepare('SELECT state FROM rooms WHERE code = ?').get(f.code)!
+      f.sqlite.prepare('SELECT state FROM rooms WHERE code = ?').get(code)!
         .state,
       stateBeforeUpgrade,
     );

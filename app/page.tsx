@@ -7,6 +7,7 @@ import {
   SeatHandoverClaim,
 } from '@/components/seat-handover';
 import { HANDOVER_CLAIM_STORAGE_KEY } from '@/lib/seat-handover';
+import { SeatAiDelegation } from '@/components/seat-ai-delegation';
 import {
   SeatRecoverySetup,
   SeatRecoveryClaim,
@@ -80,6 +81,7 @@ export default function Home() {
   const [showEntryRecovery, setShowEntryRecovery] = useState(false);
   const [showHandover, setShowHandover] = useState(false);
   const [handoverPending, setHandoverPending] = useState(true);
+  const [aiPermissionPending, setAiPermissionPending] = useState(true);
   const [abandonAcknowledged, setAbandonAcknowledged] = useState(false);
   const f = faction(selected);
   const roomCode = game?.code;
@@ -447,6 +449,7 @@ export default function Home() {
   function exitTable() {
     if (
       handoverPending ||
+      aiPermissionPending ||
       mutationPending.current ||
       reconnectPending.current ||
       seatClaimUncertain.current
@@ -454,6 +457,7 @@ export default function Home() {
       return;
     activeRoom.current = null;
     setHandoverPending(true);
+    setAiPermissionPending(true);
     activeSeat.current = null;
     ++epoch.current;
     recovery.current = null;
@@ -590,6 +594,7 @@ export default function Home() {
       return;
     if (claim) {
       setHandoverPending(true);
+      setAiPermissionPending(true);
       activeRoom.current = view.code;
       activeSeat.current = view.me;
       ++epoch.current;
@@ -667,7 +672,7 @@ export default function Home() {
           send={send}
           busy={busy || needsReconcile}
           onExit={exitTable}
-          exitDisabled={handoverPending}
+          exitDisabled={handoverPending || aiPermissionPending}
         />
         <div className="table-shell">
           {(entryAttempt || entryProblem) && (
@@ -678,7 +683,12 @@ export default function Home() {
               </p>
               <Button
                 variant="outline"
-                disabled={busy || checkingConnection || handoverPending}
+                disabled={
+                  busy ||
+                  checkingConnection ||
+                  handoverPending ||
+                  aiPermissionPending
+                }
                 onClick={exitTable}
               >
                 Review saved room request
@@ -698,6 +708,14 @@ export default function Home() {
             disabled={busy || needsReconcile || checkingConnection}
             onPending={controlPending}
             onUncertain={setHandoverPending}
+            onRestored={(view) => restoredSeat(view)}
+          />
+          <SeatAiDelegation
+            key={`ai-permission:${game.code}:${game.me}`}
+            game={game}
+            disabled={busy || needsReconcile || checkingConnection}
+            onPending={controlPending}
+            onUncertain={setAiPermissionPending}
             onRestored={(view) => restoredSeat(view)}
           />
         </div>

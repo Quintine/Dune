@@ -9,9 +9,19 @@ import {
   RuleError,
   type Action,
   type Game,
+  type GameView,
 } from '@/game/engine';
 import type { FactionId } from '@/game/catalog';
+import type { Difficulty } from '@/game/bot-profiles';
 import { runBots } from '@/game/bots';
+import {
+  validSeatAiGrantId,
+  validSetSeatAiDelegateInput,
+  validUseSeatAiDelegateInput,
+  type SeatAiDelegationView,
+  type SetSeatAiDelegateInput,
+  type UseSeatAiDelegateInput,
+} from '@/lib/seat-ai-delegation';
 export const ONLINE_BOT_INTERVAL_MS = 1500;
 /** Internal trusted dependency; never accepted from HTTP inputs. */
 export type RoomsClock = {
@@ -362,39 +372,93 @@ export async function act(
   const next = applyAction(current, id, action);
   queueRoomBots(next, current, clock.now());
   next.version++;
-  const result = await db()
+  const now = clock.now();
+  const update = db()
     .prepare(
       'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
     )
     .bind(
       JSON.stringify(next),
-      clock.now(),
+      now,
       code,
       version,
       code,
       auth.playerId,
       auth.tokenHash,
-    )
-    .run();
-  if (result.meta.changes !== 1)
+    );
+  const results =
+    action.type === 'setAutopilot'
+      ? await db().batch([
+          update,
+          db()
+            .prepare(
+              'UPDATE seat_ai_delegations SET revoked_at = ? WHERE room_code = ? AND owner_id = ? AND owner_session_hash = ? AND used_at IS NULL AND revoked_at IS NULL AND changes() = 1',
+            )
+            .bind(now, code, auth.playerId, auth.tokenHash),
+        ])
+      : [await update.run()];
+  if (results[0].meta.changes !== 1)
     throw new RuleError(
       'Another action arrived first. Your view has refreshed; try again.',
     );
-  return viewGame(next, id);
+  return readSeatView(code, auth);
 }
 
 /** Check the credential and load its private state in one database statement. */
 export async function readSeatView(code: string, auth: SeatAuth) {
   const row = await db()
     .prepare(
-      'SELECT rooms.state, rooms.version FROM rooms JOIN seats ON seats.room_code = rooms.code WHERE rooms.code = ? AND seats.player_id = ? AND seats.token_hash = ? AND seats.revoked = 0',
+      `SELECT rooms.state, rooms.version,
+        CASE WHEN COUNT(delegations.grant_id) = 0 THEN NULL ELSE
+          json_group_array(json_object(
+            'grantId', delegations.grant_id,
+            'ownerId', delegations.owner_id,
+            'delegateId', delegations.delegate_id,
+            'difficulty', delegations.difficulty,
+            'expiresAt', delegations.expires_at,
+            'usedAt', delegations.used_at
+          )) END AS seat_ai_delegations
+       FROM rooms
+       JOIN seats AS viewer ON viewer.room_code = rooms.code
+       LEFT JOIN seat_ai_delegations AS delegations
+         ON delegations.room_code = rooms.code
+        AND (delegations.owner_id = viewer.player_id OR delegations.delegate_id = viewer.player_id)
+        AND delegations.revoked_at IS NULL
+        AND EXISTS (
+          SELECT 1 FROM seats AS owner_session
+          WHERE owner_session.room_code = delegations.room_code
+            AND owner_session.player_id = delegations.owner_id
+            AND owner_session.token_hash = delegations.owner_session_hash
+            AND owner_session.revoked = 0
+        )
+        AND EXISTS (
+          SELECT 1 FROM seats AS delegate_session
+          WHERE delegate_session.room_code = delegations.room_code
+            AND delegate_session.player_id = delegations.delegate_id
+            AND delegate_session.token_hash = delegations.delegate_session_hash
+            AND delegate_session.revoked = 0
+        )
+       WHERE rooms.code = ? AND viewer.player_id = ?
+         AND viewer.token_hash = ? AND viewer.revoked = 0
+       GROUP BY rooms.code, rooms.state, rooms.version`,
     )
     .bind(code, auth.playerId, auth.tokenHash)
-    .first<{ state: string; version: number }>();
+    .first<{
+      state: string;
+      version: number;
+      seat_ai_delegations: string | null;
+    }>();
   if (!row) throw new RuleError('Your seat could not be verified.');
   const g: Game = JSON.parse(row.state);
   g.version = row.version;
-  return viewGame(g, auth.playerId);
+  const view = viewGame(g, auth.playerId) as GameView;
+  if (row.seat_ai_delegations) {
+    const delegations = JSON.parse(
+      row.seat_ai_delegations,
+    ) as SeatAiDelegationView[];
+    if (delegations.length) view.seatAiDelegations = delegations;
+  }
+  return view;
 }
 
 /** Scheduling hint only; the engine remains the authority on whether a choice exists. */
@@ -412,7 +476,10 @@ export function needsAutomaticRoomRecovery(
     !!state.pendingTreacheryDiscard ||
     !!state.response ||
     !!state.richeseAuction ||
-    (!state.decision && !state.response && state.battle?.revealed === true && state.battle.territory.startsWith('homeworld:')) ||
+    (!state.decision &&
+      !state.response &&
+      state.battle?.revealed === true &&
+      state.battle.territory.startsWith('homeworld:')) ||
     state.decision?.kind === 'choamMarket' ||
     state.decision?.kind === 'choamAudit' ||
     state.decision?.kind === 'choamAuditPayment' ||
@@ -516,6 +583,425 @@ function controlVersion(value: unknown): asserts value is number {
       'INVALID_CONTROL_REQUEST',
       400,
     );
+}
+
+export const SEAT_AI_DELEGATION_TTL_MS = 24 * 60 * 60 * 1000;
+type ControlClock = Pick<RoomsClock, 'now'>;
+type SeatAiDelegationRow = Readonly<{
+  room_code: string;
+  owner_id: string;
+  grant_id: string;
+  delegate_id: string;
+  difficulty: string;
+  owner_session_hash: string;
+  delegate_session_hash: string;
+  expires_at: number;
+  used_at: number | null;
+  revoked_at: number | null;
+}>;
+const invalidDelegation = (message: string, code = 'INVALID_AI_DELEGATION') =>
+  new SeatControlError(
+    message,
+    code,
+    code === 'AI_DELEGATION_EXPIRED' ? 410 : 409,
+  );
+async function seatAiDelegation(grantId: string) {
+  return db()
+    .prepare(
+      'SELECT room_code,owner_id,grant_id,delegate_id,difficulty,owner_session_hash,delegate_session_hash,expires_at,used_at,revoked_at FROM seat_ai_delegations WHERE grant_id = ?',
+    )
+    .bind(grantId)
+    .first<SeatAiDelegationRow>();
+}
+async function delegationSessionsActive(row: SeatAiDelegationRow) {
+  return !!(await db()
+    .prepare(
+      `SELECT 1 AS present
+       FROM seats AS owner_session
+       JOIN seats AS delegate_session ON delegate_session.room_code = owner_session.room_code
+       WHERE owner_session.room_code = ?
+         AND owner_session.player_id = ? AND owner_session.token_hash = ? AND owner_session.revoked = 0
+         AND delegate_session.player_id = ? AND delegate_session.token_hash = ? AND delegate_session.revoked = 0`,
+    )
+    .bind(
+      row.room_code,
+      row.owner_id,
+      row.owner_session_hash,
+      row.delegate_id,
+      row.delegate_session_hash,
+    )
+    .first());
+}
+
+export async function setSeatAiDelegate(
+  code: string,
+  auth: SeatAuth,
+  version: unknown,
+  input: SetSeatAiDelegateInput,
+  clock: ControlClock = roomsClock,
+) {
+  controlVersion(version);
+  if (!validSetSeatAiDelegateInput(input))
+    throw invalidDelegation(
+      'Choose one human seat, an AI difficulty and a fresh delegation identifier.',
+    );
+  const existing = await seatAiDelegation(input.grantId);
+  if (existing) {
+    const same =
+      existing.room_code === code &&
+      existing.owner_id === auth.playerId &&
+      existing.delegate_id === input.delegateId &&
+      existing.difficulty === input.difficulty &&
+      existing.owner_session_hash === auth.tokenHash;
+    if (!same)
+      throw invalidDelegation(
+        'This delegation identifier is already bound to different consent.',
+        'AI_DELEGATION_CHANGED',
+      );
+    if (!(await delegationSessionsActive(existing)))
+      throw invalidDelegation(
+        'A seat credential changed after this delegation was created.',
+        'AI_DELEGATION_INVALIDATED',
+      );
+    return { view: await readSeatView(code, auth), replayed: true };
+  }
+  const current = await readRoom(code);
+  if (current.version !== version)
+    throw invalidDelegation(
+      'The table changed. Reconnect before saving this consent.',
+      'STALE_VERSION',
+    );
+  const owner = current.players.find((player) => player.id === auth.playerId);
+  const delegate = current.players.find(
+    (player) => player.id === input.delegateId,
+  );
+  if (
+    (current.status !== 'setup' && current.status !== 'playing') ||
+    !owner ||
+    owner.bot ||
+    owner.autopilot ||
+    !delegate ||
+    delegate.id === owner.id ||
+    delegate.bot
+  )
+    throw invalidDelegation(
+      'A started human seat without active AI may authorize one different human seat.',
+      'AI_DELEGATION_UNAVAILABLE',
+    );
+  const delegateSession = await db()
+    .prepare(
+      'SELECT MIN(token_hash) AS token_hash, COUNT(*) AS count FROM seats WHERE room_code = ? AND player_id = ? AND revoked = 0',
+    )
+    .bind(code, delegate.id)
+    .first<{ token_hash: string | null; count: number }>();
+  if (!delegateSession?.token_hash || delegateSession.count !== 1)
+    throw invalidDelegation(
+      'The delegate must have one current authenticated session.',
+      'AI_DELEGATION_UNAVAILABLE',
+    );
+  const now = clock.now();
+  const expiresAt = now + SEAT_AI_DELEGATION_TTL_MS;
+  const results = await db().batch([
+    db()
+      .prepare(
+        `UPDATE rooms SET version = version + 1, updated_at = ?
+         WHERE code = ? AND version = ?
+           AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
+           AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
+           AND NOT EXISTS (SELECT 1 FROM seat_ai_delegations WHERE grant_id = ?)`,
+      )
+      .bind(
+        now,
+        code,
+        version,
+        code,
+        owner.id,
+        auth.tokenHash,
+        code,
+        delegate.id,
+        delegateSession.token_hash,
+        input.grantId,
+      ),
+    db()
+      .prepare(
+        `INSERT INTO seat_ai_delegations(
+           room_code,owner_id,grant_id,delegate_id,difficulty,
+           owner_session_hash,delegate_session_hash,expires_at,used_at,revoked_at
+         )
+         SELECT ?,?,?,?,?,?,?,?,NULL,NULL WHERE changes() = 1`,
+      )
+      .bind(
+        code,
+        owner.id,
+        input.grantId,
+        delegate.id,
+        input.difficulty,
+        auth.tokenHash,
+        delegateSession.token_hash,
+        expiresAt,
+      ),
+    db()
+      .prepare(
+        `UPDATE seat_ai_delegations SET revoked_at = ?
+         WHERE room_code = ? AND owner_id = ? AND grant_id != ?
+           AND revoked_at IS NULL
+           AND changes() = 1
+           AND EXISTS (
+             SELECT 1 FROM seat_ai_delegations AS current_grant
+             WHERE current_grant.room_code = ? AND current_grant.owner_id = ?
+               AND current_grant.grant_id = ?
+           )`,
+      )
+      .bind(now, code, owner.id, input.grantId, code, owner.id, input.grantId),
+  ]);
+  if (results[0].meta.changes !== 1 || results[1].meta.changes !== 1) {
+    const won = await seatAiDelegation(input.grantId);
+    if (
+      won &&
+      won.room_code === code &&
+      won.owner_id === owner.id &&
+      won.delegate_id === delegate.id &&
+      won.difficulty === input.difficulty &&
+      won.owner_session_hash === auth.tokenHash &&
+      won.delegate_session_hash === delegateSession.token_hash &&
+      (await delegationSessionsActive(won))
+    )
+      return { view: await readSeatView(code, auth), replayed: true };
+    throw invalidDelegation(
+      'The table, owner or delegate changed. Reconnect before saving this consent.',
+      'STALE_VERSION',
+    );
+  }
+  return { view: await readSeatView(code, auth), replayed: false };
+}
+
+export async function revokeSeatAiDelegate(
+  code: string,
+  auth: SeatAuth,
+  version: unknown,
+  grantId: unknown,
+  clock: ControlClock = roomsClock,
+) {
+  controlVersion(version);
+  if (!validSeatAiGrantId(grantId))
+    throw invalidDelegation('Choose the current AI delegation identifier.');
+  const existing = await seatAiDelegation(grantId);
+  if (
+    existing?.room_code === code &&
+    existing.owner_id === auth.playerId &&
+    existing.owner_session_hash === auth.tokenHash &&
+    (existing.revoked_at !== null || existing.used_at !== null)
+  )
+    return { view: await readSeatView(code, auth), replayed: true };
+  if (
+    !existing ||
+    existing.room_code !== code ||
+    existing.owner_id !== auth.playerId
+  )
+    throw invalidDelegation(
+      'This AI delegation is no longer current for your seat.',
+      'AI_DELEGATION_CHANGED',
+    );
+  const current = await readRoom(code);
+  if (current.version !== version)
+    throw invalidDelegation(
+      'The table changed. Reconnect before revoking this consent.',
+      'STALE_VERSION',
+    );
+  const now = clock.now();
+  const results = await db().batch([
+    db()
+      .prepare(
+        `UPDATE rooms SET version = version + 1, updated_at = ?
+         WHERE code = ? AND version = ?
+           AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
+           AND EXISTS (
+             SELECT 1 FROM seat_ai_delegations AS consent
+             JOIN seats AS delegate_session
+               ON delegate_session.room_code = consent.room_code
+              AND delegate_session.player_id = consent.delegate_id
+              AND delegate_session.token_hash = consent.delegate_session_hash
+              AND delegate_session.revoked = 0
+             WHERE consent.room_code = ? AND consent.owner_id = ? AND consent.grant_id = ?
+               AND consent.owner_session_hash = ?
+               AND consent.used_at IS NULL AND consent.revoked_at IS NULL
+           )`,
+      )
+      .bind(
+        now,
+        code,
+        version,
+        code,
+        auth.playerId,
+        auth.tokenHash,
+        code,
+        auth.playerId,
+        grantId,
+        auth.tokenHash,
+      ),
+    db()
+      .prepare(
+        `UPDATE seat_ai_delegations SET revoked_at = ?
+         WHERE room_code = ? AND owner_id = ? AND grant_id = ?
+           AND owner_session_hash = ? AND used_at IS NULL AND revoked_at IS NULL
+           AND changes() = 1`,
+      )
+      .bind(now, code, auth.playerId, grantId, auth.tokenHash),
+  ]);
+  if (results[0].meta.changes !== 1 || results[1].meta.changes !== 1)
+    throw invalidDelegation(
+      'The table, owner, delegate or consent changed. Reconnect before revoking it.',
+      'STALE_VERSION',
+    );
+  return { view: await readSeatView(code, auth), replayed: false };
+}
+
+export async function useSeatAiDelegate(
+  code: string,
+  auth: SeatAuth,
+  version: unknown,
+  input: UseSeatAiDelegateInput,
+  clock: RoomsClock = roomsClock,
+): Promise<{ view: GameView; replayed?: boolean }> {
+  controlVersion(version);
+  if (!validUseSeatAiDelegateInput(input))
+    throw invalidDelegation('Choose the current owner and AI delegation.');
+  const consent = await seatAiDelegation(input.grantId);
+  if (
+    !consent ||
+    consent.room_code !== code ||
+    consent.owner_id !== input.ownerId ||
+    consent.delegate_id !== auth.playerId ||
+    consent.delegate_session_hash !== auth.tokenHash
+  )
+    throw invalidDelegation(
+      'This AI delegation is not available to this seat.',
+      'AI_DELEGATION_CHANGED',
+    );
+  if (!(await delegationSessionsActive(consent)))
+    throw invalidDelegation(
+      'A seat credential changed after this delegation was created.',
+      'AI_DELEGATION_INVALIDATED',
+    );
+  if (consent.used_at !== null)
+    return { view: await readSeatView(code, auth), replayed: true };
+  if (consent.revoked_at !== null)
+    throw invalidDelegation(
+      'This AI delegation was revoked or replaced.',
+      'AI_DELEGATION_CHANGED',
+    );
+  const now = clock.now();
+  if (consent.expires_at <= now)
+    throw invalidDelegation(
+      'This AI delegation has expired.',
+      'AI_DELEGATION_EXPIRED',
+    );
+  const current = await readRoom(code);
+  if (current.version !== version)
+    throw invalidDelegation(
+      'The table changed. Reconnect before activating this consent.',
+      'STALE_VERSION',
+    );
+  const owner = current.players.find(
+    (player) => player.id === consent.owner_id,
+  );
+  const delegate = current.players.find(
+    (player) => player.id === consent.delegate_id,
+  );
+  if (
+    (current.status !== 'setup' && current.status !== 'playing') ||
+    !owner ||
+    owner.bot ||
+    owner.autopilot ||
+    !delegate ||
+    delegate.bot
+  )
+    throw invalidDelegation(
+      'The owner is no longer available for this delegated AI activation.',
+      'AI_DELEGATION_UNAVAILABLE',
+    );
+  const next = applyAction(current, owner.id, {
+    type: 'setAutopilot',
+    difficulty: consent.difficulty as Difficulty,
+  });
+  const entry = next.log.at(-1);
+  if (entry)
+    entry.text = `${delegate.name} activated ${consent.difficulty} AI for ${owner.name} using their one-use delegation.`;
+  queueRoomBots(next, current, now);
+  next.version = current.version + 1;
+  const results = await db().batch([
+    db()
+      .prepare(
+        `UPDATE rooms SET state = ?, version = version + 1, updated_at = ?
+         WHERE code = ? AND version = ?
+           AND EXISTS (
+             SELECT 1 FROM seat_ai_delegations AS consent
+             JOIN seats AS owner_session
+               ON owner_session.room_code = consent.room_code
+              AND owner_session.player_id = consent.owner_id
+              AND owner_session.token_hash = consent.owner_session_hash
+              AND owner_session.revoked = 0
+             JOIN seats AS delegate_session
+               ON delegate_session.room_code = consent.room_code
+              AND delegate_session.player_id = consent.delegate_id
+              AND delegate_session.token_hash = consent.delegate_session_hash
+              AND delegate_session.revoked = 0
+             WHERE consent.room_code = ? AND consent.owner_id = ?
+               AND consent.delegate_id = ? AND consent.grant_id = ?
+               AND consent.owner_session_hash = ? AND consent.delegate_session_hash = ?
+               AND consent.expires_at > ? AND consent.used_at IS NULL
+               AND consent.revoked_at IS NULL
+           )`,
+      )
+      .bind(
+        JSON.stringify(next),
+        now,
+        code,
+        version,
+        code,
+        consent.owner_id,
+        consent.delegate_id,
+        consent.grant_id,
+        consent.owner_session_hash,
+        consent.delegate_session_hash,
+        now,
+      ),
+    db()
+      .prepare(
+        `UPDATE seat_ai_delegations SET used_at = ?
+         WHERE room_code = ? AND owner_id = ? AND delegate_id = ? AND grant_id = ?
+           AND owner_session_hash = ? AND delegate_session_hash = ?
+           AND expires_at > ? AND used_at IS NULL AND revoked_at IS NULL
+           AND changes() = 1`,
+      )
+      .bind(
+        now,
+        code,
+        consent.owner_id,
+        consent.delegate_id,
+        consent.grant_id,
+        consent.owner_session_hash,
+        consent.delegate_session_hash,
+        now,
+      ),
+  ]);
+  if (results[0].meta.changes !== 1 || results[1].meta.changes !== 1) {
+    const won = await seatAiDelegation(input.grantId);
+    if (
+      won?.used_at !== null &&
+      won?.room_code === code &&
+      won?.owner_id === input.ownerId &&
+      won?.delegate_id === auth.playerId &&
+      won?.delegate_session_hash === auth.tokenHash &&
+      (await delegationSessionsActive(won))
+    )
+      return { view: await readSeatView(code, auth), replayed: true };
+    throw invalidDelegation(
+      'The table, owner, delegate or consent changed. Retry the exact activation after reconnecting.',
+      'STALE_VERSION',
+    );
+  }
+  return { view: await readSeatView(code, auth), replayed: false };
 }
 
 export async function setRecoveryKey(
@@ -1171,9 +1657,7 @@ export async function claimSeatHandover(
       claimed
         ? 'This handover offer has already been claimed.'
         : 'The table or handover offer changed. Retry the exact claim request.',
-      claimed
-        ? 'HANDOVER_ALREADY_CLAIMED'
-        : 'STALE_VERSION',
+      claimed ? 'HANDOVER_ALREADY_CLAIMED' : 'STALE_VERSION',
     );
   }
   return {

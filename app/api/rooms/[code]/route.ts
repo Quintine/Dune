@@ -4,29 +4,13 @@ import {
   joinRoom,
   act,
   RoomEntryError,
-  continueRoomBots,
-  continueRoomAutomatic,
   needsAutomaticRoomRecovery,
   type SeatAuth,
 } from '@/db/rooms';
 import { RuleError } from '@/game/engine';
 import type { FactionId } from '@/game/catalog';
 import { waitUntil } from 'cloudflare:workers';
-// Coalesce overlapping polls inside this isolate. Database CAS still fences
-// other isolates, restarts, seat recovery, and human actions.
-const continuations = new Map<string, Promise<void>>();
-function resumeRoom(code: string): Promise<void> {
-  const existing = continuations.get(code);
-  if (existing) return existing;
-  const pending = (async () => {
-    await continueRoomAutomatic(code);
-    await continueRoomBots(code);
-  })().finally(() => {
-    if (continuations.get(code) === pending) continuations.delete(code);
-  });
-  continuations.set(code, pending);
-  return pending;
-}
+import { resumeRoom } from '@/db/room-continuation';
 
 const codeOf = (req: Request) => {
   const code = new URL(req.url).pathname.split('/').pop()!.toUpperCase();

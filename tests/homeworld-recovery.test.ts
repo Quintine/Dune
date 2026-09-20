@@ -7,6 +7,7 @@ import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 import * as engine from '../game/engine';
 import * as bots from '../game/bots';
+import * as seatAiDelegation from '../lib/seat-ai-delegation';
 import type * as Rooms from '../db/rooms';
 
 /** Execute the production room module and SQL, with a hook immediately before its CAS. */
@@ -79,6 +80,7 @@ function unitStore(runBots = bots.runBots) {
           if (name === 'cloudflare:workers') return { env: { DB: database } };
           if (name === '@/game/engine') return engine;
           if (name === '@/game/bots') return { ...bots, runBots };
+          if (name === '@/lib/seat-ai-delegation') return seatAiDelegation;
           throw new Error('Unexpected module ' + name);
         },
       },

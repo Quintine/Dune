@@ -7,8 +7,10 @@ import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 import * as engine from '../game/engine';
 import * as bots from '../game/bots';
+import * as seatAiDelegation from '../lib/seat-ai-delegation';
 import { baseDeck } from '../game/cards';
 import type * as Rooms from '../db/rooms';
+import { loadRoomContinuation } from './fixture-room-continuation';
 
 /** Execute the production room module and SQL, with a hook immediately before its CAS. */
 function unitStore(runBots = bots.runBots) {
@@ -81,6 +83,7 @@ function unitStore(runBots = bots.runBots) {
         if (name === 'cloudflare:workers') return { env: { DB: database } };
         if (name === '@/game/engine') return engine;
         if (name === '@/game/bots') return { ...bots, runBots };
+        if (name === '@/lib/seat-ai-delegation') return seatAiDelegation;
         throw new Error('Unexpected module ' + name);
       },
     },
@@ -262,6 +265,10 @@ function route(
   run: (code: string) => Promise<void>,
 ) {
   const pending: Promise<void>[] = [];
+  const continuation = loadRoomContinuation({
+    continueRoomAutomatic: automatic,
+    continueRoomBots: run,
+  });
   const exports: {
     GET?: (req: Request) => Promise<Response>;
     POST?: (req: Request) => Promise<Response>;
@@ -291,6 +298,7 @@ function route(
             continueRoomAutomatic: automatic,
             continueRoomBots: run,
           };
+        if (name === '@/db/room-continuation') return continuation;
         if (name === '@/game/engine') return engine;
         if (name === 'cloudflare:workers')
           return { waitUntil: (work: Promise<void>) => pending.push(work) };

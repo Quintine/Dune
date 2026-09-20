@@ -88,6 +88,27 @@ export const seatHandoverClaimReceipts = sqliteTable(
   ],
 );
 
+export const seatAiDelegations = sqliteTable(
+  'seat_ai_delegations',
+  {
+    roomCode: text('room_code')
+      .notNull()
+      .references(() => rooms.code, { onDelete: 'cascade' }),
+    ownerId: text('owner_id').notNull(),
+    grantId: text('grant_id').notNull().unique(),
+    delegateId: text('delegate_id').notNull(),
+    difficulty: text('difficulty').notNull(),
+    ownerSessionHash: text('owner_session_hash').notNull(),
+    delegateSessionHash: text('delegate_session_hash').notNull(),
+    expiresAt: integer('expires_at').notNull(),
+    usedAt: integer('used_at'),
+    revokedAt: integer('revoked_at'),
+  },
+  (table) => [
+    primaryKey({ columns: [table.roomCode, table.ownerId, table.grantId] }),
+  ],
+);
+
 export const roomEntryReceipts = sqliteTable('room_entry_receipts', {
   operationHash: text('operation_hash').primaryKey(),
   requestHash: text('request_hash').notNull(),
