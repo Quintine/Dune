@@ -51,6 +51,7 @@ import { Distrans } from './distrans';
 import { JuiceOfSapho } from './juice-of-sapho';
 import { LeaderSkillsPanel } from './leader-skills';
 import { LeaderSkillBattleGuide } from './leader-skill-battle-guide';
+import { smugglerBattleModeSupported, smugglerBattlePlanBlock } from '@/game/smuggler-battle';
 import { RihaniChoice, RihaniHistory } from './rihani-decipherer';
 import { MentatQuestion, MentatHistory } from './mentat-question';
 import { BureaucratPayment } from './bureaucrat-payment';
@@ -469,6 +470,14 @@ export function GameTable({
   const selectedDefenseId = battlePlanCardValue(g, 'defense', defense);
   const selectedBattleWeapon = me.hand?.find(c => c.id === selectedWeaponId);
   const selectedBattleDefense = me.hand?.find(c => c.id === selectedDefenseId);
+  const selectedBattleKwisatz = kwisatz && !!me.kwisatz?.active &&
+    !me.kwisatz.dead && !g.battle?.kwisatzBlocked &&
+    (!me.kwisatz.usedAt || me.kwisatz.usedAt === g.battle?.territory);
+  const smugglerPlanReason = g.battle?.smugglerCollectionEnabled ? smugglerBattlePlanBlock({
+    assignments: g.leaderSkills?.assignments.filter(a => a.controller === me.id) ?? [],
+    leader: me.leaders.find(l => l.id === selectedBattleLeader), weapon: selectedBattleWeapon,
+    defense: selectedBattleDefense, kwisatz: selectedBattleKwisatz,
+  }, smugglerBattleModeSupported(g), { territory: g.battle.territory, spice: g.spice }) : null;
   const battlePairValid = validBattleSlotPair(selectedBattleWeapon, selectedBattleDefense,
     !!selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon));
   const harassControl = harassWithdrawControlState(g.battle?.harassWithdraw,
@@ -4415,6 +4424,10 @@ export function GameTable({
                   ) : [g.battle.attacker, g.battle.defender].includes(me.id) ? (
                     g.battle.revealed ? (
                       <>
+                        {g.battle.smugglerCollection && <p className="notice">
+                          {g.players.find(p => p.id === g.battle!.smugglerCollection!.player)?.name}’s Smuggler has {g.battle.smugglerCollection.amount} spice pending from the reveal-time pile.
+                          Collection is automatic if the leader survives, even after a defeat. That spice is not yet spendable.
+                        </p>}
                         {!g.battle.traitorSubmitted.includes(me.id) && (
                           <>
                             {actionButton(
@@ -4438,6 +4451,7 @@ export function GameTable({
                     ) : (
                       <>
                         <LeaderSkillBattleGuide game={g} leader={committed.leader ? String(committed.leader.value ?? '') : leader} />
+                        {smugglerPlanReason && <p className="notice">{smugglerPlanReason}</p>}
                         {g.battle.insight && (
                           <p className="notice">
                             {committed[g.battle.insight.field]
@@ -4712,19 +4726,13 @@ export function GameTable({
                                   !g.battle.fremenSupportBlocked
                                     ? 0
                                     : battleSupport,
-                                kwisatz:
-                                  kwisatz &&
-                                  !!me.kwisatz?.active &&
-                                  !me.kwisatz.dead &&
-                                  !g.battle.kwisatzBlocked &&
-                                  (!me.kwisatz.usedAt ||
-                                    me.kwisatz.usedAt === g.battle.territory),
+                                kwisatz: selectedBattleKwisatz,
                                 dial: battleDial,
                                 leader,
                                 weapon,
                                 defense,
                               }),
-                              !!stonePlanReason || !!harassControl.blocked || !battlePairValid,
+                              !!stonePlanReason || !!harassControl.blocked || !!smugglerPlanReason || !battlePairValid,
                             )}
                           </>
                         ) : (

@@ -12,6 +12,7 @@ import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type Rihan
 import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
 import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFieldCompanion } from './smuggler-no-field';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
+import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, type SmugglerBattleReceipt } from './smuggler-battle';
 import { quoteSandmasterMovement, validateSandmasterMovement, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
@@ -612,6 +613,9 @@ export type HarassAllocationReceipt = {
   stage: 'offered' | 'selected'; selection: HarassWithdrawSelection | null; signature: string;
 };
 export type Battle = {
+  /** New battles bind automatic collection to the original public plan reveal. */
+  smugglerCollectionVersion?: 1;
+  smugglerCollection?: SmugglerBattleReceipt | null;
   /** New battles allow physical withdrawal choice after reveal, never in the sealed plan. */
   harassAllocationVersion?: 1;
   harassAllocationEvent?: string;
@@ -1592,6 +1596,7 @@ export type Game = {
     sukRescue?: { signature: string; completed: boolean };
     rihani?: { skill: RihaniSkill; cards: string[]; signature: string; completed: boolean };
     sandmaster?: { leader: string; key: string; before: number; after: number };
+    smugglerCollection?: SmugglerBattleReceipt;
     caladanReinforcement?: HomeworldVictoryObligation;
     nexusSardaukarCasualties?: string;
     moritaniAssassinate?: {event:string;signature:string;continuation?:string};
@@ -5267,6 +5272,7 @@ function leaderSkillsIntegrity(g: Game) {
   sandmasterIntegrity(g);
   sukRescueIntegrity(g);
   rihaniIntegrity(g);
+  smugglerBattleIntegrity(g);
   for (const [owner, plan] of Object.entries(g.battle?.plans ?? {})) {
     if (plan.bankerSpice === undefined) continue;
     const p = getPlayer(g, owner);
@@ -14031,6 +14037,13 @@ function validatePlan(
   );
   const w = cardOf(p, plan.weapon),
     d = cardOf(p, plan.defense);
+  if (b.smugglerCollectionVersion === 1) {
+    const smugglerPlan = { assignments: battleLeaderSkills(g, p), leader: l, weapon: w, defense: d, kwisatz: plan.kwisatz };
+    const block = smugglerBattlePlanBlock(smugglerPlan, smugglerBattleModeSupported(g), { territory: b.territory, spice: g.spice });
+    requireRule(!block, block ?? 'Smuggler collection is unavailable for this plan.');
+    if (smugglerPlan.assignments.some(a => a.skill === 'smuggler' && a.leader === l?.id))
+      nexusRule(() => smugglerBattlePile(b.territory, g.spice));
+  }
   const planetologistWeapon = canUsePlanetologistWeapon(
     g,
     p,
@@ -15448,6 +15461,36 @@ function traitorVoters(g: Game, b: Battle) {
 function traitorBeneficiary(g: Game, b: Battle, id: string) {
   return [b.attacker, b.defender].includes(id) ? id : getPlayer(g, id).ally;
 }
+function pendingSmugglerBattle(g: Game): SmugglerBattleReceipt | null {
+  const b = g.battle!;
+  const frame = JSON.stringify({ plans: b.plans, hidden: b.leaderSkillHidden,
+    skills: [b.attacker, b.defender].map(id => battleLeaderSkills(g, getPlayer(g, id))) });
+  const receipts = [b.attacker, b.defender].flatMap(id => {
+    const p = getPlayer(g, id), plan = b.plans[id];
+    const receipt = nexusRule(() => createSmugglerBattle({ event: b.event!, turn: g.turn,
+      territory: b.territory, player: id, frame, spice: g.spice, supported: smugglerBattleModeSupported(g),
+      plan: { assignments: battleLeaderSkills(g, p),
+        leader: controlledLeaders(g, p).find(l => l.id === plan.leader && !l.dead),
+        weapon: cardOf(p, plan.weapon), defense: cardOf(p, plan.defense), kwisatz: plan.kwisatz } }));
+    return receipt ? [receipt] : [];
+  });
+  requireRule(receipts.length <= 1, 'Smuggler needs its unique physical skill card.');
+  return receipts[0] ?? null;
+}
+function smugglerBattleIntegrity(g: Game) {
+  const b = g.battle;
+  if (b?.smugglerCollectionVersion !== undefined || b?.smugglerCollection !== undefined) {
+    requireRule(b && b.smugglerCollectionVersion === 1, 'The saved Smuggler collection lost its battle version.');
+    if (b.revealed) requireRule(JSON.stringify(b.smugglerCollection) === JSON.stringify(pendingSmugglerBattle(g)),
+      'The saved Smuggler collection changed its original plans, leader or reveal-time spice.');
+    else requireRule(b.smugglerCollection === undefined, 'Smuggler collection cannot precede public Battle Plans.');
+  }
+  const context = g.lastBattleContext, receipt = context?.smugglerCollection;
+  if (receipt) requireRule(receipt.event === context!.event && receipt.turn === context!.turn &&
+    receipt.territory === context!.territory && context!.combatants.includes(receipt.player) &&
+    ['collected', 'void'].includes(receipt.stage) && receipt.signature === smugglerBattleSignature(receipt),
+    'The completed Smuggler collection changed its original battle receipt.');
+}
 /** Prepare current server-only inputs once; the pure module cannot inspect Game or mutate it. */
 function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
   const b = g.battle!;
@@ -15521,7 +15564,11 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       !g.homeworlds && !g.nexusCards && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens && !g.expansions.length &&
       g.players.every((p) => faction(p.faction).expansion === 'base'),
       'These Leader Skill victory effects with expansion factions or other optional modules are still being integrated.');
-    if (quote.sandmaster) nexusRule(() => sandmasterVictorySpice(b.territory, g.spice));
+    const smuggler = b.smugglerCollection ? nexusRule(() => settleSmugglerBattle(b.smugglerCollection!,
+      !(b.smugglerCollection!.player === b.attacker ? quote.leaderDeaths.attacker : quote.leaderDeaths.defender), g.spice)) : null;
+    if (smuggler) requireRule(Number.isSafeInteger(getPlayer(g, smuggler.receipt.player).spice + smuggler.amount),
+      'Smuggler collection would overflow the spice balance.');
+    if (quote.sandmaster) nexusRule(() => sandmasterVictorySpice(b.territory, smuggler?.spice ?? g.spice));
     if (quote.rihani) {
       const winner = getPlayer(g, quote.winner!);
       nexusRule(() => beginRihani(nexusTraitorSnapshot(g), nexusTraitorUniverse(g),
@@ -15542,7 +15589,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       );
     if (quote.homeworldExplosion)
       for (const losses of quote.homeworldExplosion.options) quoteHomeworldLoss(g, quote.homeworldExplosion.player, b.territory, losses);
-    return quote;
+    return { ...quote, smuggler };
   } catch (error) {
     if (
       error instanceof BattleResolutionQuoteError ||
@@ -15841,6 +15888,17 @@ function resolveBattle(g: Game) {
     ...(sardaukar?.casualties ? {nexusSardaukarCasualties:sardaukar.receipt.event} : {}),
   };
   recordMoritaniAssassinateOpportunity(g, b, winner, losingPlayer);
+  if (quote.smuggler) {
+    const { receipt, amount } = quote.smuggler;
+    const collector = getPlayer(g, receipt.player);
+    if (amount && receipt.key) g.spice[receipt.key] = receipt.before - amount;
+    collector.spice += amount;
+    g.lastBattleContext.smugglerCollection = receipt;
+    log(g, receipt.stage === 'void'
+      ? `${collector.name}'s Smuggler did not survive. Its pending collection is void; no spice was taken from ${combatLocationName(g, b.territory)}.`
+      : `${collector.name}'s surviving Smuggler collected ${amount} spice from ${combatLocationName(g, b.territory)}. The reveal-time pile held ${receipt.before}; the leader's unmodified strength was ${receipt.strength}. ${receipt.before - amount} spice remains before any after-victory effects.`,
+      { faction: collector.faction, name: 'Smuggler collection' });
+  }
   if (winner && quote.sandmaster) {
     const placement = nexusRule(() => sandmasterVictorySpice(b.territory, g.spice));
     if (placement) {
@@ -23829,6 +23887,7 @@ function applyActionInner(
       ...choice,
       chooserEvent: battleChooserEvent(g.turn, battleOrderAfterBattle(g), g.battleOrder?.uses.length ?? 0),
       event: battleEvent,
+      ...(g.leaderSkills ? { smugglerCollectionVersion: 1 as const } : {}),
       ...(g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
       ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 1 as const } : {}),
       ...(g.ecazTreachery ? { harassAllocationVersion: 1 as const } : {}),
@@ -24009,6 +24068,11 @@ function applyActionInner(
         if (l?.capturedBy) delete l.concealed;
       }
       log(g, 'Both battle plans are revealed.');
+      if (b.smugglerCollectionVersion === 1) {
+        b.smugglerCollection = pendingSmugglerBattle(g);
+        if (b.smugglerCollection) log(g,
+          `${getPlayer(g, b.smugglerCollection.player).name}'s Smuggler may collect ${b.smugglerCollection.amount} spice from the reveal-time pile if the leader survives. That spice is not yet spendable.`);
+      }
       nextRevealedDecision(g);
     }
     return g;
@@ -24559,6 +24623,7 @@ export function viewGame(state: Game, id: string) {
       advisorAccompanyMaximum: spiritualAdvisorMaximum(g, me.id, 'arrakeen'),
     },
     expansions: g.expansions,
+    ecazTreachery: !!g.ecazTreachery,
     turn: g.turn,
     phase: g.phase,
     phaseOpening: g.phaseOpening ? { passed: g.phaseOpening.passed } : null,
@@ -25136,6 +25201,11 @@ export function viewGame(state: Game, id: string) {
               }
             : null,
           lateDefense: b.revealed ? (b.lateDefense ?? {}) : {},
+          smugglerCollectionEnabled: b.smugglerCollectionVersion === 1,
+          smugglerCollection: b.revealed && b.smugglerCollection
+            ? { player: b.smugglerCollection.player, leader: b.smugglerCollection.leader,
+                amount: b.smugglerCollection.amount, before: b.smugglerCollection.before }
+            : null,
           diplomatDefense: b.revealed && b.diplomatDefense
             ? { player: b.diplomatDefense.player, event: b.diplomatDefense.event,
               leader: b.diplomatDefense.leader, cards: [...b.diplomatDefense.cards],

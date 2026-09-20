@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 20 September 2026 — Smuggler battle collection prototype
+
+[Unmodified Smuggler collection](SMUGGLER_BATTLE.md) binds the reveal-time pile
+and pays once after leader survival, including losing or captured leaders. Shared
+server/control/bot admission preserves the pending modifier and combined-module
+boundaries; deferred settlement before Sandmaster remains an explicit timing
+inference. Native face-up skilled discs are excluded from AI selection. New
+receipts preserve private saved continuation and old unversioned battles retain
+their prior behavior. Independent review and focused engine/SQLite evidence are
+paired with source-bound final checks, browser/samples, preservation and verified
+Git delivery in the private checkpoint and commit message. No gate is opened.
+
+After the reported outage the server responded and all 1,106 baseline games
+matched their saved rows. The prior private QA seat restored after refresh.
+No restart, reset or maintenance automation was needed.
+
 ## 20 September 2026 — Interactive introduction prototype
 
 [Five guided lessons](INTERACTIVE_INTRODUCTION.md) connect shipping budgets,

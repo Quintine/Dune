@@ -1,7 +1,8 @@
 import { discoveryBotActions } from './discovery-options';
 import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
-import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus } from './leader-skill-combat';
+import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, usesSurvivingSkilledLeader } from './leader-skill-combat';
+import { smugglerBattleModeSupported, smugglerBattlePlanBlock } from './smuggler-battle';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, type BattlePlanInspectionField } from './battle-card-slots';
 import { defaultHarassWithdrawAllocation, quoteHarassWithdraw } from './harass-withdraw';
 import { leaderSkillStrongholdCount } from './leader-skill-battle-board';
@@ -708,6 +709,7 @@ function plans(g: GameView): Action[] {
     (l) =>
       !l.dead &&
       controlsLeader(me, l) &&
+      !battleSkills.some(a => a.leader === l.id && a.faceUp && !a.captured) &&
       (!l.usedAt || l.usedAt === b.territory),
   );
   const heroes = (me.hand ?? []).filter((c) => c.kind === 'hero');
@@ -748,6 +750,7 @@ function plans(g: GameView): Action[] {
       for (const defense of defenses) {
         const kwisatz =
           !!leader &&
+          !(b.smugglerCollectionEnabled && usesSurvivingSkilledLeader(battleSkills, 'smuggler', leader, true)) &&
           !!me.kwisatz?.active &&
           !me.kwisatz.dead &&
           !b.kwisatzBlocked &&
@@ -778,6 +781,9 @@ function plans(g: GameView): Action[] {
           ) + (kwisatz ? 2 : 0);
         const w = me.hand?.find((c) => c.id === weapon);
         const d = me.hand?.find((c) => c.id === defense);
+        if (b.smugglerCollectionEnabled && smugglerBattlePlanBlock({ assignments: battleSkills,
+          leader: myLeader, weapon: w, defense: d, kwisatz }, smugglerBattleModeSupported(g),
+          { territory: b.territory, spice: g.spice })) continue;
         if (!battleCardSlotEligible('weapon', w, {planetologistWeapon: specialForLeader(w, leader)})) continue;
         const stoneBattle =
           isStoneBurner(w) || (inspected && isStoneBurner(enemyWeapon));

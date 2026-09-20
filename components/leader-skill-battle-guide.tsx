@@ -12,12 +12,16 @@ export function LeaderSkillBattleGuide({ game, leader }: { game: GameView; leade
   const bureaucrat = usesSurvivingSkilledLeader(assignments, 'bureaucrat', leader, true);
   const sandmaster = usesSurvivingSkilledLeader(assignments, 'sandmaster', leader, true);
   const rihani = usesSurvivingSkilledLeader(assignments, 'rihani-decipherer', leader, true);
-  if (!mentat && !bureaucrat && !sandmaster && !rihani) return null;
+  const smuggler = usesSurvivingSkilledLeader(assignments, 'smuggler', leader, true);
+  if (!mentat && !bureaucrat && !sandmaster && !rihani && !smuggler) return null;
   return <div className="notice" aria-label="Leader Skill battle effect">
     {mentat && <p>Mentat adds 2 to this leader’s battle strength if the leader survives.</p>}
     {bureaucrat && <p>Bureaucrat subtracts {leaderSkillStrongholdCount(game, opponent)} from your opponent’s battle total if your leader survives. Count each occupied stronghold once, including contested strongholds. Advisors do not count.</p>}
     {sandmaster && <p>If this Sandmaster survives and wins, add 3 spice to the territory’s existing spice pile automatically. No spice is added when the territory has no spice.</p>}
     {rihani && <p>If this Rihani Decipherer survives and wins, you may draw two Traitors and exchange an unused old card for one of them. A native Rihani also privately inspects two deck cards first.</p>}
+    {smuggler && <p>{game.battle!.smugglerCollectionEnabled
+      ? 'Smuggler records spice in this territory when both plans reveal, capped by this leader’s unmodified strength. If the leader survives, collect it automatically even if you lose or have no forces left. Pending spice cannot fund this plan. Strength modifiers and combined modules remain under review.'
+      : 'This saved battle predates automatic Smuggler collection. Its original battle behavior is preserved; new battles use the current collection flow.'}</p>}
     {(mentat || bureaucrat) && <p className="fine">These score effects resolve automatically. They do not change the leader’s printed value or spice bounty.</p>}
   </div>;
 }

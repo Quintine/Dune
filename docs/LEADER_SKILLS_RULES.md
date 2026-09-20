@@ -204,8 +204,9 @@ Resolving this reveal-time collection logically before Sandmaster's after-win
 addition is an explicit timing inference. A drained pile leaves no existing spice
 for Sandmaster to augment. Multiple-pile allocation remains unresolved. Pending
 spice is not spendable personal custody; this provisional timing must remain
-explicit when the collection function is connected. Runtime collection is still
-missing; the independent introduction proceeded while the modifier answer waits.
+explicit in the connected [unmodified collection prototype](SMUGGLER_BATTLE.md).
+Modified plans, other modules and multiple positive piles remain gated while
+their answers and integration wait.
 
 ## Implementation readiness contract
 

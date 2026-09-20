@@ -64,8 +64,9 @@ now connects its lower band with separate sealed funds and survivor strength. [S
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).
 [Diplomat defense](DIPLOMAT_DEFENSE.md) connects its normal band for a physical
 Worthless card copying a canonical base Shield or Snooper; the lower retreat
-and modified-defense inheritance remain guarded. Smuggler battle collection
-also remains missing.
+and modified-defense inheritance remain guarded. [Smuggler battle collection](SMUGGLER_BATTLE.md)
+now connects reveal-bound, unmodified collection after survival, including
+losers and captives. Modified strength and combined modules remain guarded.
 Planetologist and Suk Graduate have the connected
 prototypes described below.
 
@@ -78,7 +79,7 @@ Before enabling them, add response-driven automatic revival continuation
 coverage; the current before/after revival observer does not certify deferred
 Tleilaxu response chains. The other source-contract timing questions also remain
 open. Planetologist now has bounded movement and battle controls as described below.
-Remaining normal-band payments, ordinary Mentat activation, Smuggler battle collection,
+Remaining normal-band payments, ordinary Mentat activation, modified Smuggler collection,
 Diplomat retreat and the other guarded skill combinations still need connected
 effects.
 
