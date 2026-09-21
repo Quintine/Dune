@@ -73,6 +73,10 @@ Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).
 
+In **Your private hand**, search card names, filter by printed category or change
+the display order. **Show all cards** clears filters. Inspectors and card actions
+stay with each physical card. See [hand browsing](docs/HAND_BROWSING.md).
+
 The table header offers optional **Sound effects**, with mute, volume and a test
 sample. Short cues mark phase changes and automatic action notices. Sound starts
 off; preferences stay in your browser. See [table sounds](docs/TABLE_SOUNDS.md)

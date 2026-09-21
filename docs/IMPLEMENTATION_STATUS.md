@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 21 September 2026 — private-hand browsing
+
+The private hand now supports literal name search, printed-category filtering
+and stable display sorting. Physical card IDs, existing inspectors/actions and
+saved order remain intact; required choices stay outside the filtered row.
+[Hand browsing](HAND_BROWSING.md) documents empty results, reset, live changes
+and local-only filter lifetime. A stale Harass allocation availability sentence
+is corrected. Focused tests and independent review accompany the private final
+browser, check/build, preservation and Git evidence. No AI strategy or gate changed.
+
 ## 21 September 2026 — live Treachery and Spice draw counts
 
 The table now shows both physical draw-pile counts above the board. The public

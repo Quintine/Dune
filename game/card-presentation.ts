@@ -112,7 +112,7 @@ export function cardPresentation(card: VisibleCard): CardPresentation {
       availability: ecaz.card.effect === 'recruits'
         ? 'Recruits has development controls during Revival. Earlier paid revivals, pending transactions, later free-rate changes and repeated use this turn remain guarded pending their rulings.'
         : ecaz.card.effect === 'harassWithdraw'
-          ? 'Harass & Withdraw has development controls in either battle-card slot. Ambiguous physical allocations, Richese card combinations and additional optional modules remain guarded.'
+          ? 'Harass & Withdraw has development controls in either battle-card slot, with physical allocation choices after reveal. Richese card combinations and additional optional modules remain guarded.'
           : 'This battle effect is still being implemented.',
       topics: RULE_TOPICS.filter((topic) => topic.id === (ecaz.card.effect === 'harassWithdraw' ? 'card-harass-withdraw' : 'card-recruits')),
     };

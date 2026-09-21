@@ -4,6 +4,7 @@ import { StormCardInspector, StormCardLogInspector } from './storm-cards';
 import { KwisatzInspector } from './kwisatz-inspector';
 import { ForceInspector } from './force-inspector';
 import { DrawPiles } from './draw-piles';
+import { HandBrowser } from './hand-browser';
 import { LobbyBotControls } from './lobby-bot-controls';
 import { IxRicheseTechnology } from './ix-richese-technology';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
@@ -4870,8 +4871,16 @@ export function GameTable({
             <NullentropyBox game={g} act={act} busy={busy} />
             <ResidualPoison game={g} act={act} busy={busy} />
             <PortableSnooper game={g} act={act} busy={busy} />
-            <div className="hand-grid">
-              {me.hand?.map((c) => {
+            <HandBrowser key={`${g.code}:${me.id}`} cards={me.hand ?? []} empty={
+              <p className="muted">
+                {setupStage
+                  ? g.leaderSkills ? 'Starting Treachery Cards are dealt after prediction and before skill assignment.' : 'Your starting Treachery cards remain undealt until all starting force placement is complete.'
+                  : g.status === 'lobby'
+                    ? 'Your opening cards are dealt after starting force placement.'
+                    : 'Your Treachery hand is empty.'}
+              </p>
+            }>
+              {(c) => {
                 const richese = richeseCardDefinition(c);
                 const presentation = cardPresentation(c);
                 const ecaz = ecazTreacheryDefinition(c);
@@ -5394,17 +5403,8 @@ export function GameTable({
                       )}
                   </article>
                 );
-              })}
-              {!me.hand?.length && (
-                <p className="muted">
-                  {setupStage
-                    ? g.leaderSkills ? 'Starting Treachery Cards are dealt after prediction and before skill assignment.' : 'Your starting Treachery cards remain undealt until all starting force placement is complete.'
-                    : g.status === 'lobby'
-                      ? 'Your opening cards are dealt after starting force placement.'
-                      : 'Your Treachery hand is empty.'}
-                </p>
-              )}
-            </div>
+              }}
+            </HandBrowser>
             {!!me.faceDancers?.length && (
               <div className="notice">
                 <h3>Your Face Dancers</h3>

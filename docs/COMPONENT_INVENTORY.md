@@ -1,5 +1,11 @@
 # Component inventory and verification ledger
 
+**Hand browsing, 21 September 2026:** owned cards now have name search, printed
+category filters and display sorting, with physical IDs, complete existing card
+controls and inspectors retained. Empty results have a clear reset, and current
+cards update the visible results. This is a connected browsing prototype, not
+full card-effect or visual certification. See [scope and evidence](HAND_BROWSING.md).
+
 **Draw-pile counts, 21 September 2026:** the table now displays authoritative
 Treachery and Spice draw counts above the board, separate from auctions, hands,
 caches and discards. Existing Nexus counts and authorized card inspectors remain

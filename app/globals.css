@@ -1005,6 +1005,14 @@ footer {
   overflow: auto;
   padding: 24px 0;
 }
+.hand-browse { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding-top: 16px; }
+.hand-browse label { display: grid; gap: 6px; flex: 1 1 180px; min-width: 0; font-size: 0.875rem; }
+.hand-browse input, .hand-browse select { width: 100%; min-height: 44px; font-size: 1rem; }
+.hand-browse-results { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; flex: 1 1 100%; font-size: 1rem; }
+.hand-browse-results button { min-height: 44px; font-size: 1rem; }
+.hand-browse-results a { text-decoration: underline; text-underline-offset: 3px; }
+.hand-browse-empty { font-size: 1rem; line-height: 1.5; }
+.hand-grid:focus-visible { outline: 2px solid #e0c384; outline-offset: 3px; }
 .treachery-card {
   flex: 0 0 240px;
   min-height: 210px;
