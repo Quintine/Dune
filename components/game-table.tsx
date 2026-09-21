@@ -137,7 +137,6 @@ import {
 import { validBattleSlotPair } from '@/game/battle-card-slots';
 import { stoneBurnerPlanBlock } from '@/game/stone-burner';
 import { TECH_TOKENS, ownedTech } from '@/game/tech-tokens';
-import Link from 'next/link';
 import {
   canUseAsKaramaRole,
   canUseAsTruthtranceRole,
@@ -2627,9 +2626,9 @@ export function GameTable({
                     comparison. Other weapon effects and traitor precedence
                     still apply.
                   </p>
-                  <Link href="/rules?topic=stone-burner">
+                  <a href="/rules?topic=stone-burner">
                     Read Stone Burner rules
-                  </Link>
+                  </a>
                   {actionButton('Kill both leaders', {
                     type: 'decision',
                     event: g.decision.event,
@@ -3286,13 +3285,13 @@ export function GameTable({
               <details className="phase-guidance">
                 <summary>What happens in this phase?</summary>
                 <p>{PHASE_HELP[g.phase]}</p>
-                <Link
+                <a
                   href={`/rules#${phaseRuleId(g.phase)}`}
                   target="_blank"
                   rel="noreferrer"
                 >
                   Open phase guide ↗
-                </Link>
+                </a>
               </details>
               <ChoamBaliset game={g} act={act} busy={busy} />
               <ChoamGamont game={g} act={act} busy={busy} />
@@ -5529,9 +5528,9 @@ export function GameTable({
               several special cards, optional faction reactions, ally support,
               auction deadlines, and a printed-board connectivity audit.
             </p>
-            <Link href="/rules">
+            <a href="/rules">
               Open the rules coverage ledger <ArrowRight size={14} />
-            </Link>
+            </a>
           </div>
         )}
       </section>

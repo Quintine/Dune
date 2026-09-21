@@ -35,6 +35,7 @@
   ],
   "rules": {
     "no-array-constructor": "error",
+    "nextjs/no-html-link-for-pages": "off",
     "no-var": "error",
     "prefer-const": "error",
     "prefer-rest-params": "error",

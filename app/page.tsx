@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TableTalk } from '@/components/table-talk';
 import { GameTable } from '@/components/game-table';
@@ -914,11 +913,11 @@ export default function Home() {
         </div>
         <div className="masthead-right">
           <span className="status-dot" /> Multiplayer table{' '}
-          <Link href="/learn">Learn to play</Link>
-          <Link href="/rules">
+          <a href="/learn">Learn to play</a>
+          <a href="/rules">
             <BookOpen size={17} />
             Rulebook
-          </Link>
+          </a>
         </div>
       </header>
       <div className="lobby-grid">

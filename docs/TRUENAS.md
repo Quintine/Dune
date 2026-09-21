@@ -52,6 +52,16 @@ public hosting remains separately gated. HTTP does not encrypt cookies or seat
 recovery kits. Browser operation IDs now use cryptographic `getRandomValues`,
 which also works at LAN HTTP origins where `randomUUID` is unavailable.
 
+## Production navigation
+
+Use native anchors for app page links. The pinned Vinext/Vite production build
+renames navigation exports while its Link runtime dynamically looks up their
+original names, breaking clicks and prefetch despite successful HTTP responses.
+Native navigation keeps query strings, rule anchors, browser history and saved
+seat cookies. The Next.js lint preference for client-side Link is disabled for
+this intentional choice. Verify page links in the production browser when
+changing framework versions; development navigation alone does not cover it.
+
 ## Update and preserve games
 
 ### Existing NGINX HTTPS termination

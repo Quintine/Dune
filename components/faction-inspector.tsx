@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { Eye, X } from 'lucide-react';
 import { FACTIONS, faction, type FactionId } from '@/game/catalog';
@@ -34,8 +33,8 @@ export function FactionSheet({ factionId, advanced }: { factionId: FactionId; ad
     </section>}
     <footer>
       <p>The rules and game are still being completed. This sheet describes faction powers; table controls show the choices currently available. Optional modules can add or change powers.</p>
-      <Link href={`/rules?topic=faction-${factionId}#faction-${factionId}`}>Full {house.name} reference</Link>
-      {advanced && <Link href={`/rules?topic=advanced-${factionId}#advanced-${factionId}`}>Advanced {house.name} reference</Link>}
+      <a href={`/rules?topic=faction-${factionId}#faction-${factionId}`}>Full {house.name} reference</a>
+      {advanced && <a href={`/rules?topic=advanced-${factionId}#advanced-${factionId}`}>Advanced {house.name} reference</a>}
     </footer>
   </article>;
 }
@@ -64,7 +63,7 @@ export function FactionInspector({ factionId, advanced }: { factionId: FactionId
           <DialogTitle>{house.name} faction sheet</DialogTitle>
           <DialogDescription>Read public faction powers and alliance guidance without changing the game.</DialogDescription>
           <FactionSheetReader key={`${factionId}:${advanced}`} factionId={factionId} tableAdvanced={advanced} />
-          <Link className="faction-sheet-help" href="/rules?topic=faction-sheets#faction-sheets">Faction sheet help</Link>
+          <a className="faction-sheet-help" href="/rules?topic=faction-sheets#faction-sheets">Faction sheet help</a>
         </section>
       </DialogPrimitive.Popup>
     </DialogPortal>

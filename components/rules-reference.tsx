@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { StrongholdCardGallery } from './stronghold-cards';
 import { HomeworldCardGallery } from './homeworld-cards';
 import { NexusCardGallery } from './nexus-cards';
@@ -94,7 +93,7 @@ function RulesReferenceContent() {
   return (
     <main className="reference-page">
       <header className="reference-header">
-        <Link href="/">← Return to Arrakis</Link>
+        <a href="/">← Return to Arrakis</a>
         <span className="eyebrow">
           <BookOpen size={14} /> THE MENTAT’S REFERENCE
         </span>
@@ -107,17 +106,17 @@ function RulesReferenceContent() {
           Find a phase, card or faction. Follow the action guides, inspect
           examples and move directly between related rules.
         </p>
-        <p><Link href="/learn">New to Dune? Try the interactive introduction →</Link></p>
+        <p><a href="/learn">New to Dune? Try the interactive introduction →</a></p>
         <p className="reference-status">
           This reference is growing with the game. Advanced play and expansion
           rules are unfinished.{' '}
-          <Link href="/rules/coverage">
+          <a href="/rules/coverage">
             View the implementation ledger <ArrowUpRight size={13} />
-          </Link>
+          </a>
           {' · '}
-          <Link href="/rules?topic=implementation-checklist#implementation-checklist">
+          <a href="/rules?topic=implementation-checklist#implementation-checklist">
             Open feature checklists <ArrowUpRight size={13} />
-          </Link>
+          </a>
         </p>
       </header>
       <div className="reference-layout">

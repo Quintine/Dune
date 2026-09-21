@@ -1,6 +1,5 @@
 'use client';
 import { Fragment, useId, useState, type ReactNode } from 'react';
-import Link from 'next/link';
 import type { Card } from '@/game/cards';
 import { browseHand, type HandCategory, type HandSort } from '@/game/hand-browsing';
 import { Button } from './ui/button';
@@ -48,7 +47,7 @@ export function HandBrowser({ cards, empty, children }: {
           <div className="hand-browse-results">
             <output aria-live="polite">{shown.length} of {cards.length} {cards.length === 1 ? 'card' : 'cards'} shown</output>
             {filtered && <Button type="button" variant="outline" onClick={() => { setQuery(''); setCategory('all'); }}>Show all cards</Button>}
-            <Link href="/rules?topic=hand-browsing#hand-browsing">Hand browsing help</Link>
+            <a href="/rules?topic=hand-browsing#hand-browsing">Hand browsing help</a>
           </div>
         </form>
         </search>

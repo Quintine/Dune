@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { BattleWheel } from './battle-wheel';
 import { CardInspector, CardRules } from './card-inspector';
@@ -25,7 +24,7 @@ export function Introduction() {
   const hydrated = useSyncExternalStore(subscribeHydration, clientSnapshot, serverSnapshot);
   return <main className={styles.page}>
     <header className={styles.header}>
-      <Link href="/">← Return to Arrakis</Link>
+      <a href="/">← Return to Arrakis</a>
       <p className="eyebrow">LEARN TO PLAY · BASIC GAME</p>
       <h1>Your first steps on Arrakis</h1>
       <p>Practice the Basic phases, from the storm and spice blow to alliances, resources, bidding, movement, battle and collection, then take a seat at a real table. These are separate examples; they do not change any saved game.</p>
@@ -164,11 +163,11 @@ function IntroductionLessons() {
             <li>Use <strong>Protect your saved seat</strong> and keep its recovery kit private. An invitation identifies the room; the kit restores your seat after cookie loss.</li>
           </ul>
           <p>Refresh restores a live game through its saved seat. If a request has an uncertain result, use the offered retry rather than repeating the game action.</p>
-          <div className={styles.links}><Link href="/">Create or join a game →</Link><Link href="/rules">Explore the full reference →</Link></div>
+          <div className={styles.links}><a href="/">Create or join a game →</a><a href="/rules">Explore the full reference →</a></div>
         </>}
         <footer className={styles.footer}>
           <button disabled={state.step === 0} onClick={() => go(state.step - 1)}>Previous lesson</button>
-          <Link href={`/rules?topic=${lesson.topic}#${lesson.topic}`}>Read the related rules</Link>
+          <a href={`/rules?topic=${lesson.topic}#${lesson.topic}`}>Read the related rules</a>
           {state.step < INTRODUCTION_STEPS.length - 1 && <button onClick={() => go(state.step + 1)}>Next lesson</button>}
         </footer>
       </section>

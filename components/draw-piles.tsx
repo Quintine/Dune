@@ -1,4 +1,3 @@
-import Link from 'next/link';
 
 /** Counts only: this component never receives deck contents or private cards. */
 export function DrawPiles({ piles }: {
@@ -19,7 +18,7 @@ export function DrawPiles({ piles }: {
       </dl>
       <p>Draw piles exclude hands, auction cards and discards.
         {(piles.treachery === 0 || piles.spice === 0) && ' An empty pile may be replenished from eligible discards.'}
-        {' '}<Link href="/rules?topic=draw-piles#draw-piles">About these piles</Link>
+        {' '}<a href="/rules?topic=draw-piles#draw-piles">About these piles</a>
       </p>
     </section>
   );

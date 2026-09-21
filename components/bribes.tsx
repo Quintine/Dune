@@ -1,6 +1,5 @@
 'use client';
 import { useId, useState } from 'react';
-import Link from 'next/link';
 import type { Action, GameView } from '@/game/engine';
 import { bribeAction } from '@/game/bribe-options';
 import { faction } from '@/game/catalog';
@@ -47,7 +46,7 @@ export function Bribes({ game: g, act, busy }: {
       <p>{recipient ? `You may pay up to ${recipient.maximum} spice to this recipient.` : `Uncommitted spice: ${options.available}. Choose a recipient to see the payment limit.`}</p>
       {recipient?.limitation ? <p>{recipient.limitation}</p> : null}
       {recipient && !options.blocked && !action ? <output className="bribe-status">{recipient.maximum < 1 ? 'No spice is available for this payment.' : `Enter a whole number from 1 to ${recipient.maximum}.`}</output> : null}
-      <p>Eligible Bureaucrats may divert two spice to the Bank. AI opponents can receive spice, but do not negotiate deals yet. <Link href="/rules?topic=bribes#bribes">Bribe rules</Link></p>
+      <p>Eligible Bureaucrats may divert two spice to the Bank. AI opponents can receive spice, but do not negotiate deals yet. <a href="/rules?topic=bribes#bribes">Bribe rules</a></p>
     </details>
   );
 }

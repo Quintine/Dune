@@ -1,8 +1,7 @@
-import Link from 'next/link';
 export default function Rules() {
   return (
     <main className="rule-page">
-      <Link href="/">← Return to the table</Link>
+      <a href="/">← Return to the table</a>
       <h1>Rules coverage ledger</h1>
       <p>
         This project targets classic Gale Force Nine Dune, the advanced game,

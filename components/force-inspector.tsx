@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, type CSSProperties } from 'react';
-import Link from 'next/link';
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { Eye, Star, X } from 'lucide-react';
 import { FACTIONS, faction, type FactionId } from '@/game/catalog';
@@ -64,7 +63,7 @@ export function ForceInventoryDetails({ player, worlds = null }: { player: Publi
       <div><h3>Concealed No-Field</h3><p>{inventory.marker.name}</p><p>Counts as one force for board presence until revealed. It is a separate marker, not an extra physical force counter. Its hidden force value is not shown here. Revelation draws from the reserves available then.</p></div>
     </section>}
     <p>Inspecting counters does not move them or commit a Battle Plan. Spice support, temporary powers and leaders may change battle strength without adding counters.</p>
-    <Link href="/rules?topic=force-counters#force-counters">Force counter guide</Link>
+    <a href="/rules?topic=force-counters#force-counters">Force counter guide</a>
   </div>;
 }
 

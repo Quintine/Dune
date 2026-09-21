@@ -7,7 +7,6 @@ import { ForceCountFields, forceCountInputError } from './truthtrance-force-coun
 import { isKnowledgeFact, knowledgeFactInputError } from '@/game/truthtrance-knowledge';
 import type { PlanClaim } from '@/game/battle-promises';
 import { useId, useState } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
@@ -130,7 +129,7 @@ export function Truthtrance({
     <section className="truthtrance-panel" aria-label="Truthtrance question">
       <h2>Truthtrance</h2>
       <p className="fine">
-        <Link href="/rules#card-truthtrance">Question rules</Link> · The table
+        <a href="/rules#card-truthtrance">Question rules</a> · The table
         resumes its previous decision after these questions.
       </p>
       {w.stage === 'priority' ? (

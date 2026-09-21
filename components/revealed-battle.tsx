@@ -1,5 +1,4 @@
 import type { GameView } from '@/game/engine';
-import Link from 'next/link';
 import { faction } from '@/game/catalog';
 import { leaderStrengthLabel } from '@/game/cards';
 import { isStoneBurner } from '@/game/battle-cards';
@@ -37,7 +36,7 @@ export function RevealedBattle({ game }: { game: GameView }) {
     <section className="revealed-plans" id="revealed-battle-plans" tabIndex={-1} aria-label="Revealed battle plans">
       <h3>Revealed battle plans</h3>
       <a className="battle-display-link" href="#table-decisions">Return to battle decisions</a>
-      <p className="revealed-plans-help">Both plans are public. Inspect any played component; use the decision controls to resolve the battle. <Link href="/rules?topic=revealed-battle-components#revealed-battle-components">Component guide</Link> · <Link href="/rules?topic=battle#battle">Battle rules</Link></p>
+      <p className="revealed-plans-help">Both plans are public. Inspect any played component; use the decision controls to resolve the battle. <a href="/rules?topic=revealed-battle-components#revealed-battle-components">Component guide</a> · <a href="/rules?topic=battle#battle">Battle rules</a></p>
       <div className="revealed-plan-pair">
       {[battle.attacker, battle.defender].map((id) => {
         const plan = battle.plans[id];
