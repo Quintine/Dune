@@ -1,4 +1,5 @@
 'use client';
+import { randomId } from '@/lib/random-id';
 
 import { useEffect, useId, useRef, useState } from 'react';
 import type { GameView } from '@/game/engine';
@@ -300,7 +301,7 @@ export function SeatAiDelegation({
                   void submit({
                     type: 'setSeatAiDelegate',
                     version: game.version,
-                    grantId: crypto.randomUUID(),
+                    grantId: randomId(),
                     delegateId,
                     difficulty,
                   })

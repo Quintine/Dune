@@ -1,3 +1,4 @@
+import { requestOrigin } from '../lib/request-origin';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { webcrypto } from 'node:crypto';
@@ -82,6 +83,7 @@ function unitStore(runBots = bots.runBots) {
       require: (name: string) => {
         if (name === 'cloudflare:workers') return { env: { DB: database } };
         if (name === '@/game/engine') return engine;
+        if (name === '@/lib/request-origin') return { requestOrigin };
         if (name === '@/game/bots') return { ...bots, runBots };
         if (name === '@/lib/seat-ai-delegation') return seatAiDelegation;
         throw new Error('Unexpected module ' + name);
@@ -300,8 +302,9 @@ function route(
           };
         if (name === '@/db/room-continuation') return continuation;
         if (name === '@/game/engine') return engine;
+        if (name === '@/lib/request-origin') return { requestOrigin };
         if (name === 'cloudflare:workers')
-          return { waitUntil: (work: Promise<void>) => pending.push(work) };
+          return { env: {}, waitUntil: (work: Promise<void>) => pending.push(work) };
         throw new Error('Unexpected route dependency ' + name);
       },
     },

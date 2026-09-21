@@ -30,6 +30,10 @@ room; lesson progress stays in your browser and does not change saved games.
 
 Local games persist in `.wrangler/state`. Keep this directory across restarts. Apply new additive migrations before running code that depends on them. Never delete the local database to resolve a connection or rules problem. `.openai/hosting.json` belongs to the existing Sites project; do not recreate the hosting project.
 
+For private NAS hosting and manually applied checkpoint image updates, see the
+[TrueNAS container guide](docs/TRUENAS.md). Its separate persistent storage starts
+with new games; the requested host port is 33046.
+
 ## Saved seats and reconnecting
 
 The room cookie identifies your seat. Refreshing or reopening the invitation with that cookie restores your private hand and pending decisions. A failed restoration offers an explicit retry. Requests time out after 15 seconds; uncertain game actions are reconciled with a read rather than automatically repeated.

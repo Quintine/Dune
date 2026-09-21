@@ -1,3 +1,4 @@
+import { randomId } from './random-id';
 import type { GameView } from '../game/engine';
 
 export const HANDOVER_CLAIM_STORAGE_KEY = 'dune.pending-seat-handover.v1';
@@ -98,7 +99,7 @@ export function createHandoverKit(
       version: 1,
       roomCode,
       playerId,
-      offerId: crypto.randomUUID(),
+      offerId: randomId(),
       handoverSecret: secret(),
     }),
   );
@@ -111,7 +112,7 @@ export function createHandoverClaim(kit: SeatHandoverKit): SavedHandoverClaim {
       playerId: kit.playerId,
       offerId: kit.offerId,
       handoverSecret: kit.handoverSecret,
-      operationId: crypto.randomUUID(),
+      operationId: randomId(),
       newSessionToken: secret(),
     }),
   });

@@ -1,3 +1,4 @@
+import { randomId } from './random-id';
 import { EXPANSIONS, FACTIONS } from '../game/catalog';
 import { requestMayHaveCompleted } from './client-request';
 
@@ -108,7 +109,7 @@ export function createRoomEntry(
   roomCode?: string,
 ): RoomEntryAttempt {
   const entry = {
-    operationId: globalThis.crypto.randomUUID(),
+    operationId: randomId(),
     sessionToken: Array.from(
       globalThis.crypto.getRandomValues(new Uint8Array(32)),
       (byte) => byte.toString(16).padStart(2, '0'),

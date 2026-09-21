@@ -1,3 +1,4 @@
+import { requestOrigin } from '@/lib/request-origin';
 import {
   authenticate,
   createSeatHandover,
@@ -14,12 +15,12 @@ import {
 import { RuleError } from '@/game/engine';
 import { validSeatAiDelegateRequest } from '@/lib/seat-ai-delegation';
 import { resumeRoom } from '@/db/room-continuation';
-import { waitUntil } from 'cloudflare:workers';
+import { env, waitUntil } from 'cloudflare:workers';
 const noStore = { 'Cache-Control': 'no-store' };
 export async function POST(req: Request) {
   try {
     const url = new URL(req.url);
-    if (req.headers.get('origin') && req.headers.get('origin') !== url.origin)
+    if (req.headers.get('origin') && req.headers.get('origin') !== requestOrigin(req, env.DUNE_PUBLIC_ORIGIN))
       throw new SeatControlError(
         'Invalid request origin.',
         'INVALID_ORIGIN',
@@ -158,7 +159,7 @@ export async function POST(req: Request) {
       {
         headers: {
           ...noStore,
-          'Set-Cookie': `dune_${code}=${result.token}; HttpOnly; SameSite=Strict; Path=/api/rooms/${code}; Max-Age=2592000${url.protocol === 'https:' ? '; Secure' : ''}`,
+          'Set-Cookie': `dune_${code}=${result.token}; HttpOnly; SameSite=Strict; Path=/api/rooms/${code}; Max-Age=2592000${requestOrigin(req, env.DUNE_PUBLIC_ORIGIN).startsWith('https:') ? '; Secure' : ''}`,
         },
       },
     );

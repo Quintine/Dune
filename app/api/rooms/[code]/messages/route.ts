@@ -1,3 +1,5 @@
+import { env } from 'cloudflare:workers';
+import { requestOrigin } from '@/lib/request-origin';
 import { authenticate } from '@/db/rooms';
 import { readTableTalk, sendTableTalk, TableTalkError } from '@/db/table-talk';
 import { RuleError } from '@/game/engine';
@@ -8,7 +10,7 @@ async function handle(req: Request, write: boolean) {
     if (
       write &&
       req.headers.get('origin') &&
-      req.headers.get('origin') !== url.origin
+      req.headers.get('origin') !== requestOrigin(req, env.DUNE_PUBLIC_ORIGIN)
     )
       throw new TableTalkError('Invalid request origin.', 403);
     const code = url.pathname.split('/').at(-2)!.toUpperCase();
