@@ -39,6 +39,23 @@ CHOAM-only skill profile. Other optional modules retain their existing gates.
 Tleilaxu revival, other expansion payment sources and direct gifts remain outside
 this connected batch. Their absence does not establish a rule prohibition.
 
+### 21 September gift classification review
+
+A bounded primary-source review did not resolve whether Emperor gifts count as
+the card's "payment." The [November FAQ, p. 5](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=5)
+describes Emperor giving/sharing spice with allies separately from the ally's
+later auction payment. The designer's examples name income recipients, not
+outgoing gifts. The [base secrecy rule, p. 12](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=12)
+does not settle gift-amount disclosure for this combination. Current gift
+amounts are projected only to Emperor and recipient. Even a threshold-only
+Bureaucrat prompt would reveal that the gift qualifies; the existing exact-amount
+payment projection must not be applied blindly.
+
+The user has been asked whether to retain this boundary or apply Bureaucrat
+with only the qualifying threshold public. No answer is assumed. Gifts remain
+outside the connected Bureaucrat payment paths while independent ordinary
+[bribe controls](BRIBE_CONTROLS.md) proceed.
+
 For native income, the prototype resolves the existing Karama income window
 first, then offers Bureaucrat before crediting the eligible recipient and
 continuing the original auction or shipment. A canceled income payment goes to

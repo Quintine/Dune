@@ -1,3 +1,4 @@
+import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
@@ -7724,6 +7725,46 @@ function pledgeAid(g: Game, p: Player, requested: unknown) {
   p.spice += current - amount;
   g.aid[p.id] = { recipient: p.ally, amount };
   log(g, `${p.name} updated the spice available to their ally this phase.`);
+}
+function projectedBribes(g: Game, p: Player): BribeOptions {
+  const available = Math.max(0, uncommittedSpice(g, p));
+  const blocked = bribeTimingBlock(g);
+  const battlePromises = g.battle?.truthPromises?.some(promise =>
+    promise.player === p.id && !promise.released && !g.battle?.revealed && !g.battle?.plans[p.id]);
+  const shipmentPromises = liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn).length > 0;
+  // Reuse the authoritative promise checks on an isolated resource-only copy.
+  // No payment, receipt or live continuation is created by this projection.
+  const maximum = !blocked && (battlePromises || shipmentPromises)
+    ? maximumBribe(available, amount => {
+        const probe = structuredClone(g);
+        getPlayer(probe, p.id).spice -= amount;
+        try {
+          if (battlePromises) reconcileBattlePromises(probe, { actor: p.id, action: { type: 'bribe' } });
+          if (shipmentPromises) reconcileShipmentPromises(probe, { actor: p.id, action: { type: 'bribe' } });
+          return true;
+        } catch (error) {
+          if (error instanceof RuleError) return false;
+          throw error;
+        }
+      })
+    : available;
+  return {
+    available, incoming: p.bribes, blocked,
+    targets: g.players.filter(target => target.id !== p.id && target.id !== p.ally).map(target => {
+      let limit = maximum;
+      let limitation: string | null = maximum < available
+        ? 'Some spice must remain available to fulfill your Truthtrance answer.' : null;
+      if (!blocked && limit >= 5) {
+        try { checkBureaucratContributors(g, target.id, [{ payer: p.id, amount: limit }]); }
+        catch (error) {
+          if (!(error instanceof RuleError)) throw error;
+          limit = 4;
+          limitation = error.message;
+        }
+      }
+      return { id: target.id, maximum: limit, limitation };
+    }),
+  };
 }
 function uncommittedSpice(g: Game, p: Player) {
   return (
@@ -22734,14 +22775,8 @@ function applyActionInner(
     return g;
   }
   if (t === 'bribe') {
-    requireRule(
-      g.inflation?.side !== 'double',
-      'Bribes are prohibited while Inflation shows Double.',
-    );
-    requireRule(
-      g.phase !== 8,
-      'Bribes cannot be made during the Mentat pause.',
-    );
+    const blocked = bribeTimingBlock(g);
+    requireRule(!blocked, blocked ?? 'Bribes are unavailable.');
     const target = getPlayer(g, stringField(action.target));
     requireRule(
       target.id !== id && target.id !== p.ally,
@@ -22752,7 +22787,7 @@ function applyActionInner(
     p.spice -= n;
     log(
       g,
-      `${p.name} promised ${n} spice to ${target.name}; collect it at the Mentat pause.`,
+      `${p.name} paid a ${n}-spice bribe to ${target.name}; its recipient share becomes spendable at the next Mentat Pause.`,
     );
     const source = stampBureaucratPayment(g,'bribe',p.id,target.id,n).bureaucratPayment;
     if (!offerBureaucratPayment(g,source,{kind:'bribe'})) target.bribes += n;
@@ -24455,6 +24490,7 @@ export function viewGame(state: Game, id: string) {
     setupPending: setupPending(g),
     leaderSkills: projectedLeaderSkills(g, id),
     bureaucrat: projectedBureaucrat(g),
+    bribeOptions: projectedBribes(g, me),
     mentat: projectedMentat(g, id),
     rihani: projectedRihani(g, id),
     advanced: g.advanced,

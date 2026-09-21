@@ -58,6 +58,7 @@ import { smugglerBattleModeSupported, smugglerBattlePlanBlock } from '@/game/smu
 import { RihaniChoice, RihaniHistory } from './rihani-decipherer';
 import { MentatQuestion, MentatHistory } from './mentat-question';
 import { BureaucratPayment } from './bureaucrat-payment';
+import { Bribes } from './bribes';
 import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { OrnithopterMovement } from './ornithopter-movement';
@@ -4823,6 +4824,7 @@ export function GameTable({
             : ' · Flips at the next Mentat Pause'}
         </p>
       )}
+      <Bribes game={g} act={act} busy={busy} />
       <TruthHistory game={g} />
       <section className="player-console">
         <nav className="console-tabs">

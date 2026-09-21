@@ -57,6 +57,10 @@ duplicates. Private history follows the seat through recovery or handover.
 Messages do not execute game actions, and AI opponents do not answer them yet.
 See [table discussion](docs/TABLE_DISCUSSION.md).
 
+Use **Bribes** beneath the table to pay a non-allied faction. The recipient's
+share becomes spendable at the next Mentat Pause; the panel shows your own
+incoming bribes and the current payment limit. See [bribe controls](docs/BRIBE_CONTROLS.md).
+
 The table header offers optional **Sound effects**, with mute, volume and a test
 sample. Short cues mark phase changes and automatic action notices. Sound starts
 off; preferences stay in your browser. See [table sounds](docs/TABLE_SOUNDS.md)

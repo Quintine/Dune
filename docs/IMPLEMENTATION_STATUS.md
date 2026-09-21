@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 21 September 2026 — ordinary bribe controls
+
+Players can now initiate the existing out-of-turn bribe action, with server-derived
+recipient limits, private incoming escrow and public payment history. Limits
+preserve reserved funds and binding Truthtrance completions; existing Bureaucrat
+redirection and saved version handling remain authoritative. See
+[bribe controls](BRIBE_CONTROLS.md). Focused rules/projection/rendering and HTTP
+concurrency checks accompany independent review and private source-bound browser,
+preservation and Git evidence. Strategic AI negotiation remains deferred.
+The separately reviewed Emperor gift/Bureaucrat interaction remains pending;
+this work does not open mode or publication gates.
+
 ## 21 September 2026 — durable table discussion prototype
 
 Public table conversation and direct human-seat messages now have usable controls,

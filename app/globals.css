@@ -1942,3 +1942,10 @@ footer {
 .table-talk-messages p { white-space: pre-wrap; unicode-bidi: plaintext; margin: 0.5rem 0 0; font-size: 1rem; }
 .table-talk-author { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; }
 .table-talk-author time { font-size: 0.875rem; }
+.bribe-panel { font-size: 1rem; }
+.bribe-panel > summary { cursor: pointer; min-height: 44px; padding-block: .65rem; font-weight: 600; }
+.bribe-panel p, .bribe-status { display: block; margin-block: .7rem; }
+.bribe-fields { display: flex; flex-wrap: wrap; align-items: end; gap: .8rem; }
+.bribe-fields label { display: grid; gap: .35rem; flex: 1 1 12rem; min-width: 0; }
+.bribe-fields select, .bribe-fields input { min-height: 44px; width: 100%; min-width: 0; font-size: 1rem; }
+.bribe-fields button { font-size: 1rem; min-height: 44px; max-width: 100%; height: auto; white-space: normal; overflow-wrap: anywhere; }

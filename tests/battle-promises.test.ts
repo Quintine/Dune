@@ -276,6 +276,12 @@ void test('a player cannot give away support spice to escape their own battle pr
   initial.players[1].spice = 3;
   const g = promise(initial, { kind: 'support', compare: 'gte', value: 3 });
   const before = JSON.stringify(g);
+  assert.equal(viewGame(g, 'e').bribeOptions.targets.find(p => p.id === 'b')!.maximum, 0);
+  const extra = structuredClone(g);
+  extra.players[1].spice += 2;
+  assert.equal(viewGame(extra, 'e').bribeOptions.targets.find(p => p.id === 'b')!.maximum, 2);
+  assert.ok(applyAction(extra, 'e', { type: 'bribe', target: 'b', amount: 2 }));
+  assert.throws(() => applyAction(extra, 'e', { type: 'bribe', target: 'b', amount: 3 }));
   assert.throws(
     () => applyAction(g, 'e', { type: 'bribe', target: 'b', amount: 1 }),
     /voluntarily/,

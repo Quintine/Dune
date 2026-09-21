@@ -6,24 +6,23 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `b2fcef8`, [Storm and Spice Blow practice](INTERACTIVE_INTRODUCTION.md).
-Types, lint, **4,954 offline tests** and production build passed. All 1,373 rooms,
-2,883 seats and existing auxiliary rows stayed unchanged. The running server was
-reused. Earlier checkpoints include `66c41b2` for Kwisatz Haderach inspection,
-`ed53eb7` for Storm Cards and `67e429e` for Charity/Revival practice.
-The `8f7a62c` policy checkpoint removed the usage cutoff and deferred AI refinement
-until feature completion, with three adjacent 75% targets. See the
-[implementation history](IMPLEMENTATION_STATUS.md).
+Latest delivered checkpoint: `7814f74`, [durable table discussion](TABLE_DISCUSSION.md).
+Types, lint, **4,963 offline tests**, production build and **48 HTTP tests** passed.
+All 1,373 opening rooms, 2,883 seats and existing auxiliary rows stayed unchanged;
+new isolated QA brought the local baseline to 1,418 rooms and 2,991 seats. The
+running server was reused. Earlier checkpoints include `b2fcef8` for Storm/Spice
+practice and `66c41b2` for Kwisatz Haderach inspection. The `8f7a62c` policy
+checkpoint removed the usage cutoff and deferred AI refinement until feature
+completion, with three adjacent 75% targets.
 
-Current work: [table discussion](TABLE_DISCUSSION.md) adds public conversation and
-private human-seat messages, separate from game state and decision continuation.
-Durable history, audience-filtered pagination, exact retries and active-session
-fences support communication through refresh and seat recovery. AI conversation
-and prose-deal enforcement remain unfinished. Source-bound checks, independent
-review, browser and preservation/Git evidence belong to the private checkpoint.
-A fresh bounded Terror/Kull audit confirmed existing pending rulings; independent
-multiplayer communication proceeds without inventing their outcomes. The full
-rules, multiplayer and component acceptance gates remain open.
+Current work: [ordinary bribe controls](BRIBE_CONTROLS.md) connect existing engine
+payments to named recipients, private deferred balances and authoritative
+spending limits. Binding Truthtrance answers, reserved costs and Bureaucrat
+continuations remain intact. Source-bound checks, independent review, browser
+and preservation/Git evidence belong to the private checkpoint. Strategic AI
+negotiation and complete rules/multiplayer acceptance remain open. The independent
+Bureaucrat/Emperor gift source review found an unresolved payment-classification
+and disclosure boundary; the existing user question remains pending.
 
 A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
 still cross recorded pending rulings. Continue independent features rather than

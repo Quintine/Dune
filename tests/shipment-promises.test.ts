@@ -378,6 +378,14 @@ void test('voluntary bribes and spending the only required Ghola or Karama canno
   const plain = fixture();
   plain.players[1].spice = 6;
   const g = bind(plain);
+  const original = JSON.stringify(g);
+  assert.equal(viewGame(g, 'p').bribeOptions.targets.find(p => p.id === 'o')!.maximum, 0);
+  const extra = structuredClone(g);
+  extra.players[1].spice += 2;
+  assert.equal(viewGame(extra, 'p').bribeOptions.targets.find(p => p.id === 'o')!.maximum, 2);
+  assert.ok(applyAction(extra, 'p', { type: 'bribe', target: 'o', amount: 2 }));
+  reject(extra, 'p', { type: 'bribe', target: 'o', amount: 3 });
+  assert.equal(JSON.stringify(g), original);
   reject(g, 'p', { type: 'bribe', target: 'o', amount: 1 });
   const discounted = fixture();
   discounted.players[1].spice = 3;
