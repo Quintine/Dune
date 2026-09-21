@@ -28,6 +28,10 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
 - Track missing, prototyped, integrated, verified and polished work in the
   existing checklist. Prototypes need usable controls, a legal AI path and saved
   continuation; placeholders and disconnected helpers are not completed features.
+- A complete administration panel is required non-AI scope: room creation,
+  lifecycle/removal, participant support, backups/restoration and operations.
+  Follow `docs/ADMIN_PANEL.md`; retain authorization, privacy, audit history and
+  saved-game safeguards. Adding this scope does not authorize a game reset.
 - Keep focused checks for crashes, deadlocks, legality, custody, privacy and save
   integrity. Defer exhaustive combinations and visual polish until broader
   functional coverage, unless current failures require them.
@@ -69,6 +73,10 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
   to obtain a green result; the runner self-test checks real failure propagation.
 - Report actual check results and limitations. Passing focused tests does not
   certify a complete faction, expansion or rules mode; preserve release gates.
+- Verify relevant runtime changes on `https://dune.procrastination.games` after
+  deployment, matching the deployed revision to the checkpoint. Use dedicated
+  QA rooms and preserve existing games; local success is not deployed evidence.
+  Follow `docs/VERIFICATION_WORKFLOW.md` for production checks and limitations.
 
 ## Preserve development state
 

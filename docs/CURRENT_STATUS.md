@@ -1,10 +1,23 @@
 # Current development status
 
-Updated 21 September 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 22 September 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
+
+The user added a complete [administration panel](ADMIN_PANEL.md) to the goal on
+22 September: secure admin access, room creation/removal and lifecycle controls,
+participant support, backup/restore, operational views and audited actions.
+This is required scope, not implemented functionality, and belongs before full
+AI refinement/calibration. Existing rules, Git, subagent and preservation
+requirements remain in force.
+
+The goal also requires testing the deployed application at
+**https://dune.procrastination.games**. Match the running revision, exercise
+relevant real player/admin flows in dedicated QA rooms, and record deployed
+results separately from local checks. See [production verification](VERIFICATION_WORKFLOW.md#verify-the-deployed-application).
+This requirements update does not claim a new deployed test result.
 
 Latest delivered checkpoint: `0f79f28`, [forced Harkonnen exchange return](HARKONNEN_EXCHANGE.md).
 Types, lint, **5,150 offline tests**, **49 HTTP tests** and the production build
@@ -112,6 +125,7 @@ These links define bounded working behavior, not complete module certification.
 | Twelve factions and all optional modules | Every missing effect, remaining skill bands, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. Detailed boundaries remain in the checklist/decision index. |
 | AI | Maintain minimal legal participation and critical correctness fixes while game features are unfinished. Full implementation, strategy refinement and calibration wait until all non-AI features are complete; then target approximately 75% higher-tier wins for Medium/Easy, Hard/Medium and Brutal/Hard. See the [AI development plan](AI_DEVELOPMENT_PLAN.md). These targets remain unverified. |
 | Multiplayer | Broader disconnected/abandoned-seat recovery, unattended continuation and network-failure acceptance, while preserving authoritative versioning, custody, privacy and saves. |
+| Administration | Complete the [admin panel](ADMIN_PANEL.md): permissions, room directory and creation/removal, lifecycle controls, participant support, backup/restore and operational audit tools. Required before full AI refinement. |
 | Components and experience | Full component inventory/text verification, all readable inspectors, original artwork, animation/sound/accessibility/mobile polish, complete internal guidance and end-to-end human play. |
 
 [AI calibration](AI_CALIBRATION.md), [multiplayer audit](MULTIPLAYER_AUDIT.md),

@@ -1,5 +1,20 @@
 # Dune implementation status
 
+## 22 September 2026 — Administration and deployed verification added to the goal
+
+The user requested a complete [admin panel](ADMIN_PANEL.md), including adding
+and removing rooms and other useful operational actions. The goal now includes
+room lifecycle management, participant support, backups/restoration, health views
+and audited, authorized administration. This is a requirements checkpoint only;
+no admin capability or live room change is claimed. Administration is explicitly
+part of the non-AI completion gate; the existing Git, selective-subagent, rules
+coverage and saved-game preservation requirements remain unchanged.
+The user also requires relevant browser acceptance against the actual deployment
+at **https://dune.procrastination.games**, matching its revision and preserving
+human games. The [verification workflow](VERIFICATION_WORKFLOW.md#verify-the-deployed-application)
+records the distinction from local checks. No new production test is claimed by
+this documentation checkpoint.
+
 ## 21 September 2026 — Selectable Advanced preview
 
 The user-authorized [Advanced preview](ADVANCED_PREVIEW.md) now has room-creation

@@ -4,6 +4,45 @@ Use the [development guide](DEVELOPMENT.md) to choose checks appropriate to the
 change. These wrappers retain the existing test runner and simulation harness;
 they do not replace rules, browser or release acceptance.
 
+## Verify the deployed application
+
+The user requires testing the actual application at
+**https://dune.procrastination.games**, added to the goal on 22 September 2026.
+Local development, a local production build and container smoke tests do not
+replace testing that deployed origin.
+
+After relevant application changes are deployed, identify the running revision
+or image digest and match it to the checkpoint under test. Record when testing
+occurred, what revision actually ran, the routes/actions exercised, results and
+remaining limitations. If the deployed revision is older, label the results for
+that older revision; do not claim that new source passed deployed acceptance.
+If access or deployment is unavailable, report the gap and keep acceptance open.
+
+Use the production browser flow to verify relevant navigation and deep links,
+bundled assets and rendering, HTTPS/proxy behavior, cookies and authentication,
+room creation/join, rules selection, human/AI decisions, multiplayer updates,
+private views and refresh/reconnection. Exercise changed gameplay and admin
+operations through the real controls and server, with desktop/mobile coverage
+where relevant. Do not rely solely on HTTP status codes or local test results.
+Keep checks focused on the changed behavior and its dependencies; broad final
+acceptance must cover the complete game and administration scope.
+
+Create clearly identified QA rooms/seats and track their IDs privately. Protect
+human games, private information, recovery credentials and logs. Admin tests
+must use explicitly authorized admin access, with destructive or restoration
+checks restricted to designated test records and appropriate recovery snapshots.
+Do not reset production storage, interrupt live human play, weaken permissions
+or restart the server merely to run a routine smoke test.
+
+When a deployment or necessary restart occurs, verify saved-game and seat
+continuity afterward, distinguishing legitimate gameplay changes from data loss.
+Use the existing hosting/deployment procedure and additive migrations; testing
+requirements do not authorize bypassing completion or publication gates.
+Documentation-only checkpoints need documentation/link review, not an unrelated
+production gameplay run. Record production evidence separately from the local
+source-bound checks below, and repair runtime-specific failures before treating
+the affected deployed feature as verified.
+
 ## Compact checks and source evidence
 
 ```sh

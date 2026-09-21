@@ -1,6 +1,6 @@
 # AI development order and difficulty targets
 
-Updated 20 September 2026 at the user's request. This is the current development
+Updated 22 September 2026 at the user's request. This is the current development
 plan; the [earlier calibration studies](AI_CALIBRATION.md) are historical results,
 not evidence that the new targets have been met.
 
@@ -9,8 +9,9 @@ not evidence that the new targets have been met.
 Full AI implementation, strategic refinement and difficulty tuning start only
 after all non-AI game features are complete: Basic and Advanced rules, all twelve
 factions, the three expansions, applicable optional modules and interactions,
-multiplayer functions and the required player-facing features. Do not spend time
-tuning strategy against incomplete rules.
+multiplayer functions, the required player-facing features and the complete
+[administration panel](ADMIN_PANEL.md). Do not spend time tuning strategy against
+incomplete rules or move AI refinement ahead of the administration requirement.
 
 Until then, preserve existing profiles and provide only the minimal legal AI
 participation needed to exercise new features. Fix crashes, deadlocks, illegal
