@@ -1,4 +1,5 @@
 'use client';
+import { integerInputValue } from '../lib/integer-input';
 import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
 import { KwisatzInspector } from './kwisatz-inspector';
@@ -340,13 +341,13 @@ export function GameTable({
   const [richeseShipmentEvent, setRicheseShipmentEvent] = useState('');
   const useRicheseShipment = !!g.nexusRichese && richeseShipmentEvent === g.nexusRichese.event;
   const [useSmuggler, setUseSmuggler] = useState(true);
-  const [bidDraft, setBidDraft] = useState({ auction: '', value: 1 });
-  const auctionKey = `${g.code}/${g.turn}/${g.auction?.remaining ?? 0}`;
+  const [bidDraft, setBidDraft] = useState({ auction: '', value: '' });
   const minimumBid = (g.auction?.bid ?? 0) + 1;
-  const bidAmount = Math.max(
-    minimumBid,
-    bidDraft.auction === auctionKey ? bidDraft.value : minimumBid,
-  );
+  const auctionKey = `${g.code}/${g.turn}/${g.auction?.remaining ?? 0}/${minimumBid}`;
+  const bidText = bidDraft.auction === auctionKey
+    ? bidDraft.value
+    : String(minimumBid);
+  const bidAmount = integerInputValue(bidText);
   const maximumBid = me.hand?.some((c) =>
     canUseAsKaramaRole(g, me, c),
   )
@@ -3530,11 +3531,11 @@ export function GameTable({
                           type="number"
                           min={minimumBid}
                           max={maximumBid}
-                          value={bidAmount}
+                          value={bidText}
                           onChange={(e) =>
                             setBidDraft({
                               auction: auctionKey,
-                              value: Number(e.target.value),
+                              value: e.target.value,
                             })
                           }
                         />
@@ -3552,6 +3553,7 @@ export function GameTable({
                           ...payment,
                         },
                         !Number.isSafeInteger(bidAmount) ||
+                          bidAmount < minimumBid ||
                           bidAmount > maximumBid,
                       )}
                       {actionButton('Pass this bid', { type: 'passBid' })}

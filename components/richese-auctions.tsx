@@ -1,5 +1,6 @@
 'use client';
 
+import { integerInputValue } from '../lib/integer-input';
 import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import type { RicheseAuctionMethod } from '@/game/richese-auction';
@@ -247,16 +248,16 @@ export function RicheseAuctionLot({ game, act, busy }: Props) {
   const me = game.me;
   const silent = auction.method === 'silent';
   const minimum = silent ? 0 : auction.bid + 1;
-  const amount =
-    draft.event === auction.event && draft.amount !== ''
-      ? Number(draft.amount)
-      : minimum;
-  const allyPayment = draft.event === auction.event ? Number(draft.ally) : 0;
+  const bidKey = `${auction.event}/${minimum}`;
+  const amountText = draft.event === bidKey ? draft.amount : String(minimum);
+  const allyText = draft.event === bidKey ? draft.ally : '0';
+  const amount = integerInputValue(amountText);
+  const allyPayment = integerInputValue(allyText);
   const update = (part: Partial<typeof draft>) =>
     setDraft({
-      event: auction.event,
-      amount: String(amount),
-      ally: String(allyPayment),
+      event: bidKey,
+      amount: amountText,
+      ally: allyText,
       ...part,
     });
   const ownPayment = amount - allyPayment;
@@ -368,7 +369,7 @@ export function RicheseAuctionLot({ game, act, busy }: Props) {
                 min={minimum}
                 step={1}
                 max={auction.ownAvailable + auction.allyAvailable}
-                value={amount}
+                value={amountText}
                 disabled={busy}
                 onChange={(event) => update({ amount: event.target.value })}
               />
@@ -380,8 +381,8 @@ export function RicheseAuctionLot({ game, act, busy }: Props) {
                     type="number"
                     min={0}
                     step={1}
-                    max={Math.min(amount, auction.allyAvailable)}
-                    value={allyPayment}
+                    max={Number.isFinite(amount) ? Math.min(amount, auction.allyAvailable) : auction.allyAvailable}
+                    value={allyText}
                     disabled={busy}
                     onChange={(event) => update({ ally: event.target.value })}
                   />
