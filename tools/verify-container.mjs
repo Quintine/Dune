@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const image = process.argv[2];
 if (!image) throw new Error('Usage: node tools/verify-container.mjs IMAGE');
@@ -10,6 +13,8 @@ const name = `dune-verify-${randomUUID()}`;
 const volume = `${name}-data`;
 const docker = (...args) => execFileSync('docker', args, { encoding: 'utf8' }).trim();
 let base;
+const adminFiles = mkdtempSync(join(tmpdir(), 'dune-admin-container-'));
+let adminCookie;
 async function ready() {
   for (let attempt = 0; attempt < 90; attempt++) {
     try {
@@ -31,6 +36,19 @@ try {
   docker('volume', 'create', volume);
   start();
   await ready();
+  execFileSync('node', ['tools/admin-access.mjs', '--name', 'Container QA', '--role', 'viewer', '--out', join(adminFiles, 'key')]);
+  execFileSync('docker', ['exec', '-i', name, 'node', '-e', "require('node:fs').writeFileSync('/tmp/dune-admin-provision.sql', require('node:fs').readFileSync(0), {mode:0o600})"], {
+    input: readFileSync(join(adminFiles, 'key/provision.sql')), // Container USER owns this private file.
+  });
+  docker('exec', name, 'node', 'node_modules/wrangler/bin/wrangler.js', 'd1', 'execute', 'DB', '--local', '--config', 'tools/wrangler.local.json', '--persist-to', '/data', '--file', '/tmp/dune-admin-provision.sql');
+  const adminKey = readFileSync(join(adminFiles, 'key/access-key.txt'), 'utf8').trim();
+  const adminLogin = await fetch(`${base}/api/admin/session`, {
+    method: 'POST', headers: { 'content-type': 'application/json', origin: base },
+    body: JSON.stringify({ action: 'login', key: adminKey }),
+  });
+  assert.equal(adminLogin.status, 200);
+  adminCookie = adminLogin.headers.get('set-cookie')?.split(';')[0];
+  assert.ok(adminCookie);
   const headers = { 'content-type': 'application/json', origin: base };
   const body = JSON.stringify({ name: 'Container verification', faction: 'atreides', advanced: false, expansions: [] });
   const create = await fetch(`${base}/api/rooms`, { method: 'POST', headers, body });
@@ -46,6 +64,10 @@ try {
     const result = await fetch(`${base}/api/rooms/${room.code}`, { headers: { cookie } });
     assert.equal(result.status, 200);
     assert.deepEqual(await result.json(), room, 'Saved seat and room must survive replacement');
+    if (adminCookie) {
+      const admin = await fetch(`${base}/api/admin/session`, { headers: { cookie: adminCookie } });
+      assert.equal(admin.status, 200, 'Administrator session must survive replacement');
+    }
   }
   docker('restart', '--time', '60', name);
   // Docker may assign a different ephemeral host port after a restart.
@@ -57,6 +79,8 @@ try {
   start();
   await ready();
   await restored();
+  execFileSync('node', ['tools/verify-admin.mjs', '--url', base, '--key-file', join(adminFiles, 'key/access-key.txt'), '--qa-account', adminKey.split('.')[1], '--out', join(adminFiles, 'http')], { stdio: 'inherit' });
+  adminCookie = undefined; // The acceptance test intentionally signs out all sessions.
   execFileSync('npm', ['run', 'test:integration'], {
     stdio: 'inherit', env: { ...process.env, DUNE_TEST_URL: base },
   });
@@ -66,6 +90,12 @@ try {
   start(publicOrigin);
   await ready();
   await restored();
+  const proxyAdmin = await fetch(`${base}/api/admin/session`, {
+    method: 'POST', headers: { 'content-type': 'application/json', origin: publicOrigin },
+    body: JSON.stringify({ action: 'login', key: adminKey }),
+  });
+  assert.equal(proxyAdmin.status, 200);
+  assert.ok(proxyAdmin.headers.get('set-cookie')?.includes('; Secure'));
   const proxyCreate = await fetch(`${base}/api/rooms`, {
     method: 'POST', headers: { ...headers, origin: publicOrigin }, body,
   });
@@ -98,4 +128,5 @@ try {
   // Names are unique to this invocation; never remove an existing application.
   try { docker('rm', '-f', name); } catch { /* Already removed or not created. */ }
   try { docker('volume', 'rm', volume); } catch { /* Failure remains visible. */ }
+  rmSync(adminFiles, { recursive: true, force: true });
 }

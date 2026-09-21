@@ -9,9 +9,13 @@ Expansion starts and full rules/publication acceptance remain gated.**
 The user added a complete [administration panel](ADMIN_PANEL.md) to the goal on
 22 September: secure admin access, room creation/removal and lifecycle controls,
 participant support, backup/restore, operational views and audited actions.
-This is required scope, not implemented functionality, and belongs before full
-AI refinement/calibration. Existing rules, Git, subagent and preservation
-requirements remain in force.
+The first prototype now connects separate administrator sign-in, persistent
+sessions/revocation and a searchable, filtered, paginated room directory at
+`/admin`. Private game contents remain excluded. Operator provisioning and
+recovery instructions are in the admin guide. Room creation, lifecycle/removal,
+participant support, backups and operational controls remain unfinished; these
+belong before full AI refinement/calibration. Existing rules, Git, subagent and
+preservation requirements remain in force.
 
 The goal also requires testing the deployed application at
 **https://dune.procrastination.games**. Match the running revision, exercise

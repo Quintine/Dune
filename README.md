@@ -39,6 +39,11 @@ For private NAS hosting and manually applied checkpoint image updates, see the
 [TrueNAS container guide](docs/TRUENAS.md). Its separate persistent storage starts
 with new games; the requested host port is 33046.
 
+The **Administration** link opens `/admin`, with separate administrator sign-in,
+session controls and a searchable room directory. See [initial owner setup and
+scope](docs/ADMIN_PANEL.md#initial-owner-and-access-recovery). Room creation,
+lifecycle/removal, participant support and backup tools are still being built.
+
 ## Saved seats and reconnecting
 
 The room cookie identifies your seat. Refreshing or reopening the invitation with that cookie restores your private hand and pending decisions. A failed restoration offers an explicit retry. Requests time out after 15 seconds; uncertain game actions are reconciled with a read rather than automatically repeated.

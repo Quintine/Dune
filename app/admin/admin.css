@@ -1,0 +1,46 @@
+.admin-shell { max-width: 1420px; margin: auto; padding: 32px; line-height: 1.5; }
+.admin-header, .admin-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.admin-header { padding-bottom: 24px; margin-bottom: 28px; border-bottom: 1px solid var(--border); }
+.admin-return { color: var(--primary); font-size: 1rem; }
+.admin-header h1 { display: flex; align-items: center; gap: 12px; margin: 12px 0 0; }
+.admin-session { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.admin-shell h2 { margin-top: 0; }
+.admin-secondary { color: #b7bbaf; }
+.admin-login { max-width: 580px; margin: 48px auto; padding: 30px; border: 1px solid var(--border); background: #171c16; }
+.admin-login form { display: grid; gap: 12px; margin: 24px 0; }
+.admin-shell input, .admin-shell select, .admin-shell button { min-height: 42px; font-size: 1rem; }
+.admin-shell input, .admin-shell select { width: 100%; border: 1px solid var(--border); border-radius: 4px; background: #151a14; color: var(--foreground); padding: 8px 10px; }
+.admin-shell button { white-space: normal; }
+.admin-notice { display: block; padding: 14px 18px; border: 1px solid var(--primary); background: #25291e; }
+.admin-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--border); }
+.admin-filters label { display: grid; gap: 6px; font-size: 0.9375rem; flex: 1 1 145px; }
+.admin-filters .admin-search { flex: 2 1 240px; }
+.admin-results { margin: 20px 0 12px; }
+.admin-room-table { table-layout: fixed; font-size: 0.9375rem; }
+.admin-room-table th, .admin-room-table td { padding: 16px 12px; white-space: normal; overflow-wrap: anywhere; vertical-align: top; }
+.admin-room-table th:first-child { width: 30%; }
+.admin-room-table td p { margin: 8px 0; }
+.admin-room-table details { margin-top: 8px; }
+.admin-room-table summary { cursor: pointer; color: var(--primary); }
+.admin-room-table ul { padding-left: 20px; }
+.admin-code { font-family: monospace; font-size: 1.125rem; letter-spacing: 1px; }
+.admin-tag { display: inline-block; font-size: 0.875rem; border: 1px solid #626951; border-radius: 4px; padding: 2px 7px; margin-left: 5px; }
+.admin-pagination { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+.admin-session-control { border-top: 1px solid var(--border); padding-top: 24px; margin-top: 24px; max-width: 820px; }
+.admin-confirm { border: 1px solid var(--border); padding: 16px; }
+.admin-confirm button { margin-right: 10px; }
+.admin-development { border-top: 1px solid var(--border); margin-top: 28px; padding-top: 20px; }
+@media (max-width: 700px) {
+  .admin-shell { padding: 20px 16px; }
+  .admin-header, .admin-section-heading { align-items: start; flex-direction: column; gap: 16px; }
+  .admin-header h1 { font-size: 1.8rem; }
+  .admin-login { padding: 20px; margin: 24px 0; }
+  .admin-room-table { display: block; }
+  .admin-room-table thead { display: none; }
+  .admin-room-table tbody { display: block; }
+  .admin-room-table tr { display: grid; grid-template-columns: 1fr; padding: 14px 0; }
+  .admin-room-table td { display: block; padding: 6px 0; }
+  .admin-room-table td:nth-child(2)::before { content: 'Rules: '; color: var(--primary); }
+  .admin-room-table td:nth-child(3)::before { content: 'Progress: '; color: var(--primary); }
+  .admin-room-table td:nth-child(4)::before { content: 'Last game change: '; color: var(--primary); }
+}

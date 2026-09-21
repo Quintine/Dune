@@ -1,5 +1,22 @@
 # Dune implementation status
 
+## 22 September 2026 — Administrator access and room directory prototype
+
+The first [admin panel](ADMIN_PANEL.md#access-and-directory-prototype) slice adds
+personal operator-provisioned keys, live owner/operator/viewer permissions,
+separate persistent eight-hour sessions, current/all-session sign-out and a
+privacy-preserving room directory. Additive schema/trigger changes protect the
+last enabled owner, invalidate disabled-account sessions and retain safe audit
+events. Filters, paging, public roster inspection, refresh and mobile controls
+are connected; no existing game state is rewritten.
+
+Independent review found and resolved malformed-roster search failure and a
+revocation race at directory reads. Focused auth/SQL/privacy tests, authenticated
+HTTP and local browser checks precede source-bound check/build/integration and
+deployed acceptance. Evidence and actual final results belong to the checkpoint
+report. Room lifecycle, creation, participant support, backups, audit browsing
+and complete administration acceptance remain open; AI refinement remains gated.
+
 ## 22 September 2026 — Administration and deployed verification added to the goal
 
 The user requested a complete [admin panel](ADMIN_PANEL.md), including adding

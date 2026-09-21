@@ -57,6 +57,13 @@
       "when": 1789947127493,
       "tag": "0007_clammy_sprite",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1790032690330,
+      "tag": "0008_admin_access",
+      "breakpoints": true
     }
   ]
 }

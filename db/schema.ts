@@ -5,13 +5,20 @@ import {
   primaryKey,
   index,
   uniqueIndex,
+  check,
 } from 'drizzle-orm/sqlite-core';
-export const rooms = sqliteTable('rooms', {
-  code: text('code').primaryKey(),
-  state: text('state').notNull(),
-  version: integer('version').notNull().default(0),
-  updatedAt: integer('updated_at').notNull(),
-});
+import { sql } from 'drizzle-orm';
+
+export const rooms = sqliteTable(
+  'rooms',
+  {
+    code: text('code').primaryKey(),
+    state: text('state').notNull(),
+    version: integer('version').notNull().default(0),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [index('rooms_updated_at').on(table.updatedAt)],
+);
 export const seats = sqliteTable('seats', {
   tokenHash: text('token_hash').primaryKey(),
   revoked: integer('revoked').notNull().default(0),
@@ -151,4 +158,57 @@ export const roomMessages = sqliteTable(
       table.createdAt,
     ),
   ],
+);
+
+export const adminAccounts = sqliteTable(
+  'admin_accounts',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    role: text('role', { enum: ['owner', 'operator', 'viewer'] }).notNull(),
+    keyHash: text('key_hash').notNull().unique(),
+    enabled: integer('enabled').notNull().default(1),
+    sessionGeneration: integer('session_generation').notNull().default(0),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [
+    check(
+      'admin_accounts_role',
+      sql`${table.role} IN ('owner', 'operator', 'viewer')`,
+    ),
+    check('admin_accounts_enabled', sql`${table.enabled} IN (0, 1)`),
+    check('admin_accounts_generation', sql`${table.sessionGeneration} >= 0`),
+  ],
+);
+
+export const adminSessions = sqliteTable(
+  'admin_sessions',
+  {
+    tokenHash: text('token_hash').primaryKey(),
+    id: text('id').notNull().unique(),
+    adminId: text('admin_id')
+      .notNull()
+      .references(() => adminAccounts.id, { onDelete: 'cascade' }),
+    generation: integer('generation').notNull(),
+    createdAt: integer('created_at').notNull(),
+    expiresAt: integer('expires_at').notNull(),
+    revokedAt: integer('revoked_at'),
+  },
+  (table) => [index('admin_sessions_account').on(table.adminId)],
+);
+
+// Audit records intentionally have no cascading account/room dependency.
+// `detail` contains safe operation IDs only, never credentials or game state.
+export const adminAudit = sqliteTable(
+  'admin_audit',
+  {
+    id: text('id').primaryKey(),
+    actorAdminId: text('actor_admin_id'),
+    targetAdminId: text('target_admin_id').notNull(),
+    action: text('action').notNull(),
+    createdAt: integer('created_at').notNull(),
+    detail: text('detail').notNull().default('{}'),
+  },
+  (table) => [index('admin_audit_created_at').on(table.createdAt)],
 );

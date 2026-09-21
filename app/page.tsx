@@ -1125,6 +1125,7 @@ export default function Home() {
       </div>
       <footer>
         <span>Unofficial fan implementation</span>
+        <a href="/admin">Administration</a>
         <span>Dune · A game of conquest, diplomacy & betrayal</span>
       </footer>
     </main>
