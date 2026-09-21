@@ -240,6 +240,8 @@ for (const form of ['printed', 'bg'] as const)
   });
 void test('a gift restores a real Harkonnen hand exchange with its inherited BG declaration and saved response', () => {
   const f = parent(fixture(true, 3));
+  // Keep a real choice after spending the Karama; a sole held card returns automatically.
+  player(f.g, 'h').hand.push(...f.g.deck.splice(0, 1));
   const hark = player(f.g, 'h').hand.find((c) => c.effect === 'karama')!;
   let g = applyAction(f.g, 'h', {
     type: 'card',

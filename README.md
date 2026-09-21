@@ -112,6 +112,10 @@ for activation, background behavior and prototype limits.
 Bursts summarize older notices while retaining their details in the chronicle;
 see [completed-action feedback](docs/ACTION_FEEDBACK.md).
 
+In Advanced development games, **Your Harkonnen inspection** preserves the cards
+seen during the special-Karama exchange. A return with only one legal selection
+completes automatically; see [private exchange history](docs/HARKONNEN_EXCHANGE.md).
+
 ## Verify changes
 
 Use the [development guide](docs/DEVELOPMENT.md) for architecture, focused tests

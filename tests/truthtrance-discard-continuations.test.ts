@@ -675,6 +675,8 @@ void test('a real Harkonnen hand-exchange return decision survives Truthtrance w
   initial.advanced = true;
   initial.phase = 3;
   const karama = hold(initial, 'p', 'Karama');
+  // Retain a real return choice even after the intervening Truthtrance is spent.
+  hold(initial, 'p', 'Shield');
   player(initial, 'q').hand.push(...initial.deck.splice(0, 2));
   initial = applyAction(initial, 'p', {
     type: 'card',

@@ -311,13 +311,15 @@ void test('promise-bound Worthless candidate is conservatively retained but an i
 
 void test('hand-exchange suspension waits; restored response uses newly returned card and original passes', () => {
   let g = fixture(['harkonnen', 'emperor', 'guild']);
+  g.phase = 3;
+  g.players[0].specialKaramaUsed = true;
   g.pendingExchange = {
     response: { kind: 'guildIncome', owner: 'c', amount: 3, passed: ['a'] },
     decision: null,
   };
   g.response = null;
   g.decision = { kind: 'handExchange', player: 'a', target: 'b', count: 1 };
-  g.players[0].hand = [karamas[0]];
+  placeFixtureHand(g, 0, [karamas[0], shield]);
   g = normalizeAutomaticGame(g);
   assert.equal(g.players[2].spice, 10);
   assert.equal(g.decision?.kind, 'handExchange');

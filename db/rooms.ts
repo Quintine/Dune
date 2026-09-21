@@ -486,6 +486,7 @@ export function needsAutomaticRoomRecovery(
     state.decision?.kind === 'ecazAmbassador' ||
     state.decision?.kind === 'homeworldShipmentGuild' ||
     state.decision?.kind === 'fullPlanRead' ||
+    state.decision?.kind === 'handExchange' ||
     state.decision?.kind === 'auctionPayment'
   );
 }

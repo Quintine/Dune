@@ -194,6 +194,8 @@ void test('real Harkonnen extraction reserves future recipient slots and enough 
     hold(g, 'r', 'Distrans');
     const give = hold(g, 'r', 'Shield');
     const k = hold(g, 'e', 'Karama');
+    // Keep a real return choice after the blind draw; a Karama-only hand now returns automatically.
+    const retained = hold(g, 'e', 'Truthtrance');
     for (const name of ['Maula Pistol', 'Lasgun', 'Baliset', 'Snooper'].slice(
       0,
       initialSize,
@@ -208,6 +210,8 @@ void test('real Harkonnen extraction reserves future recipient slots and enough 
       target: 'a',
       amount: 2,
     });
+    assert.equal(g.decision?.kind, 'handExchange');
+    assert.equal(g.players[2].hand.length, 3);
     if (initialSize === 4) {
       const snapshot = structuredClone(g);
       assert.throws(() => transfer(g, 'r', 'a', give), /room|exchange/);
@@ -220,6 +224,7 @@ void test('real Harkonnen extraction reserves future recipient slots and enough 
         .map((c) => c.id),
     });
     assert.equal(g.players[1].hand.length, 4);
+    assert.deepEqual(g.players[2].hand.map(card => card.id), [retained]);
     assert.deepEqual(inventory(g), before);
   }
   let g = fixture();

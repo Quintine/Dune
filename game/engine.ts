@@ -1496,6 +1496,16 @@ export type Game = {
     response: ResponseWindow | null;
     decision: Decision | null;
   } | null;
+  /** Private knowledge copies, never an additional physical card zone. */
+  harkonnenExchangeInspection?: {
+    owner: string;
+    target: string;
+    turn: number;
+    phase: 3;
+    kind: 'draw' | 'return';
+    cards: Card[];
+    signature: string;
+  };
   /** Purchase is already committed; only the Emperor's receipt remains pending. */
   pendingRichesePurchaseIncome?: {
     owner: string;
@@ -8776,10 +8786,128 @@ function recordFullPlanInspection(g: Game, owner: string) {
     { faction: p.faction, name: 'Full plan inspection' },
   );
 }
+function harkonnenInspectionSignature(
+  inspection: Omit<NonNullable<Game['harkonnenExchangeInspection']>, 'signature'>,
+) {
+  return JSON.stringify(['harkonnenExchangeInspection', inspection.owner, inspection.target,
+    inspection.turn, inspection.phase, inspection.kind,
+    inspection.cards.map(card => [card.id, card.name, card.kind, card.effect ?? null])]);
+}
+function recordHarkonnenInspection(g: Game, owner: string, target: string, kind: 'draw' | 'return', cards: Card[]) {
+  const inspection = { owner, target, turn: g.turn, phase: 3 as const, kind, cards: structuredClone(cards) };
+  g.harkonnenExchangeInspection = { ...inspection, signature: harkonnenInspectionSignature(inspection) };
+}
+function projectedHarkonnenInspection(g: Game, owner: string) {
+  const inspection = g.harkonnenExchangeInspection;
+  if (inspection?.owner !== owner) return null;
+  return { owner: inspection.owner, target: inspection.target, turn: inspection.turn,
+    phase: inspection.phase, kind: inspection.kind, cards: inspection.cards };
+}
+function harkonnenExchangeIntegrity(g: Game) {
+  const inspection = g.harkonnenExchangeInspection;
+  const physical = inspection || g.pendingExchange ? physicalTreacheryCards(g) : [];
+  if (inspection !== undefined) {
+    requireRule(
+      inspection && typeof inspection === 'object' &&
+        Object.keys(inspection).sort().join(',') === 'cards,kind,owner,phase,signature,target,turn' &&
+        g.advanced &&
+        g.players.some(p => p.id === inspection.owner && p.faction === 'harkonnen' && p.specialKaramaUsed === true) &&
+        g.players.some(p => p.id === inspection.target && p.id !== inspection.owner) &&
+        Number.isSafeInteger(inspection.turn) && inspection.turn >= 1 && inspection.turn <= g.turn &&
+        inspection.phase === 3 && ['draw', 'return'].includes(inspection.kind) &&
+        Array.isArray(inspection.cards) && inspection.cards.length >= 1 && inspection.cards.length <= 4 &&
+        inspection.cards.every(card => card && typeof card === 'object' &&
+          Object.keys(card).every(key => ['id', 'name', 'kind', 'effect'].includes(key)) &&
+          typeof card.id === 'string' && typeof card.name === 'string' &&
+          physical.filter(current => current.id === card.id && current.name === card.name &&
+            current.kind === card.kind && current.effect === card.effect).length === 1) &&
+        new Set(inspection.cards.map(card => card.id)).size === inspection.cards.length &&
+        inspection.signature === harkonnenInspectionSignature(inspection),
+      'The private Harkonnen exchange inspection is malformed.',
+    );
+  }
+  const exchanges = homeworldSavedDecisions(g).filter(decision => decision.kind === 'handExchange');
+  const pending = g.pendingExchange;
+  if (!pending) {
+    requireRule(!exchanges.length, 'The Harkonnen exchange has lost its suspended continuation.');
+    return;
+  }
+  requireRule(
+    g.status === 'playing' && g.advanced && g.phase === 3 &&
+      Object.keys(pending).sort().join(',') === 'decision,response' &&
+      exchanges.length === 1 && pending.decision?.kind !== 'handExchange' &&
+      (pending.decision === null || (pending.decision && typeof pending.decision.kind === 'string' &&
+        g.players.some(p => p.id === pending.decision!.player))) &&
+      (pending.response === null || (pending.response && typeof pending.response.kind === 'string' &&
+        g.players.some(p => p.id === pending.response!.owner) && Array.isArray(pending.response.passed) &&
+        new Set(pending.response.passed).size === pending.response.passed.length &&
+        pending.response.passed.every(id => g.players.some(p => p.id === id)))),
+    'The saved Harkonnen exchange has an invalid Bidding continuation.',
+  );
+  const decision = exchanges[0];
+  const owner = g.players.find(p => p.id === decision.player);
+  const target = g.players.find(p => p.id === decision.target);
+  requireRule(
+    Object.keys(decision).sort().join(',') === 'count,kind,player,target' &&
+      owner?.faction === 'harkonnen' && owner.specialKaramaUsed === true && target && target.id !== owner.id &&
+      Number.isSafeInteger(decision.count) && decision.count >= 1 && decision.count <= 4 &&
+      owner.hand.length >= decision.count && owner.hand.length - decision.count <= handLimit(owner) &&
+      target.hand.length + decision.count <= handLimit(target),
+    'The saved Harkonnen exchange has an invalid owner, target or return count.',
+  );
+  requireRule(
+    [...owner.hand, ...target.hand].every(card => typeof card.id === 'string' &&
+      physical.filter(current => current.id === card.id).length === 1),
+    'The Harkonnen exchange requires distinct physical cards in their original custody.',
+  );
+  if (inspection) requireRule(
+    inspection.owner === owner.id && inspection.target === target.id && inspection.turn === g.turn &&
+      inspection.cards.length === decision.count,
+    'The pending Harkonnen return differs from its private inspection.',
+  );
+}
+function finishHarkonnenExchange(
+  g: Game,
+  decision: Extract<Decision, { kind: 'handExchange' }>,
+  returnCards: unknown,
+  automatic = false,
+) {
+  const owner = getPlayer(g, decision.player), target = getPlayer(g, decision.target);
+  requireRule(
+    Array.isArray(returnCards) && returnCards.length === decision.count &&
+      new Set(returnCards).size === decision.count &&
+      returnCards.every(id => typeof id === 'string' && owner.hand.some(card => card.id === id)),
+    'Return exactly the required number of distinct cards from your hand.',
+  );
+  const returned = owner.hand.filter(card => returnCards.includes(card.id));
+  if (automatic && !g.harkonnenExchangeInspection) {
+    // An old save records no original draw. Its forced return is still known exactly.
+    recordHarkonnenInspection(g, owner.id, target.id, 'return', returned);
+  }
+  owner.hand = owner.hand.filter(card => !returnCards.includes(card.id));
+  target.hand.push(...returned);
+  requireRule(owner.hand.length <= handLimit(owner) && target.hand.length <= handLimit(target),
+    'The completed exchange must respect hand limits.');
+  const pending = g.pendingExchange!;
+  g.pendingExchange = null;
+  g.response = pending.response;
+  g.decision = pending.decision;
+  if (!g.response && g.decision?.kind === 'auctionPayment')
+    recoverAuctionPayment(g, getPlayer(g, g.decision.player));
+  log(g, `${owner.name} returned ${decision.count} cards to ${target.name}${automatic ? ' automatically; every held card was required' : ''}.`,
+    { faction: 'harkonnen', name: 'Harkonnen exchange' });
+}
 function finishAutomaticDecision(g: Game): boolean {
   if (g.biddingEnd && biddingEndQuiet(g)) return finishBiddingEnd(g);
   if (advanceHomeworldReveal(g)) return true;
   const decision = g.decision;
+  if (decision?.kind === 'handExchange' && !g.response && !g.truthtrance &&
+      !g.phaseOpening && !g.pendingNullentropy && !g.pendingRicheseGift && !g.pendingTreacheryDiscard &&
+      getPlayer(g, decision.player).hand.length === decision.count) {
+    harkonnenExchangeIntegrity(g);
+    finishHarkonnenExchange(g, decision, getPlayer(g, decision.player).hand.map(card => card.id), true);
+    return true;
+  }
   if (homeworldShipmentAutomatic(g)) {
     const shipment = g.pendingHomeworldShipment!;
     g.decision = null;
@@ -20187,6 +20315,10 @@ export function prepareSpecialKaramaIntent(
     );
     const target = getPlayer(g, stringField(action.target));
     requireRule(target.id !== p.id, 'Choose another player’s hand.');
+    const physical = physicalTreacheryCards(g);
+    requireRule([...p.hand, ...target.hand].every(held =>
+      physical.filter(current => current.id === held.id).length === 1),
+    'The Harkonnen exchange requires distinct physical cards in their original custody.');
     requireRule(
       g.pendingRicheseGift?.intent.owner !== target.id,
       'Resolve the reserved Richese gift before randomly exchanging that hand.',
@@ -20481,6 +20613,7 @@ export function executeSpecialKaramaIntent(
     const taken = shuffle(target.hand).slice(0, count);
     target.hand = target.hand.filter((c) => !taken.some((t) => t.id === c.id));
     p.hand.push(...taken);
+    recordHarkonnenInspection(g, p.id, target.id, 'draw', taken);
     g.pendingExchange = { response: g.response, decision: g.decision };
     g.response = null;
     g.decision = {
@@ -20589,6 +20722,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
@@ -20744,6 +20878,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     }
   }
   finishActionContinuations(g);
+  harkonnenExchangeIntegrity(g);
   finishLeaderSkillCustody(g, state);
   leaderSkillsIntegrity(g);
   reconcileBattlePromises(g, { actor: id, action });
@@ -20760,6 +20895,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   homeworldDefenseIntegrity(g);
   homeworldShipmentIntegrity(g);
   ixRicheseTechnologyIntegrity(g);
+  harkonnenExchangeIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
@@ -20854,6 +20990,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
@@ -20898,6 +21035,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   homeworldDefenseIntegrity(g);
   homeworldShipmentIntegrity(g);
   ixRicheseTechnologyIntegrity(g);
+  harkonnenExchangeIntegrity(g);
   return g;
 }
 
@@ -22118,32 +22256,7 @@ function applyActionInner(
         'No matching paid search was saved; restore the saved search before continuing.',
       );
     } else if (decision.kind === 'handExchange') {
-      requireRule(
-        Array.isArray(action.returnCards) &&
-          action.returnCards.length === decision.count &&
-          new Set(action.returnCards).size === decision.count &&
-          action.returnCards.every(
-            (id) => typeof id === 'string' && p.hand.some((c) => c.id === id),
-          ),
-        'Return exactly the required number of distinct cards from your hand.',
-      );
-      const target = getPlayer(g, decision.target);
-      const returnIds = action.returnCards as string[];
-      const returned = p.hand.filter((c) => returnIds.includes(c.id));
-      p.hand = p.hand.filter((c) => !returnIds.includes(c.id));
-      target.hand.push(...returned);
-      requireRule(
-        p.hand.length <= handLimit(p) &&
-          target.hand.length <= handLimit(target),
-        'The completed exchange must respect hand limits.',
-      );
-      const pending = g.pendingExchange!;
-      g.pendingExchange = null;
-      g.response = pending.response;
-      g.decision = pending.decision;
-      if (!g.response && g.decision?.kind === 'auctionPayment')
-        recoverAuctionPayment(g, getPlayer(g, g.decision.player));
-      log(g, `${p.name} returned ${decision.count} cards to ${target.name}.`);
+      finishHarkonnenExchange(g, decision, action.returnCards);
     } else if (decision.kind === 'captureOffer') {
       requireRule(
         typeof action.accept === 'boolean',
@@ -24516,6 +24629,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
@@ -24569,6 +24683,7 @@ export function viewGame(state: Game, id: string) {
       ? findReachableBattlePlan(g, me)
       : null;
   return {
+    harkonnenExchangeInspection: projectedHarkonnenInspection(g, id),
     ecazPoisonIncome: (g.ecazPoisonIncome ?? []).filter((income) => income.player === id)
       .map(({turn, phase, amount, count}) => ({turn, phase, amount, count})),
     biddingEnd: g.biddingEnd ? { event: g.biddingEnd.event,

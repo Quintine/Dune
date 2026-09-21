@@ -154,6 +154,14 @@ void test('owner can retake control through Truthtrance, phase opening, response
       };
     },
     (g) => {
+      // A valid legacy Advanced exchange with a genuine return choice.
+      g.advanced = true; g.phase = 3;
+      g.deck = baseDeck();
+      const take = (kind: string) => g.deck.splice(g.deck.findIndex(card => card.kind === kind || card.effect === kind), 1)[0];
+      g.discard = [take('karama')];
+      g.players[0] = { ...newPlayer('a', 'Owner', 'harkonnen'),
+        autopilot: 'Medium', specialKaramaUsed: true, hand: [take('shield'), take('projectile')] };
+      g.pendingExchange = { response: null, decision: null };
       g.decision = { kind: 'handExchange', player: 'a', target: 'e', count: 1 };
     },
   ];

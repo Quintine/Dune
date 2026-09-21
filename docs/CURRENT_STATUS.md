@@ -6,23 +6,21 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `7136c8d`, [Truthtrance physical-force questions](TRUTHTRANCE_FORCE_FACTS.md).
-Types, lint, **5,122 offline tests** and the production build passed; six
-complete Basic/Advanced samples had no rejected actions across 1,551 actions
-and 39 JSON restores. Browser compound questions, AI responses, mobile controls
-and exact human private-answer refresh were checked. All 1,584 prior rooms and
-3,352 seats remained intact; one QA room/seat brought the baseline to 1,585 rooms
-and 3,353 human seats. Full visual acceptance remains open.
+Latest delivered checkpoint: `a3bc0ac`, [completed-action feedback](ACTION_FEEDBACK.md).
+Types, lint, **5,137 offline tests** and the production build passed. Two complete
+Basic/Advanced samples had no rejected actions across 821 actions and 21 JSON
+restores. Browser burst notices, local interaction, muted updates and exact refresh
+were checked. All 1,585 prior rooms and 3,353 seats remained intact; one QA
+room/seat brought the baseline to 1,586 rooms and 3,354 human seats. Full visual
+acceptance remains open.
 
-Current work connects [completed-action feedback](ACTION_FEEDBACK.md) for core
-movement, shipment, revival, collection and battle results. Existing cosmetic
-notices coalesce bursts into at most three visible/pending notices, with complete
-chronicle details retained; hidden pages clear and silently consume feedback.
-
-A bounded follow-up candidate is the forced Harkonnen special-Karama return
-when every held card must go back. Automatic settlement must preserve a private
-saved record of the randomly inspected cards and the original interruption.
-This is unfinished; larger hands must keep their real return choice.
+Current work connects the [forced Harkonnen special-Karama return](HARKONNEN_EXCHANGE.md)
+when every held card must go back. Automatic settlement preserves a private saved
+record of the inspected cards and the original interruption. Larger hands keep
+their real return choice; legacy records identify held cards without inventing
+which were originally drawn. The server also schedules older saved exchanges for
+automatic recovery while preserving real choices. Independent review is complete;
+final source-bound checks and browser evidence accompany the Git checkpoint.
 
 The [Sandmaster/HMS source comparison](SANDMASTER_MOVEMENT.md#21-september-native-hms-relocation-eligibility)
 found no official clarification that passengers remaining in the interior

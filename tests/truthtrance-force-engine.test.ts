@@ -128,7 +128,15 @@ void test('physical force facts include Bene Gesserit advisors without exposing 
 void test('a force fact combined with a private hand fact projects only its aggregate answer to the respondent', () => {
   const initial = typedGame();
   const target = player(initial, 'f');
-  const privateName = target.hand[0].name;
+  // Setup may move the target's only opening Truthtrance to the asker.
+  // Stage a definite held card without changing the physical inventory.
+  const inventory = knowledgePhysical(initial);
+  initial.deck.push(...target.hand);
+  const privateCard = initial.deck.shift();
+  assert.ok(privateCard);
+  target.hand = [privateCard];
+  assert.deepEqual(knowledgePhysical(initial), inventory);
+  const privateName = privateCard.name;
   const combined: TruthFact = { kind: 'or', terms: [
     fact({ kind: 'reserves' }, 'total', 11), { kind: 'hand', name: privateName },
   ] };

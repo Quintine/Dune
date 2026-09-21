@@ -6,7 +6,6 @@ import {
   normalizeAutomaticGame,
   viewGame,
   type Action,
-  type Decision,
   type Game,
 } from '../game/engine';
 import { richeseCards } from '../game/richese-cards';
@@ -362,15 +361,9 @@ void test('forged or missing saved Ixian lot decisions fail before projection, a
     (game) => {
       game.ixRicheseTechnologyEvent += '-forged';
     },
-    (game) => {
-      const duplicate = structuredClone(game.decision) as Decision;
-      game.pendingExchange = { response: null, decision: duplicate };
-    },
   ];
 
-  for (const corrupt of corruptions) {
-    const game = structuredClone(genuine);
-    corrupt(game);
+  async function rejectSaved(game: Game) {
     f.sqlite
       .prepare('UPDATE rooms SET state = ?, version = ? WHERE code = ?')
       .run(JSON.stringify(game), game.version, f.code);
@@ -387,6 +380,36 @@ void test('forged or missing saved Ixian lot decisions fail before projection, a
     );
     assert.deepEqual(snapshot(f, f.code), before);
   }
+  for (const corrupt of corruptions) {
+    const game = structuredClone(genuine);
+    corrupt(game);
+    await rejectSaved(game);
+  }
+
+  // A real paid Box search holds this exact Ix decision. Duplicating the live
+  // decision now exercises Ix uniqueness without fabricating a Harkonnen parent.
+  const staged = structuredClone(genuine);
+  const boxIndex = staged.richeseCache!.findIndex(card => card.effect === 'nullentropyBox');
+  assert.ok(boxIndex >= 0);
+  const box = staged.richeseCache!.splice(boxIndex, 1)[0];
+  player(staged, f.observerAuth.playerId).hand.push(box);
+  // Two eligible physical cards keep the paid search as a genuine private choice.
+  staged.discard.push(take(staged, card => card.kind === 'worthless'),
+    take(staged, card => card.kind === 'worthless'));
+  assert.deepEqual(physicalCards(staged), physicalCards(genuine));
+  f.sqlite.prepare('UPDATE rooms SET state = ?, version = ? WHERE code = ?')
+    .run(JSON.stringify(staged), staged.version, f.code);
+  await f.act(f.observerAuth, { type: 'card', card: box.id });
+  const suspended = await f.restart().readRoom(f.code);
+  assert.equal(suspended.decision?.kind, 'nullentropy');
+  assert.equal(player(suspended, f.observerAuth.playerId).spice,
+    player(staged, f.observerAuth.playerId).spice - 2);
+  assert.deepEqual(suspended.pendingNullentropy!.resume.decision, genuine.decision);
+  assert.deepEqual(physicalCards(suspended), physicalCards(genuine));
+  assert.doesNotThrow(() => viewGame(suspended, f.ixAuth.playerId));
+  const duplicated = structuredClone(suspended);
+  duplicated.decision = structuredClone(genuine.decision);
+  await rejectSaved(duplicated);
 });
 
 void test('concurrent authenticated declines persist one Richese lot continuation behind the room CAS', async (t) => {

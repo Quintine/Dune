@@ -90,6 +90,7 @@ import { VictoryProgress } from './victory-progress';
 import { tableActionOwner } from '@/game/table-turn';
 import { DukeVidal } from './duke-vidal';
 import { CardInspector, CardRules } from './card-inspector';
+import { HarkonnenExchangeInspection } from './harkonnen-exchange-inspection';
 import { Recruits } from './recruits';
 import { ecazTreacheryDefinition } from '@/game/ecaz-cards';
 import { ordinaryCardAvailability } from '@/game/card-availability';
@@ -4842,6 +4843,7 @@ export function GameTable({
       )}
       <Bribes game={g} act={act} busy={busy} />
       <TruthHistory game={g} />
+      <HarkonnenExchangeInspection game={g} />
       <section className="player-console">
         <nav className="console-tabs">
           {(['hand', 'leaders', 'log', 'rules'] as const).map((p) => (

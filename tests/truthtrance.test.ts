@@ -173,6 +173,10 @@ void test('any-time question overlays and restores pending windows without reapp
       };
     }
     if (mode === 'decision') {
+      initial.advanced = true;
+      initial.phase = 3;
+      initial.players.find(p => p.id === 'h')!.specialKaramaUsed = true;
+      hold(initial, 'h', 'Shield'); // Preserve a real return choice during the overlay.
       initial.decision = {
         kind: 'handExchange',
         player: 'h',

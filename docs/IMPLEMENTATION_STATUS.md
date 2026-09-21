@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 21 September 2026 — Harkonnen forced exchange return
+
+Special-Karama exchanges now return automatically when the entire combined hand
+is owed. A private saved inspection retains the actual drawn card faces; legacy
+forced saves describe their held-card observation without inventing draw origin.
+Real choices remain interactive. Shared settlement preserves suspended responses,
+auction recovery and physical custody. See [scope and evidence](HARKONNEN_EXCHANGE.md).
+The existing unfunded-bid ruling and Advanced/publication gates remain open.
+
 ## 21 September 2026 — Completed-action feedback
 
 Core committed movement, shipping, revival, collection and battle results now
