@@ -56,7 +56,7 @@ function exchange(g: Game, owner: string) {
   return act(g, owner, { type: 'decision', event, cards: [r.drawn[0], r.eligible[0]] });
 }
 
-void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, Advanced, Ixian and module gates remain closed', () => {
+void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, Advanced, Richese and module gates remain closed', () => {
   for (const card of LEADER_SKILL_CARDS) {
     const game = completedTleilaxuSkillsGame({ requestedSkill: card.id });
     assert.equal(game.leaderSkills!.assignments.find(a => a.owner === 't')!.skill, card.id);
@@ -64,7 +64,7 @@ void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, 
     assert.equal(basicTleilaxuLeaderSkillsProfile(viewGame(game, 'a')), true);
     stable(game);
   }
-  for (const mutate of [(g: Game) => {g.advanced = true;}, (g: Game) => {g.players[1] = newPlayer('x','Ixian','ixians');},
+  for (const mutate of [(g: Game) => {g.advanced = true;}, (g: Game) => {g.players[1] = newPlayer('x','Richese','richese');},
     (g: Game) => {g.discoveryEnabled = true;}, (g: Game) => {g.expansions.push('choam');}]) {
     const g = createGame('TLEIGATE',newPlayer('t','Tleilaxu','tleilaxu'),false,['ix']);
     joinGame(g,newPlayer('e','Emperor','emperor'));g.players.forEach(p => {p.ready = true;});mutate(g);

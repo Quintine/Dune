@@ -117,6 +117,10 @@ Old room IDs in historical browser evidence no longer identify active local game
 Future games must be preserved. This was a one-time user-authorized reset, not a
 maintenance strategy or permission to clear future games.
 
+The explicit `--profile ix-skills` runs genuine Basic Ixian full-deck setup for
+two through six players, with Tleilaxu and base opponents. It preserves ordinals
+26–30 and full custody/private saved continuation; see [Ix integration](IX_LEADER_SKILLS.md).
+
 ## Private-seat restoration
 
 Create a private JSON file (mode 0600) outside the checkout with this structure;

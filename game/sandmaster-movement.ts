@@ -1,6 +1,6 @@
 import { ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import type { Action, Game, GameView } from './engine';
-import { GRAPH, location, mobileRouteDistance, splitLocation } from './board';
+import { GRAPH, location, mobileRouteDistance, splitLocation, MOBILE_LOCATION } from './board';
 import { isAdvisor } from './advisors';
 import { strongholdPathBlocked } from './occupancy';
 import { botMovementRange } from './bot-mobility';
@@ -62,7 +62,10 @@ export function sandmasterPathBlocked(
   key: string,
 ): boolean {
   const p = g.players.find((p) => p.id === player);
-  if (!p || !Object.hasOwn(GRAPH, key)) return true;
+  const pointer = g.mobileStronghold?.location;
+  if (!p || (!Object.hasOwn(GRAPH, key) && key !== MOBILE_LOCATION)) return true;
+  if (key === MOBILE_LOCATION && (!pointer || !Object.hasOwn(GRAPH, pointer) ||
+    (!!splitLocation(pointer).sector && splitLocation(pointer).sector === g.storm))) return true;
   const at = splitLocation(key);
   return (
     (!!at.sector && at.sector === g.storm) ||
@@ -73,6 +76,30 @@ export function sandmasterPathBlocked(
       isAdvisor(p, splitLocation(from).territory),
     )
   );
+}
+
+/** The HMS interior is a room-local dead end connected only through its pointer. */
+export function sandmasterAdjacent(g: Game | GameView, key: string): string[] {
+  const pointer = g.mobileStronghold?.location;
+  if (key === MOBILE_LOCATION) return pointer && Object.hasOwn(GRAPH, pointer) ? [pointer] : [];
+  return [...(GRAPH[key] ?? []), ...(pointer === key ? [MOBILE_LOCATION] : [])];
+}
+
+/** Ordinary forces may enter or leave HMS; this never relocates its pointer. */
+export function sandmasterRouteDistance(g: Game | GameView, route: string[]): number {
+  if (!route.includes(MOBILE_LOCATION)) return mobileRouteDistance(route);
+  if (!route.length || route.length > Object.keys(GRAPH).length + 1 ||
+    new Set(route).size !== route.length || route.slice(1, -1).includes(MOBILE_LOCATION)) return Infinity;
+  let steps = 0;
+  for (let index = 0; index < route.length; index++) {
+    const key = route[index];
+    if (key !== MOBILE_LOCATION && !Object.hasOwn(GRAPH, key)) return Infinity;
+    if (key === MOBILE_LOCATION && !sandmasterAdjacent(g, key).length) return Infinity;
+    if (!index) continue;
+    if (!sandmasterAdjacent(g, route[index - 1]).includes(key)) return Infinity;
+    steps += Number(splitLocation(route[index - 1]).territory !== splitLocation(key).territory);
+  }
+  return steps;
 }
 /** Only crossing a territory boundary enters a new collection opportunity. */
 export function sandmasterEnteredTerritories(
@@ -140,7 +167,7 @@ export function quoteSandmasterMovement(
         route.every((k) => typeof k === 'string') &&
         route[0] === from &&
         route.at(-1) === location(move.to, move.sector) &&
-        mobileRouteDistance(route) <= move.range &&
+        sandmasterRouteDistance(g, route) <= move.range &&
         route.every((key) => !sandmasterPathBlocked(g, player, from, key)),
       'Sandmaster needs a connected route within movement range, outside blocked sectors.',
     );
@@ -198,7 +225,7 @@ export function sandmasterShortestRoute(
       last = route.at(-1)!;
     if (cost !== best.get(last)) continue;
     if (last === to) return route;
-    for (const key of GRAPH[last] ?? []) {
+    for (const key of sandmasterAdjacent(g, last)) {
       if (sandmasterPathBlocked(g, player, from, key)) continue;
       const next =
         cost +

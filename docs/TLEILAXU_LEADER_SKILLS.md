@@ -13,7 +13,8 @@ and no other optional modules. It keeps the real Ix Treachery/Spice decks and
 the Cheap Hero Traitor identity. Starting Treachery precedes simultaneous
 private two-card skill offers; public assignments and ordinary Traitor choices
 precede the native three Face Dancers. No hidden card controls profile admission.
-Ixians, Advanced Tleilaxu and combined modules require further integration.
+Ixians now have a separate [Basic integration](IX_LEADER_SKILLS.md); Advanced
+Tleilaxu and combined modules require further work.
 
 ## Connected interactions
 

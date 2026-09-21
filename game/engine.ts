@@ -13,11 +13,11 @@ import {
 import { quoteSukRescue, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
 import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
-import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
+import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, selectedOriginElites, groundMovementRange, type PlanetologistMovement } from './planetologist-movement';
 import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFieldCompanion } from './smuggler-no-field';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, type SmugglerBattleReceipt } from './smuggler-battle';
-import { quoteSandmasterMovement, validateSandmasterMovement, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
+import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterRouteDistance, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
@@ -1419,6 +1419,7 @@ export type Game = {
     order: MovementOrder;
   } | null;
   pendingIxSubstitution?: {
+    receipt?: { event: string; turn: number; physical: string; signature: string };
     homeworld?: { pool: HomeworldForces; cyborgsLost: number; eliteTanks: number; normalTanks: number; battleLosses: number };
     player: string;
     territory: string;
@@ -1610,6 +1611,7 @@ export type Game = {
     cardRolesSignature?: string;
     winnerDiscards?: { cards: string[]; completed: boolean; signature: string };
     sukRescue?: { signature: string; completed: boolean };
+    ixSubstitution?: { signature: string; completed: boolean };
     rihani?: { skill: RihaniSkill; cards: string[]; signature: string; completed: boolean; faceDanceStarted?: true };
     sandmaster?: { leader: string; key: string; before: number; after: number };
     smugglerCollection?: SmugglerBattleReceipt;
@@ -5289,6 +5291,7 @@ function leaderSkillsIntegrity(g: Game) {
   const noFieldShipment = leaderSkillNoFieldIntegrity(g);
   sandmasterIntegrity(g);
   sukRescueIntegrity(g);
+  ixSubstitutionIntegrity(g);
   rihaniIntegrity(g);
   smugglerBattleIntegrity(g);
   for (const [owner, plan] of Object.entries(g.battle?.plans ?? {})) {
@@ -9388,8 +9391,9 @@ function sandmasterIntegrity(g: Game) {
   for (const other of [g.pendingIxMove, g.pendingChoamMove])
     if (other?.sandmaster !== undefined) validateSandmasterOrder(g, getPlayer(g, other.player), other);
 }
-function movementOrderRange(g: Game, p: Player, move: MovementOrder) {
-  return move.discoveryFlight || move.ornithopterRange ? 3 : planetologistRange(movementRange(g, p, move.elite), move.planetologist?.mode);
+function movementOrderRange(g: Game, p: Player, move: MovementOrder, origin = move.origin) {
+  return move.discoveryFlight || move.ornithopterRange ? 3 : planetologistRange(
+    movementRange(g, p, selectedOriginElites(move.group, move.eliteGroup, origin)), move.planetologist?.mode);
 }
 function validatePlanetologistMove(g: Game, p: Player, move: Pick<MovementOrder, 'planetologist' | 'origins' | 'origin' | 'noField' | 'ornithopterEvent' | 'discoveryFlight'>) {
   const skill = move.planetologist;
@@ -9457,28 +9461,14 @@ function validateFlightSelection(g: Game, p: Player, move: MovementOrder) {
     );
 }
 function movementRange(g: Game, p: Player, elite: number) {
-  const base =
-    fighterCount(p, 'arrakeen') || fighterCount(p, 'carthag')
-      ? 3
-      : (p.faction === 'fremen' &&
-            !(
-              p.fremenMovementBlocked?.turn === g.turn &&
-              p.fremenMovementBlocked.move === p.moved
-            )) ||
-          (p.faction === 'ixians' &&
-            elite > 0 &&
-            !(
-              p.ixMovementBlocked?.turn === g.turn &&
-              p.ixMovementBlocked.move === p.moved
-            ))
-        ? 2
-        : 1;
-  return (
-    base +
-    (p.faction === 'choam' && g.choamMovement?.turn === g.turn
-      ? g.choamMovement.bonus
-      : 0)
-  );
+  const blocked = p.faction === 'ixians' ? p.ixMovementBlocked : p.fremenMovementBlocked;
+  return groundMovementRange({
+    faction: p.faction,
+    cityOrnithopters: !!(fighterCount(p, 'arrakeen') || fighterCount(p, 'carthag')),
+    selectedElites: elite,
+    nativeBlocked: blocked?.turn === g.turn && blocked.move === p.moved,
+    choamBonus: p.faction === 'choam' && g.choamMovement?.turn === g.turn ? g.choamMovement.bonus : 0,
+  });
 }
 function balisetPrevents(g: Game, player: string, origin: string, to: string) {
   const choam = byFaction(g, 'choam');
@@ -9598,7 +9588,7 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
       (key) =>
         gameDistance(g, key, location(move.to, move.sector), (k) =>
           pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
-        ) <= movementOrderRange(g, p, move),
+        ) <= movementOrderRange(g, p, move, splitLocation(key).territory),
     ),
     'The movement route is no longer available.',
   );
@@ -15982,6 +15972,7 @@ function resolveBattle(g: Game) {
       territory: b.territory, skill: quote.sukGraduate,
       commitment: structuredClone(casualtyCommitment), pool: sukForcePool(winner, b.territory),
       cards: [...quote.winnerCards], physical: sukPhysicalSignature(winner), losses: null, signature: '',
+      ...(winner.faction === 'ixians' ? { eliteOrigins: true as const } : {}),
     };
     updateSukReceipt(g);
   }
@@ -16098,7 +16089,7 @@ function settleWinnerCasualties(
       'Choose the original Suk Graduate casualty allocation.');
     pending.losses = { ...choice };
     updateSukReceipt(g);
-    const options = sukRescueOptions(pending.skill, pending.pool, choice);
+    const options = sukRescueOptions(pending.skill, pending.pool, choice, pending.eliteOrigins);
     if (options.length === 1) settleSukRescue(g, options[0], true);
     else g.decision = { kind: 'sukRescue', player: p.id, event: pending.event,
       territory: to, mode: pending.skill.mode, options };
@@ -16121,26 +16112,70 @@ function settleWinnerCasualties(
     `${p.name} sent ${choice.normal} normal and ${choice.elite} elite forces from ${combatLocationName(g, to)} to the Tanks. ${automatic ? 'This was the only legal casualty allocation for the revealed battle plan, so it was applied automatically.' : 'This applies the selected casualty allocation for the revealed battle plan.'}`,
     automatic ? { faction: p.faction, name: 'Battle casualties' } : undefined,
   );
+  stageIxSubstitution(g, p, to, cards, losses);
+  finishWinner(g, p, to, cards);
+}
+/** Stage faction substitution after actual Tank losses; skills finish before it opens. */
+function stageIxSubstitution(g: Game, p: Player, to: string, cards: string[], losses: Record<string, number>) {
+  const cyborgsLost = Object.values(losses).reduce((sum, count) => sum + count, 0);
   const survivingSuboids = to.startsWith('homeworld:') ? combatArmy(g, p.id, to).normal : Object.entries(p.forces)
     .filter(([key]) => splitLocation(key).territory === to)
     .reduce(
       (sum, [key, count]) => sum + count - (p.elites?.forces[key] ?? 0),
       0,
     );
-  if (p.faction === 'ixians' && choice.elite > 0 && survivingSuboids > 0) {
+  if (p.faction === 'ixians' && cyborgsLost > 0 && survivingSuboids > 0) {
     g.pendingIxSubstitution = { player: p.id, territory: to, losses, cards,
       ...(to.startsWith('homeworld:') ? { homeworld: {
-        pool: combatArmy(g, p.id, to), cyborgsLost: choice.elite,
+        pool: combatArmy(g, p.id, to), cyborgsLost,
         eliteTanks: p.elites!.tanks, normalTanks: p.tanks - p.elites!.tanks, battleLosses: p.battleLosses,
       } } : {}),
     };
-    g.decision = {
-      kind: 'ixSubstitution',
-      player: p.id,
-      territory: to,
-      losses,
-    };
-  } else finishWinner(g, p, to, cards);
+    if (g.leaderSkills) {
+      const pending = g.pendingIxSubstitution;
+      pending.receipt = { event: g.lastBattleContext!.event, turn: g.turn, physical: sukPhysicalSignature(p), signature: '' };
+      pending.receipt.signature = ixSubstitutionSignature(pending);
+      g.lastBattleContext!.ixSubstitution = { signature: pending.receipt.signature, completed: false };
+    }
+  }
+}
+function ixSubstitutionSignature(pending: NonNullable<Game['pendingIxSubstitution']>) {
+  return JSON.stringify([pending.player, pending.territory, pending.losses, pending.cards,
+    pending.receipt?.event, pending.receipt?.turn, pending.receipt?.physical,
+    ...(pending.sources === undefined ? [] : [pending.sources, pending.recover])]);
+}
+function ixSubstitutionIntegrity(g: Game) {
+  const pending = g.pendingIxSubstitution, context = g.lastBattleContext, obligation = context?.ixSubstitution;
+  if (!pending?.receipt && !obligation) {
+    requireRule(!pending || !g.leaderSkills, 'The Ixian skill aftermath lost its substitution receipt.');
+    return;
+  }
+  if (obligation?.completed) {
+    requireRule(!pending, 'The completed Ixian substitution cannot be replayed.');
+    return;
+  }
+  const owner = pending && g.players.find(p => p.id === pending.player);
+  requireRule(pending?.receipt && owner?.faction === 'ixians' && obligation && !obligation.completed &&
+    context.event === pending.receipt.event && context.turn === pending.receipt.turn && g.turn === context.turn &&
+    context.winner === pending.player && context.territory === pending.territory &&
+    g.phase === 6 && !g.battle && g.status === 'playing' &&
+    pending.receipt.signature === obligation.signature && pending.receipt.signature === ixSubstitutionSignature(pending) &&
+    pending.receipt.physical === sukPhysicalSignature(owner) &&
+    pending.cards.every(id => owner.hand.some(card => card.id === id)),
+    'The saved Ixian substitution changed its original battle losses, cards or physical counters.');
+  const decisions = homeworldSavedDecisions(g);
+  const selecting = decisions.filter(d => d.kind === 'ixSubstitution');
+  const exchangeResponse = g.response?.kind === 'ixSubstitution' || g.pendingKarama?.use.kind === 'cancel' &&
+    g.pendingKarama.use.response.kind === 'ixSubstitution';
+  requireRule(selecting.every(d => d.player === pending.player && d.territory === pending.territory &&
+    JSON.stringify(d.losses) === JSON.stringify(pending.losses)) &&
+    (exchangeResponse ? !!pending.sources && !!pending.recover : !pending.sources && !pending.recover) &&
+    (exchangeResponse || selecting.length === 1 || decisions.some(d => d.kind === 'rihani' && d.player === pending.player)),
+    'The saved Ixian substitution lost its original choice or preceding skill exchange.');
+}
+function completeIxSubstitution(g: Game) {
+  g.pendingIxSubstitution = null;
+  if (g.lastBattleContext?.ixSubstitution) g.lastBattleContext.ixSubstitution.completed = true;
 }
 function sukForcePool(p: Player, territory: string): SukForceGroup[] {
   return Object.entries(p.forces).filter(([key]) => splitLocation(key).territory === territory)
@@ -16171,6 +16206,7 @@ function sukRescueIntegrity(g: Game) {
     context.sukRescue?.signature === pending.signature && !context.sukRescue.completed &&
     pending.signature === sukReceiptSignature(pending) &&
     pending.physical === sukPhysicalSignature(player) &&
+    (pending.eliteOrigins === undefined || pending.eliteOrigins === true && player.faction === 'ixians') &&
     JSON.stringify(pending.pool) === JSON.stringify(sukForcePool(player, pending.territory)) &&
     pending.commitment.forces.normal === pending.pool.reduce((sum, group) => sum + group.normal, 0) &&
     pending.commitment.forces.elite === pending.pool.reduce((sum, group) => sum + group.elite, 0) &&
@@ -16181,7 +16217,7 @@ function sukRescueIntegrity(g: Game) {
     requireRule(pending.commitment.options.some((o) => JSON.stringify(o) === JSON.stringify(pending.losses)) &&
       decisions.length === 1 && decisions.every((d) => d.player === pending.player && d.event === pending.event &&
         d.territory === pending.territory && d.mode === pending.skill.mode &&
-        JSON.stringify(d.options) === JSON.stringify(sukRescueOptions(pending.skill, pending.pool, pending.losses!))),
+        JSON.stringify(d.options) === JSON.stringify(sukRescueOptions(pending.skill, pending.pool, pending.losses!, pending.eliteOrigins))),
       'The saved Suk Graduate rescue choices differ from the committed casualties.');
   } else {
     const lossDecision = homeworldSavedDecisions(g).find((d) => d.kind === 'battleLosses' && d.player === pending.player);
@@ -16199,7 +16235,7 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
   const player = getPlayer(g, pending.player);
   requireRule(pending.losses && pending.physical === sukPhysicalSignature(player),
     'The Suk Graduate rescue no longer has its committed physical counters.');
-  const quote = quoteSukRescue(pending.skill, pending.pool, pending.losses, option);
+  const quote = quoteSukRescue(pending.skill, pending.pool, pending.losses, option, pending.eliteOrigins);
   for (const group of quote.removed) {
     player.forces[group.key] -= group.normal + group.elite;
     if (!player.forces[group.key]) delete player.forces[group.key];
@@ -16219,6 +16255,7 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
   g.lastBattleContext!.sukRescue!.completed = true;
   log(g, `${player.name}'s Suk Graduate saved ${option.normal} ordinary and ${option.elite} elite forces: ${option.kept ? `1 remained in sector ${splitLocation(option.kept.key).sector}` : 'none remained in the battle territory'}, ${quote.reserves.normal + quote.reserves.elite} returned to reserves, and ${quote.tanks.normal + quote.tanks.elite} casualties went to the Tanks.${automatic ? ' The only legal rescue was applied automatically.' : ''}`, { faction: player.faction, name: 'Suk Graduate rescue' });
   observeOccupation(g);
+  if (pending.eliteOrigins) stageIxSubstitution(g, player, pending.territory, pending.cards, quote.eliteTanks!);
   finishWinner(g, player, pending.territory, pending.cards);
 }
 function winnerDiscardSignature(pending: NonNullable<Game['pendingWinnerDiscards']>) {
@@ -16372,6 +16409,14 @@ function projectedRihani(g: Game, owner: string) {
 }
 function finishWinner(g: Game, winner: Player, t: string, cards: string[]) {
   if (startRihaniVictory(g, winner, t, cards)) return;
+  if (g.pendingIxSubstitution) {
+    const pending = g.pendingIxSubstitution;
+    requireRule(pending.player === winner.id && pending.territory === t &&
+      JSON.stringify(pending.cards) === JSON.stringify(cards) && !pending.sources && !pending.recover,
+      'Resume the original Ixian substitution after Leader Skills.');
+    g.decision = { kind: 'ixSubstitution', player: winner.id, territory: t, losses: pending.losses };
+    return;
+  }
   if (g.pendingWinnerDiscards) {
     winnerDiscardsIntegrity(g);
     const pending = g.pendingWinnerDiscards;
@@ -17923,6 +17968,9 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
   } else if (response.kind === 'ixMovement') {
     const quote = canceled ? movementCancellationQuote(g, response) : null;
     const move = g.pendingIxMove!;
+    // Cancellation only releases the declaration; its uncommitted army or route
+    // need not remain executable. An allowed move must still be legal now.
+    if (!canceled) validateMovementOrder(g, getPlayer(g, move.player), move);
     g.pendingIxMove = null;
     if (canceled) {
       const player = getPlayer(g, move.player);
@@ -17933,13 +17981,11 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
       player.ixMovementBlocked = { turn: quote.turn, move: quote.move };
       log(
         g,
-        `${player.name}'s cyborg movement advantage was canceled. A one-territory move remains available.`,
+        `${player.name}'s cyborg movement advantage was canceled for this move. Forces remain in place and no movement was spent. Independent ornithopters and Planetologist still apply to a legal replacement.`,
       );
     } else offerChoamMovement(g, move);
   } else if (response.kind === 'ixSubstitution') {
-    const quote = canceled
-      ? ixSubstitutionCancellationQuote(g, response)!
-      : null;
+    ixSubstitutionCancellationQuote(g, response);
     const pending = g.pendingIxSubstitution!;
     const player = getPlayer(g, pending.player);
     if (!canceled && pending.homeworld) {
@@ -17968,15 +18014,14 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
       );
     }
     observeOccupation(g);
-    g.pendingIxSubstitution = null;
-    if (quote) {
+    completeIxSubstitution(g);
+    if (canceled) {
       log(
         g,
         'Karama prevented Ixian substitution. Original cyborg casualties remain in the Tanks; no surviving suboids were exchanged.',
       );
-      if (quote.decision) g.decision = quote.decision;
-      else finishBattle(g);
-    } else finishWinner(g, player, pending.territory, pending.cards);
+    }
+    finishWinner(g, player, pending.territory, pending.cards);
   } else if (
     [
       'choamRevival',
@@ -21757,7 +21802,7 @@ function applyActionInner(
     } else if (decision.kind === 'ixSubstitution') {
       const pending = g.pendingIxSubstitution!;
       if (action.decline === true) {
-        g.pendingIxSubstitution = null;
+        completeIxSubstitution(g);
         finishWinner(g, p, pending.territory, pending.cards);
       } else {
         const parse = (input: unknown, available: Record<string, number>) => {
@@ -21795,6 +21840,10 @@ function applyActionInner(
             sum(pending.sources) === sum(pending.recover),
           'Exchange one surviving suboid for each cyborg lost in this battle.',
         );
+        if (pending.receipt) {
+          pending.receipt.signature = ixSubstitutionSignature(pending);
+          g.lastBattleContext!.ixSubstitution!.signature = pending.receipt.signature;
+        }
         g.response = { kind: 'ixSubstitution', owner: id, passed: [] };
       }
     } else if (decision.kind === 'revivalStop') {
@@ -23951,22 +24000,26 @@ function applyActionInner(
         (key) =>
           gameDistance(g, key, location(to, s), (k) =>
             pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
-          ) <= speed,
+          ) <= movementOrderRange(g, p, move, splitLocation(key).territory),
       ),
-      `That destination is blocked or more than ${speed} territories away.`,
+      planetologist?.mode === 'gather'
+        ? 'Each selected origin must have an unblocked route within its own movement range.'
+        : `That destination is blocked or more than ${speed} territories away.`,
     );
     validateFlightSelection(g, p, move);
     if (
-      !move.ornithopterRange &&
+      !move.ornithopterRange && !move.discoveryFlight &&
       p.faction === 'ixians' &&
       elite > 0 &&
-      speed === 2 &&
-      group.some(
-        ([key]) =>
+      !(p.ixMovementBlocked?.turn === g.turn && p.ixMovementBlocked.move === p.moved) &&
+      !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
+      (move.sandmaster
+        ? Object.values(move.sandmaster.routes).some(route => sandmasterRouteDistance(g, route) > 1)
+        : group.some(([key]) =>
+          selectedOriginElites(group, eliteGroup, splitLocation(key).territory) > 0 &&
           gameDistance(g, key, location(to, s), (k) =>
-            pathBlocked(g, p, k, isAdvisor(p, origin)),
-          ) > 1,
-      )
+            pathBlocked(g, p, k, isAdvisor(p, splitLocation(key).territory)),
+          ) > planetologistRange(1, planetologist?.mode)))
     ) {
       g.pendingIxMove = move;
       g.response = {
@@ -23983,7 +24036,7 @@ function applyActionInner(
       !(p.fremenMovementBlocked?.turn === g.turn && p.fremenMovementBlocked.move === p.moved) &&
       !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
       (move.sandmaster
-        ? Object.values(move.sandmaster.routes).some(route => mobileRouteDistance(route) > 1)
+        ? Object.values(move.sandmaster.routes).some(route => sandmasterRouteDistance(g, route) > 1)
         : group.some(
           ([key]) => gameDistance(g, key, location(to, s), (k) =>
             pathBlocked(g, p, k, isAdvisor(p, origin))) > planetologistRange(1, planetologist?.mode)))

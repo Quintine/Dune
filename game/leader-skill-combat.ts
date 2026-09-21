@@ -60,14 +60,20 @@ export const PLANETOLOGIST_BASE_SPECIALS = [
   { id: 'treachery-32', name: 'Truthtrance', effect: 'truthtrance' },
 ] as const;
 
+export const PLANETOLOGIST_IX_SPECIALS = [
+  { id: 'ix-thumper', name: 'Thumper', effect: 'thumper' },
+  { id: 'ix-harvester', name: 'Harvester', effect: 'harvester' },
+  { id: 'ix-amal', name: 'Amal', effect: 'amal' },
+] as const;
+
 const planetologistBaseSpecialById = new Map<
   string,
-  (typeof PLANETOLOGIST_BASE_SPECIALS)[number]
+  (typeof PLANETOLOGIST_BASE_SPECIALS)[number] | (typeof PLANETOLOGIST_IX_SPECIALS)[number]
 >(
-  PLANETOLOGIST_BASE_SPECIALS.map((card) => [card.id, card]),
+  [...PLANETOLOGIST_BASE_SPECIALS, ...PLANETOLOGIST_IX_SPECIALS].map((card) => [card.id, card]),
 );
 
-/** Shared engine/UI/bot eligibility: exact printed base component, no native use. */
+/** Shared engine/UI/bot eligibility: exact printed green component, no native use. */
 export function isPlanetologistBattleSpecialCard(
   card: Pick<Card, 'id' | 'name' | 'kind' | 'effect'> | undefined,
 ): boolean {

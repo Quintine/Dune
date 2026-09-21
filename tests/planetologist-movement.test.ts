@@ -247,7 +247,7 @@ void test('two-origin movement keeps separate sources and elites, one shared arr
   unchanged(g, { ...a, forces: { [first]: 2 } }, /exactly two/);
   const far = fixture();
   const selected = gather(far, undefined, 2);
-  unchanged(far, selected.a, /more than 1/);
+  unchanged(far, selected.a, /Each selected origin.*own movement range/);
 });
 
 void test('Fremen extra range preserves a real Karama response and replacement keeps Planetologist', () => {

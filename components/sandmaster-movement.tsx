@@ -3,10 +3,8 @@
 import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import {
-  GRAPH,
   gameTerritories,
   location,
-  mobileRouteDistance,
   splitLocation,
 } from '@/game/board';
 import {
@@ -17,6 +15,8 @@ import {
   sandmasterLeader,
   sandmasterModeSupported,
   sandmasterPathBlocked,
+  sandmasterAdjacent,
+  sandmasterRouteDistance,
   type SandmasterChoice,
 } from '@/game/sandmaster-movement';
 import { Button } from './ui/button';
@@ -144,18 +144,18 @@ export function SandmasterMovement({
         const extensions =
           last === destination
             ? []
-            : (GRAPH[last] ?? []).filter(
+            : sandmasterAdjacent(game, last).filter(
                 (next) =>
                   !route.includes(next) &&
                   !sandmasterPathBlocked(game, game.me, from, next) &&
-                  mobileRouteDistance([...route, next]) <= order.range,
+                  sandmasterRouteDistance(game, [...route, next]) <= order.range,
               );
         return (
           <fieldset className="space-y-2" key={from}>
             <legend>{placeName(game, from)} route</legend>
             <p className="fine">
               {route.map((key) => placeName(game, key)).join(' → ')} ·{' '}
-              {mobileRouteDistance(route)} / {order.range} territories
+              {sandmasterRouteDistance(game, route)} / {order.range} territories
             </p>
             <div className="flex flex-wrap gap-2">
               <Button

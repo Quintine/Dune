@@ -12,7 +12,9 @@ export function sukRescueLabel(option: SukRescueOption): string {
   const kept = option.kept
     ? `keep 1 ${option.kept.kind === 'normal' ? 'ordinary' : 'elite'} in sector ${splitLocation(option.kept.key).sector}; `
     : '';
-  return `Save ${option.normal} ordinary + ${option.elite} elite: ${kept}return ${total - (option.kept ? 1 : 0)} to reserves`;
+  const origins = option.eliteReserves ? ` (cyborgs: ${Object.entries(option.eliteReserves)
+    .map(([key, count]) => `${count} from sector ${splitLocation(key).sector}`).join(', ')})` : '';
+  return `Save ${option.normal} ordinary + ${option.elite} elite: ${kept}return ${total - (option.kept ? 1 : 0)} to reserves${origins}`;
 }
 
 export function SukGraduatePanel({ decision, act, busy }: {

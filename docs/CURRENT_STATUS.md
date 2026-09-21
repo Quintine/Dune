@@ -6,32 +6,29 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `489bd32`, [Basic Moritani with Leader Skills](MORITANI_LEADER_SKILLS.md).
-Types, lint, **5,034 offline tests** and the production build passed; five
-complete two-through-six-player samples had no rejected actions. Browser setup
-and refresh were checked. All 1,580 prior rooms and 3,348 seats remained intact;
-one QA room/seat brought the baseline to 1,581 rooms and 3,349 human seats.
-Screenshot capture timed out; full visual acceptance remains open.
+Latest delivered checkpoint: `d3559f6`, [Basic Tleilaxu with Leader Skills](TLEILAXU_LEADER_SKILLS.md).
+Types, lint, **5,058 offline tests** and the production build passed; five
+complete two-through-six-player samples had no rejected actions. Browser setup,
+Rihani exchange, mobile controls and refresh were checked. All 1,581 prior rooms
+and 3,349 seats remained intact; one QA room/seat brought the baseline to 1,582
+rooms and 3,350 human seats. Screenshot capture timed out; full visual acceptance
+remains open.
 
-Current work: [Basic Tleilaxu with Leader Skills](TLEILAXU_LEADER_SKILLS.md)
-connects genuine full-deck setup, own revival through automatic response chains,
-native Rihani Face Dancer exchanges and later Face Dance skill custody. Zoal's
-Smuggler collection now uses the opposing printed disc value. Focused tests,
-authenticated saved choices, private controls and a reusable two-through-six
-player sample profile accompany final source-bound reports. Existing missing
-skill bands, Advanced Tleilaxu/foreign gholas and other roster/module combinations
-remain separate work; admission does not certify complete Leader Skills.
-The Bureaucrat/Emperor gift question is still pending. The `8f7a62c` policy
-checkpoint removed usage checks/cutoffs and deferred full AI work until feature
-completion, followed by three adjacent 75% targets.
+Current work: [Basic Ixians with Leader Skills](IX_LEADER_SKILLS.md) connects
+genuine starting-card/skill setup, per-origin cyborg movement, Sandmaster HMS
+entry/exit, Suk rescue before actual cyborg substitution, Rihani precedence and
+mandatory green-Special disposal. Saved receipts bind physical losses and choices.
+Focused tests, authenticated setup recovery and a two-through-six-player sample
+profile accompany final reports. Existing missing skill bands, Advanced and
+other module combinations remain separate work. The Bureaucrat/Emperor gift
+question is still pending.
 
 The reviewed remaining native Ecaz/Moritani effects, Duke revival and Richese
-empty-cache auction arithmetic still cross recorded source questions; Loyalty is
-now connected. For later Tleilaxu/Skills integration, create replacement offers
-at successful native revival commitment: the current automatic response loop can
-revive after the outer custody observer. This is a confirmed dependency in the
-currently gated roster, not a demonstrated supported-profile defect; no synthetic
-profile was enabled or labeled verified in this pass.
+empty-cache auction arithmetic still cross recorded source questions. Native
+Tleilaxu revival now creates its skill offer at successful commitment, including
+automatic response chains; the former dependency is resolved in its Basic profile.
+The `8f7a62c` policy checkpoint removed usage checks/cutoffs and deferred full AI
+work until feature completion, followed by three adjacent 75% targets.
 
 The [platform audit](AUTOPILOT.md#platform-audit-20-september-2026) found no supported
 Sites scheduler or Durable Object provisioning contract. Durable unattended bot

@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 21 September 2026 — Basic Ixians with Leader Skills
+
+Genuine full-deck setup connects cyborg movement per origin, Sandmaster HMS entry
+and exit, Suk rescue before actual Tank substitution, Rihani precedence and exact
+green-Special mandatory disposal. Signed aftermath choices, private controls,
+legal AI paths, authenticated concurrent recovery and two-through-six-player
+samples accompany the [integration contract](IX_LEADER_SKILLS.md). Existing
+missing effects and mode/publication gates remain; source-bound final evidence
+is stored outside the checkout.
+
 ## 21 September 2026 — Basic Tleilaxu with Leader Skills
 
 Genuine Basic Tleilaxu setup now uses the full skill deck, native Rihani Face

@@ -5,7 +5,7 @@ import { presenceAt } from './force-presence';
 import { EcazOccupancyError } from './ecaz-occupy';
 import {
   planetologistLeader,
-  planetologistRange,
+  groundMovementRange,
   type PlanetologistMoveMode,
 } from './planetologist-movement';
 import { territoryEntryBlock, strongholdPathBlocked } from './occupancy';
@@ -77,17 +77,13 @@ export function botMovementRange(
   elite: number,
   planetologist?: PlanetologistMoveMode,
 ) {
-  const base =
-    fighterCount(p, 'arrakeen') || fighterCount(p, 'carthag')
-      ? 3
-      : (p.faction === 'fremen' && !p.fremenMovementBlocked) ||
-          (p.faction === 'ixians' && elite > 0 && !p.ixMovementBlocked)
-        ? 2
-        : 1;
-  const ordinary = base + (p.faction === 'choam' ? g.choamMovementBonus : 0);
-  return planetologist && planetologistLeader(g, p.id)
-    ? planetologistRange(ordinary, planetologist)
-    : ordinary;
+  return groundMovementRange({
+    faction: p.faction,
+    cityOrnithopters: !!(fighterCount(p, 'arrakeen') || fighterCount(p, 'carthag')),
+    selectedElites: elite,
+    nativeBlocked: p.faction === 'ixians' ? !!p.ixMovementBlocked : !!p.fremenMovementBlocked,
+    choamBonus: p.faction === 'choam' ? g.choamMovementBonus : 0,
+  }, planetologist && planetologistLeader(g, p.id) ? planetologist : undefined);
 }
 export function botGroundMoveAllowed(
   g: GameView,

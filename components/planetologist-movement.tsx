@@ -5,6 +5,7 @@ import type { Action, GameView } from '@/game/engine';
 import {
   planetologistLeader,
   planetologistMovementModeSupported,
+  selectedOriginElites,
   type PlanetologistMoveMode,
 } from '@/game/planetologist-movement';
 import { botGroundMoveAllowed } from '@/game/bot-mobility';
@@ -93,7 +94,8 @@ export function planetologistMoveDraft(
   if (
     selected.some(
       ([from]) =>
-        !botGroundMoveAllowed(game, me, from, target, elites[from] ?? 0, mode),
+        !botGroundMoveAllowed(game, me, from, target,
+          selectedOriginElites(selected, elites, splitLocation(from).territory), mode),
     )
   )
     return {
@@ -194,6 +196,12 @@ export function PlanetologistMovement({
         Destination: {territory(destination).name}, sector {sector}. Select the
         physical forces to move below.
       </p>
+      {me.faction === 'ixians' && (
+        <p className="fine">
+          Each origin uses its own selected cyborgs for movement range. Cyborgs
+          from one territory cannot carry suboids from the other territory farther.
+        </p>
+      )}
       {sources.length ? (
         sources.map(([from, owned]) => {
           const source = splitLocation(from);

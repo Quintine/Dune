@@ -81,7 +81,9 @@ The local Leader Skills prototype also supports Basic Moritani with base
 opponents and the full fourteen-card deck. See [entry, connected interactions
 and remaining boundaries](docs/MORITANI_LEADER_SKILLS.md). Basic Tleilaxu also
 supports the full deck, native Rihani exchanges and saved revival choices; see
-[its integration boundary](docs/TLEILAXU_LEADER_SKILLS.md).
+[its integration boundary](docs/TLEILAXU_LEADER_SKILLS.md). Basic Ixians now connect
+cyborg movement, HMS routes and battle aftermath through the same full deck; see
+[Ixian integration](docs/IX_LEADER_SKILLS.md).
 
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See

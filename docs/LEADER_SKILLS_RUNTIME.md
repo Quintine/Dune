@@ -177,3 +177,12 @@ routes, optional collection, human/AI controls and saved cancellation. The
 [worm-ride follow-up](SANDMASTER_WORM.md) adds native Fremen destination collection
 and saved arrival reactions. Other special relocation and combined modules
 remain unfinished.
+
+## Basic Ixian integration
+
+[Basic Ixians with Leader Skills](IX_LEADER_SKILLS.md) adds genuine starting-card
+setup, per-origin cyborg range, Sandmaster HMS entry/exit, explicit Suk cyborg
+rescue origins, Rihani-before-substitution and mandatory green-Special disposal.
+Tleilaxu/base opponents are supported through the complete deck; Advanced and
+other combinations remain separate. This supersedes earlier Ix admission gaps,
+not the documented missing skill bands or Sandmaster native HMS relocation.

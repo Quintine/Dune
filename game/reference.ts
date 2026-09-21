@@ -4001,6 +4001,29 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'ixian-leader-skills',
+    title: 'Ixians with Leader Skills',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Basic Ixians connect the full skill deck to cyborg movement, the HMS and battle aftermath.',
+    steps: [
+      'The private starting-card choice precedes the full skill deal, Traitors and real first-Storm HMS placement. Basic Ixians can share this development combination with Tleilaxu and base factions; other optional modules and Advanced remain unavailable.',
+      'Planetologist calculates each gathered origin separately using its selected cyborgs. Canceling native cyborg movement leaves the independent skill range available. Sandmaster routes can enter or leave the HMS through its current pointer.',
+      'Suk Graduate rescues finish before substitution. Select the original sectors of rescued cyborgs where needed; only cyborgs actually sent to the Tanks can return through substitution. Rihani also finishes before native substitution.',
+      'Planetologist may substitute the green Thumper, Harvester or Amal in its weapon role. Their normal effects do not execute, and mandatory disposal still follows allowed, declined or canceled substitution.',
+      'Missing skill bands, extra Sandmaster HMS relocation and other combined configurations remain unfinished. This prototype does not certify complete rules or AI strength.',
+    ],
+    related: ['leader-skills', 'tleilaxu-leader-skills', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Genuine setup, per-origin range, HMS force routes, actual rescued/casualty custody and ordered battle cleanup are connected.', evidence: ['game/leader-skill-profile.ts', 'game/suk-graduate.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Private setup, typed movement, room-local routes and explicit rescue-origin choices retain saved decisions.', evidence: ['components/planetologist-movement.tsx', 'components/sandmaster-movement.tsx', 'components/suk-graduate.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing profiles use legal shared ranges and current choice lists. Full strategy and difficulty tuning remain deferred until feature completion.', evidence: ['game/bot-mobility.ts', 'game/bots.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'Configuration, physical source inventory, source composition and remaining boundaries are recorded.', evidence: ['docs/IX_LEADER_SKILLS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Full-deck setups, controls, corruption/custody, authenticated concurrent recovery and two-through-six-player samples cover this bounded composition.', evidence: ['tests/ix-skills-movement.test.ts', 'tests/ix-skills-battle.test.ts', 'tests/ix-skills-suk.test.ts', 'tests/ix-skills-recovery.test.ts', 'tools/faction-games.ts'] },
+    ],
+  },
+  {
     id: 'tleilaxu-leader-skills',
     title: 'Tleilaxu with Leader Skills',
     category: 'Advanced & expansions',
@@ -4073,7 +4096,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Other special Sandmaster relocation, Spice Banker normal income and Diplomat retreat remain missing. Foreign gholas, Face Dancers and combined modules remain unfinished. This development prototype does not enable public module starts.',
       ...LEADER_SKILL_CARDS.map(card => `${card.name}. Normal: ${card.normal.join(' ')} Skilled battle: ${card.battle.join(' ')}`),
     ],
-    related: ['tleilaxu-leader-skills', 'moritani-leader-skills', 'setup','choam-modules','implementation-checklist'],
+    related: ['ixian-leader-skills', 'tleilaxu-leader-skills', 'moritani-leader-skills', 'setup','choam-modules','implementation-checklist'],
     checklist: [
       { area:'Implementation',status:'Partial',detail:'Exact fourteen-card custody, source-ordered setup, public capture, concealment, death and own revival connect five role bonuses, Planetologist movement/Special substitution and Suk Graduate casualty rescue. Rihani inspection/exchange and lower Mentat/Bureaucrat/Sandmaster effects are connected. Smuggler normal reserve shipping, the owned Richese No-Field companion, unmodified battle collection and optional Sandmaster ground-route and native Fremen worm-ride collection are connected. A separately opted-in Mentat preview connects private pre-plan questions and historical observations while ordinary activation awaits the uniform-response decision. Spice Banker lower spending and native Diplomat base Shield/Snooper copying are connected; Spice Banker normal income, other remaining bands, Diplomat retreat and combined modules remain missing. Bureaucrat redirects supported third-party auction, shipment and bribe payments with exact saved once-per-phase use.',evidence:['game/leader-skill-cards.ts','game/leader-skills.ts','game/leader-skill-combat.ts','game/suk-graduate.ts','game/rihani-decipherer.ts','game/mentat-question.ts','game/bureaucrat-payment.ts','game/leader-skill-battle-board.ts','game/smuggler-shipment.ts','game/smuggler-no-field.ts','game/smuggler-battle.ts','game/spice-banker.ts','game/sandmaster-movement.ts','game/sandmaster-worm.ts','game/diplomat-defense.ts','game/engine.ts'] },
       { area:'Player controls',status:'Partial',detail:'Private card/leader selection, readable inspectors, public battle posture and revival draw/decline, Planetologist range/gather controls, Special weapon selection and Suk Graduate physical rescue choices are connected. Rihani has private history and separate keep-new/reveal-old controls; automatic battle effects need no confirmation. Smuggler has explicit ordinary shipping opt-out and No-Field companion opt-in with physical-versus-priced force counts, plus automatic surviving-leader battle collection with reveal-time guidance. Banker exposes separate sealed spending and authorized inspection. Sandmaster exposes explicit legal routes, per-territory collection choices and an optional worm-destination checkbox. Diplomat offers a named committed Worthless choice or decline after public reveal. Bureaucrat offers redirect or full payment with explicit recipient amounts and deferred bribe custody. Remaining effect controls are missing.',evidence:['components/leader-skills.tsx','components/planetologist-movement.tsx','components/suk-graduate.tsx','components/rihani-decipherer.tsx','components/mentat-question.tsx','components/bureaucrat-payment.tsx','components/leader-skill-battle-guide.tsx','components/smuggler-shipment.tsx','components/spice-banker.tsx','components/sandmaster-movement.tsx','components/sandmaster-worm.tsx','components/diplomat-defense.tsx','components/game-table.tsx'] },

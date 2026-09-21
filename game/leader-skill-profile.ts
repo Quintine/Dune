@@ -37,8 +37,18 @@ export function basicTleilaxuLeaderSkillsProfile(game: LeaderSkillProfile): bool
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
 }
 
+/** Basic Ixians, optionally with native Tleilaxu, keep the ordinary Ix inventories. */
+export function basicIxLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  return game.advanced === false && game.expansions.length === 1 &&
+    game.expansions[0] === 'ix' && noOtherLeaderSkillModules(game) &&
+    !!game.players?.some(player => player.faction === 'ixians') &&
+    game.players.every(player => ['ixians', 'tleilaxu'].includes(player.faction) ||
+      FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
+}
+
 export function basicExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return basicMoritaniLeaderSkillsProfile(game) || basicTleilaxuLeaderSkillsProfile(game);
+  return basicMoritaniLeaderSkillsProfile(game) || basicTleilaxuLeaderSkillsProfile(game) ||
+    basicIxLeaderSkillsProfile(game);
 }
 
 /** Shared by rule quotes, controls and minimal legal bot participation. */
