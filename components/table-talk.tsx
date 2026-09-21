@@ -1,4 +1,5 @@
 'use client';
+import { randomId } from '@/lib/random-id';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { GameView } from '@/game/engine';
 import { faction } from '@/game/catalog';
@@ -152,7 +153,7 @@ export function TableTalk({ game }: { game: GameView }) {
   async function submit() {
     if (sending.current || !ready) return;
     const draft = record ?? {
-      id: crypto.randomUUID(),
+      id: randomId(),
       recipientId: recipient || null,
       text,
     };

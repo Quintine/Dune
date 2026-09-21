@@ -1,3 +1,4 @@
+import { randomId } from './random-id';
 export type SeatRecoveryKit = Readonly<{
   format: 'dune-seat-recovery';
   version: 1;
@@ -106,7 +107,7 @@ export function createRecoveryAttempt(
     type: 'recoverSeat',
     playerId: kit.playerId,
     recoverySecret: kit.recoverySecret,
-    operationId: globalThis.crypto.randomUUID(),
+    operationId: randomId(),
     newSessionToken: secret256(),
   });
 }

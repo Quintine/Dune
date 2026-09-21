@@ -1,3 +1,4 @@
+import { requestOrigin } from '@/lib/request-origin';
 import {
   readSeatView,
   authenticate,
@@ -9,7 +10,7 @@ import {
 } from '@/db/rooms';
 import { RuleError } from '@/game/engine';
 import type { FactionId } from '@/game/catalog';
-import { waitUntil } from 'cloudflare:workers';
+import { env, waitUntil } from 'cloudflare:workers';
 import { resumeRoom } from '@/db/room-continuation';
 
 const codeOf = (req: Request) => {
@@ -68,7 +69,7 @@ export async function POST(req: Request) {
   try {
     if (
       req.headers.get('origin') &&
-      req.headers.get('origin') !== new URL(req.url).origin
+      req.headers.get('origin') !== requestOrigin(req, env.DUNE_PUBLIC_ORIGIN)
     )
       return Response.json(
         { error: 'Invalid request origin.' },
@@ -115,7 +116,7 @@ export async function POST(req: Request) {
           headers: {
             ...(r.token
               ? {
-                  'Set-Cookie': `dune_${code}=${r.token}; HttpOnly; SameSite=Strict; Path=/api/rooms/${code}; Max-Age=2592000${new URL(req.url).protocol === 'https:' ? '; Secure' : ''}`,
+                  'Set-Cookie': `dune_${code}=${r.token}; HttpOnly; SameSite=Strict; Path=/api/rooms/${code}; Max-Age=2592000${requestOrigin(req, env.DUNE_PUBLIC_ORIGIN).startsWith('https:') ? '; Secure' : ''}`,
                 }
               : {}),
             'Cache-Control': 'no-store',

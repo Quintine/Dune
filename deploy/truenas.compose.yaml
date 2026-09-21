@@ -1,0 +1,19 @@
+services:
+  dune:
+    image: ghcr.io/quintine/dune:checkpoint
+    init: true
+    restart: unless-stopped
+    environment:
+      DUNE_PUBLIC_ORIGIN: https://dune.procrastination.games
+    ports:
+      - "33046:3000"
+    volumes:
+      - dune-data:/data
+    stop_grace_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  dune-data:
