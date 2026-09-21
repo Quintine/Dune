@@ -1,12 +1,10 @@
 FROM node:22-bookworm-slim AS build
 WORKDIR /app
 ENV CI=true WRANGLER_SEND_METRICS=false GOMEMLIMIT=2GiB GOMAXPROCS=2
-RUN apt-get update && apt-get install -y --no-install-recommends git \
-    && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run check && npm run build
+RUN npm run build
 
 FROM node:22-bookworm-slim AS runtime
 WORKDIR /app

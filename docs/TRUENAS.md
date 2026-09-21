@@ -9,7 +9,9 @@ runtime prototype does not change public release or rules-mode gates.
 ## Checkpoint images
 
 Every push to `main` starts `.github/workflows/container.yml`. The Docker build
-runs types, lint, offline tests and the production build using the lockfile.
+runs the production build using the lockfile. Types, lint and offline tests
+remain part of source checkpoint verification rather than being repeated in
+the container build.
 Before publishing, CI creates an isolated container and volume, checks accepted
 and rejected HTTP origins, verifies saved-seat restoration through restart and
 container replacement, then runs the HTTP integration suite.
