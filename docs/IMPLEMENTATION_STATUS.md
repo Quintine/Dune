@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 21 September 2026 — live Nexus offer withdrawal
+
+An unallied sender can now see the recipient of its outgoing Nexus offer and
+withdraw it through the existing action. Public history distinguishes proposals,
+withdrawals and alliance breaks. [Nexus offer controls](NEXUS_OFFERS.md) retain
+the current quote, timing, readiness, card forfeiture and version fences.
+Focused full-table rendering, JSON continuation, legal AI participation and
+production SQLite race checks accompany the private source-bound browser,
+preservation, independent review and Git record. No strategy, mode or publication
+gate changes; the broader game remains unfinished.
+
 ## 21 September 2026 — ordinary bribe controls
 
 Players can now initiate the existing out-of-turn bribe action, with server-derived

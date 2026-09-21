@@ -210,6 +210,8 @@ export function GameTable({
   exitDisabled?: boolean;
 }) {
   const me = g.players.find((p) => p.id === g.me)!;
+  const outgoingAlliance = g.allianceOffers[me.id];
+  const outgoingAllianceName = g.players.find((p) => p.id === outgoingAlliance)?.name;
   const shipmentAvailable = nexusGuildShipmentAvailable(g);
   const movementAvailable = nexusGuildMovementAvailable(g);
   const guildCunning = nexusGuildCunningActive(g);
@@ -3392,6 +3394,15 @@ export function GameTable({
                   <p className="muted">
                     A sandworm has opened a Nexus. Alliances may change now.
                   </p>
+                  {outgoingAlliance && !me.ally && (
+                    <div className="nexus-offer">
+                      <p className="notice">
+                        Your alliance offer is to {outgoingAllianceName ?? 'a player no longer seated'}.
+                        You remain unallied until both players agree.
+                      </p>
+                      {actionButton('Withdraw your alliance offer', { type: 'alliance' })}
+                    </div>
+                  )}
                   <label>
                     Alliance partner
                     <select

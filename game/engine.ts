@@ -22825,6 +22825,9 @@ function applyActionInner(
       'Alliances change only during a Nexus.',
     );
     const target = action.target ? stringField(action.target) : null;
+    const formerAlly = p.ally ? getPlayer(g, p.ally).name : null;
+    const formerOffer = g.allianceOffers[id];
+    const formerOfferName = g.players.find((player) => player.id === formerOffer)?.name;
     let other: Player | null = null;
     if (target !== null) {
       other = getPlayer(g, target);
@@ -22848,12 +22851,18 @@ function applyActionInner(
     for (const player of g.players) player.ally = quote.allies[player.id];
     g.allianceOffers = quote.offers;
     if (target === null) {
-      log(g, `${p.name} is unallied.`);
+      log(g, formerAlly
+        ? `${p.name} broke the alliance with ${formerAlly}; both are unallied.`
+        : formerOffer
+          ? `${p.name} withdrew the alliance offer to ${formerOfferName ?? 'a player no longer seated'} and remains unallied.`
+          : `${p.name} is unallied.`);
     } else if (quote.formed) {
       requireRule(other, 'The alliance partner is no longer seated.');
       p.allySinceTurn = other.allySinceTurn = g.turn;
       discardAllianceNexusCards(g, p, other);
       log(g, `${p.name} and ${other.name} formed an alliance.`);
+    } else {
+      log(g, `${p.name} offered an alliance to ${other!.name}; both players must agree before an alliance forms.`);
     }
     g.ready = [];
     return g;

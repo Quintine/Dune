@@ -1949,3 +1949,6 @@ footer {
 .bribe-fields label { display: grid; gap: .35rem; flex: 1 1 12rem; min-width: 0; }
 .bribe-fields select, .bribe-fields input { min-height: 44px; width: 100%; min-width: 0; font-size: 1rem; }
 .bribe-fields button { font-size: 1rem; min-height: 44px; max-width: 100%; height: auto; white-space: normal; overflow-wrap: anywhere; }
+
+.nexus-offer .notice, .nexus-offer .game-action { font-size: 1rem; }
+.nexus-offer .game-action { min-height: 44px; height: auto; max-width: 100%; white-space: normal; }

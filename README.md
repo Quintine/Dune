@@ -61,6 +61,10 @@ Use **Bribes** beneath the table to pay a non-allied faction. The recipient's
 share becomes spendable at the next Mentat Pause; the panel shows your own
 incoming bribes and the current payment limit. See [bribe controls](docs/BRIBE_CONTROLS.md).
 
+At a Nexus, an unanswered alliance offer names its recipient and offers
+**Withdraw your alliance offer**. Formed alliances keep the separate **Break
+alliance** action. See [Nexus offers](docs/NEXUS_OFFERS.md).
+
 The table header offers optional **Sound effects**, with mute, volume and a test
 sample. Short cues mark phase changes and automatic action notices. Sound starts
 off; preferences stay in your browser. See [table sounds](docs/TABLE_SOUNDS.md)
