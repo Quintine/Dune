@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 22 September 2026 — Readable room entry and completed-action text
+
+Normal create/join now shows concise pending text while the first request runs;
+the existing full recovery panel is reserved for saved or uncertain requests and
+remains until explicitly resolved. Automatic-action notices retain text behind a
+local Continue control without gating rules, server actions or AI pacing. See
+[readable notices](READABLE_NOTICES.md) and [action feedback](ACTION_FEEDBACK.md).
+Focused regressions, delayed/lost-response browser QA and required checkpoint
+checks accompany the change. Deployed evidence remains separate and required.
+
 ## 22 September 2026 — Administrator access and room directory prototype
 
 The first [admin panel](ADMIN_PANEL.md#access-and-directory-prototype) slice adds

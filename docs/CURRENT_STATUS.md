@@ -6,6 +6,16 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+The [readable-notice fix](READABLE_NOTICES.md) replaces the flashing recovery
+screen during ordinary room creation/join with concise progress. Actual recovery
+instructions stay until resolved, and completed-action text waits for a local
+Continue control. It does not add confirmation steps to game rules or AI turns.
+
+Administrator access/directory checkpoint `c2d392e` passed types, lint, 5,196
+offline tests, 52 HTTP tests and build, plus focused authenticated/browser checks.
+Its production acceptance is being combined with this readability follow-up to
+avoid two deployments; saved games and full administration gates remain intact.
+
 The user added a complete [administration panel](ADMIN_PANEL.md) to the goal on
 22 September: secure admin access, room creation/removal and lifecycle controls,
 participant support, backup/restore, operational views and audited actions.

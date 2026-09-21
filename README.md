@@ -61,6 +61,10 @@ for saved retries and limits.
 
 New create/join requests save a private, tab-scoped retry record before sending. If the response is uncertain, keep the tab open and use the explicit retry; refresh preserves the same request. Confirmed success removes that record. Clearly rejected first requests return to the form for correction. A retry can recover the original room and seat without creating duplicates, but closing the tab or clearing its data can lose the proof. This record is separate from the long-term seat recovery kit.
 
+Normal creation/join shows brief progress; recovery instructions stay open when
+attention is needed. Completed-action notices wait for **Continue** so their text
+can be read at your pace. See [readable notices](docs/READABLE_NOTICES.md).
+
 An uncertain saved-kit recovery keeps its exact retry details in memory and prevents conflicting navigation. If that recovery has become obsolete, deliberate abandonment releases the controls after explaining that it cannot undo a completed recovery. Keep a valid saved kit before discarding retry details.
 
 Use **Pass your seat to another player** for a voluntary one-time transfer. The private offer lasts 24 hours; acceptance preserves progress and revokes the old owner’s sessions and recovery kits. The recipient uses **Accept a seat handover** on the home page, then creates their own recovery kit. Keep the tab open until acceptance is confirmed; exact private retry details survive refresh in that tab. See [seat handover](docs/SEAT_HANDOVER.md) for cancellation, retry behavior and current limits.

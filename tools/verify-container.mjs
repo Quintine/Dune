@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join as joinPath } from 'node:path';
 
 const image = process.argv[2];
 if (!image) throw new Error('Usage: node tools/verify-container.mjs IMAGE');
@@ -13,7 +13,7 @@ const name = `dune-verify-${randomUUID()}`;
 const volume = `${name}-data`;
 const docker = (...args) => execFileSync('docker', args, { encoding: 'utf8' }).trim();
 let base;
-const adminFiles = mkdtempSync(join(tmpdir(), 'dune-admin-container-'));
+const adminFiles = mkdtempSync(joinPath(tmpdir(), 'dune-admin-container-'));
 let adminCookie;
 async function ready() {
   for (let attempt = 0; attempt < 90; attempt++) {
@@ -36,12 +36,12 @@ try {
   docker('volume', 'create', volume);
   start();
   await ready();
-  execFileSync('node', ['tools/admin-access.mjs', '--name', 'Container QA', '--role', 'viewer', '--out', join(adminFiles, 'key')]);
+  execFileSync('node', ['tools/admin-access.mjs', '--name', 'Container QA', '--role', 'viewer', '--out', joinPath(adminFiles, 'key')]);
   execFileSync('docker', ['exec', '-i', name, 'node', '-e', "require('node:fs').writeFileSync('/tmp/dune-admin-provision.sql', require('node:fs').readFileSync(0), {mode:0o600})"], {
-    input: readFileSync(join(adminFiles, 'key/provision.sql')), // Container USER owns this private file.
+    input: readFileSync(joinPath(adminFiles, 'key/provision.sql')), // Container USER owns this private file.
   });
   docker('exec', name, 'node', 'node_modules/wrangler/bin/wrangler.js', 'd1', 'execute', 'DB', '--local', '--config', 'tools/wrangler.local.json', '--persist-to', '/data', '--file', '/tmp/dune-admin-provision.sql');
-  const adminKey = readFileSync(join(adminFiles, 'key/access-key.txt'), 'utf8').trim();
+  const adminKey = readFileSync(joinPath(adminFiles, 'key/access-key.txt'), 'utf8').trim();
   const adminLogin = await fetch(`${base}/api/admin/session`, {
     method: 'POST', headers: { 'content-type': 'application/json', origin: base },
     body: JSON.stringify({ action: 'login', key: adminKey }),
@@ -79,7 +79,7 @@ try {
   start();
   await ready();
   await restored();
-  execFileSync('node', ['tools/verify-admin.mjs', '--url', base, '--key-file', join(adminFiles, 'key/access-key.txt'), '--qa-account', adminKey.split('.')[1], '--out', join(adminFiles, 'http')], { stdio: 'inherit' });
+  execFileSync('node', ['tools/verify-admin.mjs', '--url', base, '--key-file', joinPath(adminFiles, 'key/access-key.txt'), '--qa-account', adminKey.split('.')[1], '--out', joinPath(adminFiles, 'http')], { stdio: 'inherit' });
   adminCookie = undefined; // The acceptance test intentionally signs out all sessions.
   execFileSync('npm', ['run', 'test:integration'], {
     stdio: 'inherit', env: { ...process.env, DUNE_TEST_URL: base },

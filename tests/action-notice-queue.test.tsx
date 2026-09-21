@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { Children, isValidElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { AutomaticActionNotice } from '../components/automatic-action-notice';
-import { advanceActionNotices, appendActionNotices, type AutomaticActionEvent } from '../lib/action-notice-queue';
+import { ActionNoticeCard, AutomaticActionNotice } from '../components/automatic-action-notice';
+import { Button } from '../components/ui/button';
+import { advanceActionNotices, appendActionNotices, initialActionNotices, updateActionNotices, type AutomaticActionEvent } from '../lib/action-notice-queue';
 
 const events = (first: number, count: number): AutomaticActionEvent[] =>
   Array.from({ length: count }, (_, index) => ({
@@ -17,7 +19,7 @@ void test('ordinary notices keep their public action and house without mutating 
   assert.deepEqual(appendActionNotices([], [], false), []);
 });
 
-void test('a full log batch becomes three brief notices while accounting for every action', () => {
+void test('a full log batch becomes three notices while accounting for every action', () => {
   const incoming = events(1, 250);
   const queue = appendActionNotices([], incoming, false);
   assert.equal(queue.length, 3);
@@ -26,6 +28,66 @@ void test('a full log batch becomes three brief notices while accounting for eve
   assert.equal(queue.reduce((sum, notice) => sum + notice.count, 0), 250);
   assert.equal(queue[0].name, incoming[247].name);
   assert.equal(queue[0].faction, incoming[247].faction);
+});
+
+void test('unread action text survives new bursts and each Continue advances only the local queue', () => {
+  const initial = initialActionNotices(events(1, 4));
+  assert.deepEqual(initial, { seenSeq: 4, pending: [], active: null });
+  const shown = updateActionNotices(initial, { type: 'events', events: events(1, 7), enabled: true, visible: true });
+  assert.equal(shown.active?.seq, 5);
+  const before = structuredClone(shown);
+  const burst = updateActionNotices(shown, { type: 'events', events: events(8, 250), enabled: true, visible: true });
+  assert.deepEqual(burst.active, shown.active);
+  assert.equal(burst.pending.length, 2);
+  assert.equal((burst.active?.count ?? 0) + burst.pending.reduce((sum, notice) => sum + notice.count, 0), 253);
+  assert.deepEqual(shown, before);
+  const first = updateActionNotices(burst, { type: 'continue' });
+  assert.deepEqual(first.active, burst.pending[0]);
+  assert.deepEqual(first.pending, burst.pending.slice(1));
+  const second = updateActionNotices(first, { type: 'continue' });
+  assert.deepEqual(second.active, burst.pending[1]);
+  const finished = updateActionNotices(second, { type: 'continue' });
+  assert.deepEqual(finished, { seenSeq: 257, pending: [], active: null });
+  assert.deepEqual(updateActionNotices(finished, { type: 'events', events: events(1, 257), enabled: true, visible: true }), finished);
+});
+
+void test('backgrounding retains the unread notice while discarding pending and hidden events without replay', () => {
+  const shown = updateActionNotices(initialActionNotices([]), { type: 'events', events: events(1, 3), enabled: true, visible: true });
+  const hidden = updateActionNotices(shown, { type: 'hide' });
+  assert.deepEqual(hidden.active, shown.active);
+  assert.deepEqual(hidden.pending, []);
+  const updated = updateActionNotices(hidden, { type: 'events', events: events(1, 20), enabled: true, visible: false });
+  assert.deepEqual(updated, { seenSeq: 20, pending: [], active: shown.active });
+  const returned = updateActionNotices(updated, { type: 'events', events: events(1, 20), enabled: true, visible: true });
+  assert.deepEqual(returned, updated);
+  const dismissed = updateActionNotices(returned, { type: 'continue' });
+  assert.deepEqual(dismissed, { seenSeq: 20, pending: [], active: null });
+});
+
+void test('turning notices off clears unread content and consumes muted updates without replay', () => {
+  const shown = updateActionNotices(initialActionNotices([]), { type: 'events', events: events(1, 3), enabled: true, visible: true });
+  assert.deepEqual(updateActionNotices(shown, { type: 'clear' }), { seenSeq: 3, pending: [], active: null });
+  const muted = updateActionNotices(shown, { type: 'events', events: events(1, 20), enabled: false, visible: true });
+  assert.deepEqual(muted, { seenSeq: 20, pending: [], active: null });
+  assert.deepEqual(updateActionNotices(muted, { type: 'events', events: events(1, 20), enabled: true, visible: true }), muted);
+});
+
+void test('an action card exposes a readable local Continue button without modal or automatic focus behavior', () => {
+  let continued = 0;
+  const notice = { ...events(1, 1)[0], name: 'Shipment completed', count: 8 };
+  const card = ActionNoticeCard({ notice, onContinue: () => { continued++; } });
+  const markup = renderToStaticMarkup(card);
+  assert.match(markup, /Atreides/);
+  assert.match(markup, /Shipment completed/);
+  assert.match(markup, /7 earlier actions.*table chronicle/);
+  assert.match(markup, /pointer-events-auto/);
+  assert.match(markup, /text-base/);
+  assert.match(markup, /<button[^>]*type="button"[^>]*>Continue<\/button>/);
+  assert.doesNotMatch(markup, /text-xs|autofocus|aria-modal|role="dialog"/);
+  const control = Children.toArray(card.props.children).filter(isValidElement).find(child => child.type === Button);
+  assert.ok(control);
+  (control.props as { onClick: () => void }).onClick();
+  assert.equal(continued, 1);
 });
 
 void test('incoming bursts preserve the visible notice and merge existing summaries without losing counts', () => {

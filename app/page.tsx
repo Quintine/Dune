@@ -80,6 +80,7 @@ export default function Home() {
     null,
   );
   const [entryProblem, setEntryProblem] = useState('');
+  const [initialEntryPending, setInitialEntryPending] = useState(false);
   const [showEntryRecovery, setShowEntryRecovery] = useState(false);
   const [showHandover, setShowHandover] = useState(false);
   const [handoverPending, setHandoverPending] = useState(true);
@@ -407,6 +408,7 @@ export default function Home() {
         );
       }
     } finally {
+      if (firstDispatch) setInitialEntryPending(false);
       mutationPending.current = false;
       setBusy(false);
     }
@@ -443,6 +445,7 @@ export default function Home() {
       return;
     }
     pendingEntry.current = attempt;
+    setInitialEntryPending(true);
     setEntryAttempt(attempt);
     setAbandonAcknowledged(false);
     await dispatchEntry(attempt, true);
@@ -805,6 +808,20 @@ export default function Home() {
               </Button>
             </>
           )}
+        </section>
+      </main>
+    );
+  // A first request is progress, not recovery. Keep the actionable recovery
+  // instructions on screen only after uncertainty or a saved-request restore.
+  if (initialEntryPending && entryAttempt)
+    return (
+      <main className="table-shell" aria-busy="true">
+        <header className="masthead">
+          <div className="wordmark">DUNE<span>ARRAKIS TABLE</span></div>
+        </header>
+        <section className="notice">
+          <h1>{entryAttempt.kind === 'create' ? 'Creating your room…' : 'Joining the room…'}</h1>
+          <output aria-live="polite">Please wait.</output>
         </section>
       </main>
     );
