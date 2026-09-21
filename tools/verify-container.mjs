@@ -48,6 +48,8 @@ try {
     assert.deepEqual(await result.json(), room, 'Saved seat and room must survive replacement');
   }
   docker('restart', '--time', '60', name);
+  // Docker may assign a different ephemeral host port after a restart.
+  base = `http://${docker('port', name, '3000/tcp')}`;
   await ready();
   await restored();
   docker('stop', '--time', '60', name);
