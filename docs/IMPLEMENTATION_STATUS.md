@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 21 September 2026 — public faction-sheet inspection
+
+Every table player now has a public faction inspector and the internal guide
+contains a twelve-faction gallery. Basic/Advanced preview uses shared reference
+text without changing the game or reading private state. Richese, Ecaz and
+Moritani receive shared guidance from settled contracts; stale CHOAM and Ecaz
+availability summaries are corrected. [Faction sheets](FACTION_SHEETS.md) records
+scope, source boundaries and remaining text/interaction acceptance. Focused
+checks and independent review accompany private browser, check/build,
+preservation and Git evidence. No AI strategy or release gate changed.
+
 ## 21 September 2026 — private-hand browsing
 
 The private hand now supports literal name search, printed-category filtering

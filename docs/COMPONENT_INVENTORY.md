@@ -1,5 +1,12 @@
 # Component inventory and verification ledger
 
+**Faction sheets, 21 September 2026:** every table player has an enlarged public
+faction guide, with Basic/Advanced preview and an internal twelve-faction gallery.
+Shared text and bundled Homeworld artwork preserve public identity; no private
+player data enters inspection. Richese guidance and stale Ecaz/CHOAM summaries
+are updated from existing contracts. Full printed text and combined rules remain
+unfinished. See [faction sheets](FACTION_SHEETS.md).
+
 **Hand browsing, 21 September 2026:** owned cards now have name search, printed
 category filters and display sorting, with physical IDs, complete existing card
 controls and inspectors retained. Empty results have a clear reset, and current

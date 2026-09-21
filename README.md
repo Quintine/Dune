@@ -69,6 +69,10 @@ Use **Inspect forces** under any player to enlarge their counters and read publi
 reserves, Tanks and deployed groups, including Homeworld reserve breakdowns.
 See [force inspection](docs/FORCE_INSPECTION.md).
 
+Use **Inspect faction** under any player for public powers and alliance guidance.
+The sheet starts in the table’s rules mode and offers an Advanced preview without
+changing the game. Browse all twelve in the [faction-sheet gallery](docs/FACTION_SHEETS.md).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

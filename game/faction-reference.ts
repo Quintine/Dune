@@ -1,5 +1,7 @@
+import type { FactionId } from './catalog';
+
 export const FACTION_RULES: Record<
-  string,
+  FactionId,
   { basic: string[]; advanced: string[] }
 > = {
   choam: {
@@ -11,13 +13,14 @@ export const FACTION_RULES: Record<
       'At each phase end, sell Worthless cards for two spice or reveal exact duplicates and sell surplus copies for three each. A Karama response precedes each sale. Once per turn, exchange one card each with your ally; both players choose and CHOAM confirms before either hand changes.',
       'Use Kulon on your movement turn to add one territory of range. Use La La La during Revival to prevent a player’s free force returns for the phase; a reactive decision lets you stop a pending free revival before it resolves. Both cards have Karama responses before discard.',
       'Trip to Gamont returns one other player’s force from a chosen sector to its reserves during Mentat. Elite types are preserved. A Karama response precedes the return, and CHOAM gets a final opportunity after the closing market before victory is checked.',
-      'Charity, Inflation, hand limits, force revival, card sales, allied exchanges, Kulon, La La La and Trip to Gamont now have engine controls. The other three Worthless effects and remaining faction powers are unfinished, so CHOAM starts remain disabled.',
+      'Baliset prevents a player from moving into a territory occupied by CHOAM for the turn, while permitting shipment. Jubba Cloak protects CHOAM forces in one territory from a moving storm. Both powers have Karama responses before the card is discarded.',
+      'Kull Wahad and combined faction interactions remain unfinished. The available development powers do not enable complete CHOAM games.',
     ],
     advanced: [
       'Once per game, spend a real Karama and discard selected other cards for three spice each. The cash-in can occur during pending phase or power decisions, while committed battle cards remain protected. See the CHOAM special Karama topic for funding and timing details.',
       'Reserve spice to pay for some or all of your ally’s battle support. Each sealed plan records its own and allied shares. A Karama response may prevent this alliance benefit for one battle; unused funding returns at the end of Battle.',
       'Receive half of each other player’s actual force-support payment, rounded down, unless any traitor is revealed. Your own payments, including support paid for your ally, go to the bank. A separate Karama response can cancel this battle’s income. See CHOAM combat for examples and outstanding interaction audits.',
-      'The Auditor and printed leader setup are not implemented yet.',
+      'The Auditor is an additional strength-two leader. After using it in battle, CHOAM may inspect two randomly selected unused opposing Treachery Cards if it survives, or one if it dies, limited by the unused cards available. The opponent may pay CHOAM one spice per card that would be inspected to prevent the whole inspection; Karama can also cancel the power. Use the Auditor guide for the exact private choices and limits. Setup and inspection are supported in development games; complete combined play remains unfinished.',
     ],
   },
   ixians: {
@@ -98,7 +101,7 @@ export const FACTION_RULES: Record<
       'Bring reserves to the Great Flat or one territory within two territories of it for no spice, subject to storm and occupancy restrictions. Ordinary movement has range two, or three when eligible for ornithopters.',
       'Worms do not devour Fremen. After the Nexus, move some or all forces from the worm territory to a legal destination. The destination’s existing forces survive.',
       'You choose whether a worm spares your ally and whether to grant your ally three free force revivals. These benefits are optional.',
-      'At the final turn, the special victory requires Sietch Tabr and Habbanya Sietch to be empty or occupied by Fremen, with no Atreides, Harkonnen or Emperor in Tuek’s Sietch. Allied occupation does not override those conditions.',
+      'At the final turn, the special victory requires Sietch Tabr and Habbanya Sietch to be empty or occupied by Fremen, with no Atreides, Harkonnen or Emperor in Tuek’s Sietch. The specific Ecaz alliance exception permits Fremen and Ecaz to share Sietch Tabr; it does not waive the other conditions or extend to Habbanya Sietch. Advanced Richese also prevents this victory while occupying Tuek’s Sietch.',
     ],
     advanced: [
       'Once per game during Spice Blow and Nexus, spend Karama to call Shai-Hulud in sand. Resolve destruction and optional protections immediately; Nexus follows at the end of the blow, with eligible Fremen rides afterward. The called worm consumes no spice-deck card.',
@@ -139,6 +142,51 @@ export const FACTION_RULES: Record<
       'Ordinary shipments enter as fighters unless joining existing advisors. Arriving forces match the Bene Gesserit type already in that territory. Advisors moving into an empty territory become fighters; those entering an occupied territory without another Bene Gesserit group may remain advisors or become fighters.',
       'When another faction enters your fighters’ territory, you may turn them into advisors. Between the spice phase and the first shipment, you may turn eligible advisors into fighters to contest their territories.',
       'Receive two charity spice regardless of wealth. Worthless cards may be used as Karama, with the card discarded when used.',
+    ],
+  },
+  richese: {
+    basic: [
+      'Begin with five spice, twenty forces in reserve and two free force revivals. Keep your ten technology cards in a separate cache, outside your hand and the ordinary Treachery Deck.',
+      'At each Bidding phase, declare whether a cache lot replaces the first or last ordinary lot. Reveal its card when that lot begins, using Once Around or Silent bidding. Other buyers pay you; your own purchase pays the Emperor or bank. The card must fit in the buyer’s hand.',
+      'Once Around lets each other faction bid or pass once in your chosen direction before your final opportunity. Silent bidding reveals simultaneous offers and resolves ties in storm order. A zero result allows the cache card to be kept or removed. Ordinary Karama acquisition cannot take this special lot.',
+      'Your concealed No-Field tokens represent zero, three or five forces, while counting as one presence until revelation. Actual forces come from the reserves available when the token is revealed. Use the No-Field guide for shipment, movement and revelation choices.',
+      'You may give your ally a Richese-family card already in your hand when they have room. Allied No-Field shipments reveal immediately and use the ally’s reserves.',
+      'Empty-cache continuation, exceptional allied pricing, mixed No-Field battles and several technology-card effects remain unfinished. Consult the linked guides for the available development choices.',
+    ],
+    advanced: [
+      'Before the regular auction sequence, Black Market may offer a concealed card from your hand. The buyer pays you. An unsold card stays in your hand; a completed sale reduces the regular auction pool by one. Atreides can inspect the offered card.',
+      'Once per game, spend Karama and three spice to acquire an eligible cache card privately for your hand. This is separate from an auction purchase.',
+      'Richese occupation of Tuek’s Sietch also prevents the Fremen special victory in Advanced play.',
+      'Black Market self-purchase, Ixian substitution on special lots and wider card interactions remain guarded in development games.',
+    ],
+  },
+  ecaz: {
+    basic: [
+      'Begin with twelve spice, six forces in Imperial Basin, fourteen in reserves and two free force revivals. Your Ambassador supply contains the reusable Ecaz token and five random other identities.',
+      'After Revival, place Ambassadors in eligible strongholds, paying one spice for the first, two for the second and so on that turn. Eligible enemy entry lets you trigger an effect for yourself or your ally. The Ambassador guide explains each identity and its choices.',
+      'Your Ecaz Ambassador can acquire an available Duke Vidal or offer an alliance when both participants are unallied. Duke availability, loans and custody use his separate rules.',
+      'You and your ally may share territories. Divide shared desert spice by agreement; without agreement, divide as equally as possible and give the odd spice to your ally. Both factions occupying each of three qualifying strongholds provides an allied victory route.',
+      'When you are allied with Fremen, sharing Sietch Tabr does not itself prevent the Fremen special victory. Its other conditions still apply.',
+      'Combined Occupy combat, Tleilaxu Ambassador revival, Duke loans and revival, and competing arrival reactions remain unfinished. The connected Sietch Tabr exception does not establish every special-victory combination.',
+    ],
+    advanced: [
+      'At Spice Collection, both allies receive the normal bank income from a jointly occupied Arrakeen, Carthag or Tuek’s Sietch. Canceling Ecaz’s Collection benefit leaves the ally’s income intact.',
+      'This is the currently documented Advanced Collection power. The remaining Advanced powers and combined interactions are still being completed; this sheet is not a complete faction certification.',
+    ],
+  },
+  moritani: {
+    basic: [
+      'Set up last with six forces in an unoccupied territory, fourteen in reserves, twelve spice and two free force revivals.',
+      'Keep six Terror identities hidden: Assassination, Atomics, Extortion, Robbery, Sabotage and Sneak Attack. Once each Mentat Pause, place one token or relocate one already placed. Eligible enemy entry into its stronghold offers an optional reaction.',
+      'Before revealing a would-trigger token, Enemy of My Enemy may offer the entrant an alliance, except Ecaz. Acceptance replaces existing alliances and returns the token; refusal requires its revelation.',
+      'When your ally loses a battle that has a winner, the ally may retain one eligible played Treachery Card that it could have kept after winning.',
+      'Moritani can acquire Duke Vidal at the end of Shipment and Movement under his separate stronghold-battle and custody conditions. Inspect his guide before choosing him for a battle.',
+      'Atomics, Extortion, exceptional leader custody and full combined play remain unfinished. Public Terror descriptions do not reveal the identities of placed tokens.',
+    ],
+    advanced: [
+      'After losing a qualifying battle with no traitor called and the opposing leader surviving, you may reveal a held Traitor Card naming a different leader from that opposing faction. A living target dies and pays its printed strength from the bank; an already-dead target pays nothing.',
+      'During Mentat Pause, set the revealed card aside face up as that faction’s use marker and draw its replacement. Use this advantage once against each faction; Karama cannot prevent it.',
+      'Advanced assassination is available in an opted-in development preview. The duration of forfeiture after calling a normal traitor and exceptional leader-custody interactions remain unresolved.',
     ],
   },
 };

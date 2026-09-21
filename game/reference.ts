@@ -230,6 +230,27 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'faction-sheets',
+    title: 'Inspect public faction sheets',
+    category: 'Getting started', coverage: 'Partial', developmentStage: 'Prototyped',
+    summary: 'Open a faction’s powers and alliance guidance beside the table, or browse all twelve factions here.',
+    steps: [
+      'Choose Inspect faction beneath any player. Every faction sheet is public; opening one does not reveal that player’s cards, spice, leaders, cache or hidden tokens.',
+      'The sheet begins in your table’s Basic or Advanced mode. Include Advanced powers previews the other mode without changing table rules. Advanced powers appear after the Basic powers they extend.',
+      'Read the enlarged sheet, scroll with the keyboard and follow internal faction links for detailed timing and exceptions. Close or Escape returns to the table. Inspection remains available while a game action is pending.',
+      'The gallery includes all twelve factions. Changing its faction starts with Basic guidance. It is a reference, not a faction selection or a change to a saved game.',
+      'The sheets share their text with the internal faction reference. Remaining powers, unresolved interactions and development-only availability stay explicit; this prototype does not certify complete faction text or rules compliance.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Implemented', detail: 'Public faction identity and rules mode select shared guidance and bundled artwork, with no game action or private state.', evidence: ['game/faction-reference.ts', 'components/faction-inspector.tsx'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Every table player has an inspector; the internal gallery offers all twelve factions, Advanced preview, scrolling and close controls.', evidence: ['components/game-table.tsx', 'components/rules-reference.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Static inspection introduces no AI decision. Existing legal participation remains; full strategy work waits for feature completion.' },
+      { area: 'Documentation', status: 'Partial', detail: 'Shared guidance covers existing faction powers and names remaining boundaries. Full printed-text and combined-rule verification remain open.', evidence: ['docs/FACTION_SHEETS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused rendering checks all identities, mode separation, shared reference and public inspector controls; browser and final acceptance have separate evidence.', evidence: ['tests/faction-inspector.test.tsx'] },
+    ],
+    related: ['force-counters', 'privacy', ...FACTIONS.map(house => `faction-${house.id}`)],
+  },
+  {
     id: 'interactive-introduction',
     title: 'Interactive introduction',
     category: 'Getting started',
@@ -2630,29 +2651,14 @@ export const RULE_TOPICS: RuleTopic[] = [
           ? 'Partial'
           : 'Planned',
       summary: f.title,
-      steps:
-        f.id === 'ecaz'
-          ? [
-              'Begin with six forces in the Imperial Basin, fourteen in reserves and twelve spice. Two force revivals are free.',
-              'Your Ambassador supply contains the Ecaz token and five random tokens from the remaining pool. Inspect the linked Ambassador guide for all eleven identities and their custody rules.',
-              'End-of-Revival placement has owner controls, escalating prices, cancellation responses and bot support in development fixtures. Full faction starts remain disabled.',
-              'Eight entry effects and their Bene Gesserit copies, plus direct Ecaz Duke acquisition, have focused support. Storm/explosion token returns, ordinary territorial co-occupation and the three jointly occupied stronghold victory are also supported. Shared desert allocation and Advanced Collection income, including cancellation, are also supported in development fixtures. Tleilaxu revival, combined Occupy battles, the Fremen endgame exception and the complete Duke revival and custody interactions remain unfinished. Consult the feature checklist for the exact tested boundary.',
-            ]
-          : f.id === 'moritani'
-            ? [
-                'Set up after every other faction: place six forces in an unoccupied territory, keep fourteen in reserves, and begin with twelve spice. Two force revivals are free.',
-                'Keep six Terror tokens hidden: Assassination, Atomics, Extortion, Robbery, Sabotage and Sneak Attack. During each Mentat Pause, you may place one token or relocate one already on the board.',
-                'Enemy entry into a marked stronghold offers an optional Terror reaction. Enemy of My Enemy can instead offer the entrant an alliance before the token is revealed, except when the entrant is Ecaz.',
-                'When your ally loses a battle that has a winner, the ally may retain one played Treachery Card that it could have kept after winning.',
-                'These topics describe the verified rules. Moritani remains unavailable for new games while its complete faction implementation and interaction checks are unfinished.',
-              ]
-            : (FACTION_RULES[f.id]?.basic ?? [
-                'This faction’s complete rules engine and reference are still being developed.',
-              ]),
+      steps: FACTION_RULES[f.id].basic,
       related: [
         'setup',
         'battle',
-        ...(FACTION_RULES[f.id] ? [`advanced-${f.id}`] : []),
+        `advanced-${f.id}`,
+        'faction-sheets',
+        ...(f.id === 'richese' ? ['richese-cards', 'richese-no-field', 'richese-gift', 'richese-acquisition'] : []),
+        ...(f.id === 'choam' ? ['choam-auditor', 'choam-worthless', 'choam-combat'] : []),
         ...(f.id === 'ecaz'
           ? ['ecaz-ambassadors', 'duke-vidal', 'implementation-checklist']
           : []),

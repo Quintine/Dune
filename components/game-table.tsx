@@ -3,6 +3,7 @@ import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
 import { KwisatzInspector } from './kwisatz-inspector';
 import { ForceInspector } from './force-inspector';
+import { FactionInspector } from './faction-inspector';
 import { DrawPiles } from './draw-piles';
 import { HandBrowser } from './hand-browser';
 import { LobbyBotControls } from './lobby-bot-controls';
@@ -1111,6 +1112,7 @@ export function GameTable({
                 )}
               </div>
               <ForceInspector player={p} worlds={g.homeworlds?.worlds} />
+              <FactionInspector key={`${p.faction}:${g.advanced}`} factionId={p.faction} advanced={g.advanced} />
               {p.revealedTraitors.length > 0 && (
                 <p className="fine">
                   Revealed traitors:{' '}
