@@ -1,5 +1,12 @@
 # Component inventory and verification ledger
 
+**Draw-pile counts, 21 September 2026:** the table now displays authoritative
+Treachery and Spice draw counts above the board, separate from auctions, hands,
+caches and discards. Existing Nexus counts and authorized card inspectors remain
+in place. No private card faces or order are exposed. This closes the ordinary
+draw-count gap; broader card handling and visual acceptance remain open. See
+[scope and evidence](DRAW_PILES.md).
+
 **Force counter inspection, 21 September 2026:** each public player summary now
 opens enlarged faction diagrams and a physical location inventory. All twelve
 sets have reference faces; special counters, advisor stances, native Homeworld

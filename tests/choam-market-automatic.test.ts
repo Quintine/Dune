@@ -148,8 +148,19 @@ void test('all non-Bidding markets preserve identical opposing views across hidd
       a.phase = phase;
       if (phase === 0) a.choamMarket!.resume = 'storm';
       if (changed === 'e') hold(a, 'e', 'Shield');
+      // Keep public draws fixed and vary only the tested hidden hand. In the
+      // donor branch CHOAM must stay empty, exposing any automatic-close oracle.
+      const hidden = a.deck.findIndex(c => c.name === 'Snooper');
+      assert.ok(hidden >= 0);
+      a.discard.push(...a.deck.splice(hidden, 1));
       const b = structuredClone(a);
-      hold(b, changed, 'Snooper');
+      b.players.find(p => p.id === changed)!.hand.push(b.discard.pop()!);
+      if (changed === 'e') {
+        assert.equal(a.players[0].hand.length, 0);
+        assert.equal(b.players[0].hand.length, 0);
+      }
+      assert.deepEqual(a.deck, b.deck);
+      assert.deepEqual(inventory(a), inventory(b));
       assert.deepEqual(viewGame(a, 'b'), viewGame(b, 'b'));
       const first = normalizeAutomaticGame(reload(a)),
         second = normalizeAutomaticGame(reload(b));

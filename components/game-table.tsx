@@ -3,6 +3,7 @@ import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
 import { KwisatzInspector } from './kwisatz-inspector';
 import { ForceInspector } from './force-inspector';
+import { DrawPiles } from './draw-piles';
 import { LobbyBotControls } from './lobby-bot-controls';
 import { IxRicheseTechnology } from './ix-richese-technology';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
@@ -1236,6 +1237,7 @@ export function GameTable({
           </div>
         </aside>
         <section className="board-column">
+          <DrawPiles piles={g.drawPiles} />
           <div className="board-toolbar">
             <span>
               <Wind size={15} />

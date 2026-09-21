@@ -146,11 +146,16 @@ for (const level of DIFFICULTIES) {
     }
     const source = fixture('richese', true);
     source.players[0].spice = 0;
+    // Both opponents' hands are hidden: vary their allocation at a fixed draw count.
+    filled(source, 'in');
     const g = enter(source);
     const poor = structuredClone(g);
     poor.players[2].spice = 0;
     const full = structuredClone(g);
-    filled(full, 'al');
+    full.players[2].hand.push(...full.players[1].hand.splice(0));
+    assert.equal(full.players[2].hand.length, 4);
+    assert.deepEqual(full.deck, g.deck);
+    assert.deepEqual(full.players.flatMap(p => p.hand).map(c => c.id).sort(), g.players.flatMap(p => p.hand).map(c => c.id).sort());
     for (const changed of [poor, full]) {
       assert.deepEqual(
         view(g, level),

@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 21 September 2026 — live Treachery and Spice draw counts
+
+The table now shows both physical draw-pile counts above the board. The public
+projection excludes auction pools, hands, caches and discards, while keeping
+private card identities and order concealed. [Draw-pile counts](DRAW_PILES.md)
+connect existing saved responses, empty/refill guidance and internal inspection
+help. Setup, actual draws/refills, skipped worms, Thumper exclusion, privacy and
+JSON/rendering checks accompany independent review and private final evidence.
+No schema, game action, AI strategy or mode/publication gate changed.
+
 ## 21 September 2026 — public force counter inspection
 
 Every player now has **Inspect forces**, with enlarged diagrams, special subsets,

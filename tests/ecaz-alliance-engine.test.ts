@@ -280,10 +280,13 @@ void test('a dead or previously controlled Duke cannot gate the no-loan alliance
 
 void test('changing BG private prediction and unrelated private hands does not change the public alliance offer', () => {
   const g = enter();
+  // Exchange custody between hidden hands without changing the public draw count.
+  seat(g, 'bg').hand.push(g.deck.shift()!);
   const changed = json(g);
   seat(changed, 'bg').prediction = { faction: 'atreides', turn: 9 };
-  const card = changed.deck.splice(0, 1)[0];
-  seat(changed, 'a').hand.push(card);
+  seat(changed, 'a').hand.push(seat(changed, 'bg').hand.pop()!);
+  assert.deepEqual(g.deck, changed.deck);
+  assert.deepEqual(g.players.flatMap(p => p.hand).map(c => c.id).sort(), changed.players.flatMap(p => p.hand).map(c => c.id).sort());
   assert.deepEqual(viewGame(g, 'ec'), viewGame(changed, 'ec'));
   const offered = propose(g);
   assert.equal(viewGame(offered, 'a').ambassadorEntry!.allianceOffer, null);

@@ -24761,6 +24761,8 @@ export function viewGame(state: Game, id: string) {
     guildTimingLocked: g.guildTimingLocked ?? false,
     ready: g.ready,
     spice: g.spice,
+    // Public physical draw piles only; auction pools and private holdings stay separate.
+    drawPiles: g.status === 'lobby' ? null : { treachery: g.deck.length, spice: g.spiceDeck.length },
     log: g.log,
     nexus: g.nexus,
     summonedWorm: g.summonedWorm

@@ -606,7 +606,12 @@ void test('Sapho options are owner-only and do not reveal hidden cards through a
   assert.ok(viewGame(withCard, 'e').saphoOptions.length);
   assert.deepEqual(viewGame(withCard, 'a').saphoOptions, []);
   const without = reload(withCard);
-  without.players[1].hand = [without.deck.pop()!];
+  // Swap identities at fixed public draw/hand sizes and preserve the physical Sapho.
+  const replacement = without.deck.pop()!;
+  without.deck.push(...without.players[1].hand.splice(0));
+  without.players[1].hand.push(replacement);
+  assert.equal(without.deck.length, withCard.deck.length);
+  assert.deepEqual([...without.deck, ...without.players[1].hand].map(c => c.id).sort(), [...withCard.deck, ...withCard.players[1].hand].map(c => c.id).sort());
   assert.deepEqual(viewGame(without, 'a'), viewGame(withCard, 'a'));
   assert.deepEqual(viewGame(without, 'e').saphoOptions, []);
   reject(withCard, 'a', action(withCard, 'last'));

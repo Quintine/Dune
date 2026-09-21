@@ -6,20 +6,20 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `2b071a4`, [live Nexus offer withdrawal](NEXUS_OFFERS.md).
-Types, lint, **4,973 offline tests**, production build and **49 HTTP tests** passed.
-All 1,459 opening rooms, 3,081 seats and auxiliary rows stayed unchanged. Isolated
-QA brought the local baseline to 1,499 rooms and 3,171 seats. Browser proposal,
-refresh, keyboard withdrawal, preserved incoming offer, acceptance, break and
-390px layout checks passed. Full visual acceptance remains open. The healthy
-server was reused. Prior checkpoints include `91dcca4` for bribes, `7814f74` for
-table discussion and `b2fcef8` for Storm/Spice practice.
+Latest delivered checkpoint: `537da4a`, [public force inspection](FORCE_INSPECTION.md).
+Types, lint, **4,984 offline tests** and production build passed. All 1,499 rooms,
+3,171 seats and auxiliary rows stayed unchanged. Browser checks covered live
+counts, twelve faction faces, keyboard inspection, internal guidance, refresh and
+390px layout. Screenshot capture remained unavailable; full visual acceptance is
+open. The healthy server was reused. Prior checkpoints include `2b071a4` for
+Nexus offers, `91dcca4` for bribes and `7814f74` for table discussion.
 
-Current work: [public force inspection](FORCE_INSPECTION.md) connects enlarged
-counters and public location inventories for all factions, with special/advisor
-subsets, Homeworld reserve breakdowns and concealed No-Field markers. This is
-read-only; source-bound checks, independent review, browser and preservation/Git
-evidence belong to the private checkpoint. The broader game remains unfinished.
+Current work: [Treachery and Spice draw counts](DRAW_PILES.md) connect public
+physical pile sizes above the board, separate from auction and private holdings.
+Setup, actual draw/refill, skipped-worm return, Thumper exclusion, privacy and
+JSON/rendering checks accompany source-bound independent review, browser and
+preservation/Git evidence. No game action or AI strategy changes. The broader
+game remains unfinished; continue independent card handling and player features.
 The separate Bureaucrat/Emperor gift question is pending.
 The `8f7a62c` policy checkpoint removed usage checks/cutoffs and deferred AI
 refinement until feature completion, followed by three adjacent 75% targets.

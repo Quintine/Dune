@@ -970,6 +970,18 @@ footer {
   margin-top: 28px;
   border-top: 1px solid var(--border);
 }
+.draw-piles {
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.draw-piles dl { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 0; }
+.draw-piles dt { font-size: 0.875rem; }
+.draw-piles dd { margin: 2px 0 0; font-size: 1rem; }
+.draw-piles strong { color: #e0c384; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.draw-piles p { margin: 8px 0 0; font-size: 1rem; line-height: 1.5; }
+.draw-piles a { text-decoration: underline; text-underline-offset: 3px; }
 .console-tabs {
   display: flex;
   gap: 28px;

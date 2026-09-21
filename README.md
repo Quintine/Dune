@@ -69,6 +69,10 @@ Use **Inspect forces** under any player to enlarge their counters and read publi
 reserves, Tanks and deployed groups, including Homeworld reserve breakdowns.
 See [force inspection](docs/FORCE_INSPECTION.md).
 
+Above the board, **Treachery draw pile** and **Spice draw pile** show live card
+counts separately from hands, auction cards and discards. See
+[draw-pile counts](docs/DRAW_PILES.md).
+
 The table header offers optional **Sound effects**, with mute, volume and a test
 sample. Short cues mark phase changes and automatic action notices. Sound starts
 off; preferences stay in your browser. See [table sounds](docs/TABLE_SOUNDS.md)
