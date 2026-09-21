@@ -5,6 +5,7 @@ import { HomeworldCardGallery } from './homeworld-cards';
 import { NexusCardGallery } from './nexus-cards';
 import { StormCardGallery } from './storm-cards';
 import { KwisatzReferenceCard } from './kwisatz-inspector';
+import { ForceReferenceGallery } from './force-inspector';
 import { createStrongholdCards } from '@/game/stronghold-cards';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect, useRef } from 'react';
@@ -200,6 +201,7 @@ function RulesReferenceContent() {
                   {topic.id === 'nexus-cards' && <NexusCardGallery />}
                   {topic.id === 'storm-cards' && <StormCardGallery />}
                   {topic.id === 'kwisatz-haderach' && <KwisatzReferenceCard />}
+                  {topic.id === 'force-counters' && <ForceReferenceGallery />}
                   {topic.id === 'richese-cards' && (
                     <section
                       aria-label="Richese card collection"

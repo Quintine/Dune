@@ -1952,3 +1952,37 @@ footer {
 
 .nexus-offer .notice, .nexus-offer .game-action { font-size: 1rem; }
 .nexus-offer .game-action { min-height: 44px; height: auto; max-width: 100%; white-space: normal; }
+
+.force-inspect-trigger { min-height: 44px; max-width: 100%; white-space: normal; font-size: 1rem; margin-top: .65rem; }
+.force-dialog { position: fixed; top: 50%; left: 50%; z-index: 50; transform: translate(-50%, -50%); display: flex; flex-direction: column; width: calc(100% - 1rem); max-width: 46rem; max-height: calc(100dvh - 1rem); overflow: hidden; border: 1px solid #8e7952; border-radius: 1rem; background: #141814; color: #eeeae0; box-shadow: 0 24px 80px #000b; outline: none; }
+.force-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem 1rem; border-bottom: 1px solid #414536; font-size: 1rem; }
+.force-dialog-scroll { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1.25rem; }
+.force-dialog-scroll:focus-visible { outline: 2px solid #ddbc77; outline-offset: -3px; }
+.force-dialog-scroll h2 { margin: 0 0 .75rem; font: 1.6rem/1.3 Georgia, serif; overflow-wrap: anywhere; }
+.force-dialog-scroll h3 { margin: 0; font-size: 1.15rem; }
+.force-dialog-scroll p, .force-reference p { font-size: 1rem; line-height: 1.65; }
+.force-details { display: grid; gap: 1rem; min-width: 0; font-size: 1rem; line-height: 1.6; }
+.force-details p { margin: 0; }
+.force-details a { color: #edca83; text-decoration: underline; text-underline-offset: .2em; }
+.force-examples { display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap; margin: 1.25rem 0; }
+.force-example { margin: 0; width: 10rem; max-width: 100%; text-align: center; }
+.force-disc { width: 10rem; max-width: 100%; aspect-ratio: 1; border-radius: 50%; border: .4rem double var(--counter-color); background: #222a25; color: var(--counter-color); display: flex; position: relative; align-items: center; justify-content: center; box-shadow: inset 0 0 0 .35rem #131713, 0 .4rem 0 #070a07; }
+.force-disc > span:first-child { font: bold 4rem/1 Georgia, serif; }
+.force-disc-special > span:first-child { transform: translateY(-.6rem); }
+.force-disc .force-star { position: absolute; bottom: .7rem; width: 1.7rem; height: 1.7rem; fill: currentColor; }
+.force-disc-advisor { border-style: dashed; background: #111811; }
+.force-disc-advisor > span:first-child { transform: translateY(-.7rem); }
+.force-disc .force-stance { position: absolute; bottom: 1rem; font-size: 1rem; }
+.force-example figcaption { margin-top: 1rem; font-size: 1rem; line-height: 1.5; }
+.force-example figcaption strong { display: block; }
+.force-notice { padding: .8rem 1rem; border: 1px solid #6b714d; border-radius: .5rem; background: #252b20; }
+.force-pools { display: grid; gap: 0; margin: 0; }
+.force-pools > div { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .4rem 1rem; padding: .75rem 0; border-bottom: 1px solid #424638; }
+.force-pools dt { font-weight: 600; overflow-wrap: anywhere; }
+.force-pools dd { margin: 0; }
+.force-pools dd span { display: block; color: #d8d4c5; }
+.force-marker { display: flex; align-items: start; gap: 1rem; padding: 1rem; border: 1px dashed #bbaa7e; border-radius: .5rem; }
+.force-marker-back { display: grid; place-items: center; flex: 0 0 2.5rem; height: 3rem; font: 2rem/1 Georgia, serif; border: 2px dashed #bbaa7e; border-radius: .3rem; }
+.force-reference { padding: 1rem; border: 1px solid #807352; border-radius: .75rem; font-size: 1rem; }
+.force-reference label { display: grid; gap: .5rem; }
+.force-reference select { min-height: 44px; width: 100%; font-size: 1rem; }

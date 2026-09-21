@@ -65,6 +65,10 @@ At a Nexus, an unanswered alliance offer names its recipient and offers
 **Withdraw your alliance offer**. Formed alliances keep the separate **Break
 alliance** action. See [Nexus offers](docs/NEXUS_OFFERS.md).
 
+Use **Inspect forces** under any player to enlarge their counters and read public
+reserves, Tanks and deployed groups, including Homeworld reserve breakdowns.
+See [force inspection](docs/FORCE_INSPECTION.md).
+
 The table header offers optional **Sound effects**, with mute, volume and a test
 sample. Short cues mark phase changes and automatic action notices. Sound starts
 off; preferences stay in your browser. See [table sounds](docs/TABLE_SOUNDS.md)

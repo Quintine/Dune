@@ -6,20 +6,21 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `91dcca4`, [ordinary bribe controls](BRIBE_CONTROLS.md).
-Types, lint, **4,968 offline tests**, production build and **49 HTTP tests** passed.
-All 1,418 opening rooms, 2,991 seats and auxiliary rows stayed unchanged. Isolated
-QA brought the local baseline to 1,459 rooms and 3,081 seats. Browser payment,
-refresh, keyboard controls and a 390px layout passed; screenshot capture and full
-visual acceptance remain open. The healthy server was reused. Prior checkpoints
-include `7814f74` for table discussion and `b2fcef8` for Storm/Spice practice.
+Latest delivered checkpoint: `2b071a4`, [live Nexus offer withdrawal](NEXUS_OFFERS.md).
+Types, lint, **4,973 offline tests**, production build and **49 HTTP tests** passed.
+All 1,459 opening rooms, 3,081 seats and auxiliary rows stayed unchanged. Isolated
+QA brought the local baseline to 1,499 rooms and 3,171 seats. Browser proposal,
+refresh, keyboard withdrawal, preserved incoming offer, acceptance, break and
+390px layout checks passed. Full visual acceptance remains open. The healthy
+server was reused. Prior checkpoints include `91dcca4` for bribes, `7814f74` for
+table discussion and `b2fcef8` for Storm/Spice practice.
 
-Current work: [live Nexus offer withdrawal](NEXUS_OFFERS.md) connects the existing
-unanswered-offer action, shows the recipient and records named proposal/withdrawal
-history. Current alliance rules, pending-window locks, readiness and version
-fences remain intact. Source-bound checks, independent review, browser and
-preservation/Git evidence belong to the private checkpoint. The broader game
-remains unfinished. The separate Bureaucrat/Emperor gift question is pending.
+Current work: [public force inspection](FORCE_INSPECTION.md) connects enlarged
+counters and public location inventories for all factions, with special/advisor
+subsets, Homeworld reserve breakdowns and concealed No-Field markers. This is
+read-only; source-bound checks, independent review, browser and preservation/Git
+evidence belong to the private checkpoint. The broader game remains unfinished.
+The separate Bureaucrat/Emperor gift question is pending.
 The `8f7a62c` policy checkpoint removed usage checks/cutoffs and deferred AI
 refinement until feature completion, followed by three adjacent 75% targets.
 

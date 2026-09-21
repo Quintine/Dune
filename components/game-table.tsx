@@ -2,6 +2,7 @@
 import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
 import { KwisatzInspector } from './kwisatz-inspector';
+import { ForceInspector } from './force-inspector';
 import { LobbyBotControls } from './lobby-bot-controls';
 import { IxRicheseTechnology } from './ix-richese-technology';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
@@ -1107,6 +1108,7 @@ export function GameTable({
                   </span>
                 )}
               </div>
+              <ForceInspector player={p} worlds={g.homeworlds?.worlds} />
               {p.revealedTraitors.length > 0 && (
                 <p className="fine">
                   Revealed traitors:{' '}

@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 21 September 2026 — public force counter inspection
+
+Every player now has **Inspect forces**, with enlarged diagrams, special subsets,
+advisor faces, board locations and native/foreign Homeworld accounting. The
+reference includes all twelve factions. [Force inspection](FORCE_INSPECTION.md)
+excludes concealed No-Field values and temporary strength bonuses from physical
+counts. Focused projections, rendering, genuine setup and JSON recovery accompany
+independent review and private browser/preservation/Git evidence. No game action,
+AI strategy, schema, mode or publication gate changed; the full goal is unfinished.
+
 ## 21 September 2026 — live Nexus offer withdrawal
 
 An unallied sender can now see the recipient of its outgoing Nexus offer and

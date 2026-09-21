@@ -1,5 +1,13 @@
 # Component inventory and verification ledger
 
+**Force counter inspection, 21 September 2026:** each public player summary now
+opens enlarged faction diagrams and a physical location inventory. All twelve
+sets have reference faces; special counters, advisor stances, native Homeworld
+reserve breakdowns and foreign deployments retain distinct accounting. Concealed
+No-Fields show only a separate marker. This is a connected inspection prototype;
+manufactured-face fidelity and full visual/combined-rule acceptance remain open.
+See [scope and evidence](FORCE_INSPECTION.md).
+
 **Kwisatz Haderach inspection, 21 September 2026:** original companion artwork,
 readable enlargement, private loss tracking and availability guidance now connect
 to Atreides controls, authorized plan inspection and the internal reference.
