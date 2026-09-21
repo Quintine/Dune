@@ -109,7 +109,7 @@ void test('sample custody catches a duplicated base traitor after setup despite 
   game.players[0].traitors[0] = other;
   assert.throws(
     () => verifySampleCustody(game, inventory),
-    /physical base traitor custody/,
+    /physical traitor custody/,
   );
 });
 
@@ -146,6 +146,6 @@ void test('resumed sample inventory cannot shrink with a deleted leader and matc
     player.traitors = player.traitors.filter((card) => card !== leader.id);
   assert.throws(
     () => verifySampleCustody(game, sampleInventory(game)),
-    /physical base traitor custody/,
+    /physical traitor custody/,
   );
 });

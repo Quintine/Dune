@@ -3,7 +3,7 @@ import { leaders, treacheryDeck } from '../game/cards';
 import type { Game } from '../game/engine';
 import { richeseCards } from '../game/richese-cards';
 import { traitorDeck } from '../game/traitors';
-import { basicMoritaniLeaderSkillsProfile } from '../game/leader-skill-profile';
+import { basicExpansionLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { validateLeaderSkills } from '../game/leader-skills';
 
 /** Fixed inventory captured after genuine setup initialization, before any choices. */
@@ -18,11 +18,12 @@ export function sampleInventory(game: Game) {
     ]
       .map((card) => card.id)
       .sort(),
-    // Expansion Face Dancer/assassination zones require a separate adapter.
-    traitors: game.expansions.length && !basicMoritaniLeaderSkillsProfile(game)
+    // Other expansion assassination zones require a separate adapter.
+    traitors: game.expansions.length && !basicExpansionLeaderSkillsProfile(game)
       ? null
       : traitorDeck(
           game.players.map((player) => ({ leaders: leaders(player.faction) })),
+          game.expansions.includes('ix'),
         ).sort(),
   };
 }
@@ -111,9 +112,11 @@ export function verifySampleCustody(
     assert.deepEqual(
       [
         ...(game.traitorReserve ?? []),
-        ...game.players.flatMap((player) => player.traitors),
+        ...game.players.flatMap((player) => [
+          ...player.traitors, ...(player.faceDancers ?? []).map(card => card.leader),
+        ]),
       ].sort(),
       inventory.traitors,
-      'physical base traitor custody',
+      'physical traitor custody',
     );
 }

@@ -1,7 +1,7 @@
 import type { Game, GameView } from './engine';
 import { splitLocation, validGameLocation } from './board';
 import { faction } from './catalog';
-import { basicMoritaniLeaderSkillsProfile } from './leader-skill-profile';
+import { basicExpansionLeaderSkillsProfile } from './leader-skill-profile';
 import { sandmasterLeader, sandmasterModeSupported } from './sandmaster-movement';
 
 export type SandmasterWormCollection = {
@@ -26,7 +26,7 @@ export function sandmasterWormCollection(
   const blocked = (reason: string): SandmasterWormCollection =>
     ({ leader, key: null, before: 0, blocked: reason });
   if (!sandmasterModeSupported(game) || game.ecazTreachery ||
-      !(basicMoritaniLeaderSkillsProfile(game) ||
+      !(basicExpansionLeaderSkillsProfile(game) ||
         game.players.every(p => faction(p.faction).expansion === 'base')))
     return blocked('Sandmaster worm collection with other optional modules is still being integrated.');
   if (destination === decision.territory ||

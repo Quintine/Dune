@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { basicMoritaniLeaderSkillsProfile } from './leader-skill-profile';
+import { basicExpansionLeaderSkillsProfile } from './leader-skill-profile';
 import type { Game, GameView } from './engine';
 
 export type PlanetologistMoveMode = 'range' | 'gather';
@@ -41,5 +41,5 @@ export function planetologistRange(
 /** Keep the existing base-roster boundary and add the connected Basic Moritani profile. */
 export function planetologistMovementModeSupported(game: Game | GameView): boolean {
   return game.players.every(player => FACTIONS.some(f => f.id === player.faction && f.expansion === 'base')) ||
-    basicMoritaniLeaderSkillsProfile(game);
+    basicExpansionLeaderSkillsProfile(game);
 }

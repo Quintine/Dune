@@ -52,8 +52,9 @@ Banker income, ordinary Mentat-question activation, Diplomat retreat, modified
 Smuggler collection, captured replacement entitlement and other source gaps.
 The private Mentat question preview has not been enabled for this roster.
 Basic Moritani admission does not settle those effects or certify every valid
-expansion/module combination. Advanced Moritani, Ecaz, Ixians and Tleilaxu need
-their own integration, including the recorded deferred Tleilaxu revival timing.
+expansion/module combination. Advanced Moritani, Ecaz and Ixians need their own integration. The later
+[Basic Tleilaxu checkpoint](TLEILAXU_LEADER_SKILLS.md) connects its own revival
+response chains and Face Dancer interactions.
 Full AI strategy and difficulty calibration still wait for feature completion.
 
 ## Reproducible entry and verification

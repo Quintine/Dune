@@ -28,8 +28,21 @@ export function basicMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): bool
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
 }
 
+/** Native Basic Tleilaxu, including Face Dancers; foreign gholas are Advanced. */
+export function basicTleilaxuLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  return game.advanced === false && game.expansions.length === 1 &&
+    game.expansions[0] === 'ix' && noOtherLeaderSkillModules(game) &&
+    !!game.players?.some(player => player.faction === 'tleilaxu') &&
+    game.players.every(player => player.faction === 'tleilaxu' ||
+      FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
+}
+
+export function basicExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  return basicMoritaniLeaderSkillsProfile(game) || basicTleilaxuLeaderSkillsProfile(game);
+}
+
 /** Shared by rule quotes, controls and minimal legal bot participation. */
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
   return noOtherLeaderSkillModules(game) &&
-    (!game.expansions.length || basicMoritaniLeaderSkillsProfile(game));
+    (!game.expansions.length || basicExpansionLeaderSkillsProfile(game));
 }

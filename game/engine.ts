@@ -1,4 +1,4 @@
-import { basicMoritaniLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
+import { basicExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -518,6 +518,7 @@ import { casualtyOptions, maxCombatDial, maxCombatSupport, validCombatForces, ty
 import { FACTIONS, faction, type FactionId } from './catalog';
 import { quoteLobbyBotConfiguration } from './lobby-bot-configuration';
 import {
+  battleLeaderStrength,
   treacheryDeck,
   normalizeLegacyCardNames,
   leaders,
@@ -1609,7 +1610,7 @@ export type Game = {
     cardRolesSignature?: string;
     winnerDiscards?: { cards: string[]; completed: boolean; signature: string };
     sukRescue?: { signature: string; completed: boolean };
-    rihani?: { skill: RihaniSkill; cards: string[]; signature: string; completed: boolean };
+    rihani?: { skill: RihaniSkill; cards: string[]; signature: string; completed: boolean; faceDanceStarted?: true };
     sandmaster?: { leader: string; key: string; before: number; after: number };
     smugglerCollection?: SmugglerBattleReceipt;
     caladanReinforcement?: HomeworldVictoryObligation;
@@ -5904,7 +5905,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
   return initializeSetupGameForAudit(g, false, false, false, false, true,
-    g.expansions.length === 1 && g.expansions[0] === 'choam', basicMoritaniLeaderSkillsProfile(g));
+    g.expansions.length === 1 && g.expansions[0] === 'choam', basicExpansionLeaderSkillsProfile(g));
 }
 /** Gated development setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
@@ -15527,10 +15528,13 @@ function pendingSmugglerBattle(g: Game): SmugglerBattleReceipt | null {
     skills: [b.attacker, b.defender].map(id => battleLeaderSkills(g, getPlayer(g, id))) });
   const receipts = [b.attacker, b.defender].flatMap(id => {
     const p = getPlayer(g, id), plan = b.plans[id];
+    const opponent = getPlayer(g, id === b.attacker ? b.defender : b.attacker);
+    const leader = controlledLeaders(g, p).find(l => l.id === plan.leader && !l.dead);
+    const opposingLeader = controlledLeaders(g, opponent).find(l => l.id === b.plans[opponent.id].leader && !l.dead);
     const receipt = nexusRule(() => createSmugglerBattle({ event: b.event!, turn: g.turn,
       territory: b.territory, player: id, frame, spice: g.spice, supported: smugglerBattleModeSupported(g),
       plan: { assignments: battleLeaderSkills(g, p),
-        leader: controlledLeaders(g, p).find(l => l.id === plan.leader && !l.dead),
+        leader: leader ? { id: leader.id, strength: battleLeaderStrength(leader, opposingLeader) } : undefined,
         weapon: cardOf(p, plan.weapon), defense: cardOf(p, plan.defense), kwisatz: plan.kwisatz } }));
     return receipt ? [receipt] : [];
   });
@@ -15618,11 +15622,11 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       'Suk Graduate rescue for Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.');
     if (quote.sukGraduate) requireRule(
       ordinaryLeaderSkillModeSupported(g) &&
-      (basicMoritaniLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
+      (basicExpansionLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
       'Suk Graduate rescue with expansion factions or other optional modules is still being implemented.');
     if (quote.rihani || quote.sandmaster) requireRule(
       ordinaryLeaderSkillModeSupported(g) &&
-      (basicMoritaniLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
+      (basicExpansionLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
       'These Leader Skill victory effects with expansion factions or other optional modules are still being integrated.');
     const smuggler = b.smugglerCollection ? nexusRule(() => settleSmugglerBattle(b.smugglerCollection!,
       !(b.smugglerCollection!.player === b.attacker ? quote.leaderDeaths.attacker : quote.leaderDeaths.defender), g.spice)) : null;
@@ -16253,7 +16257,8 @@ function winnerDiscardsIntegrity(g: Game) {
 }
 function rihaniObligationSignature(context: NonNullable<Game['lastBattleContext']>) {
   return JSON.stringify([context.event, context.turn, context.winner, context.territory,
-    context.rihani?.skill, context.rihani?.cards, context.rihani?.completed]);
+    context.rihani?.skill, context.rihani?.cards, context.rihani?.completed,
+    ...(context.rihani?.faceDanceStarted === undefined ? [] : [context.rihani.faceDanceStarted])]);
 }
 function pendingRihani(g: Game) {
   return g.rihaniHistory?.find((r) => r.stage !== 'complete') ?? null;
@@ -16281,14 +16286,19 @@ function rihaniIntegrity(g: Game) {
     nexusRule(() => validateRihani(pending, nexusTraitorUniverse(g), nexusTraitorSnapshot(g)));
   } else requireRule(!decisions.length, 'The Rihani choice has lost its physical draw receipt.');
   if (!obligation) return;
+  requireRule(obligation.faceDanceStarted === undefined ||
+    (obligation.faceDanceStarted === true && obligation.completed), 'Invalid saved Rihani aftermath boundary.');
   requireRule(obligation.signature === rihaniObligationSignature(context!), 'The saved Rihani victory obligation changed.');
   const receipt = history.find((r) => r.event === context!.event);
   if (obligation.completed) {
     requireRule(receipt?.stage === 'complete' && receipt.owner === context!.winner &&
       receipt.turn === context!.turn && JSON.stringify(receipt.skill) === JSON.stringify(obligation.skill),
       'The completed Rihani victory lost its receipt.');
-    if (g.phase === 6 && context!.turn === g.turn && !g.battle)
-      nexusRule(() => validateRihani(receipt, nexusTraitorUniverse(g), nexusTraitorSnapshot(g)));
+    if (g.phase === 6 && context!.turn === g.turn && !g.battle) {
+      if (obligation.faceDanceStarted)
+        nexusRule(() => validateNexusTraitorSnapshot(nexusTraitorSnapshot(g), nexusTraitorUniverse(g)));
+      else nexusRule(() => validateRihani(receipt, nexusTraitorUniverse(g), nexusTraitorSnapshot(g)));
+    }
   } else {
     const winner = g.players.find((p) => p.id === context!.winner);
     requireRule(winner && g.status === 'playing' && g.phase === 6 && !g.battle && context!.turn === g.turn &&
@@ -16316,7 +16326,7 @@ function startRihaniVictory(g: Game, winner: Player, territory: string, cards: s
   if (receipt.peeked.length) log(g, `${winner.name}'s Rihani Decipherer privately inspected two random Traitor Deck cards and shuffled them back. The identities are in that player's private skill history.`, { faction: winner.faction, name: 'Rihani Decipherer' });
   if (receipt.stage === 'complete') {
     completeRihaniObligation(g);
-    if (receipt.skill.skilled && !receipt.eligible.length) log(g, `${winner.name} has no unused held Traitor Card to exchange, so Rihani offers no draw.`);
+    if (receipt.skill.skilled && !receipt.eligible.length) log(g, `${winner.name} has no ${winner.faction === 'tleilaxu' ? 'unrevealed Face Dancer' : 'unused held Traitor Card'} to exchange, so Rihani offers no draw.`);
     return false;
   }
   g.decision = { kind: 'rihani', event: receipt.event, player: winner.id, stage: 'offer' };
@@ -16341,12 +16351,12 @@ function actRihani(g: Game, player: Player, decision: Extract<Decision, { kind: 
   applyNexusTraitorSnapshot(g, next.state);
   if (next.stage === 'return') {
     g.decision = { kind: 'rihani', event: next.event, player: player.id, stage: 'return' };
-    log(g, `${player.name} drew two private Traitor Cards through Rihani and must keep one by revealing an unused old card.`);
+    log(g, `${player.name} drew two private ${player.faction === 'tleilaxu' ? 'Face Dancer' : 'Traitor'} Cards through Rihani and must keep one by revealing an ${player.faction === 'tleilaxu' ? 'unrevealed' : 'unused'} old card.`);
   } else {
     completeRihaniObligation(g);
     if (next.given) {
       const name = next.given === CHEAP_HERO_TRAITOR ? 'Cheap Hero / Heroine' : g.players.flatMap((p) => p.leaders).find((l) => l.id === next.given)?.name;
-      log(g, `${player.name} revealed the unused ${name ?? next.given} Traitor Card for Rihani and returned it with the unkept new card to the shuffled Traitor Deck. The kept card remains private.`);
+      log(g, `${player.name} revealed the unused ${name ?? next.given} ${player.faction === 'tleilaxu' ? 'Face Dancer' : 'Traitor Card'} for Rihani and returned it with the unkept new card to the shuffled Traitor Deck. The kept card remains private.`);
     } else log(g, `${player.name} declined Rihani's optional Traitor exchange.`);
     finishWinner(g, player, context.territory, context.rihani!.cards);
   }
@@ -16597,6 +16607,15 @@ function finishBattle(g: Game) {
     }
   }
   const next = quote.next;
+  const rihani = g.lastBattleContext?.rihani;
+  if (next.kind === 'faceDance' && rihani && !rihani.faceDanceStarted) {
+    // Winner cleanup is complete. Face Dance may now reveal or recycle cards;
+    // the earlier exchange remains immutable history, not current deck custody.
+    requireRule(rihani.completed, 'Finish Rihani before Face Dance.');
+    rihaniIntegrity(g);
+    rihani.faceDanceStarted = true;
+    rihani.signature = rihaniObligationSignature(g.lastBattleContext!);
+  }
   if ((next.kind === 'faceDance' || next.kind === 'board') &&
       openHomeworldVictoryReturn(g, next.kind === 'faceDance')) return;
   if (next.kind === 'choamBattleIncome') {
@@ -17151,6 +17170,14 @@ function finishRevival(
       else delete leader.gholaBy;
       leader.dead = false;
       delete leader.concealed;
+      // Automatic Karama response chains may commit after the action's before/after
+      // observer. Record the own-leader offer at the successful revival itself.
+      if (revival.kind === 'leader' && g.leaderSkills && !isAuditorLeader(leader) &&
+          !leader.capturedBy && p.leaders.some(own => own.id === leader.id)) {
+        requireLeaderSkillRevival(g, p.id);
+        g.leaderSkills = skillRule(() => offerRevivedLeaderSkill(
+          g.leaderSkills!, p.id, leader.id, crypto.randomUUID()));
+      }
       log(
         g,
         `${p.name} revived ${leader.name}${revival.kind === 'foreignGhola' ? ' as a ghola' : ''}.`,

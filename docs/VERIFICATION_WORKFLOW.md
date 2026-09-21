@@ -36,6 +36,7 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-faction-games
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-base-games --profile base
 # Basic Moritani with the full Leader Skills deck, two through six seats.
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-moritani-skills --profile moritani-skills
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-tleilaxu-skills --profile tleilaxu-skills
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-base-three --profile base --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined --profile combined --rules advanced --seed 20260926
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json

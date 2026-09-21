@@ -4001,6 +4001,28 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'tleilaxu-leader-skills',
+    title: 'Tleilaxu with Leader Skills',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'The Basic development combination preserves the full skill deck and private Face Dancers.',
+    steps: [
+      'Basic Tleilaxu with base opponents uses all fourteen skills. Starting cards precede private skill choices and the native three Face Dancers. Other optional modules, Advanced foreign gholas and public starts remain unavailable.',
+      'Rihani draws become unrevealed Face Dancers. Keep one new card by revealing and returning one unrevealed old card; the other new card returns privately. Only the owner sees the inspection history and new identities.',
+      'A successful own-leader revival preserves the optional skill draw after revival responses. Winner skill and card cleanup precede Face Dance; a killed skilled leader returns its card once. Zoal copies the opposing disc value for unmodified Smuggler collection.',
+      'Other unfinished skill effects retain their stated limits. This development combination does not certify the full expansion or every optional-module interaction.',
+    ],
+    related: ['leader-skills', 'tleilaxu-face-dancers', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Full setup, response-driven own revival, Rihani Face Dancer exchanges, later death custody and copied Zoal collection are connected; remaining skill effects stay explicit.', evidence: ['game/leader-skill-profile.ts', 'game/rihani-decipherer.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Private offers, Face Dancer keep/reveal inspectors and saved own-revival choices reuse the table controls.', evidence: ['components/rihani-decipherer.tsx', 'components/leader-skills.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing profiles follow their private legal offers. Full strategy and strength tuning wait for feature completion.', evidence: ['game/bots.ts', 'tools/faction-games.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'Entry, source contracts and remaining boundaries are recorded.', evidence: ['docs/TLEILAXU_LEADER_SKILLS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Genuine setup, physical custody, revival response chains, private exchange, Face Dance aftermath, Zoal and authenticated recovery have focused checks; full acceptance remains open.', evidence: ['tests/tleilaxu-skills-integration.test.ts', 'tests/tleilaxu-skills-revival.test.ts', 'tests/tleilaxu-skills-recovery.test.ts', 'tests/rihani-face-dancers.test.ts'] },
+    ],
+  },
+  {
     id: 'moritani-leader-skills',
     title: 'Moritani with Leader Skills',
     category: 'Advanced & expansions',
@@ -4051,7 +4073,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Other special Sandmaster relocation, Spice Banker normal income and Diplomat retreat remain missing. Foreign gholas, Face Dancers and combined modules remain unfinished. This development prototype does not enable public module starts.',
       ...LEADER_SKILL_CARDS.map(card => `${card.name}. Normal: ${card.normal.join(' ')} Skilled battle: ${card.battle.join(' ')}`),
     ],
-    related: ['moritani-leader-skills', 'setup','choam-modules','implementation-checklist'],
+    related: ['tleilaxu-leader-skills', 'moritani-leader-skills', 'setup','choam-modules','implementation-checklist'],
     checklist: [
       { area:'Implementation',status:'Partial',detail:'Exact fourteen-card custody, source-ordered setup, public capture, concealment, death and own revival connect five role bonuses, Planetologist movement/Special substitution and Suk Graduate casualty rescue. Rihani inspection/exchange and lower Mentat/Bureaucrat/Sandmaster effects are connected. Smuggler normal reserve shipping, the owned Richese No-Field companion, unmodified battle collection and optional Sandmaster ground-route and native Fremen worm-ride collection are connected. A separately opted-in Mentat preview connects private pre-plan questions and historical observations while ordinary activation awaits the uniform-response decision. Spice Banker lower spending and native Diplomat base Shield/Snooper copying are connected; Spice Banker normal income, other remaining bands, Diplomat retreat and combined modules remain missing. Bureaucrat redirects supported third-party auction, shipment and bribe payments with exact saved once-per-phase use.',evidence:['game/leader-skill-cards.ts','game/leader-skills.ts','game/leader-skill-combat.ts','game/suk-graduate.ts','game/rihani-decipherer.ts','game/mentat-question.ts','game/bureaucrat-payment.ts','game/leader-skill-battle-board.ts','game/smuggler-shipment.ts','game/smuggler-no-field.ts','game/smuggler-battle.ts','game/spice-banker.ts','game/sandmaster-movement.ts','game/sandmaster-worm.ts','game/diplomat-defense.ts','game/engine.ts'] },
       { area:'Player controls',status:'Partial',detail:'Private card/leader selection, readable inspectors, public battle posture and revival draw/decline, Planetologist range/gather controls, Special weapon selection and Suk Graduate physical rescue choices are connected. Rihani has private history and separate keep-new/reveal-old controls; automatic battle effects need no confirmation. Smuggler has explicit ordinary shipping opt-out and No-Field companion opt-in with physical-versus-priced force counts, plus automatic surviving-leader battle collection with reveal-time guidance. Banker exposes separate sealed spending and authorized inspection. Sandmaster exposes explicit legal routes, per-territory collection choices and an optional worm-destination checkbox. Diplomat offers a named committed Worthless choice or decline after public reveal. Bureaucrat offers redirect or full payment with explicit recipient amounts and deferred bribe custody. Remaining effect controls are missing.',evidence:['components/leader-skills.tsx','components/planetologist-movement.tsx','components/suk-graduate.tsx','components/rihani-decipherer.tsx','components/mentat-question.tsx','components/bureaucrat-payment.tsx','components/leader-skill-battle-guide.tsx','components/smuggler-shipment.tsx','components/spice-banker.tsx','components/sandmaster-movement.tsx','components/sandmaster-worm.tsx','components/diplomat-defense.tsx','components/game-table.tsx'] },

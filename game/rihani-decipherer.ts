@@ -1,6 +1,6 @@
 import type { BattleLeaderSkill } from './leader-skill-combat';
 import { usesSurvivingSkilledLeader } from './leader-skill-combat';
-import { validateNexusTraitorSnapshot, type NexusTraitorSnapshot } from './nexus-traitor-exchange';
+import { validateNexusTraitorSnapshot, type NexusExchangePlayer, type NexusTraitorSnapshot } from './nexus-traitor-exchange';
 
 export type RihaniSkill = { leader: string; normal: boolean; skilled: boolean };
 export type RihaniReceipt = {
@@ -18,6 +18,24 @@ function requireRihani(value: unknown, message: string): asserts value {
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 const members = (a: readonly string[], b: readonly string[]) =>
   a.length === b.length && same([...a].sort(), [...b].sort());
+function eligibleOldCards(owner: NexusExchangePlayer, used: readonly string[]): string[] {
+  return owner.faction === 'tleilaxu'
+    ? owner.faceDancers!.filter((card) => !card.revealed).map((card) => card.leader)
+    : owner.traitors.filter((id) => !used.includes(id));
+}
+function unchangedHand(owner: NexusExchangePlayer, old: NexusExchangePlayer): boolean {
+  return same(owner.traitors, old.traitors) && same(owner.faceDancers, old.faceDancers);
+}
+function augmentedHand(owner: NexusExchangePlayer, old: NexusExchangePlayer, drawn: readonly string[]): boolean {
+  return owner.faction === 'tleilaxu'
+    ? same(owner.faceDancers, [...old.faceDancers!, ...drawn.map((leader) => ({ leader, revealed: false }))])
+    : same(owner.traitors, [...old.traitors, ...drawn]);
+}
+function exchangedHand(owner: NexusExchangePlayer, old: NexusExchangePlayer, kept: string, given: string): boolean {
+  return owner.faction === 'tleilaxu'
+    ? same(owner.faceDancers, [...old.faceDancers!.filter((card) => card.leader !== given), { leader: kept, revealed: false }])
+    : members(owner.traitors, [...old.traitors.filter((id) => id !== given), kept]);
+}
 function shuffled<T>(values: readonly T[], rng: () => number): T[] {
   const result = [...values];
   for (let i = result.length - 1; i > 0; i--) {
@@ -49,8 +67,8 @@ export function beginRihani(snapshot: NexusTraitorSnapshot, universe: readonly s
   identity: Pick<RihaniReceipt, 'event' | 'turn' | 'owner' | 'skill'>, used: readonly string[], rng: () => number): RihaniReceipt {
   validateNexusTraitorSnapshot(snapshot, universe);
   const owner = snapshot.players.find((p) => p.id === identity.owner);
-  requireRihani(owner && owner.faction !== 'tleilaxu', 'Rihani Face Dancer exchanges are still being integrated.');
-  const eligible = owner.traitors.filter((id) => !used.includes(id));
+  requireRihani(owner, 'Rihani requires its original card owner.');
+  const eligible = eligibleOldCards(owner, used);
   const optional = identity.skill.skilled && eligible.length > 0;
   requireRihani(!(identity.skill.normal || optional) || snapshot.reserve.length >= 2,
     'Rihani requires two physical cards in the Traitor Deck.');
@@ -72,13 +90,13 @@ export function validateRihani(receipt: RihaniReceipt, universe: readonly string
   validateNexusTraitorSnapshot(receipt.state, universe);
   const old = receipt.before.players.find((p) => p.id === receipt.owner);
   const owner = receipt.state.players.find((p) => p.id === receipt.owner);
-  requireRihani(old && owner && old.faction !== 'tleilaxu' && owner.faction === old.faction &&
+  requireRihani(old && owner && owner.faction === old.faction &&
     same(receipt.before.players.filter((p) => p.id !== receipt.owner), receipt.state.players.filter((p) => p.id !== receipt.owner)),
     'Rihani changed another player’s physical Traitors.');
   requireRihani(Array.isArray(receipt.used) && new Set(receipt.used).size === receipt.used.length &&
     members(receipt.deckAfterPeek, receipt.before.reserve) &&
     (receipt.skill.normal || same(receipt.deckAfterPeek, receipt.before.reserve)) &&
-    same(receipt.eligible, old.traitors.filter((id) => !receipt.used.includes(id))) &&
+    same(receipt.eligible, eligibleOldCards(old, receipt.used)) &&
     receipt.peeked.length === (receipt.skill.normal ? 2 : 0) &&
     new Set(receipt.peeked).size === receipt.peeked.length &&
     receipt.peeked.every((id) => receipt.before.reserve.includes(id)), 'Rihani lost its original inspection or unused cards.');
@@ -86,18 +104,18 @@ export function validateRihani(receipt: RihaniReceipt, universe: readonly string
     new Set(receipt.drawn).size === receipt.drawn.length && receipt.drawn.every((id) => receipt.before.reserve.includes(id)),
     'Rihani must draw two distinct physical cards.');
   if (!receipt.drawn.length) {
-    requireRihani(receipt.stage !== 'return' && !receipt.kept && !receipt.given && same(owner.traitors, old.traitors) &&
+    requireRihani(receipt.stage !== 'return' && !receipt.kept && !receipt.given && unchangedHand(owner, old) &&
       same(receipt.state.reserve, receipt.deckAfterPeek), 'The undrawn Rihani offer changed hand custody.');
   } else {
     requireRihani(receipt.skill.skilled && receipt.eligible.length > 0, 'This Rihani cannot exchange an unused card.');
     requireRihani(same(receipt.drawn, receipt.deckAfterPeek.slice(0, 2)), 'Rihani did not draw from the saved deck order.');
     const remaining = receipt.deckAfterPeek.slice(2);
     if (receipt.stage === 'return') requireRihani(!receipt.kept && !receipt.given &&
-      same(owner.traitors, [...old.traitors, ...receipt.drawn]) && same(receipt.state.reserve, remaining),
+      augmentedHand(owner, old, receipt.drawn) && same(receipt.state.reserve, remaining),
       'The pending Rihani return lost its drawn cards.');
     else requireRihani(receipt.stage === 'complete' && receipt.kept && receipt.drawn.includes(receipt.kept) &&
       receipt.given && receipt.eligible.includes(receipt.given) &&
-      members(owner.traitors, [...old.traitors.filter((id) => id !== receipt.given), receipt.kept]) &&
+      exchangedHand(owner, old, receipt.kept, receipt.given) &&
       members(receipt.state.reserve, [...remaining, receipt.given, ...receipt.drawn.filter((id) => id !== receipt.kept)]),
       'The completed Rihani exchange lost its exact new or returned card.');
   }
@@ -114,7 +132,9 @@ export function chooseRihaniDraw(receipt: RihaniReceipt, universe: readonly stri
   else {
     requireRihani(next.state.reserve.length >= 2, 'Rihani requires two physical cards in the Traitor Deck.');
     next.drawn = next.state.reserve.splice(0, 2);
-    next.state.players.find((p) => p.id === next.owner)!.traitors.push(...next.drawn);
+    const owner = next.state.players.find((p) => p.id === next.owner)!;
+    if (owner.faction === 'tleilaxu') owner.faceDancers!.push(...next.drawn.map((leader) => ({ leader, revealed: false })));
+    else owner.traitors.push(...next.drawn);
     next.stage = 'return';
   }
   signed(next); validateRihani(next, universe); return next;
@@ -126,7 +146,9 @@ export function finishRihani(receipt: RihaniReceipt, universe: readonly string[]
     'Keep one newly drawn Traitor and reveal one unused Traitor held before the draw.');
   const next = structuredClone(receipt), other = next.drawn.find((id) => id !== kept)!;
   const owner = next.state.players.find((p) => p.id === next.owner)!;
-  owner.traitors = owner.traitors.filter((id) => id !== given && id !== other);
+  if (owner.faction === 'tleilaxu')
+    owner.faceDancers = owner.faceDancers!.filter((card) => card.leader !== given && card.leader !== other);
+  else owner.traitors = owner.traitors.filter((id) => id !== given && id !== other);
   next.state.reserve = shuffled([...next.state.reserve, given, other], rng);
   next.kept = kept; next.given = given; next.stage = 'complete';
   signed(next); validateRihani(next, universe); return next;

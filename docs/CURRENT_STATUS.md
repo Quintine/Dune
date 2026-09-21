@@ -6,29 +6,21 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `e7e1602`, [revealed battle components](REVEALED_BATTLE_COMPONENTS.md).
-Types, lint, **5,017 offline tests** and the production build passed. The shared
-public display retains direct inspection across decision ownership; browser
-checks covered genuine plan sealing, keyboard navigation, mobile layout and
-refresh after an explicitly staged conserved battle. All 1,579 opening rooms,
-3,347 human seats and auxiliary rows stayed unchanged. One new QA room/seat
-brings the preservation baseline to 1,580 rooms and 3,348 human seats. Screenshot
-capture timed out; full visual acceptance remains open. The healthy server was
-reused. Earlier checkpoints include `de26aaf` for [Ecaz Loyalty](ECAZ_LOYALTY.md).
+Latest delivered checkpoint: `489bd32`, [Basic Moritani with Leader Skills](MORITANI_LEADER_SKILLS.md).
+Types, lint, **5,034 offline tests** and the production build passed; five
+complete two-through-six-player samples had no rejected actions. Browser setup
+and refresh were checked. All 1,580 prior rooms and 3,348 seats remained intact;
+one QA room/seat brought the baseline to 1,581 rooms and 3,349 human seats.
+Screenshot capture timed out; full visual acceptance remains open.
 
-Current work: [Basic Moritani with Leader Skills](MORITANI_LEADER_SKILLS.md)
-connects the full fourteen-card deck with base opponents and no other optional
-modules. Coordinated public-profile guards connect movement, shipment, payment
-and battle effects; focused tests cover Terror death/revival, real alliance
-retention exclusions and authenticated saved choices. A reusable two-through-six
-player sample profile exercises legal continuation. Final results and browser,
-independent review, preservation and Git evidence accompany this checkpoint.
-
-The remaining Leader Skills effects and source questions retain their explicit
-boundaries; admitting Basic Moritani does not finish the module. Next integration
-work should assess the remaining faction/module dependencies against these new
-shared profile checks, without reducing the physical deck or hiding unsupported
-cards after dealing. Advanced Moritani and Ecaz/Skills remain separate gates.
+Current work: [Basic Tleilaxu with Leader Skills](TLEILAXU_LEADER_SKILLS.md)
+connects genuine full-deck setup, own revival through automatic response chains,
+native Rihani Face Dancer exchanges and later Face Dance skill custody. Zoal's
+Smuggler collection now uses the opposing printed disc value. Focused tests,
+authenticated saved choices, private controls and a reusable two-through-six
+player sample profile accompany final source-bound reports. Existing missing
+skill bands, Advanced Tleilaxu/foreign gholas and other roster/module combinations
+remain separate work; admission does not certify complete Leader Skills.
 The Bureaucrat/Emperor gift question is still pending. The `8f7a62c` policy
 checkpoint removed usage checks/cutoffs and deferred full AI work until feature
 completion, followed by three adjacent 75% targets.

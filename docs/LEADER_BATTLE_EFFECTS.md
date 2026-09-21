@@ -48,8 +48,9 @@ when fewer than two physical deck cards are available.
 
 The [Ixian/Tleilaxu rules](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf)
 place skill resolution before faction capture and Face Dance. Tleilaxu Rihani
-must instead exchange an unrevealed Face Dancer. That combination, foreign
-gholas and the skill lifecycle after non-kill Face Dance remain unimplemented.
+must instead exchange an unrevealed Face Dancer. The [Basic Tleilaxu follow-up](TLEILAXU_LEADER_SKILLS.md)
+connects that exchange and the skill return when Face Dance kills a leader.
+Foreign gholas remain gated.
 The connected entry supports base factions in Basic/Advanced with Leader Skills
 alone. These boundaries are implementation limits, not prohibitions in the game.
 

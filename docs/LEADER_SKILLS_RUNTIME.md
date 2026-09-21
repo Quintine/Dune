@@ -7,6 +7,10 @@ records the fresh publisher/designer search requested by the user.
 
 ## Connected boundary
 
+The [Basic Tleilaxu follow-up](TLEILAXU_LEADER_SKILLS.md) adds the full-deck
+Tleilaxu/base profile, response-driven own revival, native Rihani Face Dancer
+exchanges and later Face Dance custody. Advanced foreign gholas stay gated.
+
 The [Basic Moritani follow-up](MORITANI_LEADER_SKILLS.md) now connects Moritani
 with base opponents and no other optional modules. It preserves all fourteen
 cards and existing unfinished-effect boundaries. The older base-only scope
@@ -80,9 +84,8 @@ own-leader revival while its original skill is captured, before beginning a
 paid revival or consuming the Ghola/special-Karama action. This is an explicit
 unsupported boundary, not a ruling that the physical game forbids that revival.
 Foreign gholas, other expansion rosters and combined optional modules remain gated.
-Before enabling them, add response-driven automatic revival continuation
-coverage; the current before/after revival observer does not certify deferred
-Tleilaxu response chains. The other source-contract timing questions also remain
+The Basic Tleilaxu follow-up now tests response-driven automatic own revival
+continuation; this does not certify Advanced foreign-ghola custody. The other source-contract timing questions also remain
 open. Planetologist now has bounded movement and battle controls as described below.
 Remaining normal-band payments, ordinary Mentat activation, modified Smuggler collection,
 Diplomat retreat and the other guarded skill combinations still need connected

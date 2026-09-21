@@ -79,7 +79,9 @@ persists through refresh. See [Ecaz Loyalty](docs/ECAZ_LOYALTY.md).
 
 The local Leader Skills prototype also supports Basic Moritani with base
 opponents and the full fourteen-card deck. See [entry, connected interactions
-and remaining boundaries](docs/MORITANI_LEADER_SKILLS.md).
+and remaining boundaries](docs/MORITANI_LEADER_SKILLS.md). Basic Tleilaxu also
+supports the full deck, native Rihani exchanges and saved revival choices; see
+[its integration boundary](docs/TLEILAXU_LEADER_SKILLS.md).
 
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See

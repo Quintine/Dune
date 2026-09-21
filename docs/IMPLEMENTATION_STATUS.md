@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 21 September 2026 — Basic Tleilaxu with Leader Skills
+
+Genuine Basic Tleilaxu setup now uses the full skill deck, native Rihani Face
+Dancer exchanges and response-driven own-leader revival choices. Completed
+Rihani history releases live custody only when later Face Dance begins; Zoal
+Smuggler collection uses opposing printed disc strength. Shared guards, private
+controls, legal AI continuation, authenticated recovery and two-through-six
+player samples accompany the [integration contract](TLEILAXU_LEADER_SKILLS.md).
+Existing unfinished effects and public completion/publication gates remain.
+
 ## 21 September 2026 — Basic Moritani with Leader Skills
 
 The existing private initializer now connects Basic Moritani with base opponents

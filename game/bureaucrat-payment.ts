@@ -1,4 +1,4 @@
-import { basicMoritaniLeaderSkillsProfile, noOtherLeaderSkillModules, type LeaderSkillProfile } from './leader-skill-profile';
+import { basicExpansionLeaderSkillsProfile, noOtherLeaderSkillModules, type LeaderSkillProfile } from './leader-skill-profile';
 export type BureaucratPaymentKind = 'auction' | 'shipment' | 'bribe';
 export type BureaucratPaymentSource = {
   event: string;
@@ -38,7 +38,7 @@ export function bureaucratPaymentModeSupported(game: LeaderSkillProfile): boolea
   return noOtherLeaderSkillModules(game) &&
     (!game.expansions.length ||
       (game.expansions.length === 1 && game.expansions[0] === 'choam') ||
-      basicMoritaniLeaderSkillsProfile(game));
+      basicExpansionLeaderSkillsProfile(game));
 }
 export function bureaucratUsed(
   used: readonly BureaucratPaymentUse[],

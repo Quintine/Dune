@@ -20,13 +20,13 @@ import {
   type Game,
 } from '../game/engine';
 import { sampleInventory, verifySampleCustody } from './sample-custody';
-import { basicMoritaniLeaderSkillsProfile } from '../game/leader-skill-profile';
+import { basicExpansionLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { privateOutputDirectory, sourceSnapshot } from './verification';
 
 const DEFAULT_SEED = 20_260_926;
 const DEFAULT_MAX_ACTIONS = 3_500;
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard', 'Brutal'] as const;
-type Profile = 'base' | 'choam' | 'ecaz' | 'combined' | 'moritani-skills';
+type Profile = 'base' | 'choam' | 'ecaz' | 'combined' | 'moritani-skills' | 'tleilaxu-skills';
 type Rules = 'basic' | 'advanced';
 
 type Scenario = {
@@ -112,6 +112,15 @@ const MORITANI_SKILLS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(playe
   roster: MORITANI_SKILLS_ROSTER.slice(0, players),
 }));
 
+const TLEILAXU_SKILLS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(players => ({
+  ordinal: 21 + players - 2,
+  profile: 'tleilaxu-skills',
+  rules: 'basic',
+  expansions: ['ix'],
+  roster: (['tleilaxu', 'emperor', 'guild', 'harkonnen', 'fremen', 'beneGesserit'] as FactionId[]).slice(0, players),
+}));
+const skillProfile = (profile: string) => profile === 'moritani-skills' || profile === 'tleilaxu-skills';
+
 type TraceEntry = {
   attempt: number;
   accepted: number;
@@ -148,10 +157,10 @@ type Result = {
 function usage() {
   return (
     'Usage: node --import tsx tools/faction-games.ts --out NEW_PRIVATE_DIR ' +
-    '[--seed UINT32] [--profile all|base|choam|ecaz|combined|moritani-skills] ' +
+    '[--seed UINT32] [--profile all|base|choam|ecaz|combined|moritani-skills|tleilaxu-skills] ' +
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
-    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base and moritani-skills default to their 2–6-player samples. --players requires --profile base or moritani-skills. Output must be a new private directory outside the checkout.'
+    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base and the skill profiles default to their 2–6-player samples. --players requires --profile base, moritani-skills or tleilaxu-skills. Output must be a new private directory outside the checkout.'
   );
 }
 
@@ -182,15 +191,15 @@ function positive(value: string | undefined) {
 }
 
 function scenarioName(scenario: Scenario) {
-  return scenario.profile === 'base' || scenario.profile === 'moritani-skills'
+  return scenario.profile === 'base' || skillProfile(scenario.profile)
     ? `${scenario.profile}-${scenario.roster.length}-${scenario.rules}`
     : `${scenario.profile}-${scenario.rules}`;
 }
 
 function parseProfile(value: string | undefined) {
   const profile = value ?? 'all';
-  if (!['all', 'base', 'choam', 'ecaz', 'combined', 'moritani-skills'].includes(profile))
-    throw new Error('--profile must be all, base, choam, ecaz, combined or moritani-skills.');
+  if (!['all', 'base', 'choam', 'ecaz', 'combined', 'moritani-skills', 'tleilaxu-skills'].includes(profile))
+    throw new Error('--profile must be all, base, choam, ecaz, combined, moritani-skills or tleilaxu-skills.');
   return profile as Profile | 'all';
 }
 
@@ -234,7 +243,7 @@ function freshGame(scenario: Scenario) {
     player.bot = DIFFICULTIES[index % DIFFICULTIES.length];
     player.ready = true;
   }
-  return scenario.profile === 'moritani-skills'
+  return skillProfile(scenario.profile)
     ? initializeLeaderSkillsGameForAudit(game)
     : scenario.profile === 'base'
     ? initializeBaseGameForAudit(game)
@@ -275,7 +284,7 @@ function resumedGame(path: string) {
   if (
     game.homeworlds ||
     game.nexusCards ||
-    (game.leaderSkills && !basicMoritaniLeaderSkillsProfile(game)) ||
+    (game.leaderSkills && !basicExpansionLeaderSkillsProfile(game)) ||
     game.discoveryEnabled ||
     game.discoveries ||
     game.discoveryStash ||
@@ -290,9 +299,9 @@ function resumedGame(path: string) {
     game.moritaniAssassinateCallEvents
   )
     throw new Error('--resume sample scenarios exclude optional modules.');
-  const scenario = [...SCENARIOS, ...BASE_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS].find(
+  const scenario = [...SCENARIOS, ...BASE_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS].find(
     (candidate) =>
-      (candidate.profile === 'moritani-skills') === !!game.leaderSkills &&
+      skillProfile(candidate.profile) === !!game.leaderSkills &&
       candidate.rules === (game.advanced ? 'advanced' : 'basic') &&
       JSON.stringify(candidate.expansions) ===
         JSON.stringify(game.expansions) &&
@@ -485,14 +494,14 @@ async function main() {
   const profile = parseProfile(values.profile);
   const rules = parseRules(values.rules);
   const players = parsePlayers(values.players);
-  if (supplied('players') && profile !== 'base' && profile !== 'moritani-skills')
-    throw new Error('--players requires --profile base or moritani-skills.');
-  if (profile === 'moritani-skills' && rules === 'advanced')
-    throw new Error('Moritani with Leader Skills currently supports only Basic samples.');
+  if (supplied('players') && profile !== 'base' && !skillProfile(profile))
+    throw new Error('--players requires --profile base, moritani-skills or tleilaxu-skills.');
+  if (skillProfile(profile) && rules === 'advanced')
+    throw new Error('Moritani and Tleilaxu with Leader Skills currently support only Basic samples.');
   const resume = values.resume ? resumedGame(values.resume) : null;
   const selected = resume
     ? [resume.scenario]
-    : (profile === 'base' ? BASE_SCENARIOS : profile === 'moritani-skills' ? MORITANI_SKILLS_SCENARIOS : SCENARIOS).filter(
+    : (profile === 'base' ? BASE_SCENARIOS : profile === 'moritani-skills' ? MORITANI_SKILLS_SCENARIOS : profile === 'tleilaxu-skills' ? TLEILAXU_SKILLS_SCENARIOS : SCENARIOS).filter(
         (scenario) =>
           (profile === 'all' || scenario.profile === profile) &&
           (rules === 'both' || scenario.rules === rules) &&
