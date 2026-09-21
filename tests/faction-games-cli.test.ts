@@ -95,6 +95,26 @@ function assertFailedEvidence(
   return report;
 }
 
+void test('Moritani Skills samples preserve their full module on saved continuation and reject Advanced before running', (t) => {
+  const area = temporary(t);
+  const out = join(area, 'skills');
+  const result = run(out, '--profile', 'moritani-skills', '--players', '2', '--seed', '1000', '--max-actions', '1');
+  assert.equal(result.status, 1);
+  assertFailedEvidence(out, 'moritani-skills-2-basic', 1016, false);
+  const snapshot = join(out, 'failed-moritani-skills-2-basic.json');
+  const game = json<{ advanced: boolean; leaderSkills: { deck: string[]; offers: Record<string, { cards: string[] }>; assignments: { skill: string }[] } }>(snapshot);
+  assert.equal(game.advanced, false);
+  const physical = [...game.leaderSkills.deck, ...Object.values(game.leaderSkills.offers).flatMap(o => o.cards), ...game.leaderSkills.assignments.map(a => a.skill)];
+  assert.equal(physical.length, 14); assert.equal(new Set(physical).size, 14);
+  const resumed = join(area, 'skills-resumed');
+  assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(resumed, 'moritani-skills-2-basic', 1016, true);
+  const unsupported = join(area, 'unsupported');
+  const bad = run(unsupported, '--profile', 'moritani-skills', '--rules', 'advanced');
+  assert.equal(bad.status, 1); assert.match(bad.stderr, /only Basic/);
+  assert.equal(existsSync(unsupported), false);
+});
+
 void test('selected genuine three-player Advanced base sample fails honestly, resumes its fixed snapshot and keeps source-bound private evidence', (t) => {
   const area = temporary(t);
   const first = join(area, 'first');

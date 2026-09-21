@@ -1,3 +1,4 @@
+import { ordinaryLeaderSkillModeSupported, type LeaderSkillProfile } from './leader-skill-profile';
 import {
   usesSurvivingSkilledLeader,
   type BattleLeaderSkill,
@@ -6,24 +7,8 @@ import {
 export class SpiceBankerError extends Error {}
 
 /** The same development boundary applies to declarations, saved plans, controls and bots. */
-export function spiceBankerModeSupported(game: {
-  expansions: readonly string[];
-  homeworlds?: unknown;
-  nexusCards?: unknown;
-  discoveries?: unknown;
-  discoveryEnabled?: boolean;
-  strongholdCards?: unknown;
-  techTokens?: unknown;
-}): boolean {
-  return (
-    !game.expansions.length &&
-    !game.homeworlds &&
-    !game.nexusCards &&
-    !game.discoveries &&
-    !game.discoveryEnabled &&
-    !game.strongholdCards &&
-    !game.techTokens
-  );
+export function spiceBankerModeSupported(game: LeaderSkillProfile): boolean {
+  return ordinaryLeaderSkillModeSupported(game);
 }
 
 export function spiceBankerBattleMaximum(

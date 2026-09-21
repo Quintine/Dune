@@ -1,5 +1,6 @@
+import { FACTIONS } from './catalog';
+import { basicMoritaniLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, type LeaderSkillProfile } from './leader-skill-profile';
 import type { Card, Leader } from './cards';
-import { faction } from './catalog';
 import { splitLocation, validGameLocation } from './board';
 import { leaderSkillBattleBonus, usesSurvivingSkilledLeader, type BattleLeaderSkill } from './leader-skill-combat';
 
@@ -8,13 +9,9 @@ export type SmugglerBattleReceipt = {
   frame: string; strength: number; key: string | null; before: number; amount: number;
   stage: 'pending' | 'collected' | 'void'; signature: string;
 };
-export function smugglerBattleModeSupported(g: {
-  expansions: readonly string[]; players: readonly { faction: string }[];
-  homeworlds?: unknown; nexusCards?: unknown; discoveries?: unknown;
-  discoveryEnabled?: boolean; strongholdCards?: unknown; techTokens?: unknown; ecazTreachery?: unknown;
-}) {
-  return !g.expansions.length && g.players.every(p => faction(p.faction)?.expansion === 'base') &&
-    !g.homeworlds && !g.nexusCards && !g.discoveries && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens && !g.ecazTreachery;
+export function smugglerBattleModeSupported(g: LeaderSkillProfile & { players: readonly { faction: string }[] }) {
+  return ordinaryLeaderSkillModeSupported(g) &&
+    (basicMoritaniLeaderSkillsProfile(g) || g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base')));
 }
 export type SmugglerBattlePlan = {
   assignments: readonly BattleLeaderSkill[];

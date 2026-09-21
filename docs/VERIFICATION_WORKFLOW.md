@@ -34,6 +34,8 @@ An interrupted or incomplete report is never evidence of success.
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-faction-games
 # Ten genuine base samples: Basic and Advanced at each player count.
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-base-games --profile base
+# Basic Moritani with the full Leader Skills deck, two through six seats.
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-moritani-skills --profile moritani-skills
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-base-three --profile base --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined --profile combined --rules advanced --seed 20260926
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json
@@ -46,6 +48,13 @@ additional samples: Basic and Advanced with two through six players.
 five counts. The fixed base roster adds Atreides, Harkonnen, Fremen, Emperor,
 Guild and Bene Gesserit in that order. These are sample rosters, not an assertion
 that these are the only rules-permitted player-count configurations.
+
+`--profile moritani-skills` adds five Basic samples with Moritani, then Emperor,
+Guild, Harkonnen, Fremen and Bene Gesserit. `--players` also narrows this profile;
+Advanced requests fail before running. Its seed offsets are 16–20, leaving
+existing samples unchanged. The full fourteen-card skill census and ordinary
+Moritani/base Traitor census are checked throughout. `--resume` preserves this
+explicit profile; other optional modules still fail its admission checks.
 
 All samples use genuine setup and saved AI profiles, cycling Easy, Medium,
 Hard and Brutal by seat. Smaller games necessarily contain fewer profiles;

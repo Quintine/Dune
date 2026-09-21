@@ -4001,6 +4001,28 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'moritani-leader-skills',
+    title: 'Moritani with Leader Skills',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Basic Moritani and base opponents use the full fourteen-card Leader Skills deck in development tables.',
+    steps: [
+      'Assign skills after starting Treachery Cards and before Traitor choices. Moritani places its six starting forces last. All fourteen skills remain in the physical deck; each player keeps one of two private choices and publicly assigns it to an eligible leader.',
+      'Connected movement, shipping, payment and battle skills use the same controls and legal quotes as the base profile. Terror Assassination returns a killed leader’s exact skill once; a later own-leader revival offers the normal private optional replacement. Sabotage affects Treachery Cards, not skills.',
+      'An Enemy of My Enemy alliance preserves each faction’s assignments. A losing ally cannot retain a used Planetologist Special or the Worthless card used for a Diplomat copy, because those cards must be discarded.',
+      'This profile uses Basic rules, Moritani with base opponents and no other optional modules. Existing unfinished Leader Skill effects and disputed cases remain unfinished. Advanced Moritani, Ecaz and further roster/module combinations need separate integration; ordinary public starts remain disabled.',
+    ],
+    related: ['leader-skills', 'expansion-faction-games', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Genuine setup and shared public-profile guards connect existing skill effects to Basic Moritani. Terror custody and ally-retention disposal reuse settled contracts; unfinished effects remain explicit.', evidence: ['game/leader-skill-profile.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Existing private offers, public assignments, battle and revival choices are reused; Planetologist controls share the expanded server predicate.', evidence: ['components/leader-skills.tsx', 'components/planetologist-movement.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Existing profiles retain minimal legal participation through shared public choices. Strategy and difficulty calibration remain deferred until game features are complete.', evidence: ['game/bots.ts', 'tools/faction-games.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'The integration guide records entry, exact scope, existing source contracts and remaining effects without claiming full module compliance.', evidence: ['docs/MORITANI_LEADER_SKILLS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Genuine setup, all physical assignments, Terror death/revival, movement/payment/battle continuations, mandatory retention exclusions and authenticated concurrent recovery have focused checks. Sample and browser results are recorded separately; full combined-rule acceptance remains open.', evidence: ['tests/moritani-skills-integration.test.ts', 'tests/moritani-skills-custody.test.ts', 'tests/moritani-skills-battle.test.ts', 'tests/moritani-skills-recovery.test.ts', 'tests/moritani-skills-worm.test.ts'] },
+    ],
+  },
+  {
     id: 'leader-skills',
     title: 'Leader Skills',
     category: 'Advanced & expansions',
@@ -4008,6 +4030,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     developmentStage: 'Prototyped',
     summary: 'Fourteen physical skills, private assignment choices, five battle disciplines, Planetologist movement/battle effects and Suk Graduate rescues, Mentat/Bureaucrat scoring and Bureaucrat payment redirection, Sandmaster victory spice, Rihani exchanges, optional Smuggler shipping and unmodified battle collection, Sandmaster route and worm-ride collection, sealed Spice Banker battle spending and optional Diplomat base-defense copying in development tables. Other effects and combined-module acceptance remain unfinished.',
     steps: [
+      'A development profile also connects Basic Moritani with base opponents and no other optional modules. It keeps the full deck and existing unfinished-effect boundaries; see Moritani with Leader Skills.',
       'With this optional module, starting Treachery Cards are dealt after prediction and before skill assignment. Every faction privately receives two skills, keeps one, returns the other to the shuffled deck, and assigns its chosen card to an eligible leader. Skill and leader become public before traitor selection.',
       'Before Battle Plans, leave the skilled leader face up to keep its normal effect, or move it behind the shield for possible use. A face-up leader cannot be selected for the plan. Concealing it while choosing another leader gives neither effect. A leader that must be used because no alternative remains moves behind the shield automatically.',
       'Warmaster, Master of Assassins, Swordmaster of Ginaz, Killer Medic and Prana-Bindu Adept are connected. They give another leader +1 for the matching physical card role, or the surviving assigned leader +3. These bonuses do not stack to +4. They change battle strength, not the printed disc value or leader bounty.',
@@ -4028,7 +4051,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Other special Sandmaster relocation, Spice Banker normal income and Diplomat retreat remain missing. Foreign gholas, Face Dancers and combined modules remain unfinished. This development prototype does not enable public module starts.',
       ...LEADER_SKILL_CARDS.map(card => `${card.name}. Normal: ${card.normal.join(' ')} Skilled battle: ${card.battle.join(' ')}`),
     ],
-    related: ['setup','choam-modules','implementation-checklist'],
+    related: ['moritani-leader-skills', 'setup','choam-modules','implementation-checklist'],
     checklist: [
       { area:'Implementation',status:'Partial',detail:'Exact fourteen-card custody, source-ordered setup, public capture, concealment, death and own revival connect five role bonuses, Planetologist movement/Special substitution and Suk Graduate casualty rescue. Rihani inspection/exchange and lower Mentat/Bureaucrat/Sandmaster effects are connected. Smuggler normal reserve shipping, the owned Richese No-Field companion, unmodified battle collection and optional Sandmaster ground-route and native Fremen worm-ride collection are connected. A separately opted-in Mentat preview connects private pre-plan questions and historical observations while ordinary activation awaits the uniform-response decision. Spice Banker lower spending and native Diplomat base Shield/Snooper copying are connected; Spice Banker normal income, other remaining bands, Diplomat retreat and combined modules remain missing. Bureaucrat redirects supported third-party auction, shipment and bribe payments with exact saved once-per-phase use.',evidence:['game/leader-skill-cards.ts','game/leader-skills.ts','game/leader-skill-combat.ts','game/suk-graduate.ts','game/rihani-decipherer.ts','game/mentat-question.ts','game/bureaucrat-payment.ts','game/leader-skill-battle-board.ts','game/smuggler-shipment.ts','game/smuggler-no-field.ts','game/smuggler-battle.ts','game/spice-banker.ts','game/sandmaster-movement.ts','game/sandmaster-worm.ts','game/diplomat-defense.ts','game/engine.ts'] },
       { area:'Player controls',status:'Partial',detail:'Private card/leader selection, readable inspectors, public battle posture and revival draw/decline, Planetologist range/gather controls, Special weapon selection and Suk Graduate physical rescue choices are connected. Rihani has private history and separate keep-new/reveal-old controls; automatic battle effects need no confirmation. Smuggler has explicit ordinary shipping opt-out and No-Field companion opt-in with physical-versus-priced force counts, plus automatic surviving-leader battle collection with reveal-time guidance. Banker exposes separate sealed spending and authorized inspection. Sandmaster exposes explicit legal routes, per-territory collection choices and an optional worm-destination checkbox. Diplomat offers a named committed Worthless choice or decline after public reveal. Bureaucrat offers redirect or full payment with explicit recipient amounts and deferred bribe custody. Remaining effect controls are missing.',evidence:['components/leader-skills.tsx','components/planetologist-movement.tsx','components/suk-graduate.tsx','components/rihani-decipherer.tsx','components/mentat-question.tsx','components/bureaucrat-payment.tsx','components/leader-skill-battle-guide.tsx','components/smuggler-shipment.tsx','components/spice-banker.tsx','components/sandmaster-movement.tsx','components/sandmaster-worm.tsx','components/diplomat-defense.tsx','components/game-table.tsx'] },

@@ -11,6 +11,23 @@ import {
   viewGame,
 } from '../game/engine';
 import { sampleInventory, verifySampleCustody } from '../tools/sample-custody';
+import { completedMoritaniSkillsGame } from './moritani-skills-fixture';
+
+void test('Moritani Skills sample custody checks the physical skill and Traitor inventories after genuine setup', () => {
+  const game = completedMoritaniSkillsGame();
+  const inventory = sampleInventory(game);
+  assert.ok(inventory.traitors);
+  verifySampleCustody(game, inventory);
+  const skills = structuredClone(game);
+  skills.leaderSkills!.deck.pop();
+  assert.throws(() => verifySampleCustody(skills, inventory));
+  const missing = structuredClone(game);
+  delete missing.leaderSkills;
+  assert.throws(() => verifySampleCustody(missing, inventory), /Leader Skills module custody/);
+  const traitors = structuredClone(game);
+  traitors.players[0].traitors[0] = traitors.players[1].traitors[0];
+  assert.throws(() => verifySampleCustody(traitors, inventory), /traitor custody/);
+});
 
 function fixture(advanced = false) {
   let game = createGame(

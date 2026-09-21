@@ -1,3 +1,4 @@
+import { basicMoritaniLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -12,7 +13,7 @@ import {
 import { quoteSukRescue, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
 import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
-import { planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
+import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, type PlanetologistMovement } from './planetologist-movement';
 import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFieldCompanion } from './smuggler-no-field';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, type SmugglerBattleReceipt } from './smuggler-battle';
@@ -5902,7 +5903,8 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  return initializeSetupGameForAudit(g, false, false, false, false, true, g.expansions.length === 1 && g.expansions[0] === 'choam');
+  return initializeSetupGameForAudit(g, false, false, false, false, true,
+    g.expansions.length === 1 && g.expansions[0] === 'choam', basicMoritaniLeaderSkillsProfile(g));
 }
 /** Gated development setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
@@ -9398,7 +9400,7 @@ function validatePlanetologistMove(g: Game, p: Player, move: Pick<MovementOrder,
     (skill.mode === 'range' || skill.mode === 'gather') &&
     skill.leader === planetologistLeader(g, p.id),
     'This Planetologist movement no longer has its living, uncaptured skilled leader.');
-  requireRule(g.players.every(player => faction(player.faction).expansion === 'base'),
+  requireRule(planetologistMovementModeSupported(g),
     'Planetologist movement combined with expansion factions is still being implemented.');
   requireRule(!move.noField && !move.ornithopterEvent && !move.discoveryFlight,
     'Planetologist combined with special movement cards or No-Field is still being implemented.');
@@ -15615,12 +15617,12 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       !g.advanced || getPlayer(g, quote.winner!).faction !== 'atreides',
       'Suk Graduate rescue for Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.');
     if (quote.sukGraduate) requireRule(
-      !g.homeworlds && !g.nexusCards && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens && !g.expansions.length &&
-      g.players.every((p) => faction(p.faction).expansion === 'base'),
+      ordinaryLeaderSkillModeSupported(g) &&
+      (basicMoritaniLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
       'Suk Graduate rescue with expansion factions or other optional modules is still being implemented.');
     if (quote.rihani || quote.sandmaster) requireRule(
-      !g.homeworlds && !g.nexusCards && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens && !g.expansions.length &&
-      g.players.every((p) => faction(p.faction).expansion === 'base'),
+      ordinaryLeaderSkillModeSupported(g) &&
+      (basicMoritaniLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
       'These Leader Skill victory effects with expansion factions or other optional modules are still being integrated.');
     const smuggler = b.smugglerCollection ? nexusRule(() => settleSmugglerBattle(b.smugglerCollection!,
       !(b.smugglerCollection!.player === b.attacker ? quote.leaderDeaths.attacker : quote.leaderDeaths.defender), g.spice)) : null;
@@ -18714,7 +18716,7 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
   if (shipment.smuggler) requireRule(
     !shipment.source && !shipment.noField && !shipment.alliedNoField &&
     !shipment.guildSecretEvent && !shipment.guildNexusEvent && !shipment.nexusEvent &&
-    !g.expansions.length && !g.homeworlds && !g.nexusCards && !g.discoveryEnabled && !g.strongholdCards && !g.techTokens,
+    ordinaryLeaderSkillModeSupported(g),
     'Smuggler shipping with expansion modules is still being integrated.',
   );
   if (shipment.guildSecretEvent) {

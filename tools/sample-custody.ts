@@ -3,10 +3,13 @@ import { leaders, treacheryDeck } from '../game/cards';
 import type { Game } from '../game/engine';
 import { richeseCards } from '../game/richese-cards';
 import { traitorDeck } from '../game/traitors';
+import { basicMoritaniLeaderSkillsProfile } from '../game/leader-skill-profile';
+import { validateLeaderSkills } from '../game/leader-skills';
 
 /** Fixed inventory captured after genuine setup initialization, before any choices. */
 export function sampleInventory(game: Game) {
   return {
+    leaderSkills: !!game.leaderSkills,
     cards: [
       ...treacheryDeck(game.expansions),
       ...(game.players.some((player) => player.faction === 'richese')
@@ -16,7 +19,7 @@ export function sampleInventory(game: Game) {
       .map((card) => card.id)
       .sort(),
     // Expansion Face Dancer/assassination zones require a separate adapter.
-    traitors: game.expansions.length
+    traitors: game.expansions.length && !basicMoritaniLeaderSkillsProfile(game)
       ? null
       : traitorDeck(
           game.players.map((player) => ({ leaders: leaders(player.faction) })),
@@ -28,6 +31,8 @@ export function verifySampleCustody(
   game: Game,
   inventory: ReturnType<typeof sampleInventory>,
 ) {
+  assert.equal(!!game.leaderSkills, inventory.leaderSkills, 'Leader Skills module custody');
+  if (game.leaderSkills) validateLeaderSkills(game.leaderSkills, game.players);
   const cards = [
     ...game.players.flatMap((player) => player.hand),
     ...game.deck,

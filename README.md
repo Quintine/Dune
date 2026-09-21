@@ -77,6 +77,10 @@ In new Advanced Ecaz development games, **Loyalty** shows the publicly set-aside
 Traitor Card before dealing. Inspect it without making a game choice; its identity
 persists through refresh. See [Ecaz Loyalty](docs/ECAZ_LOYALTY.md).
 
+The local Leader Skills prototype also supports Basic Moritani with base
+opponents and the full fourteen-card deck. See [entry, connected interactions
+and remaining boundaries](docs/MORITANI_LEADER_SKILLS.md).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

@@ -1,3 +1,4 @@
+import { ordinaryLeaderSkillModeSupported, type LeaderSkillProfile } from './leader-skill-profile';
 import { baseDeck, type Card } from './cards';
 import type { BattleLeaderSkill } from './leader-skill-combat';
 
@@ -69,22 +70,6 @@ export function copiedDiplomatDefense(
   return { id: card, name: 'Diplomat defense', kind: quote.kind };
 }
 
-export function diplomatDefenseModeSupported(game: {
-  expansions: readonly string[];
-  homeworlds?: unknown;
-  nexusCards?: unknown;
-  discoveries?: unknown;
-  discoveryEnabled?: unknown;
-  strongholdCards?: unknown;
-  techTokens?: unknown;
-}): boolean {
-  return (
-    !game.expansions.length &&
-    !game.homeworlds &&
-    !game.nexusCards &&
-    !game.discoveries &&
-    !game.discoveryEnabled &&
-    !game.strongholdCards &&
-    !game.techTokens
-  );
+export function diplomatDefenseModeSupported(game: LeaderSkillProfile): boolean {
+  return ordinaryLeaderSkillModeSupported(game);
 }

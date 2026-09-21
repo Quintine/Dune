@@ -4,6 +4,7 @@ import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import {
   planetologistLeader,
+  planetologistMovementModeSupported,
   type PlanetologistMoveMode,
 } from '@/game/planetologist-movement';
 import { botGroundMoveAllowed } from '@/game/bot-mobility';
@@ -15,7 +16,6 @@ import {
 } from '@/game/board';
 import { isAdvisor } from '@/game/advisors';
 import { presenceAt } from '@/game/force-presence';
-import { faction } from '@/game/catalog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -36,7 +36,7 @@ export function planetologistMoveDraft(
       blocked: 'A living, uncaptured Planetologist is required.',
     };
   if (
-    game.players.some((player) => faction(player.faction).expansion !== 'base')
+    !planetologistMovementModeSupported(game)
   )
     return {
       action: null,

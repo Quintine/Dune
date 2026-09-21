@@ -6,33 +6,32 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `de26aaf`, [Ecaz Loyalty](ECAZ_LOYALTY.md).
-Types, lint, **5,012 offline tests**, production build and **49 HTTP tests** passed.
-Six genuine faction-game samples completed with no rejected actions. A fresh
-Advanced Ecaz/Harkonnen browser setup preserved the public set-aside card through
-Traitor/force choices and refresh. All 1,539 opening rooms, 3,259 human seats and
-auxiliary rows stayed unchanged; isolated QA/HTTP fixtures brought the baseline
-to 1,579 rooms and 3,347 human seats. Screenshot capture timed out. The healthy
-server was reused. Earlier checkpoints include `c2f24fc` for public faction sheets
-and `e3cfd82` for private-hand browsing.
+Latest delivered checkpoint: `e7e1602`, [revealed battle components](REVEALED_BATTLE_COMPONENTS.md).
+Types, lint, **5,017 offline tests** and the production build passed. The shared
+public display retains direct inspection across decision ownership; browser
+checks covered genuine plan sealing, keyboard navigation, mobile layout and
+refresh after an explicitly staged conserved battle. All 1,579 opening rooms,
+3,347 human seats and auxiliary rows stayed unchanged. One new QA room/seat
+brings the preservation baseline to 1,580 rooms and 3,348 human seats. Screenshot
+capture timed out; full visual acceptance remains open. The healthy server was
+reused. Earlier checkpoints include `de26aaf` for [Ecaz Loyalty](ECAZ_LOYALTY.md).
 
-Current work: [revealed battle components](REVEALED_BATTLE_COMPONENTS.md) adds
-public dials, leader portraits and readable used-card faces in one shared area,
-with direct inspectors and navigation to pending decisions. Sealed plans and
-private hands stay separate. Focused checks, independent review, browser QA and
-final check/build/saved-preservation evidence accompany this presentation work.
-The separate Bureaucrat/Emperor gift question is pending.
-The `8f7a62c` policy checkpoint removed usage checks/cutoffs and deferred AI
-refinement until feature completion, followed by three adjacent 75% targets.
+Current work: [Basic Moritani with Leader Skills](MORITANI_LEADER_SKILLS.md)
+connects the full fourteen-card deck with base opponents and no other optional
+modules. Coordinated public-profile guards connect movement, shipment, payment
+and battle effects; focused tests cover Terror death/revival, real alliance
+retention exclusions and authenticated saved choices. A reusable two-through-six
+player sample profile exercises legal continuation. Final results and browser,
+independent review, preservation and Git evidence accompany this checkpoint.
 
-The next concrete gameplay milestone is **Basic Moritani plus Leader Skills**
-with base opponents and no other optional modules. A bounded current-code review
-found no new Moritani-specific ruling, but widening setup alone is insufficient:
-coordinate Banker, Diplomat, Sandmaster, Smuggler, Bureaucrat, Planetologist and
-battle/victory public-profile guards, keep the full fourteen-card deck, and test
-Terror leader death, skill return and revival through real continuations. Do not
-hide unsupported cards after a random deal or claim complete combination support.
-This provides a concrete dependency-ordered integration target for the next pass.
+The remaining Leader Skills effects and source questions retain their explicit
+boundaries; admitting Basic Moritani does not finish the module. Next integration
+work should assess the remaining faction/module dependencies against these new
+shared profile checks, without reducing the physical deck or hiding unsupported
+cards after dealing. Advanced Moritani and Ecaz/Skills remain separate gates.
+The Bureaucrat/Emperor gift question is still pending. The `8f7a62c` policy
+checkpoint removed usage checks/cutoffs and deferred full AI work until feature
+completion, followed by three adjacent 75% targets.
 
 The reviewed remaining native Ecaz/Moritani effects, Duke revival and Richese
 empty-cache auction arithmetic still cross recorded source questions; Loyalty is

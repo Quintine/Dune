@@ -1,3 +1,4 @@
+import { ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import type { Action, Game, GameView } from './engine';
 import { GRAPH, location, mobileRouteDistance, splitLocation } from './board';
 import { isAdvisor } from './advisors';
@@ -32,15 +33,7 @@ const record = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value);
 
 export function sandmasterModeSupported(g: Game | GameView): boolean {
-  return (
-    !g.expansions.length &&
-    !g.homeworlds &&
-    !g.nexusCards &&
-    !g.discoveries &&
-    !('discoveryEnabled' in g && g.discoveryEnabled) &&
-    !g.strongholdCards &&
-    !g.techTokens
-  );
+  return ordinaryLeaderSkillModeSupported(g);
 }
 export function sandmasterLeader(
   g: Game | GameView,

@@ -83,10 +83,9 @@ import {
   fremenReserveEntry,
   guildTransportCost,
 } from './bot-mobility';
-import { planetologistLeader } from './planetologist-movement';
+import { planetologistMovementModeSupported, planetologistLeader } from './planetologist-movement';
 import { sandmasterDefaultChoice } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
-import { faction } from './catalog';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
 import { botArrivalBlock } from './bot-arrival';
@@ -3301,7 +3300,7 @@ function policyActions(g: GameView): Action[] {
       movementAvailable &&
       planetologist &&
       !g.ornithopter?.active &&
-      g.players.every((player) => faction(player.faction).expansion === 'base')
+      planetologistMovementModeSupported(g)
     ) {
       const usefulTargets = targets
         .filter(

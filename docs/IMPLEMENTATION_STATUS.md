@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 21 September 2026 — Basic Moritani with Leader Skills
+
+The existing private initializer now connects Basic Moritani with base opponents
+and the full fourteen-card skill deck. Shared public-profile guards cover the
+movement, shipment, payment and battle paths; Terror death/revival and ally
+retention compose with physical skill/card custody. Focused genuine-setup tests,
+authenticated concurrent recovery and a reusable two-through-six-player sample
+profile accompany the [integration contract](MORITANI_LEADER_SKILLS.md). Existing
+unfinished effects, Advanced/other roster combinations and publication gates
+remain explicit; private checkpoint reports record actual final evidence.
+
 ## 21 September 2026 — public battle component display
 
 Revealed plans now share one table area with exact dials, played leader portraits

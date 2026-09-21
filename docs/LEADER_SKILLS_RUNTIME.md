@@ -7,6 +7,11 @@ records the fresh publisher/designer search requested by the user.
 
 ## Connected boundary
 
+The [Basic Moritani follow-up](MORITANI_LEADER_SKILLS.md) now connects Moritani
+with base opponents and no other optional modules. It preserves all fourteen
+cards and existing unfinished-effect boundaries. The older base-only scope
+descriptions below are extended only by that explicit integration contract.
+
 Genuine Basic or Advanced setup supports two through six base factions. Starting
 Treachery Cards, including Harkonnen's extra card, precede simultaneous private
 two-card skill offers. Every faction selects one physical skill and an eligible
@@ -74,7 +79,7 @@ Captured-card replacement entitlement remains unresolved. The prototype rejects
 own-leader revival while its original skill is captured, before beginning a
 paid revival or consuming the Ghola/special-Karama action. This is an explicit
 unsupported boundary, not a ruling that the physical game forbids that revival.
-Foreign gholas, expansion rosters and combined optional modules remain gated.
+Foreign gholas, other expansion rosters and combined optional modules remain gated.
 Before enabling them, add response-driven automatic revival continuation
 coverage; the current before/after revival observer does not certify deferred
 Tleilaxu response chains. The other source-contract timing questions also remain
