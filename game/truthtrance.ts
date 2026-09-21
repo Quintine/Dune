@@ -24,7 +24,8 @@ import {
   planClaimText,
   type PlanClaim,
 } from './battle-promises';
-import { territory } from './board';
+import { gameTerritories, territory } from './board';
+import { parseForceCountFact, forceCountFactMatches, forceCountFactText, forceCountCounterError, type ForceCountFact, type ForceCountPlayer } from './truthtrance-force-count';
 import type { Action, Game, Player } from './engine';
 import { treacheryDeck } from './cards';
 import { CHEAP_HERO_TRAITOR } from './traitors';
@@ -36,6 +37,7 @@ export type TruthFact =
   | KnowledgeFact
   | CardCountFact
   | HandInventoryFact
+  | ForceCountFact
   | { kind: 'hand'; name: string }
   | { kind: 'traitor'; leader: string }
   | { kind: 'spice'; compare: 'eq' | 'gte' | 'lte'; value: number }
@@ -87,6 +89,7 @@ const record = (value: unknown): Record<string, unknown> => {
 function parseFact(
   g: Game,
   value: unknown,
+  respondent: Player,
   depth = 0,
   budget = { remaining: 16 },
 ): TruthFact {
@@ -95,6 +98,17 @@ function parseFact(
     'Truthtrance supports at most 16 clauses and four levels of grouping.',
   );
   const v = record(value);
+  if (v.kind === 'forceCount') {
+    try {
+      const fact = parseForceCountFact(v, gameTerritories(g).flatMap(t =>
+        t.sectors.map(sector => ({ territory: t.id, sector }))));
+      const unavailable = forceCountCounterError(respondent, fact.counter);
+      check(!unavailable, unavailable ?? 'Choose a recorded physical counter type.');
+      return fact;
+    } catch (error) {
+      throw new TruthError(error instanceof Error ? error.message : String(error));
+    }
+  }
   if (isKnowledgeFact(v)) {
     try { return parseKnowledgeFact(v); }
     catch (error) { throw new TruthError(error instanceof Error ? error.message : String(error)); }
@@ -148,7 +162,7 @@ function parseFact(
   );
   return {
     kind: v.kind,
-    terms: v.terms.map((term) => parseFact(g, term, depth + 1, budget)),
+    terms: v.terms.map((term) => parseFact(g, term, respondent, depth + 1, budget)),
   };
 }
 /** Shared battle discs are valid plan identities, but never expand the traitor inventory. */
@@ -208,7 +222,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     };
   }
   if (v.kind === 'fact')
-    return { kind: 'fact', target: v.target, fact: parseFact(g, v.fact) };
+    return { kind: 'fact', target: v.target, fact: parseFact(g, v.fact, g.players.find(p => p.id === v.target)!) };
   check(
     v.kind === 'freeform' &&
       typeof v.text === 'string' &&
@@ -267,6 +281,13 @@ export function validateSavedTruthtrance(g: Game) {
       'The saved Truthtrance must retain each committed physical card in its holder’s hand.',
     );
   }
+  if (window?.question?.kind === 'fact') {
+    check((window.stage === 'answer' || window.stage === 'unknown') && window.queue.length > 0,
+      'The saved fact question must retain its asking player and answer stage.');
+    check(JSON.stringify(parseQuestion(g, window.queue[0].player, window.question)) === JSON.stringify(window.question),
+      'The saved fact question no longer matches its recorded form.');
+    return;
+  }
   if (window?.question?.kind !== 'shipment') return;
   check(
     (window.stage === 'answer' || window.stage === 'unknown') &&
@@ -303,11 +324,13 @@ export function queuedTruthCardMatches(
 }
 /** A fact answer never returns which disjunct matched or any underlying private cards. */
 export function truthFactAnswer(
-  p: Pick<Player, 'hand' | 'traitors' | 'traitorChoices' | 'spice'>,
+  p: Pick<Player, 'hand' | 'traitors' | 'traitorChoices' | 'spice'> & Partial<ForceCountPlayer>,
   fact: TruthFact,
   knowledge?: TruthKnowledge,
 ): TruthAnswer {
   if (isKnowledgeFact(fact)) return knowledgeFactAnswer(fact, knowledge);
+  if (fact.kind === 'forceCount')
+    return forceCountFactMatches(p as ForceCountPlayer, fact) ? 'yes' : 'no';
   if (fact.kind === 'handInventory')
     return handInventoryFactMatches(p.hand, fact) ? 'yes' : 'no';
   if (fact.kind === 'handCount')
@@ -352,6 +375,7 @@ export function truthQuestionText(
     return `In this battle in ${territory(q.territory).name}, will it be true that ${planClaimText(q.claim, leaderName)}?`;
   const clause = (f: TruthFact): string => {
     if (isKnowledgeFact(f)) return knowledgeFactText(f);
+    if (f.kind === 'forceCount') return forceCountFactText(f);
     if (f.kind === 'handInventory') return handInventoryFactText(f);
     if (f.kind === 'handCount') return cardCountFactText(f);
     if (f.kind === 'hand') return `you hold ${f.name}`;

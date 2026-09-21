@@ -48,6 +48,13 @@ expression. One eventual shipment or skip is evaluated against every separate
 promise. See [compound shipment promises](COMPOUND_SHIPMENT_PROMISES.md); mixed
 present/future predicates and existing timing/module gates remain unfinished.
 
+Current Truthtrance force facts count physical counters in reserves, the Tanks
+or one exact live board location. Totals include elites; normal counts subtract
+them. Advisors remain counters, and concealed No-Field markers/values are excluded.
+These are current observations, not future obligations; no typed distribution
+is invented when Basic lacks separate starred-counter tracking. See the
+[force-fact source composition](TRUTHTRANCE_FORCE_FACTS.md).
+
 ## Pending interpretations: preserve existing questions
 
 These are unresolved in the cited records. Do not infer an answer from elapsed time, a fixture, a related card or this index. Check subsequent recorded user/source decisions before proceeding; do not send duplicate questions.

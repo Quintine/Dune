@@ -91,6 +91,10 @@ Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).
 
+Truthtrance's **Current physical forces** question compares counters in reserves,
+the Tanks or an exact board location. It supports normal, elite and total counts
+where recorded; see [force questions](docs/TRUTHTRANCE_FORCE_FACTS.md).
+
 After both battle plans are revealed, **Compare revealed battle plans** opens
 the shared dials, leader portraits and played card faces. Inspect any component,
 then return to the pending decision. See [battle components](docs/REVEALED_BATTLE_COMPONENTS.md).

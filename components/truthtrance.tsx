@@ -3,6 +3,7 @@ import { ShipmentClaimFields, invalidShipmentClause, type ShipmentClauseInput } 
 import { BattleClaimFields } from './battle-promises';
 import { CardCountFields } from './truthtrance-card-count';
 import { KnowledgeFactFields } from './truthtrance-knowledge';
+import { ForceCountFields, forceCountInputError } from './truthtrance-force-count';
 import { isKnowledgeFact, knowledgeFactInputError } from '@/game/truthtrance-knowledge';
 import type { PlanClaim } from '@/game/battle-promises';
 import { useId, useState } from 'react';
@@ -85,7 +86,8 @@ export function Truthtrance({
     (!Number.isSafeInteger(fact.value) || fact.value < 0);
   const invalidFact = clauses
     .slice(0, join === 'single' ? 1 : 2)
-    .some((fact) => invalidSpice(fact) || (isKnowledgeFact(fact) && !!knowledgeFactInputError(fact)));
+    .some((fact) => invalidSpice(fact) || (isKnowledgeFact(fact) && !!knowledgeFactInputError(fact)) ||
+      (fact.kind === 'forceCount' && !!forceCountInputError(fact, g, g.players.find(p => p.id === target)!)));
   const leaderName = (id: string) =>
     id === CHEAP_HERO_TRAITOR
       ? 'Cheap Hero / Heroine'
@@ -442,6 +444,8 @@ export function Truthtrance({
                                                 ? { kind: 'stormDial', compare: 'gte', value: 0 }
                                                 : e.target.value === 'stormForecast'
                                                   ? { kind: 'stormForecast', compare: 'gte', value: 1 }
+                                          : e.target.value === 'forceCount'
+                                            ? { kind: 'forceCount', zone: { kind: 'reserves' }, counter: 'total', compare: 'gte', value: 6 }
                                           : e.target.value === 'spice'
                                             ? {
                                                 kind: 'spice',
@@ -472,6 +476,7 @@ export function Truthtrance({
                             <option value="spice">
                               Current personal spice
                             </option>
+                            <option value="forceCount">Current physical forces</option>
                           </select>
                         </label>
                         {c.kind === 'hand' ? (
@@ -506,6 +511,9 @@ export function Truthtrance({
                               )
                             }
                           />
+                        ) : c.kind === 'forceCount' ? (
+                          <ForceCountFields value={c} game={g} player={g.players.find(p => p.id === target)!}
+                            onChange={next => setClauses(clauses.map((old, n) => n === index ? next : old))} />
                         ) : c.kind === 'prediction' || c.kind === 'stormDial' || c.kind === 'stormForecast' ? (
                           <KnowledgeFactFields
                             value={c}
@@ -622,7 +630,7 @@ export function Truthtrance({
                     ))}
                   <p className="notice">
                     {invalidFact
-                      ? 'Enter a valid whole amount before asking this question.'
+                      ? 'Resolve the marked fields before asking this question.'
                       : truthQuestionText(question, leaderName)}
                   </p>
                 </>

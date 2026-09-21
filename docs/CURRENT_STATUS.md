@@ -6,19 +6,20 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `3efda21`, [Basic Ixians with Leader Skills](IX_LEADER_SKILLS.md).
-Types, lint, **5,082 offline tests** and the production build passed; five
-complete two-through-six-player samples had no rejected actions. Browser setup,
-first Storm/HMS placement, mobile Suk rescue and substitution, and same-state
-refresh were checked. All 1,582 prior rooms and 3,350 seats remained intact;
-one QA room/seat brought the baseline to 1,583 rooms and 3,351 human seats.
+Latest delivered checkpoint: `d1bf33d`, [Basic CHOAM with Leader Skills](CHOAM_LEADER_SKILLS.md).
+Types, lint, **5,101 offline tests** and the production build passed; five
+complete two-through-six-player samples had no rejected actions across 3,067
+actions and 79 JSON restores. Browser setup, market Ghola revival, private
+skill refresh, mobile assignment and exact sale settlement were checked.
+All 1,583 prior rooms and 3,351 seats remained intact; one QA room/seat brought
+the baseline to 1,584 rooms and 3,352 human seats.
 Screenshot capture timed out; full visual acceptance remains open.
 
-Current work [connects ordinary Leader Skill actions to Basic CHOAM](CHOAM_LEADER_SKILLS.md),
-using its existing genuine setup. Exact 35-card Treachery and fourteen-skill inventories,
-native Worthless-card powers, mandatory battle disposal and interrupted market
-Ghola revival are receiving integration and saved-continuation checks. Advanced
-Auditor and Richese/other combinations retain their existing separate contracts.
+Current work adds [Truthtrance physical-force questions](TRUTHTRANCE_FORCE_FACTS.md):
+normal, elite or total counters in reserves, the Tanks or one board location.
+Existing compound questions, private answers, card retirement and saved history
+are reused. These are present facts, without hidden No-Field values or future
+movement constraints. Saved facts are revalidated before actions or projection.
 
 The [Sandmaster/HMS source comparison](SANDMASTER_MOVEMENT.md#21-september-native-hms-relocation-eligibility)
 found no official clarification that passengers remaining in the interior

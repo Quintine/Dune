@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 21 September 2026 — Truthtrance physical-force questions
+
+Current force facts compare normal, elite or total physical counters in reserves,
+the Tanks or an exact live board location. Shared controls and validation retain
+typed-counter availability, exclude concealed No-Field values and reuse private
+compound answers, legal AI replies, history and card disposal. Restored fact
+questions are reparsed; current answers do not constrain later force actions.
+See the [scope and evidence](TRUTHTRANCE_FORCE_FACTS.md).
+
 ## 21 September 2026 — Basic CHOAM ordinary Leader Skill integration
 
 The existing genuine CHOAM setup now shares ordinary skill action guards for
