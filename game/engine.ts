@@ -9889,6 +9889,7 @@ function finishMovedGroup(g: Game, move: CompletedMovement) {
     move.noField
       ? `${p.name} moved a concealed No-Field${n > 1 ? ` with ${n - 1} physical forces` : ''} from ${territory(origin).name} to ${territory(to).name}. Its value remains concealed.`
       : `${p.name} moved ${n} forces from ${movementOrigins(move).map(source => territory(source).name).join(' and ')} to ${territory(to).name}.`,
+    { faction: p.faction, name: 'Movement' },
   );
   intrusion(g, p, to);
   if (movementOrigins(move).some(source => source !== to)) openTerritoryEntry(g, p, to, s, n, elite, 'movement');
@@ -13445,6 +13446,7 @@ function commitCollection(
       log(
         g,
         `${faction(p.faction).name} collected ${receipt.collected} spice.`,
+        { faction: p.faction, name: 'Spice collection' },
       );
   }
   for (const effect of discovery.effects) {
@@ -15851,7 +15853,7 @@ function resolveBattle(g: Game) {
         : `${faction(winner!.faction).name} won in ${combatLocationName(g, b.territory)} (${av}–${dv}${av === dv ? (strongholdEffect(g, winner!.id) === 'habbanya_ridge_sietch' ? ', Habbanya Stronghold advantage wins ties' : ', aggressor wins ties') : ''}).`,
       stoneResult
         ? { faction: (isStoneBurner(aw) ? a : d).faction, name: 'Stone Burner' }
-        : undefined,
+        : { faction: winner!.faction, name: 'Battle' },
     );
   }
   if (jacurutuIncome?.kind === 'income' && jacurutuIncome.amount > 0) {
@@ -17215,14 +17217,15 @@ function finishRevival(
         `${rule.name} accrued ${token.spice} spice for ${getPlayer(g, income.owner).name}, payable at phase end.`,
       );
     }
-    log(g, `${p.name} revived ${n} forces.${g.homeworlds ? ` ${revival.free} were free; ${n - revival.free} were paid. ${payer.name} paid ${revival.cost} spice. Future revival requests use the resulting Homeworld population.` : ''}`);
+    log(g, `${p.name} revived ${n} forces.${g.homeworlds ? ` ${revival.free} were free; ${n - revival.free} were paid. ${payer.name} paid ${revival.cost} spice. Future revival requests use the resulting Homeworld population.` : ''}`,
+      { faction: p.faction, name: 'Revival' });
     stageHomeworldRevivalReturn(g, p, source, group, deploymentGrant);
   } else {
     if (revival.kind === 'kwisatz') {
       p.kwisatz!.dead = false;
       p.kwisatz!.revivalCycle =
         Math.max(p.revivalCycle, p.kwisatz!.revivalCycle ?? 1) + 1;
-      log(g, `${p.name} revived Kwisatz Haderach.`);
+      log(g, `${p.name} revived Kwisatz Haderach.`, { faction: p.faction, name: 'Revival' });
     } else {
       const leader = g.players
         .flatMap((owner) => owner.leaders)
@@ -17242,6 +17245,7 @@ function finishRevival(
       log(
         g,
         `${p.name} revived ${leader.name}${revival.kind === 'foreignGhola' ? ' as a ghola' : ''}.`,
+        { faction: p.faction, name: 'Revival' },
       );
     }
     p.leaderRevived = true;
@@ -19092,7 +19096,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
         : `${p.name} shipped ${n} forces to ${territory(to).name}, sector ${s}.${shipment.guildSecretEvent ? ` Guild Secret Ally is spent; Guild shipping prices cost ${cost} spice paid to the bank.` : ''}${shipment.nexusEvent ? ` Richese Secret Ally priced the ${n} physical forces as one: ${cost} spice.` : ''}${homeworldOrigins ? ` Homeworld sources: ${homeworldOrigins}. Total shipment cost: ${cost} spice.` : ''}`,
     shipment.noField || shipment.alliedNoField
       ? { faction: 'richese', name: 'No-Field shipment' }
-      : shipment.guildSecretEvent ? {faction:'guild',name:'Secret Ally shipment'} : shipment.nexusEvent ? {faction:'richese',name:'Secret Ally shipment'} : undefined,
+      : shipment.guildSecretEvent ? {faction:'guild',name:'Secret Ally shipment'} : shipment.nexusEvent ? {faction:'richese',name:'Secret Ally shipment'} : shipment.smuggler ? undefined : { faction: p.faction, name: 'Shipment' },
   );
   if (shipment.smuggler) log(g,
     `${p.name}'s Smuggler included one free accompanying force: ${n} physical forces left reserves, priced as ${n - 1} for ${cost} spice. The destination was empty before arrival.`,
@@ -19181,6 +19185,7 @@ function relocateMobileStronghold(
   log(
     g,
     `${p.name} moved the Hidden Mobile Stronghold to ${territory(loc.territory).name}, sector ${loc.sector}, collecting ${collected} spice.`,
+    { faction: p.faction, name: 'Hidden Mobile Stronghold' },
   );
 }
 function choamWorthlessBlocked(g: Game, card: string) {
@@ -23829,7 +23834,7 @@ function applyActionInner(
     p.shipped = true;
     g.karamaShipping = null;
     log(g, `${p.name} used Guild transport for ${n} forces.${guildSecretEvent ? ` Guild Secret Ally is spent; ${cost} spice was paid to the bank. Their ordinary movement remains available.` : ''}`,
-      guildSecretEvent ? {faction:'guild',name:'Secret Ally transport'} : undefined);
+      guildSecretEvent ? {faction:'guild',name:'Secret Ally transport'} : { faction: p.faction, name: 'Guild transport' });
     if (to !== 'reserves') {
       intrusion(g, p, to);
       if (origin !== to)

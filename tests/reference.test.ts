@@ -62,7 +62,7 @@ void test('reviewed feature checklists expose all five independent facets and re
         `${id}: ${item.area} has an explicit scope`,
       );
       for (const evidence of item.evidence ?? []) {
-        assert.match(evidence, /^tests\/[a-z0-9-]+\.test\.ts$/);
+        assert.match(evidence, /^tests\/[a-z0-9-]+\.test\.tsx?$/);
         assert.match(
           readFileSync(new URL(`../${evidence}`, import.meta.url), 'utf8'),
           /test\(/,

@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 21 September 2026 — Completed-action feedback
+
+Core committed movement, shipping, revival, collection and battle results now
+feed the existing house-colored notices and optional sound. Burst summaries
+retain every represented action count while limiting the visible/pending queue
+to three notices. Hidden pages consume updates silently and clear old feedback.
+See [coverage and verification](ACTION_FEEDBACK.md). Rules and AI strategy are
+unchanged; full visual acceptance and remaining power tags stay open.
+
 ## 21 September 2026 — Truthtrance physical-force questions
 
 Current force facts compare normal, elite or total physical counters in reserves,

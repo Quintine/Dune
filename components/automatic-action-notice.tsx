@@ -8,19 +8,14 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { Bell, BellOff } from 'lucide-react';
-import { FACTIONS, type FactionId } from '@/game/catalog';
+import { FACTIONS } from '@/game/catalog';
+import { advanceActionNotices, type AutomaticActionEvent, type QueuedActionNotice } from '@/lib/action-notice-queue';
 import { Button } from './ui/button';
 
-export type AutomaticActionEvent = {
-  id: string;
-  seq: number;
-  faction: FactionId;
-  name: string;
-};
+export type { AutomaticActionEvent } from '@/lib/action-notice-queue';
 
 const PREFERENCE_KEY = 'dune.automatic-action-notices';
 const PREFERENCE_EVENT = 'dune-automatic-action-notices-preference';
-const MAX_QUEUED_NOTICES = 250;
 let memoryPreference: boolean | undefined;
 function readPreference() {
   if (memoryPreference !== undefined) return memoryPreference;
@@ -51,10 +46,10 @@ export function AutomaticActionNotice({
   const seenSeq = useRef(
     events.reduce((last, event) => Math.max(last, event.seq), -1),
   );
-  const queue = useRef<AutomaticActionEvent[]>([]);
-  const active = useRef<AutomaticActionEvent | null>(null);
+  const queue = useRef<QueuedActionNotice[]>([]);
+  const active = useRef<QueuedActionNotice | null>(null);
   const [notice, setNotice] = useState<
-    (AutomaticActionEvent & { fading: boolean }) | null
+    (QueuedActionNotice & { fading: boolean }) | null
   >(null);
   const [completed, setCompleted] = useState(0);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -65,7 +60,7 @@ export function AutomaticActionNotice({
 
   const showNext = useCallback(() => {
     if (active.current) return;
-    if (!readPreference()) {
+    if (!readPreference() || document.visibilityState === 'hidden') {
       queue.current = [];
       return;
     }
@@ -91,22 +86,28 @@ export function AutomaticActionNotice({
   }, [clearTimers]);
 
   useEffect(() => {
-    const fresh = events
-      .filter((event) => event.seq > seenSeq.current)
-      .toSorted((a, b) => a.seq - b.seq);
-    const additions: AutomaticActionEvent[] = [];
-    for (const event of fresh) {
-      if (event.seq <= seenSeq.current) continue;
-      seenSeq.current = event.seq;
-      additions.push(event);
-    }
-    // Disabled notices are consumed, so enabling cannot replay missed events.
-    if (!readPreference()) return;
-    const capacity = MAX_QUEUED_NOTICES - (active.current ? 1 : 0);
-    // Preserve the active notice and retain the newest pending events on overflow.
-    queue.current = [...queue.current, ...additions].slice(-capacity);
+    // Preserve the visible notice. Summarize older pending actions so a bot
+    // batch cannot leave minutes of stale feedback; the chronicle keeps detail.
+    const next = advanceActionNotices({ seenSeq: seenSeq.current, pending: queue.current }, events, {
+      active: !!active.current,
+      show: readPreference() && document.visibilityState !== 'hidden',
+    });
+    seenSeq.current = next.seenSeq;
+    queue.current = next.pending;
     showNext();
   }, [events, showNext, completed]);
+
+  useEffect(() => {
+    const hide = () => {
+      if (document.visibilityState !== 'hidden') return;
+      clearTimers();
+      queue.current = [];
+      active.current = null;
+      setNotice(null);
+    };
+    document.addEventListener('visibilitychange', hide);
+    return () => document.removeEventListener('visibilitychange', hide);
+  }, [clearTimers]);
 
   useEffect(
     () => () => {
@@ -168,6 +169,9 @@ export function AutomaticActionNotice({
             <span className="mt-1 block break-words text-sm font-medium leading-5">
               {notice.name}
             </span>
+            {notice.count > 1 && <span className="mt-1 block text-sm leading-5 text-[#d6cdb8]">
+              {notice.count - 1} earlier {notice.count === 2 ? 'action' : 'actions'} also completed. Details are in the table chronicle.
+            </span>}
           </span>
         )}
       </output>

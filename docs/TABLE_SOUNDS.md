@@ -43,3 +43,7 @@ to change sound settings. Settings were returned to off and 35% afterward.
 This is a functional prototype, not the final sound design. Successful powers
 without an automatic notice tag remain outside these cues. Per-component audio,
 broader device/browser acceptance and final sound mixing remain unfinished.
+
+[Completed-action feedback](ACTION_FEEDBACK.md) extends the tagged events to
+ordinary movement, shipping, revival, collection and battle results. The sound
+system keeps its existing silent baseline, coalescing and independent controls.

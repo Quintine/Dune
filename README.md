@@ -108,6 +108,10 @@ sample. Short cues mark phase changes and automatic action notices. Sound starts
 off; preferences stay in your browser. See [table sounds](docs/TABLE_SOUNDS.md)
 for activation, background behavior and prototype limits.
 
+**Automatic action notices** briefly identify completed actions in house colors.
+Bursts summarize older notices while retaining their details in the chronicle;
+see [completed-action feedback](docs/ACTION_FEEDBACK.md).
+
 ## Verify changes
 
 Use the [development guide](docs/DEVELOPMENT.md) for architecture, focused tests

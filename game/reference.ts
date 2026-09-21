@@ -1362,8 +1362,8 @@ export const RULE_TOPICS: RuleTopic[] = [
       'After a battle resolves, the server calculates casualty allocations consistent with the revealed wheel and spice support. If exactly one allocation is legal, it applies that allocation without asking for an identical confirmation.',
       'If several physical casualty combinations are legal, the winner still chooses. Automatic casualties preserve later optional Ixian substitutions, winner card cleanup and Moritani ally retention; they do not choose those benefits for you.',
       'Newly received tagged events queue in order, with the acting house and event name shown for approximately 1.5 seconds each. Use Automatic action notices to turn the display on or off. The preference belongs to this browser; hiding notices does not disable automatic rule settlement or change AI timing.',
-      'The notice is cosmetic and does not stop game progression. Reduced-motion settings suppress its fade. Reloading treats existing events as a baseline rather than replaying them. Events received while notices are off are consumed; turning notices on does not replay them. The bounded queue keeps the newest pending events if an unusually large backlog exceeds its capacity.',
-      'Current notice events cover automatic battle casualties, successful Ecaz Ambassador placement, Emperor auction income, Harkonnen bonus-card draws and private full-plan inspection availability and supported successful Ambassador effects. The Harkonnen event reports the draw without exposing its private card identity. The inspection notice reveals no plan details; the entitled player reads those in the persistent private panel. Uncancelable responses now settle automatically as described in Automatic allowance of powers. Successful powers without a notice tag remain outside the current notice coverage.',
+      'The notice is cosmetic and does not stop game progression. Reduced-motion settings suppress its fade. Reloading treats existing events as a baseline rather than replaying them. Events received while notices are off are consumed; turning notices on does not replay them. At most three notices, including the visible one, remain queued. Bursts summarize older pending actions with a count while their details remain in the table chronicle. Hiding the page clears old notices and consumes updates silently.',
+      'Current notice events include committed ordinary movement, shipment, revival, collection and battle results, native Guild transport and Hidden Mobile Stronghold relocation. Declared or canceled actions do not announce an uncompleted result. Existing notices also cover automatic casualties, successful Ecaz Ambassador placement, supported successful Ambassador effects, Emperor auction income, Harkonnen bonus-card draws and private full-plan inspection availability. The Harkonnen draw is announced without exposing its private card identity. Notices reveal no private card identities or plan details. Uncancelable responses now settle automatically as described in Automatic allowance of powers. Successful powers without a notice tag remain outside the current coverage.',
     ],
     checklist: [
       {
@@ -1376,7 +1376,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Player controls',
         status: 'Implemented',
         detail:
-          'Multiple allocations and optional continuations retain controls. The cosmetic 1.5-second house notice has an on/off button and reduced-motion behavior.',
+          'Multiple allocations and optional continuations retain controls. The cosmetic 1.5-second house notice has an on/off button, reduced-motion behavior and bounded burst summaries.',
       },
       {
         area: 'AI',
@@ -1399,6 +1399,8 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/automatic-casualties.test.ts',
           'tests/moritani-retention.test.ts',
           'tests/duke-vidal-engine.test.ts',
+          'tests/completed-action-events.test.ts',
+          'tests/action-notice-queue.test.tsx',
         ],
       },
     ],
