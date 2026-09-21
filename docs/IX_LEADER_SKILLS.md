@@ -77,8 +77,8 @@ starting-card choice, subsequent private setup and unchanged seats. Final
 source-bound check/build, samples, browser and preservation reports remain private.
 These are playability checks, not AI strength studies.
 
-Advanced Ixians, additional faction/module combinations, Sandmaster's extra
-native HMS relocation band and the other missing Leader Skill effects remain
+Advanced Ixians, additional faction/module combinations, unresolved Sandmaster
+eligibility during native HMS relocation and other missing Leader Skill effects remain
 separate work. Existing Banker, Mentat, Diplomat and modified-Smuggler questions
 remain in the [decision register](RULE_DECISIONS.md). Full AI implementation and
 difficulty tuning wait until all non-AI game features are complete.

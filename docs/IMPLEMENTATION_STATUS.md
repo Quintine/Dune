@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 21 September 2026 — Basic CHOAM ordinary Leader Skill integration
+
+The existing genuine CHOAM setup now shares ordinary skill action guards for
+its Basic/base roster. Full-deck, card-sale, mandatory battle cleanup and saved
+market/Ghola replacement choices are covered by the [integration contract](CHOAM_LEADER_SKILLS.md).
+Auditor, Richese and other mode/module boundaries retain their separate gates.
+The Sandmaster/native-HMS source audit records an unresolved eligibility
+question rather than assuming an extra collection power.
+
 ## 21 September 2026 — Basic Ixians with Leader Skills
 
 Genuine full-deck setup connects cyborg movement per origin, Sandmaster HMS entry

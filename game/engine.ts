@@ -449,7 +449,7 @@ import { biddingEndError, biddingEndQuiet, biddingEndPubliclyEmpty, type Bidding
 import { quoteHomeworldPaymentIncome, quoteGuildPaymentRounding } from './homeworld-payment-income';
 import { quoteEcazPoisonIncome, EcazPoisonIncomeError, type EcazPoisonDiscard } from './ecaz-poison-income';
 import { resolveBattleWeapons } from './effective-weapons';
-import { choamGholaEvent, choamMarketGholaError, choamSaleGholaTiming, type ChoamMarketGhola } from './choam-market-ghola';
+import { choamGholaEvent, choamGholaSkillOfferEvent, choamGholaSkillSignature, choamMarketGholaError, choamSaleGholaTiming, type ChoamMarketGhola } from './choam-market-ghola';
 import {
   charityAmount,
   charityQuote,
@@ -14384,6 +14384,7 @@ function resumeMarketGhola(g: Game) {
   if (g.homeworldRevivalReturn && g.homeworldRevivalReturn.stage !== 'complete') return;
   const pending = g.pendingChoamMarketGhola;
   if (!pending || pending.stage !== 'complete' || g.pendingTreacheryDiscard || g.pendingNullentropy ||
+      g.leaderSkills?.offers[pending.player] ||
       g.response || g.decision || g.pendingKarama || g.truthtrance ||
       g.phaseOpening || g.pendingRicheseGift || g.pendingExchange) return;
   nexusChoamTradeIntegrity(g);
@@ -14412,6 +14413,17 @@ function playMarketGhola(g: Game, p: Player, action: Action) {
   g.pendingChoamMarketGhola.event = choamGholaEvent(g.pendingChoamMarketGhola);
   g.response = null;
   applyGholaEffect(g, p, action, card.id);
+  if (g.leaderSkills) {
+    const pending = g.pendingChoamMarketGhola;
+    const offer = g.leaderSkills.offers[p.id];
+    pending.leaderSkill = {
+      leader: p.leaders.find(leader => leader.id === action.leader)?.id ?? null,
+      offer: offer?.event ?? null,
+      completed: !offer,
+      signature: '',
+    };
+    pending.leaderSkill.signature = choamGholaSkillSignature(pending);
+  }
   if (g.response) (g.response as ResponseWindow).intent = g.pendingChoamMarketGhola.event;
   const used = discard(g, p, card.id);
   log(g, `${p.name} played ${card.name}. The declared CHOAM sale waits for this revival and its income to finish.`,
@@ -14445,6 +14457,10 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
     // GF9 November 2020 FAQ p.9 permits a Ghola return in another battle
     // this turn. Death history remains; the earlier battle location does not.
     delete l.usedAt;
+    if (g.pendingChoamMarketGhola && g.leaderSkills && !isAuditorLeader(l) &&
+        !l.gholaBy && p.leaders.some(leader => leader.id === l.id))
+      g.leaderSkills = skillRule(() => offerRevivedLeaderSkill(
+        g.leaderSkills!, p.id, l.id, choamGholaSkillOfferEvent(g.pendingChoamMarketGhola!, l.id)));
     log(
       g,
       `${p.name} revived ${l.name} with Ghola. The leader may fight again this turn; no spice or normal leader-revival allowance was spent.`,
@@ -21274,6 +21290,12 @@ function applyActionInner(
         requireRule(!unavailable, unavailable ?? 'This Leader Skill is unavailable.');
         g.leaderSkills = skillRule(() => chooseLeaderSkill(g.leaderSkills!, id, stringField(action.event), skill, stringField(action.leader), skillEligibleLeaders(g,id), random));
         log(g, `${p.name} assigned ${leaderSkillCard(action.skill as Parameters<typeof leaderSkillCard>[0]).name} to a newly revived leader.`, {faction:p.faction,name:'Leader Skill'});
+      }
+      const marketGhola = g.pendingChoamMarketGhola;
+      if (marketGhola?.player === id && marketGhola.leaderSkill?.offer === decision.event &&
+          !g.leaderSkills.offers[id]) {
+        marketGhola.leaderSkill.completed = true;
+        marketGhola.leaderSkill.signature = choamGholaSkillSignature(marketGhola);
       }
       g.decision = null;
       if (g.battle && !g.battle.revealed && !g.battle.plans[id] && [g.battle.attacker,g.battle.defender].includes(id) && g.leaderSkills.assignments.some((a) => a.owner === id) && g.battle.leaderSkillHidden?.[id] === undefined)

@@ -6,22 +6,26 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `d3559f6`, [Basic Tleilaxu with Leader Skills](TLEILAXU_LEADER_SKILLS.md).
-Types, lint, **5,058 offline tests** and the production build passed; five
+Latest delivered checkpoint: `3efda21`, [Basic Ixians with Leader Skills](IX_LEADER_SKILLS.md).
+Types, lint, **5,082 offline tests** and the production build passed; five
 complete two-through-six-player samples had no rejected actions. Browser setup,
-Rihani exchange, mobile controls and refresh were checked. All 1,581 prior rooms
-and 3,349 seats remained intact; one QA room/seat brought the baseline to 1,582
-rooms and 3,350 human seats. Screenshot capture timed out; full visual acceptance
-remains open.
+first Storm/HMS placement, mobile Suk rescue and substitution, and same-state
+refresh were checked. All 1,582 prior rooms and 3,350 seats remained intact;
+one QA room/seat brought the baseline to 1,583 rooms and 3,351 human seats.
+Screenshot capture timed out; full visual acceptance remains open.
 
-Current work: [Basic Ixians with Leader Skills](IX_LEADER_SKILLS.md) connects
-genuine starting-card/skill setup, per-origin cyborg movement, Sandmaster HMS
-entry/exit, Suk rescue before actual cyborg substitution, Rihani precedence and
-mandatory green-Special disposal. Saved receipts bind physical losses and choices.
-Focused tests, authenticated setup recovery and a two-through-six-player sample
-profile accompany final reports. Existing missing skill bands, Advanced and
-other module combinations remain separate work. The Bureaucrat/Emperor gift
-question is still pending.
+Current work [connects ordinary Leader Skill actions to Basic CHOAM](CHOAM_LEADER_SKILLS.md),
+using its existing genuine setup. Exact 35-card Treachery and fourteen-skill inventories,
+native Worthless-card powers, mandatory battle disposal and interrupted market
+Ghola revival are receiving integration and saved-continuation checks. Advanced
+Auditor and Richese/other combinations retain their existing separate contracts.
+
+The [Sandmaster/HMS source comparison](SANDMASTER_MOVEMENT.md#21-september-native-hms-relocation-eligibility)
+found no official clarification that passengers remaining in the interior
+trigger collection from outside territories during native relocation. A ruling
+question was sent; ordinary HMS relocation and force entry/exit remain working.
+No extra collection is silently applied. The Bureaucrat/Emperor gift question
+and the other recorded skill boundaries remain pending.
 
 The reviewed remaining native Ecaz/Moritani effects, Duke revival and Richese
 empty-cache auction arithmetic still cross recorded source questions. Native

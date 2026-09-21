@@ -26,7 +26,7 @@ import { privateOutputDirectory, sourceSnapshot } from './verification';
 const DEFAULT_SEED = 20_260_926;
 const DEFAULT_MAX_ACTIONS = 3_500;
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard', 'Brutal'] as const;
-type Profile = 'base' | 'choam' | 'ecaz' | 'combined' | 'moritani-skills' | 'tleilaxu-skills' | 'ix-skills';
+type Profile = 'base' | 'choam' | 'ecaz' | 'combined' | 'moritani-skills' | 'tleilaxu-skills' | 'ix-skills' | 'choam-skills';
 type Rules = 'basic' | 'advanced';
 
 type Scenario = {
@@ -126,7 +126,14 @@ const IX_SKILLS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(players => 
   expansions: ['ix'],
   roster: (['ixians', 'tleilaxu', 'emperor', 'guild', 'harkonnen', 'fremen'] as FactionId[]).slice(0, players),
 }));
-const skillProfile = (profile: string) => profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills';
+const CHOAM_SKILLS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(players => ({
+  ordinal: 31 + players - 2,
+  profile: 'choam-skills',
+  rules: 'basic',
+  expansions: ['choam'],
+  roster: (['choam', 'emperor', 'guild', 'harkonnen', 'fremen', 'beneGesserit'] as FactionId[]).slice(0, players),
+}));
+const skillProfile = (profile: string) => profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills' || profile === 'choam-skills';
 
 type TraceEntry = {
   attempt: number;
@@ -164,10 +171,10 @@ type Result = {
 function usage() {
   return (
     'Usage: node --import tsx tools/faction-games.ts --out NEW_PRIVATE_DIR ' +
-    '[--seed UINT32] [--profile all|base|choam|ecaz|combined|moritani-skills|tleilaxu-skills|ix-skills] ' +
+    '[--seed UINT32] [--profile all|base|choam|ecaz|combined|moritani-skills|tleilaxu-skills|ix-skills|choam-skills] ' +
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
-    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base and the skill profiles default to their 2–6-player samples. --players requires --profile base, moritani-skills, tleilaxu-skills or ix-skills. Output must be a new private directory outside the checkout.'
+    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base and the skill profiles default to their 2–6-player samples. --players requires --profile base, moritani-skills, tleilaxu-skills, ix-skills or choam-skills. Output must be a new private directory outside the checkout.'
   );
 }
 
@@ -205,8 +212,8 @@ function scenarioName(scenario: Scenario) {
 
 function parseProfile(value: string | undefined) {
   const profile = value ?? 'all';
-  if (!['all', 'base', 'choam', 'ecaz', 'combined', 'moritani-skills', 'tleilaxu-skills', 'ix-skills'].includes(profile))
-    throw new Error('--profile must be all, base, choam, ecaz, combined, moritani-skills, tleilaxu-skills or ix-skills.');
+  if (!['all', 'base', 'choam', 'ecaz', 'combined', 'moritani-skills', 'tleilaxu-skills', 'ix-skills', 'choam-skills'].includes(profile))
+    throw new Error('--profile must be all, base, choam, ecaz, combined, moritani-skills, tleilaxu-skills, ix-skills or choam-skills.');
   return profile as Profile | 'all';
 }
 
@@ -306,7 +313,7 @@ function resumedGame(path: string) {
     game.moritaniAssassinateCallEvents
   )
     throw new Error('--resume sample scenarios exclude optional modules.');
-  const scenario = [...SCENARIOS, ...BASE_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...IX_SKILLS_SCENARIOS].find(
+  const scenario = [...SCENARIOS, ...BASE_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...IX_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS].find(
     (candidate) =>
       skillProfile(candidate.profile) === !!game.leaderSkills &&
       candidate.rules === (game.advanced ? 'advanced' : 'basic') &&
@@ -502,13 +509,13 @@ async function main() {
   const rules = parseRules(values.rules);
   const players = parsePlayers(values.players);
   if (supplied('players') && profile !== 'base' && !skillProfile(profile))
-    throw new Error('--players requires --profile base, moritani-skills, tleilaxu-skills or ix-skills.');
+    throw new Error('--players requires --profile base, moritani-skills, tleilaxu-skills, ix-skills or choam-skills.');
   if (skillProfile(profile) && rules === 'advanced')
     throw new Error('Expansion Leader Skills profiles currently support only Basic samples.');
   const resume = values.resume ? resumedGame(values.resume) : null;
   const selected = resume
     ? [resume.scenario]
-    : (profile === 'base' ? BASE_SCENARIOS : profile === 'moritani-skills' ? MORITANI_SKILLS_SCENARIOS : profile === 'tleilaxu-skills' ? TLEILAXU_SKILLS_SCENARIOS : profile === 'ix-skills' ? IX_SKILLS_SCENARIOS : SCENARIOS).filter(
+    : (profile === 'base' ? BASE_SCENARIOS : profile === 'moritani-skills' ? MORITANI_SKILLS_SCENARIOS : profile === 'tleilaxu-skills' ? TLEILAXU_SKILLS_SCENARIOS : profile === 'ix-skills' ? IX_SKILLS_SCENARIOS : profile === 'choam-skills' ? CHOAM_SKILLS_SCENARIOS : SCENARIOS).filter(
         (scenario) =>
           (profile === 'all' || scenario.profile === profile) &&
           (rules === 'both' || scenario.rules === rules) &&

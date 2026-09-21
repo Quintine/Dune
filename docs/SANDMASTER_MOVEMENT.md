@@ -74,3 +74,26 @@ collection, including saved arrival reactions. Remaining work includes other
 nonordinary relocation, special movement cards, expansion/module integration, multiple-pile adjudication and
 wider interaction and strategy acceptance. The lower battle band remains in
 [the battle-effects contract](LEADER_BATTLE_EFFECTS.md).
+
+## 21 September: native HMS relocation eligibility
+
+The [Basic Ixian integration](IX_LEADER_SKILLS.md) connects ordinary force entry
+and exit through the current HMS pointer. Native relocation is a different event:
+it changes the stronghold's pointing sector while its forces remain in the
+separate interior territory. Calling a further Sandmaster collection a known
+missing bonus was too strong; eligibility is unresolved.
+
+The [publisher-authored Ix rules, pages 9 and 11](https://cdn.1j1ju.com/medias/20/16/31-dune-ixians-tleilaxu-rulebook.pdf)
+give native collection of two spice per force from traversed spice-containing
+sectors, including departure, and prohibit movement into, out of or through the
+storm. Sandmaster instead requires forces moving into or through a territory
+and grants one total spice per entered territory. The
+[official November FAQ, page 7](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf)
+allows Karama to prevent HMS relocation and collection together.
+
+The checked card, designer walkthrough and available official rules did not
+clarify whether passengers staying in the interior count as entering outside
+territories. Skill-before-faction precedence settles ordering only if eligibility
+is established. A user ruling question was sent; no answer is assumed. Native
+relocation and ordinary Sandmaster entry/exit remain available. No extra
+collection is silently applied, and full combined compliance remains unverified.

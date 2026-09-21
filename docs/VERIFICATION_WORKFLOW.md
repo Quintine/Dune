@@ -117,6 +117,10 @@ Old room IDs in historical browser evidence no longer identify active local game
 Future games must be preserved. This was a one-time user-authorized reset, not a
 maintenance strategy or permission to clear future games.
 
+The explicit `--profile choam-skills` runs Basic CHOAM and base opponents for
+two through six players (ordinals 31–35), retaining the full skill module and
+native 35-card Treachery deck; see [CHOAM integration](CHOAM_LEADER_SKILLS.md).
+
 The explicit `--profile ix-skills` runs genuine Basic Ixian full-deck setup for
 two through six players, with Tleilaxu and base opponents. It preserves ordinals
 26–30 and full custody/private saved continuation; see [Ix integration](IX_LEADER_SKILLS.md).

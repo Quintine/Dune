@@ -46,9 +46,18 @@ export function basicIxLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
 }
 
+/** Basic CHOAM's ordinary leaders and economy; Auditor belongs to Advanced. */
+export function basicChoamLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  return game.advanced === false && game.expansions.length === 1 &&
+    game.expansions[0] === 'choam' && noOtherLeaderSkillModules(game) &&
+    !!game.players?.some(player => player.faction === 'choam') &&
+    game.players.every(player => player.faction === 'choam' ||
+      FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
+}
+
 export function basicExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return basicMoritaniLeaderSkillsProfile(game) || basicTleilaxuLeaderSkillsProfile(game) ||
-    basicIxLeaderSkillsProfile(game);
+    basicIxLeaderSkillsProfile(game) || basicChoamLeaderSkillsProfile(game);
 }
 
 /** Shared by rule quotes, controls and minimal legal bot participation. */

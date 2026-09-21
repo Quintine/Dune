@@ -4001,6 +4001,29 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'choam-leader-skills',
+    title: 'CHOAM with Leader Skills',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'Basic CHOAM connects ordinary skill actions and private revival choices during a suspended sale.',
+    steps: [
+      'This development combination uses Basic CHOAM and base opponents, the full fourteen-skill deck and no other optional modules. Starting cards precede skills and Traitors. Its 35-card Treachery deck includes Poison Tooth and Artillery; neither is a green Special. Auditor belongs to Advanced and cannot receive a skill.',
+      'Connected movement, shipping, payment and battle skills share their normal controls and legal choices. CHOAM cannot spend a card already committed to a sale or sell a Special already discarded after Planetologist battle use.',
+      'Ghola may revive an eligible own leader while a declared sale waits. Finish the spent Ghola, optional private replacement draw or decline, and any required assignment before the original sale resumes. The replacement belongs to the actual revived leader.',
+      'The sale resumes with its original card, price and response passes. Canceling that sale preserves the completed free revival and does not return the spent Ghola.',
+      'Advanced Auditor, Richese and further combinations retain separate implementation boundaries. Remaining skill effects are unfinished; this prototype does not certify complete expansion rules or AI strength.',
+    ],
+    related: ['leader-skills', 'choam-modules', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Existing genuine setup now connects ordinary skill actions, native card sales, mandatory disposal and exact interrupted-sale revival continuation.', evidence: ['game/leader-skill-profile.ts', 'game/choam-market-ghola.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Existing private draw, decline and assignment controls complete the revival before returning to the sale response.', evidence: ['components/leader-skills.tsx', 'components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'All profiles follow current private offers and legal action lists. Full strategy and calibration wait for feature completion.', evidence: ['game/bots.ts', 'tools/faction-games.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'Exact configuration, inventory, source composition and remaining boundaries are recorded.', evidence: ['docs/CHOAM_LEADER_SKILLS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Full-deck setup, native powers, skill controls, card custody, saved-sale corruption, private concurrent recovery and bounded complete games have focused checks. Final acceptance remains open.', evidence: ['tests/choam-skills-integration.test.ts', 'tests/choam-skills-ghola.test.ts', 'tests/choam-skills-recovery.test.ts', 'tools/faction-games.ts'] },
+    ],
+  },
+  {
     id: 'ixian-leader-skills',
     title: 'Ixians with Leader Skills',
     category: 'Advanced & expansions',
@@ -4012,7 +4035,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Planetologist calculates each gathered origin separately using its selected cyborgs. Canceling native cyborg movement leaves the independent skill range available. Sandmaster routes can enter or leave the HMS through its current pointer.',
       'Suk Graduate rescues finish before substitution. Select the original sectors of rescued cyborgs where needed; only cyborgs actually sent to the Tanks can return through substitution. Rihani also finishes before native substitution.',
       'Planetologist may substitute the green Thumper, Harvester or Amal in its weapon role. Their normal effects do not execute, and mandatory disposal still follows allowed, declined or canceled substitution.',
-      'Missing skill bands, extra Sandmaster HMS relocation and other combined configurations remain unfinished. This prototype does not certify complete rules or AI strength.',
+      'Missing skill bands, Sandmaster eligibility during native HMS relocation and other combined configurations remain unresolved or unfinished. This prototype does not certify complete rules or AI strength.',
     ],
     related: ['leader-skills', 'tleilaxu-leader-skills', 'implementation-checklist'],
     checklist: [
@@ -4096,7 +4119,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Other special Sandmaster relocation, Spice Banker normal income and Diplomat retreat remain missing. Foreign gholas, Face Dancers and combined modules remain unfinished. This development prototype does not enable public module starts.',
       ...LEADER_SKILL_CARDS.map(card => `${card.name}. Normal: ${card.normal.join(' ')} Skilled battle: ${card.battle.join(' ')}`),
     ],
-    related: ['ixian-leader-skills', 'tleilaxu-leader-skills', 'moritani-leader-skills', 'setup','choam-modules','implementation-checklist'],
+    related: ['choam-leader-skills', 'ixian-leader-skills', 'tleilaxu-leader-skills', 'moritani-leader-skills', 'setup','choam-modules','implementation-checklist'],
     checklist: [
       { area:'Implementation',status:'Partial',detail:'Exact fourteen-card custody, source-ordered setup, public capture, concealment, death and own revival connect five role bonuses, Planetologist movement/Special substitution and Suk Graduate casualty rescue. Rihani inspection/exchange and lower Mentat/Bureaucrat/Sandmaster effects are connected. Smuggler normal reserve shipping, the owned Richese No-Field companion, unmodified battle collection and optional Sandmaster ground-route and native Fremen worm-ride collection are connected. A separately opted-in Mentat preview connects private pre-plan questions and historical observations while ordinary activation awaits the uniform-response decision. Spice Banker lower spending and native Diplomat base Shield/Snooper copying are connected; Spice Banker normal income, other remaining bands, Diplomat retreat and combined modules remain missing. Bureaucrat redirects supported third-party auction, shipment and bribe payments with exact saved once-per-phase use.',evidence:['game/leader-skill-cards.ts','game/leader-skills.ts','game/leader-skill-combat.ts','game/suk-graduate.ts','game/rihani-decipherer.ts','game/mentat-question.ts','game/bureaucrat-payment.ts','game/leader-skill-battle-board.ts','game/smuggler-shipment.ts','game/smuggler-no-field.ts','game/smuggler-battle.ts','game/spice-banker.ts','game/sandmaster-movement.ts','game/sandmaster-worm.ts','game/diplomat-defense.ts','game/engine.ts'] },
       { area:'Player controls',status:'Partial',detail:'Private card/leader selection, readable inspectors, public battle posture and revival draw/decline, Planetologist range/gather controls, Special weapon selection and Suk Graduate physical rescue choices are connected. Rihani has private history and separate keep-new/reveal-old controls; automatic battle effects need no confirmation. Smuggler has explicit ordinary shipping opt-out and No-Field companion opt-in with physical-versus-priced force counts, plus automatic surviving-leader battle collection with reveal-time guidance. Banker exposes separate sealed spending and authorized inspection. Sandmaster exposes explicit legal routes, per-territory collection choices and an optional worm-destination checkbox. Diplomat offers a named committed Worthless choice or decline after public reveal. Bureaucrat offers redirect or full payment with explicit recipient amounts and deferred bribe custody. Remaining effect controls are missing.',evidence:['components/leader-skills.tsx','components/planetologist-movement.tsx','components/suk-graduate.tsx','components/rihani-decipherer.tsx','components/mentat-question.tsx','components/bureaucrat-payment.tsx','components/leader-skill-battle-guide.tsx','components/smuggler-shipment.tsx','components/spice-banker.tsx','components/sandmaster-movement.tsx','components/sandmaster-worm.tsx','components/diplomat-defense.tsx','components/game-table.tsx'] },

@@ -1,6 +1,7 @@
 import type { Game, ResponseWindow } from './engine';
 import type { ChoamMarket } from './choam-market';
 import { quoteChoamSaleCancellation } from './choam-sale-cancellation';
+import { CHOAM_AUDITOR_ID } from './cards';
 
 /** The sale is suspended, never replayed. Its physical card stays in its hand. */
 export type ChoamMarketGhola = {
@@ -13,12 +14,71 @@ export type ChoamMarketGhola = {
   stage: 'discard' | 'income' | 'complete';
   response: ResponseWindow;
   market: ChoamMarket;
+  /** New Skills interruptions bind their committed revival through the optional choice. */
+  leaderSkill?: {
+    leader: string | null;
+    offer: string | null;
+    completed: boolean;
+    signature: string;
+  };
 };
 
 export function choamGholaEvent(pending: Pick<ChoamMarketGhola,
   'turn' | 'phase' | 'player' | 'card' | 'discardSequence'>) {
   return JSON.stringify(['choamGhola', pending.turn, pending.phase,
     pending.player, pending.card, pending.discardSequence]);
+}
+
+export function choamGholaSkillSignature(pending: ChoamMarketGhola): string {
+  const skill = pending.leaderSkill;
+  return JSON.stringify(['choamGholaSkill', pending.event, skill?.leader,
+    skill?.offer, skill?.completed]);
+}
+
+export function choamGholaSkillOfferEvent(pending: ChoamMarketGhola, leader: string): string {
+  return JSON.stringify(['choamGholaSkillOffer', pending.event, leader]);
+}
+
+function skillRevivalError(
+  g: Game,
+  pending: ChoamMarketGhola,
+  decisions: readonly (Game['decision'] | undefined)[],
+): string | null {
+  const record = pending.leaderSkill;
+  if (!g.leaderSkills && !record) return null;
+  if (!g.leaderSkills || !record ||
+      !(record.leader === null || (typeof record.leader === 'string' && record.leader)) ||
+      !(record.offer === null || (typeof record.offer === 'string' && record.offer)) ||
+      typeof record.completed !== 'boolean' || record.signature !== choamGholaSkillSignature(pending))
+    return 'The saved market Ghola lost its committed Leader Skill revival.';
+  const owner = g.players.find(player => player.id === pending.player)!;
+  const leader = owner.leaders.find(candidate => candidate.id === record.leader);
+  if (record.leader !== null && (!leader || leader.dead || leader.capturedBy || leader.gholaBy))
+    return 'The market Ghola no longer has its own revived leader.';
+  const offer = g.leaderSkills.offers[pending.player];
+  if (record.offer === null) {
+    if (!record.completed || offer || (record.leader !== null && record.leader !== CHOAM_AUDITOR_ID &&
+        !g.leaderSkills.assignments.some(assignment => assignment.owner === pending.player)))
+      return 'This market Ghola cannot omit its optional Leader Skill offer.';
+    return null;
+  }
+  if (record.leader === null)
+    return 'A market Ghola skill offer must name its revived leader.';
+  if (record.offer !== choamGholaSkillOfferEvent(pending, record.leader))
+    return 'The market Ghola skill event no longer matches its committed revival.';
+  if (record.completed) {
+    if (offer) return 'The completed market Ghola still has an unresolved skill offer.';
+  } else {
+    if (!offer || offer.event !== record.offer || offer.leader !== record.leader)
+      return 'The market Ghola lost its original leader or optional skill offer.';
+    // An ordinary-card/Truthtrance disposal may temporarily hold this owned
+    // decision in its continuation. Its exact event remains required there.
+    if (pending.stage === 'complete' &&
+        !decisions.some(decision => decision?.kind === 'leaderSkillRevival' &&
+          decision.player === pending.player && decision.event === record.offer))
+      return 'The completed Ghola is waiting for its owned Leader Skill decision.';
+  }
+  return null;
 }
 
 /** Public timing shared by the server and the hand's ordinary-card controls. */
@@ -38,6 +98,10 @@ export function choamSaleGholaTiming(state: {
  * move the sale card or change Tupile before the original declaration resumes. */
 export function choamMarketGholaError(g: Game): string | null {
   const pending = g.pendingChoamMarketGhola;
+  const marketOffers = Object.entries(g.leaderSkills?.offers ?? {})
+    .filter(([, offer]) => typeof offer?.event === 'string' && offer.event.startsWith('["choamGholaSkillOffer",'));
+  if (marketOffers.length && (!pending || marketOffers.length !== 1 || marketOffers[0][0] !== pending.player))
+    return 'The Ghola Leader Skill offer lost its suspended market.';
   if (!pending) return null;
   if (
     g.status !== 'playing' || pending.turn !== g.turn || pending.phase !== g.phase ||
@@ -87,6 +151,9 @@ export function choamMarketGholaError(g: Game): string | null {
   if (incomes.some((income) => income!.recipient !== pending.player || income!.amount !== 1 ||
       !g.players.some((p) => p.id === income!.owner && p.faction === 'tleilaxu')))
     return 'The saved Ghola income no longer matches the revived faction.';
+  const skillError = skillRevivalError(g, pending,
+    contexts.map(context => context && 'decision' in context ? context.decision : undefined));
+  if (skillError) return skillError;
   try {
     quoteChoamSaleCancellation(g, pending.response);
   } catch (error) {

@@ -185,4 +185,14 @@ setup, per-origin cyborg range, Sandmaster HMS entry/exit, explicit Suk cyborg
 rescue origins, Rihani-before-substitution and mandatory green-Special disposal.
 Tleilaxu/base opponents are supported through the complete deck; Advanced and
 other combinations remain separate. This supersedes earlier Ix admission gaps,
-not the documented missing skill bands or Sandmaster native HMS relocation.
+not the documented missing skill bands or unresolved Sandmaster eligibility
+during native HMS relocation.
+
+## Basic CHOAM ordinary action integration
+
+[Basic CHOAM with Leader Skills](CHOAM_LEADER_SKILLS.md) connects ordinary
+skill actions to the already available genuine setup. It retains the complete
+fourteen-card skill and 35-card Treachery inventories, native card sales and
+private own-revival replacement through interrupted market timing. Existing
+Advanced/Richese setup admission remains, without extending this action profile
+or certifying its separate effects.
