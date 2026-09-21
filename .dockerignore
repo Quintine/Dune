@@ -6,6 +6,7 @@
 !next.config.ts
 !vite.config.ts
 !.oxlintrc.json
+!.gitignore
 !components.json
 !drizzle.config.ts
 !README.md
