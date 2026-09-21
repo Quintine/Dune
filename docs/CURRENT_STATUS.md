@@ -1,26 +1,26 @@
 # Current development status
 
 Updated 21 September 2026. **The full twelve-faction goal is unfinished. Basic
-is playable; public Advanced and unfinished expansion/module starts remain
-gated.** Prototypes do not open completion or publication gates.
+is playable and the six classic factions have a user-authorized Advanced preview.
+Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `a3bc0ac`, [completed-action feedback](ACTION_FEEDBACK.md).
-Types, lint, **5,137 offline tests** and the production build passed. Two complete
-Basic/Advanced samples had no rejected actions across 821 actions and 21 JSON
-restores. Browser burst notices, local interaction, muted updates and exact refresh
-were checked. All 1,585 prior rooms and 3,353 seats remained intact; one QA
-room/seat brought the baseline to 1,586 rooms and 3,354 human seats. Full visual
-acceptance remains open.
+Latest delivered checkpoint: `0f79f28`, [forced Harkonnen exchange return](HARKONNEN_EXCHANGE.md).
+Types, lint, **5,150 offline tests**, **49 HTTP tests** and the production build
+passed. One complete Advanced sample had no rejected actions across 158 actions
+and four JSON restores. Browser inspection and exact refresh were checked;
+full visual acceptance remains open. All 1,586 prior rooms and 3,354 human seats
+were preserved; new QA/HTTP rooms brought the baseline to 1,626 rooms and 3,442 seats.
 
-Current work connects the [forced Harkonnen special-Karama return](HARKONNEN_EXCHANGE.md)
-when every held card must go back. Automatic settlement preserves a private saved
-record of the inspected cards and the original interruption. Larger hands keep
-their real return choice; legacy records identify held cards without inventing
-which were originally drawn. The server also schedules older saved exchanges for
-automatic recovery while preserving real choices. Independent review is complete;
-final source-bound checks and browser evidence accompany the Git checkpoint.
+Current work exposes [Advanced preview](ADVANCED_PREVIEW.md) through normal room
+creation and host lobby controls. It uses genuine setup, explicit unfinished-mode
+start, renewed human readiness after mode changes, private seat restoration and
+saved continuation. Six classic factions, existing Tech Tokens (3+ players) and
+Stronghold Cards are admitted; expansion/module gates and pending rulings remain.
+Focused engine, controls, retry and concurrent recovery checks are connected;
+final independent review, browser, sample-game and required checks accompany the
+Git checkpoint. Preview access does not certify complete rules compliance.
 
 The [Sandmaster/HMS source comparison](SANDMASTER_MOVEMENT.md#21-september-native-hms-relocation-eligibility)
 found no official clarification that passengers remaining in the interior
@@ -94,7 +94,7 @@ These links define bounded working behavior, not complete module certification.
 
 | Area | Current connected work and evidence |
 | --- | --- |
-| Base/Advanced setup | [Genuine setup](ADVANCED_SETUP_TEST_SEAM.md), [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md), [Fremen cancellation](FREMEN_MOVEMENT_KARAMA_RULES.md), [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md). Earlier Basic-then-flip fixtures do not establish current setup coverage. |
+| Base/Advanced setup | [Normal Advanced preview](ADVANCED_PREVIEW.md), [genuine setup](ADVANCED_SETUP_TEST_SEAM.md), [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md), [Fremen cancellation](FREMEN_MOVEMENT_KARAMA_RULES.md), [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md). Earlier Basic-then-flip fixtures do not establish current setup coverage. |
 | Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement and [Advanced Loyalty](ECAZ_LOYALTY.md), separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
 | Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md) and [worm rides](SANDMASTER_WORM.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Jacurutu income, Testing Station and Shrine. Orgiz and contested/mixed cases remain pending. |
@@ -108,7 +108,7 @@ These links define bounded working behavior, not complete module certification.
 | Area | Remaining gate |
 | --- | --- |
 | Basic core | Ordinary Guild repricing/transport settlement, broader truthful commitments, unresolved special timing and integrated rules/human/AI acceptance. |
-| Six-faction Advanced | Base gaps, provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. Setup matrices and complete samples do not open public starts. |
+| Six-faction Advanced | Base gaps, provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. The user-authorized unfinished preview is available; setup matrices and complete samples do not certify full compliance. |
 | Twelve factions and all optional modules | Every missing effect, remaining skill bands, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. Detailed boundaries remain in the checklist/decision index. |
 | AI | Maintain minimal legal participation and critical correctness fixes while game features are unfinished. Full implementation, strategy refinement and calibration wait until all non-AI features are complete; then target approximately 75% higher-tier wins for Medium/Easy, Hard/Medium and Brutal/Hard. See the [AI development plan](AI_DEVELOPMENT_PLAN.md). These targets remain unverified. |
 | Multiplayer | Broader disconnected/abandoned-seat recovery, unattended continuation and network-failure acceptance, while preserving authoritative versioning, custody, privacy and saves. |

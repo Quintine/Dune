@@ -110,8 +110,13 @@ void test('real isolated initializer adds the Advanced Auditor before prediction
     const before = structuredClone(g);
     assert.throws(
       () => applyAction(g, 'c', { type: 'start' }),
-      /still being implemented/,
+      advanced ? /Advanced preview/ : /still being implemented/,
     );
+    if (advanced)
+      assert.throws(
+        () => applyAction(g, 'c', { type: 'start', advancedPreview: true }),
+        /Expansion factions are still being implemented/,
+      );
     assert.throws(() => initializeBaseGameForAudit(g), /base factions/);
     assert.deepEqual(g, before);
     initialize(g);

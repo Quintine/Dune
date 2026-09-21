@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TableTalk } from '@/components/table-talk';
 import { GameTable } from '@/components/game-table';
+import { RulesetControls } from '@/components/ruleset-controls';
 import {
   SeatHandoverSetup,
   SeatHandoverClaim,
@@ -68,6 +69,7 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [connection, setConnection] = useState('');
   const [selected, setSelected] = useState('atreides');
+  const [advanced, setAdvanced] = useState(false);
   const [expansions, setExpansions] = useState<string[]>([]);
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
@@ -423,7 +425,7 @@ export default function Home() {
     let attempt: RoomEntryAttempt;
     try {
       attempt = createRoomEntry(
-        { name, faction: selected, expansions, advanced: false },
+        { name, faction: selected, expansions, advanced },
         join ? code : undefined,
       );
     } catch {
@@ -1014,10 +1016,17 @@ export default function Home() {
             placeholder="Enter your name"
             maxLength={32}
           />
-          <div className="setting-title">
-            <span>Rules</span>
-            <span className="pill">BASIC</span>
-          </div>
+          <RulesetControls
+            advanced={advanced}
+            disabled={busy || claimUncertain}
+            onChange={(value) => {
+              setAdvanced(value);
+              if (value) {
+                setExpansions([]);
+                if (f.expansion !== 'base') setSelected('atreides');
+              }
+            }}
+          />
           <p className="fine">2–6 players · up to 10 turns</p>
           <div className="setting-title">
             <span>Expansions</span>
@@ -1028,7 +1037,7 @@ export default function Home() {
               <label className="expansion" key={x.id}>
                 <input
                   type="checkbox"
-                  disabled={busy || claimUncertain}
+                  disabled={busy || claimUncertain || advanced}
                   checked={expansions.includes(x.id)}
                   onChange={(e) => {
                     setExpansions(

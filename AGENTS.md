@@ -41,7 +41,9 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
   checkpoints under standing authorization. No user-imposed usage cutoff or
   routine account-usage check remains.
 - Keep material rulings explicit and prototype independent work while pending.
-  Prototype evidence does not open mode or publication gates.
+  The user-authorized Advanced preview permits unfinished base-faction starts
+  with a visible warning; see `docs/ADVANCED_PREVIEW.md`. Prototype evidence does
+  not certify complete modes or open expansion/publication gates.
 
 ## Implement and verify
 

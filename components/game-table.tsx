@@ -8,6 +8,7 @@ import { EcazLoyaltyCard } from './ecaz-loyalty';
 import { DrawPiles } from './draw-piles';
 import { HandBrowser } from './hand-browser';
 import { LobbyBotControls } from './lobby-bot-controls';
+import { AdvancedPreviewNotice, RulesetControls } from './ruleset-controls';
 import { IxRicheseTechnology } from './ix-richese-technology';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
 import {
@@ -988,6 +989,7 @@ export function GameTable({
                           : 'Simultaneous decisions'}
         </span>
       </div>
+      {g.advanced && g.status !== 'lobby' && <AdvancedPreviewNotice compact />}
       {g.status !== 'lobby' && (
         <nav className="phase-track" aria-label="Turn phases">
           {PHASES.map((p, i) => (
@@ -1618,6 +1620,13 @@ export function GameTable({
                 Share the invite above. Every player chooses a faction and
                 confirms they are ready.
               </p>
+              <RulesetControls
+                advanced={g.advanced}
+                disabled={busy}
+                lobby
+                host={g.host === me.id}
+                onChange={(advanced) => act({ type: 'rules', advanced })}
+              />
               <label>
                 Your faction
                 <select
@@ -1666,19 +1675,22 @@ export function GameTable({
                 />
                 Stronghold Cards · Advanced rules required
               </label>
-              {actionButton(me.ready ? 'Not ready' : 'Ready to play', {
-                type: 'ready',
-              })}
+              {actionButton(
+                me.ready ? 'Not ready' : g.advanced ? 'Ready for Advanced preview' : 'Ready to play',
+                { type: 'ready' },
+              )}
               {g.host === me.id &&
                 actionButton(
-                  'Begin game',
-                  { type: 'start' },
+                  g.advanced ? 'Begin Advanced preview' : 'Begin game',
+                  g.advanced
+                    ? { type: 'start', advancedPreview: true }
+                    : { type: 'start' },
                   g.players.length < (g.techTokens ? 3 : 2) ||
                     !g.players.every((p) => p.ready),
                 )}
               <p className="development-note">
-                Playable core under development. Advanced rules and expansion
-                games are not yet available.
+                Playable core under development. Advanced is available as an
+                unfinished preview. Expansion games are not yet available.
               </p>
             </>
           ) : g.status === 'setup' && !g.decision ? (

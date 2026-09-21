@@ -1554,6 +1554,8 @@ export type Game = {
   mentatHistory?: MentatObservation[];
   mentatHistoryEvents?: string[];
   advanced: boolean;
+  /** Explicit normal-lobby opt-in; unfinished rules remain labeled as a preview. */
+  advancedPreview?: true;
   expansions: string[];
   players: Player[];
   /** Fixed printed player circles; absent only in rooms created before this rule fix. */
@@ -5082,26 +5084,93 @@ function takeBattleLosses(g: Game, p: Player, t: string, losses: Casualties) {
   );
   return lostCyborgs;
 }
-function start(g: Game) {
+function baseStartProfileBlock(g: Game): string | null {
+  if (g.homeworlds) return 'Homeworld gameplay is still being implemented.';
+  if (g.nexusCards) return 'Nexus card effects are still being implemented.';
+  if (g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker)
+    return 'Discoveries are still being implemented.';
+  if (g.leaderSkills) return 'Leader Skills are still being implemented.';
+  if (g.ecazTreachery) return 'Ecaz Treachery Cards are still being implemented.';
+  if (g.mentatQuestionPreview || g.moritaniAssassinatePreview || g.moritaniAssassinate)
+    return 'Separate development profiles cannot be enabled by a normal start.';
+  if (!g.players.every(p => FACTIONS.some(entry => entry.id === p.faction && entry.expansion === 'base')))
+    return 'Expansion factions are still being implemented.';
+  if (g.expansions.length !== 0) return 'Expansion rules are still being implemented.';
+  return null;
+}
+function advancedPreviewIntegrity(g: Game) {
+  if (g.advancedPreview === undefined) return;
+  requireRule(g.advancedPreview === true && g.advanced === true && g.status !== 'lobby' && !baseStartProfileBlock(g),
+    'The saved Advanced preview no longer matches its supported rules profile.');
+}
+function requireFreshSetup(g: Game, allowIxElites = false) {
+  requireRule(g.status === 'lobby' && !g.setupStage && g.turn === 1 && g.phase === 0 && g.advancedPreview === undefined,
+    'Start only from a fresh lobby.');
+  requireRule(g.players.length >= 2 && g.players.length <= 6 &&
+    new Set(g.players.map(p => p.id)).size === g.players.length &&
+    new Set(g.players.map(p => p.faction)).size === g.players.length &&
+    g.players.some(p => p.id === g.host) && g.players.every(p => p.id && p.ready),
+  'Start requires two through six distinct ready players and an existing host.');
+  requireRule(!g.deck.length && !g.discard.length && !g.spiceDeck.length &&
+    !g.spiceDiscard.some(pile => pile.length) && !g.traitorReserve?.length &&
+    g.ecazLoyalty === undefined && !g.decision && !g.response && !g.battle && !g.winner.length &&
+    g.players.every(p => !p.hand.length && !p.traitors.length && !p.traitorChoices.length &&
+      Object.keys(p.forces).length === 0 && p.reserves === 20 && p.tanks === 0 && p.spice === 0 &&
+      p.moved === 0 && !p.shipped && !p.prediction && !p.advisorSetup &&
+      (!p.elites || (allowIxElites && p.faction === 'ixians' && p.elites.reserves === 7 &&
+        p.elites.tanks === 0 && p.elites.revived === 0 && Object.keys(p.elites.forces).length === 0))),
+  'Starting setup cannot redeal or replace existing game pieces.');
+  requireRule(g.players.every(p => {
+    const native = leaders(p.faction);
+    return p.leaders.length === native.length && native.every(expected => {
+      const actual = p.leaders.find(leader => leader.id === expected.id);
+      return actual && Object.keys(actual).length === Object.keys(expected).length &&
+        Object.entries(expected).every(([key, value]) => actual[key as keyof Leader] === value);
+    }) && p.ally === null && p.allySinceTurn === undefined && p.bribes === 0 && p.revived === 0 &&
+      (p.freeForcesRevived ?? 0) === 0 && p.leaderRevived === false && p.revivalCycle === 0 && p.battleLosses === 0 &&
+      !p.specialKaramaUsed && p.kwisatz === undefined && p.charityTurn === undefined &&
+      p.noField === undefined && p.noFieldEvent === undefined && p.noFieldBlockedTurn === undefined &&
+      p.advisors === undefined && p.gholaBlocked === undefined && p.ixMovementBlocked === undefined &&
+      p.fremenMovementBlocked === undefined && p.faceDancers === undefined &&
+      p.faceDancerReplacedTurn === undefined && p.revealedTraitors === undefined;
+  }), 'Starting setup requires unused native leaders and no prior alliance, revival or battle history.');
+  requireRule(Object.keys(g.playerPositions ?? {}).every(id => g.players.some(p => p.id === id)),
+    'Player circles must belong to seated players.');
+  normalizedPlayerPositions(g);
+}
+function requireFreshBaseRuntime(g: Game) {
+  requireRule((g.botsPending === undefined || g.botsPending === false) && g.botNextActionAt === undefined,
+    'Start with no pending bot work or prior action deadline.');
+  const fresh = createGame(g.code, getPlayer(g, g.host), g.advanced);
+  // These are the live lobby settings and storage metadata. Module admission and
+  // unowned optional components are checked separately; gameplay fields stay fresh.
+  const configuration = new Set<keyof Game>(['code', 'version', 'host', 'players', 'playerPositions',
+    'advanced', 'expansions', 'log', 'botsPending', 'botNextActionAt', 'techTokens', 'strongholdCards',
+    'homeworlds', 'nexusCards', 'discoveryEnabled', 'leaderSkills', 'ecazTreachery']);
+  const keys = [...new Set([...Object.keys(g), ...Object.keys(fresh)])] as (keyof Game)[];
+  requireRule(keys.every(key => configuration.has(key) ||
+    JSON.stringify(g[key]) === JSON.stringify(fresh[key])),
+  'Starting a base table cannot retain existing game resources, histories or continuations.');
+}
+function start(g: Game, advancedPreview = false) {
   requireRule(g.players.length >= 2, 'At least two players are needed.');
   requireRule(
     g.players.every((p) => p.ready),
     'Every player must be ready.',
   );
-  requireRule(!g.advanced, 'Advanced rules are still being implemented.');
-  requireRule(!g.homeworlds, 'Homeworld gameplay is still being implemented.');
-  requireRule(!g.nexusCards, 'Nexus card effects are still being implemented.');
-  requireRule(!g.discoveryEnabled, 'Discoveries are still being implemented.');
-  requireRule(!g.leaderSkills, 'Leader Skills are still being implemented.');
-  requireRule(
-    g.players.every((p) => faction(p.faction).expansion === 'base'),
-    'Expansion factions are still being implemented.',
-  );
-  requireRule(
-    g.expansions.length === 0,
-    'Expansion rules are still being implemented.',
-  );
+  requireRule(typeof g.advanced === 'boolean' && (!g.advanced || advancedPreview),
+    'Advanced rules are unfinished. Explicitly choose Start Advanced preview to continue.');
+  requireRule(!advancedPreview || g.advanced, 'Choose Advanced preview rules before starting that preview.');
+  const blocked = baseStartProfileBlock(g);
+  requireRule(!blocked, blocked ?? 'This rules profile is unavailable.');
+  requireFreshSetup(g);
+  requireRule(!g.techTokens || JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens()),
+    'Start with unused Tech Tokens before assigning their initial owners.');
+  requireRule(!g.strongholdCards || JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards()),
+    'Start with unused Stronghold Cards before assigning ownership.');
+  requireFreshBaseRuntime(g);
   initializeSetup(g);
+  if (advancedPreview) g.advancedPreview = true;
 }
 function skillRule<T>(operation: () => T): T {
   try {
@@ -5935,19 +6004,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   homeworldDefenseIntegrity(state);
   homeworldShipmentIntegrity(state);
   const g = structuredClone(state);
-  requireRule(
-    g.status === 'lobby' && !g.setupStage && g.turn === 1 && g.phase === 0,
-    'The audit initializer requires a fresh lobby.',
-  );
-  requireRule(
-    g.players.length >= 2 &&
-      g.players.length <= 6 &&
-      new Set(g.players.map((p) => p.id)).size === g.players.length &&
-      new Set(g.players.map((p) => p.faction)).size === g.players.length &&
-      g.players.some((p) => p.id === g.host) &&
-      g.players.every((p) => p.id && p.ready),
-    'The audit initializer requires two through six distinct ready players and an existing host.',
-  );
+  requireFreshSetup(g, homeworlds || nexus || ix || factions);
   requireRule(
     (homeworlds || nexus || ix || choam || factions || g.expansions.length === 0) &&
       (choam || factions || !g.expansions.includes('choam')) &&
@@ -5974,47 +6031,6 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       ? 'The Homeworld setup audit supports implemented deck sets without Tech Tokens or Stronghold Cards.'
       : 'The audit initializer supports base factions without expansions or optional modules.',
   );
-  requireRule(
-    !g.deck.length &&
-      !g.discard.length &&
-      !g.spiceDeck.length &&
-      !g.spiceDiscard.some((pile) => pile.length) &&
-      !g.traitorReserve?.length &&
-      g.ecazLoyalty === undefined &&
-      !g.decision &&
-      !g.response &&
-      !g.battle &&
-      !g.winner.length &&
-      g.players.every(
-        (p) =>
-          !p.hand.length &&
-          !p.traitors.length &&
-          !p.traitorChoices.length &&
-          Object.keys(p.forces).length === 0 &&
-          p.reserves === 20 &&
-          p.tanks === 0 &&
-          p.spice === 0 &&
-          p.moved === 0 &&
-          !p.shipped &&
-          !p.prediction &&
-          !p.advisorSetup &&
-          (!p.elites ||
-            ((homeworlds || nexus || ix || factions) &&
-              p.faction === 'ixians' &&
-              p.elites.reserves === 7 &&
-              p.elites.tanks === 0 &&
-              p.elites.revived === 0 &&
-              Object.keys(p.elites.forces).length === 0)),
-      ),
-    'The audit initializer cannot redeal or replace existing game pieces.',
-  );
-  requireRule(
-    Object.keys(g.playerPositions ?? {}).every((id) =>
-      g.players.some((p) => p.id === id),
-    ),
-    'Player circles must belong to seated players.',
-  );
-  normalizedPlayerPositions(g);
   initializeSetup(g);
   return normalizeAutomaticGame(g);
 }
@@ -20722,6 +20738,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
@@ -20990,6 +21007,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
@@ -22647,6 +22665,27 @@ function applyActionInner(
     return g;
   }
   if (g.status === 'lobby') {
+    if (t === 'rules') {
+      requireRule(id === g.host, 'Only the host can change the rules mode.');
+      requireRule(typeof action.advanced === 'boolean' &&
+        Object.keys(action).every(key => key === 'type' || key === 'advanced'),
+      'Choose Basic or Advanced preview rules.');
+      if (g.advanced === action.advanced) return g;
+      if (action.advanced) {
+        const blocked = baseStartProfileBlock(g);
+        requireRule(!blocked, blocked ?? 'This configuration cannot use Advanced preview.');
+      }
+      const removedStrongholds = !action.advanced && !!g.strongholdCards;
+      if (removedStrongholds) {
+        requireRule(JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards()),
+          'Only unused lobby Stronghold Cards can be cleared when choosing Basic rules.');
+        g.strongholdCards = null;
+      }
+      g.advanced = action.advanced;
+      g.players.forEach(player => (player.ready = !!player.bot));
+      log(g, `${p.name} selected ${g.advanced ? 'Advanced preview' : 'Basic'} rules.${removedStrongholds ? ' Stronghold Cards were disabled because they require Advanced rules.' : ''} Human readiness was cleared; AI seats remain ready.`);
+      return g;
+    }
     if (t === 'configureBot') {
       const positions = normalizedPlayerPositions(g);
       const quote = quoteLobbyBotConfiguration(
@@ -22785,7 +22824,10 @@ function applyActionInner(
     }
     if (t === 'start') {
       requireRule(id === g.host, 'Only the host can start the game.');
-      start(g);
+      requireRule(Object.keys(action).every(key => key === 'type' || key === 'advancedPreview') &&
+        (action.advancedPreview === undefined || action.advancedPreview === true),
+      'Start this table, or explicitly choose Advanced preview.');
+      start(g, action.advancedPreview === true);
       return g;
     }
     if (t === 'faction') {
@@ -24629,6 +24671,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
@@ -24739,6 +24782,7 @@ export function viewGame(state: Game, id: string) {
     mentat: projectedMentat(g, id),
     rihani: projectedRihani(g, id),
     advanced: g.advanced,
+    advancedPreview: g.advancedPreview === true,
     dukeVidal: g.dukeVidal
       ? { ...g.dukeVidal, leader: projectLeader(g, g.dukeVidal.leader, id) }
       : null,

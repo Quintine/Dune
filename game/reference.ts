@@ -198,7 +198,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Verification entries identify focused regression suites. Passing those checks does not certify every interaction, browser journey or complete expansion game.',
       'Development stages distinguish Missing functions, working Prototypes, Integrated functions, Verified behavior and Polished presentation. A prototype stage does not certify complete rules coverage; check the stated limits and evidence.',
       'This checklist is being extended across the rules. Features without a checklist still have a topic-level coverage label and are not implicitly complete.',
-      'Advanced and full expansion faction starts remain disabled. Development fixture coverage is not permission to start an unsupported mode.',
+      'Choose Rules → Advanced preview when creating a room, or as host in the lobby. After everyone is ready, choose Begin Advanced preview. This unfinished mode supports the six classic factions, with optional Tech Tokens (3+ players) and Stronghold Cards. Expansion starts remain disabled; preview access does not certify complete rules compliance.',
     ],
     related: [
       'setup',
@@ -1240,7 +1240,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Before any initial Traitor Cards are drawn, randomly select one of the five ordinary Ecaz Traitor Cards and set it aside face up. Everyone may inspect it. It remains outside the deck for the rest of the game, including later Traitor and Face Dancer draws.',
       'Loyalty is automatic and cannot be stopped with Karama. It creates no player choice, payment or acknowledgment. The card names a leader, but does not remove, kill, transfer or otherwise change that leader disc. Duke Vidal has no Traitor Card and is never a candidate.',
       'In new Advanced development games with Ecaz, the table displays the selected card before the Traitor choices. Inspect traitor enlarges its identity; refreshing or resuming the saved game keeps the same card. Basic games and games without native Ecaz do not use this power.',
-      'Older saved games that have already dealt their Traitor Cards retain that inventory; they do not gain a retroactive Loyalty draw. Full Advanced and expansion starts remain gated, including unfinished combinations with Leader Skills and Moritani assassination.',
+      'Older saved games that have already dealt their Traitor Cards retain that inventory; they do not gain a retroactive Loyalty draw. Ecaz Advanced and expansion starts remain gated, including unfinished combinations with Leader Skills and Moritani assassination.',
     ],
     checklist: [
       { area: 'Implementation', status: 'Partial', detail: 'One persisted native Ecaz card is selected before genuine initial dealing, excluded from setup and Nexus deck construction, and validated against all known circulating or retired Traitor locations. Older saves stay unchanged. Broader combinations remain gated.', evidence: ['game/ecaz-loyalty.ts', 'game/engine.ts'] },
@@ -1955,7 +1955,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Each player receives four private traitor choices and keeps one. Harkonnen keeps all four automatically. Every remaining selection must finish before starting spice and forces are placed. Your starting Treachery hand is still empty.',
       'Starting spice and fixed forces are then placed. Fremen distributes ten forces among Sietch Tabr, False Wall South and False Wall West, choosing their printed sectors. Basic Bene Gesserit starts with one fighter in Polar Sink. In Advanced setup, Bene Gesserit instead chooses a printed territory and sector after Fremen placement; its advisor becomes a fighter when alone.',
       'After all starting force choices, each player receives one private Treachery Card and Harkonnen receives two. Dealing and entry into the first Storm phase are automatic. The table names the player whose setup choice is still required; there is no separate confirmation for dealing.',
-      'Older saved tables that already received their cards keep those cards and their existing unfinished choices. Returning to a table does not restart setup or deal another hand. Advanced and expansion starts remain unavailable while their remaining rules and interactions are completed.',
+      'Older saved tables that already received their cards keep those cards and their existing unfinished choices. Returning to a table does not restart setup or deal another hand. The six classic factions can start Advanced preview from the lobby while remaining rules and interactions are completed. Expansion starts remain unavailable.',
       'The browser keeps a private seat cookie. Returning to the same room in that browser restores your seat. Separate players should use separate browsers or profiles.',
     ],
     related: ['privacy', 'ai-players', 'storm', 'implementation-checklist'],
@@ -2762,7 +2762,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         ? 'Partial'
         : 'Planned',
       summary:
-        'Advanced faction rules. Some powers have tested engine support; advanced table starts remain disabled until the full rules are ready.',
+        'Advanced faction rules. The six classic factions can use the unfinished Advanced preview; complete rules compliance remains under verification.',
       steps: rules.advanced,
       related: [`faction-${id}`, 'advanced-combat', ...(id === 'ecaz' ? ['ecaz-loyalty'] : [])],
     }),
@@ -2944,7 +2944,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'An already-dead named leader remains a legal reveal, awarding no death or spice. During Mentat Pause, set the revealed card aside face up as a marker and draw a new Traitor Card. You can use this advantage only once against each faction in the game.',
       'The printed rule says a normal traitor reveal loses this advantage, but its duration remains unresolved. The preview guards further assassination after a normal call. Karama has no effect against Assassinate Leaders.',
       'If Harkonnen has captured your own leader and you hold its Traitor Card, you may call that traitor normally; you may not use Assassinate Leaders on that basis.',
-      'Terror Assassination chooses a random leader when its token is triggered. It does not use this battle-loss condition, different-leader Traitor Card or once-per-faction allowance. Advanced starts and Moritani starts remain unavailable.',
+      'Terror Assassination chooses a random leader when its token is triggered. It does not use this battle-loss condition, different-leader Traitor Card or once-per-faction allowance. Moritani starts remain unavailable in Basic and Advanced.',
     ],
     checklist: [
       {area:'Implementation',status:'Partial',detail:'Explicit Advanced Moritani/base-opponent preview before any normal traitor call; native disc deaths, printed bounty, dead-target zero bounty and exact Mentat replacement.',evidence:['game/moritani-assassinate.ts','game/engine.ts']},
@@ -2968,7 +2968,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary:
       'Spice-supported combat, elite units, casualty selection and Kwisatz Haderach.',
     steps: [
-      'The combat engine now distinguishes ordinary and elite tokens, accepts half-strength dials and seals spice support with the battle plan. Advanced table starts remain disabled while other advanced rules are built.',
+      'The combat engine now distinguishes ordinary and elite tokens, accepts half-strength dials and seals spice support with the battle plan. The unfinished Advanced preview is available for the six classic factions while other Advanced rules are completed.',
       'One spice supports one token at its full strength. Unsupported tokens fight at half strength. Fremen uses full strength without spice; Sardaukar counts as ordinary against Fremen.',
       'After resolution, casualties must match both the dial and spice spent. One legal ordinary/elite allocation settles automatically; several legal allocations ask the winner to choose. The losing army is destroyed. Only a traitor winner avoids its committed spice payment.',
       'Elite tokens are tracked in reserves, territories and tanks. Normal revival, Ghola and the Emperor’s extra revival all share the limit of one elite revival per faction per turn.',
@@ -3005,7 +3005,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary:
       'Two spice piles, Fremen forecasts, half storm losses and additional worms.',
     steps: [
-      'These phase rules have engine support and focused tests. Advanced table starts remain disabled while the other advanced powers are completed.',
+      'These phase rules have engine support and focused tests. The six classic factions can start the unfinished Advanced preview while remaining powers are completed.',
       'Resolve blow A, its worms, Harvester window, Nexus and rides, then do the same for blow B. Each pile uses its own previous discard. First-turn worms are set aside and shuffled back only after both blows finish.',
       'After the first storm, Fremen privately learns a random storm card for the next turn. A foresight cancellation hides that card from Fremen without changing its eventual distance. Weather Control may replace a revealed card distance before movement.',
       'Fremen storm losses are half the exposed group, rounded up. Choose ordinary and Fedaykin casualties when more than one combination is possible. A legal reserve shipment into storm applies this loss only to the arriving group.',
@@ -3039,7 +3039,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'When neither Guild nor Fremen is playing and nobody has reached the normal target, compare individual qualifying stronghold counts. Every player tied for the highest count wins. A correct Bene Gesserit prediction can replace this stronghold win.',
       'With tech tokens enabled, owning all three adds one stronghold. One player must hold all three, even in an alliance. If several sides reach their target at the same check, they share a normal win before any correct prediction replaces it.',
       'The table’s Stronghold victory progress shows current qualifying territories, a complete Tech Token set, Ecaz joint occupation and Fremen’s final-turn conditions. Allied Ecaz and Fremen may co-occupy Sietch Tabr without blocking that special win; solitary or non-allied Ecaz does not receive this exception. Tech Tokens cannot supply a jointly occupied territory. These public counts do not resolve a private prediction or award victory before the proper checkpoint.',
-      'Other expansion additions to victory remain in development. Advanced and expansion faction starts remain disabled.',
+      'Other expansion additions to victory remain in development. Advanced preview supports the six classic factions; expansion starts remain disabled.',
     ],
     example:
       'At the final turn with neither Guild nor Fremen, two players each hold two qualifying strongholds and a third holds one. The two leaders of the count share the win.',
@@ -3090,7 +3090,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The mobile card copies a currently controlled stronghold, even if another faction still holds that location’s card. Holding a card after leaving its location does not itself make that location an eligible copy. The choice is public and fixed before battle plans; a sole eligible advantage is announced automatically.',
       'Arrakeen pays only for actual support and creates no personal cash. CHOAM force-payment income includes the bank contribution, subject to its normal traitor and donor exclusions. Carthag does not protect an empty or Worthless defense, stop Poison Tooth, or remove a Shield’s Lasgun explosion risk.',
       'Sietch Tabr uses the opposing dial, excluding leaders and other bonuses. A single traitor victory qualifies; mutual destruction does not. Tuek pays after an ordinary loss or a single traitor outcome as well as a win; a double traitor gives neither faction spice. Habbanya also decides a tied Stone Burner comparison.',
-      'The six effects, public ownership and pre-plan choice are integrated in development games. Complete Advanced games and every expansion interaction remain under verification, so public Advanced starts remain unavailable.',
+      'The six effects, public ownership and pre-plan choice are integrated in development games. Enable Stronghold Cards in an Advanced preview lobby. Complete Advanced compliance and every expansion interaction remain under verification.',
     ],
     example:
       'You hold Arrakeen’s card and support four forces. The bank pays two spice; you and any permitted ally cover the remaining two. Leaving Arrakeen later does not transfer its card until turn end.',
@@ -3190,7 +3190,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A retained captive is available only to Harkonnen. Its territorial use restrictions remain. It can turn traitor, returns to its faction if it survives its one battle, and enters its original faction’s tanks if killed.',
       'When all native Harkonnen leaders are dead, return every unused captive immediately. A new captive retained in that situation also returns immediately.',
       'Only Harkonnen and the original owner know a concealed living captive’s identity. Tleilaxu can inspect a concealed executed leader. Using a captive in a revealed battle makes its identity public.',
-      'The capture engine and private views have focused tests. Advanced table starts remain disabled while other advanced rules and expansion interactions are completed.',
+      'The capture engine and private views have focused tests. The six classic factions can start Advanced preview; remaining Advanced rules and expansion interactions are unfinished.',
     ],
     related: [
       'advanced-harkonnen',
@@ -3224,7 +3224,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Tleilaxu receive a decision before another faction’s normal revival completes, whether or not they hold Karama. Decline to continue the revival, or spend a real Karama once per game to prevent that faction’s normal force and leader revivals for the current turn. A stopped attempt spends no spice, returns no pieces and consumes no elite or extra-revival quota.',
       'This includes negotiated leaders, KH and Emperor-funded allied extra forces. The Emperor remains the payer when an extra revival is allowed. Hidden leader identities and prices are not added to the public stop decision. Ghola treachery and the Emperor’s special Karama currently remain separate from the normal-revival restriction.',
       'The printed Tleilaxu power is brief. Its full-turn scope, precise timing and card/special-power exceptions remain provisional pending the complete primary-source audit. These choices are tested implementation behavior, not certification of the full expansion rules.',
-      'Remaining expansion special powers, plus further timing and expansion interaction audits, remain unfinished. Advanced table starts remain disabled.',
+      'Remaining expansion special powers, plus further timing and expansion interaction audits, remain unfinished. Advanced preview is available for the six classic factions.',
       'Richese’s special purchase is available in development tables: spend a Karama and three spice to choose privately from the cache, with separate Emperor income and explicit full-hand/final-cache guards. See its acquisition guide for current controls and limits.',
     ],
     related: [
@@ -3640,7 +3640,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'When another faction ships, moves or worm rides into your fighters, immediately choose whether to become advisors. The choice opens a Karama response. Repeated entry can offer a new choice.',
       'After another faction’s off-planet shipment, choose a free force in the Polar Sink or an accompanying force at the shipment destination. An accompanying advisor group cannot flip to fighters in that turn while other factions remain.',
       'Before the first shipment, choose eligible advisor territories to prepare for battle. Each chosen flip has a Karama response. Advisors cannot prepare against an ally or where storm prevents the battle.',
-      'The engine and these choices have focused tests. The full advisor timing audit, forced-flip cancellation and expansion interactions remain unfinished; advanced table starts are disabled.',
+      'The engine and these choices have focused tests. Advanced preview is available for the six classic factions; the full advisor timing audit, forced-flip cancellation and expansion interactions remain unfinished.',
     ],
     related: ['faction-beneGesserit', 'movement', 'battle', 'victory'],
   },

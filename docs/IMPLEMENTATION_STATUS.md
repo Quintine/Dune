@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 21 September 2026 — Selectable Advanced preview
+
+The user-authorized [Advanced preview](ADVANCED_PREVIEW.md) now has room-creation
+and host lobby selectors, renewed readiness after mode changes, an explicit
+preview start and a persistent unfinished-rules notice. It uses genuine setup
+for two through six classic factions, with the existing Tech Token and Stronghold
+Card options. Saved mode integrity, fresh-piece checks, authenticated recovery
+and concurrent-start tests retain authority, custody and privacy. All 57 base
+rosters complete setup with each of four existing legal AI profiles. Full rules
+compliance, expansion starts and publication remain gated; final verification
+evidence stays in the private checkpoint report and Git message.
+
 ## 21 September 2026 — Harkonnen forced exchange return
 
 Special-Karama exchanges now return automatically when the entire combined hand

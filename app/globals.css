@@ -473,6 +473,10 @@ input[data-slot='input'] {
   line-height: 1.8;
   color: #a8af9c;
 }
+.development-note.advanced-preview-note {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
 .development-note {
   font-size: 11px;
   line-height: 1.6;

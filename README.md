@@ -1,6 +1,6 @@
 # Dune — Arrakis Table
 
-An unofficial multiplayer adaptation of Gale Force Nine’s classic 2019 Dune, built with React, TypeScript, Vinext, and Cloudflare Workers/D1. **Development is ongoing; this is not yet a complete rules implementation.** Advanced and unfinished expansion starts remain disabled. Start with [current status](docs/CURRENT_STATUS.md) for implemented systems, remaining requirements and release gates; detailed historical evidence remains in the [implementation log](docs/IMPLEMENTATION_STATUS.md).
+An unofficial multiplayer adaptation of Gale Force Nine’s classic 2019 Dune, built with React, TypeScript, Vinext, and Cloudflare Workers/D1. **Development is ongoing; this is not yet a complete rules implementation.** The six classic factions can use a clearly labeled **Advanced preview**; unfinished expansion starts remain disabled. Start with [current status](docs/CURRENT_STATUS.md) for implemented systems, remaining requirements and release gates; detailed historical evidence remains in the [implementation log](docs/IMPLEMENTATION_STATUS.md).
 
 ## Run locally
 
@@ -13,6 +13,11 @@ npm run dev -- --host 0.0.0.0
 ```
 
 Open `http://localhost:3000`. Create a room, share its eight-character invitation, and add human or AI seats. The host can configure Easy, Medium, Hard and Brutal AI opponents. Current calibration demonstrates a substantially weaker Easy policy; it does not yet demonstrate a consistent ordering among the upper three levels.
+
+For Advanced play, choose **Rules → Advanced preview** before creating a room,
+or use the same selector as host in an existing base-game lobby. Everyone must
+ready again after changing rules, then the host chooses **Begin Advanced preview**.
+This mode is unfinished; see [preview scope and limits](docs/ADVANCED_PREVIEW.md).
 
 Before starting, open **Configure** on an AI seat to change its difficulty,
 faction or player circle without replacing it. Changes save immediately and
