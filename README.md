@@ -81,6 +81,10 @@ Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).
 
+After both battle plans are revealed, **Compare revealed battle plans** opens
+the shared dials, leader portraits and played card faces. Inspect any component,
+then return to the pending decision. See [battle components](docs/REVEALED_BATTLE_COMPONENTS.md).
+
 In **Your private hand**, search card names, filter by printed category or change
 the display order. **Show all cards** clears filters. Inspectors and card actions
 stay with each physical card. See [hand browsing](docs/HAND_BROWSING.md).

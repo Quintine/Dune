@@ -2242,6 +2242,28 @@ export const RULE_TOPICS: RuleTopic[] = [
     related: ['bidding', 'movement', 'faction-guild', 'card-karama'],
   },
   {
+    id: 'revealed-battle-components',
+    title: 'Compare revealed battle components',
+    category: 'Cards',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'After both plans are public, compare their dials, leaders and played card faces in one shared area.',
+    steps: [
+      'Use Compare revealed battle plans beside your next decision. Attacker and defender are shown in a stable order with the exact force dial and the played leader’s printed strength. These numbers alone are not the final battle score.',
+      'Weapon and original-defense cards show their names, printed categories and gameplay guidance. A Cheap Hero appears in the leader slot. None marks an empty slot. Added after reveal is separate from the original defense; Diplomat and other effect details explain changes without replacing the recorded plan.',
+      'Inspect card or Inspect leader enlarges that public component. Return to battle decisions takes you back to the pending controls. Inspection never plays a card, changes a dial or submits a Traitor call.',
+      'The shared display stays available while another player owns a post-reveal choice. It does not appear while either plan remains sealed. Private Atreides inspection and unplayed hand cards stay on their separate authorized surfaces.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Implemented', detail: 'One read-only display consumes existing revealed projections, exact used card identities and authorized leaders. No new engine or saved-state behavior.', evidence: ['components/revealed-battle.tsx', 'components/revealed-plan-pieces.tsx'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'Public faces, exact dials, direct enlarged inspection and navigation to the decision controls remain available across decision ownership.', evidence: ['components/game-table.tsx', 'app/globals.css'] },
+      { area: 'AI', status: 'Implemented', detail: 'The same public components display an AI plan after normal revelation; presentation adds no AI decision or strategy change.', evidence: ['components/revealed-battle.tsx'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'The guide distinguishes public disclosure, printed values, original and late slots, private insight and decision ownership.', evidence: ['game/reference.ts', 'docs/REVEALED_BATTLE_COMPONENTS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Sealed/revealed actions, used-card privacy, JSON rendering, empty/hero/late slots and shared display during another player’s choice have focused tests. Browser and final checkpoint evidence are recorded separately; full visual and interaction acceptance remain open.', evidence: ['tests/revealed-plan-pieces.test.tsx', 'tests/kwisatz.test.ts', 'tests/diplomat-defense-controls.test.tsx', 'tests/spice-banker-controls.test.tsx'] },
+    ],
+    related: ['battle', 'battle-cards', 'kwisatz-haderach', 'implementation-checklist'],
+  },
+  {
     id: 'battle-cards',
     title: 'Weapons, defenses and winning cards',
     category: 'Cards',

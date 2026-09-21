@@ -1562,10 +1562,11 @@ export function GameTable({
             </section>
           )}
         </section>
-        <aside className="action-panel">
+        <aside className="action-panel" id="table-decisions" tabIndex={-1}>
           <div className="eyebrow">
             {g.status === 'finished' ? 'FINAL OUTCOME' : 'YOUR NEXT DECISION'}
           </div>
+          {g.battle?.revealed && <a className="battle-display-link" href="#revealed-battle-plans">Compare revealed battle plans</a>}
           <PrivateBattlePlan game={g} />
           <NexusCards game={g} act={act} busy={busy} />
           <Recruits game={g} act={act} busy={busy} />
@@ -2605,7 +2606,6 @@ export function GameTable({
                 />
               ) : g.decision.kind === 'stoneBurner' ? (
                 <>
-                  <RevealedBattle game={g} />
                   <h3>Choose Stone Burner’s effect</h3>
                   <p className="muted">
                     Choose whether both leaders die or surviving leaders
@@ -2630,17 +2630,14 @@ export function GameTable({
                 </>
               ) : g.decision.kind === 'harassWithdraw' ? (
                 <>
-                  <RevealedBattle game={g} />
                   <HarassWithdrawChoice key={g.decision.event} game={g} act={act} busy={busy} />
                 </>
               ) : g.decision.kind === 'diplomatDefense' ? (
                 <>
-                  <RevealedBattle game={g} />
                   <DiplomatDefense game={g} act={act} busy={busy} />
                 </>
               ) : g.decision.kind === 'poisonTooth' ? (
                 <>
-                  <RevealedBattle game={g} />
                   <p className="muted">
                     Choose after reviewing both plans. Activating attacks both
                     leaders, including yours. Chemistry as a defense protects;
@@ -2964,7 +2961,6 @@ export function GameTable({
                 </>
               ) : g.decision.kind === 'homeworldDefense' ? (
                 <>
-                  <RevealedBattle game={g} />
                   <h3>Late poison defense</h3>
                   <p className="muted">
                     The Traitor window is complete. You may add Portable Snooper
@@ -4403,7 +4399,6 @@ export function GameTable({
                       strength in this battle.
                     </p>
                   )}
-                  {g.battle.revealed && <RevealedBattle game={g} />}
                   <NexusInspectionHistory game={g} />
                   {(!g.battle.preLeader || g.battle.preLeader.closed) && (
                     <BattlePromises
@@ -4832,6 +4827,7 @@ export function GameTable({
           )}
         </aside>
       </div>
+      <RevealedBattle game={g} />
       {g.inflation && (
         <p className="notice" role="status">
           Inflation · {g.inflation.side === 'double' ? 'DOUBLE' : 'CANCEL'} ·{' '}

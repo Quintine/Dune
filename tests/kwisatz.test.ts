@@ -14,7 +14,7 @@ import { registerHooks } from 'node:module';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 const aliases = registerHooks({ resolve(specifier, context, next) {
-  return next(specifier === 'next/image' ? 'vinext/shims/image' : specifier, context);
+  return next(specifier === 'next/image' ? 'vinext/shims/image' : specifier === 'next/link' ? 'vinext/shims/link' : specifier, context);
 } });
 const { RevealedBattle } = await import('../components/revealed-battle');
 const { PrivateBattlePlan } = await import('../components/private-battle-plan');

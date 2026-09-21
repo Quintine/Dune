@@ -1,5 +1,11 @@
 # Component inventory and verification ledger
 
+**Revealed battle components, 21 September 2026:** public plans now display
+physical dials, leader portraits/printed strength and readable used-card faces,
+with direct inspectors and separate late-defense slots. One shared table area
+remains visible across decision ownership; sealed and unplayed identities remain
+private. See [scope and evidence](REVEALED_BATTLE_COMPONENTS.md).
+
 **Ecaz Loyalty, 21 September 2026:** one existing native Traitor Card now has a
 separate face-up public location in new Advanced Ecaz setup. Its canonical
 identity and portrait use the enlarged Traitor inspector; it is excluded from

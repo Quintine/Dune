@@ -6,34 +6,46 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `c2f24fc`, [public faction sheets](FACTION_SHEETS.md).
-Types, lint, **5,000 offline tests** and production build passed. Public table
-inspection, all twelve gallery entries, Basic/Advanced preview, keyboard and
-mobile layouts, internal help and refresh passed bounded browser checks. All
-1,539 opening rooms, 3,259 human seats and auxiliary rows stayed unchanged.
-Screenshot capture timed out; full visual acceptance remains open. The healthy
-server was reused. Prior checkpoints include `e3cfd82` for hand browsing,
-`14a7800` for draw counts and `537da4a` for force inspection.
+Latest delivered checkpoint: `de26aaf`, [Ecaz Loyalty](ECAZ_LOYALTY.md).
+Types, lint, **5,012 offline tests**, production build and **49 HTTP tests** passed.
+Six genuine faction-game samples completed with no rejected actions. A fresh
+Advanced Ecaz/Harkonnen browser setup preserved the public set-aside card through
+Traitor/force choices and refresh. All 1,539 opening rooms, 3,259 human seats and
+auxiliary rows stayed unchanged; isolated QA/HTTP fixtures brought the baseline
+to 1,579 rooms and 3,347 human seats. Screenshot capture timed out. The healthy
+server was reused. Earlier checkpoints include `c2f24fc` for public faction sheets
+and `e3cfd82` for private-hand browsing.
 
-Current work: [Ecaz Loyalty](ECAZ_LOYALTY.md) selects one native Traitor Card
-before genuine Advanced dealing, keeps it publicly set aside through setup and
-Nexus replacement draws, and adds enlarged inspection and internal guidance.
-Focused custody, public-view, all-profile legal setup and JSON checks accompany
-independent review, browser checks, final check/build/HTTP and saved preservation.
-Legacy dealt games remain unchanged; combined Skills/assassination rosters and
-complete faction acceptance remain gated.
+Current work: [revealed battle components](REVEALED_BATTLE_COMPONENTS.md) adds
+public dials, leader portraits and readable used-card faces in one shared area,
+with direct inspectors and navigation to pending decisions. Sealed plans and
+private hands stay separate. Focused checks, independent review, browser QA and
+final check/build/saved-preservation evidence accompany this presentation work.
 The separate Bureaucrat/Emperor gift question is pending.
 The `8f7a62c` policy checkpoint removed usage checks/cutoffs and deferred AI
 refinement until feature completion, followed by three adjacent 75% targets.
 
-A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
-cross recorded pending rulings, with the independent Loyalty setup omission now
-being connected. Continue independent features rather than
-inventing answers. The [platform audit](AUTOPILOT.md#platform-audit-20-september-2026)
-found no supported Sites scheduler or Durable Object provisioning contract.
-Durable unattended bot resumption remains blocked on that capability; current
-request/reconnect continuation does not establish it. Continue independent
-player-facing features and integration while preserving pending rules questions.
+The next concrete gameplay milestone is **Basic Moritani plus Leader Skills**
+with base opponents and no other optional modules. A bounded current-code review
+found no new Moritani-specific ruling, but widening setup alone is insufficient:
+coordinate Banker, Diplomat, Sandmaster, Smuggler, Bureaucrat, Planetologist and
+battle/victory public-profile guards, keep the full fourteen-card deck, and test
+Terror leader death, skill return and revival through real continuations. Do not
+hide unsupported cards after a random deal or claim complete combination support.
+This provides a concrete dependency-ordered integration target for the next pass.
+
+The reviewed remaining native Ecaz/Moritani effects, Duke revival and Richese
+empty-cache auction arithmetic still cross recorded source questions; Loyalty is
+now connected. For later Tleilaxu/Skills integration, create replacement offers
+at successful native revival commitment: the current automatic response loop can
+revive after the outer custody observer. This is a confirmed dependency in the
+currently gated roster, not a demonstrated supported-profile defect; no synthetic
+profile was enabled or labeled verified in this pass.
+
+The [platform audit](AUTOPILOT.md#platform-audit-20-september-2026) found no supported
+Sites scheduler or Durable Object provisioning contract. Durable unattended bot
+resumption remains blocked on that capability; request/reconnect continuation
+does not establish it. Preserve pending rules questions and mode gates.
 
 The connected [Harass & Withdraw prototype](HARASS_WITHDRAW_RUNTIME.md) supports either
 battle-card slot, private category inspections, exact undialed normal/elite

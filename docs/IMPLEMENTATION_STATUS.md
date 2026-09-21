@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 21 September 2026 — public battle component display
+
+Revealed plans now share one table area with exact dials, played leader portraits
+and readable card faces. Direct inspection and navigation preserve pending
+decisions; both players retain access when a post-reveal choice belongs to one
+seat. Sealed plans and unused hands stay out of this display.
+[Battle components](REVEALED_BATTLE_COMPONENTS.md) records scope and evidence;
+focused tests and independent review accompany private check/build, browser,
+preservation and Git results. No game rule, saved field or AI strategy changed.
+
 ## 21 September 2026 — Advanced Ecaz Loyalty
 
 Genuine Advanced Ecaz setup now randomly sets one native Traitor Card aside face

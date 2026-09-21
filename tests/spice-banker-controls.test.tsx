@@ -17,7 +17,7 @@ import { spiceBankerGame } from './spice-banker-fixture';
 const aliases = registerHooks({
   resolve(specifier, context, next) {
     return next(
-      specifier === 'next/image' ? 'vinext/shims/image' : specifier,
+      specifier === 'next/image' ? 'vinext/shims/image' : specifier === 'next/link' ? 'vinext/shims/link' : specifier,
       context,
     );
   },

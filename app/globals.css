@@ -946,18 +946,51 @@ footer {
   font-size: 15px;
   color: #e0ba75;
 }
-.revealed-plans > div {
+.revealed-plans { min-width: 0; padding: 20px; scroll-margin-top: 16px; }
+.revealed-plan-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+.battle-display-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; line-height: 1.5; text-decoration: underline; margin: 4px 0; }
+#table-decisions { scroll-margin-top: 16px; }
+.revealed-plans-help { font-size: 16px !important; line-height: 1.6; }
+.revealed-plans-help a { text-decoration: underline; }
+.revealed-plan {
+  min-width: 0;
   border: 1px solid #70633f;
-  padding: 14px;
-  margin: 10px 0;
-  font-size: 14px;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  background: #181f19;
 }
-.revealed-plans span {
-  display: block;
-  font-size: 12px;
-  color: #b5bca6;
-  margin-top: 8px;
+.revealed-plan > h4 { margin: 0 0 12px; font-size: 20px; overflow-wrap: anywhere; }
+.revealed-plan-detail { display: block; font-size: 16px; line-height: 1.6; color: #d0d5c7; margin: 8px 0; }
+.revealed-plan-pieces { display: grid; gap: 14px; margin: 16px 0; min-width: 0; }
+.revealed-plan-leader { display: flex; flex-wrap: wrap; align-items: stretch; gap: 14px; min-width: 0; }
+.revealed-dial {
+  flex: 0 0 116px; align-self: center; width: 116px; height: 116px; margin: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 5px double #c5a66d; border-radius: 50%;
+  background: radial-gradient(circle at 38% 28%, #394331, #11170f);
+  box-shadow: inset 0 0 0 5px #222b1d;
 }
+.revealed-dial dt { font-size: 14px; color: #e1d2b3; }
+.revealed-dial dd { margin: 0; font: 36px/1.2 Georgia, serif; color: #fff0c9; }
+.revealed-plan-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 14px; }
+.revealed-piece {
+  min-width: 0; display: flex; flex-direction: column; gap: 10px; padding: 16px;
+  border: 1px solid #a18b62; border-radius: 12px; background: linear-gradient(145deg, #35352a, #151b16);
+}
+.revealed-piece-weapon { background: linear-gradient(145deg, #512f28, #211b19); }
+.revealed-piece-defense { background: linear-gradient(145deg, #284544, #18231f); }
+.revealed-piece-leader { background: linear-gradient(145deg, #4b3c23, #221e15); }
+.revealed-piece-utility { background: linear-gradient(145deg, #38344b, #1d1d26); }
+.revealed-piece-empty { border-style: dashed; background: #171c17; }
+.revealed-plan-leader > .revealed-piece { flex: 1 1 210px; }
+.revealed-piece .revealed-piece-label { margin: 0; font-size: 14px !important; line-height: 1.5; color: #ebd4a4; }
+.revealed-piece h4 { margin: 0; font: 22px/1.25 Georgia, serif; color: #fff1d3; overflow-wrap: anywhere; }
+.revealed-piece .revealed-piece-rules { margin: 0; font-size: 16px !important; line-height: 1.6; color: #eee5d2; }
+.revealed-piece > button { margin-top: auto; align-self: stretch; min-height: 44px; }
+.revealed-leader { display: flex; flex-flow: row wrap; align-items: center; }
+.revealed-leader > div { flex: 1 1 120px; min-width: 0; }
+.revealed-leader > button { flex: 1 0 100%; }
 .prescience {
   display: grid;
   grid-template-columns: 1fr 1fr;

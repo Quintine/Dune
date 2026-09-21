@@ -1,9 +1,11 @@
 import type { GameView } from '@/game/engine';
+import Link from 'next/link';
 import { faction } from '@/game/catalog';
 import { leaderStrengthLabel } from '@/game/cards';
 import { isStoneBurner } from '@/game/battle-cards';
 import { stoneBurnerComparison } from '@/game/stone-burner';
-import { BattleComponentInspection } from './battle-component-inspection';
+import { RevealedPlanPieces } from './revealed-plan-pieces';
+import { KwisatzInspector } from './kwisatz-inspector';
 export function RevealedBattle({ game }: { game: GameView }) {
   const battle = game.battle;
   if (!battle?.revealed) return null;
@@ -32,8 +34,14 @@ export function RevealedBattle({ game }: { game: GameView }) {
         id)
       : 'None';
   return (
-    <div className="revealed-plans" aria-label="Revealed battle plans">
-      {Object.entries(battle.plans).map(([id, plan]) => {
+    <section className="revealed-plans" id="revealed-battle-plans" tabIndex={-1} aria-label="Revealed battle plans">
+      <h3>Revealed battle plans</h3>
+      <a className="battle-display-link" href="#table-decisions">Return to battle decisions</a>
+      <p className="revealed-plans-help">Both plans are public. Inspect any played component; use the decision controls to resolve the battle. <Link href="/rules?topic=revealed-battle-components#revealed-battle-components">Component guide</Link> · <Link href="/rules?topic=battle#battle">Battle rules</Link></p>
+      <div className="revealed-plan-pair">
+      {[battle.attacker, battle.defender].map((id) => {
+        const plan = battle.plans[id];
+        if (!plan) return null;
         const leader = game.allLeaders.find((l) => l.id === plan.leader);
         const diplomat =
           battle.diplomatDefense?.player === id ? battle.diplomatDefense : null;
@@ -46,32 +54,30 @@ export function RevealedBattle({ game }: { game: GameView }) {
           ),
         ].sort((a, b) => a - b);
         return (
-          <div key={id}>
-            <b>{game.players.find((p) => p.id === id)?.name}</b>
-            <span>
+          <section className="revealed-plan" key={id} aria-label={`${id === battle.attacker ? 'Attacker' : 'Defender'} plan`}>
+            <h4>{game.players.find((p) => p.id === id)?.name} · {id === battle.attacker ? 'Attacker' : 'Defender'}</h4>
+            <span className="revealed-plan-detail">
               Dial {plan.dial}
               {game.advanced ? ` · ${plan.support} spice support` : ''}
               {!!plan.allyPayment && ` (${plan.allyPayment} from CHOAM)`}
             </span>
             {!!plan.bankerSpice && (
-              <span>Spice Banker: {plan.bankerSpice} spice committed</span>
+              <span className="revealed-plan-detail">Spice Banker: {plan.bankerSpice} spice committed</span>
             )}
             {battle.native === id && !battle.cards.some(isStoneBurner) && (
-              <span>
+              <span className="revealed-plan-detail">
                 Native Homeworld bonus: +{battle.nativeBattleStrength} to the
                 battle score, separately from the dial
               </span>
             )}
-            <span>Leader: {name(plan.leader)}</span>
             {plan.kwisatz && (
-              <span>
+              <span className="revealed-plan-detail">
                 Kwisatz Haderach · +2 if leader survives · protected from
                 traitors
               </span>
             )}
-            <span>Weapon: {name(plan.weapon)}</span>
             {undialed.length > 0 && (
-              <span>
+              <span className="revealed-plan-detail">
                 Stone Burner undialed tokens: {undialed.join(' or ')}
                 {undialed.length > 1
                   ? ' (possible counts before casualty choice)'
@@ -79,7 +85,7 @@ export function RevealedBattle({ game }: { game: GameView }) {
               </span>
             )}
             {battle.stoneBurner[id] && (
-              <span>
+              <span className="revealed-plan-detail">
                 Stone Burner:{' '}
                 {battle.stoneBurner[id] === 'kill'
                   ? 'both leaders die'
@@ -88,49 +94,32 @@ export function RevealedBattle({ game }: { game: GameView }) {
               </span>
             )}
             {battle.poisonTooth[id] !== undefined && (
-              <span>
+              <span className="revealed-plan-detail">
                 Poison Tooth: {battle.poisonTooth[id] ? 'activated' : 'unused'}
               </span>
             )}
-            <span>Defense in original plan: {name(plan.defense)}</span>
             {diplomat?.stage === 'copied' && diplomat.card && (
-              <span>
+              <span className="revealed-plan-detail">
                 Diplomat: {name(diplomat.card)} copies {name(diplomat.source)} ·
                 discard after battle
               </span>
             )}
             {diplomat?.stage === 'declined' && (
-              <span>Diplomat: defense copy declined</span>
+              <span className="revealed-plan-detail">Diplomat: defense copy declined</span>
             )}
-            {battle.lateDefense[id] && (
-              <span>Added after reveal: {name(battle.lateDefense[id])}</span>
-            )}
-            <BattleComponentInspection
-              kwisatz={plan.kwisatz}
-              playerName={
-                game.players.find((p) => p.id === id)?.name ?? 'Player'
-              }
-              cards={battle.cards.filter((card) =>
-                [
-                  plan.leader,
-                  plan.weapon,
-                  plan.defense,
-                  battle.lateDefense[id],
-                ].includes(card.id),
-              )}
-              leader={
-                leader
-                  ? {
-                      name: leader.name,
-                      factionName: faction(leader.faction).name,
-                      strength: leaderStrengthLabel(leader),
-                    }
-                  : undefined
-              }
+            <RevealedPlanPieces
+              dial={plan.dial}
+              leader={leader ? { id: leader.id, name: leader.name, factionName: faction(leader.faction).name, strength: leaderStrengthLabel(leader) } : undefined}
+              leaderCard={battle.cards.find(card => card.id === plan.leader)}
+              weapon={battle.cards.find(card => card.id === plan.weapon)}
+              defense={battle.cards.find(card => card.id === plan.defense)}
+              lateDefense={battle.cards.find(card => card.id === battle.lateDefense[id])}
             />
-          </div>
+            {plan.kwisatz && <KwisatzInspector context="plan" />}
+          </section>
         );
       })}
-    </div>
+      </div>
+    </section>
   );
 }
