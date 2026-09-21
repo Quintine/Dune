@@ -73,6 +73,10 @@ Use **Inspect faction** under any player for public powers and alliance guidance
 The sheet starts in the table’s rules mode and offers an Advanced preview without
 changing the game. Browse all twelve in the [faction-sheet gallery](docs/FACTION_SHEETS.md).
 
+In new Advanced Ecaz development games, **Loyalty** shows the publicly set-aside
+Traitor Card before dealing. Inspect it without making a game choice; its identity
+persists through refresh. See [Ecaz Loyalty](docs/ECAZ_LOYALTY.md).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

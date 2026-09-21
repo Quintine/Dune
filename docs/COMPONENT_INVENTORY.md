@@ -1,5 +1,11 @@
 # Component inventory and verification ledger
 
+**Ecaz Loyalty, 21 September 2026:** one existing native Traitor Card now has a
+separate face-up public location in new Advanced Ecaz setup. Its canonical
+identity and portrait use the enlarged Traitor inspector; it is excluded from
+all subsequent draw inventories without changing the corresponding leader disc.
+Old dealt games remain unchanged. See [source and evidence](ECAZ_LOYALTY.md).
+
 **Faction sheets, 21 September 2026:** every table player has an enlarged public
 faction guide, with Basic/Advanced preview and an internal twelve-faction gallery.
 Shared text and bundled Homeworld artwork preserve public identity; no private

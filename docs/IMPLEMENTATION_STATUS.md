@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 21 September 2026 — Advanced Ecaz Loyalty
+
+Genuine Advanced Ecaz setup now randomly sets one native Traitor Card aside face
+up before dealing. A persisted public identity, enlarged inspector and automatic
+notice connect to initial setup, Tleilaxu Face Dancers and Nexus replacements.
+Physical census and invalid-state checks preserve its separate custody; older
+already-dealt games stay unchanged. [Ecaz Loyalty](ECAZ_LOYALTY.md) records official
+sources, sequencing interpretation, focused tests and combined-module limits.
+Independent review accompanies private check/build/HTTP, genuine faction samples,
+browser and saved-preservation evidence. AI strategy and release gates remain unchanged.
+
 ## 21 September 2026 — public faction-sheet inspection
 
 Every table player now has a public faction inspector and the internal guide

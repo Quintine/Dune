@@ -1231,6 +1231,27 @@ export const RULE_TOPICS: RuleTopic[] = [
     }),
   ),
   {
+    id: 'ecaz-loyalty',
+    title: 'Ecaz Loyalty: public Traitor Card',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    summary: 'Advanced Ecaz sets one randomly chosen native Traitor Card aside face up before the initial deal.',
+    steps: [
+      'Before any initial Traitor Cards are drawn, randomly select one of the five ordinary Ecaz Traitor Cards and set it aside face up. Everyone may inspect it. It remains outside the deck for the rest of the game, including later Traitor and Face Dancer draws.',
+      'Loyalty is automatic and cannot be stopped with Karama. It creates no player choice, payment or acknowledgment. The card names a leader, but does not remove, kill, transfer or otherwise change that leader disc. Duke Vidal has no Traitor Card and is never a candidate.',
+      'In new Advanced development games with Ecaz, the table displays the selected card before the Traitor choices. Inspect traitor enlarges its identity; refreshing or resuming the saved game keeps the same card. Basic games and games without native Ecaz do not use this power.',
+      'Older saved games that have already dealt their Traitor Cards retain that inventory; they do not gain a retroactive Loyalty draw. Full Advanced and expansion starts remain gated, including unfinished combinations with Leader Skills and Moritani assassination.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'One persisted native Ecaz card is selected before genuine initial dealing, excluded from setup and Nexus deck construction, and validated against all known circulating or retired Traitor locations. Older saves stay unchanged. Broader combinations remain gated.', evidence: ['game/ecaz-loyalty.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Implemented', detail: 'A public named card and existing enlarged Traitor inspector appear before setup choices and during play, with internal help and no acknowledgment.', evidence: ['components/ecaz-loyalty.tsx', 'components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'All four profiles complete genuine setup through existing legal actions without choosing, rerolling or acknowledging Loyalty. Strategy remains deferred until game features are complete.', evidence: ['tests/ecaz-loyalty-engine.test.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'Public setup, permanent card exclusion, normal leader custody and old-save limits have internal guidance and sourced developer notes.', evidence: ['game/reference.ts', 'game/faction-reference.ts', 'docs/ECAZ_LOYALTY.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Two-through-six-player deals, full Tleilaxu setup, Harkonnen and Tleilaxu Nexus draws, public projection, invalid-state rejection, all-profile setup, rendering and JSON continuity have focused checks. Final browser and checkpoint evidence is recorded separately; combined-module acceptance remains open.', evidence: ['tests/ecaz-loyalty.test.tsx', 'tests/ecaz-loyalty-engine.test.ts', 'tests/nexus-traitor-engine.test.ts'] },
+    ],
+    related: ['setup', 'faction-ecaz', 'advanced-ecaz', 'ecaz-ambassadors', 'duke-vidal', 'implementation-checklist'],
+  },
+  {
     id: 'ecaz-ambassadors',
     title: 'Ecaz Ambassadors: placement and remaining effects',
     category: 'Advanced & expansions',
@@ -2660,7 +2681,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         ...(f.id === 'richese' ? ['richese-cards', 'richese-no-field', 'richese-gift', 'richese-acquisition'] : []),
         ...(f.id === 'choam' ? ['choam-auditor', 'choam-worthless', 'choam-combat'] : []),
         ...(f.id === 'ecaz'
-          ? ['ecaz-ambassadors', 'duke-vidal', 'implementation-checklist']
+          ? ['ecaz-loyalty', 'ecaz-ambassadors', 'duke-vidal', 'implementation-checklist']
           : []),
         ...(f.id === 'moritani'
           ? [
@@ -2688,13 +2709,14 @@ export const RULE_TOPICS: RuleTopic[] = [
         'emperor',
         'tleilaxu',
         'ixians',
+        'ecaz',
       ].includes(id)
         ? 'Partial'
         : 'Planned',
       summary:
         'Advanced faction rules. Some powers have tested engine support; advanced table starts remain disabled until the full rules are ready.',
       steps: rules.advanced,
-      related: [`faction-${id}`, 'advanced-combat'],
+      related: [`faction-${id}`, 'advanced-combat', ...(id === 'ecaz' ? ['ecaz-loyalty'] : [])],
     }),
   ),
   {

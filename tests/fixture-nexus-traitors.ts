@@ -146,7 +146,7 @@ export function nexusTraitorInventory(g: Game): void {
           : {}),
       })),
     },
-    universe,
+    universe.filter(card => card !== g.ecazLoyalty?.card),
   );
   assert.deepEqual(
     [...g.deck, ...g.discard, ...g.players.flatMap((p) => p.hand)]

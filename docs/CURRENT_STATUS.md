@@ -6,29 +6,29 @@ gated.** Prototypes do not open completion or publication gates.
 
 ## Current checkpoint and work
 
-Latest delivered checkpoint: `e3cfd82`, [private-hand browsing](HAND_BROWSING.md).
-Types, lint, **4,996 offline tests** and production build passed. Search, category
-filters, all sort orders, an auction acquisition under an active filter, keyboard
-scrolling, internal help, tab reset and refresh passed browser checks. All 1,538
-opening rooms, 3,258 seats and auxiliary rows stayed unchanged; the isolated QA
-game brought the baseline to 1,539 rooms and 3,259 human seat records. Screenshot
-capture timed out; full visual acceptance remains open. The healthy server was
-reused. Prior checkpoints include `14a7800` for draw counts, `537da4a` for force
-inspection and `2b071a4` for Nexus offers.
+Latest delivered checkpoint: `c2f24fc`, [public faction sheets](FACTION_SHEETS.md).
+Types, lint, **5,000 offline tests** and production build passed. Public table
+inspection, all twelve gallery entries, Basic/Advanced preview, keyboard and
+mobile layouts, internal help and refresh passed bounded browser checks. All
+1,539 opening rooms, 3,259 human seats and auxiliary rows stayed unchanged.
+Screenshot capture timed out; full visual acceptance remains open. The healthy
+server was reused. Prior checkpoints include `e3cfd82` for hand browsing,
+`14a7800` for draw counts and `537da4a` for force inspection.
 
-Current work: [public faction sheets](FACTION_SHEETS.md) adds a table inspector
-and twelve-faction internal gallery with Basic/Advanced preview. Shared guidance
-fills Richese’s missing overview, centralizes Ecaz/Moritani and corrects stale
-CHOAM/Ecaz summaries from existing contracts. Public ID and mode are the only
-inspector inputs; no private state or game action is involved. Focused rendering
-checks accompany independent review, browser verification and saved preservation.
-Full printed-sheet text and all remaining rules still require completion.
+Current work: [Ecaz Loyalty](ECAZ_LOYALTY.md) selects one native Traitor Card
+before genuine Advanced dealing, keeps it publicly set aside through setup and
+Nexus replacement draws, and adds enlarged inspection and internal guidance.
+Focused custody, public-view, all-profile legal setup and JSON checks accompany
+independent review, browser checks, final check/build/HTTP and saved preservation.
+Legacy dealt games remain unchanged; combined Skills/assassination rosters and
+complete faction acceptance remain gated.
 The separate Bureaucrat/Emperor gift question is pending.
 The `8f7a62c` policy checkpoint removed usage checks/cutoffs and deferred AI
 refinement until feature completion, followed by three adjacent 75% targets.
 
 A bounded remaining-effect audit found that the reviewed faction/Nexus candidates
-still cross recorded pending rulings. Continue independent features rather than
+cross recorded pending rulings, with the independent Loyalty setup omission now
+being connected. Continue independent features rather than
 inventing answers. The [platform audit](AUTOPILOT.md#platform-audit-20-september-2026)
 found no supported Sites scheduler or Durable Object provisioning contract.
 Durable unattended bot resumption remains blocked on that capability; current
@@ -89,7 +89,7 @@ These links define bounded working behavior, not complete module certification.
 | Area | Current connected work and evidence |
 | --- | --- |
 | Base/Advanced setup | [Genuine setup](ADVANCED_SETUP_TEST_SEAM.md), [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md), [Fremen cancellation](FREMEN_MOVEMENT_KARAMA_RULES.md), [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md). Earlier Basic-then-flip fixtures do not establish current setup coverage. |
-| Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement, separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
+| Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement and [Advanced Loyalty](ECAZ_LOYALTY.md), separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
 | Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md) and [worm rides](SANDMASTER_WORM.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Jacurutu income, Testing Station and Shrine. Orgiz and contested/mixed cases remain pending. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected; CHOAM inspection and Emperor purchase remain pending. A source audit or helper alone is not a completed effect. |

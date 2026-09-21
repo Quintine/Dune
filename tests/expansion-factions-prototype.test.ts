@@ -127,6 +127,7 @@ function inventory(g: Game) {
     assert.equal(p.reserves + p.tanks + sum(p.forces), 20, p.id);
   if (g.setupStage !== 'prediction') {
     const traitors = [
+      ...(g.ecazLoyalty?.card ? [g.ecazLoyalty.card] : []),
       ...(g.traitorReserve ?? []),
       ...g.players.flatMap((p) => [
         ...p.traitors,

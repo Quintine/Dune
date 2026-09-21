@@ -171,7 +171,8 @@ export const FACTION_RULES: Record<
     ],
     advanced: [
       'At Spice Collection, both allies receive the normal bank income from a jointly occupied Arrakeen, Carthag or Tuek’s Sietch. Canceling Ecaz’s Collection benefit leaves the ally’s income intact.',
-      'This is the currently documented Advanced Collection power. The remaining Advanced powers and combined interactions are still being completed; this sheet is not a complete faction certification.',
+      'Loyalty: before initial Traitor dealing, randomly set aside one of your five native Traitor Cards face up for everyone. It stays outside the deck for the whole game, including later Traitor and Face Dancer draws. Karama cannot prevent this automatic power; the corresponding leader disc is unchanged.',
+      'Loyalty and Collection have connected development implementations. Remaining Advanced powers and combined interactions are still being completed; this sheet is not a complete faction certification.',
     ],
   },
   moritani: {

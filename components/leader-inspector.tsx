@@ -25,7 +25,7 @@ export type LeaderDisplayIdentity = Readonly<
 >;
 export type LeaderInspectorProps = {
   identity: LeaderDisplayIdentity;
-  kind?: 'leader' | 'traitor' | 'faceDancer';
+  kind?: 'leader' | 'traitor' | 'faceDancer' | 'loyalty';
   assassination?: 'choice' | 'revealed' | 'retired';
 };
 
@@ -107,11 +107,14 @@ export function LeaderInspector({
   kind = 'leader',
   assassination,
 }: LeaderInspectorProps) {
-  const traitor = kind === 'traitor';
+  const loyalty = kind === 'loyalty';
+  const traitor = kind === 'traitor' || loyalty;
   const faceDancer = kind === 'faceDancer';
-  const label = faceDancer ? 'Face Dancer' : kind;
+  const label = faceDancer ? 'Face Dancer' : loyalty ? 'traitor' : kind;
   const cheapHero = identity.cheapHero === true;
-  const description = traitor && assassination === 'retired'
+  const description = loyalty
+    ? 'This Ecaz Traitor Card was randomly set aside face up before initial dealing. Everyone may inspect it; nobody holds it as a Traitor or Face Dancer.'
+    : traitor && assassination === 'retired'
     ? 'This face-up card marks the faction against which Moritani has already used Assassinate Leaders. It is set aside, separate from held Traitor Cards.'
     : faceDancer
     ? cheapHero
@@ -258,6 +261,19 @@ export function LeaderInspector({
                         components.
                       </p>
                     )}
+                  </>
+                ) : loyalty ? (
+                  <>
+                    <p className="m-0 text-base leading-7 text-[#e0e4d8]">
+                      The card remains outside the deck for the rest of this game.
+                      It cannot be drawn, held or called as a traitor. Inspection
+                      does not move the card or change its public identity.
+                    </p>
+                    <p className="m-0 text-base leading-7 text-[#e0e4d8]">
+                      Loyalty is automatic and Karama cannot prevent it. The
+                      corresponding leader disc keeps its normal ownership,
+                      battle, death and revival rules.
+                    </p>
                   </>
                 ) : traitor && assassination ? (
                   <>

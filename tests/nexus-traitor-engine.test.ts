@@ -9,6 +9,7 @@ import {
 } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
+import { traitorDeck } from '../game/traitors';
 import {
   nexusTraitorFixture,
   nexusTraitorInventory,
@@ -18,6 +19,27 @@ import {
   holdNexusTraitor,
 } from './fixture-nexus-traitors';
 import { nexusReload, nexusReject, nexusAllow } from './fixture-nexus-cards';
+
+void test('Advanced Ecaz Loyalty stays set aside through Harkonnen and Tleilaxu Nexus draws and returns', () => {
+  for (const ownerFaction of ['harkonnen', 'tleilaxu'] as const) {
+    let g = nexusTraitorFixture({ ownerFaction, opponentFaction: 'ecaz', advanced: true });
+    const loyalty = structuredClone(g.ecazLoyalty)!;
+    assert.ok(loyalty.card);
+    const inventory = traitorDeck(g.players).sort();
+    const census = () => [loyalty.card!, ...(g.traitorReserve ?? []), ...g.players.flatMap(player => [
+      ...player.traitors, ...(player.faceDancers ?? []).map(card => card.leader),
+    ])].sort();
+    assert.deepEqual(census(), inventory);
+    g = nexusTraitorDraw(g);
+    const pending = viewGame(g, 'p').nexusTraitors!.pending!;
+    assert.ok(pending.choices.every(card => card.id !== loyalty.card));
+    g = nexusTraitorReturn(nexusReload(g), pending.choices.filter(card => card.drawn).map(card => card.id));
+    nexusTraitorInventory(g);
+    assert.deepEqual(g.ecazLoyalty, loyalty);
+    assert.deepEqual(census(), inventory);
+    for (const player of g.players) assert.deepEqual(viewGame(g, player.id).ecazLoyalty, loyalty);
+  }
+});
 
 void test('real Cunning draws before return and resumes from JSON with one physical Nexus card spent', () => {
   let g = nexusTraitorFixture();

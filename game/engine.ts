@@ -491,6 +491,7 @@ import {
   type PendingRevival,
 } from './revival';
 import { traitorDeck, matchingTraitor, CHEAP_HERO_TRAITOR } from './traitors';
+import { chooseEcazLoyalty, withoutEcazLoyalty, validateEcazLoyalty, type EcazLoyalty } from './ecaz-loyalty';
 import {
   isStoneBurner,
   isPortableSnooper,
@@ -1427,6 +1428,7 @@ export type Game = {
   revivalPrevention?: { player: string; turn: number };
 
   traitorReserve?: string[];
+  ecazLoyalty?: EcazLoyalty;
   pendingFaceDance?: {
     player: string;
     winner: string;
@@ -1852,9 +1854,9 @@ function projectedNexusCards(g: Game, id: string) {
 function nexusTraitorUniverse(g: Game) {
   // This describes the printed setup inventory; it never regenerates the deck
   // from current hands, captured leaders or Face Dancer custody.
-  return traitorDeck(g.players.map(p => ({ leaders: [
+  return withoutEcazLoyalty(traitorDeck(g.players.map(p => ({ leaders: [
     ...leaders(p.faction), ...(g.advanced && p.faction === 'choam' ? [createAuditorLeader()] : []),
-  ] })), g.expansions.includes('ix'));
+  ] })), g.expansions.includes('ix')), g.ecazLoyalty);
 }
 function nexusTraitorSnapshot(g: Game): NexusTraitorSnapshot {
   return { reserve: [...(g.traitorReserve ?? [])], players: g.players.map(p => ({
@@ -5627,6 +5629,8 @@ function finishMandatorySkillVisibility(g: Game) {
 }
 
 function initializeSetup(g: Game) {
+  const ecaz = byFaction(g, 'ecaz');
+  if (ecaz && g.advanced) g.ecazLoyalty = { player: ecaz.id, card: null };
   if (g.discoveryEnabled) g.discoveries = createDiscoveryState(random);
   if (g.nexusCards) g.nexusCards = { cards: createNexusCards(g.players, random), phase: null };
   const choam = byFaction(g, 'choam');
@@ -5785,9 +5789,13 @@ function advanceSetup(g: Game) {
   }
   if (g.setupStage === 'leaderSkills' && setupPending(g).length) return;
   if (g.setupStage === 'prediction' || g.setupStage === 'leaderSkills') {
-    const traitors = shuffle(
-      traitorDeck(g.players, g.expansions.includes('ix')),
-    );
+    const inventory = traitorDeck(g.players, g.expansions.includes('ix'));
+    if (g.ecazLoyalty && g.ecazLoyalty.card === null) {
+      g.ecazLoyalty.card = chooseEcazLoyalty(inventory, random());
+      const loyal = leaders('ecaz').find(leader => leader.id === g.ecazLoyalty!.card)!;
+      log(g, `Ecaz Loyalty set ${loyal.name}’s Traitor Card face up outside the deck before initial dealing. This card stays out of the game; its leader is unchanged.`, { faction: 'ecaz', name: 'Loyalty' });
+    }
+    const traitors = shuffle(withoutEcazLoyalty(inventory, g.ecazLoyalty));
     for (const p of g.players) {
       p.traitorChoices = p.faction === 'tleilaxu' ? [] : traitors.splice(0, 4);
       if (p.faction === 'harkonnen') {
@@ -5956,6 +5964,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       !g.spiceDeck.length &&
       !g.spiceDiscard.some((pile) => pile.length) &&
       !g.traitorReserve?.length &&
+      g.ecazLoyalty === undefined &&
       !g.decision &&
       !g.response &&
       !g.battle &&
@@ -6025,7 +6034,7 @@ function finishSetup(g: Game) {
   if (tleilaxu) {
     const held = new Set(g.players.flatMap((player) => player.traitors));
     g.traitorReserve = shuffle(
-      traitorDeck(g.players, g.expansions.includes('ix')).filter(
+      withoutEcazLoyalty(traitorDeck(g.players, g.expansions.includes('ix')), g.ecazLoyalty).filter(
         (card) => !held.has(card),
       ),
     );
@@ -20485,6 +20494,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
@@ -20749,6 +20759,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
@@ -24396,6 +24407,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
@@ -24700,6 +24712,7 @@ export function viewGame(state: Game, id: string) {
         }
       : null,
     techTokens: g.techTokens ?? null,
+    ecazLoyalty: g.ecazLoyalty?.card ? { player: g.ecazLoyalty.player, card: g.ecazLoyalty.card } : null,
     strongholdCards: g.strongholdCards ?? null,
     discoveries: discoveryChoices(g,id,g.phase === 7 && grummanCollectionAutomatic(g)),
     ecologicalStorm: g.decision?.kind === 'ecologicalStorm' && g.decision.player === id && g.ecologicalStorm?.stage === 'choose'

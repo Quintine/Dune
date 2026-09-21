@@ -4,6 +4,7 @@ import { StormCardInspector, StormCardLogInspector } from './storm-cards';
 import { KwisatzInspector } from './kwisatz-inspector';
 import { ForceInspector } from './force-inspector';
 import { FactionInspector } from './faction-inspector';
+import { EcazLoyaltyCard } from './ecaz-loyalty';
 import { DrawPiles } from './draw-piles';
 import { HandBrowser } from './hand-browser';
 import { LobbyBotControls } from './lobby-bot-controls';
@@ -1020,6 +1021,7 @@ export function GameTable({
       )}
       <SeatAutopilot game={g} act={act} busy={transportBusy} />
       <DukeVidal game={g} />
+      <EcazLoyaltyCard loyalty={g.ecazLoyalty} />
       <MoritaniTerrorSupply game={g} />
       <MoritaniAssassinateHistory game={g} />
       <AmbassadorSupply game={g} />
