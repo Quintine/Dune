@@ -12,7 +12,7 @@ recovery and persistence systems where suitable.
 | Administrator access | Personal access keys, server-enforced owner/operator/viewer roles, persistent eight-hour sessions, individual/all-session sign-out and operator provisioning/revocation. A room host is not a site administrator. Account-management UI and further operational permissions remain. | Prototyped |
 | Room directory | Search room codes/public player names, filter status/rules/availability, sort and paginate; show host, roster, modules, game change time, pause/join flags and bounded decision ownership. Detailed setup/shared-window ownership remains. | Prototyped |
 | Create and configure | [Create a lobby](ADMIN_ROOM_CREATION.md) with an explicitly owned new host seat, Basic/Advanced preview and initial AI configuration; invite humans and use ordinary lobby controls/voluntary host-seat handover. [Neutral lobby configuration](ADMIN_LOBBY_CONFIGURATION.md) adds rules/modules, AI seats and host assignment to an existing human without private access. Reserved human seats remain. | Prototyped, partial |
-| Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. Archive, permanent deletion and bulk actions remain missing. | Prototyped, partial |
+| Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. [Archive/unarchive](ADMIN_ROOM_ARCHIVE.md) has separate directory filters and exact retries. Permanent deletion and bulk actions remain missing. | Prototyped, partial |
 | Participant support | Remove disruptive participants or revoke access, manage appropriate restrictions, assist saved-seat recovery and host reassignment, and use supported AI takeover/replacement without losing forces, cards or decisions. | Missing |
 | Saved-game operations | Create/list/download backups, validate imports, restore a selected checkpoint safely, and diagnose or resume interrupted automatic work through authoritative game actions. | Missing |
 | Operations and audit | Show server/build/storage health, room/player counts and actionable errors; provide maintenance controls and a searchable record of administrator actions. | Missing |
@@ -46,6 +46,9 @@ find removed rooms; restoration retains prior pause and joining settings.
 [Close or reopen](ADMIN_ROOM_CLOSURE.md) ends further play without awarding a
 winner and preserves readable private tables and discussion. Reopening retains
 the saved game, pause/join settings and current credentials.
+[Archive or unarchive](ADMIN_ROOM_ARCHIVE.md) organizes closed rooms with separate
+directory filters and exact retries. Unarchiving leaves play closed; restoring
+a removed archive preserves both flags.
 Disabling an account invalidates its sessions; later re-enabling it cannot restore
 them. The database refuses to disable, demote or delete the final enabled owner.
 No default key, public account creation or host-to-administrator promotion exists.
@@ -116,7 +119,7 @@ session revocation and unchanged game/seat continuation. Operator/owner QA keys
 also create dedicated rooms for joining locks, pause/takeback/resume,
 administrator creation, invitations, voluntary host handover and neutral lobby
 configuration with existing-human host assignment and a real game start. They
-also remove/restore a separate QA game, preserving its paused state, discussion,
+also close/reopen, archive/unarchive and remove/restore separate QA games, preserving their paused state, discussion,
 saved seats and revoked credentials. Private reports retain
 room IDs and safe outcomes, never keys/cookies. The container verifier provisions
 its own disposable QA account and checks admin-session continuity across restart

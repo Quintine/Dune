@@ -1,30 +1,30 @@
 import { AdminError, type AdminIdentity } from './admin-access';
 import {
-  validAdminClosureInput,
-  type AdminClosureInput,
-  type AdminClosureResult,
-  type AdminClosureView,
-} from '../lib/admin-closure';
+  validAdminArchiveInput,
+  type AdminArchiveInput,
+  type AdminArchiveResult,
+  type AdminArchiveView,
+} from '../lib/admin-archive';
 
 const authority = `SELECT a.role FROM admin_sessions s JOIN admin_accounts a ON a.id = s.admin_id
   WHERE s.token_hash = ? AND a.id = ? AND a.enabled = 1 AND s.revoked_at IS NULL
   AND s.expires_at > ? AND s.generation = a.session_generation
   AND a.role IN ('owner','operator','viewer')`;
 const mutationAuthority = authority + " AND a.role IN ('owner','operator')";
-const roomSelect = `SELECT r.code,r.version,EXISTS (SELECT 1 FROM room_archives WHERE room_code = r.code AND archived = 1) AS archived,EXISTS (SELECT 1 FROM room_removals WHERE room_code = r.code AND removed = 1) AS removed,COALESCE(m.closed,0) AS closed,
-  COALESCE(m.revision,0) AS revision,m.closed_at,m.updated_at,
+const roomSelect = `SELECT r.code,r.version,EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1) AS closed,EXISTS (SELECT 1 FROM room_removals WHERE room_code = r.code AND removed = 1) AS removed,COALESCE(m.archived,0) AS archived,
+  COALESCE(m.revision,0) AS revision,m.archived_at,m.updated_at,
   COALESCE(c.paused,0) AS paused,COALESCE(c.join_locked,0) AS join_locked
-  FROM rooms r LEFT JOIN room_closures m ON m.room_code = r.code
+  FROM rooms r LEFT JOIN room_archives m ON m.room_code = r.code
   LEFT JOIN room_controls c ON c.room_code = r.code
   WHERE r.code = ? AND EXISTS (${authority})`;
 type Row = {
-  archived: number;
+  closed: number;
   removed: number;
   code: string;
   version: number;
-  closed: number;
+  archived: number;
   revision: number;
-  closed_at: number | null;
+  archived_at: number | null;
   updated_at: number | null;
   paused: number;
   join_locked: number;
@@ -37,14 +37,14 @@ type Receipt = {
   applied_version: number;
   applied_revision: number;
 };
-const project = (row: Row): AdminClosureView => ({
+const project = (row: Row): AdminArchiveView => ({
   code: row.code,
-  ...(row.archived === 1 ? { archived: true as const } : {}),
+  closed: row.closed === 1,
   removed: row.removed === 1,
   version: row.version,
-  closed: row.closed === 1,
+  archived: row.archived === 1,
   revision: row.revision,
-  closedAt: row.closed_at,
+  archivedAt: row.archived_at,
   updatedAt: row.updated_at,
   paused: row.paused === 1,
   joinLocked: row.join_locked === 1,
@@ -76,13 +76,13 @@ function authorize(result: D1Result, mutation = false) {
     );
 }
 
-/** Public operational metadata remains available for closed and unreadable saves. */
-export async function readAdminClosure(
+/** Public operational metadata remains available for archived and unreadable saves. */
+export async function readAdminArchive(
   database: D1Database,
   identity: AdminIdentity,
   code: string,
   now = Date.now(),
-): Promise<AdminClosureView> {
+): Promise<AdminArchiveView> {
   const args = credentials(identity, code, now);
   const results = await database.batch([
     database.prepare(authority).bind(...args),
@@ -94,28 +94,28 @@ export async function readAdminClosure(
   return project(row);
 }
 
-/** An exact receipt, room-version fence and closure transition commit together.
- * Neither transition replaces state or credentials; reopen only refreshes AI pacing. */
-export async function applyAdminClosure(
+/** An exact receipt, room-version fence and archive transition commit together.
+ * Neither transition changes saved state, credentials, closure or AI pacing. */
+export async function applyAdminArchive(
   database: D1Database,
   identity: AdminIdentity,
   code: string,
-  input: AdminClosureInput,
+  input: AdminArchiveInput,
   now = Date.now(),
-): Promise<AdminClosureResult> {
+): Promise<AdminArchiveResult> {
   const args = credentials(identity, code, now);
-  if (!validAdminClosureInput(input))
+  if (!validAdminArchiveInput(input))
     throw new AdminError(
-      'Provide the room version, closure revision, requested state, a fresh operation identifier and a reason of 1–300 characters.',
+      'Provide the room version, archive revision, requested state, a fresh operation identifier and a reason of 1–300 characters.',
       400,
     );
-  const { operationId, expectedVersion, expectedRevision, closed } = input;
+  const { operationId, expectedVersion, expectedRevision, archived } = input;
   const actorId = identity.id,
     reason = input.reason.trim();
   const digest = await crypto.subtle.digest(
     'SHA-256',
     new TextEncoder().encode(
-      JSON.stringify({ expectedVersion, expectedRevision, closed, reason }),
+      JSON.stringify({ expectedVersion, expectedRevision, archived, reason }),
     ),
   );
   const requestHash = Array.from(new Uint8Array(digest), (byte) =>
@@ -125,68 +125,56 @@ export async function applyAdminClosure(
     database.prepare(authority).bind(...args),
     // Existing receipt IDs cannot enter this write, regardless of later room state.
     database
-      .prepare(`INSERT INTO admin_room_closures
+      .prepare(`INSERT INTO admin_room_archives
       (operation_id,actor_admin_id,room_code,request_hash,expected_version,expected_revision,
-       applied_version,applied_revision,closed,reason,before_metadata,after_metadata,created_at)
+       applied_version,applied_revision,archived,reason,before_metadata,after_metadata,created_at)
       SELECT ?,?,r.code,?,?,?,r.version + 1,COALESCE(m.revision,0) + 1,?,?,
-        json_object('code',r.code,'version',r.version,'closed',json(CASE WHEN m.closed = 1 THEN 'true' ELSE 'false' END),
-          'revision',COALESCE(m.revision,0),'closedAt',m.closed_at,'updatedAt',m.updated_at,
+        json_object('closed',json('true'),'removed',json('false'),'code',r.code,'version',r.version,'archived',json(CASE WHEN m.archived = 1 THEN 'true' ELSE 'false' END),
+          'revision',COALESCE(m.revision,0),'archivedAt',m.archived_at,'updatedAt',m.updated_at,
           'paused',json(CASE WHEN c.paused = 1 THEN 'true' ELSE 'false' END),
           'joinLocked',json(CASE WHEN c.join_locked = 1 THEN 'true' ELSE 'false' END)),
-        json_object('code',r.code,'version',r.version + 1,'closed',json(CASE WHEN ? = 1 THEN 'true' ELSE 'false' END),
-          'revision',COALESCE(m.revision,0) + 1,'closedAt',?,'updatedAt',?,
+        json_object('closed',json('true'),'removed',json('false'),'code',r.code,'version',r.version + 1,'archived',json(CASE WHEN ? = 1 THEN 'true' ELSE 'false' END),
+          'revision',COALESCE(m.revision,0) + 1,'archivedAt',?,'updatedAt',?,
           'paused',json(CASE WHEN c.paused = 1 THEN 'true' ELSE 'false' END),
           'joinLocked',json(CASE WHEN c.join_locked = 1 THEN 'true' ELSE 'false' END)),?
-      FROM rooms r LEFT JOIN room_closures m ON m.room_code = r.code
+      FROM rooms r LEFT JOIN room_archives m ON m.room_code = r.code
       LEFT JOIN room_controls c ON c.room_code = r.code
-      WHERE r.code = ? AND r.version = ? AND COALESCE(m.revision,0) = ? AND COALESCE(m.closed,0) != ?
+      WHERE r.code = ? AND r.version = ? AND COALESCE(m.revision,0) = ? AND COALESCE(m.archived,0) != ?
       AND EXISTS (${mutationAuthority})
-      AND NOT EXISTS (SELECT 1 FROM room_archives WHERE room_code = r.code AND archived = 1)
+      AND EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1)
       AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = r.code AND removed = 1)
-      AND NOT EXISTS (SELECT 1 FROM admin_room_closures WHERE operation_id = ?)`)
+      AND NOT EXISTS (SELECT 1 FROM admin_room_archives WHERE operation_id = ?)`)
       .bind(
         operationId,
         actorId,
         requestHash,
         expectedVersion,
         expectedRevision,
-        Number(closed),
+        Number(archived),
         reason,
-        Number(closed),
-        closed ? now : null,
+        Number(archived),
+        archived ? now : null,
         now,
         now,
         code,
         expectedVersion,
         expectedRevision,
-        Number(closed),
+        Number(archived),
         ...args,
         operationId,
       ),
-    // Closing never parses or changes JSON. Reopen tolerates malformed saved state.
+    // Archive is directory metadata only. Preserve the entire saved JSON and its timestamps.
+    database.prepare('UPDATE rooms SET version = version + 1 WHERE code = ? AND changes() = 1').bind(code),
     database
-      .prepare(`UPDATE rooms SET version = version + 1,
-      state = CASE WHEN ? = 0 AND NOT EXISTS (
-        SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1
-      ) THEN CASE WHEN json_valid(state) THEN CASE WHEN
-        json_extract(state, '$.status') IN ('setup','playing') AND
-        EXISTS (SELECT 1 FROM json_each(CASE WHEN json_type(state, '$.players') = 'array' THEN json_extract(state, '$.players') ELSE '[]' END) p
-          WHERE json_extract(CASE WHEN p.type = 'object' THEN p.value ELSE '{}' END, '$.bot') IS NOT NULL
-          OR json_extract(CASE WHEN p.type = 'object' THEN p.value ELSE '{}' END, '$.autopilot') IS NOT NULL)
-        THEN json_set(state, '$.botsPending', json('true'), '$.botNextActionAt', ?)
-        ELSE state END ELSE state END ELSE state END
-      WHERE code = ? AND changes() = 1`)
-      .bind(Number(closed), now + 1500, code),
-    database
-      .prepare(`INSERT INTO room_closures(room_code,closed,revision,closed_at,updated_at)
-      SELECT room_code,closed,applied_revision,CASE WHEN closed = 1 THEN created_at ELSE NULL END,created_at
-      FROM admin_room_closures WHERE operation_id = ? AND changes() = 1
-      ON CONFLICT(room_code) DO UPDATE SET closed = excluded.closed,revision = excluded.revision,
-        closed_at = excluded.closed_at,updated_at = excluded.updated_at`)
+      .prepare(`INSERT INTO room_archives(room_code,archived,revision,archived_at,updated_at)
+      SELECT room_code,archived,applied_revision,CASE WHEN archived = 1 THEN created_at ELSE NULL END,created_at
+      FROM admin_room_archives WHERE operation_id = ? AND changes() = 1
+      ON CONFLICT(room_code) DO UPDATE SET archived = excluded.archived,revision = excluded.revision,
+        archived_at = excluded.archived_at,updated_at = excluded.updated_at`)
       .bind(operationId),
     database
       .prepare(`SELECT operation_id,actor_admin_id,room_code,request_hash,applied_version,applied_revision
-      FROM admin_room_closures WHERE operation_id = ? AND EXISTS (${mutationAuthority})`)
+      FROM admin_room_archives WHERE operation_id = ? AND EXISTS (${mutationAuthority})`)
       .bind(operationId, ...args),
     database.prepare(roomSelect).bind(code, ...args),
   ]);
@@ -200,7 +188,7 @@ export async function applyAdminClosure(
       receipt.request_hash !== requestHash
     )
       throw new AdminError(
-        'This closure operation is bound to a different administrator or request.',
+        'This archive operation is bound to a different administrator or request.',
         409,
       );
     if (!row) throw new AdminError('Room not found.', 404);
@@ -213,17 +201,17 @@ export async function applyAdminClosure(
     };
   }
   if (!row) throw new AdminError('Room not found.', 404);
-  if (row.removed) throw new AdminError('Restore this removed room before changing its closure.', 409);
-  if (row.archived) throw new AdminError('Unarchive this room before reopening it.', 409);
+  if (row.removed) throw new AdminError('Restore this removed room before changing its archive.', 409);
+  if (!row.closed) throw new AdminError('Close this room before changing its archive state.', 409);
   if (row.version !== expectedVersion || row.revision !== expectedRevision)
     throw new AdminError(
-      'The room or closure settings changed. Refresh before choosing a new operation.',
+      'The room or archive settings changed. Refresh before choosing a new operation.',
       409,
     );
   throw new AdminError(
-    closed
-      ? 'This room is already closed.'
-      : 'This room is already open.',
+    archived
+      ? 'This room is already archived.'
+      : 'This room is already unarchived.',
     409,
   );
 }

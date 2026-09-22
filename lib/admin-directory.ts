@@ -4,6 +4,7 @@ export type AdminRoom = {
   code: string;
   version: number;
   removed: boolean;
+  archived: boolean;
   updatedAt: number;
   status: 'lobby' | 'setup' | 'playing' | 'finished' | 'unreadable';
   host: string | null;

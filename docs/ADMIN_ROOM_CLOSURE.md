@@ -44,7 +44,7 @@ available while the table's mutation controls are disabled.
 
 ## Other administrator controls
 
-Closed rooms remain in the default directory and can be filtered with
+Unarchived closed rooms remain in the default directory and can be filtered with
 **Availability → Closed**. **Running** excludes closed rooms. New pause/join and
 lobby configuration changes require reopening; prior exact receipts still work.
 
@@ -56,7 +56,8 @@ available to authorized administrators while it is removed.
 Apply additive migration `0013_admin_room_closure.sql` before this revision.
 `room_closures` stores current availability independently of pause and removal;
 `admin_room_closures` stores durable audit receipts. No existing game or credential
-rows are migrated or deleted. Archive, permanent deletion, bulk actions,
+rows are migrated or deleted. [Archiving](ADMIN_ROOM_ARCHIVE.md) organizes closed
+rooms separately; unarchive before reopening. Permanent deletion, bulk actions,
 participant support and backup/restore tools remain unfinished.
 
 ## Verification

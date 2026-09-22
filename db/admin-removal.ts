@@ -11,13 +11,14 @@ const authority = `SELECT a.role FROM admin_sessions s JOIN admin_accounts a ON 
   AND s.expires_at > ? AND s.generation = a.session_generation
   AND a.role IN ('owner','operator','viewer')`;
 const mutationAuthority = authority + " AND a.role IN ('owner','operator')";
-const roomSelect = `SELECT r.code,r.version,EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1) AS closed,COALESCE(m.removed,0) AS removed,
+const roomSelect = `SELECT r.code,r.version,EXISTS (SELECT 1 FROM room_archives WHERE room_code = r.code AND archived = 1) AS archived,EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1) AS closed,COALESCE(m.removed,0) AS removed,
   COALESCE(m.revision,0) AS revision,m.removed_at,m.updated_at,
   COALESCE(c.paused,0) AS paused,COALESCE(c.join_locked,0) AS join_locked
   FROM rooms r LEFT JOIN room_removals m ON m.room_code = r.code
   LEFT JOIN room_controls c ON c.room_code = r.code
   WHERE r.code = ? AND EXISTS (${authority})`;
 type Row = {
+  archived: number;
   closed: number;
   code: string;
   version: number;
@@ -38,6 +39,7 @@ type Receipt = {
 };
 const project = (row: Row): AdminRemovalView => ({
   code: row.code,
+  ...(row.archived === 1 ? { archived: true as const } : {}),
   ...(row.closed === 1 ? { closed: true as const } : {}),
   version: row.version,
   removed: row.removed === 1,

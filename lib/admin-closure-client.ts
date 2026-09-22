@@ -9,7 +9,7 @@ const integer = (value: unknown): value is number => Number.isSafeInteger(value)
 const timestamp = (value: unknown) => value === null || integer(value) && value <= 8_640_000_000_000_000;
 
 export function validAdminClosureView(value: unknown): value is AdminClosureView {
-  return object(value) && keys(value, ['removed', 'code', 'version', 'closed', 'revision', 'closedAt', 'updatedAt', 'paused', 'joinLocked']) &&
+  return object(value) && keys(value, ['removed', 'code', 'version', 'closed', 'revision', 'closedAt', 'updatedAt', 'paused', 'joinLocked', ...(value.archived === true ? ['archived'] : [])]) &&
     typeof value.code === 'string' && /^[A-Z2-9]{8}$/.test(value.code) && integer(value.version) && integer(value.revision) &&
     typeof value.removed === 'boolean' && typeof value.closed === 'boolean' && typeof value.paused === 'boolean' && typeof value.joinLocked === 'boolean' &&
     timestamp(value.closedAt) && timestamp(value.updatedAt);
@@ -36,6 +36,7 @@ export function newAdminClosureRequest(view: AdminClosureView, closed: boolean, 
   const input = { operationId: randomId(), expectedVersion: view.version, expectedRevision: view.revision, closed, reason: reason.trim() };
   if (!validAdminClosureInput(input)) throw new Error('Enter a reason of 1–300 characters on one line.');
   if (view.removed) throw new Error('Restore this removed room before changing its closure.');
+  if (view.archived) throw new Error('Unarchive this room before reopening it.');
   if (closed === view.closed) throw new Error('Refresh the room before choosing a closure or reopening.');
   return input;
 }

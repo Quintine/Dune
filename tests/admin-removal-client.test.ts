@@ -81,3 +81,12 @@ void test('uncertain removal and changed-access responses keep the exact saved r
   }
   for (const status of [400, 404, 409, 422]) assert.equal(retainAdminRoomRequest(new ClientRequestError('Rejected', 'http', status)), false);
 });
+
+void test('removal projections and exact receipts retain only the explicit archived flag', () => {
+  const room = view(), input = newAdminRemovalRequest(room, true, 'QA');
+  assert.deepEqual(adminRemovalResponse({ ...room, archived: true }, room.code), { ...room, archived: true });
+  for (const archived of [false, undefined, null, 1, 'true'])
+    assert.throws(() => adminRemovalResponse({ ...room, archived }, room.code));
+  const receipt = { operationId: input.operationId, appliedVersion: 8, appliedRevision: 3, replayed: true, room: { ...room, version: 12, revision: 4, archived: true } };
+  assert.deepEqual(adminRemovalConfirmation(receipt, room.code, input), receipt);
+});

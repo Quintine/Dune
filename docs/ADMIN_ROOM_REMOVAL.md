@@ -64,7 +64,11 @@ These checks also exposed a lobby readiness bug: a joining human or human
 faction change could clear AI readiness and block start. Those changes now clear
 only human readiness; focused JSON continuation tests and the HTTP start cover it.
 
-Close/end, archive, permanent deletion, bulk operations, participant support and
+[Close/reopen](ADMIN_ROOM_CLOSURE.md) and [archive/unarchive](ADMIN_ROOM_ARCHIVE.md)
+are separate reversible controls. Permanent deletion, bulk operations, participant support and
 backup/import workflows remain unfinished. Recoverable removal does not satisfy
 those separate [administration requirements](ADMIN_PANEL.md). No existing human
 room is used for removal tests, and no database reset is authorized.
+
+Restoring an archived room preserves both archive and closure. Use All rooms in
+both Directory and Archive filters to find a room with both flags.

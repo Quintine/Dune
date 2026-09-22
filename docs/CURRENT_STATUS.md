@@ -6,12 +6,20 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
-Current work adds [administrative close/reopen](ADMIN_ROOM_CLOSURE.md):
-closed rooms preserve readable private tables and discussion while stopping new
-play, joins, AI and seat mutations. Exact prior receipts remain confirmable;
-reopening preserves pending decisions, credentials and pause/join flags.
-Archive, permanent deletion, bulk actions and full participant/backup support
-remain unfinished.
+Current work adds [administrative archive/unarchive](ADMIN_ROOM_ARCHIVE.md):
+closed rooms can leave the default directory without changing saved games,
+credentials, discussion or AI deadlines. Unarchiving leaves play closed;
+reopening requires unarchiving first. Exact saved retries and combined archive /
+removal filters preserve recovery. Permanent deletion, bulk actions and full
+participant/backup support remain unfinished.
+
+Checkpoint `98b1b32` added [close/reopen](ADMIN_ROOM_CLOSURE.md) and passed types/lint,
+5,356 offline tests, 52 HTTP tests and build, with seventeen administrator HTTP
+groups and lost-response desktop/mobile browser QA. It is deployed on the NAS:
+container verification passed, migration 0013 applied, all eight prior rooms and
+ten seats were preserved, and public HTTPS/browser saved-seat restoration passed.
+Anonymous admin routes remain denied. Positive production administrator acceptance
+still awaits authorized QA access; archive/unarchive is not deployed yet.
 
 Checkpoint `238de38` added [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md)
 and passed types/lint, 5,314 offline tests, 52 HTTP tests and build, with fourteen
@@ -20,7 +28,7 @@ deployed on the NAS: container verification passed, migration 0012 applied,
 all eight prior rooms and ten seats were preserved, and public HTTPS/browser
 saved-seat restoration passed. Anonymous removal and other admin routes remain
 denied. Positive production administrator acceptance remains pending authorized
-QA operator access; the current close/reopen work is not deployed yet.
+QA operator access.
 
 Checkpoint `c0cc4de` added [neutral administrator lobby configuration](ADMIN_LOBBY_CONFIGURATION.md)
 and passed types/lint, 5,260 offline tests, 52 HTTP tests and build, with eleven

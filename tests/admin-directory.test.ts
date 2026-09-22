@@ -114,3 +114,35 @@ void test('closed rooms remain in the directory but are excluded from running ro
     assert.deepEqual((await read('availability=running')).rooms.map(room => room.code), ['OPENROOM']);
   } finally { f.sqlite.close(); }
 });
+
+void test('archive filters compose with removal, availability, private-safe search and stable pagination', async () => {
+  const f = await fixture();
+  try {
+    insert(f.sqlite, 'OPENROOM', state('Open QA'));
+    for (let n = 0; n < 28; n++) {
+      const code = `AR${String(n).padStart(6, '0')}`;
+      insert(f.sqlite, code, state(n === 0 ? 'Archived %_ QA' : 'Archived QA'));
+      f.sqlite.prepare('INSERT INTO room_closures(room_code,closed,revision,closed_at,updated_at) VALUES (?,1,1,100,100)').run(code);
+      f.sqlite.prepare('INSERT INTO room_archives(room_code,archived,revision,archived_at,updated_at) VALUES (?,1,1,100,100)').run(code);
+      if (n === 27) f.sqlite.prepare('INSERT INTO room_removals(room_code,removed,revision,removed_at,updated_at) VALUES (?,1,1,100,100)').run(code);
+    }
+    const read = (q = '') => readAdminDirectory(f.database, f.identity, new URLSearchParams(q));
+    assert.deepEqual((await read()).rooms.map(room => room.code), ['OPENROOM']);
+    assert.equal((await read('q=Archived')).total, 0);
+    const first = await read('archive=archived'), second = await read('archive=archived&page=2');
+    assert.equal(first.total, 27); assert.equal(first.rooms.length, 25); assert.equal(second.rooms.length, 2);
+    assert.equal(new Set([...first.rooms, ...second.rooms].map(room => room.code)).size, 27);
+    assert.ok(first.rooms.every(room => room.archived && room.control.closed && !room.removed));
+    assert.equal(JSON.stringify(first).includes('SECRET'), false);
+    assert.equal((await read('archive=all')).total, 28);
+    assert.equal((await read('removal=all')).total, 1);
+    assert.equal((await read('removal=removed')).total, 0);
+    assert.equal((await read('archive=all&removal=all')).total, 29);
+    assert.equal((await read('archive=archived&removal=removed')).total, 1);
+    assert.equal((await read('archive=archived&availability=closed')).total, 27);
+    assert.equal((await read('archive=all&availability=running')).total, 1);
+    assert.equal((await read('archive=archived&q=%25_')).total, 1);
+    assert.equal((await read('archive=all&q=SECRET')).total, 0);
+    for (const q of ['archive=unknown', 'archive=all&archive=archived']) await assert.rejects(read(q), (e: unknown) => e instanceof AdminError && e.status === 400);
+  } finally { f.sqlite.close(); }
+});

@@ -136,6 +136,51 @@ export const adminRoomClosures = sqliteTable(
   ],
 );
 
+// Archive organizes closed rooms without changing saved games or credentials.
+export const roomArchives = sqliteTable(
+  'room_archives',
+  {
+    roomCode: text('room_code')
+      .primaryKey()
+      .references(() => rooms.code, { onDelete: 'cascade' }),
+    archived: integer('archived').notNull().default(0),
+    revision: integer('revision').notNull().default(0),
+    archivedAt: integer('archived_at'),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [
+    check('room_archives_archived', sql`${table.archived} IN (0, 1)`),
+    check('room_archives_revision', sql`${table.revision} >= 0`),
+    check(
+      'room_archives_time',
+      sql`(${table.archived} = 1 AND ${table.archivedAt} IS NOT NULL) OR (${table.archived} = 0 AND ${table.archivedAt} IS NULL)`,
+    ),
+  ],
+);
+
+// Exact operation receipts also retain safe audit evidence independently of rooms/accounts.
+export const adminRoomArchives = sqliteTable(
+  'admin_room_archives',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    requestHash: text('request_hash').notNull(),
+    expectedVersion: integer('expected_version').notNull(),
+    expectedRevision: integer('expected_revision').notNull(),
+    appliedVersion: integer('applied_version').notNull(),
+    appliedRevision: integer('applied_revision').notNull(),
+    archived: integer('archived').notNull(),
+    reason: text('reason').notNull(),
+    beforeMetadata: text('before_metadata').notNull(),
+    afterMetadata: text('after_metadata').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    index('admin_room_archives_room').on(table.roomCode, table.createdAt),
+  ],
+);
+
 // Durable receipts are also the room operations audit. They intentionally survive
 // account/room removal, and contain no credentials, game state or private cards.
 export const adminRoomAudit = sqliteTable(

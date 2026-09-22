@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 22 September 2026 — Administrative archive/unarchive prototype
+
+[Archive or unarchive](ADMIN_ROOM_ARCHIVE.md) organizes closed rooms without
+changing their saved state, timestamps, credentials, discussion or AI pacing.
+Separate directory filters compose with removal; unarchive leaves play closed,
+reopen rejects archives, and removal/restoration retains both flags. Live
+operator authority and room/archive version fences commit with durable audit
+receipts. Tab-scoped exact retries remain confirmable across refresh and later
+availability changes.
+
+Independent read-only review found no material issues. Focused database/client
+checks and twenty dedicated administrator HTTP groups passed. Browser acceptance,
+source-bound broad checks and preservation evidence accompany the checkpoint.
+Authenticated production acceptance awaits authorized QA access. Full admin and
+rules gates remain unfinished.
+
 ## 22 September 2026 — Administrative close/reopen prototype
 
 [Close or reopen](ADMIN_ROOM_CLOSURE.md) now separates administrative availability

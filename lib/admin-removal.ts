@@ -7,6 +7,7 @@ export type AdminRemovalInput = {
 };
 
 export type AdminRemovalView = {
+  archived?: true;
   closed?: true;
   code: string;
   version: number;

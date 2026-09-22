@@ -124,7 +124,7 @@ export function AdminRoomRemoval({ accountId, code, canManage, onClose, onUpdate
       </div> : pending ? <div className="admin-confirm">
         <p>Saved request: <strong>{pending.removed ? 'Remove' : 'Restore'} room {code}</strong>.</p><p>Reason: {pending.reason}</p>
         <p>The exact request stays in this tab across refresh and reopening these controls. Retrying confirms a completed change without applying it again. Current availability can differ if another administrator changed the room afterward.</p>
-        <p>After refreshing the page or signing in again, choose All rooms in the Directory filter to find this room and reopen these controls.</p>
+        <p>After refreshing the page or signing in again, choose All rooms in both the Directory and Archive filters to find this room and reopen these controls.</p>
         <Button disabled={busy} onClick={() => void submit(pending)}>Retry saved request</Button>
       </div> : room && <form onSubmit={event => { event.preventDefault(); void submit(); }}>
         <label htmlFor="admin-removal-reason">Reason for the audit history<Input id="admin-removal-reason" value={reason} maxLength={300} required disabled={busy} onChange={e => { setReason(e.target.value); setConfirmed(false); }} /></label>
@@ -132,7 +132,7 @@ export function AdminRoomRemoval({ accountId, code, canManage, onClose, onUpdate
         <div className="admin-confirm">
           {room.removed ? <>
             <p>Restore ordinary access to room <strong>{code}</strong>. Saved progress and seats are retained, and current credentials and access revocations remain in effect.</p>
-            <p>Restoration preserves the previous pause and joining settings. {room.closed && 'This room is also closed: restoration keeps it closed to further play until reopened.'} {room.closed ? 'AI remains stopped while closed.' : room.paused ? 'This room will remain paused.' : 'This room will resume with the existing AI pace.'} New joins will remain {room.joinLocked ? 'locked' : 'open'}.</p>
+            <p>Restoration preserves the previous pause and joining settings. {room.archived && 'This room remains archived; use the Archive filter to find it after restoration.'} {room.closed && 'This room is also closed: restoration keeps it closed to further play until reopened.'} {room.closed ? 'AI remains stopped while closed.' : room.paused ? 'This room will remain paused.' : 'This room will resume with the existing AI pace.'} New joins will remain {room.joinLocked ? 'locked' : 'open'}.</p>
           </> : <>
             <p>Remove room <strong>{code}</strong> from ordinary access. This interrupts every player: private room access, joining, game actions, AI play, seat security changes and messages stop until restoration.</p>
             <p>Warn active players before interrupting their game. This recoverable removal keeps the saved game and seats for restoration.</p>

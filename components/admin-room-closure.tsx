@@ -63,7 +63,7 @@ export function AdminRoomClosure({ accountId, code, canManage, onClose, onUpdate
 
   async function submit(saved?: AdminClosureInput) {
     if (inFlight.current || loading || !canManage || storageProblem ||
-        (!saved && (!room || room.removed || pending || !confirmed || (!room.closed && confirmationCode !== code)))) return;
+        (!saved && (!room || room.removed || room.archived || pending || !confirmed || (!room.closed && confirmationCode !== code)))) return;
     let input: AdminClosureInput;
     try {
       input = saved ?? newAdminClosureRequest(room!, !room!.closed, reason);
@@ -124,9 +124,9 @@ export function AdminRoomClosure({ accountId, code, canManage, onClose, onUpdate
       </div> : pending ? <div className="admin-confirm">
         <p>Saved request: <strong>{pending.closed ? 'Close' : 'Reopen'} room {code}</strong>.</p><p>Reason: {pending.reason}</p>
         <p>The exact request stays in this tab across refresh and reopening these controls. Retrying confirms a completed change without applying it again. Current availability can differ if another administrator changed the room afterward.</p>
-        <p>After refreshing the page or signing in again, choose All rooms in the Directory filter to find this room and reopen these controls.</p>
+        <p>After refreshing the page or signing in again, choose All rooms in both the Directory and Archive filters to find this room and reopen these controls.</p>
         <Button disabled={busy} onClick={() => void submit(pending)}>Retry saved request</Button>
-      </div> : room?.removed ? <p>Restore this removed room before changing its closure. Any saved close/reopen request can still be confirmed above.</p> : room && <form onSubmit={event => { event.preventDefault(); void submit(); }}>
+      </div> : room?.removed ? <p>Restore this removed room before changing its closure. Any saved close/reopen request can still be confirmed above.</p> : room?.archived ? <p>Unarchive this room before reopening it. The saved game remains closed and readable to existing players.</p> : room && <form onSubmit={event => { event.preventDefault(); void submit(); }}>
         <label htmlFor="admin-closure-reason">Reason for the audit history<Input id="admin-closure-reason" value={reason} maxLength={300} required disabled={busy} onChange={e => { setReason(e.target.value); setConfirmed(false); }} /></label>
         <p className="admin-secondary">Use a short operational reason. Do not include credentials or private game information.</p>
         <div className="admin-confirm">

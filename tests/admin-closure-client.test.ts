@@ -82,3 +82,13 @@ void test('uncertain closure and changed-access responses keep the exact saved r
   }
   for (const status of [400, 404, 409, 422]) assert.equal(retainAdminRoomRequest(new ClientRequestError('Rejected', 'http', status)), false);
 });
+
+void test('closure projections and exact receipts retain only the explicit archived flag', () => {
+  const room = view(), input = newAdminClosureRequest(room, true, 'QA');
+  assert.deepEqual(adminClosureResponse({ ...room, archived: true }, room.code), { ...room, archived: true });
+  for (const archived of [false, undefined, null, 1, 'true'])
+    assert.throws(() => adminClosureResponse({ ...room, archived }, room.code));
+  const receipt = { operationId: input.operationId, appliedVersion: 8, appliedRevision: 3, replayed: true, room: { ...room, version: 12, revision: 4, archived: true } };
+  assert.deepEqual(adminClosureConfirmation(receipt, room.code, input), receipt);
+  assert.throws(() => newAdminClosureRequest({ ...room, closed: true, archived: true }, false, 'Reopen'), /Unarchive/);
+});

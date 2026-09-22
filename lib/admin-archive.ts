@@ -1,42 +1,42 @@
-export type AdminClosureInput = {
+export type AdminArchiveInput = {
   operationId: string;
   expectedVersion: number;
   expectedRevision: number;
-  closed: boolean;
+  archived: boolean;
   reason: string;
 };
 
-export type AdminClosureView = {
-  archived?: true;
+export type AdminArchiveView = {
+  closed: boolean;
   removed: boolean;
   code: string;
   version: number;
-  closed: boolean;
+  archived: boolean;
   revision: number;
-  closedAt: number | null;
+  archivedAt: number | null;
   updatedAt: number | null;
   paused: boolean;
   joinLocked: boolean;
 };
 
-export type AdminClosureResult = {
+export type AdminArchiveResult = {
   operationId: string;
   replayed: boolean;
   appliedRevision: number;
   appliedVersion: number;
-  room: AdminClosureView;
+  room: AdminArchiveView;
 };
 
-export function validAdminClosureInput(
+export function validAdminArchiveInput(
   value: unknown,
-): value is AdminClosureInput {
+): value is AdminArchiveInput {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const input = value as Record<string, unknown>;
   const fields = [
     'operationId',
     'expectedVersion',
     'expectedRevision',
-    'closed',
+    'archived',
     'reason',
   ];
   return (
@@ -53,7 +53,7 @@ export function validAdminClosureInput(
         Number(version) >= 0 &&
         Number(version) < Number.MAX_SAFE_INTEGER,
     ) &&
-    typeof input.closed === 'boolean' &&
+    typeof input.archived === 'boolean' &&
     typeof input.reason === 'string' &&
     !!input.reason.trim() &&
     input.reason.length <= 300 &&
