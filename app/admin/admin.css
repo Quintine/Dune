@@ -38,12 +38,19 @@
 .admin-room-control .admin-check input { width: 22px; height: 22px; min-height: 22px; flex-shrink: 0; accent-color: var(--primary); }
 .admin-room-control .admin-confirm { margin-top: 16px; }
 .admin-room-control h2:focus-visible { outline: 2px solid var(--primary); outline-offset: 5px; }
+.admin-room-actions, .admin-created-result { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.admin-created-result h3, .admin-created-result p { flex-basis: 100%; }
+.admin-create-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 16px; }
+.admin-create-bot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: end; gap: 12px; margin-bottom: 16px; }
+.admin-room-creation fieldset { min-width: 0; border: 1px solid var(--border); padding: 16px; }
+.admin-room-link { display: inline-flex; min-height: 44px; align-items: center; padding: 8px 16px; border: 1px solid var(--primary); border-radius: 4px; color: var(--primary); }
 @media (max-width: 700px) {
   .admin-shell { padding: 20px 16px; }
   .admin-header, .admin-section-heading { align-items: start; flex-direction: column; gap: 16px; }
   .admin-header h1 { font-size: 1.8rem; }
   .admin-login { padding: 20px; margin: 24px 0; }
   .admin-room-control { padding: 18px; }
+  .admin-create-bot { grid-template-columns: 1fr; }
   .admin-room-table { display: block; }
   .admin-room-table thead { display: none; }
   .admin-room-table tbody { display: block; }

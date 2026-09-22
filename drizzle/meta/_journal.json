@@ -71,6 +71,13 @@
       "when": 1790035625313,
       "tag": "0009_admin_room_controls",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1790038013633,
+      "tag": "0010_admin_room_creation",
+      "breakpoints": true
     }
   ]
 }

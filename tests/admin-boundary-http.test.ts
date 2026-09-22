@@ -26,6 +26,14 @@ void test('admin HTTP denies anonymous, forged admin, room-host and spoofed iden
     });
     assert.equal(write.status, 401);
     assert.deepEqual(Object.keys(await write.json()), ['error']);
+    const create = await fetch(base + '/api/admin/rooms', {
+      method: 'POST', headers: { ...headers, origin: base, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operationId: crypto.randomUUID(), sessionToken: 'b'.repeat(64), name: 'Denied creation QA', faction: 'atreides', advanced: false, techTokens: false, strongholdCards: false, bots: [], reason: 'Must not create a room' }),
+      signal: AbortSignal.timeout(15000),
+    });
+    assert.equal(create.status, 401);
+    assert.equal(create.headers.get('set-cookie'), null);
+    assert.deepEqual(Object.keys(await create.json()), ['error']);
   }
 });
 void test('admin HTTP rejects login CSRF, oversized bodies and invalid credentials without setting sessions', async () => {

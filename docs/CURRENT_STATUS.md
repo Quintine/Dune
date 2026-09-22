@@ -6,13 +6,19 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
-Current implementation adds [administrator pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md):
-usable controls, availability filters, player guidance, stopped human/AI
-decisions, durable audit and account-bound exact retries. Recovery, discussion
-and AI takeback remain available. Focused persistence, authenticated local HTTP
-and desktop/mobile browser checks accompany the checkpoint. Remaining lifecycle
-and full-admin requirements stay open; authenticated production acceptance waits
-for the required QA-access confirmation.
+Current work adds [administrator room creation](ADMIN_ROOM_CREATION.md): a new
+explicitly owned human host seat, supported rules/modules, initial AI seats,
+invitation joining and exact saved retries. Creation uses ordinary engine setup
+and preserves normal readiness/start gates. Neutral administrator configuration,
+reserved human seats and reassignment to existing participants remain unfinished.
+
+Checkpoint `8c922b4` added [pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md)
+and passed types/lint, 5,223 offline tests, 52 HTTP tests and build, with independent
+review and dedicated local administrator/browser checks. It is deployed on the
+NAS: container verification passed, migration 0009 applied, all eight prior rooms
+and ten seats were preserved, and a saved seat restored through public HTTPS.
+Anonymous administrator requests remain denied. Authenticated production admin
+acceptance still requires the pending QA-access confirmation.
 
 Checkpoint `f29d056` was pushed and deployed to the NAS instance. Readable
 create/join progress and Continue notices passed actual HTTPS browser acceptance,
@@ -27,8 +33,8 @@ Continue control. It does not add confirmation steps to game rules or AI turns.
 
 Administrator access/directory checkpoint `c2d392e` passed types, lint, 5,196
 offline tests, 52 HTTP tests and build, plus focused authenticated/browser checks.
-Its production acceptance is being combined with this readability follow-up to
-avoid two deployments; saved games and full administration gates remain intact.
+Its authenticated production acceptance remains pending; the current deployment
+preserves saved games and full administration gates.
 
 The user added a complete [administration panel](ADMIN_PANEL.md) to the goal on
 22 September: secure admin access, room creation/removal and lifecycle controls,

@@ -68,6 +68,26 @@ export const adminRoomAudit = sqliteTable(
   ],
 );
 
+// Durable creation receipts retain public audit metadata after room/account removal.
+// Secret material is hashed; replay never inserts a replacement seat.
+export const adminRoomCreations = sqliteTable(
+  'admin_room_creations',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    hostId: text('host_id').notNull(),
+    requestHash: text('request_hash').notNull(),
+    sessionHash: text('session_hash').notNull().unique(),
+    configuration: text('configuration').notNull(),
+    reason: text('reason').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    index('admin_room_creations_room').on(table.roomCode, table.createdAt),
+  ],
+);
+
 export const seatRecoveryKeys = sqliteTable(
   'seat_recovery_keys',
   {

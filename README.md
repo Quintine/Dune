@@ -43,7 +43,9 @@ The **Administration** link opens `/admin`, with separate administrator sign-in,
 session controls and a searchable room directory. **Room controls** lets owners
 and operators pause/resume rooms and lock/unlock new joins. See [room controls](docs/ADMIN_ROOM_CONTROLS.md)
 and [initial owner setup](docs/ADMIN_PANEL.md#initial-owner-and-access-recovery).
-Room creation, archive/removal, participant support and backup tools are still being built.
+Owners/operators can [create a configured lobby](docs/ADMIN_ROOM_CREATION.md) with
+an explicitly owned new host seat and initial AI players. Neutral lobby management,
+archive/removal, participant support and backup tools are still being built.
 
 ## Saved seats and reconnecting
 

@@ -11,7 +11,7 @@ recovery and persistence systems where suitable.
 | --- | --- | --- |
 | Administrator access | Personal access keys, server-enforced owner/operator/viewer roles, persistent eight-hour sessions, individual/all-session sign-out and operator provisioning/revocation. A room host is not a site administrator. Account-management UI and further operational permissions remain. | Prototyped |
 | Room directory | Search room codes/public player names, filter status/rules/availability, sort and paginate; show host, roster, modules, game change time, pause/join flags and bounded decision ownership. Detailed setup/shared-window ownership remains. | Prototyped |
-| Create and configure | Create rooms with supported rules and human/AI seats, manage lobby settings and invitations, and assign a host through an explicit workflow. Preserve normal prerequisites and readiness rules. | Missing |
+| Create and configure | [Create a lobby](ADMIN_ROOM_CREATION.md) with an explicitly owned new host seat, Basic/Advanced preview and initial AI configuration; invite humans and use ordinary lobby controls/voluntary host-seat handover. Neutral administration of lobby configuration, reserved human seats and reassignment to another existing player remain. | Prototyped, partial |
 | Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md) have controls, durable audit, exact retries and player/AI enforcement. Close/end, archive, restore and recoverable/permanent removal remain missing. | Prototyped, partial |
 | Participant support | Remove disruptive participants or revoke access, manage appropriate restrictions, assist saved-seat recovery and host reassignment, and use supported AI takeover/replacement without losing forces, cards or decisions. | Missing |
 | Saved-game operations | Create/list/download backups, validate imports, restore a selected checkpoint safely, and diagnose or resume interrupted automatic work through authoritative game actions. | Missing |
@@ -36,6 +36,8 @@ All three roles may read the current directory and sign out their own sessions.
 Owners/operators may pause/resume rooms and lock/unlock new joins through
 [Room controls](ADMIN_ROOM_CONTROLS.md). The role is checked from the live
 account, never accepted from a client.
+Owners/operators can also [create a configured lobby](ADMIN_ROOM_CREATION.md),
+with explicit new-host ownership and saved exact retries.
 Disabling an account invalidates its sessions; later re-enabling it cannot restore
 them. The database refuses to disable, demote or delete the final enabled owner.
 No default key, public account creation or host-to-administrator promotion exists.
@@ -103,8 +105,8 @@ checks its ID before proceeding: it creates a named QA room and signs out all
 sessions of that QA account. Never supply a human operator's normal key. It checks
 authentication, cookie properties, ordinary-host denial, directory privacy,
 session revocation and unchanged game/seat continuation. Operator/owner QA keys
-also create one additional room for joining locks, pause/takeback/resume and
-account-bound request checks. Private reports retain
+also create dedicated rooms for joining locks, pause/takeback/resume,
+administrator creation, invitations and voluntary host handover. Private reports retain
 room IDs and safe outcomes, never keys/cookies. The container verifier provisions
 its own disposable QA account and checks admin-session continuity across restart
 and replacement, followed by the HTTP flow and HTTPS-proxy cookie behavior.

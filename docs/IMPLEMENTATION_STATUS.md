@@ -1,5 +1,15 @@
 # Dune implementation status
 
+## 22 September 2026 — Administrator room creation
+
+Added [configured lobby creation](ADMIN_ROOM_CREATION.md) with explicit new-host
+ownership, initial AI factions/difficulties, supported optional rules, invitations
+and the ordinary voluntary host-seat transfer path. Atomic live-authorized writes
+and saved account-bound requests keep retries from duplicating rooms or reviving
+revoked private-seat access. Normal readiness and preview gates remain. Full
+neutral lobby administration, participant support and authenticated production
+acceptance remain unfinished; verification evidence accompanies the checkpoint.
+
 ## 22 September 2026 — Administrator room pause and joining locks
 
 Added reversible pause/resume and joining-lock controls, availability filters
