@@ -78,6 +78,13 @@
       "when": 1790038013633,
       "tag": "0010_admin_room_creation",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1790039439940,
+      "tag": "0011_admin_lobby_configuration",
+      "breakpoints": true
     }
   ]
 }

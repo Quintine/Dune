@@ -6,11 +6,19 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
-Current work adds [administrator room creation](ADMIN_ROOM_CREATION.md): a new
-explicitly owned human host seat, supported rules/modules, initial AI seats,
-invitation joining and exact saved retries. Creation uses ordinary engine setup
-and preserves normal readiness/start gates. Neutral administrator configuration,
-reserved human seats and reassignment to existing participants remain unfinished.
+Current work adds [neutral administrator lobby configuration](ADMIN_LOBBY_CONFIGURATION.md):
+supported rules/modules, AI seat management and host assignment to an existing
+human without private seat access. Exact saved requests, live authority and
+version fences preserve concurrent play and saved continuation. Reserved human
+seats, full participant support, archive/removal and backups remain unfinished.
+
+Checkpoint `e7d4efc` added [administrator room creation](ADMIN_ROOM_CREATION.md)
+and passed types/lint, 5,240 offline tests, 52 HTTP tests and build, with independent
+review and eight dedicated administrator HTTP groups. It is deployed on the NAS:
+container verification passed, migration 0010 applied, all eight prior rooms and
+ten seats were preserved, and a saved seat restored through public HTTPS and the
+browser. Anonymous administrator creation remains denied. Positive production
+administrator acceptance still requires explicitly authorized QA operator access.
 
 Checkpoint `8c922b4` added [pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md)
 and passed types/lint, 5,223 offline tests, 52 HTTP tests and build, with independent

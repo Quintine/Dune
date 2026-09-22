@@ -14,9 +14,9 @@ set up for another person, use the existing **Pass your seat to another player**
 flow in that lobby; the host player identity and room progress survive transfer.
 This workflow grants no access to any existing participant's seat.
 
-This is a connected room-creation prototype, not complete neutral administrator
-lobby management. Creating reserved human seats, assigning a different existing
-participant as host and managing lobbies without a playing seat remain part of
+Use [Configure lobby](ADMIN_LOBBY_CONFIGURATION.md) to manage rules and AI seats
+or assign another existing human as host without a playing seat. Reserved human
+seats and remaining administration still belong to
 [the full panel requirements](ADMIN_PANEL.md).
 
 ## Saved confirmation

@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 22 September 2026 — Neutral administrator lobby configuration
+
+Added [rules/modules, AI configuration and existing-human host assignment](ADMIN_LOBBY_CONFIGURATION.md)
+through public administrator controls. Genuine unused-lobby admission, existing
+engine calculations, atomic live authorization/version fences and durable audit
+preserve normal start gates, physical pieces and private seats. Exact tab-scoped
+requests confirm without reapplying after a lost response, refresh or later game
+start. Independent malformed-save review, focused regressions, actual HTTP/browser
+checks and required source-bound checks accompany the checkpoint. Full admin
+scope and authenticated production acceptance remain unfinished.
+
 ## 22 September 2026 — Administrator room creation
 
 Added [configured lobby creation](ADMIN_ROOM_CREATION.md) with explicit new-host

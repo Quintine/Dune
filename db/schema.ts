@@ -88,6 +88,27 @@ export const adminRoomCreations = sqliteTable(
   ],
 );
 
+// Durable neutral lobby operation receipts and safe before/after audit metadata.
+export const adminLobbyOperations = sqliteTable(
+  'admin_lobby_operations',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    requestHash: text('request_hash').notNull(),
+    expectedVersion: integer('expected_version').notNull(),
+    appliedVersion: integer('applied_version').notNull(),
+    action: text('action').notNull(),
+    reason: text('reason').notNull(),
+    beforeConfiguration: text('before_configuration').notNull(),
+    afterConfiguration: text('after_configuration').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    index('admin_lobby_operations_room').on(table.roomCode, table.createdAt),
+  ],
+);
+
 export const seatRecoveryKeys = sqliteTable(
   'seat_recovery_keys',
   {

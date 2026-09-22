@@ -7,6 +7,7 @@ import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyRoomLifecycle } from './admin-lifecycle-verification.mjs';
 import { verifyRoomCreation } from './admin-creation-verification.mjs';
+import { verifyLobbyConfiguration } from './admin-lobby-verification.mjs';
 
 const options = {};
 for (let n = 2; n < process.argv.length; n += 2) {
@@ -31,7 +32,7 @@ async function request(path, body, cookie, origin = base, expectedAdminId = admi
   const response = await fetch(base + path, {
     method: body === undefined ? 'GET' : 'POST',
     headers: { ...(body === undefined ? {} : { 'content-type': 'application/json', origin }), ...(cookie ? { cookie } : {}),
-      ...(expectedAdminId && (path === '/api/admin/rooms' && body !== undefined || /^\/api\/admin\/rooms\/[^/]+\/control$/.test(path)) ? { 'X-Dune-Admin-Id': expectedAdminId } : {}) },
+      ...(expectedAdminId && (path === '/api/admin/rooms' && body !== undefined || /^\/api\/admin\/rooms\/[^/]+\/(control|lobby)$/.test(path)) ? { 'X-Dune-Admin-Id': expectedAdminId } : {}) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(15000),
   });
   report.lastRequest = { path, status: response.status };
@@ -85,6 +86,7 @@ try {
     session1 = lifecycleSession.cookie;
     await verifyRoomLifecycle(request, session1, report);
     await verifyRoomCreation(request, session1, report);
+    await verifyLobbyConfiguration(request, session1, report);
   }
   report.passed = true;
 } catch (error) {
