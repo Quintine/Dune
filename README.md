@@ -48,7 +48,9 @@ an explicitly owned new host seat and initial AI players.
 [Configure lobby](docs/ADMIN_LOBBY_CONFIGURATION.md) manages supported rules, AI
 seats and host assignment without private seat access.
 [Remove or restore](docs/ADMIN_ROOM_REMOVAL.md) recoverably removes selected rooms;
-use the Directory filter to find them for restoration. Close/end, archive,
+use the Directory filter to find them for restoration.
+[Close or reopen](docs/ADMIN_ROOM_CLOSURE.md) stops further play while preserving
+readable tables and history, then resumes the same saved position. Archive,
 permanent deletion, participant support and backup tools are still being built.
 
 ## Saved seats and reconnecting

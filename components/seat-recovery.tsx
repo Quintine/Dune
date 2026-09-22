@@ -6,7 +6,7 @@ import type { GameView } from '@/game/engine';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { isRoomRemoved, requestJson, requestMayHaveCompleted } from '@/lib/client-request';
+import { isRoomClosed, isRoomRemoved, requestJson, requestMayHaveCompleted } from '@/lib/client-request';
 import { clearHandoverOwner } from '@/lib/seat-handover';
 import {
   createRecoveryAttempt,
@@ -41,6 +41,7 @@ export function SeatRecoverySetup({
   const [busy, setBusy] = useState(false);
   const [uncertain, setUncertain] = useState(false);
   const [message, setMessage] = useState('');
+  const closed = !!game.roomControl?.closed;
   const own = game.players.find((player) => player.id === game.me);
   const kit =
     draft?.roomCode === game.code && draft.playerId === game.me ? draft : null;
@@ -61,7 +62,7 @@ export function SeatRecoverySetup({
   }
 
   async function saveKey() {
-    if (!kit || !saved || confirmed || disabled || pending.current) return;
+    if (!kit || !saved || confirmed || disabled || closed || pending.current) return;
     let confirmedView: GameView | undefined;
     pending.current = true;
     setBusy(true);
@@ -96,7 +97,7 @@ export function SeatRecoverySetup({
       const mayHaveSaved = requestMayHaveCompleted(error);
       setUncertain(mayHaveSaved);
       setMessage(
-        isRoomRemoved(error)
+        isRoomClosed(error) ? `${(error as Error).message} Keep this kit and request; retry after reopening.` : isRoomRemoved(error)
           ? `${(error as Error).message} Keep this same recovery kit and this page open. Retry saving after the room is restored.`
           : mayHaveSaved
           ? 'Saving was not confirmed and may have completed. Keep this same kit. Retry saving to confirm it; no retry has been sent automatically.'
@@ -126,10 +127,11 @@ export function SeatRecoverySetup({
         invalidates the previous kit. The kit stays in memory here; save it
         before refreshing or closing this page.
       </p>
+      {closed && <p>The room is closed. Keep any existing kit; new recovery keys can be enabled after reopening.</p>}
       {!kit ? (
         <Button
           variant="outline"
-          disabled={disabled || busy}
+          disabled={disabled || busy || closed}
           onClick={() => {
             try {
               setDraft(createRecoveryKit(game.code, game.me));
@@ -173,14 +175,14 @@ export function SeatRecoverySetup({
               id={`${id}-saved`}
               type="checkbox"
               checked={saved}
-              disabled={disabled || busy}
+              disabled={disabled || busy || closed}
               onChange={(event) => setSaved(event.target.checked)}
             />
             I have saved the complete private kit outside this page.
           </label>
           <div className="flex flex-wrap gap-2">
             <Button
-              disabled={disabled || busy || !saved || confirmed}
+              disabled={disabled || busy || closed || !saved || confirmed}
               onClick={() => void saveKey()}
             >
               {confirmed
@@ -309,7 +311,7 @@ export function SeatRecoveryClaim({
       setUncertain(mayHaveRecovered);
       onUncertain?.(mayHaveRecovered);
       setMessage(
-        isRoomRemoved(error)
+        isRoomClosed(error) ? `${(error as Error).message} Keep this kit and request; retry after reopening.` : isRoomRemoved(error)
           ? `${(error as Error).message} Your exact recovery request is retained. Keep this page open and retry it after restoration.`
           : mayHaveRecovered
           ? 'Recovery was not confirmed and may have completed. Retry this same request below. Keep this page open to preserve its exact retry details; no retry is automatic.'

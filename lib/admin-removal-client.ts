@@ -9,7 +9,7 @@ const integer = (value: unknown): value is number => Number.isSafeInteger(value)
 const timestamp = (value: unknown) => value === null || integer(value) && value <= 8_640_000_000_000_000;
 
 export function validAdminRemovalView(value: unknown): value is AdminRemovalView {
-  return object(value) && keys(value, ['code', 'version', 'removed', 'revision', 'removedAt', 'updatedAt', 'paused', 'joinLocked']) &&
+  return object(value) && keys(value, ['code', 'version', 'removed', 'revision', 'removedAt', 'updatedAt', 'paused', 'joinLocked', ...(value.closed === true ? ['closed'] : [])]) &&
     typeof value.code === 'string' && /^[A-Z2-9]{8}$/.test(value.code) && integer(value.version) && integer(value.revision) &&
     typeof value.removed === 'boolean' && typeof value.paused === 'boolean' && typeof value.joinLocked === 'boolean' &&
     timestamp(value.removedAt) && timestamp(value.updatedAt);

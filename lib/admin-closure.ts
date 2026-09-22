@@ -1,41 +1,41 @@
-export type AdminRemovalInput = {
+export type AdminClosureInput = {
   operationId: string;
   expectedVersion: number;
   expectedRevision: number;
-  removed: boolean;
+  closed: boolean;
   reason: string;
 };
 
-export type AdminRemovalView = {
-  closed?: true;
+export type AdminClosureView = {
+  removed: boolean;
   code: string;
   version: number;
-  removed: boolean;
+  closed: boolean;
   revision: number;
-  removedAt: number | null;
+  closedAt: number | null;
   updatedAt: number | null;
   paused: boolean;
   joinLocked: boolean;
 };
 
-export type AdminRemovalResult = {
+export type AdminClosureResult = {
   operationId: string;
   replayed: boolean;
   appliedRevision: number;
   appliedVersion: number;
-  room: AdminRemovalView;
+  room: AdminClosureView;
 };
 
-export function validAdminRemovalInput(
+export function validAdminClosureInput(
   value: unknown,
-): value is AdminRemovalInput {
+): value is AdminClosureInput {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const input = value as Record<string, unknown>;
   const fields = [
     'operationId',
     'expectedVersion',
     'expectedRevision',
-    'removed',
+    'closed',
     'reason',
   ];
   return (
@@ -52,7 +52,7 @@ export function validAdminRemovalInput(
         Number(version) >= 0 &&
         Number(version) < Number.MAX_SAFE_INTEGER,
     ) &&
-    typeof input.removed === 'boolean' &&
+    typeof input.closed === 'boolean' &&
     typeof input.reason === 'string' &&
     !!input.reason.trim() &&
     input.reason.length <= 300 &&

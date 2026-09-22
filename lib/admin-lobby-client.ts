@@ -17,7 +17,7 @@ export function validAdminLobbyView(value: unknown): value is AdminLobbyView {
       typeof value.advanced !== 'boolean' || typeof value.techTokens !== 'boolean' || typeof value.strongholdCards !== 'boolean' ||
       !Array.isArray(value.players) || value.players.length > 6 || !object(value.control)) return false;
   const control = value.control;
-  return keys(control, ['paused', 'joinLocked', 'revision', 'updatedAt']) && typeof control.paused === 'boolean' && typeof control.joinLocked === 'boolean' &&
+  return keys(control, ['paused', 'joinLocked', 'revision', 'updatedAt', ...(control.closed === true ? ['closed'] : [])]) && typeof control.paused === 'boolean' && typeof control.joinLocked === 'boolean' &&
     integer(control.revision) && (control.updatedAt === null || integer(control.updatedAt)) && value.players.every(player =>
       object(player) && keys(player, ['id', 'name', 'faction', 'bot', 'position', 'ready', 'hostEligible']) &&
       typeof player.id === 'string' && typeof player.name === 'string' && FACTIONS.some(faction => faction.id === player.faction) &&

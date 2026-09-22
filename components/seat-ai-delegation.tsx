@@ -73,7 +73,8 @@ export function SeatAiDelegation({
   const received = grants.filter((grant) => grant.delegateId === game.me);
   const started = ['setup', 'playing'].includes(game.status);
   const locked = disabled || busy || !loaded;
-  const paused = !!game.roomControl?.paused;
+  const closed = !!game.roomControl?.closed;
+  const paused = !!game.roomControl?.paused || closed;
   if (!own || own.bot) return null;
 
   function store(next: SeatAiDelegateRequest | null) {
@@ -82,7 +83,7 @@ export function SeatAiDelegation({
     setStorageProblem(false);
   }
   async function submit(request: SeatAiDelegateRequest) {
-    if (locked || pending.current) return;
+    if (locked || pending.current || (closed && !record)) return;
     pending.current = true;
     setBusy(true);
     setExpanded(true);
@@ -241,7 +242,7 @@ export function SeatAiDelegation({
                 <Button
                   className="min-h-11 whitespace-normal"
                   variant="outline"
-                  disabled={locked}
+                  disabled={locked || closed}
                   onClick={() =>
                     void submit({
                       type: 'revokeSeatAiDelegate',
@@ -255,7 +256,7 @@ export function SeatAiDelegation({
               )}
             </section>
           )}
-          {paused && <p>The room is paused. New AI permissions and activation will be available after it resumes. Revoking permission and confirming saved requests remain available.</p>}
+          {closed ? <p>The room is closed. New AI permission changes are stopped; exact saved requests can still confirm earlier completed actions.</p> : paused && <p>The room is paused. New AI permissions and activation will be available after it resumes. Revoking permission and confirming saved requests remain available.</p>}
           {started && !paused && !own.autopilot && peers.length > 0 && (
             <div className="flex min-w-0 flex-col gap-3">
               <label htmlFor={`${id}-player`}>

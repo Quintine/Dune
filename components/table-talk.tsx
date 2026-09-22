@@ -18,6 +18,7 @@ import {
 /** Remount on room/seat changes. Messages belong to seats, never browser identities. */
 export function TableTalk({ game }: { game: GameView }) {
   const field = useId();
+  const closed = !!game.roomControl?.closed;
   const [open, setOpen] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [text, setText] = useState('');
@@ -151,7 +152,7 @@ export function TableTalk({ game }: { game: GameView }) {
     }
   }
   async function submit() {
-    if (sending.current || !ready) return;
+    if (sending.current || !ready || (closed && !record)) return;
     const draft = record ?? {
       id: randomId(),
       recipientId: recipient || null,
@@ -314,6 +315,7 @@ export function TableTalk({ game }: { game: GameView }) {
           {shownPage.messages.length === 0 && (
             <p className="muted">No messages loaded in this conversation.</p>
           )}
+          {closed && <p className="notice">This room is closed. Discussion history remains available; an exact saved message can still be confirmed.</p>}
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -330,7 +332,7 @@ export function TableTalk({ game }: { game: GameView }) {
               rows={3}
               maxLength={TALK_LIMIT}
               value={text}
-              disabled={busy || !!record}
+              disabled={busy || !!record || closed}
               onChange={(event) => setText(event.target.value)}
               aria-describedby={`${field}-count`}
             />
@@ -341,6 +343,7 @@ export function TableTalk({ game }: { game: GameView }) {
               type="submit"
               disabled={
                 !ready ||
+                (closed && !record) ||
                 busy ||
                 !text.trim() ||
                 (!record && !!recipient && !target)

@@ -133,7 +133,7 @@ export function AdminRoomControls({ accountId, code, canManage, onClose, onUpdat
     <div className="admin-section-heading"><h2 id="admin-room-control-title" ref={title} tabIndex={-1}>Room {code}</h2><Button variant="outline" disabled={busy} onClick={onClose}>Close room controls</Button></div>
     {notice && <output className="admin-notice">{notice}</output>}
     {loading ? <output>Loading current room settings…</output> : !control ? <Button disabled={busy} onClick={() => void refresh()}>Retry loading settings</Button> : <>
-      <p>Current status: <strong>{control.paused ? 'Paused' : 'Running'}</strong> · New joins <strong>{control.joinLocked ? 'locked' : 'open'}</strong>.</p>
+      <p>Current status: <strong>{control.closed ? 'Closed' : control.paused ? 'Paused' : 'Running'}</strong> · New joins <strong>{control.joinLocked ? 'locked' : 'open'}</strong>.</p>
       <p>Pause stops player decisions, automatic effects and AI play. The pending game stays saved. Discussion, seat recovery and taking back control remain available.</p>
       <p>A joining lock blocks new players. Existing players can reconnect or recover their seats.</p>
       <Button variant="outline" disabled={busy} onClick={() => void refresh()}>Refresh current settings</Button>
@@ -146,7 +146,7 @@ export function AdminRoomControls({ accountId, code, canManage, onClose, onUpdat
         <p>Reason: {pending.reason}</p>
         <p>The exact request is kept in this tab across refresh. Retrying confirms an already completed operation without applying it again.</p>
         <Button disabled={busy} onClick={() => void submit(pending)}>Retry saved request</Button>
-      </div> : <form onSubmit={event => { event.preventDefault(); void submit(); }}>
+      </div> : control.closed ? <p>Reopen this room before changing pause or joining settings. Existing settings are preserved while closed.</p> : <form onSubmit={event => { event.preventDefault(); void submit(); }}>
         <label className="admin-check"><input type="checkbox" checked={paused} disabled={busy} onChange={e => { setPaused(e.target.checked); setConfirmed(false); }} />Pause this room</label>
         <label className="admin-check"><input type="checkbox" checked={joinLocked} disabled={busy} onChange={e => { setJoinLocked(e.target.checked); setConfirmed(false); }} />Lock new joins</label>
         <label htmlFor="admin-room-reason">Reason for the audit history<Input id="admin-room-reason" value={reason} maxLength={300} required disabled={busy} onChange={e => setReason(e.target.value)} /></label>

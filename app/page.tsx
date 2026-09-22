@@ -189,7 +189,7 @@ export default function Home() {
       if (
         !data.botsPending ||
         removedRooms.current.has(room) ||
-        data.roomControl?.paused ||
+        data.roomControl?.paused || data.roomControl?.closed ||
         activeRoom.current !== room ||
         data.me !== activeSeat.current ||
         data.version < (knownVersions.current.get(room) ?? -1) ||
@@ -526,6 +526,7 @@ export default function Home() {
 
   async function send(action: Action) {
     if (!game || removedRooms.current.has(game.code) || mutationPending.current || recovery.current) return;
+    if (game.roomControl?.closed) { setNotice('An administrator closed this room. The saved table remains readable; play resumes after reopening.'); return; }
     if (game.roomControl?.paused && !(action.type === 'setAutopilot' && action.difficulty === null)) {
       setNotice('An administrator paused this room. Game decisions will be available when the room resumes.');
       return;

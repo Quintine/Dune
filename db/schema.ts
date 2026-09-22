@@ -91,6 +91,51 @@ export const adminRoomRemovals = sqliteTable(
   ],
 );
 
+// Closure freezes mutations while retaining private read access, independent of saved game state and pause settings.
+export const roomClosures = sqliteTable(
+  'room_closures',
+  {
+    roomCode: text('room_code')
+      .primaryKey()
+      .references(() => rooms.code, { onDelete: 'cascade' }),
+    closed: integer('closed').notNull().default(0),
+    revision: integer('revision').notNull().default(0),
+    closedAt: integer('closed_at'),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [
+    check('room_closures_closed', sql`${table.closed} IN (0, 1)`),
+    check('room_closures_revision', sql`${table.revision} >= 0`),
+    check(
+      'room_closures_time',
+      sql`(${table.closed} = 1 AND ${table.closedAt} IS NOT NULL) OR (${table.closed} = 0 AND ${table.closedAt} IS NULL)`,
+    ),
+  ],
+);
+
+// Exact operation receipts also retain safe audit evidence independently of rooms/accounts.
+export const adminRoomClosures = sqliteTable(
+  'admin_room_closures',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    requestHash: text('request_hash').notNull(),
+    expectedVersion: integer('expected_version').notNull(),
+    expectedRevision: integer('expected_revision').notNull(),
+    appliedVersion: integer('applied_version').notNull(),
+    appliedRevision: integer('applied_revision').notNull(),
+    closed: integer('closed').notNull(),
+    reason: text('reason').notNull(),
+    beforeMetadata: text('before_metadata').notNull(),
+    afterMetadata: text('after_metadata').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    index('admin_room_closures_room').on(table.roomCode, table.createdAt),
+  ],
+);
+
 // Durable receipts are also the room operations audit. They intentionally survive
 // account/room removal, and contain no credentials, game state or private cards.
 export const adminRoomAudit = sqliteTable(

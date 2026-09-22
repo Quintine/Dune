@@ -286,7 +286,7 @@ export function GameTable({
       : [],
   );
   const busy =
-    transportBusy || !!g.roomControl?.paused || !!me.autopilot || g.automaticContinuationPending;
+    transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot || g.automaticContinuationPending;
   const traitorBattle = g.battle;
   const traitorBeneficiary =
     traitorBattle &&
@@ -1575,14 +1575,14 @@ export function GameTable({
           <PrivateBattlePlan game={g} />
           <NexusCards game={g} act={act} busy={busy} />
           <Recruits game={g} act={act} busy={busy} />
-          <NexusTraitors game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
-          <DiscoveryPanel game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
-          <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
+          <NexusTraitors game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
+          <DiscoveryPanel game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
+          <LeaderSkillsPanel skills={g.leaderSkills} leaders={g.allLeaders} players={g.players} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <RihaniHistory game={g} />
           <MentatHistory game={g} />
-          <NexusChoamTrade game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
-          <NexusTleilaxu game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
-          <NexusSuboids game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
+          <NexusChoamTrade game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
+          <NexusTleilaxu game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
+          <NexusSuboids game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <NexusAdvisors game={g} act={act} busy={busy} />
           <NexusSardaukar game={g} act={act} busy={busy} />
           {!g.nexusCards?.waiting.length && <TupileIntelligence game={g} act={act} busy={busy} />}
@@ -1633,6 +1633,7 @@ export function GameTable({
                 Your faction
                 <select
                   value={me.faction}
+                  disabled={busy}
                   onChange={(e) =>
                     act({ type: 'faction', faction: e.target.value })
                   }
@@ -3037,9 +3038,9 @@ export function GameTable({
                   ))}
                 </>
               ) : g.decision.kind === 'sukRescue' ? (
-                <SukGraduatePanel key={g.decision.event} decision={g.decision} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
+                <SukGraduatePanel key={g.decision.event} decision={g.decision} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
               ) : g.decision.kind === 'rihani' ? (
-                <RihaniChoice key={g.decision.event} game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
+                <RihaniChoice key={g.decision.event} game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
               ) : g.decision.kind === 'battleLosses' ? (
                 <>
                   <p className="muted">
@@ -3144,13 +3145,13 @@ export function GameTable({
                   })}
                 </>
               ) : g.decision.kind === 'discoveryEntry' ? (
-                <DiscoveryEntryDecision game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
+                <DiscoveryEntryDecision game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
               ) : g.decision.kind === 'ecologicalStorm' ? (
-                <DiscoveryStormDecision game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
+                <DiscoveryStormDecision game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
               ) : g.decision.kind === 'discoveryDiscard' ? (
-                <DiscoveryDiscardDecision game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
+                <DiscoveryDiscardDecision game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
               ) : g.decision.kind === 'greatMakerVote' || g.decision.kind === 'greatMakerRide' ? (
-                <GreatMakerDecision game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!me.autopilot} />
+                <GreatMakerDecision game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
               ) : g.decision.kind === 'wormProtection' ? (
                 <>
                   <p className="muted">

@@ -1,5 +1,6 @@
 /** Public room operations only. Reasons and administrator identities stay private. */
 export type RoomControl = {
+  closed?: true;
   paused: boolean;
   joinLocked: boolean;
   revision: number;

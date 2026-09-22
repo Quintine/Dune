@@ -11,14 +11,16 @@ const authority = `SELECT a.role FROM admin_sessions s JOIN admin_accounts a ON 
   AND a.role IN ('owner','operator','viewer')`;
 const mutationAuthority = authority + " AND a.role IN ('owner','operator')";
 const fields = `COALESCE(c.paused, 0) AS paused, COALESCE(c.join_locked, 0) AS join_locked,
-  COALESCE(c.revision, 0) AS revision, c.updated_at`;
+  COALESCE(c.revision, 0) AS revision, c.updated_at, EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1) AS closed`;
 type ControlRow = {
+  closed: number;
   paused: number;
   join_locked: number;
   revision: number;
   updated_at: number | null;
 };
 const project = (row: ControlRow): RoomControl => ({
+  ...(row.closed === 1 ? { closed: true as const } : {}),
   paused: row.paused === 1,
   joinLocked: row.join_locked === 1,
   revision: row.revision,
@@ -92,6 +94,7 @@ export async function applyAdminRoomControl(
       SELECT ?,?,r.code,?,?,COALESCE(c.paused,0),COALESCE(c.join_locked,0),?,?,?
       FROM rooms r LEFT JOIN room_controls c ON c.room_code = r.code
       WHERE r.code = ? AND COALESCE(c.revision,0) = ? AND EXISTS (${mutationAuthority})
+      AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1)
       AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = r.code AND removed = 1)
       AND NOT EXISTS (SELECT 1 FROM admin_room_audit WHERE operation_id = ?)`)
       .bind(

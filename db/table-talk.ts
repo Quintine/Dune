@@ -116,6 +116,7 @@ export async function sendTableTalk(
     SELECT r.code, ?, s.player_id, s.token_hash, json_extract(p.value, '$.name'), json_extract(p.value, '$.faction'), ?,
       (SELECT json_extract(target.value, '$.name') FROM json_each(r.state, '$.players') target WHERE json_extract(target.value, '$.id') = ?), ?, ?
     ${viewer}
+    AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1)
     AND (? IS NULL OR EXISTS (SELECT 1 FROM json_each(r.state, '$.players') target
       WHERE json_extract(target.value, '$.id') = ? AND json_extract(target.value, '$.bot') IS NULL))
     AND NOT EXISTS (SELECT 1 FROM room_messages recent WHERE recent.room_code = r.code
@@ -155,6 +156,8 @@ export async function sendTableTalk(
     .first<{ accepted: number }>();
   if (!receipt) {
     await requireRoomNotRemoved(code);
+    if (await database().prepare('SELECT 1 FROM room_closures WHERE room_code = ? AND closed = 1').bind(code).first())
+      throw new TableTalkError('An administrator closed this room. Discussion history remains readable; new messages are available after reopening.', 409, 'ROOM_CLOSED');
     throw new TableTalkError(
       'Message not confirmed. Check your seat and recipient, wait a second, then try again.',
     );

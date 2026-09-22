@@ -276,3 +276,10 @@ void test('a failed gateway response keeps its status and requires reconciliatio
   );
   assert.equal(calls, 1);
 });
+
+void test('a typed closure rejection retains possibly completed request proof without treating it as removal', async () => {
+  const { isRoomClosed, isRoomRemoved, requestMayHaveCompleted } = await import('../lib/client-request');
+  const error = new ClientRequestError('Room closed', 'http', 409, 'ROOM_CLOSED');
+  assert.equal(isRoomClosed(error), true); assert.equal(isRoomRemoved(error), false);
+  assert.equal(requestMayHaveCompleted(error), true);
+});

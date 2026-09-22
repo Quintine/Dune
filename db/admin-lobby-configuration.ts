@@ -17,7 +17,7 @@ const authority = `SELECT a.role FROM admin_sessions s JOIN admin_accounts a ON 
   AND s.expires_at > ? AND s.generation = a.session_generation
   AND a.role IN ('owner','operator','viewer')`;
 const mutationAuthority = authority + " AND a.role IN ('owner','operator')";
-const roomSelect = `SELECT r.code,r.state,r.version,COALESCE(c.paused,0) AS paused,
+const roomSelect = `SELECT r.code,r.state,r.version,EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1) AS closed,COALESCE(c.paused,0) AS paused,
   EXISTS (SELECT 1 FROM room_removals WHERE room_code = r.code AND removed = 1) AS removed,
   COALESCE(c.join_locked,0) AS join_locked,COALESCE(c.revision,0) AS control_revision,c.updated_at AS control_updated_at,
   (SELECT json_group_array(DISTINCT s.player_id) FROM seats s WHERE s.room_code = r.code AND s.revoked = 0) AS active_humans
@@ -29,6 +29,7 @@ type Row = {
   state: string;
   version: number;
   removed: number;
+  closed: number;
   paused: number;
   join_locked: number;
   control_revision: number;
@@ -77,6 +78,7 @@ function decode(row: Row) {
   }
   const activeHumans = new Set<string>(JSON.parse(row.active_humans));
   const control = {
+    ...(row.closed === 1 ? { closed: true as const } : {}),
     paused: row.paused === 1,
     joinLocked: row.join_locked === 1,
     revision: row.control_revision,
@@ -89,6 +91,7 @@ function decode(row: Row) {
     activeHumans,
     control,
   );
+  if (row.closed === 1) { view.editable = false; view.blockedReason = 'Reopen this closed room before configuring its lobby.'; }
   if (row.removed === 1) {
     view.editable = false;
     view.blockedReason =
@@ -259,6 +262,7 @@ export async function configureAdminLobby(
     database
       .prepare(`UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ?
       AND json_extract(state, '$.status') = 'lobby' AND EXISTS (${mutationAuthority})
+      AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1)
       AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)
       AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)
       AND NOT EXISTS (SELECT 1 FROM admin_lobby_operations WHERE operation_id = ?)

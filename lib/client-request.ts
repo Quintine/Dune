@@ -17,6 +17,9 @@ export class ClientRequestError extends Error {
   }
 }
 
+export const isRoomClosed = (error: unknown): error is ClientRequestError =>
+  error instanceof ClientRequestError && error.code === 'ROOM_CLOSED';
+
 export const isRoomRemoved = (error: unknown): error is ClientRequestError =>
   error instanceof ClientRequestError && error.code === 'ROOM_REMOVED';
 
@@ -33,7 +36,7 @@ export function subscribeRoomRemoval(listener: (room: string) => void) {
 export function requestMayHaveCompleted(error: unknown): boolean {
   // Creation/recovery can commit before their final private read loses to removal.
   // A temporary removal is never proof that a preceding mutation did not commit.
-  if (isRoomRemoved(error)) return true;
+  if (isRoomRemoved(error) || isRoomClosed(error)) return true;
   if (!(error instanceof ClientRequestError) || error.kind !== 'http')
     return true;
   return (

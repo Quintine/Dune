@@ -85,6 +85,13 @@ async function requireRoomNotRemoved(code: string) {
     .first();
   if (removed) throw new RoomRemovedError();
 }
+export class RoomClosedError extends RoomEntryError {
+  constructor() { super('An administrator closed this room. The saved table remains readable; new play and seat changes are available after it is reopened.', 'ROOM_CLOSED', 409); }
+}
+async function requireRoomNotClosed(code: string) {
+  const closed = await db().prepare('SELECT 1 AS closed FROM room_closures WHERE room_code = ? AND closed = 1').bind(code).first();
+  if (closed) throw new RoomClosedError();
+}
 type PreparedEntry = {
   operationId: string;
   operationHash: string;
@@ -261,11 +268,11 @@ export async function createRoom(
 }
 type RoomControlRow = { room_control: string };
 // SQLite constructs an explicit public allowlist, consistent with delegation views.
-const roomControlProjection = `json_object(
+const roomControlProjection = `json_patch(json_object(
   'paused', json(CASE WHEN c.paused = 1 THEN 'true' ELSE 'false' END),
   'joinLocked', json(CASE WHEN c.join_locked = 1 THEN 'true' ELSE 'false' END),
   'revision', COALESCE(c.revision, 0), 'updatedAt', c.updated_at
-) AS room_control`;
+), CASE WHEN EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) THEN '{"closed":true}' ELSE '{}' END) AS room_control`;
 function publicRoomControl(row: RoomControlRow): RoomControl {
   return JSON.parse(row.room_control) as RoomControl;
 }
@@ -273,7 +280,7 @@ function attachRoomControl(view: GameView, row: RoomControlRow) {
   const control = publicRoomControl(row);
   // Untouched rooms retain the ordinary game-view shape. Once an administrator
   // changes controls, keep the revision visible even after both flags are cleared.
-  if (control.revision > 0) view.roomControl = control;
+  if (control.revision > 0 || control.closed) view.roomControl = control;
 }
 async function readRoomSnapshot(code: string) {
   const row = await db()
@@ -305,6 +312,7 @@ export async function readRoom(code: string) {
   return game;
 }
 function requireUnpaused(control: RoomControl) {
+  if (control.closed) throw new RoomClosedError();
   if (control.paused)
     throw new RuleError(
       'An administrator paused this room. Game decisions and AI will continue after it resumes.',
@@ -364,6 +372,7 @@ export async function joinRoom(
     }
     await requireUnusedEntryToken(entry);
     const { game: g, control } = await readRoomSnapshot(code);
+    if (control.closed) throw new RoomClosedError();
     if (control.paused || control.joinLocked)
       throw new RoomEntryError(
         control.paused
@@ -380,7 +389,7 @@ export async function joinRoom(
     const results = await db().batch([
       db()
         .prepare(
-          'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND (paused = 1 OR join_locked = 1))',
+          'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND (paused = 1 OR join_locked = 1))',
         )
         .bind(JSON.stringify(g), Date.now(), code, old),
       db()
@@ -406,6 +415,7 @@ export async function joinRoom(
     ]);
     if (results[0].meta.changes !== 1) {
       await requireRoomNotRemoved(code);
+      await requireRoomNotClosed(code);
       throw new RoomEntryError(
         'The table changed. Retry the same room-entry request.',
         'ENTRY_CONFLICT',
@@ -435,6 +445,7 @@ export async function act(
   const { game: current, control } = await readRoomSnapshot(code);
   const takingBackControl =
     action?.type === 'setAutopilot' && action.difficulty === null;
+  if (control.closed) throw new RoomClosedError();
   if (!takingBackControl) requireUnpaused(control);
   if (current.version !== version)
     throw new RuleError(
@@ -456,7 +467,7 @@ export async function act(
   const now = clock.now();
   const update = db()
     .prepare(
-      'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND (? = 1 OR NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
+      'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND (? = 1 OR NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
     )
     .bind(
       JSON.stringify(next),
@@ -481,6 +492,7 @@ export async function act(
       : [await update.run()];
   if (results[0].meta.changes !== 1) {
     await requireRoomNotRemoved(code);
+    await requireRoomNotClosed(code);
     throw new RuleError(
       'Another action arrived first. Your view has refreshed; try again.',
     );
@@ -600,7 +612,7 @@ export async function continueRoomAutomatic(
     const snapshot = await readWorkerRoomSnapshot(code);
     if (!snapshot) return;
     const { game: current, control } = snapshot;
-    if (control.paused) return;
+    if (control.paused || control.closed) return;
     if (
       !needsAutomaticRoomRecovery(current) ||
       (!current.pendingTreacheryDiscard &&
@@ -615,7 +627,7 @@ export async function continueRoomAutomatic(
     next.version = current.version + 1;
     const result = await db()
       .prepare(
-        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
+        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
       )
       .bind(JSON.stringify(next), clock.now(), code, current.version)
       .run();
@@ -637,7 +649,7 @@ export async function continueRoomBots(
     if (!snapshot) return;
     let current = snapshot.game;
     if (
-      snapshot.control.paused ||
+      snapshot.control.paused || snapshot.control.closed ||
       !current.botsPending ||
       current.status === 'finished'
     )
@@ -650,7 +662,7 @@ export async function continueRoomBots(
       if (!snapshot) return;
       current = snapshot.game;
       if (
-        snapshot.control.paused ||
+        snapshot.control.paused || snapshot.control.closed ||
         !current.botsPending ||
         current.status === 'finished'
       )
@@ -666,7 +678,7 @@ export async function continueRoomBots(
     next.version = current.version + 1;
     const result = await db()
       .prepare(
-        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
+        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
       )
       .bind(JSON.stringify(next), clock.now(), code, current.version)
       .run();
@@ -825,7 +837,7 @@ export async function setSeatAiDelegate(
     db()
       .prepare(
         `UPDATE rooms SET version = version + 1, updated_at = ?
-         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)
+         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1)
            AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)
            AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
            AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
@@ -889,6 +901,7 @@ export async function setSeatAiDelegate(
       (await delegationSessionsActive(won))
     )
       return { view: await readSeatView(code, auth), replayed: true };
+    await requireRoomNotClosed(code);
     throw invalidDelegation(
       'The table, owner or delegate changed. Reconnect before saving this consent.',
       'STALE_VERSION',
@@ -932,11 +945,12 @@ export async function revokeSeatAiDelegate(
       'STALE_VERSION',
     );
   const now = clock.now();
+  await requireRoomNotClosed(code);
   const results = await db().batch([
     db()
       .prepare(
         `UPDATE rooms SET version = version + 1, updated_at = ?
-         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)
+         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1)
            AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
            AND EXISTS (
              SELECT 1 FROM seat_ai_delegations AS consent
@@ -973,6 +987,7 @@ export async function revokeSeatAiDelegate(
   ]);
   if (results[0].meta.changes !== 1 || results[1].meta.changes !== 1) {
     await requireRoomNotRemoved(code);
+    await requireRoomNotClosed(code);
     throw invalidDelegation(
       'The table, owner, delegate or consent changed. Reconnect before revoking it.',
       'STALE_VERSION',
@@ -1060,7 +1075,7 @@ export async function useSeatAiDelegate(
     db()
       .prepare(
         `UPDATE rooms SET state = ?, version = version + 1, updated_at = ?
-         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)
+         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1)
            AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)
            AND EXISTS (
              SELECT 1 FROM seat_ai_delegations AS consent
@@ -1125,6 +1140,7 @@ export async function useSeatAiDelegate(
       (await delegationSessionsActive(won))
     )
       return { view: await readSeatView(code, auth), replayed: true };
+    await requireRoomNotClosed(code);
     throw invalidDelegation(
       'The table, owner, delegate or consent changed. Retry the exact activation after reconnecting.',
       'STALE_VERSION',
@@ -1148,10 +1164,11 @@ export async function setRecoveryKey(
       'INVALID_CONTROL_REQUEST',
       400,
     );
+  await requireRoomNotClosed(code);
   const results = await db().batch([
     db()
       .prepare(
-        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
       )
       .bind(Date.now(), code, version, code, auth.playerId, auth.tokenHash),
     db()
@@ -1162,6 +1179,7 @@ export async function setRecoveryKey(
   ]);
   if (results[0].meta.changes !== 1) {
     await requireRoomNotRemoved(code);
+    await requireRoomNotClosed(code);
     throw new SeatControlError(
       'The table or seat changed. Reconnect before saving the recovery key.',
       'STALE_VERSION',
@@ -1268,10 +1286,11 @@ export async function recoverSeat(
       'INVALID_SESSION_TOKEN',
     );
   const current = await readRoom(code);
+  await requireRoomNotClosed(code);
   const results = await db().batch([
     db()
       .prepare(
-        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seat_recovery_keys WHERE room_code = ? AND player_id = ? AND recovery_hash = ?) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_recovery_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?)',
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND EXISTS (SELECT 1 FROM seat_recovery_keys WHERE room_code = ? AND player_id = ? AND recovery_hash = ?) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_recovery_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?)',
       )
       .bind(
         Date.now(),
@@ -1310,6 +1329,7 @@ export async function recoverSeat(
   ]);
   if (results[0].meta.changes !== 1) {
     await requireRoomNotRemoved(code);
+    await requireRoomNotClosed(code);
     // A concurrent exact request may have completed: retrying the same proof is safe.
     throw new SeatControlError(
       'The table or recovery operation changed. Retry the exact recovery request.',
@@ -1414,10 +1434,11 @@ export async function createSeatHandover(
   if (replay) return replay;
   const expiresAt = now + SEAT_HANDOVER_TTL_MS;
   try {
-    const results = await db().batch([
+    await requireRoomNotClosed(code);
+  const results = await db().batch([
       db()
         .prepare(
-          'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_handover_offers WHERE offer_hash = ? AND (room_code != ? OR player_id != ?))',
+          'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_handover_offers WHERE offer_hash = ? AND (room_code != ? OR player_id != ?))',
         )
         .bind(
           now,
@@ -1453,6 +1474,7 @@ export async function createSeatHandover(
         now,
       );
       if (won) return won;
+      await requireRoomNotClosed(code);
       throw new SeatControlError(
         'The table, seat, or handover offer changed. Reconnect before creating the offer.',
         'STALE_VERSION',
@@ -1501,10 +1523,11 @@ export async function revokeSeatHandover(
       'A different handover offer is now current for this seat.',
       'HANDOVER_CHANGED',
     );
+  await requireRoomNotClosed(code);
   const results = await db().batch([
     db()
       .prepare(
-        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND claim_operation_hash IS NULL)',
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND claim_operation_hash IS NULL)',
       )
       .bind(
         clock.now(),
@@ -1525,6 +1548,7 @@ export async function revokeSeatHandover(
   ]);
   if (results[0].meta.changes !== 1) {
     await requireRoomNotRemoved(code);
+    await requireRoomNotClosed(code);
     const current = await handoverOffer(code, auth.playerId);
     if (!current)
       return {
@@ -1713,10 +1737,11 @@ export async function claimSeatHandover(
     );
   const current = await readRoom(code);
   const claimFence = await hash(crypto.randomUUID());
+  await requireRoomNotClosed(code);
   const results = await db().batch([
     db()
       .prepare(
-        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND secret_hash = ? AND issuer_session_hash = ? AND expires_at > ? AND claim_operation_hash IS NULL) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?) AND NOT EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?)',
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = rooms.code AND closed = 1) AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND secret_hash = ? AND issuer_session_hash = ? AND expires_at > ? AND claim_operation_hash IS NULL) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?) AND NOT EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?)',
       )
       .bind(
         now,
@@ -1786,6 +1811,7 @@ export async function claimSeatHandover(
   ]);
   if (results[0].meta.changes !== 1) {
     await requireRoomNotRemoved(code);
+    await requireRoomNotClosed(code);
     const won = await replayClaimedHandover(
       code,
       playerId,

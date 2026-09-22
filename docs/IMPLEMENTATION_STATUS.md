@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 22 September 2026 — Administrative close/reopen prototype
+
+[Close or reopen](ADMIN_ROOM_CLOSURE.md) now separates administrative availability
+from the saved game's rules status and winner. It retains readable private tables
+and discussion, blocks new player/AI/seat/message mutations, and preserves exact
+prior receipts. Atomic audit/version/revision fences and independent closure
+metadata compose with pause, lobby configuration and recoverable removal.
+Reopening preserves credentials and pending choices, with existing AI pacing.
+
+Independent review corrected recovery-claim scope, unnecessary closed-room worker
+scheduling and typed closure errors after write races. Focused runtime checks,
+dedicated HTTP acceptance and lost-response/mobile browser QA accompany the
+checkpoint. Source-bound broad checks and preservation evidence remain private;
+production acceptance must match the deployed checkpoint. Archive, permanent
+removal, bulk operations and the rest of the full administration panel remain
+unfinished; this does not certify complete rules or open publication gates.
+
+
 ## 22 September 2026 — Recoverable room removal and restoration
 
 Added [administrator removal/restoration](ADMIN_ROOM_REMOVAL.md) with a typed-room

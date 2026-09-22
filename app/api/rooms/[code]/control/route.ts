@@ -86,7 +86,7 @@ export async function POST(req: Request) {
                 ownerId: input.ownerId,
                 grantId: input.grantId,
               });
-      if (!result.view.roomControl?.paused && (result.view.botsPending || needsAutomaticRoomRecovery(result.view)))
+      if (!result.view.roomControl?.paused && !result.view.roomControl?.closed && (result.view.botsPending || needsAutomaticRoomRecovery(result.view)))
         waitUntil(resumeRoom(code));
       return Response.json(result, { headers: noStore });
     }

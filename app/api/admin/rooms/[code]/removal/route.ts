@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     if (!validAdminRemovalInput(input)) throw new AdminError('Choose removal or restoration, current versions and an operational reason.', 400);
     const room = code(request);
     const result = await applyAdminRemoval(env.DB, identity, room, input);
-    if (!result.replayed && !result.room.removed && !result.room.paused) waitUntil(resumeRoom(room));
+    if (!result.replayed && !result.room.removed && !result.room.paused && !result.room.closed) waitUntil(resumeRoom(room));
     return adminResponse(result);
   } catch (error) { return adminFailure(error); }
 }

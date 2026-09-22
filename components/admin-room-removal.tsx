@@ -132,7 +132,7 @@ export function AdminRoomRemoval({ accountId, code, canManage, onClose, onUpdate
         <div className="admin-confirm">
           {room.removed ? <>
             <p>Restore ordinary access to room <strong>{code}</strong>. Saved progress and seats are retained, and current credentials and access revocations remain in effect.</p>
-            <p>Restoration preserves the previous pause and joining settings. {room.paused ? 'This room will remain paused.' : 'This room will resume with the existing AI pace.'} New joins will remain {room.joinLocked ? 'locked' : 'open'}.</p>
+            <p>Restoration preserves the previous pause and joining settings. {room.closed && 'This room is also closed: restoration keeps it closed to further play until reopened.'} {room.closed ? 'AI remains stopped while closed.' : room.paused ? 'This room will remain paused.' : 'This room will resume with the existing AI pace.'} New joins will remain {room.joinLocked ? 'locked' : 'open'}.</p>
           </> : <>
             <p>Remove room <strong>{code}</strong> from ordinary access. This interrupts every player: private room access, joining, game actions, AI play, seat security changes and messages stop until restoration.</p>
             <p>Warn active players before interrupting their game. This recoverable removal keeps the saved game and seats for restoration.</p>

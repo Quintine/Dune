@@ -50,6 +50,7 @@ export function SeatHandoverSetup({
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [replaceAcknowledged, setReplaceAcknowledged] = useState(false);
+  const closed = !!game.roomControl?.closed;
   const own = game.players.find((player) => player.id === game.me);
   useEffect(() => {
     try {
@@ -96,7 +97,7 @@ export function SeatHandoverSetup({
     setRecord(next);
   }
   async function submit(operation: 'create' | 'revoke', kit: SeatHandoverKit) {
-    if (disabled || pending.current) return;
+    if (disabled || pending.current || (closed && !record?.operation)) return;
     pending.current = true;
     setReplaceAcknowledged(false);
     setBusy(true);
@@ -170,10 +171,11 @@ export function SeatHandoverSetup({
         accepted. Recovering your seat invalidates its pending handover. Only
         share the kit with the intended recipient.
       </p>
+      {closed && <p>The room is closed. New handovers and cancellations are stopped; exact saved requests can still confirm a completed change.</p>}
       {!record ? (
         <Button
           variant="outline"
-          disabled={disabled || busy || !loaded}
+          disabled={disabled || closed || busy || !loaded}
           onClick={() => {
             try {
               void submit('create', createHandoverKit(game.code, game.me));
@@ -238,7 +240,7 @@ export function SeatHandoverSetup({
                 </Button>
                 <Button
                   variant="outline"
-                  disabled={disabled || busy}
+                  disabled={disabled || closed || busy}
                   onClick={() => void submit('revoke', record.kit)}
                 >
                   Cancel handover
@@ -263,7 +265,7 @@ export function SeatHandoverSetup({
           <Button
             variant="outline"
             disabled={
-              disabled || busy || (!!record.operation && !replaceAcknowledged)
+              disabled || closed || busy || (!!record.operation && !replaceAcknowledged)
             }
             onClick={() => {
               try {

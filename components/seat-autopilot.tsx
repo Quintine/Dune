@@ -24,6 +24,8 @@ export function SeatAutopilot({ game, act, busy }: SeatAutopilotProps) {
   if (!own || own.bot || !['setup', 'playing'].includes(game.status))
     return null;
 
+  if (game.roomControl?.closed) return <p className="notice">The room is closed. AI play and changes to its control are stopped until an administrator reopens it.</p>;
+
   if (own.autopilot)
     return (
       <section

@@ -6,12 +6,21 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
-Current work adds [recoverable administrator removal/restoration](ADMIN_ROOM_REMOVAL.md):
-live authority and atomic version/revision fences block ordinary room access,
-player/AI work, seat operations and discussion while preserving saved records.
-Persistent notices and exact saved retries retain proof through temporary removal.
-Restoration retains prior pause/join settings and credential revocations.
-Close/end, archive, permanent deletion, bulk actions and full support remain open.
+Current work adds [administrative close/reopen](ADMIN_ROOM_CLOSURE.md):
+closed rooms preserve readable private tables and discussion while stopping new
+play, joins, AI and seat mutations. Exact prior receipts remain confirmable;
+reopening preserves pending decisions, credentials and pause/join flags.
+Archive, permanent deletion, bulk actions and full participant/backup support
+remain unfinished.
+
+Checkpoint `238de38` added [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md)
+and passed types/lint, 5,314 offline tests, 52 HTTP tests and build, with fourteen
+administrator HTTP groups and lost-response desktop/mobile browser QA. It is
+deployed on the NAS: container verification passed, migration 0012 applied,
+all eight prior rooms and ten seats were preserved, and public HTTPS/browser
+saved-seat restoration passed. Anonymous removal and other admin routes remain
+denied. Positive production administrator acceptance remains pending authorized
+QA operator access; the current close/reopen work is not deployed yet.
 
 Checkpoint `c0cc4de` added [neutral administrator lobby configuration](ADMIN_LOBBY_CONFIGURATION.md)
 and passed types/lint, 5,260 offline tests, 52 HTTP tests and build, with eleven

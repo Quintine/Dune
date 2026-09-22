@@ -13,7 +13,7 @@ void test('admin HTTP denies anonymous, forged admin, room-host and spoofed iden
   assert.ok(cookie);
   const room = (await created.json() as { code: string }).code;
   for (const headers of [{}, { cookie }, { cookie: 'dune_admin_session=' + 'a'.repeat(64) }, { 'oai-authenticated-user-id': 'owner', 'oai-authenticated-user-email': 'owner@example.test' }] as Record<string, string>[]) {
-    for (const path of ['/api/admin/session', '/api/admin/rooms', `/api/admin/rooms/${room}/control`, `/api/admin/rooms/${room}/lobby`, `/api/admin/rooms/${room}/removal`]) {
+    for (const path of ['/api/admin/session', '/api/admin/rooms', `/api/admin/rooms/${room}/control`, `/api/admin/rooms/${room}/lobby`, `/api/admin/rooms/${room}/removal`, `/api/admin/rooms/${room}/closure`]) {
       const result = await fetch(base + path, { headers, signal: AbortSignal.timeout(15000) });
       assert.equal(result.status, 401, path);
       assert.equal(result.headers.get('cache-control'), 'no-store');
@@ -42,6 +42,14 @@ void test('admin HTTP denies anonymous, forged admin, room-host and spoofed iden
     assert.equal(removal.status, 401);
     assert.equal(removal.headers.get('set-cookie'), null);
     assert.deepEqual(Object.keys(await removal.json()), ['error']);
+    const closure = await fetch(`${base}/api/admin/rooms/${room}/closure`, {
+      method: 'POST', headers: { ...headers, origin: base, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operationId: crypto.randomUUID(), expectedVersion: 0, expectedRevision: 0, closed: true, reason: 'Denied closure QA' }),
+      signal: AbortSignal.timeout(15000),
+    });
+    assert.equal(closure.status, 401);
+    assert.equal(closure.headers.get('set-cookie'), null);
+    assert.deepEqual(Object.keys(await closure.json()), ['error']);
     const create = await fetch(base + '/api/admin/rooms', {
       method: 'POST', headers: { ...headers, origin: base, 'Content-Type': 'application/json' },
       body: JSON.stringify({ operationId: crypto.randomUUID(), sessionToken: 'b'.repeat(64), name: 'Denied creation QA', faction: 'atreides', advanced: false, techTokens: false, strongholdCards: false, bots: [], reason: 'Must not create a room' }),

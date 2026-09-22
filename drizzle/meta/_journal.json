@@ -92,6 +92,13 @@
       "when": 1790040786205,
       "tag": "0012_admin_room_removal",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1790042692212,
+      "tag": "0013_admin_room_closure",
+      "breakpoints": true
     }
   ]
 }

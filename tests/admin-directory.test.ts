@@ -99,3 +99,18 @@ void test('directory projects and filters operational flags without private audi
     await assert.rejects(read('availability=unsupported'), (e: unknown) => e instanceof AdminError && e.status === 400);
   } finally { f.sqlite.close(); }
 });
+
+void test('closed rooms remain in the directory but are excluded from running rooms and expose only the closure flag', async () => {
+  const f = await fixture();
+  try {
+    insert(f.sqlite, 'OPENROOM', state()); insert(f.sqlite, 'CLOSEDQA', state());
+    f.sqlite.prepare('INSERT INTO room_closures(room_code,closed,revision,closed_at,updated_at) VALUES (?,1,1,100,100)').run('CLOSEDQA');
+    const read = (q: string) => readAdminDirectory(f.database, f.identity, new URLSearchParams(q));
+    assert.equal((await read('')).total, 2);
+    const closed = await read('availability=closed');
+    assert.equal(closed.total, 1); assert.equal(closed.rooms[0].code, 'CLOSEDQA');
+    assert.deepEqual(closed.rooms[0].control, { paused: false, joinLocked: false, revision: 0, updatedAt: null, closed: true });
+    assert.equal(JSON.stringify(closed).includes('SECRET'), false);
+    assert.deepEqual((await read('availability=running')).rooms.map(room => room.code), ['OPENROOM']);
+  } finally { f.sqlite.close(); }
+});

@@ -56,7 +56,7 @@ export async function GET(req: Request) {
     const view = await readSeatView(code, id);
     // Reconnect resumes persisted automatic effects/acknowledgements and AI work
     // after an interruption. Actual human choices remain engine-owned decisions.
-    if (!view.roomControl?.paused && (view.botsPending || needsAutomaticRoomRecovery(view)))
+    if (!view.roomControl?.paused && !view.roomControl?.closed && (view.botsPending || needsAutomaticRoomRecovery(view)))
       waitUntil(resumeRoom(code));
     return Response.json(view, {
       headers: { 'Cache-Control': 'no-store' },
@@ -132,7 +132,7 @@ export async function POST(req: Request) {
     )
       throw new RuleError('The action is invalid.');
     const view = await act(code, id, body.version, body.action);
-    if (!view.roomControl?.paused && (view.botsPending || needsAutomaticRoomRecovery(view)))
+    if (!view.roomControl?.paused && !view.roomControl?.closed && (view.botsPending || needsAutomaticRoomRecovery(view)))
       waitUntil(resumeRoom(code));
     return Response.json(view, {
       headers: { 'Cache-Control': 'no-store' },

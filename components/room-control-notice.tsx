@@ -2,6 +2,11 @@ import type { RoomControl } from '@/lib/room-control';
 
 /** Public operational status only; administrator reasons and identity stay private. */
 export function RoomControlNotice({ control }: { control?: RoomControl }) {
+  if (control?.closed) return <section className="notice" aria-label="Room availability" aria-live="polite">
+    <h2 className="text-lg font-semibold">Room closed by an administrator</h2>
+    <p>This room is closed to further play. Your table and discussion history remain readable. The saved position and pending choices are preserved; closing does not award a winner.</p>
+    <p>New joins, game decisions, AI, messages and seat changes are stopped. Keep any unconfirmed request and recovery kit. Exact saved requests can still confirm an earlier completed action. An administrator can reopen the room.</p>
+  </section>;
   if (!control?.paused && !control?.joinLocked) return null;
   return <section className="notice" aria-label="Room availability" aria-live="polite">
     {control.paused ? <>
