@@ -6,6 +6,20 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+Current implementation adds [administrator pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md):
+usable controls, availability filters, player guidance, stopped human/AI
+decisions, durable audit and account-bound exact retries. Recovery, discussion
+and AI takeback remain available. Focused persistence, authenticated local HTTP
+and desktop/mobile browser checks accompany the checkpoint. Remaining lifecycle
+and full-admin requirements stay open; authenticated production acceptance waits
+for the required QA-access confirmation.
+
+Checkpoint `f29d056` was pushed and deployed to the NAS instance. Readable
+create/join progress and Continue notices passed actual HTTPS browser acceptance,
+including mobile and saved-seat refresh; existing production records survived
+the update. Administrator sign-in renders closed by default. Authenticated admin
+production checks remain pending provisioning approval.
+
 The [readable-notice fix](READABLE_NOTICES.md) replaces the flashing recovery
 screen during ordinary room creation/join with concise progress. Actual recovery
 instructions stay until resolved, and completed-action text waits for a local
@@ -33,7 +47,7 @@ relevant real player/admin flows in dedicated QA rooms, and record deployed
 results separately from local checks. See [production verification](VERIFICATION_WORKFLOW.md#verify-the-deployed-application).
 This requirements update does not claim a new deployed test result.
 
-Latest delivered checkpoint: `0f79f28`, [forced Harkonnen exchange return](HARKONNEN_EXCHANGE.md).
+Earlier completed rules checkpoint: `0f79f28`, [forced Harkonnen exchange return](HARKONNEN_EXCHANGE.md).
 Types, lint, **5,150 offline tests**, **49 HTTP tests** and the production build
 passed. One complete Advanced sample had no rejected actions across 158 actions
 and four JSON restores. Browser inspection and exact refresh were checked;

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import { baseDeck } from '../game/cards';
 import { createGame, newPlayer } from '../game/engine';
@@ -389,12 +389,14 @@ void test('0005 backfills an active 0004 claim for exact replay after upgrade', 
       (receipt.claim_fence as string).includes(body.newSessionToken),
       false,
     );
-    f.sqlite.exec(
-      readFileSync(
-        new URL('../drizzle/0006_thick_imperial_guard.sql', import.meta.url),
-        'utf8',
-      ),
-    );
+    // Run current production code only after completing the schema upgrade.
+    // The receipt assertion above still verifies the 0005 backfill itself.
+    for (const file of readdirSync(new URL('../drizzle/', import.meta.url))
+      .filter((file) => file.endsWith('.sql') && file > '0005_salty_alice.sql')
+      .sort())
+      f.sqlite.exec(
+        readFileSync(new URL('../drizzle/' + file, import.meta.url), 'utf8'),
+      );
     const replay = await f.restart().claimSeatHandover(code, body, clock(3000));
     assert.equal(replay.replayed, true);
     assert.equal(replay.token, body.newSessionToken);

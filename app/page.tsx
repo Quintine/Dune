@@ -170,6 +170,7 @@ export default function Home() {
       const room = data.code;
       if (
         !data.botsPending ||
+        data.roomControl?.paused ||
         activeRoom.current !== room ||
         data.me !== activeSeat.current ||
         data.version < (knownVersions.current.get(room) ?? -1) ||
@@ -501,6 +502,10 @@ export default function Home() {
 
   async function send(action: Action) {
     if (!game || mutationPending.current || recovery.current) return;
+    if (game.roomControl?.paused && !(action.type === 'setAutopilot' && action.difficulty === null)) {
+      setNotice('An administrator paused this room. Game decisions will be available when the room resumes.');
+      return;
+    }
     const room = game.code,
       seat = game.me,
       requestEpoch = epoch.current;

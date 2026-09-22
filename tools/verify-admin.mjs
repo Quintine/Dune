@@ -1,10 +1,11 @@
 // Explicit operator-run HTTP acceptance. Use a dedicated QA administrator key:
 // this signs out ALL sessions for that account. Never use a human operator's key.
-// Uses one new QA room; never modifies an existing game.
+// Uses new QA rooms only; operator/owner QA keys also exercise room lifecycle.
 import assert from 'node:assert/strict';
 import { readFile, mkdir, realpath, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verifyRoomLifecycle } from './admin-lifecycle-verification.mjs';
 
 const options = {};
 for (let n = 2; n < process.argv.length; n += 2) {
@@ -24,11 +25,12 @@ await mkdir(out, { mode: 0o700 });
 const key = (await readFile(options['--key-file'], 'utf8')).trim();
 const base = url.origin;
 const report = { origin: base, startedAt: new Date().toISOString(), passed: false, checks: [], room: null };
-let session1, session2;
-async function request(path, body, cookie, origin = base) {
+let session1, session2, adminId;
+async function request(path, body, cookie, origin = base, expectedAdminId = adminId) {
   const response = await fetch(base + path, {
     method: body === undefined ? 'GET' : 'POST',
-    headers: { ...(body === undefined ? {} : { 'content-type': 'application/json', origin }), ...(cookie ? { cookie } : {}) },
+    headers: { ...(body === undefined ? {} : { 'content-type': 'application/json', origin }), ...(cookie ? { cookie } : {}),
+      ...(expectedAdminId && /^\/api\/admin\/rooms\/[^/]+\/control$/.test(path) ? { 'X-Dune-Admin-Id': expectedAdminId } : {}) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(15000),
   });
   report.lastRequest = { path, status: response.status };
@@ -44,6 +46,7 @@ try {
   assert.equal(login.status, 200); assert.ok(login.cookie);
   session1 = login.cookie;
   assert.equal(login.data.admin.id, options['--qa-account'], 'Use the explicitly designated QA account.');
+  adminId = login.data.admin.id;
   for (const attribute of ['HttpOnly', 'SameSite=Strict', 'Path=/api/admin']) assert.ok(login.rawCookie.includes(attribute));
   if (url.protocol === 'https:') assert.ok(login.rawCookie.includes('; Secure'));
   assert.equal((await request('/api/admin/session', undefined, session1)).data.admin.id, login.data.admin.id);
@@ -75,11 +78,17 @@ try {
   for (const cookie of [session1, session2]) assert.equal((await request('/api/admin/rooms', undefined, cookie)).status, 401);
   assert.deepEqual((await request(path, undefined, created.cookie)).data, before);
   report.checks.push('Foreign-origin denial; individual and all-session revocation; saved-seat continuity');
+  if (['owner', 'operator'].includes(login.data.admin.role)) {
+    const lifecycleSession = await request('/api/admin/session', { action: 'login', key });
+    assert.equal(lifecycleSession.status, 200);
+    session1 = lifecycleSession.cookie;
+    await verifyRoomLifecycle(request, session1, report);
+  }
   report.passed = true;
 } catch (error) {
   // Do not serialize assertion payloads: failed authentication responses might contain credentials.
   report.failure = 'Administrator HTTP verification failed. Investigate the last completed check.';
-  report.failureRequest = report.lastRequest;
+  report.failureRequest ??= report.lastRequest;
   report.failureLocation = error instanceof Error ? error.stack?.split('\n').find(line => line.trim().startsWith('at ') && line.includes('verify-admin.mjs'))?.trim() : undefined;
   process.exitCode = 1;
 } finally {

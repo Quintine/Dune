@@ -1,4 +1,5 @@
 /** Public operational metadata only; never a player view or a saved game. */
+import type { RoomControl } from './room-control';
 export type AdminRoom = {
   code: string;
   version: number;
@@ -13,6 +14,7 @@ export type AdminRoom = {
   turn: number | null;
   phase: string;
   pending: { label: string; owners: string[] };
+  control: RoomControl;
 };
 export type AdminDirectory = {
   rooms: AdminRoom[];

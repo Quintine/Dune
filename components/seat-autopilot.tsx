@@ -36,10 +36,10 @@ export function SeatAutopilot({ game, act, busy }: SeatAutopilotProps) {
             AI autopilot · {own.autopilot}
           </output>
           <p className="m-0 text-sm leading-6 text-[#e0e4d8]">
-            AI is making this seat’s decisions using only its available
+            {game.roomControl?.paused ? 'AI decisions are paused with the room. On resume, AI uses only this seat’s available information, with about 1.5 seconds between decisions. You can take back control now.' : <>AI is making this seat’s decisions using only its available
             information, with about 1.5 seconds between decisions. You keep the
             seat and its recovery setup. Taking back control stops future AI
-            decisions; completed decisions remain in the game.
+            decisions; completed decisions remain in the game.</>}
           </p>
         </div>
         <Button
@@ -55,6 +55,9 @@ export function SeatAutopilot({ game, act, busy }: SeatAutopilotProps) {
         </Button>
       </section>
     );
+
+  if (game.roomControl?.paused)
+    return <p className="notice">The room is paused. AI can be enabled after an administrator resumes play.</p>;
 
   return (
     <details className="notice min-w-0">

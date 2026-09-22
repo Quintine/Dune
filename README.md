@@ -40,9 +40,10 @@ For private NAS hosting and manually applied checkpoint image updates, see the
 with new games; the requested host port is 33046.
 
 The **Administration** link opens `/admin`, with separate administrator sign-in,
-session controls and a searchable room directory. See [initial owner setup and
-scope](docs/ADMIN_PANEL.md#initial-owner-and-access-recovery). Room creation,
-lifecycle/removal, participant support and backup tools are still being built.
+session controls and a searchable room directory. **Room controls** lets owners
+and operators pause/resume rooms and lock/unlock new joins. See [room controls](docs/ADMIN_ROOM_CONTROLS.md)
+and [initial owner setup](docs/ADMIN_PANEL.md#initial-owner-and-access-recovery).
+Room creation, archive/removal, participant support and backup tools are still being built.
 
 ## Saved seats and reconnecting
 

@@ -64,6 +64,13 @@
       "when": 1790032690330,
       "tag": "0008_admin_access",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1790035625313,
+      "tag": "0009_admin_room_controls",
+      "breakpoints": true
     }
   ]
 }

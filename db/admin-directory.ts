@@ -9,12 +9,14 @@ const text = (value: unknown, max = 80) => typeof value === 'string' ? value.sli
 const integer = (value: unknown) => Number.isSafeInteger(value) && Number(value) >= 0 ? Number(value) : null;
 
 /** Only emit allowlisted fields. Never call viewGame with an administrator's or host's seat. */
-export function projectAdminRoom(row: { code: string; version: number; updated_at: number; state: string }): AdminRoom {
+type DirectoryRow = { code: string; version: number; updated_at: number; state: string; control_paused?: number; control_join_locked?: number; control_revision?: number; control_updated_at?: number | null };
+export function projectAdminRoom(row: DirectoryRow): AdminRoom {
   const base: AdminRoom = {
     code: row.code, version: row.version, updatedAt: row.updated_at,
     status: 'unreadable', host: null, players: [], advanced: false, preview: false,
     expansions: [], modules: [], turn: null, phase: 'Unavailable',
     pending: { label: 'Saved room needs inspection', owners: [] },
+    control: { paused: row.control_paused === 1, joinLocked: row.control_join_locked === 1, revision: row.control_revision ?? 0, updatedAt: row.control_updated_at ?? null },
   };
   try {
     const g = JSON.parse(row.state) as Game;
@@ -47,15 +49,16 @@ export function projectAdminRoom(row: { code: string; version: number; updated_a
 }
 
 export async function readAdminDirectory(database: D1Database, identity: AdminIdentity, search: URLSearchParams, now = Date.now()): Promise<AdminDirectory> {
-  const allowed = ['q', 'status', 'rules', 'sort', 'page'];
+  const allowed = ['q', 'status', 'rules', 'sort', 'page', 'availability'];
   if ([...search.keys()].some(k => !allowed.includes(k) || search.getAll(k).length !== 1)) throw new AdminError('Invalid room filters.', 400);
   const q = (search.get('q') ?? '').trim();
   const status = search.get('status') ?? 'all';
   const rules = search.get('rules') ?? 'all';
   const sort = search.get('sort') ?? 'recent';
   const rawPage = search.get('page') ?? '1';
+  const availability = search.get('availability') ?? 'all';
   if (q.length > 80 || !['all', ...statuses].includes(status) || !['all', 'basic', 'advanced'].includes(rules) ||
-      !['recent', 'oldest', 'code'].includes(sort) || !/^[1-9][0-9]{0,5}$/.test(rawPage)) throw new AdminError('Invalid room filters.', 400);
+      !['recent', 'oldest', 'code'].includes(sort) || !['all', 'running', 'paused', 'locked'].includes(availability) || !/^[1-9][0-9]{0,5}$/.test(rawPage)) throw new AdminError('Invalid room filters.', 400);
   const page = Number(rawPage), pageSize = 25;
   // json_valid protects the rest of the directory if a legacy save is malformed.
   const state = "CASE WHEN json_valid(state) THEN state ELSE '{}' END";
@@ -76,15 +79,19 @@ export async function readAdminDirectory(database: D1Database, identity: AdminId
   }
   if (status !== 'all') { where.push(`json_extract(${state}, '$.status') = ?`); args.push(status); }
   if (rules !== 'all') { where.push(`json_extract(${state}, '$.advanced') = ?`); args.push(rules === 'advanced' ? 1 : 0); }
+  if (availability === 'paused') where.push('c.paused = 1');
+  if (availability === 'running') where.push('COALESCE(c.paused, 0) = 0');
+  if (availability === 'locked') where.push('c.join_locked = 1');
   const predicate = where.length ? 'WHERE ' + where.join(' AND ') : '';
-  const order = sort === 'code' ? 'code ASC' : `updated_at ${sort === 'oldest' ? 'ASC' : 'DESC'}, code ASC`;
+  const order = sort === 'code' ? 'r.code ASC' : `r.updated_at ${sort === 'oldest' ? 'ASC' : 'DESC'}, r.code ASC`;
+  const source = 'FROM rooms r LEFT JOIN room_controls c ON c.room_code = r.code';
   const results = await database.batch([
     database.prepare(authority).bind(...credentials),
-    database.prepare(`SELECT COUNT(*) AS total FROM rooms ${predicate}`).bind(...args),
-    database.prepare(`SELECT code,version,updated_at,state FROM rooms ${predicate} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...args, pageSize, (page - 1) * pageSize),
+    database.prepare(`SELECT COUNT(*) AS total ${source} ${predicate}`).bind(...args),
+    database.prepare(`SELECT r.code,r.version,r.updated_at,r.state,COALESCE(c.paused,0) AS control_paused,COALESCE(c.join_locked,0) AS control_join_locked,COALESCE(c.revision,0) AS control_revision,c.updated_at AS control_updated_at ${source} ${predicate} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(...args, pageSize, (page - 1) * pageSize),
   ]);
   if (!results[0].results.length) throw new AdminError('Administrator sign-in required.', 401);
   const total = Number((results[1].results[0] as { total: number }).total);
-  const rows = results[2].results as { code: string; version: number; updated_at: number; state: string }[];
+  const rows = results[2].results as DirectoryRow[];
   return { rooms: rows.map(projectAdminRoom), total, page, pageSize };
 }

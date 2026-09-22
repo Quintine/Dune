@@ -28,6 +28,46 @@ export const seats = sqliteTable('seats', {
   playerId: text('player_id').notNull(),
 });
 
+export const roomControls = sqliteTable(
+  'room_controls',
+  {
+    roomCode: text('room_code')
+      .primaryKey()
+      .references(() => rooms.code, { onDelete: 'cascade' }),
+    paused: integer('paused').notNull().default(0),
+    joinLocked: integer('join_locked').notNull().default(0),
+    revision: integer('revision').notNull().default(0),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [
+    check('room_controls_paused', sql`${table.paused} IN (0, 1)`),
+    check('room_controls_join_locked', sql`${table.joinLocked} IN (0, 1)`),
+    check('room_controls_revision', sql`${table.revision} >= 0`),
+  ],
+);
+
+// Durable receipts are also the room operations audit. They intentionally survive
+// account/room removal, and contain no credentials, game state or private cards.
+export const adminRoomAudit = sqliteTable(
+  'admin_room_audit',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    action: text('action').notNull().default('room_control'),
+    reason: text('reason').notNull(),
+    expectedRevision: integer('expected_revision').notNull(),
+    beforePaused: integer('before_paused').notNull(),
+    beforeJoinLocked: integer('before_join_locked').notNull(),
+    afterPaused: integer('after_paused').notNull(),
+    afterJoinLocked: integer('after_join_locked').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    index('admin_room_audit_room').on(table.roomCode, table.createdAt),
+  ],
+);
+
 export const seatRecoveryKeys = sqliteTable(
   'seat_recovery_keys',
   {

@@ -14,6 +14,7 @@ import {
 import type { FactionId } from '@/game/catalog';
 import type { Difficulty } from '@/game/bot-profiles';
 import { runBots } from '@/game/bots';
+import type { RoomControl } from '@/lib/room-control';
 import {
   validSeatAiGrantId,
   validSetSeatAiDelegateInput,
@@ -74,7 +75,7 @@ type PreparedEntry = {
 };
 type EntryResult = {
   token?: string;
-  view: ReturnType<typeof viewGame>;
+  view: GameView;
   entryReceipt?: { operationId: string; replayed: boolean };
   alreadySeated?: true;
 };
@@ -238,15 +239,48 @@ export async function createRoom(
     throw error;
   }
 }
+type RoomControlRow = { room_control: string };
+// SQLite constructs an explicit public allowlist, consistent with delegation views.
+const roomControlProjection = `json_object(
+  'paused', json(CASE WHEN c.paused = 1 THEN 'true' ELSE 'false' END),
+  'joinLocked', json(CASE WHEN c.join_locked = 1 THEN 'true' ELSE 'false' END),
+  'revision', COALESCE(c.revision, 0), 'updatedAt', c.updated_at
+) AS room_control`;
+function publicRoomControl(row: RoomControlRow): RoomControl {
+  return JSON.parse(row.room_control) as RoomControl;
+}
+function attachRoomControl(view: GameView, row: RoomControlRow) {
+  const control = publicRoomControl(row);
+  // Untouched rooms retain the ordinary game-view shape. Once an administrator
+  // changes controls, keep the revision visible even after both flags are cleared.
+  if (control.revision > 0) view.roomControl = control;
+}
+async function readRoomSnapshot(code: string) {
+  const row = await db()
+    .prepare(`SELECT rooms.state, rooms.version, ${roomControlProjection}
+      FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code WHERE rooms.code = ?`)
+    .bind(code)
+    .first<{ state: string; version: number } & RoomControlRow>();
+  if (!row) throw new RuleError('Room not found. Check your invite code.');
+  const g: Game = JSON.parse(row.state);
+  g.version = row.version;
+  return { game: g, control: publicRoomControl(row) };
+}
 export async function readRoom(code: string) {
   const row = await db()
     .prepare('SELECT state,version FROM rooms WHERE code = ?')
     .bind(code)
     .first<{ state: string; version: number }>();
   if (!row) throw new RuleError('Room not found. Check your invite code.');
-  const g: Game = JSON.parse(row.state);
-  g.version = row.version;
-  return g;
+  const game: Game = JSON.parse(row.state);
+  game.version = row.version;
+  return game;
+}
+function requireUnpaused(control: RoomControl) {
+  if (control.paused)
+    throw new RuleError(
+      'An administrator paused this room. Game decisions and AI will continue after it resumes.',
+    );
 }
 export type SeatAuth = { playerId: string; tokenHash: string };
 export async function authenticate(
@@ -294,7 +328,14 @@ export async function joinRoom(
       }
     }
     await requireUnusedEntryToken(entry);
-    const g = await readRoom(code);
+    const { game: g, control } = await readRoomSnapshot(code);
+    if (control.paused || control.joinLocked)
+      throw new RoomEntryError(
+        control.paused
+          ? 'An administrator paused this room. New players may join after it resumes.'
+          : 'New joins are locked by an administrator.',
+        control.paused ? 'ROOM_PAUSED' : 'ROOM_JOIN_LOCKED',
+      );
     joinGame(g, player);
     const old = g.version;
     g.version++;
@@ -304,7 +345,7 @@ export async function joinRoom(
     const results = await db().batch([
       db()
         .prepare(
-          'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ?',
+          'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND (paused = 1 OR join_locked = 1))',
         )
         .bind(JSON.stringify(g), Date.now(), code, old),
       db()
@@ -354,7 +395,10 @@ export async function act(
   action: Action,
   clock: RoomsClock = roomsClock,
 ) {
-  const current = await readRoom(code);
+  const { game: current, control } = await readRoomSnapshot(code);
+  const takingBackControl =
+    action?.type === 'setAutopilot' && action.difficulty === null;
+  if (!takingBackControl) requireUnpaused(control);
   if (current.version !== version)
     throw new RuleError(
       'The table changed. Your view has refreshed; try again.',
@@ -375,13 +419,14 @@ export async function act(
   const now = clock.now();
   const update = db()
     .prepare(
-      'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
+      'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND (? = 1 OR NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
     )
     .bind(
       JSON.stringify(next),
       now,
       code,
       version,
+      Number(takingBackControl),
       code,
       auth.playerId,
       auth.tokenHash,
@@ -408,7 +453,7 @@ export async function act(
 export async function readSeatView(code: string, auth: SeatAuth) {
   const row = await db()
     .prepare(
-      `SELECT rooms.state, rooms.version,
+      `SELECT rooms.state, rooms.version, ${roomControlProjection},
         CASE WHEN COUNT(delegations.grant_id) = 0 THEN NULL ELSE
           json_group_array(json_object(
             'grantId', delegations.grant_id,
@@ -419,6 +464,7 @@ export async function readSeatView(code: string, auth: SeatAuth) {
             'usedAt', delegations.used_at
           )) END AS seat_ai_delegations
        FROM rooms
+       LEFT JOIN room_controls c ON c.room_code = rooms.code
        JOIN seats AS viewer ON viewer.room_code = rooms.code
        LEFT JOIN seat_ai_delegations AS delegations
          ON delegations.room_code = rooms.code
@@ -443,15 +489,18 @@ export async function readSeatView(code: string, auth: SeatAuth) {
        GROUP BY rooms.code, rooms.state, rooms.version`,
     )
     .bind(code, auth.playerId, auth.tokenHash)
-    .first<{
-      state: string;
-      version: number;
-      seat_ai_delegations: string | null;
-    }>();
+    .first<
+      RoomControlRow & {
+        state: string;
+        version: number;
+        seat_ai_delegations: string | null;
+      }
+    >();
   if (!row) throw new RuleError('Your seat could not be verified.');
   const g: Game = JSON.parse(row.state);
   g.version = row.version;
   const view = viewGame(g, auth.playerId) as GameView;
+  attachRoomControl(view, row);
   if (row.seat_ai_delegations) {
     const delegations = JSON.parse(
       row.seat_ai_delegations,
@@ -497,7 +546,8 @@ export async function continueRoomAutomatic(
   clock: RoomsClock = roomsClock,
 ) {
   for (let attempt = 0; attempt < 4; attempt++) {
-    const current = await readRoom(code);
+    const { game: current, control } = await readRoomSnapshot(code);
+    if (control.paused) return;
     if (
       !needsAutomaticRoomRecovery(current) ||
       (!current.pendingTreacheryDiscard &&
@@ -512,7 +562,7 @@ export async function continueRoomAutomatic(
     next.version = current.version + 1;
     const result = await db()
       .prepare(
-        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ?',
+        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
       )
       .bind(JSON.stringify(next), clock.now(), code, current.version)
       .run();
@@ -530,14 +580,26 @@ export async function continueRoomBots(
   clock: RoomsClock = roomsClock,
 ) {
   for (let batch = 0; batch < batches; batch++) {
-    let current = await readRoom(code);
-    if (!current.botsPending || current.status === 'finished') return;
+    let snapshot = await readRoomSnapshot(code);
+    let current = snapshot.game;
+    if (
+      snapshot.control.paused ||
+      !current.botsPending ||
+      current.status === 'finished'
+    )
+      return;
     const delay = (current.botNextActionAt ?? clock.now()) - clock.now();
     if (delay > 0) {
       await clock.sleep(Math.min(delay, ONLINE_BOT_INTERVAL_MS));
       // A human may have taken control or another worker committed while asleep.
-      current = await readRoom(code);
-      if (!current.botsPending || current.status === 'finished') return;
+      snapshot = await readRoomSnapshot(code);
+      current = snapshot.game;
+      if (
+        snapshot.control.paused ||
+        !current.botsPending ||
+        current.status === 'finished'
+      )
+        return;
       if ((current.botNextActionAt ?? 0) > clock.now()) continue;
     }
     // Offline simulations retain runBots' fast default. Online persistence makes
@@ -549,7 +611,7 @@ export async function continueRoomBots(
     next.version = current.version + 1;
     const result = await db()
       .prepare(
-        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ?',
+        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
       )
       .bind(JSON.stringify(next), clock.now(), code, current.version)
       .run();
@@ -666,7 +728,8 @@ export async function setSeatAiDelegate(
       );
     return { view: await readSeatView(code, auth), replayed: true };
   }
-  const current = await readRoom(code);
+  const { game: current, control } = await readRoomSnapshot(code);
+  requireUnpaused(control);
   if (current.version !== version)
     throw invalidDelegation(
       'The table changed. Reconnect before saving this consent.',
@@ -707,6 +770,7 @@ export async function setSeatAiDelegate(
       .prepare(
         `UPDATE rooms SET version = version + 1, updated_at = ?
          WHERE code = ? AND version = ?
+           AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)
            AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
            AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
            AND NOT EXISTS (SELECT 1 FROM seat_ai_delegations WHERE grant_id = ?)`,
@@ -897,7 +961,8 @@ export async function useSeatAiDelegate(
       'This AI delegation has expired.',
       'AI_DELEGATION_EXPIRED',
     );
-  const current = await readRoom(code);
+  const { game: current, control } = await readRoomSnapshot(code);
+  requireUnpaused(control);
   if (current.version !== version)
     throw invalidDelegation(
       'The table changed. Reconnect before activating this consent.',
@@ -935,6 +1000,7 @@ export async function useSeatAiDelegate(
       .prepare(
         `UPDATE rooms SET state = ?, version = version + 1, updated_at = ?
          WHERE code = ? AND version = ?
+           AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)
            AND EXISTS (
              SELECT 1 FROM seat_ai_delegations AS consent
              JOIN seats AS owner_session
@@ -1103,10 +1169,10 @@ export async function recoverSeat(
     // A replaced key or later rotation invalidates the receipt, including races after the first lookup.
     const row = await db()
       .prepare(
-        'SELECT rooms.state, rooms.version FROM rooms JOIN seats ON seats.room_code = rooms.code JOIN seat_recovery_keys AS keys ON keys.room_code = seats.room_code AND keys.player_id = seats.player_id WHERE rooms.code = ? AND seats.player_id = ? AND seats.token_hash = ? AND seats.revoked = 0 AND keys.recovery_hash = ? AND keys.current_operation_hash = ?',
+        `SELECT rooms.state, rooms.version, ${roomControlProjection} FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code JOIN seats ON seats.room_code = rooms.code JOIN seat_recovery_keys AS keys ON keys.room_code = seats.room_code AND keys.player_id = seats.player_id WHERE rooms.code = ? AND seats.player_id = ? AND seats.token_hash = ? AND seats.revoked = 0 AND keys.recovery_hash = ? AND keys.current_operation_hash = ?`,
       )
       .bind(code, playerId, sessionHash, recoveryHash, operationHash)
-      .first<{ state: string; version: number }>();
+      .first<{ state: string; version: number } & RoomControlRow>();
     if (!row)
       throw new SeatControlError(
         'This recovery receipt is no longer active.',
@@ -1114,8 +1180,10 @@ export async function recoverSeat(
       );
     const g: Game = JSON.parse(row.state);
     g.version = row.version;
+    const view = viewGame(g, playerId) as GameView;
+    attachRoomControl(view, row);
     return {
-      view: viewGame(g, playerId),
+      view,
       token: input.newSessionToken as string,
       recovered: true as const,
       replayed: true,
@@ -1431,7 +1499,7 @@ async function replayClaimedHandover(
 ) {
   const row = await db()
     .prepare(
-      'SELECT rooms.state,rooms.version FROM rooms JOIN seat_handover_claim_receipts AS receipts ON receipts.room_code = rooms.code JOIN seats ON seats.room_code = receipts.room_code AND seats.player_id = receipts.player_id WHERE rooms.code = ? AND receipts.player_id = ? AND receipts.offer_hash = ? AND receipts.secret_hash = ? AND receipts.operation_hash = ? AND receipts.session_hash = ? AND seats.token_hash = ? AND seats.revoked = 0',
+      `SELECT rooms.state,rooms.version, ${roomControlProjection} FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code JOIN seat_handover_claim_receipts AS receipts ON receipts.room_code = rooms.code JOIN seats ON seats.room_code = receipts.room_code AND seats.player_id = receipts.player_id WHERE rooms.code = ? AND receipts.player_id = ? AND receipts.offer_hash = ? AND receipts.secret_hash = ? AND receipts.operation_hash = ? AND receipts.session_hash = ? AND seats.token_hash = ? AND seats.revoked = 0`,
     )
     .bind(
       code,
@@ -1442,12 +1510,14 @@ async function replayClaimedHandover(
       sessionHash,
       sessionHash,
     )
-    .first<{ state: string; version: number }>();
+    .first<{ state: string; version: number } & RoomControlRow>();
   if (!row) return null;
   const game: Game = JSON.parse(row.state);
   game.version = row.version;
+  const view = viewGame(game, playerId) as GameView;
+  attachRoomControl(view, row);
   return {
-    view: viewGame(game, playerId),
+    view,
     token: newSessionToken as string,
     transferred: true as const,
     replayed: true,

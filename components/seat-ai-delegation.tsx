@@ -73,6 +73,7 @@ export function SeatAiDelegation({
   const received = grants.filter((grant) => grant.delegateId === game.me);
   const started = ['setup', 'playing'].includes(game.status);
   const locked = disabled || busy || !loaded;
+  const paused = !!game.roomControl?.paused;
   if (!own || own.bot) return null;
 
   function store(next: SeatAiDelegateRequest | null) {
@@ -254,7 +255,8 @@ export function SeatAiDelegation({
               )}
             </section>
           )}
-          {started && !own.autopilot && peers.length > 0 && (
+          {paused && <p>The room is paused. New AI permissions and activation will be available after it resumes. Revoking permission and confirming saved requests remain available.</p>}
+          {started && !paused && !own.autopilot && peers.length > 0 && (
             <div className="flex min-w-0 flex-col gap-3">
               <label htmlFor={`${id}-player`}>
                 Player allowed to start your AI
@@ -316,7 +318,7 @@ export function SeatAiDelegation({
           {!started && <p>Permission can be granted after the game starts.</p>}
           {own.autopilot && (
             <p>
-              Your AI is already running. Use Take back control at the table
+              Your seat is assigned to AI{paused ? ', currently paused with the room' : ''}. Use Take back control at the table
               before granting another permission.
             </p>
           )}
@@ -341,6 +343,7 @@ export function SeatAiDelegation({
                   className="min-h-11 whitespace-normal"
                   disabled={
                     locked ||
+                    paused ||
                     !started ||
                     !!game.players.find((player) => player.id === grant.ownerId)
                       ?.autopilot

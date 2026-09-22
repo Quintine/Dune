@@ -37,7 +37,7 @@ function unitStore(runBots = bots.runBots) {
     async run() {
       const continuation =
         this.sql.startsWith('UPDATE rooms SET state') &&
-        !this.sql.includes('EXISTS');
+        !this.sql.includes('FROM seats');
       if (continuation) await hooks.beforeWrite?.();
       const changes = Number(
         sqlite.prepare(this.sql).run(...this.values).changes,

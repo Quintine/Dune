@@ -36,7 +36,7 @@ try {
   docker('volume', 'create', volume);
   start();
   await ready();
-  execFileSync('node', ['tools/admin-access.mjs', '--name', 'Container QA', '--role', 'viewer', '--out', joinPath(adminFiles, 'key')]);
+  execFileSync('node', ['tools/admin-access.mjs', '--name', 'Container QA', '--role', 'operator', '--out', joinPath(adminFiles, 'key')]);
   execFileSync('docker', ['exec', '-i', name, 'node', '-e', "require('node:fs').writeFileSync('/tmp/dune-admin-provision.sql', require('node:fs').readFileSync(0), {mode:0o600})"], {
     input: readFileSync(joinPath(adminFiles, 'key/provision.sql')), // Container USER owns this private file.
   });

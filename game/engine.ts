@@ -25725,4 +25725,5 @@ export function viewGame(state: Game, id: string) {
 }
 export type GameView = ReturnType<typeof viewGame> & {
   seatAiDelegations?: import('../lib/seat-ai-delegation').SeatAiDelegationView[];
+  roomControl?: import('../lib/room-control').RoomControl;
 };

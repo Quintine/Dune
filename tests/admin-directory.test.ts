@@ -66,3 +66,18 @@ void test('admin directory rechecks authority inside its snapshot after concurre
     await assert.rejects(pending, (e: unknown) => e instanceof AdminError && e.status === 401);
   } finally { f.sqlite.close(); }
 });
+
+void test('directory projects and filters operational flags without private audit reasons', async () => {
+  const f = await fixture();
+  try {
+    insert(f.sqlite, 'ROOMAAAA', state()); insert(f.sqlite, 'ROOMBBBB', state());
+    f.sqlite.prepare('INSERT INTO room_controls(room_code,paused,join_locked,revision,updated_at) VALUES (?,1,1,2,999)').run('ROOMAAAA');
+    const read = (query: string) => readAdminDirectory(f.database, f.identity, new URLSearchParams(query));
+    const paused = await read('availability=paused');
+    assert.equal(paused.total, 1);
+    assert.deepEqual(paused.rooms[0].control, { paused: true, joinLocked: true, revision: 2, updatedAt: 999 });
+    assert.equal((await read('availability=running')).rooms[0].code, 'ROOMBBBB');
+    assert.equal((await read('availability=locked')).rooms[0].code, 'ROOMAAAA');
+    await assert.rejects(read('availability=unsupported'), (e: unknown) => e instanceof AdminError && e.status === 400);
+  } finally { f.sqlite.close(); }
+});

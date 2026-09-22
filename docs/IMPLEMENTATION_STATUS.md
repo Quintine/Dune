@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 22 September 2026 — Administrator room pause and joining locks
+
+Added reversible pause/resume and joining-lock controls, availability filters
+and public player notices. SQL fences cover joins, player actions, automatic
+normalization and AI workers, including in-flight races. Saved-seat recovery,
+handover, discussion and AI takeback remain available. Control changes and exact
+receipts are audited atomically, with expected account binding protecting stale
+administrator tabs. Local HTTP/browser evidence includes a lost successful
+response, refresh, one-record replay and resume. See [scope and verification](ADMIN_ROOM_CONTROLS.md).
+Full lifecycle, admin tools and authenticated deployed acceptance remain open.
+
 ## 22 September 2026 — Readable room entry and completed-action text
 
 Normal create/join now shows concise pending text while the first request runs;
