@@ -4,10 +4,37 @@ import {
   ClientRequestError,
   requestJson,
   requestMayHaveCompleted,
+  isRoomRemoved,
+  subscribeRoomRemoval,
 } from '../lib/client-request';
 
 const never = () => new Promise<never>(() => {});
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+void test('typed removal retains post-commit proofs and notifies only the affected public room', async () => {
+  const rooms: string[] = [];
+  const stop = subscribeRoomRemoval(room => rooms.push(room));
+  const fetcher: typeof fetch = async () => Response.json({ code: 'ROOM_REMOVED', error: 'Room removed', private: 'NOT_FOR_LISTENERS' }, { status: 410 });
+  try {
+    for (const path of ['/api/rooms/TEST2345', '/api/rooms/TEST2345/control', '/api/rooms/TEST2345/messages', '/api/rooms'])
+      await assert.rejects(requestJson(path, { method: 'POST' }, { fetcher }), error => isRoomRemoved(error) && error.status === 410 && requestMayHaveCompleted(error));
+    assert.deepEqual(rooms, ['TEST2345', 'TEST2345', 'TEST2345']);
+  } finally { stop(); }
+  await assert.rejects(requestJson('/api/rooms/TEST2345', {}, { fetcher }));
+  assert.equal(rooms.length, 3, 'Unmounted controllers no longer receive removal events');
+  assert.equal(requestMayHaveCompleted(new ClientRequestError('Ordinary rejection', 'http', 410)), false);
+});
+
+void test('removal observers cannot swallow the typed error or trigger automatic request retries', async () => {
+  let calls = 0;
+  const stop = subscribeRoomRemoval(() => { throw new Error('Controller failed'); });
+  try {
+    await assert.rejects(requestJson('/api/rooms/TEST2345', {}, { fetcher: async () => {
+      calls++; return Response.json({ code: 'ROOM_REMOVED', error: 'Removed' }, { status: 410 });
+    } }), isRoomRemoved);
+    assert.equal(calls, 1);
+  } finally { stop(); }
+});
 
 void test('successful JSON preserves mutation body, version and credential options, with one fetch', async () => {
   let calls = 0;

@@ -92,6 +92,7 @@ export async function applyAdminRoomControl(
       SELECT ?,?,r.code,?,?,COALESCE(c.paused,0),COALESCE(c.join_locked,0),?,?,?
       FROM rooms r LEFT JOIN room_controls c ON c.room_code = r.code
       WHERE r.code = ? AND COALESCE(c.revision,0) = ? AND EXISTS (${mutationAuthority})
+      AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = r.code AND removed = 1)
       AND NOT EXISTS (SELECT 1 FROM admin_room_audit WHERE operation_id = ?)`)
       .bind(
         input.operationId,

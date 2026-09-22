@@ -1,5 +1,19 @@
 # Dune implementation status
 
+## 22 September 2026 — Recoverable room removal and restoration
+
+Added [administrator removal/restoration](ADMIN_ROOM_REMOVAL.md) with a typed-room
+confirmation, persistent operator/player notices, removed-room directory filters,
+live authorization and atomic version/revision audit receipts. Removed rooms deny
+private reads, joins, actions, AI, seat changes and discussion; restoration keeps
+saved state, previous pause/join flags and credential revocations. Exact retries
+retain proof across refresh, lost responses and temporary removal. Independent
+review repaired stale client removal markers without discarding recovery drafts.
+The dedicated HTTP flow also exposed and fixed AI lobby readiness after a human
+joins or changes faction. Focused, browser and required source-bound evidence
+accompany this checkpoint. Full administration and authenticated deployed
+acceptance remain unfinished.
+
 ## 22 September 2026 — Neutral administrator lobby configuration
 
 Added [rules/modules, AI configuration and existing-human host assignment](ADMIN_LOBBY_CONFIGURATION.md)

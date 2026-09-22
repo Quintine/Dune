@@ -6,6 +6,7 @@ import {
   claimSeatHandover,
   recoverSeat,
   SeatControlError,
+  RoomEntryError,
   setRecoveryKey,
   setSeatAiDelegate,
   revokeSeatAiDelegate,
@@ -124,7 +125,7 @@ export async function POST(req: Request) {
       try {
         existing = await authenticate(code, token);
       } catch (error) {
-        if (!(error instanceof RuleError)) throw error;
+        if (error instanceof RoomEntryError && error.code === 'ROOM_REMOVED' || !(error instanceof RuleError)) throw error;
       }
       if (existing && existing.playerId !== input.playerId)
         throw new SeatControlError(
@@ -173,7 +174,7 @@ export async function POST(req: Request) {
               ? 'Invalid JSON.'
               : 'The server could not complete this seat request.',
         code:
-          error instanceof SeatControlError
+          (error instanceof SeatControlError || error instanceof RoomEntryError)
             ? error.code
             : error instanceof RuleError
               ? 'INVALID_SESSION'
@@ -183,7 +184,7 @@ export async function POST(req: Request) {
       },
       {
         status:
-          error instanceof SeatControlError
+          (error instanceof SeatControlError || error instanceof RoomEntryError)
             ? error.status
             : error instanceof RuleError
               ? 409

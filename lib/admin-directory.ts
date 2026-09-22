@@ -3,6 +3,7 @@ import type { RoomControl } from './room-control';
 export type AdminRoom = {
   code: string;
   version: number;
+  removed: boolean;
   updatedAt: number;
   status: 'lobby' | 'setup' | 'playing' | 'finished' | 'unreadable';
   host: string | null;

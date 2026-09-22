@@ -9,7 +9,8 @@ const uuid = (value: unknown) => typeof value === 'string' && value.length === 3
 export function validAdminRoomCreationResult(value: unknown): value is AdminRoomCreationResult {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const result = value as Record<string, unknown>;
-  return Object.keys(result).length === 5 && typeof result.code === 'string' && result.code.length === 8 && /^[A-Z2-9]{8}$/.test(result.code) &&
+  return Object.keys(result).length === (result.roomRemoved === true ? 6 : 5) &&
+    (!Object.hasOwn(result, 'roomRemoved') || result.roomRemoved === true && result.hostAccess === false) && typeof result.code === 'string' && result.code.length === 8 && /^[A-Z2-9]{8}$/.test(result.code) &&
     uuid(result.hostId) && uuid(result.operationId) && typeof result.replayed === 'boolean' && typeof result.hostAccess === 'boolean';
 }
 
@@ -49,6 +50,7 @@ export function saveAdminRoomCreation(storage: Storage, account: string, input: 
 
 export function completeAdminRoomCreation(storage: Storage, account: string, input: AdminRoomCreationInput, result: AdminRoomCreationResult) {
   if (!validAdminRoomCreationResult(result) || result.operationId !== input.operationId) throw new Error('The server did not confirm this room-creation request.');
+  if (result.roomRemoved) throw new Error('The room is temporarily removed. Keep the exact creation proof until an administrator restores it.');
   const previous = readAdminRoomCreation(storage, account);
   if (!previous || previous.kind !== 'pending' || JSON.stringify(previous.input) !== JSON.stringify(input))
     throw new Error('The saved room-creation record changed. Keep the current record and inspect the room directory.');

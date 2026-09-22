@@ -137,8 +137,10 @@ export async function createAdminRoom(
         ),
       database
         .prepare(`SELECT c.operation_id,c.actor_admin_id,c.room_code,c.host_id,c.request_hash,c.session_hash,
+        EXISTS (SELECT 1 FROM room_removals WHERE room_code = c.room_code AND removed = 1) AS room_removed,
         EXISTS (SELECT 1 FROM seats s JOIN rooms r ON r.code = s.room_code
           WHERE s.token_hash = c.session_hash AND s.room_code = c.room_code AND s.player_id = c.host_id AND s.revoked = 0
+          AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = r.code AND removed = 1)
           AND CASE WHEN json_valid(r.state) THEN EXISTS (
             SELECT 1 FROM json_each(CASE WHEN json_type(r.state, '$.players') = 'array' THEN json_extract(r.state, '$.players') ELSE '[]' END) p
             WHERE json_extract(CASE WHEN p.type = 'object' THEN p.value ELSE '{}' END, '$.id') = c.host_id
@@ -168,6 +170,7 @@ export async function createAdminRoom(
           request_hash: string;
           session_hash: string;
           host_access: number;
+          room_removed: number;
         }
       | undefined;
     if (receipt) {
@@ -186,6 +189,7 @@ export async function createAdminRoom(
         hostId: receipt.host_id,
         replayed: results[1].meta.changes !== 1,
         hostAccess: receipt.host_access === 1,
+        ...(receipt.room_removed === 1 ? { roomRemoved: true as const } : {}),
       };
     }
     const conflict = results[5].results[0] as {

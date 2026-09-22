@@ -1,6 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { requestOrigin } from '@/lib/request-origin';
-import { authenticate } from '@/db/rooms';
+import { authenticate, RoomEntryError } from '@/db/rooms';
 import { readTableTalk, sendTableTalk, TableTalkError } from '@/db/table-talk';
 import { RuleError } from '@/game/engine';
 const noStore = { 'Cache-Control': 'no-store' };
@@ -50,6 +50,7 @@ async function handle(req: Request, write: boolean) {
   } catch (error) {
     return Response.json(
       {
+        ...((error instanceof TableTalkError || error instanceof RoomEntryError) && error.code ? { code: error.code } : {}),
         error:
           error instanceof TableTalkError || error instanceof RuleError
             ? error.message
@@ -59,7 +60,7 @@ async function handle(req: Request, write: boolean) {
       },
       {
         status:
-          error instanceof TableTalkError
+          (error instanceof TableTalkError || error instanceof RoomEntryError)
             ? error.status
             : error instanceof RuleError
               ? 409

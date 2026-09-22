@@ -46,6 +46,51 @@ export const roomControls = sqliteTable(
   ],
 );
 
+// Removal is an access boundary, independent of saved game state and pause settings.
+export const roomRemovals = sqliteTable(
+  'room_removals',
+  {
+    roomCode: text('room_code')
+      .primaryKey()
+      .references(() => rooms.code, { onDelete: 'cascade' }),
+    removed: integer('removed').notNull().default(0),
+    revision: integer('revision').notNull().default(0),
+    removedAt: integer('removed_at'),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [
+    check('room_removals_removed', sql`${table.removed} IN (0, 1)`),
+    check('room_removals_revision', sql`${table.revision} >= 0`),
+    check(
+      'room_removals_time',
+      sql`(${table.removed} = 1 AND ${table.removedAt} IS NOT NULL) OR (${table.removed} = 0 AND ${table.removedAt} IS NULL)`,
+    ),
+  ],
+);
+
+// Exact operation receipts also retain safe audit evidence independently of rooms/accounts.
+export const adminRoomRemovals = sqliteTable(
+  'admin_room_removals',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    requestHash: text('request_hash').notNull(),
+    expectedVersion: integer('expected_version').notNull(),
+    expectedRevision: integer('expected_revision').notNull(),
+    appliedVersion: integer('applied_version').notNull(),
+    appliedRevision: integer('applied_revision').notNull(),
+    removed: integer('removed').notNull(),
+    reason: text('reason').notNull(),
+    beforeMetadata: text('before_metadata').notNull(),
+    afterMetadata: text('after_metadata').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    index('admin_room_removals_room').on(table.roomCode, table.createdAt),
+  ],
+);
+
 // Durable receipts are also the room operations audit. They intentionally survive
 // account/room removal, and contain no credentials, game state or private cards.
 export const adminRoomAudit = sqliteTable(

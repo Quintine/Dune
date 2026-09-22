@@ -6,7 +6,7 @@ import type { GameView } from '@/game/engine';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { requestJson, requestMayHaveCompleted } from '@/lib/client-request';
+import { isRoomRemoved, requestJson, requestMayHaveCompleted } from '@/lib/client-request';
 import { clearHandoverOwner } from '@/lib/seat-handover';
 import {
   createRecoveryAttempt,
@@ -96,7 +96,9 @@ export function SeatRecoverySetup({
       const mayHaveSaved = requestMayHaveCompleted(error);
       setUncertain(mayHaveSaved);
       setMessage(
-        mayHaveSaved
+        isRoomRemoved(error)
+          ? `${(error as Error).message} Keep this same recovery kit and this page open. Retry saving after the room is restored.`
+          : mayHaveSaved
           ? 'Saving was not confirmed and may have completed. Keep this same kit. Retry saving to confirm it; no retry has been sent automatically.'
           : `${(error as Error).message} Your kit remains below. Review the current table and retry when ready.`,
       );
@@ -307,7 +309,9 @@ export function SeatRecoveryClaim({
       setUncertain(mayHaveRecovered);
       onUncertain?.(mayHaveRecovered);
       setMessage(
-        mayHaveRecovered
+        isRoomRemoved(error)
+          ? `${(error as Error).message} Your exact recovery request is retained. Keep this page open and retry it after restoration.`
+          : mayHaveRecovered
           ? 'Recovery was not confirmed and may have completed. Retry this same request below. Keep this page open to preserve its exact retry details; no retry is automatic.'
           : `${(error as Error).message} You can retry the same request or inspect a different saved kit.`,
       );

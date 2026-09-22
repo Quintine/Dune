@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TableTalk } from '@/components/table-talk';
+import { RemovedRoomNotice } from '@/components/removed-room-notice';
 import { GameTable } from '@/components/game-table';
 import { RulesetControls } from '@/components/ruleset-controls';
 import {
@@ -30,6 +31,8 @@ import {
   ClientRequestError,
   requestJson,
   requestMayHaveCompleted,
+  isRoomRemoved,
+  subscribeRoomRemoval,
 } from '@/lib/client-request';
 
 import {
@@ -65,6 +68,8 @@ export default function Home() {
   const [needsReconcile, setNeedsReconcile] = useState(false);
   const [botRecovery, setBotRecovery] = useState(false);
   const [game, setGame] = useState<GameView | null>(null);
+  const removedRooms = useRef(new Set<string>());
+  const [removedRoom, setRemovedRoom] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [connection, setConnection] = useState('');
   const [selected, setSelected] = useState('atreides');
@@ -88,6 +93,15 @@ export default function Home() {
   const [abandonAcknowledged, setAbandonAcknowledged] = useState(false);
   const f = faction(selected);
   const roomCode = game?.code;
+  const roomUnavailable = !!game && removedRoom === game.code;
+  const markRoomRemoved = useCallback((room: string) => {
+    if (activeRoom.current !== room || removedRooms.current.has(room)) return;
+    removedRooms.current.add(room);
+    ++epoch.current;
+    recovery.current = null; botAttempt.current = null;
+    setRemovedRoom(room); setNeedsReconcile(false); setBotRecovery(false); setConnection(''); setNotice('');
+  }, []);
+  useEffect(() => subscribeRoomRemoval(markRoomRemoved), [markRoomRemoved]);
   // This function is deliberately GET-only, including WebMCP reads and recovery.
   const refresh = useCallback(
     async (room: string, fresh = false): Promise<GameView> => {
@@ -106,6 +120,7 @@ export default function Home() {
           if (
             activeRoom.current !== room ||
             readEpoch !== epoch.current ||
+            (removedRooms.current.has(room) && !fresh) ||
             data.version < (knownVersions.current.get(room) ?? -1)
           )
             throw new ClientRequestError(
@@ -113,6 +128,8 @@ export default function Home() {
               'aborted',
             );
           activeSeat.current = data.me;
+          removedRooms.current.delete(room);
+          setRemovedRoom(null);
           knownVersions.current.set(room, data.version);
           setGame((previous) =>
             !previous ||
@@ -151,12 +168,13 @@ export default function Home() {
 
   const reconcile = useCallback(
     async (room: string) => {
+      if (removedRooms.current.has(room)) return;
       recovery.current = { room, epoch: ++epoch.current };
       setNeedsReconcile(true);
       try {
         await refresh(room, true);
       } catch {
-        if (activeRoom.current === room)
+        if (activeRoom.current === room && !removedRooms.current.has(room))
           setConnection(
             'Reconnect to confirm the latest table before taking another action.',
           );
@@ -170,6 +188,7 @@ export default function Home() {
       const room = data.code;
       if (
         !data.botsPending ||
+        removedRooms.current.has(room) ||
         data.roomControl?.paused ||
         activeRoom.current !== room ||
         data.me !== activeSeat.current ||
@@ -300,7 +319,7 @@ export default function Home() {
   }, [refresh]);
 
   useEffect(() => {
-    if (!roomCode) return;
+    if (!roomCode || removedRoom === roomCode) return;
     let live = true;
     let timer: ReturnType<typeof setTimeout>;
     const tick = async () => {
@@ -317,7 +336,7 @@ export default function Home() {
           nextPollMs = data.botsPending ? 500 : 2000;
         }
       } catch {
-        if (live && activeRoom.current === roomCode)
+        if (live && activeRoom.current === roomCode && !removedRooms.current.has(roomCode))
           setConnection('Connection interrupted. Retrying…');
       } finally {
         // Schedule after completion, so slow requests cannot stack polling cycles.
@@ -329,7 +348,7 @@ export default function Home() {
       live = false;
       clearTimeout(timer);
     };
-  }, [roomCode, refresh]);
+  }, [roomCode, refresh, removedRoom]);
 
   async function dispatchEntry(
     attempt: RoomEntryAttempt,
@@ -373,6 +392,8 @@ export default function Home() {
         );
       }
       activeRoom.current = data.code;
+      removedRooms.current.delete(data.code);
+      setRemovedRoom(null);
       activeSeat.current = data.me;
       setHandoverPending(true);
       knownVersions.current.set(data.code, data.version);
@@ -461,6 +482,7 @@ export default function Home() {
       seatClaimUncertain.current
     )
       return;
+    if (activeRoom.current) removedRooms.current.delete(activeRoom.current);
     activeRoom.current = null;
     setHandoverPending(true);
     setAiPermissionPending(true);
@@ -472,6 +494,8 @@ export default function Home() {
     setBotRecovery(false);
     setConnection('');
     setGame(null);
+    setRemovedRoom(null);
+    setRestoreFailed(false);
     setNotice('');
     window.history.replaceState(null, '', '/');
   }
@@ -501,7 +525,7 @@ export default function Home() {
   }
 
   async function send(action: Action) {
-    if (!game || mutationPending.current || recovery.current) return;
+    if (!game || removedRooms.current.has(game.code) || mutationPending.current || recovery.current) return;
     if (game.roomControl?.paused && !(action.type === 'setAutopilot' && action.difficulty === null)) {
       setNotice('An administrator paused this room. Game decisions will be available when the room resumes.');
       return;
@@ -570,8 +594,14 @@ export default function Home() {
       if (resumeBots) await advanceBots(data, true);
     } catch (error) {
       if (activeRoom.current === room) {
-        if (restoreFailed && inviteRejected(error)) {
+        if (isRoomRemoved(error)) {
+          setConnection(error.message);
+        } else if (restoreFailed && inviteRejected(error)) {
+          removedRooms.current.delete(room);
+          setRemovedRoom(null);
           activeRoom.current = null;
+          activeSeat.current = null;
+          ++epoch.current;
           setRestoreFailed(false);
           setCode(room);
           setNotice((error as Error).message);
@@ -597,6 +627,7 @@ export default function Home() {
   }
 
   function restoredSeat(view: GameView, claim = false) {
+    if (removedRooms.current.has(view.code)) return false;
     if (
       !claim &&
       (activeRoom.current !== view.code || activeSeat.current !== view.me)
@@ -629,6 +660,7 @@ export default function Home() {
     setRestoreFailed(false);
     setConnection('');
     setNotice('');
+    return true;
   }
   useEffect(() => {
     const ctx = (
@@ -668,8 +700,7 @@ export default function Home() {
         <SeatHandoverClaim
           onCancel={() => window.location.reload()}
           onRestored={(view) => {
-            restoredSeat(view, true);
-            setShowHandover(false);
+            if (restoredSeat(view, true)) setShowHandover(false);
           }}
         />
       </main>
@@ -677,15 +708,17 @@ export default function Home() {
   if (game)
     return (
       <>
-        <GameTable
+        {roomUnavailable ? <main className="table-shell"><RemovedRoomNotice code={game.code} busy={busy || checkingConnection} onRetry={() => void reconnect()} onExit={exitTable} exitDisabled={handoverPending || aiPermissionPending || claimUncertain} /></main> : <GameTable
           game={game}
           send={send}
           busy={busy || needsReconcile}
           onExit={exitTable}
           exitDisabled={handoverPending || aiPermissionPending}
-        />
+        />}
         <div className="table-shell">
-          <TableTalk key={`talk:${game.code}:${game.me}`} game={game} />
+          {!roomUnavailable && <TableTalk key={`talk:${game.code}:${game.me}`} game={game} />}
+          {/* Keep controllers mounted: recovery kits and exact attempts can be memory-only. */}
+          <div hidden={roomUnavailable}>
           {(entryAttempt || entryProblem) && (
             <section className="notice">
               <p>
@@ -709,14 +742,14 @@ export default function Home() {
           <SeatRecoverySetup
             key={`${game.code}:${game.me}`}
             game={game}
-            disabled={busy || needsReconcile || checkingConnection}
+            disabled={roomUnavailable || busy || needsReconcile || checkingConnection}
             onPending={controlPending}
             onRestored={(view) => restoredSeat(view)}
           />
           <SeatHandoverSetup
             key={`handover:${game.code}:${game.me}`}
             game={game}
-            disabled={busy || needsReconcile || checkingConnection}
+            disabled={roomUnavailable || busy || needsReconcile || checkingConnection}
             onPending={controlPending}
             onUncertain={setHandoverPending}
             onRestored={(view) => restoredSeat(view)}
@@ -724,13 +757,14 @@ export default function Home() {
           <SeatAiDelegation
             key={`ai-permission:${game.code}:${game.me}`}
             game={game}
-            disabled={busy || needsReconcile || checkingConnection}
+            disabled={roomUnavailable || busy || needsReconcile || checkingConnection}
             onPending={controlPending}
             onUncertain={setAiPermissionPending}
             onRestored={(view) => restoredSeat(view)}
           />
+          </div>
         </div>
-        {(notice || connection || needsReconcile || botRecovery) && (
+        {!roomUnavailable && (notice || connection || needsReconcile || botRecovery) && (
           <output className="floating-notice">
             {notice && <span>{notice}</span>}
             {connection && <span>{connection}</span>}
@@ -776,7 +810,7 @@ export default function Home() {
             DUNE<span>ARRAKIS TABLE</span>
           </div>
         </header>
-        <section className="notice">
+        {removedRoom ? <RemovedRoomNotice code={removedRoom} busy={checkingConnection} onRetry={() => void reconnect()} onExit={() => { removedRooms.current.delete(removedRoom); activeRoom.current = null; activeSeat.current = null; ++epoch.current; setRestoreFailed(false); setRemovedRoom(null); setConnection(''); setNotice(''); window.history.replaceState(null, '', '/'); }} /> : <section className="notice">
           <h1>
             {restoring
               ? 'Restoring your table'
@@ -813,7 +847,7 @@ export default function Home() {
               </Button>
             </>
           )}
-        </section>
+        </section>}
       </main>
     );
   // A first request is progress, not recovery. Keep the actionable recovery

@@ -23,6 +23,13 @@ const fields = {
   advanced: false,
 };
 const playerId = '93c66e7c-2d3b-4845-aedf-5d1f06cf3371';
+
+void test('temporary removal cannot clear a first creation or join proof that may already have committed', () => {
+  const removed = new ClientRequestError('Room removed', 'http', 410, 'ROOM_REMOVED');
+  assert.equal(roomEntryRejectedBeforeCommit(true, removed), false);
+  assert.equal(roomEntryRejectedBeforeCommit(false, removed), false);
+  assert.equal(roomEntryRejectedBeforeCommit(true, new ClientRequestError('Invalid input', 'http', 400)), true);
+});
 const memoryStorage = () => {
   const data = new Map<string, string>();
   return {

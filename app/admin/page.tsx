@@ -11,11 +11,12 @@ import { FACTIONS } from '@/game/catalog';
 import { AdminRoomControls } from '@/components/admin-room-controls';
 import { AdminRoomCreation } from '@/components/admin-room-creation';
 import { AdminLobbyControls } from '@/components/admin-lobby-controls';
+import { AdminRoomRemoval } from '@/components/admin-room-removal';
 import './admin.css';
 
 type Account = { id: string; name: string; role: 'owner' | 'operator' | 'viewer' };
-type Filters = { q: string; status: string; rules: string; sort: string; availability: string };
-const initialFilters: Filters = { q: '', status: 'all', rules: 'all', sort: 'recent', availability: 'all' };
+type Filters = { q: string; status: string; rules: string; sort: string; availability: string; removal: string };
+const initialFilters: Filters = { q: '', status: 'all', rules: 'all', sort: 'recent', availability: 'all', removal: 'active' };
 const errorMessage = (error: unknown) => error instanceof Error ? error.message : 'The request could not be completed.';
 
 export default function Administration() {
@@ -30,6 +31,7 @@ export default function Administration() {
   const [confirmAll, setConfirmAll] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [selectedLobby, setSelectedLobby] = useState<string | null>(null);
+  const [selectedRemoval, setSelectedRemoval] = useState<string | null>(null);
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [operationBusy, setOperationBusy] = useState(false);
   const controlsBusy = busy || operationBusy;
@@ -37,7 +39,7 @@ export default function Administration() {
   const clearSession = useCallback(() => {
     epoch.current++;
     setAccount(null); setDirectory(null); setConfirmAll(false);
-    setBusy(false); setSelectedRoom(null); setSelectedLobby(null); setCreatingRoom(false);
+    setBusy(false); setSelectedRoom(null); setSelectedLobby(null); setSelectedRemoval(null); setCreatingRoom(false);
   }, []);
   const accessChanged = useCallback(() => {
     clearSession();
@@ -113,13 +115,16 @@ export default function Administration() {
       </section> : <>
       <section aria-labelledby="admin-rooms-title">
         <div className="admin-section-heading"><div><h2 id="admin-rooms-title">Rooms</h2><p className="admin-secondary">Public room details. Cards, sealed choices and private discussion stay hidden.</p></div>
-          <div className="admin-room-actions">{account.role !== 'viewer' && <Button disabled={controlsBusy} onClick={() => { setSelectedRoom(null); setSelectedLobby(null); setCreatingRoom(true); }}>Create a room</Button>}
+          <div className="admin-room-actions">{account.role !== 'viewer' && <Button disabled={controlsBusy} onClick={() => { setSelectedRoom(null); setSelectedLobby(null); setSelectedRemoval(null); setCreatingRoom(true); }}>Create a room</Button>}
             <Button variant="outline" disabled={controlsBusy} onClick={() => void load(applied, directory?.page ?? 1)}><RefreshCw aria-hidden="true" /> Refresh</Button></div></div>
         {creatingRoom && account.role !== 'viewer' && <AdminRoomCreation key={account.id} accountId={account.id}
           onClose={() => setCreatingRoom(false)} onDenied={accessChanged} onBusyChange={setOperationBusy}
           onCreated={code => { const next = { ...initialFilters, q: code }; setFilters(next); void load(next); }} />}
         <form className="admin-filters" onSubmit={event => { event.preventDefault(); void load(filters); }}>
           <label className="admin-search" htmlFor="admin-search">Room code or player name<Input id="admin-search" value={filters.q} maxLength={80} disabled={controlsBusy} onChange={e => setFilters({ ...filters, q: e.target.value })} /></label>
+          <label>Directory<select disabled={controlsBusy} value={filters.removal} onChange={e => setFilters({ ...filters, removal: e.target.value })}>
+            <option value="active">Active rooms</option><option value="removed">Removed rooms</option><option value="all">All rooms</option>
+          </select></label>
           <label>Status<select disabled={controlsBusy} value={filters.status} onChange={e => setFilters({ ...filters, status: e.target.value })}>
             <option value="all">All statuses</option><option value="lobby">Lobby</option><option value="setup">Setup</option><option value="playing">Playing</option><option value="finished">Finished</option>
           </select></label>
@@ -140,6 +145,9 @@ export default function Administration() {
         {selectedLobby && <AdminLobbyControls key={`${account.id}:${selectedLobby}`} accountId={account.id} code={selectedLobby}
           canManage={account.role !== 'viewer'} onClose={() => setSelectedLobby(null)} onDenied={accessChanged}
           onUpdated={() => void load(applied, directory?.page ?? 1)} onBusyChange={setOperationBusy} />}
+        {selectedRemoval && <AdminRoomRemoval key={`${account.id}:${selectedRemoval}`} accountId={account.id} code={selectedRemoval}
+          canManage={account.role !== 'viewer'} onClose={() => setSelectedRemoval(null)} onDenied={accessChanged}
+          onUpdated={() => void load(applied, directory?.page ?? 1)} onBusyChange={setOperationBusy} />}
         <div aria-busy={busy}>
           {!directory ? <output>{busy ? 'Loading rooms…' : 'Use Refresh to load rooms.'}</output> : <>
             <p className="admin-results">{directory.total.toLocaleString()} {directory.total === 1 ? 'room' : 'rooms'} match</p>
@@ -148,6 +156,7 @@ export default function Administration() {
                 <TableHead>Room & players</TableHead><TableHead>Rules</TableHead><TableHead>Progress</TableHead><TableHead>Last game change</TableHead>
               </TableRow></TableHeader><TableBody>{directory.rooms.map(room => <TableRow key={room.code}>
                 <TableCell><strong className="admin-code">{room.code}</strong> <span className="admin-tag">{room.status}</span>
+                  {room.removed && <span className="admin-tag">Removed</span>}
                   {room.control.paused && <span className="admin-tag">Paused</span>}
                   {room.control.joinLocked && <span className="admin-tag">Joins locked</span>}
                   <p>Host: {room.players.find(p => p.id === room.host)?.name ?? 'Unavailable'}</p>
@@ -160,7 +169,7 @@ export default function Administration() {
                 <TableCell>{room.turn !== null && room.status !== 'lobby' ? `Turn ${room.turn} · ` : ''}{room.phase}
                   <p>{room.pending.label}{room.pending.owners.length > 0 ? ': ' + room.pending.owners.map(id => room.players.find(p => p.id === id)?.name).filter(Boolean).join(', ') : ''}</p>
                 </TableCell>
-                <TableCell><Button variant="outline" disabled={controlsBusy} onClick={() => { setCreatingRoom(false); setSelectedLobby(null); setSelectedRoom(room.code); }}>Room controls · {room.code}</Button><Button variant="outline" disabled={controlsBusy} onClick={() => { setCreatingRoom(false); setSelectedRoom(null); setSelectedLobby(room.code); }}>Configure lobby · {room.code}</Button><p><time dateTime={new Date(room.updatedAt).toISOString()}>{new Date(room.updatedAt).toLocaleString()}</time></p><p className="admin-secondary">Version {room.version}</p></TableCell>
+                <TableCell><Button variant="outline" disabled={controlsBusy} onClick={() => { setCreatingRoom(false); setSelectedLobby(null); setSelectedRemoval(null); setSelectedRoom(room.code); }}>Room controls · {room.code}</Button><Button variant="outline" disabled={controlsBusy} onClick={() => { setCreatingRoom(false); setSelectedRoom(null); setSelectedRemoval(null); setSelectedLobby(room.code); }}>Configure lobby · {room.code}</Button><Button variant="outline" disabled={controlsBusy} onClick={() => { setCreatingRoom(false); setSelectedRoom(null); setSelectedLobby(null); setSelectedRemoval(room.code); }}>Remove or restore · {room.code}</Button><p><time dateTime={new Date(room.updatedAt).toISOString()}>{new Date(room.updatedAt).toLocaleString()}</time></p><p className="admin-secondary">Version {room.version}</p></TableCell>
               </TableRow>)}</TableBody></Table>}
             <nav className="admin-pagination" aria-label="Room pages">
               <Button variant="outline" disabled={controlsBusy || directory.page <= 1} onClick={() => void load(applied, 1)}>First</Button>
@@ -176,7 +185,7 @@ export default function Administration() {
         {!confirmAll ? <Button variant="outline" disabled={controlsBusy} onClick={() => setConfirmAll(true)}>Sign out everywhere…</Button> :
           <div className="admin-confirm"><p>End all your administrator sessions now?</p><Button disabled={controlsBusy} onClick={() => void sessionAction('logoutAll')}>Confirm sign out everywhere</Button><Button variant="outline" disabled={controlsBusy} onClick={() => setConfirmAll(false)}>Cancel</Button></div>}
       </section>
-      <p className="admin-secondary admin-development">Administration preview: create and configure lobbies, assign hosts, pause/resume rooms and manage joining locks. Archive/removal, participant support and backup tools are still being implemented.</p>
+      <p className="admin-secondary admin-development">Administration preview: create and configure lobbies, assign hosts, pause/resume rooms, manage joining locks, and recoverably remove or restore rooms. Close/end, archive, permanent removal, participant support and backup tools are still being implemented.</p>
     </>}
   </main>;
 }

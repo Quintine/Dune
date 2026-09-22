@@ -12,6 +12,24 @@ const state = (name = 'Directory QA', status = 'lobby', advanced = false) => ({
   log: ['SECRET_HISTORY'], unknownFuturePrivateField: 'SECRET_NEW_FIELD',
 });
 const insert = (sqlite: DatabaseSync, code: string, value: unknown, updated = 100) => sqlite.prepare('INSERT INTO rooms (code,state,version,updated_at) VALUES (?,?,0,?)').run(code, typeof value === 'string' ? value : JSON.stringify(value), updated);
+
+void test('recoverably removed rooms leave the default directory and remain explicitly searchable for restoration', async () => {
+  const f = await fixture();
+  try {
+    insert(f.sqlite, 'ACTIVEAA', state('Active QA'));
+    insert(f.sqlite, 'REMOVEDA', state('Removed QA'));
+    f.sqlite.prepare('INSERT INTO room_removals(room_code,removed,revision,removed_at,updated_at) VALUES (?,1,1,100,100)').run('REMOVEDA');
+    const read = (query = '') => readAdminDirectory(f.database, f.identity, new URLSearchParams(query));
+    const active = await read(); assert.equal(active.total, 1); assert.equal(active.rooms[0].code, 'ACTIVEAA'); assert.equal(active.rooms[0].removed, false);
+    assert.equal((await read('q=Removed')).total, 0);
+    const removed = await read('removal=removed&q=Removed'); assert.equal(removed.total, 1); assert.equal(removed.rooms[0].removed, true);
+    assert.equal(JSON.stringify(removed).includes('SECRET'), false);
+    assert.equal((await read('removal=all')).total, 2);
+    await assert.rejects(read('removal=invalid'), (e: unknown) => e instanceof AdminError && e.status === 400);
+    f.sqlite.prepare('UPDATE room_removals SET removed=0,revision=2,removed_at=NULL WHERE room_code=?').run('REMOVEDA');
+    assert.equal((await read()).total, 2); assert.equal((await read('removal=removed')).total, 0);
+  } finally { f.sqlite.close(); }
+});
 async function fixture() {
   const store = adminStore();
   const account = store.provision('viewer');

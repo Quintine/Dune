@@ -13,7 +13,7 @@ void test('admin HTTP denies anonymous, forged admin, room-host and spoofed iden
   assert.ok(cookie);
   const room = (await created.json() as { code: string }).code;
   for (const headers of [{}, { cookie }, { cookie: 'dune_admin_session=' + 'a'.repeat(64) }, { 'oai-authenticated-user-id': 'owner', 'oai-authenticated-user-email': 'owner@example.test' }] as Record<string, string>[]) {
-    for (const path of ['/api/admin/session', '/api/admin/rooms', `/api/admin/rooms/${room}/control`, `/api/admin/rooms/${room}/lobby`]) {
+    for (const path of ['/api/admin/session', '/api/admin/rooms', `/api/admin/rooms/${room}/control`, `/api/admin/rooms/${room}/lobby`, `/api/admin/rooms/${room}/removal`]) {
       const result = await fetch(base + path, { headers, signal: AbortSignal.timeout(15000) });
       assert.equal(result.status, 401, path);
       assert.equal(result.headers.get('cache-control'), 'no-store');
@@ -34,6 +34,14 @@ void test('admin HTTP denies anonymous, forged admin, room-host and spoofed iden
     assert.equal(lobby.status, 401);
     assert.equal(lobby.headers.get('set-cookie'), null);
     assert.deepEqual(Object.keys(await lobby.json()), ['error']);
+    const removal = await fetch(`${base}/api/admin/rooms/${room}/removal`, {
+      method: 'POST', headers: { ...headers, origin: base, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operationId: crypto.randomUUID(), expectedVersion: 0, expectedRevision: 0, removed: true, reason: 'Denied removal QA' }),
+      signal: AbortSignal.timeout(15000),
+    });
+    assert.equal(removal.status, 401);
+    assert.equal(removal.headers.get('set-cookie'), null);
+    assert.deepEqual(Object.keys(await removal.json()), ['error']);
     const create = await fetch(base + '/api/admin/rooms', {
       method: 'POST', headers: { ...headers, origin: base, 'Content-Type': 'application/json' },
       body: JSON.stringify({ operationId: crypto.randomUUID(), sessionToken: 'b'.repeat(64), name: 'Denied creation QA', faction: 'atreides', advanced: false, techTokens: false, strongholdCards: false, bots: [], reason: 'Must not create a room' }),

@@ -10,14 +10,30 @@ export class ClientRequestError extends Error {
       | 'http'
       | 'invalid-response',
     readonly status?: number,
+    readonly code?: string,
   ) {
     super(message);
     this.name = 'ClientRequestError';
   }
 }
 
+export const isRoomRemoved = (error: unknown): error is ClientRequestError =>
+  error instanceof ClientRequestError && error.code === 'ROOM_REMOVED';
+
+// Controllers subscribe to a public room identifier, never response bodies or
+// credentials. A removal observed by discussion or seat controls also closes the
+// table. Pending controllers can stay mounted to retain their private retry proof.
+const removalListeners = new Set<(room: string) => void>();
+export function subscribeRoomRemoval(listener: (room: string) => void) {
+  removalListeners.add(listener);
+  return () => { removalListeners.delete(listener); };
+}
+
 /** Gateways can report failure after the server has already committed a mutation. */
 export function requestMayHaveCompleted(error: unknown): boolean {
+  // Creation/recovery can commit before their final private read loses to removal.
+  // A temporary removal is never proof that a preceding mutation did not commit.
+  if (isRoomRemoved(error)) return true;
   if (!(error instanceof ClientRequestError) || error.kind !== 'http')
     return true;
   return (
@@ -92,7 +108,15 @@ export async function requestJson<T>(
         typeof data.error === 'string'
           ? data.error
           : `Request failed (${response.status}).`;
-      throw new ClientRequestError(message, 'http', response.status);
+      const code = data && typeof data === 'object' && 'code' in data &&
+        typeof data.code === 'string' && /^[A-Z_]{1,80}$/.test(data.code) ? data.code : undefined;
+      if (code === 'ROOM_REMOVED') {
+        const room = new URL(url, 'http://local.invalid').pathname.match(/^\/api\/rooms\/([A-Z2-9]{8})(?:\/|$)/)?.[1];
+        if (room) for (const listener of removalListeners) {
+          try { listener(room); } catch { /* A controller cannot change request semantics. */ }
+        }
+      }
+      throw new ClientRequestError(message, 'http', response.status, code);
     }
     return data as T;
   };

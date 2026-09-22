@@ -3497,7 +3497,7 @@ export function joinGame(g: Game, p: Player) {
   );
   g.players.push(p);
   g.playerPositions = normalizedPlayerPositions(g);
-  g.players.forEach((x) => (x.ready = false));
+  g.players.forEach((x) => (x.ready = !!x.bot));
   log(g, `${p.name} joined as ${faction(p.faction).name}.`);
 }
 function draw(g: Game) {
@@ -22851,7 +22851,7 @@ function applyActionInner(
           ? { reserves: 7, tanks: 0, forces: {}, revived: 0 }
           : undefined;
       p.leaders = leaders(f);
-      g.players.forEach((x) => (x.ready = false));
+      g.players.forEach((x) => (x.ready = !!x.bot));
       return g;
     }
     throw new RuleError('That action is not available in the lobby.');

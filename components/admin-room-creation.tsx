@@ -6,7 +6,7 @@ import { Input } from './ui/input';
 import { FACTIONS, type FactionId } from '@/game/catalog';
 import { ClientRequestError, requestJson, requestMayHaveCompleted } from '@/lib/client-request';
 import { retainAdminRoomRequest } from '@/lib/admin-room-control-client';
-import { clearAdminRoomCreation, completeAdminRoomCreation, newAdminRoomCreationRequest, readAdminRoomCreation, saveAdminRoomCreation, type AdminRoomCreationRecord } from '@/lib/admin-room-creation-client';
+import { clearAdminRoomCreation, completeAdminRoomCreation, newAdminRoomCreationRequest, readAdminRoomCreation, saveAdminRoomCreation, validAdminRoomCreationResult, type AdminRoomCreationRecord } from '@/lib/admin-room-creation-client';
 import type { AdminRoomCreationInput, AdminRoomCreationResult } from '@/lib/admin-room-creation';
 
 type Props = { accountId: string; onClose: () => void; onCreated: (code: string) => void; onDenied: () => void; onBusyChange: (busy: boolean) => void };
@@ -57,6 +57,14 @@ export function AdminRoomCreation({ accountId, onClose, onCreated, onDenied, onB
       const result = await requestJson<AdminRoomCreationResult>('/api/admin/rooms', {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Dune-Admin-Id': accountId }, body: JSON.stringify(input),
       });
+      if (validAdminRoomCreationResult(result) && result.operationId === input.operationId && result.roomRemoved) {
+        if (alive.current) {
+          setNotice(`Room ${result.code} exists but has been removed. Its exact creation proof is still saved in this tab. Restore the room in Administration, then retry this same request to confirm host access.`);
+          setConfirmed(false);
+          onCreated(result.code);
+        }
+        return;
+      }
       completeAdminRoomCreation(window.sessionStorage, accountId, input, result);
       if (alive.current) {
         setRecord({ kind: 'completed', result }); setConfirmed(false);

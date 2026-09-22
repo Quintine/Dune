@@ -20,6 +20,7 @@ export type AdminRoomCreationResult = {
   hostId: string;
   replayed: boolean;
   hostAccess: boolean;
+  roomRemoved?: true;
 };
 
 const object = (value: unknown): value is Record<string, unknown> =>

@@ -89,7 +89,7 @@ export async function POST(req: Request) {
         try {
           auth = await authenticate(code, existing);
         } catch (error) {
-          if (!(error instanceof RuleError)) throw error;
+          if (error instanceof RoomEntryError && error.code === 'ROOM_REMOVED' || !(error instanceof RuleError)) throw error;
         }
       }
       if (body.entry === undefined && auth) {

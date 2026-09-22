@@ -11,6 +11,20 @@ function storage() {
 }
 const receipt = (operationId: string): AdminRoomCreationResult => ({ operationId, code: 'ABCD2345', hostId: crypto.randomUUID(), replayed: true, hostAccess: true });
 
+void test('a removed room confirmation cannot erase its only creation proof before restoration', () => {
+  const tab = storage(), input = newAdminRoomCreationRequest(fields());
+  saveAdminRoomCreation(tab, 'a', input);
+  const result = { ...receipt(input.operationId), hostAccess: false, roomRemoved: true as const };
+  assert.equal(validAdminRoomCreationResult(result), true);
+  assert.equal(validAdminRoomCreationResult({ ...result, hostAccess: true }), false);
+  assert.equal(validAdminRoomCreationResult({ ...result, roomRemoved: false }), false);
+  assert.throws(() => completeAdminRoomCreation(tab, 'a', input, result), /temporarily removed/);
+  assert.deepEqual(readAdminRoomCreation(tab, 'a'), { kind: 'pending', input });
+  const restored = receipt(input.operationId);
+  completeAdminRoomCreation(tab, 'a', input, restored);
+  assert.deepEqual(readAdminRoomCreation(tab, 'a'), { kind: 'completed', result: restored });
+});
+
 void test('creation retry preserves one exact private host proof and roster order in its original administrator scope', () => {
   const tab = storage(), input = newAdminRoomCreationRequest(fields());
   assert.equal(input.name, 'Host QA'); assert.equal(input.reason, 'Dedicated QA lobby');

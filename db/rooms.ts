@@ -66,6 +66,25 @@ export class RoomEntryError extends RuleError {
     super(message);
   }
 }
+/** Temporary room unavailability must never invalidate a saved seat or retry proof. */
+export class RoomRemovedError extends RoomEntryError {
+  constructor() {
+    super(
+      'An administrator recoverably removed this room. Keep your saved seat and retry details; access returns if the room is restored.',
+      'ROOM_REMOVED',
+      410,
+    );
+  }
+}
+async function requireRoomNotRemoved(code: string) {
+  const removed = await db()
+    .prepare(
+      'SELECT 1 AS removed FROM room_removals WHERE room_code = ? AND removed = 1',
+    )
+    .bind(code)
+    .first();
+  if (removed) throw new RoomRemovedError();
+}
 type PreparedEntry = {
   operationId: string;
   operationHash: string;
@@ -150,7 +169,8 @@ async function replayEntry(
       entryReceipt: { operationId: entry.operationId, replayed: true },
     };
   } catch (error) {
-    if (!(error instanceof RuleError)) throw error;
+    if (error instanceof RoomRemovedError || !(error instanceof RuleError))
+      throw error;
     throw new RoomEntryError(
       'This room-entry session is no longer active. Use the saved seat recovery kit.',
       'ENTRY_RECEIPT_INVALID',
@@ -258,20 +278,28 @@ function attachRoomControl(view: GameView, row: RoomControlRow) {
 async function readRoomSnapshot(code: string) {
   const row = await db()
     .prepare(`SELECT rooms.state, rooms.version, ${roomControlProjection}
-      FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code WHERE rooms.code = ?`)
+      FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code WHERE rooms.code = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)`)
     .bind(code)
     .first<{ state: string; version: number } & RoomControlRow>();
-  if (!row) throw new RuleError('Room not found. Check your invite code.');
+  if (!row) {
+    await requireRoomNotRemoved(code);
+    throw new RuleError('Room not found. Check your invite code.');
+  }
   const g: Game = JSON.parse(row.state);
   g.version = row.version;
   return { game: g, control: publicRoomControl(row) };
 }
 export async function readRoom(code: string) {
   const row = await db()
-    .prepare('SELECT state,version FROM rooms WHERE code = ?')
+    .prepare(
+      'SELECT state,version FROM rooms WHERE code = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)',
+    )
     .bind(code)
     .first<{ state: string; version: number }>();
-  if (!row) throw new RuleError('Room not found. Check your invite code.');
+  if (!row) {
+    await requireRoomNotRemoved(code);
+    throw new RuleError('Room not found. Check your invite code.');
+  }
   const game: Game = JSON.parse(row.state);
   game.version = row.version;
   return game;
@@ -287,15 +315,21 @@ export async function authenticate(
   code: string,
   token: string,
 ): Promise<SeatAuth> {
-  if (!token) throw new RuleError('Join this room first.');
+  if (!token) {
+    await requireRoomNotRemoved(code);
+    throw new RuleError('Join this room first.');
+  }
   const tokenHash = await hash(token);
   const seat = await db()
     .prepare(
-      'SELECT player_id FROM seats WHERE token_hash = ? AND room_code = ? AND revoked = 0',
+      'SELECT player_id FROM seats WHERE token_hash = ? AND room_code = ? AND revoked = 0 AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = seats.room_code AND removed = 1)',
     )
     .bind(tokenHash, code)
     .first<{ player_id: string }>();
-  if (!seat) throw new RuleError('Your seat could not be verified.');
+  if (!seat) {
+    await requireRoomNotRemoved(code);
+    throw new RuleError('Your seat could not be verified.');
+  }
   return { playerId: seat.player_id, tokenHash };
 }
 export async function joinRoom(
@@ -324,7 +358,8 @@ export async function joinRoom(
           alreadySeated: true,
         };
       } catch (error) {
-        if (!(error instanceof RuleError)) throw error;
+        if (error instanceof RoomRemovedError || !(error instanceof RuleError))
+          throw error;
       }
     }
     await requireUnusedEntryToken(entry);
@@ -345,7 +380,7 @@ export async function joinRoom(
     const results = await db().batch([
       db()
         .prepare(
-          'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND (paused = 1 OR join_locked = 1))',
+          'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND (paused = 1 OR join_locked = 1))',
         )
         .bind(JSON.stringify(g), Date.now(), code, old),
       db()
@@ -369,11 +404,13 @@ export async function joinRoom(
           ]
         : []),
     ]);
-    if (results[0].meta.changes !== 1)
+    if (results[0].meta.changes !== 1) {
+      await requireRoomNotRemoved(code);
       throw new RoomEntryError(
         'The table changed. Retry the same room-entry request.',
         'ENTRY_CONFLICT',
       );
+    }
     return {
       token,
       view: await readSeatView(code, { playerId: id, tokenHash }),
@@ -419,7 +456,7 @@ export async function act(
   const now = clock.now();
   const update = db()
     .prepare(
-      'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND (? = 1 OR NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
+      'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND (? = 1 OR NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
     )
     .bind(
       JSON.stringify(next),
@@ -442,10 +479,12 @@ export async function act(
             .bind(now, code, auth.playerId, auth.tokenHash),
         ])
       : [await update.run()];
-  if (results[0].meta.changes !== 1)
+  if (results[0].meta.changes !== 1) {
+    await requireRoomNotRemoved(code);
     throw new RuleError(
       'Another action arrived first. Your view has refreshed; try again.',
     );
+  }
   return readSeatView(code, auth);
 }
 
@@ -484,7 +523,7 @@ export async function readSeatView(code: string, auth: SeatAuth) {
             AND delegate_session.token_hash = delegations.delegate_session_hash
             AND delegate_session.revoked = 0
         )
-       WHERE rooms.code = ? AND viewer.player_id = ?
+       WHERE rooms.code = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND viewer.player_id = ?
          AND viewer.token_hash = ? AND viewer.revoked = 0
        GROUP BY rooms.code, rooms.state, rooms.version`,
     )
@@ -496,7 +535,10 @@ export async function readSeatView(code: string, auth: SeatAuth) {
         seat_ai_delegations: string | null;
       }
     >();
-  if (!row) throw new RuleError('Your seat could not be verified.');
+  if (!row) {
+    await requireRoomNotRemoved(code);
+    throw new RuleError('Your seat could not be verified.');
+  }
   const g: Game = JSON.parse(row.state);
   g.version = row.version;
   const view = viewGame(g, auth.playerId) as GameView;
@@ -540,13 +582,24 @@ export function needsAutomaticRoomRecovery(
   );
 }
 
+async function readWorkerRoomSnapshot(code: string) {
+  try {
+    return await readRoomSnapshot(code);
+  } catch (error) {
+    if (error instanceof RoomRemovedError) return null;
+    throw error;
+  }
+}
+
 /** Persist an old automatic continuation through the same version fence as current actions. */
 export async function continueRoomAutomatic(
   code: string,
   clock: RoomsClock = roomsClock,
 ) {
   for (let attempt = 0; attempt < 4; attempt++) {
-    const { game: current, control } = await readRoomSnapshot(code);
+    const snapshot = await readWorkerRoomSnapshot(code);
+    if (!snapshot) return;
+    const { game: current, control } = snapshot;
     if (control.paused) return;
     if (
       !needsAutomaticRoomRecovery(current) ||
@@ -562,7 +615,7 @@ export async function continueRoomAutomatic(
     next.version = current.version + 1;
     const result = await db()
       .prepare(
-        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
+        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
       )
       .bind(JSON.stringify(next), clock.now(), code, current.version)
       .run();
@@ -580,7 +633,8 @@ export async function continueRoomBots(
   clock: RoomsClock = roomsClock,
 ) {
   for (let batch = 0; batch < batches; batch++) {
-    let snapshot = await readRoomSnapshot(code);
+    let snapshot = await readWorkerRoomSnapshot(code);
+    if (!snapshot) return;
     let current = snapshot.game;
     if (
       snapshot.control.paused ||
@@ -592,7 +646,8 @@ export async function continueRoomBots(
     if (delay > 0) {
       await clock.sleep(Math.min(delay, ONLINE_BOT_INTERVAL_MS));
       // A human may have taken control or another worker committed while asleep.
-      snapshot = await readRoomSnapshot(code);
+      snapshot = await readWorkerRoomSnapshot(code);
+      if (!snapshot) return;
       current = snapshot.game;
       if (
         snapshot.control.paused ||
@@ -611,7 +666,7 @@ export async function continueRoomBots(
     next.version = current.version + 1;
     const result = await db()
       .prepare(
-        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
+        'UPDATE rooms SET state = ?, version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)',
       )
       .bind(JSON.stringify(next), clock.now(), code, current.version)
       .run();
@@ -703,6 +758,7 @@ export async function setSeatAiDelegate(
   input: SetSeatAiDelegateInput,
   clock: ControlClock = roomsClock,
 ) {
+  await requireRoomNotRemoved(code);
   controlVersion(version);
   if (!validSetSeatAiDelegateInput(input))
     throw invalidDelegation(
@@ -769,7 +825,7 @@ export async function setSeatAiDelegate(
     db()
       .prepare(
         `UPDATE rooms SET version = version + 1, updated_at = ?
-         WHERE code = ? AND version = ?
+         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)
            AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)
            AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
            AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
@@ -820,6 +876,7 @@ export async function setSeatAiDelegate(
       .bind(now, code, owner.id, input.grantId, code, owner.id, input.grantId),
   ]);
   if (results[0].meta.changes !== 1 || results[1].meta.changes !== 1) {
+    await requireRoomNotRemoved(code);
     const won = await seatAiDelegation(input.grantId);
     if (
       won &&
@@ -847,6 +904,7 @@ export async function revokeSeatAiDelegate(
   grantId: unknown,
   clock: ControlClock = roomsClock,
 ) {
+  await requireRoomNotRemoved(code);
   controlVersion(version);
   if (!validSeatAiGrantId(grantId))
     throw invalidDelegation('Choose the current AI delegation identifier.');
@@ -878,7 +936,7 @@ export async function revokeSeatAiDelegate(
     db()
       .prepare(
         `UPDATE rooms SET version = version + 1, updated_at = ?
-         WHERE code = ? AND version = ?
+         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)
            AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)
            AND EXISTS (
              SELECT 1 FROM seat_ai_delegations AS consent
@@ -913,11 +971,13 @@ export async function revokeSeatAiDelegate(
       )
       .bind(now, code, auth.playerId, grantId, auth.tokenHash),
   ]);
-  if (results[0].meta.changes !== 1 || results[1].meta.changes !== 1)
+  if (results[0].meta.changes !== 1 || results[1].meta.changes !== 1) {
+    await requireRoomNotRemoved(code);
     throw invalidDelegation(
       'The table, owner, delegate or consent changed. Reconnect before revoking it.',
       'STALE_VERSION',
     );
+  }
   return { view: await readSeatView(code, auth), replayed: false };
 }
 
@@ -928,6 +988,7 @@ export async function useSeatAiDelegate(
   input: UseSeatAiDelegateInput,
   clock: RoomsClock = roomsClock,
 ): Promise<{ view: GameView; replayed?: boolean }> {
+  await requireRoomNotRemoved(code);
   controlVersion(version);
   if (!validUseSeatAiDelegateInput(input))
     throw invalidDelegation('Choose the current owner and AI delegation.');
@@ -999,7 +1060,7 @@ export async function useSeatAiDelegate(
     db()
       .prepare(
         `UPDATE rooms SET state = ?, version = version + 1, updated_at = ?
-         WHERE code = ? AND version = ?
+         WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1)
            AND NOT EXISTS (SELECT 1 FROM room_controls WHERE room_code = rooms.code AND paused = 1)
            AND EXISTS (
              SELECT 1 FROM seat_ai_delegations AS consent
@@ -1053,6 +1114,7 @@ export async function useSeatAiDelegate(
       ),
   ]);
   if (results[0].meta.changes !== 1 || results[1].meta.changes !== 1) {
+    await requireRoomNotRemoved(code);
     const won = await seatAiDelegation(input.grantId);
     if (
       won?.used_at !== null &&
@@ -1077,6 +1139,7 @@ export async function setRecoveryKey(
   version: unknown,
   secret: unknown,
 ) {
+  await requireRoomNotRemoved(code);
   controlVersion(version);
   const recoveryHash = await secretHash(secret);
   if (recoveryHash === auth.tokenHash)
@@ -1088,7 +1151,7 @@ export async function setRecoveryKey(
   const results = await db().batch([
     db()
       .prepare(
-        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0)',
       )
       .bind(Date.now(), code, version, code, auth.playerId, auth.tokenHash),
     db()
@@ -1097,11 +1160,13 @@ export async function setRecoveryKey(
       )
       .bind(code, auth.playerId, recoveryHash),
   ]);
-  if (results[0].meta.changes !== 1)
+  if (results[0].meta.changes !== 1) {
+    await requireRoomNotRemoved(code);
     throw new SeatControlError(
       'The table or seat changed. Reconnect before saving the recovery key.',
       'STALE_VERSION',
     );
+  }
   return {
     view: await readSeatView(code, auth),
     recoveryConfigured: true as const,
@@ -1117,6 +1182,7 @@ export async function recoverSeat(
     newSessionToken: unknown;
   },
 ) {
+  await requireRoomNotRemoved(code);
   if (
     typeof input.playerId !== 'string' ||
     !input.playerId ||
@@ -1169,15 +1235,17 @@ export async function recoverSeat(
     // A replaced key or later rotation invalidates the receipt, including races after the first lookup.
     const row = await db()
       .prepare(
-        `SELECT rooms.state, rooms.version, ${roomControlProjection} FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code JOIN seats ON seats.room_code = rooms.code JOIN seat_recovery_keys AS keys ON keys.room_code = seats.room_code AND keys.player_id = seats.player_id WHERE rooms.code = ? AND seats.player_id = ? AND seats.token_hash = ? AND seats.revoked = 0 AND keys.recovery_hash = ? AND keys.current_operation_hash = ?`,
+        `SELECT rooms.state, rooms.version, ${roomControlProjection} FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code JOIN seats ON seats.room_code = rooms.code JOIN seat_recovery_keys AS keys ON keys.room_code = seats.room_code AND keys.player_id = seats.player_id WHERE rooms.code = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND seats.player_id = ? AND seats.token_hash = ? AND seats.revoked = 0 AND keys.recovery_hash = ? AND keys.current_operation_hash = ?`,
       )
       .bind(code, playerId, sessionHash, recoveryHash, operationHash)
       .first<{ state: string; version: number } & RoomControlRow>();
-    if (!row)
+    if (!row) {
+      await requireRoomNotRemoved(code);
       throw new SeatControlError(
         'This recovery receipt is no longer active.',
         'RECOVERY_RECEIPT_INVALID',
       );
+    }
     const g: Game = JSON.parse(row.state);
     g.version = row.version;
     const view = viewGame(g, playerId) as GameView;
@@ -1203,7 +1271,7 @@ export async function recoverSeat(
   const results = await db().batch([
     db()
       .prepare(
-        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seat_recovery_keys WHERE room_code = ? AND player_id = ? AND recovery_hash = ?) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_recovery_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?)',
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seat_recovery_keys WHERE room_code = ? AND player_id = ? AND recovery_hash = ?) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_recovery_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?)',
       )
       .bind(
         Date.now(),
@@ -1241,6 +1309,7 @@ export async function recoverSeat(
       .bind(operationHash, code, playerId),
   ]);
   if (results[0].meta.changes !== 1) {
+    await requireRoomNotRemoved(code);
     // A concurrent exact request may have completed: retrying the same proof is safe.
     throw new SeatControlError(
       'The table or recovery operation changed. Retry the exact recovery request.',
@@ -1318,6 +1387,7 @@ export async function createSeatHandover(
   input: { offerId: unknown; handoverSecret: unknown },
   clock: HandoverClock = roomsClock,
 ) {
+  await requireRoomNotRemoved(code);
   controlVersion(version);
   const offerId = controlUuid(
     input.offerId,
@@ -1347,7 +1417,7 @@ export async function createSeatHandover(
     const results = await db().batch([
       db()
         .prepare(
-          'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_handover_offers WHERE offer_hash = ? AND (room_code != ? OR player_id != ?))',
+          'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seat_handover_offers WHERE offer_hash = ? AND (room_code != ? OR player_id != ?))',
         )
         .bind(
           now,
@@ -1374,6 +1444,7 @@ export async function createSeatHandover(
         ),
     ]);
     if (results[0].meta.changes !== 1) {
+      await requireRoomNotRemoved(code);
       const won = await replayCreatedHandover(
         code,
         auth,
@@ -1412,6 +1483,7 @@ export async function revokeSeatHandover(
   offerIdValue: unknown,
   clock: HandoverClock = roomsClock,
 ) {
+  await requireRoomNotRemoved(code);
   controlVersion(version);
   const offerHash = await hash(
     controlUuid(offerIdValue, 'Choose the handover offer to revoke.'),
@@ -1432,7 +1504,7 @@ export async function revokeSeatHandover(
   const results = await db().batch([
     db()
       .prepare(
-        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND claim_operation_hash IS NULL)',
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND claim_operation_hash IS NULL)',
       )
       .bind(
         clock.now(),
@@ -1452,6 +1524,7 @@ export async function revokeSeatHandover(
       .bind(code, auth.playerId, offerHash),
   ]);
   if (results[0].meta.changes !== 1) {
+    await requireRoomNotRemoved(code);
     const current = await handoverOffer(code, auth.playerId);
     if (!current)
       return {
@@ -1499,7 +1572,7 @@ async function replayClaimedHandover(
 ) {
   const row = await db()
     .prepare(
-      `SELECT rooms.state,rooms.version, ${roomControlProjection} FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code JOIN seat_handover_claim_receipts AS receipts ON receipts.room_code = rooms.code JOIN seats ON seats.room_code = receipts.room_code AND seats.player_id = receipts.player_id WHERE rooms.code = ? AND receipts.player_id = ? AND receipts.offer_hash = ? AND receipts.secret_hash = ? AND receipts.operation_hash = ? AND receipts.session_hash = ? AND seats.token_hash = ? AND seats.revoked = 0`,
+      `SELECT rooms.state,rooms.version, ${roomControlProjection} FROM rooms LEFT JOIN room_controls c ON c.room_code = rooms.code JOIN seat_handover_claim_receipts AS receipts ON receipts.room_code = rooms.code JOIN seats ON seats.room_code = receipts.room_code AND seats.player_id = receipts.player_id WHERE rooms.code = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND receipts.player_id = ? AND receipts.offer_hash = ? AND receipts.secret_hash = ? AND receipts.operation_hash = ? AND receipts.session_hash = ? AND seats.token_hash = ? AND seats.revoked = 0`,
     )
     .bind(
       code,
@@ -1511,7 +1584,10 @@ async function replayClaimedHandover(
       sessionHash,
     )
     .first<{ state: string; version: number } & RoomControlRow>();
-  if (!row) return null;
+  if (!row) {
+    await requireRoomNotRemoved(code);
+    return null;
+  }
   const game: Game = JSON.parse(row.state);
   game.version = row.version;
   const view = viewGame(game, playerId) as GameView;
@@ -1535,6 +1611,7 @@ export async function claimSeatHandover(
   },
   clock: HandoverClock = roomsClock,
 ) {
+  await requireRoomNotRemoved(code);
   if (
     typeof input.playerId !== 'string' ||
     !input.playerId ||
@@ -1639,7 +1716,7 @@ export async function claimSeatHandover(
   const results = await db().batch([
     db()
       .prepare(
-        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND secret_hash = ? AND issuer_session_hash = ? AND expires_at > ? AND claim_operation_hash IS NULL) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?) AND NOT EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?)',
+        'UPDATE rooms SET version = version + 1, updated_at = ? WHERE code = ? AND version = ? AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = rooms.code AND removed = 1) AND EXISTS (SELECT 1 FROM seat_handover_offers WHERE room_code = ? AND player_id = ? AND offer_hash = ? AND secret_hash = ? AND issuer_session_hash = ? AND expires_at > ? AND claim_operation_hash IS NULL) AND EXISTS (SELECT 1 FROM seats WHERE room_code = ? AND player_id = ? AND token_hash = ? AND revoked = 0) AND NOT EXISTS (SELECT 1 FROM seats WHERE token_hash = ?) AND NOT EXISTS (SELECT 1 FROM seat_handover_claim_receipts WHERE room_code = ? AND player_id = ? AND operation_hash = ?)',
       )
       .bind(
         now,
@@ -1708,6 +1785,7 @@ export async function claimSeatHandover(
       .bind(code, playerId, code, playerId, claimFence),
   ]);
   if (results[0].meta.changes !== 1) {
+    await requireRoomNotRemoved(code);
     const won = await replayClaimedHandover(
       code,
       playerId,

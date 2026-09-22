@@ -13,6 +13,7 @@ export class TableTalkError extends Error {
   constructor(
     message: string,
     readonly status = 409,
+    readonly code?: string,
   ) {
     super(message);
   }
@@ -21,11 +22,26 @@ function database() {
   if (!env.DB) throw new Error('Game storage is unavailable.');
   return env.DB;
 }
+async function requireRoomNotRemoved(code: string) {
+  const removed = await database()
+    .prepare(
+      'SELECT 1 AS removed FROM room_removals WHERE room_code = ? AND removed = 1',
+    )
+    .bind(code)
+    .first();
+  if (removed)
+    throw new TableTalkError(
+      'An administrator recoverably removed this room. Keep your saved seat and retry details; access returns if the room is restored.',
+      410,
+      'ROOM_REMOVED',
+    );
+}
 // Every read and write checks the exact active session AND room membership.
 // A separate message table keeps private activity out of game versions/logs.
 const viewer = `FROM rooms r JOIN seats s ON s.room_code = r.code
   JOIN json_each(r.state, '$.players') p ON json_extract(p.value, '$.id') = s.player_id
   WHERE r.code = ? AND s.player_id = ? AND s.token_hash = ? AND s.revoked = 0
+  AND NOT EXISTS (SELECT 1 FROM room_removals WHERE room_code = r.code AND removed = 1)
   AND json_extract(p.value, '$.bot') IS NULL`;
 const channel = `(m.recipient_id IS NULL AND ? IS NULL) OR
   (? IS NOT NULL AND ((m.sender_id = s.player_id AND m.recipient_id = ?) OR
@@ -71,7 +87,10 @@ export async function readTableTalk(
       auth.tokenHash,
     )
     .first<{ messages: string }>();
-  if (!row) throw new TableTalkError('Your seat could not be verified.');
+  if (!row) {
+    await requireRoomNotRemoved(code);
+    throw new TableTalkError('Your seat could not be verified.');
+  }
   const newestFirst: TalkMessage[] = JSON.parse(row.messages);
   const messages = newestFirst.slice(0, TALK_PAGE_SIZE).reverse();
   return {
@@ -134,9 +153,11 @@ export async function sendTableTalk(
       draft.text,
     )
     .first<{ accepted: number }>();
-  if (!receipt)
+  if (!receipt) {
+    await requireRoomNotRemoved(code);
     throw new TableTalkError(
       'Message not confirmed. Check your seat and recipient, wait a second, then try again.',
     );
+  }
   return { id: draft.id, replayed: result.meta.changes === 0 };
 }
