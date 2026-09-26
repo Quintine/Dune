@@ -6,6 +6,18 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+Current work adds [participant AI support](ADMIN_PARTICIPANT_AI.md): a live
+owner/operator can enable an existing AI difficulty for an eligible human in a
+paused, started game. Saved custody and seat access remain; the human can take
+back control, and resume is separate. Atomic audit, exact saved retries and
+commit-time room/seat/authority checks are connected. Participant restrictions,
+access revocation, assisted recovery, permanent deletion, bulk actions and
+backup/operations tools remain unfinished. This adds no strategic AI refinement.
+
+Readable-notice checkpoint `137f922` is pushed. Types/lint, 5,381 offline tests,
+52 HTTP tests, build and delayed-response desktop/mobile browser QA passed.
+Its new-revision deployment handoff is pending confirmation.
+
 The [readable-notice follow-up](READABLE_NOTICES.md) extends first-request progress
 to admin operations, AI permissions and seat handovers, preventing recovery
 instructions from flashing before a successful response. Seat recovery/handover
@@ -13,8 +25,8 @@ confirmations remain above the table until Continue. Existing retry proofs and
 rules/AI pacing are unchanged. New-revision deployed acceptance remains separate
 from local checks; positive production admin testing still needs authorized access.
 
-Current work adds [administrative archive/unarchive](ADMIN_ROOM_ARCHIVE.md):
-closed rooms can leave the default directory without changing saved games,
+The connected [administrative archive/unarchive](ADMIN_ROOM_ARCHIVE.md) prototype lets
+closed rooms leave the default directory without changing saved games,
 credentials, discussion or AI deadlines. Unarchiving leaves play closed;
 reopening requires unarchiving first. Exact saved retries and combined archive /
 removal filters preserve recovery. Permanent deletion, bulk actions and full

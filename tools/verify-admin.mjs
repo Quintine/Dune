@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { verifyRoomLifecycle } from './admin-lifecycle-verification.mjs';
 import { verifyRoomCreation } from './admin-creation-verification.mjs';
 import { verifyLobbyConfiguration } from './admin-lobby-verification.mjs';
+import { verifyParticipantAi } from './admin-seat-ai-verification.mjs';
 import { verifyRoomArchive } from './admin-archive-verification.mjs';
 import { verifyRoomClosure } from './admin-closure-verification.mjs';
 import { verifyRoomRemoval } from './admin-removal-verification.mjs';
@@ -35,7 +36,7 @@ async function request(path, body, cookie, origin = base, expectedAdminId = admi
   const response = await fetch(base + path, {
     method: body === undefined ? 'GET' : 'POST',
     headers: { ...(body === undefined ? {} : { 'content-type': 'application/json', origin }), ...(cookie ? { cookie } : {}),
-      ...(expectedAdminId && (path === '/api/admin/rooms' && body !== undefined || /^\/api\/admin\/rooms\/[^/]+\/(control|lobby|removal|closure|archive)$/.test(path)) ? { 'X-Dune-Admin-Id': expectedAdminId } : {}) },
+      ...(expectedAdminId && (path === '/api/admin/rooms' && body !== undefined || /^\/api\/admin\/rooms\/[^/]+\/(control|lobby|removal|closure|archive|seat-ai)$/.test(path)) ? { 'X-Dune-Admin-Id': expectedAdminId } : {}) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(15000),
   });
   report.lastRequest = { path, status: response.status };
@@ -93,6 +94,7 @@ try {
     await verifyRoomRemoval(request, session1, report);
     await verifyRoomClosure(request, session1, report);
     await verifyRoomArchive(request, session1, report);
+    await verifyParticipantAi(request, session1, report);
   }
   report.passed = true;
 } catch (error) {

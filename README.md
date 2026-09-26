@@ -53,7 +53,9 @@ use the Directory filter to find them for restoration.
 readable tables and history, then resumes the same saved position.
 [Archive or unarchive](docs/ADMIN_ROOM_ARCHIVE.md) organizes closed rooms while
 retaining their tables and history; unarchiving leaves play closed.
-Permanent deletion, participant support and backup tools are still being built.
+[Participant AI](docs/ADMIN_PARTICIPANT_AI.md) supports an absent human in a paused
+game while preserving their seat and takeback control. Permanent deletion,
+further participant support and backup tools are still being built.
 
 ## Saved seats and reconnecting
 

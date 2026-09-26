@@ -181,6 +181,25 @@ export const adminRoomArchives = sqliteTable(
   ],
 );
 
+// Participant AI never gives administrators a private seat. Receipts survive room removal.
+export const adminSeatAiOperations = sqliteTable(
+  'admin_seat_ai_operations',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    requestHash: text('request_hash').notNull(),
+    expectedVersion: integer('expected_version').notNull(),
+    expectedControlRevision: integer('expected_control_revision').notNull(),
+    appliedVersion: integer('applied_version').notNull(),
+    target: text('target').notNull(),
+    difficulty: text('difficulty').notNull(),
+    reason: text('reason').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  table => [index('admin_seat_ai_room').on(table.roomCode, table.createdAt)],
+);
+
 // Durable receipts are also the room operations audit. They intentionally survive
 // account/room removal, and contain no credentials, game state or private cards.
 export const adminRoomAudit = sqliteTable(

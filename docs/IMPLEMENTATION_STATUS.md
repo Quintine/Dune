@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 26 September 2026 — Administrative participant AI prototype
+
+[Participant AI](ADMIN_PARTICIPANT_AI.md) connects paused human-seat support to
+the existing authoritative controller action. It retains player access, private
+custody and AI deadlines; explicit resume starts normal paced continuation.
+Atomic authority/room/pause/seat fences, durable receipts and target-owned unused
+permission revocation preserve concurrent and uncertain requests. Local retry
+controls survive refresh and confirm old operations without reversing takeback.
+
+Independent review corrected sector-18 and worm-ride compatibility, core
+continuation shape guards and changed-access handling after reconciliation.
+Focused regressions and twenty-two administrator HTTP groups passed; source-bound
+checks, browser acceptance and preservation accompany the checkpoint separately.
+Positive production admin testing remains pending authorized access. The complete
+administration panel, rules/expansion coverage and AI refinement remain unfinished.
+
 ## 26 September 2026 — Readable admin and saved-seat notices
 
 First administrator and seat-control submissions show progress while the request
