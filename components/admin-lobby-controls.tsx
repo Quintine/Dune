@@ -31,6 +31,7 @@ export function AdminLobbyControls({ accountId, code, canManage, onClose, onUpda
   const [storageProblem, setStorageProblem] = useState(false);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+  const [initialRequestPending, setInitialRequestPending] = useState(false);
   const [loading, setLoading] = useState(true);
   const alive = useRef(false), inFlight = useRef(false);
   const title = useRef<HTMLHeadingElement>(null);
@@ -101,7 +102,7 @@ export function AdminLobbyControls({ accountId, code, canManage, onClose, onUpda
       input = saved ?? newAdminLobbyRequest(lobby, action, reason);
       saveAdminLobbyRequest(window.sessionStorage, accountId, code, input);
     } catch (error) { setNotice(message(error)); return; }
-    inFlight.current = true; setBusy(true); onBusyChange(true); setPending(input); setNotice('Saving lobby change…');
+    inFlight.current = true; setInitialRequestPending(!saved); setBusy(true); onBusyChange(true); setPending(input); setNotice('Saving lobby change…');
     try {
       const result = adminLobbyConfirmation(await requestJson<unknown>(url, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Dune-Admin-Id': accountId }, body: JSON.stringify(input),
@@ -127,7 +128,7 @@ export function AdminLobbyControls({ accountId, code, canManage, onClose, onUpda
           if (alive.current) setLobby(current);
         } catch { /* Preserve the original outcome and retry instructions. */ }
       }
-    } finally { inFlight.current = false; onBusyChange(false); if (alive.current) setBusy(false); }
+    } finally { inFlight.current = false; onBusyChange(false); if (alive.current) { setInitialRequestPending(false); setBusy(false); } }
   }
   function discardUnreadableRecord() {
     if (!confirmed || busy) return;
@@ -152,7 +153,7 @@ export function AdminLobbyControls({ accountId, code, canManage, onClose, onUpda
         <p>No new changes can be sent until this tab’s unreadable retry record is resolved. Removing it does not cancel a change already saved on the server.</p>
         <label className="admin-check"><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} />I have inspected the current lobby and want to remove the local retry record.</label>
         <Button disabled={busy || !confirmed} onClick={discardUnreadableRecord}>Discard unreadable local record</Button>
-      </div> : pending ? <div className="admin-confirm">
+      </div> : initialRequestPending ? null : pending ? <div className="admin-confirm">
         <p>Saved request for {code}: {describeAdminLobbyAction(pending.action, lobby)}.</p><p>Reason: {pending.reason}</p>
         <p>The exact request stays in this tab across refresh. Retrying confirms an already completed change without applying it again, including after the game has started.</p>
         <Button disabled={busy} onClick={() => void submit(pending)}>Retry saved lobby request</Button>

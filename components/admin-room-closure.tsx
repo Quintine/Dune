@@ -23,6 +23,7 @@ export function AdminRoomClosure({ accountId, code, canManage, onClose, onUpdate
   const [storageProblem, setStorageProblem] = useState(false);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+  const [initialRequestPending, setInitialRequestPending] = useState(false);
   const [loading, setLoading] = useState(true);
   const alive = useRef(false), inFlight = useRef(false);
   const title = useRef<HTMLHeadingElement>(null);
@@ -69,7 +70,7 @@ export function AdminRoomClosure({ accountId, code, canManage, onClose, onUpdate
       input = saved ?? newAdminClosureRequest(room!, !room!.closed, reason);
       saveAdminClosureRequest(window.sessionStorage, accountId, code, input);
     } catch (error) { setNotice(message(error)); return; }
-    inFlight.current = true; setBusy(true); onBusyChange(true); setPending(input); setNotice(input.closed ? 'Closing room…' : 'Reopening room…');
+    inFlight.current = true; setInitialRequestPending(!saved); setBusy(true); onBusyChange(true); setPending(input); setNotice(input.closed ? 'Closing room…' : 'Reopening room…');
     try {
       const result = adminClosureConfirmation(await requestJson<unknown>(url, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Dune-Admin-Id': accountId }, body: JSON.stringify(input),
@@ -96,7 +97,7 @@ export function AdminRoomClosure({ accountId, code, canManage, onClose, onUpdate
           if (alive.current) setRoom(current);
         } catch { /* Preserve the original outcome and saved retry. */ }
       }
-    } finally { inFlight.current = false; onBusyChange(false); if (alive.current) setBusy(false); }
+    } finally { inFlight.current = false; onBusyChange(false); if (alive.current) { setInitialRequestPending(false); setBusy(false); } }
   }
 
   function discardUnreadableRecord() {
@@ -121,7 +122,7 @@ export function AdminRoomClosure({ accountId, code, canManage, onClose, onUpdate
         <p>No new changes can be sent until this tab’s unreadable retry record is resolved. Discarding the record does not cancel a change already saved on the server.</p>
         <label className="admin-check"><input type="checkbox" checked={confirmed} disabled={busy || !room} onChange={e => setConfirmed(e.target.checked)} />I have inspected room {code} and want to remove its local retry record.</label>
         <Button disabled={busy || !room || !confirmed} onClick={discardUnreadableRecord}>Discard unreadable local record</Button>
-      </div> : pending ? <div className="admin-confirm">
+      </div> : initialRequestPending ? null : pending ? <div className="admin-confirm">
         <p>Saved request: <strong>{pending.closed ? 'Close' : 'Reopen'} room {code}</strong>.</p><p>Reason: {pending.reason}</p>
         <p>The exact request stays in this tab across refresh and reopening these controls. Retrying confirms a completed change without applying it again. Current availability can differ if another administrator changed the room afterward.</p>
         <p>After refreshing the page or signing in again, choose All rooms in both the Directory and Archive filters to find this room and reopen these controls.</p>

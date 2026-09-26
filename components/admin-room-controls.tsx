@@ -34,6 +34,7 @@ export function AdminRoomControls({ accountId, code, canManage, onClose, onUpdat
   const [storageProblem, setStorageProblem] = useState(false);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+  const [initialRequestPending, setInitialRequestPending] = useState(false);
   const [loading, setLoading] = useState(true);
   const alive = useRef(false);
   const title = useRef<HTMLHeadingElement>(null);
@@ -84,7 +85,7 @@ export function AdminRoomControls({ accountId, code, canManage, onClose, onUpdat
       input = saved ?? newAdminRoomRequest(control, paused, joinLocked, reason);
       saveAdminRoomRequest(window.sessionStorage, accountId, code, input);
     } catch (error) { setNotice(message(error)); return; }
-    inFlight.current = true; setBusy(true); onBusyChange(true); setPending(input); setNotice('Saving room settings…');
+    inFlight.current = true; setInitialRequestPending(!saved); setBusy(true); onBusyChange(true); setPending(input); setNotice('Saving room settings…');
     try {
       const result = await requestJson<RoomControl & { replayed: boolean }>(url, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Dune-Admin-Id': accountId }, body: JSON.stringify(input),
@@ -116,7 +117,7 @@ export function AdminRoomControls({ accountId, code, canManage, onClose, onUpdat
           } catch { /* Preserve the original outcome and retry instructions. */ }
         }
       }
-    } finally { inFlight.current = false; onBusyChange(false); if (alive.current) setBusy(false); }
+    } finally { inFlight.current = false; onBusyChange(false); if (alive.current) { setInitialRequestPending(false); setBusy(false); } }
   }
 
   function discardUnreadableRecord() {
@@ -141,7 +142,7 @@ export function AdminRoomControls({ accountId, code, canManage, onClose, onUpdat
         <p>No new changes can be sent until this tab’s unreadable retry record is resolved. Removing it does not cancel a change already saved on the server.</p>
         <label className="admin-check"><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} />I have inspected the current settings and want to remove the local retry record.</label>
         <Button disabled={busy || !confirmed} onClick={discardUnreadableRecord}>Discard unreadable local record</Button>
-      </div> : pending ? <div className="admin-confirm">
+      </div> : initialRequestPending ? null : pending ? <div className="admin-confirm">
         <p>Saved request: {pending.paused ? 'pause' : 'resume'} room {code}; {pending.joinLocked ? 'lock' : 'open'} new joins.</p>
         <p>Reason: {pending.reason}</p>
         <p>The exact request is kept in this tab across refresh. Retrying confirms an already completed operation without applying it again.</p>

@@ -74,7 +74,9 @@ New create/join requests save a private, tab-scoped retry record before sending.
 
 Normal creation/join shows brief progress; recovery instructions stay open when
 attention is needed. Completed-action notices wait for **Continue** so their text
-can be read at your pace. See [readable notices](docs/READABLE_NOTICES.md).
+can be read at your pace. Seat recovery and handover confirmations also wait for
+**Continue**; admin and seat-control requests show recovery instructions only
+when needed. See [readable notices](docs/READABLE_NOTICES.md).
 
 An uncertain saved-kit recovery keeps its exact retry details in memory and prevents conflicting navigation. If that recovery has become obsolete, deliberate abandonment releases the controls after explaining that it cannot undo a completed recovery. Keep a valid saved kit before discarding retry details.
 

@@ -28,6 +28,7 @@ export function AdminRoomCreation({ accountId, onClose, onCreated, onDenied, onB
   const [notice, setNotice] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [initialRequestPending, setInitialRequestPending] = useState(false);
   const alive = useRef(false), inFlight = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -51,7 +52,7 @@ export function AdminRoomCreation({ accountId, onClose, onCreated, onDenied, onB
       input = saved ?? newAdminRoomCreationRequest({ name, faction, advanced, techTokens, strongholdCards, bots, reason });
       saveAdminRoomCreation(window.sessionStorage, accountId, input);
     } catch (error) { setNotice(message(error)); return; }
-    inFlight.current = true; setBusy(true); onBusyChange(true);
+    inFlight.current = true; setInitialRequestPending(!saved); setBusy(true); onBusyChange(true);
     setRecord({ kind: 'pending', input }); setNotice('Creating your room…');
     try {
       const result = await requestJson<AdminRoomCreationResult>('/api/admin/rooms', {
@@ -82,7 +83,7 @@ export function AdminRoomCreation({ accountId, onClose, onCreated, onDenied, onB
         setNotice(requestMayHaveCompleted(error) ? `${message(error)} The room may already exist. Retry the saved request to confirm it.` : message(error));
         if (error instanceof ClientRequestError && [401, 403].includes(error.status ?? 0)) onDenied();
       }
-    } finally { inFlight.current = false; onBusyChange(false); if (alive.current) setBusy(false); }
+    } finally { inFlight.current = false; onBusyChange(false); if (alive.current) { setInitialRequestPending(false); setBusy(false); } }
   }
 
   function clearRecord() {
@@ -107,7 +108,7 @@ export function AdminRoomCreation({ accountId, onClose, onCreated, onDenied, onB
       <p>A room may already have been created. Check the directory before removing this unreadable record. Removing it cannot cancel creation and may lose this tab’s host-seat retry proof.</p>
       <label className="admin-check"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} />I checked the directory and want to discard this local record.</label>
       <Button disabled={!confirmed} onClick={clearRecord}>Discard unreadable local record</Button>
-    </div> : record?.kind === 'pending' ? <div className="admin-confirm">
+    </div> : initialRequestPending ? null : record?.kind === 'pending' ? <div className="admin-confirm">
       <p>Unconfirmed room: host <strong>{record.input.name}</strong> · {record.input.advanced ? 'Advanced preview' : 'Basic'} · {record.input.bots.length} AI players.</p>
       <p>The exact request is kept privately in this tab across refresh. Keep the tab and its storage until the result is confirmed. Retrying finds the same room.</p>
       <Button disabled={busy} onClick={() => void submit(record.input)}>Retry saved room creation</Button>

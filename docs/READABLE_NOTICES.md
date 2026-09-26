@@ -21,9 +21,23 @@ cannot replace the text being read. The optional toggle, bounded summaries,
 private-information filtering and silent refresh baseline remain; see
 [completed-action feedback](ACTION_FEEDBACK.md).
 
-The notice audit found no other timer removing substantive text in app/component
-flows. Errors and recovery prompts have explicit controls; component inspectors
-have close buttons. Network progress, polling deadlines and permission-expiry
+The follow-up audit also covers instructions replaced by a quick server response,
+even without a dismissal timer. Initial administrator creation, room/lobby controls,
+removal, closure and archive requests now show only progress while awaiting their
+first response. The same applies to AI permissions and handover creation,
+cancellation and acceptance. Saved requests restored after refresh and uncertain
+results retain their recovery controls; explicitly retrying leaves those controls
+visible and disabled until the response. Private retry proofs are still saved
+before dispatch, independently of whether recovery instructions are visible.
+
+Successful seat recovery and handover show a confirmation above the table with
+**Continue**, including the previous owner's/session's revoked access. It remains
+while the player reads or plays; background polling and new actions do not clear
+it. Continue dismisses only the message. Leaving or reloading the page clears this
+local confirmation, without changing the recovered seat.
+
+Errors and recovery prompts have explicit controls; component inspectors have
+close buttons. Network progress, polling deadlines and permission-expiry
 countdowns keep their existing behavior.
 
 ## Verification

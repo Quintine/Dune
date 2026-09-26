@@ -1,10 +1,17 @@
 # Current development status
 
-Updated 22 September 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 26 September 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
+
+The [readable-notice follow-up](READABLE_NOTICES.md) extends first-request progress
+to admin operations, AI permissions and seat handovers, preventing recovery
+instructions from flashing before a successful response. Seat recovery/handover
+confirmations remain above the table until Continue. Existing retry proofs and
+rules/AI pacing are unchanged. New-revision deployed acceptance remains separate
+from local checks; positive production admin testing still needs authorized access.
 
 Current work adds [administrative archive/unarchive](ADMIN_ROOM_ARCHIVE.md):
 closed rooms can leave the default directory without changing saved games,
@@ -19,7 +26,10 @@ groups and lost-response desktop/mobile browser QA. It is deployed on the NAS:
 container verification passed, migration 0013 applied, all eight prior rooms and
 ten seats were preserved, and public HTTPS/browser saved-seat restoration passed.
 Anonymous admin routes remain denied. Positive production administrator acceptance
-still awaits authorized QA access; archive/unarchive is not deployed yet.
+still awaits authorized QA access. Archive checkpoint `e918e2e` is also deployed:
+migration 0014, integrity and public HTTPS/browser saved-seat restoration passed;
+all eight prior rooms and ten seats were preserved. Its positive production
+administrator acceptance remains pending the same authorization.
 
 Checkpoint `238de38` added [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md)
 and passed types/lint, 5,314 offline tests, 52 HTTP tests and build, with fourteen

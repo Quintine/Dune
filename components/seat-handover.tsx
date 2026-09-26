@@ -49,6 +49,7 @@ export function SeatHandoverSetup({
   const [loaded, setLoaded] = useState(false);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [initialRequestPending, setInitialRequestPending] = useState(false);
   const [replaceAcknowledged, setReplaceAcknowledged] = useState(false);
   const closed = !!game.roomControl?.closed;
   const own = game.players.find((player) => player.id === game.me);
@@ -101,6 +102,7 @@ export function SeatHandoverSetup({
     pending.current = true;
     setReplaceAcknowledged(false);
     setBusy(true);
+    setInitialRequestPending(!record?.operation);
     onPending(true);
     try {
       store({ kit, expiresAt: record?.expiresAt ?? null, operation });
@@ -151,6 +153,7 @@ export function SeatHandoverSetup({
       );
     } finally {
       pending.current = false;
+      setInitialRequestPending(false);
       setBusy(false);
       onPending(false);
     }
@@ -172,7 +175,7 @@ export function SeatHandoverSetup({
         share the kit with the intended recipient.
       </p>
       {closed && <p>The room is closed. New handovers and cancellations are stopped; exact saved requests can still confirm a completed change.</p>}
-      {!record ? (
+      {initialRequestPending ? <output className="block">Saving handover…</output> : !record ? (
         <Button
           variant="outline"
           disabled={disabled || closed || busy || !loaded}
@@ -308,6 +311,7 @@ export function SeatHandoverClaim({
   const [stored, setStored] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [initialRequestPending, setInitialRequestPending] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
   const [message, setMessage] = useState('');
   useEffect(() => {
@@ -333,6 +337,7 @@ export function SeatHandoverClaim({
     if (!claim || pending.current) return;
     pending.current = true;
     setBusy(true);
+    setInitialRequestPending(!stored);
     try {
       saveHandoverClaim(sessionStorage, claim);
       setStored(true);
@@ -366,6 +371,7 @@ export function SeatHandoverClaim({
       );
     } finally {
       pending.current = false;
+      setInitialRequestPending(false);
       setBusy(false);
     }
   }
@@ -434,7 +440,7 @@ export function SeatHandoverClaim({
           )}
         </>
       )}
-      {stored && (
+      {stored && !initialRequestPending && (
         <>
           <p>
             Abandoning removes this tab’s exact retry proof. It cannot undo a

@@ -1,5 +1,19 @@
 # Dune implementation status
 
+## 26 September 2026 — Readable admin and saved-seat notices
+
+First administrator and seat-control submissions show progress while the request
+is in flight; saved/uncertain requests retain their recovery controls. This
+extends the room-entry fix to admin creation, controls, lobby changes, removal,
+closure, archive, AI permissions and handovers. Successful recovery and handover
+confirmations remain above the table until Continue, including after polling or
+game actions. No game action waits for that acknowledgement.
+
+Independent read-only review found no material issues. Focused notice/entry
+regressions and delayed/lost-response browser checks accompany the checkpoint;
+broad checks and deployed evidence are recorded separately. The complete admin
+panel and rules goal remain unfinished. See [readable notices](READABLE_NOTICES.md).
+
 ## 22 September 2026 — Administrative archive/unarchive prototype
 
 [Archive or unarchive](ADMIN_ROOM_ARCHIVE.md) organizes closed rooms without

@@ -35,6 +35,7 @@ export function SeatAiDelegation({
   const [record, setRecord] = useState<SeatAiDelegateRequest | null>(null);
   const [storageProblem, setStorageProblem] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [initialRequestPending, setInitialRequestPending] = useState(false);
   const [message, setMessage] = useState('');
   const [abandon, setAbandon] = useState(false);
   const [delegateId, setDelegateId] = useState('');
@@ -86,6 +87,7 @@ export function SeatAiDelegation({
     if (locked || pending.current || (closed && !record)) return;
     pending.current = true;
     setBusy(true);
+    setInitialRequestPending(!record);
     setExpanded(true);
     setAbandon(false);
     onPending(true);
@@ -148,6 +150,7 @@ export function SeatAiDelegation({
       );
     } finally {
       pending.current = false;
+      setInitialRequestPending(false);
       setBusy(false);
       onPending(false);
     }
@@ -175,7 +178,7 @@ export function SeatAiDelegation({
         your own AI control, or recovering or transferring either seat
         invalidates unused permission.
       </p>
-      {record || storageProblem ? (
+      {initialRequestPending ? <output className="block">Saving AI permission…</output> : record || storageProblem ? (
         <section
           aria-label="Unconfirmed AI permission request"
           className="flex flex-col gap-3"

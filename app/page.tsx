@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { TableTalk } from '@/components/table-talk';
 import { RemovedRoomNotice } from '@/components/removed-room-notice';
 import { GameTable } from '@/components/game-table';
+import { SeatConfirmation, type SeatConfirmationKind } from '@/components/seat-confirmation';
 import { RulesetControls } from '@/components/ruleset-controls';
 import {
   SeatHandoverSetup,
@@ -78,6 +79,7 @@ export default function Home() {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [notice, setNotice] = useState('');
+  const [seatConfirmation, setSeatConfirmation] = useState<SeatConfirmationKind | null>(null);
   const seatClaimUncertain = useRef(false);
   const [claimUncertain, setClaimUncertain] = useState(false);
   const pendingEntry = useRef<RoomEntryAttempt | null>(null);
@@ -494,6 +496,7 @@ export default function Home() {
     setBotRecovery(false);
     setConnection('');
     setGame(null);
+    setSeatConfirmation(null);
     setRemovedRoom(null);
     setRestoreFailed(false);
     setNotice('');
@@ -627,7 +630,7 @@ export default function Home() {
     setBusy(pending);
   }
 
-  function restoredSeat(view: GameView, claim = false) {
+  function restoredSeat(view: GameView, claim = false, confirmation?: SeatConfirmationKind) {
     if (removedRooms.current.has(view.code)) return false;
     if (
       !claim &&
@@ -635,6 +638,7 @@ export default function Home() {
     )
       return;
     if (claim) {
+      setSeatConfirmation(confirmation ?? null);
       setHandoverPending(true);
       setAiPermissionPending(true);
       activeRoom.current = view.code;
@@ -701,7 +705,7 @@ export default function Home() {
         <SeatHandoverClaim
           onCancel={() => window.location.reload()}
           onRestored={(view) => {
-            if (restoredSeat(view, true)) setShowHandover(false);
+            if (restoredSeat(view, true, 'handover')) setShowHandover(false);
           }}
         />
       </main>
@@ -709,6 +713,9 @@ export default function Home() {
   if (game)
     return (
       <>
+        {seatConfirmation && !roomUnavailable && <div className="table-shell">
+          <SeatConfirmation kind={seatConfirmation} onContinue={() => setSeatConfirmation(null)} />
+        </div>}
         {roomUnavailable ? <main className="table-shell"><RemovedRoomNotice code={game.code} busy={busy || checkingConnection} onRetry={() => void reconnect()} onExit={exitTable} exitDisabled={handoverPending || aiPermissionPending || claimUncertain} /></main> : <GameTable
           game={game}
           send={send}
@@ -956,7 +963,7 @@ export default function Home() {
               disabled={busy || checkingConnection}
               onPending={controlPending}
               onUncertain={controlUncertain}
-              onRestored={(view) => restoredSeat(view, true)}
+              onRestored={(view) => restoredSeat(view, true, 'recovery')}
             />
           )}
         </section>
@@ -1148,7 +1155,7 @@ export default function Home() {
             disabled={busy || needsReconcile || checkingConnection}
             onPending={controlPending}
             onUncertain={controlUncertain}
-            onRestored={(view) => restoredSeat(view, true)}
+            onRestored={(view) => restoredSeat(view, true, 'recovery')}
           />
           <Button
             variant="outline"
