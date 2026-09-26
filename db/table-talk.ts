@@ -70,7 +70,9 @@ export async function readTableTalk(
         WHERE m.room_code = r.code AND m.id = ? AND (${channel})))
       ORDER BY m.sequence DESC LIMIT ${TALK_PAGE_SIZE + 1}
     )
-  ) AS messages ${viewer}`)
+  ) AS messages,
+    EXISTS (SELECT 1 FROM seat_discussion_controls WHERE room_code=r.code AND player_id=s.player_id AND muted=1) AS muted
+  ${viewer}`)
     .bind(
       recipientId,
       recipientId,
@@ -86,7 +88,7 @@ export async function readTableTalk(
       auth.playerId,
       auth.tokenHash,
     )
-    .first<{ messages: string }>();
+    .first<{ messages: string; muted: number }>();
   if (!row) {
     await requireRoomNotRemoved(code);
     throw new TableTalkError('Your seat could not be verified.');
@@ -96,6 +98,7 @@ export async function readTableTalk(
   return {
     messages,
     before: newestFirst.length > TALK_PAGE_SIZE ? messages[0].id : null,
+    muted: row.muted === 1,
   };
 }
 
@@ -117,6 +120,7 @@ export async function sendTableTalk(
       (SELECT json_extract(target.value, '$.name') FROM json_each(r.state, '$.players') target WHERE json_extract(target.value, '$.id') = ?), ?, ?
     ${viewer}
     AND NOT EXISTS (SELECT 1 FROM room_closures WHERE room_code = r.code AND closed = 1)
+    AND NOT EXISTS (SELECT 1 FROM seat_discussion_controls WHERE room_code=r.code AND player_id=s.player_id AND muted=1)
     AND (? IS NULL OR EXISTS (SELECT 1 FROM json_each(r.state, '$.players') target
       WHERE json_extract(target.value, '$.id') = ? AND json_extract(target.value, '$.bot') IS NULL))
     AND NOT EXISTS (SELECT 1 FROM room_messages recent WHERE recent.room_code = r.code
@@ -158,6 +162,10 @@ export async function sendTableTalk(
     await requireRoomNotRemoved(code);
     if (await database().prepare('SELECT 1 FROM room_closures WHERE room_code = ? AND closed = 1').bind(code).first())
       throw new TableTalkError('An administrator closed this room. Discussion history remains readable; new messages are available after reopening.', 409, 'ROOM_CLOSED');
+    // Only a still-authenticated seat may learn its own restriction. Never gate prior receipts on mute.
+    if (await database().prepare(`SELECT 1 ${viewer} AND EXISTS (SELECT 1 FROM seat_discussion_controls WHERE room_code=r.code AND player_id=s.player_id AND muted=1)`)
+      .bind(code, auth.playerId, auth.tokenHash).first())
+      throw new TableTalkError('An administrator muted discussion for this seat. You can still read messages and play; new messages are available after unmuting.', 409, 'SEAT_DISCUSSION_MUTED');
     throw new TableTalkError(
       'Message not confirmed. Check your seat and recipient, wait a second, then try again.',
     );

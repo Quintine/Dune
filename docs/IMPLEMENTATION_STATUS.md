@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 26 September 2026 — Administrative discussion moderation prototype
+
+[Discussion controls](ADMIN_DISCUSSION.md) connect human-seat mute/unmute to the
+admin directory and player message panel. New public/private sends are blocked
+at commit; history, incoming messages and exact committed retries remain usable.
+Settings survive seat recovery/handover without reviving old credentials. Game
+JSON, versions, timestamps, private custody and AI pacing remain unchanged.
+
+Atomic live authority/membership/version fences, per-seat revisions and audit
+receipts protect concurrent and uncertain requests. Independent SQL/privacy and
+UI source review found no blocking defects. Focused regressions cover mute/send
+ordering, rollback, stale unmute races and exact retry privacy. Browser, HTTP,
+source-bound checkpoint checks and preservation evidence accompany this slice.
+New-revision deployed acceptance remains open; full administration and game
+rules/expansion completion remain unfinished.
+
 ## 26 September 2026 — Administrative participant AI prototype
 
 [Participant AI](ADMIN_PARTICIPANT_AI.md) connects paused human-seat support to

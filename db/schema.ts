@@ -363,6 +363,32 @@ export const roomEntryReceipts = sqliteTable('room_entry_receipts', {
   playerId: text('player_id').notNull(),
 });
 
+// Discussion moderation follows the logical seat across recovery and handover.
+export const seatDiscussionControls = sqliteTable('seat_discussion_controls', {
+  roomCode: text('room_code').notNull().references(() => rooms.code, { onDelete: 'cascade' }),
+  playerId: text('player_id').notNull(),
+  muted: integer('muted').notNull().default(0),
+  revision: integer('revision').notNull().default(0),
+  updatedAt: integer('updated_at').notNull(),
+}, table => [primaryKey({ columns: [table.roomCode, table.playerId] }),
+  check('seat_discussion_muted', sql`${table.muted} IN (0, 1)`),
+  check('seat_discussion_revision', sql`${table.revision} >= 0`)]);
+
+// Keep audit receipts independent of room/account deletion, like other admin operations.
+export const adminDiscussionOperations = sqliteTable('admin_discussion_operations', {
+  operationId: text('operation_id').primaryKey(),
+  actorAdminId: text('actor_admin_id').notNull(),
+  roomCode: text('room_code').notNull(),
+  requestHash: text('request_hash').notNull(),
+  expectedVersion: integer('expected_version').notNull(),
+  expectedRevision: integer('expected_revision').notNull(),
+  appliedRevision: integer('applied_revision').notNull(),
+  target: text('target').notNull(),
+  muted: integer('muted').notNull(),
+  reason: text('reason').notNull(),
+  createdAt: integer('created_at').notNull(),
+}, table => [index('admin_discussion_room').on(table.roomCode, table.createdAt)]);
+
 export const roomMessages = sqliteTable(
   'room_messages',
   {

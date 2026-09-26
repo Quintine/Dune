@@ -15,7 +15,7 @@ export type TalkMessage = {
   text: string;
   createdAt: number;
 };
-export type TalkPage = { messages: TalkMessage[]; before: string | null };
+export type TalkPage = { messages: TalkMessage[]; before: string | null; muted: boolean };
 export const talkId = (value: unknown): value is string =>
   typeof value === 'string' &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value);

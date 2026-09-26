@@ -87,7 +87,7 @@ void test('public and private discussion preserves game rows and hides direct ac
     assert.equal(JSON.stringify(publicPage).includes('PRIVATE'), false);
     assert.deepEqual(
       await f.talk.readTableTalk(f.code, f.auth[2], f.auth[0].playerId),
-      { messages: [], before: null },
+      { messages: [], before: null, muted: false },
     );
     for (const [viewer, peer] of [
       [0, 1],
@@ -251,11 +251,11 @@ void test('pagination filters before limiting and never accepts a hidden message
     assert.equal(older.before, null);
     assert.deepEqual(
       await f.talk.readTableTalk(f.code, f.auth[2], null, privateId),
-      { messages: [], before: null },
+      { messages: [], before: null, muted: false },
     );
     assert.deepEqual(
       await f.talk.readTableTalk(f.code, f.auth[2], null, crypto.randomUUID()),
-      { messages: [], before: null },
+      { messages: [], before: null, muted: false },
     );
   } finally {
     f.sqlite.close();
@@ -346,4 +346,51 @@ void test('a credential rotation after a committed insert still returns that exa
   } finally {
     f.sqlite.close();
   }
+});
+
+void test('mute prevents new public/private sends, preserves incoming history and exact committed retries, and follows seat rotation', async () => {
+  const f = await fixture();
+  try {
+    const before = gameRows(f), prior = draft('Private history before mute', f.auth[1].playerId);
+    await f.talk.sendTableTalk(f.code, f.auth[0], prior, 1000);
+    f.sqlite.prepare('INSERT INTO seat_discussion_controls(room_code,player_id,muted,revision,updated_at) VALUES(?,?,1,1,1)').run(f.code, f.auth[0].playerId);
+    for (const recipient of [null, f.auth[1].playerId])
+      await assert.rejects(f.talk.sendTableTalk(f.code, f.auth[0], draft('Blocked', recipient), 2000), (error: unknown) => !!error && typeof error === 'object' && 'code' in error && error.code === 'SEAT_DISCUSSION_MUTED');
+    assert.equal((await f.talk.sendTableTalk(f.code, f.auth[0], prior, 3000)).replayed, true);
+    await assert.rejects(f.talk.sendTableTalk(f.code, f.auth[0], { ...prior, text: 'Altered' }, 3000));
+    await f.talk.sendTableTalk(f.code, f.auth[1], draft('Incoming remains available', f.auth[0].playerId), 4000);
+    const own = await f.talk.readTableTalk(f.code, f.auth[0], f.auth[1].playerId);
+    assert.equal(own.muted, true); assert.equal(own.messages.length, 2);
+    const observer = await f.talk.readTableTalk(f.code, f.auth[2], null);
+    assert.deepEqual(observer, { messages: [], before: null, muted: false });
+    f.sqlite.prepare('UPDATE seats SET revoked=1 WHERE token_hash=?').run(f.auth[0].tokenHash);
+    const fresh = { ...f.auth[0], tokenHash: 'new-muted-controller' };
+    f.sqlite.prepare('INSERT INTO seats(token_hash,room_code,player_id) VALUES(?,?,?)').run(fresh.tokenHash, f.code, fresh.playerId);
+    await assert.rejects(f.talk.readTableTalk(f.code, f.auth[0], null));
+    assert.deepEqual(await f.load().readTableTalk(f.code, fresh, f.auth[1].playerId), own);
+    await assert.rejects(f.talk.sendTableTalk(f.code, fresh, prior, 5000));
+    await assert.rejects(f.talk.sendTableTalk(f.code, fresh, draft('Still muted'), 5000));
+    f.sqlite.prepare('UPDATE seat_discussion_controls SET muted=0,revision=2').run();
+    await f.talk.sendTableTalk(f.code, fresh, draft('Unmuted'), 6000);
+    assert.equal((await f.talk.readTableTalk(f.code, fresh, null)).muted, false);
+    assert.deepEqual(gameRows(f), before);
+  } finally { f.sqlite.close(); }
+});
+for (const when of ['before', 'after'] as const) void test(`mute ${when} message insert respects commit order`, async () => {
+  const f = await fixture();
+  try {
+    const input = draft('Racing mute');
+    const hook = when === 'before' ? 'beforeStatement' : 'afterStatement';
+    f.hooks[hook] = async sql => {
+      if (!sql.startsWith('INSERT INTO room_messages')) return;
+      delete f.hooks[hook];
+      f.sqlite.prepare('INSERT INTO seat_discussion_controls(room_code,player_id,muted,revision,updated_at) VALUES(?,?,1,1,1)').run(f.code, f.auth[0].playerId);
+    };
+    if (when === 'before') await assert.rejects(f.talk.sendTableTalk(f.code, f.auth[0], input, 1000));
+    else {
+      assert.deepEqual(await f.talk.sendTableTalk(f.code, f.auth[0], input, 1000), { id: input.id, replayed: false });
+      assert.equal((await f.talk.sendTableTalk(f.code, f.auth[0], input, 2000)).replayed, true);
+    }
+    assert.equal(f.sqlite.prepare('SELECT count(*) AS n FROM room_messages').get()!.n, when === 'before' ? 0 : 1);
+  } finally { f.sqlite.close(); }
 });

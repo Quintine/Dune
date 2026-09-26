@@ -6,13 +6,19 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
-Current work adds [participant AI support](ADMIN_PARTICIPANT_AI.md): a live
-owner/operator can enable an existing AI difficulty for an eligible human in a
-paused, started game. Saved custody and seat access remain; the human can take
-back control, and resume is separate. Atomic audit, exact saved retries and
-commit-time room/seat/authority checks are connected. Participant restrictions,
-access revocation, assisted recovery, permanent deletion, bulk actions and
-backup/operations tools remain unfinished. This adds no strategic AI refinement.
+Current work adds [discussion moderation](ADMIN_DISCUSSION.md): owners/operators
+can mute or unmute new public/private messages from a human seat. History,
+incoming messages, game state and credentials remain saved; the setting follows
+recovery/handover. Atomic authority/version fences, durable audit and exact
+admin/message retries are connected. This is partial participant support;
+access revocation, participant removal, assisted recovery, permanent deletion,
+bulk actions and backup/operations tools remain unfinished.
+
+[Participant AI](ADMIN_PARTICIPANT_AI.md) checkpoint `2cddf03` is pushed. Types/lint,
+5,408 offline tests, 52 HTTP tests, build, twenty-two administrator HTTP groups
+and desktop/mobile browser acceptance passed. Deployment request delivery remains
+unconfirmed; the latest confirmed production revision is `e918e2e`. No strategic
+AI refinement was added.
 
 Readable-notice checkpoint `137f922` is pushed. Types/lint, 5,381 offline tests,
 52 HTTP tests, build and delayed-response desktop/mobile browser QA passed.

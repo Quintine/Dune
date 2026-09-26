@@ -13,7 +13,7 @@ recovery and persistence systems where suitable.
 | Room directory | Search room codes/public player names, filter status/rules/availability, sort and paginate; show host, roster, modules, game change time, pause/join flags and bounded decision ownership. Detailed setup/shared-window ownership remains. | Prototyped |
 | Create and configure | [Create a lobby](ADMIN_ROOM_CREATION.md) with an explicitly owned new host seat, Basic/Advanced preview and initial AI configuration; invite humans and use ordinary lobby controls/voluntary host-seat handover. [Neutral lobby configuration](ADMIN_LOBBY_CONFIGURATION.md) adds rules/modules, AI seats and host assignment to an existing human without private access. Reserved human seats remain. | Prototyped, partial |
 | Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. [Archive/unarchive](ADMIN_ROOM_ARCHIVE.md) has separate directory filters and exact retries. Permanent deletion and bulk actions remain missing. | Prototyped, partial |
-| Participant support | [Participant AI](ADMIN_PARTICIPANT_AI.md) enables an existing difficulty on an eligible human seat in a paused game, retaining access/takeback and private custody. Participant restrictions/removal, access revocation, assisted recovery and further replacement remain. Existing lobby controls can reassign the host. | Prototyped, partial |
+| Participant support | [Participant AI](ADMIN_PARTICIPANT_AI.md) enables an existing difficulty on an eligible human seat in a paused game, retaining access/takeback and private custody. [Discussion controls](ADMIN_DISCUSSION.md) mute/unmute new sends while retaining history and gameplay. Participant removal, access revocation, assisted recovery and further replacement remain. Existing lobby controls can reassign the host. | Prototyped, partial |
 | Saved-game operations | Create/list/download backups, validate imports, restore a selected checkpoint safely, and diagnose or resume interrupted automatic work through authoritative game actions. | Missing |
 | Operations and audit | Show server/build/storage health, room/player counts and actionable errors; provide maintenance controls and a searchable record of administrator actions. | Missing |
 
@@ -56,6 +56,8 @@ No default key, public account creation or host-to-administrator promotion exist
 [Participant AI](ADMIN_PARTICIPANT_AI.md) lets owners/operators support an absent
 human in a paused, started game. The player retains access and takeback controls;
 the administrator receives no private seat. Resume remains a separate action.
+[Discussion controls](ADMIN_DISCUSSION.md) restrict new messages from a human seat,
+including after recovery/handover, without exposing private history.
 
 The directory uses an explicit field allowlist, independent of any player view.
 It never returns hands, Traitors, predictions, plans, private messages, recovery
@@ -129,7 +131,8 @@ room IDs and safe outcomes, never keys/cookies. The container verifier provision
 its own disposable QA account and checks admin-session continuity across restart
 and replacement, followed by the HTTP flow and HTTPS-proxy cookie behavior.
 Participant checks use another new QA room for paused AI enable, private-seat
-continuity, takeback and durable retries after resuming.
+continuity, takeback and durable retries after resuming. Discussion checks use a
+new QA room for mute/unmute, own-only status, incoming messages and saved retries.
 
 Local browser checks cover sign-in, directory filters, refresh restoration and
 mobile layout. Final source-bound checks and separately recorded deployed

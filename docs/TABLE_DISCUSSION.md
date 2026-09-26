@@ -28,6 +28,16 @@ resumes updates. Channel changes discard obsolete read results. There are no
 public direct-message counts, typing indicators or global sequence numbers.
 Messages are stored durably; pagination does not delete old history.
 
+## Discussion moderation
+
+An administrator can [mute new messages from a seat](ADMIN_DISCUSSION.md). The
+player sees a persistent explanation; reading history, receiving messages and
+playing remain available. The setting follows recovery or handover and is never
+shown as another player's private activity. New sends are checked at database
+commit. An exact previously committed send can still be confirmed while muted;
+no new message is created. Refresh availability after an unmute, or allow the
+normal latest-message poll to update the controls.
+
 ## Saved retries and state isolation
 
 The browser saves an exact message UUID, recipient and body in tab storage before

@@ -127,11 +127,11 @@ void test('discussion HTTP preserves sealed setup and room version; public and d
     undefined,
     f.c.cookie,
   );
-  assert.deepEqual(outsider.data, { messages: [], before: null });
+  assert.deepEqual(outsider.data, { messages: [], before: null, muted: false });
   assert.deepEqual(
     (await request(endpoint + `?before=${direct.id}`, undefined, f.c.cookie))
       .data,
-    { messages: [], before: null },
+    { messages: [], before: null, muted: false },
   );
   const publicText = {
     id: crypto.randomUUID(),
@@ -227,6 +227,6 @@ void test('discussion HTTP retries save once and seat recovery inherits conversa
         f.c.cookie,
       )
     ).data,
-    { messages: [], before: null },
+    { messages: [], before: null, muted: false },
   );
 });

@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { GameView } from '@/game/engine';
 import { faction } from '@/game/catalog';
 import { Button } from './ui/button';
-import { requestJson, requestMayHaveCompleted } from '@/lib/client-request';
+import { ClientRequestError, requestJson, requestMayHaveCompleted } from '@/lib/client-request';
 import {
   TALK_LIMIT,
   clearTalkDraft,
@@ -24,7 +24,8 @@ export function TableTalk({ game }: { game: GameView }) {
   const [text, setText] = useState('');
   const [record, setRecord] = useState<TalkDraft | null>(null);
   const [pageChannel, setPageChannel] = useState<string | null>(null);
-  const [page, setPage] = useState<TalkPage>({ messages: [], before: null });
+  const [page, setPage] = useState<TalkPage>({ messages: [], before: null, muted: false });
+  const [muted, setMuted] = useState(false);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -104,6 +105,7 @@ export function TableTalk({ game }: { game: GameView }) {
           !readingHistory.current
         ) {
           setPage(result);
+          setMuted(result.muted === true);
           setPageChannel(url);
           setReadError('');
         }
@@ -120,7 +122,7 @@ export function TableTalk({ game }: { game: GameView }) {
     readingHistory.current = false;
     // oxlint-disable-next-line react/react-compiler -- Reset saved-history browsing when the external conversation subscription changes.
     setHistory(false);
-    setPage({ messages: [], before: null });
+    setPage({ messages: [], before: null, muted: false });
     void read();
     return () => {
       controller.abort();
@@ -138,11 +140,14 @@ export function TableTalk({ game }: { game: GameView }) {
     const generation = channelGeneration.current;
     try {
       const result = await requestJson<TalkPage>(pageUrl(shownPage.before));
-      if (generation === channelGeneration.current)
+      if (generation === channelGeneration.current) {
+        setMuted(result.muted === true);
         setPage((current) => ({
           before: result.before,
           messages: mergeTalkPages(result.messages, current.messages),
+          muted: result.muted,
         }));
+      }
     } catch {
       if (generation === channelGeneration.current)
         setReadError('Older messages could not be loaded. Try again.');
@@ -152,7 +157,7 @@ export function TableTalk({ game }: { game: GameView }) {
     }
   }
   async function submit() {
-    if (sending.current || !ready || (closed && !record)) return;
+    if (sending.current || !ready || ((closed || muted) && !record)) return;
     const draft = record ?? {
       id: randomId(),
       recipientId: recipient || null,
@@ -188,6 +193,7 @@ export function TableTalk({ game }: { game: GameView }) {
       setRefresh((value) => value + 1);
     } catch (error) {
       if (!mounted.current) return;
+      if (error instanceof ClientRequestError && error.code === 'SEAT_DISCUSSION_MUTED') setMuted(true);
       if (dispatched && (wasRetry || requestMayHaveCompleted(error))) {
         setNotice(
           'Message not confirmed. Retry the exact message, or check the conversation before discarding its retry details.',
@@ -316,6 +322,7 @@ export function TableTalk({ game }: { game: GameView }) {
             <p className="muted">No messages loaded in this conversation.</p>
           )}
           {closed && <p className="notice">This room is closed. Discussion history remains available; an exact saved message can still be confirmed.</p>}
+          {muted && <p className="notice">An administrator muted discussion for this seat. You can still read messages and play. An exact saved message can still be confirmed; new messages are available after unmuting. <Button variant="outline" onClick={() => setRefresh(value => value + 1)}>Refresh discussion availability</Button></p>}
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -332,7 +339,7 @@ export function TableTalk({ game }: { game: GameView }) {
               rows={3}
               maxLength={TALK_LIMIT}
               value={text}
-              disabled={busy || !!record || closed}
+              disabled={busy || !!record || closed || muted}
               onChange={(event) => setText(event.target.value)}
               aria-describedby={`${field}-count`}
             />
@@ -343,7 +350,7 @@ export function TableTalk({ game }: { game: GameView }) {
               type="submit"
               disabled={
                 !ready ||
-                (closed && !record) ||
+                ((closed || muted) && !record) ||
                 busy ||
                 !text.trim() ||
                 (!record && !!recipient && !target)
