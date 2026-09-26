@@ -43,3 +43,5 @@ next-env.d.ts
 
 # local notes (contains credentials, never commit)
 /github.md
+/GOAL.local.md
+/DEPLOYMENT.local.md
