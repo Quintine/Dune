@@ -8,12 +8,17 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
 
 - Read `README.md` and this guide first. See `docs/DEVELOPMENT.md` for the
   architecture map and focused verification commands.
+- When continuing the complete project goal in this checkout, explicitly read
+  `GOAL.local.md` if present; it is local and ignored, not automatically loaded
+  project context. If absent, use the tracked guidance and the current user
+  request. Never recreate it from credential-bearing handovers or commit it.
 - Read `docs/CURRENT_STATUS.md` for current gates and `docs/RULE_DECISIONS.md`
   for existing rulings before reopening research.
 - Run `git status --short` before editing; preserve other work.
 - Search the relevant feature in `game/`, `components/`, `tests/`, and `docs/`.
-  Use `rg -n` and bounded reads for `game/engine.ts` and
-  `components/game-table.tsx`; both are large orchestration files.
+  Use OMP `find` for unknown behavior, `grep` for known literals and bounded
+  `read` for `game/engine.ts` and `components/game-table.tsx`; both are large
+  orchestration files.
 - `docs/IMPLEMENTATION_STATUS.md` is a historical evidence log, newest first.
   Read its opening checkpoint and the relevant feature document rather than
   loading the entire log. Verify historical claims against current code/tests.
@@ -25,6 +30,12 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
 - The user prioritizes working first versions of all remaining functions across
   Basic, Advanced and every expansion, followed by integration, refinement and
   polish. Reuse existing capabilities; batch related functions by dependency.
+- The 26 September 2026 priority amendment puts game content first. Current
+  playable continuation and blocking save fixes remain required; historical-save
+  compatibility, exhaustive restore/seat audits, backup refinement and routine
+  whole-database comparisons move to final polish after game content. Retain
+  privacy, authorization, custody, no-reset safety, complete administration,
+  relevant checkpoint checks and final recovery acceptance.
 - Track missing, prototyped, integrated, verified and polished work in the
   existing checklist. Prototypes need usable controls, a legal AI path and saved
   continuation; placeholders and disconnected helpers are not completed features.
@@ -48,6 +59,13 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
   The user-authorized Advanced preview permits unfinished base-faction starts
   with a visible warning; see `docs/ADVANCED_PREVIEW.md`. Prototype evidence does
   not certify complete modes or open expansion/publication gates.
+
+## OMP harness workflow
+
+See [the OMP harness workflow](docs/DEVELOPMENT.md#omp-harness-workflow).
+Live tool schemas take precedence. Use native planning, delegation and browser
+tools, keep one integration owner and retain selective independent review for
+complex rules, hidden information and persistence.
 
 ## Implement and verify
 
@@ -82,7 +100,9 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
 
 - The user-authorized 2026-09-13 reset cleared old local games once; see
   `docs/VERIFICATION_WORKFLOW.md`. Preserve all games created afterward.
-- Keep `.wrangler/state` and all saved games. Never reset a database to fix a
+- Keep `.wrangler/state` and all saved games: do not delete/reset or
+  intentionally damage existing games; extensive historical-save hardening
+  follows the content-first priority above. Never reset a database to fix a
   test, migration, connection or gameplay problem. Migrations are additive.
 - Reuse a running dev server. Restart only when a code/configuration change or
   observed server condition warrants it; there is no hourly restart schedule.

@@ -4,6 +4,18 @@ Use the [development guide](DEVELOPMENT.md) to choose checks appropriate to the
 change. These wrappers retain the existing test runner and simulation harness;
 they do not replace rules, browser or release acceptance.
 
+## Current verification priority
+
+The 26 September 2026 amendment prioritizes remaining game content before
+extensive saved-game polish. Keep focused current-feature playable continuation,
+custody, privacy, authorization, no-reset and blocking save checks and required
+checkpoint commands. Historical-save compatibility, exhaustive restore/seat
+audits, backup refinement and routine whole-database comparisons wait until
+final polish after game content; final recovery acceptance is still required.
+The tools below remain available, not a mandate to run every preservation
+command for each content checkpoint. See the
+[OMP harness workflow](DEVELOPMENT.md#omp-harness-workflow) for execution mechanics.
+
 ## Verify the deployed application
 
 The user requires testing the actual application at
@@ -133,8 +145,10 @@ node --import tsx tools/saved-games.ts compare --db /absolute/games.sqlite --bas
 The source database is opened read-only. Snapshots store room versions and state
 hashes, not private game state. New rooms are allowed; every changed or missing
 original room fails comparison. Legitimate human play can change a room: investigate
-and document it, never overwrite progress to make a comparison pass. Snapshot the
-current set before each maintenance operation so newly created rooms are protected.
+and document it, never overwrite progress to make a comparison pass. When a
+targeted storage-risk maintenance operation warrants a baseline, snapshot the
+current set rather than reusing historical room counts; routine content-only
+checkpoints do not require full-database comparisons.
 Online backup includes WAL contents and requires Node 22.16 or newer; snapshot and
 comparison retain the project's Node 22.13 minimum. Backup files contain private
 state and session records, remain outside Git, and never overwrite an earlier run.
