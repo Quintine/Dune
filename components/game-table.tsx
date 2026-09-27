@@ -29,6 +29,7 @@ import { DiscoveryPanel, DiscoveryDiscardDecision } from './discoveries';
 import { DiscoveryEntryDecision } from './discovery-entry';
 import { DiscoveryStormDecision } from './discovery-storm';
 import { NexusChoamTrade } from './nexus-choam-trade';
+import { NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { NexusMoritaniBetrayal } from './nexus-moritani-betrayal';
 import { buildRevision, buildRevisionLabel } from '@/lib/build-revision';
 import { NexusEcazBetrayal } from './nexus-ecaz-betrayal';
@@ -1587,6 +1588,7 @@ export function GameTable({
           <RihaniHistory game={g} />
           <MentatHistory game={g} />
           <NexusChoamTrade game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
+          <NexusChoamBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusMoritaniBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusEcazBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />

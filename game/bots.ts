@@ -11,6 +11,7 @@ import { discoveryEntryBotActions } from './discovery-entry-options';
 import { discoveryStormActions } from './discovery-storm-options';
 import { greatMakerBotActions } from './great-maker-options';
 import { nexusChoamTradeBotActions } from './nexus-choam-trade-options';
+import { nexusChoamBetrayalBotActions } from './nexus-choam-betrayal-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
 import { moritaniBetrayalBotActions } from './nexus-moritani-betrayal-options';
@@ -3848,6 +3849,8 @@ export function botActions(g: GameView): Action[] {
   if (discovery.length) return discovery;
   const trade = nexusChoamTradeBotActions(g);
   if (trade.length) return trade;
+  const choamBetrayal = nexusChoamBetrayalBotActions(g);
+  if (choamBetrayal.length) return choamBetrayal;
   const moritaniBetrayal = moritaniBetrayalBotActions(g);
   if (moritaniBetrayal.length) return moritaniBetrayal;
   const ecazBetrayal = ecazBetrayalBotActions(g);

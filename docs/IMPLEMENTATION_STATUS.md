@@ -1,5 +1,9 @@
 # Dune implementation status
 
+## 27 September 2026 — Bounded CHOAM Nexus Betrayal
+
+The [CHOAM Betrayal panel](NEXUS_CARD_RULES.md#bounded-choam-betrayal-runtime) now has a playable Basic/Advanced path when CHOAM is seated. An unallied rival spends the physical CHOAM Nexus card at a clean boundary; the server samples and discards one actual held CHOAM Treachery Card without spice compensation. The holder-only control never offers a rival card choice or identities; its hand count appears only during Bidding. Bots act only when that count is public. A saved discard receipt completes once after JSON restore, including later same-turn Nexus recycling. Focused quote, controls, bot, physical inventory, rejection and interruption cases pass; the isolated browser table rendered the enabled holder control without room writes. Complete Nexus, combined-module and deployed revision acceptance remain open.
+
 ## 26 September 2026 — Bounded Ecaz Nexus Betrayal and build revision
 
 The [Ecaz source contract](NEXUS_ECAZ_RULES.md#bounded-betrayal-runtime)

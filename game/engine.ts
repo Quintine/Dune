@@ -32,6 +32,7 @@ import { createDiscoveryState, validateDiscoveryState, placeDiscovery, rememberD
 import { quoteJacurutuBattleIncome } from './discovery-battle';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
+import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
@@ -1028,6 +1029,8 @@ export type Game = {
   greatMaker?: GreatMaker;
   nexusChoamTrades?: NexusChoamTrade[];
   nexusChoamTradeLast?: { event: string; stage: NexusChoamTrade['stage'] };
+  nexusChoamBetrayals?: NexusChoamBetrayal[];
+  nexusChoamBetrayalLast?: { event: string; stage: NexusChoamBetrayal['stage'] };
   nexusEmperorSecretHistory?: NexusEmperorRevival[];
   nexusEmperorSecretEvents?: string[];
   nexusFremenRevivalHistory?: FremenNexusRevival[];
@@ -1042,6 +1045,7 @@ export type Game = {
       | { kind: 'ambassador'; entry: NonNullable<Game['pendingAmbassador']> }
       | { kind: 'discoveryStash'; event: string; owner: string; card: string }
       | { kind: 'nexusChoamTrade'; event: string; owner: string; card: string; spiceAfter: number }
+      | { kind: 'nexusChoamBetrayal'; event: string; owner: string; target: string; card: string; handBefore: number }
       | { kind: 'kaitainDiscard'; owner: string; event: string; cost: number; spiceAfter: number }
       | { kind: 'winnerMandatoryDiscard'; event: string; player: string; territory: string; optional: string[]; commitment: NonNullable<Game['pendingWinnerDiscards']> }
       | {
@@ -1756,6 +1760,42 @@ function nexusChoamTradeIntegrity(g: Game) {
     pending.spiceAfter === last.spiceBefore + 2 && getPlayer(g, last.owner).spice === pending.spiceAfter,
     'The CHOAM Nexus trade no longer matches its committed payment.');
 }
+function nexusChoamBetrayalIntegrity(g: Game) {
+  const history = g.nexusChoamBetrayals;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const pending = continuation?.kind === 'nexusChoamBetrayal' ? continuation : null;
+  if (history === undefined) {
+    requireRule(!g.nexusChoamBetrayalLast && !pending,
+      'The CHOAM Nexus Betrayal has lost its spent card history.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+    'CHOAM Nexus Betrayal requires its physical card and saved history.');
+  const events = new Set<string>();
+  const physical = physicalTreacheryCards(g);
+  for (const [index, record] of history.entries()) {
+    nexusRule(() => validateNexusChoamBetrayal(g, record, physical));
+    requireRule(!events.has(record.event) &&
+      (record.stage === 'complete' || index === history.length - 1),
+      'The CHOAM Nexus Betrayal has a duplicated or unfinished prior discard.');
+    events.add(record.event);
+  }
+  const last = history.at(-1)!;
+  requireRule(JSON.stringify(g.nexusChoamBetrayalLast) ===
+    JSON.stringify({ event: last.event, stage: last.stage }) &&
+    (last.stage === 'discard') === !!pending,
+    'The CHOAM Nexus Betrayal has lost or reopened its committed discard.');
+  if (pending)
+    requireRule(g.nexusCards.cards.discard.includes('choam'),
+      'The pending CHOAM Nexus Betrayal has lost its spent card.');
+  if (pending)
+    requireRule(g.status === 'playing' && last.turn === g.turn &&
+      pending.event === last.event && pending.owner === last.owner &&
+      pending.target === last.target && pending.card === last.card &&
+      pending.handBefore === last.handBefore &&
+      getPlayer(g, last.target).hand.length === last.handBefore - 1,
+      'The CHOAM Nexus Betrayal no longer matches its random discard.');
+}
 function currentNexusChoamTrade(g: Game, owner: string) {
   return nexusRule(() => quoteNexusChoamTrade(g, owner,
     g.phase === 7 && grummanCollectionAutomatic(g)));
@@ -2098,6 +2138,32 @@ function playNexusChoamTrade(g: Game, p: Player, action: Action) {
     {kind: 'nexusChoamTrade', event: record.event, owner: p.id, card: card.id, spiceAfter: p.spice});
   log(g, `${p.name} spent CHOAM Nexus Secret Ally and discarded ${card.name} during Spice Collection to receive 2 spice from the bank. Both cards are spent.`,
     {faction: p.faction, name: 'CHOAM Nexus trade'});
+}
+function playNexusChoamBetrayal(g: Game, p: Player, action: Action) {
+  const offer = quoteNexusChoamBetrayal(g, p.id,
+    g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g));
+  requireRule(Object.keys(action).sort().join(',') === 'event,type' &&
+    offer && !offer.blocked && action.event === offer.event,
+    offer?.blocked ?? 'Choose the current CHOAM Nexus Betrayal.');
+  const target = getPlayer(g, offer.target.id);
+  requireRule(target.hand.length > 0, 'CHOAM Betrayal has no legal card to discard.');
+  const card = target.hand[Math.floor(random() * target.hand.length)];
+  const record: NexusChoamBetrayal = {
+    event: offer.event, turn: g.turn, phase: g.phase, owner: p.id,
+    target: target.id, card: card.id, handBefore: target.hand.length,
+    stage: 'discard', signature: '',
+  };
+  record.signature = nexusChoamBetrayalSignature(record);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  const discarded = discard(g, target, card.id);
+  (g.nexusChoamBetrayals ??= []).push(record);
+  g.nexusChoamBetrayalLast = { event: record.event, stage: record.stage };
+  stageTreacheryDiscard(g, 'nexus:choamBetrayal',
+    [{ card: discarded, discardedBy: target.id, publicFace: false }],
+    { kind: 'nexusChoamBetrayal', event: record.event, owner: p.id,
+      target: target.id, card: card.id, handBefore: record.handBefore });
+  log(g, `${p.name} spent CHOAM Nexus Betrayal. ${target.name} discarded one randomly selected Treachery card without receiving spice.`,
+    { faction: p.faction, name: 'CHOAM Nexus Betrayal' });
 }
 function playMoritaniBetrayal(g: Game, p: Player, action: Action) {
   const offer = moritaniBetrayalOffer(g, p.id,
@@ -4962,6 +5028,13 @@ function treacheryDiscardIntegrity(g: Game) {
       batch.entries[0].discardedBy === c.owner && batch.entries[0].publicFace &&
       batch.entries[0].card.id === c.card && batch.entries[0].card.kind === 'worthless',
       'The CHOAM Nexus trade has changed its discarded Worthless card.');
+  } else if (continuation?.kind === 'nexusChoamBetrayal') {
+    const c = continuation;
+    nexusChoamBetrayalIntegrity(g);
+    requireRule(batch.cause === 'nexus:choamBetrayal' && batch.entries.length === 1 &&
+      batch.entries[0].discardedBy === c.target && !batch.entries[0].publicFace &&
+      batch.entries[0].card.id === c.card && g.nexusChoamBetrayals?.at(-1)?.event === c.event,
+      'The CHOAM Nexus Betrayal has changed its random physical discard.');
   } else if (continuation?.kind === 'kaitainDiscard') {
     const c = continuation;
     requireRule(g.phase === 3 && g.biddingEnd?.event === c.event &&
@@ -5019,6 +5092,12 @@ function finishTreacheryDiscard(g: Game) {
     const record = g.nexusChoamTrades!.at(-1)!;
     record.stage = 'complete'; record.signature = nexusChoamTradeSignature(record);
     g.nexusChoamTradeLast = { event: record.event, stage: record.stage };
+    return;
+  }
+  if (next.kind === 'nexusChoamBetrayal') {
+    const record = g.nexusChoamBetrayals!.at(-1)!;
+    record.stage = 'complete'; record.signature = nexusChoamBetrayalSignature(record);
+    g.nexusChoamBetrayalLast = { event: record.event, stage: record.stage };
     return;
   }
   if (next.kind === 'kaitainDiscard') return;
@@ -21194,6 +21273,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
+  nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -21352,6 +21432,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   discoveryIntegrity(g);
   greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
+  nexusChoamBetrayalIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -21464,6 +21545,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
+  nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -21494,6 +21576,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   discoveryIntegrity(g);
   greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
+  nexusChoamBetrayalIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -21592,6 +21675,7 @@ function applyActionInner(
   }
   if (t === 'discovery') { playDiscovery(g, p, action); return g; }
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
+  if (t === 'nexusChoamBetrayal') { playNexusChoamBetrayal(g, p, action); return g; }
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
   if (t === 'nexusEmperorBetrayal') { playNexusEmperorBetrayal(g,p,action); return g; }
   if (t === 'nexusBgBetrayal') { playNexusBgBetrayal(g,p,action); return g; }
@@ -25201,6 +25285,7 @@ export function viewGame(state: Game, id: string) {
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
+  nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -25510,6 +25595,8 @@ export function viewGame(state: Game, id: string) {
     greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,
     nexusCards: projectedNexusCards(g, id),
     nexusChoamTrade: currentNexusChoamTrade(g, id),
+    nexusChoamBetrayal: quoteNexusChoamBetrayal(g, id,
+      g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
     nexusEmperorBetrayal: nexusEmperorBetrayalOffer(g, id),
     nexusBgBetrayal: nexusBgBetrayalOffer(g, id),

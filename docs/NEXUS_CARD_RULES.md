@@ -53,6 +53,12 @@ Every row below is a semantic transcription of the photographed face, not a repr
 
 Source for the entire table: [the twelve original printed components](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani). All card identities appear once; the photograph is arranged Moritani/Tleilaxu/Richese/Ixians, Atreides/Bene Gesserit/CHOAM/Emperor, Guild/Ecaz/Harkonnen/Fremen.
 
+## Bounded CHOAM Betrayal runtime
+
+The unallied holder of the CHOAM Nexus card may use its Betrayal panel when CHOAM is seated and holds at least one Treachery Card. The printed panel names no phase, so the current prototype offers it at a clean playing boundary, not during another decision, response or automatic continuation. The server samples one card uniformly from CHOAM's actual hand; neither the holder nor the bot chooses its identity. The physical Nexus card and sampled Treachery Card are discarded once. CHOAM receives no spice, and this panel does not create an additional Karama reaction. The ordinary fresh-discard continuation handles any applicable discard consequence.
+
+The private holder offer contains CHOAM's name; it includes the hand count only during Bidding, when the base rules make that count public. Outside Bidding neither the count nor empty-hand availability is passively exposed. An attempted use against an empty hand rejects without consuming the Nexus card; bots act only with the public Bidding count to avoid blind invalid actions. Other seats do not receive the offer, and the public action log does not name the sampled card. An integrity receipt records the original card ID, owner, target, turn, phase and pending discard stage; its deterministic signature is not a cryptographic authentication of a saved game. JSON restore finishes the already-committed discard once without drawing new randomness or repaying the cost. A later same-turn Nexus recycle may move the spent card from discard without invalidating the completed use. Basic and Advanced use the same bounded path. This is not certification of CHOAM Cunning, its second Secret Ally effect, any other Nexus panel or combined-module play.
+
 ## Effect integration boundaries
 
 Later focused source contracts cover [Emperor strength, purchases and revival](NEXUS_EMPEROR_RULES.md), [Ixian purchased-card replacement](NEXUS_IXIAN_REPLACEMENT_RULES.md), and [Fremen worm and revival effects](NEXUS_FREMEN_RULES.md). These audits distinguish implemented work from remaining source/timing questions; the current runtime evidence is tracked in [implementation status](IMPLEMENTATION_STATUS.md).
