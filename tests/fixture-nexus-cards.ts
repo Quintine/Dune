@@ -23,7 +23,7 @@ export function nexusFixture(
   options: {
     seatIds?: [string, string, string];
     advanced?: boolean;
-    hostFaction?: 'fremen' | 'moritani' | 'ecaz';
+    hostFaction?: 'fremen' | 'moritani' | 'ecaz' | 'guild' | 'emperor';
   } = {},
 ): Game {
   const [f, a, h] = options.seatIds ?? ['f', 'a', 'h'];
@@ -140,7 +140,7 @@ export function nexusTurnTwo(
   options: {
     seatIds?: [string, string, string];
     advanced?: boolean;
-    hostFaction?: 'fremen' | 'moritani' | 'ecaz';
+    hostFaction?: 'fremen' | 'moritani' | 'ecaz' | 'guild' | 'emperor';
   } = {},
 ): Game {
   const first = enterNexusSpice(nexusFixture(options));

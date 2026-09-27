@@ -33,6 +33,7 @@ import { quoteJacurutuBattleIncome } from './discovery-battle';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
+import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
 import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, moritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
@@ -1023,6 +1024,8 @@ export type Game = {
   nexusChoamTradeLast?: { event: string; stage: NexusChoamTrade['stage'] };
   nexusEmperorSecretHistory?: NexusEmperorRevival[];
   nexusEmperorSecretEvents?: string[];
+  nexusFremenRevivalHistory?: FremenNexusRevival[];
+  nexusFremenRevivalEvents?: string[];
   treacheryDiscardSequence?: number;
   resolvedTreacheryDiscardSequence?: number;
   /** Committed discard receipts are evidence, not additional card custody. */
@@ -1787,6 +1790,49 @@ function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
   (g.nexusEmperorSecretEvents ??= []).push(record.event);
   log(g,`${p.name} spent Emperor Nexus Secret Ally to return three forces${elite ? `, including ${elite} Fedaykin` : ''} from Tanks to reserves for free. Ordinary force and free-revival allowances are unchanged.`,
     {faction:p.faction,name:'Emperor Nexus revival'});
+}
+function nexusFremenRevivalIntegrity(g: Game) {
+  const history = g.nexusFremenRevivalHistory, events = g.nexusFremenRevivalEvents;
+  if (history === undefined) {
+    requireRule(events === undefined, 'Fremen Nexus has lost its saved revival history.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0 &&
+    Array.isArray(events) && history.length === events.length &&
+    new Set(events).size === events.length,
+    'Fremen Nexus has lost its physical card or independent use markers.');
+  for (const [index, record] of history.entries()) {
+    nexusRule(() => validateFremenNexusRevival(g, record));
+    requireRule(record.event === events[index] &&
+      (index === 0 || record.turn >= history[index - 1].turn),
+      'Fremen Nexus has duplicated or reordered a completed return.');
+  }
+  const last = history.at(-1)!;
+  if (last.turn === g.turn)
+    requireRule(g.nexusCards.cards.discard.includes('fremen'),
+      'Fremen Nexus has reopened its already spent physical card.');
+}
+function playNexusFremenRevive(g: Game, p: Player, action: Action) {
+  const offer = fremenNexusRevivalOffer(g, p.id);
+  requireRule(offer && !offer.blocked && action.event === offer.event &&
+    Object.keys(action).sort().join(',') === 'elite,event,type' &&
+    offer.eliteOptions.includes(action.elite as number),
+    offer?.blocked ?? 'Choose a current eligible three-force Fremen Nexus return.');
+  const elite = action.elite as number, before = fremenNexusRevivalPools(p);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  addRevivedReserves(g, p, FREMEN_NEXUS_FREE_FORCES, elite);
+  p.tanks -= FREMEN_NEXUS_FREE_FORCES;
+  p.revived += FREMEN_NEXUS_FREE_FORCES;
+  p.freeForcesRevived = (p.freeForcesRevived ?? 0) + FREMEN_NEXUS_FREE_FORCES;
+  if (p.elites) { p.elites.tanks -= elite; p.elites.revived += elite; }
+  const record: FremenNexusRevival = { event: offer.event, owner: p.id, turn: g.turn,
+    phase: 4, faction: p.faction, advanced: g.advanced, elite, before,
+    after: fremenNexusRevivalPools(p), signature: '' };
+  record.signature = fremenNexusRevivalSignature(record);
+  (g.nexusFremenRevivalHistory ??= []).push(record);
+  (g.nexusFremenRevivalEvents ??= []).push(record.event);
+  log(g, `${p.name} spent Fremen Nexus Secret Ally to return three forces${elite ? `, including ${elite} elite` : ''} from Tanks to reserves for free. This uses the ordinary three-force revival allowance.`,
+    { faction: p.faction, name: 'Fremen Nexus revival' });
 }
 function playNexusChoamTrade(g: Game, p: Player, action: Action) {
   const offer = currentNexusChoamTrade(g, p.id);
@@ -14515,6 +14561,7 @@ function marketGholaIntegrity(g: Game) {
   saphoAggressorIntegrity(g);
   nexusCardsIntegrity(g);
   nexusEmperorSecretIntegrity(g);
+  nexusFremenRevivalIntegrity(g);
   nexusTraitorIntegrity(g);
   nexusFaceDancerIntegrity(g);
   nexusSuboidIntegrity(g);
@@ -21160,6 +21207,7 @@ function applyActionInner(
   if (t === 'discovery') { playDiscovery(g, p, action); return g; }
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
+  if (t === 'nexusFremenRevive') { playNexusFremenRevive(g,p,action); return g; }
   if (t === 'nexusMoritaniBetrayal') { playMoritaniBetrayal(g, p, action); return g; }
   if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
@@ -25007,6 +25055,7 @@ export function viewGame(state: Game, id: string) {
     nexusCards: projectedNexusCards(g, id),
     nexusChoamTrade: currentNexusChoamTrade(g, id),
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
+    nexusFremenRevival: fremenNexusRevivalOffer(g,id),
     nexusMoritani: nexusMoritaniOffer(g,id),
     nexusMoritaniBetrayal: moritaniBetrayalOffer(g,id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),

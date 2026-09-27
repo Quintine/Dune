@@ -1,6 +1,6 @@
 # Fremen Nexus: worm and revival contract
 
-Primary-source and integration audit, 10 September 2026. This document does not implement an effect or open a release gate. The [common Nexus rules](NEXUS_CARD_RULES.md) apply. No new user question was sent.
+Primary-source and integration audit, 10 September 2026; narrow Secret Ally Revival prototype integrated later. This document does not certify the other two Fremen effects or open a release gate. The [common Nexus rules](NEXUS_CARD_RULES.md) apply. No new user question was sent.
 
 ## Evidence
 
@@ -46,8 +46,11 @@ A pause offered only when the threatened player secretly holds this card would d
 ## Secret Ally revival
 
 The card's total-of-three wording and the native alliance's ordinary free-three benefit support a **free-rate interpretation within ordinary revival accounting**, rather than three additional counters beyond the usual allowance. This is source composition, not an explicit Nexus FAQ. Preserve it as the proposed contract; do not silently apply Emperor's separate extra-return producer.
+The current first path is a deliberate subset of that proposed contract: with Fremen absent, an unallied base-faction holder in Basic or Advanced Revival may spend the physical Nexus card to transfer exactly three eligible forces from Tanks to reserves at zero spice cost. It is available before any ordinary force return, with no competing expansion/module revival modifier, pending response or decision. The three returned forces consume the ordinary allowance and free-force ledger; they are **not** Emperor-style extra returns. The Advanced one-elite-per-turn cap and physical elite census apply. The server's private offer provides the eligible elite counts; the action validates its current turn and group. A signed before/after receipt and independent event markers persist through JSON saves.
 
-`game/revival.ts` already computes free rate/remaining from `p.revived`, typed prices and ordinary limits. Engine `beginRevival`/`finishRevival` retains pending requests and Tleilaxu prevention/income continuations. The likely narrow adapter is an explicit source-labelled, phase-bound free-rate entitlement consumed by an actual normal revival request, retaining previous returns and exact free/paid normal/starred allocation. Never refund earlier paid revivals or reset `revived`/elite counters on card play or reload.
+This direct transfer is safe only because the scoped seats exclude Tleilaxu income/Axlotl and Homeworld arrival continuations. It must not be generalized to those modes without using the native pending-revival pipeline. If fewer than three forces are in Tanks, if a force return already occurred, or if a higher free rate or modifier applies, the option stays unavailable rather than guessing a ruling. Protection and Cunning remain unimplemented.
+
+`game/revival.ts` already computes free rate/remaining from `p.revived`, typed prices and ordinary limits. Engine `beginRevival`/`finishRevival` retains pending requests and Tleilaxu prevention/income continuations. The future combined-mode adapter should be an explicit source-labelled, phase-bound free-rate entitlement consumed by an actual normal revival request, retaining previous returns and exact free/paid normal/starred allocation. Never refund earlier paid revivals or reset `revived`/elite counters on card play or reload.
 
 Keep these questions visible: how the three-total interacts with a higher native free rate, prior paid/free returns, low-Homeworld bonus and Recruits; whether a partial group below three is permitted when Tanks cannot supply three; and whether the benefit survives La La La or Tleilaxu prevention. The [existing revival audit](FREMEN_REVIVAL_AUDIT.md) and [Homeworld benefit audit](HOMEWORLD_BENEFITS_RULES.md) do not by themselves answer differently worded Nexus composition.
 
