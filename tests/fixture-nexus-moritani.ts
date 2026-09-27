@@ -40,6 +40,7 @@ export function nexusMoritaniFixture(
     native?: number;
     karama?: boolean;
     stack?: boolean;
+    cardOwner?: string;
   } = {},
 ): NexusMoritaniFixture {
   const [owner, target, observer] = options.seatIds ?? ['p', 'q', 'r'];
@@ -150,7 +151,7 @@ export function nexusMoritaniFixture(
     'moritani',
     ...cards.deck.filter((card) => card !== 'moritani'),
   ];
-  g.nexusCards!.cards = drawNexusCard(cards, owner, g.players, () => 0);
+  g.nexusCards!.cards = drawNexusCard(cards, options.cardOwner ?? owner, g.players, () => 0);
   const karama =
     options.karama === false
       ? undefined

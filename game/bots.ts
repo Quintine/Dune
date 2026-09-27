@@ -13,6 +13,7 @@ import { greatMakerBotActions } from './great-maker-options';
 import { nexusChoamTradeBotActions } from './nexus-choam-trade-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
+import { moritaniBetrayalBotActions } from './nexus-moritani-betrayal-options';
 import { ECAZ_START_FORCES, ECAZ_START_LOCATIONS, quoteEcazStartingForces } from './ecaz-setup';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
 import { nexusCardBotActions } from './nexus-card-options';
@@ -3785,6 +3786,8 @@ export function botActions(g: GameView): Action[] {
   if (discovery.length) return discovery;
   const trade = nexusChoamTradeBotActions(g);
   if (trade.length) return trade;
+  const moritaniBetrayal = moritaniBetrayalBotActions(g);
+  if (moritaniBetrayal.length) return moritaniBetrayal;
   const sardaukar = nexusSardaukarBotActions(g);
   if (sardaukar.length) return sardaukar;
   const advisorConversion = nexusAdvisorBotActions(g);

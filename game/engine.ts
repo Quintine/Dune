@@ -46,6 +46,7 @@ import { createNexusSuboids, validateNexusSuboids, nexusSuboidsActive, type Nexu
 import { quoteNexusAdvisors, createNexusAdvisors, validateNexusAdvisors, type NexusAdvisorReceipt } from './nexus-advisors';
 import { createNexusSardaukar, validateNexusSardaukar, type NexusSardaukarReceipt } from './nexus-sardaukar';
 import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement, type NexusMoritaniReceipt } from './nexus-moritani';
+import { moritaniBetrayalOffer } from './nexus-moritani-betrayal';
 import { nexusMoritaniRecordSignature, terrorLocationAllowed, terrorEntryLocationAllowed } from './terror-location';
 import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
@@ -1807,6 +1808,20 @@ function playNexusChoamTrade(g: Game, p: Player, action: Action) {
     {kind: 'nexusChoamTrade', event: record.event, owner: p.id, card: card.id, spiceAfter: p.spice});
   log(g, `${p.name} spent CHOAM Nexus Secret Ally and discarded ${card.name} during Spice Collection to receive 2 spice from the bank. Both cards are spent.`,
     {faction: p.faction, name: 'CHOAM Nexus trade'});
+}
+function playMoritaniBetrayal(g: Game, p: Player, action: Action) {
+  const offer = moritaniBetrayalOffer(g, p.id,
+    g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g));
+  requireRule(offer && !offer.blocked && action.event === offer.event &&
+    Object.keys(action).sort().join(',') === 'event,token,type' &&
+    offer.tokens.some(token => token.id === action.token),
+    offer?.blocked ?? 'Choose a currently placed Terror token.');
+  const target = offer.tokens.find(token => token.id === action.token)!;
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  g.moritaniTerror = nexusRule(() => returnTerror(g.moritaniTerror!, target.id, random));
+  if (g.nexusMoritaniLocations) delete g.nexusMoritaniLocations[target.id];
+  log(g, `${p.name} spent Moritani Nexus Betrayal to return a hidden Terror token from ${territory(target.territory).name} to Moritani's supply without revealing its face.`,
+    { faction: p.faction, name: 'Moritani Nexus Betrayal' });
 }
 function markNexusOccurred(g: Game) {
   if (!g.nexusCards) return;
@@ -21145,6 +21160,7 @@ function applyActionInner(
   if (t === 'discovery') { playDiscovery(g, p, action); return g; }
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
+  if (t === 'nexusMoritaniBetrayal') { playMoritaniBetrayal(g, p, action); return g; }
   if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
     !(
@@ -24992,6 +25008,8 @@ export function viewGame(state: Game, id: string) {
     nexusChoamTrade: currentNexusChoamTrade(g, id),
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
     nexusMoritani: nexusMoritaniOffer(g,id),
+    nexusMoritaniBetrayal: moritaniBetrayalOffer(g,id,
+      g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
     nexusRichese: nexusRicheseOffer(g,id),
     nexusGuildSecretAlly: nexusGuildSecretAllyOffer(g,id),
     nexusGuildCunning: projectedNexusGuildCunning(g,id),

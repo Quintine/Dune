@@ -52,3 +52,24 @@ Required integration evidence includes genuine Basic/Advanced placement, cancel/
 [nexus-moritani.ts](../game/nexus-moritani.ts) now provides the initial Mentat-only historical receipt and immutable supply-placement quote. Its receipt fixes source `mentat` and phase 8; it does not represent a Grumman grant. The quote admits static Arrakis destinations and stacks, validates the six physical faces and custody zones, and leaves ordinary `placeTerror` unchanged. Current source ownership, phase, held Nexus card, authorization of prior non-stronghold custody and allowed/canceled progress remain engine responsibilities.
 
 The five focused cases in [nexus-moritani.test.ts](../tests/nexus-moritani.test.ts) cover every static destination, stacks and later ordinary relocation, physical-inventory rejection, historical privacy and altered proof rejection. `npm test -- nexus-moritani` and focused type-aware lint passed. Local links and whitespace were checked. Full checks and integrated runtime verification remain the coordinator's pending work; this pure-module evidence does not lift release gates.
+
+## Opposing Betrayal token return prototype
+
+The separate printed Betrayal panel lets an unallied holder return one board
+Terror token to Moritani without revealing it. The current [runtime
+quote](../game/nexus-moritani-betrayal.ts) offers public placed token IDs and
+locations only to that holder. At a clean play boundary, the accepted choice
+spends the physical Nexus card and calls the existing hidden-supply return:
+the selected token joins Moritani's available supply, all supply IDs rotate,
+other placed tokens remain, and Moritani's Mentat placement allowance is not
+consumed. Moritani receives the returned face privately. The chronicle names
+the location and action, never the hidden face.
+
+The printed panel specifies no phase; using a clean boundary rather than
+interrupting another unresolved response is a development serializer, not a
+new printed phase rule. Pending Terror, placement, battle and card continuations
+are not interrupted. [Focused engine cases](../tests/nexus-moritani-betrayal.test.ts)
+cover actual placement custody, spent Nexus, rejected/stale actions, JSON view
+continuation and hidden-face projection parity. Other Betrayal effects with
+secret reaction timing, the unresolved Grumman removal, complete Nexus effects
+and public module starts remain gated.
