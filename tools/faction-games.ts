@@ -11,6 +11,8 @@ import {
   createGame,
   initializeBaseGameForAudit,
   initializeFactionExpansionsGameForAudit,
+  initializeHomeworldGameForAudit,
+  initializeNexusGameForAudit,
   initializeLeaderSkillsGameForAudit,
   joinGame,
   newPlayer,
@@ -26,7 +28,7 @@ import { privateOutputDirectory, sourceSnapshot } from './verification';
 const DEFAULT_SEED = 20_260_926;
 const DEFAULT_MAX_ACTIONS = 3_500;
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard', 'Brutal'] as const;
-type Profile = 'base' | 'choam' | 'ecaz' | 'combined' | 'moritani-skills' | 'tleilaxu-skills' | 'ix-skills' | 'choam-skills';
+type Profile = 'base' | 'choam' | 'ecaz' | 'combined' | 'homeworld' | 'nexus' | 'moritani-skills' | 'tleilaxu-skills' | 'ix-skills' | 'choam-skills';
 type Rules = 'basic' | 'advanced';
 
 type Scenario = {
@@ -100,6 +102,16 @@ const BASE_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].flatMap((players) =>
     roster: BASE_ROSTER.slice(0, players),
   })),
 );
+const MODULE_SCENARIOS: readonly Scenario[] = (['homeworld', 'nexus'] as const).flatMap((profile, index) =>
+  (['basic', 'advanced'] as const).map((rules, ruleIndex) => ({
+    ordinal: 36 + 2 * index + ruleIndex,
+    profile,
+    rules,
+    expansions: [],
+    roster: BASE_ROSTER.slice(0, profile === 'nexus' ? 6 : 4),
+  })),
+);
+
 
 const MORITANI_SKILLS_ROSTER: readonly FactionId[] = [
   'moritani', 'emperor', 'guild', 'harkonnen', 'fremen', 'beneGesserit',
@@ -171,10 +183,10 @@ type Result = {
 function usage() {
   return (
     'Usage: node --import tsx tools/faction-games.ts --out NEW_PRIVATE_DIR ' +
-    '[--seed UINT32] [--profile all|base|choam|ecaz|combined|moritani-skills|tleilaxu-skills|ix-skills|choam-skills] ' +
+    '[--seed UINT32] [--profile all|base|choam|ecaz|combined|homeworld|nexus|moritani-skills|tleilaxu-skills|ix-skills|choam-skills] ' +
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
-    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base and the skill profiles default to their 2–6-player samples. --players requires --profile base, moritani-skills, tleilaxu-skills, ix-skills or choam-skills. Output must be a new private directory outside the checkout.'
+    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base and skill profiles default to their 2–6-player samples. Homeworld uses four base factions; Nexus uses all six. --players requires --profile base or a skill profile. Output must be a new private directory outside the checkout.'
   );
 }
 
@@ -212,8 +224,8 @@ function scenarioName(scenario: Scenario) {
 
 function parseProfile(value: string | undefined) {
   const profile = value ?? 'all';
-  if (!['all', 'base', 'choam', 'ecaz', 'combined', 'moritani-skills', 'tleilaxu-skills', 'ix-skills', 'choam-skills'].includes(profile))
-    throw new Error('--profile must be all, base, choam, ecaz, combined, moritani-skills, tleilaxu-skills, ix-skills or choam-skills.');
+  if (!['all', 'base', 'choam', 'ecaz', 'combined', 'homeworld', 'nexus', 'moritani-skills', 'tleilaxu-skills', 'ix-skills', 'choam-skills'].includes(profile))
+    throw new Error('--profile must be all, base, choam, ecaz, combined, homeworld, nexus, moritani-skills, tleilaxu-skills, ix-skills or choam-skills.');
   return profile as Profile | 'all';
 }
 
@@ -257,11 +269,19 @@ function freshGame(scenario: Scenario) {
     player.bot = DIFFICULTIES[index % DIFFICULTIES.length];
     player.ready = true;
   }
+  if (scenario.profile === 'homeworld')
+    game.homeworlds = { custody: null };
+  if (scenario.profile === 'nexus')
+    game.nexusCards = { cards: null, phase: null };
   return skillProfile(scenario.profile)
     ? initializeLeaderSkillsGameForAudit(game)
-    : scenario.profile === 'base'
-    ? initializeBaseGameForAudit(game)
-    : initializeFactionExpansionsGameForAudit(game);
+    : scenario.profile === 'homeworld'
+      ? initializeHomeworldGameForAudit(game)
+      : scenario.profile === 'nexus'
+        ? initializeNexusGameForAudit(game)
+        : scenario.profile === 'base'
+          ? initializeBaseGameForAudit(game)
+          : initializeFactionExpansionsGameForAudit(game);
 }
 
 function resumedGame(path: string) {
@@ -296,8 +316,7 @@ function resumedGame(path: string) {
       '--resume is not an incomplete faction-games snapshot with saved AI profiles.',
     );
   if (
-    game.homeworlds ||
-    game.nexusCards ||
+    (game.homeworlds && game.nexusCards) ||
     (game.leaderSkills && !basicExpansionLeaderSkillsProfile(game)) ||
     game.discoveryEnabled ||
     game.discoveries ||
@@ -312,9 +331,11 @@ function resumedGame(path: string) {
     game.moritaniAssassinateResume ||
     game.moritaniAssassinateCallEvents
   )
-    throw new Error('--resume sample scenarios exclude optional modules.');
-  const scenario = [...SCENARIOS, ...BASE_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...IX_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS].find(
+    throw new Error('--resume sample scenarios exclude unsupported optional modules.');
+  const scenario = [...SCENARIOS, ...BASE_SCENARIOS, ...MODULE_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...IX_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS].find(
     (candidate) =>
+      (candidate.profile === 'homeworld') === !!game.homeworlds &&
+      (candidate.profile === 'nexus') === !!game.nexusCards &&
       skillProfile(candidate.profile) === !!game.leaderSkills &&
       candidate.rules === (game.advanced ? 'advanced' : 'basic') &&
       JSON.stringify(candidate.expansions) ===
@@ -324,7 +345,7 @@ function resumedGame(path: string) {
   );
   if (!scenario)
     throw new Error(
-      '--resume does not match a fixed base or expansion sample scenario.',
+      '--resume does not match a fixed base, module or expansion sample scenario.',
     );
   // Projection validates the engine-facing shape and every private seat boundary.
   for (const player of game.players) viewGame(game, player.id);
@@ -513,9 +534,16 @@ async function main() {
   if (skillProfile(profile) && rules === 'advanced')
     throw new Error('Expansion Leader Skills profiles currently support only Basic samples.');
   const resume = values.resume ? resumedGame(values.resume) : null;
+  const requestedSamples = profile === 'homeworld' || profile === 'nexus'
+    ? MODULE_SCENARIOS
+    : profile === 'base' ? BASE_SCENARIOS
+    : profile === 'moritani-skills' ? MORITANI_SKILLS_SCENARIOS
+    : profile === 'tleilaxu-skills' ? TLEILAXU_SKILLS_SCENARIOS
+    : profile === 'ix-skills' ? IX_SKILLS_SCENARIOS
+    : profile === 'choam-skills' ? CHOAM_SKILLS_SCENARIOS : SCENARIOS;
   const selected = resume
     ? [resume.scenario]
-    : (profile === 'base' ? BASE_SCENARIOS : profile === 'moritani-skills' ? MORITANI_SKILLS_SCENARIOS : profile === 'tleilaxu-skills' ? TLEILAXU_SKILLS_SCENARIOS : profile === 'ix-skills' ? IX_SKILLS_SCENARIOS : profile === 'choam-skills' ? CHOAM_SKILLS_SCENARIOS : SCENARIOS).filter(
+    : requestedSamples.filter(
         (scenario) =>
           (profile === 'all' || scenario.profile === profile) &&
           (rules === 'both' || scenario.rules === rules) &&
@@ -602,7 +630,7 @@ async function main() {
     status,
     setup: resume
       ? 'Resume supplied private snapshot; its setup provenance must be checked against the original report. Saved AI profiles choose every continuation action.'
-      : 'Genuine base or faction-expansion setup; no cards, forces, factions, phases or statistics staged. Real saved AI profiles choose every setup and gameplay action.',
+      : 'Genuine base, optional-module or faction-expansion setup; no cards, forces, factions, phases or statistics staged. Real saved AI profiles choose every setup and gameplay action.',
     randomness: resume
       ? 'Continuation restarts the random stream at seed plus scenario ordinal; it does not reconstruct the pre-snapshot random stream.'
       : 'Each scenario starts its random stream at seed plus scenario ordinal.',

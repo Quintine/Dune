@@ -53,10 +53,21 @@ export function verifySampleCustody(
     'physical card custody',
   );
   for (const player of game.players) {
+    let visitorNormal = 0;
+    let visitorElite = 0;
+    for (const occupants of Object.values(game.homeworlds?.custody?.visitors ?? {})) {
+      const group = occupants[player.id];
+      if (group) {
+        visitorNormal += group.normal;
+        visitorElite += group.elite;
+      }
+    }
     const amounts = [
       player.reserves,
       player.tanks,
       ...Object.values(player.forces),
+      visitorNormal,
+      visitorElite,
     ];
     assert.ok(
       amounts.every((amount) => Number.isSafeInteger(amount) && amount >= 0),
@@ -77,12 +88,14 @@ export function verifySampleCustody(
         (game.advanced && ['emperor', 'fremen'].includes(player.faction)))
     )
       assert.ok(player.elites, `missing elite inventory ${player.faction}`);
+    if (!player.elites) assert.equal(visitorElite, 0, `unexpected elite visitors ${player.faction}`);
     if (player.elites) {
       const elites = player.elites;
       const typed = [
         elites.reserves,
         elites.tanks,
         ...Object.values(elites.forces),
+        visitorElite,
       ];
       assert.ok(
         typed.every((amount) => Number.isSafeInteger(amount) && amount >= 0),

@@ -97,6 +97,9 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-moritani-skills --p
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-tleilaxu-skills --profile tleilaxu-skills
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-base-three --profile base --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined --profile combined --rules advanced --seed 20260926
+# Homeworld (four base factions) and Nexus (six), Basic and Advanced.
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-homeworld --profile homeworld
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-nexus --profile nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json
 ```
 
@@ -106,7 +109,10 @@ additional samples: Basic and Advanced with two through six players.
 `--players 2..6` narrows only that base profile; omission or `all` retains all
 five counts. The fixed base roster adds Atreides, Harkonnen, Fremen, Emperor,
 Guild and Bene Gesserit in that order. These are sample rosters, not an assertion
-that these are the only rules-permitted player-count configurations.
+that these are the only rules-permitted player-count configurations. The
+`homeworld` profile runs four base factions; `nexus` runs all six, each under Basic
+and Advanced using the actual optional-module setup seams. They do not open
+public module starts or assert complete module interaction coverage.
 
 `--profile moritani-skills` adds five Basic samples with Moritani, then Emperor,
 Guild, Harkonnen, Fremen and Bene Gesserit. `--players` also narrows this profile;
@@ -114,6 +120,9 @@ Advanced requests fail before running. Its seed offsets are 16–20, leaving
 existing samples unchanged. The full fourteen-card skill census and ordinary
 Moritani/base Traitor census are checked throughout. `--resume` preserves this
 explicit profile; other optional modules still fail its admission checks.
+Homeworld and Nexus snapshots may be resumed only when their saved module and
+fixed roster match the corresponding profile; unsupported module combinations
+are still rejected.
 
 All samples use genuine setup and saved AI profiles, cycling Easy, Medium,
 Hard and Brutal by seat. Smaller games necessarily contain fewer profiles;

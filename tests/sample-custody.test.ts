@@ -98,6 +98,28 @@ void test('sample custody detects balanced negative forces and elite subsets out
     /elite board subset/,
   );
 });
+void test('sample custody accounts for foreign Homeworld ordinary and elite forces without counting Salusa twice', () => {
+  const { game, inventory } = fixture(true);
+  const emperor = game.players.find((seat) => seat.faction === 'emperor')!;
+  assert.ok(emperor.elites);
+  emperor.reserves -= 3;
+  emperor.elites.reserves--;
+  game.homeworlds = {
+    custody: {
+      visitors: { 'homeworld:fremen': { [emperor.id]: { normal: 2, elite: 1 } } },
+      salusa: { normal: 1, elite: 0 },
+    },
+    historyVersion: 1,
+  };
+  verifySampleCustody(game, inventory);
+  const missing = structuredClone(game);
+  missing.homeworlds!.custody!.visitors['homeworld:fremen'][emperor.id].normal--;
+  assert.throws(() => verifySampleCustody(missing, inventory), /force custody emperor/);
+  const missingElite = structuredClone(game);
+  missingElite.homeworlds!.custody!.visitors['homeworld:fremen'][emperor.id].elite--;
+  missingElite.homeworlds!.custody!.visitors['homeworld:fremen'][emperor.id].normal++;
+  assert.throws(() => verifySampleCustody(missingElite, inventory), /elite custody emperor/);
+});
 
 void test('sample custody catches a duplicated base traitor after setup despite preserved hand size', () => {
   const { game, inventory } = fixture();
