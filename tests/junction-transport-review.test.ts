@@ -279,3 +279,26 @@ void test('Junction distinguishes native Fremen Arrakis arrival from a foreign H
     viewGame(foreign, 'beneGesserit').decision,
   );
 });
+
+void test('Junction Intrusion without accompanying advisors survives JSON restoration', () => {
+  let g = fixture(true);
+  g.active = 'fremen';
+  g.movementRemaining = ['fremen', 'atreides', 'beneGesserit', 'guild'];
+  const bg = player(g, 'beneGesserit');
+  bg.forces = { 'wind_pass:14': 1 };
+  bg.reserves = 19;
+  g = offered(g);
+  const option = viewGame(g, 'fremen').junctionTransport!;
+  g = applyAction(g, 'fremen', {
+    type: 'junctionShip',
+    event: option.event,
+    offer: option.offer!.event,
+    destination: 'wind_pass:14',
+    sources: { 'homeworld:fremen': { normal: 1, elite: 0 } },
+  });
+  assert.equal(g.decision?.kind, 'intrusion');
+  assert.equal(Object.hasOwn(g.decision!, 'followup'), false);
+  const restored: Game = JSON.parse(JSON.stringify(g));
+  for (const seat of g.players)
+    assert.deepEqual(viewGame(restored, seat.id), viewGame(g, seat.id));
+});

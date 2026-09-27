@@ -19212,7 +19212,7 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
     const bg = byFaction(g, 'beneGesserit');
     const followup = offPlanet && bg && bg.id !== p.id && spiritualAdvisorMaximum(g, bg.id) > 0
       ? {shipment: p.id, destination} : undefined;
-    if (!intrusion(g, p, arrival.territory, {followup}) && followup)
+    if (!intrusion(g, p, arrival.territory, followup ? { followup } : undefined) && followup)
       g.decision = {kind: 'advisor', player: bg!.id, ...followup};
     openTerritoryEntry(g, p, arrival.territory, arrival.sector, quote.amount, quote.elite, 'shipment');
   }
@@ -19696,7 +19696,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     p.faction !== 'fremen' && bg && bg.id !== p.id && spiritualAdvisorMaximum(g, bg.id) > 0
       ? { shipment: p.id, destination: location(to, s) }
       : undefined;
-  if (!intrusion(g, p, to, { followup }) && followup)
+  if (!intrusion(g, p, to, followup ? { followup } : undefined) && followup)
     g.decision = { kind: 'advisor', player: bg!.id, ...followup };
   if (g.advanced && p.faction === 'fremen' && s === g.storm)
     g.response = {

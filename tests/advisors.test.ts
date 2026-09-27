@@ -220,6 +220,19 @@ void test('advisors moving to an empty territory become fighters; optional occup
   assert.equal(isAdvisor(empty.players[1], 'imperial_basin'), false);
   assert.equal(empty.response, null);
 });
+void test('intrusion without advisor accompaniment restores the same decision and private views', () => {
+  const g = fixture();
+  army(g, 'b', { 'arrakeen:10': 20 });
+  const pending = applyAction(g, 'a', {
+    type: 'ship', territory: 'arrakeen', sector: 10, amount: 2,
+  });
+  assert.equal(pending.decision?.kind, 'intrusion');
+  assert.equal(Object.hasOwn(pending.decision!, 'followup'), false);
+  const restored = JSON.parse(JSON.stringify(pending)) as Game;
+  for (const player of pending.players)
+    assert.deepEqual(viewGame(restored, player.id), viewGame(pending, player.id));
+});
+
 void test('intrusion resolves before free accompaniment, with a separate cancelable token flip and same-turn advisor lock', () => {
   let g = fixture();
   g.players[0].hand = [baseDeck().find((c) => c.effect === 'karama')!];

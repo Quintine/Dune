@@ -60,6 +60,15 @@ this access change; see the [decision index](RULE_DECISIONS.md).
 - `advanced-preview-http.test.ts`: normal authenticated endpoints, explicit
   opt-in, origin/authority checks, readiness, duplicate start and refresh.
 
+An Advanced six-seat sample exposed an Intrusion save boundary: a shipment
+without an accompanying-advisor offer stored `followup: undefined`, which JSON
+removed and changed the restored private views. Ordinary and Junction shipment
+calls now omit that field when no follow-up exists. Focused regressions cover
+both routes and every seat across JSON restoration. The same genuine six-seat
+seed then completed at turn 10 after 1,531 actions and 41 restores. A separate
+ten-game Basic/Advanced base-roster matrix (two through six seats) completed
+with no rejected actions; these samples do not certify all Advanced interactions.
+
 The private checkpoint directory records final check/build/HTTP results, ordinary
 preview-start complete-game samples, browser checks and saved-game preservation.
 These are development samples, not AI calibration or complete interaction coverage.
