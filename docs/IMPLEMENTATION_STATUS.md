@@ -1,5 +1,9 @@
 # Dune implementation status
 
+## 27 September 2026 — CHOAM/Richese with Nexus Cards
+
+The offline [sample runner](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) now admits genuine CHOAM/Richese setup with the physical Nexus module at two through six seats in Basic and Advanced. At seed 20260928 all ten games completed with 3,481 accepted actions, 90 periodic JSON restores, no rejected actions and one unallied Nexus Card choice. A separate seed 20260927 completed nine games with three choices, then stopped in six-seat Advanced Bidding after 1,863 accepted actions at the existing unresolved exhausted-Richese-cache normal-auction-count guard; the failed report is `/tmp/dune-choam-nexus-trial-20260927/report.json`. The passing source-bound checkpoint report is `/tmp/dune-choam-nexus-checkpoint-20260928/report.json`. No drawn card effect happened in these samples, so they do not certify the CHOAM Betrayal panel, all Nexus effects or public module starts.
+
 ## 27 September 2026 — Combined expansion game continuation
 
 The original six [faction samples](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) now complete at seed 20260927, including the six-expansion-faction Basic and Advanced games. Those two combined games reached turn ten and turn nine respectively, with 4,396 accepted actions, 118 periodic JSON restores and no rejected actions. The Advanced trace includes nine explicit Ixian declines on Richese lots, ten Ecaz Ambassador decisions and fifteen Face Dancer decisions; it no longer stops at the historical movement-arrival guard for this seed. The source-bound report is `/tmp/dune-combined-checkpoint-20260927-2183376/report.json`. One seeded roster is not every valid combination, and the Richese Technology exchange remains unresolved; expansion/publication gates stay closed.

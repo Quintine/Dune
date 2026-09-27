@@ -255,7 +255,7 @@ void test('combined modules reach saved Nexus draws and actual Homeworld shipmen
 
 void test('expansion-roster snapshots resume their own Advanced games rather than the fixed four-seat sample', (t) => {
   const area = temporary(t);
-  for (const [profile, seed] of [['choam-roster', '20260928'], ['ecaz-roster', '20260927'], ['ix-roster', '20260927']] as const) {
+  for (const [profile, seed] of [['choam-roster', '20260928'], ['ecaz-roster', '20260927'], ['ix-roster', '20260927'], ['choam-nexus', '20260928']] as const) {
     const name = `${profile}-4-advanced`;
     const initial = join(area, `${profile}-initial`);
     assert.equal(run(initial, '--profile', profile, '--players', '4', '--rules', 'advanced', '--seed', seed, '--max-actions', '1').status, 1);
@@ -308,6 +308,25 @@ void test('combined-expansion Advanced sample completes with Richese Technology 
   assert.ok(game.used['decision:ixRicheseTechnology'] > 0);
   assert.ok(game.used['decision:ecazAmbassador'] > 0);
   assert.ok(game.used['decision:faceDance'] > 0);
+  assert.deepEqual(game.rejected, {});
+  assert.ok(game.restores > 0);
+});
+
+void test('CHOAM/Richese Nexus game reaches an unallied card choice and restores across phases', (t) => {
+  const out = join(temporary(t), 'choam-nexus-complete');
+  const result = run(out, '--profile', 'choam-nexus', '--players', '3', '--rules', 'advanced', '--seed', '20260927');
+  assert.equal(result.status, 0, result.stderr);
+  const report = json<CliReport>(join(out, 'report.json'));
+  const game = json<{ results: (CliResult & {
+    used: Record<string, number>;
+    rejected: Record<string, number>;
+    restores: number;
+  })[] }>(join(out, 'results.json')).results[0];
+  assert.equal(report.status, 'passed');
+  assert.equal(report.sourceUnchanged, true);
+  assert.equal(game.name, 'choam-nexus-3-advanced');
+  assert.equal(game.outcome, 'complete');
+  assert.ok(game.used.nexusCardChoice > 0);
   assert.deepEqual(game.rejected, {});
   assert.ok(game.restores > 0);
 });

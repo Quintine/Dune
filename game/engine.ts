@@ -6360,6 +6360,18 @@ export function initializeNexusGameForAudit(state: Game): Game {
     'Enable Nexus cards in a fresh audit lobby first.');
   return initializeSetupGameForAudit(state, !!state.homeworlds, true);
 }
+/** Offline CHOAM/Richese with Nexus Cards; public expansion/module starts remain gated. */
+export function initializeChoamNexusGameForAudit(state: Game): Game {
+  requireRule(state.expansions.length === 1 && state.expansions[0] === 'choam' &&
+    state.players.some(player => player.faction === 'choam') &&
+    state.players.some(player => player.faction === 'richese'),
+    'The CHOAM Nexus sample requires both expansion factions and their deck.');
+  requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null &&
+    !state.homeworlds && !state.leaderSkills && !state.discoveryEnabled && !state.ecazTreachery,
+    'Enable only Nexus Cards in a fresh CHOAM expansion lobby.');
+  return initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
+}
+
 /** Offline prototype entry through real Ix setup, including both expansion factions.
  * No player action or room API bypasses the normal release gates. */
 export function initializeIxGameForAudit(state: Game): Game {
@@ -6451,7 +6463,9 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
           (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base' || (ix && f.expansion === 'ix') || (choam && f.expansion === 'choam') || (factions && g.expansions.includes(f.expansion))),
         ),
       ),
-    factions
+    factions && nexus
+      ? 'The CHOAM Nexus audit needs a fresh expansion lobby without other optional modules.'
+      : factions
       ? 'The faction prototype supports base factions and the selected expansion factions without optional modules.'
       : choam
       ? 'The Leader Skills prototype supports base, CHOAM and Richese factions without other expansions or optional modules.'
