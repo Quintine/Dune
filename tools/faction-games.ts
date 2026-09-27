@@ -103,13 +103,15 @@ const BASE_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].flatMap((players) =>
   })),
 );
 const MODULE_SCENARIOS: readonly Scenario[] = [
-  ...(['basic', 'advanced'] as const).map((rules, index) => ({
-    ordinal: 36 + index,
-    profile: 'homeworld' as const,
-    rules,
-    expansions: [],
-    roster: BASE_ROSTER.slice(0, 4),
-  })),
+  ...[2, 3, 4, 5, 6].flatMap((players) =>
+    (['basic', 'advanced'] as const).map((rules, index) => ({
+      ordinal: players === 4 ? 36 + index : 48 + (players - 2) * 2 + index,
+      profile: 'homeworld' as const,
+      rules,
+      expansions: [],
+      roster: BASE_ROSTER.slice(0, players),
+    })),
+  ),
   ...[2, 3, 4, 5, 6].flatMap((players) =>
     (['basic', 'advanced'] as const).map((rules, index) => ({
       ordinal: players === 6 ? 38 + index : 40 + (players - 2) * 2 + index,
@@ -195,7 +197,7 @@ function usage() {
     '[--seed UINT32] [--profile all|base|choam|ecaz|combined|homeworld|nexus|moritani-skills|tleilaxu-skills|ix-skills|choam-skills] ' +
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
-    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base, Nexus and skill profiles default to their 2–6-player samples. Homeworld uses four base factions. --players requires --profile base, nexus or a skill profile. Output must be a new private directory outside the checkout.'
+    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base, Homeworld, Nexus and skill profiles default to their 2–6-player samples. --players requires one of these profiles. Output must be a new private directory outside the checkout.'
   );
 }
 
@@ -226,7 +228,7 @@ function positive(value: string | undefined) {
 }
 
 function scenarioName(scenario: Scenario) {
-  return scenario.profile === 'base' || scenario.profile === 'nexus' || skillProfile(scenario.profile)
+  return scenario.profile === 'base' || scenario.profile === 'homeworld' || scenario.profile === 'nexus' || skillProfile(scenario.profile)
     ? `${scenario.profile}-${scenario.roster.length}-${scenario.rules}`
     : `${scenario.profile}-${scenario.rules}`;
 }
@@ -538,8 +540,8 @@ async function main() {
   const profile = parseProfile(values.profile);
   const rules = parseRules(values.rules);
   const players = parsePlayers(values.players);
-  if (supplied('players') && profile !== 'base' && profile !== 'nexus' && !skillProfile(profile))
-    throw new Error('--players requires --profile base, nexus or a skill profile.');
+  if (supplied('players') && !['base', 'homeworld', 'nexus'].includes(profile) && !skillProfile(profile))
+    throw new Error('--players requires --profile base, homeworld, nexus or a skill profile.');
   if (skillProfile(profile) && rules === 'advanced')
     throw new Error('Expansion Leader Skills profiles currently support only Basic samples.');
   const resume = values.resume ? resumedGame(values.resume) : null;

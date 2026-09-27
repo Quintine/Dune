@@ -180,8 +180,8 @@ void test('Homeworld and Nexus sample snapshots resume only their matching modul
     ['nexus', 39, 'nexusCards', 'homeworlds'],
   ] as const) {
     const out = join(area, profile);
-    const name = profile === 'nexus' ? 'nexus-6-advanced' : 'homeworld-advanced';
-    const playerFilter = profile === 'nexus' ? ['--players', '6'] : [];
+    const name = profile === 'nexus' ? 'nexus-6-advanced' : 'homeworld-4-advanced';
+    const playerFilter = ['--players', profile === 'nexus' ? '6' : '4'];
     assert.equal(run(out, '--profile', profile, '--rules', 'advanced', ...playerFilter, '--seed', '1000', '--max-actions', '1').status, 1);
     assertFailedEvidence(out, name, 1000 + ordinal, false);
     const snapshot = join(out, `failed-${name}.json`);
@@ -198,6 +198,26 @@ void test('Homeworld and Nexus sample snapshots resume only their matching modul
     assert.equal(result.status, 1);
     assert.equal(existsSync(refused), false);
   }
+});
+
+void test('Homeworld samples cover each two-to-six-seat roster under both rules and resume the two-seat configuration', (t) => {
+  const area = temporary(t);
+  const out = join(area, 'homeworld');
+  assert.equal(run(out, '--profile', 'homeworld', '--seed', '1000', '--max-actions', '1').status, 1);
+  assert.deepEqual(json<{ results: CliResult[] }>(join(out, 'results.json')).results.map(({ name, seed }) => [name, seed]), [
+    ['homeworld-2-basic', 1048], ['homeworld-2-advanced', 1049],
+    ['homeworld-3-basic', 1050], ['homeworld-3-advanced', 1051],
+    ['homeworld-4-basic', 1036], ['homeworld-4-advanced', 1037],
+    ['homeworld-5-basic', 1054], ['homeworld-5-advanced', 1055],
+    ['homeworld-6-basic', 1056], ['homeworld-6-advanced', 1057],
+  ]);
+  const snapshot = join(out, 'failed-homeworld-2-advanced.json');
+  const game = json<{ players: unknown[]; homeworlds: unknown }>(snapshot);
+  assert.equal(game.players.length, 2);
+  assert.ok(game.homeworlds);
+  const resumed = join(area, 'resumed');
+  assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(resumed, 'homeworld-2-advanced', 1049, true);
 });
 
 void test('three-seat Nexus samples preserve their module and roster across saved continuation', (t) => {
