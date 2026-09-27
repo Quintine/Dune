@@ -4,8 +4,10 @@ import { unitStore } from './fixture-nexus-room-store';
 import {
   discoveryFixture,
   enterDiscoveryCollection,
+  putDiscovery,
 } from './fixture-discovery';
 import { applyAction, viewGame, type Game } from '../game/engine';
+import { revealDiscoveryToken } from '../game/discoveries';
 import { discoveryStashSignature } from '../game/discovery-actions';
 import { startPrototypeRoom } from '../tools/prototype-room';
 import type { RoomsClock } from '../db/rooms';
@@ -176,6 +178,69 @@ void test('SQLite Discovery prototype preserves seats and competing stash reveal
       store.sqlite.prepare('SELECT * FROM seats ORDER BY player_id').all(),
       seats,
     );
+  } finally {
+    store.sqlite.close();
+  }
+});
+
+void test('competing saved Collection commits transfer Orgiz spice exactly once', async () => {
+  const store = unitStore();
+  try {
+    const made = await store.rooms.createRoom('Orgiz SQL', 'atreides', false, []);
+    const code = made.view.code;
+    const tokens = [made.token];
+    for (const faction of ['guild', 'fremen'] as const)
+      tokens.push((await store.rooms.joinRoom(code, faction, faction)).token!);
+    const auths = await Promise.all(tokens.map(token => store.rooms.authenticate(code, token)));
+    const ids = auths.map(auth => auth.playerId) as [string, string, string];
+    const g = discoveryFixture(false, ids);
+    g.code = code;
+    g.version = (await store.rooms.readRoom(code)).version;
+    const token = putDiscovery(g, 'orgiz-processing-station');
+    g.discoveries = revealDiscoveryToken(g.discoveries!, token.id, g.turn).state;
+    Object.assign(g, {
+      phase: 5, active: ids[2], movementRemaining: [ids[2]],
+      phaseOpening: null, response: null, decision: null,
+      storm: 18, stormPending: null,
+      spice: { 'hagga_basin:12': 4 },
+    });
+    for (const player of g.players)
+      Object.assign(player, {
+        forces: {}, reserves: 20, shipped: true, moved: 1,
+      });
+    g.players[0].forces = { 'orgiz-processing-station:0': 1 };
+    g.players[0].reserves = 19;
+    g.players[1].forces = { 'hagga_basin:12': 1 };
+    g.players[1].reserves = 19;
+    const beforeOwner = g.players[0].spice, beforeCollector = g.players[1].spice;
+    store.sqlite.prepare('UPDATE rooms SET state = ?, version = ? WHERE code = ?')
+      .run(JSON.stringify(g), g.version, code);
+
+    let arrivals = 0, release!: () => void;
+    const gate = new Promise<void>(resolve => { release = resolve; });
+    store.hooks.beforeWrite = async () => {
+      if (++arrivals === 2) release();
+      await gate;
+    };
+    const timer = setTimeout(release, 2000);
+    try {
+      const results = await Promise.allSettled([0, 1].map(() =>
+        store.restart().act(code, auths[2], g.version, { type: 'endMovement' }, clock)));
+      assert.equal(arrivals, 2);
+      assert.equal(results.filter(result => result.status === 'fulfilled').length, 1);
+    } finally {
+      clearTimeout(timer);
+      delete store.hooks.beforeWrite;
+    }
+    const done = await store.restart().readRoom(code);
+    assert.equal(done.version, g.version + 1);
+    assert.equal(done.players[0].spice, beforeOwner + 1);
+    assert.equal(done.players[1].spice, beforeCollector + 1);
+    assert.equal(done.spice['hagga_basin:12'], 2);
+    assert.equal(done.log.filter(entry => entry.automatic?.name === 'Orgiz Processing Station').length, 1);
+    const settled = JSON.stringify(done);
+    await store.restart().continueRoomAutomatic(code, clock);
+    assert.equal(JSON.stringify(await store.restart().readRoom(code)), settled);
   } finally {
     store.sqlite.close();
   }

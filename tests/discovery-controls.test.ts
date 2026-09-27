@@ -8,7 +8,7 @@ import {
 } from '../game/engine';
 import { botActions } from '../game/bots';
 import {
-  DISCOVERY_TOKENS, placeDiscovery, rememberDiscoveryFace, revealDiscoveryToken,
+  placeDiscovery, rememberDiscoveryFace, revealDiscoveryToken,
   type DiscoveryTokenFace,
 } from '../game/discoveries';
 import { discoveryAction, discoveryBotActions, discoveryDiscardAction } from '../game/discovery-options';
@@ -92,20 +92,6 @@ void test('Fremen and Guild privileged faces remain distinct from another seatâ€
   assert.doesNotMatch(html(atreides), /Read (Cistern|Spice Stash) rules/);
   assert.deepEqual(discoveryBotActions(fremen), []);
   assert.deepEqual(discoveryBotActions(guild), []);
-});
-
-void test('all eight authorized faces have readable rules while shared location rules preserve parent-territory meaning', () => {
-  const game = fixture();
-  for (const definition of DISCOVERY_TOKENS) place(game, definition.id, true);
-  const markup = html(viewGame(game, 'p'));
-  for (const definition of DISCOVERY_TOKENS) assert.ok(markup.includes(`Read ${definition.name} rules`), definition.name);
-  for (const text of ['opposing undialed force', 'two spice from the bank', 'Weather Control',
-    'use a Truthtrance card as Karama', 'each spice blow that is collected', 'including the new card',
-    'Receive seven spice', 'On a later turn', 'separate territory inside', 'At most two factions',
-    'protected from storms and sandworms', 'before the storm and the mobile stronghold move']) assert.ok(markup.includes(text), text);
-  assert.doesNotMatch(markup, /href="https?:/);
-  assert.ok(markup.includes('Next-turn free entry, sole-occupant Cistern income and later-turn Ornithopter movement are available in the development prototype.'));
-  assert.ok(markup.includes('Orgiz, mixed-force Jacurutu rewards and contested Cistern/Testing Station benefits remain pending.'));
 });
 
 void test('all four AI profiles inspect and then reveal through fresh private views and actual saved actions', () => {

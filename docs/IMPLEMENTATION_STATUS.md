@@ -1,10 +1,18 @@
 # Dune implementation status
 
+## 27 September 2026 — Bounded Orgiz Processing Station Collection
+
+The [Discovery prototype](DISCOVERY_PROTOTYPE.md#connected-behavior) now composes a sole Orgiz occupant's one-spice transfer over ordinary Collection: one uniquely collected board deposit is one observable blow, even when older blows stacked there. Separate deposits pay separately; contested Orgiz occupancy and unresolved Ecaz shared lots withhold their uncertain transfers without blocking ordinary collection. Advisor releases follow the ordinary Collection quote. This is a documented inference from the *Ecaz & Moritani* rulebook, not a publisher ruling. Basic/Advanced engine, JSON restoration, simultaneous in-memory SQLite CAS, conserved spice, rejected-action custody and player-visible log are covered by 20 focused Discovery cases. An actual staged engine continuation reached Collection and credited the Orgiz owner; an isolated local browser table rendered its token guidance and chronicle log without writing a room. The broader Discovery, combined-expansion and publication gates remain closed; this source is not yet the live `c9a3625` image.
+
+The complete offline suite passed 5,549 tests across 696 files, the app build passed, and scoped TypeScript/ESLint checks passed. `npm run check` still stops at an unrelated in-progress Nexus/Fremen draft with `fremenNexusMovementBlockedTurn` missing from `Player`; that draft was not changed or included in this checkpoint.
+
 ## 27 September 2026 — Bounded skilled Diplomat retreat
 
 The standalone [Leader Skills retreat interpretation](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation) now offers a surviving losing trained leader an event-bound, saved decision before ordinary loser casualties. The server quotes destination-specific undialed normal/elite counts using dial commitments, occupied strongholds, sector adjacency and the storm; accepted choices transfer those exact physical counters, while a decline or dead leader follows ordinary losses. Human controls and all four AI profiles use the same projected choices. Nine focused engine, controls and concurrent in-memory SQLite cases passed, including JSON restoration, split-sector custody, legacy-battle continuation and rejected-action immutability. An isolated browser view from a genuine revealed battle rendered the destination/count selectors and decline; POST was blocked, so no room was changed. The scoped type check and production build passed. This is a provisional strength/outcome-order interpretation, not a complete skill or combined-module ruling, and it is not yet deployed.
 
 The complete offline regression suite passed 5,545 tests across 696 files after the retreat changes. The unrelated in-progress Nexus/Fremen draft still blocks the repository-wide type/lint check; the scoped type check covers this retreat slice. The live `4801ce0` image predates this slice.
+
+Deployment follow-up: successful workflow `36358270534` published `c9a3625ff2a9ddafdbc08e64de809eca6029db85`, and a dedicated deployment agent updated only the NAS Apps `dune` image. The public footer title/accessibility name matched the full revision, the owner signed in, and all nine prior rooms remained (one playing room at version 54). The 0600 online SQLite backup passed `PRAGMA quick_check`. Live Diplomat battle gameplay and private saved-seat recovery were not exercised; the local browser fixture remains the feature-specific UI evidence.
 
 ## 27 September 2026 — Ixian/Tleilaxu with Nexus Cards
 

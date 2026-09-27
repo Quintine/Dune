@@ -1,7 +1,8 @@
-import { fighterCount, isAdvisor } from './advisors';
+import { isAdvisor } from './advisors';
 import { gameTerritories, splitLocation, type MobileBoard } from './board';
+import type { AdvisorRelease } from './board-resolution-quote';
 import type { Player } from './engine';
-import { presenceByLocation, type ForcePresence } from './force-presence';
+import { presenceAt, type ForcePresence } from './force-presence';
 
 export const CISTERN = 'cistern';
 export const ORGIZ_PROCESSING_STATION = 'orgiz-processing-station';
@@ -32,6 +33,8 @@ export type DiscoveryBaseCollectionReceipt = {
 };
 
 export type DiscoveryBaseCollectionQuote = {
+  /** Advisor stance changes already established by the ordinary quote. */
+  released: readonly AdvisorRelease[];
   /** Deposits remaining after ordinary and shared collection. */
   spice: Readonly<Record<string, number>>;
   receipts: readonly DiscoveryBaseCollectionReceipt[];
@@ -65,14 +68,6 @@ export type DiscoveryCollectionQuote = {
   effects: (CisternCollectionReceipt | OrgizCollectionReceipt)[];
 };
 
-export type DiscoveryCollectionOptions = {
-  /**
-   * Draft interpretation only. The publisher text does not clarify whether a
-   * stacked physical spice pile represents one or several “spice blows.”
-   */
-  orgizObservableDeposits?: boolean;
-};
-
 const record = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value);
 const whole = (value: unknown): value is number =>
@@ -84,29 +79,41 @@ function requireCollection(
   if (!condition) throw new DiscoveryCollectionError(message);
 }
 
+function isCollectingFighter(
+  player: DiscoveryCollectionSeat,
+  territory: string,
+  released: readonly AdvisorRelease[],
+): boolean {
+  return !isAdvisor(player, territory) ||
+    released.some((entry) => entry.player === player.id && entry.territory === territory);
+}
+
 function occupants(
   context: DiscoveryCollectionContext,
   location: string,
+  released: readonly AdvisorRelease[],
 ): DiscoveryCollectionSeat[] {
   if (!gameTerritories(context).some((territory) => territory.id === location))
     return [];
-  return context.players.filter((player) => fighterCount(player, location) > 0);
+  return context.players.filter(
+    (player) => isCollectingFighter(player, location, released) &&
+      presenceAt(player, location) > 0,
+  );
 }
 
 /**
- * Compose Cistern, plus an explicitly enabled bounded Orgiz draft, over the
+ * Compose sole-occupant Cistern income and a bounded Orgiz transfer over the
  * canonical ordinary collection quote. The ordinary `collected` and `desert`
- * fields stay factual: Cistern is bank income and Orgiz moves spice afterward.
+ * fields remain factual: Cistern is bank income; Orgiz transfers player spice.
  *
- * The printed source does not resolve two occupants claiming the same location
- * or identify a payer before an Ecaz shared lot is allocated. Cistern therefore
- * pays only an ordinary sole occupant; the unresolved contested case is retained
- * without a bonus instead of blocking the Collection phase.
+ * The publisher does not specify whether a stacked physical pile is one or
+ * several blows. One positive collected board deposit is treated as one
+ * observable blow. Contested location benefits and unresolved shared lots
+ * withhold only their uncertain effect; they never block ordinary collection.
  */
 export function quoteDiscoveryCollection(
   context: DiscoveryCollectionContext,
   collection: DiscoveryBaseCollectionQuote,
-  options: DiscoveryCollectionOptions = {},
 ): DiscoveryCollectionQuote {
   requireCollection(
     record(context) &&
@@ -130,10 +137,13 @@ export function quoteDiscoveryCollection(
       record(collection.spice) &&
       Array.isArray(collection.receipts) &&
       Array.isArray(collection.shared) &&
-      record(options) &&
-      Object.keys(options).every((key) => key === 'orgizObservableDeposits') &&
-      (options.orgizObservableDeposits === undefined ||
-        typeof options.orgizObservableDeposits === 'boolean'),
+      Array.isArray(collection.released) &&
+      collection.released.every(
+        (entry) => record(entry) &&
+          typeof entry.player === 'string' &&
+          context.order.includes(entry.player) &&
+          typeof entry.territory === 'string',
+      ),
     'Discovery collection needs the canonical public collection context and quote.',
   );
 
@@ -195,7 +205,7 @@ export function quoteDiscoveryCollection(
   );
 
   const effects: DiscoveryCollectionQuote['effects'] = [];
-  const cistern = occupants(context, CISTERN);
+  const cistern = occupants(context, CISTERN, collection.released);
   if (cistern.length === 1) {
     const receipt = receipts.find((entry) => entry.player === cistern[0].id)!;
     requireCollection(
@@ -211,39 +221,34 @@ export function quoteDiscoveryCollection(
     });
   }
 
-  const orgiz = occupants(context, ORGIZ_PROCESSING_STATION);
-  const collectedLocations = sourceKeys.filter(
-    (key) => context.spice[key] > collection.spice[key],
-  );
-  requireCollection(
-    !options.orgizObservableDeposits ||
-      orgiz.length <= 1 ||
-      collectedLocations.length === 0,
-    'Orgiz theft with two occupying factions awaits an explicit ruling.',
-  );
-  if (
-    options.orgizObservableDeposits &&
-    orgiz.length === 1 &&
-    collectedLocations.length > 0
-  ) {
-    requireCollection(
-      !collection.shared.some((lot) => lot.amount > 0),
-      'Orgiz theft from an unresolved Ecaz shared lot awaits an explicit ruling.',
-    );
+  const orgiz = occupants(context, ORGIZ_PROCESSING_STATION, collection.released);
+  if (orgiz.length === 1) {
     const owner = orgiz[0];
     const ownerReceipt = receipts.find((entry) => entry.player === owner.id)!;
-    for (const key of collectedLocations) {
-      const collectors = context.players.filter(
-        (player) =>
-          !isAdvisor(player, splitLocation(key).territory) &&
-          (presenceByLocation(player)[key] ?? 0) > 0,
-      );
-      requireCollection(
-        collectors.length === 1,
-        'Orgiz theft needs one ordinary collector for each collected spice blow.',
-      );
-      const collector = collectors[0];
-      if (collector.id === owner.id) continue;
+    for (const key of sourceKeys) {
+      if (context.spice[key] <= collection.spice[key]) continue;
+      const { territory, sector } = splitLocation(key);
+      if (
+        collection.shared.some(
+          (lot) => lot.amount > 0 && lot.territory === territory,
+        )
+      ) continue;
+      let collector: DiscoveryCollectionSeat | undefined;
+      let contested = false;
+      for (const player of context.players) {
+        if (!isCollectingFighter(player, territory, collection.released)) continue;
+        const marker = player.noField?.deployed?.location;
+        if (
+          (player.forces[key] ?? 0) <= 0 &&
+          !(marker?.territory === territory && marker.sector === sector)
+        ) continue;
+        if (collector) {
+          contested = true;
+          break;
+        }
+        collector = player;
+      }
+      if (contested || !collector || collector.id === owner.id) continue;
       const collectorReceipt = receipts.find(
         (entry) => entry.player === collector.id,
       )!;

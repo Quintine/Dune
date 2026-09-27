@@ -6,16 +6,25 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
-The live NAS Apps `dune` image is now the immutable
-`ghcr.io/quintine/dune:sha-4801ce003bd28d5f0aaf26c3bcded3dcfea4df07`
-from successful container workflow `36355611201`. The public homepage displays
-that full revision. After the update, owner sign-in succeeded and the nine
-existing rooms remained in the directory, including a playing room at version
-54. A 0600 online SQLite backup in the persistent app volume passed
-`PRAGMA quick_check` before the update; the temporary remote plaintext owner
-key and provisioning SQL were removed afterward. Private saved-seat
-reconnection and complete historical-data comparison were not exercised.
-The pending Diplomat retreat work is not in this deployed image.
+The live NAS Apps `dune` image is the immutable
+`ghcr.io/quintine/dune:sha-c9a3625ff2a9ddafdbc08e64de809eca6029db85`
+from successful container workflow `36358270534`. The public footer's title and
+accessibility name show that full revision; visible text shows `c9a3625`.
+After the update, owner sign-in succeeded and nine existing rooms remained,
+including a playing room at version 54. A fresh 0600 online SQLite backup in
+the persistent app volume passed `PRAGMA quick_check` before the update. The
+earlier temporary remote plaintext owner key and provisioning SQL were removed.
+Private saved-seat reconnection, complete historical-data comparison and live
+Diplomat retreat gameplay were not exercised; its local behavior is verified,
+not production gameplay-proven.
+
+The bounded Discovery Orgiz Collection transfer is connected in current local
+source for Basic/Advanced, with an automatic public log and saved continuation.
+It treats each positive collected board deposit as one observable blow, a source
+inference pending a publisher clarification. A focused engine/browser/SQLite
+checkpoint is in [Discovery prototype](DISCOVERY_PROTOTYPE.md); this code is
+not yet in the live `c9a3625` image. Contested/shared transfers and full
+Discovery release acceptance remain gated.
 
 The bounded [Fremen Nexus Cunning](NEXUS_FREMEN_RULES.md#connected-native-cunning-path)
 prototype connects an initially empty worm's public offer, one spent private
@@ -242,7 +251,7 @@ These links define bounded working behavior, not complete module certification.
 | Base/Advanced setup | [Normal Advanced preview](ADVANCED_PREVIEW.md), [genuine setup](ADVANCED_SETUP_TEST_SEAM.md), [Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md), [Fremen cancellation](FREMEN_MOVEMENT_KARAMA_RULES.md), [Atreides full-plan audit](ATREIDES_FULL_PLAN_TIMING.md). Earlier Basic-then-flip fixtures do not establish current setup coverage. |
 | Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement and [Advanced Loyalty](ECAZ_LOYALTY.md), separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
 | Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md) and [worm rides](SANDMASTER_WORM.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md) and [bounded retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation). Remaining bands and combinations are explicit in those contracts. |
-| Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Jacurutu income, Testing Station and Shrine. Orgiz and contested/mixed cases remain pending. |
+| Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Orgiz transfers, Jacurutu income, Testing Station and Shrine. Orgiz's per-deposit interpretation, contested/shared benefits and mixed physical allocation remain provisional or pending. The Orgiz path in current source is not yet deployed. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Collection trade](NEXUS_CHOAM_SECRET_ALLY.md) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected; CHOAM inspection and Emperor purchase remain pending. A source audit or helper alone is not a completed effect. |
 | Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
 | Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) connects the bounded battle return in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |

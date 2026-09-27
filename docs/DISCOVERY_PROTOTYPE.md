@@ -69,9 +69,17 @@ to redeal a started game. The default `ix` profile remains available.
   territory into sector zero of that location. This spends no spice, shipment or
   normal movement. Empty, storm-blocked and occupancy-blocked offers skip without
   holding up the turn. Accepted groups and arrival reactions survive restoration.
-- **Cistern:** during Collection, a sole occupant receives two bank spice. If two
-  factions occupy Cistern, the unresolved benefit is withheld without blocking
-  Collection; this boundary does not decide which occupant should receive it.
+- **Cistern:** during Collection, a sole fighter occupant receives two bank
+  spice after ordinary advisor releases. If two fighters occupy Cistern, the
+  unresolved benefit is withheld without blocking Collection; this boundary
+  does not decide which occupant should receive it.
+- **Orgiz:** during Collection, a sole fighter occupant takes one spice from
+  the unique rival collector of each positive board deposit after ordinary
+  advisor releases. One collected pile is one observable blow even if previous
+  blows stacked there. The transfer occurs after ordinary collection, conserves
+  player spice, appears in the public log, and resumes from saved state without
+  another payment. Unresolved Ecaz shared lots and contested Orgiz occupation
+  withhold their uncertain transfers, not the ordinary Collection phase.
 
 - **Jacurutu:** winning a battle here automatically grants one bank spice per
   opposing undialed physical force sent to the Tanks. Winner casualties and
@@ -120,10 +128,16 @@ answers or newly approved table rulings.
 
 The printed Cistern text names an occupant but permits two factions to occupy a
 revealed location. The prototype pays an ordinary sole occupant and withholds
-the contested bonus. Orgiz remains disabled because the source also does not
-settle whether a stacked board deposit represents one or several collected
-spice blows; contested occupancy and unresolved Ecaz shared collection add
-further unanswered cases.
+the contested bonus. The publisher's [Ecaz & Moritani rulebook, page 13](https://gamers-hq.de/media/pdf/0f/7a/86/Dune_EcazMoritani_Rulebook_EN.pdf)
+says an Orgiz occupant steals one spice of each collected blow. Its bundled
+Q&A does not define a stacked pile as one or several blows; searches of the
+publisher/designer and community rules pages found no explicit clarification.
+The bounded implementation treats each positive board deposit collected as one
+observable blow, transfers one spice from its unique collector, and does not
+take spice from the occupant itself. This is an inference, not an official
+ruling. Two fighters occupying Orgiz withhold all theft. An Ecaz shared lot
+with no assigned collector withholds theft from its entire territory; independent
+deposits elsewhere and ordinary collection proceed.
 
 The Testing Station's two-occupant case leaves ordering and cumulative adjustment
 unresolved. The prototype opens only the sole-occupant path and continues an
@@ -211,9 +225,10 @@ to Spice Blow. Refresh restored the same station forces and private Snooper.
 This is targeted control/recovery evidence, not an unmodified complete game.
 The 187 opening saved rooms remain preserved; no server restart was needed.
 
-1. Resolve Orgiz's collected-blow interpretation, contested Cistern/Testing
-   Station benefits and Jacurutu's mixed physical dial allocation; complete their
-   remaining controls and effects when settled.
+1. Resolve contested Cistern/Orgiz/Testing Station benefits, Ecaz shared-lot
+   Orgiz allocation and Jacurutu's mixed physical dial allocation; complete
+   remaining controls and effects when settled. The per-collected-deposit
+   Orgiz interpretation remains provisional.
 2. Integrate combined modules and complete games, then refine interaction,
    strategy and presentation coverage before opening normal start gates.
 3. Use the existing prototype starter and saved-room verification for further

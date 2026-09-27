@@ -14110,7 +14110,6 @@ function commitCollection(
 ) {
   let discovery: ReturnType<typeof quoteDiscoveryCollection>;
   try {
-    // Orgiz remains disabled pending a source ruling on stacked spice blows.
     discovery = quoteDiscoveryCollection(g, quote);
   } catch (error) {
     if (error instanceof DiscoveryCollectionError)
