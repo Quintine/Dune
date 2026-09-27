@@ -78,8 +78,23 @@ them when generating future schema changes. Audit browsing is still pending.
 
 ### Initial owner and access recovery
 
-From the development checkout, apply additive migrations, then create a personal
-owner key in a new private directory outside the checkout:
+The NAS container provisions an **Initial owner** automatically after migrations
+only if `admin_accounts` has no rows. Its newly generated personal access key is
+printed once in that container's startup log (`docker logs <container-name>`).
+Retrieve it privately, save it in a password manager and sign in at `/admin`;
+it is not a chosen password or an environment variable. Anyone able to read
+that log can use the key. Restrict log access and retention; do not paste the
+log into support reports. Restarts,
+container replacements and existing accounts (even disabled ones) never generate
+or print another key. Save the key before replacing the first container, since
+its original log may disappear. Losing it requires manual owner recovery below.
+
+The automatic bootstrap applies only to the bundled NAS container startup, not
+`npm run dev` or an external D1 deployment.
+
+For manual provisioning or access recovery from the development checkout,
+apply additive migrations, then create a personal owner key in a new private
+directory outside the checkout:
 
 ```sh
 npm run db:local

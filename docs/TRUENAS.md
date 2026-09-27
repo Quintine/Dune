@@ -42,6 +42,13 @@ Startup applies pending additive migrations before serving. Both commands use
 the same database ID and storage root. A failed migration stops startup without
 deleting games. The inspector remains on container loopback and is not published.
 
+On a database without administrator accounts, startup creates one owner and
+prints its personal access key once in the container log. Save it privately
+before replacing the container; its original log may be lost. Anyone with log
+access can use that key, so restrict log access and do not publish diagnostics
+containing it. Existing accounts never trigger a new key on restart or update.
+See [admin access recovery](ADMIN_PANEL.md#initial-owner-and-access-recovery).
+
 The container serves the built Worker directly through pinned Miniflare/workerd,
 with persisted D1-compatible SQLite. Wrangler only applies startup migrations.
 The development proxy produced intermittent POST failures after rejected request

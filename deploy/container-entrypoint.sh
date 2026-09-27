@@ -15,4 +15,5 @@ node --input-type=module -e '
 '
 node node_modules/wrangler/bin/wrangler.js d1 migrations apply DB \
   --local --config tools/wrangler.local.json --persist-to "$state_path"
+node deploy/bootstrap-admin.mjs
 exec node deploy/serve.mjs

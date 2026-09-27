@@ -20,6 +20,7 @@ COPY package.json ./
 COPY tools/wrangler.local.json ./tools/wrangler.local.json
 COPY tools/admin-access.mjs ./tools/admin-access.mjs
 COPY deploy/container-entrypoint.sh ./deploy/container-entrypoint.sh
+COPY deploy/bootstrap-admin.mjs ./deploy/bootstrap-admin.mjs
 COPY deploy/serve.mjs ./deploy/serve.mjs
 RUN mkdir -p /data /app/.wrangler && chown node:node /data /app/.wrangler
 USER node

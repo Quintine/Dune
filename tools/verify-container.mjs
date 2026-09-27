@@ -32,10 +32,22 @@ function start(publicOrigin = '') {
     '-e', `DUNE_PUBLIC_ORIGIN=${publicOrigin}`, image);
   base = `http://${docker('port', name, '3000/tcp')}`;
 }
+const bootstrapKeys = (logs) => logs.match(/dune-admin\.[0-9a-f-]{36}\.[0-9a-f]{64}/g) || [];
+function checkBootstrap(count) {
+  const keys = bootstrapKeys(docker('logs', name));
+  assert.equal(keys.length, count, 'First owner key must be logged exactly once per new database');
+  return keys[0];
+}
 try {
   docker('volume', 'create', volume);
   start();
   await ready();
+  const bootstrapKey = checkBootstrap(1);
+  const ownerLogin = await fetch(`${base}/api/admin/session`, {
+    method: 'POST', headers: { 'content-type': 'application/json', origin: base },
+    body: JSON.stringify({ action: 'login', key: bootstrapKey }),
+  });
+  assert.equal(ownerLogin.status, 200, 'Bootstrapped owner must be able to sign in');
   execFileSync('node', ['tools/admin-access.mjs', '--name', 'Container QA', '--role', 'operator', '--out', joinPath(adminFiles, 'key')]);
   execFileSync('docker', ['exec', '-i', name, 'node', '-e', "require('node:fs').writeFileSync('/tmp/dune-admin-provision.sql', require('node:fs').readFileSync(0), {mode:0o600})"], {
     input: readFileSync(joinPath(adminFiles, 'key/provision.sql')), // Container USER owns this private file.
@@ -73,12 +85,14 @@ try {
   // Docker may assign a different ephemeral host port after a restart.
   base = `http://${docker('port', name, '3000/tcp')}`;
   await ready();
+  assert.equal(checkBootstrap(1), bootstrapKey, 'Restart must not replace the owner key');
   await restored();
   docker('stop', '--time', '60', name);
   docker('rm', name);
   start();
   await ready();
   await restored();
+  checkBootstrap(0);
   execFileSync('node', ['tools/verify-admin.mjs', '--url', base, '--key-file', joinPath(adminFiles, 'key/access-key.txt'), '--qa-account', adminKey.split('.')[1], '--out', joinPath(adminFiles, 'http')], { stdio: 'inherit' });
   adminCookie = undefined; // The acceptance test intentionally signs out all sessions.
   execFileSync('npm', ['run', 'test:integration'], {
@@ -90,6 +104,7 @@ try {
   start(publicOrigin);
   await ready();
   await restored();
+  checkBootstrap(0);
   const proxyAdmin = await fetch(`${base}/api/admin/session`, {
     method: 'POST', headers: { 'content-type': 'application/json', origin: publicOrigin },
     body: JSON.stringify({ action: 'login', key: adminKey }),
@@ -122,7 +137,7 @@ try {
   }
   console.log('Container origin, restart, replacement, saved seat and HTTP integration checks passed.');
 } catch (error) {
-  try { console.error(docker('logs', name)); } catch { /* May not exist yet. */ }
+  try { console.error(docker('logs', name).replaceAll(/dune-admin\.[0-9a-f-]{36}\.[0-9a-f]{64}/g, '[REDACTED ADMIN KEY]')); } catch { /* May not exist yet. */ }
   throw error;
 } finally {
   // Names are unique to this invocation; never remove an existing application.
