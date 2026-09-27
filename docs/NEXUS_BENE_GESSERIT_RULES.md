@@ -50,8 +50,10 @@ removes only the Voice; any already selected Prescience preparation and
 unchanged plan promises continue. The spent-card battle receipt, private
 holder offer and exact response survive JSON and room recovery; other seats
 see the public response but not who holds the card. Bot profiles play or pass
-their own reaction. An active Truthtrance or unfinished private Harkonnen
-Nexus Traitor return suspends the offer until that interaction finishes.
+their own reaction. An active Truthtrance suspends the private offer. An
+unfinished Harkonnen Nexus Traitor return suspends both the offer and Voice
+response actions, including the hand-card Karama cancellation, until the
+private card return finishes.
 
 This does not grant absent-BG Secret Ally Voice or change Cunning's advisor
 conversion. Basic and Advanced retain their native Voice legality; the

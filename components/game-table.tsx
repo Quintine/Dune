@@ -2205,37 +2205,45 @@ export function GameTable({
                 g.response.kind !== 'faceDancerReplacement' && (
                   <p className="notice">{g.response.intent}</p>
                 )}
-              {me.hand
-                ?.filter((c) => g.responseControls?.cancelCards.includes(c.id))
-                .map((c) => (
-                  <Button
-                    key={c.id}
-                    className="game-action"
-                    disabled={busy}
-                    onClick={() =>
-                      act({ type: 'card', card: c.id, mode: 'cancel' })
-                    }
-                  >
-                    {c.kind === 'worthless'
-                      ? `Use ${c.name} as Karama`
-                      : 'Cancel with Karama'}
-                  </Button>
-                ))}
-              {(g.responseControls?.cancelCards.length ||
-                (g.nexusCards && (
-                  (g.response.kind === 'eliteStrength' &&
-                    g.players.some((player) => player.id === g.response?.owner && player.faction === 'emperor')) ||
-                  (g.response.kind === 'voice' &&
-                    g.players.some((player) => player.id === g.response?.owner && player.faction === 'beneGesserit'))
-                ))) &&
-              !g.responseControls?.hasPassed ? (
-                actionButton('Allow this power', { type: 'passResponse' })
-              ) : (
-                <p className="muted">
-                  {g.responseControls?.hasPassed
-                    ? 'You have allowed this power. Waiting for the response to finish.'
-                    : 'Waiting for the response to finish.'}
+              {g.nexusTraitors?.pending ? (
+                <p className="notice">
+                  Finish the private Nexus Traitor card return before responding to this power.
                 </p>
+              ) : (
+                <>
+                  {me.hand
+                    ?.filter((c) => g.responseControls?.cancelCards.includes(c.id))
+                    .map((c) => (
+                      <Button
+                        key={c.id}
+                        className="game-action"
+                        disabled={busy}
+                        onClick={() =>
+                          act({ type: 'card', card: c.id, mode: 'cancel' })
+                        }
+                      >
+                        {c.kind === 'worthless'
+                          ? `Use ${c.name} as Karama`
+                          : 'Cancel with Karama'}
+                      </Button>
+                    ))}
+                  {(g.responseControls?.cancelCards.length ||
+                    (g.nexusCards && (
+                      (g.response.kind === 'eliteStrength' &&
+                        g.players.some((player) => player.id === g.response?.owner && player.faction === 'emperor')) ||
+                      (g.response.kind === 'voice' &&
+                        g.players.some((player) => player.id === g.response?.owner && player.faction === 'beneGesserit'))
+                    ))) &&
+                  !g.responseControls?.hasPassed ? (
+                    actionButton('Allow this power', { type: 'passResponse' })
+                  ) : (
+                    <p className="muted">
+                      {g.responseControls?.hasPassed
+                        ? 'You have allowed this power. Waiting for the response to finish.'
+                        : 'Waiting for the response to finish.'}
+                    </p>
+                  )}
+                </>
               )}
             </>
           ) : g.decision ? (
@@ -5027,9 +5035,11 @@ export function GameTable({
                       : richeseCardActionBlock(c)) ??
                   (canUseAsKaramaRole(g, me, c)
                     ? g.response
-                      ? !g.responseControls?.cancelCards.includes(c.id)
-                        ? 'This card cannot cancel the current power.'
-                        : null
+                      ? g.nexusTraitors?.pending
+                        ? 'Finish the private Nexus Traitor card return before responding to this power.'
+                        : !g.responseControls?.cancelCards.includes(c.id)
+                          ? 'This card cannot cancel the current power.'
+                          : null
                       : g.decision
                         ? 'Finish the pending decision before taking an auction card.'
                         : g.phase !== 3 || !g.auction || g.richeseAuction
