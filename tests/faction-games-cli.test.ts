@@ -291,6 +291,27 @@ void test('six-seat Advanced Ixian/Tleilaxu game resolves Technology and Face Da
   assert.ok(evidence.restores > 0);
 });
 
+void test('combined-expansion Advanced sample completes with Richese Technology declines and saved continuation', (t) => {
+  const out = join(temporary(t), 'combined-complete');
+  const result = run(out, '--profile', 'combined', '--rules', 'advanced', '--seed', '20260927');
+  assert.equal(result.status, 0, result.stderr);
+  const report = json<CliReport>(join(out, 'report.json'));
+  const game = json<{ results: (CliResult & {
+    used: Record<string, number>;
+    rejected: Record<string, number>;
+    restores: number;
+  })[] }>(join(out, 'results.json')).results[0];
+  assert.equal(report.status, 'passed');
+  assert.equal(report.sourceUnchanged, true);
+  assert.equal(game.name, 'combined-advanced');
+  assert.equal(game.outcome, 'complete');
+  assert.ok(game.used['decision:ixRicheseTechnology'] > 0);
+  assert.ok(game.used['decision:ecazAmbassador'] > 0);
+  assert.ok(game.used['decision:faceDance'] > 0);
+  assert.deepEqual(game.rejected, {});
+  assert.ok(game.restores > 0);
+});
+
 void test('three-seat Nexus samples preserve their module and roster across saved continuation', (t) => {
   const area = temporary(t);
   for (const [rules, ordinal] of [['basic', 42], ['advanced', 43]] as const) {

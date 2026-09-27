@@ -1,5 +1,9 @@
 # Dune implementation status
 
+## 27 September 2026 — Combined expansion game continuation
+
+The original six [faction samples](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) now complete at seed 20260927, including the six-expansion-faction Basic and Advanced games. Those two combined games reached turn ten and turn nine respectively, with 4,396 accepted actions, 118 periodic JSON restores and no rejected actions. The Advanced trace includes nine explicit Ixian declines on Richese lots, ten Ecaz Ambassador decisions and fifteen Face Dancer decisions; it no longer stops at the historical movement-arrival guard for this seed. The source-bound report is `/tmp/dune-combined-checkpoint-20260927-2183376/report.json`. One seeded roster is not every valid combination, and the Richese Technology exchange remains unresolved; expansion/publication gates stay closed.
+
 ## 27 September 2026 — Ixian/Tleilaxu standalone roster samples
 
 The [expansion sample runner](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) now exercises the Ixian/Tleilaxu pair with two through six seats under Basic and Advanced rules. At seed 20260927 all ten genuine setup/play games completed: 6,365 accepted actions, 169 JSON restores and no rejected actions. The six-seat Advanced trace reaches both Ixian Technology and Tleilaxu Face Dancer decisions, along with battle, revival and shipment paths. An interrupted four-seat Advanced run also resumes to completion. The source-bound report is `/tmp/dune-ix-roster-checkpoint-20260927-final/report.json`. This is bounded playable coverage, not full E1 rules certification or public expansion-start authorization.
