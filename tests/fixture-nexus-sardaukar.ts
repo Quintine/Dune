@@ -13,6 +13,7 @@ export function nexusSardaukarFixture(
     opponentFaction?: 'guild' | 'atreides' | 'fremen';
     normal?: number;
     starred?: number;
+    emperorCardHolder?: string;
   } = {},
 ): Game {
   let g = nexusTraitorFixture({
@@ -35,6 +36,13 @@ export function nexusSardaukarFixture(
   assert.ok(index >= 0);
   cards.deck[index] = cards.hands[owner.id]!;
   cards.hands[owner.id] = 'emperor';
+  if (options.emperorCardHolder) {
+    const holder = g.players.find((p) => p.id === options.emperorCardHolder);
+    assert.ok(holder && holder.id !== owner.id);
+    if (cards.hands[holder.id]) cards.deck.push(cards.hands[holder.id]!);
+    cards.hands[holder.id] = cards.hands[owner.id];
+    cards.hands[owner.id] = null;
+  }
   for (const p of g.players) {
     p.forces = {};
     p.reserves = 20;

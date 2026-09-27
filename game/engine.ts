@@ -1466,6 +1466,8 @@ export type Game = {
   }[];
   /** A spent Ecaz card binds one exact allied force group until Karama settles. */
   nexusEcazBetrayalHistory?: { snapshot: EcazBetrayalSnapshot; stage: 'pending' | 'complete' }[];
+  /** One actual Sardaukar battle advantage suppressed by a spent Emperor card. */
+  nexusEmperorBetrayalHistory?: { event: string; turn: number; territory: string; owner: string; target: string }[];
   nexusFaceDancerHistory?: NexusFaceDancerReceipt[];
   nexusSuboidHistory?: NexusSuboidReceipt[];
   nexusSuboidLast?: { event: string; owner: string; turn: number };
@@ -1754,6 +1756,60 @@ function nexusChoamTradeIntegrity(g: Game) {
 function currentNexusChoamTrade(g: Game, owner: string) {
   return nexusRule(() => quoteNexusChoamTrade(g, owner,
     g.phase === 7 && grummanCollectionAutomatic(g)));
+}
+function emperorBetrayalWindow(g: Game) {
+  const response = g.response, battle = g.battle;
+  return !!(g.nexusCards?.cards && g.status === 'playing' && g.phase === 6 &&
+    battle && !battle.revealed && battle.event && response?.kind === 'eliteStrength' &&
+    response.owner === byFaction(g, 'emperor')?.id &&
+    [battle.attacker, battle.defender].includes(response.owner) &&
+    !battle.eliteBlocked?.includes(response.owner));
+}
+function nexusEmperorBetrayalOffer(g: Game, owner: string) {
+  const player = g.players.find((p) => p.id === owner);
+  if (g.truthtrance || !emperorBetrayalWindow(g) || !player || player.ally ||
+    owner === g.response!.owner || g.response!.passed.includes(owner) ||
+    g.nexusCards!.cards!.hands[owner] !== 'emperor') return null;
+  return { event: g.battle!.event!, target: g.response!.owner };
+}
+function nexusEmperorBetrayalIntegrity(g: Game) {
+  const history = g.nexusEmperorBetrayalHistory;
+  if (history === undefined) return;
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+    'Emperor Betrayal has lost its physical card module.');
+  const events = new Set<string>();
+  for (const record of history) {
+    requireRule(record && typeof record.event === 'string' && record.event.length > 0 &&
+      Number.isInteger(record.turn) && record.turn > 0 && record.turn <= g.turn &&
+      typeof record.territory === 'string' && record.territory.length > 0 &&
+      record.owner !== record.target &&
+      g.players.some(p => p.id === record.owner) &&
+      g.players.some(p => p.id === record.target && p.faction === 'emperor') &&
+      !events.has(record.event),
+      'Emperor Betrayal has a malformed or repeated battle receipt.');
+    events.add(record.event);
+  }
+  const last = history.at(-1)!;
+  if (last.turn === g.turn) requireRule(g.nexusCards.cards.discard.includes('emperor'),
+    'Emperor Betrayal has lost its spent physical card.');
+  if (g.battle?.event === last.event) requireRule(g.battle.territory === last.territory &&
+    g.battle.eliteBlocked?.includes(last.target),
+    'The current battle has lost its Emperor Betrayal suppression.');
+}
+function playNexusEmperorBetrayal(g: Game, p: Player, action: Action) {
+  const offer = nexusEmperorBetrayalOffer(g, p.id);
+  requireRule(offer && action.event === offer.event &&
+    Object.keys(action).sort().join(',') === 'event,type',
+    'Choose your current Emperor Sardaukar battle response.');
+  const response = g.response!;
+  const record = { event: offer.event, turn: g.turn, territory: g.battle!.territory,
+    owner: p.id, target: response.owner };
+  g.nexusCards!.cards = nexusRule(() =>
+    discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  (g.nexusEmperorBetrayalHistory ??= []).push(record);
+  finishResponse(g, true);
+  log(g, `${p.name} spent Emperor Nexus Betrayal to suppress ${getPlayer(g, record.target).name}'s Sardaukar strength in this battle. Actual starred counters remain Sardaukar.`,
+    { faction: p.faction, name: 'Emperor Nexus Betrayal' });
 }
 function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
   const p = g.players.find(p => p.id === owner);
@@ -14818,6 +14874,7 @@ function marketGholaIntegrity(g: Game) {
   saphoAggressorIntegrity(g);
   nexusCardsIntegrity(g);
   nexusEmperorSecretIntegrity(g);
+  nexusEmperorBetrayalIntegrity(g);
   nexusFremenRevivalIntegrity(g);
   nexusFremenCunningIntegrity(g);
   nexusEcazBetrayalIntegrity(g);
@@ -21317,7 +21374,8 @@ function settleAutomaticContinuations(g: Game) {
         g.players.some(
           (p) =>
             !response.passed.includes(p.id) &&
-            responseCancelCards(g, p, response).length > 0,
+            (emperorBetrayalWindow(g) ||
+              responseCancelCards(g, p, response).length > 0),
         )
       )
         return;
@@ -21477,6 +21535,7 @@ function applyActionInner(
   if (t === 'discovery') { playDiscovery(g, p, action); return g; }
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
+  if (t === 'nexusEmperorBetrayal') { playNexusEmperorBetrayal(g,p,action); return g; }
   if (t === 'nexusFremenRevive') { playNexusFremenRevive(g,p,action); return g; }
   if (t === 'nexusMoritaniBetrayal') { playMoritaniBetrayal(g, p, action); return g; }
   if (t === 'nexusEcazBetrayal') { playEcazBetrayal(g, p, action); return g; }
@@ -25393,6 +25452,7 @@ export function viewGame(state: Game, id: string) {
     nexusCards: projectedNexusCards(g, id),
     nexusChoamTrade: currentNexusChoamTrade(g, id),
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
+    nexusEmperorBetrayal: nexusEmperorBetrayalOffer(g, id),
     nexusFremenRevival: fremenNexusRevivalOffer(g,id),
     nexusMoritani: nexusMoritaniOffer(g,id),
     nexusMoritaniBetrayal: moritaniBetrayalOffer(g,id,

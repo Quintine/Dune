@@ -62,12 +62,33 @@ E1 pays Tleilaxu for factions using free revival or Ghola; E2's La La La prevent
 
 Normal Emperor-funded auction help goes to the ally and is paid back to Emperor, according to November's FAQ. Therefore forcing its contribution cannot automatically be implemented as transferring its spice to the bank. Bind the actual allied purchase and its original price/contributions. [November FAQ, p.2](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2)
 
+### Implemented battle alternative (bounded)
+
+In an Advanced battle against a non-Fremen faction with actual Emperor Sardaukar,
+the existing `eliteStrength` response now remains open for every seat when Nexus
+cards are enabled, even if no player holds a canceling card. This prevents the
+response's presence or duration from identifying a hidden Emperor Nexus holder.
+An unallied non-Emperor holder may spend the card during that response, before
+plans are submitted, to suppress the Emperor's Sardaukar strength for this
+battle. The normal combat response quote rechecks legal plans and preserves
+physical starred counters and their casualty custody. Seats without a card
+explicitly pass; bots do so too. Truthtrance temporarily hides and blocks the
+card reaction until its priority and question resolve. The spent card, battle
+receipt, suppression and seat-private offer survive JSON and room restart;
+replay cannot spend it twice. Karama remains an independent alternative in
+the same window.
+
+This does not implement the forced-purchase Betrayal alternative or the
+Secret Ally purchase. Emperor Cunning still has its own earlier declaration
+and response; one unique Emperor Nexus card cannot be both Cunning and
+Betrayal at once. The wider Nexus module remains gated.
+
 The following material cases remain unresolved; no new question was sent:
 
 - **Short groups:** may Cunning operate with fewer than five eligible ordinary counters, or Secret Ally revive fewer than three when Tanks/typed limits cannot supply three? Neither panel says up to. Do not disguise the question as a silently truncated count.
 - **Forced payment:** who chooses Emperor's compulsory contribution, what is the minimum when its ally already holds the full price, and what occurs if Emperor cannot cover the requested amount? The panel's necessary-amount wording does not settle the complete digital transaction.
 - **Special purchases and revival suppression/income:** resolve the concrete boundaries above before connecting broad existing payment/free-revival adapters.
 
-The existing private reaction-policy question already covers Betrayal timing; do not duplicate it. A native holder and a Betrayal holder cannot possess the same unique Emperor card simultaneously, so do not manufacture Betrayal-versus-Cunning tests with duplicate physical copies.
+The existing private reaction-policy question still covers other hidden Betrayal timing. This battle path uses a uniform native response rather than an identity-dependent private pause. A native holder and a Betrayal holder cannot possess the same unique Emperor card simultaneously, so do not manufacture Betrayal-versus-Cunning tests with duplicate physical copies.
 
 Suggested first package: one-battle Cunning with five available normal counters, genuine no-Sardaukar eligibility, native cancellation, physical casualty mapping, current Salusa support and prior commitments. Verify ordinary victories, traitors, explosions, Fremen, later battles, JSON response recovery, corruption, all-seat privacy and all bot profiles before claiming that bounded package. No runtime or tests were changed by this audit.

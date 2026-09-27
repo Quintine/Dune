@@ -145,6 +145,19 @@ export function NexusCards({ game, act, busy }: { game: GameView; act: (action: 
           )}
         </div>
       )}
+      {game.nexusEmperorBetrayal && offer.card === 'emperor' && (
+        <div aria-label="Emperor Nexus Betrayal" className="space-y-2">
+          <h4>Emperor Betrayal · Sardaukar</h4>
+          <p className="fine">
+            Spend your Nexus card during this battle response to prevent the Emperor’s
+            Sardaukar strength advantage. Its starred forces remain physical Sardaukar.
+          </p>
+          <Button className="game-action min-h-11 whitespace-normal" disabled={busy}
+            onClick={() => act({ type: 'nexusEmperorBetrayal', event: game.nexusEmperorBetrayal!.event })}>
+            Suppress Sardaukar with Betrayal
+          </Button>
+        </div>
+      )}
       <NexusEmperorSecretAlly game={game} act={act} busy={busy} />
       <NexusFremenRevival game={game} act={act} busy={busy} />
       <div aria-label="Your private Nexus card" className="max-w-xl">

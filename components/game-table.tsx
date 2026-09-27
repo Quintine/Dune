@@ -2155,6 +2155,14 @@ export function GameTable({
                 using this power. Another faction may play Karama to cancel this
                 use.
               </p>
+              {g.response.kind === 'eliteStrength' &&
+                g.nexusCards &&
+                g.players.some((player) => player.id === g.response?.owner && player.faction === 'emperor') && (
+                  <p className="notice">
+                    Every seat may respond before the Emperor’s Sardaukar strength is locked.
+                    A private Emperor Nexus Betrayal may suppress it without moving starred forces.
+                  </p>
+                )}
               {g.response.kind === 'revivalIncome' &&
                 g.response.amount !== undefined && (
                   <p className="notice">
@@ -2205,8 +2213,10 @@ export function GameTable({
                       : 'Cancel with Karama'}
                   </Button>
                 ))}
-              {g.responseControls?.cancelCards.length &&
-              !g.responseControls.hasPassed ? (
+              {(g.responseControls?.cancelCards.length ||
+                (g.response.kind === 'eliteStrength' && g.nexusCards &&
+                  g.players.some((player) => player.id === g.response?.owner && player.faction === 'emperor'))) &&
+              !g.responseControls?.hasPassed ? (
                 actionButton('Allow this power', { type: 'passResponse' })
               ) : (
                 <p className="muted">
