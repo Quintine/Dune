@@ -102,15 +102,24 @@ const BASE_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].flatMap((players) =>
     roster: BASE_ROSTER.slice(0, players),
   })),
 );
-const MODULE_SCENARIOS: readonly Scenario[] = (['homeworld', 'nexus'] as const).flatMap((profile, index) =>
-  (['basic', 'advanced'] as const).map((rules, ruleIndex) => ({
-    ordinal: 36 + 2 * index + ruleIndex,
-    profile,
+const MODULE_SCENARIOS: readonly Scenario[] = [
+  ...(['basic', 'advanced'] as const).map((rules, index) => ({
+    ordinal: 36 + index,
+    profile: 'homeworld' as const,
     rules,
     expansions: [],
-    roster: BASE_ROSTER.slice(0, profile === 'nexus' ? 6 : 4),
+    roster: BASE_ROSTER.slice(0, 4),
   })),
-);
+  ...[2, 3, 4, 5, 6].flatMap((players) =>
+    (['basic', 'advanced'] as const).map((rules, index) => ({
+      ordinal: players === 6 ? 38 + index : 40 + (players - 2) * 2 + index,
+      profile: 'nexus' as const,
+      rules,
+      expansions: [],
+      roster: BASE_ROSTER.slice(0, players),
+    })),
+  ),
+];
 
 
 const MORITANI_SKILLS_ROSTER: readonly FactionId[] = [
@@ -186,7 +195,7 @@ function usage() {
     '[--seed UINT32] [--profile all|base|choam|ecaz|combined|homeworld|nexus|moritani-skills|tleilaxu-skills|ix-skills|choam-skills] ' +
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
-    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base and skill profiles default to their 2–6-player samples. Homeworld uses four base factions; Nexus uses all six. --players requires --profile base or a skill profile. Output must be a new private directory outside the checkout.'
+    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base, Nexus and skill profiles default to their 2–6-player samples. Homeworld uses four base factions. --players requires --profile base, nexus or a skill profile. Output must be a new private directory outside the checkout.'
   );
 }
 
@@ -217,7 +226,7 @@ function positive(value: string | undefined) {
 }
 
 function scenarioName(scenario: Scenario) {
-  return scenario.profile === 'base' || skillProfile(scenario.profile)
+  return scenario.profile === 'base' || scenario.profile === 'nexus' || skillProfile(scenario.profile)
     ? `${scenario.profile}-${scenario.roster.length}-${scenario.rules}`
     : `${scenario.profile}-${scenario.rules}`;
 }
@@ -529,8 +538,8 @@ async function main() {
   const profile = parseProfile(values.profile);
   const rules = parseRules(values.rules);
   const players = parsePlayers(values.players);
-  if (supplied('players') && profile !== 'base' && !skillProfile(profile))
-    throw new Error('--players requires --profile base, moritani-skills, tleilaxu-skills, ix-skills or choam-skills.');
+  if (supplied('players') && profile !== 'base' && profile !== 'nexus' && !skillProfile(profile))
+    throw new Error('--players requires --profile base, nexus or a skill profile.');
   if (skillProfile(profile) && rules === 'advanced')
     throw new Error('Expansion Leader Skills profiles currently support only Basic samples.');
   const resume = values.resume ? resumedGame(values.resume) : null;

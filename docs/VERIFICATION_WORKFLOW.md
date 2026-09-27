@@ -97,29 +97,36 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-moritani-skills --p
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-tleilaxu-skills --profile tleilaxu-skills
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-base-three --profile base --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined --profile combined --rules advanced --seed 20260926
-# Homeworld (four base factions) and Nexus (six), Basic and Advanced.
+# Homeworld (four base factions) and Nexus (two through six), Basic and Advanced.
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-homeworld --profile homeworld
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-nexus --profile nexus
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-nexus-three --profile nexus --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json
 ```
 
 Default and `--profile all` retain the original six fixed CHOAM/Richese,
 Ecaz/Moritani and combined Basic/Advanced samples. `--profile base` selects ten
 additional samples: Basic and Advanced with two through six players.
-`--players 2..6` narrows only that base profile; omission or `all` retains all
-five counts. The fixed base roster adds Atreides, Harkonnen, Fremen, Emperor,
-Guild and Bene Gesserit in that order. These are sample rosters, not an assertion
-that these are the only rules-permitted player-count configurations. The
-`homeworld` profile runs four base factions; `nexus` runs all six, each under Basic
-and Advanced using the actual optional-module setup seams. They do not open
-public module starts or assert complete module interaction coverage.
+`--players 2..6` narrows the base or Nexus profile; omission or `all` retains
+all five counts. The fixed base roster adds Atreides, Harkonnen, Fremen,
+Emperor, Guild and Bene Gesserit in that order. These are sample rosters, not
+an assertion that these are the only rules-permitted player-count
+configurations. The `homeworld` profile runs four base factions; `nexus` runs
+two through six, each under Basic and Advanced using the actual
+optional-module setup seams. Nexus output names include the player count;
+the six-seat random seed offsets remain 38–39, and smaller rosters use 40–47.
+They do not open public module starts or assert complete module interaction
+coverage.
 
 All-AI Nexus samples now make public reciprocal offers as well as accepting
 them, so an actual alliance can form without a human proposer. At the
 20260927 seed, each six-seat sample made six alliance actions and completed;
-all six seats paired, leaving no unallied Nexus Card recipient. The focused
-Nexus alliance regression exercises the subsequent draw when a seat remains
-unallied. These samples do not establish complete card-effect coverage.
+no Nexus Card choice occurred at those tables. The two-to-six-seat matrix
+completed without rejected actions and with JSON restores throughout; the
+three-seat Advanced sample and five-seat Basic sample reached actual
+`nexusCardChoice` actions. The focused Nexus alliance regression exercises
+the subsequent draw when a seat remains unallied. These samples do not
+establish complete card-effect coverage.
 
 `--profile moritani-skills` adds five Basic samples with Moritani, then Emperor,
 Guild, Harkonnen, Fremen and Bene Gesserit. `--players` also narrows this profile;

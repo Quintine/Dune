@@ -180,15 +180,17 @@ void test('Homeworld and Nexus sample snapshots resume only their matching modul
     ['nexus', 39, 'nexusCards', 'homeworlds'],
   ] as const) {
     const out = join(area, profile);
-    assert.equal(run(out, '--profile', profile, '--rules', 'advanced', '--seed', '1000', '--max-actions', '1').status, 1);
-    assertFailedEvidence(out, `${profile}-advanced`, 1000 + ordinal, false);
-    const snapshot = join(out, `failed-${profile}-advanced.json`);
+    const name = profile === 'nexus' ? 'nexus-6-advanced' : 'homeworld-advanced';
+    const playerFilter = profile === 'nexus' ? ['--players', '6'] : [];
+    assert.equal(run(out, '--profile', profile, '--rules', 'advanced', ...playerFilter, '--seed', '1000', '--max-actions', '1').status, 1);
+    assertFailedEvidence(out, name, 1000 + ordinal, false);
+    const snapshot = join(out, `failed-${name}.json`);
     const game = json<Record<string, unknown>>(snapshot);
     assert.ok(game[module], `${profile} module remains in the snapshot`);
     assert.equal(Boolean(game[other]), false);
     const resumed = join(area, `${profile}-resumed`);
     assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
-    assertFailedEvidence(resumed, `${profile}-advanced`, 1000 + ordinal, true);
+    assertFailedEvidence(resumed, name, 1000 + ordinal, true);
     const unsupported = join(area, `${profile}-combined.json`);
     writeFileSync(unsupported, JSON.stringify({ ...game, [other]: game[module] }), { mode: 0o600 });
     const refused = join(area, `${profile}-refused`);
@@ -196,6 +198,40 @@ void test('Homeworld and Nexus sample snapshots resume only their matching modul
     assert.equal(result.status, 1);
     assert.equal(existsSync(refused), false);
   }
+});
+
+void test('three-seat Nexus samples preserve their module and roster across saved continuation', (t) => {
+  const area = temporary(t);
+  for (const [rules, ordinal] of [['basic', 42], ['advanced', 43]] as const) {
+    const out = join(area, rules);
+    const initial = run(out, '--profile', 'nexus', '--players', '3', '--rules', rules, '--seed', '1000', '--max-actions', '1');
+    assert.equal(initial.status, 1);
+    assertFailedEvidence(out, `nexus-3-${rules}`, 1000 + ordinal, false);
+    const snapshot = join(out, `failed-nexus-3-${rules}.json`);
+    const game = json<{ players: unknown[]; nexusCards: unknown }>(snapshot);
+    assert.equal(game.players.length, 3);
+    assert.ok(game.nexusCards);
+    const resumed = join(area, `${rules}-resumed`);
+    assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+    assertFailedEvidence(resumed, `nexus-3-${rules}`, 1000 + ordinal, true);
+  }
+});
+
+void test('a genuine three-seat Advanced Nexus game reaches unallied card choice and completes without illegal bot actions', (t) => {
+  const out = join(temporary(t), 'card-draw');
+  const result = run(out, '--profile', 'nexus', '--players', '3', '--rules', 'advanced', '--seed', '20260927');
+  assert.equal(result.status, 0, result.stderr);
+  const report = json<CliReport>(join(out, 'report.json'));
+  const evidence = json<{ results: (CliResult & {
+    used: Record<string, number>;
+    rejected: Record<string, number>;
+    restores: number;
+  })[] }>(join(out, 'results.json')).results[0];
+  assert.equal(report.status, 'passed');
+  assert.equal(evidence.outcome, 'complete');
+  assert.ok(evidence.used.nexusCardChoice > 0);
+  assert.deepEqual(evidence.rejected, {});
+  assert.ok(evidence.restores > 0);
 });
 
 void test('selected genuine three-player Advanced base sample fails honestly, resumes its fixed snapshot and keeps source-bound private evidence', (t) => {
