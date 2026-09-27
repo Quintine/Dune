@@ -2802,10 +2802,19 @@ function policyActions(g: GameView): Action[] {
       if (card) return [{ type: 'card', card: card.id }];
     }
     if (g.nexus && !g.spiceWindow && !me.ally) {
-      const offer = Object.entries(g.allianceOffers).find(
-        ([id, target]) => id !== me.id && target === me.id && !g.homeworldAllianceBlocks?.[id],
+      const offer = g.players.find(
+        (player) => player.id !== me.id &&
+          g.allianceOffers[player.id] === me.id &&
+          !g.homeworldAllianceBlocks?.[player.id],
       );
-      if (offer && level > 0) return [{ type: 'alliance', target: offer[0] }];
+      if (offer) return [{ type: 'alliance', target: offer.id }];
+      if (level > 0 && !g.ready.includes(me.id) && !g.allianceOffers[me.id]) {
+        const target = g.players.find(
+          (player) => player.id !== me.id &&
+            !player.ally && !g.homeworldAllianceBlocks?.[player.id],
+        );
+        if (target) return [{ type: 'alliance', target: target.id }];
+      }
     }
     return g.ready.includes(me.id) ? [] : [{ type: 'ready' }];
   }

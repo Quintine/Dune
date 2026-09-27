@@ -114,6 +114,13 @@ that these are the only rules-permitted player-count configurations. The
 and Advanced using the actual optional-module setup seams. They do not open
 public module starts or assert complete module interaction coverage.
 
+All-AI Nexus samples now make public reciprocal offers as well as accepting
+them, so an actual alliance can form without a human proposer. At the
+20260927 seed, each six-seat sample made six alliance actions and completed;
+all six seats paired, leaving no unallied Nexus Card recipient. The focused
+Nexus alliance regression exercises the subsequent draw when a seat remains
+unallied. These samples do not establish complete card-effect coverage.
+
 `--profile moritani-skills` adds five Basic samples with Moritani, then Emperor,
 Guild, Harkonnen, Fremen and Bene Gesserit. `--players` also narrows this profile;
 Advanced requests fail before running. Its seed offsets are 16–20, leaving

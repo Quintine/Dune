@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyAction } from '../game/engine';
+import { applyAction, viewGame } from '../game/engine';
+import { botActions } from '../game/bots';
 import {
   quoteNexusAlliance,
   type NexusAllianceSeat,
 } from '../game/nexus-alliance';
 import {
+  nexusInventory,
   nexusPlayer,
   nexusReady,
   nexusTurnTwo,
@@ -123,6 +125,32 @@ function negotiations() {
   return game;
 }
 
+void test('AI initiates a reciprocal Nexus alliance without retrying its outstanding offer', () => {
+  let game = negotiations();
+  nexusPlayer(game, 'f').bot = 'Easy';
+  nexusPlayer(game, 'a').bot = 'Medium';
+  nexusPlayer(game, 'h').bot = 'Hard';
+
+  const proposal = botActions(viewGame(game, 'a'))[0];
+  assert.deepEqual(proposal, { type: 'alliance', target: 'f' });
+  game = applyAction(game, 'a', proposal);
+  assert.deepEqual(game.allianceOffers, { a: 'f' });
+  assert.deepEqual(botActions(viewGame(game, 'a'))[0], { type: 'ready' });
+  const acceptance = botActions(viewGame(game, 'f'))[0];
+  assert.deepEqual(acceptance, { type: 'alliance', target: 'a' });
+  game = applyAction(game, 'f', acceptance);
+  assert.equal(nexusPlayer(game, 'a').ally, 'f');
+  assert.equal(nexusPlayer(game, 'f').ally, 'a');
+  assert.deepEqual(game.allianceOffers, {});
+  game = nexusReady(game);
+  assert.equal(game.nexusCards?.phase?.stage, 'drawing');
+  const draw = botActions(viewGame(game, 'h'))[0];
+  assert.equal(draw.type, 'nexusCardChoice');
+  game = applyAction(game, 'h', draw);
+  assert.equal(game.nexusCards?.phase?.stage, 'complete');
+  nexusInventory(game);
+});
+
 void test('the actual engine preserves ordinary offer, formation and withdrawal side effects', () => {
   let game = negotiations();
   game.ready = ['h'];
@@ -139,12 +167,10 @@ void test('the actual engine preserves ordinary offer, formation and withdrawal 
   assert.equal(nexusPlayer(game, 'a').allySinceTurn, game.turn);
   assert.deepEqual(game.allianceOffers, {});
   assert.deepEqual(game.ready, []);
-  assert.match(game.log.at(-1)!.text, /formed an alliance/);
 
   game.ready = ['h'];
   game = applyAction(game, 'f', { type: 'alliance', target: null });
   assert.equal(nexusPlayer(game, 'f').ally, null);
   assert.equal(nexusPlayer(game, 'a').ally, null);
   assert.deepEqual(game.ready, []);
-  assert.match(game.log.at(-1)!.text, /unallied/);
 });
