@@ -1422,6 +1422,8 @@ function policyActions(g: GameView): Action[] {
   }
   if (g.nexusEmperorBetrayal)
     return [{ type: 'nexusEmperorBetrayal', event: g.nexusEmperorBetrayal.event }];
+  if (g.nexusBgBetrayal)
+    return [{ type: 'nexusBgBetrayal', event: g.nexusBgBetrayal.event }];
   if (g.response) {
     const benefitEnemy =
       g.response.owner !== me.id && g.response.owner !== me.ally;
@@ -1473,9 +1475,11 @@ function policyActions(g: GameView): Action[] {
               g.response.intent === 'double'))))
     )
       return [{ type: 'card', card: card.id, mode: 'cancel' }];
-    if (g.response.kind === 'eliteStrength' && g.nexusCards &&
-        g.players.some((player) => player.id === g.response!.owner && player.faction === 'emperor') &&
-        !g.responseControls?.hasPassed)
+    if (g.nexusCards && !g.responseControls?.hasPassed &&
+        ((g.response.kind === 'eliteStrength' &&
+          g.players.some((player) => player.id === g.response!.owner && player.faction === 'emperor')) ||
+         (g.response.kind === 'voice' &&
+          g.players.some((player) => player.id === g.response!.owner && player.faction === 'beneGesserit'))))
       return [{ type: 'passResponse' }];
     return !g.responseControls?.cancelCards.length ||
       g.responseControls.hasPassed

@@ -39,6 +39,24 @@ These are implementation consequences, not additional publisher quotations:
 - Secret Ally supplies one Voice in one owned battle and spends the card. It does not grant Voice in another faction's battle or future battles. Reuse native command classification, compliance, compulsory-card logic and existing promise validation; do not expose whether the opponent privately holds a matching card.
 - Bind Voice to its original battle, owner, target and command. Close the opportunity before either Prescience or sealed plans make the command late. Native and Nexus inspections must share that boundary; this is consistent timing composition for Atreides Secret Ally, not a separately printed FAQ answer.
 
+## Bounded Betrayal Voice reaction
+
+The implemented native-Voice reaction opens the existing `voice` response to
+every seat whenever Nexus cards are enabled, even when nobody has Karama or
+the Bene Gesserit card. This fixed public timing does not identify a secret
+holder. An unallied non-BG holder may spend that one physical card against a
+current BG Voice before plans are sealed. The native combat response quote
+removes only the Voice; any already selected Prescience preparation and
+unchanged plan promises continue. The spent-card battle receipt, private
+holder offer and exact response survive JSON and room recovery; other seats
+see the public response but not who holds the card. Bot profiles play or pass
+their own reaction. An active Truthtrance or unfinished private Harkonnen
+Nexus Traitor return suspends the offer until that interaction finishes.
+
+This does not grant absent-BG Secret Ally Voice or change Cunning's advisor
+conversion. Basic and Advanced retain their native Voice legality; the
+optional Nexus module still cannot start as a complete public mode.
+
 ## Material boundaries requiring a ruling
 
 No retrieved primary clarification resolves these specific combinations. Do not silently broaden permission or describe a conservative block as the printed rule.
@@ -47,10 +65,10 @@ No retrieved primary clarification resolves these specific combinations. Do not 
 2. **Storm:** does Cunning allow an in-place flip in a storm-locked stronghold? The FAQ's prohibition explicitly addresses the earlier ordinary Battle flip; its rationale concerns inability to battle. Applying it to this later card is plausible, not explicit.
 3. **Borrowed Voice and Karama:** the card expressly grants a named advantage, while the normal native owner is absent. E3's secret-alliance terminology and the general alliance-cancellation rule support cancellation; absence of a native BG owner supports the opposite reading used for Atreides' differently worded effect. No retrieved Nexus FAQ selects one. Do not copy that earlier implementation choice as authority.
 
-The existing Betrayal response-privacy question remains pending; this audit adds no duplicate user question. It likewise does not settle historical Homeworld occupation ownership. Ordinary unoccupied, older, storm-free advisor groups are a clear selection subset, but broader claims must retain the boundaries above.
+The remaining private-reaction policy question applies to other hidden effects; the bounded Voice Betrayal path uses a uniform native response. This audit likewise does not settle historical Homeworld occupation ownership. Ordinary unoccupied, older, storm-free advisor groups are a clear selection subset, but broader claims retain the boundaries above.
 
 ## Suggested state and verification contract
 
 Keep stance choices public and event-bound: owner, turn, own-action identity, selected territory IDs, original counts/stances and settled/canceled result. A retry must not flip twice or consume a second card. For borrowed Voice, keep source and receipt separate from native ability ownership, with cancellation behavior dependent on the unresolved ruling.
 
-Exercise multi-territory and multi-sector selections, current-owner timing, conserved counters, Basic absence, occupied strongholds, No-Field getter traps, stale selection and saved continuations. Voice tests should cover generic and named special commands, impossible compliance, prior inspection, sealed plans, private hand permutation and bot actions using only projected choices. No runtime was changed by this audit.
+Exercise multi-territory and multi-sector selections, current-owner timing, conserved counters, Basic absence, occupied strongholds, No-Field getter traps, stale selection and saved continuations. Borrowed Voice still needs generic and named special-command, impossible-compliance, prior-inspection, sealed-plan and private-hand-permutation checks before implementation.

@@ -158,6 +158,19 @@ export function NexusCards({ game, act, busy }: { game: GameView; act: (action: 
           </Button>
         </div>
       )}
+      {game.nexusBgBetrayal && offer.card === 'beneGesserit' && (
+        <div aria-label="Bene Gesserit Nexus Betrayal" className="space-y-2">
+          <h4>Bene Gesserit Betrayal · Voice</h4>
+          <p className="fine">
+            Spend your Nexus card to prevent this declared Voice before battle
+            plans are sealed. Prescience and other battle powers still proceed.
+          </p>
+          <Button className="game-action min-h-11 whitespace-normal" disabled={busy}
+            onClick={() => act({ type: 'nexusBgBetrayal', event: game.nexusBgBetrayal!.event })}>
+            Prevent Voice with Betrayal
+          </Button>
+        </div>
+      )}
       <NexusEmperorSecretAlly game={game} act={act} busy={busy} />
       <NexusFremenRevival game={game} act={act} busy={busy} />
       <div aria-label="Your private Nexus card" className="max-w-xl">

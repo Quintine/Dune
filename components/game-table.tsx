@@ -2163,6 +2163,14 @@ export function GameTable({
                     A private Emperor Nexus Betrayal may suppress it without moving starred forces.
                   </p>
                 )}
+              {g.response.kind === 'voice' &&
+                g.nexusCards &&
+                g.players.some((player) => player.id === g.response?.owner && player.faction === 'beneGesserit') && (
+                  <p className="notice">
+                    Every seat may respond to this Voice before plans are sealed.
+                    A private Bene Gesserit Nexus Betrayal may prevent it.
+                  </p>
+                )}
               {g.response.kind === 'revivalIncome' &&
                 g.response.amount !== undefined && (
                   <p className="notice">
@@ -2214,8 +2222,12 @@ export function GameTable({
                   </Button>
                 ))}
               {(g.responseControls?.cancelCards.length ||
-                (g.response.kind === 'eliteStrength' && g.nexusCards &&
-                  g.players.some((player) => player.id === g.response?.owner && player.faction === 'emperor'))) &&
+                (g.nexusCards && (
+                  (g.response.kind === 'eliteStrength' &&
+                    g.players.some((player) => player.id === g.response?.owner && player.faction === 'emperor')) ||
+                  (g.response.kind === 'voice' &&
+                    g.players.some((player) => player.id === g.response?.owner && player.faction === 'beneGesserit'))
+                ))) &&
               !g.responseControls?.hasPassed ? (
                 actionButton('Allow this power', { type: 'passResponse' })
               ) : (
