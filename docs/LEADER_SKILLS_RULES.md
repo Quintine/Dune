@@ -184,6 +184,24 @@ designer expressly presents the latter as useful to Fremen, but does not
 publish a general stacking order for every expansion movement modifier
 ([designer example, 19:13](https://www.youtube.com/watch?v=XT_azRVLq_0&t=1153s)).
 
+### Bounded Diplomat retreat interpretation
+
+A 27 September 2026 online check of the [publisher's CHOAM & Richese
+rulebook](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf),
+the [designer's walkthrough](https://www.youtube.com/watch?v=XT_azRVLq_0&t=851s)
+and the independent [Landsraad tournament reference](https://www.landsraad-vegas.com/rules)
+did not establish a publisher/designer priority ruling for modified strength
+or the precise casualty order. The publisher's old PDF URL currently redirects
+to its store; the sourced printed-card paraphrase above remains the authority.
+For the playable standalone Leader Skills profile, use the selected disc's
+printed value (Zoal copies the opposing disc), not battle bonuses. Resolve
+weapons and leader survival first; a surviving losing trained leader may then
+move up to that cap in undialed physical counters before the remaining loser
+forces go to the Tanks. A dead leader, traitor loss or explosion cannot retreat.
+This is an explicit conservative implementation interpretation, not a quoted
+FAQ answer. Legacy battles, other optional modules and modified-skill
+interactions retain their existing gates.
+
 ## 20 September Smuggler follow-up
 
 A bounded renewed check of the GF9 CHOAM & Richese rules/Q&A, the

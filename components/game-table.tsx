@@ -180,6 +180,7 @@ import { canUsePlanetologistBattleSpecial } from '../game/leader-skill-combat';
 import type { Card } from '../game/cards';
 import { RevealedBattle } from './revealed-battle';
 import { DiplomatDefense } from './diplomat-defense';
+import { DiplomatRetreat } from './diplomat-retreat';
 import { EliteCount } from './elite-count';
 import { HelpTip } from './help-tip';
 import { PHASE_HELP, phaseRuleId } from '@/game/reference';
@@ -2272,6 +2273,8 @@ export function GameTable({
                     ? 'Save your battle casualties'
                   : g.decision.kind === 'harassWithdraw'
                     ? 'Choose undialed forces to return'
+                  : g.decision.kind === 'diplomatRetreat'
+                    ? 'Retreat undialed forces'
                   : g.decision.kind === 'diplomatDefense'
                     ? 'Copy an opposing defense'
                   : g.decision.kind === 'homeworldRevivalDeployment'
@@ -2702,6 +2705,8 @@ export function GameTable({
                 <>
                   <HarassWithdrawChoice key={g.decision.event} game={g} act={act} busy={busy} />
                 </>
+              ) : g.decision.kind === 'diplomatRetreat' ? (
+                <DiplomatRetreat key={g.decision.event} game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'diplomatDefense' ? (
                 <>
                   <DiplomatDefense game={g} act={act} busy={busy} />

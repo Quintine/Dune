@@ -12,6 +12,7 @@ const DECISIONS = {
   sukRescue: true,
   rihani: true,
   diplomatDefense: true,
+  diplomatRetreat: true,
   harassWithdraw: true,
   choamAudit: true,
   choamAuditPayment: true,

@@ -33,6 +33,13 @@ Each pushed application checkpoint also needs a separate live deployment; a
 successful GitHub container publication alone is not a deployment. Follow
 [the manual TrueNAS update](TRUENAS.md#applying-an-update) only after the image
 passes CI, the persistent volume is backed up and play reaches a safe point.
+
+For subsequent checkpoints, delegate the NAS Apps update and live verification
+to a dedicated deployment agent while the integration owner continues other
+work. Supply the exact successful immutable image tag; the agent changes only
+the `dune` app in Apps, retains its `/data` volume, and reports the displayed
+revision and saved-room continuity before the checkpoint is called deployed.
+
 If access, the backup or a safe point is missing, report the push as **not
 deployed** and keep its production verification open rather than claiming the
 Git revision label matches the pushed commit.

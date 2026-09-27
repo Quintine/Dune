@@ -21,6 +21,7 @@ import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterRouteDis
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
+import { diplomatRetreatChoices, type DiplomatRetreatSelection, type DiplomatRetreatDestination } from './diplomat-retreat';
 import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair } from './battle-card-slots';
 import { HARASS_WITHDRAW_CARD, HarassWithdrawError, isHarassWithdraw, quoteHarassWithdraw, defaultHarassWithdrawAllocation, harassWithdrawNeedsAllocation, type HarassWithdrawSelection, type HarassWithdrawContext, type HarassWithdrawPreview } from './harass-withdraw';
@@ -295,6 +296,7 @@ import {
   quoteBattleResolution,
   BattleResolutionQuoteError,
   type ResolutionCombatant,
+  type BattleResolutionQuote,
 } from './battle-resolution-quote';
 import {
   quoteRevivalCancellation,
@@ -540,6 +542,7 @@ import {
 import {
   TERRITORIES,
   MOBILE_STRONGHOLD,
+  MOBILE_LOCATION,
   gameTerritories,
   gameDistance,
   mobileRouteDistance,
@@ -651,6 +654,12 @@ export type Battle = {
   diplomatDefenseVersion?: 1;
   diplomatDefenseEvent?: string;
   diplomatDefense?: DiplomatDefenseReceipt;
+  /** New battles may pause after the outcome is known, before loser losses. */
+  diplomatRetreatVersion?: 1;
+  diplomatRetreat?: {
+    player: string; event: string; battle: string; turn: number; frame: string;
+    destinations: DiplomatRetreatDestination[];
+  };
   /** Public face-up/behind-shield choice precedes faction battle powers. */
   leaderSkillHidden?: Record<string, boolean>;
   nexusInspection?: NexusInspection;
@@ -713,6 +722,7 @@ export type Auction = {
 export type Decision =
   | { kind: 'harassWithdraw'; player: string; event: string }
   | { kind: 'diplomatDefense'; player: string; event: string; cards: string[]; source: string }
+  | { kind: 'diplomatRetreat'; player: string; event: string; destinations: DiplomatRetreatDestination[] }
   | { kind: 'leaderSkillVisibility'; player: string; event: string; resumePowers?: boolean }
   | { kind: 'leaderSkillRevival'; player: string; event: string }
   | { kind: 'homeworldRevivalDeployment'; player: string; event: string }
@@ -5796,6 +5806,7 @@ function leaderSkillsIntegrity(g: Game) {
   bureaucratPaymentIntegrity(g);
   mentatQuestionIntegrity(g);
   diplomatDefenseIntegrity(g);
+  diplomatRetreatIntegrity(g);
   harassAllocationIntegrity(g);
   const noFieldShipment = leaderSkillNoFieldIntegrity(g);
   sandmasterIntegrity(g);
@@ -16192,7 +16203,7 @@ function advanceHomeworldReveal(g: Game): boolean {
   if (owner) {
     requireRule(b.event, 'The Homeworld defense opportunity needs its battle event.');
     g.decision = {kind: 'homeworldDefense', player: owner, event: b.event};
-  } else resolveBattle(g);
+  } else advanceBattleOutcome(g);
   return true;
 }
 function traitorVoters(g: Game, b: Battle) {
@@ -16352,8 +16363,89 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
     throw error;
   }
 }
-function resolveBattle(g: Game) {
+function diplomatRetreatBlocked(g: Game, key: string) {
+  const sector = key === MOBILE_LOCATION ? splitLocation(g.mobileStronghold?.location ?? '').sector
+    : splitLocation(key).sector;
+  return sector > 0 && sector === g.storm;
+}
+function diplomatRetreatOffer(g: Game, quote: BattleResolutionQuote) {
   const b = g.battle!;
+  if (b.diplomatRetreatVersion !== 1 || quote.result !== 'normal' || !quote.winner ||
+      b.territory.startsWith('homeworld:')) return null;
+  const player = quote.winner === b.attacker ? b.defender : b.attacker;
+  const p = getPlayer(g, player);
+  const plan = b.plans[player];
+  const leader = controlledLeaders(g, p).find(candidate => candidate.id === plan.leader && !candidate.dead);
+  if (!leader || (player === b.attacker ? quote.leaderDeaths.attacker : quote.leaderDeaths.defender) ||
+      !battleLeaderSkills(g, p).some(skill => skill.skill === 'diplomat' && skill.leader === leader.id &&
+        (!skill.faceUp || skill.captured)) || p.noField?.deployed?.location.territory === b.territory) return null;
+  const opponent = getPlayer(g, quote.winner);
+  const forces = combatForces(g, p, b.territory, opponent);
+  const strength = battleLeaderStrength(leader,
+    controlledLeaders(g, opponent).find(candidate => candidate.id === b.plans[opponent.id].leader));
+  const origins = Object.entries(p.forces).filter(([key, count]) =>
+    count > 0 && splitLocation(key).territory === b.territory);
+  const destinations = TERRITORIES.filter(candidate => candidate.type !== 'stronghold' &&
+    candidate.id !== b.territory &&
+    !g.players.some(side => Object.entries(side.forces).some(([key, count]) =>
+      count > 0 && splitLocation(key).territory === candidate.id)))
+    .flatMap(candidate => candidate.sectors.map(sector => location(candidate.id, sector)))
+    .sort()
+    .map(key => {
+      const available = origins.reduce((sum, [origin, count]) => {
+        if (gameDistance(g, origin, key, candidate => diplomatRetreatBlocked(g, candidate)) !== 1) return sum;
+        const elite = p.elites?.forces[origin] ?? 0;
+        return { normal: sum.normal + count - elite, elite: sum.elite + elite };
+      }, { normal: 0, elite: 0 });
+      return { location: key, choices: diplomatRetreatChoices(forces, plan.dial, plan.support, strength, available) };
+    })
+    .filter(option => option.choices.length);
+  return destinations.length ? { player, destinations } : null;
+}
+function diplomatRetreatFrame(g: Game) {
+  const b = g.battle!;
+  return JSON.stringify({ battle: b.event, turn: g.turn, territory: b.territory,
+    plans: b.plans, hidden: b.leaderSkillHidden, traitors: b.traitorCalls,
+    forces: g.players.map(p => [p.id, p.forces, p.elites?.forces]),
+    skills: g.leaderSkills?.assignments, storm: g.storm });
+}
+function diplomatRetreatIntegrity(g: Game) {
+  const b = g.battle, receipt = b?.diplomatRetreat;
+  const decision = g.decision;
+  if (!receipt) {
+    requireRule(decision?.kind !== 'diplomatRetreat', 'The Diplomat retreat lost its battle.');
+    return;
+  }
+  requireRule(b?.diplomatRetreatVersion === 1 && g.status === 'playing' && g.phase === 6 &&
+    b.revealed && b.event === receipt.battle && g.turn === receipt.turn &&
+    receipt.event && receipt.frame === diplomatRetreatFrame(g) &&
+    JSON.stringify(diplomatRetreatOffer(g, currentBattleResolutionQuote(g))) ===
+      JSON.stringify({ player: receipt.player, destinations: receipt.destinations }) &&
+    decision?.kind === 'diplomatRetreat' && decision.event === receipt.event &&
+    decision.player === receipt.player &&
+    JSON.stringify(decision.destinations) === JSON.stringify(receipt.destinations),
+    'The saved Diplomat retreat changed its battle, forces, outcome or legal destinations.');
+}
+function advanceBattleOutcome(g: Game) {
+  const b = g.battle!;
+  if (b.diplomatRetreatVersion !== 1 || ![b.attacker, b.defender].some(id =>
+    battleLeaderSkills(g, getPlayer(g, id)).some(skill => skill.skill === 'diplomat' &&
+      b.plans[id].leader === skill.leader && (!skill.faceUp || skill.captured)))) {
+    resolveBattle(g);
+    return;
+  }
+  const offer = diplomatRetreatOffer(g, currentBattleResolutionQuote(g));
+  if (!offer) { resolveBattle(g); return; }
+  requireRule(b.event && !b.diplomatRetreat, 'The Diplomat retreat needs one current battle.');
+  const event = crypto.randomUUID();
+  b.diplomatRetreat = { ...offer, event, battle: b.event, turn: g.turn, frame: diplomatRetreatFrame(g) };
+  g.decision = { kind: 'diplomatRetreat', event, ...offer };
+  log(g, `${getPlayer(g, offer.player).name} may retreat surviving undialed forces with Diplomat before battle losses.`,
+    { faction: getPlayer(g, offer.player).faction, name: 'Diplomat retreat' });
+}
+function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
+  const b = g.battle!;
+  requireRule(!!b.diplomatRetreat === !!retreat, 'Resolve the pending Diplomat retreat before battle losses.');
   const quote = currentBattleResolutionQuote(g);
   const a = getPlayer(g, b.attacker),
     d = getPlayer(g, b.defender),
@@ -16522,6 +16614,30 @@ function resolveBattle(g: Game) {
           log(g, `${player.name} gained ${bonus.amount} battle strength from ${leaderSkillCard(bonus.skill).name}${bonus.mode === 'normal' ? ' while their skilled leader remained face up' : ' by using their surviving skilled leader'}.`, {faction:player.faction,name:'Leader Skill'});
     const loser = winner === a ? d : a;
     if (quote.bounty) winner!.spice += quote.bounty.amount;
+    if (retreat?.destination) {
+      let normal = retreat.normal, elite = retreat.elite;
+      for (const key of Object.keys(loser.forces).sort()) {
+        if (splitLocation(key).territory !== b.territory || (!normal && !elite) ||
+            gameDistance(g, key, retreat.destination, candidate => diplomatRetreatBlocked(g, candidate)) !== 1) continue;
+        const availableElite = loser.elites?.forces[key] ?? 0;
+        const takenNormal = Math.min(normal, loser.forces[key] - availableElite);
+        const takenElite = Math.min(elite, availableElite);
+        loser.forces[key] -= takenNormal + takenElite;
+        if (!loser.forces[key]) delete loser.forces[key];
+        if (takenElite && loser.elites) {
+          loser.elites.forces[key] -= takenElite;
+          if (!loser.elites.forces[key]) delete loser.elites.forces[key];
+        }
+        normal -= takenNormal; elite -= takenElite;
+      }
+      requireRule(!normal && !elite, 'The Diplomat retreat lost its undialed physical counters.');
+      loser.forces[retreat.destination] = (loser.forces[retreat.destination] ?? 0) + retreat.normal + retreat.elite;
+      if (retreat.elite && loser.elites)
+        loser.elites.forces[retreat.destination] = (loser.elites.forces[retreat.destination] ?? 0) + retreat.elite;
+      log(g, `${loser.name} retreated ${retreat.normal} normal and ${retreat.elite} elite undialed forces with Diplomat to ${territory(splitLocation(retreat.destination).territory).name}.`,
+        { faction: loser.faction, name: 'Diplomat retreat' });
+      observeOccupation(g);
+    }
     killTerritory(g, loser, b.territory, Infinity, true);
     observeOccupation(g);
     if (quote.basicWinnerLosses !== null)
@@ -19079,7 +19195,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     if (
       traitorVoters(g, b).every((voter) => b.traitorCalls[voter] !== undefined)
     )
-      resolveBattle(g);
+      advanceBattleOutcome(g);
   } else if (response.kind === 'richesePurchaseIncome') {
     const pending = g.pendingRichesePurchaseIncome;
     requireRule(
@@ -22708,6 +22824,20 @@ function applyActionInner(
       if (harkonnen) returnCaptives(g, harkonnen);
       settleAdvisors(g);
       finishBattle(g);
+    } else if (decision.kind === 'diplomatRetreat') {
+      const receipt = g.battle?.diplomatRetreat;
+      const destination = action.destination;
+      const normal = action.normal, elite = action.elite;
+      requireRule(Object.keys(action).every(key => ['type', 'event', 'destination', 'normal', 'elite'].includes(key)) &&
+        receipt?.event === decision.event && action.event === decision.event && receipt.player === id &&
+        (destination === null && normal === 0 && elite === 0 ||
+          typeof destination === 'string' && receipt.destinations.some(option => option.location === destination &&
+            option.choices.some(choice => choice.normal === normal && choice.elite === elite))),
+        'Choose a legal empty adjacent territory and undialed force count, or decline this Diplomat retreat.');
+      g.decision = null;
+      if (destination === null)
+        log(g, `${p.name} declined the Diplomat retreat.`, { faction: p.faction, name: 'Diplomat retreat' });
+      resolveBattle(g, { destination: destination as string | null, normal: normal as number, elite: elite as number });
     } else if (decision.kind === 'harassWithdraw') {
       const receipt = g.battle?.harassAllocation, offer = harassAllocationOffer(g);
       requireRule(Object.keys(action).every(key => ['type', 'event', 'returns'].includes(key)) &&
@@ -24916,6 +25046,7 @@ function applyActionInner(
       ...(g.leaderSkills ? { smugglerCollectionVersion: 1 as const } : {}),
       ...(g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
       ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 1 as const } : {}),
+      ...(g.leaderSkills && ordinaryLeaderSkillModeSupported(g) ? { diplomatRetreatVersion: 1 as const } : {}),
       ...(g.ecazTreachery ? { harassAllocationVersion: 1 as const } : {}),
       ...(byFaction(g, 'richese')
         ? { preLeader: { event: battleEvent, ready: [], closed: false } }
@@ -25149,7 +25280,7 @@ function applyActionInner(
     if (
       traitorVoters(g, b).every((voter) => b.traitorCalls[voter] !== undefined)
     )
-      if (!b.territory.startsWith('homeworld:')) resolveBattle(g);
+      if (!b.territory.startsWith('homeworld:')) advanceBattleOutcome(g);
       else advanceHomeworldReveal(g);
     return g;
   }

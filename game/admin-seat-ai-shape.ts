@@ -25,6 +25,7 @@ const nullableCount = (value: unknown) => value === null || count(value);
 const decisions = {
   harassWithdraw: true,
   diplomatDefense: true,
+  diplomatRetreat: true,
   leaderSkillVisibility: true,
   leaderSkillRevival: true,
   homeworldRevivalDeployment: true,

@@ -72,8 +72,11 @@ income remains missing. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
 now connects its lower band with separate sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).
 [Diplomat defense](DIPLOMAT_DEFENSE.md) connects its normal band for a physical
-Worthless card copying a canonical base Shield or Snooper; the lower retreat
-and modified-defense inheritance remain guarded. [Smuggler battle collection](SMUGGLER_BATTLE.md)
+Worthless card copying a canonical base Shield or Snooper. Its bounded lower
+[retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation) now moves
+selected undialed normal/elite counters to an empty adjacent non-stronghold
+after a surviving trained leader loses. Modified-defense inheritance remains
+guarded. [Smuggler battle collection](SMUGGLER_BATTLE.md)
 now connects reveal-bound, unmodified collection after survival, including
 losers and captives. Modified strength and combined modules remain guarded.
 Planetologist and Suk Graduate have the connected
@@ -88,8 +91,8 @@ The Basic Tleilaxu follow-up now tests response-driven automatic own revival
 continuation; this does not certify Advanced foreign-ghola custody. The other source-contract timing questions also remain
 open. Planetologist now has bounded movement and battle controls as described below.
 Remaining normal-band payments, ordinary Mentat activation, modified Smuggler collection,
-Diplomat retreat and the other guarded skill combinations still need connected
-effects.
+and the other guarded skill combinations still need connected effects. Diplomat
+retreat is a bounded prototype, not a complete simultaneous-effect ruling.
 
 ## Planetologist follow-up
 

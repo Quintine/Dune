@@ -1547,6 +1547,20 @@ function policyActions(g: GameView): Action[] {
         stronghold,
       }));
     }
+    if (d.kind === 'diplomatRetreat') {
+      const destination = d.destinations[0];
+      let choice = destination?.choices[0];
+      for (const candidate of destination?.choices ?? [])
+        if (!choice || candidate.normal + candidate.elite > choice.normal + choice.elite)
+          choice = candidate;
+      return [{
+        type: 'decision',
+        event: d.event,
+        destination: destination && choice ? destination.location : null,
+        normal: choice?.normal ?? 0,
+        elite: choice?.elite ?? 0,
+      }];
+    }
     if (d.kind === 'diplomatDefense') {
       const battle = g.battle;
       const opponent = battle

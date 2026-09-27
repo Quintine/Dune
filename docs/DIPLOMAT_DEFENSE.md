@@ -2,7 +2,8 @@
 
 13 September 2026. **Prototyped**, with **Partial** rules coverage. This connects
 the Diplomat's normal band for canonical base Shield and Snooper defenses only.
-The lower retreat band, combined modules and other defense cards remain
+The lower [retreat prototype](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation)
+is now connected separately; combined modules and other defense cards remain
 unfinished. Public Leader Skills starts and publication remain gated.
 
 ## Source and interpretation
@@ -86,10 +87,11 @@ eligible copy; targeted tests and the browser establish the effect. Required
 broad check results and final saved-game preservation are recorded in the
 checkpoint commit and private source-bound report.
 
-The lower Diplomat retreat remains pending with its recorded strength and
-resolution-order questions. Shield Snooper, Chemistry, defensive Weirding Way,
-Portable Snooper, Carthag-added protection and any future copied or modified
-defense need a separate contract for whether generic roles or named exceptions
-are inherited. Homeworlds, Nexus, Discoveries, Stronghold Cards, Tech Tokens and
-other combined modules remain guarded. These limits preserve the existing
-public gates.
+The bounded [lower retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation)
+now follows a documented conservative strength and outcome order; this does not
+settle a publisher priority ruling. Shield Snooper, Chemistry, defensive
+Weirding Way, Portable Snooper, Carthag-added protection and any future copied
+or modified defense still need a separate contract for whether generic roles or
+named exceptions are inherited. Homeworlds, Nexus, Discoveries, Stronghold
+Cards, Tech Tokens and other combined modules remain guarded. These limits
+preserve the existing public gates.
