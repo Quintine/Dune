@@ -1,8 +1,28 @@
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { sites } from '@openai/sites-vite-plugin';
 import tailwindcss from '@tailwindcss/postcss';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
 import hostingConfig from './.openai/hosting.json';
+
+const fullGitSha = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/i;
+const configuredRevision = process.env.BUILD_REVISION?.trim();
+let buildRevision = 'unavailable';
+if (configuredRevision && fullGitSha.test(configuredRevision)) {
+  buildRevision = configuredRevision;
+} else {
+  try {
+    const checkoutRevision = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: fileURLToPath(new URL('.', import.meta.url)),
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    if (fullGitSha.test(checkoutRevision)) buildRevision = checkoutRevision;
+  } catch {
+    // Container contexts exclude .git; only an explicit workflow SHA can identify them.
+  }
+}
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   '00000000-0000-4000-8000-000000000000';
@@ -45,6 +65,7 @@ export default defineConfig(async () => {
   const { cloudflare } = await import('@cloudflare/vite-plugin');
 
   return {
+    define: { __BUILD_REVISION__: JSON.stringify(buildRevision) },
     css: { postcss: { plugins: [tailwindcss()] } },
     server: {
       watch: {

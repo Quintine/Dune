@@ -24,6 +24,7 @@ export function nexusFixture(
     seatIds?: [string, string, string];
     advanced?: boolean;
     hostFaction?: 'fremen' | 'moritani' | 'ecaz' | 'guild' | 'emperor';
+    secondFaction?: 'atreides' | 'emperor' | 'beneGesserit';
   } = {},
 ): Game {
   const [f, a, h] = options.seatIds ?? ['f', 'a', 'h'];
@@ -37,7 +38,9 @@ export function nexusFixture(
     options.advanced ?? false,
     [],
   );
-  joinGame(g, newPlayer(a, 'Atreides', 'atreides'));
+  joinGame(g, newPlayer(a, options.secondFaction === 'emperor' ? 'Emperor' :
+    options.secondFaction === 'beneGesserit' ? 'Bene Gesserit' : 'Atreides',
+  options.secondFaction ?? 'atreides'));
   joinGame(g, newPlayer(h, 'Harkonnen', 'harkonnen'));
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   g.nexusCards = { cards: null, phase: null };
@@ -128,6 +131,11 @@ export function finishNexusSpice(state: Game): Game {
         type: 'decision',
         accept: false,
       });
+    else if (g.decision?.kind === 'nexusFremenCunningOffer' ||
+      g.decision?.kind === 'nexusFremenCunningRide')
+      g = applyAction(g, g.decision.player, {
+        type: 'decision', event: g.decision.event, accept: false,
+      });
     else {
       assert.equal(g.decision, null);
       g = nexusReady(g);
@@ -141,6 +149,7 @@ export function nexusTurnTwo(
     seatIds?: [string, string, string];
     advanced?: boolean;
     hostFaction?: 'fremen' | 'moritani' | 'ecaz' | 'guild' | 'emperor';
+    secondFaction?: 'atreides' | 'emperor' | 'beneGesserit';
   } = {},
 ): Game {
   const first = enterNexusSpice(nexusFixture(options));

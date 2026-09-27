@@ -10,6 +10,7 @@ import {
   SeatHandoverClaim,
 } from '@/components/seat-handover';
 import { HANDOVER_CLAIM_STORAGE_KEY } from '@/lib/seat-handover';
+import { buildRevision, buildRevisionLabel } from '@/lib/build-revision';
 import { SeatAiDelegation } from '@/components/seat-ai-delegation';
 import {
   SeatRecoverySetup,
@@ -1190,6 +1191,7 @@ export default function Home() {
       <footer>
         <span>Unofficial fan implementation</span>
         <a href="/admin">Administration</a>
+        <span className="build-revision" title={buildRevision}>Git revision: <code>{buildRevisionLabel}</code></span>
         <span>Dune · A game of conquest, diplomacy & betrayal</span>
       </footer>
     </main>

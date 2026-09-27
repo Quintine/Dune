@@ -1,5 +1,47 @@
 # Dune implementation status
 
+## 26 September 2026 — Bounded Ecaz Nexus Betrayal and build revision
+
+The [Ecaz source contract](NEXUS_ECAZ_RULES.md#bounded-betrayal-runtime)
+now has a narrow Betrayal path at the opening of Shipment and Movement.
+The unallied card holder chooses a public territory shared by Ecaz and its
+reciprocal ally. One physical Ecaz card is spent before a provisional Karama
+response; allowance returns the ally's entire typed group from all sectors
+to reserves, while cancellation preserves its board forces. The native
+shipment and movement queue is unchanged. Pure quote, real turn-two Nexus,
+bot ordering, privacy, rejection, JSON continuation and in-memory SQL
+duplicate-CAS/restart regressions exercise this bounded path. A local browser
+fixture rendered the owner-only shared-territory selector and rival public
+Karama notice; no room was written. The homepage revision was visually
+verified on local desktop and mobile. Broader combined-module acceptance and
+other Ecaz Nexus panels remain separate.
+
+The landing lobby and active-table masthead now show the build's Git commit.
+Vite bakes a checkout HEAD or validated `BUILD_REVISION`; the container
+workflow passes its GitHub commit to Docker before building. A source tree
+with uncommitted edits still displays its committed HEAD, not those edits.
+
+## 26 September 2026 — Bounded Fremen Nexus Cunning prototype
+
+The [Fremen Nexus source contract](NEXUS_FREMEN_RULES.md#connected-native-cunning-path)
+now has a native Basic/Advanced path for initially empty natural and accepted
+additional worm appearances, plus an Advanced Fremen special-Karama summoned
+appearance in classic-faction Nexus-only games. A uniform public offer does
+not disclose the privately held Fremen card. Accepted use spends it once,
+preserves the original worm and permits
+one source-labelled desert ride after its Nexus, moves exact normal/Fedaykin
+counters, and resumes native arrival children. Summons keep a separate
+server-issued parent event through the saved original Spice Blow. A Karama
+response provisionally cancels only the remote ride. JSON and in-memory
+SQLite continuations, duplicate-offer CAS races for natural and summoned
+appearances, owner-only controls, minimal legal bot participation and focused
+checks cover this bounded path. Independent review exposed an inherited-key
+force creation bug that was reproduced and fixed. Browser QA exercised natural
+and summoned offer/response/ride controls from genuine projected views with
+isolated GET interception and blocked POST; no room was mutated. Full module
+games, second Cunning offers during interrupted controls and Great Maker,
+combined modules and the absent-faction protection remain gated.
+
 ## 26 September 2026 — Administrative discussion moderation prototype
 
 [Discussion controls](ADMIN_DISCUSSION.md) connect human-seat mute/unmute to the

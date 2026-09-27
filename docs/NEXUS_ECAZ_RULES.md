@@ -47,3 +47,36 @@ Read the target's completed current hand. Finish an already pending Harkonnen dr
 Implement the common, source-clear contract as a pure boolean intersection of **explicitly supplied queried leader IDs** with an ordinary held-traitor snapshot. Let the engine select the agreed leader scope and audience. Bind the accepted event, original seats/factions, turn/phase, chosen target, scope and boolean in a completed receipt; keep private source evidence server-side if retained. Discard the one real Ecaz Nexus card in the same accepted transaction. Validate current global custody separately from historical answers. Public offers can be built entirely from roster, timing/continuation state and the owner's card, without reading target secrets.
 
 Meaningful regressions should cover positive and negative answers with equal public hand sizes; dead/revived native leaders; native captive versus foreign captive/Ghola cases for the explicitly selected scope; Duke and Hero identities; Tleilaxu role separation; Harkonnen exchange before/after inquiry; stale/replayed/concurrent play; JSON/SQL historical persistence; and exact audience projection without counts or matching identities. Until scope and audience are selected, those unresolved branches must not be presented as fully source-verified behavior.
+
+## Bounded Betrayal runtime
+
+The printed Betrayal is a **separate panel** from the Secret Ally inquiry above.
+With Ecaz seated, an unallied holder of the one physical Ecaz Nexus card may
+choose one printed Arrakis territory occupied by both Ecaz and its reciprocal
+ally. The ally returns its **entire** normal/starred group from every sector of
+that territory to reserves; Ecaz's forces and the ally's other territories stay.
+This is not a shipment, movement, combat loss or revival. The holder's private
+offer contains only public positions and typed public force counts; rivals do
+not see the held card. Acceptance spends the card once and opens a public
+Karama response. Allowance returns the quoted group; cancellation leaves all
+board forces unchanged and the Nexus card spent. This response classification
+is an explicit **provisional composition**, not a GF9 ruling granting Karama
+blanket jurisdiction over Nexus effects.
+
+The first implementation window is deliberately narrow: phase 5 while its
+first active player is still current, the original movement queue is intact,
+no pending decision/response and no shipment or movement has been used. It does
+not assert that this is the only possible reading of “before Shipment and
+Movement.” The physical Ecaz alliance and co-occupation must be current.
+An automated eligible holder is scheduled before an earlier-seated movement
+bot closes this opening; a human holder must declare before that first turn
+advances. The game does not pause all seats to reveal a hidden card.
+Only the classic factions plus Ecaz/Moritani and the Nexus module are
+admitted; advisors, hidden No-Fields, Homeworlds, Discoveries, Leader Skills,
+Tech, Stronghold Cards and other combined modules remain gated. A saved
+pending snapshot binds the card's discard position, ally and exact typed board
+group through the Karama window, even if another Nexus card is discarded
+during that response. The ally's reserve counters are validated before any
+board return. Saved receipts reject replay but are not cryptographic proof of
+historical save authenticity. Ecaz Cunning's Duke override and the Secret
+Ally identity/audience questions above remain unimplemented.

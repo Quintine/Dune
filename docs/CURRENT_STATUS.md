@@ -6,6 +6,30 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+The bounded [Fremen Nexus Cunning](NEXUS_FREMEN_RULES.md#connected-native-cunning-path)
+prototype connects an initially empty worm's public offer, one spent private
+card, a Karama response, a typed remote ride after the Nexus, human controls
+and minimal legal AI in classic-faction Nexus-only games. Basic/Advanced
+natural continuation, an additional-worm placement and an actual Advanced
+special-Karama summon retain their physical parent, response and native-then-
+remote ride order across JSON/isolated SQLite recovery and duplicate CAS.
+Natural and summoned offer/ride browser surfaces were exercised. Review found
+and fixed an inherited-key force-custody bypass. A second Cunning offer
+inside an interrupted control, Great Maker, combined modules, Secret Ally
+protection and complete Nexus games remain gated.
+
+The bounded [Ecaz Nexus Betrayal](NEXUS_ECAZ_RULES.md#bounded-betrayal-runtime)
+path lets a card holder select one public territory shared by Ecaz and its
+ally before the first Shipment and Movement turn advances. One spent card,
+a provisional Karama response and exact typed ally-force return are wired
+through human controls, legal bot action, JSON and in-memory SQL continuation,
+and focused gameplay, race and restart tests. A local browser fixture rendered
+the holder-only offer and rival Karama notice without writing a room. Secret
+Ally inquiry, Duke Cunning and combined modes remain gated. The main page
+labels its build's Git commit in the lobby and active-table masthead; local
+Git HEAD does not represent uncommitted work. The main-branch container
+workflow publishes an image but does not deploy the live site automatically.
+
 Current work adds [discussion moderation](ADMIN_DISCUSSION.md): owners/operators
 can mute or unmute new public/private messages from a human seat. History,
 incoming messages, game state and credentials remain saved; the setting follows

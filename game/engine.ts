@@ -34,6 +34,7 @@ import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type Great
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
+import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
 import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, moritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
@@ -48,6 +49,7 @@ import { quoteNexusAdvisors, createNexusAdvisors, validateNexusAdvisors, type Ne
 import { createNexusSardaukar, validateNexusSardaukar, type NexusSardaukarReceipt } from './nexus-sardaukar';
 import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement, type NexusMoritaniReceipt } from './nexus-moritani';
 import { moritaniBetrayalOffer } from './nexus-moritani-betrayal';
+import { ecazBetrayalOffer, quoteEcazBetrayal, validateEcazBetrayalSnapshot, type EcazBetrayalSnapshot } from './nexus-ecaz-betrayal';
 import { nexusMoritaniRecordSignature, terrorLocationAllowed, terrorEntryLocationAllowed } from './terror-location';
 import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
@@ -863,6 +865,8 @@ export type Decision =
   | { kind: 'greatMakerVote'; player: string; event: string }
   | { kind: 'greatMakerRide'; player: string; event: string }
   | { kind: 'wormRide'; player: string; territory: string }
+  | { kind: 'nexusFremenCunningOffer'; player: string; event: string }
+  | { kind: 'nexusFremenCunningRide'; player: string; event: string }
   | {
       kind: 'moritaniRetention';
       owner: string;
@@ -931,6 +935,8 @@ export type ResponseWindow = {
     | 'advisorFlip'
     | 'nexusAdvisorFlip'
     | 'nexusSardaukar'
+    | 'nexusFremenCunning'
+    | 'nexusEcazBetrayal'
     | 'nexusGuildCunning'
     | 'bgCharity'
     | 'choamCharity'
@@ -1450,6 +1456,16 @@ export type Game = {
   /** Optional independent module; complete effect coverage is still release-gated. */
   nexusCards?: { cards: NexusState | null; phase: NexusCardPhase | null } | null;
   nexusTraitorExchanges?: NexusTraitorExchange[];
+  /** An initially empty actual worm occurrence; the optional card is not disclosed by this offer. */
+  nexusFremenCunningOffer?: { occurrence: FremenCunningOccurrence; owner: string } | null;
+  /** Accepted appearances wait for post-Nexus riding, then retain completion custody. */
+  nexusFremenCunningRides?: {
+    occurrence: FremenCunningOccurrence;
+    authorization: FremenCunningRideAuthorization;
+    stage: 'pending' | 'queued' | 'select' | 'complete';
+  }[];
+  /** A spent Ecaz card binds one exact allied force group until Karama settles. */
+  nexusEcazBetrayalHistory?: { snapshot: EcazBetrayalSnapshot; stage: 'pending' | 'complete' }[];
   nexusFaceDancerHistory?: NexusFaceDancerReceipt[];
   nexusSuboidHistory?: NexusSuboidReceipt[];
   nexusSuboidLast?: { event: string; owner: string; turn: number };
@@ -1480,6 +1496,8 @@ export type Game = {
   summonedNexusBeforeRides?: boolean;
   summonedWorm?: {
     territory: string;
+    /** Server-created identity for this one physical special-Karama appearance. */
+    event: string;
     resume: Pick<
       Game,
       | 'response'
@@ -1791,6 +1809,119 @@ function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
   log(g,`${p.name} spent Emperor Nexus Secret Ally to return three forces${elite ? `, including ${elite} Fedaykin` : ''} from Tanks to reserves for free. Ordinary force and free-revival allowances are unchanged.`,
     {faction:p.faction,name:'Emperor Nexus revival'});
 }
+function nexusEcazBetrayalIntegrity(g: Game) {
+  const history = g.nexusEcazBetrayalHistory;
+  if (history === undefined) return;
+  requireRule(Array.isArray(history) && history.length > 0 && g.nexusCards?.cards,
+    'Ecaz Betrayal has lost its spent card history.');
+  const events = new Set<string>();
+  let pending = 0;
+  for (const record of history) {
+    const snapshot = record?.snapshot;
+    requireRule(snapshot && typeof snapshot.event === 'string' &&
+      !events.has(snapshot.event) &&
+      Number.isSafeInteger(snapshot.turn) && snapshot.turn > 0 && snapshot.turn <= g.turn &&
+      Number.isSafeInteger(snapshot.discardIndex) && snapshot.discardIndex >= 0 &&
+      g.players.some(player => player.id === snapshot.owner && player.faction !== 'ecaz') &&
+      g.players.some(player => player.id === snapshot.ally) &&
+      ['pending', 'complete'].includes(record.stage),
+    'Ecaz Betrayal has lost its unique owner, ally or turn.');
+    events.add(snapshot.event);
+    if (record.stage === 'pending') {
+      pending++;
+      requireRule(pending === 1 && record === history.at(-1) &&
+        ((g.response?.kind === 'nexusEcazBetrayal' &&
+          g.response.owner === snapshot.owner &&
+          g.response.intent === snapshot.event &&
+          g.response.location === snapshot.territory) ||
+        (g.pendingKarama?.use.kind === 'cancel' &&
+          g.pendingKarama.use.response.kind === 'nexusEcazBetrayal' &&
+          g.pendingKarama.use.response.intent === snapshot.event)),
+      'Ecaz Betrayal has lost its pending Karama response.');
+      nexusRule(() => validateEcazBetrayalSnapshot(g, snapshot, true));
+    } else if (snapshot.turn === g.turn) {
+      requireRule(g.nexusCards!.cards!.discard[snapshot.discardIndex] === 'ecaz',
+        'Ecaz Betrayal has reopened its spent card.');
+    }
+  }
+}
+
+function nexusFremenCunningIntegrity(g: Game) {
+  const offer = g.nexusFremenCunningOffer;
+  const rides = g.nexusFremenCunningRides;
+  if (offer === undefined && rides === undefined) return;
+  requireRule(g.nexusCards?.cards && (!rides || Array.isArray(rides)),
+    'Fremen Cunning has lost its physical Nexus module or saved rides.');
+  const suspended = g.summonedWorm?.resume;
+  if (offer) {
+    const occurrence = offer.occurrence;
+    const decision = g.decision?.kind === 'nexusFremenCunningOffer'
+      ? g.decision : suspended?.decision;
+    requireRule(g.status === 'playing' && g.phase === 1 &&
+      occurrence.turn === g.turn && occurrence.initiallyEmpty &&
+      occurrence.event && byFaction(g, 'fremen')?.id === offer.owner &&
+      decision?.kind === 'nexusFremenCunningOffer' &&
+      decision.player === offer.owner && decision.event === occurrence.event,
+    'The empty worm appearance has lost its original public offer.');
+    if (occurrence.origin === 'summoned') requireRule(
+      occurrence.parent && g.summonedWorm?.event === occurrence.parent &&
+      g.summonedWorm?.territory === occurrence.territory,
+      'The empty summoned worm has lost its original special Karama parent.',
+    );
+  }
+  const events = new Set<string>();
+  for (const ride of rides ?? []) {
+    const { occurrence, authorization, stage } = ride;
+    requireRule(occurrence.initiallyEmpty && occurrence.event &&
+      !events.has(occurrence.event) && authorization.event === occurrence.event &&
+      authorization.turn === occurrence.turn && occurrence.turn <= g.turn &&
+      authorization.owner && getPlayer(g, authorization.owner).faction === 'fremen' &&
+      ['pending', 'queued', 'select', 'complete'].includes(stage),
+    'Fremen Cunning has lost its unique accepted worm appearance.');
+    requireRule(
+      ['natural', 'additional', 'summoned'].includes(occurrence.origin) &&
+      (occurrence.origin !== 'summoned' ||
+        (typeof occurrence.parent === 'string' && occurrence.parent.length > 0 &&
+          (stage !== 'pending' || (g.summonedWorm?.event === occurrence.parent &&
+            g.summonedWorm?.territory === occurrence.territory)))),
+      'Fremen Cunning has lost its summoned worm parent.',
+    );
+    events.add(occurrence.event);
+    if (stage === 'complete') continue;
+    requireRule(g.status === 'playing' && g.phase === 1 &&
+      occurrence.turn === g.turn && g.nexusCards!.cards!.discard.includes('fremen'),
+    'A pending Fremen ride has lost its spent physical card.');
+    if (stage === 'select') {
+      const decision = g.decision?.kind === 'nexusFremenCunningRide'
+        ? g.decision : suspended?.decision;
+      requireRule(decision?.kind === 'nexusFremenCunningRide' &&
+        decision.player === authorization.owner &&
+        decision.event === occurrence.event,
+      'Fremen Cunning has lost its current rider choice.');
+    }
+    if (stage === 'pending') {
+      const live = g.response;
+      const prior = suspended?.response;
+      const liveKarama = g.pendingKarama;
+      const priorKarama = suspended?.pendingKarama;
+      requireRule(
+        (live?.kind === 'nexusFremenCunning' &&
+          live.owner === authorization.owner && live.intent === occurrence.event) ||
+        (prior?.kind === 'nexusFremenCunning' &&
+          prior.owner === authorization.owner && prior.intent === occurrence.event) ||
+        (liveKarama?.use.kind === 'cancel' &&
+          liveKarama.use.response.kind === 'nexusFremenCunning' &&
+          liveKarama.use.response.intent === occurrence.event) ||
+        (priorKarama?.use.kind === 'cancel' &&
+          priorKarama.use.response.kind === 'nexusFremenCunning' &&
+          priorKarama.use.response.intent === occurrence.event),
+      'Fremen Cunning has lost its pending cancellation window.');
+    }
+  }
+  requireRule(!offer || !events.has(offer.occurrence.event),
+    'A worm occurrence cannot be both offered and already spent.');
+}
+
 function nexusFremenRevivalIntegrity(g: Game) {
   const history = g.nexusFremenRevivalHistory, events = g.nexusFremenRevivalEvents;
   if (history === undefined) {
@@ -1868,6 +1999,52 @@ function playMoritaniBetrayal(g: Game, p: Player, action: Action) {
   if (g.nexusMoritaniLocations) delete g.nexusMoritaniLocations[target.id];
   log(g, `${p.name} spent Moritani Nexus Betrayal to return a hidden Terror token from ${territory(target.territory).name} to Moritani's supply without revealing its face.`,
     { faction: p.faction, name: 'Moritani Nexus Betrayal' });
+}
+function currentEcazBetrayalResponse(g: Game, response: ResponseWindow) {
+  const record = g.nexusEcazBetrayalHistory?.find(row =>
+    row.stage === 'pending' && row.snapshot.event === response.intent);
+  requireRule(response.kind === 'nexusEcazBetrayal' && record &&
+    response.owner === record.snapshot.owner &&
+    response.location === record.snapshot.territory,
+  'The Ecaz Betrayal interruption has lost its spent card or territory.');
+  nexusRule(() => validateEcazBetrayalSnapshot(g, record.snapshot, true));
+  return record;
+}
+function finishEcazBetrayalResponse(g: Game, response: ResponseWindow, canceled: boolean) {
+  const record = currentEcazBetrayalResponse(g, response);
+  const ally = getPlayer(g, record.snapshot.ally);
+  if (!canceled) validateReserveReturnCounters(ally, record.snapshot.total, 'Ecaz Betrayal');
+  record.stage = 'complete';
+  if (!canceled) {
+    for (const key of Object.keys(record.snapshot.sectors)) {
+      delete ally.forces[key];
+      if (ally.elites) delete ally.elites.forces[key];
+    }
+    ally.reserves += record.snapshot.total.normal + record.snapshot.total.elite;
+    if (ally.elites) ally.elites.reserves += record.snapshot.total.elite;
+    observeOccupation(g);
+  }
+  log(g, canceled
+    ? `Karama prevented the Ecaz Nexus return from ${territory(record.snapshot.territory).name}; the Nexus card remains spent.`
+    : `${ally.name} returned ${record.snapshot.total.normal + record.snapshot.total.elite} forces from ${territory(record.snapshot.territory).name} to reserves under Ecaz Nexus Betrayal.`,
+  { faction: ally.faction, name: 'Ecaz Nexus Betrayal' });
+}
+function playEcazBetrayal(g: Game, p: Player, action: Action) {
+  const offer = ecazBetrayalOffer(g, p.id,
+    g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g));
+  requireRule(offer && !offer.blocked &&
+    Object.keys(action).sort().join(',') === 'event,territory,type' &&
+    typeof action.event === 'string' && typeof action.territory === 'string',
+    offer?.blocked ?? 'Choose one currently shared Ecaz territory.');
+  const snapshot = nexusRule(() =>
+    quoteEcazBetrayal(g, p.id, stringField(action.event), stringField(action.territory)));
+  g.nexusCards!.cards = nexusRule(() =>
+    discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  (g.nexusEcazBetrayalHistory ??= []).push({ snapshot, stage: 'pending' });
+  g.response = { kind: 'nexusEcazBetrayal', owner: p.id, intent: snapshot.event,
+    location: snapshot.territory, passed: [] };
+  log(g, `${p.name} spent Ecaz Nexus Betrayal to require Ecaz’s ally to return all forces from ${territory(snapshot.territory).name}, unless Karama prevents the return.`,
+    { faction: p.faction, name: 'Ecaz Nexus Betrayal' });
 }
 function markNexusOccurred(g: Game) {
   if (!g.nexusCards) return;
@@ -6391,8 +6568,40 @@ function devour(
   if (fremen && at(fremen, t)) g.wormRides.push(t);
   log(g, `Shai-Hulud appeared in ${territory(t).name}.`);
 }
-function beginWorm(g: Game, t: string) {
+function beginWorm(g: Game, t: string, origin: 'natural' | 'additional' | 'summoned' = 'natural') {
   const fremen = byFaction(g, 'fremen');
+  // An empty appearance offers the same decision with or without the private
+  // Fremen card; the offer itself must not disclose its custody.
+  if ((origin !== 'summoned' || (g.summonedWorm?.event &&
+    !g.nexusFremenCunningOffer &&
+    !g.nexusFremenCunningRides?.some(row => row.stage === 'pending' || row.stage === 'select'))) &&
+    !g.greatMaker && g.nexusCards?.cards &&
+    !g.expansions.length && !g.homeworlds && !g.leaderSkills &&
+    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
+    !g.techTokens && !g.strongholdCards &&
+    g.players.every(seat => ['atreides', 'harkonnen', 'emperor', 'guild', 'beneGesserit', 'fremen'].includes(seat.faction)) &&
+    fremen && !fremen.ally && g.phase === 1 &&
+    Object.entries(fremen.forces).some(([key, amount]) => {
+      if (amount <= 0) return false;
+      const source = splitLocation(key);
+      return source.sector !== g.storm &&
+        TERRITORIES.some(row => row.id === source.territory && row.type === 'sand');
+    })) {
+    const occurrence = captureFremenCunningOccurrence(g, {
+      event: crypto.randomUUID(), territory: t, origin,
+      ...(origin === 'summoned'
+        ? { parent: g.summonedWorm!.event }
+        : { pile: g.spiceSequence?.pile }),
+    });
+    if (occurrence.initiallyEmpty) {
+      requireRule(!g.nexusFremenCunningOffer,
+        'Finish the previous worm appearance before another Cunning offer.');
+      g.nexusFremenCunningOffer = { occurrence, owner: fremen.id };
+      g.decision = { kind: 'nexusFremenCunningOffer', player: fremen.id,
+        event: occurrence.event };
+      return;
+    }
+  }
   if (fremen?.ally && at(getPlayer(g, fremen.ally), t)) {
     g.decision = {
       kind: 'wormProtection',
@@ -6402,6 +6611,27 @@ function beginWorm(g: Game, t: string) {
     };
   } else wormSurvival(g, t);
 }
+function currentFremenCunningResponse(g: Game, response: ResponseWindow) {
+  const ride = g.nexusFremenCunningRides?.find(row =>
+    row.stage === 'pending' && row.occurrence.event === response.intent);
+  requireRule(response.kind === 'nexusFremenCunning' &&
+    ride && response.owner === ride.authorization.owner &&
+    response.location === ride.occurrence.territory &&
+    ride.occurrence.turn === g.turn && g.phase === 1 &&
+    g.nexusCards?.cards?.discard.includes('fremen'),
+  'The Fremen Nexus interruption has lost its spent card or worm appearance.');
+  return ride;
+}
+function finishFremenCunningResponse(g: Game, response: ResponseWindow, canceled: boolean) {
+  const ride = currentFremenCunningResponse(g, response);
+  ride.stage = canceled ? 'complete' : 'queued';
+  log(g, canceled
+    ? 'Karama prevented the Fremen Nexus remote ride; the original worm still resolves.'
+    : 'Fremen Nexus Cunning will ride from one desert territory after this Nexus.',
+  { faction: 'fremen', name: 'Fremen Nexus Cunning' });
+  wormSurvival(g, ride.occurrence.territory);
+}
+
 function wormSurvival(g: Game, t: string, protectedAlly?: string) {
   const fremen = byFaction(g, 'fremen');
   if (fremen && at(fremen, t)) {
@@ -6452,6 +6682,13 @@ function afterWorm(g: Game) {
   // completed ride resolves before opening the newly triggered Nexus.
   if (g.decision?.kind === 'wormRide') {
     g.wormRides.unshift(g.decision.territory);
+    g.decision = null;
+  } else if (g.decision?.kind === 'nexusFremenCunningRide') {
+    const event = g.decision.event;
+    const ride = g.nexusFremenCunningRides?.find(row =>
+      row.stage === 'select' && row.occurrence.event === event);
+    requireRule(ride, 'The summoned worm has lost its interrupted Fremen Cunning ride.');
+    ride.stage = 'queued';
     g.decision = null;
   } else if (
     g.pendingAmbassador?.resume === 'wormRide' ||
@@ -6949,6 +7186,21 @@ function nextWormRide(g: Game) {
       g.decision = { kind: 'wormRide', player: fremen.id, territory: t };
       return;
     }
+  }
+  for (const ride of g.nexusFremenCunningRides ?? []) {
+    if (ride.stage !== 'queued' || ride.occurrence.turn !== g.turn) continue;
+    const source = nexusRule(() => quoteFremenCunningRide(
+      g, ride.authorization.owner, ride.occurrence, ride.authorization,
+    ));
+    if (!source) {
+      ride.stage = 'complete';
+      log(g, 'Fremen Nexus Cunning has no remaining legal desert force source.');
+      continue;
+    }
+    ride.stage = 'select';
+    g.decision = { kind: 'nexusFremenCunningRide',
+      player: ride.authorization.owner, event: ride.occurrence.event };
+    return;
   }
   g.nexus = false;
   finishSpicePass(g);
@@ -8603,6 +8855,10 @@ function validateKaramaUse(
     if (use.response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, use.response);
     if (use.response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, use.response);
     if (use.response.kind === 'nexusSardaukar') validateNexusSardaukarResponse(g, use.response);
+    if (use.response.kind === 'nexusFremenCunning')
+      currentFremenCunningResponse(g, use.response);
+    if (use.response.kind === 'nexusEcazBetrayal')
+      currentEcazBetrayalResponse(g, use.response);
     if (isCombatResponseKind(use.response.kind))
       currentCombatResponseQuote(g, {
         kind: 'response',
@@ -12555,7 +12811,7 @@ function saphoOptions(g: Game, p: Player): SaphoOption[] {
     !lot.acted.includes(p.id)
   ) {
     const remaining = lot.order.filter((id) => !lot.acted.includes(id));
-    if (!lot.acted.length && remaining[0] !== p.id)
+    if (remaining[0] !== p.id)
       options.push({ scope: 'onceAround', event: lot.event, mode: 'first' });
     if (remaining.at(-1) !== p.id)
       options.push({ scope: 'onceAround', event: lot.event, mode: 'last' });
@@ -13869,17 +14125,18 @@ function currentHarassWithdrawQuote(g: Game, p: Player, plan: Pick<Plan, 'dial' 
     const selection = receipt?.player === p.id && receipt.stage === 'selected' ? receipt.selection! :
       g.battle?.harassAllocationVersion === 1 ? defaultHarassWithdrawAllocation(context, plan.dial, plan.support) : undefined;
     const quote = quoteHarassWithdraw(context, plan.dial, plan.support, selection);
-    validateHarassReturnCounters(p, quote.returned);
+    validateReserveReturnCounters(p, quote.returned);
     return quote;
   }
   catch (error) { if (error instanceof HarassWithdrawError) throw new RuleError(error.message); throw error; }
 }
-function validateHarassReturnCounters(p: Player, returned: { normal: number; elite: number }) {
+function validateReserveReturnCounters(p: Player, returned: { normal: number; elite: number },
+  source = 'Harass & Withdraw') {
   requireRule(Number.isSafeInteger(p.reserves) && p.reserves >= 0 &&
     Number.isSafeInteger(p.reserves + returned.normal + returned.elite) &&
     (!p.elites || (Number.isSafeInteger(p.elites.reserves) && p.elites.reserves >= 0 &&
       p.elites.reserves <= p.reserves && Number.isSafeInteger(p.elites.reserves + returned.elite))),
-    'Harass & Withdraw needs valid reserve and elite counters before any forces return.');
+    `${source} needs valid reserve and elite counters before any forces return.`);
 }
 function harassWithdrawPreview(g: Game, p: Player): HarassWithdrawPreview | null {
   const b = g.battle;
@@ -14562,6 +14819,8 @@ function marketGholaIntegrity(g: Game) {
   nexusCardsIntegrity(g);
   nexusEmperorSecretIntegrity(g);
   nexusFremenRevivalIntegrity(g);
+  nexusFremenCunningIntegrity(g);
+  nexusEcazBetrayalIntegrity(g);
   nexusTraitorIntegrity(g);
   nexusFaceDancerIntegrity(g);
   nexusSuboidIntegrity(g);
@@ -15830,7 +16089,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       pendingRetentionPresent: !!g.moritaniRetention,
     });
     for (const withdrawal of quote.harassWithdraw ?? [])
-      validateHarassReturnCounters(getPlayer(g, withdrawal.player), withdrawal.returned);
+      validateReserveReturnCounters(getPlayer(g, withdrawal.player), withdrawal.returned);
     if (quote.sukGraduate) requireRule(
       !g.advanced || getPlayer(g, quote.winner!).faction !== 'atreides',
       'Suk Graduate rescue for Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.');
@@ -17654,6 +17913,8 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
   if (response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, response);
   if (response.kind === 'nexusSardaukar') validateNexusSardaukarResponse(g, response);
+  if (response.kind === 'nexusFremenCunning') currentFremenCunningResponse(g, response);
+  if (response.kind === 'nexusEcazBetrayal') currentEcazBetrayalResponse(g, response);
   if (response.kind === 'nexusGuildCunning') validateGuildCunningResponse(g,response);
   if (response.kind === 'moritaniPlacement') {
     // Both outcomes need the same physical inventory and declared source.
@@ -17695,6 +17956,14 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     : null;
   if (!canceled && bureaucratDiversion === undefined && offerBureaucratPayment(g,response.bureaucratPayment,{kind:'response'})) return;
   g.response = null;
+  if (response.kind === 'nexusEcazBetrayal') {
+    finishEcazBetrayalResponse(g, response, canceled);
+    return;
+  }
+  if (response.kind === 'nexusFremenCunning') {
+    finishFremenCunningResponse(g, response, canceled);
+    return;
+  }
   if (response.kind === 'nexusGuildCunning') { settleGuildCunning(g,response,canceled); return; }
   if (response.kind === 'nexusAdvisorFlip') {
     finishNexusAdvisors(g, canceled);
@@ -18504,7 +18773,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     if (canceled) {
       g.wormPlacementCanceledTurn = g.turn;
       continueSpice(g);
-    } else beginWorm(g, response.location!);
+    } else beginWorm(g, response.location!, 'additional');
   } else if (response.kind === 'wormAllyProtection') {
     wormSurvival(
       g,
@@ -20580,6 +20849,7 @@ export function executeSpecialKaramaIntent(
     p.specialKaramaUsed = true;
     g.summonedWorm = {
       territory: t,
+      event: crypto.randomUUID(),
       resume: {
         response: g.response,
         decision: g.decision,
@@ -20605,7 +20875,7 @@ export function executeSpecialKaramaIntent(
       g,
       `${p.name} used special Karama to summon Shai-Hulud in ${territory(t).name}.`,
     );
-    beginWorm(g, t);
+    beginWorm(g, t, 'summoned');
   } else if (intent.kind === 'atreides') {
     const b = g.battle!,
       target = intent.target;
@@ -21209,6 +21479,7 @@ function applyActionInner(
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
   if (t === 'nexusFremenRevive') { playNexusFremenRevive(g,p,action); return g; }
   if (t === 'nexusMoritaniBetrayal') { playMoritaniBetrayal(g, p, action); return g; }
+  if (t === 'nexusEcazBetrayal') { playEcazBetrayal(g, p, action); return g; }
   if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
     !(
@@ -22222,7 +22493,7 @@ function applyActionInner(
       let quote;
       try { quote = quoteHarassWithdraw(offer.context, offer.dial, offer.support, action.returns as HarassWithdrawSelection); }
       catch (error) { if (error instanceof HarassWithdrawError) throw new RuleError(error.message); throw error; }
-      validateHarassReturnCounters(p, quote.returned);
+      validateReserveReturnCounters(p, quote.returned);
       receipt.selection = structuredClone(quote.locations); receipt.stage = 'selected';
       receipt.signature = harassAllocationSignature(receipt);
       log(g, `${p.name} selected ${quote.returned.normal} ordinary and ${quote.returned.elite} elite undialed forces for Harass & Withdraw: ${Object.entries(quote.locations).map(([key, group]) => `${key} (${group.normal} ordinary, ${group.elite} elite)`).join('; ')}. The return waits for traitor declarations; an opposing successful call cancels it.`);
@@ -22583,6 +22854,32 @@ function applyActionInner(
           passed: [],
         };
       } else continueSpice(g);
+    } else if (decision.kind === 'nexusFremenCunningOffer') {
+      const pending = g.nexusFremenCunningOffer;
+      requireRule(pending && pending.owner === id &&
+        pending.occurrence.event === decision.event &&
+        action.event === decision.event &&
+        typeof action.accept === 'boolean' &&
+        Object.keys(action).every(key => ['type', 'event', 'accept'].includes(key)),
+      'Choose whether to use the current empty-worm Nexus opportunity.');
+      g.nexusFremenCunningOffer = null;
+      if (action.accept) {
+        requireRule(nexusRule(() => quoteFremenCunning(g, id, pending.occurrence)),
+          'Fremen Cunning needs your own unallied Nexus card and a desert force source.');
+        g.nexusCards!.cards = nexusRule(() =>
+          discardNexusCard(g.nexusCards!.cards!, id, g.players));
+        g.nexusFremenCunningRides ??= [];
+        g.nexusFremenCunningRides.push({
+          occurrence: pending.occurrence,
+          authorization: { event: decision.event, turn: g.turn, owner: id },
+          stage: 'pending',
+        });
+        g.response = { kind: 'nexusFremenCunning', owner: id,
+          intent: decision.event, location: pending.occurrence.territory,
+          passed: [] };
+        log(g, `${p.name} spent Fremen Nexus Cunning on an empty worm appearance; a Karama response precedes the remote ride.`,
+          { faction: p.faction, name: 'Fremen Nexus Cunning' });
+      } else wormSurvival(g, pending.occurrence.territory);
     } else if (decision.kind === 'wormProtection') {
       requireRule(
         typeof action.accept === 'boolean',
@@ -22612,6 +22909,47 @@ function applyActionInner(
       decideGreatMakerVote(g,p,action);
     } else if (decision.kind === 'greatMakerRide') {
       decideGreatMakerRide(g,p,action);
+    } else if (decision.kind === 'nexusFremenCunningRide') {
+      const ride = g.nexusFremenCunningRides?.find(row =>
+        row.stage === 'select' && row.occurrence.event === decision.event);
+      requireRule(ride && ride.authorization.owner === id &&
+        action.event === decision.event && typeof action.accept === 'boolean',
+      'Choose the pending Fremen Cunning remote worm ride.');
+      if (action.accept) {
+        requireRule(Object.keys(action).every(key =>
+          ['type', 'event', 'accept', 'source', 'forces', 'territory', 'sector'].includes(key)),
+        'Choose only this Cunning source, forces and destination.');
+        const selection = {
+          source: stringField(action.source),
+          forces: action.forces as FremenCunningSelection['forces'],
+          destination: {
+            territory: stringField(action.territory),
+            sector: integer(action.sector, 0, 18, 'Sector'),
+          },
+        };
+        const chosen = nexusRule(() => validateFremenCunningSelection(
+          g, id, ride.occurrence, selection, ride.authorization));
+        allowedEntry(g, p, selection.destination.territory, selection.destination.sector);
+        const entries = Object.entries(selection.forces);
+        removeGroup(p, entries.map(([key, count]) => [key, count.normal + count.elite] as [string, number]),
+          Object.fromEntries(entries.map(([key, count]) => [key, count.elite])));
+        place(p, selection.destination.territory, selection.destination.sector,
+          chosen.total, chosen.elite);
+        ride.stage = 'complete';
+        log(g, `${p.name} used Fremen Nexus Cunning to ride ${chosen.total} forces from ${territory(selection.source).name} to ${territory(selection.destination.territory).name}.`,
+          { faction: p.faction, name: 'Fremen Nexus Cunning' });
+        const intruded = intrusion(g, p, selection.destination.territory, { wormRide: true });
+        if (openTerritoryEntry(g, p, selection.destination.territory,
+          selection.destination.sector, chosen.total, chosen.elite,
+          'wormRide', 'wormRide') || intruded) return g;
+      } else {
+        requireRule(Object.keys(action).every(key =>
+          ['type', 'event', 'accept'].includes(key)),
+        'Declining Cunning does not move forces.');
+        ride.stage = 'complete';
+        log(g, `${p.name} declined the Fremen Nexus remote ride.`);
+      }
+      nextWormRide(g);
     } else if (decision.kind === 'wormRide') {
       requireRule(
         typeof action.accept === 'boolean',
@@ -25058,6 +25396,8 @@ export function viewGame(state: Game, id: string) {
     nexusFremenRevival: fremenNexusRevivalOffer(g,id),
     nexusMoritani: nexusMoritaniOffer(g,id),
     nexusMoritaniBetrayal: moritaniBetrayalOffer(g,id,
+      g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
+    nexusEcazBetrayal: ecazBetrayalOffer(g, id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
     nexusRichese: nexusRicheseOffer(g,id),
     nexusGuildSecretAlly: nexusGuildSecretAllyOffer(g,id),

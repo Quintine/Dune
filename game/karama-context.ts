@@ -84,6 +84,16 @@ const cancellationSources = {
     ...movementSource(g),
     conversion: g.nexusAdvisorHistory?.find(record => record.stage === 'pending') ?? null,
   }),
+  nexusFremenCunning: (g, response) => ({
+    ...wormSource(g),
+    appearance: g.nexusFremenCunningRides?.find(ride =>
+      ride.stage === 'pending' && ride.occurrence.event === response.intent) ?? null,
+  }),
+  nexusEcazBetrayal: (g, response) => ({
+    ...movementSource(g),
+    return: g.nexusEcazBetrayalHistory?.find(record =>
+      record.stage === 'pending' && record.snapshot.event === response.intent) ?? null,
+  }),
   nexusGuildCunning: (g) => ({cunning:g.nexusGuildCunningHistory?.at(-1),active:g.active,remaining:g.movementRemaining}),
   nexusSardaukar: (g) => ({
     battle: battleSource(g),

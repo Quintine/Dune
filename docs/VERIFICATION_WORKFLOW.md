@@ -29,6 +29,13 @@ occurred, what revision actually ran, the routes/actions exercised, results and
 remaining limitations. If the deployed revision is older, label the results for
 that older revision; do not claim that new source passed deployed acceptance.
 If access or deployment is unavailable, report the gap and keep acceptance open.
+Each pushed application checkpoint also needs a separate live deployment; a
+successful GitHub container publication alone is not a deployment. Follow
+[the manual TrueNAS update](TRUENAS.md#applying-an-update) only after the image
+passes CI, the persistent volume is backed up and play reaches a safe point.
+If access, the backup or a safe point is missing, report the push as **not
+deployed** and keep its production verification open rather than claiming the
+Git revision label matches the pushed commit.
 
 Use the production browser flow to verify relevant navigation and deep links,
 bundled assets and rendering, HTTPS/proxy behavior, cookies and authentication,

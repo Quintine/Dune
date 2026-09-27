@@ -30,6 +30,8 @@ import { DiscoveryEntryDecision } from './discovery-entry';
 import { DiscoveryStormDecision } from './discovery-storm';
 import { NexusChoamTrade } from './nexus-choam-trade';
 import { NexusMoritaniBetrayal } from './nexus-moritani-betrayal';
+import { buildRevision, buildRevisionLabel } from '@/lib/build-revision';
+import { NexusEcazBetrayal } from './nexus-ecaz-betrayal';
 import { NexusTleilaxu } from './nexus-tleilaxu';
 import { NexusSuboids } from './nexus-suboids';
 import { NexusAdvisors } from './nexus-advisors';
@@ -939,6 +941,9 @@ export function GameTable({
           }} />
           <span className="status-dot" />
           {g.status === 'lobby' ? 'Gathering players' : `Turn ${g.turn} / 10`}
+          <span className="build-revision" title={buildRevision}>
+            Git revision: <code>{buildRevisionLabel}</code>
+          </span>
           <Button
             variant="outline"
             onClick={async () => {
@@ -1583,6 +1588,7 @@ export function GameTable({
           <MentatHistory game={g} />
           <NexusChoamTrade game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <NexusMoritaniBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
+          <NexusEcazBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <NexusAdvisors game={g} act={act} busy={busy} />
@@ -1996,6 +2002,8 @@ export function GameTable({
                     kwisatz: 'Kwisatz Haderach battle protection',
                     guildTiming: 'Guild shipment and movement timing',
                     nexusGuildCunning: 'Guild Cunning second shipment',
+                    nexusFremenCunning: 'Fremen Cunning remote worm ride',
+                    nexusEcazBetrayal: 'Ecaz Nexus forced ally return',
                     atreidesAuction: 'Atreides auction foresight',
                     atreidesSpice: 'Atreides spice foresight',
                     stormPeek: 'Fremen storm foresight',
@@ -2165,11 +2173,19 @@ export function GameTable({
                 Allow one second Guild shipment at its normal price, or cancel this extra opportunity.
                 The completed first shipment and movement stay unchanged; the Nexus is already spent.
               </p>}
+              {g.response.kind === 'nexusFremenCunning' && <p className="notice">
+                The Fremen Nexus card was spent for a remote ride after this Nexus. Karama can prevent that ride, but the original worm still resolves.
+              </p>}
+              {g.response.kind === 'nexusEcazBetrayal' && <p className="notice">
+                Ecaz Nexus Betrayal was spent to return Ecaz’s ally’s forces from {territory(g.response.location!).name}.
+                Karama can prevent that return; the card stays spent.
+              </p>}
               {g.response.intent &&
                 g.response.kind !== 'nexusGuildCunning' &&
                 g.response.source !== 'ambassador' &&
                 g.response.kind !== 'nexusAdvisorFlip' &&
                 g.response.kind !== 'nexusSardaukar' &&
+                g.response.kind !== 'nexusEcazBetrayal' &&
                 g.response.kind !== 'faceDancerReplacement' && (
                   <p className="notice">{g.response.intent}</p>
                 )}
@@ -2392,6 +2408,10 @@ export function GameTable({
                                                                                                   ? 'Enter a Discovery location'
                                                                                                 : g.decision.kind === 'ecologicalStorm'
                                                                                                   ? 'Ecological Testing Station'
+                                                                                                : g.decision.kind === 'nexusFremenCunningOffer'
+                                                                                                  ? 'Empty worm: Fremen Cunning'
+                                                                                                  : g.decision.kind === 'nexusFremenCunningRide'
+                                                                                                    ? 'Fremen Cunning remote ride'
                                                                                                 : g
                                                                                                       .decision
                                                                                                       .kind ===
@@ -3168,6 +3188,72 @@ export function GameTable({
                   {actionButton('Do not protect', {
                     type: 'decision',
                     accept: false,
+                  })}
+                </>
+              ) : g.decision.kind === 'nexusFremenCunningOffer' ? (
+                <>
+                  <p className="muted">An empty sandworm appearance can trigger Fremen Cunning.
+                    If you hold your own Fremen Nexus Card, spend it now to arrange a remote
+                    ride from one occupied desert territory after this Nexus. The worm still resolves normally.</p>
+                  {g.nexusCards?.card === 'fremen' && actionButton('Spend Fremen Cunning', {
+                    type: 'decision', event: g.decision.event, accept: true,
+                  })}
+                  {actionButton('Continue without Cunning', {
+                    type: 'decision', event: g.decision.event, accept: false,
+                  })}
+                </>
+              ) : g.decision.kind === 'nexusFremenCunningRide' ? (
+                <>
+                  <p className="muted">The Nexus has ended. Choose one occupied desert territory,
+                    typed forces and a legal destination for the extra ride. The original
+                    worm appearance has already resolved; this does not consume normal movement.</p>
+                  <label>Desert source
+                    <select value={source} onChange={e => {
+                      setSource(e.target.value);
+                      setRideForces({});
+                      setEliteForces({});
+                    }}>
+                      <option value="">Choose source</option>
+                      {[...new Set(Object.entries(me.forces)
+                        .filter(([key, count]) => count > 0 &&
+                          splitLocation(key).sector !== g.storm &&
+                          TERRITORIES.some(t => t.id === splitLocation(key).territory && t.type === 'sand'))
+                        .map(([key]) => splitLocation(key).territory))].map(id =>
+                        <option key={id} value={id}>{combatName(id)}</option>)}
+                    </select>
+                  </label>
+                  {Object.entries(me.forces).filter(([key, count]) =>
+                    count > 0 && splitLocation(key).territory === source &&
+                    splitLocation(key).sector !== g.storm).map(([key, count]) =>
+                    <div key={key}>
+                      <label>Sector {splitLocation(key).sector} · {count} forces
+                        <Input type="number" min={0} max={count}
+                          value={rideForces[key] ?? 0}
+                          onChange={e => setRideForces({
+                            ...rideForces, [key]: Number(e.target.value),
+                          })} />
+                      </label>
+                      {me.elites && (
+                        <EliteCount label={`Fedaykin from sector ${splitLocation(key).sector}`}
+                          max={Math.min(rideForces[key] ?? 0, me.elites.forces[key] ?? 0)}
+                          value={eliteForces[key] ?? 0}
+                          onChange={n => setEliteForces({ ...eliteForces, [key]: n })} />
+                      )}
+                    </div>)}
+                  {destination}
+                  {actionButton('Ride remotely', {
+                    type: 'decision', event: g.decision.event, accept: true,
+                    source, territory: selected, sector,
+                    forces: Object.fromEntries(Object.entries(rideForces)
+                      .filter(([key, count]) => count > 0 && splitLocation(key).territory === source)
+                      .map(([key, count]) => [key, {
+                        normal: count - (eliteForces[key] ?? 0),
+                        elite: eliteForces[key] ?? 0,
+                      }])),
+                  }, !source || !Object.entries(rideForces).some(([key, count]) =>
+                    count > 0 && splitLocation(key).territory === source))}
+                  {actionButton('Decline remote ride', {
+                    type: 'decision', event: g.decision.event, accept: false,
                   })}
                 </>
               ) : g.decision.kind === 'wormRide' ? (

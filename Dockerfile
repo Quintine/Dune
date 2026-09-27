@@ -4,6 +4,8 @@ ENV CI=true WRANGLER_SEND_METRICS=false GOMEMLIMIT=2GiB GOMAXPROCS=2
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+ARG BUILD_REVISION
+ENV BUILD_REVISION=${BUILD_REVISION}
 RUN npm run build
 
 FROM node:22-bookworm-slim AS runtime
@@ -18,6 +20,7 @@ COPY package.json ./
 COPY tools/wrangler.local.json ./tools/wrangler.local.json
 COPY tools/admin-access.mjs ./tools/admin-access.mjs
 COPY deploy/container-entrypoint.sh ./deploy/container-entrypoint.sh
+COPY deploy/bootstrap-admin.mjs ./deploy/bootstrap-admin.mjs
 COPY deploy/serve.mjs ./deploy/serve.mjs
 RUN mkdir -p /data /app/.wrangler && chown node:node /data /app/.wrangler
 USER node

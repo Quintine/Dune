@@ -76,6 +76,8 @@ const DECISIONS = {
   greatMakerVote: true,
   greatMakerRide: true,
   wormRide: true,
+  nexusFremenCunningOffer: true,
+  nexusFremenCunningRide: true,
   moritaniRetention: true,
   battleCards: true,
 } satisfies Record<Decision['kind'], true>;
@@ -92,6 +94,8 @@ const RESPONSES = {
   nexusAdvisorFlip: true,
   nexusSardaukar: true,
   nexusGuildCunning: true,
+  nexusFremenCunning: true,
+  nexusEcazBetrayal: true,
   advisor: true,
   emperorIncome: true,
   richesePurchaseIncome: true,

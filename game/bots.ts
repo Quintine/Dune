@@ -14,6 +14,8 @@ import { nexusChoamTradeBotActions } from './nexus-choam-trade-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from './nexus-guild-cunning-options';
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
 import { moritaniBetrayalBotActions } from './nexus-moritani-betrayal-options';
+import { ecazBetrayalBotActions } from './nexus-ecaz-betrayal-options';
+import { ecazBetrayalOffer } from './nexus-ecaz-betrayal';
 import { ECAZ_START_FORCES, ECAZ_START_LOCATIONS, quoteEcazStartingForces } from './ecaz-setup';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
 import { nexusCardBotActions } from './nexus-card-options';
@@ -1445,13 +1447,19 @@ function policyActions(g: GameView): Action[] {
       fighterCount(me, splitLocation(g.response.location).territory) > 0) ||
       (g.response.kind === 'nexusAdvisorFlip' &&
         !!g.nexusAdvisors?.pending?.territories.some((territory) => fighterCount(me, territory) > 0));
+    const ecazBetrayalThreat =
+      g.response.kind === 'nexusEcazBetrayal' &&
+      !!g.response.location &&
+      fighterCount(me, g.response.location) > 0 &&
+      !!me.ally &&
+      g.players.some(player => player.id === me.ally && player.faction === 'ecaz');
     const card = me.hand?.find((c) =>
       g.responseControls?.cancelCards.includes(c.id),
     );
     if (
       card &&
       benefitEnemy &&
-      ((level >= 2 && (targeted || movementThreat || auditThreat)) ||
+      ((level >= 2 && (targeted || movementThreat || ecazBetrayalThreat || auditThreat)) ||
         (level === 3 &&
           ([
             'harkonnenBonus',
@@ -2500,6 +2508,31 @@ function policyActions(g: GameView): Action[] {
     if (d.kind === 'discoveryEntry') return discoveryEntryBotActions(g);
     if (d.kind === 'ecologicalStorm') return discoveryStormActions(g);
     if (d.kind === 'greatMakerVote' || d.kind === 'greatMakerRide') return greatMakerBotActions(g);
+    if (d.kind === 'nexusFremenCunningOffer')
+      return [{ type: 'decision', event: d.event,
+        accept: g.nexusCards?.card === 'fremen' && me.faction === 'fremen' &&
+          !me.ally && Object.entries(me.forces).some(([key, count]) =>
+            count > 0 && splitLocation(key).sector !== g.storm &&
+            TERRITORIES.some(t => t.id === splitLocation(key).territory && t.type === 'sand')) }];
+    if (d.kind === 'nexusFremenCunningRide') {
+      const decline: Action = { type: 'decision', event: d.event, accept: false };
+      const candidates: Action[] = [];
+      for (const [key, count] of Object.entries(me.forces)) {
+        if (count <= 0 || splitLocation(key).sector === g.storm) continue;
+        const source = splitLocation(key).territory;
+        if (!TERRITORIES.some(t => t.id === source && t.type === 'sand')) continue;
+        const elite = me.elites?.forces[key] ?? 0;
+        const forces = { [key]: { normal: count - elite, elite } };
+        for (const to of destinations(g)) {
+          if (to.t === source || !botEntryAllowed(g, me, to.t, to.s, 'move') ||
+            territoryEntryBlock(g.players, me.id, to.t)) continue;
+          candidates.push({ type: 'decision', event: d.event, accept: true,
+            source, forces, territory: to.t, sector: to.s });
+          if (candidates.length >= 16) return [...candidates, decline];
+        }
+      }
+      return [...candidates, decline];
+    }
     if (d.kind === 'wormProtection')
       return [{ type: 'decision', accept: true }];
     if (d.kind === 'stormLosses')
@@ -3798,6 +3831,8 @@ export function botActions(g: GameView): Action[] {
   if (trade.length) return trade;
   const moritaniBetrayal = moritaniBetrayalBotActions(g);
   if (moritaniBetrayal.length) return moritaniBetrayal;
+  const ecazBetrayal = ecazBetrayalBotActions(g);
+  if (ecazBetrayal.length) return ecazBetrayal;
   const sardaukar = nexusSardaukarBotActions(g);
   if (sardaukar.length) return sardaukar;
   const advisorConversion = nexusAdvisorBotActions(g);
@@ -3919,9 +3954,15 @@ export function runBots(state: Game, limit = 96): Game {
   for (let step = 0; step < limit; step++) {
     let next: Game | undefined;
     const actors = g.players.filter((p) => p.bot ?? p.autopilot);
-    // Give an automated optional supplier a chance before a seated-earlier
-    // recipient spends the shipment. Humans retain their ordinary actions.
-    if (g.phase === 5 && junctionSponsor(g) && !currentJunctionOffer(g))
+    // A card holder's only pre-shipment declaration must run before an
+    // earlier-seated movement bot consumes the shared opening.
+    const ecazHolder = g.phase === 5 && g.nexusCards?.cards
+      ? actors.find(actor => g.nexusCards!.cards!.hands[actor.id] === 'ecaz' &&
+        ecazBetrayalOffer(g, actor.id)?.blocked === null)
+      : undefined;
+    if (ecazHolder)
+      actors.sort((a, b) => Number(b.id === ecazHolder.id) - Number(a.id === ecazHolder.id));
+    else if (g.phase === 5 && junctionSponsor(g) && !currentJunctionOffer(g))
       actors.sort((a, b) => Number(b.faction === 'guild') - Number(a.faction === 'guild'));
     for (const p of actors) {
       for (const action of botActions(viewGame(g, p.id))) {

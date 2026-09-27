@@ -99,6 +99,11 @@ a:focus-visible {
   font-size: 14px;
   color: #c6c6b9;
 }
+.build-revision {
+  color: var(--muted-foreground);
+  font-size: 12px;
+  white-space: nowrap;
+}
 .masthead-right a {
   display: flex;
   gap: 9px;
