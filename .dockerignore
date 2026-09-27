@@ -27,6 +27,7 @@
 !tools/**
 !deploy/container-entrypoint.sh
 !deploy/serve.mjs
+!deploy/bootstrap-admin.mjs
 **/*.orig
 **/*.rej
 **/.env*

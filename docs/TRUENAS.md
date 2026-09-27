@@ -49,6 +49,10 @@ access can use that key, so restrict log access and do not publish diagnostics
 containing it. Existing accounts never trigger a new key on restart or update.
 See [admin access recovery](ADMIN_PANEL.md#initial-owner-and-access-recovery).
 
+The Docker build context explicitly allows `deploy/bootstrap-admin.mjs`; keep
+that allowlist in `.dockerignore` when changing the startup entrypoint. A CI
+image-build failure does not replace the running NAS image or provision a key.
+
 The container serves the built Worker directly through pinned Miniflare/workerd,
 with persisted D1-compatible SQLite. Wrangler only applies startup migrations.
 The development proxy produced intermittent POST failures after rejected request
