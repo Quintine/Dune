@@ -28,7 +28,7 @@ import { privateOutputDirectory, sourceSnapshot } from './verification';
 const DEFAULT_SEED = 20_260_926;
 const DEFAULT_MAX_ACTIONS = 3_500;
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard', 'Brutal'] as const;
-type Profile = 'base' | 'choam' | 'ecaz' | 'combined' | 'homeworld' | 'nexus' | 'homeworld-nexus' | 'choam-roster' | 'ecaz-roster' | 'moritani-skills' | 'tleilaxu-skills' | 'ix-skills' | 'choam-skills';
+type Profile = 'base' | 'choam' | 'ecaz' | 'combined' | 'homeworld' | 'nexus' | 'homeworld-nexus' | 'choam-roster' | 'ecaz-roster' | 'ix-roster' | 'moritani-skills' | 'tleilaxu-skills' | 'ix-skills' | 'choam-skills';
 type Rules = 'basic' | 'advanced';
 
 type Scenario = {
@@ -134,6 +134,7 @@ const MODULE_SCENARIOS: readonly Scenario[] = [
 const EXPANSION_ROSTER_SCENARIOS: readonly Scenario[] = [
   { profile: 'choam-roster' as const, expansions: ['choam'], roster: ['choam', 'richese', 'emperor', 'guild', 'harkonnen', 'fremen'] as FactionId[] },
   { profile: 'ecaz-roster' as const, expansions: ['ecaz'], roster: ['moritani', 'ecaz', 'atreides', 'beneGesserit', 'harkonnen', 'guild'] as FactionId[] },
+  { profile: 'ix-roster' as const, expansions: ['ix'], roster: ['ixians', 'tleilaxu', 'emperor', 'guild', 'harkonnen', 'fremen'] as FactionId[] },
 ].flatMap(({ profile, expansions, roster }, family) =>
   [2, 3, 4, 5, 6].flatMap(players =>
     (['basic', 'advanced'] as const).map((rules, index) => ({
@@ -214,7 +215,7 @@ type Result = {
 function usage() {
   return (
     'Usage: node --import tsx tools/faction-games.ts --out NEW_PRIVATE_DIR ' +
-    '[--seed UINT32] [--profile all|base|choam|ecaz|combined|homeworld|nexus|homeworld-nexus|choam-roster|ecaz-roster|moritani-skills|tleilaxu-skills|ix-skills|choam-skills] ' +
+    '[--seed UINT32] [--profile all|base|choam|ecaz|combined|homeworld|nexus|homeworld-nexus|choam-roster|ecaz-roster|ix-roster|moritani-skills|tleilaxu-skills|ix-skills|choam-skills] ' +
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
     'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; base, Homeworld, Nexus, combined Homeworld-Nexus, expansion roster and skill profiles default to their 2–6-player samples. --players requires one of these profiles. Output must be a new private directory outside the checkout.'
@@ -249,15 +250,15 @@ function positive(value: string | undefined) {
 
 function scenarioName(scenario: Scenario) {
   return scenario.profile === 'base' || scenario.profile === 'homeworld' || scenario.profile === 'nexus' || scenario.profile === 'homeworld-nexus' ||
-    scenario.profile === 'choam-roster' || scenario.profile === 'ecaz-roster' || skillProfile(scenario.profile)
+    scenario.profile === 'choam-roster' || scenario.profile === 'ecaz-roster' || scenario.profile === 'ix-roster' || skillProfile(scenario.profile)
     ? `${scenario.profile}-${scenario.roster.length}-${scenario.rules}`
     : `${scenario.profile}-${scenario.rules}`;
 }
 
 function parseProfile(value: string | undefined) {
   const profile = value ?? 'all';
-  if (!['all', 'base', 'choam', 'ecaz', 'combined', 'homeworld', 'nexus', 'homeworld-nexus', 'choam-roster', 'ecaz-roster', 'moritani-skills', 'tleilaxu-skills', 'ix-skills', 'choam-skills'].includes(profile))
-    throw new Error('--profile must be all, base, choam, ecaz, combined, homeworld, nexus, homeworld-nexus, choam-roster, ecaz-roster, moritani-skills, tleilaxu-skills, ix-skills or choam-skills.');
+  if (!['all', 'base', 'choam', 'ecaz', 'combined', 'homeworld', 'nexus', 'homeworld-nexus', 'choam-roster', 'ecaz-roster', 'ix-roster', 'moritani-skills', 'tleilaxu-skills', 'ix-skills', 'choam-skills'].includes(profile))
+    throw new Error('--profile must be all, base, choam, ecaz, combined, homeworld, nexus, homeworld-nexus, choam-roster, ecaz-roster, ix-roster, moritani-skills, tleilaxu-skills, ix-skills or choam-skills.');
   return profile as Profile | 'all';
 }
 
@@ -560,14 +561,14 @@ async function main() {
   const profile = parseProfile(values.profile);
   const rules = parseRules(values.rules);
   const players = parsePlayers(values.players);
-  if (supplied('players') && !['base', 'homeworld', 'nexus', 'homeworld-nexus', 'choam-roster', 'ecaz-roster'].includes(profile) && !skillProfile(profile))
-    throw new Error('--players requires --profile base, homeworld, nexus, homeworld-nexus, choam-roster, ecaz-roster or a skill profile.');
+  if (supplied('players') && !['base', 'homeworld', 'nexus', 'homeworld-nexus', 'choam-roster', 'ecaz-roster', 'ix-roster'].includes(profile) && !skillProfile(profile))
+    throw new Error('--players requires --profile base, homeworld, nexus, homeworld-nexus, choam-roster, ecaz-roster, ix-roster or a skill profile.');
   if (skillProfile(profile) && rules === 'advanced')
     throw new Error('Expansion Leader Skills profiles currently support only Basic samples.');
   const resume = values.resume ? resumedGame(values.resume) : null;
   const requestedSamples = profile === 'homeworld' || profile === 'nexus' || profile === 'homeworld-nexus'
     ? MODULE_SCENARIOS
-    : profile === 'choam-roster' || profile === 'ecaz-roster' ? EXPANSION_ROSTER_SCENARIOS
+    : profile === 'choam-roster' || profile === 'ecaz-roster' || profile === 'ix-roster' ? EXPANSION_ROSTER_SCENARIOS
     : profile === 'base' ? BASE_SCENARIOS
     : profile === 'moritani-skills' ? MORITANI_SKILLS_SCENARIOS
     : profile === 'tleilaxu-skills' ? TLEILAXU_SKILLS_SCENARIOS

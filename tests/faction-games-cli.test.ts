@@ -255,7 +255,7 @@ void test('combined modules reach saved Nexus draws and actual Homeworld shipmen
 
 void test('expansion-roster snapshots resume their own Advanced games rather than the fixed four-seat sample', (t) => {
   const area = temporary(t);
-  for (const [profile, seed] of [['choam-roster', '20260928'], ['ecaz-roster', '20260927']] as const) {
+  for (const [profile, seed] of [['choam-roster', '20260928'], ['ecaz-roster', '20260927'], ['ix-roster', '20260927']] as const) {
     const name = `${profile}-4-advanced`;
     const initial = join(area, `${profile}-initial`);
     assert.equal(run(initial, '--profile', profile, '--players', '4', '--rules', 'advanced', '--seed', seed, '--max-actions', '1').status, 1);
@@ -272,6 +272,23 @@ void test('expansion-roster snapshots resume their own Advanced games rather tha
     assert.deepEqual(result.rejected, {});
     assert.ok(result.restores > 0);
   }
+});
+
+void test('six-seat Advanced Ixian/Tleilaxu game resolves Technology and Face Dancers through JSON restores', (t) => {
+  const out = join(temporary(t), 'ix-complete');
+  const runResult = run(out, '--profile', 'ix-roster', '--players', '6', '--rules', 'advanced', '--seed', '20260927');
+  assert.equal(runResult.status, 0, runResult.stderr);
+  const evidence = json<{ results: (CliResult & {
+    used: Record<string, number>;
+    rejected: Record<string, number>;
+    restores: number;
+  })[] }>(join(out, 'results.json')).results[0];
+  assert.equal(evidence.name, 'ix-roster-6-advanced');
+  assert.equal(evidence.outcome, 'complete');
+  assert.ok(evidence.used['decision:ixTechnology'] > 0);
+  assert.ok(evidence.used['decision:faceDance'] > 0);
+  assert.deepEqual(evidence.rejected, {});
+  assert.ok(evidence.restores > 0);
 });
 
 void test('three-seat Nexus samples preserve their module and roster across saved continuation', (t) => {

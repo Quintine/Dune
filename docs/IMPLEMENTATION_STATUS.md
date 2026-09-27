@@ -1,5 +1,9 @@
 # Dune implementation status
 
+## 27 September 2026 — Ixian/Tleilaxu standalone roster samples
+
+The [expansion sample runner](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) now exercises the Ixian/Tleilaxu pair with two through six seats under Basic and Advanced rules. At seed 20260927 all ten genuine setup/play games completed: 6,365 accepted actions, 169 JSON restores and no rejected actions. The six-seat Advanced trace reaches both Ixian Technology and Tleilaxu Face Dancer decisions, along with battle, revival and shipment paths. An interrupted four-seat Advanced run also resumes to completion. The source-bound report is `/tmp/dune-ix-roster-checkpoint-20260927-final/report.json`. This is bounded playable coverage, not full E1 rules certification or public expansion-start authorization.
+
 ## 27 September 2026 — CHOAM/Richese and Ecaz/Moritani roster samples
 
 The [sample runner](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) now covers each expansion pair in Basic and Advanced at two through six seats, using genuine faction setup, legal AI decisions and periodic JSON restoration. The ten CHOAM/Richese games at seed 20260928 and ten Ecaz/Moritani games at seed 20260927 completed: 6,523 accepted actions, 167 restores, no rejected actions. Source-bound checkpoint reports are `/tmp/dune-choam-roster-checkpoint-20260928/report.json` and `/tmp/dune-ecaz-roster-checkpoint-20260927/report.json`. A separate CHOAM/Richese seed 20260927 completed nine games but stopped in six-seat Advanced Bidding after 1,728 accepted actions: an exhausted Richese cache reached the existing explicit unresolved normal-auction-count guard. That source question remains open, not papered over by the passing matrix. These samples do not certify full expansion rules, all rosters or public starts.
