@@ -6369,7 +6369,10 @@ export function initializePairedNexusGameForAudit(state: Game): Game {
       state.players.some(player => player.faction === 'richese')) ||
     (expansion === 'ecaz' &&
       state.players.some(player => player.faction === 'ecaz') &&
-      state.players.some(player => player.faction === 'moritani'))),
+      state.players.some(player => player.faction === 'moritani')) ||
+    (expansion === 'ix' &&
+      state.players.some(player => player.faction === 'ixians') &&
+      state.players.some(player => player.faction === 'tleilaxu'))),
     'The paired Nexus sample requires both selected expansion factions and their deck.');
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null &&
     !state.homeworlds && !state.leaderSkills && !state.discoveryEnabled && !state.ecazTreachery,

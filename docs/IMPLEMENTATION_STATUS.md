@@ -1,5 +1,9 @@
 # Dune implementation status
 
+## 27 September 2026 — Ixian/Tleilaxu with Nexus Cards
+
+The paired-faction Nexus sample path now includes genuine Ixian/Tleilaxu games without opening the public expansion/module starts. At seed 20260927 all ten two-through-six-seat Basic/Advanced [samples](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) completed with 3,853 accepted actions, 100 JSON restores, five unallied card choices and no rejected actions. The three-seat Basic and Advanced traces reach Ixian auction decisions and Nexus draws; Basic reaches a Face Dancer decision, Advanced an Ixian Technology decision. A five-seat Basic trace also plays one Atreides Nexus effect, while an interrupted four-seat Advanced game resumes its own roster. The source-bound report is `/tmp/dune-ix-nexus-checkpoint-20260927/report.json`. This does not certify all card effects, combined module configurations or complete expansion rules.
+
 ## 27 September 2026 — Ecaz/Moritani with Nexus Cards
 
 The paired-faction Nexus audit setup now includes genuine Ecaz/Moritani games, retaining the CHOAM/Richese profile and both public start gates. At seed 20260927 all ten two-through-six-seat Basic/Advanced [samples](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) completed: 3,827 accepted actions, 98 JSON restores, five unallied card choices and no rejected actions. A three-seat Basic trace reaches Ecaz Ambassador decisions, battles and Nexus drawing; an interrupted four-seat Advanced game resumes as its own Ecaz/Nexus roster. The source-bound report is `/tmp/dune-ecaz-nexus-checkpoint-20260927/report.json`. None of those draws activated a Nexus card effect; card-family and combined-mode completion remain gated.
