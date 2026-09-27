@@ -220,6 +220,39 @@ void test('Homeworld samples cover each two-to-six-seat roster under both rules 
   assertFailedEvidence(resumed, 'homeworld-2-advanced', 1049, true);
 });
 
+void test('combined Homeworld and Nexus snapshots keep both physical modules across saved continuation', (t) => {
+  const area = temporary(t);
+  const out = join(area, 'combined');
+  assert.equal(run(out, '--profile', 'homeworld-nexus', '--players', '3', '--rules', 'advanced', '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(out, 'homeworld-nexus-3-advanced', 1061, false);
+  const snapshot = join(out, 'failed-homeworld-nexus-3-advanced.json');
+  const game = json<Record<string, unknown>>(snapshot);
+  assert.equal((game.players as unknown[]).length, 3);
+  assert.ok(game.homeworlds);
+  assert.ok(game.nexusCards);
+  const resumed = join(area, 'resumed');
+  assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(resumed, 'homeworld-nexus-3-advanced', 1061, true);
+});
+
+void test('combined modules reach saved Nexus draws and actual Homeworld shipment in one complete game', (t) => {
+  const out = join(temporary(t), 'complete');
+  const result = run(out, '--profile', 'homeworld-nexus', '--players', '5', '--rules', 'advanced', '--seed', '20260927');
+  assert.equal(result.status, 0, result.stderr);
+  const report = json<CliReport>(join(out, 'report.json'));
+  const evidence = json<{ results: (CliResult & {
+    used: Record<string, number>;
+    rejected: Record<string, number>;
+    restores: number;
+  })[] }>(join(out, 'results.json')).results[0];
+  assert.equal(report.status, 'passed');
+  assert.equal(evidence.outcome, 'complete');
+  assert.ok(evidence.used.nexusCardChoice > 0);
+  assert.ok(evidence.used.homeworldShip > 0);
+  assert.deepEqual(evidence.rejected, {});
+  assert.ok(evidence.restores > 0);
+});
+
 void test('three-seat Nexus samples preserve their module and roster across saved continuation', (t) => {
   const area = temporary(t);
   for (const [rules, ordinal] of [['basic', 42], ['advanced', 43]] as const) {

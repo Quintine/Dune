@@ -100,6 +100,7 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined --profile 
 # Homeworld and Nexus with two through six base factions, Basic and Advanced.
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-homeworld --profile homeworld
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-nexus --profile nexus
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-homeworld-nexus --profile homeworld-nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-nexus-three --profile nexus --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json
 ```
@@ -107,15 +108,16 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /pr
 Default and `--profile all` retain the original six fixed CHOAM/Richese,
 Ecaz/Moritani and combined Basic/Advanced samples. `--profile base` selects ten
 additional samples: Basic and Advanced with two through six players.
-`--players 2..6` narrows the base, Homeworld or Nexus profile; omission or
-`all` retains all five counts. The fixed base roster adds Atreides, Harkonnen,
-Fremen, Emperor, Guild and Bene Gesserit in that order. These are sample
-rosters, not an assertion that these are the only rules-permitted player-count
-configurations. Homeworld and Nexus each run two through six base factions
-under Basic and Advanced using the actual optional-module setup seams.
-Their output names include the player count. Homeworld's original four-seat
-seed offsets remain 36–37; its other rosters use 48–51 and 54–57. Nexus's
-six-seat offsets remain 38–39; its smaller rosters use 40–47. These samples
+`--players 2..6` narrows the base, Homeworld, Nexus or combined
+`homeworld-nexus` profile; omission or `all` retains all five counts. The fixed
+base roster adds Atreides, Harkonnen, Fremen, Emperor, Guild and Bene
+Gesserit in that order. These are sample rosters, not an assertion that these
+are the only rules-permitted player-count configurations. Each optional
+module profile runs two through six base factions under Basic and Advanced
+using the actual setup seams. Output names include the player count.
+Homeworld's original four-seat seed offsets remain 36–37; its other rosters
+use 48–51 and 54–57. Nexus's six-seat offsets remain 38–39; its smaller
+rosters use 40–47. The combined module uses offsets 58–67. These samples
 do not open public module starts or assert complete module interaction
 coverage.
 
@@ -135,15 +137,23 @@ Junction offers/shipments and a Caladan reinforcement decision; these
 observations do not certify every Homeworld occupation or expansion
 interaction.
 
+At the same seed, all ten combined Homeworld/Nexus samples completed without
+rejected actions and with JSON restores. The five-seat Advanced game reached
+three Nexus Card choices and eight Homeworld shipments in one physical game,
+including 26 restores. This does not certify every interaction between the
+two independent modules or either module's unfinished card effects.
+
 `--profile moritani-skills` adds five Basic samples with Moritani, then Emperor,
 Guild, Harkonnen, Fremen and Bene Gesserit. `--players` also narrows this profile;
 Advanced requests fail before running. Its seed offsets are 16–20, leaving
 existing samples unchanged. The full fourteen-card skill census and ordinary
 Moritani/base Traitor census are checked throughout. `--resume` preserves this
 explicit profile; other optional modules still fail its admission checks.
-Homeworld and Nexus snapshots may be resumed only when their saved module and
-fixed roster match the corresponding profile; unsupported module combinations
-are still rejected.
+Homeworld, Nexus and combined snapshots resume only when their saved modules
+and fixed rosters match a supported profile; other optional module
+combinations remain excluded. An edited snapshot with a removed module can
+match a different fixed profile, so verify its original private report
+before relying on resumed provenance.
 
 All samples use genuine setup and saved AI profiles, cycling Easy, Medium,
 Hard and Brutal by seat. Smaller games necessarily contain fewer profiles;
