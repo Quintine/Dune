@@ -101,6 +101,8 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined --profile 
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-homeworld --profile homeworld
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-nexus --profile nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-homeworld-nexus --profile homeworld-nexus
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-choam-roster --profile choam-roster
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-ecaz-roster --profile ecaz-roster
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-nexus-three --profile nexus --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json
 ```
@@ -108,18 +110,22 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /pr
 Default and `--profile all` retain the original six fixed CHOAM/Richese,
 Ecaz/Moritani and combined Basic/Advanced samples. `--profile base` selects ten
 additional samples: Basic and Advanced with two through six players.
-`--players 2..6` narrows the base, Homeworld, Nexus or combined
-`homeworld-nexus` profile; omission or `all` retains all five counts. The fixed
-base roster adds Atreides, Harkonnen, Fremen, Emperor, Guild and Bene
-Gesserit in that order. These are sample rosters, not an assertion that these
-are the only rules-permitted player-count configurations. Each optional
-module profile runs two through six base factions under Basic and Advanced
-using the actual setup seams. Output names include the player count.
-Homeworld's original four-seat seed offsets remain 36–37; its other rosters
-use 48–51 and 54–57. Nexus's six-seat offsets remain 38–39; its smaller
-rosters use 40–47. The combined module uses offsets 58–67. These samples
-do not open public module starts or assert complete module interaction
-coverage.
+`--players 2..6` narrows the base, Homeworld, Nexus, combined
+`homeworld-nexus`, `choam-roster` or `ecaz-roster` profile; omission or `all`
+retains all five counts. The fixed base roster adds Atreides, Harkonnen,
+Fremen, Emperor, Guild and Bene Gesserit in that order. These are sample
+rosters, not an assertion that they are the only rules-permitted player-count
+configurations. Each optional module profile runs two through six base factions
+under Basic and Advanced using the actual setup seams. The two expansion-roster
+profiles also run Basic and Advanced with their respective physical expansion
+enabled: CHOAM/Richese start with CHOAM then Richese, Ecaz/Moritani with
+Moritani then Ecaz; subsequent seats extend each to six without changing
+existing fixed four-seat samples. Their seed offsets are 68–77 and 78–87.
+Output names include the player count. Homeworld's original four-seat seed
+offsets remain 36–37; its other rosters use 48–51 and 54–57. Nexus's six-seat
+offsets remain 38–39; its smaller rosters use 40–47. The combined module uses
+offsets 58–67. These samples do not open public module or expansion starts or
+assert complete interaction coverage.
 
 All-AI Nexus samples now make public reciprocal offers as well as accepting
 them, so an actual alliance can form without a human proposer. At the

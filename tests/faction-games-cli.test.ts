@@ -253,6 +253,27 @@ void test('combined modules reach saved Nexus draws and actual Homeworld shipmen
   assert.ok(evidence.restores > 0);
 });
 
+void test('expansion-roster snapshots resume their own Advanced games rather than the fixed four-seat sample', (t) => {
+  const area = temporary(t);
+  for (const [profile, seed] of [['choam-roster', '20260928'], ['ecaz-roster', '20260927']] as const) {
+    const name = `${profile}-4-advanced`;
+    const initial = join(area, `${profile}-initial`);
+    assert.equal(run(initial, '--profile', profile, '--players', '4', '--rules', 'advanced', '--seed', seed, '--max-actions', '1').status, 1);
+    const snapshot = join(initial, `failed-${name}.json`);
+    const continued = join(area, `${profile}-continued`);
+    const resumed = run(continued, '--resume', snapshot, '--seed', seed);
+    assert.equal(resumed.status, 0, resumed.stderr);
+    const report = json<CliReport>(join(continued, 'report.json'));
+    const result = json<{ results: (CliResult & { restores: number; rejected: Record<string, number> })[] }>(join(continued, 'results.json')).results[0];
+    assert.equal(report.status, 'passed');
+    assert.equal(result.name, name);
+    assert.equal(result.outcome, 'complete');
+    assert.equal(result.resumed, true);
+    assert.deepEqual(result.rejected, {});
+    assert.ok(result.restores > 0);
+  }
+});
+
 void test('three-seat Nexus samples preserve their module and roster across saved continuation', (t) => {
   const area = temporary(t);
   for (const [rules, ordinal] of [['basic', 42], ['advanced', 43]] as const) {

@@ -1,5 +1,9 @@
 # Dune implementation status
 
+## 27 September 2026 — CHOAM/Richese and Ecaz/Moritani roster samples
+
+The [sample runner](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) now covers each expansion pair in Basic and Advanced at two through six seats, using genuine faction setup, legal AI decisions and periodic JSON restoration. The ten CHOAM/Richese games at seed 20260928 and ten Ecaz/Moritani games at seed 20260927 completed: 6,523 accepted actions, 167 restores, no rejected actions. Source-bound checkpoint reports are `/tmp/dune-choam-roster-checkpoint-20260928/report.json` and `/tmp/dune-ecaz-roster-checkpoint-20260927/report.json`. A separate CHOAM/Richese seed 20260927 completed nine games but stopped in six-seat Advanced Bidding after 1,728 accepted actions: an exhausted Richese cache reached the existing explicit unresolved normal-auction-count guard. That source question remains open, not papered over by the passing matrix. These samples do not certify full expansion rules, all rosters or public starts.
+
 ## 27 September 2026 — Bounded CHOAM Nexus Betrayal
 
 The [CHOAM Betrayal panel](NEXUS_CARD_RULES.md#bounded-choam-betrayal-runtime) now has a playable Basic/Advanced path when CHOAM is seated. An unallied rival spends the physical CHOAM Nexus card at a clean boundary; the server samples and discards one actual held CHOAM Treachery Card without spice compensation. The holder-only control never offers a rival card choice or identities; its hand count appears only during Bidding. Bots act only when that count is public. A saved discard receipt completes once after JSON restore, including later same-turn Nexus recycling. Focused quote, controls, bot, physical inventory, rejection and interruption cases pass; the isolated browser table rendered the enabled holder control without room writes. Complete Nexus, combined-module and deployed revision acceptance remain open.
