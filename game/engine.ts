@@ -6360,15 +6360,20 @@ export function initializeNexusGameForAudit(state: Game): Game {
     'Enable Nexus cards in a fresh audit lobby first.');
   return initializeSetupGameForAudit(state, !!state.homeworlds, true);
 }
-/** Offline CHOAM/Richese with Nexus Cards; public expansion/module starts remain gated. */
-export function initializeChoamNexusGameForAudit(state: Game): Game {
-  requireRule(state.expansions.length === 1 && state.expansions[0] === 'choam' &&
-    state.players.some(player => player.faction === 'choam') &&
-    state.players.some(player => player.faction === 'richese'),
-    'The CHOAM Nexus sample requires both expansion factions and their deck.');
+/** Offline paired-faction Nexus setup; public expansion/module starts remain gated. */
+export function initializePairedNexusGameForAudit(state: Game): Game {
+  const expansion = state.expansions[0];
+  requireRule(state.expansions.length === 1 &&
+    ((expansion === 'choam' &&
+      state.players.some(player => player.faction === 'choam') &&
+      state.players.some(player => player.faction === 'richese')) ||
+    (expansion === 'ecaz' &&
+      state.players.some(player => player.faction === 'ecaz') &&
+      state.players.some(player => player.faction === 'moritani'))),
+    'The paired Nexus sample requires both selected expansion factions and their deck.');
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null &&
     !state.homeworlds && !state.leaderSkills && !state.discoveryEnabled && !state.ecazTreachery,
-    'Enable only Nexus Cards in a fresh CHOAM expansion lobby.');
+    'Enable only Nexus Cards in a fresh paired expansion lobby.');
   return initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
 }
 
@@ -6464,7 +6469,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
         ),
       ),
     factions && nexus
-      ? 'The CHOAM Nexus audit needs a fresh expansion lobby without other optional modules.'
+      ? 'The paired expansion Nexus audit needs a fresh lobby without other optional modules.'
       : factions
       ? 'The faction prototype supports base factions and the selected expansion factions without optional modules.'
       : choam

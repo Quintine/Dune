@@ -1,5 +1,9 @@
 # Dune implementation status
 
+## 27 September 2026 — Ecaz/Moritani with Nexus Cards
+
+The paired-faction Nexus audit setup now includes genuine Ecaz/Moritani games, retaining the CHOAM/Richese profile and both public start gates. At seed 20260927 all ten two-through-six-seat Basic/Advanced [samples](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) completed: 3,827 accepted actions, 98 JSON restores, five unallied card choices and no rejected actions. A three-seat Basic trace reaches Ecaz Ambassador decisions, battles and Nexus drawing; an interrupted four-seat Advanced game resumes as its own Ecaz/Nexus roster. The source-bound report is `/tmp/dune-ecaz-nexus-checkpoint-20260927/report.json`. None of those draws activated a Nexus card effect; card-family and combined-mode completion remain gated.
+
 ## 27 September 2026 — CHOAM/Richese with Nexus Cards
 
 The offline [sample runner](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games) now admits genuine CHOAM/Richese setup with the physical Nexus module at two through six seats in Basic and Advanced. At seed 20260928 all ten games completed with 3,481 accepted actions, 90 periodic JSON restores, no rejected actions and one unallied Nexus Card choice. A separate seed 20260927 completed nine games with three choices, then stopped in six-seat Advanced Bidding after 1,863 accepted actions at the existing unresolved exhausted-Richese-cache normal-auction-count guard; the failed report is `/tmp/dune-choam-nexus-trial-20260927/report.json`. The passing source-bound checkpoint report is `/tmp/dune-choam-nexus-checkpoint-20260928/report.json`. No drawn card effect happened in these samples, so they do not certify the CHOAM Betrayal panel, all Nexus effects or public module starts.
