@@ -1,0 +1,16 @@
+.admin-operations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.admin-operations-grid > div {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: #171c16;
+}
+
+.admin-operations-grid dt { color: #b7bbaf; font-size: 0.9rem; }
+.admin-operations-grid dd { margin: 0.35rem 0 0; font-size: 1.2rem; overflow-wrap: anywhere; }

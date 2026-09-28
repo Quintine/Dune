@@ -39,6 +39,13 @@ limits, missing import/restore and absent unified action-history entries keep
 the saved-game operations gate open. Local isolated capture/export and a
 signed-out browser denial passed; this is not deployed evidence.
 
+The owner-only [read-only operations sample](ADMIN_PANEL.md) now exposes the
+build revision, saved-room and active-seat counts, lifecycle flags, invalid
+JSON room counts, latest room write and backup/export usage. Live SQL owner
+authorization and desktop/mobile local UI checks passed. It does not inspect
+SQLite integrity, disk space, stalled turns or restore safety; no live NAS
+deployment or production administrator acceptance is claimed.
+
 The bounded [Fremen Nexus Cunning](NEXUS_FREMEN_RULES.md#connected-native-cunning-path)
 prototype connects an initially empty worm's public offer, one spent private
 card, a Karama response, a typed remote ride after the Nexus, human controls

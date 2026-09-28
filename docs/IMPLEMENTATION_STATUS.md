@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 28 September 2026 — owner-only operational counts
+
+`/admin/operations` now samples the build revision and live database aggregates:
+saved/removed/archived/paused/closed rooms, active seat credentials, syntactically
+invalid JSON saves, last room write, backup snapshot bytes/count and committed
+private exports. Its read query repeats owner authority in SQL and returns no
+saved state, seat token, message, backup payload or audit reason. The page is
+read-only and refreshes only on request; it makes no integrity, disk-capacity,
+repair or stalled-decision claim. Two isolated D1 tests pass for counts, live
+demotion/revocation and unchanged saved games. The production HTTP suite
+passed 54/54 with anonymous/forged-session denial, and the build includes the
+new route/page. A real local signed-out browser denied access; desktop and
+390-pixel samples rendered correctly using **mocked owner API responses** only,
+not an authenticated production owner. Full administrator operations and
+deployed acceptance remain gated; no production data was changed.
+
 ## 28 September 2026 — owner-only room backup capture
 
 The new `/admin/backups` page lets an authenticated owner capture, list and

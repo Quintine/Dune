@@ -39,3 +39,16 @@ void test('room-host and forged administrator credentials cannot list, create or
     assert.deepEqual(Object.keys(await response.json()), ['error']);
   }
 });
+
+void test('anonymous and forged administrator session cannot read operational counters', async () => {
+  const credentials: Record<string, string>[] = [
+    {},
+    { cookie: 'dune_admin_session=' + 'a'.repeat(64), 'X-Dune-Admin-Id': backupId },
+  ];
+  for (const headers of credentials) {
+    const response = await fetch(base + '/api/admin/operations', { headers, signal: AbortSignal.timeout(15_000) });
+    assert.equal(response.status, 401);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.deepEqual(Object.keys(await response.json()), ['error']);
+  }
+});

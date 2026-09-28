@@ -15,7 +15,7 @@ recovery and persistence systems where suitable.
 | Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. [Archive/unarchive](ADMIN_ROOM_ARCHIVE.md) has separate directory filters and exact retries. Permanent deletion and bulk actions remain missing. | Prototyped, partial |
 | Participant support | [Participant AI](ADMIN_PARTICIPANT_AI.md) enables an existing difficulty on an eligible human seat in a paused game, retaining access/takeback and private custody. [Discussion controls](ADMIN_DISCUSSION.md) mute/unmute new sends while retaining history and gameplay. Participant removal, access revocation, assisted recovery and further replacement remain. Existing lobby controls can reassign the host. | Prototyped, partial |
 | Saved-game operations | [Owner-only room backups](ADMIN_BACKUPS.md) capture/list/download a size-limited, version-fenced room snapshot without changing play or access; import validation, safe checkpoint restore and interrupted-work diagnosis/resume remain missing. | Prototyped, partial |
-| Operations and audit | Show server/build/storage health, room/player counts and actionable errors; provide maintenance controls and a searchable record of administrator actions. | Missing |
+| Operations and audit | The owner-only [operations page](../app/admin/operations/page.tsx) samples build revision, room/seat flags, JSON syntax failures and backup/export counts without exposing game contents. Searchable action history, failed-attempt records, integrity/disk checks, stalled-decision diagnosis and maintenance controls remain. | Prototyped, partial |
 
 Track each area through Missing, Prototyped, Integrated, Verified and Polished.
 As implementation begins, link its controls, server actions, persistence,
@@ -63,6 +63,12 @@ including after recovery/handover, without exposing private history.
 state and related room-owned records without pausing or editing the room. The
 metadata directory omits private contents; downloaded JSON contains secret
 game state and hashed seat/recovery credentials. Import/restore are not available.
+
+The owner-only [operations page](../app/admin/operations/page.tsx) provides
+manual read-only samples of room lifecycle counts, active seat credentials,
+invalid JSON saves, latest room write, backup payload usage and export receipts.
+The database query repeats current owner authority. This is not an integrity
+check, disk-capacity monitor, restore validation or automated repair.
 
 The directory uses an explicit field allowlist, independent of any player view.
 It never returns hands, Traitors, predictions, plans, private messages, recovery
