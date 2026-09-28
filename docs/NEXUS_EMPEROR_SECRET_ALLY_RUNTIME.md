@@ -1,7 +1,7 @@
-# Emperor Nexus Secret Ally revival
+# Emperor Nexus Secret Ally revival and bank-auction purchase
 
-14 September 2026. **Prototyped**, with **Partial** rules coverage. This connects
-the separate three-force revival alternative in Basic and Advanced base-faction
+27 September 2026. **Prototyped**, with **Partial** rules coverage. These
+separate Secret Ally alternatives connect in Basic and Advanced classic-faction
 games with Nexus alone. Public module starts and publication remain gated.
 
 ## Rules and connected behavior
@@ -37,18 +37,32 @@ physical elite selector only when it offers a real choice, shows unavailability
 reasons, and disables submission while busy. The existing Nexus inspector retains
 all three printed panels. This is legal functional support, not calibrated strategy.
 
-## Purchase alternative: pending interface decision
+## Bank-auction purchase alternative
 
 The printed purchase option preserves the actual buyer's spice after proving
-the price is held. It supplies a choice when buying. A pause only for the hidden
-holder would disclose eligibility; a per-bid instruction would commit earlier,
-before opponents finish passing or bidding. Neither is silently substituted.
+the final price is held. An unallied holder, with Emperor absent, can spend the
+physical Nexus at the winner-payment decision of an ordinary bank auction.
+The winner must have the full positive bid in their own spendable spice and
+cannot use ally contribution. One actual Treachery lot enters their hand,
+their spice remains unchanged, and normal auction/card follow-ups continue.
+The public log announces the price/proof/use without revealing excess spice or
+the Treachery card face. A private signed receipt records the lot, price and
+unchanged balance; independent use markers and physical custody survive JSON
+and in-memory SQLite CAS/restart. Rival seat views omit the offer and receipt.
 
-The user has been asked whether to permit a uniform winner payment step,
-including otherwise forced spice payments, as an exception to the preference
-against forced confirmations. The answer is pending. The purchase effect is
-unimplemented; its source-specific seller-payment and non-Bidding boundaries also
-remain in the [source contract](NEXUS_EMPEROR_RULES.md#secret-ally-retain-the-actual-purchase-price).
+**Timing is a provisional privacy choice, not a user or publisher ruling.**
+Every winner in this bounded public auction context receives the same payment
+confirmation, including a player with only spice and no Nexus card. Otherwise
+the holder-only pause would disclose hidden ownership. The existing ordinary
+spice/Karama payment choices stay available; bots use a legal purchase when
+owned and otherwise use the ordinary decision. The previously asked
+confirmation-versus-gate question remains pending; this prototype does not
+settle it for release.
+
+Seller-paid Richese/CHOAM transactions, allied split, expansions, other
+purchase sources and the forced Emperor-payment Betrayal alternative remain
+gated. The [source contract](NEXUS_EMPEROR_RULES.md#secret-ally-retain-the-actual-purchase-price)
+records those payment boundaries.
 
 ## Prototype entry and evidence
 

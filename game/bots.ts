@@ -79,7 +79,7 @@ import { quoteSmugglerShipment } from './smuggler-shipment';
 import { quoteSmugglerNoField } from './smuggler-no-field';
 import { spiceBankerBattleMaximum, spiceBankerModeSupported } from './spice-banker';
 import { nexusGuildSecretAllyAction, nexusGuildSecretAllyCanAct, nexusGuildSecretAllyQuote } from './nexus-guild-secret-ally-options';
-import { nexusEmperorRevivalAction } from './nexus-emperor-secret-ally-options';
+import { nexusEmperorPurchaseAction, nexusEmperorRevivalAction } from './nexus-emperor-secret-ally-options';
 import { nexusFremenRevivalAction } from './nexus-fremen-revival-options';
 import { nexusRicheseAction, nexusRicheseQuote } from './nexus-richese-options';
 import { liveShipmentPromises, matchesShipment } from './shipment-promises';
@@ -3824,6 +3824,8 @@ export function botActions(g: GameView): Action[] {
     const action = nexusEmperorRevivalAction(g, elite);
     if (action) return [action];
   }
+  const emperorPurchase = nexusEmperorPurchaseAction(g);
+  if (emperorPurchase) return [emperorPurchase];
   const bureaucrat = g.bureaucrat?.pending;
   if (bureaucrat) {
     if (bureaucrat.owner !== g.me || g.decision?.kind !== 'bureaucratPayment' ||

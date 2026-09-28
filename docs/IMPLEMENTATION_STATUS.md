@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 27 September 2026 — Bounded Emperor Nexus bank-auction purchase
+
+[The separate Secret Ally purchase alternative](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md#bank-auction-purchase-alternative)
+lets an unallied holder with Emperor absent retain the full personally
+affordable winning bid on an ordinary bank-paid Treachery auction. The actual
+lot enters the winner's hand, the unique Emperor Nexus enters the discard,
+and ordinary auction follow-ups continue. A uniform winner confirmation in
+eligible classic-faction Nexus-only games avoids revealing hidden ownership;
+its timing remains a provisional product choice pending the recorded user
+question. Owner-only controls, all four legal AI profiles, signed event/receipt,
+JSON integrity and concurrent in-memory SQLite CAS/restart/replay are connected.
+Seller-paid/allied/expansion and non-Bidding transactions remain gated, as do
+the forced Emperor-payment Betrayal alternative and complete Nexus acceptance.
+
+Independent review found and prompted repair of a stale cross-lot offer event
+and a bypass of normal-auction physical custody/hand-capacity preflight.
+The offer now binds the public auction index and final price without exposing
+the hidden lot face. Twenty-four focused purchase/automatic-payment cases
+passed; the frozen offline suite passed 5,610/5,610 across 708 files.
+Isolated project TypeScript excluding only the unrelated Fremen Nexus draft,
+scoped oxlint and the app build passed. `npm run check` and full lint stop at
+that draft's missing `Player.fremenNexusMovementBlockedTurn`. A read-only local
+browser fixture displayed the owner's purchase control, bid proof and ordinary
+payment choice; a rival seat saw only the uniform waiting decision and no
+private offer or card. No room write occurred. Production remains on the
+last verified `c9a3625` image.
+
 ## 27 September 2026 — Bounded Reinforcements Battle Plan
 
 [The independent three-card runtime](REINFORCEMENTS_RUNTIME.md) now permits

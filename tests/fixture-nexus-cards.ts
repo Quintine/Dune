@@ -170,7 +170,7 @@ export function nexusInventory(g: Game): void {
     [...NEXUS_FACTIONS].sort(),
   );
   assert.deepEqual(
-    [...g.deck, ...g.discard, ...g.players.flatMap((p) => p.hand)]
+    [...g.deck, ...g.discard, ...(g.auction?.cards.slice(g.auction.index) ?? []), ...g.players.flatMap((p) => p.hand)]
       .map((c) => c.id)
       .sort(),
     baseDeck()

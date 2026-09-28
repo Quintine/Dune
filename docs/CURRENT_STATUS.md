@@ -80,6 +80,17 @@ normal-first elite selection and battle-loss accounting remain explicitly
 provisional interpretations, not a publisher or user ruling; full variant and
 public mode gates remain closed. This source is not in the live image.
 
+The bounded [Emperor Nexus Secret Ally bank-auction purchase](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md#bank-auction-purchase-alternative)
+connects the separate retained-price alternative in Basic/Advanced
+classic-faction Nexus-only games. An unallied winner proves the final bid from
+their own spice, keeps it, takes the physical Treachery lot and spends the
+Nexus; owner controls, legal AI, signed history and saved SQLite continuation
+are wired. Every eligible winner receives the same payment confirmation
+regardless of hidden card custody; this privacy-preserving timing is
+**provisional**, with the prior user question still pending. Seller payments,
+allied splits, non-Bidding sources, Betrayal and complete Nexus remain gated.
+This source is not in the live image.
+
 5,408 offline tests, 52 HTTP tests, build, twenty-two administrator HTTP groups
 and desktop/mobile browser acceptance passed. Deployment delivery was
 unconfirmed at that checkpoint; the current production revision is recorded

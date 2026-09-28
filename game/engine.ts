@@ -39,6 +39,7 @@ import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayal
 import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
+import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
@@ -1056,6 +1057,8 @@ export type Game = {
   nexusEcazInquiryLast?: { event: string };
   nexusEmperorSecretHistory?: NexusEmperorRevival[];
   nexusEmperorSecretEvents?: string[];
+  nexusEmperorPurchaseHistory?: EmperorNexusPurchase[];
+  nexusEmperorPurchaseEvents?: string[];
   nexusFremenRevivalHistory?: FremenNexusRevival[];
   nexusFremenRevivalEvents?: string[];
   treacheryDiscardSequence?: number;
@@ -2093,10 +2096,42 @@ function playNexusBgBetrayal(g: Game, p: Player, action: Action) {
   log(g, `${p.name} spent Bene Gesserit Nexus Betrayal to prevent ${getPlayer(g, record.target).name}'s Voice in this battle. The battle and any later Prescience remain available.`,
     { faction: p.faction, name: 'Bene Gesserit Nexus Betrayal' });
 }
+/** The public payment window must not depend on who privately holds Emperor Nexus. */
+function emperorNexusUniformAuctionPayment(g: Game): boolean {
+  return !!g.nexusCards?.cards && !byFaction(g,'emperor') &&
+    emperorNexusModeSupported(g) && !g.ecazTreachery && !g.sandtrout &&
+    !!g.auction && !g.currentAuctionSale;
+}
+
 function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
   const p = g.players.find(p => p.id === owner);
   if (!p || g.nexusCards?.cards?.hands[owner] !== 'emperor' || byFaction(g,'emperor')) return null;
-  const event = emperorNexusEvent(g.turn,g.phase,owner,g.nexusEmperorSecretHistory?.length ?? 0);
+  const purchasing = g.status === 'playing' && g.phase === 3 &&
+    g.decision?.kind === 'auctionPayment' && g.decision.player === owner &&
+    g.auction?.bidder === owner && !g.currentAuctionSale;
+  const event = purchasing
+    ? emperorNexusPurchaseEvent(g.turn,owner,g.nexusEmperorPurchaseHistory?.length ?? 0,g.auction!.index,g.auction!.bid)
+    : emperorNexusEvent(g.turn,g.phase,owner,g.nexusEmperorSecretHistory?.length ?? 0);
+  let purchase: {blocked:string|null;price:number}|null = null;
+  if (purchasing) {
+    let purchaseBlock:string|null = null;
+    if (p.ally) purchaseBlock = 'Emperor Nexus Secret Ally requires an unallied buyer.';
+    else if (!emperorNexusModeSupported(g) || g.ecazTreachery || g.sandtrout)
+      purchaseBlock = 'Emperor Nexus purchase currently requires classic factions and Nexus alone.';
+    else if (g.response || g.truthtrance || g.phaseOpening || g.pendingKarama ||
+      g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange ||
+      g.pendingRicheseGift || g.pendingRichesePurchaseIncome || g.pendingAmbassador ||
+      g.pendingCapture || g.battle || g.nexusTraitorPending || g.nexusCards?.phase?.stage === 'drawing')
+      purchaseBlock = 'Finish the current interaction before this auction payment.';
+    else {
+      try {
+        normalKaramaAuction(g,p,true);
+        quoteEmperorNexusPurchase(g.auction!.bid,p.spice,g.auction!.allyPayment ?? 0);
+      }
+      catch (error) { purchaseBlock = error instanceof Error ? error.message : 'The buyer cannot prove the full price.'; }
+    }
+    purchase = {blocked:purchaseBlock,price:g.auction!.bid};
+  }
   let blocked:string|null = null;
   if (p.ally) blocked = 'Emperor Nexus Secret Ally requires an unallied holder.';
   else if (!emperorNexusModeSupported(g)) blocked = 'Emperor Nexus Secret Ally currently requires base factions and Nexus alone; expansion and other module combinations remain pending.';
@@ -2110,24 +2145,42 @@ function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
     blocked = 'Emperor Nexus revival with free-revival suppression or expanded revival effects remains pending.';
   const eliteOptions = emperorNexusRevivalElites(p,g.advanced);
   if (!blocked && !eliteOptions.length) blocked = 'Emperor Nexus needs exactly three eligible forces in Tanks; a smaller return remains pending.';
-  return {event,revival:{blocked,eliteOptions},purchase:null};
+  return {event,revival:{blocked,eliteOptions},purchase};
 }
 function nexusEmperorSecretIntegrity(g:Game) {
   const history = g.nexusEmperorSecretHistory, events = g.nexusEmperorSecretEvents;
-  if (history === undefined) {
-    requireRule(events === undefined,'Emperor Nexus has lost its saved use history.'); return;
+  if (history === undefined)
+    requireRule(events === undefined,'Emperor Nexus has lost its saved revival history.');
+  else {
+    requireRule(g.nexusCards?.cards && emperorNexusModeSupported(g) && Array.isArray(history) && history.length > 0 &&
+      Array.isArray(events) && events.length === history.length && new Set(events).size === events.length,
+      'Emperor Nexus has lost its physical module or independent use markers.');
+    for (const [index,record] of history.entries()) {
+      nexusRule(() => validateEmperorNexusRevival(g,record));
+      requireRule(record.sequence === index && events[index] === record.event,
+        'Emperor Nexus has duplicated or reordered a completed revival.');
+    }
+    const last = history.at(-1)!;
+    if (last.turn === g.turn) requireRule(g.nexusCards.cards.discard.includes('emperor'),
+      'Emperor Nexus has reopened its already spent physical card.');
   }
-  requireRule(g.nexusCards?.cards && emperorNexusModeSupported(g) && Array.isArray(history) && history.length > 0 &&
-    Array.isArray(events) && events.length === history.length && new Set(events).size === events.length,
-    'Emperor Nexus has lost its physical module or independent use markers.');
-  for (const [index,record] of history.entries()) {
-    nexusRule(() => validateEmperorNexusRevival(g,record));
-    requireRule(record.sequence === index && events[index] === record.event,
-      'Emperor Nexus has duplicated or reordered a completed use.');
+  const purchases = g.nexusEmperorPurchaseHistory, purchaseEvents = g.nexusEmperorPurchaseEvents;
+  if (purchases === undefined)
+    requireRule(purchaseEvents === undefined,'Emperor Nexus has lost its saved purchase history.');
+  else {
+    requireRule(g.nexusCards?.cards && emperorNexusModeSupported(g) && !g.ecazTreachery && !g.sandtrout &&
+      Array.isArray(purchases) && purchases.length > 0 && Array.isArray(purchaseEvents) &&
+      purchases.length === purchaseEvents.length && new Set(purchaseEvents).size === purchaseEvents.length,
+      'Emperor Nexus purchase has lost its physical module or independent use markers.');
+    for (const [index,record] of purchases.entries()) {
+      nexusRule(() => validateEmperorNexusPurchase(g,record));
+      requireRule(record.sequence === index && purchaseEvents[index] === record.event,
+        'Emperor Nexus purchase has duplicated or reordered a completed use.');
+    }
+    const last = purchases.at(-1)!;
+    if (last.turn === g.turn) requireRule(g.nexusCards.cards.discard.includes('emperor'),
+      'Emperor Nexus purchase has reopened its already spent physical card.');
   }
-  const last = history.at(-1)!;
-  if (last.turn === g.turn) requireRule(g.nexusCards.cards.discard.includes('emperor'),
-    'Emperor Nexus has reopened its already spent physical card.');
 }
 function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
   const offer = nexusEmperorSecretAllyOffer(g,p.id);
@@ -2146,6 +2199,31 @@ function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
   (g.nexusEmperorSecretEvents ??= []).push(record.event);
   log(g,`${p.name} spent Emperor Nexus Secret Ally to return three forces${elite ? `, including ${elite} Fedaykin` : ''} from Tanks to reserves for free. Ordinary force and free-revival allowances are unchanged.`,
     {faction:p.faction,name:'Emperor Nexus revival'});
+}
+function playNexusEmperorPurchase(g:Game,p:Player,action:Action) {
+  const offer = nexusEmperorSecretAllyOffer(g,p.id), purchase = offer?.purchase;
+  requireRule(purchase && !purchase.blocked && action.event === offer.event &&
+    Object.keys(action).sort().join(',') === 'event,type',
+    purchase?.blocked ?? 'Choose your current Emperor Nexus bank-auction payment.');
+  const auction = g.auction!;
+  normalKaramaAuction(g,p,true);
+  nexusRule(() => quoteEmperorNexusPurchase(auction.bid,p.spice,auction.allyPayment ?? 0));
+  const purchased = auction.cards[auction.index], auctionIndex = auction.index;
+  requireRule(purchased && auction.bidder === p.id && g.decision?.kind === 'auctionPayment' &&
+    g.decision.player === p.id,'The original winning bank-auction lot is no longer available.');
+  const beforeSpice = p.spice;
+  g.decision = null;
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
+  settleAuction(g,true,false,true);
+  const record:EmperorNexusPurchase = {kind:'purchase',event:offer.event,owner:p.id,turn:g.turn,
+    phase:3,sequence:g.nexusEmperorPurchaseHistory?.length ?? 0,faction:p.faction,
+    advanced:g.advanced,price:auction.bid,auctionIndex,card:purchased.id,beforeSpice,afterSpice:p.spice,signature:''};
+  record.signature = signEmperorNexusPurchase(record);
+  nexusRule(() => validateEmperorNexusPurchase(g,record));
+  (g.nexusEmperorPurchaseHistory ??= []).push(record);
+  (g.nexusEmperorPurchaseEvents ??= []).push(record.event);
+  log(g,`${p.name} spent Emperor Nexus Secret Ally after proving the ${record.price}-spice winning bid, bought the Treachery card and kept their own spice. The physical Nexus card was discarded.`,
+    {faction:p.faction,name:'Emperor Nexus purchase'});
 }
 function nexusEcazBetrayalIntegrity(g: Game) {
   const history = g.nexusEcazBetrayalHistory;
@@ -8614,7 +8692,7 @@ function auctionNext(g: Game) {
   a.active = next.player;
   g.active = a.active;
 }
-function settleAuction(g: Game, free = false, automatic = false) {
+function settleAuction(g: Game, free = false, automatic = false, emperorNexus = false) {
   const a = g.auction!;
   const winner = getPlayer(g, a.bidder!);
   if (!free) payWithAlly(g, winner, a.bid, a.allyPayment ?? 0);
@@ -8629,7 +8707,7 @@ function settleAuction(g: Game, free = false, automatic = false) {
   };
   log(
     g,
-    `${faction(winner.faction).name} won a treachery card for ${free ? 'a Karama' : `${a.bid} spice`}.${automatic ? ' The declared spice payment was the only available payment method.' : ''}`,
+    `${faction(winner.faction).name} won a treachery card for ${emperorNexus ? `the Emperor Nexus card after proving ${a.bid} spice` : free ? 'a Karama' : `${a.bid} spice`}.${automatic ? ' The declared spice payment was the only available payment method.' : ''}`,
     automatic
       ? { faction: winner.faction, name: 'Auction payment' }
       : undefined,
@@ -9909,7 +9987,8 @@ function finishAutomaticDecision(g: Game): boolean {
     // split or consume a card on behalf of a player, including a BG conversion.
     if (
       auctionSpicePaymentFunded(g, p) &&
-      !p.hand.some((card) => !karamaSpendingBlock(g, p, card))
+      !p.hand.some((card) => !karamaSpendingBlock(g, p, card)) &&
+      !emperorNexusUniformAuctionPayment(g)
     ) {
       g.decision = null;
       settleAuction(g, false, true);
@@ -22328,6 +22407,7 @@ function applyActionInner(
   if (t === 'nexusChoamBetrayal') { playNexusChoamBetrayal(g, p, action); return g; }
   if (t === 'nexusEcazInquiry') { playNexusEcazInquiry(g, p, action); return g; }
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
+  if (t === 'nexusEmperorPurchase') { playNexusEmperorPurchase(g,p,action); return g; }
   if (t === 'nexusEmperorBetrayal') { playNexusEmperorBetrayal(g,p,action); return g; }
   if (t === 'nexusBgBetrayal') { playNexusBgBetrayal(g,p,action); return g; }
   if (t === 'nexusFremenRevive') { playNexusFremenRevive(g,p,action); return g; }

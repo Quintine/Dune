@@ -1,6 +1,6 @@
 # Emperor Nexus: battle strength, purchase and revival
 
-Primary-source audit, 10 September 2026. This is a contract for future implementation, not a runtime-completion claim. The [common Nexus rules](NEXUS_CARD_RULES.md) and current release gates remain in force. No new user question was sent.
+Primary-source audit, 10 September 2026, with a bounded purchase-runtime note added 27 September. The source contract does not certify the full mode. The [common Nexus rules](NEXUS_CARD_RULES.md) and current release gates remain in force; no new user ruling is assumed.
 
 ## Authority
 
@@ -50,6 +50,25 @@ For an ordinary bank-paid auction, the practical result is one purchased card, u
 
 Special seller payments require a separate ruling: if Richese or another faction would receive that price, is the seller unpaid or paid by the bank? The text only tells the buyer to keep spice. Likewise, it does not expressly decide purchases outside Bidding, such as a card acquisition from an Ambassador. Do not silently route income or broaden a generic purchase hook to those sources.
 
+### Bounded bank-auction purchase prototype (27 September 2026)
+
+In Basic/Advanced classic-faction Nexus-only games with Emperor absent, the
+unallied holder can spend the physical card at a normal Bidding winner-payment
+window. The full positive final bid must be affordable from the buyer's own
+spice without ally contribution. The bank receives no spice; the winner keeps
+that balance, receives the one purchased physical Treachery Card and continues
+through normal auction follow-ups. One private signed receipt records the
+original lot, final price and unchanged buyer balance across JSON/SQLite
+recovery. No Richese/CHOAM seller payment, allied split, expansion, special
+purchase or generic card-acquisition hook is inferred from this path.
+
+Every winner in this bounded public auction context receives the same payment
+confirmation, even without the card or Karama. Otherwise a pause only for the
+concealed holder would disclose Nexus ownership. This is a **provisional
+privacy-preserving product choice**, not a printed timing rule or a user ruling;
+the previously asked confirmation-versus-gate question remains open.
+The normal spice and Karama payment choices remain available where legal.
+
 ## Secret Ally: three additional free revivals
 
 The express additional/beyond-limits wording supplies a separate force allowance rather than spending the holder's ordinary three-force quota. It revives forces, not a leader or Cheap Hero. Recruits doubles free rates and changes the normal limit; it does not double a fixed three-counter card grant. [Printed card](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), [E3, p.11](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=11)
@@ -78,10 +97,11 @@ receipt, suppression and seat-private offer survive JSON and room restart;
 replay cannot spend it twice. Karama remains an independent alternative in
 the same window.
 
-This does not implement the forced-purchase Betrayal alternative or the
-Secret Ally purchase. Emperor Cunning still has its own earlier declaration
-and response; one unique Emperor Nexus card cannot be both Cunning and
-Betrayal at once. The wider Nexus module remains gated.
+This does not implement the forced-purchase Betrayal alternative. The bounded
+Secret Ally bank-auction purchase is connected above; Emperor Cunning still
+has its own earlier declaration and response. One unique Emperor Nexus card
+cannot be both Cunning and Betrayal at once. The wider Nexus module remains
+gated.
 
 The following material cases remain unresolved; no new question was sent:
 
