@@ -120,13 +120,20 @@ bulk actions and backup/operations tools remain unfinished.
 
 [Participant AI](ADMIN_PARTICIPANT_AI.md) checkpoint `2cddf03` is pushed. Types/lint,
 
-The latest [complete-game integration samples](IMPLEMENTATION_STATUS.md)
+Earlier [complete-game integration samples](IMPLEMENTATION_STATUS.md)
 finished 62 genuine games: Basic Leader Skills with Tleilaxu, Moritani,
 Ixians or CHOAM; Basic/Advanced classic Homeworld + Nexus; all three paired
 faction-expansion + Nexus profiles across two through six seats; and two
 six-seat all-expansion games. All 29,333 actions were accepted, with 765
 JSON/private-view restorations and unchanged source fingerprints. Rare effects
 not encountered naturally and all public release gates remain unverified.
+
+Four further [all-expansion Nexus samples](IMPLEMENTATION_STATUS.md)
+completed genuine five/six-seat Basic and Advanced games: 4,098 accepted
+actions, 109 JSON/private-view restorations, unchanged source fingerprints
+and five Nexus Card draw/keep decisions in the five-seat games. No Nexus
+effect was played in those samples; card-specific combinations and public
+expansion/Nexus starts remain gated.
 
 The bounded [native Richese Nexus Cunning shipment](NEXUS_RICHESE_RULES.md#bounded-native-cunning-prototype-27-september-2026) now uses two distinct physical No-Field tokens in one priced shipment in genuine Richese/CHOAM paired Nexus games. One token immediately reveals a reserve-capped public force group; the other remains concealed. Owner-only controls, four legal AI profiles, Karama/Guild responses, signed saved receipts and concurrent in-memory SQLite settlement are connected in Basic/Advanced. A read-only local browser fixture displayed the owner selector and no rival private panel. Same-shipment nonrepeat is a documented product interpretation; faceup-component artwork, combined modules, Betrayal and full Nexus acceptance remain gated. This code is local and not in the last verified production image.
 

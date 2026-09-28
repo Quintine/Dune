@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 28 September 2026 — five/six-seat all-expansion Nexus integration samples
+
+The offline-only `combined-nexus` audit setup selects all three physical
+expansions and Nexus Cards for five seats (Ixians, Tleilaxu, CHOAM, Ecaz,
+Moritani) or six (plus Richese). Basic and Advanced samples for each roster
+completed with 4,098 accepted actions, zero rejected bot actions and 109
+JSON/private-view restores. The five-seat tables reached five real Nexus Card
+draw/keep decisions; the six-seat tables formed alliances but did not draw
+cards. The report at `/tmp/dune-all-expansion-nexus-matrix-final/report.json`
+records `status: passed` and unchanged source. A separate intentionally
+capped ten-action five-seat save resumed to a turn-nine win with 1,380 accepted
+actions, 37 more restores and zero rejected actions. The resumed random stream
+restarts, so its outcome need not match an uninterrupted game. No card effect
+happened in these samples, so they do not establish individual card correctness,
+complete cross-expansion behavior or permission to open public starts.
+
 ## 28 September 2026 — owner-only operational counts
 
 `/admin/operations` now samples the build revision and live database aggregates:
