@@ -141,9 +141,11 @@ import { CHEAP_HERO_TRAITOR, matchingTraitor } from '@/game/traitors';
 import {
   battleCardLabel,
   isStoneBurner,
+  isMirrorWeapon,
 } from '@/game/battle-cards';
 import { validBattleSlotPair } from '@/game/battle-card-slots';
 import { stoneBurnerPlanBlock } from '@/game/stone-burner';
+import { mirrorWeaponModeBlock } from '@/game/mirror-weapon-mode';
 import { TECH_TOKENS, ownedTech } from '@/game/tech-tokens';
 import {
   canUseAsKaramaRole,
@@ -518,15 +520,14 @@ export function GameTable({
     selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw',
     committed.dial ? Number(committed.dial.value) : battleDial,
     me.faction === 'fremen' && !g.battle?.fremenSupportBlocked ? 0 : battleSupport);
-  const selectedStone = me.hand?.find(
-    (c) =>
-      c.id === selectedWeaponId &&
-      isStoneBurner(c),
+  const selectedSpecialWeapon = me.hand?.find(
+    (c) => c.id === selectedWeaponId && (isStoneBurner(c) || isMirrorWeapon(c)),
   );
+  const mirrorSelected = isMirrorWeapon(selectedSpecialWeapon);
   const stoneContext = g.battle?.stoneBurnerContext;
-  const stonePlanReason = !selectedStone
+  const stonePlanReason = !selectedSpecialWeapon
     ? null
-    : (stoneContext?.blocked ??
+    : ((mirrorSelected ? mirrorWeaponModeBlock(g) : null) ?? stoneContext?.blocked ??
       (!ownBattleForces || !stoneContext?.opponentPools.length
         ? 'Stone Burner needs a supported physical force pool.'
         : (stoneContext.opponentPools
@@ -2296,7 +2297,7 @@ export function GameTable({
                   : g.decision.kind === 'ecazSpice'
                   ? 'Shared spice collection'
                   : g.decision.kind === 'stoneBurner'
-                    ? 'Stone Burner'
+                    ? g.decision.copiedFrom ? 'Mirror Weapon copying Stone Burner' : 'Stone Burner'
                     : g.decision.kind === 'nullentropy'
                       ? 'Private Nullentropy Box search'
                       : g.decision.kind === 'richeseAllyOpportunity'
@@ -2695,7 +2696,7 @@ export function GameTable({
                 />
               ) : g.decision.kind === 'stoneBurner' ? (
                 <>
-                  <h3>Choose Stone Burner’s effect</h3>
+                  <h3>Choose {g.decision.copiedFrom ? 'Mirror Weapon’s copied Stone Burner' : 'Stone Burner'} effect</h3>
                   <p className="muted">
                     Choose whether both leaders die or surviving leaders
                     contribute no strength. Both choices compare undialed
@@ -2703,6 +2704,7 @@ export function GameTable({
                     comparison. Other weapon effects and traitor precedence
                     still apply.
                   </p>
+                  {g.decision.copiedFrom && <p className="fine">Your physical Mirror Weapon copied the opposing Stone Burner. Your choice is independent of its owner’s; winning retains Mirror as Mirror.</p>}
                   <a href="/rules?topic=stone-burner">
                     Read Stone Burner rules
                   </a>
@@ -2729,6 +2731,7 @@ export function GameTable({
                 </>
               ) : g.decision.kind === 'poisonTooth' ? (
                 <>
+                  {g.decision.copiedFrom && <p className="fine">Your physical Mirror Weapon copied the opposing Poison Tooth. Choose its activation independently; a winning Mirror remains Mirror.</p>}
                   <p className="muted">
                     Choose after reviewing both plans. Activating attacks both
                     leaders, including yours. Chemistry as a defense protects;
@@ -2736,10 +2739,12 @@ export function GameTable({
                   </p>
                   {actionButton('Activate Poison Tooth', {
                     type: 'decision',
+                    event: g.decision.event,
                     activate: true,
                   })}
                   {actionButton('Leave it unused', {
                     type: 'decision',
+                    event: g.decision.event,
                     activate: false,
                   })}
                 </>
@@ -3953,6 +3958,7 @@ export function GameTable({
                                 {g.revival.leaders.map((choice) => (
                                   <option value={choice.id} key={choice.id}>
                                     {choice.name} · {choice.cost} spice
+                                    {choice.id === 'duke-vidal' ? ' · strength 6, set aside after revival' : ''}
                                     {choice.early ? ' · early revival' : ''}
                                     {!choice.affordable
                                       ? ' · insufficient spice'
@@ -3972,13 +3978,18 @@ export function GameTable({
                           </>
                         );
                       })()
-                    : me.leaders.some(
-                        (l) => l.dead && l.faction === me.faction,
-                      ) && (
+                    : (me.leaders.some((l) => l.dead && l.faction === me.faction) ||
+                        (me.faction === 'ecaz' && g.dukeVidal?.leader.dead)) && (
                         <p className="fine">
                           {me.leaderRevived && me.faction !== 'tleilaxu'
                             ? 'You have used your one leader revival for this phase.'
-                            : 'No native leader is currently eligible for normal revival.'}
+                            : g.revival.prevented
+                              ? 'Tleilaxu prevented your normal revivals this turn.'
+                              : g.revival.dukeBlocked && me.faction === 'ecaz' && g.dukeVidal?.leader.dead
+                                ? g.revival.dukeBlocked
+                                : g.revival.cycleBlock
+                                  ? g.revival.cycleBlock
+                                  : 'No leader is currently eligible for normal revival.'}
                         </p>
                       )}
                 </>
@@ -4849,14 +4860,14 @@ export function GameTable({
                                 Discard it after this battle, even if you win.
                               </p>
                             )}
-                            {selectedStone && (
+                            {selectedSpecialWeapon && (
                               <div className="my-3 flex flex-col gap-3">
                                 <p>
-                                  Stone Burner compares undialed physical
-                                  tokens, not dialed strength. Its leader effect
-                                  is chosen after both plans are revealed.
+                                  {mirrorSelected
+                                    ? 'Mirror Weapon copies the opposing revealed weapon attack, not its physical card. If the copied attack is Stone Burner, it uses undialed physical tokens; any copied post-reveal choice is yours. A winning Mirror remains physical Mirror, even if it copies activated Poison Tooth or Artillery.'
+                                    : 'Stone Burner compares undialed physical tokens, not dialed strength. Its leader effect is chosen after both plans are revealed.'}
                                 </p>
-                                <CardInspector card={selectedStone} />
+                                <CardInspector card={selectedSpecialWeapon} />
                                 {stonePlanReason && (
                                   <p className="notice" role="status">
                                     {stonePlanReason}
@@ -5290,7 +5301,7 @@ export function GameTable({
                             <option value="">Forces</option>
                             {g.ghola.leaders.map((l) => (
                               <option key={l.id} value={l.id}>
-                                {l.name}
+                                {l.name}{l.id === 'duke-vidal' ? ' · set aside after revival' : ''}
                               </option>
                             ))}
                             {g.ghola.kwisatz && (

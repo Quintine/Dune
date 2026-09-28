@@ -1,5 +1,6 @@
 import type { Card } from './cards';
 import { richeseCardDefinition } from './richese-cards';
+import { canRetainBattleCard } from './moritani-retention';
 
 export type BattleWeaponSide = 'attacker' | 'defender';
 export type EffectiveBattleWeapon = {
@@ -11,13 +12,17 @@ export type EffectiveBattleWeapon = {
 /** Public name used by effective attack/defense integration. */
 export type EffectiveWeapon = EffectiveBattleWeapon;
 type SelectedBattleCards = { weapon?: Card; defense?: Card };
+export type EffectiveWeaponChoice = {
+  side: BattleWeaponSide;
+  kind: 'poisonTooth' | 'stoneBurner';
+  /** The committed card making this decision, never the copied source card. */
+  physicalId: string;
+  copiedFrom: string | null;
+};
 export type BattleWeaponResolution = {
   attacker: EffectiveBattleWeapon;
   defender: EffectiveBattleWeapon;
-  choiceOrder: {
-    side: BattleWeaponSide;
-    kind: 'poisonTooth' | 'stoneBurner';
-  }[];
+  choiceOrder: EffectiveWeaponChoice[];
   error: string | null;
 };
 const mirrorId = 'richese-mirror-weapon';
@@ -33,6 +38,17 @@ const empty = (card?: Card): EffectiveBattleWeapon => ({
   kind: null,
   choice: null,
 });
+
+function appendChoice(result: BattleWeaponResolution, side: BattleWeaponSide) {
+  const weapon = result[side];
+  if (weapon.choice && weapon.physicalId)
+    result.choiceOrder.push({
+      side,
+      kind: weapon.choice,
+      physicalId: weapon.physicalId,
+      copiedFrom: weapon.copiedFrom,
+    });
+}
 
 /** The caller validates whole plans. Here Chemistry's selected weapon role must
  * have its original second defense; a copied effect does not require that card.
@@ -88,6 +104,7 @@ function originalWeapon({
  * This establishes a copy-first dependency, not general battle turn order.
  * Without that dependency choiceOrder follows input attacker/defender order;
  * callers retain the existing ordinary storm-order choice policy as required.
+ * Choice entries identify the physical owner of each independent decision.
  * This helper decides neither activation answers nor physical-card retention.
  */
 export function resolveBattleWeapons(input: {
@@ -100,43 +117,79 @@ export function resolveBattleWeapons(input: {
     choiceOrder: [],
     error: null,
   };
-  const cards = [
-    input.attacker.weapon,
-    input.attacker.defense,
-    input.defender.weapon,
-    input.defender.defense,
-  ].filter((card): card is Card => !!card);
-  if (cards.some((card) => claimsMirror(card) && !isMirror(card))) {
+  const aw = input.attacker.weapon;
+  const ad = input.attacker.defense;
+  const dw = input.defender.weapon;
+  const dd = input.defender.defense;
+  const attackerMirror = isMirror(aw);
+  const attackerDefenseMirror = isMirror(ad);
+  const defenderMirror = isMirror(dw);
+  const defenderDefenseMirror = isMirror(dd);
+  if (
+    (aw && claimsMirror(aw) && !attackerMirror) ||
+    (ad && claimsMirror(ad) && !attackerDefenseMirror) ||
+    (dw && claimsMirror(dw) && !defenderMirror) ||
+    (dd && claimsMirror(dd) && !defenderDefenseMirror)
+  ) {
     result.error = 'Mirror Weapon must match its canonical physical identity.';
     return result;
   }
-  if (cards.filter(isMirror).length > 1) {
+  if (
+    Number(attackerMirror) +
+      Number(attackerDefenseMirror) +
+      Number(defenderMirror) +
+      Number(defenderDefenseMirror) >
+    1
+  ) {
     result.error =
       'Only one physical Mirror Weapon exists; duplicated custody is invalid.';
     return result;
   }
   result.attacker = originalWeapon(input.attacker);
   result.defender = originalWeapon(input.defender);
-  for (const side of ['attacker', 'defender'] as const) {
-    if (!isMirror(input[side].weapon)) continue;
-    const other = side === 'attacker' ? 'defender' : 'attacker';
-    const original = result[other];
-    if (original.kind !== null) {
-      result[side] = {
-        physicalId: input[side].weapon!.id,
-        copiedFrom: original.physicalId,
-        kind: original.kind,
-        choice: original.choice,
-      };
-    }
+  if (attackerMirror && result.defender.kind !== null) {
+    result.attacker = {
+      physicalId: aw!.id,
+      copiedFrom: result.defender.physicalId,
+      kind: result.defender.kind,
+      choice: result.defender.choice,
+    };
+  } else if (defenderMirror && result.attacker.kind !== null) {
+    result.defender = {
+      physicalId: dw!.id,
+      copiedFrom: result.attacker.physicalId,
+      kind: result.attacker.kind,
+      choice: result.attacker.choice,
+    };
   }
-  const order: BattleWeaponSide[] =
-    result.defender.copiedFrom && result.defender.choice
-      ? ['defender', 'attacker']
-      : ['attacker', 'defender'];
-  for (const side of order) {
-    const choice = result[side].choice;
-    if (choice) result.choiceOrder.push({ side, kind: choice });
+  if (result.defender.copiedFrom && result.defender.choice) {
+    appendChoice(result, 'defender');
+    appendChoice(result, 'attacker');
+  } else {
+    appendChoice(result, 'attacker');
+    appendChoice(result, 'defender');
   }
   return result;
+}
+
+/** Ordinary battle cleanup quote for one committed physical card. The copy's
+ * effective kind is deliberately not an input: mandatory Tooth/Artillery
+ * disposal applies to those original physical cards, not to Mirror. Moritani's
+ * separate losing-ally interception is outside ordinary winner/loser cleanup.
+ */
+export function quoteBattleWeaponRetention(input: {
+  card: Card;
+  outcome: 'winner' | 'loser';
+  traitorDecided: boolean;
+  toothUsed: boolean;
+}): { physicalId: string; mayRetain: boolean } {
+  const { card, outcome, traitorDecided, toothUsed } = input;
+  if (claimsMirror(card) && !isMirror(card))
+    throw new Error('Mirror Weapon must match its canonical physical identity.');
+  return {
+    physicalId: card.id,
+    mayRetain:
+      outcome === 'winner' &&
+      canRetainBattleCard(card, traitorDecided, toothUsed),
+  };
 }

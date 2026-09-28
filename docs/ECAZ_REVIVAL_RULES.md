@@ -2,6 +2,28 @@
 
 Bounded primary-source review, 2026-09-06. This document supplements `DUKE_VIDAL_RULES.md` and separates the ordinary arithmetic and eligibility rules from unresolved shared-disc custody and cycle questions. No runtime edits were made.
 
+## Selected product interpretation (28 September 2026)
+
+The user chose **set-aside custody**: a successful ordinary Ecaz revival or Ecaz
+Ghola returns the same dead Duke disc alive to the shared area, with
+`controller`, `source` and `acquiredTurn` cleared. It is not automatically
+playable by Ecaz. This is an explicit product interpretation, **not** a
+publisher ruling; the Ambassador or another supported living-disc acquisition
+must subsequently claim him. Ordinary revival costs five spice (three with
+the existing Tleilaxu alliance discount), spends Ecaz's ordinary leader slot,
+and follows the normal stop, discount-cancellation and payment/income windows.
+Ghola spends the actual card instead of spice or that slot. Strength remains
+six; both paths preserve the physical death history.
+
+Ecaz's first ordinary cohort opens with five dead discs counting Duke, or
+when its entire native five-disc roster is unavailable under the existing
+captured-leader exception. The opened first cohort persists across returns.
+Further native returns once any of the six histories enters a repeated cycle
+remain explicitly gated; Duke's independent Ecaz-only permission remains
+available, without making a repeated six-disc algorithm up. Captured, Ghola
+or concealed shared-disc custody and Advanced Harkonnen combinations retain
+their existing uniform boundary.
+
 ## Explicit expansion rules
 
 Ecaz may revive Duke for **5 spice regardless of how many leaders are dead**. Its ordinary leaders become revivable with **five leaders in the Tanks, including Duke**. The clarification expressly permits this while Ecaz still holds one living leader, regardless of which leader that is. Only Ecaz may revive Duke, including through the Ghola Treachery Card. [GF9 Ecaz & Moritani, printed pp. 8–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf)
@@ -14,7 +36,9 @@ The same p. 9 clarification restricts Ecaz’s acquisition of Duke to its Ambass
 
 The ordinary base rule makes a revived leader playable. Applying that ordinary result to the special Ecaz-only revival strongly supports active Ecaz custody, treating the Ambassador sentence as acquisition of a living shared disc. The competing literal reading revives Duke to the shared set-aside area so that Ambassador-only acquisition remains universal. The retrieved expansion does not expressly choose between those readings. The Ghola FAQ permits a revived leader to fight in the same Battle phase, but does not specifically resolve Duke’s custody. [GF9 base rules, printed pp. 9, 22](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
 
-**Implementation boundary:** do not certify either controller assignment as an explicit Duke FAQ result. Obtain a supported interpretation before activating revival, especially Ghola during Battle. Persisting `dead=false` while silently choosing `controller=null` or Ecaz changes whether the paid card/action is useful immediately. If Ecaz control is selected, it must be explicit shared custody rather than inserting Duke into the native five-leader array.
+Earlier implementation guidance below records the pre-decision boundary. The
+selected set-aside interpretation and limited first-cohort runtime above now
+supersede that boundary; it remains a source caveat, not a live blocker.
 
 ## Frequency, prices and Tleilaxu
 
@@ -42,4 +66,4 @@ The E3 Ecaz table lists Ambassador, Occupy, Loyalty and Collection; it contains 
 
 ## Verification boundary
 
-Checked official indexed GF9 p. 8/9 passages, the base revival text, Ixian/Tleilaxu alliance and early-revival text, and the November 2020 FAQ p. 6 against existing publisher-authored local extracts. Targeted official GF9 and designer-site searches returned no written Duke-after-revival or six-disc repeated-cycle example. This records a retrieval limit, not proof that no clarification exists. Existing direct publisher download restrictions and crawler dates were not treated as evidence of a new edition. Runtime integration, custody decisions and regression tests remain with the parent task.
+Checked official indexed GF9 p. 8/9 passages, the base revival text, Ixian/Tleilaxu alliance and early-revival text, and the November 2020 FAQ p. 6 against existing publisher-authored local extracts. Targeted official GF9 and designer-site searches returned no written Duke-after-revival or six-disc repeated-cycle example. This records a retrieval limit, not proof that no clarification exists. Existing direct publisher download restrictions and crawler dates were not treated as evidence of a new edition. The selected set-aside product interpretation and bounded runtime above do not resolve the repeated six-disc, exceptional custody or complete-expansion boundaries.

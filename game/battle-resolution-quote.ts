@@ -5,8 +5,9 @@ import {
   type Leader,
 } from './cards';
 import type { FactionId } from './catalog';
-import { battleWeaponsExplode, isStoneBurner } from './battle-cards';
+import { battleWeaponsExplode } from './battle-cards';
 import { validBattleSlotPair } from './battle-card-slots';
+import { resolveBattleWeapons } from './effective-weapons';
 import {
   casualtyOptions,
   validCombatForces,
@@ -376,6 +377,12 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     return copiedDiplomatDefense(quote, copy.card);
   };
   const effectiveAd = effectiveDefense(a, d, ad), effectiveDd = effectiveDefense(d, a, dd);
+  const weapons = resolveBattleWeapons({
+    attacker: { weapon: aw, defense: effectiveAd },
+    defender: { weapon: dw, defense: effectiveDd },
+  });
+  requireQuote(!weapons.error, weapons.error ?? 'The revealed weapons are invalid.');
+  const hasStone = weapons.attacker.kind === 'stoneBurner' || weapons.defender.kind === 'stoneBurner';
   const withdrawals = new Map<string, HarassWithdrawQuote>();
   const reinforcements: NonNullable<BattleResolutionQuote['reinforcements']> = [];
   for (const side of [a, d]) {
@@ -393,7 +400,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       'Reinforcements needs a unique physical card and valid weapon and defense slot pair.');
       requireQuote(!input.homeworld && !(side.leaderSkills?.length || (side === a ? d : a).leaderSkills?.length) &&
         !slots.some(isHarassWithdraw) &&
-        !isStoneBurner(aw) && !isStoneBurner(dw),
+        !hasStone,
       'Reinforcements cannot combine with Homeworld, leader skills, own Harass & Withdraw or Stone Burner.');
       const reserves = side.reinforcementsReserves!;
       requireQuote(!!reserves && typeof reserves === 'object' && !Array.isArray(reserves),
@@ -406,7 +413,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     if (harass) {
       requireQuote(validBattleSlotPair(slots[0], slots[1]),
         'The Harass & Withdraw plan has an invalid weapon and defense pair.');
-      requireQuote(side.harassWithdraw && !input.homeworld && !isStoneBurner(aw) && !isStoneBurner(dw),
+      requireQuote(side.harassWithdraw && !input.homeworld && !hasStone,
         'Harass & Withdraw needs its supported physical context; Homeworld and Stone Burner combinations remain unfinished.');
       requireQuote(JSON.stringify(side.harassWithdraw.forces) === JSON.stringify(side.forces),
         'The withdrawal context must match the current battle force roles.');
@@ -416,29 +423,28 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   const tie = battleTieOwner(a.id, d.id, input.aggressor ?? a.id,
     [a, d].filter(side => side.stronghold === 'habbanya_ridge_sietch').map(side => side.id)) === a.id
     ? 'attacker' : 'defender';
-  const stone =
-    isStoneBurner(aw) || isStoneBurner(dw)
-      ? stoneBurnerComparison(
-          a.forces,
-          a.plan.dial,
-          a.plan.support,
-          d.forces,
-          d.plan.dial,
-          d.plan.support,
-          tie,
-        )
-      : null;
+  const stone = hasStone
+    ? stoneBurnerComparison(
+        a.forces,
+        a.plan.dial,
+        a.plan.support,
+        d.forces,
+        d.plan.dial,
+        d.plan.support,
+        tie,
+      )
+    : null;
   if (stone) {
     requireQuote(
       !!stone.winner,
       'Stone Burner has an unresolved physical casualty allocation. No battle resources were spent.',
     );
     for (const [side, weapon] of [
-      [a, aw],
-      [d, dw],
+      [a, weapons.attacker],
+      [d, weapons.defender],
     ] as const)
       requireQuote(
-        !isStoneBurner(weapon) ||
+        weapon.kind !== 'stoneBurner' ||
           ['kill', 'ignore'].includes(side.stoneMode ?? ''),
         'Choose Stone Burner’s revealed mode before resolving battle.',
       );

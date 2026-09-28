@@ -1,4 +1,6 @@
 import type { Game, ResponseWindow, Player } from './engine';
+import { DUKE_VIDAL_ID } from './duke-vidal';
+import { resolveEcazDukeRevival } from './ecaz-duke-revival';
 import { isAuditorLeader } from './choam-auditor';
 import { controlsLeader } from './leader-control';
 import {
@@ -28,6 +30,7 @@ export type RevivalCancellationContext = Pick<
   | 'players'
   | 'revivalRules'
   | 'freeRevival'
+  | 'dukeVidal'
   | 'pendingRevival'
   | 'emperorExtra'
 >;
@@ -116,6 +119,20 @@ export function continuationCustody(
         nonnegative(Math.max(p.revivalCycle, p.kwisatz.revivalCycle ?? 1) + 1),
       'The pending Kwisatz Haderach is no longer available for revival.',
     );
+    return;
+  }
+  if (pending.leader === DUKE_VIDAL_ID) {
+    requireRevival(pending.kind === 'leader' && p.faction === 'ecaz' &&
+      pending.normalCost === 5 && (pending.cost === 3 || pending.cost === 5) &&
+      !pending.checks.includes('earlyRevival'),
+      'The pending shared leader has invalid revival costs or checks.');
+    try {
+      resolveEcazDukeRevival(g, p.id);
+    } catch {
+      throw new RevivalCancellationError('The pending shared leader is unavailable for revival.');
+    }
+    requireRevival(!p.leaderRevived,
+      'The pending shared leader has already used this phase’s revival slot.');
     return;
   }
   const matches = g.players
@@ -241,6 +258,16 @@ export function quoteRevivalCancellation(
         g.advanced && p.faction === 'atreides' && !!p.kwisatz,
         'The pending Kwisatz Haderach belongs to no valid revival pool.',
       );
+    } else if (original.leader === DUKE_VIDAL_ID) {
+      requireRevival(original.kind === 'leader' && p.faction === 'ecaz' &&
+        original.normalCost === 5 && (original.cost === 3 || original.cost === 5) &&
+        kind !== 'earlyRevival',
+        'The pending shared leader has invalid revival costs or checks.');
+      try {
+        resolveEcazDukeRevival(g, p.id);
+      } catch {
+        throw new RevivalCancellationError('The pending shared leader is unavailable for revival.');
+      }
     } else {
       const matches = g.players
         .flatMap((seat) => seat.leaders.map((leader) => ({ seat, leader })))

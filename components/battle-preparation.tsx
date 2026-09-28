@@ -5,6 +5,7 @@ import {
   battleCardLabel,
   isWeaponCard,
   isStoneBurner,
+  isMirrorWeapon,
   isDefenseCard,
   VOICE_KINDS,
 } from '@/game/battle-cards';
@@ -20,6 +21,7 @@ import {
   type BattleCardSlot,
 } from '@/game/battle-card-slots';
 import { canUsePlanetologistBattleSpecial } from '@/game/leader-skill-combat';
+import { mirrorWeaponModeBlock } from '@/game/mirror-weapon-mode';
 
 /** Both selectors evaluate the complete physical pair, in either selection order. */
 export function battlePlanCardOptions(game: GameView, slot: BattleCardSlot, leader: string, weapon: string, defense: string) {
@@ -34,6 +36,7 @@ export function battlePlanCardOptions(game: GameView, slot: BattleCardSlot, lead
     });
     return (card.id !== 'ecaz-reinforcements' || (!!game.battle?.reinforcements && !game.battle.reinforcements.blocked)) &&
       (card.id !== 'ecaz-harass-withdraw' || (!!game.battle?.harassWithdraw && !game.battle.harassWithdraw.blocked)) &&
+      (!isMirrorWeapon(card) || !mirrorWeaponModeBlock(game)) &&
       battleCardSlotEligible(slot, card, { planetologistWeapon }) &&
       (!fixed || fixedBattleInspectionMatches(slot, fixed.value, card.id, card)) &&
       validBattleSlotPair(w, d, planetologistWeapon);
@@ -154,7 +157,7 @@ export function BattlePreparation({
             value={kind}
             onChange={(e) => setKind(e.target.value)}
           >
-            {VOICE_KINDS.map((k) => (
+            {VOICE_KINDS.filter((name) => name !== 'mirrorWeapon' || !mirrorWeaponModeBlock(game)).map((k) => (
               <option key={k} value={k}>
                 {battleCardLabel(k)}
               </option>

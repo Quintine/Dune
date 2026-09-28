@@ -194,11 +194,10 @@ export const RICHESE_CARD_DEFINITIONS: readonly RicheseCardDefinition[] =
       ],
       [
         'Determine the copied weapon from the revealed opposing plan, not the opponent’s hand.',
-        'Physical disposal follows the general official winner-retention rule unless a specific exception applies; copied special-weapon disposal remains under audit.',
+        'The user-selected interpretation keeps a victorious physical Mirror eligible for normal winner retention even if it copied activated Poison Tooth or Artillery; this is not a publisher clarification.',
       ],
       [
-        'Two Mirror Weapons, no opposing weapon, mode-dependent cards, Poison Tooth, Artillery Strike, Stone Burner and weapon-order effects.',
-        'Copied card disposal and effects that cancel or replace weapons.',
+        'Further combined-module card-role changes and effects that cancel or replace weapons.',
       ],
     ),
     define(

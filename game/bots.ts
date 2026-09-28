@@ -4,6 +4,7 @@ import type { Card } from './cards';
 import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, usesSurvivingSkilledLeader } from './leader-skill-combat';
 import { smugglerBattleModeSupported, smugglerBattlePlanBlock } from './smuggler-battle';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, type BattlePlanInspectionField } from './battle-card-slots';
+import { mirrorWeaponModeBlock } from './mirror-weapon-mode';
 import { defaultHarassWithdrawAllocation, quoteHarassWithdraw } from './harass-withdraw';
 import { leaderSkillStrongholdCount } from './leader-skill-battle-board';
 import { discoveryFlightBotActions } from './discovery-flight-options';
@@ -61,6 +62,7 @@ import {
 import {
   isWeaponCard,
   isStoneBurner,
+  isMirrorWeapon,
   isDefenseCard,
   defaultVoiceMatch,
   playedVoiceMatch,
@@ -701,6 +703,7 @@ function plans(g: GameView): Action[] {
   const specialForLeader = (card: Card | undefined, leader: string | null) =>
     canUsePlanetologistBattleSpecial({assignments:battleSkills, selectedLeader:leader, card});
   const prototypeCardAllowed = (card: Card) =>
+    (!isMirrorWeapon(card) || !mirrorWeaponModeBlock(g)) &&
     (card.id !== 'ecaz-reinforcements' || (!!b.reinforcements && !b.reinforcements.blocked)) &&
     (card.id !== 'ecaz-harass-withdraw' || (!!b.harassWithdraw && !b.harassWithdraw.blocked));
   const weapons = [
@@ -927,9 +930,8 @@ function plans(g: GameView): Action[] {
               : 0,
           );
           if (bankerSpice) action.bankerSpice = bankerSpice;
-          const stonePlan = isStoneBurner(
-            me.hand?.find((c) => c.id === action.weapon),
-          );
+          const stonePlan = isStoneBurner(me.hand?.find((c) => c.id === action.weapon)) ||
+            isMirrorWeapon(me.hand?.find((c) => c.id === action.weapon));
           if (stonePlan && !action.leader) continue;
           if (
             stonePlan &&
@@ -2384,6 +2386,7 @@ function policyActions(g: GameView): Action[] {
       return [
         {
           type: 'decision',
+          ...(d.event ? { event: d.event } : {}),
           activate:
             level === 0
               ? variation(g, 'tooth') > 0.5

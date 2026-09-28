@@ -3,6 +3,8 @@ import { faction, type FactionId } from './catalog';
 import { isAuditorLeader } from './choam-auditor';
 import { homeworldLowBonus } from './homeworld-benefits';
 import { recruitsRevivalAllowance } from './recruits';
+import { DUKE_VIDAL_ID } from './duke-vidal';
+import { ecazDukeRevivalBlock, quoteEcazDukeRevival } from './ecaz-duke-revival';
 type RevivalRateContext = Pick<
   Game,
   | 'advanced'
@@ -136,10 +138,9 @@ export function normalRevivalCycle(
     : p.revivalCycle;
 }
 
-/** Native leader options for the existing ordinary cycle and Tleilaxu self-service.
- * Shared discs are deliberately separate: Ecaz's six-disc cycle is not implemented here.
- * This is a pure quote; committing an action, not reading a view, advances the cycle.
- */
+/** The five-disc Ecaz opening is recorded in revivalCycle on the first
+ * accepted ordinary return. Later six-disc cohorts are not established by E3:
+ * keep their native returns gated rather than guessing from death counters. */
 export function leaderRevivalOptions(
   g: Pick<
     Game,
@@ -149,6 +150,8 @@ export function leaderRevivalOptions(
     | 'revivalPrevention'
     | 'players'
     | 'revivalRules'
+    | 'status'
+    | 'dukeVidal'
   >,
   p: Pick<
     Player,
@@ -161,7 +164,21 @@ export function leaderRevivalOptions(
     | 'kwisatz'
   >,
 ) {
-  const cycle = normalRevivalCycle(p);
+  const shared = p.faction === 'ecaz' && g.dukeVidal;
+  const dukeContext = shared && g.status === 'playing' ? g : null;
+  const dukeBlocked = dukeContext ? ecazDukeRevivalBlock(dukeContext, p.id) : null;
+  const dukeAvailable = !!dukeContext && !dukeBlocked;
+  const repeatHistory = !!shared &&
+    (g.dukeVidal!.leader.deaths > 1 || p.leaders.some((l) => l.deaths > 1) ||
+      p.revivalCycle > 1);
+  const firstOpening = !!shared && !repeatHistory &&
+    (p.leaders.filter((l) => l.dead && !l.capturedBy && !l.gholaBy && l.deaths === 1).length +
+      (g.dukeVidal!.leader.dead && dukeAvailable &&
+      g.dukeVidal!.leader.deaths === 1 ? 1 : 0) >= 5 ||
+      p.leaders.every((l) => l.dead || l.capturedBy || l.gholaBy));
+  const cycle = shared
+    ? (!repeatHistory && (p.revivalCycle === 1 || firstOpening) ? 1 : 0)
+    : normalRevivalCycle(p);
   const enabled = g.phase === 4 && !revivalPrevented(g, p.id);
   const discount = revivalDiscount(g, p);
   const leaders = p.leaders.flatMap((leader) => {
@@ -195,6 +212,17 @@ export function leaderRevivalOptions(
       },
     ];
   });
+  if (dukeAvailable && enabled && !p.leaderRevived) {
+    const quote = quoteEcazDukeRevival(dukeContext!, p.id, !!discount);
+    leaders.push({
+      id: DUKE_VIDAL_ID,
+      name: quote.duke.leader.name,
+      normalCost: quote.normalCost,
+      cost: quote.cost,
+      early: false,
+      affordable: p.spice >= quote.cost,
+    });
+  }
   const kwisatzCost = discount ? 1 : 2;
   const kwisatz =
     enabled &&
@@ -205,7 +233,8 @@ export function leaderRevivalOptions(
     cycle >= (p.kwisatz.revivalCycle ?? 1)
       ? { cost: kwisatzCost, affordable: p.spice >= kwisatzCost }
       : null;
-  return { cycle, leaders, kwisatz };
+  return { cycle, leaders, kwisatz, dukeBlocked, cycleBlock: repeatHistory
+    ? 'Ecaz six-disc repeated revival cycles are not yet resolved.' : null };
 }
 export type PendingRevival = {
   player: string;

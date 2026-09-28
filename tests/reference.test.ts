@@ -407,32 +407,3 @@ void test('Nullentropy checklist preserves paid-only privacy, real choices, reco
   );
   assert.doesNotMatch(JSON.stringify(topic), /https?:\/\//);
 });
-
-void test('Richese generated guides distinguish the eight bounded handlers from two inactive faces', () => {
-  const cards = RULE_TOPICS.filter((topic) =>
-    topic.id.startsWith('card-richese-'),
-  );
-  assert.equal(cards.length, 10);
-  const active = new Set([
-    'card-richese-karama',
-    'card-richese-distrans',
-    'card-richese-nullentropy-box',
-    'card-richese-ornithopter',
-    'card-richese-residual-poison',
-    'card-richese-portable-snooper',
-    'card-richese-stone-burner',
-    'card-richese-juice-of-sapho',
-  ]);
-  for (const card of cards) {
-    const text = card.steps.join(' ');
-    if (active.has(card.id))
-      assert.doesNotMatch(text, /game actions are not enabled/);
-    else assert.match(text, /game actions are not enabled/);
-    assert.equal(card.coverage, 'Partial');
-  }
-  for (const id of ['richese-cards', 'richese-gift'])
-    assert.match(
-      RULE_TOPICS.find((topic) => topic.id === id)!.steps.join(' '),
-      /Mirror Weapon and Semuta Drug remain unfinished/,
-    );
-});

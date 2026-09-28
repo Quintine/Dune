@@ -5,9 +5,13 @@ import { richeseCards } from '../game/richese-cards';
 import {
   battleCardEffects,
   battleWeaponsExplode,
+  isMirrorWeapon,
   isWeaponCard,
   validBattleCardPair,
+  defaultVoiceMatch,
+  playedVoiceMatch,
 } from '../game/battle-cards';
+import { strongholdBattleEffects } from '../game/stronghold-battle';
 
 const cards = [...baseDeck(), ...ixBattleCards(), ...richeseCards()];
 const get = (kind: Card['kind']) => cards.find((card) => card.kind === kind)!;
@@ -137,6 +141,15 @@ void test('copied Lasgun uses the same explosion predicate and only actual shiel
   assert.equal(battleWeaponsExplode(get('lasgun'), get('shield')), true);
 });
 
+void test('Carthag does not grant free Snooper when physical Mirror copies a poison attack', () => {
+  const shield = get('shield');
+  const poison = get('poison');
+  const copied = strongholdBattleEffects(mirror, shield, poison, undefined, true, true, 'carthag');
+  assert.equal(copied.attackerDead, true);
+  const ordinary = strongholdBattleEffects(get('projectile'), shield, poison, undefined, true, true, 'carthag');
+  assert.equal(ordinary.attackerDead, false);
+});
+
 void test('empty and Worthless copies have no attack; Stone remains a separate post-reveal outcome', () => {
   for (const weapon of [undefined, get('worthless'), stone]) {
     const before = structuredClone([mirror, weapon]);
@@ -151,11 +164,16 @@ void test('empty and Worthless copies have no attack; Stone remains a separate p
   }
 });
 
-void test('effective attack support does not activate Mirror plan admission or invent physical cleanup rules', () => {
-  assert.equal(isWeaponCard(mirror), false);
-  assert.equal(validBattleCardPair(mirror, get('weirdingWay')), false);
-  assert.equal(mirror.id, 'richese-mirror-weapon');
-  assert.equal(mirror.kind, 'special');
+void test('only the canonical physical Mirror is a named weapon in plans and Voice', () => {
+  assert.equal(isMirrorWeapon(mirror), true);
+  assert.equal(isWeaponCard(mirror), true);
+  assert.equal(validBattleCardPair(mirror, get('weirdingWay')), true);
+  assert.equal(defaultVoiceMatch(mirror, 'mirrorWeapon'), true);
+  assert.equal(playedVoiceMatch(mirror, 'weapon', 'mirrorWeapon'), true);
+  const counterfeit = { ...mirror, id: 'forged-mirror' };
+  assert.equal(isMirrorWeapon(counterfeit), false);
+  assert.equal(isWeaponCard(counterfeit), false);
+  assert.equal(validBattleCardPair(counterfeit), false);
   assert.throws(() => battleCardEffects(mirror, undefined, mirror));
   assert.throws(() => battleWeaponsExplode(mirror, undefined, mirror));
 });

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createGame, newPlayer, type Game } from '../game/engine';
+import { applyAction, createGame, newPlayer, viewGame, type Game } from '../game/engine';
 import { FACTIONS, type FactionId } from '../game/catalog';
 import {
   createDukeVidal,
@@ -16,6 +16,9 @@ import {
   EcazDukeRevivalError,
   DUKE_REVIVAL_NORMAL_COST,
 } from '../game/ecaz-duke-revival';
+import { baseDeck } from '../game/cards';
+import { quoteRevivalCancellation } from '../game/revival-cancellation';
+import { botActions } from '../game/bots';
 const p = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
 function fixture(advanced = false) {
   const g = createGame(
@@ -360,6 +363,15 @@ void test('set-aside battle-death identity and valid retained legacy custody res
     released,
   );
 });
+void test('a dead Duke with prior Ecaz Nexus custody resolves to the same physical return', () => {
+  const g = fixture();
+  g.dukeVidal = acquireDuke(createDukeVidal(), 'ec', 2, 'ecazNexus');
+  g.dukeVidal.leader.dead = true;
+  g.dukeVidal.leader.deaths = 1;
+  const quoted = resolveEcazDukeRevival(g, 'ec');
+  assert.equal(quoted.duke.source, 'ecazNexus');
+  assert.equal(quoted.normalCost, 5);
+});
 void test('invalid source context and duplicate Ecaz owners fail independently from paid revival timing', () => {
   for (const change of [
     (g: Game) => {
@@ -387,4 +399,166 @@ void test('invalid source context and duplicate Ecaz owners fail independently f
     assert.throws(() => resolveEcazDukeRevival(g, 'ec'), EcazDukeRevivalError);
     assert.deepEqual(g, before);
   }
+});
+void test('four native deaths plus Duke open Ecaz first cohort, which stays open after a paid return', () => {
+  let g = fixture();
+  p(g, 'ec').leaders.slice(0, 4).forEach((l) => {
+    l.dead = true;
+    l.deaths = 1;
+  });
+  p(g, 'ec').spice = 20;
+  const initial = viewGame(g, 'ec').revival.leaders;
+  assert.equal(initial.filter((l) => l.id !== DUKE_VIDAL_ID).length, 4);
+  assert.equal(initial.find((l) => l.id === DUKE_VIDAL_ID)?.early, false);
+  g = applyAction(g, 'ec', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
+  assert.equal(p(g, 'ec').revivalCycle, 1);
+  assert.equal(p(g, 'ec').spice, 15);
+  p(g, 'ec').leaderRevived = false;
+  g.turn++;
+  assert.equal(viewGame(g, 'ec').revival.leaders.length, 4);
+  const native = p(g, 'ec').leaders[0].id;
+  g = applyAction(g, 'ec', { type: 'reviveLeader', leader: native });
+  assert.equal(p(g, 'ec').spice, 15 - p(g, 'ec').leaders[0].strength);
+  assert.equal(p(g, 'ec').leaders[4].dead, false);
+  assert.equal(g.dukeVidal!.controller, null);
+});
+void test('Ecaz native repeated six-disc cycles stay gated while Duke remains independently revivable', () => {
+  const g = fixture();
+  p(g, 'ec').leaders.forEach((l) => { l.dead = true; l.deaths = 1; });
+  p(g, 'ec').leaders[0].deaths = 2;
+  p(g, 'ec').spice = 10;
+  p(g, 'ec').revivalCycle = 1;
+  const options = viewGame(g, 'ec').revival;
+  assert.match(options.cycleBlock!, /six-disc repeated/);
+  assert.deepEqual(options.leaders.map((l) => l.id), [DUKE_VIDAL_ID]);
+  assert.equal(options.leaders[0].cost, 5);
+  const returned = applyAction(g, 'ec', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
+  assert.equal(p(returned, 'ec').revivalCycle, 1);
+  assert.equal(returned.dukeVidal!.leader.deaths, 1);
+});
+void test('saved discounted Duke request can be canceled back to five and paid once with income', () => {
+  let g = fixture(true);
+  g.players.push(newPlayer('t', 'Tleilaxu', 'tleilaxu'));
+  g.players.push(newPlayer('k', 'Karama', 'emperor'));
+  g.order = g.players.map((seat) => seat.id);
+  g.deck = baseDeck();
+  const karamaIndex = g.deck.findIndex((card) => card.effect === 'karama');
+  p(g, 'k').hand.push(g.deck.splice(karamaIndex, 1)[0]);
+  p(g, 'ec').spice = 8;
+  p(g, 't').ally = 'ec';
+  p(g, 'ec').ally = 't';
+  p(g, 't').specialKaramaUsed = true;
+  g = applyAction(g, 't', { type: 'tleilaxuAllyDiscount' });
+  assert.equal(viewGame(g, 'ec').revival.leaders.find((l) => l.id === DUKE_VIDAL_ID)?.cost, 3);
+  g = applyAction(g, 'ec', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
+  assert.deepEqual(g.pendingRevival?.checks, []);
+  assert.equal(g.response?.kind, 'revivalDiscount');
+  assert.equal(g.pendingRevival?.normalCost, 5);
+  assert.equal(g.pendingRevival?.cost, 3);
+  const saved = JSON.parse(JSON.stringify(g)) as Game;
+  const before = structuredClone(saved);
+  const quote = quoteRevivalCancellation(saved, saved.response!);
+  assert.equal(quote.pending?.cost, 5);
+  assert.deepEqual(saved, before);
+  g = applyAction(saved, 'k', {
+    type: 'card', card: p(saved, 'k').hand[0].id, mode: 'cancel',
+  });
+  assert.equal(p(g, 'ec').spice, 3);
+  assert.equal(g.dukeVidal!.leader.dead, false);
+  assert.equal(g.dukeVidal!.controller, null);
+  assert.equal(p(g, 'ec').leaderRevived, true);
+  assert.equal(g.pendingRevival, null);
+  assert.equal(g.response, null);
+  assert.equal(p(g, 't').spice, 5, 'the automatic paid revival income settles once');
+});
+void test('Advanced Tleilaxu stop decision survives JSON and cannot charge Duke before approval', () => {
+  let g = fixture(true);
+  g.players.push(newPlayer('t', 'Tleilaxu', 'tleilaxu'));
+  g.order = g.players.map((seat) => seat.id);
+  p(g, 'ec').spice = 7;
+  g = applyAction(g, 'ec', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
+  assert.equal(g.decision?.kind, 'revivalStop');
+  assert.equal(g.pendingRevival?.normalCost, 5);
+  assert.equal(p(g, 'ec').spice, 7);
+  assert.equal(g.dukeVidal!.leader.dead, true);
+  g = JSON.parse(JSON.stringify(g)) as Game;
+  g = applyAction(g, 't', { type: 'decision', decline: true });
+  assert.equal(p(g, 'ec').spice, 2);
+  assert.equal(p(g, 't').spice, 5);
+  assert.equal(g.dukeVidal!.leader.dead, false);
+  assert.equal(g.dukeVidal!.controller, null);
+  assert.equal(g.pendingRevival, null);
+});
+void test('all four Ecaz AI profiles can choose the authoritative five-spice Duke return', () => {
+  const g = fixture();
+  p(g, 'ec').spice = 10;
+  for (const profile of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
+    p(g, 'ec').bot = profile;
+    const view = viewGame(g, 'ec');
+    const selected = botActions(view).find(
+      (action) => action.type === 'reviveLeader' && action.leader === DUKE_VIDAL_ID,
+    );
+    assert.ok(selected, profile);
+    const done = applyAction(g, 'ec', selected);
+    assert.equal(done.dukeVidal!.leader.dead, false);
+    assert.equal(done.dukeVidal!.controller, null);
+    assert.equal(done.players.find((seat) => seat.id === 'ec')!.spice, 5);
+  }
+});
+void test('corrupt saved pending Duke custody rejects continuation without changing spice or the request', () => {
+  let g = fixture(true);
+  g.players.push(newPlayer('t', 'Tleilaxu', 'tleilaxu'));
+  g.order = g.players.map((seat) => seat.id);
+  p(g, 'ec').spice = 9;
+  g = applyAction(g, 'ec', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
+  assert.equal(g.decision?.kind, 'revivalStop');
+  g = JSON.parse(JSON.stringify(g)) as Game;
+  p(g, 'ec').leaders.push(structuredClone(g.dukeVidal!.leader));
+  const before = structuredClone(g);
+  assert.throws(() => applyAction(g, 't', { type: 'decision', decline: true }));
+  assert.deepEqual(g, before);
+  assert.equal(p(g, 'ec').spice, 9);
+});
+void test('five native Ecaz leaders in Tanks open the ordinary first cohort even while Duke lives', () => {
+  const g = fixture();
+  g.dukeVidal!.leader.dead = false;
+  g.dukeVidal!.leader.deaths = 0;
+  p(g, 'ec').leaders.forEach((l) => { l.dead = true; l.deaths = 1; });
+  p(g, 'ec').spice = 20;
+  const options = viewGame(g, 'ec').revival.leaders;
+  assert.equal(options.length, 5);
+  assert.equal(options.some((l) => l.id === DUKE_VIDAL_ID), false);
+});
+void test('unavailable captured native leaders retain the ordinary no-survivor exception', () => {
+  const g = fixture();
+  g.dukeVidal!.leader.dead = false;
+  g.dukeVidal!.leader.deaths = 0;
+  p(g, 'ec').leaders.forEach((l, i) => {
+    l.dead = i === 0;
+    l.deaths = i === 0 ? 1 : 0;
+    if (i !== 0) l.capturedBy = 'm';
+  });
+  p(g, 'ec').spice = 20;
+  assert.deepEqual(viewGame(g, 'ec').revival.leaders.map((l) => l.id),
+    [p(g, 'ec').leaders[0].id]);
+});
+void test('concealed foreign-ghola execution does not reveal Ecaz revival cohort history', () => {
+  const g = fixture(true);
+  g.expansions = ['ecaz', 'ix'];
+  g.players.push(newPlayer('t', 'Tleilaxu', 'tleilaxu'));
+  g.players.push(newPlayer('h', 'Harkonnen', 'harkonnen'));
+  const leader = p(g, 'ec').leaders[0];
+  leader.dead = false;
+  leader.deaths = 1;
+  leader.gholaBy = 't';
+  leader.capturedBy = 'h';
+  leader.concealed = { captor: 'h', controller: 't', dead: false, deaths: 1 };
+  const before = viewGame(g, 'ec');
+  leader.dead = true;
+  leader.deaths = 2;
+  delete leader.capturedBy;
+  const after = viewGame(g, 'ec');
+  assert.deepEqual(after.players.find((seat) => seat.id === 'ec')?.leaders,
+    before.players.find((seat) => seat.id === 'ec')?.leaders);
+  assert.deepEqual(after.revival, before.revival);
 });

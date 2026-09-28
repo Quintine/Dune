@@ -249,6 +249,43 @@ void test('Stone validates physical ambiguity and mode before traitors, and uses
   g.defender.plan.support = 1;
   reject(g, /unresolved physical casualty/);
 });
+void test('copied Stone needs each revealed mode and keeps physical Mirror custody on victory', () => {
+  const g = input();
+  const mirror = play(g, 'attacker', 'weapon', (card) => card.effect === 'mirrorWeapon');
+  const original = play(g, 'defender', 'weapon', (card) => card.effect === 'stoneBurner');
+  g.defender.plan.dial = g.defender.plan.support = 4;
+  reject(g, /revealed mode/);
+  g.attacker.stoneMode = 'ignore';
+  reject(g, /revealed mode/);
+  g.defender.stoneMode = 'ignore';
+  const quote = quoteBattleResolution(g);
+  assert.equal(quote.stone?.winner, 'attacker');
+  assert.equal(quote.winner, 'a');
+  assert.ok(quote.winnerCards.includes(mirror.id));
+  assert.ok(quote.discarded.some((entry) => entry.card === original.id));
+  assert.ok(!quote.discarded.some((entry) => entry.card === mirror.id));
+  g.attacker.stoneMode = 'kill';
+  assert.deepEqual(quoteBattleResolution(g).leaderDeaths, {
+    attacker: true,
+    defender: true,
+  });
+});
+void test('victorious physical Mirror retains after copying activated Tooth or Artillery', () => {
+  for (const copiedKind of ['poisonTooth', 'artillery'] as const) {
+    const g = input();
+    const mirror = play(g, 'attacker', 'weapon', (card) => card.effect === 'mirrorWeapon');
+    const original = play(g, 'defender', 'weapon', (card) => card.kind === copiedKind);
+    if (copiedKind === 'poisonTooth') {
+      g.attacker.poisonTooth = true;
+      g.defender.poisonTooth = true;
+    }
+    const quote = quoteBattleResolution(g);
+    assert.equal(quote.winner, 'a', copiedKind);
+    assert.ok(quote.winnerCards.includes(mirror.id), copiedKind);
+    assert.ok(!quote.discarded.some((entry) => entry.card === mirror.id), copiedKind);
+    assert.ok(quote.discarded.some((entry) => entry.card === original.id), copiedKind);
+  }
+});
 void test('Habbanya selects ordinary and Stone ties; canceled free-support and elite bonuses remain captured in casualty choices', () => {
   const g = input();
   g.defender.leader!.strength = 3;

@@ -3,6 +3,7 @@ import { richeseCardDefinition } from './richese-cards';
 import {
   resolveBattleWeapons,
   type EffectiveWeapon,
+  type BattleWeaponResolution,
 } from './effective-weapons';
 
 /** Keep persisted physical card shapes stable while validating their printed role. */
@@ -17,8 +18,11 @@ export function isDefenseCard(card: Card): boolean {
 export function isStoneBurner(card: Card | undefined): boolean {
   return !!card && richeseCardDefinition(card)?.card.effect === 'stoneBurner';
 }
+export function isMirrorWeapon(card: Card | undefined): boolean {
+  return !!card && richeseCardDefinition(card)?.card.effect === 'mirrorWeapon';
+}
 export function isWeaponCard(card: Card): boolean {
-  return WEAPON_KINDS.includes(card.kind) || isStoneBurner(card);
+  return WEAPON_KINDS.includes(card.kind) || isStoneBurner(card) || isMirrorWeapon(card);
 }
 
 export const WEAPON_KINDS = [
@@ -42,6 +46,7 @@ export const DEFENSE_KINDS = [
 ];
 export const VOICE_KINDS = [
   'stoneBurner',
+  'mirrorWeapon',
   'poison',
   'projectile',
   'lasgun',
@@ -84,6 +89,7 @@ export function validBattleCardPair(weapon?: Card, defense?: Card) {
 export function weaponTypes(card?: Card): string[] {
   if (!card) return [];
   if (isStoneBurner(card)) return ['stoneBurner'];
+  if (isMirrorWeapon(card)) return ['mirrorWeapon'];
   if (card.kind === 'poisonBlade') return ['projectile', 'poison'];
   if (card.kind === 'weirdingWay') return ['projectile'];
   if (card.kind === 'chemistry' || card.kind === 'poisonTooth')
@@ -164,6 +170,7 @@ export function battleCardLabel(kind: string) {
         poisonTooth: 'Poison Tooth',
         artillery: 'Artillery Strike',
         stoneBurner: 'Stone Burner',
+        mirrorWeapon: 'Mirror Weapon',
         poisonBlade: 'Poison Blade',
         shieldSnooper: 'Shield Snooper',
         weirdingWay: 'Weirding Way',
@@ -189,8 +196,9 @@ export function battleCardEffects(
   toothA = true,
   toothD = true,
   extraSnoopers: { attacker?: boolean; defender?: boolean } = {},
+  resolved?: BattleWeaponResolution,
 ) {
-  const weapons = resolveBattleWeapons({
+  const weapons = resolved ?? resolveBattleWeapons({
     attacker: { weapon: aw, defense: ad },
     defender: { weapon: dw, defense: dd },
   });

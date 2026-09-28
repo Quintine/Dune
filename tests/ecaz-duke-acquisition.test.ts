@@ -390,7 +390,7 @@ function completeMovement(g: Game) {
   assert.equal(g.phase, 6);
   return g;
 }
-void test('an acquired Duke is usable in a genuine following battle, then the same disc is consumed after death', () => {
+function deadFromBattle() {
   const initial = fixture();
   p(initial, 'ec').forces = { 'arrakeen:10': 1 };
   p(initial, 'ec').reserves = 19;
@@ -429,6 +429,72 @@ void test('an acquired Duke is usable in a genuine following battle, then the sa
   assert.equal(g.dukeVidal!.leader.id, DUKE_VIDAL_ID);
   assert.equal(p(g, 'in').spice, 24);
   assert.ok(p(g, 'ec').leaders.every((l) => !l.dead));
+  g = applyAction(g, 'in', { type: 'decision', discard: [] });
+  assert.equal(g.decision, null);
+  return g;
+}
+void test('an acquired Duke is usable in a genuine following battle, then the same disc is consumed after death', () => {
+  const g = deadFromBattle();
+  assert.equal(viewGame(g, 'ec').dukeVidal?.controller, null);
+  assert.ok(g.players.every((seat) => seat.leaders.every((l) => l.id !== DUKE_VIDAL_ID)));
+});
+void test('genuine acquisition and battle death lead to one paid Ecaz return of the shared disc at five, unclaimed', () => {
+  let g = deadFromBattle();
+  g.phase = 4;
+  g.turn = 3;
+  g.battle = null;
+  g.ready = [];
+  const ec = p(g, 'ec');
+  ec.spice = 9;
+  const option = viewGame(g, 'ec').revival.leaders.find((l) => l.id === DUKE_VIDAL_ID);
+  assert.deepEqual(option, {
+    id: DUKE_VIDAL_ID, name: 'Duke Prad Vidal',
+    normalCost: 5, cost: 5, early: false, affordable: true,
+  });
+  assert.equal(viewGame(g, 'in').revival.leaders.some((l) => l.id === DUKE_VIDAL_ID), false);
+  const before = structuredClone(g);
+  reject(g, 'in', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
+  assert.deepEqual(g, before);
+  g = applyAction(reload(g), 'ec', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
+  assert.equal(g.pendingRevival, null);
+  assert.equal(p(g, 'ec').spice, 4);
+  assert.equal(p(g, 'ec').leaderRevived, true);
+  assert.equal(g.dukeVidal!.leader.dead, false);
+  assert.equal(g.dukeVidal!.leader.deaths, 1);
+  assert.equal(g.dukeVidal!.leader.strength, 6);
+  assert.deepEqual(
+    [g.dukeVidal!.controller, g.dukeVidal!.source, g.dukeVidal!.acquiredTurn],
+    [null, null, null],
+  );
+  assert.equal(p(g, 'ec').leaders.length, 5);
+  assert.equal(viewGame(g, 'ec').players.find((seat) => seat.id === 'ec')!.leaders.some((l) => l.id === DUKE_VIDAL_ID), false);
+  assert.equal(viewGame(g, 'ec').revival.leaders.some((l) => l.id === DUKE_VIDAL_ID), false);
+  reject(g, 'ec', { type: 'reviveLeader', leader: DUKE_VIDAL_ID });
+  assert.deepEqual(reload(g).dukeVidal, g.dukeVidal);
+});
+void test('Ghola revives the genuine dead Ecaz Duke as an unclaimed disc without spice or ordinary slot', () => {
+  let g = deadFromBattle();
+  const cardIndex = g.deck.findIndex((c) => c.effect === 'ghola');
+  assert.ok(cardIndex >= 0);
+  const card = g.deck.splice(cardIndex, 1)[0];
+  p(g, 'ec').hand.push(card);
+  const beforeSpice = p(g, 'ec').spice;
+  assert.equal(viewGame(g, 'ec').ghola.leaders.some((l) => l.id === DUKE_VIDAL_ID), true);
+  assert.equal(viewGame(g, 'in').ghola.leaders.some((l) => l.id === DUKE_VIDAL_ID), false);
+  reject(g, 'in', { type: 'card', card: card.id, leader: DUKE_VIDAL_ID });
+  g = applyAction(reload(g), 'ec', { type: 'card', card: card.id, leader: DUKE_VIDAL_ID });
+  assert.equal(p(g, 'ec').spice, beforeSpice);
+  assert.equal(p(g, 'ec').leaderRevived, false);
+  assert.equal(g.dukeVidal!.leader.dead, false);
+  assert.equal(g.dukeVidal!.leader.deaths, 1);
+  assert.equal(g.dukeVidal!.controller, null);
+  assert.equal(g.dukeVidal!.source, null);
+  assert.equal(g.dukeVidal!.leader.usedAt, undefined);
+  assert.equal(g.dukeVidal!.acquiredTurn, null);
+  assert.equal(p(g, 'ec').leaders.length, 5);
+  assert.equal(p(g, 'ec').hand.some((c) => c.id === card.id), false);
+  assert.deepEqual(reload(g).dukeVidal, g.dukeVidal);
+  assert.equal(viewGame(reload(g), 'ec').ghola.leaders.some((l) => l.id === DUKE_VIDAL_ID), false);
 });
 void test('unused source-Ecaz custody persists through a genuine end of turn without manufacturing another disc', () => {
   let g = acquire(enter());

@@ -25,6 +25,8 @@ export function richeseCardActionBlock(card: VisibleCard): string | null {
   const definition = richeseCardDefinition(card);
   if (definition?.card.effect === 'stoneBurner')
     return 'Choose Stone Burner in your battle weapon slot, then choose its leader effect after both plans are revealed.';
+  if (definition?.card.effect === 'mirrorWeapon')
+    return 'Choose Mirror Weapon in your battle weapon slot. It copies the opposing revealed weapon attack, with your own first post-reveal choice if needed.';
   if (definition?.card.effect === 'portableSnooper')
     return 'Choose Portable Snooper as your battle defense, or use its late-defense panel after reveal before submitting your traitor decision.';
   if (definition?.card.effect === 'residualPoison')
@@ -86,10 +88,12 @@ export function cardPresentation(card: VisibleCard): CardPresentation {
       gameplay: richese.gameplay,
       availability:
         richese.card.effect === 'juiceOfSapho'
-          ? 'Richese effect integration and verification are incomplete. Supported controls cover Once Around first before bidding begins, Once Around last before your bid, bounded movement and battle-choice ordering, and aggressor during the shared pre-plan opportunity. Later aggressor intervention and other phase or auction modes remain unfinished; expansion starts remain disabled.'
+          ? 'Richese effect integration and verification are incomplete. Supported controls cover Once Around first or last while your bid remains open, bounded movement and battle-choice ordering, and aggressor during the shared pre-plan opportunity. Earlier bids stay committed. Later aggressor intervention and other phase or auction modes remain unfinished; expansion starts remain disabled.'
+          : richese.card.effect === 'mirrorWeapon'
+            ? 'Mirror Weapon works in bounded CHOAM/Richese-deck classic-faction battles; copied Tooth and Stone choices resolve separately, and a winning physical Mirror may be kept even after copying Tooth or Artillery. This winner-retention treatment is a user-selected interpretation, not an official clarification. Combined modes and full Richese starts remain gated.'
           : richese.card.effect === 'stoneBurner'
             ? 'Stone Burner has development battle controls. Combined allocation timing and Ix timing remain guarded; full expansion starts stay disabled.'
-            : 'Richese effect integration and verification are incomplete. Karama, Distrans, Nullentropy Box, Ornithopter, Residual Poison, Portable Snooper and Stone Burner have card handlers in development fixtures; full expansion starts remain disabled.',
+            : 'Richese effect integration and verification are incomplete. Karama, Distrans, Nullentropy Box, Ornithopter, Residual Poison, Portable Snooper, Stone Burner and Mirror Weapon have bounded card handlers; full expansion starts remain disabled.',
       topics: RULE_TOPICS.filter(
         (topic) =>
           topic.id ===

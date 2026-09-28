@@ -8,6 +8,7 @@ import {
 } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
 import {
+  quoteBattleWeaponRetention,
   resolveBattleWeapons,
   type BattleWeaponSide,
   type EffectiveBattleWeapon,
@@ -75,8 +76,8 @@ void test('Stone Burner and Poison Tooth copies require separate choices before 
       const kind = weapon === stone ? 'stoneBurner' : 'poisonTooth';
       const { result, other } = copied(side, weapon);
       assert.deepEqual(result.choiceOrder, [
-        { side, kind },
-        { side: other, kind },
+        { side, kind, physicalId: mirror.id, copiedFrom: weapon.id },
+        { side: other, kind, physicalId: weapon.id, copiedFrom: null },
       ]);
       assert.equal(result[side].choice, kind);
       assert.equal(result[other].choice, kind);
@@ -102,10 +103,14 @@ void test('ordinary choices retain input order when no copy dependency exists an
       {
         side: 'attacker',
         kind: attacker === stone ? 'stoneBurner' : 'poisonTooth',
+        physicalId: attacker.id,
+        copiedFrom: null,
       },
       {
         side: 'defender',
         kind: defender === stone ? 'stoneBurner' : 'poisonTooth',
+        physicalId: defender.id,
+        copiedFrom: null,
       },
     ]);
   }
@@ -284,4 +289,83 @@ void test('resolution accepts frozen physical inputs and returned descriptors ne
     choiceOrder: [],
     error: null,
   });
+});
+
+void test('physical winner retention ignores the copied attack, including activated Tooth and Artillery', () => {
+  for (const weapon of [
+    card('poisonTooth'),
+    card('artillery'),
+    stone,
+    card('projectile'),
+    undefined,
+  ]) {
+    for (const side of sides) {
+      const { result } = copied(side, weapon);
+      assert.equal(result[side].physicalId, mirror.id);
+      assert.equal(result[side].copiedFrom, weapon?.id ?? null);
+      const winner = quoteBattleWeaponRetention({
+        card: mirror,
+        outcome: 'winner',
+        traitorDecided: false,
+        toothUsed: true,
+      });
+      assert.deepEqual(winner, { physicalId: mirror.id, mayRetain: true });
+      assert.deepEqual(
+        quoteBattleWeaponRetention({
+          card: mirror,
+          outcome: 'loser',
+          traitorDecided: false,
+          toothUsed: true,
+        }),
+        { physicalId: mirror.id, mayRetain: false },
+      );
+    }
+  }
+});
+
+void test('original physical Tooth and Artillery retain their existing mandatory disposal exceptions', () => {
+  const quote = (
+    physical: Card,
+    outcome: 'winner' | 'loser',
+    toothUsed: boolean,
+    traitorDecided = false,
+  ) =>
+    quoteBattleWeaponRetention({
+      card: physical,
+      outcome,
+      toothUsed,
+      traitorDecided,
+    });
+  const tooth = card('poisonTooth');
+  const artillery = card('artillery');
+  assert.deepEqual(quote(tooth, 'winner', true), {
+    physicalId: tooth.id,
+    mayRetain: false,
+  });
+  assert.equal(quote(tooth, 'winner', false).mayRetain, true);
+  assert.equal(quote(artillery, 'winner', false).mayRetain, false);
+  assert.equal(quote(artillery, 'winner', true, true).mayRetain, true);
+  assert.equal(quote(tooth, 'winner', true, true).mayRetain, true);
+  assert.equal(quote(tooth, 'loser', false, true).mayRetain, false);
+  assert.equal(quote(card('projectile'), 'winner', false).mayRetain, true);
+  assert.equal(quote(card('hero'), 'winner', false, true).mayRetain, false);
+});
+
+void test('retention quote refuses forged Mirror identities instead of treating them as generic Specials', () => {
+  for (const forged of [
+    { ...mirror, id: 'forged-mirror' },
+    { ...mirror, effect: undefined },
+    { ...mirror, kind: 'artillery' as const },
+  ]) {
+    assert.throws(
+      () =>
+        quoteBattleWeaponRetention({
+          card: forged,
+          outcome: 'winner',
+          traitorDecided: false,
+          toothUsed: false,
+        }),
+      /canonical physical identity/,
+    );
+  }
 });

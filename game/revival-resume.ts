@@ -9,6 +9,8 @@ import { isAuditorLeader } from './choam-auditor';
 import { controlsLeader } from './leader-control';
 import { TECH_TOKENS, ownedTech } from './tech-tokens';
 import { tleilaxuHomeworldFreeIncomeBlocked } from './homeworld-benefits';
+import { DUKE_VIDAL_ID } from './duke-vidal';
+import { resolveEcazDukeRevival } from './ecaz-duke-revival';
 
 export type RevivalResumeContext = Pick<
   Game,
@@ -247,49 +249,61 @@ export function quoteRevivalResume(
       throw error;
     }
   } else {
-    const matches = g.players
-      .flatMap((owner) => owner.leaders.map((leader) => ({ owner, leader })))
-      .filter(({ leader }) => leader.id === pending.leader);
-    requireResume(
-      matches.length === 1 &&
-        matches[0].leader.dead &&
-        !matches[0].leader.capturedBy,
-      'The pending revival needs one dead, uncaptured physical leader.',
-    );
-    const { owner, leader } = matches[0];
-    if (pending.kind === 'foreignGhola') {
-      const living =
-        g.players
-          .flatMap((seat) => seat.leaders)
-          .filter((leader) => controlsLeader(p, leader) && !leader.dead)
-          .length +
-        (g.dukeVidal?.controller === p.id &&
-        !g.dukeVidal.leader.dead &&
-        !g.dukeVidal.leader.capturedBy &&
-        !g.dukeVidal.leader.gholaBy &&
-        !(g.advanced && g.players.some((seat) => seat.faction === 'harkonnen'))
-          ? 1
-          : 0);
-      requireResume(
-        leader.faction !== p.faction && !isAuditorLeader(leader) && living < 5,
-        'The pending foreign ghola has invalid leader identity or active pool capacity.',
-      );
+    if (pending.leader === DUKE_VIDAL_ID) {
+      requireResume(pending.kind === 'leader' && p.faction === 'ecaz' &&
+        pending.normalCost === 5 && (pending.cost === 3 || pending.cost === 5) &&
+        !pending.checks.includes('earlyRevival') && !p.leaderRevived,
+        'The pending shared leader has invalid ownership, cost, or revival slot.');
+      try {
+        resolveEcazDukeRevival(g, p.id);
+      } catch {
+        throw new RevivalResumeError('The pending shared leader is unavailable for revival.');
+      }
     } else {
-      // A negotiated native buyback may still carry the Tleilaxu ghola marker.
-      // The original approved request survives while benefit checks are answered.
-      const request = g.revivalRequests?.[p.id];
-      const buyback =
-        !!tleilaxu &&
-        leader.gholaBy === tleilaxu.id &&
-        request?.leader === leader.id &&
-        request.price === pending.cost &&
-        !request.declined;
+      const matches = g.players
+        .flatMap((owner) => owner.leaders.map((leader) => ({ owner, leader })))
+        .filter(({ leader }) => leader.id === pending.leader);
       requireResume(
-        owner.id === p.id &&
-          (!leader.gholaBy || buyback) &&
-          (!p.leaderRevived || p.faction === 'tleilaxu'),
-        'The pending native leader no longer belongs to this revival request.',
+        matches.length === 1 &&
+          matches[0].leader.dead &&
+          !matches[0].leader.capturedBy,
+        'The pending revival needs one dead, uncaptured physical leader.',
       );
+      const { owner, leader } = matches[0];
+      if (pending.kind === 'foreignGhola') {
+        const living =
+          g.players
+            .flatMap((seat) => seat.leaders)
+            .filter((leader) => controlsLeader(p, leader) && !leader.dead)
+            .length +
+          (g.dukeVidal?.controller === p.id &&
+          !g.dukeVidal.leader.dead &&
+          !g.dukeVidal.leader.capturedBy &&
+          !g.dukeVidal.leader.gholaBy &&
+          !(g.advanced && g.players.some((seat) => seat.faction === 'harkonnen'))
+            ? 1
+            : 0);
+        requireResume(
+          leader.faction !== p.faction && !isAuditorLeader(leader) && living < 5,
+          'The pending foreign ghola has invalid leader identity or active pool capacity.',
+        );
+      } else {
+        // A negotiated native buyback may still carry the Tleilaxu ghola marker.
+        // The original approved request survives while benefit checks are answered.
+        const request = g.revivalRequests?.[p.id];
+        const buyback =
+          !!tleilaxu &&
+          leader.gholaBy === tleilaxu.id &&
+          request?.leader === leader.id &&
+          request.price === pending.cost &&
+          !request.declined;
+        requireResume(
+          owner.id === p.id &&
+            (!leader.gholaBy || buyback) &&
+            (!p.leaderRevived || p.faction === 'tleilaxu'),
+          'The pending native leader no longer belongs to this revival request.',
+        );
+      }
     }
   }
   if (stop)

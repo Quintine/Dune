@@ -144,6 +144,7 @@ function practiceLeaders(choice: IntroductionResourceChoice): Leader[] {
 export function introductionRevival(choice: IntroductionResourceChoice) {
   validateChoice(choice);
   const context = {
+    status: 'playing' as const,
     advanced: false,
     phase: 4,
     turn: 1,

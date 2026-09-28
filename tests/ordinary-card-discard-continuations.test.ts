@@ -1026,11 +1026,11 @@ void test('a dead-leader preparation witness stays private and its Ghola cannot 
   );
 });
 
-void test('an admitted shared Duke Ghola outcome binds the shared record outside all native leader arrays', () => {
+void test('a saved Ecaz Duke Ghola return binds one unclaimed shared record outside native arrays', () => {
   const g = fixture(4, true, ['ecaz', 'emperor', 'atreides']),
     card = hold(g, 'p', 'ghola');
-  // Isolated saved-state precondition for the existing controlledLeaders path.
-  // This does not assert how a controlled dead Duke arises in normal battle play.
+  // A legacy retained controller is intentionally present: revival must
+  // release it, even when a consumed-card save interrupts disposal.
   g.dukeVidal = acquireDuke(createDukeVidal(), 'p', g.turn, 'ecaz');
   g.dukeVidal.leader.dead = true;
   g.dukeVidal.leader.deaths = 1;
@@ -1040,6 +1040,9 @@ void test('an admitted shared Duke Ghola outcome binds the shared record outside
     leader: DUKE_VIDAL_ID,
   });
   assert.equal(pending.dukeVidal!.leader.dead, false);
+  assert.equal(pending.dukeVidal!.controller, null);
+  assert.equal(pending.dukeVidal!.source, null);
+  assert.equal(pending.dukeVidal!.acquiredTurn, null);
   assert.deepEqual(done.dukeVidal, pending.dukeVidal);
   assert.equal(
     done.players.some((p) => p.leaders.some((l) => l.id === DUKE_VIDAL_ID)),

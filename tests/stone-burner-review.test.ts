@@ -225,6 +225,40 @@ void test('public zero-spice compulsion guard is independent of Stone possession
   assert.ok(plan(g, 'r', { weapon: null, dial: 0 }).battle!.plans.r);
 });
 
+void test('required Mirror Voice rejects unfinishable public zero-spice plans without testing card possession', () => {
+  let g = fixture();
+  g.advanced = true;
+  g.richeseCache!.push(g.players[0].hand.pop()!);
+  hold(g, 'r', 'Mirror Weapon');
+  g.players[0].forces = { 'arrakeen:10': 1 };
+  g.players[0].reserves = 19;
+  g.players[0].spice = 0;
+  g.players[1].faction = 'emperor';
+  g.players[1].leaders = leaders('emperor');
+  g.players[1].forces = { 'arrakeen:10': 6 };
+  g.players[1].reserves = 14;
+  g.players[1].elites = {
+    forces: { 'arrakeen:10': 1 }, reserves: 4, tanks: 0, revived: 0,
+  };
+  g.players[2] = newPlayer('e', 'Bene Gesserit', 'beneGesserit');
+  g.players[2].ally = 'g';
+  g.players[1].ally = 'e';
+  g = start(g);
+  const withoutMirror = reload(g);
+  withoutMirror.richeseCache!.push(withoutMirror.players[0].hand.pop()!);
+  for (const state of [g, withoutMirror]) {
+    const before = structuredClone(state);
+    assert.throws(() => send(state, 'e', {
+      type: 'voice', kind: 'mirrorWeapon', must: true,
+    }));
+    assert.deepEqual(state, before);
+  }
+  g = send(g, 'e', { type: 'declineBattlePower' });
+  for (const id of ['r', 'g'])
+    g = send(g, id, { type: 'battlePreparationReady', event: g.battle!.event });
+  assert.ok(plan(g, 'r', { weapon: null, dial: 0 }).battle!.plans.r);
+});
+
 void test('foreign No-Field values produce identical public Stone preflight context and accept the same own commitment', () => {
   const contexts: unknown[] = [];
   for (const value of [0, 3, 5]) {

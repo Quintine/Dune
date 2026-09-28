@@ -64,3 +64,15 @@ The integrated896-unit suite,45 persisted/API tests, typecheck, lint and build p
 ## Direct Ecaz acquisition follow-up
 
 The direct self-acquisition feature was subsequently implemented and verified. See [Ecaz Duke acquisition](ECAZ_DUKE_ACQUISITION.md) for the integrated controls, AI, persistence and actual battle playtest. Alliance/loan alternatives, revival and exceptional capture remain separate unfinished work. Earlier readiness and integration statements above are historical.
+
+## Ecaz revival follow-up (28 September 2026)
+
+Ecaz alone can revive the canonical dead shared disc through ordinary paid
+revival or a real Ghola card. The user selected the living **set-aside** result
+after either return: no automatic Ecaz controller, source or acquisition turn.
+This is a product interpretation, **not** a published Duke-specific ruling.
+The printed five-spice normal price, existing allied discount/stop/payment
+accounting, ordinary slot and one physical death history remain separate from
+the Ghola card's free return. Native first-cohort five-in-Tanks eligibility is
+supported; repeated six-disc cycles and exceptional custody stay guarded.
+See [Ecaz revival](ECAZ_REVIVAL_RULES.md#selected-product-interpretation-28-september-2026).

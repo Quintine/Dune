@@ -438,7 +438,7 @@ import {
   type MoritaniRetention,
 } from './moritani-retention';
 import { ordinaryCardAvailability } from './card-availability';
-import { ecazDukeRevivalBlock } from './ecaz-duke-revival';
+import { ecazDukeRevivalBlock, quoteEcazDukeRevival } from './ecaz-duke-revival';
 import {
   reserveShipmentCost,
   guildShipmentCost,
@@ -510,11 +510,13 @@ import { traitorDeck, matchingTraitor, CHEAP_HERO_TRAITOR } from './traitors';
 import { chooseEcazLoyalty, withoutEcazLoyalty, validateEcazLoyalty, type EcazLoyalty } from './ecaz-loyalty';
 import {
   isStoneBurner,
+  isMirrorWeapon,
   isPortableSnooper,
   VOICE_KINDS,
   defaultVoiceMatch,
   playedVoiceMatch,
 } from './battle-cards';
+import { mirrorWeaponModeBlock } from './mirror-weapon-mode';
 import {
   TECH_TOKENS,
   createTechTokens,
@@ -811,8 +813,8 @@ export type Decision =
       territory: string;
     }
   | { kind: 'techToken'; player: string; loser: string; choices: TechId[] }
-  | { kind: 'poisonTooth'; player: string }
-  | { kind: 'stoneBurner'; player: string; event: string }
+  | { kind: 'poisonTooth'; player: string; event?: string; physicalId?: string; copiedFrom?: string | null }
+  | { kind: 'stoneBurner'; player: string; event: string; physicalId?: string; copiedFrom?: string | null }
   | { kind: 'sukRescue'; player: string; event: string; territory: string; mode: 'normal' | 'skilled'; options: SukRescueOption[] }
   | { kind: 'rihani'; player: string; event: string; stage: 'offer' | 'return' }
   | { kind: 'fullPlanOffer'; player: string }
@@ -4631,7 +4633,7 @@ function suspendedControlsIntegrity(
   saphoMovementIntegrity(context);
   ornithopterIntegrity(context);
   lateDefenseIntegrity(context);
-  stoneBurnerIntegrity(context);
+  battleSpecialWeaponIntegrity(context);
   strongholdIntegrity(context);
   auditorIntegrity(context);
 }
@@ -15176,6 +15178,10 @@ function validatePlan(
     currentReinforcementsCost(g, p);
   }
   if ([w, d].some(isHarassWithdraw)) currentHarassWithdrawQuote(g, p, plan);
+  if (isMirrorWeapon(w)) {
+    const blocked = mirrorWeaponModeBlock(g) ?? stonePlanBlock(g, p, dial, support);
+    requireRule(!blocked, blocked ?? 'Mirror Weapon cannot resolve this commitment.');
+  }
   if (isStoneBurner(w)) {
     const blocked = stonePlanBlock(g, p, dial, support);
     requireRule(
@@ -15332,13 +15338,12 @@ function normalizeBattle(g: Game) {
 /** Ghola follows current control for ordinary leaders, but Duke's printed
  * revival right belongs exclusively to Ecaz, regardless of temporary custody. */
 function gholaLeaders(g: Game, p: Player) {
-  return controlledLeaders(g, p).filter(
-    (l) =>
-      l.dead &&
-      !l.capturedBy &&
-      (l.id !== DUKE_VIDAL_ID ||
-        (p.faction === 'ecaz' && !ecazDukeRevivalBlock(g, p.id))),
+  const native = controlledLeaders(g, p).filter(
+    (l) => l.id !== DUKE_VIDAL_ID && l.dead && !l.capturedBy,
   );
+  if (p.faction === 'ecaz' && !ecazDukeRevivalBlock(g, p.id))
+    native.push(g.dukeVidal!.leader);
+  return native;
 }
 function gholaOptions(g: Game, p: Player) {
   const cards = p.hand
@@ -15512,16 +15517,16 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
     requireRule(l?.dead && !l.capturedBy, 'Choose a dead leader in your pool.');
     l.dead = false;
     delete l.concealed;
-    // GF9 November 2020 FAQ p.9 permits a Ghola return in another battle
-    // this turn. Death history remains; the earlier battle location does not.
+    // Ghola permits a return in another battle this turn (GF9 FAQ p.9).
     delete l.usedAt;
+    if (l.id === DUKE_VIDAL_ID) g.dukeVidal = consumeDuke(g.dukeVidal!);
     if (g.pendingChoamMarketGhola && g.leaderSkills && !isAuditorLeader(l) &&
         !l.gholaBy && p.leaders.some(leader => leader.id === l.id))
       g.leaderSkills = skillRule(() => offerRevivedLeaderSkill(
         g.leaderSkills!, p.id, l.id, choamGholaSkillOfferEvent(g.pendingChoamMarketGhola!, l.id)));
     log(
       g,
-      `${p.name} revived ${l.name} with Ghola. The leader may fight again this turn; no spice or normal leader-revival allowance was spent.`,
+      `${p.name} revived ${l.name} with Ghola.${l.id === DUKE_VIDAL_ID ? ' The living shared disc is set aside, unclaimed.' : ' The leader may fight again this turn;'} No spice or normal leader-revival allowance was spent.`,
     );
   } else {
     const n = integer(
@@ -16329,49 +16334,100 @@ function portableSnooperView(g: Game, owner: Player) {
   }
   return { card, event: g.battle?.event ?? null, blocked };
 }
-function stoneBurnerIntegrity(g: Game) {
+function revealedWeaponChoices(g: Game) {
+  const b = g.battle!;
+  requireRule(b.revealed && !!b.plans[b.attacker] && !!b.plans[b.defender],
+    'Revealed weapon choices need both exact battle plans.');
+  const selected = (id: string) => {
+    const p = getPlayer(g, id), plan = b.plans[id];
+    return { weapon: cardOf(p, plan.weapon), defense: cardOf(p, b.lateDefense?.[id] ?? plan.defense) };
+  };
+  const resolved = resolveBattleWeapons({ attacker: selected(b.attacker), defender: selected(b.defender) });
+  requireRule(!resolved.error, resolved.error ?? 'The revealed weapon choices are invalid.');
+  return resolved.choiceOrder.map((choice) => ({
+    ...choice,
+    player: choice.side === 'attacker' ? b.attacker : b.defender,
+  }));
+}
+function orderedRevealedWeaponChoices(
+  g: Game,
+  choices: ReturnType<typeof revealedWeaponChoices>,
+) {
+  if (choices.some((choice) => choice.copiedFrom !== null)) return choices;
+  return [
+    ...choices.filter((choice) => choice.kind === 'stoneBurner'),
+    ...g.order.flatMap((id) => choices.filter((choice) =>
+      choice.kind === 'poisonTooth' && choice.player === id)),
+  ];
+}
+function revealedWeaponAnswered(
+  b: Battle,
+  choice: ReturnType<typeof revealedWeaponChoices>[number],
+) {
+  return choice.kind === 'stoneBurner'
+    ? b.stoneBurner?.[choice.player] !== undefined
+    : b.poisonTooth?.[choice.player] !== undefined;
+}
+function battleSpecialWeaponIntegrity(g: Game) {
   const b = g.battle;
   if (!b) return;
-  if (b.stoneBurner !== undefined) {
-    requireRule(
-      g.phase === 6 &&
-        b.revealed &&
-        !!b.event &&
-        !!b.stoneBurner &&
-        typeof b.stoneBurner === 'object' &&
-        !Array.isArray(b.stoneBurner),
-      'The saved Stone Burner choice context is invalid.',
-    );
-    for (const [id, mode] of Object.entries(b.stoneBurner))
-      requireRule(
-        [b.attacker, b.defender].includes(id) &&
-          ['kill', 'ignore'].includes(mode) &&
-          isStoneBurner(cardOf(getPlayer(g, id), b.plans[id]?.weapon)),
-        'The saved Stone Burner choice has an invalid owner, mode, or missing canonical weapon.',
-      );
-  }
   for (const id of [b.attacker, b.defender]) {
-    if (b.plans[id]?.weapon !== 'richese-stone-burner') continue;
-    const owner = getPlayer(g, id),
-      card = cardOf(owner, b.plans[id].weapon);
-    requireRule(
-      isStoneBurner(card),
-      'The committed canonical Stone Burner weapon is missing from its reserved hand.',
-    );
-    requireRule(
-      g.players.reduce(
-        (n, p) => n + p.hand.filter((c) => c.id === card!.id).length,
-        0,
-      ) === 1 &&
-        ![
-          ...g.deck,
-          ...g.discard,
-          ...(g.richeseCache ?? []),
-          ...(g.auction?.cards ?? []),
-          ...(g.ixSetupCards ?? []),
-        ].some((c) => c.id === card!.id),
-      'The committed Stone Burner physical card is duplicated.',
-    );
+    const cardId = b.plans[id]?.weapon;
+    if (cardId !== 'richese-stone-burner' && cardId !== 'richese-mirror-weapon') continue;
+    const owner = getPlayer(g, id), card = cardOf(owner, cardId);
+    const name = cardId === 'richese-stone-burner' ? 'Stone Burner' : 'Mirror Weapon';
+    if (cardId === 'richese-mirror-weapon') {
+      const blocked = mirrorWeaponModeBlock(g);
+      requireRule(!blocked, blocked ?? 'The committed Mirror Weapon mode is invalid.');
+    }
+    requireRule(cardId === 'richese-stone-burner' ? isStoneBurner(card) : isMirrorWeapon(card),
+      `The committed canonical ${name} weapon is missing from its reserved hand.`);
+    requireRule(g.players.reduce((n, p) => n + p.hand.filter((c) => c.id === cardId).length, 0) === 1 &&
+      ![...g.deck, ...g.discard, ...(g.richeseCache ?? []),
+        ...(g.auction?.cards ?? []), ...(g.ixSetupCards ?? [])].some((c) => c.id === cardId),
+      `The committed ${name} physical card is duplicated.`);
+  }
+  const choices = b.revealed ? revealedWeaponChoices(g) : [];
+  if (b.stoneBurner !== undefined) {
+    requireRule(g.phase === 6 && b.revealed && !!b.event && !!b.stoneBurner &&
+      typeof b.stoneBurner === 'object' && !Array.isArray(b.stoneBurner),
+    'The saved Stone Burner choice context is invalid.');
+    for (const [id, mode] of Object.entries(b.stoneBurner))
+      requireRule(['kill', 'ignore'].includes(mode) &&
+        choices.some((choice) => choice.player === id && choice.kind === 'stoneBurner' &&
+          choice.physicalId === b.plans[id]?.weapon),
+      'The saved Stone Burner choice has an invalid owner, mode, or physical weapon.');
+  }
+  if (b.poisonTooth !== undefined) {
+    requireRule(g.phase === 6 && b.revealed && !!b.poisonTooth &&
+      typeof b.poisonTooth === 'object' && !Array.isArray(b.poisonTooth),
+    'The saved Poison Tooth choice context is invalid.');
+    for (const [id, activated] of Object.entries(b.poisonTooth))
+      requireRule(typeof activated === 'boolean' &&
+        choices.some((choice) => choice.player === id && choice.kind === 'poisonTooth' &&
+          choice.physicalId === b.plans[id]?.weapon &&
+          (choice.copiedFrom === null || !!b.event)),
+      'The saved Poison Tooth choice has an invalid owner, answer, or physical weapon.');
+  }
+  const ordered = orderedRevealedWeaponChoices(g, choices);
+  let pendingSeen = false;
+  for (const choice of ordered) {
+    if (revealedWeaponAnswered(b, choice))
+      requireRule(!pendingSeen, 'A revealed weapon choice cannot precede its copied source.');
+    else pendingSeen = true;
+  }
+  if (g.decision?.kind === 'stoneBurner' || g.decision?.kind === 'poisonTooth') {
+    const decision = g.decision;
+    const choice = ordered.find((candidate) => !revealedWeaponAnswered(b, candidate));
+    requireRule(!!choice && choice.player === decision.player &&
+      choice.kind === decision.kind &&
+      choice.physicalId === b.plans[decision.player]?.weapon &&
+      (decision.event === undefined || decision.event === b.event) &&
+      (decision.physicalId === undefined || decision.physicalId === choice.physicalId) &&
+      (decision.copiedFrom === undefined || decision.copiedFrom === choice.copiedFrom) &&
+      (choice.copiedFrom === null || (decision.event === b.event &&
+        decision.physicalId === choice.physicalId && decision.copiedFrom === choice.copiedFrom)),
+    'The saved revealed weapon choice lost its physical card or battle event.');
   }
 }
 function diplomatDefenseOffer(g: Game): (DiplomatDefenseQuote & { player: string }) | null {
@@ -16531,23 +16587,17 @@ function nextRevealedDecision(g: Game) {
   const b = g.battle!;
   if (offerHarassAllocation(g)) return;
   if (offerDiplomatDefense(g)) return;
-  const stoneOwner = [b.attacker, b.defender].find(
-    (id) =>
-      isStoneBurner(cardOf(getPlayer(g, id), b.plans[id].weapon)) &&
-      !b.stoneBurner?.[id],
-  );
-  if (stoneOwner) {
-    requireRule(!!b.event, 'The Stone Burner battle event is missing.');
-    g.decision = { kind: 'stoneBurner', player: stoneOwner, event: b.event };
-    return;
+  const ordered = orderedRevealedWeaponChoices(g, revealedWeaponChoices(g));
+  const choice = ordered.find((candidate) => !revealedWeaponAnswered(b, candidate));
+  if (choice) {
+    if (choice.kind === 'stoneBurner' || choice.copiedFrom)
+      requireRule(!!b.event, 'The revealed weapon battle event is missing.');
+    g.decision = choice.kind === 'stoneBurner'
+      ? { kind: 'stoneBurner', player: choice.player, event: b.event!,
+          physicalId: choice.physicalId, copiedFrom: choice.copiedFrom }
+      : { kind: 'poisonTooth', player: choice.player, event: b.event,
+          physicalId: choice.physicalId, copiedFrom: choice.copiedFrom };
   }
-  const player = g.order.find(
-    (id) =>
-      [b.attacker, b.defender].includes(id) &&
-      cardOf(getPlayer(g, id), b.plans[id].weapon)?.kind === 'poisonTooth' &&
-      b.poisonTooth?.[id] === undefined,
-  );
-  if (player) g.decision = { kind: 'poisonTooth', player };
 }
 /** Homeworld invaders have no traitor vote to hold their late-defense window.
  * Offer only a real held legal defense; empty windows resolve automatically. */
@@ -18477,15 +18527,16 @@ function finishRevival(
         Math.max(p.revivalCycle, p.kwisatz!.revivalCycle ?? 1) + 1;
       log(g, `${p.name} revived Kwisatz Haderach.`, { faction: p.faction, name: 'Revival' });
     } else {
-      const leader = g.players
-        .flatMap((owner) => owner.leaders)
-        .find((l) => l.id === revival.leader)!;
+      const sharedDuke = revival.kind === 'leader' && revival.leader === DUKE_VIDAL_ID;
+      const leader = sharedDuke
+        ? g.dukeVidal!.leader
+        : g.players.flatMap((owner) => owner.leaders).find((l) => l.id === revival.leader)!;
       if (revival.kind === 'foreignGhola') leader.gholaBy = p.id;
       else delete leader.gholaBy;
       leader.dead = false;
       delete leader.concealed;
+      if (sharedDuke) g.dukeVidal = consumeDuke(g.dukeVidal!);
       // Automatic Karama response chains may commit after the action's before/after
-      // observer. Record the own-leader offer at the successful revival itself.
       if (revival.kind === 'leader' && g.leaderSkills && !isAuditorLeader(leader) &&
           !leader.capturedBy && p.leaders.some(own => own.id === leader.id)) {
         requireLeaderSkillRevival(g, p.id);
@@ -18494,7 +18545,7 @@ function finishRevival(
       }
       log(
         g,
-        `${p.name} revived ${leader.name}${revival.kind === 'foreignGhola' ? ' as a ghola' : ''}.`,
+        `${p.name} revived ${leader.name}${revival.kind === 'foreignGhola' ? ' as a ghola' : ''}.${sharedDuke ? ' The living shared disc is set aside, unclaimed.' : ''}`,
         { faction: p.faction, name: 'Revival' },
       );
     }
@@ -22095,7 +22146,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   karamaConversionIntegrity(g);
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
-  stoneBurnerIntegrity(g);
+  battleSpecialWeaponIntegrity(g);
   saphoAggressorIntegrity(g);
   strongholdIntegrity(g);
   auditorIntegrity(g);
@@ -22326,7 +22377,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   const g = structuredClone(state);
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
-  stoneBurnerIntegrity(g);
+  battleSpecialWeaponIntegrity(g);
   strongholdIntegrity(g);
   auditorIntegrity(g);
   if (g.pendingNullentropy) return g;
@@ -22370,7 +22421,7 @@ function applyActionInner(
     g.biddingEnd.ready = [];
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
-  stoneBurnerIntegrity(g);
+  battleSpecialWeaponIntegrity(g);
   strongholdIntegrity(g);
   auditorIntegrity(g);
   if (g.pendingNullentropy && !['nexusTraitorDraw', 'nexusTraitorReturn', 'nexusFaceDancers'].includes(action?.type)) {
@@ -23545,43 +23596,41 @@ function applyActionInner(
       nextRevealedDecision(g);
     } else if (decision.kind === 'stoneBurner') {
       requireRule(
-        Object.keys(action).every((key) =>
-          ['type', 'event', 'mode'].includes(key),
-        ),
-        'Stone Burner needs only this battle event and a mode.',
-      );
-      requireRule(
-        g.battle?.revealed &&
-          action.event === decision.event &&
+        Object.keys(action).every((key) => ['type', 'event', 'mode'].includes(key)) &&
+          (action.mode === 'kill' || action.mode === 'ignore') &&
+          g.battle?.revealed && action.event === decision.event &&
           action.event === g.battle.event,
         'Choose Stone Burner’s mode for this exact revealed battle.',
       );
-      requireRule(
-        action.mode === 'kill' || action.mode === 'ignore',
-        'Choose to kill both leaders or ignore surviving leader strength.',
-      );
-      requireRule(
-        isStoneBurner(cardOf(p, g.battle.plans[id]?.weapon)) &&
-          !g.battle.stoneBurner?.[id],
-        'Stone Burner’s mode is already chosen or its weapon is missing.',
-      );
+      const choice = revealedWeaponChoices(g).find((candidate) =>
+        candidate.kind === 'stoneBurner' && candidate.player === id);
+      requireRule(!!choice && choice.physicalId === (decision.physicalId ?? choice.physicalId) &&
+        choice.copiedFrom === (decision.copiedFrom ?? null) &&
+        g.battle.stoneBurner?.[id] === undefined,
+      'Stone Burner’s mode is already chosen or its physical weapon changed.');
       (g.battle.stoneBurner ??= {})[id] = action.mode;
-      log(
-        g,
-        `${p.name} chose Stone Burner: ${action.mode === 'kill' ? 'both participating leaders will be killed' : 'surviving leaders add no strength; other weapon attacks still apply'}. Undialed physical force tokens decide the ordinary battle; traitors and explosions retain precedence.`,
-      );
+      log(g, `${p.name} chose ${choice.copiedFrom ? 'Mirror Weapon copying ' : ''}Stone Burner: ${
+        action.mode === 'kill' ? 'both participating leaders will be killed' :
+          'surviving leaders add no strength; other weapon attacks still apply'
+      }. Undialed physical force tokens decide the ordinary battle; traitors and explosions retain precedence.`);
       nextRevealedDecision(g);
     } else if (decision.kind === 'poisonTooth') {
-      requireRule(
-        g.battle?.revealed && typeof action.activate === 'boolean',
-        'Choose whether to activate Poison Tooth.',
-      );
-      g.battle.poisonTooth ??= {};
-      g.battle.poisonTooth[id] = action.activate;
-      log(
-        g,
-        `${p.name} ${action.activate ? 'activated' : 'declined to activate'} Poison Tooth.`,
-      );
+      requireRule(Object.keys(action).every((key) => ['type', 'event', 'activate'].includes(key)) &&
+        g.battle?.revealed && typeof action.activate === 'boolean' &&
+        (decision.copiedFrom === null || decision.copiedFrom === undefined ||
+          action.event === decision.event) &&
+        (action.event === undefined || action.event === decision.event) &&
+        (decision.event === undefined || decision.event === g.battle.event),
+      'Choose whether to activate Poison Tooth for this exact revealed battle.');
+      const choice = revealedWeaponChoices(g).find((candidate) =>
+        candidate.kind === 'poisonTooth' && candidate.player === id);
+      requireRule(!!choice && choice.physicalId === (decision.physicalId ?? choice.physicalId) &&
+        choice.copiedFrom === (decision.copiedFrom ?? null) &&
+        g.battle.poisonTooth?.[id] === undefined,
+      'Poison Tooth is already chosen or its physical weapon changed.');
+      (g.battle.poisonTooth ??= {})[id] = action.activate;
+      log(g, `${p.name} ${action.activate ? 'activated' : 'declined to activate'} ${
+        choice.copiedFrom ? 'Mirror Weapon copying ' : ''}Poison Tooth.`);
       nextRevealedDecision(g);
     } else if (decision.kind === 'techToken') {
       requireRule(
@@ -24908,6 +24957,8 @@ function applyActionInner(
       g.advanced && g.phase === 4 && p.faction === 'tleilaxu',
       'Foreign gholas require advanced Tleilaxu during Revival.',
     );
+    requireRule(action.leader !== DUKE_VIDAL_ID,
+      'Only Ecaz may revive Duke Vidal, including with Ghola.');
     const leader = g.players
       .flatMap((owner) => owner.leaders)
       .find((l) => l.id === action.leader);
@@ -24997,11 +25048,16 @@ function applyActionInner(
       'Tleilaxu prevented this faction’s normal revivals for this turn.',
     );
     const options = leaderRevivalOptions(g, p);
-    p.revivalCycle = options.cycle;
-    const l =
-      t === 'reviveLeader'
-        ? p.leaders.find((l) => l.id === action.leader)
-        : undefined;
+    const duke = t === 'reviveLeader' && action.leader === DUKE_VIDAL_ID;
+    if (duke) {
+      requireRule(p.faction === 'ecaz', 'Only Ecaz may revive Duke Vidal.');
+      const blocked = ecazDukeRevivalBlock(g, p.id);
+      requireRule(!blocked, blocked ?? 'Duke Vidal is unavailable for revival.');
+    }
+    const dukeQuote = duke ? quoteEcazDukeRevival(g, id, !!revivalDiscount(g, p)) : null;
+    const l = t === 'reviveLeader'
+      ? duke ? g.dukeVidal!.leader : p.leaders.find((l) => l.id === action.leader)
+      : undefined;
     if (t === 'reviveKwisatz')
       requireRule(
         g.advanced && p.faction === 'atreides' && p.kwisatz?.dead,
@@ -25031,10 +25087,14 @@ function applyActionInner(
       t === 'reviveKwisatz' ? !!options.kwisatz : !!option,
       'That leader is unavailable for revival this phase.',
     );
-    const normalCost = l?.strength ?? 2;
-    const cost = revivalDiscount(g, p) ? Math.ceil(normalCost / 2) : normalCost;
+    const normalCost = dukeQuote?.normalCost ?? l?.strength ?? 2;
+    const cost = dukeQuote?.cost ?? (revivalDiscount(g, p) ? Math.ceil(normalCost / 2) : normalCost);
     requireRule(p.spice >= cost, 'Not enough spice.');
     if (cost < normalCost) checks.push('revivalDiscount');
+    // Duke may be revived independently even while later six-disc native
+    // cycles are gated; that request must not erase an opened first cohort.
+    if (!duke || options.cycle > p.revivalCycle)
+      p.revivalCycle = options.cycle;
     beginRevival(g, {
       player: id,
       kind: t === 'reviveKwisatz' ? 'kwisatz' : 'leader',
@@ -25857,8 +25917,12 @@ function applyActionInner(
       VOICE_KINDS.includes(String(action.kind)),
       'Choose a card type.',
     );
+    if (action.kind === 'mirrorWeapon') {
+      const blocked = mirrorWeaponModeBlock(g);
+      requireRule(!blocked, blocked ?? 'Mirror Weapon is unavailable in this battle configuration.');
+    }
     requireRule(typeof action.must === 'boolean', 'Choose require or forbid.');
-    if (action.kind === 'stoneBurner' && action.must) {
+    if ((action.kind === 'stoneBurner' || action.kind === 'mirrorWeapon') && action.must) {
       const target = getPlayer(
         g,
         b.attacker === b.preparation.beneficiary ? b.defender : b.attacker,
@@ -25866,7 +25930,7 @@ function applyActionInner(
       const blocked = stoneCompulsionBlock(g, target);
       requireRule(
         !blocked,
-        blocked ?? 'Stone Burner cannot be compelled in this battle.',
+        blocked ?? `${action.kind === 'mirrorWeapon' ? 'Mirror Weapon' : 'Stone Burner'} cannot be compelled in this battle.`,
       );
     }
     b.voice = {
@@ -26148,6 +26212,7 @@ export function viewGame(state: Game, id: string) {
   ambassadorRelocationIntegrity(state);
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
+  battleSpecialWeaponIntegrity(state);
   const g = structuredClone(state);
   normalizeCardNames(g);
   settleAdvisors(g);
@@ -26165,7 +26230,15 @@ export function viewGame(state: Game, id: string) {
       if (!(error instanceof VictoryProgressError)) throw error;
     }
   }
-  const leaderRevivals = leaderRevivalOptions(g, me);
+  // A concealed capture may change the real death count without revealing it
+  // to the native owner. Derive guidance from the same projected discs that
+  // the seat can inspect; action validation still uses authoritative custody.
+  const visibleRevivalGame = me.faction === 'ecaz' && g.dukeVidal
+    ? { ...g, dukeVidal: { ...g.dukeVidal,
+        leader: projectLeader(g, g.dukeVidal.leader, id) } }
+    : g;
+  const leaderRevivals = leaderRevivalOptions(visibleRevivalGame,
+    { ...me, leaders: me.leaders.map((leader) => projectLeader(g, leader, id)) });
   const b = g.battle;
   const completion =
     !g.pendingTreacheryDiscard &&
@@ -26767,6 +26840,8 @@ export function viewGame(state: Game, id: string) {
           : null,
       leaders: leaderRevivals.leaders,
       kwisatz: leaderRevivals.kwisatz,
+      cycleBlock: leaderRevivals.cycleBlock,
+      dukeBlocked: leaderRevivals.dukeBlocked,
       prevented: revivalPrevented(g, me.id),
       eliteRemaining: eliteRevivalRemaining(me, g.advanced),
       limit: normalForceRevivalLimit(g, me),

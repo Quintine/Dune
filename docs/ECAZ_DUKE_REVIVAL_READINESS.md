@@ -2,6 +2,15 @@
 
 Read-only review, 7 September 2026. Recommend a shared-disc revival contract before adding a selectable Duke to ordinary revival or Ghola. The printed permission and price are clear; post-revival active custody and subsequent six-disc cycles remain material interpretation boundaries already recorded in [ECAZ_REVIVAL_RULES.md](ECAZ_REVIVAL_RULES.md). This review does not silently resolve them, enable full Ecaz starts, or certify all expansion rules.
 
+**Runtime follow-up, 28 September 2026:** The user selected the set-aside
+interpretation for a revived living Duke. Ecaz ordinary paid revival and Ghola
+now return the same physical disc alive and unclaimed, preserving death
+history; this is an explicit product decision, not an official clarification.
+The first five-disc ordinary cohort (including Duke) opens and stays recorded
+after a return. Repeated six-disc native cycles, exotic capture/Ghola custody
+and Advanced Harkonnen remain guarded. The gap table and in-memory probe below
+are historical pre-implementation observations, not present runtime status.
+
 ## Verified rule boundary
 
 Fresh official indexed retrieval confirms Ecaz can revive Duke at a normal price of five spice without a dead-leader threshold. Five Ecaz leaders in the Tanks, counting Duke, permit ordinary revival even with a survivor. Only Ecaz may revive Duke, including through Ghola. His battle strength remains six and he has no Traitor card. These are Basic Ecaz rules as well as Advanced rules. [GF9 E3, printed pp.8–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=8)

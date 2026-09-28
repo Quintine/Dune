@@ -128,7 +128,7 @@ export function resolveEcazDukeRevival(
           whole(duke.acquiredTurn) &&
           duke.acquiredTurn > 0 &&
           duke.acquiredTurn <= g.turn &&
-          ['ecaz', 'moritani', 'ally'].includes(duke.source!),
+          ['ecaz', 'ecazNexus', 'moritani', 'ally'].includes(duke.source!),
   );
   return {
     source: 'sharedDuke',

@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 28 September 2026 — Ecaz Duke revival and bounded Mirror Weapon
+
+The user chose two explicit product interpretations after bounded publisher
+source review: a successfully revived Duke returns alive to the shared area,
+unclaimed until later acquisition; a victorious physical Mirror may be kept
+even when its copied attack activates Poison Tooth or Artillery. Neither is
+presented as an official GF9 clarification. Ecaz's separate five-spice
+ordinary Duke revival and Ghola now use the same physical disc, with first
+five-in-Tanks cohort eligibility, frozen discount/payment and Tleilaxu
+stop/cancellation continuation, owner controls, minimal legal AI and JSON/
+isolated SQLite recovery. Repeated six-disc native cycles, exceptional
+shared-disc custody and Advanced Harkonnen remain guarded.
+
+Canonical Mirror now occupies the actual weapon slot in bounded Basic/Advanced
+CHOAM/Richese-deck classic/CHOAM/Richese battles. Revealed opposing attacks,
+copy-first independently saved Tooth/Stone choices, Stone's public casualty
+feasibility, physical-card retention/custody, Carthag's effective-poison
+defense, named Voice, human controls and four-profile legal AI are connected.
+Combined modules, changing card roles, complete Richese starts and release
+acceptance remain gated. Read-only local desktop browser fixtures showed the
+selectable Duke at five spice with strength six/set-aside guidance and the
+Mirror weapon selector, copied-attack explanation and updated hand guide;
+no real room was written. The verified live image remains `c9a3625`.
+
+Independent read-only reviews found and prompted fixes for concealed foreign-
+ghola death-count privacy, Mirror Voice compulsion deadlock, reordered saved
+copy decisions and incorrect Stone scoring of ordinary Mirror copies. The
+reviewed focused run passed **66/66**; the frozen full offline suite passed
+**5,643/5,643** across 714 files, live development-server HTTP integration
+passed **52/52**, scoped oxlint and the app build passed. Project TypeScript
+still reports only the unrelated in-progress Fremen Nexus draft's missing
+`Player.fremenNexusMovementBlockedTurn`; the required full `npm run check`
+cannot be claimed green until that draft is resolved. Browser proof also
+showed the actual copy-first revealed Tooth decision and physical Mirror/
+opponent Tooth card faces. Production deployment remains blocked by the
+OS-locked host Apps session, not by a local reset or game migration.
+
 ## 27 September 2026 — Bounded Emperor Nexus bank-auction purchase
 
 [The separate Secret Ally purchase alternative](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md#bank-auction-purchase-alternative)

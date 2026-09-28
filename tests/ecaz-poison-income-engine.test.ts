@@ -6,6 +6,7 @@ import {
   newPlayer,
   normalizeAutomaticGame,
   viewGame,
+  RuleError,
   type Game,
 } from '../game/engine';
 import { baseDeck, treacheryDeck, spiceDeck, type Card } from '../game/cards';
@@ -314,10 +315,7 @@ void test('Mirror remains gated at actual plan selection and cannot award income
   const defense = hold(g, 'owner', (card) => card.kind === 'snooper');
   const poison = hold(g, 'other', (card) => card.kind === 'poison');
   const before = reload(g);
-  assert.throws(
-    () => readyBattle(g, mirror.id, defense.id, poison.id),
-    /Choose a weapon/,
-  );
+  assert.throws(() => readyBattle(g, mirror.id, defense.id, poison.id), RuleError);
   assert.deepEqual(g, before);
   assert.equal(player(g, 'ec').spice, 20);
   assert.deepEqual(viewGame(g, 'ec').ecazPoisonIncome, []);

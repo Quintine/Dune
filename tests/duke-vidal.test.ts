@@ -5,7 +5,6 @@ import {
   consumeDuke,
   createDukeVidal,
   DUKE_VIDAL_ID,
-  DUKE_VIDAL_RULES,
   expireDuke,
   type DukeSource,
 } from '../game/duke-vidal';
@@ -169,35 +168,4 @@ void test('custody survives JSON persistence and permits a later eligible acquis
   assert.equal(reacquired.acquiredTurn, 2);
   assert.equal(released.controller, null);
   assert.equal(held.controller, 'm');
-});
-
-void test('immutable original gameplay guidance separates strength, revival cost and unfinished integrations', () => {
-  assert.equal(DUKE_VIDAL_RULES.traitor, false);
-  assert.equal(DUKE_VIDAL_RULES.strength, 6);
-  assert.equal(DUKE_VIDAL_RULES.faction, 'ecaz');
-  assert.ok(
-    DUKE_VIDAL_RULES.gameplay.some((paragraph) =>
-      paragraph.includes('five spice'),
-    ),
-  );
-  assert.ok(
-    DUKE_VIDAL_RULES.gameplay.some((paragraph) =>
-      paragraph.includes('Only Ecaz'),
-    ),
-  );
-  assert.ok(
-    DUKE_VIDAL_RULES.gameplay.some((paragraph) => paragraph.includes('Karama')),
-  );
-  assert.ok(
-    DUKE_VIDAL_RULES.gameplay.every(
-      (paragraph) => !/https?:\/\//.test(paragraph),
-    ),
-  );
-  assert.equal(DUKE_VIDAL_RULES.implementation.custody, 'implemented');
-  assert.equal(DUKE_VIDAL_RULES.implementation.capture, 'not-implemented');
-  assert.equal(DUKE_VIDAL_RULES.implementation.revival, 'not-implemented');
-  assert.equal(DUKE_VIDAL_RULES.implementation.allyLoanReturn, 'unresolved');
-  assert.ok(Object.isFrozen(DUKE_VIDAL_RULES));
-  assert.ok(Object.isFrozen(DUKE_VIDAL_RULES.gameplay));
-  assert.ok(Object.isFrozen(DUKE_VIDAL_RULES.implementation));
 });

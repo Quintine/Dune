@@ -63,6 +63,26 @@ tables, where the battle path cannot select Duke. Captured, dead and Ghola
 destinations and all combined modules remain gated. The Battle-only timing
 is a documented product boundary rather than printed phase text. This code
 is not yet in the live image.
+
+The bounded [Ecaz-only Duke revival](ECAZ_REVIVAL_RULES.md#selected-product-interpretation-28-september-2026)
+returns the existing dead shared disc alive and set aside after ordinary paid
+revival or a Ghola card. The user selected this custody interpretation; it is
+not a publisher clarification. Five spice (three with the existing Tleilaxu
+alliance discount), stop/cancellation windows, first five-in-Tanks cohort,
+owner choices, legal AI and JSON/SQLite continuation are connected. Further
+six-disc native cycles, exceptional custody and Advanced Harkonnen remain
+guarded; no complete Ecaz start is certified.
+
+The bounded [Mirror Weapon battle path](MIRROR_WEAPON_ENGINE_AUDIT.md#user-selected-cleanup-interpretation-28-september-2026)
+admits the canonical physical card in CHOAM/Richese-deck Basic/Advanced
+classic/CHOAM/Richese battles without combined optional modules. Effective
+copied attacks, copy-first Tooth/Stone choices, public Stone feasibility,
+saved custody, human controls and legal AI are connected. A victorious
+physical Mirror can be kept even after a copied activated Tooth or Artillery
+attack under the user's interpretation, not a GF9 clarification. Combined
+modes and full Richese starts remain gated. Neither new path is in the
+verified live `c9a3625` image.
+
 The main page
 labels its build's Git commit in the lobby and active-table masthead; local
 Git HEAD does not represent uncommitted work. The main-branch container
@@ -225,7 +245,7 @@ question was sent; ordinary HMS relocation and force entry/exit remain working.
 No extra collection is silently applied. The Bureaucrat/Emperor gift question
 and the other recorded skill boundaries remain pending.
 
-The reviewed remaining native Ecaz/Moritani effects, Duke revival and Richese
+Remaining native Ecaz/Moritani effects, repeated six-disc Duke cycles and Richese
 empty-cache auction arithmetic still cross recorded source questions. Native
 Tleilaxu revival now creates its skill offer at successful commitment, including
 automatic response chains; the former dependency is resolved in its Basic profile.
