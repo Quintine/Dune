@@ -78,8 +78,11 @@ This is a legal strategy path, not strength calibration.
   Richese remains eligible. This is a development boundary, not a printed ban.
 - Co-present reciprocal Ecaz allied armies on either side reject before
   sealing; other faction integration gates remain in force. This prototype does not settle Ecaz's undialed allied support allocation.
-- Reinforcements remains unavailable pending its separate cost and outcome
-  accounting. Neither slot recognition nor card text proves its effect complete.
+- [Bounded Reinforcements](REINFORCEMENTS_RUNTIME.md) can appear in the
+  opposing Battle Plan in classic-faction Basic/Advanced games. The two cards
+  cannot share one player's plan; their relative same-plan timing remains
+  unresolved. Both prototypes retain their separate provisional cost and
+  outcome interpretations.
 
 ## Verification and preservation
 

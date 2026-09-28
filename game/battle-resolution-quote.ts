@@ -33,6 +33,7 @@ import { HARASS_WITHDRAW_CARD, isHarassWithdraw, quoteHarassWithdraw, type Haras
 import { auditCount } from './choam-auditor';
 import { sukGraduateSkill, type SukGraduateSkill } from './suk-graduate';
 import { validateSpiceBankerSpend } from './spice-banker';
+import { isReinforcements, quoteReinforcements, REINFORCEMENTS_CARD } from './reinforcements';
 import { rihaniVictorySkill, type RihaniSkill } from './rihani-decipherer';
 import { copiedDiplomatDefense, quoteDiplomatDefense, type DiplomatDefenseQuote } from './diplomat-defense';
 import {
@@ -75,6 +76,8 @@ export type ResolutionParticipant = {
   noFieldAtTerritory?: boolean;
 };
 export type ResolutionCombatant = ResolutionParticipant & {
+  /** Own physical reserve counters available before battle casualties. */
+  reinforcementsReserves?: { normal: number; elite: number };
   harassWithdraw?: HarassWithdrawContext;
   harassSelection?: HarassWithdrawSelection;
   diplomatDefense?: Pick<DiplomatDefenseQuote, 'leader' | 'source' | 'kind'> & { card: string };
@@ -133,6 +136,8 @@ export type BattleSupportPayment = {
   freeByTraitor: boolean;
 };
 export type BattleResolutionQuote = {
+  /** Reserve-to-Tanks costs apply to every revealed outcome, including traitors and explosions. */
+  reinforcements?: { player: string; card: typeof REINFORCEMENTS_CARD; normal: number; elite: number }[];
   harassWithdraw?: (HarassWithdrawQuote & { player: string; card: typeof HARASS_WITHDRAW_CARD })[];
   result: 'normal' | 'traitor' | 'mutualTraitors' | 'explosion';
   winner: string | null;
@@ -372,10 +377,30 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   };
   const effectiveAd = effectiveDefense(a, d, ad), effectiveDd = effectiveDefense(d, a, dd);
   const withdrawals = new Map<string, HarassWithdrawQuote>();
+  const reinforcements: NonNullable<BattleResolutionQuote['reinforcements']> = [];
   for (const side of [a, d]) {
     const slots = [card(side, side.plan.weapon), card(side, side.plan.defense)];
-    requireQuote(!slots.some(c => c?.id === 'ecaz-reinforcements'),
-      'Reinforcements battle effects are still being implemented.');
+    const selectedIds = [side.plan.weapon, side.plan.defense, side.plan.leader, side.lateDefense];
+    requireQuote(selectedIds.every((selectedId) =>
+      selectedId !== REINFORCEMENTS_CARD || slots.some(c => c?.id === selectedId && isReinforcements(c))),
+    'Reinforcements must be a canonical physical card in exactly one battle-card slot.');
+    const selected = slots.filter(isReinforcements);
+    requireQuote(selected.length <= 1 && (selected.length === 0) === (side.reinforcementsReserves === undefined),
+      'Reinforcements requires its own reserve counts exactly when selected.');
+    if (selected.length) {
+      requireQuote(validBattleSlotPair(slots[0], slots[1]) &&
+        !(side === d && reinforcements.length),
+      'Reinforcements needs a unique physical card and valid weapon and defense slot pair.');
+      requireQuote(!input.homeworld && !(side.leaderSkills?.length || (side === a ? d : a).leaderSkills?.length) &&
+        !slots.some(isHarassWithdraw) &&
+        !isStoneBurner(aw) && !isStoneBurner(dw),
+      'Reinforcements cannot combine with Homeworld, leader skills, own Harass & Withdraw or Stone Burner.');
+      const reserves = side.reinforcementsReserves!;
+      requireQuote(!!reserves && typeof reserves === 'object' && !Array.isArray(reserves),
+        'Reinforcements needs own typed reserves.');
+      const cost = quoteReinforcements(reserves.normal, reserves.elite);
+      reinforcements.push({ player: side.id, card: REINFORCEMENTS_CARD, normal: cost.normal, elite: cost.elite });
+    }
     const harass = slots.some(isHarassWithdraw);
     requireQuote((!side.harassWithdraw && side.harassSelection === undefined) || harass, 'The withdrawal context requires the physical Harass & Withdraw card.');
     if (harass) {
@@ -608,6 +633,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     scores = {
       attacker:
         a.plan.dial - attackerPenalty +
+        (reinforcements[0]?.player === a.id ? 2 : 0) +
         (a.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.attacker || effects.stunned
           ? 0
@@ -616,6 +642,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
             (a.plan.kwisatz ? 2 : 0)),
       defender:
         d.plan.dial - defenderPenalty +
+        (reinforcements[0]?.player === d.id ? 2 : 0) +
         (d.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.defender || effects.stunned
           ? 0
@@ -755,7 +782,8 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   // The explicit after-use instruction also applies to a successful own traitor
   // call, using the same specificity inference as Planetologist's discard.
   const mandatorySkillDiscard = (side: ResolutionCombatant, selected: string) =>
-    mandatoryPlanetologistDiscard(side, selected) || side.diplomatDefense?.card === selected || isHarassWithdraw(card(side, selected));
+    mandatoryPlanetologistDiscard(side, selected) || side.diplomatDefense?.card === selected ||
+    isHarassWithdraw(card(side, selected)) || isReinforcements(card(side, selected));
   const moritani = input.participants.find((p) => p.faction === 'moritani');
   if (winner && (moritani || input.nexusMoritani)) {
     const loser = winner === a ? d : a,
@@ -837,6 +865,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     : [];
   return {
     ...(harassWithdraw.length ? { harassWithdraw } : {}),
+    ...(reinforcements.length ? { reinforcements } : {}),
     result,
     winner: winner?.id ?? null,
     attackerTraitor: ac,

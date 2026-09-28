@@ -541,6 +541,7 @@ import {
   type SpiceCard,
 } from './cards';
 import { ecazTreacheryCards, ecazTreacheryDefinition } from './ecaz-cards';
+import { isReinforcements, quoteReinforcements, ReinforcementsError } from './reinforcements';
 import {
   RECRUITS_CARD_ID,
   type RecruitsPreview,
@@ -8972,8 +8973,17 @@ function ecazTreacheryIntegrity(g: Game) {
     'The Ecaz Treachery Cards inventory contains an unknown physical card.',
   );
   for (const [player, plan] of Object.entries(g.battle?.plans ?? {})) {
-    requireRule(![plan.weapon, plan.defense].includes('ecaz-reinforcements'),
-      'Reinforcements battle effects are still being implemented.');
+    if ([plan.weapon, plan.defense].includes('ecaz-reinforcements')) {
+      const owner = getPlayer(g, player);
+      requireRule(plan.leader !== 'ecaz-reinforcements' &&
+        g.battle?.lateDefense?.[player] !== 'ecaz-reinforcements' &&
+        plan.weapon !== plan.defense &&
+        owner.hand.some(isReinforcements) &&
+        [plan.weapon, plan.defense].every(id => id === null || !!cardOf(owner, id)) &&
+        validBattleSlotPair(cardOf(owner, plan.weapon), cardOf(owner, plan.defense)),
+        'The sealed Reinforcements plan lost its physical card or legal slot.');
+      currentReinforcementsCost(g, owner);
+    }
     requireRule(plan.leader !== HARASS_WITHDRAW_CARD && g.battle?.lateDefense?.[player] !== HARASS_WITHDRAW_CARD &&
       !(plan.weapon === HARASS_WITHDRAW_CARD && plan.defense === HARASS_WITHDRAW_CARD),
       'Harass & Withdraw occupies exactly one ordinary Battle Plan card slot.');
@@ -9018,6 +9028,37 @@ function recruitsModeSupported(g: Game) {
     !g.discoveryEnabled
   );
 }
+function reinforcementsModeSupported(g: Game) {
+  return !!g.ecazTreachery && recruitsModeSupported(g) && !g.sandtrout &&
+    g.expansions.length === 0 &&
+    g.players.every(player => faction(player.faction).expansion === 'base');
+}
+function currentReinforcementsCost(g: Game, p: Player) {
+  requireRule(reinforcementsModeSupported(g),
+    'Reinforcements currently requires the standalone Ecaz card variant with classic factions.');
+  try {
+    return quoteReinforcements(p.reserves - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
+  } catch (error) {
+    if (error instanceof ReinforcementsError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function reinforcementsPreview(g: Game, p: Player) {
+  const battle = g.battle;
+  if (!battle || ![battle.attacker, battle.defender].includes(p.id) ||
+    !p.hand.some(isReinforcements)) return null;
+  const normal = Math.min(3, Math.max(0, p.reserves - (p.elites?.reserves ?? 0)));
+  const elite = Math.min(3 - normal, Math.max(0, p.elites?.reserves ?? 0));
+  let blocked: string | null = null;
+  if (!reinforcementsModeSupported(g))
+    blocked = 'Reinforcements currently requires the standalone Ecaz card variant with classic factions.';
+  else if (g.status !== 'playing' || g.phase !== 6 || battle.revealed || battle.plans[p.id])
+    blocked = 'Choose Reinforcements before sealing your Battle Plan.';
+  else if (normal + elite < 3)
+    blocked = 'Reinforcements needs three physical forces in your reserves.';
+  return { blocked, normal, elite };
+}
+
 function recruitsInteractionPending(g: Game) {
   return !!(
     g.response ||
@@ -14996,11 +15037,11 @@ function validatePlan(
   );
   requireRule(
     !plan.weapon || (w && battleCardSlotEligible('weapon', w, { planetologistWeapon })),
-    'Choose a weapon, worthless card, eligible Planetologist Special, or Harass & Withdraw.',
+    'Choose a weapon, Worthless card, eligible Planetologist Special, Harass & Withdraw, or Reinforcements.',
   );
   requireRule(
     !plan.defense || (d && battleCardSlotEligible('defense', d)),
-    'Choose a defense, worthless card, or Harass & Withdraw.',
+    'Choose a defense, Worthless card, Harass & Withdraw, or Reinforcements.',
   );
   requireRule(
     !plan.weapon || plan.weapon !== plan.defense,
@@ -15014,8 +15055,11 @@ function validatePlan(
     validBattleSlotPair(w, d, planetologistWeapon),
     'Chemistry as a weapon needs another defense; Weirding Way as a defense needs another weapon.',
   );
-  requireRule(![w, d].some(card => card?.id === 'ecaz-reinforcements'),
-    'Reinforcements battle effects are still being implemented.');
+  if ([w, d].some(isReinforcements)) {
+    requireRule(![w, d].some(card => isHarassWithdraw(card) || isStoneBurner(card)),
+      'Reinforcements cannot share this bounded plan with Harass & Withdraw or Stone Burner.');
+    currentReinforcementsCost(g, p);
+  }
   if ([w, d].some(isHarassWithdraw)) currentHarassWithdrawQuote(g, p, plan);
   if (isStoneBurner(w)) {
     const blocked = stonePlanBlock(g, p, dial, support);
@@ -16479,6 +16523,10 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       leaderSkills: battleLeaderSkills(g, p),
       occupiedStrongholds: leaderSkillStrongholdCount(g, p),
       forces: combatForces(g, p, b.territory, opponent),
+      ...([cardOf(p, plan.weapon), cardOf(p, plan.defense)].some(isReinforcements)
+        ? { reinforcementsReserves: {
+          normal: p.reserves - (p.elites?.reserves ?? 0), elite: p.elites?.reserves ?? 0,
+        } } : {}),
       ...([cardOf(p, plan.weapon), cardOf(p, plan.defense)].some(isHarassWithdraw)
         ? { harassWithdraw: harassWithdrawContext(g, p),
           ...(b.harassAllocation?.player === p.id && b.harassAllocation.stage === 'selected'
@@ -16738,6 +16786,22 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
       ? `${player.name}'s successful traitor call waived the committed Spice Banker payment along with other Battle Plan spice.`
       : `${player.name} paid ${payment.amount} committed Spice Banker spice to the bank, separate from force support. The payment is spent win or lose; only a surviving skilled leader receives its strength bonus.`,
       { faction: player.faction, name: 'Spice Banker payment' });
+  }
+  for (const cost of quote.reinforcements ?? []) {
+    const player = getPlayer(g, cost.player);
+    const current = currentReinforcementsCost(g, player);
+    requireRule(cost.normal === current.normal && cost.elite === current.elite,
+      'Reinforcements lost its original physical reserve cost.');
+    player.reserves -= cost.normal + cost.elite;
+    player.tanks += cost.normal + cost.elite;
+    player.battleLosses += cost.normal + cost.elite;
+    if (cost.elite) {
+      requireRule(player.elites, 'Reinforcements lost its elite reserve custody.');
+      player.elites.reserves -= cost.elite;
+      player.elites.tanks += cost.elite;
+    }
+    log(g, `${player.name} used Reinforcements: three reserve forces (${cost.elite} elite) went to the Tanks, and the dialed battle strength gained 2 without adding on-board forces or spice support.`,
+      { faction: player.faction, name: 'Reinforcements' });
   }
   if (quote.choamIncome) g.pendingChoamBattleIncome = { ...quote.choamIncome };
   for (const [player, plan, canceled] of [[a, ap, dc], [d, dp, ac]] as const)
@@ -26973,6 +27037,7 @@ export function viewGame(state: Game, id: string) {
           } : null,
           nexusInsights: projectedNexusInsights(g, id),
           harassWithdraw: harassWithdrawPreview(g, me),
+          reinforcements: reinforcementsPreview(g, me),
           ownCommitments: committedPlanElements(b, id),
           prescience: b.prescience
             ? {

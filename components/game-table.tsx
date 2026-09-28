@@ -494,6 +494,15 @@ export function GameTable({
   const selectedDefenseId = battlePlanCardValue(g, 'defense', defense);
   const selectedBattleWeapon = me.hand?.find(c => c.id === selectedWeaponId);
   const selectedBattleDefense = me.hand?.find(c => c.id === selectedDefenseId);
+  const reinforcementsSelected = selectedWeaponId === 'ecaz-reinforcements' ||
+    selectedDefenseId === 'ecaz-reinforcements';
+  const reinforcementsPlanReason = !reinforcementsSelected ? null :
+    !g.battle?.reinforcements ? 'Reinforcements is unavailable in this battle.' :
+    g.battle.reinforcements.blocked ??
+    ((selectedBattleWeapon?.id === 'ecaz-harass-withdraw' ||
+      selectedBattleDefense?.id === 'ecaz-harass-withdraw' ||
+      (!!selectedBattleWeapon && isStoneBurner(selectedBattleWeapon)))
+      ? 'Reinforcements cannot share this plan with Harass & Withdraw or Stone Burner.' : null);
   const selectedBattleKwisatz = kwisatz && !!me.kwisatz?.active &&
     !me.kwisatz.dead && !g.battle?.kwisatzBlocked &&
     (!me.kwisatz.usedAt || me.kwisatz.usedAt === g.battle?.territory);
@@ -4819,6 +4828,17 @@ export function GameTable({
                               </label>
                             ))}
                             <HarassWithdrawGuide preview={g.battle.harassWithdraw} state={harassControl} />
+                            {g.battle.reinforcements && (
+                              <p className="notice">
+                                Reinforcements may occupy either card slot but is neither a weapon nor a defense.
+                                It adds 2 to battle strength without changing the physical dial or spice support.
+                                The cost is three reserve forces ({g.battle.reinforcements.normal} normal,{' '}
+                                {g.battle.reinforcements.elite} elite) sent to the Tanks on any revealed outcome;
+                                the card is discarded even after a traitor call or explosion.
+                                {g.battle.reinforcements.blocked && ` ${g.battle.reinforcements.blocked}`}
+                              </p>
+                            )}
+                            {reinforcementsPlanReason && <p role="status" className="notice">{reinforcementsPlanReason}</p>}
                             {!battlePairValid && <p role="status" className="notice">Choose two compatible battle cards. A single physical card cannot fill both slots.</p>}
                             {selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon) && (
                               <p className="notice">
@@ -4902,7 +4922,7 @@ export function GameTable({
                                 weapon,
                                 defense,
                               }),
-                              !!stonePlanReason || !!harassControl.blocked || !!smugglerPlanReason || !battlePairValid,
+                              !!stonePlanReason || !!harassControl.blocked || !!smugglerPlanReason || !!reinforcementsPlanReason || !battlePairValid,
                             )}
                           </>
                         ) : (

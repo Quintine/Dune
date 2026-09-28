@@ -70,6 +70,16 @@ bulk actions and backup/operations tools remain unfinished.
 
 The bounded [native Richese Nexus Cunning shipment](NEXUS_RICHESE_RULES.md#bounded-native-cunning-prototype-27-september-2026) now uses two distinct physical No-Field tokens in one priced shipment in genuine Richese/CHOAM paired Nexus games. One token immediately reveals a reserve-capped public force group; the other remains concealed. Owner-only controls, four legal AI profiles, Karama/Guild responses, signed saved receipts and concurrent in-memory SQLite settlement are connected in Basic/Advanced. A read-only local browser fixture displayed the owner selector and no rival private panel. Same-shipment nonrepeat is a documented product interpretation; faceup-component artwork, combined modules, Betrayal and full Nexus acceptance remain gated. This code is local and not in the last verified production image.
 
+The independent [Reinforcements Battle Plan prototype](REINFORCEMENTS_RUNTIME.md)
+connects its physical card in either slot for Basic/Advanced classic-faction
+games without other optional modules. Three own reserve counters enter the
+Tanks, +2 affects normal battle score only, and the card is discarded on all
+revealed outcomes. Owner-only availability, controls, legal AI, private
+inspection and saved continuation are connected. Traitor/explosion payment,
+normal-first elite selection and battle-loss accounting remain explicitly
+provisional interpretations, not a publisher or user ruling; full variant and
+public mode gates remain closed. This source is not in the live image.
+
 5,408 offline tests, 52 HTTP tests, build, twenty-two administrator HTTP groups
 and desktop/mobile browser acceptance passed. Deployment delivery was
 unconfirmed at that checkpoint; the current production revision is recorded
@@ -213,8 +223,9 @@ four AI profiles. New battles also have [revealed physical allocation](HARASS_AL
 ordinary/elite mixtures and multi-sector returns. Richese card combinations
 and additional optional modules stay gated. Withdrawal before explosion and
 card-specific discard precedence are explicitly labeled inferences. The Stone
-Burner timing question is pending; no user answer is assumed. Reinforcements
-remains unfinished. This does not open variant, mode or publication gates.
+Burner timing question is pending; no user answer is assumed. The separate
+Reinforcements prototype has its own provisional timing and cost boundary.
+Neither prototype opens variant, mode or publication gates.
 
 The preceding [early Sapho aggressor](SAPHO_AGGRESSOR.md) connects the
 printed battle-priority effect during the existing shared pre-plan opportunity.
@@ -265,7 +276,7 @@ These links define bounded working behavior, not complete module certification.
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Orgiz transfers, Jacurutu income, Testing Station and Shrine. Orgiz's per-deposit interpretation, contested/shared benefits and mixed physical allocation remain provisional or pending. The Orgiz path in current source is not yet deployed. |
 | Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Secret Ally trade and bounded after-victory inspection](NEXUS_CHOAM_SECRET_ALLY.md), [Moritani Secret Ally losing-card retention](NEXUS_MORITANI_RULES.md#secret-ally-losing-card-retention-prototype), [Ecaz private yes/no traitor inquiry](NEXUS_ECAZ_RULES.md#bounded-secret-ally-traitor-inquiry-runtime) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected. Uniform CHOAM winner/Moritani loser windows and Ecaz inquiry scope/audience are explicit product inferences, not publisher rulings; Emperor purchase remains pending. A source audit or helper alone is not a completed effect. |
 | Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
-| Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) connects the bounded battle return in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
+| Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) and [Reinforcements](REINFORCEMENTS_RUNTIME.md) connect bounded battle effects in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
 | Multiplayer | [Public and private discussion](TABLE_DISCUSSION.md), saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), [named-player AI permission](SEAT_AI_PERMISSION.md) and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |
 
 ## Remaining readiness

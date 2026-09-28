@@ -699,7 +699,8 @@ function plans(g: GameView): Action[] {
   const bankerPrototypeAvailable = spiceBankerModeSupported(g);
   const specialForLeader = (card: Card | undefined, leader: string | null) =>
     canUsePlanetologistBattleSpecial({assignments:battleSkills, selectedLeader:leader, card});
-  const prototypeCardAllowed = (card: Card) => card.id !== 'ecaz-reinforcements' &&
+  const prototypeCardAllowed = (card: Card) =>
+    (card.id !== 'ecaz-reinforcements' || (!!b.reinforcements && !b.reinforcements.blocked)) &&
     (card.id !== 'ecaz-harass-withdraw' || (!!b.harassWithdraw && !b.harassWithdraw.blocked));
   const weapons = [
     null,
@@ -795,6 +796,9 @@ function plans(g: GameView): Action[] {
           isStoneBurner(w) || (inspected && isStoneBurner(enemyWeapon));
         if ((!leader && (weapon || defense)) || !validBattleSlotPair(w, d, specialForLeader(w,leader)))
           continue;
+        const reinforcements = weapon === 'ecaz-reinforcements' || defense === 'ecaz-reinforcements';
+        if (reinforcements && (weapon === 'ecaz-harass-withdraw' ||
+          defense === 'ecaz-harass-withdraw' || isStoneBurner(w))) continue;
         if (voice) {
           const used =
             playedVoiceMatch(
@@ -967,6 +971,8 @@ function plans(g: GameView): Action[] {
             ? battleWeaponsExplode(w, d, enemyWeapon, enemyDefense)
             : (isShield(revealedDefense) && w?.kind === 'lasgun') ||
               (revealedWeapon?.kind === 'lasgun' && isShield(d));
+          const reinforcementBonus = reinforcements && !stoneBattle &&
+            !selfExplosion && !explosionRisk ? 2 : 0;
           const undialed = stoneBattle
             ? Math.min(
                 ...casualtyOptions(
@@ -1006,7 +1012,7 @@ function plans(g: GameView): Action[] {
               (effectiveDefense ? 2 : 0)
             : level === 0
               ? variation(g, `${leader}-${weapon}-${defense}-${dial}`) * 100
-              : (ownSurvivingStrength +
+              : (ownSurvivingStrength + reinforcementBonus +
                   (!effects.attackerDead && !effects.stunned
                     ? bankerSpice
                     : 0)) * 2 +

@@ -117,3 +117,19 @@ toward the Advanced Atreides seven-loss threshold, or the relative order when
 the same plan also plays Harass & Withdraw. Those combinations remain explicit
 boundaries rather than inferred rules. No disconnected quote is recorded as a
 completed card effect.
+
+## 27 September bounded Reinforcements prototype
+
+The earlier cost review remains an unresolved source question, not a user
+ruling. [The connected runtime](REINFORCEMENTS_RUNTIME.md) uses the printed
+three-reserve transfer and +2 modifier in classic-faction Basic/Advanced games
+with the independent three-card variant and no other optional modules. The
+normal score is separate from physical dial/support/casualties; three ordinary
+reserves are used first, with elite reserves supplying any shortfall. The
+transfer counts as battle losses and applies even to a sole successful Traitor
+caller, an opposing/mutual Traitor outcome or an explosion, before board
+casualties. Those choices are **provisional product interpretations**, not
+publisher adjudications or an answer to the pending user question. The card
+cannot share a plan with Harass & Withdraw or Stone Burner until those
+combinations are resolved. The earlier “remains disabled” statement describes
+the 14 September snapshot rather than this bounded current prototype.

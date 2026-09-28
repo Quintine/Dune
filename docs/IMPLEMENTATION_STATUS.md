@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 27 September 2026 — Bounded Reinforcements Battle Plan
+
+[The independent three-card runtime](REINFORCEMENTS_RUNTIME.md) now permits
+the physical Reinforcements card in either Battle Plan slot for Basic/Advanced
+classic-faction games without other optional modules. A normal battle score
+gains two without changing the dial, support or on-board casualties; exactly
+three own ordinary-first reserve counters transfer to typed Tanks and count as
+battle losses at settlement, even for traitor/explosion outcomes. Mandatory
+discard, private category-None inspections, owner-only controls, four minimal
+legal AI profiles and JSON/SQLite saved continuation are connected. The
+normal-first choice, all-outcome payment and accounting are provisional
+product interpretations pending the recorded user/source ruling, not complete
+variant certification. Same-plan Harass/Stone Burner and optional modules
+remain gated; an opposing Harass plan is supported. Independent rules and
+privacy reviews found and prompted repair of a revealed-plan deadlock against
+opposing Harass.
+
+Fourteen focused Reinforcements cases and 27 focused Harass cases passed,
+including Basic/Advanced physical custody, rival privacy, rejected-action
+immutability and concurrent in-memory SQLite CAS/restart. Read-only
+intercepted local browser views displayed the owner card in both physical
+selectors, cost guidance and no duplicate card after selection; the rival
+had no private card or cost offer. No room write occurred. Project-wide
+`npm run check` stops at the unrelated in-progress Fremen Nexus draft
+`Player.fremenNexusMovementBlockedTurn` diagnostic; isolated project
+TypeScript excluding only that draft and scoped lint passed. The final frozen
+offline suite passed 5,595/5,595 cases across 704 files; the app production
+build passed. Production still runs the earlier verified `c9a3625` image.
+
 ## 27 September 2026 — Bounded native Richese Nexus Cunning pair
 
 The [Richese source contract](NEXUS_RICHESE_RULES.md#bounded-native-cunning-prototype-27-september-2026) now has one usable two-No-Field shipment in genuine Richese/CHOAM paired Nexus games without other optional modules. Two distinct nonrepeating physical tokens ship at the one-marker price; one immediately reveals into reserve-capped public normal forces and the other remains the sole concealed marker. The native Karama cancellation leaves resources, tokens and shipment allowance untouched while spending the card; Advanced Guild special prevention spends the attempted allowance without placing tokens or charging spice. Owner-only controls, four minimal legal bot paths, public value/force log and private concealed custody are connected. A read-only local browser fixture displayed the owner pair selector; the rival view had no private panel. Same-shipment `lastShipped` handling is a product interpretation, not a published FAQ answer.

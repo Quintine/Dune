@@ -77,12 +77,12 @@ void test('named card inspections still lock their exact physical card, includin
   }
 });
 
-void test('the table keeps a no-category slot selectable and offers Harass without unfinished Reinforcements', () => {
+void test('the table offers the held no-category Harass card in its physical battle slot', () => {
   const view = fixture();
   const html = renderToStaticMarkup(createElement(GameTable, { game: view, send: async () => {}, onExit() {}, busy: false }));
   const select = html.match(/<select[^>]*id="battle-weapon"[^>]*>[\s\S]*?<\/select>/)?.[0];
   assert.ok(select);
-  assert.doesNotMatch(select, /disabled|ecaz-reinforcements|ecaz-recruits|value="treachery-/);
+  assert.doesNotMatch(select, /disabled|ecaz-recruits|value="treachery-/);
   assert.match(select, /value="ecaz-harass-withdraw"/);
   assert.match(html, /Harass and Withdraw battle guidance/);
 });

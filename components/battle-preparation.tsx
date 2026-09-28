@@ -32,7 +32,7 @@ export function battlePlanCardOptions(game: GameView, slot: BattleCardSlot, lead
       assignments: game.leaderSkills?.assignments.filter(a => a.controller === game.me) ?? [],
       selectedLeader: leader, card: w,
     });
-    return card.id !== 'ecaz-reinforcements' &&
+    return (card.id !== 'ecaz-reinforcements' || (!!game.battle?.reinforcements && !game.battle.reinforcements.blocked)) &&
       (card.id !== 'ecaz-harass-withdraw' || (!!game.battle?.harassWithdraw && !game.battle.harassWithdraw.blocked)) &&
       battleCardSlotEligible(slot, card, { planetologistWeapon }) &&
       (!fixed || fixedBattleInspectionMatches(slot, fixed.value, card.id, card)) &&
