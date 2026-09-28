@@ -13,6 +13,21 @@ forces, phases or statistics. Private reports:
 `/tmp/dune-tleilaxu-skills-20260928/report.json` and
 `/tmp/dune-homeworld-nexus-matrix-20260928/report.json`.
 
+Thirty paired CHOAM/Richese, Ecaz/Moritani and Ix/Tleilaxu + Nexus games
+also finished, covering two through six seats in both modes. Two six-seat games
+with all three faction expansions finished in Basic and Advanced. Together
+these 32 further games accepted 14,785 actions with 385 JSON/private-view
+restorations, zero rejected candidates and unchanged source fingerprints.
+The paired-module reports are
+`/tmp/dune-choam-nexus-matrix-20260929/report.json`,
+`/tmp/dune-ecaz-nexus-matrix-20260929/report.json` and
+`/tmp/dune-ix-nexus-matrix-20260929/report.json`; the combined-expansion report
+is `/tmp/dune-all-expansion-complete-20260929/report.json`.
+The runner checks physical cards, force counts and typed elites after each
+action; its generic expansion samples do not independently census exceptional
+Traitor zones. Across all six reports, 47 games finished with 21,504 accepted
+actions and 559 restores.
+
 These samples establish legal sampled continuation to a winner, not natural
 exercise of every rare card or payment effect. They do not certify complete
 Leader Skills, Tleilaxu, Homeworld, Nexus, Advanced or expansion play, browser
