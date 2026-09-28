@@ -16,6 +16,7 @@ import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction,
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
 import { moritaniBetrayalBotActions } from './nexus-moritani-betrayal-options';
 import { ecazBetrayalBotActions } from './nexus-ecaz-betrayal-options';
+import { ecazInquiryBotActions } from './nexus-ecaz-inquiry-options';
 import { ecazBetrayalOffer } from './nexus-ecaz-betrayal';
 import { ECAZ_START_FORCES, ECAZ_START_LOCATIONS, quoteEcazStartingForces } from './ecaz-setup';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
@@ -3875,6 +3876,8 @@ export function botActions(g: GameView): Action[] {
   if (moritaniBetrayal.length) return moritaniBetrayal;
   const ecazBetrayal = ecazBetrayalBotActions(g);
   if (ecazBetrayal.length) return ecazBetrayal;
+  const ecazInquiry = ecazInquiryBotActions(g);
+  if (ecazInquiry.length) return ecazInquiry;
   const sardaukar = nexusSardaukarBotActions(g);
   if (sardaukar.length) return sardaukar;
   const advisorConversion = nexusAdvisorBotActions(g);

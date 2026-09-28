@@ -33,6 +33,7 @@ import { NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { NexusMoritaniBetrayal } from './nexus-moritani-betrayal';
 import { buildRevision, buildRevisionLabel } from '@/lib/build-revision';
 import { NexusEcazBetrayal } from './nexus-ecaz-betrayal';
+import { NexusEcazInquiry } from './nexus-ecaz-inquiry';
 import { NexusTleilaxu } from './nexus-tleilaxu';
 import { NexusSuboids } from './nexus-suboids';
 import { NexusAdvisors } from './nexus-advisors';
@@ -1593,6 +1594,7 @@ export function GameTable({
           <NexusChoamBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusMoritaniBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusEcazBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
+          <NexusEcazInquiry game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <NexusSuboids game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
           <NexusAdvisors game={g} act={act} busy={busy} />

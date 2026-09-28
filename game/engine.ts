@@ -36,6 +36,7 @@ import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature
 import { quoteNexusChoamInspection, sampleNexusChoamInspection, nexusChoamInspectionSignature, type NexusChoamInspectionReceipt } from './nexus-choam-inspection';
 import { quoteNexusMoritaniRetention, nexusMoritaniRetentionSignature, type NexusMoritaniRetentionReceipt } from './nexus-moritani-retention';
 import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
+import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
@@ -1046,6 +1047,8 @@ export type Game = {
   nexusChoamTradeLast?: { event: string; stage: NexusChoamTrade['stage'] };
   nexusChoamBetrayals?: NexusChoamBetrayal[];
   nexusChoamBetrayalLast?: { event: string; stage: NexusChoamBetrayal['stage'] };
+  nexusEcazInquiries?: EcazInquiryReceipt[];
+  nexusEcazInquiryLast?: { event: string };
   nexusEmperorSecretHistory?: NexusEmperorRevival[];
   nexusEmperorSecretEvents?: string[];
   nexusFremenRevivalHistory?: FremenNexusRevival[];
@@ -1950,6 +1953,27 @@ function nexusChoamBetrayalIntegrity(g: Game) {
       getPlayer(g, last.target).hand.length === last.handBefore - 1,
       'The CHOAM Nexus Betrayal no longer matches its random discard.');
 }
+function nexusEcazInquiryIntegrity(g: Game) {
+  const history = g.nexusEcazInquiries;
+  if (history === undefined) {
+    requireRule(!g.nexusEcazInquiryLast, 'The Ecaz Nexus inquiry lost its history.');
+    return;
+  }
+  requireRule(Array.isArray(history) && history.length > 0 && !!g.nexusCards?.cards,
+    'The Ecaz Nexus inquiry lost its physical card history.');
+  for (const [index, receipt] of history.entries()) {
+    nexusRule(() => validateEcazInquiry(g, receipt, index));
+    if (index > 0) {
+      const previous = history[index - 1];
+      requireRule(previous.turn < receipt.turn ||
+        (previous.turn === receipt.turn && previous.phase <= receipt.phase),
+      'The Ecaz Nexus inquiries changed their original order.');
+    }
+  }
+  requireRule(g.nexusEcazInquiryLast?.event === history.at(-1)!.event,
+    'The last Ecaz Nexus inquiry lost its original answer.');
+}
+
 function currentNexusChoamTrade(g: Game, owner: string) {
   return nexusRule(() => quoteNexusChoamTrade(g, owner,
     g.phase === 7 && grummanCollectionAutomatic(g)));
@@ -2319,6 +2343,28 @@ function playNexusChoamBetrayal(g: Game, p: Player, action: Action) {
   log(g, `${p.name} spent CHOAM Nexus Betrayal. ${target.name} discarded one randomly selected Treachery card without receiving spice.`,
     { faction: p.faction, name: 'CHOAM Nexus Betrayal' });
 }
+function playNexusEcazInquiry(g: Game, p: Player, action: Action) {
+  const offer = quoteEcazInquiry(g, p.id,
+    g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g));
+  requireRule(Object.keys(action).sort().join(',') === 'event,target,type' &&
+    offer && !offer.blocked && action.event === offer.event &&
+    offer.targets.some(target => target.id === action.target),
+  offer?.blocked ?? 'Choose the current Ecaz Nexus inquiry and a seated player.');
+  const target = getPlayer(g, action.target as string);
+  const receipt: EcazInquiryReceipt = {
+    event: offer.event, owner: p.id, ownerFaction: p.faction,
+    target: target.id, targetFaction: target.faction,
+    turn: g.turn, phase: g.phase, scope: 'native',
+    answer: ecazInquiryAnswer(p, target), signature: '',
+  };
+  receipt.signature = ecazInquirySignature(receipt);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  (g.nexusEcazInquiries ??= []).push(receipt);
+  g.nexusEcazInquiryLast = { event: receipt.event };
+  log(g, `${p.name} spent Ecaz Nexus Secret Ally to ask whether ${target.name} holds any of their native leaders as Traitor Cards. The yes/no answer was delivered privately.`,
+    { faction: p.faction, name: 'Ecaz Nexus inquiry' });
+}
+
 function playMoritaniBetrayal(g: Game, p: Player, action: Action) {
   const offer = moritaniBetrayalOffer(g, p.id,
     g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g));
@@ -21635,6 +21681,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   nexusChoamInspectionIntegrity(state);
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
+  nexusEcazInquiryIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -21796,6 +21843,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   nexusChoamInspectionIntegrity(g);
   nexusMoritaniRetentionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
+  nexusEcazInquiryIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -21911,6 +21959,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   nexusChoamInspectionIntegrity(state);
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
+  nexusEcazInquiryIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -21944,6 +21993,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   nexusChoamInspectionIntegrity(g);
   nexusMoritaniRetentionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
+  nexusEcazInquiryIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -22043,6 +22093,7 @@ function applyActionInner(
   if (t === 'discovery') { playDiscovery(g, p, action); return g; }
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
   if (t === 'nexusChoamBetrayal') { playNexusChoamBetrayal(g, p, action); return g; }
+  if (t === 'nexusEcazInquiry') { playNexusEcazInquiry(g, p, action); return g; }
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
   if (t === 'nexusEmperorBetrayal') { playNexusEmperorBetrayal(g,p,action); return g; }
   if (t === 'nexusBgBetrayal') { playNexusBgBetrayal(g,p,action); return g; }
@@ -25714,6 +25765,7 @@ export function viewGame(state: Game, id: string) {
   nexusChoamInspectionIntegrity(state);
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
+  nexusEcazInquiryIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -26030,6 +26082,11 @@ export function viewGame(state: Game, id: string) {
     nexusChoamInspection: quoteNexusChoamInspection(g, id),
     nexusChoamBetrayal: quoteNexusChoamBetrayal(g, id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
+    nexusEcazInquiry: {
+      offer: quoteEcazInquiry(g, id,
+        g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
+      history: ecazInquiryHistory(g, id),
+    },
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
     nexusEmperorBetrayal: nexusEmperorBetrayalOffer(g, id),
     nexusBgBetrayal: nexusBgBetrayalOffer(g, id),

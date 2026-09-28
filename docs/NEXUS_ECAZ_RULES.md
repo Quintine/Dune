@@ -78,5 +78,35 @@ pending snapshot binds the card's discard position, ally and exact typed board
 group through the Karama window, even if another Nexus card is discarded
 during that response. The ally's reserve counters are validated before any
 board return. Saved receipts reject replay but are not cryptographic proof of
-historical save authenticity. Ecaz Cunning's Duke override and the Secret
-Ally identity/audience questions above remain unimplemented.
+historical save authenticity. Ecaz Cunning's Duke override remains
+unimplemented; Secret Ally's exceptional leader scope and audience remain
+unsettled beyond the bounded runtime below.
+
+## Bounded Secret Ally traitor inquiry runtime
+
+When Ecaz is absent, an unallied holder may spend its physical Nexus card at
+a quiet play boundary to ask about any seated player, including themself. The
+owner-only offer lists public names and never consults a target's hidden hand
+to determine availability. Acceptance atomically reads the target's currently
+held ordinary Traitor Cards, records one yes/no answer, and consumes the Nexus
+card. The target and public chronicle learn that an inquiry occurred, but only
+the holder sees the historical answer. Later exchanges or leader deaths do not
+rewrite it. No generic Karama response to this borrowed panel is invented.
+
+For this first playable interpretation, “your leaders” means the holder's
+native faction leader identities, including dead and captured native discs,
+but not foreign captives/Gholas, Duke Vidal or Cheap Hero. Face Dancers are
+not ordinary Traitor Cards. This identity scope and the holder-only audience
+are **product interpretations**, not explicit publisher rulings. A fresh
+online search found no authenticated clarification beyond the previously
+inspected primary component and rulebook linked above. The
+exceptional controlled-pool and table-wide disclosure alternatives remain
+visible release boundaries; this prototype does not certify them.
+
+The completed, signed receipt binds the accepted event, original seats and
+factions, turn/phase, native scope and answer without storing or projecting a
+matching identity. The owner's private history survives JSON restoration and
+later Nexus discard recycling. Focused Basic/Advanced, four-profile AI,
+rejection, spectator projection and concurrent saved-room cases are in
+[the inquiry tests](../tests/nexus-ecaz-inquiry.test.ts). Full Nexus and
+combined-mode acceptance remain gated.
