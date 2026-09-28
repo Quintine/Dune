@@ -1501,6 +1501,9 @@ function policyActions(g: GameView): Action[] {
       return [{ type: 'decision', event: d.event,
         returns: offer.selection ?? defaultHarassWithdrawAllocation(offer.context, offer.dial, offer.support) }];
     }
+    if (d.kind === 'nexusChoamInspection')
+      return [{ type: 'decision', event: d.event,
+        inspect: !!g.nexusChoamInspection?.canInspect }];
     if (d.kind === 'choamAudit')
       return [{ type: 'decision', event: d.event, audit: true }];
     if (d.kind === 'choamAuditPayment') {

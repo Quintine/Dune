@@ -33,6 +33,7 @@ import { createDiscoveryState, validateDiscoveryState, placeDiscovery, rememberD
 import { quoteJacurutuBattleIncome } from './discovery-battle';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
+import { quoteNexusChoamInspection, sampleNexusChoamInspection, nexusChoamInspectionSignature, type NexusChoamInspectionReceipt } from './nexus-choam-inspection';
 import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
@@ -729,6 +730,7 @@ export type Decision =
   | { kind: 'grummanCollection'; player: string; event: string }
   | { kind: 'caladanReinforcement'; player: string; event: string }
   | { kind: 'choamAudit'; player: string; event: string }
+  | { kind: 'nexusChoamInspection'; player: string; event: string }
   | { kind: 'choamAuditPayment'; player: string; event: string }
   | {
       kind: 'strongholdCopy';
@@ -1387,6 +1389,13 @@ export type Game = {
     turn: number;
     cards: Card[];
   } | null;
+  nexusChoamInsight?: {
+    event: string;
+    viewer: string;
+    target: string;
+    turn: number;
+    card: Card;
+  } | null;
   choamMarket?: ChoamMarket | null;
   biddingEnd?: BiddingEnd | null;
   ecazPoisonIncome?: { player: string; turn: number; phase: number; amount: number; count: number }[];
@@ -1671,6 +1680,7 @@ export type Game = {
     caladanReinforcement?: HomeworldVictoryObligation;
     nexusSardaukarCasualties?: string;
     moritaniAssassinate?: {event:string;signature:string;continuation?:string};
+    nexusChoamInspection?: NexusChoamInspectionReceipt;
   } | null;
   auction: Auction | null;
   battle: Battle | null;
@@ -1770,6 +1780,71 @@ function nexusChoamTradeIntegrity(g: Game) {
     pending.spiceAfter === last.spiceBefore + 2 && getPlayer(g, last.owner).spice === pending.spiceAfter,
     'The CHOAM Nexus trade no longer matches its committed payment.');
 }
+function choamInspectionDecision(
+  decision: Game['decision'] | undefined,
+): Extract<Decision, { kind: 'nexusChoamInspection' }> | null {
+  return decision?.kind === 'nexusChoamInspection' ? decision : null;
+}
+
+function nexusChoamInspectionIntegrity(g: Game) {
+  const context = g.lastBattleContext;
+  const receipt = context?.nexusChoamInspection;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const active = choamInspectionDecision(g.decision);
+  const exchange = choamInspectionDecision(g.pendingExchange?.decision);
+  const nullentropy = choamInspectionDecision(g.pendingNullentropy?.resume.decision);
+  const gift = choamInspectionDecision(g.pendingRicheseGift?.resume.decision);
+  const purchase = choamInspectionDecision(g.pendingRichesePurchaseIncome?.resume.decision);
+  const discard = choamInspectionDecision(
+    continuation && 'resume' in continuation ? continuation.resume.decision : null,
+  );
+  const decisionCount = Number(!!active) + Number(!!exchange) +
+    Number(!!nullentropy) + Number(!!gift) + Number(!!purchase) + Number(!!discard);
+  const inspectionDecision = active ?? exchange ?? nullentropy ?? gift ?? purchase ?? discard;
+  if (!receipt) {
+    requireRule(decisionCount === 0, 'The CHOAM Nexus inspection has lost its battle.');
+    return;
+  }
+  requireRule(
+    !!g.nexusCards?.cards && !!context?.winner &&
+      context.result !== 'legacy' &&
+      receipt.event === context.event &&
+      context.combatants.length === 2 &&
+      context.combatants.includes(receipt.opponent) &&
+      receipt.opponent !== context.winner &&
+      Array.isArray(receipt.usedCards) &&
+      receipt.usedCards.every(id => typeof id === 'string' && id.length > 0) &&
+      new Set(receipt.usedCards).size === receipt.usedCards.length &&
+      ['pending', 'offer', 'complete'].includes(receipt.stage) &&
+      receipt.signature === nexusChoamInspectionSignature(receipt),
+    'The CHOAM Nexus inspection lost its original battle or used cards.',
+  );
+  if (receipt.stage === 'offer')
+    requireRule(g.phase === 6 && !g.battle && decisionCount === 1 &&
+      inspectionDecision?.event === receipt.event &&
+      inspectionDecision.player === context.winner,
+    'The CHOAM Nexus inspection offer has lost its winner.');
+  else
+    requireRule(decisionCount === 0, 'The CHOAM Nexus inspection reopened after its battle.');
+  if (receipt.stage === 'pending')
+    requireRule(g.phase === 6 && !g.battle,
+      'Finish the original battle cleanup before CHOAM inspection.');
+  if (receipt.inspected !== undefined)
+    requireRule(receipt.stage === 'complete' &&
+      !receipt.usedCards.includes(receipt.inspected) &&
+      g.nexusChoamInsight?.event === receipt.event &&
+      g.nexusChoamInsight.viewer === context.winner &&
+      g.nexusChoamInsight.target === receipt.opponent &&
+      g.nexusChoamInsight.turn === context.turn &&
+      g.nexusChoamInsight.card.id === receipt.inspected,
+    'The private CHOAM Nexus inspection lost its sampled card.');
+}
+function retireNexusChoamInsight(g: Game) {
+  g.nexusChoamInsight = null;
+  if (g.lastBattleContext?.nexusChoamInspection?.stage === 'complete')
+    delete g.lastBattleContext.nexusChoamInspection;
+}
+
 function nexusChoamBetrayalIntegrity(g: Game) {
   const history = g.nexusChoamBetrayals;
   const continuation = g.pendingTreacheryDiscard?.continuation;
@@ -13613,7 +13688,10 @@ function openPhase(g: Game, initialize = true) {
   else if (initialize) beginPhase(g);
 }
 function beginPhase(g: Game) {
-  if (g.phase === 0) g.auditorInsight = null;
+  if (g.phase === 0) {
+    g.auditorInsight = null;
+    retireNexusChoamInsight(g);
+  }
   if (g.phase === 2 && g.choamCharity?.turn !== g.turn) {
     const choam = byFaction(g, 'choam');
     if (choam && charityMultiplier(g) === 0) {
@@ -16745,8 +16823,20 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   if (g.dukeVidal && [ap.leader, dp.leader].includes(DUKE_VIDAL_ID))
     g.dukeVidal = consumeDuke(g.dukeVidal);
   g.lastBattle = [a.id, d.id];
+  const battleEvent = b.event ?? g.pendingAuditor?.event ?? crypto.randomUUID();
+  const inspection: NexusChoamInspectionReceipt | null =
+    winner && g.nexusCards?.cards && !byFaction(g, 'choam')
+      ? {
+          event: battleEvent,
+          opponent: winner.id === a.id ? d.id : a.id,
+          usedCards: [...(winner.id === a.id ? quote.played.defender : quote.played.attacker)],
+          stage: 'pending',
+          signature: '',
+        }
+      : null;
+  if (inspection) inspection.signature = nexusChoamInspectionSignature(inspection);
   g.lastBattleContext = {
-    event: b.event ?? g.pendingAuditor?.event ?? crypto.randomUUID(),
+    event: battleEvent,
     turn: g.turn,
     territory: b.territory,
     combatants: [...g.lastBattle],
@@ -16754,6 +16844,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     result: quote.result,
     ...(playedCardRoles ? { cardRoles: playedCardRoles } : {}),
     ...(sardaukar?.casualties ? {nexusSardaukarCasualties:sardaukar.receipt.event} : {}),
+    ...(inspection ? { nexusChoamInspection: inspection } : {}),
   };
   recordMoritaniAssassinateOpportunity(g, b, winner, losingPlayer);
   if (quote.smuggler) {
@@ -17477,6 +17568,17 @@ function finishBattle(g: Game) {
   }
   if ((next.kind === 'faceDance' || next.kind === 'board') &&
       openHomeworldVictoryReturn(g, next.kind === 'faceDance')) return;
+  const choamInspection = g.lastBattleContext?.nexusChoamInspection;
+  if (next.kind === 'board' && choamInspection?.stage === 'pending') {
+    choamInspection.stage = 'offer';
+    choamInspection.signature = nexusChoamInspectionSignature(choamInspection);
+    g.decision = {
+      kind: 'nexusChoamInspection',
+      player: g.lastBattleContext!.winner!,
+      event: choamInspection.event,
+    };
+    return;
+  }
   if (next.kind === 'choamBattleIncome') {
     g.response = { ...next, passed: [] };
   } else if (next.kind === 'choamAudit') {
@@ -21410,6 +21512,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
+  nexusChoamInspectionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -21569,6 +21672,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   discoveryIntegrity(g);
   greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
+  nexusChoamInspectionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -21682,6 +21786,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
+  nexusChoamInspectionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -21713,6 +21818,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   discoveryIntegrity(g);
   greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
+  nexusChoamInspectionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -22407,6 +22513,38 @@ function applyActionInner(
         'Allow the movement or declare Baliset.',
       );
       resumeChoamMovement(g, true);
+      return g;
+    }
+    if (decision.kind === 'nexusChoamInspection') {
+      const offer = quoteNexusChoamInspection(g, id, decision);
+      requireRule(
+        offer?.event === decision.event &&
+          action.event === decision.event &&
+          typeof action.inspect === 'boolean' &&
+          Object.keys(action).every(key => ['type', 'event', 'inspect'].includes(key)),
+        'Choose whether to use CHOAM Secret Ally for this resolved victory.',
+      );
+      const receipt = g.lastBattleContext!.nexusChoamInspection!;
+      if (action.inspect) {
+        requireRule(offer.canInspect,
+          'The CHOAM Secret Ally needs its unallied holder and an unused opposing card.');
+        const opponent = getPlayer(g, receipt.opponent);
+        const card = nexusRule(() =>
+          sampleNexusChoamInspection(opponent.hand, receipt.usedCards, random));
+        g.nexusCards!.cards = nexusRule(() =>
+          discardNexusCard(g.nexusCards!.cards!, id, g.players));
+        receipt.inspected = card.id;
+        g.nexusChoamInsight = {
+          event: receipt.event, viewer: id, target: opponent.id,
+          turn: g.turn, card,
+        };
+        log(g, `${p.name} spent CHOAM Nexus Secret Ally to privately inspect one unused card held by ${opponent.name} after winning the battle. The inspected face remains private.`,
+          { faction: p.faction, name: 'CHOAM Nexus inspection' });
+      }
+      receipt.stage = 'complete';
+      receipt.signature = nexusChoamInspectionSignature(receipt);
+      g.decision = null;
+      finishBattle(g);
       return g;
     }
     if (
@@ -25025,6 +25163,7 @@ function applyActionInner(
     );
     requireRule(choice, 'Choose one of your unresolved battles.');
     g.auditorInsight = null;
+    retireNexusChoamInsight(g);
     const noFieldPlayers = [choice.attacker, choice.defender].filter(
       (playerId) =>
         getPlayer(g, playerId).noField?.deployed?.location.territory ===
@@ -25437,6 +25576,7 @@ export function viewGame(state: Game, id: string) {
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
+  nexusChoamInspectionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -25729,6 +25869,10 @@ export function viewGame(state: Game, id: string) {
       g.auditorInsight?.viewer === id
         ? structuredClone(g.auditorInsight)
         : null,
+    nexusChoamInsight:
+      g.nexusChoamInsight?.viewer === id
+        ? structuredClone(g.nexusChoamInsight)
+        : null,
     mobileStronghold: g.mobileStronghold ?? null,
     mobileRoute: g.pendingMobileMove
       ? {
@@ -25747,6 +25891,7 @@ export function viewGame(state: Game, id: string) {
     greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,
     nexusCards: projectedNexusCards(g, id),
     nexusChoamTrade: currentNexusChoamTrade(g, id),
+    nexusChoamInspection: quoteNexusChoamInspection(g, id),
     nexusChoamBetrayal: quoteNexusChoamBetrayal(g, id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),

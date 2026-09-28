@@ -177,6 +177,10 @@ void test('every winning casualty choice removes ordinary counters and never inv
 void test('the completed grant expires before a second battle in the same turn', () => {
   let g = resolveOrdinary(activate(nexusSardaukarFixture()), 0, 0);
   assert.equal(g.battle, null);
+  assert.ok(g.decision?.kind === 'nexusChoamInspection');
+  g = applyAction(g, g.decision.player, {
+    type: 'decision', event: g.decision.event, inspect: false,
+  });
   g = applyAction(g, 'p', {
     type: 'chooseBattle',
     territory: 'hagga_basin',

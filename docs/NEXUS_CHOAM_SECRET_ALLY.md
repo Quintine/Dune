@@ -1,7 +1,7 @@
 # CHOAM Nexus Secret Ally prototype
 
-13 September 2026. The Spice Collection trade is **Prototyped** in the development
-Nexus module. Its battle inspection alternative is still missing. This checkpoint
+27 September 2026. The Spice Collection trade and a bounded after-victory
+inspection are **Prototyped** in the development Nexus module. This checkpoint
 does not enable normal Nexus starts, certify the full card family, or open a
 publication gate.
 
@@ -51,32 +51,34 @@ the opponent, including a Cheap Hero, cards played in weapon or defense slots
 and a late Portable Snooper. A used card remains excluded if another effect
 later retains it. The effect neither transfers nor discards the inspected card.
 
-The battle engine must preserve the opposing used-card IDs with the resolved
-battle event before mandatory loser disposal. The existing Auditor candidate
-filter is reusable because it removes exact physical used IDs from the current
-opposing hand. The Nexus effect still needs its own one-card sampler and receipt;
-it must not borrow Auditor survival, payment or cancellation behavior. A
-successful use discards the held CHOAM Nexus card once, records the sampled
-snapshot once and projects the face only to its holder. The public chronicle may
-name the use, winner and opponent, but not the inspected face.
+The battle engine records the opposing used-card IDs with the resolved battle
+event before mandatory loser disposal. The existing Auditor exclusion contract
+is reused for physical IDs, but the Secret Ally has its own one-card sampler
+and receipt. It does not borrow Auditor survival, payment or cancellation.
+Winning normally or by a single traitor qualifies; no-winner explosion and
+mutual-traitor outcomes do not. The physical CHOAM Nexus card is spent once.
+Only the holder sees the sampled card snapshot. The public chronicle names the
+use and opponent without naming the face.
 
-The safe continuation point is the existing final `finishBattle` board boundary:
-after mandatory and optional battle-card cleanup, Moritani retention, battle
-income, technology, capture, Auditor, Face Dance and Caladan reinforcement, and
-before another battle or phase begins. No existing choice occurs at that point
-for every possible winner. Opening a pause only when the winner secretly holds
-the CHOAM Nexus card would reveal that hidden identity. Precommitting a
-conditional use before the result would remove the printed after-victory choice.
-A universal use-or-pass window would preserve secrecy and the full choice, but
-would also ask winners without the card to pass. The user has been asked which
-product exception to adopt; no timing policy is implemented while that answer
-is pending.
+After compulsory and optional card cleanup, battle income, technology, capture,
+Auditor, Face Dance and Caladan reinforcement, the final `finishBattle` board
+boundary opens the same use-or-continue window for **every winner** when Nexus
+is enabled and CHOAM is absent. This is a privacy-preserving product
+interpretation, not a printed requirement: nonholders and ineligible allied
+holders continue without use. Opening only for a secret holder would expose
+card custody; precommitting before the result would remove the printed
+after-victory choice. All four AI levels use the same private offer and can
+legally continue. Legacy battle cleanup saves without a physical used-card
+receipt do not infer one and continue through their existing path.
+The saved winner choice survives a paid Nullentropy Box search or another
+interruption without exposing the held Nexus card. Only the active decision
+projects its private offer; suspended frames retain their signed battle receipt.
+The private sampled-card snapshot expires at the next battle or Storm.
 
 The retrieved Nexus sources neither establish an ordinary Karama response to
-this Secret Ally play nor grant blanket Nexus immunity. The Collection trade is
-currently direct and this inspection must not inherit the native Auditor's
-Karama/payment window by analogy. Cancellation remains an explicit later audit
-boundary rather than an invented prototype rule.
+this Secret Ally play nor grant blanket Nexus immunity. The current inspection
+is direct, as with the Collection trade. Cancellation remains an explicit
+later source-audit boundary rather than an invented prototype rule.
 
 ## Focused evidence and remaining scope
 
@@ -86,8 +88,10 @@ stale action rejection, Truthtrance locking, damaged saved receipts and JSON
 continuation. Production SQLite tests exercise competing trades, seat restoration,
 replay rejection and an already-paid discard resume.
 
-The after-victory inspection still needs an original battle receipt, exclusion of
-the opponent's used cards, a private one-card sample and composition with winner
-cleanup. Complete Nexus games, broader Homeworld interactions, strategic choice
-between the two Secret Ally uses and visual acceptance of that full family remain
+Run `npm test -- nexus-choam-inspection` for real Basic/Advanced battles,
+private controls, physical used-card exclusion, JSON continuation, paid-search
+interruption, snapshot expiry and competing in-memory SQLite cases. The
+Collection trade retains its separate focused and production SQLite evidence
+above. Complete Nexus games, broader Homeworld interactions, strategic choice
+between the two Secret Ally uses and visual acceptance of the full family remain
 unfinished. Prototype evidence is deliberately narrower than complete compliance.

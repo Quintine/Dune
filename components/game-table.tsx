@@ -28,7 +28,7 @@ import { GreatMakerDecision } from './great-maker';
 import { DiscoveryPanel, DiscoveryDiscardDecision } from './discoveries';
 import { DiscoveryEntryDecision } from './discovery-entry';
 import { DiscoveryStormDecision } from './discovery-storm';
-import { NexusChoamTrade } from './nexus-choam-trade';
+import { NexusChoamTrade, NexusChoamInspectionDecision, NexusChoamInspectionInsight } from './nexus-choam-trade';
 import { NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { NexusMoritaniBetrayal } from './nexus-moritani-betrayal';
 import { buildRevision, buildRevisionLabel } from '@/lib/build-revision';
@@ -1040,6 +1040,7 @@ export function GameTable({
       <AmbassadorSupply game={g} />
       <AmbassadorInsights key={`${g.code}-${g.me}`} game={g} />
       <AuditorInsight game={g} />
+      <NexusChoamInspectionInsight game={g} />
       <div className="play-grid">
         <aside className="players-panel">
           <div className="eyebrow">THE GREAT HOUSES</div>
@@ -2667,6 +2668,8 @@ export function GameTable({
                     decline: true,
                   })}
                 </>
+              ) : g.decision.kind === 'nexusChoamInspection' ? (
+                <NexusChoamInspectionDecision game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'choamAudit' ||
                 g.decision.kind === 'choamAuditPayment' ? (
                 <AuditorDecision game={g} act={act} busy={busy} />

@@ -71,6 +71,10 @@ void test('Suboid effect survives a second battle in the same turn and expires w
     assert.ok(acted, `Battle stalled at ${g.decision?.kind}/${g.response?.kind}`);
   }
   assert.equal(g.battle, null);
+  assert.ok(g.decision?.kind === 'nexusChoamInspection');
+  g = applyAction(g, g.decision.player, {
+    type: 'decision', event: g.decision.event, inspect: false,
+  });
   g = applyAction(g, 'p', { type: 'chooseBattle', territory: 'hagga_basin', target: 'q' });
   assert.notEqual(g.battle!.event, first);
   assert.equal(viewGame(g, 'p').battle!.ownForces!.normalFreeSupport, true);

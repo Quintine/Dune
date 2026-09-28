@@ -15,6 +15,7 @@ const DECISIONS = {
   diplomatRetreat: true,
   harassWithdraw: true,
   choamAudit: true,
+  nexusChoamInspection: true,
   choamAuditPayment: true,
   strongholdCopy: true,
   richeseBlackMarket: true,

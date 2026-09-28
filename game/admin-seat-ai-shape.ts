@@ -32,6 +32,7 @@ const decisions = {
   grummanCollection: true,
   caladanReinforcement: true,
   choamAudit: true,
+  nexusChoamInspection: true,
   choamAuditPayment: true,
   strongholdCopy: true,
   richeseBlackMarket: true,
