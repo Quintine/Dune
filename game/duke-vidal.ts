@@ -1,7 +1,7 @@
 import type { Leader } from './cards';
 
 export const DUKE_VIDAL_ID = 'duke-vidal';
-export type DukeSource = 'moritani' | 'ecaz' | 'ally';
+export type DukeSource = 'moritani' | 'ecaz' | 'ecazNexus' | 'ally';
 export type DukeState = {
   leader: Leader;
   controller: string | null;
@@ -53,7 +53,7 @@ export function acquireDuke(
   validTurn(turn);
   if (typeof controller !== 'string' || !controller.trim())
     throw new Error('Choose a player to control Duke Vidal.');
-  if (!['moritani', 'ecaz', 'ally'].includes(source))
+  if (!['moritani', 'ecaz', 'ecazNexus', 'ally'].includes(source))
     throw new Error('Choose a valid source of Duke Vidal custody.');
   if (state.leader.dead)
     throw new Error('Duke Vidal is in the Tanks and cannot be acquired.');
@@ -75,13 +75,14 @@ export function consumeDuke(state: DukeState): DukeState {
 }
 
 /**
- * End-turn custody only. Ecaz's ordinary acquisition lasts until battle use.
+ * End-turn custody only. Ecaz's ordinary Ambassador acquisition lasts until
+ * battle use; the distinct Ecaz Nexus Cunning acquisition lasts this turn.
  * Allied loans and captured/ghola release destinations need a verified return contract.
  */
 export function expireDuke(state: DukeState, turn: number): DukeState {
   validTurn(turn);
   if (
-    state.source === 'moritani' &&
+    (state.source === 'moritani' || state.source === 'ecazNexus') &&
     state.acquiredTurn !== null &&
     state.acquiredTurn <= turn &&
     !state.leader.dead &&

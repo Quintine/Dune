@@ -17,6 +17,7 @@ import { nexusMoritaniBotActions } from './nexus-moritani-options';
 import { moritaniBetrayalBotActions } from './nexus-moritani-betrayal-options';
 import { ecazBetrayalBotActions } from './nexus-ecaz-betrayal-options';
 import { ecazInquiryBotActions } from './nexus-ecaz-inquiry-options';
+import { nexusEcazDukeBotActions } from './nexus-ecaz-duke-options';
 import { ecazBetrayalOffer } from './nexus-ecaz-betrayal';
 import { ECAZ_START_FORCES, ECAZ_START_LOCATIONS, quoteEcazStartingForces } from './ecaz-setup';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
@@ -3909,6 +3910,8 @@ export function botActions(g: GameView): Action[] {
   if (faceDancers.length) return faceDancers;
   const traitorExchange = nexusTraitorBotActions(g);
   if (traitorExchange.length) return traitorExchange;
+  const ecazDuke = nexusEcazDukeBotActions(g);
+  if (ecazDuke.length) return ecazDuke;
   const nexus = g.nexusAtreides;
   if (
     g.status === 'playing' && g.phase === 6 && nexus && !nexus.blocked &&
@@ -4020,14 +4023,20 @@ export function runBots(state: Game, limit = 96): Game {
   for (let step = 0; step < limit; step++) {
     let next: Game | undefined;
     const actors = g.players.filter((p) => p.bot ?? p.autopilot);
-    // A card holder's only pre-shipment declaration must run before an
-    // earlier-seated movement bot consumes the shared opening.
+    // Private Nexus plays must run before an earlier-seated bot consumes
+    // their shared shipment or pre-battle opening.
+    const ecazDukeHolder = g.phase === 6 && !g.battle && !g.response &&
+      !g.decision && !g.phaseOpening && !g.truthtrance && g.nexusCards?.cards
+      ? actors.find(actor => actor.faction === 'ecaz' && !actor.ally &&
+        g.nexusCards!.cards!.hands[actor.id] === 'ecaz')
+      : undefined;
     const ecazHolder = g.phase === 5 && g.nexusCards?.cards
       ? actors.find(actor => g.nexusCards!.cards!.hands[actor.id] === 'ecaz' &&
         ecazBetrayalOffer(g, actor.id)?.blocked === null)
       : undefined;
-    if (ecazHolder)
-      actors.sort((a, b) => Number(b.id === ecazHolder.id) - Number(a.id === ecazHolder.id));
+    const priorityEcaz = ecazDukeHolder ?? ecazHolder;
+    if (priorityEcaz)
+      actors.sort((a, b) => Number(b.id === priorityEcaz.id) - Number(a.id === priorityEcaz.id));
     else if (g.phase === 5 && junctionSponsor(g) && !currentJunctionOffer(g))
       actors.sort((a, b) => Number(b.faction === 'guild') - Number(a.faction === 'guild'));
     for (const p of actors) {

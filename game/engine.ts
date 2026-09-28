@@ -432,6 +432,7 @@ import {
   DUKE_VIDAL_ID,
   type DukeState,
 } from './duke-vidal';
+import { createNexusEcazDukeReceipt, quoteNexusEcazDuke, validateNexusEcazDuke, type NexusEcazDukeReceipt } from './nexus-ecaz-duke';
 import {
   retentionReservesCard,
   type MoritaniRetention,
@@ -1055,6 +1056,8 @@ export type Game = {
   nexusChoamBetrayalLast?: { event: string; stage: NexusChoamBetrayal['stage'] };
   nexusEcazInquiries?: EcazInquiryReceipt[];
   nexusEcazInquiryLast?: { event: string };
+  nexusEcazDukeHistory?: NexusEcazDukeReceipt[];
+  nexusEcazDukeEvents?: string[];
   nexusEmperorSecretHistory?: NexusEmperorRevival[];
   nexusEmperorSecretEvents?: string[];
   nexusEmperorPurchaseHistory?: EmperorNexusPurchase[];
@@ -1983,6 +1986,24 @@ function nexusEcazInquiryIntegrity(g: Game) {
   requireRule(g.nexusEcazInquiryLast?.event === history.at(-1)!.event,
     'The last Ecaz Nexus inquiry lost its original answer.');
 }
+function nexusEcazDukeIntegrity(g: Game) {
+  const history = g.nexusEcazDukeHistory, events = g.nexusEcazDukeEvents;
+  if (history === undefined) {
+    requireRule(events === undefined, 'Ecaz Nexus Duke lost its saved acquisition history.');
+    return;
+  }
+  requireRule(Array.isArray(history) && history.length > 0 && !!g.nexusCards?.cards &&
+    Array.isArray(events) && events.length === history.length &&
+    new Set(events).size === events.length,
+    'Ecaz Nexus Duke lost its physical card or independent use markers.');
+  for (const [index, receipt] of history.entries()) {
+    nexusRule(() => validateNexusEcazDuke(g, receipt, index));
+    requireRule(events[index] === receipt.event, 'Ecaz Nexus Duke acquired from a changed event.');
+  }
+  if (history.at(-1)!.turn === g.turn)
+    requireRule(g.nexusCards.cards.discard.includes('ecaz'),
+      'Ecaz Nexus Duke has reopened its spent physical card.');
+}
 
 function currentNexusChoamTrade(g: Game, owner: string) {
   return nexusRule(() => quoteNexusChoamTrade(g, owner,
@@ -2448,6 +2469,21 @@ function playNexusEcazInquiry(g: Game, p: Player, action: Action) {
   g.nexusEcazInquiryLast = { event: receipt.event };
   log(g, `${p.name} spent Ecaz Nexus Secret Ally to ask whether ${target.name} holds any of their native leaders as Traitor Cards. The yes/no answer was delivered privately.`,
     { faction: p.faction, name: 'Ecaz Nexus inquiry' });
+}
+function playNexusEcazDuke(g: Game, p: Player, action: Action) {
+  const offer = nexusRule(() => quoteNexusEcazDuke(g, p.id));
+  requireRule(offer && !offer.blocked && action.event === offer.event &&
+    Object.keys(action).sort().join(',') === 'event,type',
+    offer?.blocked ?? 'Choose the current Ecaz Nexus Duke acquisition.');
+  const index = g.nexusEcazDukeHistory?.length ?? 0;
+  const receipt = nexusRule(() => createNexusEcazDukeReceipt(g, p.id, index));
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  g.dukeVidal = nexusRule(() => acquireDuke(g.dukeVidal!, p.id, g.turn, 'ecazNexus'));
+  nexusRule(() => validateNexusEcazDuke(g, receipt, index));
+  (g.nexusEcazDukeHistory ??= []).push(receipt);
+  (g.nexusEcazDukeEvents ??= []).push(receipt.event);
+  log(g, `${p.name} spent Ecaz Nexus Cunning to take Duke Prad Vidal for this turn. The shared leader remains physically unique and returns after use or at turn end.`,
+    { faction: p.faction, name: 'Ecaz Nexus Cunning' });
 }
 
 function playMoritaniBetrayal(g: Game, p: Player, action: Action) {
@@ -21990,6 +22026,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   nexusEcazInquiryIntegrity(state);
+  nexusEcazDukeIntegrity(state);
   richesePairIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -22153,6 +22190,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   nexusMoritaniRetentionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
   nexusEcazInquiryIntegrity(g);
+  nexusEcazDukeIntegrity(g);
   richesePairIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -22270,6 +22308,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   nexusEcazInquiryIntegrity(state);
+  nexusEcazDukeIntegrity(state);
   richesePairIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -22305,6 +22344,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   nexusMoritaniRetentionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
   nexusEcazInquiryIntegrity(g);
+  nexusEcazDukeIntegrity(g);
   richesePairIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -22406,6 +22446,7 @@ function applyActionInner(
   if (t === 'nexusChoamTrade') { playNexusChoamTrade(g, p, action); return g; }
   if (t === 'nexusChoamBetrayal') { playNexusChoamBetrayal(g, p, action); return g; }
   if (t === 'nexusEcazInquiry') { playNexusEcazInquiry(g, p, action); return g; }
+  if (t === 'nexusEcazDuke') { playNexusEcazDuke(g, p, action); return g; }
   if (t === 'nexusEmperorRevive') { playNexusEmperorRevive(g,p,action); return g; }
   if (t === 'nexusEmperorPurchase') { playNexusEmperorPurchase(g,p,action); return g; }
   if (t === 'nexusEmperorBetrayal') { playNexusEmperorBetrayal(g,p,action); return g; }
@@ -26092,6 +26133,7 @@ export function viewGame(state: Game, id: string) {
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   nexusEcazInquiryIntegrity(state);
+  nexusEcazDukeIntegrity(state);
   richesePairIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -26414,6 +26456,7 @@ export function viewGame(state: Game, id: string) {
         g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
       history: ecazInquiryHistory(g, id),
     },
+    nexusEcazDuke: nexusRule(() => quoteNexusEcazDuke(g, id)),
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
     nexusEmperorBetrayal: nexusEmperorBetrayalOffer(g, id),
     nexusBgBetrayal: nexusBgBetrayalOffer(g, id),

@@ -27,6 +27,7 @@ export function nexusTraitorFixture(
     advanced?: boolean;
     ix?: boolean;
     seatIds?: [string, string, string];
+    observerFaction?: FactionId;
     phase?: number;
   } = {},
 ): Game {
@@ -43,6 +44,8 @@ export function nexusTraitorFixture(
   g.players[0] = newPlayer(p, 'Owner', options.ownerFaction ?? 'harkonnen');
   if (options.opponentFaction)
     g.players[1] = newPlayer(q, 'Opponent', options.opponentFaction);
+  if (options.observerFaction)
+    g.players[2] = newPlayer(r, 'Observer', options.observerFaction);
   for (const player of g.players)
     g = applyAction(g, player.id, { type: 'ready' });
   g.nexusCards = { cards: null, phase: null };

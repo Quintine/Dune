@@ -78,9 +78,53 @@ pending snapshot binds the card's discard position, ally and exact typed board
 group through the Karama window, even if another Nexus card is discarded
 during that response. The ally's reserve counters are validated before any
 board return. Saved receipts reject replay but are not cryptographic proof of
-historical save authenticity. Ecaz Cunning's Duke override remains
-unimplemented; Secret Ally's exceptional leader scope and audience remain
-unsettled beyond the bounded runtime below.
+historical save authenticity. The bounded Duke Cunning path below is separate;
+Secret Ally's exceptional leader scope and audience remain unsettled beyond
+the bounded runtime below.
+
+## Bounded native Cunning: Duke Vidal
+
+When Ecaz and Moritani are both seated in a three-to-six-player Basic or
+Advanced game using only their expansion and Nexus cards (other seats may be
+classic factions), an unallied Ecaz holder may spend the physical Ecaz Nexus
+card at a quiet Battle phase boundary to take the **existing** living,
+uncaptured, non-Ghola Duke Vidal. This transfers the one shared disc even if
+Moritani controls him; it does not add a leader or Traitor Card to a native
+roster. The owner's private offer reports the current public controller and
+availability. Other seats see no held-card-dependent offer or pause.
+
+Acceptance binds the original controller, source, turn, seated factions and
+event to a signed saved receipt, discards the single card, changes Duke custody
+and retains independent replay markers. The ordinary battle leader path may
+then select Duke, and battle use sets him aside through its existing lifecycle.
+Unused **Nexus** custody ends at turn end. This distinct temporary source does
+not shorten the ordinary Ecaz Ambassador tenure, which lasts until battle use
+or a later Moritani acquisition. JSON restoration and saved-room replay retain
+the completed play without recomputing historical custody from a later turn.
+
+The printed Cunning explicitly reaches Duke in capture, Tanks or Ghola custody;
+this **bounded prototype does not**. Those return destinations and exceptional
+priority interactions need a coherent physical-custody contract before they
+are enabled. The face does not print a Battle-only timing restriction; the
+quiet phase-six window is a product implementation boundary, **not** a GF9
+ruling. Advanced Harkonnen tables are also excluded: the existing shared
+leader battle path cannot select Duke there, so the card must not be spent
+for an unusable disc. Other expansion factions, Homeworlds, Discoveries,
+Leader Skills and combined optional modules remain gated. This is not full
+Ecaz, Moritani or Nexus module acceptance.
+
+[The focused Duke tests](../tests/nexus-ecaz-duke-engine.test.ts) exercise
+genuine Ecaz/Moritani setup, physical draw/spend, Basic and Advanced transfer,
+ordinary leader projection, actual end-turn expiry, blocked custody,
+Advanced-Harkonnen rejection, stale commands and historical integrity.
+[Owner/bot controls](../tests/nexus-ecaz-duke-controls.test.ts) and
+[in-memory SQLite recovery](../tests/nexus-ecaz-duke-recovery.test.ts) cover
+private availability, four legal AI profiles, restart and competing writes.
+A local read-only browser fixture displayed the owner action and no rival
+offer; no room was written. The final offline suite passed 5,623 tests across
+712 files; scoped lint, isolated type diagnostics outside the concurrent
+Fremen draft and production build passed. The repository-wide `npm run check`
+remains blocked by that separately owned draft, not by this Duke path.
 
 ## Bounded Secret Ally traitor inquiry runtime
 

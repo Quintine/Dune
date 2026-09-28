@@ -52,7 +52,17 @@ through human controls, legal bot action, JSON and in-memory SQL continuation,
 and focused gameplay, race and restart tests. A local browser fixture rendered
 the holder-only offer and rival Karama notice without writing a room. The
 Secret Ally inquiry has a bounded private prototype; its native-leader
-scope/answer audience, Duke Cunning and combined modes remain release gates.
+scope/answer audience and combined modes remain release gates.
+
+The bounded [native Ecaz Nexus Cunning](NEXUS_ECAZ_RULES.md#bounded-native-cunning-duke-vidal)
+prototype spends the one card to take the existing living Duke from Moritani
+at a quiet Battle boundary in paired Ecaz/Moritani Nexus games. Owner controls,
+legal AI, ordinary battle selection, temporary end-turn custody and signed
+saved continuation are connected in Basic/Advanced outside Advanced Harkonnen
+tables, where the battle path cannot select Duke. Captured, dead and Ghola
+destinations and all combined modules remain gated. The Battle-only timing
+is a documented product boundary rather than printed phase text. This code
+is not yet in the live image.
 The main page
 labels its build's Git commit in the lobby and active-table masthead; local
 Git HEAD does not represent uncommitted work. The main-branch container
