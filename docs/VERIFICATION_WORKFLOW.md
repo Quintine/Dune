@@ -115,6 +115,7 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-choam-nexus --profi
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ecaz-nexus --profile ecaz-nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ix-nexus --profile ix-nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined-nexus --profile combined-nexus
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-combined-homeworld-nexus --profile combined-homeworld-nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-nexus-three --profile nexus --players 3 --rules advanced
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-resume --resume /private/failed-combined-advanced.json
 ```
@@ -124,8 +125,8 @@ Ecaz/Moritani and combined Basic/Advanced samples. `--profile base` selects ten
 additional samples: Basic and Advanced with two through six players.
 `--players 2..6` narrows the base, Homeworld, Nexus, combined
 `homeworld-nexus`, expansion-roster or paired-Nexus profiles. The
-`combined-nexus` profile supports `--players 5` or `6` only. Omission or `all`
-retains every roster in a selected profile. The fixed
+`combined-nexus` and `combined-homeworld-nexus` profiles support `--players 5`
+or `6` only. Omission or `all` retains every roster in a selected profile. The fixed
 base roster adds Atreides, Harkonnen, Fremen, Emperor, Guild and Bene Gesserit
 in that order. These are sample rosters, not the only rules-permitted
 player-count configurations. Each optional module profile runs two through
@@ -140,8 +141,12 @@ rosters with Nexus Cards enabled at seed offsets 98–107, 108–117 and 118–1
 `combined-nexus` selects five or six actual expansion factions and all three
 expansion decks with Nexus Cards in Basic and Advanced. Five seats leave Richese
 absent so a player can remain unallied and draw; six seats contain every expansion
-faction. Their seed offsets are 130–131 and 128–129 respectively. The original
-six default samples are unchanged. Output names include the player count.
+faction. Their seed offsets are 130–131 and 128–129 respectively.
+`combined-homeworld-nexus` reuses the same four rosters with physical Homeworld
+custody added, at offsets 132–135. Its public arrival-priority gate can reject a
+route where Ecaz Ambassadors and Moritani Terror both react; the bot must choose
+another legal route. Neither profile establishes those pending source priorities.
+The original six default samples are unchanged. Output names include the player count.
 Homeworld's original four-seat seed offsets remain 36–37; its other rosters
 use 48–51 and 54–57. Nexus's six-seat offsets remain 38–39; its smaller
 rosters use 40–47. The combined module uses offsets 58–67. These samples

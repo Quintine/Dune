@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 28 September 2026 — all-expansion Homeworld/Nexus samples
+
+The offline combined audit setup can also enable genuine Homeworld custody with
+Nexus Cards and all three expansion decks; public starts remain unchanged.
+Five- and six-seat Basic/Advanced games all completed: 2,800 accepted actions,
+74 JSON/private-view restores and unchanged source fingerprints. Five-seat
+tables reached three Nexus Card draw/keep choices and six actual Homeworld
+revival-deployment decisions. Eight proposed shipments/moves into public
+Ecaz Ambassador and Moritani Terror overlaps were rejected without mutation;
+bot continuations found other legal actions. The published arrival-priority
+question remains unresolved. An intentionally capped ten-action Advanced save
+resumed to turn-five victory with 877 accepted actions and 23 more restores.
+The source-bound matrix and replay reports are in
+`/tmp/dune-combined-homeworld-nexus-matrix/report.json` and
+`/tmp/dune-homeworld-nexus-resume-finish/report.json`. These sample wins do not
+certify individual card effects, every Homeworld entitlement or combined
+expansion publication.
+
 ## 28 September 2026 — five/six-seat all-expansion Nexus integration samples
 
 The offline-only `combined-nexus` audit setup selects all three physical

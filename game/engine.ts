@@ -6716,8 +6716,8 @@ export function initializePairedNexusGameForAudit(state: Game): Game {
   return initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
 }
 
-/** Offline-only all-expansion Nexus composition; not a public start gate. */
-export function initializeCombinedNexusGameForAudit(state: Game): Game {
+/** Offline-only all-expansion Nexus composition, optionally with Homeworlds; not a public start gate. */
+export function initializeCombinedNexusGameForAudit(state: Game, homeworlds = false): Game {
   requireRule(state.expansions.length === 3 &&
     ['ix', 'choam', 'ecaz'].every(expansion => state.expansions.includes(expansion)) &&
     [5, 6].includes(state.players.length) &&
@@ -6726,10 +6726,10 @@ export function initializeCombinedNexusGameForAudit(state: Game): Game {
       .every(faction => state.players.some(player => player.faction === faction)),
     'The combined Nexus sample requires five or six expansion factions and their three decks.');
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null &&
-    !state.homeworlds && !state.leaderSkills && !state.discoveryEnabled &&
+    !!state.homeworlds === homeworlds && !state.leaderSkills && !state.discoveryEnabled &&
     !state.ecazTreachery && !state.techTokens && !state.strongholdCards,
-    'Enable only Nexus Cards in a fresh combined expansion lobby.');
-  return initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
+    'Enable only the selected Nexus and Homeworld modules in a fresh combined expansion lobby.');
+  return initializeSetupGameForAudit(state, homeworlds, true, false, false, false, false, true);
 }
 
 /** Offline prototype entry through real Ix setup, including both expansion factions.

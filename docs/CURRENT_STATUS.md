@@ -135,6 +135,14 @@ and five Nexus Card draw/keep decisions in the five-seat games. No Nexus
 effect was played in those samples; card-specific combinations and public
 expansion/Nexus starts remain gated.
 
+Four more [all-expansion Homeworld/Nexus samples](IMPLEMENTATION_STATUS.md)
+completed five/six-seat Basic and Advanced games with 2,800 accepted
+actions, 74 JSON/private-view restores and unchanged source fingerprints.
+Five-seat tables drew/kept three Nexus Cards and used real Homeworld
+deployment decisions. Eight proposed entries were rejected by the existing
+Ecaz Ambassador/Moritani Terror overlap gate; bots found alternate actions
+and completed. Their unresolved priority and all public mode gates remain.
+
 The bounded [native Richese Nexus Cunning shipment](NEXUS_RICHESE_RULES.md#bounded-native-cunning-prototype-27-september-2026) now uses two distinct physical No-Field tokens in one priced shipment in genuine Richese/CHOAM paired Nexus games. One token immediately reveals a reserve-capped public force group; the other remains concealed. Owner-only controls, four legal AI profiles, Karama/Guild responses, signed saved receipts and concurrent in-memory SQLite settlement are connected in Basic/Advanced. A read-only local browser fixture displayed the owner selector and no rival private panel. Same-shipment nonrepeat is a documented product interpretation; faceup-component artwork, combined modules, Betrayal and full Nexus acceptance remain gated. This code is local and not in the last verified production image.
 
 The independent [Reinforcements Battle Plan prototype](REINFORCEMENTS_RUNTIME.md)
