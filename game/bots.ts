@@ -1676,7 +1676,10 @@ function policyActions(g: GameView): Action[] {
       const candidates = (me.hand ?? [])
         .filter((card) => d.cards.includes(card.id))
         .sort((a, b) => technologyCardValue(g, b) - technologyCardValue(g, a));
-      return [{ type: 'decision', keep: candidates[0]?.id ?? null }];
+      return [d.source === 'nexus'
+        ? { type: 'decision', event: d.event,
+            keep: g.nexusMoritaniRetention?.canKeep ? candidates[0]?.id ?? null : null }
+        : { type: 'decision', keep: candidates[0]?.id ?? null }];
     }
     if (d.kind === 'moritaniTerror') {
       const entry = g.terrorEntry;

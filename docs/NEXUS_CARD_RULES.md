@@ -86,16 +86,19 @@ No user question was sent during this audit. No tournament rule, fan effect, pub
 
 ## Moritani Secret Ally retention timing
 
-14 September follow-up. The recorded physical card permits retaining one
-otherwise retainable played Treachery Card after losing a battle with a winner;
-mandatory discards stay excluded. The existing Moritani alliance retention
-quote, card selection and saved discard continuation can supply the physical
-operation, but do not supply a private opportunity to use a hidden Nexus card.
+27 September follow-up. The printed card permits retaining one otherwise
+retainable played Treachery Card after losing a battle with a winner; mandatory
+discards stay excluded. The connected prototype opens the same after-loss choice
+for every loser in a Nexus game without Moritani **when a publicly revealed
+played card is eligible**. With no eligible card the opportunity is impossible
+from public information, so no prompt appears regardless of concealed custody.
 
-Automatically continuing a loser without the card while pausing a holder
-reveals custody through the table's progress. Calling both paths the same
-cleanup boundary does not hide that difference. Committing before the result
-moves the printed after-loss choice earlier. A universal loser confirmation
-requires the same pending product exception as other hidden optional reactions.
-Keep this effect unavailable until that shared response policy is resolved;
-no new outcome ruling or duplicate user question is introduced by this audit.
+An unallied holder can then spend the physical Moritani Nexus card to retain
+one such played card; nonholders continue without retaining one. The loser’s
+other played cards use the existing saved battle-discard continuation. This
+uniform prompt is a privacy-preserving product interpretation, not printed
+timing text. A holder-only pause would expose card custody; an earlier
+precommitment would remove the printed after-loss choice. The sources do not
+establish a generic Karama response to this borrowed Secret Ally effect, so
+none is invented. The native Moritani alliance retention response remains a
+separate power.

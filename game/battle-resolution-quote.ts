@@ -120,6 +120,8 @@ export type BattleResolutionInput = {
   physicalCards: readonly { id: string }[];
   pendingAuditorPresent: boolean;
   pendingRetentionPresent: boolean;
+  /** Open the same loser window regardless of private Moritani Nexus custody. */
+  nexusMoritani?: boolean;
 };
 export type BattleSupportPayment = {
   player: string;
@@ -755,7 +757,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   const mandatorySkillDiscard = (side: ResolutionCombatant, selected: string) =>
     mandatoryPlanetologistDiscard(side, selected) || side.diplomatDefense?.card === selected || isHarassWithdraw(card(side, selected));
   const moritani = input.participants.find((p) => p.faction === 'moritani');
-  if (winner && moritani) {
+  if (winner && (moritani || input.nexusMoritani)) {
     const loser = winner === a ? d : a,
       loserPlayed = loser === a ? played.attacker : played.defender;
     const retainablePlayed = loserPlayed.filter(
@@ -770,6 +772,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         ),
     );
     if (
+      moritani &&
       loser.id !== moritani.id &&
       loser.ally === moritani.id &&
       moritani.ally === loser.id &&
@@ -786,6 +789,21 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         turn: input.turn,
         played: [...retainablePlayed],
         eligible,
+        stage: 'choose',
+      };
+    } else if (!moritani && input.nexusMoritani && eligible.length) {
+      requireQuote(
+        !input.pendingRetentionPresent,
+        'Finish the previous battle card cleanup first.',
+      );
+      retention = {
+        owner: loser.id,
+        player: loser.id,
+        territory: input.territory,
+        turn: input.turn,
+        played: [...retainablePlayed],
+        eligible,
+        source: 'nexus',
         stage: 'choose',
       };
     }

@@ -73,3 +73,18 @@ cover actual placement custody, spent Nexus, rejected/stale actions, JSON view
 continuation and hidden-face projection parity. Other Betrayal effects with
 secret reaction timing, the unresolved Grumman removal, complete Nexus effects
 and public module starts remain gated.
+
+## Secret Ally losing-card retention prototype
+
+The separate absent-Moritani panel now uses the native battle card's
+retainability predicate but not Moritani's allied Karama response. A battle
+winner and at least one publicly eligible played losing card trigger a uniform
+loser choice in a Nexus game; no hidden-card-dependent pause is opened. The
+unallied holder alone may spend the physical Moritani Nexus card to keep one
+otherwise retainable card. Mandatory-discard cards leave normally, and the
+other played cards use the saved public battle-discard continuation. The
+receipt binds the resolved battle, event, loser and eligible physical IDs
+through winner cleanup and JSON restore. Bots use the loser's private quote;
+the table displays the same opportunity to nonholders. The source and
+privacy timing interpretation is recorded in [the common audit](NEXUS_CARD_RULES.md#moritani-secret-ally-retention-timing).
+This is a bounded prototype, not a complete Moritani/Nexus certification.

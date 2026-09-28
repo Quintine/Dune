@@ -34,6 +34,7 @@ import { quoteJacurutuBattleIncome } from './discovery-battle';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { quoteNexusChoamInspection, sampleNexusChoamInspection, nexusChoamInspectionSignature, type NexusChoamInspectionReceipt } from './nexus-choam-inspection';
+import { quoteNexusMoritaniRetention, nexusMoritaniRetentionSignature, type NexusMoritaniRetentionReceipt } from './nexus-moritani-retention';
 import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
@@ -886,6 +887,8 @@ export type Decision =
       player: string;
       territory: string;
       cards: string[];
+      source?: 'nexus';
+      event?: string;
     }
   | { kind: 'battleCards'; player: string; territory: string; cards: string[] };
 export type ResponseWindow = {
@@ -1681,6 +1684,7 @@ export type Game = {
     nexusSardaukarCasualties?: string;
     moritaniAssassinate?: {event:string;signature:string;continuation?:string};
     nexusChoamInspection?: NexusChoamInspectionReceipt;
+    nexusMoritaniRetention?: NexusMoritaniRetentionReceipt;
   } | null;
   auction: Auction | null;
   battle: Battle | null;
@@ -1839,6 +1843,71 @@ function nexusChoamInspectionIntegrity(g: Game) {
       g.nexusChoamInsight.card.id === receipt.inspected,
     'The private CHOAM Nexus inspection lost its sampled card.');
 }
+function nexusMoritaniDecision(
+  decision: Game['decision'] | undefined,
+): Extract<Decision, { kind: 'moritaniRetention' }> | null {
+  return decision?.kind === 'moritaniRetention' && decision.source === 'nexus'
+    ? decision : null;
+}
+function nexusMoritaniRetentionIntegrity(g: Game) {
+  const context = g.lastBattleContext;
+  const receipt = context?.nexusMoritaniRetention;
+  const pending = g.moritaniRetention?.source === 'nexus' ? g.moritaniRetention : null;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const active = nexusMoritaniDecision(g.decision);
+  const exchange = nexusMoritaniDecision(g.pendingExchange?.decision);
+  const nullentropy = nexusMoritaniDecision(g.pendingNullentropy?.resume.decision);
+  const gift = nexusMoritaniDecision(g.pendingRicheseGift?.resume.decision);
+  const purchase = nexusMoritaniDecision(g.pendingRichesePurchaseIncome?.resume.decision);
+  const worm = nexusMoritaniDecision(g.summonedWorm?.resume.decision);
+  const discard = nexusMoritaniDecision(
+    continuation && 'resume' in continuation ? continuation.resume.decision : null,
+  );
+  const count = Number(!!active) + Number(!!exchange) + Number(!!nullentropy) +
+    Number(!!gift) + Number(!!purchase) + Number(!!worm) + Number(!!discard);
+  const decision = active ?? exchange ?? nullentropy ?? gift ?? purchase ?? worm ?? discard;
+  if (!receipt) {
+    requireRule(!pending && count === 0, 'The Moritani Nexus cleanup lost its battle.');
+    return;
+  }
+  requireRule(
+    !!g.nexusCards?.cards && !!context?.winner && context.result !== 'legacy' &&
+      !byFaction(g, 'moritani') && context.event === receipt.event &&
+      context.combatants.includes(receipt.player) &&
+      context.winner !== receipt.player &&
+      Array.isArray(receipt.played) && Array.isArray(receipt.eligible) &&
+      new Set(receipt.played).size === receipt.played.length &&
+      new Set(receipt.eligible).size === receipt.eligible.length &&
+      receipt.played.every(id => typeof id === 'string' && !!id) &&
+      receipt.eligible.every(id => receipt.played.includes(id)) &&
+      ['pending', 'offer', 'complete'].includes(receipt.stage) &&
+      receipt.signature === nexusMoritaniRetentionSignature(receipt),
+    'The Moritani Nexus retention lost its physical losing battle.',
+  );
+  if (receipt.stage === 'complete') {
+    requireRule(!pending && count === 0 &&
+      (receipt.kept === null || receipt.eligible.includes(receipt.kept!)),
+    'The Moritani Nexus retention reopened after cleanup.');
+    return;
+  }
+  requireRule(
+    g.phase === 6 && !g.battle && !!pending &&
+      pending.stage === 'choose' && pending.event === receipt.event &&
+      pending.owner === receipt.player && pending.player === receipt.player &&
+      pending.turn === context.turn && pending.territory === context.territory &&
+      JSON.stringify(pending.played) === JSON.stringify(receipt.played) &&
+      JSON.stringify(pending.eligible) === JSON.stringify(receipt.eligible) &&
+      pending.played.every(id => getPlayer(g, pending.player).hand.some(card => card.id === id)),
+    'The Moritani Nexus retention lost its reserved battle cards.',
+  );
+  if (receipt.stage === 'offer')
+    requireRule(count === 1 && decision?.player === receipt.player &&
+      decision.event === receipt.event &&
+      JSON.stringify(decision.cards) === JSON.stringify(receipt.eligible),
+    'The Moritani Nexus offer lost its original loser.');
+  else requireRule(count === 0, 'Finish earlier battle cleanup before Moritani Nexus retention.');
+}
+
 function retireNexusChoamInsight(g: Game) {
   g.nexusChoamInsight = null;
   if (g.lastBattleContext?.nexusChoamInspection?.stage === 'complete')
@@ -5025,10 +5094,16 @@ function treacheryDiscardIntegrity(g: Game) {
             r.turn === g.turn &&
             r.territory === c.territory &&
             r.player === c.player &&
-            owner?.faction === 'moritani' &&
-            owner.ally === c.player &&
-            loser?.ally === owner.id &&
-            ['choose', 'response'].includes(r.stage) &&
+            (r.source === 'nexus'
+              ? r.owner === c.player && r.event === context.event &&
+                !byFaction(g, 'moritani') &&
+                context.nexusMoritaniRetention?.stage === 'complete' &&
+                context.nexusMoritaniRetention.kept === (c.kept[0] ?? null) &&
+                !!g.nexusCards?.cards &&
+                (!c.kept.length || g.nexusCards.cards.discard.includes('moritani'))
+              : owner?.faction === 'moritani' &&
+                owner.ally === c.player && loser?.ally === owner.id &&
+                ['choose', 'response'].includes(r.stage)) &&
             JSON.stringify(r.played) === JSON.stringify(c.played) &&
             Array.isArray(r.eligible) &&
             new Set(r.eligible).size === r.eligible.length &&
@@ -16391,6 +16466,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       physicalCards: physicalTreacheryCards(g),
       pendingAuditorPresent: !!g.pendingAuditor,
       pendingRetentionPresent: !!g.moritaniRetention,
+      nexusMoritani: !!g.nexusCards?.cards && !byFaction(g, 'moritani'),
     });
     for (const withdrawal of quote.harassWithdraw ?? [])
       validateReserveReturnCounters(getPlayer(g, withdrawal.player), withdrawal.returned);
@@ -16835,6 +16911,21 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
         }
       : null;
   if (inspection) inspection.signature = nexusChoamInspectionSignature(inspection);
+  const nexusRetention: NexusMoritaniRetentionReceipt | null =
+    quote.retention?.source === 'nexus'
+      ? {
+          event: battleEvent,
+          player: quote.retention.player,
+          played: [...quote.retention.played],
+          eligible: [...quote.retention.eligible],
+          stage: 'pending',
+          signature: '',
+        }
+      : null;
+  if (nexusRetention) {
+    nexusRetention.signature = nexusMoritaniRetentionSignature(nexusRetention);
+    g.moritaniRetention!.event = battleEvent;
+  }
   g.lastBattleContext = {
     event: battleEvent,
     turn: g.turn,
@@ -16845,6 +16936,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     ...(playedCardRoles ? { cardRoles: playedCardRoles } : {}),
     ...(sardaukar?.casualties ? {nexusSardaukarCasualties:sardaukar.receipt.event} : {}),
     ...(inspection ? { nexusChoamInspection: inspection } : {}),
+    ...(nexusRetention ? { nexusMoritaniRetention: nexusRetention } : {}),
   };
   recordMoritaniAssassinateOpportunity(g, b, winner, losingPlayer);
   if (quote.smuggler) {
@@ -17579,6 +17671,14 @@ function finishBattle(g: Game) {
     };
     return;
   }
+  if (next.kind === 'moritaniRetention' && next.source === 'nexus') {
+    const receipt = g.lastBattleContext?.nexusMoritaniRetention;
+    requireRule(!!receipt && receipt.event === next.event &&
+      ['pending', 'offer'].includes(receipt.stage),
+    'The Moritani Nexus loser window lost its battle.');
+    receipt.stage = 'offer';
+    receipt.signature = nexusMoritaniRetentionSignature(receipt);
+  }
   if (next.kind === 'choamBattleIncome') {
     g.response = { ...next, passed: [] };
   } else if (next.kind === 'choamAudit') {
@@ -17805,7 +17905,7 @@ function finishMoritaniRetention(g: Game, keep: string | null) {
     validateMoritaniCancellation(g, pending.owner);
   requireRule(
     pending && pending.turn === g.turn && g.phase === 6,
-    'This alliance card cleanup is no longer current.',
+    'This battle card cleanup is no longer current.',
   );
   const player = getPlayer(g, pending.player);
   requireRule(
@@ -17816,6 +17916,26 @@ function finishMoritaniRetention(g: Game, keep: string | null) {
     pending.played.every((id) => player.hand.some((c) => c.id === id)),
     'Cards committed to alliance cleanup must remain available.',
   );
+  if (pending.source === 'nexus') {
+    const receipt = g.lastBattleContext?.nexusMoritaniRetention;
+    requireRule(receipt?.stage === 'offer' && receipt.event === pending.event &&
+      receipt.player === player.id && pending.stage === 'choose',
+    'Finish the original losing battle before using Moritani Nexus.');
+    if (keep !== null) {
+      const offer = quoteNexusMoritaniRetention(g, player.id, {
+        kind: 'moritaniRetention', owner: pending.owner, player: player.id,
+        territory: pending.territory, cards: pending.eligible,
+        source: 'nexus', event: pending.event,
+      });
+      requireRule(offer?.canKeep,
+        'Moritani Secret Ally needs its unallied holder and a retainable played card.');
+      g.nexusCards!.cards = nexusRule(() =>
+        discardNexusCard(g.nexusCards!.cards!, player.id, g.players));
+    }
+    receipt.kept = keep;
+    receipt.stage = 'complete';
+    receipt.signature = nexusMoritaniRetentionSignature(receipt);
+  }
   const discarded = pending.played
     .filter((id) => id !== keep)
     .map((id) => ({
@@ -17826,8 +17946,8 @@ function finishMoritaniRetention(g: Game, keep: string | null) {
   log(
     g,
     keep
-      ? `${player.name} retained ${cardOf(player, keep)!.name} through the Moritani alliance.`
-      : `${player.name} retained no battle card through the Moritani alliance.`,
+      ? `${player.name} retained ${cardOf(player, keep)!.name} through ${pending.source === 'nexus' ? 'Moritani Nexus Secret Ally' : 'the Moritani alliance'}.`
+      : `${player.name} retained no battle card through ${pending.source === 'nexus' ? 'the postbattle Nexus choice' : 'the Moritani alliance'}.`,
   );
   g.moritaniRetention = null;
   const context = discarded.length
@@ -21513,6 +21633,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
   nexusChoamInspectionIntegrity(state);
+  nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -21673,6 +21794,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
   nexusChoamInspectionIntegrity(g);
+  nexusMoritaniRetentionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -21787,6 +21909,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
   nexusChoamInspectionIntegrity(state);
+  nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -21819,6 +21942,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   greatMakerIntegrity(g);
   nexusChoamTradeIntegrity(g);
   nexusChoamInspectionIntegrity(g);
+  nexusMoritaniRetentionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -22348,6 +22472,17 @@ function applyActionInner(
             p.hand.some((c) => c.id === action.keep)),
         'Keep one eligible played card, or explicitly keep none.',
       );
+      requireRule(decision.source === pending.source,
+        'The battle-card retention source changed.');
+      if (pending.source === 'nexus') {
+        const offer = quoteNexusMoritaniRetention(g, id, decision);
+        requireRule(offer?.event === action.event &&
+          Object.keys(action).every(key => ['type', 'event', 'keep'].includes(key)) &&
+          (action.keep === null || offer?.canKeep === true),
+        'Choose whether to spend Moritani Nexus after this loss.');
+        finishMoritaniRetention(g, action.keep as string | null);
+        return g;
+      }
       if (action.keep === null) finishMoritaniRetention(g, null);
       else {
         pending.keep = action.keep as string;
@@ -25577,6 +25712,7 @@ export function viewGame(state: Game, id: string) {
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
   nexusChoamInspectionIntegrity(state);
+  nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
@@ -26130,6 +26266,7 @@ export function viewGame(state: Game, id: string) {
     },
     moritaniAssassinate: projectedMoritaniAssassinate(g,id),
     moritaniRetention: g.moritaniRetention ?? null,
+    nexusMoritaniRetention: quoteNexusMoritaniRetention(g, id),
     moritaniRetentionCard: g.moritaniRetention?.keep
       ? (cardOf(
           getPlayer(g, g.moritaniRetention.player),

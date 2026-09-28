@@ -92,6 +92,8 @@ export type AftermathNext =
       player: string;
       territory: string;
       cards: string[];
+      source?: 'nexus';
+      event?: string;
     }
   | { kind: 'choamBattleIncome'; owner: string; amount: number }
   | { kind: 'techToken'; player: string; loser: string; choices: TechId[] }
@@ -264,27 +266,32 @@ function calculate(input: BattleAftermathInput): BattleAftermathQuote {
     );
   }
   function retention(value: unknown): MoritaniRetention {
+    const nexus = record(value) && value.source === 'nexus';
     requireAftermath(
       record(value) &&
         value.stage === 'choose' &&
         whole(value.turn) &&
         value.turn === input.turn &&
         ids(value.played) &&
-        value.played.length > 0 &&
+        (nexus || value.played.length > 0) &&
         ids(value.eligible) &&
-        value.eligible.length > 0 &&
+        (nexus || value.eligible.length > 0) &&
         value.eligible.every((card) =>
           (value.played as string[]).includes(card),
         ),
-      'Resolve the alliance retention response first; its saved cleanup must be current.',
+      'Resolve the battle card retention response first; its saved cleanup must be current.',
     );
     const owner = player(value.owner),
       loser = player(value.player);
     requireAftermath(
-      owner.faction === 'moritani' &&
-        owner.id !== loser.id &&
-        Array.isArray(loser.hand),
-      'This alliance cleanup needs its Moritani owner and defeated ally.',
+      Array.isArray(loser.hand) &&
+        (nexus
+          ? owner.id === loser.id &&
+            context.kind === 'modern' &&
+            value.event === context.receipt.event &&
+            !input.players.some((p) => p.faction === 'moritani')
+          : owner.faction === 'moritani' && owner.id !== loser.id),
+      'This card cleanup needs its original loser and source.',
     );
     const to = territory(value.territory);
     winner(other(loser.id));
@@ -297,6 +304,7 @@ function calculate(input: BattleAftermathInput): BattleAftermathQuote {
       played: [...value.played],
       eligible: [...value.eligible],
       stage: 'choose',
+      ...(nexus ? { source: 'nexus' as const, event: value.event as string } : {}),
     };
   }
   function income(value: unknown) {
@@ -511,6 +519,7 @@ function calculate(input: BattleAftermathInput): BattleAftermathQuote {
       player: p.player,
       territory: p.territory,
       cards: [...p.eligible],
+      ...(p.source === 'nexus' ? { source: 'nexus', event: p.event } : {}),
     });
   }
   if (present(pending.income))

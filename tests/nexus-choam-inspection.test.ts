@@ -67,6 +67,11 @@ function battle(holdCard: boolean, ids: [string, string, string] = ['p', 'q', 'r
       game = applyAction(game, game.decision.player, { type: 'decision', discard: [] });
     } else if (game.decision?.kind === 'battleLosses') {
       game = applyAction(game, game.decision.player, { type: 'decision', choice: 0 });
+    } else if (game.decision?.kind === 'moritaniRetention' &&
+        game.decision.source === 'nexus') {
+      game = applyAction(game, game.decision.player, {
+        type: 'decision', event: game.decision.event, keep: null,
+      });
     } else if (game.decision?.kind === 'captureOffer') {
       game = applyAction(game, game.decision.player, { type: 'decision', accept: false });
     } else break;

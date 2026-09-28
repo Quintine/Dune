@@ -2304,7 +2304,7 @@ export function GameTable({
                                 : g.decision.kind === 'moritaniAssassinate'
                                   ? 'Moritani · Assassinate Leaders'
                                   : g.decision.kind === 'moritaniRetention'
-                                  ? 'Moritani · allied card retention'
+                                  ? g.decision.source === 'nexus' ? 'Moritani Nexus · after-loss choice' : 'Moritani · allied card retention'
                                   : g.decision.kind === 'moritaniTerror'
                                     ? 'Moritani · Terror entry reaction'
                                     : g.decision.kind === 'moritaniSetup'

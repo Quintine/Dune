@@ -23,6 +23,9 @@ export type MoritaniRetention = {
   eligible: string[];
   stage: 'choose' | 'response';
   keep?: string;
+  /** A uniform, hidden-card-independent losing window when Moritani is absent. */
+  source?: 'nexus';
+  event?: string;
 };
 
 export function retentionReservesCard(
