@@ -473,3 +473,37 @@ export const adminAudit = sqliteTable(
   },
   (table) => [index('admin_audit_created_at').on(table.createdAt)],
 );
+
+// Immutable private room snapshots survive room/account deletion; only owner APIs expose them.
+export const adminRoomBackups = sqliteTable(
+  'admin_room_backups',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    requestHash: text('request_hash').notNull(),
+    roomVersion: integer('room_version').notNull(),
+    createdAt: integer('created_at').notNull(),
+    sizeBytes: integer('size_bytes').notNull(),
+    digest: text('digest').notNull(),
+    payload: text('payload').notNull(),
+    reason: text('reason').notNull(),
+  },
+  (table) => [
+    index('admin_room_backups_room').on(table.roomCode, table.createdAt),
+    check('admin_room_backups_size', sql`${table.sizeBytes} BETWEEN 1 AND 1800000 AND ${table.sizeBytes} = length(CAST(${table.payload} AS BLOB))`),
+  ],
+);
+
+// Each private export is independently recorded only on successful authorized download.
+export const adminRoomBackupDownloads = sqliteTable(
+  'admin_room_backup_downloads',
+  {
+    downloadId: text('download_id').primaryKey(),
+    operationId: text('operation_id').notNull(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    roomCode: text('room_code').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [index('admin_room_backup_downloads_room').on(table.roomCode, table.createdAt)],
+);

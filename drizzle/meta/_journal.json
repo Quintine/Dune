@@ -120,6 +120,20 @@
       "when": 1790395696065,
       "tag": "0016_seat_discussion_controls",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1790640000000,
+      "tag": "0017_admin_room_backups",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "6",
+      "when": 1790640001000,
+      "tag": "0018_admin_backup_downloads",
+      "breakpoints": true
     }
   ]
 }

@@ -32,6 +32,13 @@ enter TrueNAS Apps because the host desktop was OS-locked; it made no NAS change
 backup or post-rollout claim. Production remains at the last verified `c9a3625`
 image until the Apps session is unlocked and this exact image is deployed.
 
+An owner-only [room-backup prototype](ADMIN_BACKUPS.md) now captures, lists and
+downloads immutable private snapshots with live authorization, unchanged room
+versions and append-only capture/export receipts. The per-room size/storage
+limits, missing import/restore and absent unified action-history entries keep
+the saved-game operations gate open. Local isolated capture/export and a
+signed-out browser denial passed; this is not deployed evidence.
+
 The bounded [Fremen Nexus Cunning](NEXUS_FREMEN_RULES.md#connected-native-cunning-path)
 prototype connects an initially empty worm's public offer, one spent private
 card, a Karama response, a typed remote ride after the Nexus, human controls

@@ -1,5 +1,43 @@
 # Dune implementation status
 
+## 28 September 2026 — owner-only room backup capture
+
+The new `/admin/backups` page lets an authenticated owner capture, list and
+download an immutable private room snapshot. It includes the saved game and
+related seat/recovery, lifecycle and discussion records without changing room
+version or granting access. Exact operation replays, live database authorization,
+content/version fencing and byte quotas protect competing writes and storage.
+An append-only owner/room/time receipt records each successful private export
+before its payload is returned. These are capture-only files: there is no import,
+validated restore, server health display or unified action-history entry yet.
+
+Twelve isolated in-memory D1 backup cases pass, including exact replay, revoked
+access, unversioned concurrent changes, highly escaped state rejection, the
+32,768-record download-audit capacity boundary and duplicate snapshots. A throwaway genuine game created in an isolated store was
+captured, listed and downloaded once; its room version remained zero and its
+export receipt count was one. The signed-out local browser showed the owner
+gate. A separate intercepted local UI view showed an older snapshot available
+to download after its live room had disappeared; that view used mocked API
+responses, not a real room restoration. The HTTP suite passed 53/53, including
+a new anonymous, forged-admin and real room-host backup denial case; the build
+included both new backup routes and the page. The stable full offline run
+passed 5,662/5,662 cases with zero failures.
+`npm run check` remains blocked by the unrelated concurrent Fremen Nexus draft's
+missing `Player.fremenNexusMovementBlockedTurn` type field. The 1,800,000-byte
+per-snapshot cap, 16 MiB per-room and 64 MiB global quotas, bounded export
+ledger without archival, absent chunked backups, and unavailable live NAS Apps
+session keep saved-game and deployed acceptance open. No production game or credential was modified.
+
+## 28 September 2026 — rules-reference duplicate links
+
+The Ecaz faction topic no longer repeats its Duke Vidal related link, and the
+Homeworld implementation checklist lists each Tupile intelligence and Terror
+entry receipt source once. The local `/rules?topic=faction-ecaz#faction-ecaz`
+page rendered its opened Ecaz guide and one Duke link after the change; its
+fresh browser console had no React duplicate-key errors. Before the change,
+the same page reported duplicate keys for all three entries. This is a
+reference-display correction, not new game-rule acceptance.
+
 ## 28 September 2026 — source-stable complete-game integration samples
 
 `tools/faction-games.ts` completed five genuine Basic Tleilaxu/Leader Skills

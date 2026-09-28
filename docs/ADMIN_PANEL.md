@@ -14,7 +14,7 @@ recovery and persistence systems where suitable.
 | Create and configure | [Create a lobby](ADMIN_ROOM_CREATION.md) with an explicitly owned new host seat, Basic/Advanced preview and initial AI configuration; invite humans and use ordinary lobby controls/voluntary host-seat handover. [Neutral lobby configuration](ADMIN_LOBBY_CONFIGURATION.md) adds rules/modules, AI seats and host assignment to an existing human without private access. Reserved human seats remain. | Prototyped, partial |
 | Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. [Archive/unarchive](ADMIN_ROOM_ARCHIVE.md) has separate directory filters and exact retries. Permanent deletion and bulk actions remain missing. | Prototyped, partial |
 | Participant support | [Participant AI](ADMIN_PARTICIPANT_AI.md) enables an existing difficulty on an eligible human seat in a paused game, retaining access/takeback and private custody. [Discussion controls](ADMIN_DISCUSSION.md) mute/unmute new sends while retaining history and gameplay. Participant removal, access revocation, assisted recovery and further replacement remain. Existing lobby controls can reassign the host. | Prototyped, partial |
-| Saved-game operations | Create/list/download backups, validate imports, restore a selected checkpoint safely, and diagnose or resume interrupted automatic work through authoritative game actions. | Missing |
+| Saved-game operations | [Owner-only room backups](ADMIN_BACKUPS.md) capture/list/download a size-limited, version-fenced room snapshot without changing play or access; import validation, safe checkpoint restore and interrupted-work diagnosis/resume remain missing. | Prototyped, partial |
 | Operations and audit | Show server/build/storage health, room/player counts and actionable errors; provide maintenance controls and a searchable record of administrator actions. | Missing |
 
 Track each area through Missing, Prototyped, Integrated, Verified and Polished.
@@ -58,6 +58,11 @@ human in a paused, started game. The player retains access and takeback controls
 the administrator receives no private seat. Resume remains a separate action.
 [Discussion controls](ADMIN_DISCUSSION.md) restrict new messages from a human seat,
 including after recovery/handover, without exposing private history.
+
+[Private room backups](ADMIN_BACKUPS.md) let an owner capture the current saved
+state and related room-owned records without pausing or editing the room. The
+metadata directory omits private contents; downloaded JSON contains secret
+game state and hashed seat/recovery credentials. Import/restore are not available.
 
 The directory uses an explicit field allowlist, independent of any player view.
 It never returns hands, Traitors, predictions, plans, private messages, recovery
