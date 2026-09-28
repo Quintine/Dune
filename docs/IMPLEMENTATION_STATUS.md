@@ -25,8 +25,16 @@ The paired-module reports are
 is `/tmp/dune-all-expansion-complete-20260929/report.json`.
 The runner checks physical cards, force counts and typed elites after each
 action; its generic expansion samples do not independently census exceptional
-Traitor zones. Across all six reports, 47 games finished with 21,504 accepted
-actions and 559 restores.
+Traitor zones.
+
+Fifteen additional Basic Leader Skills games with native Moritani, Ixians
+or CHOAM finished across two through six seats: 7,829 accepted actions,
+206 JSON/private-view restorations, no rejected bot candidates and unchanged
+source fingerprints. The reports are
+`/tmp/dune-moritani-skills-matrix-20260929/report.json`,
+`/tmp/dune-ix-skills-matrix-20260929/report.json` and
+`/tmp/dune-choam-skills-matrix-20260929/report.json`. Across all nine reports,
+62 games finished with 29,333 accepted actions and 765 restores.
 
 These samples establish legal sampled continuation to a winner, not natural
 exercise of every rare card or payment effect. They do not certify complete
