@@ -67,6 +67,9 @@ access revocation, participant removal, assisted recovery, permanent deletion,
 bulk actions and backup/operations tools remain unfinished.
 
 [Participant AI](ADMIN_PARTICIPANT_AI.md) checkpoint `2cddf03` is pushed. Types/lint,
+
+The bounded [native Richese Nexus Cunning shipment](NEXUS_RICHESE_RULES.md#bounded-native-cunning-prototype-27-september-2026) now uses two distinct physical No-Field tokens in one priced shipment in genuine Richese/CHOAM paired Nexus games. One token immediately reveals a reserve-capped public force group; the other remains concealed. Owner-only controls, four legal AI profiles, Karama/Guild responses, signed saved receipts and concurrent in-memory SQLite settlement are connected in Basic/Advanced. A read-only local browser fixture displayed the owner selector and no rival private panel. Same-shipment nonrepeat is a documented product interpretation; faceup-component artwork, combined modules, Betrayal and full Nexus acceptance remain gated. This code is local and not in the last verified production image.
+
 5,408 offline tests, 52 HTTP tests, build, twenty-two administrator HTTP groups
 and desktop/mobile browser acceptance passed. Deployment delivery was
 unconfirmed at that checkpoint; the current production revision is recorded

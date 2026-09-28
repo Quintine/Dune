@@ -3140,6 +3140,19 @@ function policyActions(g: GameView): Action[] {
           Math.abs(a.value - preferred) - Math.abs(b.value - preferred) ||
           b.value - a.value,
       )[0];
+      const cunning = g.nexusRicheseCunning;
+      if (cunning && !cunning.blocked && tokens.length >= 2) {
+        const revealed = tokens.reduce((best, token) => token.value > best.value ? token : best);
+        const concealed = tokens.find(token => token.id !== revealed.id)!;
+        const target = markerTargets.slice(0, 24).find(to =>
+          reserveShipmentCost({ faction: me.faction, halfRate: false },
+            territory(to.t).type, 1) <= (me.spice ?? 0));
+        if (target) return [{
+          type: 'ship', noField: concealed.id, revealedToken: revealed.id,
+          nexus: cunning.event, event: noField.event,
+          territory: target.t, sector: target.s, allyPayment: 0,
+        }];
+      }
       if (selected)
         for (const to of markerTargets.slice(0, 24)) {
           if (Math.min(selected.value, me.reserves) === 0 && to.enemy > 0)

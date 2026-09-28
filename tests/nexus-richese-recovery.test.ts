@@ -18,15 +18,16 @@ import {
 const clock: RoomsClock = { now: () => 10000, sleep: async () => {} };
 async function fixture(options: NexusRicheseFixtureOptions = {}) {
   const store = unitStore();
+  const richese = options.ownerFaction === 'richese';
   const made = await store.rooms.createRoom(
     'Richese SQL',
     options.ownerFaction ?? 'atreides',
     options.advanced ?? true,
-    [],
+    richese ? ['choam'] : [],
   );
   const code = made.view.code,
     tokens = [made.token];
-  for (const faction of ['guild', 'fremen'] as const)
+  for (const faction of ['guild', richese ? 'choam' : 'fremen'] as const)
     tokens.push((await store.rooms.joinRoom(code, faction, faction)).token!);
   const auths = await Promise.all(
     tokens.map((token) => store.rooms.authenticate(code, token)),
@@ -145,6 +146,50 @@ void test('SQLite competing Richese declarations spend one Nexus and restore one
         .get(unrelated.view.code),
       otherBefore,
     );
+  } finally {
+    f.sqlite.close();
+  }
+});
+
+void test('SQLite competing native Cunning pairs settle one concealed marker and one immediate faceup group after reload', async () => {
+  const f = await fixture({ ownerFaction: 'richese', opponentFaction: 'guild', spice: 20 });
+  try {
+    const tokens = f.g.players[0].noField!.tokens;
+    const three = tokens.find(token => token.value === 3)!.id;
+    const five = tokens.find(token => token.value === 5)!.id;
+    const event = viewGame(f.g, f.owner).nexusRicheseCunning!.event;
+    const request = (concealed: string, revealed: string): Action => ({
+      type: 'ship', territory: 'arrakeen', sector: 10,
+      noField: concealed, revealedToken: revealed, event: f.g.players[0].noFieldEvent,
+      nexus: event, allyPayment: 0,
+    });
+    await compete(f, f.g.version, [request(three, five), request(five, three)]);
+    let pending = await f.restart().readRoom(f.code);
+    assert.equal(pending.nexusRicheseCunningLast?.stage, 'pending');
+    assert.equal(pending.nexusCards!.cards!.discard.filter(card => card === 'richese').length, 1);
+    await restored(f, pending);
+    while (pending.response) {
+      const seat = f.ids.findIndex(id => !pending.response!.passed.includes(id));
+      pending = await act(f, seat, { type: 'passResponse' });
+    }
+    assert.equal(pending.decision?.kind, 'guildShipment');
+    const revealedId = pending.pendingShipment!.richesePair!.revealedTokenId;
+    await restored(f, pending);
+    const done = await act(f, 1, { type: 'decision', allow: true });
+    const marker = done.players[0].noField!.deployed!;
+    const revealed = tokens.find(token => token.id === revealedId)!;
+    assert.equal(done.nexusRicheseCunningLast?.stage, 'shipped');
+    assert.equal(done.players[0].noField!.lastShipped, marker.tokenId);
+    assert.equal(done.players[0].forces['arrakeen:10'], revealed.value);
+    assert.equal(done.players[0].reserves, 20 - revealed.value);
+    assert.equal(done.players[0].spice, 19);
+    assert.equal(done.players[1].spice, 21);
+    await restored(f, done);
+    const before = row(f);
+    await assert.rejects(() => f.restart().act(
+      f.code, f.auths[0], done.version, request(marker.tokenId, revealed.id), clock,
+    ));
+    assert.deepEqual(row(f), before);
   } finally {
     f.sqlite.close();
   }

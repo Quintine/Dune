@@ -37,6 +37,7 @@ import { quoteNexusChoamInspection, sampleNexusChoamInspection, nexusChoamInspec
 import { quoteNexusMoritaniRetention, nexusMoritaniRetentionSignature, type NexusMoritaniRetentionReceipt } from './nexus-moritani-retention';
 import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
+import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
@@ -382,6 +383,8 @@ import { richeseCards, richeseCardDefinition } from './richese-cards';
 import {
   createRicheseNoField,
   deployRicheseNoField,
+  deployRicheseNoFieldPair,
+  validateRicheseNoFieldPair,
   moveRicheseNoField,
   revealRicheseNoField,
   shipAlliedRicheseNoField,
@@ -1009,6 +1012,7 @@ type PendingShipment = {
   guildSecretEvent?: string;
   guildNexusEvent?: string;
   nexusEvent?: string;
+  richesePair?: { event: string; revealedTokenId: string };
   homeworldSources?: NativeReserveSelections;
   source?: 'ambassador';
   ambassadorEvent?: string;
@@ -1516,6 +1520,8 @@ export type Game = {
   nexusGuildSecretLast?: {event:string};
   nexusRicheseHistory?: {receipt:NexusRicheseReceipt;stage:'pending'|'shipped'|'stopped';frame:string;halfRate:boolean;signature:string}[];
   nexusRicheseLast?: {event:string;stage:'pending'|'shipped'|'stopped'};
+  nexusRicheseCunningHistory?: { event: string; owner: string; turn: number; phase: 5; tokenEvent: string; frame: string; stage: 'pending' | 'shipped' | 'stopped'; signature: string }[];
+  nexusRicheseCunningLast?: { event: string; stage: 'pending' | 'shipped' | 'stopped' };
   nexusMoritaniLocations?: Record<string,{event:string;territory:string}>;
   nexusMoritaniLast?: {event:string;stage:'pending'|'complete'|'canceled'};
   nexusChoamLast?: {event: string; stage: 'pending' | 'canceled' | 'complete' | 'fizzled'};
@@ -15255,6 +15261,7 @@ function marketGholaIntegrity(g: Game) {
   nexusMoritaniIntegrity(g);
   nexusGuildSecretIntegrity(g);
   nexusRicheseIntegrity(g);
+  richesePairIntegrity(g);
   nexusGuildCunningIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
@@ -18675,6 +18682,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
           shipment.alliedNoField?.owner === response.owner),
       'No current No-Field shipment is awaiting this response.',
     );
+    if (canceled && shipment.richesePair) finishRichesePairShipment(g, shipment, 'stopped');
     g.pendingShipment = null;
     if (canceled) {
       requireRule(quote, 'Missing canceled No-Field declaration.');
@@ -18682,7 +18690,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
       else getPlayer(g, quote.player).noFieldBlockedTurn = quote.blockedTurn;
       log(
         g,
-        'Karama prevented No-Field use for this shipment opportunity. No spice, reserves or token history changed; normal shipment remains available.',
+        `Karama prevented No-Field use for this shipment opportunity. No spice, reserves or token history changed; normal shipment remains available.${shipment.richesePair ? ' The Richese Nexus card remains spent.' : ''}`,
       );
     } else offerShipment(g, shipment);
   } else if (response.kind === 'moritaniRetention') {
@@ -19847,16 +19855,20 @@ function validateLeaderSkillNoFieldShipment(g: Game, shipment: PendingShipment) 
     'The declared No-Field contributor is no longer your mutual ally.');
   contribution(g, p, cost, shipment.allyPayment);
 }
-/** Bind both private stages, also while a card effect has saved their controls. */
-function leaderSkillNoFieldIntegrity(g: Game): boolean {
+/** Find a No-Field response while another card has temporarily suspended it. */
+function savedNoFieldResponses(g: Game): ResponseWindow[] {
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
     g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
-  const responses = contexts.flatMap(context => {
+  return contexts.flatMap(context => {
     const karama = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
     return [context?.response, karama?.use.kind === 'cancel' ? karama.use.response : null];
   }).filter((response): response is ResponseWindow => !!response);
+}
+/** Bind both private stages, also while a card effect has saved their controls. */
+function leaderSkillNoFieldIntegrity(g: Game): boolean {
+  const responses = savedNoFieldResponses(g);
   const decisions = homeworldSavedDecisions(g);
   const shipment = g.pendingShipment;
   if (!(shipment?.smugglerCompanion !== undefined || shipment?.noFieldSkillProof !== undefined ||
@@ -19892,6 +19904,7 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
   }
   if (shipment.guildNexusEvent) validateGuildCunningShipment(g,shipment.player,shipment.guildNexusEvent,'reserve',shipment);
   if (shipment.nexusEvent !== undefined) currentNexusRicheseShipment(g,shipment);
+  if (shipment.richesePair) currentRichesePairShipment(g, shipment);
   requireRule(
     !(shipment.noField || shipment.alliedNoField) ||
       shipment.homeworldSources === undefined,
@@ -20050,6 +20063,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
   validateShipmentArrival(g, shipment);
   if (shipment.guildSecretEvent) recordGuildSecretShipment(g,shipment.player,shipment.guildSecretEvent,'reserve',shipment);
   finishNexusRicheseShipment(g,shipment,'shipped');
+  finishRichesePairShipment(g, shipment, 'shipped');
   if (shipment.guildNexusEvent) finishGuildCunningShipment(g,shipment.player,'reserve',shipment);
   finishShipmentPromises(
     g,
@@ -20066,6 +20080,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     advisors,
   } = shipment;
   const p = getPlayer(g, shipment.player);
+  let pairRevealed: ReturnType<typeof deployRicheseNoFieldPair>['revealed'] | null = null;
   if (shipment.noField) {
     requireRule(
       p.faction === 'richese' &&
@@ -20073,13 +20088,19 @@ function commitShipment(g: Game, shipment: PendingShipment) {
         p.noFieldEvent === shipment.noField.event,
       'This No-Field shipment is no longer current.',
     );
-    p.noField = noFieldRule(() =>
-      deployRicheseNoField(p.noField!, {
+    if (shipment.richesePair) {
+      const pair = noFieldRule(() => deployRicheseNoFieldPair(p.noField!, {
         tokenId: shipment.noField!.tokenId,
         controller: p.id,
         location: { territory: to, sector: s },
-      }),
-    );
+      }, shipment.richesePair!.revealedTokenId, p.reserves));
+      p.noField = pair.state;
+      pairRevealed = pair.revealed;
+    } else p.noField = noFieldRule(() => deployRicheseNoField(p.noField!, {
+      tokenId: shipment.noField!.tokenId,
+      controller: p.id,
+      location: { territory: to, sector: s },
+    }));
     p.noFieldEvent = crypto.randomUUID();
   }
   if (shipment.alliedNoField) {
@@ -20121,6 +20142,11 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     owner.spice -= quote.ownerPayment;
     p.spice -= quote.recipientPayment;
   } else payWithAlly(g, p, cost, allyPayment);
+  if (pairRevealed) {
+    p.reserves -= pairRevealed.forces;
+    if (pairRevealed.forces) place(p, to, s, pairRevealed.forces);
+    observeOccupation(g);
+  }
   let homeworldOrigins = '';
   if (!shipment.noField) {
     const receipts = withdrawNativeReserves(
@@ -20166,7 +20192,9 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     shipment.alliedNoField
       ? `${getPlayer(g, shipment.alliedNoField.owner).name} shipped ${p.name} with No-Field ${quoteAlliedTokenValue(g, shipment.alliedNoField)}, immediately placing ${n} physical forces (${elite} elite) in ${territory(to).name}, sector ${s}. ${shipment.alliedNoField.payer === 'both' ? 'Each ally paid 1 spice' : `${getPlayer(g, shipment.alliedNoField.payer).name} paid ${cost} spice`}.`
       : shipment.noField
-        ? `${p.name} shipped one concealed No-Field to ${territory(to).name}, sector ${s}, for ${cost} spice. ${shipment.smugglerCompanion ? 'One free Smuggler force left reserves and arrived beside the marker; the concealed token remains unchanged until reveal.' : 'It counts as one force; physical reserves remain unchanged until reveal.'}`
+        ? pairRevealed
+          ? `${p.name} shipped two No-Fields with Richese Nexus Cunning to ${territory(to).name}, sector ${s}, for ${cost} spice. The faceup ${pairRevealed.value} token placed ${pairRevealed.forces} physical forces from reserves${pairRevealed.forces < pairRevealed.value ? ' (only the available reserves)' : ''}; the other token remains concealed and counts as one force.`
+          : `${p.name} shipped one concealed No-Field to ${territory(to).name}, sector ${s}, for ${cost} spice. ${shipment.smugglerCompanion ? 'One free Smuggler force left reserves and arrived beside the marker; the concealed token remains unchanged until reveal.' : 'It counts as one force; physical reserves remain unchanged until reveal.'}`
         : `${p.name} shipped ${n} forces to ${territory(to).name}, sector ${s}.${shipment.guildSecretEvent ? ` Guild Secret Ally is spent; Guild shipping prices cost ${cost} spice paid to the bank.` : ''}${shipment.nexusEvent ? ` Richese Secret Ally priced the ${n} physical forces as one: ${cost} spice.` : ''}${homeworldOrigins ? ` Homeworld sources: ${homeworldOrigins}. Total shipment cost: ${cost} spice.` : ''}`,
     shipment.noField || shipment.alliedNoField
       ? { faction: 'richese', name: 'No-Field shipment' }
@@ -20197,7 +20225,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     p,
     to,
     s,
-    shipment.alliedNoField ? Math.max(1, n) : n + (shipment.smugglerCompanion ? 1 : 0),
+    shipment.alliedNoField ? Math.max(1, n) : n + (shipment.smugglerCompanion ? 1 : 0) + (pairRevealed?.forces ?? 0),
     elite,
     'shipment',
   );
@@ -20488,6 +20516,142 @@ function nexusRicheseOffer(g: Game, owner: string) {
     blocked = 'Finish the current interaction before declaring this shipment.';
   else if (p.reserves < 1) blocked = 'You need physical forces in reserves.';
   return {event:JSON.stringify(['nexusRichese',g.turn,owner]),blocked,maxForces:Math.min(5,p.reserves)};
+}
+const RICHESE_CUNNING_ROSTER = new Set<FactionId>([
+  'atreides', 'harkonnen', 'emperor', 'fremen', 'beneGesserit', 'guild', 'richese', 'choam',
+]);
+function richeseCunningModeSupported(g: Game) {
+  return !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled &&
+    !g.ecazTreachery && !g.sandtrout &&
+    g.players.every(player => RICHESE_CUNNING_ROSTER.has(player.faction));
+}
+function nexusRicheseCunningOffer(g: Game, owner: string) {
+  const p = g.players.find(player => player.id === owner);
+  if (!p || p.faction !== 'richese' || g.nexusCards?.cards?.hands[owner] !== 'richese') return null;
+  let blocked: string | null = null;
+  if (!richeseCunningModeSupported(g))
+    blocked = 'This two-token shipment supports classic factions, Richese and CHOAM without other optional modules.';
+  else if (p.ally) blocked = 'Nexus Cunning requires an unallied Richese holder.';
+  else if (g.status !== 'playing' || g.phase !== 5 || g.active !== owner || !shipmentAvailable(g, p))
+    blocked = 'Use Cunning for your unused shipment before movement.';
+  else if (nexusCleanPlayBlocked(g) || g.karamaShipping)
+    blocked = 'Finish the current interaction or Karama shipment before using Cunning.';
+  else blocked = noFieldShipBlock(g, p);
+  return {
+    event: JSON.stringify(['nexusRicheseCunning', g.turn, owner, p.noFieldEvent]),
+    blocked,
+  };
+}
+function richesePairSignature(record: NonNullable<Game['nexusRicheseCunningHistory']>[number]) {
+  return JSON.stringify([record.event, record.owner, record.turn, record.phase,
+    record.tokenEvent, record.frame, record.stage]);
+}
+function currentRichesePairShipment(g: Game, shipment: PendingShipment) {
+  const pair = shipment.richesePair;
+  const record = g.nexusRicheseCunningHistory?.at(-1);
+  requireRule(pair && record?.stage === 'pending' && record.event === pair.event &&
+    record.frame === JSON.stringify(shipment) && record.owner === shipment.player &&
+    record.turn === g.turn && record.phase === 5 &&
+    record.tokenEvent === shipment.noField?.event &&
+    record.signature === richesePairSignature(record) &&
+    g.nexusCards?.cards?.discard.includes('richese') &&
+    !shipment.nexusEvent && !shipment.guildNexusEvent && !shipment.guildSecretEvent &&
+    !shipment.alliedNoField && !shipment.source && !shipment.smuggler &&
+    !shipment.smugglerCompanion && !shipment.homeworldSources &&
+    !shipment.noFieldSkillProof && shipment.amount === 1 && shipment.elite === 0 &&
+    shipment.advisors === false && shipment.allyPayment === 0 &&
+    richeseCunningModeSupported(g),
+    'Richese Cunning lost its original two-token shipment or physical Nexus card.');
+  const p = getPlayer(g, shipment.player);
+  requireRule(p.faction === 'richese' && !p.ally && p.noField &&
+    p.noFieldEvent === record.tokenEvent && !p.noField.deployed &&
+    g.status === 'playing' && g.phase === 5 && g.active === p.id &&
+    shipmentAvailable(g, p), 'Richese Cunning lost its unused native shipment.');
+  const cost = reserveShipmentCost({ faction: p.faction, halfRate: false },
+    territory(shipment.territory).type, 1);
+  requireRule(shipment.cost === cost && Number.isSafeInteger(shipment.sector) &&
+    territory(shipment.territory).sectors.includes(shipment.sector),
+    'Richese Cunning lost its original one-marker price or destination.');
+  noFieldRule(() => validateRicheseNoFieldPair(p.noField!, {
+    tokenId: shipment.noField!.tokenId,
+    controller: p.id,
+    location: { territory: shipment.territory, sector: shipment.sector },
+  }, pair.revealedTokenId, p.reserves));
+  return record;
+}
+function recordRichesePairShipment(g: Game, shipment: PendingShipment) {
+  const p = getPlayer(g, shipment.player);
+  const offer = nexusRicheseCunningOffer(g, p.id);
+  requireRule(offer && !offer.blocked && offer.event === shipment.richesePair?.event,
+    offer?.blocked ?? 'Richese Cunning is unavailable or stale.');
+  const record: NonNullable<Game['nexusRicheseCunningHistory']>[number] = {
+    event: offer.event, owner: p.id, turn: g.turn, phase: 5,
+    tokenEvent: shipment.noField!.event, frame: JSON.stringify(shipment),
+    stage: 'pending', signature: '',
+  };
+  record.signature = richesePairSignature(record);
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  (g.nexusRicheseCunningHistory ??= []).push(record);
+  g.nexusRicheseCunningLast = { event: record.event, stage: record.stage };
+}
+function finishRichesePairShipment(g: Game, shipment: PendingShipment, stage: 'shipped' | 'stopped') {
+  if (!shipment.richesePair) return;
+  const record = currentRichesePairShipment(g, shipment);
+  record.stage = stage;
+  record.signature = richesePairSignature(record);
+  g.nexusRicheseCunningLast = { event: record.event, stage };
+}
+function richesePairIntegrity(g: Game) {
+  const history = g.nexusRicheseCunningHistory;
+  const pending = g.pendingShipment;
+  if (history === undefined) {
+    requireRule(!g.nexusRicheseCunningLast && !pending?.richesePair,
+      'Richese Cunning lost its saved shipment history.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
+    'Richese Cunning needs its physical Nexus module and history.');
+  const events = new Set<string>();
+  for (const [index, record] of history.entries()) {
+    requireRule(record && typeof record === 'object' &&
+      Object.keys(record).sort().join(',') === 'event,frame,owner,phase,signature,stage,tokenEvent,turn' &&
+      typeof record.owner === 'string' && typeof record.tokenEvent === 'string' &&
+      Number.isSafeInteger(record.turn) && record.turn > 0 && record.turn <= g.turn &&
+      record.phase === 5 && ['pending', 'shipped', 'stopped'].includes(record.stage) &&
+      typeof record.frame === 'string' && record.signature === richesePairSignature(record) &&
+      !events.has(record.event) && (record.stage !== 'pending' || index === history.length - 1) &&
+      record.event === JSON.stringify(['nexusRicheseCunning', record.turn, record.owner, record.tokenEvent]),
+      'Richese Cunning changed its original card, owner or shipment receipt.');
+    const frame = JSON.parse(record.frame) as PendingShipment;
+    requireRule(frame && typeof frame === 'object' && !Array.isArray(frame) &&
+      Object.keys(frame).sort().join(',') === 'advisors,allyPayment,amount,cost,elite,noField,player,richesePair,sector,territory,turn' &&
+      frame.richesePair?.event === record.event && frame.player === record.owner &&
+      frame.noField?.event === record.tokenEvent && frame.turn === record.turn &&
+      typeof frame.noField.tokenId === 'string' && typeof frame.richesePair.revealedTokenId === 'string' &&
+      g.players.some(player => player.id === record.owner && player.faction === 'richese' &&
+        player.noField?.tokens.some(token => token.id === frame.noField?.tokenId) &&
+        player.noField?.tokens.some(token => token.id === frame.richesePair?.revealedTokenId)),
+      'Richese Cunning changed its two physical token identities.');
+    events.add(record.event);
+  }
+  const last = history.at(-1)!;
+  requireRule(JSON.stringify(g.nexusRicheseCunningLast) ===
+    JSON.stringify({ event: last.event, stage: last.stage }) &&
+    (last.stage === 'pending') === !!pending?.richesePair,
+    'Richese Cunning lost or reopened its latest shipment.');
+  if (last.stage === 'pending') {
+    requireRule(pending && pending.richesePair?.event === last.event,
+      'Richese Cunning lost its pending shipment.');
+    currentRichesePairShipment(g, pending);
+    const responses = savedNoFieldResponses(g).filter(response => response.kind === 'richeseNoField');
+    const decisions = homeworldSavedDecisions(g).filter(decision => decision.kind === 'guildShipment');
+    requireRule(responses.length + decisions.length === 1,
+      'Richese Cunning lost its unique Karama response or Guild interception decision.');
+    for (const response of responses)
+      requireRule(response.owner === pending.player && response.noFieldSkillProof === undefined,
+        'Richese Cunning changed its native No-Field response.');
+    for (const decision of decisions) validateGuildShipmentDecision(g, decision);
+  }
 }
 function shipmentHalfRate(g: Game, p: Player) {
   return p.faction === 'guild' || byFaction(g,'guild')?.id === p.ally || g.karamaShipping?.player === p.id;
@@ -21513,6 +21677,7 @@ export function executeSpecialKaramaIntent(
     }
     if (g.pendingShipment?.guildNexusEvent) finishGuildCunningShipment(g,shipper.id,'reserve',g.pendingShipment,'stopped');
     if (g.pendingShipment) finishNexusRicheseShipment(g,g.pendingShipment,'stopped');
+    if (g.pendingShipment) finishRichesePairShipment(g, g.pendingShipment, 'stopped');
     shipper.shipped = true;
     // Provisional canceled-shipment settlement pending a primary-source
     // clarification: retain the attempted shipment's spice and rate card.
@@ -21682,6 +21847,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   nexusEcazInquiryIntegrity(state);
+  richesePairIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -21844,6 +22010,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   nexusMoritaniRetentionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
   nexusEcazInquiryIntegrity(g);
+  richesePairIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -21960,6 +22127,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   nexusEcazInquiryIntegrity(state);
+  richesePairIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -21994,6 +22162,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   nexusMoritaniRetentionIntegrity(g);
   nexusChoamBetrayalIntegrity(g);
   nexusEcazInquiryIntegrity(g);
+  richesePairIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -24799,7 +24968,16 @@ function applyActionInner(
     );
     let nexusEvent: string | undefined;
     let guildSecretEvent: string | undefined;
-    if (action.nexus !== undefined && action.nexus === nexusGuildSecretAllyOffer(g,id)?.event) {
+    let richesePair: PendingShipment['richesePair'];
+    if (action.revealedToken !== undefined) {
+      const offer = nexusRicheseCunningOffer(g, id);
+      requireRule(offer && !offer.blocked && action.nexus === offer.event,
+        offer?.blocked ?? 'Richese Cunning is unavailable or stale.');
+      requireRule(Object.keys(action).sort().join(',') ===
+        'allyPayment,event,nexus,noField,revealedToken,sector,territory,type',
+        'Choose exactly two physical No-Field tokens and a shipment destination.');
+      richesePair = { event: offer.event, revealedTokenId: stringField(action.revealedToken) };
+    } else if (action.nexus !== undefined && action.nexus === nexusGuildSecretAllyOffer(g,id)?.event) {
       guildSecretEvent = validateGuildSecretDeclaration(g,id,action.nexus);
       requireRule(Object.keys(action).every(k => ['type','territory','sector','amount','elite','homeworldSources','allyPayment','nexus'].includes(k)),
         'Guild Secret Ally needs an ordinary physical reserve shipment.');
@@ -24813,7 +24991,7 @@ function applyActionInner(
     }
     checkShipmentPromises(g, p, {
       territory: String(action.territory),
-      amount: Number(action.amount),
+      amount: richesePair ? 1 : Number(action.amount),
     });
     const to = String(action.territory),
       s = integer(action.sector, 0, 18, 'Sector');
@@ -24836,13 +25014,14 @@ function applyActionInner(
         'This No-Field selection is stale.',
       );
       const tokenId = stringField(action.noField);
-      noFieldRule(() =>
-        deployRicheseNoField(p.noField!, {
-          tokenId,
-          controller: id,
-          location: { territory: to, sector: s },
-        }),
-      );
+      if (richesePair)
+        noFieldRule(() => validateRicheseNoFieldPair(p.noField!, {
+          tokenId, controller: id, location: { territory: to, sector: s },
+        }, richesePair.revealedTokenId, p.reserves));
+      else
+        noFieldRule(() => deployRicheseNoField(p.noField!, {
+          tokenId, controller: id, location: { territory: to, sector: s },
+        }));
       requireRule(
         action.amount === undefined || action.amount === 1,
         'The shipment price is for one No-Field, not a chosen number of physical forces.',
@@ -24853,6 +25032,7 @@ function applyActionInner(
       );
       noField = { tokenId, event: p.noFieldEvent! };
     }
+    requireRule(!richesePair || noField, 'Richese Cunning needs a concealed native No-Field.');
     const n = noField ? 1 : integer(action.amount, 1, p.reserves, 'Forces');
     const elite = noField
       ? 0
@@ -24890,6 +25070,7 @@ function applyActionInner(
       ...(currentGuildCunning(g,id) ? {guildNexusEvent:currentGuildCunning(g,id)!.receipt.event} : {}),
       ...(nexusEvent ? {nexusEvent} : {}),
       ...(guildSecretEvent ? {guildSecretEvent} : {}),
+      ...(richesePair ? { richesePair } : {}),
       turn: g.turn,
       player: id,
       territory: to,
@@ -24916,12 +25097,13 @@ function applyActionInner(
       // unsupported arrival combinations before saving its private intent.
       validateShipmentArrival(g, shipment);
       checkShipmentIncomeRounding(g, p, cost, allyPayment);
+      if (richesePair) recordRichesePairShipment(g, shipment);
       g.pendingShipment = shipment;
       g.response = { kind: 'richeseNoField', owner: p.id, passed: [],
         ...(shipment.noFieldSkillProof ? { noFieldSkillProof: shipment.noFieldSkillProof } : {}) };
       log(
         g,
-        `${p.name} declared a concealed No-Field shipment${smugglerCompanion ? ' with one free Smuggler force' : ''} to ${territory(to).name}, sector ${s}.`,
+        `${p.name} declared a concealed No-Field shipment${richesePair ? ' with Richese Nexus Cunning and one faceup token' : ''}${smugglerCompanion ? ' with one free Smuggler force' : ''} to ${territory(to).name}, sector ${s}.${richesePair ? ' The Nexus card is spent; payment and both token effects await the responses.' : ''}`,
       );
     } else offerShipment(g, shipment);
     return g;
@@ -25766,6 +25948,7 @@ export function viewGame(state: Game, id: string) {
   nexusMoritaniRetentionIntegrity(state);
   nexusChoamBetrayalIntegrity(state);
   nexusEcazInquiryIntegrity(state);
+  richesePairIntegrity(state);
   marketGholaIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -26097,6 +26280,7 @@ export function viewGame(state: Game, id: string) {
     nexusEcazBetrayal: ecazBetrayalOffer(g, id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
     nexusRichese: nexusRicheseOffer(g,id),
+    nexusRicheseCunning: nexusRicheseCunningOffer(g, id),
     nexusGuildSecretAlly: nexusGuildSecretAllyOffer(g,id),
     nexusGuildCunning: projectedNexusGuildCunning(g,id),
     nexusTraitors: projectedNexusTraitors(g, id),

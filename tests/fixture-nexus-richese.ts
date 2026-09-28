@@ -3,6 +3,7 @@ import {
   applyAction,
   createGame,
   initializeNexusGameForAudit,
+  initializePairedNexusGameForAudit,
   joinGame,
   newPlayer,
   viewGame,
@@ -24,12 +25,13 @@ import {
 
 export type NexusRicheseOwner =
   | 'atreides'
+  | 'harkonnen'
   | 'emperor'
   | 'fremen'
   | 'guild'
   | 'beneGesserit'
   | 'ixians'
-  | 'harkonnen';
+  | 'richese';
 export type NexusRicheseFixtureOptions = {
   seatIds?: [string, string, string];
   ownerFaction?: NexusRicheseOwner;
@@ -66,14 +68,17 @@ export function nexusRicheseFixture(
       ? 'guild'
       : 'harkonnen');
   assert.notEqual(ownerFaction, opponentFaction);
-  const observerFaction = (
-    ['fremen', 'atreides', 'emperor'] as FactionId[]
-  ).find((f) => f !== ownerFaction && f !== opponentFaction)!;
+  const observerFaction = ownerFaction === 'richese'
+    ? 'choam'
+    : (['fremen', 'atreides', 'emperor'] as FactionId[])
+      .find((f) => f !== ownerFaction && f !== opponentFaction)!;
   let g = createGame(
     'RICHESENEXUS',
     newPlayer(owner, ownerFaction, ownerFaction),
     options.advanced ?? false,
-    ownerFaction === 'ixians' || opponentFaction === 'ixians' ? ['ix'] : [],
+    ownerFaction === 'ixians' || opponentFaction === 'ixians'
+      ? ['ix']
+      : ownerFaction === 'richese' ? ['choam'] : [],
   );
   // The unfinished E3 public deck gate is separate from native Moritani audit
   // setup. Fix the final faction before readiness and genuine initialization.
@@ -92,7 +97,9 @@ export function nexusRicheseFixture(
     g = applyAction(g, owner, { type: 'homeworlds', enabled: true });
   g.nexusCards = { cards: null, phase: null };
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
-  g = initializeNexusGameForAudit(g);
+  g = ownerFaction === 'richese'
+    ? initializePairedNexusGameForAudit(g)
+    : initializeNexusGameForAudit(g);
   for (let step = 0; g.status === 'setup' && step < 100; step++) {
     let next: Game | undefined;
     for (const p of g.players) {
@@ -112,7 +119,7 @@ export function nexusRicheseFixture(
   }
   assert.equal(g.status, 'playing');
   for (const p of g.players) g.deck.push(...p.hand.splice(0));
-  if (g.expansions.includes('ix')) {
+  if (g.expansions.includes('ix') || ownerFaction === 'richese') {
     for (let step = 0; g.phase === 0 && step < 60; step++) g = fixtureStep(g);
     assert.equal(g.phase, 1);
     orderNexusSpice(g, ['land', 'land']);

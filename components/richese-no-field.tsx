@@ -109,6 +109,8 @@ export function RicheseNoFieldControls({
 }) {
   const id = useId();
   const [selection, setSelection] = useState('');
+  const [pairConcealedSelection, setPairConcealedSelection] = useState('');
+  const [pairRevealedSelection, setPairRevealedSelection] = useState('');
   const [useSmuggler, setUseSmuggler] = useState(false);
   const info = game.richeseNoField;
   const me = game.players.find((player) => player.id === game.me);
@@ -119,6 +121,16 @@ export function RicheseNoFieldControls({
   );
   const selected =
     available.find((token) => token.id === selection) ?? available[0];
+  const pairConcealed =
+    available.find((token) => token.id === pairConcealedSelection) ??
+    available[0];
+  const pairRevealed =
+    available.find(
+      (token) =>
+        token.id === pairRevealedSelection &&
+        token.id !== pairConcealed?.id,
+    ) ?? available.find((token) => token.id !== pairConcealed?.id);
+  const nexus = game.nexusRicheseCunning;
   const deployed = state.deployed;
   const selectedTerritory = territory(destination);
   const rate = {
@@ -165,6 +177,10 @@ export function RicheseNoFieldControls({
     if (cost - share > (me.spice ?? 0))
       problems.push('Your spice does not cover the chosen payment.');
   }
+  const pairProblems = [...problems];
+  if (nexus?.blocked) pairProblems.push(nexus.blocked);
+  if (!pairConcealed || !pairRevealed)
+    pairProblems.push('Choose two different available No-Field tokens.');
   const showShipment = game.phase === 5 && game.active === me.id && !me.shipped;
   return (
     <details className="my-4" open={showShipment || !!deployed}>
@@ -304,6 +320,104 @@ export function RicheseNoFieldControls({
               Ship concealed No-Field {selected?.value ?? ''} · {cost} spice
               {useSmuggler && smuggler ? ' · + 1 real force' : ''}
             </Button>
+            {nexus && (
+              <div className="rounded border border-[#8e8159] p-3">
+                <h3 className="font-semibold">Nexus Cunning: ship two No-Fields</h3>
+                <p className="fine mt-2">
+                  Choose one token to reveal immediately and one to keep
+                  concealed at {selectedTerritory.name}, sector {sector}. The
+                  revealed token brings up to its printed value in forces from
+                  your current reserves; the concealed marker still counts as
+                  one force. Both ship for the price of one marker ({cost} spice).
+                  This is separate from the ordinary shipment and Smuggler.
+                </p>
+                <label htmlFor={`${id}-pair-revealed`}>
+                  Private token to reveal immediately
+                </label>
+                <select
+                  id={`${id}-pair-revealed`}
+                  className="block min-h-11"
+                  value={pairRevealed?.id ?? ''}
+                  disabled={busy || !!deployed || !!nexus.blocked}
+                  onChange={(event) => {
+                    if (event.target.value === pairConcealed?.id)
+                      setPairConcealedSelection(pairRevealed?.id ?? '');
+                    setPairRevealedSelection(event.target.value);
+                  }}
+                >
+                  {state.tokens.map((token) => (
+                    <option
+                      key={token.id}
+                      value={token.id}
+                      disabled={token.id === state.lastShipped}
+                    >
+                      No-Field {token.value}
+                      {token.id === state.lastShipped ? ' · cannot repeat' : ''}
+                    </option>
+                  ))}
+                </select>
+                <label htmlFor={`${id}-pair-concealed`}>
+                  Private token to keep concealed
+                </label>
+                <select
+                  id={`${id}-pair-concealed`}
+                  className="block min-h-11"
+                  value={pairConcealed?.id ?? ''}
+                  disabled={busy || !!deployed || !!nexus.blocked}
+                  onChange={(event) => {
+                    if (event.target.value === pairRevealed?.id)
+                      setPairRevealedSelection(pairConcealed?.id ?? '');
+                    setPairConcealedSelection(event.target.value);
+                  }}
+                >
+                  {state.tokens.map((token) => (
+                    <option
+                      key={token.id}
+                      value={token.id}
+                      disabled={token.id === state.lastShipped}
+                    >
+                      No-Field {token.value}
+                      {token.id === state.lastShipped ? ' · cannot repeat' : ''}
+                    </option>
+                  ))}
+                </select>
+                {pairProblems.length > 0 && (
+                  <ul className="fine" id={`${id}-pair-reasons`}>
+                    {pairProblems.map((reason) => (
+                      <li key={reason}>{reason}</li>
+                    ))}
+                  </ul>
+                )}
+                <Button
+                  className="min-h-11 whitespace-normal"
+                  disabled={busy || pairProblems.length > 0}
+                  aria-describedby={
+                    pairProblems.length > 0 ? `${id}-pair-reasons` : undefined
+                  }
+                  onClick={() => {
+                    if (
+                      !busy &&
+                      pairProblems.length === 0 &&
+                      pairConcealed &&
+                      pairRevealed
+                    )
+                      act({
+                        type: 'ship',
+                        noField: pairConcealed.id,
+                        revealedToken: pairRevealed.id,
+                        nexus: nexus.event,
+                        event: info.event,
+                        territory: destination,
+                        sector,
+                        allyPayment: share,
+                      });
+                  }}
+                >
+                  Reveal No-Field {pairRevealed?.value ?? ''} and ship concealed
+                  No-Field {pairConcealed?.value ?? ''} · {cost} spice
+                </Button>
+              </div>
+            )}
           </>
         )}
       </div>

@@ -119,10 +119,10 @@ export function createRicheseNoField(ids: readonly string[]): RicheseNoField {
 }
 
 /** Engine resolves authorization, shipment legality, payment and Karama first. */
-export function deployRicheseNoField(
+function validateDeployment(
   previous: RicheseNoField,
   deployment: NoFieldDeployment,
-): RicheseNoField {
+): void {
   validateRicheseNoField(previous);
   requireNoField(
     !previous.deployed,
@@ -141,10 +141,69 @@ export function deployRicheseNoField(
     'Choose the No-Field force controller.',
   );
   validateLocation(deployment.location);
+}
+
+export function deployRicheseNoField(
+  previous: RicheseNoField,
+  deployment: NoFieldDeployment,
+): RicheseNoField {
+  validateDeployment(previous, deployment);
   const state = structuredClone(previous);
   state.lastShipped = deployment.tokenId;
   state.deployed = structuredClone(deployment);
   return state;
+}
+
+/**
+ * Validate both identities and current reserves without allocating shipment
+ * state. The token reference belongs to the caller's validated input state.
+ */
+export function validateRicheseNoFieldPair(
+  previous: RicheseNoField,
+  concealed: NoFieldDeployment,
+  revealedTokenId: string,
+  reserves: number,
+): NoFieldToken {
+  validateDeployment(previous, concealed);
+  requireNoField(
+    Number.isSafeInteger(reserves) && reserves >= 0,
+    'Available reserves must be a nonnegative safe integer.',
+  );
+  const token = previous.tokens.find((candidate) => candidate.id === revealedTokenId);
+  requireNoField(token && token.id !== concealed.tokenId,
+    'Choose a different physical No-Field token to reveal.');
+  requireNoField(token.id !== previous.lastShipped,
+    'The same No-Field cannot be shipped twice in a row.');
+  return token;
+}
+
+/**
+ * Ship two distinct tokens for one shipment. Only the concealed token remains
+ * in marker custody; the other materializes immediately from available reserves.
+ * Engine owns payment, board placement and Karama resolution.
+ */
+export function deployRicheseNoFieldPair(
+  previous: RicheseNoField,
+  concealed: NoFieldDeployment,
+  revealedTokenId: string,
+  reserves: number,
+): { state: RicheseNoField; revealed: NoFieldReveal } {
+  const token = validateRicheseNoFieldPair(previous, concealed, revealedTokenId, reserves);
+  const state = structuredClone(previous);
+  state.lastShipped = concealed.tokenId;
+  state.deployed = structuredClone(concealed);
+  return {
+    state,
+    revealed: {
+      state,
+      tokenId: token.id,
+      controller: concealed.controller,
+      location: structuredClone(concealed.location),
+      value: token.value,
+      forces: Math.min(token.value, reserves),
+      cause: 'voluntary',
+    },
+  };
 }
 
 /** Location/custody only; path, movement allowance and exposure belong to engine. */
