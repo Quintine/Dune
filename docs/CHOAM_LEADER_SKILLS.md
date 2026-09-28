@@ -90,10 +90,12 @@ remains open.
 
 ## Remaining scope
 
-Normal Banker income, ordinary Mentat questioning, Diplomat retreat, modified
-Smuggler collection, captured replacement entitlement and other recorded skill
-questions remain unfinished. Advanced Auditor rules and mixed Richese/other
-faction or module combinations remain separate work. See the
+Normal Banker income, ordinary Mentat questioning, modified Smuggler collection,
+captured replacement entitlement and other recorded skill questions remain
+unfinished. The [bounded Diplomat retreat](LEADER_SKILLS_RUNTIME.md) is connected
+for supported battles, not a ruling for modified or simultaneous effects. Advanced
+Auditor rules and mixed Richese/other faction or module combinations remain
+separate work. See the
 [runtime boundaries](LEADER_SKILLS_RUNTIME.md) and [decision register](RULE_DECISIONS.md).
 Full AI implementation and difficulty calibration wait until every non-AI
 feature is complete.

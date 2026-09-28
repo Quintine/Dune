@@ -48,8 +48,9 @@ exceptional assassination pools and competing-arrival questions remain explicit.
 ## Remaining work
 
 The [Leader Skills runtime](LEADER_SKILLS_RUNTIME.md) retains unfinished normal
-Banker income, ordinary Mentat-question activation, Diplomat retreat, modified
-Smuggler collection, captured replacement entitlement and other source gaps.
+Banker income, ordinary Mentat-question activation, modified Smuggler collection,
+captured replacement entitlement and other source gaps. Its bounded Diplomat
+retreat is connected for supported battles, not modified or simultaneous effects.
 The private Mentat question preview has not been enabled for this roster.
 Basic Moritani admission does not settle those effects or certify every valid
 expansion/module combination. Advanced Moritani, Ecaz and Ixians need their own integration. The later

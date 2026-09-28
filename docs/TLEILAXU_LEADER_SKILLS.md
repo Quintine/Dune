@@ -80,8 +80,10 @@ Private source-bound reports record final checks, game samples and browser work.
 
 ## Remaining work
 
-Normal Banker income, ordinary Mentat questioning, Diplomat retreat, modified
-Smuggler collection, captured replacement entitlement and other recorded skill
-questions remain incomplete. See the [runtime boundaries](LEADER_SKILLS_RUNTIME.md)
-and [rule decisions](RULE_DECISIONS.md). Full AI implementation and tuning wait
+Normal Banker income, ordinary Mentat questioning, modified Smuggler collection,
+captured replacement entitlement and other recorded skill questions remain
+incomplete. The [bounded Diplomat retreat](LEADER_SKILLS_RUNTIME.md) is connected
+for supported battles, not modified or simultaneous effects. See the
+[runtime boundaries](LEADER_SKILLS_RUNTIME.md) and
+[rule decisions](RULE_DECISIONS.md). Full AI implementation and tuning wait
 until all non-AI game features are complete.
