@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 28 September 2026 — Basic Tleilaxu revival/Bureaucrat composition
+
+A genuine Basic Tleilaxu/Leader Skills game now offers a living native
+Bureaucrat's once-per-phase redirection on another player's actual paid revival
+price of at least five spice. The payer's cost and revived physical leader or
+forces are committed once; native Tleilaxu income retains its existing Karama
+window, and a cancellation does not offer a player-directed payment. A separate
+one-spice free-revival award cannot lift a small price over the threshold and
+is not diverted. The decision binds the payer, trainer, payee, amount, turn and
+phase to the saved response; the declined opportunity remains available.
+Negotiated price is available to its participants and trainer but omitted
+from unrelated observers' pending view and the public redirection log.
+
+The owner panel shows the original price, both possible recipient amounts and
+the separate free-award explanation. Four legal bot policies use the projected
+choice. Genuine setup, Karama allow/cancel, negotiated leader and small force
+revival, JSON reload, authenticated SQLite restart and competing-version CAS
+have focused regressions. A read-only intercepted local browser room displayed
+the actual seven-spice payment and both controls; no room write occurred. This
+is one bounded payment family, not complete Tleilaxu, Leader Skills or
+combined-module acceptance; the verified live image remains `c9a3625`.
+
+Independent rules and privacy/recovery reviews passed after correcting a public
+log that initially disclosed the negotiated price. Scoped lint, the production
+build, all 52 local HTTP integration tests and the standalone 716-file,
+5,652-case offline suite pass. The required
+`npm run check` cannot complete: concurrent independent work in
+`game/nexus-fremen-betrayal.ts:38` reads an undeclared
+`Player.fremenNexusMovementBlockedTurn` field. This checkpoint does not alter
+that draft or claim a green typecheck.
+
 ## 28 September 2026 — Ecaz Duke revival and bounded Mirror Weapon
 
 The user chose two explicit product interpretations after bounded publisher

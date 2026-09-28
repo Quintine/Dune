@@ -39,6 +39,11 @@ export function BureaucratPayment({
           It cannot be spent before then.
         </p>
       )}
+      {pending.kind === 'revival' && (
+        <p className="text-base leading-7">
+          This is the actual revival price. A separate free-revival award, if any, stays with Tleilaxu.
+        </p>
+      )}
       <p className="fine">
         Allowing the full payment preserves Bureaucrat for later use this phase.
       </p>

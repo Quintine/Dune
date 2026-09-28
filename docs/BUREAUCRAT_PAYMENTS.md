@@ -33,11 +33,12 @@ A verbal promise alone transfers no spice.
 
 ## Connected boundary and explicit interpretations
 
-The target paths are ordinary paid auctions, Guild shipment income, direct
-Richese auction proceeds and actual bribe transfers in the existing base or
-CHOAM-only skill profile. Other optional modules retain their existing gates.
-Tleilaxu revival, other expansion payment sources and direct gifts remain outside
-this connected batch. Their absence does not establish a rule prohibition.
+The connected paths are ordinary paid auctions, Guild shipment income, direct
+Richese auction proceeds and actual bribe transfers in the base or CHOAM-only
+skill profile. Basic Tleilaxu with Leader Skills and base opponents additionally
+supports a single payer's actual paid revival price to Tleilaxu. Other expansion
+payment sources and direct gifts remain outside this batch; omission is not a
+printed prohibition.
 
 ### 21 September gift classification review
 
@@ -64,7 +65,20 @@ composition inference. The rulebook's skill-before-faction sentence occurs in
 its battle paragraph and does not expressly order this economic reaction.
 The implementation does not settle Bureaucrat-before-Karama consumption.
 
-Qualifying single-payer payments have a public amount. Qualifying allied funding,
+In the Basic Tleilaxu skill profile, a paid revival first commits its force or
+leader custody and deducts the actual price. Its native income response still
+allows Karama cancellation. Only an allowed, single-payer payment of at least
+five spice then offers Bureaucrat before Tleilaxu receives that price. A separate
+one-spice free-revival award is not a payment and cannot make a smaller price
+qualify; if both occur, the award stays with Tleilaxu after any redirection.
+The signed response and saved Bureaucrat choice retain the original payer and
+price through JSON/SQLite continuation, while unrelated observers do not see
+the private negotiated amount. The trainer's declined opportunity remains
+available for a later qualifying payment in that phase.
+
+Existing auction, shipment and bribe paths have public payment amounts; the
+negotiated revival price remains limited to the participating seats and trainer.
+Qualifying allied funding,
 including an aggregate such as three plus three and a payment funded entirely by
 the ally, is guarded before costs or commitment. It needs separate payment-unit
 and privacy work, as does split-recipient Homeworld income. Independent Karama

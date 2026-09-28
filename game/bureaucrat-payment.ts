@@ -1,5 +1,5 @@
 import { basicExpansionLeaderSkillsProfile, noOtherLeaderSkillModules, type LeaderSkillProfile } from './leader-skill-profile';
-export type BureaucratPaymentKind = 'auction' | 'shipment' | 'bribe';
+export type BureaucratPaymentKind = 'auction' | 'shipment' | 'bribe' | 'revival';
 export type BureaucratPaymentSource = {
   event: string;
   turn: number;

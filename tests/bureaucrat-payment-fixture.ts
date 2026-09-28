@@ -27,11 +27,13 @@ export function takeBureaucratCard(g: Game, id: string, name = 'Karama') {
 export function bureaucratPaymentGame({
   advanced = false,
   choam = false,
+  tleilaxu = false,
   phase = 5,
   advisor = false,
 }: {
   advanced?: boolean;
   choam?: boolean;
+  tleilaxu?: boolean;
   phase?: number;
   advisor?: boolean;
 } = {}): Game {
@@ -39,7 +41,7 @@ export function bureaucratPaymentGame({
     'BUROTEST',
     newPlayer('b', 'Bureaucrat', 'atreides'),
     advanced,
-    choam ? ['choam'] : [],
+    choam ? ['choam'] : tleilaxu ? ['ix'] : [],
   );
   for (const [id, name, faction] of [
     ['p', 'Payer', 'harkonnen'],
@@ -47,6 +49,7 @@ export function bureaucratPaymentGame({
     ['g', 'Guild', 'guild'],
     ...(choam ? [['r', 'Richese', 'richese']] : []),
     ...(advisor ? [['bg', 'Bene Gesserit', 'beneGesserit']] : []),
+    ...(tleilaxu ? [['t', 'Tleilaxu', 'tleilaxu']] : []),
   ] as [string, string, Parameters<typeof newPlayer>[2]][])
     joinGame(g, newPlayer(id, name, faction));
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });

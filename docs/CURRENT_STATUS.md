@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 27 September 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 28 September 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -82,6 +82,14 @@ physical Mirror can be kept even after a copied activated Tooth or Artillery
 attack under the user's interpretation, not a GF9 clarification. Combined
 modes and full Richese starts remain gated. Neither new path is in the
 verified live `c9a3625` image.
+
+The bounded [Bureaucrat/Tleilaxu revival payment](BUREAUCRAT_PAYMENTS.md)
+path adds the Basic Tleilaxu/Leader Skills profile's actual single-payer
+revival prices to the skill's post-Karama redirection. Paid custody, separate
+free-revival income, private negotiated amounts, owner controls, four legal
+AI policies and concurrent SQLite continuation are connected. Other expansion
+payment families, gifts and combined modules remain gated; this is not a
+complete Leader Skills or Tleilaxu certification.
 
 The main page
 labels its build's Git commit in the lobby and active-table masthead; local
