@@ -106,6 +106,12 @@ bulk actions and backup/operations tools remain unfinished.
 
 [Participant AI](ADMIN_PARTICIPANT_AI.md) checkpoint `2cddf03` is pushed. Types/lint,
 
+The latest [complete-game integration samples](IMPLEMENTATION_STATUS.md)
+finished five Basic Tleilaxu/Skills and ten Basic/Advanced Homeworld + Nexus
+games across two through six seats. All 6,719 actions were accepted, with 174
+JSON/private-view restorations and unchanged source fingerprints. Rare effects
+not encountered naturally and all public release gates remain unverified.
+
 The bounded [native Richese Nexus Cunning shipment](NEXUS_RICHESE_RULES.md#bounded-native-cunning-prototype-27-september-2026) now uses two distinct physical No-Field tokens in one priced shipment in genuine Richese/CHOAM paired Nexus games. One token immediately reveals a reserve-capped public force group; the other remains concealed. Owner-only controls, four legal AI profiles, Karama/Guild responses, signed saved receipts and concurrent in-memory SQLite settlement are connected in Basic/Advanced. A read-only local browser fixture displayed the owner selector and no rival private panel. Same-shipment nonrepeat is a documented product interpretation; faceup-component artwork, combined modules, Betrayal and full Nexus acceptance remain gated. This code is local and not in the last verified production image.
 
 The independent [Reinforcements Battle Plan prototype](REINFORCEMENTS_RUNTIME.md)
@@ -285,11 +291,12 @@ continuation. Later intervention remains unfinished; no new ruling is assumed.
 Final checks, samples, browser evidence and delivery belong to the source-bound
 private report and Git message.
 
-The [Mirror admission review](MIRROR_WEAPON_ENGINE_AUDIT.md) found that every genuine
-Richese setup contains the unresolved copied weapons. Ordinary-only activation
-cannot safely depend on hidden custody or alter the printed deck. Mirror remains
-gated pending the existing disposal ruling and copied-choice work. Continue with
-independent missing faction/card functions, then integrated play and refinement.
+The earlier [Mirror admission review](MIRROR_WEAPON_ENGINE_AUDIT.md) flagged
+copied-attack choice and physical-card cleanup gaps in genuine Richese decks.
+The user subsequently chose ordinary winner retention for the physical Mirror,
+and the bounded Basic/Advanced battle path above now handles copy-first choices.
+Full Richese starts and combined-module play remain gated; the former blanket
+admission block does not apply to the connected profile.
 
 The Smuggler follow-up review supports a saved reveal-time receipt with settlement
 only on leader survival, but located no official ruling on modified leader

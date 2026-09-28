@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 28 September 2026 — source-stable complete-game integration samples
+
+`tools/faction-games.ts` completed five genuine Basic Tleilaxu/Leader Skills
+games across two through six seats: 2,435 accepted actions, 64 JSON/private-view
+restorations and no rejected bot candidates. Ten genuine classic-faction
+Homeworld + Nexus games spanned two through six seats in Basic and Advanced:
+4,284 accepted actions, 110 restorations and no rejected candidates. Both
+source-fingerprint reports passed unchanged, with custody checks after each
+action. The real setup and four rotating AI profiles used no staged cards,
+forces, phases or statistics. Private reports:
+`/tmp/dune-tleilaxu-skills-20260928/report.json` and
+`/tmp/dune-homeworld-nexus-matrix-20260928/report.json`.
+
+These samples establish legal sampled continuation to a winner, not natural
+exercise of every rare card or payment effect. They do not certify complete
+Leader Skills, Tleilaxu, Homeworld, Nexus, Advanced or expansion play, browser
+usability, production deployment or AI strength calibration.
+
 ## 28 September 2026 — Basic Tleilaxu revival/Bureaucrat composition
 
 A genuine Basic Tleilaxu/Leader Skills game now offers a living native
