@@ -361,6 +361,11 @@ void test('authenticated clean Semuta producers claim once through restart and r
       leader: seat(duel, ids[2]).leaders[0].id, defense: defense.id });
     duel = await act(1, { type: 'traitorCall', call: false });
     duel = await act(2, { type: 'traitorCall', call: false });
+    assert.equal(duel.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
+    assert.equal(duel.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    const mandatoryEvent = duel.pendingTreacheryDiscard!.batch.event;
+    for (const index of [2, 1, 0])
+      duel = await act(index, { type: 'semutaPass', event: mandatoryEvent });
     assert.equal(duel.decision?.kind, 'battleCards');
     const chosen = await act(1, { type: 'decision', discard: [weapon.id, shield.id] });
     assert.equal(chosen.pendingTreacheryDiscard?.batch.cause, 'battle:winner');
@@ -464,5 +469,77 @@ void test('authenticated clean Semuta producers claim once through restart and r
     assert.equal(optional.discard.filter(card => card.id === nextWeapon.id).length, 1);
     assert.equal(optional.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
     assert.equal(seat(optional, ids[0]).hand.filter(card => card.id === hero.id).length, 1);
+
+    const mutual = structuredClone(optional);
+    const mutualSemuta = take(mutual, SEMUTA_DRUG_ID);
+    mutual.deck.push(take(mutual, hero.id));
+    seat(mutual, ids[0]).hand.push(mutualSemuta);
+    const mixedShield = mutual.deck.splice(
+      mutual.deck.findIndex(card => card.kind === 'shield'), 1)[0];
+    const mixedSnooper = mutual.deck.splice(
+      mutual.deck.findIndex(card => card.kind === 'snooper'), 1)[0];
+    assert.ok(mixedShield && mixedSnooper);
+    const attacker = seat(mutual, ids[1]), defender = seat(mutual, ids[2]);
+    attacker.hand.push(mixedShield);
+    defender.hand.push(mixedSnooper);
+    for (const p of [attacker, defender]) {
+      p.reserves += Object.values(p.forces).reduce((sum, n) => sum + n, 0) - 5;
+      p.forces = { 'arrakeen:10': 5 };
+      for (const leader of p.leaders) leader.strength = 0;
+    }
+    const attackerLeader = attacker.leaders.find(leader => !leader.dead)!;
+    const defenderLeader = defender.leaders.find(leader => !leader.dead)!;
+    attacker.traitors = [defenderLeader.id];
+    defender.traitors = [attackerLeader.id];
+    Object.assign(mutual, { turn: 11, phase: 6, active: ids[1],
+      order: [ids[1], ids[2], ids[0]], ready: [],
+      decision: null, response: null, phaseOpening: null, stormPending: null,
+      lastBattle: [], lastBattleContext: null });
+    mutual.version = optional.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(mutual), mutual.version, code, optional.version).changes, 1);
+    let mutualBattle = await act(1, { type: 'chooseBattle', territory: 'arrakeen', target: ids[2] });
+    for (let step = 0; step < 40; step++) {
+      if (mutualBattle.response) {
+        const p = mutualBattle.players.find(p => !mutualBattle.response!.passed.includes(p.id))!;
+        mutualBattle = await act(ids.indexOf(p.id), { type: 'passResponse' });
+      } else if (mutualBattle.battle?.preparation)
+        mutualBattle = await act(ids.indexOf(mutualBattle.battle.preparation.owner),
+          { type: 'declineBattlePower' });
+      else break;
+    }
+    if (mutualBattle.battle?.preLeader && !mutualBattle.battle.preLeader.closed)
+      for (const index of [1, 2])
+        mutualBattle = await act(index, {
+          type: 'battlePreparationReady', event: mutualBattle.battle!.preLeader!.event,
+        });
+    mutualBattle = await act(1, { type: 'battlePlan', dial: 2, support: 2,
+      leader: attackerLeader.id, defense: mixedShield.id });
+    mutualBattle = await act(2, { type: 'battlePlan', dial: 0, support: 0,
+      leader: defenderLeader.id, defense: mixedSnooper.id });
+    mutualBattle = await act(1, { type: 'traitorCall', call: true });
+    const mixedOffer = await act(2, { type: 'traitorCall', call: true });
+    assert.equal(mixedOffer.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
+    assert.equal(mixedOffer.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.deepEqual(mixedOffer.pendingTreacheryDiscard?.batch.entries.map(entry => [
+      entry.card.id, entry.discardedBy,
+    ]), [[mixedShield.id, ids[1]], [mixedSnooper.id, ids[2]]]);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, mixedOffer.version);
+    const mixedEvent = mixedOffer.pendingTreacheryDiscard!.batch.event;
+    const mixedCommit = await act(0, { type: 'semutaCommit', event: mixedEvent });
+    assert.equal(mixedCommit.pendingTreacheryDiscard?.reaction?.stage, 'select');
+    assert.deepEqual((await f.restart().readSeatView(code, auths[0])).semutaReaction?.candidates.map(card => card.id),
+      [mixedShield.id, mixedSnooper.id]);
+    assert.deepEqual((await f.restart().readSeatView(code, auths[1])).semutaReaction?.candidates, []);
+    const mixedClaim = await act(0, { type: 'semutaSelect', event: mixedEvent, card: mixedSnooper.id });
+    assert.equal(mixedClaim.pendingTreacheryDiscard, null);
+    assert.equal(mixedClaim.lastBattleContext?.winner, null);
+    assert.equal(seat(mixedClaim, ids[0]).hand.filter(card => card.id === mixedSnooper.id).length, 1);
+    assert.equal(mixedClaim.discard.filter(card => card.id === mixedShield.id).length, 1);
+    assert.equal(mixedClaim.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(mixedClaim, auth.playerId));
   } finally { f.sqlite.close(); }
 });

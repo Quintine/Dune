@@ -40,7 +40,7 @@ export function richeseCardActionBlock(card: VisibleCard): string | null {
   if (definition?.card.effect === 'distrans')
     return 'Choose a recipient and card in the Distrans transfer panel.';
   if (definition?.card.effect === 'semutaDrug')
-    return 'Use the neutral fresh-discard response in the Semuta development preview. Clean completed ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order Sapho and winner battle-card discards are connected; other producers and full-hand sequencing remain unfinished.';
+    return 'Use the neutral fresh-discard response in the Semuta development preview. Clean completed ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order Sapho and battle-card batches are connected; pending rewards, other producers and full-hand sequencing remain unfinished.';
   return definition && definition.card.effect !== 'karama'
     ? 'This Richese card’s effect is not implemented yet. You can inspect its rules.'
     : null;

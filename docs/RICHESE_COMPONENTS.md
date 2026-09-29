@@ -12,7 +12,7 @@ Audited 6 September 2026. The ten physical identities and their readable face in
 
 - Player controls show both original plans, exact undialed counts or honest possible totals, the mode choice and a complete internal guide. No victim/death confirmation is added. The card stays physically reserved until standard cleanup; stale events, duplicate requests and corrupted source custody fail before resources change. All four AI profiles use public force possibilities, legal low-dial plans and revealed leader/bounty information. They preserve leader value when Artillery suppresses bounty and leave traitor/explosion precedence intact.
 
-- Semuta Drug has an explicit bounded development preview for clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final definite Truthtrance, movement-order Sapho and separate mandatory/optional winner battle-card batches. A multi-card winner batch exposes candidates only after holder commitment and transfers one physical card. Private gifts, unresolved promises, reactive arrivals, auction/battle Sapho, loser/mixed-owner battle batches and pending battle rewards remain outside scope. Other producers, full-hand ordering and normal Richese starts remain unfinished. Mirror Weapon and Juice of Sapho have separate bounded paths, not complete combined-mode certification. Other unfinished systems, mobile acceptance, difficulty calibration and complete Advanced/expansion games still prevent goal completion. No start gate was removed.
+- Semuta Drug has an explicit bounded preview for clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final definite Truthtrance, movement-order Sapho and three distinct battle discard stages: initial mandatory combatants, mandatory winner and optional winner. A multi-card batch, including two-owner mutual-Traitor cleanup, exposes candidates only after holder commitment and transfers one other-player physical card. Private gifts, unresolved promises, reactive arrivals, auction/battle Sapho and pending battle rewards remain outside scope. Other producers, full-hand ordering and normal Richese starts are unfinished. Mirror Weapon and Juice of Sapho have separate bounded paths, not complete combined-mode certification. Other systems, mobile acceptance, difficulty calibration and complete Advanced/expansion games still prevent goal completion. No start gate was removed.
 
 The complete integrated validation checkpoint is recorded in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 
@@ -113,10 +113,11 @@ explicitly opted-in Richese development profile. Neutral all-seat
 responses, physical one-card recovery, a provisional free-slot guard,
 minimal legal AI and saved continuation work after clean public
 ordinary-card, paid Box, retired Ornithopter, private Distrans, final
-definite Truthtrance, movement-order Sapho and separate mandatory
-and optional winner battle-card batches, including committed
-owner-only multi-card selection. Queued questions, promise-bound
-answers, reactive arrivals, auction/battle Sapho, loser or mixed-owner
-battle batches and pending battle rewards remain unconnected.
-Full-hand ordering, ten-card inventory, cache custody and public
-expansion start gate are unchanged.
+definite Truthtrance, movement-order Sapho and three separate battle
+card stages: initial mandatory combatants, mandatory winner and
+optional winner. Multi-owner batches require committed owner-only
+selection of one other-player card. Queued questions, promises,
+reactive arrivals, auction/battle Sapho, pending battle rewards and
+other semantic discard families remain unconnected. Full-hand
+ordering, ten-card inventory, cache custody and public expansion
+start gate are unchanged.

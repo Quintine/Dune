@@ -62,33 +62,32 @@ Do not ask again about normal targets, forced-discard owner bookkeeping, simulta
 ## 30 September 2026 — bounded clean-discard runtime
 
 The explicit `semuta` development profile starts a fresh Richese roster
-without opening ordinary expansion starts. It interrupts **one public
-ordinary-card discard, the used Box after a paid Nullentropy search,
-either retirement of a played Ornithopter in a clean flight, the used
-Distrans after a private transfer, a final definite Truthtrance,
-movement-order Juice of Sapho, mandatory winning-card cleanup, or a
-later winner-selected battle-card batch without pending rewards**,
-provided the parent transaction is clean. Every seat sees a neutral
-fresh-discard opportunity regardless
-of hidden Semuta possession. An early-ended Ornithopter advances its
-saved movement queue; a completed flight has committed its forces
-and resumes its one arrival only without BG, Ecaz or Moritani entry
-reactions. Distrans's gift stays private with its recipient. The
-Truthtrance answer/history and Sapho first/last queue are bound.
-Mandatory winning cards form one public fresh batch after the
-previous loser cleanup, and any later optional winner selection is a
-separate batch. Neither a Semuta claim nor all-seat decline replays
-casualties or re-discards an already claimed card.
+without opening ordinary expansion starts. It interrupts **clean public
+ordinary-card, paid Box, retired Ornithopter, used Distrans, final
+Truthtrance, movement-order Sapho and battle discard batches**, provided
+the parent transaction has no competing response. Every seat sees a
+neutral fresh-discard opportunity regardless of hidden Semuta custody.
+An early-ended Ornithopter advances the saved queue; a completed
+flight resumes one committed arrival only without BG, Ecaz or
+Moritani entry reactions. Distrans's gift remains private with its
+recipient; Truthtrance answer/history and Sapho first/last order are
+already bound.
+
+The first battle mandatory batch may contain public cards belonging
+to both combatants. Its accepted result and card custody precede
+the neutral offer; casualty allocation and winner cleanup still
+follow it once. Mandatory winning-card cleanup, if present, is a
+separate later batch; optional winner-selected disposal is later
+again. No Semuta claim replays combat or combines these events.
 
 Each seat can Continue; only the canonical holder with a free hand
 slot and a card discarded by another player can commit. A sole
 eligible fresh card transfers automatically in that same action.
-Multiple eligible public winner cards instead open a committed,
-owner-only inspection and exact one-card selection; the other fresh
-cards stay in the pile and Semuta is discarded once. The saved
-ordinary effect or Box parent resumes once. No undisclosed face is
-projected before commitment. Other simultaneous discard producers
-remain unfinished.
+Multiple eligible public battle cards open a committed, owner-only
+inspection and exact one-card selection; the other cards remain in
+the pile and Semuta is discarded once. The saved ordinary effect or
+Box parent resumes once. No undisclosed face is projected before
+commitment. Other simultaneous discard producers remain unfinished.
 
 This neutral all-seat acknowledgement is a conservative **application
 policy**, not a newly discovered publisher timing rule. The explicit
@@ -96,12 +95,12 @@ free-slot requirement is a provisional safety guard, not the printed
 resolution of full-hand take-before-discard. Auction, CHOAM market,
 pending gifts, competing responses, completed Ornithopter arrivals
 with BG intrusion, Ecaz Ambassador or Moritani Terror, queued or
-promise-bound Truthtrance, auction/battle Sapho, loser or mixed-owner
-mandatory battle batches and pending battle rewards retain their
-automatic continuation; Semuta cannot claim those events yet.
-The completed Box's selected search card stays private and its paid
-shuffle is not repeated when another seat takes the used Box.
-No source ruling is inferred from this omission. The
+promise-bound Truthtrance, auction/battle Sapho, pending battle
+rewards and other typed producers retain their automatic continuation;
+Semuta cannot claim those events yet. The completed Box's selected
+search card stays private and its paid shuffle is not repeated
+when another seat takes the used Box. No source ruling is inferred
+from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.

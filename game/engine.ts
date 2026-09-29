@@ -1783,6 +1783,10 @@ export type Game = {
     result: 'normal' | 'traitor' | 'mutualTraitors' | 'explosion' | 'legacy';
     cardRoles?: Record<string, Record<string, Omit<EcazPoisonDiscard, 'card'>>>;
     cardRolesSignature?: string;
+    mandatoryDiscard?: {
+      entries: { card: string; owner: string }[];
+      signature: string;
+    };
     winnerDiscards?: { cards: string[]; completed: boolean; signature: string };
     sukRescue?: { signature: string; completed: boolean };
     ixSubstitution?: { signature: string; completed: boolean };
@@ -4542,6 +4546,13 @@ function battleCardRolesSignature(context: NonNullable<Game['lastBattleContext']
   const { event, turn, territory, combatants, winner, result, cardRoles } = context;
   return JSON.stringify({ event, turn, territory, combatants, winner, result, cardRoles });
 }
+function battleMandatoryDiscardSignature(context: NonNullable<Game['lastBattleContext']>) {
+  return JSON.stringify({
+    event: context.event, turn: context.turn, territory: context.territory,
+    combatants: context.combatants, winner: context.winner, result: context.result,
+    entries: context.mandatoryDiscard?.entries,
+  });
+}
 function battleCardRolesIntegrity(g: Game) {
   const context = g.lastBattleContext;
   if (!context?.cardRoles && !context?.cardRolesSignature) return;
@@ -5547,6 +5558,20 @@ function treacheryDiscardIntegrity(g: Game) {
         ),
       'The saved battle discard does not match its resolved combatants.',
     );
+    if (c.kind === 'battleResolved' && context.mandatoryDiscard) {
+      const receipt = context.mandatoryDiscard;
+      requireRule(
+        Array.isArray(receipt.entries) &&
+        receipt.entries.length === batch.entries.length &&
+        receipt.entries.every(entry =>
+          typeof entry.card === 'string' && typeof entry.owner === 'string') &&
+        receipt.signature === battleMandatoryDiscardSignature(context) &&
+        JSON.stringify(receipt.entries) === JSON.stringify(batch.entries.map(entry => ({
+          card: entry.card.id, owner: entry.discardedBy,
+        }))),
+        'The fresh mandatory battle cards no longer match their former owners.',
+      );
+    }
     // Projection must validate the private Auditor owner as strictly as actions.
     auditorIntegrity(g);
     const loser = c.combatants.find((id) => id !== context.winner);
@@ -5755,6 +5780,7 @@ function semutaOfferSupported(
     continuation.kind !== 'saphoMovementDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
+    continuation.kind !== 'battleResolved' &&
     !(continuation.kind === 'ornithopterDiscard' &&
       (continuation.source === 'end' ||
         (continuation.source === 'move' &&
@@ -5764,8 +5790,11 @@ function semutaOfferSupported(
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&
       continuation.remaining === null && continuation.promise === null)) return false;
+  if (continuation.kind === 'battleResolved' &&
+    !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||
-    continuation.kind === 'winnerMandatoryDiscard') &&
+    continuation.kind === 'winnerMandatoryDiscard' ||
+    continuation.kind === 'battleResolved') &&
     (g.pendingAuditor || g.pendingCapture || g.pendingTech ||
       g.pendingFaceDance || g.pendingChoamBattleIncome ||
       g.pendingWinnerDiscards || g.moritaniRetention ||
@@ -5780,11 +5809,13 @@ function semutaOfferSupported(
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
     (continuation.kind === 'battleCleanup' ||
-      continuation.kind === 'winnerMandatoryDiscard'
+      continuation.kind === 'winnerMandatoryDiscard' ||
+      continuation.kind === 'battleResolved'
       ? entries.every(entry => entry.publicFace)
       : entries.length === 1 && entries[0].publicFace) &&
     (continuation.kind === 'battleCleanup' ||
       continuation.kind === 'winnerMandatoryDiscard' ||
+      continuation.kind === 'battleResolved' ||
       (!continuation.resume.response && !continuation.resume.decision &&
         !continuation.resume.pendingKarama && !continuation.resume.phaseOpening)) &&
     !g.karamaShipping && !g.auction && !g.richeseAuction && !g.battle &&
@@ -18131,6 +18162,14 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
       options: (quote.homeworldExplosion?.options ?? casualtyCommitment!.options).map(({normal, elite}) => ({normal, elite})),
       ...(casualtyCommitment ? { commitment: { forces: {...casualtyCommitment.forces}, dial: casualtyCommitment.dial, support: casualtyCommitment.support } } : {}),
     };
+  }
+  if (discarded.length) {
+    g.lastBattleContext.mandatoryDiscard = {
+      entries: discarded.map(entry => ({ card: entry.card.id, owner: entry.discardedBy })),
+      signature: '',
+    };
+    g.lastBattleContext.mandatoryDiscard.signature =
+      battleMandatoryDiscardSignature(g.lastBattleContext);
   }
   g.battle = null;
   const cards = [...quote.winnerCards];

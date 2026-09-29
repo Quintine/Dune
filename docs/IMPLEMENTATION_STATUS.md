@@ -1,5 +1,45 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta at first mandatory battle discard
+
+The explicit Richese Semuta preview now pauses a clean public
+`battleResolved` discard batch after its combat result and physical
+used-card disposal but before casualty choices or winner cleanup.
+A normal battle's used loser defense is one fresh card; a mutual
+Traitor battle can produce one simultaneous pair owned by both
+combatants. Every seat sees the same neutral offer. The holder may
+commit and recover only a card discarded by another player; two
+eligible cards require owner-only inspection and exact one-card
+selection. Other cards remain on the pile. The result, losses and
+later mandatory/optional winner batches continue once, separately.
+
+Genuine setup exercises a normal battle's loser defense, all-seat
+decline into winner choice, and a two-owner mutual-Traitor batch
+with committed selection and physical census. An isolated migrated
+SQLite room recovers both the initial and owner-committed mixed batch
+without auto-advancing; authenticated selection changes one card
+without rewriting seats or doubling casualties. Pending battle
+rewards, other discard producers, full-hand ordering, normal Richese
+starts and deployed acceptance remain gated.
+
+Independent rules review found no scoped issue. Privacy/recovery
+review found that the initial `battleResolved` metadata did not bind
+the exact original card/owner pair, permitting a malformed saved
+batch to reassign a former owner or substitute an old discarded
+card. Failing-before/passing-after cases now bind the original
+mandatory entries in the resolved battle receipt and reject both
+corruptions before projection or claim; frames predating that receipt
+continue automatically rather than inventing an offer.
+
+Follow-up privacy/recovery review found no remaining scoped defect.
+A direct production-engine run resolved a mutual-Traitor battle,
+opened one two-owner public batch, committed Semuta, selected one
+opponent card and left the other physically discarded without a
+winner. Phone-width rules showed the three separate battle stages.
+`npm run check` passed typecheck, lint and 5,811/5,811 offline
+cases; `npm run build` and all 55 Vite development HTTP cases
+passed. No deployed revision was exercised.
+
 ## 30 September 2026 — Semuta between mandatory and optional winner cleanup
 
 The explicit Richese Semuta preview now pauses a clean public

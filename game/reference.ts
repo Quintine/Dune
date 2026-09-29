@@ -1156,7 +1156,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final Truthtrance, movement-order Sapho or winner battle-card discards without pending rewards. Mandatory winning cards and later optional winner discards are separate fresh batches. Continue or commit held Semuta with a free hand slot; a sole card transfers automatically. For several cards, commit first, then privately select exactly one. The original effect or battle suffix resumes once. BG/Ecaz/Moritani arrivals, loser and mixed-owner mandatory battle batches, competing transactions, full-hand sequencing and normal Richese starts remain unfinished.'
+                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final Truthtrance, movement-order Sapho or battle-card discards without pending rewards. The battle’s first mandatory batch can include cards from both combatants; a later mandatory winning-card cleanup and optional winner selection are separate fresh batches. Continue or commit held Semuta with a free hand slot; only another player’s card is eligible. A sole card transfers automatically; for several, commit first and privately select exactly one. Casualties and awards never replay. Mixed arrivals, reward-pending battle effects, competing transactions, full-hand sequencing and normal Richese starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1166,13 +1166,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final Truthtrance, movement-order Sapho, mandatory winner and optional winner battle-card discards with a neutral all-seat offer. Mandatory and later optional winner cards are separate batches; committed multi-card candidates belong only to the holder. Semuta transfers one other-player card, is discarded once and resumes the original effect once. Mixed arrivals, loser battle batches, pending rewards, other typed producers and full-hand exchange remain unfinished.',
+                  'The explicit Richese preview interrupts clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order Sapho and three separate battle discard stages: initial mandatory combatants, mandatory winner and optional winner. A neutral all-seat offer precedes each eligible batch. Only a committed holder sees multi-card candidates from other players; Semuta transfers one physical card, is discarded once and resumes the saved battle/casualty suffix once. Mixed arrivals, pending battle rewards, other producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
                 status: 'Partial' as const,
                 detail:
-                  'All seats can Continue at the neutral fresh-discard boundary; only the actual holder sees Commit. A committed winner-battle batch gives that holder the card inspector and exact one-card selector; nonholders receive no candidates. Normal Richese starts remain gated.',
+                  'All seats can Continue at the neutral fresh-discard boundary; only the actual holder sees Commit. In a mixed-owner battle batch, a committed holder can inspect and select only cards discarded by another player; nonholders receive no candidates. Normal Richese starts remain gated.',
               },
               {
                 area: 'AI' as const,
@@ -1184,13 +1184,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide distinguishes bounded public ordinary-card, paid Box, clean Ornithopter, Distrans, final Truthtrance, movement-order Sapho and mandatory/optional winner battle batches from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
+                  'The guide distinguishes bounded clean public ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order Sapho and initial/mandatory-winner/optional-winner battle batches from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, physical custody, hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, Ornithopter, Distrans, final Truthtrance, movement-order Sapho and consecutive mandatory/optional winner battle reactions. Loser and mixed-owner batches, full games and live deployment remain unverified.',
+                  'Genuine setup, physical custody, hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order Sapho and separate mandatory/optional battle reactions, including a two-owner simultaneous batch. Pending battle rewards, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',

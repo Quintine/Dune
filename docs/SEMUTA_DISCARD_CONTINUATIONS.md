@@ -35,16 +35,17 @@ sources. The final forces and move counter are held in the existing
 bound flight frame; claim or decline retires that frame and logs the
 arrival once. Mixed entry reactions remain unsupported for Semuta.
 
-Mandatory winner cleanup now pauses at `winnerMandatoryDiscard`
-after any earlier loser/battle batch has retired; a Hero already in
-the public pile can be claimed before the exact optional winner
-choice resumes. If the winner then selects other played cards,
-their public disposal is a separate `battleCleanup` batch. Each
-stage has a neutral all-seat offer; only a committed holder inspects
-multiple eligible cards, selects one, and leaves the others in the
-pile. No battle award or card cost repeats. Moritani loser retention
-and pending Auditor, capture, tech, Face Dance or CHOAM rewards
-remain automatic without this reaction.
+Clean `battleResolved` now pauses the first public mandatory batch
+after combat result and actual card custody are committed but before
+casualty choices or winner follow-up. A mutual-Traitor outcome may
+place two cards from different former owners in that one batch;
+claimants can choose only a card from another player. Later mandatory
+winning-card cleanup uses a separate `winnerMandatoryDiscard` batch,
+and an optional winner selection uses a third `battleCleanup` batch.
+Every supported stage has a neutral all-seat offer; committed holders
+select one fresh card, leave the others in the pile and resume exactly
+once. Pending Auditor, capture, tech, Face Dance or CHOAM rewards
+remain automatic without Semuta.
 
 ## Main findings
 

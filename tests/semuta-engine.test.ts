@@ -534,6 +534,16 @@ void test('clean winner-selected battle cards allow one committed Semuta choice 
     leader: player(battle, 'e').leaders[0].id, defense: defense.id });
   battle = applyAction(battle, 'a', { type: 'traitorCall', call: false });
   battle = applyAction(battle, 'e', { type: 'traitorCall', call: false });
+  assert.equal(battle.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
+  assert.equal(battle.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(battle.pendingTreacheryDiscard?.batch.entries.map(entry => [
+    entry.card.id, entry.discardedBy,
+  ]), [[defense.id, 'e']]);
+  const mandatoryEvent = battle.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(battle, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(battle)), reload(battle));
+  for (const id of ['e', 'a', 'r'])
+    battle = applyAction(battle, id, { type: 'semutaPass', event: mandatoryEvent });
   assert.equal(battle.decision?.kind, 'battleCards');
   const pending = applyAction(reload(battle), 'a', { type: 'decision', discard: [weapon.id] });
   assert.equal(pending.pendingTreacheryDiscard?.batch.cause, 'battle:winner');
@@ -665,4 +675,75 @@ void test('a mandatory winner Hero discard can be claimed before optional battle
   for (const p of claimed.players)
     assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});
+
+void test('a mutual-traitor battle offers one mixed-owner mandatory batch with one committed choice', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const [shield] = g.deck.splice(g.deck.findIndex(card => card.kind === 'shield'), 1);
+  const [snooper] = g.deck.splice(g.deck.findIndex(card => card.kind === 'snooper'), 1);
+  assert.ok(shield && snooper);
+  player(g, 'a').hand.push(shield);
+  player(g, 'e').hand.push(snooper);
+  player(g, 'a').traitors = [player(g, 'e').leaders[0].id];
+  player(g, 'e').traitors = [player(g, 'a').leaders[0].id];
+  for (const id of ['a', 'e']) {
+    player(g, id).forces = { 'arrakeen:10': 5 };
+    player(g, id).reserves = 15;
+    for (const leader of player(g, id).leaders) leader.strength = 0;
+  }
+  Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+    response: null, decision: null, phaseOpening: null, ready: [] });
+  const original = inventory(g);
+  let battle = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+  for (let step = 0; step < 40; step++) {
+    if (battle.response) {
+      const p = battle.players.find(p => !battle.response!.passed.includes(p.id))!;
+      battle = applyAction(battle, p.id, { type: 'passResponse' });
+    } else if (battle.battle?.preparation)
+      battle = applyAction(battle, battle.battle.preparation.owner, { type: 'declineBattlePower' });
+    else break;
+  }
+  if (battle.battle?.preLeader && !battle.battle.preLeader.closed)
+    for (const id of ['a', 'e'])
+      battle = applyAction(battle, id, {
+        type: 'battlePreparationReady', event: battle.battle!.preLeader!.event,
+      });
+  battle = applyAction(battle, 'a', { type: 'battlePlan', dial: 2, support: 2,
+    leader: player(battle, 'a').leaders[0].id, defense: shield.id });
+  battle = applyAction(battle, 'e', { type: 'battlePlan', dial: 0, support: 0,
+    leader: player(battle, 'e').leaders[0].id, defense: snooper.id });
+  battle = applyAction(battle, 'a', { type: 'traitorCall', call: true });
+  const pending = applyAction(battle, 'e', { type: 'traitorCall', call: true });
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(pending.pendingTreacheryDiscard?.batch.entries.map(entry => [
+    entry.card.id, entry.discardedBy,
+  ]), [[shield.id, 'a'], [snooper.id, 'e']]);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  const wrongOwner = reload(pending);
+  wrongOwner.pendingTreacheryDiscard!.batch.entries[0].discardedBy = 'e';
+  assert.throws(() => viewGame(wrongOwner, 'r'));
+  const oldCard = reload(pending);
+  const prior = oldCard.deck.shift()!;
+  oldCard.discard.push(prior);
+  oldCard.pendingTreacheryDiscard!.batch.entries[0].card = prior;
+  assert.throws(() => viewGame(oldCard, 'r'));
+  const committed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  assert.equal(committed.pendingTreacheryDiscard?.reaction?.stage, 'select');
+  assert.deepEqual(viewGame(committed, 'r').semutaReaction?.candidates.map(card => card.id),
+    [shield.id, snooper.id]);
+  assert.deepEqual(viewGame(committed, 'a').semutaReaction?.candidates, []);
+  assert.deepEqual(normalizeAutomaticGame(reload(committed)), reload(committed));
+  const selected = applyAction(reload(committed), 'r', { type: 'semutaSelect',
+    event, card: snooper.id });
+  assert.equal(selected.pendingTreacheryDiscard, null);
+  assert.equal(selected.lastBattleContext?.winner, null);
+  assert.equal(player(selected, 'r').hand.filter(card => card.id === snooper.id).length, 1);
+  assert.equal(selected.discard.filter(card => card.id === shield.id).length, 1);
+  assert.equal(selected.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.deepEqual(inventory(selected), original);
+  for (const p of selected.players)
+    assert.deepEqual(viewGame(reload(selected), p.id), viewGame(selected, p.id));
 });
