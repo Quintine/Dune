@@ -158,7 +158,11 @@ export function guildTransportQuote(g: GameView, action: Action) {
     );
   const cost =
     validForces && total > 0 && validDestination
-      ? guildTransportCost(to, total)
+      ? guildTransportCost(
+          to,
+          total,
+          g.karamaShipping?.player === g.me || !g.guildRateCanceled,
+        )
       : null;
   const ownSpice = p.spice ?? 0;
   const pledgedSpice = g.aid.available;

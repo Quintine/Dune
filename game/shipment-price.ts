@@ -14,14 +14,14 @@ export function reserveShipmentCost(
 /** Guild cross-planet transport and returns; Fremen southern reserves pay this
  * tariff too. Pass 'reserves' for a return, not a board territory type.
  */
-export function guildShipmentCost(destinationType: string, amount: number) {
-  return Math.ceil(
-    (amount *
-      (destinationType === 'reserves' || destinationType === 'stronghold'
-        ? 1
-        : 2)) /
-      2,
-  );
+export function guildShipmentCost(
+  destinationType: string,
+  amount: number,
+  halfRate = true,
+) {
+  const normal = amount *
+    (destinationType === 'reserves' || destinationType === 'stronghold' ? 1 : 2);
+  return halfRate ? Math.ceil(normal / 2) : normal;
 }
 
 /** A pledge is already escrowed. Selecting a share never spends a donor's

@@ -6,18 +6,20 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
-A bounded [Guild reserve-rate Karama path](GUILD_RATE_KARAMA_RULES.md#selected-ordinary-reserve-interpretation--28-september-2026)
-now interrupts a Guild or reciprocal ally's ordinary shipment before payment
-in classic Basic/Advanced tables without optional modules. Canceling the rate
-charges full price for the same forces and originally approved funding split.
-If that split cannot pay, the Karama is spent but the uncommitted shipment
-returns; its replacement uses full price until turn end. This withdrawal
-policy is a conservative implementation interpretation, not a publisher
-affordability ruling. Guild income and independently purchased Karama rates
-remain separate. Saved room/CAS recovery, a legal AI path and a local
-read-only browser preview of the cancel button and full-price replacement
-quote are connected. Cross-shipment, return and optional-module rate
-cancellation remain gated; this change is not in the verified live image.
+A bounded [Guild native rate Karama path](GUILD_RATE_KARAMA_RULES.md#native-transport-extension--29-september-2026)
+now interrupts classic Guild/reciprocal-ally ordinary reserve shipments and
+eligible cross-planet transport before payment, including Guild's own return
+to abstract reserves and allied Fremen southern-reserve transport. Canceling
+the rate charges normal destination price for the **exact saved force group**
+and original approved funding split; return costs one spice per force under
+the documented conservative doubled-tariff interpretation. If the group or
+split cannot complete, Karama is spent but the declaration returns unused and
+a replacement uses full price this turn. Saved typed custody, a legal AI path,
+SQLite CAS recovery and local read-only browser previews of the cancel control
+and replacement quote are connected. Guild income, transport permission and
+independently purchased Karama rates remain separate. Optional-module and
+Homeworld rate cancellation remain gated; this code is not in the verified
+live image below.
 
 Moritani Extortion now has a bounded local reveal-to-Mentat continuation:
 five bank spice stays reserved until Moritani finishes normal Terror placement

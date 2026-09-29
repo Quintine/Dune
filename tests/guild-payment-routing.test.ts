@@ -169,11 +169,9 @@ void test('Guild income from either contributor direction can be allowed or canc
         const card = holdKarama(g, 'a');
         const beforeGuild = player(g, 'g').spice;
         let pending = applyAction(g, shipper, shipment(route, 1));
-        if (route === 'reserve') {
-          assert.equal(pending.response?.kind, 'guildRate');
-          assert.equal(player(pending, shipper).shipped, false);
-          pending = applyAction(pending, 'a', { type: 'passResponse' });
-        }
+        assert.equal(pending.response?.kind, 'guildRate');
+        assert.equal(player(pending, shipper).shipped, false);
+        pending = applyAction(pending, 'a', { type: 'passResponse' });
         assert.equal(pending.response?.kind, 'guildIncome');
         assert.equal(pending.response?.owner, 'g');
         assert.equal(pending.response?.amount, 1);

@@ -1,5 +1,49 @@
 # Dune implementation status
 
+## 29 September 2026 — native Guild cross/return rate response
+
+The classic Basic/Advanced Guild rate interruption now owns a typed, persisted
+cross-planet/return declaration as well as ordinary reserve shipment. Guild,
+its reciprocal ally and paid allied Fremen southern reserves can cross-ship
+one exact physical group; only Guild returns an on-planet group to abstract
+reserves. The prepayment Karama response binds original sector/elite groups,
+turn, destination, quoted half-price cost and approved ally contribution.
+Canceled rate uses full normal destination price for that same group; a Guild
+return costs one spice per force under the explicit doubled-tariff
+interpretation. If original resources or source custody cannot support it,
+the declaration withdraws without payment, force transfer or consumed
+shipment. The spent Karama keeps a replacement at full price for this turn.
+Independent purchased shipping rates, Guild income and canceling transport
+permission remain distinct; Homeworld and optional-module combinations are
+not certified.
+
+Focused engine/quote/in-memory SQLite cases cover group conservation, paid
+Fremen transport, exact funding and unaffordable replacement, Basic/Advanced
+responses, BG Worthless conversion, source corruption or depletion, private
+views, legal AI candidates and a concurrent CAS race. A direct non-test
+multi-sector smoke preserved 20 Guild spice and the source forces through
+JSON reloading, then canceled the rate and settled three Carthag forces for
+three spice with one Karama discarded. A local read-only Chromium seat-view
+preview displayed the public prepayment rate and owner-only Cancel with
+Karama button without persisting a room. These bounded cases do not certify
+complete Guild, public Advanced or deployed behavior; see
+[the selected transport policy](GUILD_RATE_KARAMA_RULES.md#native-transport-extension--29-september-2026).
+
+A second read-only Chromium seat preview selected two physical forces after
+an unaffordable Guild return; the replacement quoted **two spice** instead
+of the old one-spice half rate and enabled Return to reserves. It wrote no room.
+
+Independent review found and verified a previously excluded affordable
+four-force/two-spice Guild Nexus Secret Ally bot cross-shipment; its
+independent card rate remains separate from the native rate. Existing
+Moritani/Terror alliance continuations also required the classic-faction
+roster gate rather than relying only on expansion flags. Eleven focused
+Guild/Nexus/Moritani files passed 123 cases; all 5,706 offline tests, the
+local client/server build and all 54 HTTP integration cases passed.
+`npm run check`/lint remain blocked solely by the concurrent untracked
+Fremen Nexus draft's missing `Player.fremenNexusMovementBlockedTurn` field,
+not a transport diagnostic.
+
 ## 29 September 2026 — bounded Guild rate Karama before payment
 
 In classic-faction Basic/Advanced tables without optional modules, an ordinary

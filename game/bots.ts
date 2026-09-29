@@ -3302,6 +3302,7 @@ function policyActions(g: GameView): Action[] {
           guildTransportCost(
             to.t,
             Math.min(me.reserves, level === 0 ? 1 : 4),
+            halfRate,
           ) <= shipmentBudget
         )
           actions.push({
@@ -3327,7 +3328,7 @@ function policyActions(g: GameView): Action[] {
             origin.id !== to.t &&
             splitLocation(from).sector !== g.storm &&
             botEntryAllowed(g, me, to.t, to.s, 'guildShip', origin.id) &&
-            guildTransportCost(to.t, amount) <= shipmentBudget &&
+            guildTransportCost(to.t, amount, halfRate || guildSecret) <= shipmentBudget &&
             gameDistance(g, from, to.key) > 3
           )
             actions.push({

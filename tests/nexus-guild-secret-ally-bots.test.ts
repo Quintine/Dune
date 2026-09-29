@@ -106,3 +106,24 @@ void test('all profiles can select a physically typed cross-shipment with the ex
     assert.ok(botActions(other).every((a) => a.nexus === undefined));
   }
 });
+
+void test('an unallied Guild Secret Ally bot budgets the independent half-price cross-shipment', () => {
+  const f = nexusGuildSecretAllyFixture({
+    ownerFaction: 'emperor', advanced: true, spice: 2,
+  });
+  const owner = f.g.players[0];
+  owner.forces['false_wall_west:16'] = 4;
+  owner.reserves -= 4;
+  const view = viewGame(f.g, f.owner);
+  view.players[0].bot = 'Medium';
+  const action = botActions(view).find(candidate =>
+    candidate.type === 'guildShip' &&
+    candidate.nexus === view.nexusGuildSecretAlly?.event &&
+    candidate.from === 'false_wall_west:16' &&
+    Number(candidate.amount) === 4);
+  assert.ok(action, 'Four physical forces at Guild price two must remain affordable.');
+  const done = nexusAllow(applyAction(f.g, f.owner, action));
+  assert.equal(done.players[0].spice, 0);
+  assert.equal(done.players[0].shipped, true);
+  nexusGuildSecretAllyInventory(done);
+});

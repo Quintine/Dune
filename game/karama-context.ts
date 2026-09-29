@@ -134,6 +134,7 @@ const cancellationSources = {
   guildIncome: () => null,
   guildRate: (g) => ({
     pending: g.pendingShipment ?? null,
+    ...(g.pendingGuildTransport ? { transport: g.pendingGuildTransport } : {}),
     active: g.active,
     discountedRateBlocked: g.guildRateBlocked ?? null,
     purchasedRate: g.karamaShipping ?? null,

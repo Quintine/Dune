@@ -140,9 +140,10 @@ export function fremenReserveEntry(to: string) {
   );
 }
 /** Guild cross-shipping is paid transport, including allied Fremen reserves. */
-export function guildTransportCost(to: string, amount: number) {
+export function guildTransportCost(to: string, amount: number, halfRate = true) {
   return guildShipmentCost(
     to === 'reserves' ? 'reserves' : territory(to).type,
     amount,
+    halfRate,
   );
 }

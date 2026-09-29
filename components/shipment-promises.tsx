@@ -19,22 +19,21 @@ export function ShipmentPromises({
   const me = g.players.find((p) => p.id === g.me)!;
   const next = g.shipmentCompletion?.actions[0];
   const shipping = next && (next.type === 'ship' || next.type === 'guildShip');
+  const halfRate = g.karamaShipping?.player === me.id ||
+    (!g.guildRateCanceled &&
+      (me.faction === 'guild' ||
+        g.players.some((p) => p.faction === 'guild' && p.id === me.ally)));
   const cost = shipping
     ? next.type === 'guildShip'
       ? guildShipmentCost(
-          territory(String(next.territory)).type,
+          String(next.territory) === 'reserves'
+            ? 'reserves'
+            : territory(String(next.territory)).type,
           Number(next.amount),
+          g.karamaShipping?.player === me.id || !g.guildRateCanceled,
         )
       : reserveShipmentCost(
-          {
-            faction: me.faction,
-            halfRate:
-              me.faction === 'guild' ||
-              g.players.some(
-                (p) => p.faction === 'guild' && p.id === me.ally,
-              ) ||
-              g.karamaShipping?.player === me.id,
-          },
+          { faction: me.faction, halfRate },
           territory(String(next.territory)).type,
           Number(next.amount),
         )
