@@ -12,6 +12,13 @@ import {
 } from '../game/engine';
 import { sampleInventory, verifySampleCustody } from '../tools/sample-custody';
 import { completedMoritaniSkillsGame } from './moritani-skills-fixture';
+import {
+  assassinationChoice,
+  assassinationGame,
+  assassinationToMentat,
+  resolveAssassinationBattle,
+  stageAssassinationBattle,
+} from './moritani-assassinate-fixture';
 
 void test('Moritani Skills sample custody checks the physical skill and Traitor inventories after genuine setup', () => {
   const game = completedMoritaniSkillsGame();
@@ -27,6 +34,23 @@ void test('Moritani Skills sample custody checks the physical skill and Traitor 
   const traitors = structuredClone(game);
   traitors.players[0].traitors[0] = traitors.players[1].traitors[0];
   assert.throws(() => verifySampleCustody(traitors, inventory), /traitor custody/);
+});
+
+void test('Moritani assassination samples conserve retired Traitors after real battle and Mentat replacement', () => {
+  const start = assassinationGame();
+  const inventory = sampleInventory(start);
+  assert.ok(inventory.traitors);
+  verifySampleCustody(start, inventory);
+  const staged = stageAssassinationBattle(start);
+  verifySampleCustody(staged, inventory);
+  const revealed = assassinationChoice(resolveAssassinationBattle(staged), 'guild-1');
+  verifySampleCustody(revealed, inventory);
+  const settled = assassinationToMentat(revealed);
+  assert.equal(settled.moritaniAssassinate?.opportunities[0].stage, 'replaced');
+  verifySampleCustody(settled, inventory);
+  const duplicated = structuredClone(settled);
+  duplicated.traitorReserve!.push('guild-1');
+  assert.throws(() => verifySampleCustody(duplicated, inventory), /physical traitor custody/);
 });
 
 function fixture(advanced = false) {

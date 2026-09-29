@@ -120,3 +120,16 @@ server is reused. Broad checks, source fingerprint, final saved-game preservatio
 and Git delivery are recorded with the checkpoint. Focused and staged evidence
 does not certify a complete faction, all combinations or public
 Advanced readiness.
+
+## 29 September 2026 — five-roster game continuation
+
+The reusable [faction-game runner](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games)
+now exercises this exact gated Advanced preview from two through six seats
+with Moritani and only the supported classic opponents except Harkonnen.
+Five games at seed `20260929` completed in 2,511 accepted actions, with
+zero rejected candidates and 65 JSON continuations. The six-seat game
+opened two genuine private assassination decisions; both were declined.
+The existing staged battle/replacement cases and the external physical
+custody check cover the actual reveal, retirement and new-card draw, but
+the natural full-game samples do **not** demonstrate a reveal. The source
+boundaries and pending user timing/UX questions above remain unchanged.

@@ -6,6 +6,15 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+The bounded [Advanced Moritani Assassinate Leaders preview](MORITANI_ASSASSINATE_LEADERS.md)
+now has repeatable genuine games across two through six supported seats.
+Five samples completed 2,511 accepted actions, no rejected candidates
+and 65 JSON continuations. The six-seat game reached two private
+assassination offers, both declined; real reveal and replacement still
+depend on the focused physical-custody evidence, not a natural full-game
+sample. The unresolved duration/UX questions and public expansion gate
+remain unchanged. This source is not in the last verified live image.
+
 The independent Ecaz three-card variant now has a repeatable
 [genuine-game sample profile](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games)
 for paired Ecaz/Moritani rosters from two to six seats. Ten Basic/Advanced

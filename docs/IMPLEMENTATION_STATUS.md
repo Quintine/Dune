@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 29 September 2026 — Advanced Moritani assassination sample matrix
+
+The reusable offline runner now supports the explicitly gated
+`moritani-assassinate` profile with native Moritani and supported classic
+opponents excluding Harkonnen, across two through six Advanced seats.
+Initialization uses the actual preview path; resume requires both its saved
+marker and ability state, and the external physical Traitor census includes
+publicly retired assassination cards only after Mentat replacement. The
+existing six default samples and their ordinals are unchanged.
+
+At base seed `20260929`, all five games completed in 2,511 accepted actions,
+zero rejected candidates and 65 JSON continuations, with an unchanged
+source fingerprint. The six-seat game reached two actual private
+assassination offers; both were declined. Genuine battle/Mentat focused
+tests independently exercise reveal, retirement, replacement and duplicate
+custody rejection; the natural game samples do **not** establish that use.
+Source-bound private report:
+`/tmp/dune-moritani-assassinate-matrix-20260929/report.json`, based on
+`c961a93` plus this checkpoint's uncommitted source (fingerprint
+`8889d9bf25b964948913588aa3320a3f47fd2b3f1fd79edf9df12397ce687c57`).
+Independent read-only review found no concrete profile or custody defect.
+The pending rule-duration and uniform-private-step UX questions remain.
+No complete Moritani faction, public Moritani start or deployed acceptance
+follows from these samples.
+
+The focused assassination/CLI/custody union passes 56/56 cases.
+`npm run check` passes typecheck, lint and 5,767/5,767 offline cases.
+No app route, database schema or deployed game changed in this checkpoint.
+
 ## 29 September 2026 — Ecaz card variant full-game integration samples
 
 The reusable offline runner now has `--profile ecaz-treachery`: two through

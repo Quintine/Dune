@@ -20,8 +20,9 @@ export function sampleInventory(game: Game) {
     ]
       .map((card) => card.id)
       .sort(),
-    // Other expansion assassination zones require a separate adapter.
-    traitors: game.expansions.length && !basicExpansionLeaderSkillsProfile(game)
+    // The bounded Moritani preview has a separate public retired-card zone.
+    traitors: game.expansions.length && !basicExpansionLeaderSkillsProfile(game) &&
+      !game.moritaniAssassinatePreview
       ? null
       : traitorDeck(
           game.players.map((player) => ({ leaders: leaders(player.faction) })),
@@ -130,6 +131,9 @@ export function verifySampleCustody(
         ...game.players.flatMap((player) => [
           ...player.traitors, ...(player.faceDancers ?? []).map(card => card.leader),
         ]),
+        ...(game.moritaniAssassinate?.opportunities ?? [])
+          .filter(receipt => receipt.stage === 'replaced')
+          .map(receipt => receipt.card!),
       ].sort(),
       inventory.traitors,
       'physical traitor custody',

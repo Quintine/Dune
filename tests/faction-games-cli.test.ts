@@ -119,6 +119,27 @@ void test('Ecaz card samples keep all three physical identities through saved re
   assertFailedEvidence(resumed, 'ecaz-treachery-2-advanced', 1137, true);
 });
 
+void test('Advanced Moritani assassination samples retain their preview and physical Traitor pool on resume', (t) => {
+  const area = temporary(t);
+  const out = join(area, 'assassinate');
+  assert.equal(run(out, '--profile', 'moritani-assassinate', '--players', '3',
+    '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(out, 'moritani-assassinate-3-advanced', 1147, false);
+  const snapshot = join(out, 'failed-moritani-assassinate-3-advanced.json');
+  const game = json<{ advanced: boolean; moritaniAssassinatePreview: boolean;
+    moritaniAssassinate: { owner: string; opportunities: unknown[] };
+    players: { id: string; faction: string }[] }>(snapshot);
+  assert.equal(game.advanced, true);
+  assert.equal(game.moritaniAssassinatePreview, true);
+  assert.equal(game.moritaniAssassinate.owner, game.players.find(p => p.faction === 'moritani')?.id);
+  const resumed = join(area, 'resumed');
+  assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(resumed, 'moritani-assassinate-3-advanced', 1147, true);
+  const unsupported = join(area, 'basic');
+  assert.equal(run(unsupported, '--profile', 'moritani-assassinate', '--rules', 'basic').status, 1);
+  assert.equal(existsSync(unsupported), false);
+});
+
 void test('Moritani Skills samples preserve their full module on saved continuation and reject Advanced before running', (t) => {
   const area = temporary(t);
   const out = join(area, 'skills');

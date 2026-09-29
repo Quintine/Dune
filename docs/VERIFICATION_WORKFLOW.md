@@ -112,6 +112,7 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-choam-roster --prof
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ecaz-roster --profile ecaz-roster
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ix-roster --profile ix-roster
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ecaz-cards --profile ecaz-treachery
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-moritani-assassinate --profile moritani-assassinate
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-choam-nexus --profile choam-nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ecaz-nexus --profile ecaz-nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ix-nexus --profile ix-nexus
@@ -143,6 +144,13 @@ independent three-card Treachery variant instead of Nexus Cards. Basic and
 Advanced seed offsets are 136–145; default/all keeps its original six games.
 The runner counts all three physical cards and resume requires the variant
 marker and exact roster. This is still a gated development profile.
+`moritani-assassinate` runs only Advanced with Moritani followed by Atreides,
+Emperor, Fremen, Guild and Bene Gesserit as seats are added. Harkonnen and
+other optional modules remain outside this explicit development preview.
+Five scenario offsets 146–150 leave earlier profiles unchanged. A resumed
+snapshot must retain both the preview and its authoritative ability state;
+the external physical census includes each public set-aside Traitor Card after
+its actual Mentat replacement.
 `choam-nexus`, `ecaz-nexus` and `ix-nexus` reuse the respective expansion
 rosters with Nexus Cards enabled at seed offsets 98–107, 108–117 and 118–127.
 `combined-nexus` selects five or six actual expansion factions and all three
@@ -170,6 +178,15 @@ matrix exposed a non-serializable unlocked advisor stance; its corrected
 writer paths are documented in
 [the implementation log](IMPLEMENTATION_STATUS.md#29-september-2026--ecaz-card-variant-full-game-integration-samples).
 This is not expansion release evidence.
+
+At the same base seed, five Advanced Moritani assassination preview games
+completed with 2,511 accepted actions, zero rejected candidates and 65 JSON
+continuations. The six-seat game reached two actual private
+assassination opportunities, both declined; it did **not** naturally test
+reveal and replacement. Focused engine/custody regressions cover that
+physical path. Private report:
+`/tmp/dune-moritani-assassinate-matrix-20260929/report.json`. This is
+sampled continuation, not a duration ruling or public expansion readiness.
 
 All-AI Nexus samples now make public reciprocal offers as well as accepting
 them, so an actual alliance can form without a human proposer. At the
@@ -199,11 +216,12 @@ Advanced requests fail before running. Its seed offsets are 16–20, leaving
 existing samples unchanged. The full fourteen-card skill census and ordinary
 Moritani/base Traitor census are checked throughout. `--resume` preserves this
 explicit profile; other optional modules still fail its admission checks.
-Homeworld, Nexus, independent Ecaz-card and combined snapshots resume only
-when their saved modules and fixed rosters match a supported profile; other
-optional-module combinations remain excluded. An edited snapshot with a
-removed module can match a different fixed profile, so verify its original
-private report before relying on resumed provenance.
+Homeworld, Nexus, independent Ecaz-card, Advanced Moritani assassination and
+combined snapshots resume only when their saved modules and fixed rosters
+match a supported profile; other optional-module combinations remain
+excluded. An edited snapshot with a removed module can match a different
+fixed profile, so verify its original private report before relying on
+resumed provenance.
 
 All samples use genuine setup and saved AI profiles, cycling Easy, Medium,
 Hard and Brutal by seat. Smaller games necessarily contain fewer profiles;
