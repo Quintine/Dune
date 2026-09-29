@@ -7,19 +7,19 @@ Expansion starts and full rules/publication acceptance remain gated.**
 ## Current checkpoint and work
 
 The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
-pauses a clean public ordinary-card discard, the used Box after a
-paid search, early-ended Ornithopter, public used Distrans after a
-private transfer, or a final definite Truthtrance after its answer
-is bound. Every seat sees the same neutral offer independently of
-hidden Semuta possession. The Distrans gift remains private with
-its recipient; Truthtrance history stays fixed through the claim.
-A holder with a free hand slot can recover the fresh other-player
-discard and dispose Semuta; saved effects and the movement queue
-resume once. All-seat decline, minimal legal AI, exact JSON/SQLite
-continuation and competing-room CAS are connected. Phone width
-showed the owned Commit and rival Continue event without a private
-card face. Promise-bound and queued Truthtrance, completed-flight
-arrival, competing transactions, multi-card and most other producers,
+pauses a clean public ordinary-card discard, used Box after paid search,
+early-ended Ornithopter, public used Distrans after private transfer,
+final definite Truthtrance or movement-order Juice of Sapho after
+its queue reorder. Every seat sees the same neutral offer independently
+of hidden Semuta possession. The private gift stays with its recipient,
+Truthtrance history stays fixed, and Sapho's first/last queue resumes
+once after claim or decline. A holder with a free hand slot can recover
+the fresh other-player discard and dispose Semuta. All-seat decline,
+minimal legal AI, exact JSON/SQLite continuation and competing-room
+CAS are connected. Phone width showed the owned Commit and rival
+Continue event without a private card face. Auction/battle Sapho,
+promise-bound and queued Truthtrance, completed-flight arrival,
+competing transactions, multi-card and most other producers,
 full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and the free-slot guard are
 product safety choices, not publisher rulings.

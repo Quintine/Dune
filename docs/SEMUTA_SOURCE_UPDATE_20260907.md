@@ -65,15 +65,17 @@ The explicit `semuta` development profile starts a fresh Richese roster
 without opening ordinary expansion starts. It interrupts **one public
 ordinary-card discard, the used Box after a paid Nullentropy search, an
 Ornithopter retired by ending movement early, the used Distrans after
-a clean private transfer, or a final definite Truthtrance after its
-answer is bound**, provided the parent transaction is clean. Every seat
-sees a neutral fresh-discard opportunity regardless of hidden Semuta
-possession. The flight's committed movement and escrow remain intact;
-a claim or all-seat decline advances its saved queue once. Distrans's
-transferred card stays privately with its recipient and cannot be
-claimed; only the played public Distrans enters the fresh batch. The
-Truthtrance's public answer and history are already committed before
-the offer, and neither is re-evaluated afterward.
+a clean private transfer, a final definite Truthtrance after its answer
+is bound, or movement-order Juice of Sapho after its queue is committed**,
+provided the parent transaction is clean. Every seat sees a neutral
+fresh-discard opportunity regardless of hidden Semuta possession. The
+flight's committed movement and escrow remain intact; a claim or
+all-seat decline advances its saved queue once. Distrans's transferred
+card stays privately with its recipient and cannot be claimed; only
+the played public Distrans enters the fresh batch. Truthtrance's
+public answer and history are already committed before the offer.
+Sapho's first/last queue and protected Guild-last choice stay committed;
+only the turn-activation suffix waits for the reaction.
 
 Each seat can Continue; only the canonical holder with a free hand
 slot and a card discarded by another player can commit. The sole
@@ -90,11 +92,12 @@ policy**, not a newly discovered publisher timing rule. The explicit
 free-slot requirement is a provisional safety guard, not the printed
 resolution of full-hand take-before-discard. Auction, CHOAM market,
 pending gifts, competing responses, completed Ornithopter flights with
-arrival follow-up, queued or promise-bound Truthtrance and other typed
-discard producers retain their existing automatic continuation; Semuta
-cannot claim those events yet. The completed Box's selected search card
-stays private and its paid shuffle is not repeated when another seat
-takes the used Box. No source ruling is inferred from this omission. The
+arrival follow-up, queued or promise-bound Truthtrance, auction/battle
+Sapho and other typed discard producers retain their existing
+automatic continuation; Semuta cannot claim those events yet. The
+completed Box's selected search card stays private and its paid shuffle
+is not repeated when another seat takes the used Box. No source ruling
+is inferred from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.

@@ -21,6 +21,13 @@ promise or competing parent qualifies. A claim may move that consumed
 card, never re-answer the question or rewrite its history; other
 Truthtrance continuations remain automatic.
 
+Clean movement-order Sapho now stages `saphoMovementDiscard` after
+its finite first/last queue and public card disposal are committed.
+The reaction retires before `movementTurn` opens the new actor's turn;
+the queue, prior active seat and protected-last receipt bind saved
+continuation. Once Around and Battle Sapho remain outside this
+Semuta preview.
+
 ## Main findings
 
 A post-`applyAction` pile diff cannot implement immediate Semuta. Ix Ambassador and Ixian ally replacement discard then draw directly. Ordinary Karama cancellation/purchase can reach replacement, Harkonnen bonus or a new auction pool indirectly. A stopped frame must resume at a named stage, never rerun its original public action.

@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after clean movement-order Sapho
+
+The explicit Richese Semuta preview now pauses after Juice of Sapho
+physically discards its public card and commits a clean first/last
+reorder of remaining combined shipment and movement turns. Every seat
+sees the same neutral event before the active turn changes. A legal
+holder can claim only the used Sapho and discard Semuta; all-seat
+decline leaves Sapho in the ordinary pile. Both paths resume the
+already committed order once, retaining protected last and prior
+Guild timing without restarting any completed turn.
+
+Genuine setup covers first reordering, last protection, all-seat
+decline, one physical claim, exact card census and JSON views. A
+corrupted saved queue, newly spent movement, changed Basic/Advanced
+profile or altered faction roster rejects before claim; an isolated
+migrated SQLite room restores the paused reorder and commits an
+authenticated claim with unchanged seat rows. Independent rules
+review found the initially missing timing-profile binding; the
+failing-before/passing-after regression now covers both Advanced
+mode and Guild identity. Auction and battle Sapho, competing parents,
+full-hand ordering, normal Richese starts and deployed acceptance
+remain outside scope.
+
+Follow-up rules and independent privacy reviews found no remaining
+scoped defect. A throwaway production-engine run completed genuine
+AI setup, Sapho first reorder, neutral Semuta offer and bot claim;
+the saved turn advanced to the reordered actor exactly once. The
+phone-width rules guide rendered the bounded Sapho path as Partial.
+An initial `npm run check` failed one expansion-roster CLI resume
+while source edits were concurrent; the focused case passed after
+source stabilized. The stable rerun passed typecheck, lint and
+5,807/5,807 offline cases; `npm run build` and all 55 Vite development
+HTTP cases passed after the timing-profile fix. No deployed revision
+was exercised.
+
 ## 30 September 2026 — Semuta after a final definite Truthtrance answer
 
 The explicit Richese Semuta preview now pauses the public card discard

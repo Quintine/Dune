@@ -369,3 +369,83 @@ void test('a final definite Truthtrance answer offers its consumed card after pu
     assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
 });
+
+void test('a completed Sapho first-movement reorder offers its public card before changing the active turn', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const sapho = take(g, 'richese-juice-of-sapho');
+  player(g, 'e').hand.push(sapho);
+  const original = inventory(g);
+  const pending = applyAction(g, 'e', {
+    type: 'card', card: sapho.id, scope: 'movement', mode: 'first',
+    event: `movement:${g.turn}`,
+  });
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(pending.movementRemaining, ['e', 'a', 'r']);
+  assert.equal(pending.active, 'a');
+  assert.equal(pending.discard.filter(card => card.id === sapho.id).length, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(declined.active, 'e');
+  assert.deepEqual(declined.movementRemaining, ['e', 'a', 'r']);
+  assert.equal(declined.discard.filter(card => card.id === sapho.id).length, 1);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(claimed.active, 'e');
+  assert.deepEqual(claimed.movementRemaining, ['e', 'a', 'r']);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === sapho.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(claimed.discard.some(card => card.id === sapho.id), false);
+  assert.deepEqual(inventory(claimed), original);
+  for (const p of claimed.players)
+    assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
+  assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});
+
+void test('Sapho last protects the saved queue and its discard receipt against alteration', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const sapho = take(g, 'richese-juice-of-sapho');
+  player(g, 'a').hand.push(sapho);
+  const pending = applyAction(g, 'a', {
+    type: 'card', card: sapho.id, scope: 'movement', mode: 'last',
+    event: `movement:${g.turn}`,
+  });
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(pending.movementRemaining, ['r', 'e', 'a']);
+  assert.equal(pending.active, 'a');
+  assert.equal(pending.saphoMovementLast?.player, 'a');
+  const tampered = reload(pending);
+  tampered.movementRemaining = ['e', 'r', 'a'];
+  const before = JSON.stringify(tampered);
+  assert.throws(() => viewGame(tampered, 'r'));
+  assert.throws(() => normalizeAutomaticGame(tampered));
+  assert.equal(JSON.stringify(tampered), before);
+  const spent = reload(pending);
+  player(spent, 'a').moved = 1;
+  assert.throws(() => applyAction(spent, 'r', {
+    type: 'semutaCommit', event: pending.pendingTreacheryDiscard!.batch.event,
+  }));
+  const profile = reload(pending);
+  profile.advanced = !profile.advanced;
+  assert.throws(() => viewGame(profile, 'r'));
+  const roster = reload(pending);
+  player(roster, 'e').faction = 'guild';
+  assert.throws(() => viewGame(roster, 'r'));
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit',
+    event: pending.pendingTreacheryDiscard!.batch.event });
+  assert.equal(claimed.active, 'r');
+  assert.deepEqual(claimed.movementRemaining, ['r', 'e', 'a']);
+  assert.equal(claimed.saphoMovementLast?.player, 'a');
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === sapho.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.deepEqual(normalizeAutomaticGame(reload(claimed)), reload(claimed));
+});

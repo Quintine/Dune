@@ -1144,6 +1144,16 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'saphoMovementDiscard';
+          player: string;
+          card: string;
+          event: string;
+          mode: 'first' | 'last';
+          previousActive: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'truthtranceDiscard';
           consumed: TruthQueueEntry;
           historyIndex: number;
@@ -4681,6 +4691,25 @@ function distransDiscardSignature(g: Game, c: DistransDiscardContinuation) {
     recipientHand: recipient.hand.map(card => card.id),
   });
 }
+type SaphoMovementDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'saphoMovementDiscard' }
+>;
+function saphoMovementDiscardSignature(g: Game, c: SaphoMovementDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, card: c.card, event: c.event, mode: c.mode,
+    previousActive: c.previousActive,
+    parent: nullentropyParentSignature(g, c.resume, c.event),
+    turn: g.turn, phase: g.phase, advanced: g.advanced,
+    active: g.active, order: g.order,
+    remaining: g.movementRemaining, protectedLast: g.saphoMovementLast,
+    guildTimingGranted: g.guildTimingGranted, guildTimingLocked: g.guildTimingLocked,
+    hajr: g.hajr, karamaShipping: g.karamaShipping, choamMovement: g.choamMovement,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, moved: p.moved, shipped: p.shipped,
+    })),
+  });
+}
 type TruthDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'truthtranceDiscard' }
@@ -5094,6 +5123,34 @@ function treacheryDiscardIntegrity(g: Game) {
       !c.resume.pendingKarama && !c.resume.phaseOpening &&
       c.stateSignature === distransDiscardSignature(g, c),
       'The completed private Distrans transfer no longer matches its fresh discard.',
+    );
+  } else if (continuation?.kind === 'saphoMovementDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    requireRule(
+      g.phase === 5 && g.active === c.previousActive &&
+      c.event === `movement:${g.turn}` &&
+      g.players.some(p => p.id === c.player) &&
+      Array.isArray(g.movementRemaining) &&
+      g.movementRemaining.length > 1 &&
+      new Set(g.movementRemaining).size === g.movementRemaining.length &&
+      g.movementRemaining.every(id => g.order.includes(id)) &&
+      g.movementRemaining.includes(c.previousActive) &&
+      (c.mode === 'first'
+        ? g.movementRemaining[0] === c.player &&
+          c.previousActive !== c.player && !g.saphoMovementLast
+        : c.mode === 'last' &&
+          g.movementRemaining.at(-1) === c.player &&
+          g.saphoMovementLast?.event === c.event &&
+          g.saphoMovementLast.turn === g.turn &&
+          g.saphoMovementLast.player === c.player) &&
+      batch.cause === 'sapho:movement' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card &&
+      richeseCardDefinition(entry.card)?.card.effect === 'juiceOfSapho' &&
+      !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature === saphoMovementDiscardSignature(g, c),
+      'The used Juice of Sapho no longer matches its committed movement order.',
     );
   } else if (continuation?.kind === 'truthtranceDiscard') {
     const c = continuation,
@@ -5685,8 +5742,8 @@ function treacheryDiscardIntegrity(g: Game) {
   } else throw new RuleError('Unknown saved discard continuation.');
 }
 /** Bounded public single-card reaction after a completed ordinary effect, paid
- * Box search, early-ended Ornithopter flight, clean Distrans transfer or final
- * definite Truthtrance answer without a new promise or parent transaction. */
+ * Box search, early-ended Ornithopter, clean Distrans transfer, final definite
+ * Truthtrance answer or clean Sapho movement reorder. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -5695,11 +5752,14 @@ function semutaOfferSupported(
   if (continuation.kind !== 'ordinaryCardDiscard' &&
     continuation.kind !== 'nullentropyDiscard' &&
     continuation.kind !== 'distransDiscard' &&
+    continuation.kind !== 'saphoMovementDiscard' &&
     !(continuation.kind === 'ornithopterDiscard' && continuation.source === 'end') &&
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&
       continuation.remaining === null && continuation.promise === null)) return false;
-  if ((continuation.kind === 'distransDiscard' || continuation.kind === 'truthtranceDiscard') &&
+  if ((continuation.kind === 'distransDiscard' ||
+    continuation.kind === 'truthtranceDiscard' ||
+    continuation.kind === 'saphoMovementDiscard') &&
     (g.pendingChoamMove || g.pendingIxMove || g.pendingFremenMove ||
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0)) return false;
   return g.semutaPreview === true && g.status === 'playing' &&
@@ -5869,6 +5929,12 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
+  } else if (next.kind === 'saphoMovementDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
+    if (g.active !== g.movementRemaining?.[0]) movementTurn(g);
   } else if (next.kind === 'ornithopterDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -14214,12 +14280,27 @@ function playSapho(g: Game, p: Player, action: Action) {
     g.movementRemaining = [...next.remaining];
     if (option.mode === 'last')
       g.saphoMovementLast = { event: option.event, turn: g.turn, player: p.id };
-    discard(g, p, 'richese-juice-of-sapho');
+    const used = discard(g, p, 'richese-juice-of-sapho');
     log(
       g,
       `${p.name} discarded Juice of Sapho to take the ${option.mode} remaining combined shipment and movement turn${option.mode === 'last' ? ', including after the Spacing Guild' : ''}. Completed turns and physical storm order are unchanged.`,
       { faction: p.faction, name: 'Juice of Sapho' },
     );
+    if (g.semutaPreview) {
+      const continuation: SaphoMovementDiscardContinuation = {
+        kind: 'saphoMovementDiscard', player: p.id, card: used.id,
+        event: option.event, mode: option.mode, previousActive: g.active!,
+        resume: { response: g.response, decision: g.decision,
+          pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+        stateSignature: '',
+      };
+      const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+      if (semutaOfferSupported(g, continuation, entries)) {
+        continuation.stateSignature = saphoMovementDiscardSignature(g, continuation);
+        stageTreacheryDiscard(g, 'sapho:movement', entries, continuation);
+        return;
+      }
+    }
     // Preserve the Guild decision already settled for an unchanged current actor.
     if (g.active !== g.movementRemaining[0]) movementTurn(g);
   }

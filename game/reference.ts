@@ -488,6 +488,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'During your open pre-plan preparation, use Sapho to become the current battle’s aggressor before declaring ready. You win ordinary ties, while the Habbanya Stronghold advantage still takes precedence. Physical participants, plans and later battle-choice order do not swap. The accepted priority survives refresh.',
       'Finish existing shipment, movement, card preparation and pending decisions before changing order. Your hand panel lists only currently available choices. A reserved card or a position you already hold cannot be selected.',
       'Completed bids and turns stay completed. Storm order, committed funding and movement counters do not reset. Refreshing preserves the same remaining opportunities and any declared last position.',
+      'In the explicitly opted-in Semuta preview, a clean movement-order Sapho discard pauses after its queue reorder. Every seat receives the same neutral offer before the active turn changes. A claim transfers only the used Sapho card; the saved queue and any protected last position resume once. Auction and battle Sapho discards remain automatic without this preview reaction.',
       'These are the supported development controls, not additional printed restrictions. Later aggressor intervention, ordinary cyclic auction scope, other phase ordering and intervention during a partly completed combined turn remain unfinished. Silent bids are simultaneous; their storm-order tie rule is unchanged.',
     ],
     example:
@@ -704,7 +705,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Synchronous two-card custody, private transfer, normal Distrans disposal, both-card reservations and prospective transaction/promise checks are integrated. Open-lot timing and self-transfer remain explicit guards; Semuta reaction to Distrans disposal is not yet integrated.',
+          'Synchronous two-card custody, private transfer, normal Distrans disposal, both-card reservations and prospective transaction/promise checks are integrated. The explicit Semuta preview offers a neutral reaction only after a clean completed transfer; open-lot timing, competing transactions and self-transfer remain guarded.',
       },
       {
         area: 'Player controls',
@@ -1155,7 +1156,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard, completed paid Box search, early-ended Ornithopter flight, clean private Distrans transfer or final definite Truthtrance answer. Continue or commit held Semuta with a free hand slot; only the freshly discarded public card transfers. A Distrans gift remains private with its recipient, and the Truthtrance answer/history is already bound. Competing transactions, later queued questions, full-hand sequencing and normal Richese starts remain unfinished.'
+                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard, paid Box search, early-ended Ornithopter flight, private Distrans transfer, final definite Truthtrance answer or completed movement-order Sapho discard. Continue or commit held Semuta with a free hand slot; only the freshly discarded public card transfers. Private gifts and bound answers stay intact; a Sapho claim resumes its saved movement queue once. Competing transactions, auction and battle Sapho, full-hand sequencing and normal Richese starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1165,7 +1166,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card, paid Box, early-ended Ornithopter, private Distrans and final definite Truthtrance discards with a neutral all-seat offer. Committing held Semuta claims only the other-player discarded card and discards Semuta. The private gift stays with its recipient, the answered Truthtrance history remains public, and saved effects or movement resume once. Promise-bound or queued questions, competing transactions, other typed producers and full-hand exchange remain unfinished.',
+                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card, paid Box, early-ended Ornithopter, private Distrans, final definite Truthtrance and movement-order Sapho discards with a neutral all-seat offer. Committing held Semuta claims only the other-player discarded card and discards Semuta. Private gifts and answered history remain intact; completed effects, Sapho ordering and movement resume once. Auction/battle Sapho, competing transactions, other typed producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
@@ -1183,13 +1184,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide distinguishes bounded public ordinary-card, paid Box, early-ended Ornithopter, clean Distrans and final definite Truthtrance previews, privacy-neutral acknowledgements and conservative free-slot policy from unresolved full-hand sequencing and remaining discard sources.',
+                  'The guide distinguishes bounded public ordinary-card, paid Box, early-ended Ornithopter, clean Distrans, final definite Truthtrance and movement-order Sapho previews, privacy-neutral acknowledgements and conservative free-slot policy from unresolved full-hand sequencing and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, early-ended Ornithopter, private Distrans and final definite Truthtrance reactions. Other discard producers, full games and live deployment remain unverified.',
+                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, early-ended Ornithopter, private Distrans, final definite Truthtrance and movement-order Sapho reactions. Other discard producers, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',

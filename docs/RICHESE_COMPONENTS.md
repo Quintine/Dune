@@ -12,7 +12,7 @@ Audited 6 September 2026. The ten physical identities and their readable face in
 
 - Player controls show both original plans, exact undialed counts or honest possible totals, the mode choice and a complete internal guide. No victim/death confirmation is added. The card stays physically reserved until standard cleanup; stale events, duplicate requests and corrupted source custody fail before resources change. All four AI profiles use public force possibilities, legal low-dial plans and revealed leader/bounty information. They preserve leader value when Artillery suppresses bounty and leave traitor/explosion precedence intact.
 
-- Semuta Drug now has an explicit bounded development preview for clean public ordinary-card, paid Box, early-ended Ornithopter, completed private Distrans and final definite Truthtrance discards; no private gift or unresolved promise becomes a fresh target. Other producers, full-hand ordering and normal Richese starts remain unfinished. Mirror Weapon and Juice of Sapho have separate bounded paths, not complete combined-mode certification. Other unfinished faction/module systems, mobile acceptance, difficulty-strength calibration and complete Advanced/expansion games still prevent goal completion. No start gate was removed.
+- Semuta Drug now has an explicit bounded development preview for clean public ordinary-card, paid Box, early-ended Ornithopter, completed private Distrans, final definite Truthtrance and movement-order Sapho discards; private gifts, unresolved promises and auction/battle Sapho are not fresh targets. Other producers, full-hand ordering and normal Richese starts remain unfinished. Mirror Weapon and Juice of Sapho have separate bounded paths, not complete combined-mode certification. Other unfinished faction/module systems, mobile acceptance, difficulty-strength calibration and complete Advanced/expansion games still prevent goal completion. No start gate was removed.
 
 The complete integrated validation checkpoint is recorded in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 
@@ -113,8 +113,9 @@ explicitly opted-in Richese development profile. Neutral all-seat
 responses, physical one-card recovery, a provisional free-slot guard,
 minimal legal AI and saved continuation now work after clean public
 ordinary-card discards, the used Box after a paid search, early-ended
-Ornithopter, clean private Distrans transfer and final definite
-Truthtrance without a queued question or bound promise. Other semantic
-discard families and full-hand ordering remain unconnected; the
+Ornithopter, clean private Distrans, final definite Truthtrance and
+movement-order Sapho after its first/last queue is committed. Queued
+questions, promise-bound answers, auction/battle Sapho and other
+semantic discard families remain unconnected; full-hand ordering,
 ten-card inventory, cache custody and public expansion start gate
 are unchanged.

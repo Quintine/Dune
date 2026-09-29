@@ -247,5 +247,38 @@ void test('authenticated clean Semuta producers claim once through restart and r
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(recovered, auth.playerId));
+
+    const ordered = structuredClone(recovered);
+    const again = take(ordered, SEMUTA_DRUG_ID);
+    ordered.deck.push(take(ordered, truth.id));
+    seat(ordered, ids[0]).hand.push(again);
+    const sapho = take(ordered, 'richese-juice-of-sapho');
+    seat(ordered, ids[2]).hand.push(sapho);
+    for (const p of ordered.players) { p.moved = 0; p.shipped = false; }
+    Object.assign(ordered, { turn: 7, phase: 5, active: ids[1], ready: [],
+      decision: null, response: null, phaseOpening: null, stormPending: null,
+      movementRemaining: [ids[1], ids[0], ids[2]], hajr: [] });
+    ordered.version = recovered.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(ordered), ordered.version, code, recovered.version).changes, 1);
+    const reordered = await act(2, { type: 'card', card: sapho.id, scope: 'movement',
+      mode: 'first', event: `movement:${ordered.turn}` });
+    assert.equal(reordered.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.deepEqual(reordered.movementRemaining, [ids[2], ids[1], ids[0]]);
+    assert.equal(reordered.active, ids[1]);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, reordered.version);
+    assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
+    const reorderedClaim = await act(0, { type: 'semutaCommit',
+      event: reordered.pendingTreacheryDiscard!.batch.event });
+    assert.equal(reorderedClaim.pendingTreacheryDiscard, null);
+    assert.equal(reorderedClaim.active, ids[2]);
+    assert.deepEqual(reorderedClaim.movementRemaining, [ids[2], ids[1], ids[0]]);
+    assert.equal(seat(reorderedClaim, ids[0]).hand.filter(card => card.id === sapho.id).length, 1);
+    assert.equal(reorderedClaim.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.equal(reorderedClaim.discard.some(card => card.id === sapho.id), false);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(reorderedClaim, auth.playerId));
   } finally { f.sqlite.close(); }
 });
