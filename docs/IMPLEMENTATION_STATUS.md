@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 29 September 2026 — paired expansion game samples
+
+At source revision `b9c8b74`, the reusable genuine-setup runner completed
+all six fixed Basic/Advanced CHOAM/Richese, Ecaz/Moritani and combined
+expansion samples at base seed `20260929`: 4,641 accepted actions, no rejected
+candidates and 122 JSON continuations. The source fingerprint remained
+unchanged throughout. The private source-bound report is
+`/tmp/dune-goal-20260929-expansion-pairs/report.json`; no live room was used.
+This is sampled integration evidence, not effect-by-effect acceptance, full
+module coverage, AI calibration or permission to open public expansion starts.
+
 ## 29 September 2026 — Homeworld-sourced AI arrival preflight
 
 A genuine five-seat Advanced combined Homeworld/Nexus/expansion game on
