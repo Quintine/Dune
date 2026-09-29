@@ -19,10 +19,11 @@ at `b9c8b74` completed with 4,641 legal actions and 122 JSON continuations.
 They do not establish complete faction effects, module combinations or
 release readiness.
 
-Five Basic Moritani plus Leader Skills [game samples](IMPLEMENTATION_STATUS.md#29-september-2026--moritani-leader-skills-samples)
-across two through six seats at `29aedf1` completed with 2,013 legal actions
-and 53 JSON continuations. This is sampled playable coverage, not complete
-skills, Advanced or optional-module acceptance.
+Five Basic Moritani and five Basic Tleilaxu plus Leader Skills
+[game samples](IMPLEMENTATION_STATUS.md#29-september-2026--moritani-and-tleilaxu-leader-skills-samples)
+across two through six seats completed with 4,736 legal actions and 123 JSON
+continuations. This is sampled playable coverage, not complete skills,
+Advanced or optional-module acceptance.
 
 A bounded [Ecaz Ambassador/Moritani Terror same-entry continuation](MORITANI_ENTRY_TIMING.md#selected-bounded-overlap-order--29-september-2026)
 now snapshots both original optional triggers and offers their owners sequential

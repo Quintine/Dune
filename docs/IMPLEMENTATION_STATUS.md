@@ -1,6 +1,6 @@
 # Dune implementation status
 
-## 29 September 2026 — Moritani Leader Skills samples
+## 29 September 2026 — Moritani and Tleilaxu Leader Skills samples
 
 At source revision `29aedf1`, all five Basic Moritani plus Leader Skills
 two-through-six-seat games at base seed `20260929` finished through genuine
@@ -9,8 +9,16 @@ and 53 JSON continuations. The four-seat game exercised a Bureaucrat payment
 decision and nine battles; the six-seat game reached twelve Terror decisions
 and ten turns. The source fingerprint was unchanged and no live room was
 used. The private report is
-`/tmp/dune-goal-20260929-moritani-skills/report.json`. These samples do not
-certify every skill effect, Advanced play, combined modules or AI strength.
+`/tmp/dune-goal-20260929-moritani-skills/report.json`.
+
+At source revision `df71faf`, all five Basic Tleilaxu plus Leader Skills
+two-through-six-seat samples at the same base seed finished with 2,723
+accepted actions, zero rejected candidates and 70 JSON continuations. The
+six-seat game reached native early-revival requests, actual Face Dancer
+replacements, seventeen battle selections and eight turns. No live room
+was used; the source fingerprint stayed unchanged. The private report is
+`/tmp/dune-goal-20260929-tleilaxu-skills/report.json`. Neither matrix certifies
+every skill effect, Advanced play, combined modules or AI strength.
 
 ## 29 September 2026 — paired expansion game samples
 
