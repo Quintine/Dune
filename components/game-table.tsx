@@ -42,6 +42,7 @@ import { NexusAdvisors } from './nexus-advisors';
 import { NexusSardaukar } from './nexus-sardaukar';
 import { TerrorBoardMarkers } from './terror-board-markers';
 import { homeworldRevivalActionBlock } from '@/game/homeworld-revival-deployment-options';
+import { atomicsAllianceChangeBlocked } from '@/game/moritani-atomics';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
 import { BiddingEnd } from './bidding-end';
@@ -830,6 +831,8 @@ export function GameTable({
               : null,
           ) !== p.answer,
       );
+    const atomicsShipmentBlocked =
+      a.type === 'ship' && a.territory === g.moritaniAtomics?.territory;
     return (
       <Button
         className="game-action"
@@ -837,11 +840,12 @@ export function GameTable({
           [
             describedBy,
             shipmentBlocked ? 'shipment-promise-guidance' : undefined,
+            atomicsShipmentBlocked ? 'atomics-shipment-guidance' : undefined,
           ]
             .filter(Boolean)
             .join(' ') || undefined
         }
-        disabled={busy || !!g.truthtrance || !!g.nexusTraitors?.pending || disabled || shipmentBlocked}
+        disabled={busy || !!g.truthtrance || !!g.nexusTraitors?.pending || disabled || shipmentBlocked || atomicsShipmentBlocked}
         onClick={() => act(a)}
       >
         {text}
@@ -1483,7 +1487,7 @@ export function GameTable({
                 ));
               })}
               <NoFieldBoardMarkers players={g.players} />
-              <TerrorBoardMarkers tokens={g.moritaniTerror?.tokens ?? []} />
+              <TerrorBoardMarkers tokens={g.moritaniTerror?.tokens ?? []} atomics={g.moritaniAtomics} />
               {Object.entries(g.spice)
                 .filter(([, n]) => n > 0)
                 .map(([k, n]) => {
@@ -3600,24 +3604,29 @@ export function GameTable({
                       <option value="">Choose a player</option>
                       {g.players
                         .filter((p) => p.id !== me.id)
-                        .map((p) => (
-                          <option value={p.id} key={p.id} disabled={!!g.homeworldAllianceBlocks?.[p.id]}>
+                        .map((p) => {
+                          const atomicsBlocked = atomicsAllianceChangeBlocked(g.moritaniAtomics, me.id, p.id);
+                          return <option value={p.id} key={p.id}
+                            disabled={!!g.homeworldAllianceBlocks?.[p.id] || atomicsBlocked}>
                             {p.name}
                             {g.homeworldAllianceBlocks?.[p.id] ? ` · ${g.homeworldAllianceBlocks[p.id]}` : ''}
-                            {g.allianceOffers[p.id] === me.id
-                              ? ' · Invited you'
-                              : ''}
-                          </option>
-                        ))}
+                            {atomicsBlocked ? ' · Atomics alliance ruling pending' : ''}
+                            {g.allianceOffers[p.id] === me.id ? ' · Invited you' : ''}
+                          </option>;
+                        })}
                     </select>
                   </label>
                   {g.homeworldAllianceBlocks?.[target] && <p className="notice">{g.homeworldAllianceBlocks[target]}</p>}
+                  {!!target && atomicsAllianceChangeBlocked(g.moritaniAtomics, me.id, target) &&
+                    <p className="notice">Changing Moritani’s ally after Atomics awaits a hand-limit ruling.</p>}
                   {actionButton('Propose / accept alliance', {
                     type: 'alliance',
                     target,
-                  }, !target || !!g.homeworldAllianceBlocks?.[target])}
+                  }, !target || !!g.homeworldAllianceBlocks?.[target] ||
+                    atomicsAllianceChangeBlocked(g.moritaniAtomics, me.id, target))}
                   {me.ally &&
-                    actionButton('Break alliance', { type: 'alliance' })}
+                    actionButton('Break alliance', { type: 'alliance' },
+                      atomicsAllianceChangeBlocked(g.moritaniAtomics, me.id, null))}
                 </>
               )}
               {g.phase === 1 && !g.nexus && !g.spiceWindow && (

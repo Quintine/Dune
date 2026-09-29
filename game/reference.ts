@@ -2802,9 +2802,9 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Advanced & expansions',
     coverage: 'Partial',
     summary:
-      'Six hidden tokens threaten stronghold entrants. Moritani starts remain unavailable.',
+      'Six hidden tokens threaten stronghold entrants. Bounded Atomics revelation is available in classic-plus-Moritani tables; complete Moritani starts remain unavailable.',
     steps: [
-      'Placement and isolated entry decisions have controls for Robbery, Sabotage, Sneak Attack and ordinary native-leader Assassination. You may instead leave a token hidden. Arrivals with competing reactions remain unavailable while their timing is clarified; Moritani starts remain disabled.',
+      'Placement and isolated entry decisions have controls for Robbery, Sabotage, Sneak Attack, Extortion, ordinary native-leader Assassination and bounded Atomics. You may instead leave a token hidden. Arrivals with unsupported competing reactions remain gated; Moritani starts remain disabled.',
       'Begin with all six Terror tokens in your hidden supply. Once during Mentat Pause, you may either place one from supply or move one already placed to another eligible stronghold. There is no spice cost.',
       'The destination must have no Terror token. A stronghold under storm is eligible, but the Hidden Mobile Stronghold and Homeworlds are excluded.',
       'When another faction ships or moves into the marked stronghold, you may reveal its token and apply the effect to that entrant. Your ally does not trigger this opportunity. Bene Gesserit advisors do.',
@@ -2831,14 +2831,14 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary:
       'Random assassination, territorial destruction, deferred income, theft, sabotage and reserve entry.',
     steps: [
-      'Robbery, Sabotage, Sneak Attack, ordinary native-leader Assassination and Extortion have controls for supported entry reactions. After a Robbery draw, finish any required discard; after Sabotage, give one of your own cards or decline. Enemy of My Enemy has partial alliance controls. Atomics and complete Moritani games remain unfinished.',
+      'Robbery, Sabotage, Sneak Attack, ordinary native-leader Assassination, Extortion and bounded Atomics have controls for supported entry reactions. After a Robbery draw, finish any required discard; after Sabotage, give one of your own cards or decline. Enemy of My Enemy has partial alliance controls. Complete Moritani games remain unfinished.',
       'Assassination: randomly select one of the entrant’s leaders and send it to the Tanks. Moritani collects spice for that leader’s value; Zoal pays three. Revealing the token resolves the random selection without letting Moritani choose a victim. This token needs neither a battle loss nor a matching Traitor Card. Current controls support ordinary native leaders; unresolved captured, foreign or special-leader pools block revelation and show Moritani the reason privately.',
-      'Atomics: send every faction’s forces in the territory to the Tanks and place Atomics Aftermath there. Its lasting shipment prohibition and hand-limit penalty are explained in the Aftermath topic.',
+      'Atomics: send every faction’s forces in the territory to the Tanks and place public Atomics Aftermath there. Supported revelation is limited to classic-plus-Moritani without Guild, Ecaz or optional modules and with a stable Moritani alliance. Its lasting shipment prohibition and hand-limit penalty are explained in the Aftermath topic.',
       'Extortion: set aside five spice from the bank for collection during Mentat Pause. After collection, recover this token unless one player pays you three spice in the storm-order opportunity. The Extortion topic explains the two separate payments.',
       'Robbery: choose between taking half the entrant’s spice, rounded up, and drawing the top Treachery Card. If the draw exceeds your hand limit, choose a card to discard afterward; a full hand does not remove the draw option.',
       'Sabotage: randomly draw and discard a Treachery Card from the entrant if possible. Then you may give that player a card of your choice from your own hand. Giving a card is optional.',
       'Sneak Attack: send up to five of your reserve forces into the triggered territory at no cost, respecting storm and occupancy restrictions. This particular entry is allowed even when Atomics Aftermath is present.',
-      'Before revealing Sneak Attack, inspect its private available maximum and any reason positive entry is blocked. You may keep it hidden. Revealing spends the token even if you then choose Send no forces. For a supported entry, select zero through the displayed maximum; forces enter the arrival’s territory and sector without consuming your ordinary shipment or movement turn. Zero remains available when positive entry is blocked. Aftermath’s printed exception does not mean the unfinished Atomics lifecycle is enabled.',
+      'Before revealing Sneak Attack, inspect its private available maximum and any reason positive entry is blocked. You may keep it hidden. Revealing spends the token even if you then choose Send no forces. For a supported entry, select zero through the displayed maximum; forces enter the arrival’s territory and sector without consuming your ordinary shipment or movement turn. Zero remains available when positive entry is blocked. Aftermath’s printed exception allows this reserve entry even after Atomics resolves.',
       'The random Assassination token is separate from the advanced Assassinate Leaders advantage. Neither ability supplies the other’s selection or timing rules.',
     ],
     related: [
@@ -2852,16 +2852,16 @@ export const RULE_TOPICS: RuleTopic[] = [
     id: 'moritani-aftermath',
     title: 'Moritani Atomics and Aftermath',
     category: 'Advanced & expansions',
-    coverage: 'Planned',
+    coverage: 'Partial',
     summary:
-      'Destroy the territory’s forces, prohibit future shipment there, and reduce hand limits.',
+      'Bounded Atomics reveals destroy the territory’s forces, prohibit future shipment there, and reduce hand limits.',
     steps: [
-      'When the Atomics Terror token resolves, all forces in that territory go to the Tanks. Put the separate Atomics Aftermath marker in the territory.',
+      'On a supported classic-plus-Moritani table without Guild, Ecaz or optional modules, revealing Atomics sends every faction’s forces in the triggered territory to the Tanks and places a public Atomics Aftermath marker there. Hidden tokens remain face down until revealed.',
       'Aftermath permanently prohibits shipping forces into that territory, including Fremen reinforcements. The restriction is on shipment: it does not prohibit otherwise legal ordinary movement into the territory.',
       'Sneak Attack expressly permits its reserve forces to enter despite Aftermath. Its storm and occupancy restrictions still apply.',
-      'Beginning this turn, Moritani’s hand limit and its ally’s hand limit are each reduced by one. If a hand exceeds its reduced limit, discard a random card.',
-      'The lasting penalty’s treatment after a later alliance change is unresolved. This topic does not decide whether the penalty remains with an old ally or follows a new one.',
-      'The Atomics Terror token and Family Atomics Treachery Card are separate components with different effects. Aftermath is not the destroyed Shield Wall.',
+      'Beginning on the activation turn, Moritani’s hand limit and its ally’s at activation are each reduced by one. If either hand exceeds its reduced limit on resolution, discard one random card per excess card. The public Aftermath notice identifies the affected players; their individual projected hand limits reflect the penalty.',
+      'The lasting penalty’s treatment after a later alliance change is unresolved. Supported play gates later Moritani alliance changes rather than guessing whether the penalty remains with an old ally or follows a new one.',
+      'The Atomics Terror token and Family Atomics Treachery Card are separate components with different effects. Aftermath is not the destroyed Shield Wall. Complete Moritani games and public expansion starts remain unavailable.',
     ],
     related: ['moritani-terror-effects', 'movement', 'card-atomics', 'bidding'],
   },

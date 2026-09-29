@@ -21,6 +21,7 @@ import { fremenBetrayalBotActions } from './nexus-fremen-betrayal-options';
 import { ecazInquiryBotActions } from './nexus-ecaz-inquiry-options';
 import { nexusEcazDukeBotActions } from './nexus-ecaz-duke-options';
 import { ecazBetrayalOffer } from './nexus-ecaz-betrayal';
+import { atomicsAllianceChangeBlocked } from './moritani-atomics';
 import { fremenBetrayalOffer } from './nexus-fremen-betrayal';
 import { ECAZ_START_FORCES, ECAZ_START_LOCATIONS, quoteEcazStartingForces } from './ecaz-setup';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
@@ -2844,13 +2845,15 @@ function policyActions(g: GameView): Action[] {
       const offer = g.players.find(
         (player) => player.id !== me.id &&
           g.allianceOffers[player.id] === me.id &&
+          !atomicsAllianceChangeBlocked(g.moritaniAtomics, me.id, player.id) &&
           !g.homeworldAllianceBlocks?.[player.id],
       );
       if (offer) return [{ type: 'alliance', target: offer.id }];
       if (level > 0 && !g.ready.includes(me.id) && !g.allianceOffers[me.id]) {
         const target = g.players.find(
           (player) => player.id !== me.id &&
-            !player.ally && !g.homeworldAllianceBlocks?.[player.id],
+            !player.ally && !g.homeworldAllianceBlocks?.[player.id] &&
+            !atomicsAllianceChangeBlocked(g.moritaniAtomics, me.id, player.id),
         );
         if (target) return [{ type: 'alliance', target: target.id }];
       }

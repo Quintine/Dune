@@ -46,6 +46,8 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
   };
   let order: CompletedMovementArrivalInput['order'];
   if (action.type === 'ship') {
+    if (g.moritaniAtomics?.territory === to)
+      return 'Atomics Aftermath permanently blocks shipments into this territory.';
     const amount = action.noField === undefined ? action.amount : 1;
     if (
       typeof amount !== 'number' ||

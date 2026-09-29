@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 28 September 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 29 September 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -17,9 +17,10 @@ A summoned worm during the overlap retains its Nexus before the queued ride;
 Robbery overflow and Sabotage discards preserve physical custody. The table
 shows public owner order without disclosing the hidden Terror face; existing
 owned controls and minimal legal AI remain usable. Competing BG Intrusion,
-Fremen/Guild Ambassador child arrivals, Atomics and optional-module combinations
-remain gated, as do normal public expansion starts. This source is not in the
-last verified live image.
+Fremen/Guild Ambassador child arrivals and optional-module combinations remain
+gated, as do normal public expansion starts. The bounded Atomics path below
+does not open these overlap combinations. This source is not in the last
+verified live image.
 
 A bounded [Guild native rate Karama path](GUILD_RATE_KARAMA_RULES.md#native-transport-extension--29-september-2026)
 now interrupts classic Guild/reciprocal-ally ordinary reserve shipments and
@@ -45,8 +46,11 @@ was selected by the user, not sourced as a publisher priority ruling. Public
 notices hide the current payer's affordability from other seats. Owner controls,
 legal AI, JSON/SQLite CAS, nested Box/gift interruptions and a genuine late
 Mentat Ambassador entry have focused coverage; each still settles before the
-turn ends. Atomics/Aftermath and complete expansion starts stay gated. This
-local change is not in the last verified live image below.
+turn ends. A separate bounded classic-plus-Moritani Atomics path now records
+public Aftermath with permanent shipment prohibition and a one-card hand-limit
+reduction for Moritani and its ally at activation; later alliance changes are
+gated pending a ruling. Complete expansion starts stay gated. These local
+changes are not in the last verified live image below.
 
 The live NAS Apps `dune` image is the immutable
 `ghcr.io/quintine/dune:sha-c9a3625ff2a9ddafdbc08e64de809eca6029db85`
@@ -98,7 +102,18 @@ remote ride order across JSON/isolated SQLite recovery and duplicate CAS.
 Natural and summoned offer/ride browser surfaces were exercised. Review found
 and fixed an inherited-key force-custody bypass. A second Cunning offer
 inside an interrupted control, Great Maker, combined modules, Secret Ally
-protection and complete Nexus games remain gated.
+protection and complete Nexus games remain gated. The bounded Atomics reveal
+is a separate classic-plus-Moritani path, not a playable Nexus Terror effect;
+its later-alliance hand-limit policy is unresolved.
+
+The bounded [Fremen Nexus Betrayal movement alternative](NEXUS_FREMEN_RULES.md#bounded-betrayal-movement-range)
+lets an unallied holder spend the physical card before Fremen move in
+Shipment and Movement. The native two-territory advantage stays suppressed
+through that turn, while independent ornithopters and ordinary moves remain
+legal. Owner controls, a prioritized legal bot play, Basic/Advanced JSON
+continuation and an authenticated concurrent SQLite CAS test are connected.
+The card's separate worm-riding suppression alternative and combined modules
+remain unfinished; no public Nexus gate changes.
 
 The bounded [Ecaz Nexus Betrayal](NEXUS_ECAZ_RULES.md#bounded-betrayal-runtime)
 path lets a card holder select one public territory shared by Ecaz and its

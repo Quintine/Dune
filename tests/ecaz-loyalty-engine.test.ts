@@ -126,10 +126,9 @@ void test('all four bot profiles can legally perform Ecaz setup', () => {
     let g = readyTable(['beneGesserit', 'ecaz', 'atreides', 'harkonnen']);
     g.players.forEach((p) => (p.bot = difficulty));
     g = initializeFactionExpansionsGameForAudit(g);
-    for (let i = 0; i < 20 && g.status === 'setup'; i++) {
-      g = runBots(g);
-      if (g.setupStage === undefined) break;
-    }
+    // Stop at the setup boundary; a bulk bot run may already finish a short game.
+    for (let i = 0; i < 200 && g.status === 'setup'; i++)
+      g = runBots(g, 1);
     assert.equal(g.status, 'playing', `${difficulty} did not complete setup`);
     assert.ok(g.ecazLoyalty?.card);
   }

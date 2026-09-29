@@ -58,6 +58,7 @@ import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement
 import { moritaniBetrayalOffer } from './nexus-moritani-betrayal';
 import { ecazBetrayalOffer, quoteEcazBetrayal, validateEcazBetrayalSnapshot, type EcazBetrayalSnapshot } from './nexus-ecaz-betrayal';
 import { fremenBetrayalOffer, fremenBetrayalSignature, validateFremenBetrayal, type FremenNexusBetrayal } from './nexus-fremen-betrayal';
+import { atomicsAllianceChangeBlocked, atomicsAllianceStatus, atomicsShipmentBlocked, quoteMoritaniAtomics, type AtomicsAftermath, type AtomicsQuote } from './moritani-atomics';
 import { nexusMoritaniRecordSignature, terrorLocationAllowed, terrorEntryLocationAllowed } from './terror-location';
 import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
@@ -591,6 +592,8 @@ export type Player = {
   ixMovementBlocked?: { turn: number; move: number };
   fremenMovementBlocked?: { turn: number; move: number };
   fremenNexusMovementBlockedTurn?: number;
+  /** Permanent printed one-card reduction after Atomics; bound to its Aftermath receipt. */
+  atomicsHandLimitPenalty?: boolean;
   elites?: {
     reserves: number;
     tanks: number;
@@ -1156,6 +1159,12 @@ export type Game = {
           discardedHandSize: number;
         }
       | {
+          kind: 'terrorAtomics';
+          entry: NonNullable<Game['pendingTerrorEntry']>;
+          aftermath: AtomicsAftermath;
+          handBefore: { player: string; count: number }[];
+        }
+      | {
           kind: 'battleResolved';
           event: string;
           result: 'normal' | 'traitor' | 'mutualTraitors' | 'explosion';
@@ -1414,6 +1423,7 @@ export type Game = {
     ambassadorEvent?: string;
   } | null;
   moritaniTerror?: TerrorState;
+  moritaniAtomics?: AtomicsAftermath | null;
   moritaniExtortion?: ExtortionState;
   grummanCollection?: GrummanCollection;
   pendingMoritaniPlacement?: {
@@ -4217,8 +4227,81 @@ function richeseGiftView(g: Game, viewer: Player) {
       : null,
   };
 }
-export const handLimit = (p: Pick<Player, 'faction'>) =>
-  p.faction === 'harkonnen' ? 8 : p.faction === 'choam' ? 5 : 4;
+export const handLimit = (
+  p: Pick<Player, 'faction'> & Partial<Pick<Player, 'atomicsHandLimitPenalty'>>,
+) =>
+  (p.faction === 'harkonnen' ? 8 : p.faction === 'choam' ? 5 : 4) -
+  Number(p.atomicsHandLimitPenalty === true);
+
+function atomicsRule<T>(run: () => T): T {
+  try { return run(); }
+  catch (error) {
+    if (error instanceof Error) throw new RuleError(error.message);
+    throw error;
+  }
+}
+/** Only the clean printed-territory entry is connected; other arrival parents remain gated. */
+function atomicsModeSupported(g: Game): boolean {
+  return !!byFaction(g, 'moritani') && !byFaction(g, 'ecaz') &&
+    !byFaction(g, 'guild') &&
+    g.players.every(p => CLASSIC_FACTIONS[p.faction] === true || p.faction === 'moritani') &&
+    g.expansions.every(expansion => expansion === 'ecaz') &&
+    !g.homeworlds && !g.nexusCards && !g.leaderSkills &&
+    !g.discoveryEnabled && !g.techTokens && !g.strongholdCards &&
+    !g.ecazTreachery && !g.pendingArrivalOverlap;
+}
+function currentAtomicsQuote(
+  g: Game,
+  entry: NonNullable<Game['pendingTerrorEntry']>,
+): AtomicsQuote {
+  requireRule(atomicsModeSupported(g) && !g.moritaniAtomics && !g.moritaniExtortion,
+    'Atomics with these combined modules or another unresolved Terror effect is not yet supported.');
+  const token = g.moritaniTerror?.tokens.find(row => row.id === entry.token);
+  requireRule(token, 'The Atomics token has lost its original stronghold.');
+  return atomicsRule(() => quoteMoritaniAtomics({
+    token, territory: entry.territory, moritaniId: byFaction(g, 'moritani')!.id,
+    turn: g.turn, aftermath: g.moritaniAtomics ?? null,
+    players: g.players.map(player => ({
+      ...player, handSize: player.hand.length, baseHandLimit: handLimit(player),
+    })),
+  }));
+}
+function resolveAtomics(
+  g: Game,
+  entry: NonNullable<Game['pendingTerrorEntry']>,
+  quote: AtomicsQuote,
+) {
+  g.moritaniAtomics = quote.aftermath;
+  for (const casualty of quote.casualties) {
+    const player = getPlayer(g, casualty.playerId);
+    kill(g, player, casualty.location, casualty.normal + casualty.elite, false, casualty.elite);
+  }
+  for (const player of g.players)
+    if (!at(player, quote.aftermath.territory) && player.advisors)
+      delete player.advisors[quote.aftermath.territory];
+  observeOccupation(g);
+  const handBefore: { player: string; count: number }[] = [];
+  const entries: FreshDiscardBatch['entries'][number][] = [];
+  for (const reduction of quote.handReductions) {
+    const player = getPlayer(g, reduction.playerId);
+    handBefore.push({ player: player.id, count: player.hand.length });
+    player.atomicsHandLimitPenalty = true;
+    requireRule(handLimit(player) === reduction.limit,
+      'Atomics has lost its original hand-limit reduction.');
+    for (let i = 0; i < reduction.randomDiscards; i++) {
+      const card = player.hand[Math.floor(random() * player.hand.length)];
+      entries.push({ card: discard(g, player, card.id),
+        discardedBy: player.id, publicFace: false });
+    }
+  }
+  log(g, `Atomics destroyed every force in ${territory(quote.aftermath.territory).name}. Aftermath permanently blocks shipments there, including Fremen reinforcements. ${quote.aftermath.allyAtActivation ? 'Moritani and its ally each lost' : 'Moritani lost'} one Treachery hand slot; ${entries.length} excess ${entries.length === 1 ? 'card was' : 'cards were'} discarded at random.`);
+  if (entries.length) {
+    g.pendingTerrorEntry = null;
+    g.decision = null;
+    stageTreacheryDiscard(g, 'terror:atomics', entries,
+      { kind: 'terrorAtomics', entry, aftermath: quote.aftermath, handBefore });
+  } else finishTerrorEntry(g);
+}
 export function newPlayer(id: string, name: string, f: FactionId): Player {
   requireRule(
     name.trim().length > 0 && name.trim().length <= 32,
@@ -5207,6 +5290,37 @@ function treacheryDiscardIntegrity(g: Game) {
         (sabotage || discardedHandSize > handLimit(owner)),
       'The saved Terror discard does not match its consumed entry and hand.',
     );
+  } else if (continuation?.kind === 'terrorAtomics') {
+    const { entry, aftermath, handBefore } = continuation;
+    atomicsIntegrity(g);
+    const owner = byFaction(g, 'moritani');
+    const token = g.moritaniTerror?.tokens.find(row => row.id === entry?.token);
+    requireRule(!g.pendingTerrorEntry && !g.pendingExchange && !g.summonedWorm &&
+      entry && entry.turn === g.turn && entry.phase === g.phase &&
+      entry.stage === 'offer' && entry.resume === (entry.cause === 'wormRide' ? 'wormRide' : 'none') &&
+      (entry.cause !== 'wormRide' || (g.phase === 1 &&
+        g.players.some(player => player.id === entry.entrant && player.faction === 'fremen'))) &&
+      ['shipment', 'movement', 'advisor', 'wormRide'].includes(entry.cause) &&
+      entry.entrant !== owner?.id && entry.territory === aftermath.territory &&
+      validGameLocation(g, entry.territory, entry.sector) &&
+      token?.kind === 'atomics' && token.status === 'removed' &&
+      token.location === null &&
+      batch.cause === 'terror:atomics' && batch.entries.length > 0 &&
+      batch.entries.every(row => !row.publicFace &&
+        (row.discardedBy === owner?.id || row.discardedBy === aftermath.allyAtActivation)) &&
+      Array.isArray(handBefore) &&
+      handBefore.length === (aftermath.allyAtActivation ? 2 : 1) &&
+      handBefore.every((row, index) => {
+        const id = index === 0 ? owner?.id : aftermath.allyAtActivation;
+        const player = g.players.find(seat => seat.id === id);
+        const discarded = batch.entries.reduce((count, card) =>
+          count + Number(card.discardedBy === row.player), 0);
+        return player && row.player === id &&
+          Number.isSafeInteger(row.count) && row.count >= 0 &&
+          row.count === player.hand.length + discarded &&
+          discarded === Math.max(0, row.count - handLimit(player));
+      }),
+      'The saved Atomics random discards lost their revealed entry or hand custody.');
   } else if (continuation?.kind === 'ixAllyCard') {
     const sale = g.currentAuctionSale;
     const buyer = g.players.find((p) => p.id === continuation.player);
@@ -5581,6 +5695,9 @@ function finishTreacheryDiscard(g: Game) {
   } else if (next.kind === 'terrorDiscard') {
     g.pendingTerrorEntry = next.entry;
     continueTerrorDiscard(g, next.source);
+  } else if (next.kind === 'terrorAtomics') {
+    g.pendingTerrorEntry = next.entry;
+    finishTerrorEntry(g);
   } else {
     finishBattle(g);
   }
@@ -5988,7 +6105,7 @@ function requireFreshSetup(g: Game, allowIxElites = false) {
       p.noField === undefined && p.noFieldEvent === undefined && p.noFieldBlockedTurn === undefined &&
       p.advisors === undefined && p.gholaBlocked === undefined && p.ixMovementBlocked === undefined &&
       p.fremenMovementBlocked === undefined && p.fremenNexusMovementBlockedTurn === undefined &&
-      p.faceDancers === undefined &&
+      p.atomicsHandLimitPenalty === undefined && p.faceDancers === undefined &&
       p.faceDancerReplacedTurn === undefined && p.revealedTraitors === undefined;
   }), 'Starting setup requires unused native leaders and no prior alliance, revival or battle history.');
   requireRule(Object.keys(g.playerPositions ?? {}).every(id => g.players.some(p => p.id === id)),
@@ -12943,7 +13060,8 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
 function terrorEntryIntegrity(g: Game) {
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const entries = [g.pendingTerrorEntry,
-    continuation?.kind === 'terrorDiscard' ? continuation.entry : null];
+    (continuation?.kind === 'terrorDiscard' || continuation?.kind === 'terrorAtomics')
+      ? continuation.entry : null];
   for (const entry of entries) {
     if (!entry) continue;
     homeworldRule(() => validateTerrorEntrySignature(entry));
@@ -12953,7 +13071,8 @@ function terrorEntryIntegrity(g: Game) {
       g.players.filter((p) => p.faction === 'moritani').length === 1,
       'The saved Terror entry has lost its original turn or seated participants.');
     if (entry.candidates) {
-      const committedDiscard = continuation?.kind === 'terrorDiscard' && entry === continuation.entry;
+      const committedDiscard = (continuation?.kind === 'terrorDiscard' ||
+        continuation?.kind === 'terrorAtomics') && entry === continuation.entry;
       const reserved = entry.candidates.filter((id) => id !== entry.token ||
         (!committedDiscard && ['select', 'offer', 'allianceResponse', 'allianceReply'].includes(entry.stage)));
       requireRule(reserved.every((id) => g.moritaniTerror?.tokens.filter((token) =>
@@ -13097,6 +13216,13 @@ function terrorRevealBlocked(
 ): string | null {
   const homeworldBlock = homeworldTerrorEntryBlock(g, entry.amount);
   if (homeworldBlock) return homeworldBlock;
+  if (kind === 'atomics') {
+    try { currentAtomicsQuote(g, entry); return null; }
+    catch (error) {
+      if (error instanceof RuleError) return error.message;
+      throw error;
+    }
+  }
   if (kind === 'robbery' || kind === 'sabotage' || kind === 'sneakAttack' || kind === 'extortion')
     return null;
   if (kind !== 'assassination')
@@ -13169,6 +13295,8 @@ function terrorAllianceBlocked(
 ): string | null {
   if (entry.allianceBlocked)
     return 'Karama prevented this alliance opportunity; you may still reveal the token or leave it hidden.';
+  if (g.moritaniAtomics)
+    return 'Changing Moritani’s ally after Atomics awaits a hand-limit ruling.';
   const entrant = getPlayer(g, entry.entrant);
   const owner = byFaction(g, 'moritani')!;
   const homeworldBlock = homeworldAllianceReason(g, owner.id, entrant.id);
@@ -13185,6 +13313,8 @@ function terrorAllianceBlocked(
 function formTerrorAlliance(g: Game, owner: Player, entrant: Player) {
   const blocked = homeworldAllianceReason(g, owner.id, entrant.id);
   requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
+  requireRule(!g.moritaniAtomics,
+    'Changing Moritani’s ally after Atomics awaits a hand-limit ruling.');
   const changed = new Set([owner.id, entrant.id]);
   for (const member of [owner, entrant]) {
     if (member.ally) getPlayer(g, member.ally).ally = null;
@@ -13300,7 +13430,8 @@ function decideTerror(g: Game, p: Player, action: Action) {
       action.reveal === true,
       'Reveal the Terror token or leave it hidden.',
     );
-    const blocked = terrorRevealBlocked(g, entry, token.kind);
+    const atomics = token.kind === 'atomics' ? currentAtomicsQuote(g, entry) : null;
+    const blocked = atomics ? null : terrorRevealBlocked(g, entry, token.kind);
     requireRule(!blocked, blocked ?? 'This Terror effect is unavailable.');
     g.moritaniTerror = revealTerror(g.moritaniTerror!, token.id);
     if (g.nexusMoritaniLocations) delete g.nexusMoritaniLocations[token.id];
@@ -13334,6 +13465,8 @@ function decideTerror(g: Game, p: Player, action: Action) {
       }, extortionContext(g))).state;
       log(g, 'Five bank spice is reserved for Moritani until Mentat Pause; it is not yet spendable.');
       finishTerrorEntry(g);
+    } else if (atomics) {
+      resolveAtomics(g, entry, atomics);
     } else {
       const victimCard = shuffle(entrant.hand)[0];
       if (victimCard) {
@@ -15738,6 +15871,26 @@ function gholaOptions(g: Game, p: Player) {
     reason,
   };
 }
+function atomicsIntegrity(g: Game) {
+  const aftermath = g.moritaniAtomics;
+  if (!aftermath) {
+    requireRule(g.players.every(player => player.atomicsHandLimitPenalty === undefined),
+      'Atomics hand-limit penalties require the physical Aftermath.');
+    return;
+  }
+  const owner = byFaction(g, 'moritani');
+  const token = g.moritaniTerror?.tokens.find(row => row.kind === 'atomics');
+  requireRule(atomicsModeSupported(g) && owner?.id === aftermath.moritaniId &&
+    Number.isSafeInteger(aftermath.turn) && aftermath.turn >= 1 &&
+    aftermath.turn <= g.turn && TERROR_STRONGHOLDS.includes(aftermath.territory) &&
+    token?.status === 'removed' && token.location === null &&
+    aftermath.alliancePolicy === 'unresolved' &&
+    atomicsAllianceStatus(aftermath, owner.ally) === 'activation-alliance' &&
+    g.players.every(player =>
+      player.atomicsHandLimitPenalty ===
+      (player.id === owner.id || player.id === aftermath.allyAtActivation ? true : undefined)),
+    'Atomics Aftermath has lost its revealed token, stable alliance or hand-limit custody.');
+}
 function marketGholaIntegrity(g: Game) {
   battleOrderIntegrity(g);
   saphoAggressorIntegrity(g);
@@ -15766,6 +15919,7 @@ function marketGholaIntegrity(g: Game) {
   grummanCollectionIntegrity(g);
   homeworldVictoryReturnIntegrity(g);
   homeworldRevivalReturnIntegrity(g);
+  atomicsIntegrity(g);
   terrorEntryIntegrity(g);
   homeworldRule(() => validateGiediCollection(g, g.turn, g.giediCollection));
   currentFactionPayment(g);
@@ -20465,6 +20619,8 @@ function leaderSkillNoFieldIntegrity(g: Game): boolean {
   return true;
 }
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
+  requireRule(!atomicsShipmentBlocked(g.moritaniAtomics, shipment.territory),
+    'Atomics Aftermath permanently blocks shipments into this territory.');
   if (shipment.smugglerCompanion !== undefined || shipment.noFieldSkillProof !== undefined ||
     (g.leaderSkills && shipment.noField)) validateLeaderSkillNoFieldShipment(g, shipment);
   if (shipment.smuggler) requireRule(
@@ -21674,7 +21830,9 @@ function nexusMoritaniIntegrity(g: Game) {
       'The Terror token has no valid original placement for this territory.');
   }
   const continuation = g.pendingTreacheryDiscard?.continuation;
-  for (const entry of [g.pendingTerrorEntry,continuation?.kind === 'terrorDiscard' ? continuation.entry : null])
+  for (const entry of [g.pendingTerrorEntry,
+    continuation?.kind === 'terrorDiscard' || continuation?.kind === 'terrorAtomics'
+      ? continuation.entry : null])
     if (entry) requireRule(terrorEntryLocationAllowed(g,entry),
       'The Terror arrival has lost its original Cunning placement permission.');
 }
@@ -25262,6 +25420,9 @@ function applyActionInner(
       'Alliances change only during a Nexus.',
     );
     const target = action.target ? stringField(action.target) : null;
+    requireRule(!atomicsAllianceChangeBlocked(g.moritaniAtomics, id, target) ||
+      (target === null && !p.ally),
+      'Changing Moritani’s ally after Atomics awaits a hand-limit ruling.');
     const formerAlly = p.ally ? getPlayer(g, p.ally).name : null;
     const formerOffer = g.allianceOffers[id];
     const formerOfferName = g.players.find((player) => player.id === formerOffer)?.name;
@@ -25285,6 +25446,11 @@ function applyActionInner(
         },
       ),
     );
+    if (g.moritaniAtomics) {
+      const moritani = byFaction(g, 'moritani')!;
+      requireRule(quote.allies[moritani.id] === moritani.ally,
+        'Changing Moritani’s ally after Atomics awaits a hand-limit ruling.');
+    }
     for (const player of g.players) player.ally = quote.allies[player.id];
     g.allianceOffers = quote.offers;
     if (target === null) {
@@ -26962,6 +27128,11 @@ export function viewGame(state: Game, id: string) {
       : null,
     moritaniTerror: g.moritaniTerror
       ? projectTerror(g.moritaniTerror, me.faction === 'moritani')
+      : null,
+    moritaniAtomics: g.moritaniAtomics
+      ? { territory: g.moritaniAtomics.territory, turn: g.moritaniAtomics.turn,
+          moritaniId: g.moritaniAtomics.moritaniId,
+          allyAtActivation: g.moritaniAtomics.allyAtActivation }
       : null,
     arrivalOverlapMode: arrivalOverlapModeSupported(g),
     arrivalOverlap: g.pendingArrivalOverlap

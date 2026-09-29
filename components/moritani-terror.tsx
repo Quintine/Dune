@@ -204,12 +204,12 @@ function TokenInspector({
                   ),
                 )}
                 <p className="border-t border-[#414536] pt-4 text-sm leading-6 text-[#c9c2ae]">
-                  Robbery, Sabotage, Sneak Attack and ordinary native-leader
-                  Assassination have controls for supported entry reactions.
-                  Enemy of My Enemy has partial alliance controls. Atomics and
-                  Extortion remain under implementation, and complete Moritani
-                  games remain unavailable. Inspection explains the rules; it
-                  does not reveal a token or activate an effect.
+                  Supported entry reactions include Robbery, Sabotage, Sneak
+                  Attack, ordinary native-leader Assassination and Extortion.
+                  Enemy of My Enemy has partial alliance controls. Atomics can
+                  be revealed only on supported tables; complete Moritani games
+                  remain unavailable. Inspection does not reveal a token or
+                  activate an effect.
                 </p>
               </section>
             </div>
@@ -223,6 +223,15 @@ function TokenInspector({
 export function MoritaniTerrorSupply({ game }: { game: GameView }) {
   const titleId = useId();
   const view = game.moritaniTerror;
+  const aftermath = game.moritaniAtomics;
+  const affectedNames = aftermath
+    ? [
+        game.players.find((player) => player.id === aftermath.moritaniId)?.name ?? 'Moritani',
+        ...(aftermath.allyAtActivation
+          ? [game.players.find((player) => player.id === aftermath.allyAtActivation)?.name ?? 'their ally at activation']
+          : []),
+      ].join(' and ')
+    : '';
   if (!view) return null;
   const owner =
     game.players.find((p) => p.id === game.me)?.faction === 'moritani';
@@ -242,6 +251,22 @@ export function MoritaniTerrorSupply({ game }: { game: GameView }) {
           ? 'Your supply and placed tokens. Inspect a face without revealing it to the table.'
           : 'Placed tokens stay hidden. Revealed tokens can be inspected by everyone.'}
       </p>
+      {aftermath && (
+        <div id="atomics-shipment-guidance" className="mb-3 rounded-lg border border-[#b99a68] bg-[#302923] p-3 text-sm leading-6 text-[#f1dfb4]" aria-label="Atomics Aftermath">
+          <p className="m-0 font-semibold">
+            Atomics Aftermath · {territory(aftermath.territory).name}
+          </p>
+          <p className="mt-1 mb-0">
+            From turn {aftermath.turn}, no faction may ship forces into this
+            territory, including Fremen reinforcements. Otherwise legal
+            ordinary movement and Sneak Attack remain possible.
+          </p>
+          <p className="mt-1 mb-0">
+            A lasting hand-limit reduction of one applies to {affectedNames}.
+            Any excess cards were discarded at random when Atomics resolved.
+          </p>
+        </div>
+      )}
       {tokens.length ? (
         <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
           {tokens.map((token) => (
@@ -563,6 +588,18 @@ export function MoritaniEntry({
                 native leader. You do not choose the victim.
               </p>
             )}
+            {entry.kind === 'atomics' && entry.canReveal && (
+              <p className="m-0 text-sm leading-6">
+                Revealing Atomics sends every faction’s forces in{' '}
+                {territory(entry.territory).name} to the Tanks, including your
+                own. The public Aftermath permanently blocks shipments into
+                that territory, including Fremen reinforcements, but not
+                otherwise legal movement or Sneak Attack. Your hand limit
+                falls by one starting this turn; your ally’s at activation
+                does too, if you have one. Each hand over its new limit
+                discards one random card per excess card.
+              </p>
+            )}
             {entry.kind === 'sneakAttack' && sneak && (
               <div className="space-y-2 text-sm leading-6">
                 <p className="m-0">
@@ -625,10 +662,11 @@ export function MoritaniEntry({
               Leave token hidden
             </Button>
             <p className="m-0 text-sm leading-6">
-              Robbery, Sabotage, Sneak Attack and ordinary native-leader
-              Assassination support eligible arrivals. Enemy of My Enemy has
-              partial alliance controls. Atomics and Extortion are not yet
-              available; complete Moritani games remain unavailable.
+              Robbery, Sabotage, Sneak Attack, ordinary native-leader
+              Assassination and Extortion support eligible arrivals. Atomics
+              is available only on supported tables. Enemy of My Enemy has
+              partial alliance controls; complete Moritani games remain
+              unavailable.
             </p>
           </>
         )}

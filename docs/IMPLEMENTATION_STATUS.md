@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 29 September 2026 — bounded Moritani Atomics Aftermath
+
+In classic-plus-Moritani tables without Guild, Ecaz or optional modules, a
+placed Atomics Terror token may be revealed against an eligible original
+entry. The existing arrival is never replayed. All physical forces in that
+territory enter the Tanks, the revealed token leaves play, and one public
+Aftermath marker permanently bars shipments there, including Fremen free
+reinforcements. Ordinary movement and the printed Sneak Attack exception
+remain available. From detonation Moritani and its ally at activation lose
+one Treachery hand slot; excess cards are discarded randomly through the
+saved fresh-discard continuation, not by identity chosen by another seat.
+The unresolved later-alliance penalty is conservatively gated before any
+Moritani alliance offer or break, while unrelated alliances remain possible.
+
+Seventeen focused pure, Basic/Advanced gameplay, owner/rival component and
+authenticated SQLite CAS/restart cases pass. They cover elite counters,
+unallied and Harkonnen hand limits, physical card custody, privacy, Fremen
+shipment rejection, movement and Sneak Attack, and corrupted saved state.
+A direct non-test Basic reveal preserved two random discards, two lost
+armies, reduced projected hand limits and public Aftermath through JSON.
+Read-only browser inspection showed the owner-only reveal, no rival offer,
+public Aftermath notice and map marker; no room was written. Independent
+review found an impossible post-Aftermath Nexus bot alliance; the shared
+pre-offer guard and corresponding player controls now leave bots a legal
+Ready path. Typecheck, lint, the app build, **5,747/5,747 offline tests**
+and **54/54 local HTTP integration cases** passed. This is not a complete
+Moritani faction or release gate. See
+[source-bound Atomics scope](MORITANI_TERROR_RULES.md#bounded-atomicsaftermath-checkpoint--29-september-2026).
+
 ## 29 September 2026 — bounded Fremen Nexus Betrayal movement alternative
 
 An unallied holder may spend the one physical Fremen Nexus card before Fremen
