@@ -119,6 +119,12 @@ function validate(state: ExtortionState, context: ExtortionContext) {
   }
   return players;
 }
+
+/** Check an unfinished saved obligation against its original turn and seat roster. */
+export function validateExtortionState(state: ExtortionState, context: ExtortionContext): void {
+  validate(state, context);
+}
+
 function clone(state: ExtortionState): ExtortionState {
   return {
     owner: state.owner,

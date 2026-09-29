@@ -1674,6 +1674,11 @@ function policyActions(g: GameView): Action[] {
       }
       return [{ type: 'decision', decline: true }];
     }
+    if (d.kind === 'moritaniExtortion') {
+      return g.extortion.pending?.event === d.event && g.extortion.pending.player === me.id
+        ? [{ type: 'decision', event: d.event, pay: false }]
+        : [];
+    }
     if (d.kind === 'moritaniAssassinate') {
       const pending = g.moritaniAssassinate?.pending;
       if (!pending || pending.event !== d.event) return [];

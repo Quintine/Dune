@@ -6,6 +6,18 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+Moritani Extortion now has a bounded local reveal-to-Mentat continuation:
+five bank spice stays reserved until Moritani finishes normal Terror placement
+and any Karama response; then non-Moritani seats in storm order may pay three
+once or decline. Payment removes the revealed token; all declines rotate it
+back into hidden supply. The [placement-first order](MORITANI_EXTORTION_RULES.md)
+was selected by the user, not sourced as a publisher priority ruling. Public
+notices hide the current payer's affordability from other seats. Owner controls,
+legal AI, JSON/SQLite CAS, nested Box/gift interruptions and a genuine late
+Mentat Ambassador entry have focused coverage; each still settles before the
+turn ends. Atomics/Aftermath and complete expansion starts stay gated. This
+local change is not in the last verified live image below.
+
 The live NAS Apps `dune` image is the immutable
 `ghcr.io/quintine/dune:sha-c9a3625ff2a9ddafdbc08e64de809eca6029db85`
 from successful container workflow `36358270534`. The public footer's title and

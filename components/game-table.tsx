@@ -213,6 +213,7 @@ import {
 import { TERROR_DEFINITIONS } from '@/game/moritani-terror';
 import { MoritaniRetention } from './moritani-retention';
 import { MoritaniAssassinate, MoritaniAssassinateHistory } from './moritani-assassinate';
+import { MoritaniExtortion, MoritaniExtortionNotice } from './moritani-extortion';
 export function GameTable({
   game: g,
   send,
@@ -1048,6 +1049,7 @@ export function GameTable({
       <DukeVidal game={g} />
       <EcazLoyaltyCard loyalty={g.ecazLoyalty} />
       <MoritaniTerrorSupply game={g} />
+      <MoritaniExtortionNotice game={g} />
       <MoritaniAssassinateHistory game={g} />
       <AmbassadorSupply game={g} />
       <AmbassadorInsights key={`${g.code}-${g.me}`} game={g} />
@@ -2321,6 +2323,8 @@ export function GameTable({
                                   ? g.decision.source === 'nexus' ? 'Moritani Nexus · after-loss choice' : 'Moritani · allied card retention'
                                   : g.decision.kind === 'moritaniTerror'
                                     ? 'Moritani · Terror entry reaction'
+                                  : g.decision.kind === 'moritaniExtortion'
+                                    ? 'Moritani · Extortion payment'
                                     : g.decision.kind === 'moritaniSetup'
                                       ? 'Moritani · final deployment'
                                       : g.decision.kind === 'moritaniPlacement'
@@ -2613,6 +2617,8 @@ export function GameTable({
                 <EcazPlacement game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'moritaniPlacement' ? (
                 <MoritaniPlacement game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'moritaniExtortion' ? (
+                <MoritaniExtortion game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'choamStorm' ? (
                 <ChoamStorm game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'choamMovement' ? (

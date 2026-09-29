@@ -45,6 +45,7 @@ const decisions = {
   moritaniTerror: true,
   moritaniSetup: true,
   moritaniPlacement: true,
+  moritaniExtortion: true,
   ecazPlacement: true,
   ecazSpice: true,
   choamStorm: true,

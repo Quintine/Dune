@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 28 September 2026 — Moritani Extortion saved Mentat continuation
+
+The real Terror-entry reveal now reserves five bank spice without crediting
+Moritani. Normal Mentat placement/relocation and any Karama response resolve
+first by the user's explicitly selected interpretation; bank collection then
+opens one saved storm-order offer for each other faction. The first three-spice
+payment removes the physical revealed token and ends the queue; if all decline,
+the return helper rotates all hidden supply identities. Insolvent and allied
+players retain a decline, and neither the bank award nor a payment replays after
+JSON reload or an SQLite compare-and-swap race. Public notice and owner-only
+payment controls are connected; the minimal AI declines legally.
+
+Independent review identified three concrete follow-ups, now corrected: the
+current payer's affordability is private, Nullentropy Box and Richese gift
+continuation frames retain the exact pending payment, and an Extortion
+revealed by a real Guild Ambassador shipment after Mentat placement settles
+before the turn changes. The focused entry/engine/SQLite/alliance/placement
+suite passed 119 cases in eight files. A direct game-engine smoke revealed
+Extortion at Moritani spice 12, reached placement before collection to 17,
+then two AI payers declined and the revealed token returned under a different
+hidden ID. Separately, an offline three-seat Basic Ecaz/Moritani game completed
+in 110 accepted actions with two restores and no rejected bot proposals; that
+sample did **not** draw the Extortion effect.
+
+The local rules reference displayed the selected order and late-Mentat
+continuation in Chromium; the production UI/room flow remains unverified.
+After review corrections, `npm run build`, all 5,677 offline tests and all
+54 HTTP integration tests against the local server passed. The required
+TypeScript/lint umbrella check still cannot finish because a separate
+concurrent untracked Fremen Nexus draft references a nonexistent
+`Player.fremenNexusMovementBlockedTurn`; no Extortion diagnostic remains.
+Atomics/Aftermath, mixed arrival reaction priority, complete faction games
+and public expansion starts remain gated. See
+[the publisher sequence and user selection](MORITANI_EXTORTION_RULES.md).
+
 ## 28 September 2026 — all-expansion Homeworld/Nexus samples
 
 The offline combined audit setup can also enable genuine Homeworld custody with

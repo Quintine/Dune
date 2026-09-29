@@ -104,21 +104,6 @@ void test('shipment opens a private Terror choice after settlement and decline s
   rejected(declined, 'e', shipment);
 });
 
-void test('unsupported hidden faces can be declined but cannot be revealed or leaked', () => {
-  for (const kind of ['atomics', 'extortion'] as const) {
-    const g = enter(fixture(kind));
-    assert.equal(viewGame(g, 'm').terrorEntry!.canReveal, false);
-    assert.equal('kind' in viewGame(g, 'e').terrorEntry!, false);
-    rejected(g, 'm', { type: 'decision', reveal: true });
-    const done = decide(g, { decline: true });
-    assert.equal(done.decision, null);
-    assert.equal(
-      done.moritaniTerror!.tokens.find((token) => token.kind === kind)!.status,
-      'placed',
-    );
-  }
-});
-
 void test('Moritani and its ally do not trigger Terror when shipping', () => {
   const allied = fixture();
   player(allied, 'm').ally = 'e';

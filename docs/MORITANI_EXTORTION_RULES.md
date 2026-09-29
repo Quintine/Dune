@@ -1,6 +1,6 @@
 # Moritani Extortion: sequence and payment
 
-Bounded primary-source audit, 2026-09-06. No runtime edits or live-room actions were performed.
+Initial primary-source audit, 2026-09-06; placement-first implementation interpretation selected by the user on 2026-09-28. No live-room action was performed for this rule work.
 
 ## Confirmed sequence
 
@@ -28,20 +28,23 @@ Current `g.order` is recalculated by storm movement and is not reordered by Guil
 
 Do not silently auto-pass an insolvent player merely to shorten the queue if phase-independent effects can raise that player’s available spice before deciding. A visible pass/payment decision and payment-time balance validation avoid that assumption.
 
-## Material Mentat ordering gap
+## Mentat ordering: selected interpretation, not a publisher ruling
 
-Moritani may also place or move one Terror token during Mentat. Neither the placement paragraph nor Extortion specifies their relative order. Recovering Extortion first can permit immediately placing it again; placement first cannot. This changes a substantive option and is not harmless UI serialization. No targeted official or written designer clarification was found. Keep this combination explicitly unresolved or apply a user-approved interpretation; do not infer priority from the engine’s current handler order. [GF9 Ecaz & Moritani, printed pp. 5–6](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf)
+Moritani may also place or move one Terror token during Mentat. Neither the placement paragraph nor Extortion specifies their relative order. Recovering Extortion first could permit immediately placing it again; placement first cannot. No targeted publisher/designer clarification was found in the audited sources. **The user selected placement first on 28 September 2026.** Resolve the normal placement/relocation opportunity and its Karama response, then collect the deferred five-spice bank award, then offer the storm-order payment decisions. A recovered token cannot be redeployed during the same Mentat Pause. This is a table policy, not a newly discovered rule. [GF9 Ecaz & Moritani, printed pp. 5–6](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf)
 
-There is likewise no retrieved complete priority rule against Mentat bribe collection, CHOAM’s effects or victory checking. The token’s **own** collection-before-payment sequence is explicit. The general placement/Mentat ordering is not. Current `beginPhase(8)` collects bribes and opens Moritani placement, while `finishMoritaniPlacement` may immediately check victory; neither path should bypass an unresolved Extortion obligation. CHOAM has a later end-phase continuation that must also preserve the obligation.
+The token's **own** collection-before-payment sequence is explicit. This implementation preserves the existing Mentat bribe collection before placement, settles Extortion before the no-CHOAM victory check, and keeps CHOAM's later market/Mentat continuation after Extortion. Those cross-effect priorities are software compositions, not separately sourced publisher procedures.
+
+A legal entry may reveal Extortion **during** Mentat after Moritani has already used the placement opportunity (for example, a revived force triggers an Ambassador's free shipment into Terror). Complete the committed entry and its interruptions first, then collect and offer payment before turn advancement. This is the same placement-first table policy applied to a late arrival, not a separate publisher priority ruling. Never let a pending reserve cross a turn boundary.
 
 ## Narrow persistence requirements
 
 - Store the specific revealed Extortion token ID, owner, triggering turn and pending five-spice credit. Keep the deferred credit distinct from spendable spice before Mentat. A record separate from aggregate bribes makes once-only collection auditable.
 - On Mentat collection, credit exactly five and mark it settled before any payer response. Reloads, failed transactions and nested Truthtrance must not award it again.
 - Persist payer order and progress. A valid three-spice payment deducts the payer, credits Moritani and permanently settles non-recovery atomically; later player responses are stale. Declining the final payer returns the exact token once.
+- A Nullentropy search or Richese gift can suspend the current payer decision. Validate and restore that exact saved decision through the existing continuation frame without losing the one-time collection or exposing the payer's affordability to other seats.
 - Use the existing hidden-supply return helper when recovering. Its identity rotation avoids later linking a public Extortion identity to a newly hidden face. Do not restore the public revealed ID unchanged.
 - Treat current-owner eligibility separately from the original entrant. Moritani may have changed allies since revelation; the original target alone is not the payment queue.
-- No generic Karama cancellation of revelation/Extortion is stated by the E3 table. Keep existing Terror effect rules and the unanswered separate Mentat-order issue distinct.
+- No generic Karama cancellation of revelation/Extortion is stated by the E3 table. Keep existing Terror effect rules and this explicitly selected Mentat-order interpretation distinct.
 
 These are implementation recommendations, not newly asserted publisher procedures.
 

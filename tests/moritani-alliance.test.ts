@@ -281,22 +281,26 @@ void test('Karama cancels the alliance offer while preserving reveal or decline 
   assert.equal(revealed.pendingTerrorEntry?.stage, 'robbery');
 });
 
-void test('Ecaz and presently unsupported refusal effects cannot receive an alliance offer', () => {
-  for (const initial of [
-    fixture('robbery', 'ecaz'),
-    fixture('atomics'),
-    fixture('extortion'),
-  ]) {
-    const g = enter(initial);
-    assert.equal(viewGame(g, 'm').terrorEntry!.canOfferAlliance, false);
-    assert.ok(viewGame(g, 'm').terrorEntry!.allianceBlockedReason);
-    assert.equal(
-      'allianceBlockedReason' in viewGame(g, 'e').terrorEntry!,
-      false,
-    );
-    rejected(g, 'm', { type: 'decision', alliance: true });
-    assert.equal(decision(g, 'm', { decline: true }).pendingTerrorEntry, null);
-  }
+void test('Ecaz entrants cannot be offered Enemy of My Enemy', () => {
+  const g = enter(fixture('robbery', 'ecaz'));
+  assert.equal(viewGame(g, 'm').terrorEntry!.canOfferAlliance, false);
+  rejected(g, 'm', { type: 'decision', alliance: true });
+  assert.equal(decision(g, 'm', { decline: true }).pendingTerrorEntry, null);
+});
+
+void test('Extortion refusal reserves the award while acceptance returns the token without collecting it', () => {
+  const entered = enter(fixture('extortion'));
+  assert.equal(viewGame(entered, 'm').terrorEntry!.canOfferAlliance, true);
+  const declined = decision(reload(allow(offer(entered))), 'e', { accept: false });
+  assert.equal(declined.moritaniExtortion?.bank.reserved, 5);
+  assert.equal(player(declined, 'm').spice, player(entered, 'm').spice);
+  assert.equal(declined.moritaniTerror!.tokens.find(token => token.kind === 'extortion')?.status, 'extortion');
+
+  const accepted = decision(reload(allow(offer(entered))), 'e', { accept: true });
+  assert.equal(accepted.moritaniExtortion, undefined);
+  assert.equal(player(accepted, 'm').spice, player(entered, 'm').spice);
+  assert.equal(accepted.moritaniTerror!.tokens.find(token => token.kind === 'extortion')?.status, 'available');
+  assert.equal(viewGame(accepted, 'e').extortion.deferred, 0);
 });
 
 void test('alliance declarations and replies do not expose different hidden Terror faces', () => {

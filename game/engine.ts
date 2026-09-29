@@ -453,9 +453,11 @@ import {
   projectTerror,
   revealTerror,
   returnTerror,
+  retireExtortion,
   type TerrorKind,
   type TerrorState,
 } from './moritani-terror';
+import { reserveExtortion, collectExtortion, answerExtortion, validateExtortionState, type ExtortionState } from './moritani-extortion';
 import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
@@ -763,6 +765,7 @@ export type Decision =
     }
   | { kind: 'moritaniSetup'; player: string }
   | { kind: 'moritaniPlacement'; player: string }
+  | { kind: 'moritaniExtortion'; player: string; event: string }
   | { kind: 'ecazPlacement'; player: string }
   | { kind: 'ecazSpice'; player: string }
   | {
@@ -1364,6 +1367,7 @@ export type Game = {
     ambassadorEvent?: string;
   } | null;
   moritaniTerror?: TerrorState;
+  moritaniExtortion?: ExtortionState;
   grummanCollection?: GrummanCollection;
   pendingMoritaniPlacement?: {
     token: string;
@@ -6862,7 +6866,74 @@ function setupComplete(g: Game) {
     !g.players.some((p) => p.faction === 'moritani' && p.reserves === 20)
   );
 }
+function extortionEvent(state: ExtortionState): string {
+  return JSON.stringify(['moritaniExtortion', state.turn, state.token, state.cursor]);
+}
+function extortionContext(g: Game) {
+  return { turn: g.turn, phase: g.phase, players: g.players.map(player => ({ id: player.id, spice: player.spice })) };
+}
+function extortionRule<T>(apply: () => T): T {
+  try { return apply(); }
+  catch (error) {
+    if (error instanceof Error) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function moritaniExtortionIntegrity(g: Game) {
+  const pending = g.moritaniExtortion;
+  const revealed = g.moritaniTerror?.tokens.filter(token => token.status === 'extortion') ?? [];
+  requireRule(revealed.length === (pending ? 1 : 0) &&
+    (!pending || (revealed[0].id === pending.token && revealed[0].kind === 'extortion' &&
+      byFaction(g, 'moritani')?.id === pending.owner && g.status === 'playing')),
+    'Extortion has lost its revealed token or Moritani owner.');
+  if (!pending) return;
+  extortionRule(() => validateExtortionState(pending, extortionContext(g)));
+  const stormPayers = pending.stage === 'payment'
+    ? g.order.filter(id => id !== pending.owner) : null;
+  const savedDecisions = pending.stage === 'payment'
+    ? homeworldSavedDecisions(g).filter(decision => decision.kind === 'moritaniExtortion')
+    : [];
+  requireRule(pending.stage === 'reserved'
+    ? g.phase <= 8
+    : pending.stage === 'payment' && g.phase === 8 &&
+      g.moritaniTerror?.placementTurn === g.turn &&
+      savedDecisions.length === 1 &&
+      savedDecisions[0].player === pending.queue[pending.cursor] &&
+      savedDecisions[0].event === extortionEvent(pending) &&
+      pending.queue.length === stormPayers?.length &&
+      pending.queue.every((seat, index) => seat === stormPayers?.[index]),
+    'Extortion payment must resume in the original Mentat storm order.');
+}
+function settleMoritaniExtortion(g: Game, state: ExtortionState, recover: boolean) {
+  requireRule(g.moritaniTerror && state.stage === 'settled',
+    'Extortion must settle with its revealed Terror token.');
+  g.moritaniTerror = recover
+    ? returnTerror(g.moritaniTerror, state.token, random)
+    : retireExtortion(g.moritaniTerror, state.token);
+  delete g.moritaniExtortion;
+  log(g, recover
+    ? 'No one paid Extortion. Its token returned to the hidden Terror supply.'
+    : 'Extortion was paid. Its revealed Terror token was removed from the game.');
+  finishMoritaniPlacement(g);
+}
 function finishMoritaniPlacement(g: Game) {
+  const obligation = g.moritaniExtortion;
+  if (obligation?.stage === 'reserved') {
+    requireRule(g.phase === 8 && g.moritaniTerror?.placementTurn === g.turn,
+      'Finish the Terror placement before collecting Extortion.');
+    const result = extortionRule(() => collectExtortion(obligation, {
+      ...extortionContext(g), stormOrder: g.order,
+    }));
+    getPlayer(g, obligation.owner).spice += 5;
+    g.moritaniExtortion = result.state;
+    log(g, 'Moritani collected five reserved spice from the bank for Extortion.');
+    if (result.state.stage === 'payment') {
+      const payer = result.state.queue[result.state.cursor];
+      g.decision = { kind: 'moritaniExtortion', player: payer, event: extortionEvent(result.state) };
+    } else settleMoritaniExtortion(g, result.state, true);
+    return;
+  }
+  requireRule(!obligation, 'Finish the pending Extortion payments first.');
   if (!byFaction(g, 'choam')) victory(g);
 }
 function finishSetup(g: Game) {
@@ -12799,7 +12870,7 @@ function terrorRevealBlocked(
 ): string | null {
   const homeworldBlock = homeworldTerrorEntryBlock(g, entry.amount);
   if (homeworldBlock) return homeworldBlock;
-  if (kind === 'robbery' || kind === 'sabotage' || kind === 'sneakAttack')
+  if (kind === 'robbery' || kind === 'sabotage' || kind === 'sneakAttack' || kind === 'extortion')
     return null;
   if (kind !== 'assassination')
     return 'This Terror effect is still being implemented.';
@@ -13029,6 +13100,13 @@ function decideTerror(g: Game, p: Player, action: Action) {
     } else if (token.kind === 'sneakAttack') {
       entry.stage = 'sneakAttack';
       reopen();
+    } else if (token.kind === 'extortion') {
+      requireRule(!g.moritaniExtortion, 'An Extortion obligation is already pending.');
+      g.moritaniExtortion = extortionRule(() => reserveExtortion({
+        owner: owner.id, token: token.id, turn: g.turn,
+      }, extortionContext(g))).state;
+      log(g, 'Five bank spice is reserved for Moritani until Mentat Pause; it is not yet spendable.');
+      finishTerrorEntry(g);
     } else {
       const victimCard = shuffle(entrant.hand)[0];
       if (victimCard) {
@@ -13910,6 +13988,8 @@ function decideBiddingEnd(g: Game, p: Player, action: Action) {
   }
 }
 function advancePhase(g: Game) {
+  if (g.phase === 8)
+    requireRule(!g.moritaniExtortion, 'Settle Extortion before leaving Mentat Pause.');
   if (g.phase === 6) boardResolution(() => quoteBattlePhaseAdvance(g));
   commitPhaseResources(g, currentPhaseResources(g));
   g.ready = [];
@@ -13970,6 +14050,8 @@ function completePhase(g: Game) {
     g.grummanCollection.outcome = 'expired';
     g.grummanCollection.signature = grummanCollectionSignature(g.grummanCollection);
   }
+  if (g.phase === 8)
+    requireRule(!g.moritaniExtortion, 'Settle Extortion before ending the turn.');
   if (g.phase === 8) settleStrongholdOwnership(g);
   g.phase++;
   if (g.phase === 9) {
@@ -14068,7 +14150,7 @@ function beginPhase(g: Game) {
       g.moritaniTerror.placementTurn !== g.turn
     ) {
       g.decision = { kind: 'moritaniPlacement', player: moritani.id };
-    } else if (!byFaction(g, 'choam')) victory(g);
+    } else finishMoritaniPlacement(g);
   }
   if (g.phase === 0 && g.turn > 1) {
     if (g.discoveryEnabled && g.discoveries) {
@@ -19087,7 +19169,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
       );
     }
     g.pendingMoritaniPlacement = null;
-    if (placementCancellation?.finalVictory)
+    if (placementCancellation?.finalVictory && !g.moritaniExtortion)
       victory(g, placementCancellation.finalVictory);
     else finishMoritaniPlacement(g);
   } else if (response.kind === 'choamWorthless') {
@@ -22096,6 +22178,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
+  moritaniExtortionIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -22277,6 +22360,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   homeworldShipmentIntegrity(g);
   ixRicheseTechnologyIntegrity(g);
   harkonnenExchangeIntegrity(g);
+  moritaniExtortionIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
@@ -22331,6 +22415,12 @@ function finishActionContinuations(g: Game) {
   )
     finishSetup(g);
   settleAdvisors(g);
+  if (g.status === 'playing' && g.phase === 8 &&
+      g.moritaniExtortion?.stage === 'reserved' &&
+      g.moritaniTerror?.placementTurn === g.turn &&
+      !g.decision && !g.response && !g.truthtrance && !g.phaseOpening &&
+      !g.pendingKarama && !g.pendingTerrorEntry && !g.pendingAmbassador)
+    finishMoritaniPlacement(g);
 }
 function settleAutomaticContinuations(g: Game) {
   if (pendingNexusTraitors(g)) return;
@@ -22378,6 +22468,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
+  moritaniExtortionIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -22431,6 +22522,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   homeworldShipmentIntegrity(g);
   ixRicheseTechnologyIntegrity(g);
   harkonnenExchangeIntegrity(g);
+  moritaniExtortionIntegrity(g);
   return g;
 }
 
@@ -22859,6 +22951,29 @@ function applyActionInner(
     g.decision = null;
     requireRule(decision.kind !== 'leaderSkillVisibility' && decision.kind !== 'leaderSkillRevival', 'Use the Leader Skills controls for this decision.');
     if (decision.kind === 'moritaniAssassinate') {actMoritaniAssassinate(g,decision,action);return g;}
+    if (decision.kind === 'moritaniExtortion') {
+      const obligation = g.moritaniExtortion;
+      const pay = action.pay;
+      requireRule(g.phase === 8 && obligation?.stage === 'payment' &&
+        obligation.queue[obligation.cursor] === id &&
+        decision.event === extortionEvent(obligation) &&
+        action.event === decision.event && typeof pay === 'boolean' &&
+        Object.keys(action).every(key => ['type', 'event', 'pay'].includes(key)),
+        'Choose the current Extortion opportunity in storm order.');
+      const result = extortionRule(() => answerExtortion(obligation, id, pay, extortionContext(g)));
+      if (result.transfer?.from === 'player') {
+        p.spice -= result.transfer.amount;
+        getPlayer(g, result.transfer.to).spice += result.transfer.amount;
+        log(g, `${p.name} paid Moritani three spice to prevent Extortion recovery.`);
+      } else log(g, `${p.name} declined the Extortion payment.`);
+      g.moritaniExtortion = result.state;
+      if (result.recover !== null) settleMoritaniExtortion(g, result.state, result.recover);
+      else {
+        const next = result.state.queue[result.state.cursor];
+        g.decision = { kind: 'moritaniExtortion', player: next, event: extortionEvent(result.state) };
+      }
+      return g;
+    }
     if (decision.kind === 'mentatQuestion') {
       actMentatQuestion(g, decision, action);
       return g;
@@ -26215,6 +26330,7 @@ export function viewGame(state: Game, id: string) {
   ecazTreacheryIntegrity(state);
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
+  moritaniExtortionIntegrity(state);
   discoveryFlightIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
@@ -26342,6 +26458,18 @@ export function viewGame(state: Game, id: string) {
     moritaniTerror: g.moritaniTerror
       ? projectTerror(g.moritaniTerror, me.faction === 'moritani')
       : null,
+    extortion: {
+      deferred: g.moritaniExtortion?.stage === 'reserved' ? 5 : 0,
+      pending: g.moritaniExtortion?.stage === 'payment' && g.decision?.kind === 'moritaniExtortion'
+        ? {
+            event: g.decision.event,
+            owner: g.moritaniExtortion.owner,
+            player: g.decision.player,
+            amount: 3 as const,
+            canPay: me.id === g.decision.player ? me.spice >= 3 : null,
+          }
+        : null,
+    },
     moritaniPendingPlacement:
       me.faction === 'moritani' ? (g.pendingMoritaniPlacement ?? null) : null,
     grummanCollection: projectedGrummanCollection(g, id),
@@ -26734,6 +26862,7 @@ export function viewGame(state: Game, id: string) {
       g.status === 'playing' &&
       (!!byFaction(g, 'choam') ||
         g.decision?.kind === 'moritaniPlacement' ||
+        g.decision?.kind === 'moritaniExtortion' ||
         g.response?.kind === 'moritaniPlacement'),
     choamMovementBonus:
       g.choamMovement?.turn === g.turn ? g.choamMovement.bonus : 0,

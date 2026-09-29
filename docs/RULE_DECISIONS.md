@@ -27,6 +27,7 @@ Updated 14 September 2026. This is the authoritative navigation index for existi
 | Truthtrance | Current facts are boolean disclosures, not promises to preserve resources. Structured Basic and base Advanced active-opportunity shipment promises bind within their documented scope (Advanced excludes Guild and optional modules); prose is not automatically enforced. | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card facts](TRUTHTRANCE_CARD_COUNT.md), [shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md), [remaining audit](TRUTHTRANCE_NONBATTLE_READINESS_20260907.md) |
 | Truthtrance hand categories | Count current physical hand custody by explicitly named primary role; alternate battle slots and faction powers do not reclassify cards. Only an aggregate answer is disclosed. | [Hand inventory](TRUTHTRANCE_HAND_INVENTORY.md) |
 | Moritani Advanced assassination preview | After an eligible battle loss, a different opposing-faction Traitor Card may be revealed even if its leader is already dead (zero bounty). Face-up set-aside and one private replacement occur during Mentat; one use per faction. Normal-call duration, uniform hidden-eligibility UX and exceptional combinations remain explicit. | [Runtime/source contract](MORITANI_ASSASSINATE_LEADERS.md) |
+| Moritani Extortion at Mentat | The user selected normal Terror placement/relocation first, including any Karama response; only then collect the reserved five bank spice and approach other players in storm order for a possible three-spice payment. Payment removes the token; all declines recover it with rotated hidden supply IDs. The relative placement timing is a user-selected interpretation, not a publisher ruling. | [Publisher sequence and selected timing](MORITANI_EXTORTION_RULES.md#mentat-ordering-selected-interpretation-not-a-publisher-ruling) |
 | Fremen/Ecaz final-turn victory | Reciprocal allied Ecaz and Fremen with fighters in Sietch Tabr do not block the Fremen special victory. Ecaz alone/non-allied or a third faction still blocks. The Habbanya extension remains unsupported; ordinary winner/prediction and fallback order are preserved. | [Explicit FAQ and runtime](ECAZ_VICTORY_RULES.md#fremen-final-turn-runtime-follow-up) |
 | Truthtrance recorded knowledge | Questions compare an already recorded BG prediction, active submitted storm dial or actually known native Fremen forecast. Missing knowledge is unknown; only the aggregate answer is published. No future promise or unknown deck peek is created. | [Connected predicates and evidence](TRUTHTRANCE_KNOWLEDGE.md) |
 | Nexus lifecycle | Twelve physical cards, phase draw/replacement and alliance forfeiture; native Cunning, absent-faction Secret Ally and Betrayal have separate effects. No blanket Karama immunity. | [Common source contract](NEXUS_CARD_RULES.md), [lifecycle runtime](NEXUS_CARD_RUNTIME.md) |
@@ -57,6 +58,11 @@ them. Advisors remain counters, and concealed No-Field markers/values are exclud
 These are current observations, not future obligations; no typed distribution
 is invented when Basic lacks separate starred-counter tracking. See the
 [force-fact source composition](TRUTHTRANCE_FORCE_FACTS.md).
+
+For future interactions with no publisher ruling discoverable after targeted research,
+use the conservative recommended interpretation and document it as an implementation
+choice rather than soliciting another preference. Earlier pending questions below
+remain recorded until their relevant work is revisited.
 
 ## Pending interpretations: preserve existing questions
 

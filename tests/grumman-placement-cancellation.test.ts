@@ -124,14 +124,6 @@ void test('denial tolerates changed placement feasibility but rejects malformed 
       },
     ],
     [
-      'extortion source',
-      (bad) => {
-        const token = grummanToken(bad, 'extortion');
-        token.status = 'extortion';
-        bad.pendingMoritaniPlacement!.token = token.id;
-      },
-    ],
-    [
       'same source and target',
       (bad) => {
         bad.pendingMoritaniPlacement!.token = grummanToken(bad, 'robbery').id;

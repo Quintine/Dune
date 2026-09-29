@@ -155,6 +155,19 @@ export function revealTerror(state: TerrorState, tokenId: string): TerrorState {
   };
 }
 
+/** A paid Extortion cannot return to supply; the revealed physical token is spent. */
+export function retireExtortion(state: TerrorState, tokenId: string): TerrorState {
+  const token = state.tokens.find(candidate => candidate.id === tokenId);
+  if (token?.kind !== 'extortion' || token.status !== 'extortion')
+    throw new Error('Only the revealed Extortion token can be removed.');
+  return {
+    ...state,
+    tokens: state.tokens.map(candidate => candidate.id === tokenId
+      ? { ...candidate, status: 'removed' as const }
+      : candidate),
+  };
+}
+
 /**
  * Return an unrevealed token or recover Extortion without resolving its rule effect.
  * Every available ID is replaced, and the supply is rebuilt in a fresh random order.
