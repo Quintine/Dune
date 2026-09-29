@@ -11237,13 +11237,10 @@ function completeMove(g: Game, move: MovementOrder) {
   removeGroup(p, group, eliteGroup);
   if (n > (move.noField ? 1 : 0))
     place(p, to, s, n - (move.noField ? 1 : 0), elite);
-  if (advisors)
-    (p.advisors ??= {})[to] = {
-      lockedTurn:
-        Math.max(lockedTurn ?? 0, p.advisors?.[to]?.lockedTurn ?? 0) ||
-        undefined,
-    };
-  else if (p.advisors) delete p.advisors[to];
+  if (advisors) {
+    const arrivalLock = Math.max(lockedTurn ?? 0, p.advisors?.[to]?.lockedTurn ?? 0);
+    (p.advisors ??= {})[to] = arrivalLock ? { lockedTurn: arrivalLock } : {};
+  } else if (p.advisors) delete p.advisors[to];
   if (wantsFighters)
     g.response = {
       kind: 'advisorFlip',
@@ -12451,15 +12448,10 @@ function commitAmbassadorRelocation(g: Game, move: FremenAmbassadorMove) {
   removeGroup(p, move.group, move.eliteGroup);
   const physical = move.total - (move.noField ? 1 : 0);
   if (physical) place(p, move.to, move.sector, physical, move.elite);
-  if (move.advisors)
-    (p.advisors ??= {})[move.to] = {
-      lockedTurn:
-        Math.max(
-          move.lockedTurn ?? 0,
-          p.advisors?.[move.to]?.lockedTurn ?? 0,
-        ) || undefined,
-    };
-  else if (p.advisors) delete p.advisors[move.to];
+  if (move.advisors) {
+    const lockedTurn = Math.max(move.lockedTurn ?? 0, p.advisors?.[move.to]?.lockedTurn ?? 0);
+    (p.advisors ??= {})[move.to] = lockedTurn ? { lockedTurn } : {};
+  } else if (p.advisors) delete p.advisors[move.to];
   entry.stage = 'arrival';
   entry.relocation = { order: move, next: 'flip' };
   log(
@@ -20454,9 +20446,10 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
   observeOccupation(g);
   if (arrival) {
     place(p, arrival.territory, arrival.sector, quote.amount, quote.elite);
-    if (advisors) (p.advisors ??= {})[arrival.territory] = {
-      lockedTurn: Math.max(sourceLock ?? 0, p.advisors?.[arrival.territory]?.lockedTurn ?? 0) || undefined};
-    else if (p.advisors) delete p.advisors[arrival.territory];
+    if (advisors) {
+      const lockedTurn = Math.max(sourceLock ?? 0, p.advisors?.[arrival.territory]?.lockedTurn ?? 0);
+      (p.advisors ??= {})[arrival.territory] = lockedTurn ? { lockedTurn } : {};
+    } else if (p.advisors) delete p.advisors[arrival.territory];
   }
   p.shipped = true;
   g.junctionOffer = null;
@@ -21043,11 +21036,10 @@ function commitGuildTransport(
     if (p.elites) p.elites.reserves += elite;
   } else {
     place(p, to, sector, amount, elite);
-    if (advisors)
-      (p.advisors ??= {})[to] = {
-        lockedTurn: Math.max(sourceLock ?? 0, p.advisors?.[to]?.lockedTurn ?? 0) || undefined,
-      };
-    else if (p.advisors) delete p.advisors[to];
+    if (advisors) {
+      const lockedTurn = Math.max(sourceLock ?? 0, p.advisors?.[to]?.lockedTurn ?? 0);
+      (p.advisors ??= {})[to] = lockedTurn ? { lockedTurn } : {};
+    } else if (p.advisors) delete p.advisors[to];
   }
   observeOccupation(g);
   finishShipmentPromises(g, p, fromReserves ? { territory: to, amount } : null);

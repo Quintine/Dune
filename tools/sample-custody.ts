@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { leaders, treacheryDeck } from '../game/cards';
 import type { Game } from '../game/engine';
 import { richeseCards } from '../game/richese-cards';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { traitorDeck } from '../game/traitors';
 import { basicExpansionLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { validateLeaderSkills } from '../game/leader-skills';
@@ -12,6 +13,7 @@ export function sampleInventory(game: Game) {
     leaderSkills: !!game.leaderSkills,
     cards: [
       ...treacheryDeck(game.expansions),
+      ...(game.ecazTreachery ? ecazTreacheryCards() : []),
       ...(game.players.some((player) => player.faction === 'richese')
         ? richeseCards()
         : []),

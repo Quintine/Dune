@@ -111,6 +111,7 @@ node --import tsx tools/faction-games.ts --out /tmp/dune-new-homeworld-nexus --p
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-choam-roster --profile choam-roster
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ecaz-roster --profile ecaz-roster
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ix-roster --profile ix-roster
+node --import tsx tools/faction-games.ts --out /tmp/dune-new-ecaz-cards --profile ecaz-treachery
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-choam-nexus --profile choam-nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ecaz-nexus --profile ecaz-nexus
 node --import tsx tools/faction-games.ts --out /tmp/dune-new-ix-nexus --profile ix-nexus
@@ -124,8 +125,9 @@ Default and `--profile all` retain the original six fixed CHOAM/Richese,
 Ecaz/Moritani and combined Basic/Advanced samples. `--profile base` selects ten
 additional samples: Basic and Advanced with two through six players.
 `--players 2..6` narrows the base, Homeworld, Nexus, combined
-`homeworld-nexus`, expansion-roster or paired-Nexus profiles. The
-`combined-nexus` and `combined-homeworld-nexus` profiles support `--players 5`
+`homeworld-nexus`, expansion-roster, paired-Nexus, independent Ecaz-card or
+Leader Skills profiles. The `combined-nexus` and
+`combined-homeworld-nexus` profiles support `--players 5`
 or `6` only. Omission or `all` retains every roster in a selected profile. The fixed
 base roster adds Atreides, Harkonnen, Fremen, Emperor, Guild and Bene Gesserit
 in that order. These are sample rosters, not the only rules-permitted
@@ -136,6 +138,11 @@ respective physical expansion enabled: CHOAM/Richese start with CHOAM then
 Richese, Ecaz/Moritani with Moritani then Ecaz, Ixian/Tleilaxu with Ixians
 then Tleilaxu. Subsequent seats extend each to six without changing existing
 fixed four-seat samples. Their seed offsets are 68–77, 78–87 and 88–97.
+`ecaz-treachery` reuses the two-through-six-seat Ecaz/Moritani roster with the
+independent three-card Treachery variant instead of Nexus Cards. Basic and
+Advanced seed offsets are 136–145; default/all keeps its original six games.
+The runner counts all three physical cards and resume requires the variant
+marker and exact roster. This is still a gated development profile.
 `choam-nexus`, `ecaz-nexus` and `ix-nexus` reuse the respective expansion
 rosters with Nexus Cards enabled at seed offsets 98–107, 108–117 and 118–127.
 `combined-nexus` selects five or six actual expansion factions and all three
@@ -152,6 +159,17 @@ use 48–51 and 54–57. Nexus's six-seat offsets remain 38–39; its smaller
 rosters use 40–47. The combined module uses offsets 58–67. These samples
 do not open public module or expansion starts or assert complete interaction
 coverage.
+
+At base seed `20260929`, the Ecaz-card profile completed all ten
+two-to-six-seat Basic/Advanced samples with 3,768 accepted actions, no
+rejected candidates and 95 JSON continuations. The six-seat Advanced trace
+includes Recruits, Reinforcements and Harass & Withdraw actual uses. The
+private source-bound report is
+`/tmp/dune-ecaz-treachery-matrix-final-20260929/report.json`. The first
+matrix exposed a non-serializable unlocked advisor stance; its corrected
+writer paths are documented in
+[the implementation log](IMPLEMENTATION_STATUS.md#29-september-2026--ecaz-card-variant-full-game-integration-samples).
+This is not expansion release evidence.
 
 All-AI Nexus samples now make public reciprocal offers as well as accepting
 them, so an actual alliance can form without a human proposer. At the
@@ -181,11 +199,11 @@ Advanced requests fail before running. Its seed offsets are 16–20, leaving
 existing samples unchanged. The full fourteen-card skill census and ordinary
 Moritani/base Traitor census are checked throughout. `--resume` preserves this
 explicit profile; other optional modules still fail its admission checks.
-Homeworld, Nexus and combined snapshots resume only when their saved modules
-and fixed rosters match a supported profile; other optional module
-combinations remain excluded. An edited snapshot with a removed module can
-match a different fixed profile, so verify its original private report
-before relying on resumed provenance.
+Homeworld, Nexus, independent Ecaz-card and combined snapshots resume only
+when their saved modules and fixed rosters match a supported profile; other
+optional-module combinations remain excluded. An edited snapshot with a
+removed module can match a different fixed profile, so verify its original
+private report before relying on resumed provenance.
 
 All samples use genuine setup and saved AI profiles, cycling Easy, Medium,
 Hard and Brutal by seat. Smaller games necessarily contain fewer profiles;

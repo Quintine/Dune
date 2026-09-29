@@ -94,6 +94,31 @@ function assertFailedEvidence(
   return report;
 }
 
+void test('Ecaz card samples keep all three physical identities through saved resume', (t) => {
+  const area = temporary(t);
+  const out = join(area, 'ecaz-cards');
+  const result = run(out, '--profile', 'ecaz-treachery', '--players', '2',
+    '--rules', 'advanced', '--seed', '1000', '--max-actions', '1');
+  assert.equal(result.status, 1);
+  assertFailedEvidence(out, 'ecaz-treachery-2-advanced', 1137, false);
+  const snapshot = join(out, 'failed-ecaz-treachery-2-advanced.json');
+  const game = json<{
+    ecazTreachery: boolean;
+    deck: { id: string }[];
+    discard: { id: string }[];
+    players: { hand: { id: string }[] }[];
+  }>(snapshot);
+  assert.equal(game.ecazTreachery, true);
+  assert.deepEqual(
+    [...game.deck, ...game.discard, ...game.players.flatMap(player => player.hand)]
+      .map(card => card.id).filter(id => id.startsWith('ecaz-')).sort(),
+    ['ecaz-harass-withdraw', 'ecaz-recruits', 'ecaz-reinforcements'],
+  );
+  const resumed = join(area, 'resumed');
+  assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(resumed, 'ecaz-treachery-2-advanced', 1137, true);
+});
+
 void test('Moritani Skills samples preserve their full module on saved continuation and reject Advanced before running', (t) => {
   const area = temporary(t);
   const out = join(area, 'skills');

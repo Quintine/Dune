@@ -387,6 +387,19 @@ void test('new advisors cannot flip into occupied fighters during their arrival 
     /cannot become fighters/,
   );
 });
+void test('an unlocked ordinary advisor move keeps the same private and public views after JSON', () => {
+  let g = fixture();
+  army(g, 'a', { 'arrakeen:10': 1, 'imperial_basin:10': 1 });
+  army(g, 'b', { 'arrakeen:10': 2, 'imperial_basin:10': 1 }, [
+    'arrakeen', 'imperial_basin',
+  ]);
+  g.active = 'b';
+  g = move(g, 'b', 'arrakeen:10', 'imperial_basin', 10, 1);
+  assert.deepEqual(g.players[1].advisors?.imperial_basin, {});
+  for (const player of g.players)
+    assert.deepEqual(viewGame(g, player.id), viewGame(JSON.parse(JSON.stringify(g)) as Game, player.id));
+});
+
 void test('advisor setup waits for Fremen, follows their placement, and becomes fighters only when alone', () => {
   for (const occupied of [false, true]) {
     let g = createGame('ADSETUP2', newPlayer('a', 'Atreides', 'atreides'));
@@ -504,6 +517,22 @@ void test('Guild cross-shipping matches existing advisors and preserves their ar
     viewGame(JSON.parse(JSON.stringify(g)), 'a').players[1].advisors,
     viewGame(g, 'a').players[1].advisors,
   );
+});
+
+void test('an unlocked Guild advisor arrival projects identically after JSON continuation', () => {
+  let g = fixture();
+  g.players[2].faction = 'guild';
+  g.players[2].ally = 'b';
+  g.players[1].ally = 'h';
+  army(g, 'a', { 'red_chasm:7': 1 });
+  army(g, 'b', { 'arrakeen:10': 2, 'red_chasm:7': 1 }, ['arrakeen', 'red_chasm']);
+  g.active = 'b';
+  g = allow(applyAction(g, 'b', {
+    type: 'guildShip', from: 'arrakeen:10', territory: 'red_chasm',
+    sector: 7, amount: 2,
+  }));
+  assert.deepEqual(g.players[1].advisors?.red_chasm, {});
+  assert.deepEqual(viewGame(g, 'a'), viewGame(JSON.parse(JSON.stringify(g)) as Game, 'a'));
 });
 
 void test('accompanying advisors may select a valid sector of the shipment territory, with no reserve loss on a rejected choice', () => {

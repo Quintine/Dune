@@ -206,6 +206,26 @@ void test('Junction cross-transport preserves BG advisor locks and forbids mergi
   homeworldGameIntegrity(g);
 });
 
+void test('an unlocked Junction advisor group has identical views across JSON recovery', () => {
+  let g = fixture();
+  g.active = 'beneGesserit';
+  g.movementRemaining = ['beneGesserit', 'atreides', 'guild'];
+  const bg = player(g, 'beneGesserit');
+  bg.forces = { 'arrakeen:10': 2, 'tueks_sietch:5': 1 };
+  bg.reserves = 17;
+  bg.advisors = { arrakeen: {}, tueks_sietch: {} };
+  g = offered(g);
+  const option = viewGame(g, bg.id).junctionTransport!;
+  g = applyAction(g, bg.id, {
+    type: 'junctionShip', event: option.event, offer: option.offer!.event,
+    destination: 'tueks_sietch:5',
+    sources: { 'arrakeen:10': { normal: 1, elite: 0 } },
+  });
+  assert.deepEqual(player(g, bg.id).advisors!.tueks_sietch, {});
+  assert.deepEqual(viewGame(g, bg.id), viewGame(JSON.parse(JSON.stringify(g)) as Game, bg.id));
+  homeworldGameIntegrity(g);
+});
+
 void test('Junction distinguishes native Fremen Arrakis arrival from a foreign Homeworld departure for BG and technology', () => {
   let native = fixture(true);
   native.active = 'fremen';

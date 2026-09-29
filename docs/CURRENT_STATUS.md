@@ -6,6 +6,16 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+The independent Ecaz three-card variant now has a repeatable
+[genuine-game sample profile](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games)
+for paired Ecaz/Moritani rosters from two to six seats. Ten Basic/Advanced
+games at base seed `20260929` completed with 3,768 accepted actions, zero
+rejected candidates and 95 JSON continuations; the six-seat Advanced game
+actually played Recruits, Reinforcements and Harass & Withdraw. That run
+exposed and confirmed a saved-view drift from unlocked Bene Gesserit advisor
+stances, now corrected at four arrival/movement writers. These samples do
+not certify all card interactions, full expansion modes or deployment.
+
 The separate [Reinforcements card prototype](REINFORCEMENTS_RUNTIME.md)
 now works in clean Ecaz/Moritani expansion battles as well as classic-faction
 tables in Basic and Advanced. Genuine setup, owner-only two-slot controls,

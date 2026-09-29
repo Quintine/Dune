@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 29 September 2026 — Ecaz card variant full-game integration samples
+
+The reusable offline runner now has `--profile ecaz-treachery`: two through
+six genuine paired Ecaz/Moritani seats, each Basic and Advanced, with the
+independent three-card deck, physical custody checks, all four saved AI
+profiles and explicit JSON continuation. Its default six historical games
+and seed offsets remain unchanged; incomplete snapshots can resume only
+under the exact saved variant/roster. Public starts remain gated.
+
+The first same-seed matrix completed eight of ten games and caught an actual
+saved-view mismatch: an unlocked Bene Gesserit advisor stance was stored as
+`{lockedTurn:undefined}` by movement, Guild transport, Junction transport or
+Fremen Ambassador relocation, but JSON restored it as `{}`. The four writers
+now store a canonical empty stance or a numeric lock. Focused Guild,
+Junction, ordinary move and Fremen relocation cases preserve view parity
+after JSON; locked arrivals still retain their original turn. No saved room
+or credential was altered.
+
+The final source-bound run at base seed `20260929` completed all ten games:
+3,768 accepted actions, no rejected candidates, 95 JSON continuations and
+unchanged source fingerprint. The six-seat Advanced game used all three
+physical Ecaz card effects. Report:
+`/tmp/dune-ecaz-treachery-matrix-final-20260929/report.json`, based on
+`6ac5dab` plus the uncommitted source changes of this checkpoint (source
+fingerprint `466f801d36e8dc9aa1b14d2c9215813c8b4561926cc2ba43664d38e03ebbb081`).
+This samples playable continuation, not complete card interactions,
+combined-module acceptance, calibrated AI or deployed behavior.
+
+The focused runner/advisor suites pass 101/101 cases. An independent
+read-only review of the four writer changes, source custody and resume gates
+found no concrete defect; it did not run tests or certify release readiness.
+
+`npm run check` passes typecheck, lint and 5,765/5,765 offline cases;
+`npm run build` passes. No database schema or HTTP route changed.
+The last verified live image predates these changes.
+
 ## 29 September 2026 — Reinforcements in paired Ecaz/Moritani battles
 
 The independently selected three-card Ecaz variant now allows its physical

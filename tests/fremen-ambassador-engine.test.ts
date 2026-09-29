@@ -727,6 +727,9 @@ void test('Ecaz Occupy permits its unlocked BG ally to choose fighters beside Ec
       settled(advisors);
       continue;
     }
+    const unlockedAdvisors = move(g, { ...action, fighters: false });
+    assert.deepEqual(p(unlockedAdvisors, 'a').advisors?.sietch_tabr, {});
+    assert.deepEqual(viewGame(unlockedAdvisors, 'a'), viewGame(reload(unlockedAdvisors), 'a'));
     let done = applyAction(reload(g), 'a', action);
     assert.equal(done.response?.kind, 'advisorFlip');
     done = allow(reload(done));
