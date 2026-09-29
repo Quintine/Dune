@@ -1,5 +1,17 @@
 # Dune implementation status
 
+## 29 September 2026 — Moritani Leader Skills samples
+
+At source revision `29aedf1`, all five Basic Moritani plus Leader Skills
+two-through-six-seat games at base seed `20260929` finished through genuine
+setup and saved AI actions: 2,013 accepted actions, zero rejected candidates
+and 53 JSON continuations. The four-seat game exercised a Bureaucrat payment
+decision and nine battles; the six-seat game reached twelve Terror decisions
+and ten turns. The source fingerprint was unchanged and no live room was
+used. The private report is
+`/tmp/dune-goal-20260929-moritani-skills/report.json`. These samples do not
+certify every skill effect, Advanced play, combined modules or AI strength.
+
 ## 29 September 2026 — paired expansion game samples
 
 At source revision `b9c8b74`, the reusable genuine-setup runner completed
