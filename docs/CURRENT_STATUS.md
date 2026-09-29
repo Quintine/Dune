@@ -7,21 +7,22 @@ Expansion starts and full rules/publication acceptance remain gated.**
 ## Current checkpoint and work
 
 The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
-now pauses a clean public ordinary-card discard, the used Box after
-a completed paid search, an Ornithopter retired on early movement
-ending, or the public used Distrans after a clean private transfer.
-Every seat sees the same neutral offer independently of hidden Semuta
-possession; the transferred card remains private with its recipient.
-A holder with a free hand slot can commit to the fresh other-player
-discard; its physical claim and Semuta disposal resume the original
-effect, Box parent or movement queue once. All-seat decline, four
-minimal legal AI profiles, exact JSON/SQLite continuation and
-competing-room CAS are connected. Phone width showed the owned
-Commit control and identical rival Continue event without a private
-card face. Completed-flight arrival, competing transactions,
-multi-card and most other producers, full-hand ordering, normal
-Richese starts and deployed acceptance remain unfinished; neutral
-passes and free-slot guard are product safety choices, not rulings.
+pauses a clean public ordinary-card discard, the used Box after a
+paid search, early-ended Ornithopter, public used Distrans after a
+private transfer, or a final definite Truthtrance after its answer
+is bound. Every seat sees the same neutral offer independently of
+hidden Semuta possession. The Distrans gift remains private with
+its recipient; Truthtrance history stays fixed through the claim.
+A holder with a free hand slot can recover the fresh other-player
+discard and dispose Semuta; saved effects and the movement queue
+resume once. All-seat decline, minimal legal AI, exact JSON/SQLite
+continuation and competing-room CAS are connected. Phone width
+showed the owned Commit and rival Continue event without a private
+card face. Promise-bound and queued Truthtrance, completed-flight
+arrival, competing transactions, multi-card and most other producers,
+full-hand ordering, normal Richese starts and deployed acceptance
+remain unfinished. Neutral passes and the free-slot guard are
+product safety choices, not publisher rulings.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,

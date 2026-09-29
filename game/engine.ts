@@ -5685,8 +5685,8 @@ function treacheryDiscardIntegrity(g: Game) {
   } else throw new RuleError('Unknown saved discard continuation.');
 }
 /** Bounded public single-card reaction after a completed ordinary effect, paid
- * Box search, early-ended Ornithopter flight or clean Distrans transfer. A
- * completed flight's arrival may open further entry windows and stays automatic. */
+ * Box search, early-ended Ornithopter flight, clean Distrans transfer or final
+ * definite Truthtrance answer without a new promise or parent transaction. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -5695,8 +5695,11 @@ function semutaOfferSupported(
   if (continuation.kind !== 'ordinaryCardDiscard' &&
     continuation.kind !== 'nullentropyDiscard' &&
     continuation.kind !== 'distransDiscard' &&
-    !(continuation.kind === 'ornithopterDiscard' && continuation.source === 'end')) return false;
-  if (continuation.kind === 'distransDiscard' &&
+    !(continuation.kind === 'ornithopterDiscard' && continuation.source === 'end') &&
+    !(continuation.kind === 'truthtranceDiscard' &&
+      continuation.consumed.source === undefined &&
+      continuation.remaining === null && continuation.promise === null)) return false;
+  if ((continuation.kind === 'distransDiscard' || continuation.kind === 'truthtranceDiscard') &&
     (g.pendingChoamMove || g.pendingIxMove || g.pendingFremenMove ||
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0)) return false;
   return g.semutaPreview === true && g.status === 'playing' &&

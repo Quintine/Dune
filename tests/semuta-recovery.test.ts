@@ -16,7 +16,7 @@ function take(g: Game, identity: string) {
   throw new Error('The genuine setup lost a physical card.');
 }
 
-void test('authenticated ordinary, paid Box, retired flight and private Distrans claims survive restart and room CAS', async () => {
+void test('authenticated clean Semuta producers claim once through restart and room CAS', async () => {
   const f = unitStore();
   try {
     const created = await f.rooms.createRoom('Semuta QA', 'richese', false, ['choam']);
@@ -208,5 +208,44 @@ void test('authenticated ordinary, paid Box, retired flight and private Distrans
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(final, auth.playerId));
+
+    const finalAnswer = structuredClone(final);
+    const lastSemuta = take(finalAnswer, SEMUTA_DRUG_ID);
+    finalAnswer.richeseCache!.push(take(finalAnswer, distrans.id));
+    seat(finalAnswer, ids[0]).hand.push(lastSemuta);
+    const truth = take(finalAnswer, 'truthtrance');
+    seat(finalAnswer, ids[1]).hand.push(truth);
+    Object.assign(finalAnswer, { turn: 6, phase: 5, active: ids[1], ready: [],
+      decision: null, response: null, phaseOpening: null, stormPending: null,
+      movementRemaining: [ids[1], ids[0], ids[2]], hajr: [] });
+    finalAnswer.version = final.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(finalAnswer), finalAnswer.version, code, final.version).changes, 1);
+    let question = await act(1, { type: 'card', card: truth.id });
+    while (question.truthtrance?.stage === 'priority') {
+      const responder = question.players.find(p => !question.truthtrance!.passed.includes(p.id))!;
+      question = await act(ids.indexOf(responder.id), { type: 'truthPass' });
+    }
+    const targetSpice = seat(question, ids[2]).spice;
+    question = await act(1, { type: 'truthAsk',
+      question: { kind: 'fact', target: ids[2],
+        fact: { kind: 'spice', compare: 'eq', value: targetSpice } } });
+    const answered = await act(2, { type: 'truthAnswer', answer: 'yes' });
+    assert.equal(answered.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(answered.truthHistory?.at(-1)?.answer, 'yes');
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, answered.version);
+    assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
+    const recovered = await act(0, { type: 'semutaCommit',
+      event: answered.pendingTreacheryDiscard!.batch.event });
+    assert.equal(recovered.pendingTreacheryDiscard, null);
+    assert.equal(recovered.truthtrance, null);
+    assert.deepEqual(recovered.truthHistory, answered.truthHistory);
+    assert.equal(seat(recovered, ids[0]).hand.filter(card => card.id === truth.id).length, 1);
+    assert.equal(recovered.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.equal(recovered.discard.some(card => card.id === truth.id), false);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(recovered, auth.playerId));
   } finally { f.sqlite.close(); }
 });

@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after a final definite Truthtrance answer
+
+The explicit Richese Semuta preview now pauses the public card discard
+after a clean final definite Truthtrance answer. The asker has spent
+the actual held card, the respondent's answer is already recorded,
+and the public history is bound before the neutral all-seat offer.
+Another holder with hand space may take only that freshly consumed
+card and discard Semuta; all-seat decline retains the original pile.
+Neither path re-answers, duplicates a promise, restarts a question,
+or changes the recorded fact.
+
+Genuine setup and an isolated migrated SQLite room exercise a real
+declaration, priority passes, privately answerable spice/hand fact,
+definite answer, persisted reaction and authenticated claim after
+restart. JSON projections, custody, public answer history, legal AI,
+owner-only commitment, all-seat decline and saved seat rows remain
+stable. Setup-era facts, queued follow-ups, promise-bound questions,
+competing parent transactions, other discard producers and full-hand
+ordering remain outside this bounded preview.
+
+Independent rules/continuation and privacy/recovery reviews found no
+scoped defect. A throwaway production-engine run completed genuine
+AI setup, declaration, definite hand answer, neutral reaction and
+bot claim with one fixed public history entry. The phone-width guide
+rendered this boundary as Partial. `npm run check` passed typecheck,
+lint and 5,805/5,805 offline cases; `npm run build` and all 55 Vite
+development HTTP cases passed. No deployed revision was exercised.
+
 ## 30 September 2026 — Semuta after a completed private Distrans transfer
 
 An explicitly opted-in Richese preview now pauses after a clean

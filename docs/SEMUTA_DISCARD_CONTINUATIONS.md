@@ -14,6 +14,13 @@ gifts and competing parents retain the original direct transfer
 behavior without this Semuta reaction. The table below remains the
 broader producer/continuation inventory, not a claim of complete coverage.
 
+The same preview also pauses a final definite Truthtrance after its
+public answer, history and physical card disposal are committed. Only
+an ordinary held Truthtrance with no following queued question, new
+promise or competing parent qualifies. A claim may move that consumed
+card, never re-answer the question or rewrite its history; other
+Truthtrance continuations remain automatic.
+
 ## Main findings
 
 A post-`applyAction` pile diff cannot implement immediate Semuta. Ix Ambassador and Ixian ally replacement discard then draw directly. Ordinary Karama cancellation/purchase can reach replacement, Harkonnen bonus or a new auction pool indirectly. A stopped frame must resume at a named stage, never rerun its original public action.

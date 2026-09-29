@@ -320,3 +320,52 @@ void test('a completed private Distrans transfer offers only its public used car
     assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
 });
+
+void test('a final definite Truthtrance answer offers its consumed card after public history binds', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const truth = take(g, 'truthtrance');
+  const shield = g.deck.splice(g.deck.findIndex(card => card.name === 'Shield'), 1)[0];
+  assert.ok(shield);
+  player(g, 'a').hand.push(truth);
+  player(g, 'e').hand.push(shield);
+  const original = inventory(g);
+  let declared = applyAction(g, 'a', { type: 'card', card: truth.id });
+  while (declared.truthtrance?.stage === 'priority') {
+    const responder = declared.players.find(p => !declared.truthtrance!.passed.includes(p.id))!;
+    declared = applyAction(declared, responder.id, { type: 'truthPass' });
+  }
+  const asked = applyAction(declared, 'a', { type: 'truthAsk',
+    question: { kind: 'fact', target: 'e', fact: { kind: 'hand', name: 'Shield' } },
+  });
+  assert.equal(viewGame(asked, 'e').truthAnswer, 'yes');
+  const pending = applyAction(asked, 'e', { type: 'truthAnswer', answer: 'yes' });
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'truthtranceDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.truthHistory?.length, 1);
+  assert.equal(pending.truthHistory?.[0].answer, 'yes');
+  assert.equal(pending.discard.filter(card => card.id === truth.id).length, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  let declined = reload(pending);
+  for (const id of ['e', 'a', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(declined.discard.filter(card => card.id === truth.id).length, 1);
+  assert.deepEqual(declined.truthHistory, pending.truthHistory);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(claimed.truthtrance, null);
+  assert.deepEqual(claimed.truthHistory, pending.truthHistory);
+  assert.equal(player(claimed, 'e').hand.filter(card => card.id === shield.id).length, 1);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === truth.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(claimed.discard.some(card => card.id === truth.id), false);
+  assert.deepEqual(inventory(claimed), original);
+  for (const p of claimed.players)
+    assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
+  assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});
