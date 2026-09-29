@@ -72,3 +72,27 @@ genuine-setup replay completes in 786 accepted attempts, zero rejections,
 21 JSON continuations and the same fourth-turn shared victory. This repairs
 candidate legality, not the unsupported arrival-rule composition or public
 expansion start gate.
+
+## 29 September: Guild cross-planet transport and Terror
+
+An unmodified six-seat Advanced Moritani sample at base seed `20260930`
+completed 1,262 actions and 34 JSON restores but proposed six illegal
+cross-planet Guild transports into a placed Terror while Guild income was
+pending. The existing bot preflight covered ordinary shipments, not the
+single-source `guildShip` action.
+
+The owner-view adapter now quotes those transports with the submitted source,
+physical count, Guild tariff and selected ally payment. It excludes only
+publicly unsupported arrival combinations; payment entirely funded by the
+Guild ally has no Guild income response and remains eligible. Multi-source,
+Nexus and special routes still use their separate adapters. No Terror face or
+rival private field is read. The authoritative engine still decides every
+actual transport.
+
+The focused engine regression first reproduced the rejected Guild action,
+then exercised all four profile filters and a Guild-funded accepted action.
+Same-seed genuine setup replay completed the same 1,262 accepted actions with
+zero rejected candidates and 34 JSON continuations. Both actual
+assassination opportunities were declined; this is not a natural reveal or
+replacement sample. The unsupported reaction combination and public
+expansion gate remain unchanged.

@@ -6,6 +6,16 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+A six-seat Advanced Moritani sample exposed six illegal bot Guild
+cross-planet transport candidates into a placed Terror while Guild income
+was pending. [Arrival preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-guild-cross-planet-transport-and-terror)
+now quotes the submitted single-source transport and payment using public
+arrival triggers. The same genuine game completes 1,262 accepted actions,
+zero rejected candidates and 34 JSON restores; both assassination choices
+were declined. This repairs AI candidate legality, not the unsupported
+arrival composition, natural assassination reveal coverage, normal
+expansion starts or deployed acceptance.
+
 The owner-only [administrator accounts](ADMIN_ACCOUNTS.md) prototype now
 lists accounts, provisions a browser-generated one-time personal key, changes
 another account’s role and disables access. Server actions repeat live owner

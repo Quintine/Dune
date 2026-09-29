@@ -5,7 +5,7 @@ import { botActions } from '../game/bots';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { createHomeworldCustody } from '../game/homeworld-custody';
 import { homeworldContext } from '../game/homeworld-game';
-import { createTerrorState } from '../game/moritani-terror';
+import { createTerrorState, placeTerror } from '../game/moritani-terror';
 import {
   arrivalMove,
   arrivalPlayer,
@@ -81,7 +81,39 @@ void test('Homeworld-sourced AI shipments avoid unsupported paired entry reactio
   assert.equal(JSON.stringify(game), before);
   game.moritaniTerror = createTerrorState(() => 0.2);
   assert.equal(botArrivalBlock(ownView(game), action), null);
-  assert.ok(applyAction(game, 'tleilaxu', action));
+});
+
+void test('Guild cross-planet transport avoids a Terror arrival blocked by its Guild income response', () => {
+  const game = shipmentArrivalGame();
+  const bg = arrivalPlayer(game, 'bg');
+  const guild = arrivalPlayer(game, 'guild');
+  game.active = bg.id;
+  bg.shipped = false;
+  bg.ally = guild.id;
+  guild.ally = bg.id;
+  bg.forces = { 'sietch_tabr:14': 2 };
+  bg.reserves = 18;
+  const terror = createTerrorState(() => 0.2);
+  game.moritaniTerror = placeTerror(terror, terror.tokens[0].id, 'carthag', 2);
+  const action: Action = { type: 'guildShip', from: 'sietch_tabr:14', amount: 2,
+    territory: 'carthag', sector: 11 };
+  assert.throws(() => applyAction(game, bg.id, action), overlap);
+  const before = JSON.stringify(game);
+  for (const profile of profiles) {
+    const view = ownView(game, profile);
+    assert.match(botArrivalBlock(view, action) ?? '', overlap);
+    const choices = botActions(view);
+    assert.ok(choices.length, profile);
+    assert.equal(choices.some(candidate => candidate.type === 'guildShip' &&
+      candidate.territory === 'carthag'), false, profile);
+    assert.ok(applyAction(game, bg.id, choices[0]));
+  }
+  assert.equal(JSON.stringify(game), before);
+  const funded = JSON.parse(before) as Game;
+  funded.aid[guild.id] = { recipient: bg.id, amount: 1 };
+  const guildPaid = { ...action, allyPayment: 1 };
+  assert.equal(botArrivalBlock(ownView(funded), guildPaid), null);
+  assert.ok(applyAction(funded, bg.id, guildPaid));
 });
 
 void test('single reactions and matching-faction Ambassador immunity remain playable', () => {

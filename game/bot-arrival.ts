@@ -7,6 +7,7 @@ import {
   type CompletedMovementArrivalInput,
 } from './karama-movement-preflight';
 import {
+  guildShipmentCost,
   guildShipmentIncome,
   reserveShipmentCost,
   shipmentPaymentBounds,
@@ -15,8 +16,9 @@ import { quoteSmugglerShipment } from './smuggler-shipment';
 
 /**
  * Known arrival support for ordinary owner-view candidates, plus the public
- * overlap guard for Homeworld-sourced shipments. This is not a complete action
- * validator. Explicit Nexus and special movement routes retain their adapters.
+ * overlap guard for Homeworld-sourced shipments and single-source Guild
+ * transport. This is not a complete action validator. Explicit Nexus and
+ * special movement routes retain their adapters.
  * No hidden Terror face or rival hand enters this quote; unexpected failures
  * are never treated as rejected candidates.
  */
@@ -25,7 +27,7 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
     g.status !== 'playing' ||
     g.phase !== 5 ||
     g.active !== g.me ||
-    !['ship', 'move'].includes(action.type) ||
+    !['ship', 'guildShip', 'move'].includes(action.type) ||
     action.nexus !== undefined ||
     action.source !== undefined ||
     typeof action.territory !== 'string' ||
@@ -46,7 +48,35 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
   let order: CompletedMovementArrivalInput['order'];
   if (action.type === 'ship' && g.moritaniAtomics?.territory === to)
     return 'Atomics Aftermath permanently blocks shipments into this territory.';
-  if (g.homeworlds || action.homeworldSources !== undefined) {
+  if (action.type === 'guildShip') {
+    if (
+      action.forces !== undefined ||
+      typeof action.from !== 'string' ||
+      typeof action.amount !== 'number' ||
+      !Number.isSafeInteger(action.amount) ||
+      action.amount < 1
+    ) return null;
+    const origin = action.from === 'reserves' ? 'reserves' : splitLocation(action.from);
+    if (origin !== 'reserves' && !validLocation(origin.territory, origin.sector))
+      return null;
+    const guild = g.players.find((p) => p.faction === 'guild');
+    const cost = guildShipmentCost(territory(to).type, action.amount,
+      g.karamaShipping?.player === me.id || !g.guildRateCanceled);
+    const bounds = shipmentPaymentBounds(cost, me.spice ?? 0, g.aid.available);
+    const allyPayment = action.allyPayment ?? bounds.minimum;
+    if (typeof allyPayment !== 'number' || !Number.isSafeInteger(allyPayment) ||
+      allyPayment < bounds.minimum || allyPayment > bounds.maximum)
+      return null;
+    controls.response ||= guildShipmentIncome({
+      guild: guild?.id, shipper: me.id, ally: me.ally, cost, allyPayment,
+      bankOnly: g.karamaShipping?.player === me.id,
+    }) > 0;
+    order = {
+      player: me.id,
+      origin: origin === 'reserves' ? origin : origin.territory,
+      to, advisors: arrivalAsAdvisor(g, me, to), wantsFighters: false,
+    };
+  } else if (g.homeworlds || action.homeworldSources !== undefined) {
     if (action.type !== 'ship' || !g.homeworlds || action.homeworldSources === undefined)
       return null;
     // Off-planet Homeworld pools have the same arrival triggers. Only the

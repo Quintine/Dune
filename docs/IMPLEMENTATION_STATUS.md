@@ -1,5 +1,26 @@
 # Dune implementation status
 
+## 29 September 2026 — Guild transport arrival preflight
+
+The [arrival preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-guild-cross-planet-transport-and-terror)
+now filters single-source Guild cross-planet transport candidates before
+they enter a publicly unsupported Terror/Guild-income reaction combination.
+A six-seat Advanced Moritani game at base seed `20260930` first completed
+1,262 accepted actions, six rejected Guild candidates and 34 JSON
+continuations. Same-seed replay after the fix completed 1,262 accepted
+actions, no rejected candidates and 34 JSON continuations. Two real
+assassination offers were declined; neither sample shows a natural reveal.
+
+A focused engine test reproduced the illegal action before the fix, then
+covered all four bot filters and accepted Guild-funded transport with no
+income response. No card face, hidden rival data or unsupported arrival
+ordering enters the quote. Existing expansion start and publication gates
+stay closed.
+
+`npm run check` passes typecheck, lint and 5,781/5,781 offline cases.
+No app route or persisted database changed; the production build and HTTP
+suite were not repeated for this bot-only correction.
+
 ## 29 September 2026 — owner account management prototype
 
 The [account page](ADMIN_ACCOUNTS.md) lists only safe metadata to a live
