@@ -5741,9 +5741,9 @@ function treacheryDiscardIntegrity(g: Game) {
       'The committed Kaitain discard no longer matches its payment and closing opportunity.');
   } else throw new RuleError('Unknown saved discard continuation.');
 }
-/** Bounded public single-card reaction after a completed ordinary effect, paid
- * Box search, early-ended Ornithopter, clean Distrans transfer, final definite
- * Truthtrance answer or clean Sapho movement reorder. */
+/** Bounded public single-card reaction after clean completed effects. A final
+ * Ornithopter arrival qualifies only without factions that can open a new
+ * intrusion or territory-entry response from the committed movement. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -5753,13 +5753,19 @@ function semutaOfferSupported(
     continuation.kind !== 'nullentropyDiscard' &&
     continuation.kind !== 'distransDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
-    !(continuation.kind === 'ornithopterDiscard' && continuation.source === 'end') &&
+    !(continuation.kind === 'ornithopterDiscard' &&
+      (continuation.source === 'end' ||
+        (continuation.source === 'move' &&
+          !g.players.some(p => p.faction === 'beneGesserit' ||
+            p.faction === 'ecaz' || p.faction === 'moritani') &&
+          !g.pendingArrivalOverlap))) &&
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&
       continuation.remaining === null && continuation.promise === null)) return false;
   if ((continuation.kind === 'distransDiscard' ||
     continuation.kind === 'truthtranceDiscard' ||
-    continuation.kind === 'saphoMovementDiscard') &&
+    continuation.kind === 'saphoMovementDiscard' ||
+    (continuation.kind === 'ornithopterDiscard' && continuation.source === 'move')) &&
     (g.pendingChoamMove || g.pendingIxMove || g.pendingFremenMove ||
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0)) return false;
   return g.semutaPreview === true && g.status === 'playing' &&

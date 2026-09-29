@@ -449,3 +449,48 @@ void test('Sapho last protects the saved queue and its discard receipt against a
   assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
   assert.deepEqual(normalizeAutomaticGame(reload(claimed)), reload(claimed));
 });
+
+void test('a completed clean Ornithopter flight offers the retired card before its one arrival', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const ornithopter = take(g, 'richese-ornithopter');
+  player(g, 'a').hand.push(ornithopter);
+  player(g, 'a').forces = { 'imperial_basin:10': 3 };
+  player(g, 'a').reserves = 17;
+  player(g, 'a').shipped = true;
+  const original = inventory(g);
+  const pending = applyAction(g, 'a', {
+    type: 'move', movementCard: ornithopter.id, ornithopter: 'range3',
+    forces: { 'imperial_basin:10': 1 }, territory: 'hagga_basin', sector: 12,
+  });
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'ornithopterDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.ornithopter, null);
+  assert.equal(pending.discard.filter(card => card.id === ornithopter.id).length, 1);
+  assert.equal(player(pending, 'a').forces['hagga_basin:12'], 1);
+  assert.equal(player(pending, 'a').moved, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  let declined = reload(pending);
+  for (const id of ['e', 'a', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(declined.discard.filter(card => card.id === ornithopter.id).length, 1);
+  assert.equal(player(declined, 'a').forces['hagga_basin:12'], 1);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(claimed.active, 'a');
+  assert.equal(player(claimed, 'a').moved, 1);
+  assert.equal(player(claimed, 'a').forces['hagga_basin:12'], 1);
+  assert.equal(player(claimed, 'a').forces['imperial_basin:10'], 2);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === ornithopter.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(claimed.discard.some(card => card.id === ornithopter.id), false);
+  assert.deepEqual(inventory(claimed), original);
+  for (const p of claimed.players)
+    assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
+  assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});

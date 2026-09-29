@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after a clean completed Ornithopter flight
+
+The explicit Richese Semuta preview now pauses a completed range-three
+or second-group Ornithopter as its one public used card leaves escrow.
+The pilot's exact forces have already arrived and its move counter
+has advanced; the neutral all-seat event precedes the saved arrival
+log and territory-entry suffix. A legal holder can claim only that
+retired card and discard Semuta. All-seat decline leaves the card
+on the pile. Either choice resumes the one arrival without placing
+another force or consuming another move.
+
+The bounded roster excludes Bene Gesserit intrusion and Ecaz/Moritani
+entry reactions, alongside other competing parent transactions.
+Genuine setup covers a final flight, exact card/force census, JSON
+restoration, owner-only legal AI claim, all-seat decline and stale
+action rejection. An isolated migrated SQLite room restores the
+paused arrival without automatic advancement, commits an authenticated
+claim and preserves seat rows. The excluded arrival compositions,
+multi-card batches, full-hand sequencing, normal Richese starts and
+deployed acceptance remain open.
+
+Independent rule/continuation and privacy/recovery reviews found no
+scoped defect. A throwaway production-engine run completed genuine AI
+setup, a final flight, neutral offer and bot claim; one moved force
+remained at its destination, one move was consumed and the active
+pilot retained control after arrival. Phone-width rules rendered the
+clean arrival boundary as Partial. `npm run check` passed typecheck,
+lint and 5,808/5,808 offline cases; `npm run build` and all 55 Vite
+development HTTP cases passed. No deployed revision was exercised.
+
 ## 30 September 2026 — Semuta after clean movement-order Sapho
 
 The explicit Richese Semuta preview now pauses after Juice of Sapho

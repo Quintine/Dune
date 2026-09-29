@@ -28,6 +28,13 @@ the queue, prior active seat and protected-last receipt bind saved
 continuation. Once Around and Battle Sapho remain outside this
 Semuta preview.
 
+Completed Ornithopter movement now offers the same retired public card
+before its already committed arrival suffix only in a roster without
+Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response
+sources. The final forces and move counter are held in the existing
+bound flight frame; claim or decline retires that frame and logs the
+arrival once. Mixed entry reactions remain unsupported for Semuta.
+
 ## Main findings
 
 A post-`applyAction` pile diff cannot implement immediate Semuta. Ix Ambassador and Ixian ally replacement discard then draw directly. Ordinary Karama cancellation/purchase can reach replacement, Harkonnen bonus or a new auction pool indirectly. A stopped frame must resume at a named stage, never rerun its original public action.

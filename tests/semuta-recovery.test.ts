@@ -280,5 +280,42 @@ void test('authenticated clean Semuta producers claim once through restart and r
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(reorderedClaim, auth.playerId));
+
+    const arrival = structuredClone(reorderedClaim);
+    const arrivalSemuta = take(arrival, SEMUTA_DRUG_ID);
+    const finalFlight = take(arrival, 'richese-ornithopter');
+    seat(arrival, ids[0]).hand.push(arrivalSemuta);
+    seat(arrival, ids[1]).hand.push(finalFlight);
+    const mover = seat(arrival, ids[1]);
+    mover.reserves += Object.values(mover.forces).reduce((sum, n) => sum + n, 0) - 3;
+    mover.forces = { 'imperial_basin:10': 3 };
+    mover.moved = 0;
+    mover.shipped = true;
+    Object.assign(arrival, { turn: 8, phase: 5, active: ids[1], storm: 18,
+      ready: [], decision: null, response: null, phaseOpening: null,
+      stormPending: null, movementRemaining: [ids[1], ids[0], ids[2]], hajr: [] });
+    arrival.version = reorderedClaim.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(arrival), arrival.version, code, reorderedClaim.version).changes, 1);
+    const arrived = await act(1, { type: 'move', movementCard: finalFlight.id,
+      ornithopter: 'range3', forces: { 'imperial_basin:10': 1 },
+      territory: 'hagga_basin', sector: 12 });
+    assert.equal(arrived.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(seat(arrived, ids[1]).forces['hagga_basin:12'], 1);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, arrived.version);
+    assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
+    const finalArrival = await act(0, { type: 'semutaCommit',
+      event: arrived.pendingTreacheryDiscard!.batch.event });
+    assert.equal(finalArrival.pendingTreacheryDiscard, null);
+    assert.equal(finalArrival.active, ids[1]);
+    assert.equal(seat(finalArrival, ids[1]).moved, 1);
+    assert.equal(seat(finalArrival, ids[1]).forces['hagga_basin:12'], 1);
+    assert.equal(seat(finalArrival, ids[0]).hand.filter(card => card.id === finalFlight.id).length, 1);
+    assert.equal(finalArrival.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.equal(finalArrival.discard.some(card => card.id === finalFlight.id), false);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(finalArrival, auth.playerId));
   } finally { f.sqlite.close(); }
 });
