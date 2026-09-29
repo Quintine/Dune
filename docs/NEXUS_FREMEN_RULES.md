@@ -12,7 +12,7 @@ The [November 2020 FAQ, pp.2–3](https://www.gf9games.com/dune/wp-content/uploa
 
 The [E1 FAQ, p.11](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=11) describes Sandtrout's anti-Nexus and immediate replacement-card behavior. Its Karama table distinguishes destroying Fremen at a worm from stopping additional-worm placement. The [E3 rules, pp.11–12 and 16](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=12), reread in the cached publisher-authored PDF text and fresh publisher-indexed excerpts, give common Nexus timing and distinguish Great Maker's reserve ride from ordinary board-origin riding. Great Maker remains a separate integration boundary.
 
-## Bounded Betrayal: movement range
+## Bounded Betrayal: movement and worm riding
 
 An unallied non-Fremen holder of the physical Fremen Nexus card may spend it
 during Shipment and Movement **before Fremen move** to suppress their native
@@ -28,10 +28,29 @@ physical card enters the Nexus discard once; a saved receipt and player turn
 marker preserve suppression through JSON/SQLite recovery and reject replay or
 malformed ownership. The public movement view shows the restriction without
 revealing who held the card before play. All four AI profiles can spend the
-card before an active Fremen bot moves; the owner control labels this
-alternative and keeps the printed worm-riding suppression alternative visibly
-unavailable. The latter is **not** covered by this prototype. This does not
-open the complete Nexus module or public expansion starts.
+card before an active Fremen bot moves; the owner control labels the currently
+available alternative.
+
+The same unallied holder may instead spend that one physical card at a clean
+**pre-first-blow** Spice Blow and Nexus boundary. For the remainder of that
+turn, Fremen cannot take ordinary or native Cunning worm rides. Worm
+destruction, survival, allied protection, spice placement, additional worm
+appearances and Nexus negotiations still resolve. The card must be declared
+before any worm or spice blow, including a special-Karama summon; this
+conservative advance-declaration window avoids a holder-dependent hidden
+reaction, but is a product timing choice rather than an explicit printed
+priority ruling. No reactive post-appearance Betrayal is claimed.
+
+Both alternatives use one mode-bound saved receipt, public turn marker and
+physical discard. A later Nexus draw may recycle that card during the same
+turn; even if it returns to a hand, the second alternative is unavailable.
+Validated six-field movement-only receipts from the previous checkpoint
+remain readable and executable after JSON or SQL restoration; malformed old
+events or signatures still reject. No game reset or public backfill is needed.
+Basic/Advanced natural appearances, empty-worm Cunning exclusion, actual
+saved worm continuation, duplicate authenticated SQL action and all four bot
+profiles have focused checks. The module remains release-gated; Great Maker,
+Sandtrout, combined expansions and after-appearance timing are separate.
 
 ## Cunning: source-backed scope and implementation composition
 

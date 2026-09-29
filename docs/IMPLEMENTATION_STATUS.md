@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 29 September 2026 — Fremen Nexus Betrayal pre-blow worm suppression
+
+The second printed Betrayal alternative now spends the physical Fremen Nexus
+card at a clean phase-one boundary **before the first spice blow or worm**.
+For that turn ordinary Fremen worm rides and native Cunning remote rides do
+not open; worm destruction, survival/protection, spice placement and Nexus
+still resolve. This advance-declaration timing is a conservative product
+boundary, not a publisher priority ruling or a reactive post-appearance use.
+The existing phase-five movement-range alternative remains independent; a
+card recycled at the current turn's Nexus cannot activate both alternatives.
+
+Sixteen focused Basic/Advanced, actual-worm, empty-Cunning, late-rejection,
+owner/rival control, all-profile bot-priority and authenticated concurrent
+SQLite continuation cases passed. A direct non-test third-turn worm smoke
+showed one spent card, a real Nexus, four surviving Fremen forces and no ride.
+A read-only browser preview rendered the owner-only pre-blow button with no
+rival or spent-card control; no room was written. Independent review found
+that the first movement-only checkpoint's six-field receipt would have
+locked saved seats on direct GET. Its original event/signature are now
+validated alongside new mode-bound receipts; JSON and authenticated SQL
+reads/actions accept genuine old records and reject tampering. The
+[source-bound Fremen contract](NEXUS_FREMEN_RULES.md#bounded-betrayal-movement-and-worm-riding)
+marks the timing and combined-mode limits. Typecheck, lint, the app build,
+**5,756/5,756 offline tests** and **54/54 local HTTP integration cases**
+passed. This does not open public Nexus starts or prove deployment.
+
 ## 29 September 2026 — bounded Moritani Atomics Aftermath
 
 In classic-plus-Moritani tables without Guild, Ecaz or optional modules, a

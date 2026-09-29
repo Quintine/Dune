@@ -4050,7 +4050,7 @@ export function runBots(state: Game, limit = 96): Game {
       ? actors.find(actor => g.nexusCards!.cards!.hands[actor.id] === 'ecaz' &&
         ecazBetrayalOffer(g, actor.id)?.blocked === null)
       : undefined;
-    const fremenHolder = g.phase === 5 && g.nexusCards?.cards
+    const fremenHolder = (g.phase === 1 || g.phase === 5) && g.nexusCards?.cards
       ? actors.find(actor => g.nexusCards!.cards!.hands[actor.id] === 'fremen' &&
         fremenBetrayalOffer(g, actor.id)?.blocked === null)
       : undefined;

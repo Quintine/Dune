@@ -3581,6 +3581,14 @@ export function GameTable({
                     : ' This blow is closed to Harvester.'}
                 </p>
               )}
+              {g.phase === 1 &&
+                g.players.some((player) => player.faction === 'fremen' && player.fremenNexusWormBlocked) && (
+                  <p className="notice">
+                    Fremen Nexus Betrayal was spent before the spice blow.
+                    Fremen cannot ride worms this turn; ordinary worm effects
+                    and Nexus negotiations still resolve.
+                  </p>
+                )}
               {g.phase === 1 && g.nexus && !g.spiceWindow && (
                 <>
                   <p className="muted">

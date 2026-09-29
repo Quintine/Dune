@@ -106,14 +106,16 @@ protection and complete Nexus games remain gated. The bounded Atomics reveal
 is a separate classic-plus-Moritani path, not a playable Nexus Terror effect;
 its later-alliance hand-limit policy is unresolved.
 
-The bounded [Fremen Nexus Betrayal movement alternative](NEXUS_FREMEN_RULES.md#bounded-betrayal-movement-range)
-lets an unallied holder spend the physical card before Fremen move in
-Shipment and Movement. The native two-territory advantage stays suppressed
-through that turn, while independent ornithopters and ordinary moves remain
-legal. Owner controls, a prioritized legal bot play, Basic/Advanced JSON
-continuation and an authenticated concurrent SQLite CAS test are connected.
-The card's separate worm-riding suppression alternative and combined modules
-remain unfinished; no public Nexus gate changes.
+The bounded [Fremen Nexus Betrayal alternatives](NEXUS_FREMEN_RULES.md#bounded-betrayal-movement-and-worm-riding)
+let an unallied holder spend the physical card either before the first Spice
+Blow to prevent Fremen worm rides for that turn, or before Fremen move in
+Shipment and Movement to suppress their native two-territory advantage.
+Worm destruction/protection and Nexus still resolve; independent movement
+bonuses remain available. One saved card cannot use both modes, even if
+recycled later that turn. Owner controls, prioritized legal bot play,
+Basic/Advanced JSON and authenticated concurrent SQLite continuation are
+connected. Post-appearance Betrayal timing and combined modules remain gated;
+no public Nexus gate changes.
 
 The bounded [Ecaz Nexus Betrayal](NEXUS_ECAZ_RULES.md#bounded-betrayal-runtime)
 path lets a card holder select one public territory shared by Ecaz and its

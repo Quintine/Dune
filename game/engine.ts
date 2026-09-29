@@ -57,7 +57,7 @@ import { createNexusSardaukar, validateNexusSardaukar, type NexusSardaukarReceip
 import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement, type NexusMoritaniReceipt } from './nexus-moritani';
 import { moritaniBetrayalOffer } from './nexus-moritani-betrayal';
 import { ecazBetrayalOffer, quoteEcazBetrayal, validateEcazBetrayalSnapshot, type EcazBetrayalSnapshot } from './nexus-ecaz-betrayal';
-import { fremenBetrayalOffer, fremenBetrayalSignature, validateFremenBetrayal, type FremenNexusBetrayal } from './nexus-fremen-betrayal';
+import { fremenBetrayalOffer, fremenBetrayalSignature, validateFremenBetrayal, type FremenNexusBetrayal, type StoredFremenNexusBetrayal } from './nexus-fremen-betrayal';
 import { atomicsAllianceChangeBlocked, atomicsAllianceStatus, atomicsShipmentBlocked, quoteMoritaniAtomics, type AtomicsAftermath, type AtomicsQuote } from './moritani-atomics';
 import { nexusMoritaniRecordSignature, terrorLocationAllowed, terrorEntryLocationAllowed } from './terror-location';
 import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
@@ -592,6 +592,7 @@ export type Player = {
   ixMovementBlocked?: { turn: number; move: number };
   fremenMovementBlocked?: { turn: number; move: number };
   fremenNexusMovementBlockedTurn?: number;
+  fremenNexusWormBlockedTurn?: number;
   /** Permanent printed one-card reduction after Atomics; bound to its Aftermath receipt. */
   atomicsHandLimitPenalty?: boolean;
   elites?: {
@@ -1569,8 +1570,8 @@ export type Game = {
   }[];
   /** A spent Ecaz card binds one exact allied force group until Karama settles. */
   nexusEcazBetrayalHistory?: { snapshot: EcazBetrayalSnapshot; stage: 'pending' | 'complete' }[];
-  /** A spent Fremen card suppresses the native two-territory advantage through its turn. */
-  nexusFremenBetrayalHistory?: FremenNexusBetrayal[];
+  /** Spent Fremen card receipts include the earlier movement-only saved form. */
+  nexusFremenBetrayalHistory?: StoredFremenNexusBetrayal[];
   /** One actual Sardaukar battle advantage suppressed by a spent Emperor card. */
   nexusEmperorBetrayalHistory?: { event: string; turn: number; territory: string; owner: string; target: string }[];
   /** Original native Voice canceled by a spent Bene Gesserit Nexus card. */
@@ -2135,41 +2136,60 @@ function nexusFremenBetrayalIntegrity(g: Game) {
   const history = g.nexusFremenBetrayalHistory;
   const fremen = byFaction(g, 'fremen');
   if (history === undefined) {
-    requireRule(fremen?.fremenNexusMovementBlockedTurn === undefined,
-      'Fremen movement suppression has no spent Nexus card receipt.');
+    requireRule(fremen?.fremenNexusMovementBlockedTurn === undefined &&
+      fremen?.fremenNexusWormBlockedTurn === undefined,
+      'Fremen Betrayal restrictions require a spent Nexus card receipt.');
     return;
   }
   requireRule(g.nexusCards?.cards && fremen && Array.isArray(history) &&
     history.length > 0, 'Fremen Betrayal has lost its physical card module.');
   const turns = new Set<number>();
+  let latestMovement: number | undefined;
+  let latestWorm: number | undefined;
+  let lastMode: FremenNexusBetrayal['mode'] = 'movement';
   for (const record of history) {
-    nexusRule(() => validateFremenBetrayal(g, record));
+    const mode = nexusRule(() => validateFremenBetrayal(g, record));
     requireRule(!turns.has(record.turn),
-      'Fremen Betrayal cannot suppress movement twice in one turn.');
+      'Fremen Betrayal cannot suppress two advantages in one turn.');
     turns.add(record.turn);
+    if (mode === 'worm') latestWorm = record.turn;
+    else latestMovement = record.turn;
+    lastMode = mode;
   }
   const last = history.at(-1)!;
-  requireRule(fremen.fremenNexusMovementBlockedTurn === last.turn,
-    'Fremen Betrayal has lost its turn-long movement suppression.');
-  if (last.turn === g.turn)
-    requireRule(g.nexusCards.cards.discard.includes('fremen'),
-      'Fremen Betrayal has lost its spent physical card.');
+  requireRule(fremen.fremenNexusMovementBlockedTurn === latestMovement &&
+    fremen.fremenNexusWormBlockedTurn === latestWorm,
+    'Fremen Betrayal has lost its turn-long restriction.');
+  if (last.turn === g.turn) {
+    requireRule(lastMode !== 'worm' || (g.nexusCards.phase?.turn === g.turn &&
+      !g.wormRides.length && !g.nexusFremenCunningOffer &&
+      !g.nexusFremenCunningRides?.some(row =>
+        row.occurrence.turn === g.turn && row.stage !== 'complete')),
+      'Fremen Betrayal cannot leave a current worm ride or Cunning offer.');
+    if (lastMode === 'movement' || g.nexusCards.phase?.stage === 'spice')
+      requireRule(g.nexusCards.cards.discard.includes('fremen'),
+        'Fremen Betrayal has lost its spent physical card.');
+  }
 }
 function playNexusFremenBetrayal(g: Game, p: Player, action: Action) {
   const offer = fremenBetrayalOffer(g, p.id);
   requireRule(offer && !offer.blocked && action.event === offer.event &&
     Object.keys(action).sort().join(',') === 'event,type',
-    'Use Fremen Betrayal before Fremen movement begins.');
+    'Use Fremen Betrayal before its current printed advantage begins.');
   const record: FremenNexusBetrayal = {
     event: offer.event, owner: p.id, target: offer.target, turn: g.turn,
-    phase: 5, signature: '',
+    phase: offer.mode === 'worm' ? 1 : 5, mode: offer.mode, signature: '',
   };
   record.signature = fremenBetrayalSignature(record);
   g.nexusCards!.cards = nexusRule(() =>
     discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
-  getPlayer(g, offer.target).fremenNexusMovementBlockedTurn = g.turn;
+  const fremen = getPlayer(g, offer.target);
+  if (offer.mode === 'worm') fremen.fremenNexusWormBlockedTurn = g.turn;
+  else fremen.fremenNexusMovementBlockedTurn = g.turn;
   (g.nexusFremenBetrayalHistory ??= []).push(record);
-  log(g, `${p.name} spent Fremen Nexus Betrayal to suppress the Fremen two-territory movement advantage this turn. Independent ornithopters and movement abilities remain available.`,
+  log(g, offer.mode === 'worm'
+    ? `${p.name} spent Fremen Nexus Betrayal before the first blow to suppress Fremen worm riding for this turn. Worm appearances and protection still resolve; ordinary and remote rides do not.`
+    : `${p.name} spent Fremen Nexus Betrayal to suppress the Fremen two-territory movement advantage this turn. Independent ornithopters and movement abilities remain available.`,
     { faction: p.faction, name: 'Fremen Nexus Betrayal' });
 }
 function bgBetrayalWindow(g: Game) {
@@ -6105,6 +6125,7 @@ function requireFreshSetup(g: Game, allowIxElites = false) {
       p.noField === undefined && p.noFieldEvent === undefined && p.noFieldBlockedTurn === undefined &&
       p.advisors === undefined && p.gholaBlocked === undefined && p.ixMovementBlocked === undefined &&
       p.fremenMovementBlocked === undefined && p.fremenNexusMovementBlockedTurn === undefined &&
+      p.fremenNexusWormBlockedTurn === undefined &&
       p.atomicsHandLimitPenalty === undefined && p.faceDancers === undefined &&
       p.faceDancerReplacedTurn === undefined && p.revealedTraitors === undefined;
   }), 'Starting setup requires unused native leaders and no prior alliance, revival or battle history.');
@@ -7413,7 +7434,8 @@ function devour(
   for (const k of Object.keys(g.spice))
     if (splitLocation(k).territory === t) delete g.spice[k];
   const fremen = byFaction(g, 'fremen');
-  if (fremen && at(fremen, t)) g.wormRides.push(t);
+  if (fremen && fremen.fremenNexusWormBlockedTurn !== g.turn && at(fremen, t))
+    g.wormRides.push(t);
   log(g, `Shai-Hulud appeared in ${territory(t).name}.`);
 }
 function beginWorm(g: Game, t: string, origin: 'natural' | 'additional' | 'summoned' = 'natural') {
@@ -7429,6 +7451,7 @@ function beginWorm(g: Game, t: string, origin: 'natural' | 'additional' | 'summo
     !g.techTokens && !g.strongholdCards &&
     g.players.every(seat => ['atreides', 'harkonnen', 'emperor', 'guild', 'beneGesserit', 'fremen'].includes(seat.faction)) &&
     fremen && !fremen.ally && g.phase === 1 &&
+    fremen.fremenNexusWormBlockedTurn !== g.turn &&
     Object.entries(fremen.forces).some(([key, amount]) => {
       if (amount <= 0) return false;
       const source = splitLocation(key);
@@ -8021,6 +8044,7 @@ function nextWormRide(g: Game) {
     return;
   }
   const fremen = byFaction(g, 'fremen');
+  if (fremen?.fremenNexusWormBlockedTurn === g.turn) g.wormRides.length = 0;
   while (g.wormRides.length) {
     const t = g.wormRides.shift()!;
     if (
@@ -8038,6 +8062,10 @@ function nextWormRide(g: Game) {
   }
   for (const ride of g.nexusFremenCunningRides ?? []) {
     if (ride.stage !== 'queued' || ride.occurrence.turn !== g.turn) continue;
+    if (fremen?.fremenNexusWormBlockedTurn === g.turn) {
+      ride.stage = 'complete';
+      continue;
+    }
     const source = nexusRule(() => quoteFremenCunningRide(
       g, ride.authorization.owner, ride.occurrence, ride.authorization,
     ));
@@ -27734,6 +27762,7 @@ export function viewGame(state: Game, id: string) {
         (p.fremenMovementBlocked?.turn === g.turn &&
           p.fremenMovementBlocked.move === p.moved),
       fremenNexusMovementBlocked: p.fremenNexusMovementBlockedTurn === g.turn,
+      fremenNexusWormBlocked: p.fremenNexusWormBlockedTurn === g.turn,
       ixMovementBlocked:
         p.ixMovementBlocked?.turn === g.turn &&
         p.ixMovementBlocked.move === p.moved,

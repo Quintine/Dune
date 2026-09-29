@@ -9,6 +9,7 @@ import { nexusInventory, nexusPlayer, nexusReload } from './fixture-nexus-cards'
 import {
   fremenBetrayalFixture as setup,
   fremenBetrayalMovement as movement,
+  useLegacyFremenMovementReceipt,
 } from './fixture-nexus-fremen-betrayal';
 
 const fremen = 'f';
@@ -102,6 +103,27 @@ void test('changed saved turn, target or suppression rejects before advancing mo
   ]) {
     const damaged = nexusReload(played);
     change(damaged);
+    rejected(damaged, fremen, movement(1));
+  }
+});
+
+void test('validated movement-only receipts remain readable and executable after JSON restoration', () => {
+  const { g, play } = setup();
+  const played = applyAction(g, holder, play);
+  useLegacyFremenMovementReceipt(played);
+  const saved = nexusReload(played);
+  assert.equal(viewGame(saved, fremen).players.find(p => p.id === fremen)!.fremenMovementBlocked, true);
+  const restored = normalizeAutomaticGame(nexusReload(saved));
+  assert.deepEqual(restored.nexusFremenBetrayalHistory, saved.nexusFremenBetrayalHistory);
+  const moved = applyAction(restored, fremen, movement(1));
+  assert.equal(nexusPlayer(moved, fremen).moved, 1);
+  for (const corrupt of [
+    (state: Game) => { state.nexusFremenBetrayalHistory![0].event = 'forged'; },
+    (state: Game) => { state.nexusFremenBetrayalHistory![0].signature = 'forged'; },
+  ]) {
+    const damaged = nexusReload(saved);
+    corrupt(damaged);
+    assert.throws(() => viewGame(damaged, fremen));
     rejected(damaged, fremen, movement(1));
   }
 });
