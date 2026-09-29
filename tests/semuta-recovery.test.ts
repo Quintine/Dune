@@ -129,5 +129,50 @@ void test('authenticated ordinary and paid-Box discards preserve one Semuta clai
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimedBox, auth.playerId));
+
+    const flight = structuredClone(claimedBox);
+    const reusableSemuta = take(flight, SEMUTA_DRUG_ID);
+    const ornithopter = take(flight, 'richese-ornithopter');
+    seat(flight, ids[0]).hand.push(reusableSemuta);
+    seat(flight, ids[1]).hand.push(ornithopter);
+    const pilot = seat(flight, ids[1]);
+    pilot.reserves += Object.values(pilot.forces).reduce((sum, n) => sum + n, 0) - 3;
+    pilot.forces = { 'imperial_basin:10': 3 };
+    pilot.shipped = true;
+    pilot.moved = 0;
+    flight.hajr = [];
+    Object.assign(flight, { turn: 4, phase: 5, active: ids[1], storm: 18,
+      ready: [], decision: null, response: null, phaseOpening: null,
+      stormPending: null, movementRemaining: [ids[1], ids[0], ids[2]] });
+    flight.version = claimedBox.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(flight), flight.version, code, claimedBox.version).changes, 1);
+    const moved = await act(1, { type: 'move', movementCard: ornithopter.id,
+      ornithopter: 'twoGroups', forces: { 'imperial_basin:10': 1 },
+      territory: 'arrakeen', sector: 10 });
+    assert.equal(moved.ornithopter?.completed, 1);
+    const retired = await act(1, { type: 'endMovement' });
+    const flightEvent = retired.pendingTreacheryDiscard?.batch.event;
+    assert.equal(retired.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.ok(flightEvent);
+    assert.equal(retired.active, ids[1]);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, retired.version);
+    const flightOwner = await f.restart().readSeatView(code, auths[0]);
+    const flightObserver = await f.restart().readSeatView(code, auths[2]);
+    assert.equal(flightOwner.semutaReaction?.canCommit, true);
+    assert.equal(flightObserver.semutaReaction?.canCommit, false);
+    const flown = await act(0, { type: 'semutaCommit', event: flightEvent });
+    assert.equal(flown.pendingTreacheryDiscard, null);
+    assert.equal(flown.active, ids[0]);
+    assert.deepEqual(flown.movementRemaining, [ids[0], ids[2]]);
+    assert.equal(seat(flown, ids[1]).moved, 1);
+    assert.equal(seat(flown, ids[1]).forces['arrakeen:10'], 1);
+    assert.equal(seat(flown, ids[0]).hand.filter(card => card.id === ornithopter.id).length, 1);
+    assert.equal(flown.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.equal(flown.discard.some(card => card.id === ornithopter.id), false);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(flown, auth.playerId));
   } finally { f.sqlite.close(); }
 });

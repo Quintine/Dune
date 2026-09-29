@@ -1155,7 +1155,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard or the used Box following a completed paid search. Continue or commit your held Semuta with a free hand slot; the sole eligible card transfers automatically. Other discard producers, full-hand sequencing and normal Richese starts remain unfinished.'
+                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard, a completed paid Box search, or early ending an Ornithopter flight. Continue or commit your held Semuta with a free hand slot; the sole eligible card transfers automatically before the saved turn advances. A completed flight with arrival follow-up, other discard producers, full-hand sequencing and normal Richese starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1165,7 +1165,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card and completed paid Box discards with a neutral all-seat offer. Committing held Semuta atomically claims the sole eligible other-player card, discards Semuta and resumes the saved ordinary-card or Box parent once. Other typed discard producers and full-hand exchange remain unfinished.',
+                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card, completed paid Box and early-ended Ornithopter discards with a neutral all-seat offer. Committing held Semuta atomically claims the sole eligible other-player card, discards Semuta and resumes the saved ordinary-card, Box or movement-turn parent once. Completed-flight arrival and other typed discard producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
@@ -1183,13 +1183,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide distinguishes the bounded public ordinary-card prototype, privacy-neutral acknowledgements and conservative free-slot policy from unresolved full-hand sequencing and remaining discard sources.',
+                  'The guide distinguishes bounded public ordinary-card, paid Box and early-ended Ornithopter previews, privacy-neutral acknowledgements and conservative free-slot policy from unresolved full-hand sequencing and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and all four legal AI profiles cover clean ordinary-card and paid Box reactions. Other discard producers, full games and live deployment remain unverified.',
+                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and all four legal AI profiles cover clean ordinary-card, paid Box and early-ended Ornithopter reactions. Other discard producers, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',

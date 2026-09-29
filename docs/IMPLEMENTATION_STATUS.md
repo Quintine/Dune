@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after an early-ended Ornithopter flight
+
+The explicit Richese Semuta preview now interrupts the one public
+Ornithopter discarded when its pilot ends movement before using every
+available flight group. The first group has already moved its exact
+forces and consumed one move; the card then leaves escrow exactly once.
+Every seat sees the same neutral event before the saved movement queue
+advances. Another holder with hand space can claim that retired physical
+card and discard Semuta; all-seat decline leaves it on the pile. Both
+paths advance the original turn once without moving forces again.
+
+Genuine setup exercises a completed first group, early retirement,
+JSON restoration, owner-only commitment by the legal AI, all-seat
+decline, exact force/card census and stale-action rejection. An
+isolated migrated SQLite room recovers the paused flight without
+auto-advancing, projects only the owner's Commit control and commits
+the claim through authenticated room CAS, preserving seat rows.
+Completed flights with arrival/intrusion follow-up, competing suspended
+transactions, multiple fresh cards and unresolved full-hand ordering
+remain gated. This is not a complete Semuta or deployed Richese path.
+
+Independent rule/continuation and privacy/recovery reviews found no
+scoped defect. A throwaway direct production-engine run completed
+genuine AI setup, moved one group, showed a neutral offer with owner-only
+Commit, recovered the played card and advanced to the next seat with
+one move and one arrived force. A phone-width local rules page rendered
+the new boundary and Partial checklist. `npm run check` passed typecheck,
+lint and 5,803/5,803 offline cases; `npm run build` and 55/55 Vite
+development HTTP cases passed. No production deployment was verified.
+
 ## 30 September 2026 — Semuta after a completed paid Box search
 
 The explicit Richese Semuta preview now opens the same neutral

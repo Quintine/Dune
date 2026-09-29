@@ -212,3 +212,54 @@ void test('a completed paid Box discard can be claimed before resumption without
     assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
   assert.deepEqual(normalizeAutomaticGame(reload(claimed)), reload(claimed));
 });
+
+void test('a retired Ornithopter can be claimed after one flight group without replaying movement', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const ornithopter = take(g, 'richese-ornithopter');
+  player(g, 'a').hand.push(ornithopter);
+  player(g, 'a').forces = { 'imperial_basin:10': 3 };
+  player(g, 'a').reserves = 17;
+  player(g, 'a').shipped = true;
+  const original = inventory(g);
+  const first = applyAction(g, 'a', {
+    type: 'move', movementCard: ornithopter.id, ornithopter: 'twoGroups',
+    forces: { 'imperial_basin:10': 1 }, territory: 'arrakeen', sector: 10,
+  });
+  assert.equal(first.ornithopter?.completed, 1);
+  assert.equal(first.discard.some(card => card.id === ornithopter.id), false);
+  const pending = applyAction(first, 'a', { type: 'endMovement' });
+  assert.equal(pending.ornithopter, null);
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'ornithopterDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.discard.filter(card => card.id === ornithopter.id).length, 1);
+  assert.equal(pending.active, 'a');
+  assert.deepEqual(pending.movementRemaining, ['a', 'r', 'e']);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.equal(viewGame(pending, 'a').semutaReaction?.canCommit, false);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  let declined = reload(pending);
+  for (const id of ['e', 'a', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(declined.active, 'r');
+  assert.deepEqual(declined.movementRemaining, ['r', 'e']);
+  assert.equal(declined.discard.filter(card => card.id === ornithopter.id).length, 1);
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(claimed.active, 'r');
+  assert.deepEqual(claimed.movementRemaining, ['r', 'e']);
+  assert.equal(player(claimed, 'a').moved, 1);
+  assert.equal(player(claimed, 'a').forces['arrakeen:10'], 1);
+  assert.equal(player(claimed, 'a').forces['imperial_basin:10'], 2);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === ornithopter.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(claimed.discard.some(card => card.id === ornithopter.id), false);
+  assert.deepEqual(inventory(claimed), original);
+  for (const p of claimed.players)
+    assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
+  assert.deepEqual(normalizeAutomaticGame(reload(claimed)), reload(claimed));
+  assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});
