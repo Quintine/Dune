@@ -8,18 +8,20 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
 now pauses a clean public ordinary-card discard, the used Box after
-a completed paid search, or an Ornithopter retired on early movement
-ending with the same neutral offer for every seat, independently of
-hidden Semuta possession. A holder with a free hand slot can commit
-to the one fresh other-player card; its physical claim and Semuta
-disposal resume the original effect, Box parent or movement queue once.
-All-seat decline, four minimal legal AI profiles, exact JSON/SQLite
-continuation and competing-room CAS are connected. Phone width
-showed the owned Commit control and the identical rival Continue
-event without a private card face. Completed-flight arrival, multi-card
-and most other discard producers, full-hand ordering, normal Richese
-starts and deployed acceptance remain unfinished; neutral passes and
-the free-slot guard are product safety choices, not publisher rulings.
+a completed paid search, an Ornithopter retired on early movement
+ending, or the public used Distrans after a clean private transfer.
+Every seat sees the same neutral offer independently of hidden Semuta
+possession; the transferred card remains private with its recipient.
+A holder with a free hand slot can commit to the fresh other-player
+discard; its physical claim and Semuta disposal resume the original
+effect, Box parent or movement queue once. All-seat decline, four
+minimal legal AI profiles, exact JSON/SQLite continuation and
+competing-room CAS are connected. Phone width showed the owned
+Commit control and identical rival Continue event without a private
+card face. Completed-flight arrival, competing transactions,
+multi-card and most other producers, full-hand ordering, normal
+Richese starts and deployed acceptance remain unfinished; neutral
+passes and free-slot guard are product safety choices, not rulings.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,

@@ -263,3 +263,60 @@ void test('a retired Ornithopter can be claimed after one flight group without r
   assert.deepEqual(normalizeAutomaticGame(reload(claimed)), reload(claimed));
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
 });
+
+void test('a completed private Distrans transfer offers only its public used card', () => {
+  const { g, semuta, hajr } = fixture();
+  const distrans = take(g, 'richese-distrans');
+  player(g, 'a').hand.push(distrans);
+  const original = inventory(g);
+  const without = reload(g);
+  player(without, 'r').hand = [];
+  without.richeseCache!.push(semuta);
+  player(without, 'r').hand.push(take(without, 'richese-nullentropy-box'));
+  const pending = applyAction(g, 'a', {
+    type: 'card', card: distrans.id, target: 'e', give: hajr.id,
+  });
+  const absent = applyAction(without, 'a', {
+    type: 'card', card: distrans.id, target: 'e', give: hajr.id,
+  });
+  assert.equal(absent.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  for (const id of ['a', 'e'])
+    assert.deepEqual(viewGame(pending, id), viewGame(absent, id));
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(pending.pendingTreacheryDiscard?.batch.entries.map(entry => entry.card.id), [distrans.id]);
+  assert.equal(player(pending, 'e').hand.filter(card => card.id === hajr.id).length, 1);
+  assert.equal(player(pending, 'a').hand.some(card => card.id === hajr.id), false);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  const stranger = JSON.stringify(viewGame(pending, 'r'));
+  assert.equal(stranger.includes(hajr.id), false);
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.equal(viewGame(pending, 'e').semutaReaction?.canCommit, false);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  const corrupt = reload(pending);
+  if (corrupt.pendingTreacheryDiscard?.continuation.kind !== 'distransDiscard')
+    throw Error('Missing saved private transfer');
+  corrupt.pendingTreacheryDiscard.continuation.transferred = semuta.id;
+  const before = JSON.stringify(corrupt);
+  assert.throws(() => viewGame(corrupt, 'r'));
+  assert.throws(() => applyAction(corrupt, 'r', { type: 'semutaCommit', event }));
+  assert.equal(JSON.stringify(corrupt), before);
+  const duplicate = reload(pending);
+  duplicate.richeseRemoved = [...(duplicate.richeseRemoved ?? []), structuredClone(hajr)];
+  assert.throws(() => viewGame(duplicate, 'r'));
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(declined.discard.filter(card => card.id === distrans.id).length, 1);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(player(claimed, 'e').hand.filter(card => card.id === hajr.id).length, 1);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === distrans.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(claimed.discard.some(card => card.id === distrans.id), false);
+  assert.deepEqual(inventory(claimed), original);
+  for (const p of claimed.players)
+    assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
+  assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});

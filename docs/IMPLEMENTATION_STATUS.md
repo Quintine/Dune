@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after a completed private Distrans transfer
+
+An explicitly opted-in Richese preview now pauses after a clean
+Distrans action physically gives one privately selected card to its
+recipient and publicly discards the used Distrans. Every seat sees
+the same neutral fresh-discard event, not the transferred card. A
+legal holder may recover only the public used Distrans, discarding
+Semuta; all-seat decline leaves Distrans in the ordinary pile. The
+recipient keeps its transferred card on either path. Existing
+pending gifts, bid or response contexts remain outside this bounded
+reaction; ordinary transfers retain their previous completion.
+
+Genuine setup and isolated migrated SQLite room cases cover physical
+custody, owner-only commit and legal AI participation, all-seat
+decline, private recipient card projection, saved restart without
+auto-advance, exact authenticated claim and unchanged seat rows.
+Incomplete producer families, full-hand ordering, normal Richese
+starts and deployed acceptance remain gated.
+
+Independent privacy review found no scoped leak. Rules review found
+that a duplicated transferred card in removed Richese custody escaped
+the initial saved receipt check; a failing-before/passing-after
+regression now requires the recipient's card to be unique across
+all physical non-discard zones. Follow-up review found no remaining
+scoped defect. A throwaway direct engine run completed genuine AI
+setup, private transfer, neutral offer and bot claim; the nonrecipient
+view omitted the given card and the recipient retained it. The
+phone-width rules guide visibly marks this path Partial. `npm run check`
+passed typecheck, lint and 5,804/5,804 offline cases after the custody
+fix; `npm run build` and all 55 Vite development HTTP cases passed. No
+production deployment was verified.
+
 ## 30 September 2026 — Semuta after an early-ended Ornithopter flight
 
 The explicit Richese Semuta preview now interrupts the one public

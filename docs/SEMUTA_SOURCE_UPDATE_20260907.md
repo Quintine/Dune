@@ -64,31 +64,34 @@ Do not ask again about normal targets, forced-discard owner bookkeeping, simulta
 The explicit `semuta` development profile starts a fresh Richese roster
 without opening ordinary expansion starts. It now interrupts **one public
 ordinary-card discard, the used Box after a completed paid Nullentropy
-search, or an Ornithopter retired by ending movement early**, provided
-the parent transaction is clean, with a neutral fresh-discard opportunity
-for every seat regardless of hidden Semuta possession. The flight's
-already committed movement and physical escrow remain intact; a claim
-or all-seat decline advances the saved movement queue exactly once.
-Each seat can Continue; only the canonical holder with a free hand slot
-and a card discarded by another player can commit. The sole eligible
-fresh card transfers automatically in the same accepted action, then
-Semuta goes to the normal discard pile. The saved ordinary effect or
-Box parent resumes once; passing by every seat preserves the original
-discard and effect. No face from an undisclosed event is projected
-before commitment. Owner-only multi-candidate selection support exists
-in the reaction component and bot adapter, but no multi-discard
-producer is activated in this bounded runtime.
+search, an Ornithopter retired by ending movement early, or the used
+Distrans after a clean completed private transfer**, provided the parent
+transaction is clean, with a neutral fresh-discard opportunity for every
+seat regardless of hidden Semuta possession. The flight's already
+committed movement and physical escrow remain intact; a claim or
+all-seat decline advances the saved movement queue exactly once.
+Distrans's transferred card stays privately with its recipient and
+cannot be claimed; only the played public Distrans enters this fresh
+batch. Each seat can Continue; only the canonical holder with a free
+hand slot and a card discarded by another player can commit. The sole
+eligible fresh card transfers automatically in the same accepted action,
+then Semuta goes to the normal discard pile. The saved ordinary effect
+or Box parent resumes once; passing by every seat preserves the
+original discard and effect. No face from an undisclosed event is
+projected before commitment. Owner-only multi-candidate selection
+support exists in the reaction component and bot adapter, but no
+multi-discard producer is activated in this bounded runtime.
 
 This neutral all-seat acknowledgement is a conservative **application
 policy**, not a newly discovered publisher timing rule. The explicit
 free-slot requirement is a provisional safety guard, not the printed
 resolution of full-hand take-before-discard. Auction, CHOAM market,
 pending gifts, competing responses, completed Ornithopter flights with
-arrival follow-up and other typed discard producers retain their existing
-automatic continuation; Semuta cannot claim those events yet. The
-completed Box's selected search card stays private and its paid shuffle
-is not repeated when another seat takes the used Box. No source ruling
-is inferred from this omission. The
+arrival follow-up and other typed discard producers retain their
+existing automatic continuation; Semuta cannot claim those events yet.
+The completed Box's selected search card stays private and its paid
+shuffle is not repeated when another seat takes the used Box. No source
+ruling is inferred from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.

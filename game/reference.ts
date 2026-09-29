@@ -690,7 +690,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A transfer must preserve binding battle answers, compulsory discards and both sides of a pending Harkonnen hand exchange. The recipient must retain room for its mandatory incoming return. Optional proposals that become unavailable can still finish through their existing decline or no-effect path.',
       'A different legal transfer can fill or free space for a pending Richese gift. The ordinary Distrans transfer resolves first, and the pending gift rechecks capacity before moving its own card. A canceled alliance gift does not automatically prevent using this separate card effect.',
       'All four AI profiles use their own legal projected cards. They may give an allied Bene Gesserit or CHOAM a Worthless card, or share a duplicate ordinary weapon, defense or Karama to free a full hand. They do not inspect the recipient’s private cards and preserve existing decision priority.',
-      'Semuta responses to a fresh Distrans discard, mobile acceptance, the unresolved bid and self-transfer cases, and full combined Richese games remain unfinished. The separate clean public ordinary-card Semuta preview does not enable this transfer composition, all remaining Richese cards or expansion starts.',
+      'The explicitly opted-in Semuta preview now offers a neutral all-seat response to the public used Distrans after a clean completed private transfer. The given card remains private and belongs to its recipient; only the used Distrans is claimable. Responses or decisions already in progress, unresolved bid and self-transfer rulings, full combined Richese games and ordinary expansion starts remain unfinished.',
     ],
     related: [
       'card-richese-distrans',
@@ -1155,7 +1155,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard, a completed paid Box search, or early ending an Ornithopter flight. Continue or commit your held Semuta with a free hand slot; the sole eligible card transfers automatically before the saved turn advances. A completed flight with arrival follow-up, other discard producers, full-hand sequencing and normal Richese starts remain unfinished.'
+                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard, a completed paid Box search, early ending an Ornithopter flight, or completing a clean private Distrans transfer. Continue or commit your held Semuta with a free hand slot; only the freshly discarded public card transfers, never the private card given to its recipient. Completed-flight arrival, competing transactions, other discard producers, full-hand sequencing and normal Richese starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1165,7 +1165,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card, completed paid Box and early-ended Ornithopter discards with a neutral all-seat offer. Committing held Semuta atomically claims the sole eligible other-player card, discards Semuta and resumes the saved ordinary-card, Box or movement-turn parent once. Completed-flight arrival and other typed discard producers and full-hand exchange remain unfinished.',
+                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card, completed paid Box, early-ended Ornithopter and completed private Distrans discards with a neutral all-seat offer. Committing held Semuta claims the sole eligible other-player discarded card and discards Semuta. The private Distrans gift remains with its recipient; the other saved effects and movement queue resume once. Completed-flight arrival, competing transactions, other typed producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
@@ -1183,13 +1183,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide distinguishes bounded public ordinary-card, paid Box and early-ended Ornithopter previews, privacy-neutral acknowledgements and conservative free-slot policy from unresolved full-hand sequencing and remaining discard sources.',
+                  'The guide distinguishes bounded public ordinary-card, paid Box, early-ended Ornithopter and clean Distrans previews, privacy-neutral acknowledgements and conservative free-slot policy from unresolved full-hand sequencing and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and all four legal AI profiles cover clean ordinary-card, paid Box and early-ended Ornithopter reactions. Other discard producers, full games and live deployment remain unverified.',
+                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, early-ended Ornithopter and private Distrans reactions. Other discard producers, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',

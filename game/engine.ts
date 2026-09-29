@@ -1135,6 +1135,15 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'distransDiscard';
+          owner: string;
+          recipient: string;
+          transferred: string;
+          card: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'truthtranceDiscard';
           consumed: TruthQueueEntry;
           historyIndex: number;
@@ -4658,6 +4667,20 @@ function stageOrdinaryCardDiscard(g: Game, p: Player, card: Card) {
     next,
   );
 }
+type DistransDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'distransDiscard' }
+>;
+function distransDiscardSignature(g: Game, c: DistransDiscardContinuation) {
+  const owner = getPlayer(g, c.owner), recipient = getPlayer(g, c.recipient);
+  return JSON.stringify({
+    owner: c.owner, recipient: c.recipient, transferred: c.transferred,
+    card: c.card, parent: nullentropyParentSignature(g, c.resume, `distrans:${c.card}`),
+    turn: g.turn, phase: g.phase, active: g.active,
+    ownerHand: owner.hand.map(card => card.id),
+    recipientHand: recipient.hand.map(card => card.id),
+  });
+}
 type TruthDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'truthtranceDiscard' }
@@ -5052,6 +5075,25 @@ function treacheryDiscardIntegrity(g: Game) {
                 g.ready.length === 0
               : true,
       'The completed ordinary-card outcome has changed.',
+    );
+  } else if (continuation?.kind === 'distransDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    const owner = g.players.find(p => p.id === c.owner);
+    const recipient = g.players.find(p => p.id === c.recipient);
+    requireRule(
+      owner && recipient && owner !== recipient &&
+      batch.cause === 'distrans' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.owner &&
+      entry.card.id === c.card &&
+      richeseCardDefinition(entry.card)?.card.effect === 'distrans' &&
+      recipient.hand.filter(card => card.id === c.transferred).length === 1 &&
+      !owner.hand.some(card => card.id === c.transferred || card.id === c.card) &&
+      outside.filter(card => card.id === c.transferred).length === 1 &&
+      !g.discard.some(card => card.id === c.transferred) &&
+      !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature === distransDiscardSignature(g, c),
+      'The completed private Distrans transfer no longer matches its fresh discard.',
     );
   } else if (continuation?.kind === 'truthtranceDiscard') {
     const c = continuation,
@@ -5643,8 +5685,8 @@ function treacheryDiscardIntegrity(g: Game) {
   } else throw new RuleError('Unknown saved discard continuation.');
 }
 /** Bounded public single-card reaction after a completed ordinary effect, paid
- * Box search, or early-ended Ornithopter flight. A completed flight's arrival
- * may open further entry windows, so that continuation remains automatic. */
+ * Box search, early-ended Ornithopter flight or clean Distrans transfer. A
+ * completed flight's arrival may open further entry windows and stays automatic. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -5652,7 +5694,11 @@ function semutaOfferSupported(
 ) {
   if (continuation.kind !== 'ordinaryCardDiscard' &&
     continuation.kind !== 'nullentropyDiscard' &&
+    continuation.kind !== 'distransDiscard' &&
     !(continuation.kind === 'ornithopterDiscard' && continuation.source === 'end')) return false;
+  if (continuation.kind === 'distransDiscard' &&
+    (g.pendingChoamMove || g.pendingIxMove || g.pendingFremenMove ||
+      g.ornithopter || g.summonedWorm || g.wormRides.length > 0)) return false;
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length === 1 && entries[0].publicFace &&
@@ -5815,6 +5861,11 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
     g.truthtrance = next.remaining;
+  } else if (next.kind === 'distransDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
   } else if (next.kind === 'ornithopterDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -23697,6 +23748,20 @@ function applyActionInner(
       `${p.name} played Distrans to give ${recipient.name} one private Treachery Card, then discarded Distrans. No spice, purchase bonus or recipient confirmation is required.`,
       { faction: p.faction, name: 'Distrans' },
     );
+    if (g.semutaPreview && !g.pendingTreacheryDiscard) {
+      const continuation: DistransDiscardContinuation = {
+        kind: 'distransDiscard', owner: p.id, recipient: recipient.id,
+        transferred: result.transferred.id, card: result.discarded.id,
+        resume: { response: g.response, decision: g.decision,
+          pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+        stateSignature: '',
+      };
+      const entries = [{ card: result.discarded, discardedBy: p.id, publicFace: true }];
+      if (semutaOfferSupported(g, continuation, entries)) {
+        continuation.stateSignature = distransDiscardSignature(g, continuation);
+        stageTreacheryDiscard(g, 'distrans', entries, continuation);
+      }
+    }
     return g;
   }
   if (t === 'richeseGift') {

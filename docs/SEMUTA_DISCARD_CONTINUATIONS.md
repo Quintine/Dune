@@ -4,6 +4,16 @@ Read-only engine audit, 2026-09-07. Read the complete `docs/SEMUTA_DRUG_ENGINE_A
 
 Update: the exchange producers, three battle producers, Sabotage, Robbery overflow and completed Nullentropy Box searches, Ornithopter escrow retirement, definite Truthtrance answers and the five ordinary completed-card effects below now have production automatic continuation frames; see [exchange checkpoint](TREACHERY_DISCARD_CONTINUATIONS.md), [battle checkpoint](BATTLE_DISCARD_CONTINUATIONS.md), [forced Terror checkpoint](TERROR_DISCARD_CONTINUATIONS.md), [Box checkpoint](BOX_DISCARD_CONTINUATIONS.md), [Ornithopter checkpoint](ORNITHOPTER_DISCARD_CONTINUATIONS.md), [Truthtrance checkpoint](TRUTHTRANCE_DISCARD_CONTINUATIONS.md) and [ordinary-card checkpoint](ORDINARY_CARD_DISCARD_CONTINUATIONS.md). The remaining table is an implementation inventory, not a claim that Semuta is active.
 
+30 September 2026 checkpoint: the explicit Semuta development preview
+now stages a `distransDiscard` receipt only after a clean completed
+private transfer. Its fresh batch contains the public played Distrans,
+not the private card already transferred to its recipient. Neutral
+all-seat acknowledgement precedes closure; claim or decline retires
+the saved receipt without redoing the hand transfer. Pending responses,
+gifts and competing parents retain the original direct transfer
+behavior without this Semuta reaction. The table below remains the
+broader producer/continuation inventory, not a claim of complete coverage.
+
 ## Main findings
 
 A post-`applyAction` pile diff cannot implement immediate Semuta. Ix Ambassador and Ixian ally replacement discard then draw directly. Ordinary Karama cancellation/purchase can reach replacement, Harkonnen bonus or a new auction pool indirectly. A stopped frame must resume at a named stage, never rerun its original public action.
