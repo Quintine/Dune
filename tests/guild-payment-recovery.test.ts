@@ -297,7 +297,14 @@ for (const cancel of [false, true])
     for (const route of ['reserve', 'cross'] as const) {
       const f = await fixture(route, true);
       try {
-        await f.action(0, f.shipment);
+        const announced = await f.action(0, f.shipment);
+        if (route === 'reserve') {
+          assert.equal(announced.response?.kind, 'guildRate');
+          assert.equal(announced.players[0].spice, 20);
+          assert.equal(announced.players[0].shipped, false);
+          const allowed = await f.action(2, { type: 'passResponse' });
+          assert.equal(allowed.response?.kind, 'guildIncome');
+        }
         const pending = await restored(f);
         paidOnce(f, pending, 19);
         assert.equal(pending.response?.kind, 'guildIncome');

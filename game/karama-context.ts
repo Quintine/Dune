@@ -132,6 +132,12 @@ const cancellationSources = {
     calls: g.battle?.traitorCalls ?? null,
   }),
   guildIncome: () => null,
+  guildRate: (g) => ({
+    pending: g.pendingShipment ?? null,
+    active: g.active,
+    discountedRateBlocked: g.guildRateBlocked ?? null,
+    purchasedRate: g.karamaShipping ?? null,
+  }),
   emperorGift: () => null,
   emperorRevival: () => null,
   stormPeek: (g) => ({ card: g.stormCard, dialers: g.stormDialers }),

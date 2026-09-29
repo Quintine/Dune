@@ -1,10 +1,18 @@
 # Guild shipment rates and ordinary Karama
 
-Bounded primary-source and engine audit, 2026-09-06. This records the missing cancellation contract; it does not activate a new rule or resolve the pending affordability choice.
+Initial primary-source and engine audit, 2026-09-06. The bounded ordinary-reserve cancellation policy below was selected on 2026-09-28 after a targeted publisher-source search found no affordability procedure; the later original audit remains historical evidence for unfinished transport and module combinations.
 
 ## Implemented payment follow-up
 
-The shared contributor-income calculation and private Guild transport quotes are now integrated and verified. November2020 direct contribution routing now also credits a non-Guild ally’s contribution when Guild is the shipper; Guild’s own contribution still goes to the bank. This corrects the reverse-direction omission not identified in the original audit below. The source adjudication, 1,600-check checkpoint and browser evidence are in [GUILD_SHIPMENT_PAYMENTS.md](GUILD_SHIPMENT_PAYMENTS.md). It does not implement the unresolved cancellation/intent contract.
+The shared contributor-income calculation and private Guild transport quotes were integrated in the earlier payment checkpoint. November 2020 direct contribution routing credits a non-Guild ally’s contribution when Guild ships; Guild’s own contribution still goes to the bank. The source adjudication, earlier 1,600-check checkpoint and browser evidence are in [GUILD_SHIPMENT_PAYMENTS.md](GUILD_SHIPMENT_PAYMENTS.md). That checkpoint preceded the bounded rate-cancellation path below.
+
+## Selected ordinary-reserve interpretation — 28 September 2026
+
+In classic-faction Basic and Advanced tables without optional modules, Guild or its reciprocal ally declaring an ordinary reserve shipment at the Guild rate opens a **prepayment** Karama response. Advanced Guild's separate special shipment-stop decision resolves first. A Karama spent against the rate does not cancel Guild income, permission to ship, or an independent Karama-purchased discount. The original number and types of forces, destination and approved ally contribution are fixed while opponents respond.
+
+If Karama cancels the rate, recalculate the same force shipment at the normal one/two-spice-per-force price. If the shipper and the **original approved split** can fund it, transfer that exact amount and then commit the original shipment once; another faction's pledge is never silently increased. Otherwise the declaration returns with no spice, forces or shipment allowance spent. The responding Karama is still discarded. A replacement ordinary shipment in this turn uses full price; the restriction expires at turn end. An independent purchased Karama rate remains separate. This is the recommended conservative software interpretation where the publisher does not prescribe the unaffordable outcome: no forced debt, retroactive cancellation or unauthorized ally charge. It is **not** an asserted GF9 timing/refund ruling. [GF9 November FAQ, p. 7](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=7)
+
+Guild cross-planet and return shipments, optional-module rate sources, Homeworld advantages and special combinations still need their own integration; this first version does not certify the complete Guild faction or public Advanced rules.
 
 ## Confirmed source contract
 
@@ -38,9 +46,9 @@ The retrieved publisher sources do **not** state whether a declared shipment can
 
 Likewise, no retrieved primary passage orders ordinary rate cancellation against Guild's Advanced shipment-stop declaration, a second payment-contributor choice, or a newly played independent rate card. The base Advanced Guild power stops a shipment; it is not the ordinary discount cancellation. Existing implementation's canceled-special-shipment settlement is already marked provisional and must not silently become authority for this new case.
 
-A pre-payment declaration window is a safe software architecture for applying the printed price effect without undoing arrival. Its exact user-visible sequencing remains implementation composition. Parent has asked the user about the unaffordable outcome; this audit does not supply that answer.
+For the bounded ordinary reserve path, the user’s later instruction to choose the conservative recommended option where no publisher ruling exists is applied above. Other transport, repeated-declaration and combined-response questions retain the source boundaries below until connected.
 
-## Current implementation findings
+## Initial implementation findings (before the bounded rate response)
 
 - `ship` computes a valid discounted quote and exact typed reserve count. Its existing `pendingShipment` only pauses for Advanced Guild's special shipment-stop choice. Ordinary games call `commitShipment` directly.
 - `commitShipment` pays, transfers forces, marks shipment used and generates technology/arrival effects before opening `guildIncome`. That existing response can redirect income, but is too late for discount cancellation. Reusing it to reprice would require undoing already-settled effects and is unsafe.
@@ -51,7 +59,7 @@ A pre-payment declaration window is a safe software architecture for applying th
 
 Proposed intent fields are shipper ID, source kind and exact force groups, destination/sector, typed amounts/advisor stance, turn/phase, rate source, quoted costs, and chosen ally contribution. Record which one-use windows have resolved, so JSON resume cannot reopen a canceled discount or replay payments. Revalidate custody, legal destination, alliance and contribution before committing once. This is a software proposal, not a stored arbitrary Action or printed rule.
 
-## Focused checks before integration
+## Initial focused acceptance targets
 
 Cover own and allied reserve shipments at both destination prices; odd force counts; cross/return transport separately; free Fremen; independent Karama rates; explicit/default aid splits; Guild versus non-Guild contributors; separate income cancellation; nested Bene Gesserit Worthless conversion and cancellation; JSON reload/stale submissions; unchanged forces/payment/technology before settlement; and exactly one final commit. Include both sufficient and insufficient full-price budgets, but bind the latter tests only after the pending interpretation is selected.
 

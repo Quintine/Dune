@@ -606,10 +606,10 @@ export function GameTable({
   }
   const shipmentRate = {
     faction: me.faction,
-    halfRate:
-      me.faction === 'guild' ||
-      g.players.some((p) => p.faction === 'guild' && p.id === me.ally) ||
-      g.karamaShipping?.player === me.id,
+    halfRate: g.karamaShipping?.player === me.id ||
+      (!g.guildRateCanceled &&
+        (me.faction === 'guild' ||
+          g.players.some((p) => p.faction === 'guild' && p.id === me.ally))),
   };
   const smugglerOffer = validShipmentAmount && !useGuildSecret && !useRicheseShipment
     ? quoteSmugglerShipment(g, me.id, selected, amount) : null;
@@ -2000,6 +2000,7 @@ export function GameTable({
                     harkonnenBonus: 'Harkonnen bonus card',
                     harkonnenTraitor: 'Harkonnen ally traitor',
                     guildIncome: 'Guild shipment income',
+                    guildRate: 'Guild half-price shipment rate',
                     richeseNoField: 'Richese No-Field shipment',
                     advisor: 'Spiritual advisor',
                     emperorGift: 'Emperor spice gift',

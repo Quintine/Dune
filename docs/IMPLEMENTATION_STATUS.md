@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 29 September 2026 — bounded Guild rate Karama before payment
+
+In classic-faction Basic/Advanced tables without optional modules, an ordinary
+Guild or reciprocal ally reserve shipment priced at the Guild half-rate waits
+for a Karama response before any spice or forces move. Advanced Guild's
+separate special stop resolves first. A canceled discount reprices the exact
+declared force cohort at full destination tariff without enlarging the
+original approved ally contribution. If that split cannot fund full price,
+the spent Karama withdraws the uncommitted shipment; a later ordinary
+declaration in the same turn uses full price. This conservative withdrawal is
+an explicit table policy, not an identified GF9 refund ruling. Independent
+Karama rates and later Guild-income cancellation remain distinct; Guild
+cross-shipment, return and optional-module combinations remain gated.
+
+New focused engine tests cover physical custody, exact funding, unaffordable
+withdrawal/replacement and turn expiry, Advanced stop priority, BG Worthless
+conversion, legal AI, corrupt saves and validated unstamped Advanced saves.
+An in-memory SQLite room test exercises authenticated private views, restart,
+CAS race and duplicate cancellation. A direct non-test engine smoke showed
+20 Guild spice and 20 reserves held during response, then 17 spice, 17
+reserves, three Arrakeen forces and exactly one discarded Karama after JSON
+restore/cancellation. In a local read-only Chromium QA view, the cancel
+button was visible before payment; after unaffordable cancellation the
+replacement form quoted **two spice for two Arrakeen forces**, selected the
+existing two-spice ally pledge and enabled shipment. No live room was
+modified. Independent review identified and verified fixes for the quote
+projection and older unstamped Guild-stop declarations. This is a bounded
+prototype, not complete Guild or deployed evidence; see
+[the publisher distinction and selected policy](GUILD_RATE_KARAMA_RULES.md).
+
+The focused Guild rate, existing Guild income, pending shipment and BG Karama
+group passed 43 cases in seven files. All 5,689 offline tests, the local
+client/server build and all 54 HTTP integration cases passed. `npm run check`
+stops in TypeScript on a separate concurrent untracked Fremen Nexus draft
+referencing missing `Player.fremenNexusMovementBlockedTurn`; the separate lint
+command reports only that same draft error. No source or saved room was reset.
+
 ## 28 September 2026 — Moritani Extortion saved Mentat continuation
 
 The real Terror-entry reveal now reserves five bank spice without crediting

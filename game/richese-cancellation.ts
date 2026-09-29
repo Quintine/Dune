@@ -107,6 +107,7 @@ const RESPONSES = {
   harkonnenBonus: true,
   harkonnenTraitor: true,
   guildIncome: true,
+  guildRate: true,
   emperorGift: true,
   emperorRevival: true,
   stormPeek: true,

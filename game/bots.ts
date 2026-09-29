@@ -3110,10 +3110,10 @@ function policyActions(g: GameView): Action[] {
     if (g.ornithopter?.active && me.shipped) return [{ type: 'endMovement' }];
     const actions: Action[] = [...guildHomeworldShipmentActions(g, level), ...homeworldShipmentActions(g, level)];
     const targets = destinations(g);
-    const halfRate =
-      me.faction === 'guild' ||
-      g.players.some((p) => p.faction === 'guild' && p.id === me.ally) ||
-      g.karamaShipping?.player === me.id;
+    const halfRate = g.karamaShipping?.player === me.id ||
+      (!g.guildRateCanceled &&
+        (me.faction === 'guild' ||
+          g.players.some((p) => p.faction === 'guild' && p.id === me.ally)));
     const shipmentBudget = (me.spice ?? 0) + g.aid.available;
     const guildSecret = nexusGuildSecretAllyCanAct(g);
     const noField = g.richeseNoField;

@@ -274,7 +274,7 @@ void test('a paid Nullentropy search suspends and restores the payer without los
   g = applyAction(g, 'e', { type: 'card', card: box.id });
   assert.equal(g.decision?.kind, 'nullentropy');
   assert.equal(g.pendingNullentropy?.resume.decision?.kind, 'moritaniExtortion');
-  assert.doesNotThrow(() => viewGame(reload(g), 'e'));
+  assert.equal(viewGame(reload(g), 'e').decision?.kind, 'nullentropy');
   const selected = g.discard[0].id;
   g = applyAction(reload(g), 'e', { type: 'decision', event: g.pendingNullentropy!.event, card: selected });
   assert.equal(g.decision?.kind, 'moritaniExtortion');
@@ -307,7 +307,7 @@ void test('a Richese gift response suspends its payer and restores the same save
   g = applyAction(g, 'b', { type: 'richeseGift', card: gift.id });
   assert.equal(g.response?.kind, 'richeseGift');
   assert.equal(g.pendingRicheseGift?.resume.decision?.kind, 'moritaniExtortion');
-  assert.doesNotThrow(() => viewGame(reload(g), 'e'));
+  assert.equal(viewGame(reload(g), 'e').response?.kind, 'richeseGift');
   g = applyAction(reload(g), 'e', { type: 'passResponse' });
   assert.equal(g.decision?.kind, 'moritaniExtortion');
   assert.equal(g.decision.event, event);

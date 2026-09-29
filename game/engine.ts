@@ -917,6 +917,8 @@ export type ResponseWindow = {
   source?: 'ambassador';
   intent?: string;
   advisors?: boolean;
+  /** Saved exact ordinary Guild-rate response; not the independent Karama rate. */
+  guildRateEvent?: string;
   advisorResume?: 'wormRide' | 'declaration' | 'ambassador' | 'discoveryEntry';
   discoveryEntry?: DiscoveryEntryArrivalChild;
   advisorAmbassadorEvent?: string;
@@ -946,6 +948,7 @@ export type ResponseWindow = {
     | 'harkonnenBonus'
     | 'harkonnenTraitor'
     | 'guildIncome'
+    | 'guildRate'
     | 'emperorGift'
     | 'emperorRevival'
     | 'stormPeek'
@@ -1018,6 +1021,7 @@ type PendingShipment = {
   smugglerCompanion?: SmugglerNoFieldCompanion;
   noFieldSkillProof?: string;
   guildSecretEvent?: string;
+  guildRateEvent?: string;
   guildNexusEvent?: string;
   nexusEvent?: string;
   richesePair?: { event: string; revealedTokenId: string };
@@ -1565,6 +1569,8 @@ export type Game = {
     >;
   } | null;
   pendingShipment?: PendingShipment | null;
+  /** One canceled unaffordable declaration may be redeclared at full price this turn. */
+  guildRateBlocked?: { turn: number; player: string };
   pendingHomeworldShipment?: PendingHomeworldShipment | null;
   junctionOffer?: JunctionOffer | null;
   pendingExchange?: {
@@ -14059,6 +14065,7 @@ function completePhase(g: Game) {
     observeOccupation(g, 'turnEnd');
     g.turn++;
     g.recruits = null;
+    delete g.guildRateBlocked;
     g.phase = 0;
     observeOccupation(g, 'turnStart');
   }
@@ -18860,6 +18867,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
   if (response.kind === 'nexusFremenCunning') currentFremenCunningResponse(g, response);
   if (response.kind === 'nexusEcazBetrayal') currentEcazBetrayalResponse(g, response);
   if (response.kind === 'nexusGuildCunning') validateGuildCunningResponse(g,response);
+  if (response.kind === 'guildRate') validateGuildRateResponse(g, response);
   if (response.kind === 'moritaniPlacement') {
     // Both outcomes need the same physical inventory and declared source.
     // This detached denial quote is only validation here; allowance still
@@ -18900,6 +18908,10 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     : null;
   if (!canceled && bureaucratDiversion === undefined && offerBureaucratPayment(g,response.bureaucratPayment,{kind:'response'})) return;
   g.response = null;
+  if (response.kind === 'guildRate') {
+    finishGuildRateResponse(g, response, canceled);
+    return;
+  }
   if (response.kind === 'nexusEcazBetrayal') {
     finishEcazBetrayalResponse(g, response, canceled);
     return;
@@ -20358,6 +20370,90 @@ function validateGuildShipmentDecision(
   validatePhysicalShipment(g, shipment);
   return shipment;
 }
+/** The independent Karama rate is a card benefit, not Guild's cancelable rate. */
+function ordinaryGuildRateFullCost(g: Game, shipment: PendingShipment): number | null {
+  const guild = byFaction(g, 'guild');
+  const p = getPlayer(g, shipment.player);
+  if (!guild || (p.id !== guild.id && !(p.ally === guild.id && guild.ally === p.id)) ||
+      g.expansions.length || g.homeworlds || g.leaderSkills || g.nexusCards ||
+      g.discoveryEnabled || g.techTokens || g.strongholdCards ||
+      g.karamaShipping?.player === p.id ||
+      (g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id) ||
+      shipment.source || shipment.noField || shipment.alliedNoField ||
+      shipment.smuggler || shipment.smugglerCompanion || shipment.guildSecretEvent ||
+      shipment.guildNexusEvent || shipment.nexusEvent || shipment.richesePair)
+    return null;
+  const fullCost = reserveShipmentCost({ faction: p.faction, halfRate: false },
+    territory(shipment.territory).type, shipment.amount);
+  return shipment.cost < fullCost ? fullCost : null;
+}
+function openGuildRate(g: Game, shipment: PendingShipment): boolean {
+  const fullCost = ordinaryGuildRateFullCost(g, shipment);
+  if (fullCost === null) return false;
+  // A validated older Guild-stop declaration may lack this newer turn stamp.
+  shipment.turn ??= g.turn;
+  const event = crypto.randomUUID();
+  shipment.guildRateEvent = event;
+  g.pendingShipment = shipment;
+  g.response = {
+    kind: 'guildRate',
+    owner: byFaction(g, 'guild')!.id,
+    passed: [],
+    guildRateEvent: event,
+    intent: `${getPlayer(g, shipment.player).name} declared ${shipment.amount} reserve forces to ${territory(shipment.territory).name} at the Guild rate of ${shipment.cost} spice. Karama can remove this discount before any payment or arrival. The original forces would cost ${fullCost} at full price; if the original authorized split cannot pay that amount, the declaration returns unused and a replacement this turn uses full price.`,
+  };
+  log(g, `${getPlayer(g, shipment.player).name} declared a Guild-rate reserve shipment; payment and arrival wait for the rate response.`);
+  return true;
+}
+function validateGuildRateResponse(g: Game, response: ResponseWindow) {
+  const shipment = g.pendingShipment;
+  const guild = byFaction(g, 'guild');
+  const p = shipment && getPlayer(g, shipment.player);
+  const fullCost = shipment ? ordinaryGuildRateFullCost(g, shipment) : null;
+  requireRule(response.kind === 'guildRate' && guild && p && shipment &&
+    g.status === 'playing' && g.phase === 5 && g.active === p.id && !p.shipped &&
+    response.owner === guild.id && typeof shipment.guildRateEvent === 'string' &&
+    shipment.guildRateEvent.length > 0 &&
+    response.guildRateEvent === shipment.guildRateEvent &&
+    shipment.turn === g.turn && fullCost !== null &&
+    shipment.cost === reserveShipmentCost({ faction: p.faction, halfRate: true },
+      territory(shipment.territory).type, shipment.amount),
+    'The saved Guild-rate response lost its original physical shipment.');
+  return { shipment, fullCost };
+}
+function guildRateIntegrity(g: Game) {
+  const pending = g.pendingShipment;
+  const responses = savedNoFieldResponses(g).filter(response => response.kind === 'guildRate');
+  requireRule(responses.length === Number(!!pending?.guildRateEvent),
+    'The saved Guild-rate shipment lost its single Karama response.');
+  if (responses.length) validateGuildRateResponse(g, responses[0]);
+  const blocked = g.guildRateBlocked;
+  if (blocked)
+    requireRule(blocked.turn === g.turn && g.players.some(p => p.id === blocked.player),
+      'The canceled Guild discount belongs to another turn or player.');
+}
+function finishGuildRateResponse(g: Game, response: ResponseWindow, canceled: boolean) {
+  const { shipment, fullCost } = validateGuildRateResponse(g, response);
+  const shipper = getPlayer(g, shipment.player);
+  g.pendingShipment = null;
+  delete shipment.guildRateEvent;
+  if (!canceled) {
+    commitShipment(g, shipment);
+    return;
+  }
+  g.guildRateBlocked = { turn: g.turn, player: shipper.id };
+  const bounds = shipmentPaymentBounds(fullCost, shipper.spice,
+    aidFor(g, shipper)?.amount ?? 0);
+  if (shipment.allyPayment < bounds.minimum || shipment.allyPayment > bounds.maximum) {
+    log(g, `Karama removed Guild's half-price rate from ${shipper.name}'s declaration. Its original approved payment split cannot fund the full price, so no spice or forces were spent and shipment remains available at full price this turn.`);
+    return;
+  }
+  shipment.cost = fullCost;
+  checkShipmentIncomeRounding(g, shipper, fullCost, shipment.allyPayment);
+  commitShipment(g, shipment);
+  delete g.guildRateBlocked;
+  log(g, `Karama removed Guild's half-price rate. ${shipper.name} paid the full ${fullCost} spice for the unchanged shipment.`);
+}
 function offerShipment(g: Game, shipment: PendingShipment) {
   validatePhysicalShipment(g, shipment);
   validateShipmentArrival(g, shipment);
@@ -20390,7 +20486,7 @@ function offerShipment(g: Game, shipment: PendingShipment) {
       g,
       `${p.name} declared a shipment of ${shipment.noField ? `one concealed No-Field${shipment.smugglerCompanion ? ' and one free Smuggler force' : ''}` : `${n} forces`} to ${territory(to).name}, sector ${s}.${shipment.nexusEvent ? ` Richese Secret Ally is spent; the shipment is priced as one force (${shipment.cost} spice) if allowed.` : ''}`,
     );
-  } else commitShipment(g, shipment);
+  } else if (!openGuildRate(g, shipment)) commitShipment(g, shipment);
 }
 function commitShipment(g: Game, shipment: PendingShipment) {
   if (shipment.source === 'ambassador') {
@@ -20992,7 +21088,9 @@ function richesePairIntegrity(g: Game) {
   }
 }
 function shipmentHalfRate(g: Game, p: Player) {
-  return p.faction === 'guild' || byFaction(g,'guild')?.id === p.ally || g.karamaShipping?.player === p.id;
+  return g.karamaShipping?.player === p.id ||
+    ((p.faction === 'guild' || byFaction(g,'guild')?.id === p.ally) &&
+      !(g.guildRateBlocked?.turn === g.turn && g.guildRateBlocked.player === p.id));
 }
 function nexusRicheseSignature(record: NonNullable<Game['nexusRicheseHistory']>[number]) {
   return JSON.stringify([record.receipt.signature,record.stage,record.frame,record.halfRate]);
@@ -22179,6 +22277,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
+  guildRateIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -22361,6 +22460,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   ixRicheseTechnologyIntegrity(g);
   harkonnenExchangeIntegrity(g);
   moritaniExtortionIntegrity(g);
+  guildRateIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
@@ -22469,6 +22569,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
+  guildRateIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -22523,6 +22624,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ixRicheseTechnologyIntegrity(g);
   harkonnenExchangeIntegrity(g);
   moritaniExtortionIntegrity(g);
+  guildRateIntegrity(g);
   return g;
 }
 
@@ -23823,8 +23925,10 @@ function applyActionInner(
         );
         return g;
       }
-      g.pendingShipment = null;
-      commitShipment(g, shipment);
+      if (!openGuildRate(g, shipment)) {
+        g.pendingShipment = null;
+        commitShipment(g, shipment);
+      }
     } else if (decision.kind === 'nullentropy') {
       throw new RuleError(
         'No matching paid search was saved; restore the saved search before continuing.',
@@ -26331,6 +26435,7 @@ export function viewGame(state: Game, id: string) {
   ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
+  guildRateIntegrity(state);
   discoveryFlightIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
@@ -26791,6 +26896,8 @@ export function viewGame(state: Game, id: string) {
     karamaShipping: g.karamaShipping
       ? { player: g.karamaShipping.player, owner: g.karamaShipping.owner }
       : null,
+    guildRateCanceled: g.guildRateBlocked?.turn === g.turn &&
+      g.guildRateBlocked.player === id,
     stormPending: g.stormPending ?? null,
     stormForecast:
       me.faction === 'fremen' && g.stormCardKnown ? g.stormCard : null,
