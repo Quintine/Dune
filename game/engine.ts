@@ -5776,7 +5776,10 @@ function semutaOfferSupported(
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0)) return false;
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
-    entries.length === 1 && entries[0].publicFace &&
+    entries.length > 0 &&
+    (continuation.kind === 'battleCleanup'
+      ? entries.every(entry => entry.publicFace)
+      : entries.length === 1 && entries[0].publicFace) &&
     (continuation.kind === 'battleCleanup' ||
       (!continuation.resume.response && !continuation.resume.decision &&
         !continuation.resume.pendingKarama && !continuation.resume.phaseOpening)) &&

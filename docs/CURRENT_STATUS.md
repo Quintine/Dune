@@ -7,21 +7,21 @@ Expansion starts and full rules/publication acceptance remain gated.**
 ## Current checkpoint and work
 
 The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
-pauses a clean public ordinary-card discard, used Box after paid search,
-either clean Ornithopter retirement, public used Distrans after private
-transfer, final definite Truthtrance, movement-order Juice of Sapho
-or one winner-selected battle card with no pending reward. Every seat
-sees the same neutral offer regardless of hidden Semuta possession.
-An early-ended flight advances the queue; a completed flight without
-BG/Ecaz/Moritani entry reaction resumes its one committed arrival.
-Private gifts, answer history, Sapho order and resolved battle remain
-intact through claim or decline. A holder with a free hand slot can
-recover the fresh other-player discard and dispose Semuta. Minimal
+pauses clean public ordinary-card, paid Box, retired Ornithopter,
+private Distrans, final definite Truthtrance, movement-order Sapho
+and winner-selected battle-card discards without pending rewards.
+Every seat sees a neutral offer regardless of hidden Semuta possession.
+A sole eligible card transfers on commitment; a simultaneous
+winner-card batch first requires public commitment, then reveals
+only to that holder the eligible fresh faces to select exactly one.
+Other cards remain in the pile and the resolved battle resumes once.
+The early-ended flight queue, completed-flight arrival, private gift,
+answer history and Sapho order also resume without replay. Minimal
 legal AI, exact JSON/SQLite continuation and competing-room CAS are
 connected. Phone width showed owned Commit and rival Continue without
-a private card face. Mixed arrival reactions, auction/battle Sapho,
-queued or promise-bound Truthtrance, multi-card/reward-pending battle
-discards, other producers, full-hand ordering, normal Richese starts
+a private card face. Mixed arrivals, auction/battle Sapho, queued or
+promise-bound Truthtrance, mandatory or reward-pending battle batches,
+other discard producers, full-hand ordering, normal Richese starts
 and deployed acceptance remain unfinished. Neutral passes and the
 free-slot guard are product safety choices, not publisher rulings.
 

@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta choice among simultaneous winner cards
+
+The explicit Richese Semuta preview now recognizes a clean batch of
+two or more publicly revealed played cards selected by a battle winner
+for discard. The battle result and earlier mandatory cleanup are
+committed; all seats receive the same neutral offer. Only the actual
+Semuta holder with free hand space can commit, and only after that
+commit does their private view reveal the fresh candidate list.
+They must select exactly one. The other cards remain in the discard,
+Semuta is disposed once, and the resolved battle continues once.
+All-seat decline leaves the full batch in place.
+
+Genuine setup covers both a single winner card and simultaneous
+projectile/Shield selections, owner-only candidates after commitment,
+legal AI choice, explicit alternative human choice, stale foreign
+selection rejection, exact physical census and resource equivalence.
+An isolated migrated SQLite room restores the offer and later the
+committed selection without automatic progress, checks rival candidate
+privacy and authenticates the exact one-card choice. Other multi-card
+producers, mandatory/reward-pending battle frames, full-hand ordering,
+normal Richese starts and deployed acceptance remain gated.
+
+Independent rules and privacy/recovery reviews found no scoped defect.
+A direct production-engine run committed the two-card batch, showed
+only the owner both candidates and selected Shield while the other
+played weapon remained discarded. Phone-width local table fixtures
+showed two owned Inspect/Claim cards and a rival's candidate-free
+waiting state; the stale hand-help text was updated. `npm run check` passed
+typecheck, lint and 5,809/5,809 offline cases; `npm run build` and
+all 55 Vite development HTTP cases passed. No deployed revision
+was exercised.
+
 ## 30 September 2026 — Semuta after one winner-selected battle card
 
 The explicit Richese Semuta preview now pauses a clean single public

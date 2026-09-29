@@ -495,15 +495,16 @@ void test('a completed clean Ornithopter flight offers the retired card before i
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
 });
 
-void test('a clean winner-selected battle card can be claimed after the resolved battle', () => {
+void test('clean winner-selected battle cards allow one committed Semuta choice after resolution', () => {
   const { g, semuta, hajr } = fixture();
   player(g, 'a').hand = [];
   g.deck.push(hajr);
   const weaponIndex = g.deck.findIndex(card => card.kind === 'projectile');
   const [weapon] = g.deck.splice(weaponIndex, 1);
+  const [shield] = g.deck.splice(g.deck.findIndex(card => card.kind === 'shield'), 1);
   const [defense] = g.deck.splice(g.deck.findIndex(card => card.kind === 'snooper'), 1);
-  assert.ok(weapon && defense);
-  player(g, 'a').hand.push(weapon);
+  assert.ok(weapon && shield && defense);
+  player(g, 'a').hand.push(weapon, shield);
   player(g, 'e').hand.push(defense);
   for (const id of ['a', 'e']) {
     player(g, id).forces = { 'arrakeen:10': 5 };
@@ -528,13 +529,13 @@ void test('a clean winner-selected battle card can be claimed after the resolved
         type: 'battlePreparationReady', event: battle.battle!.preLeader!.event,
       });
   battle = applyAction(battle, 'a', { type: 'battlePlan', dial: 2, support: 2,
-    leader: player(battle, 'a').leaders[0].id, weapon: weapon.id });
+    leader: player(battle, 'a').leaders[0].id, weapon: weapon.id, defense: shield.id });
   battle = applyAction(battle, 'e', { type: 'battlePlan', dial: 0, support: 0,
     leader: player(battle, 'e').leaders[0].id, defense: defense.id });
   battle = applyAction(battle, 'a', { type: 'traitorCall', call: false });
   battle = applyAction(battle, 'e', { type: 'traitorCall', call: false });
   assert.equal(battle.decision?.kind, 'battleCards');
-  const pending = applyAction(battle, 'a', { type: 'decision', discard: [weapon.id] });
+  const pending = applyAction(reload(battle), 'a', { type: 'decision', discard: [weapon.id] });
   assert.equal(pending.pendingTreacheryDiscard?.batch.cause, 'battle:winner');
   assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
   assert.equal(pending.discard.filter(card => card.id === weapon.id).length, 1);
@@ -562,4 +563,40 @@ void test('a clean winner-selected battle card can be claimed after the resolved
   for (const p of claimed.players)
     assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+  const multiple = applyAction(reload(battle), 'a', {
+    type: 'decision', discard: [weapon.id, shield.id],
+  });
+  assert.equal(multiple.pendingTreacheryDiscard?.batch.entries.length, 2);
+  assert.equal(multiple.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(viewGame(multiple, 'e').semutaReaction?.candidates, []);
+  const multiEvent = multiple.pendingTreacheryDiscard!.batch.event;
+  const committed = applyAction(reload(multiple), 'r', { type: 'semutaCommit', event: multiEvent });
+  assert.equal(committed.pendingTreacheryDiscard?.reaction?.stage, 'select');
+  assert.deepEqual(viewGame(committed, 'r').semutaReaction?.candidates.map(card => card.id),
+    [weapon.id, shield.id]);
+  assert.deepEqual(viewGame(committed, 'a').semutaReaction?.candidates, []);
+  assert.equal(player(committed, 'r').hand.some(card => card.id === semuta.id), true);
+  assert.equal(committed.discard.filter(card => card.id === weapon.id || card.id === shield.id).length, 2);
+  const snapshot = JSON.stringify(committed);
+  assert.throws(() => applyAction(committed, 'e', {
+    type: 'semutaSelect', event: multiEvent, card: weapon.id,
+  }));
+  assert.equal(JSON.stringify(committed), snapshot);
+  assert.deepEqual(normalizeAutomaticGame(reload(committed)), reload(committed));
+  const selected = applyAction(reload(committed), 'r', botActions(viewGame(committed, 'r'))[0]!);
+  assert.equal(selected.pendingTreacheryDiscard, null);
+  assert.equal(player(selected, 'r').hand.filter(card => card.id === weapon.id).length, 1);
+  assert.equal(selected.discard.some(card => card.id === shield.id), true);
+  assert.equal(selected.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.deepEqual(inventory(selected), original);
+  assert.deepEqual(settled(selected), settled(declined));
+  const alternate = applyAction(reload(committed), 'r', {
+    type: 'semutaSelect', event: multiEvent, card: shield.id,
+  });
+  assert.equal(alternate.pendingTreacheryDiscard, null);
+  assert.equal(player(alternate, 'r').hand.filter(card => card.id === shield.id).length, 1);
+  assert.equal(alternate.discard.filter(card => card.id === weapon.id).length, 1);
+  assert.equal(alternate.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.deepEqual(inventory(alternate), original);
+  assert.deepEqual(settled(alternate), settled(declined));
 });
