@@ -189,7 +189,7 @@ export async function adminLogoutAll(
   const results = await database.batch([
     database
       .prepare(
-        `UPDATE admin_accounts SET session_generation = session_generation + 1, updated_at = ?
+        `UPDATE admin_accounts SET session_generation = session_generation + 1, updated_at = MAX(updated_at + 1, ?)
        WHERE id = ? AND enabled = 1 AND EXISTS (
          SELECT 1 FROM admin_sessions s WHERE s.token_hash = ? AND s.admin_id = admin_accounts.id
          AND s.generation = admin_accounts.session_generation AND s.revoked_at IS NULL AND s.expires_at > ?

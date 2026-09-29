@@ -17,9 +17,11 @@ Each record identifies the action, time, room/seat/account where recorded, actor
 operational reason when permitted, and bounded before/after settings. Expand
 **Recorded settings** for the public configuration, lifecycle flags, revisions,
 AI difficulty or changed player circle. Names come from current administrator
-accounts; deleted accounts retain their recorded identifiers. External account
-provisioning/revocation records have no human actor attribution, and the page
-explicitly says so. A **Recorded** outcome means the operation was applied; a
+accounts; deleted accounts retain their recorded identifiers. Web-managed
+provisioning, role changes and disabling identify the acting owner and record
+the supplied reason. External CLI provisioning/revocation may lack human
+actor attribution, and the page says so. A **Recorded** outcome means the
+operation was applied; a
 room-control operation may successfully save identical settings, and later
 operations may supersede it. It does not assert the room's current state.
 
@@ -51,7 +53,10 @@ and uses the existing no-store, cookie-varying administration boundary.
 Implementation: [query/projection](../db/admin-audit.ts),
 [response contract](../lib/admin-audit.ts),
 [route](../app/api/admin/audit/route.ts), [page](../app/admin/audit/page.tsx).
-No schema migration is needed.
+The original nine-source read needed no migration. Owner account management
+adds a safe `reason` field and durable retry receipts in additive
+[migration 0019](../drizzle/0019_admin_accounts.sql); it does not add a
+new raw game or message source.
 
 ```sh
 npm test -- admin-audit
@@ -71,7 +76,7 @@ sources under its five-term compound-query limit, with live role demotion and
 filtered reads. Materialized groups keep the unified query within that limit.
 
 Existing records cover successful operations only. Failed/rejected attempts,
-additional account-management actions, full operational health/diagnostics,
+key rotation and re-enable, full operational health/diagnostics,
 backup/import/restore and the remaining participant support are still required.
 Local/browser/source-bound evidence is separate from deployed acceptance, which
 must identify the actual running revision and use authorized QA access.

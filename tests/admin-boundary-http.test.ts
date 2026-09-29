@@ -13,12 +13,20 @@ void test('admin HTTP denies anonymous, forged admin, room-host and spoofed iden
   assert.ok(cookie);
   const room = (await created.json() as { code: string }).code;
   for (const headers of [{}, { cookie }, { cookie: 'dune_admin_session=' + 'a'.repeat(64) }, { 'oai-authenticated-user-id': 'owner', 'oai-authenticated-user-email': 'owner@example.test' }] as Record<string, string>[]) {
-    for (const path of ['/api/admin/session', '/api/admin/audit', '/api/admin/rooms', `/api/admin/rooms/${room}/control`, `/api/admin/rooms/${room}/lobby`, `/api/admin/rooms/${room}/removal`, `/api/admin/rooms/${room}/closure`, `/api/admin/rooms/${room}/archive`, `/api/admin/rooms/${room}/seat-ai`, `/api/admin/rooms/${room}/discussion`]) {
+    for (const path of ['/api/admin/session', '/api/admin/accounts', '/api/admin/audit', '/api/admin/rooms', `/api/admin/rooms/${room}/control`, `/api/admin/rooms/${room}/lobby`, `/api/admin/rooms/${room}/removal`, `/api/admin/rooms/${room}/closure`, `/api/admin/rooms/${room}/archive`, `/api/admin/rooms/${room}/seat-ai`, `/api/admin/rooms/${room}/discussion`]) {
       const result = await fetch(base + path, { headers, signal: AbortSignal.timeout(15000) });
       assert.equal(result.status, 401, path);
       assert.equal(result.headers.get('cache-control'), 'no-store');
       assert.deepEqual(Object.keys(await result.json()), ['error']);
     }
+    const account = await fetch(base + '/api/admin/accounts', {
+      method: 'POST', headers: { ...headers, origin: base, 'Content-Type': 'application/json', 'X-Dune-Admin-Id': 'forged-owner' },
+      body: JSON.stringify({ action: 'provision', operationId: crypto.randomUUID(), id: crypto.randomUUID(), key: 'forged', name: 'Forbidden', role: 'owner', reason: 'Denied boundary request' }),
+      signal: AbortSignal.timeout(15000),
+    });
+    assert.equal(account.status, 401);
+    assert.equal(account.headers.get('set-cookie'), null);
+    assert.deepEqual(Object.keys(await account.json()), ['error']);
     const write = await fetch(`${base}/api/admin/rooms/${room}/control`, {
       method: 'POST', headers: { ...headers, origin: base, 'Content-Type': 'application/json' },
       body: JSON.stringify({ operationId: crypto.randomUUID(), expectedRevision: 0, paused: true, joinLocked: true, reason: 'Denied QA request' }),
@@ -93,6 +101,18 @@ void test('admin HTTP rejects login CSRF, oversized bodies and invalid credentia
     assert.equal(result.status, expected);
     assert.equal(result.headers.get('set-cookie'), null);
     if (expected !== 403) assert.equal(result.headers.get('cache-control'), 'no-store');
+    await result.text();
+  }
+});
+void test('account writes reject foreign origins before any credential or account lookup', async () => {
+  for (const origin of ['', 'https://foreign.invalid']) {
+    const result = await fetch(base + '/api/admin/accounts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...(origin ? { origin } : {}), 'X-Dune-Admin-Id': 'forged-owner' },
+      body: JSON.stringify({ action:'disable',operationId:crypto.randomUUID(),target:crypto.randomUUID(),expectedUpdatedAt:1,reason:'Forbidden' }),
+      signal: AbortSignal.timeout(15000),
+    });
+    assert.equal(result.status,403);
+    assert.equal(result.headers.get('set-cookie'),null);
     await result.text();
   }
 });

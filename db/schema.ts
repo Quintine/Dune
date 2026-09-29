@@ -460,7 +460,7 @@ export const adminSessions = sqliteTable(
 );
 
 // Audit records intentionally have no cascading account/room dependency.
-// `detail` contains safe operation IDs only, never credentials or game state.
+// `detail` contains safe role/session metadata only, never credentials or game state.
 export const adminAudit = sqliteTable(
   'admin_audit',
   {
@@ -470,8 +470,29 @@ export const adminAudit = sqliteTable(
     action: text('action').notNull(),
     createdAt: integer('created_at').notNull(),
     detail: text('detail').notNull().default('{}'),
+    reason: text('reason'),
   },
   (table) => [index('admin_audit_created_at').on(table.createdAt)],
+);
+
+// Durable idempotency receipts contain a request fingerprint, never an access key.
+export const adminAccountOperations = sqliteTable(
+  'admin_account_operations',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    requestHash: text('request_hash').notNull(),
+    targetAdminId: text('target_admin_id').notNull(),
+    action: text('action').notNull(),
+    name: text('name').notNull(),
+    role: text('role', { enum: ['owner', 'operator', 'viewer'] }).notNull(),
+    enabled: integer('enabled').notNull(),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [
+    check('admin_account_operations_action', sql`${table.action} IN ('provision','role','disable')`),
+  ],
 );
 
 // Immutable private room snapshots survive room/account deletion; only owner APIs expose them.

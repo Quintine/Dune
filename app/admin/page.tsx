@@ -126,6 +126,7 @@ export default function Administration() {
           <div className="admin-room-actions"><a className="admin-room-link" href="/admin/audit">Action history</a>{account.role !== 'viewer' && <Button disabled={controlsBusy} onClick={() => { setSelectedDiscussion(null); setSelectedSeatAi(null); setSelectedRoom(null); setSelectedLobby(null); setSelectedRemoval(null); setSelectedClosure(null); setSelectedArchive(null); setCreatingRoom(true); }}>Create a room</Button>}
             {account.role === 'owner' && <a className="admin-room-link" href="/admin/backups">Room backups</a>}
             {account.role === 'owner' && <a className="admin-room-link" href="/admin/operations">Operations</a>}
+            {account.role === 'owner' && <a className="admin-room-link" href="/admin/accounts">Accounts</a>}
             <Button variant="outline" disabled={controlsBusy} onClick={() => void load(applied, directory?.page ?? 1)}><RefreshCw aria-hidden="true" /> Refresh</Button></div></div>
         {creatingRoom && account.role !== 'viewer' && <AdminRoomCreation key={account.id} accountId={account.id}
           onClose={() => setCreatingRoom(false)} onDenied={accessChanged} onBusyChange={setOperationBusy}

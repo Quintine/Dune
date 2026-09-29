@@ -6,6 +6,16 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+The owner-only [administrator accounts](ADMIN_ACCOUNTS.md) prototype now
+lists accounts, provisions a browser-generated one-time personal key, changes
+another account’s role and disables access. Server actions repeat live owner
+authority and target-version checks at commit, preserve exact tab-scoped
+retries and attribute successful changes in action history without exposing
+keys or saved games. Key rotation/re-enable, rejected-attempt history,
+authenticated positive **network** HTTP on a dedicated isolated QA account, deployed
+acceptance and the rest of full administration remain unfinished. This code
+is not in the last verified live image.
+
 The bounded [Advanced Moritani Assassinate Leaders preview](MORITANI_ASSASSINATE_LEADERS.md)
 now has repeatable genuine games across two through six supported seats.
 Five samples completed 2,511 accepted actions, no rejected candidates

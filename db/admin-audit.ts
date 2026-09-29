@@ -14,8 +14,8 @@ const actionType = `json_extract(${json('action')},'$.type')`;
 // bounded groups so SQLite cannot flatten the nine sources back into one union.
 const rawEvents = `WITH first_events AS MATERIALIZED (
   SELECT 'account' category,rowid row_key,id receipt_id,actor_admin_id actor_id,NULL room_code,target_admin_id target_admin_id,NULL target_seat_id,
-    CASE WHEN action IN ('provision','revoke','login','logout','logout_all') THEN action ELSE 'unknown' END action,
-    NULL reason,NULL before_json,substr(detail,1,8192) after_json,created_at FROM admin_audit
+    CASE WHEN action IN ('provision','revoke','role','login','logout','logout_all') THEN action ELSE 'unknown' END action,
+    reason,NULL before_json,substr(detail,1,8192) after_json,created_at FROM admin_audit
   UNION ALL SELECT 'control',rowid,operation_id,actor_admin_id,room_code,NULL,NULL,'room_control',reason,
     json_object('paused',before_paused,'joinLocked',before_join_locked,'revision',expected_revision),
     json_object('paused',after_paused,'joinLocked',after_join_locked,'revision',expected_revision+1),created_at FROM admin_room_audit

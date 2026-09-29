@@ -9,7 +9,7 @@ recovery and persistence systems where suitable.
 
 | Area | Required behavior | Stage |
 | --- | --- | --- |
-| Administrator access | Personal access keys, server-enforced owner/operator/viewer roles, persistent eight-hour sessions, individual/all-session sign-out and operator provisioning/revocation. A room host is not a site administrator. Account-management UI and further operational permissions remain. | Prototyped |
+| Administrator access | Personal access keys, server-enforced owner/operator/viewer roles, persistent eight-hour sessions and individual/all-session sign-out. [Owner-only account management](ADMIN_ACCOUNTS.md) adds a paginated directory, browser-created one-time keys, role changes, disabling, live authority and exact retries. A room host is not a site administrator. Key rotation/re-enable, failed-attempt history and further operational permissions remain. | Prototyped, partial |
 | Room directory | Search room codes/public player names, filter status/rules/availability, sort and paginate; show host, roster, modules, game change time, pause/join flags and bounded decision ownership. Detailed setup/shared-window ownership remains. | Prototyped |
 | Create and configure | [Create a lobby](ADMIN_ROOM_CREATION.md) with an explicitly owned new host seat, Basic/Advanced preview and initial AI configuration; invite humans and use ordinary lobby controls/voluntary host-seat handover. [Neutral lobby configuration](ADMIN_LOBBY_CONFIGURATION.md) adds rules/modules, AI seats and host assignment to an existing human without private access. Reserved human seats remain. | Prototyped, partial |
 | Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. [Archive/unarchive](ADMIN_ROOM_ARCHIVE.md) has separate directory filters and exact retries. Permanent deletion and bulk actions remain missing. | Prototyped, partial |
@@ -52,6 +52,13 @@ a removed archive preserves both flags.
 Disabling an account invalidates its sessions; later re-enabling it cannot restore
 them. The database refuses to disable, demote or delete the final enabled owner.
 No default key, public account creation or host-to-administrator promotion exists.
+
+[Manage accounts](ADMIN_ACCOUNTS.md) lets a current owner provision a personal
+key, change another administrator’s role or disable its access. The exact
+request and generated key remain tab-scoped through uncertain responses;
+the server never returns a key. The owner reviews the target and reason
+before submitting, and no game or seat is modified. Key rotation and
+re-enabling disabled accounts are not available in this prototype.
 
 [Participant AI](ADMIN_PARTICIPANT_AI.md) lets owners/operators support an absent
 human in a paused, started game. The player retains access and takeback controls;

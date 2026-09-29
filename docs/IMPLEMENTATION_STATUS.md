@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 29 September 2026 — owner account management prototype
+
+The [account page](ADMIN_ACCOUNTS.md) lists only safe metadata to a live
+owner. Provisioning uses a tab-scoped, browser-generated 256-bit key and an
+exact durable operation receipt; only its SHA-256 hash enters the database.
+Owners can change another account’s role or disable it after reviewing the
+name, ID, current/desired role and reason. Database writes repeat live owner
+authority and target-version checks, retain the final-owner trigger, and
+attribute the single successful provision/role/disable audit event. Disabled
+sessions fail immediately; room and seat rows remain untouched. Rotation,
+re-enable, failed-attempt audit and complete administration remain pending.
+
+An isolated direct D1 smoke provisioned a disposable account, changed its
+role, disabled it, confirmed its old key/session fail and verified safe
+owner-attributed history without a raw key. An isolated Request/Response
+route-handler smoke confirmed owner provision, exact replay, directory read
+and foreign-origin denial without contacting a persistent database. Focused
+account/access/audit regressions include an additive migration preserving
+existing room, seat, credential and audit bytes. The local browser showed
+signed-out denial at phone width; intercepted owner fixtures displayed exact
+owner-role disable confirmation, retained a one-time key after refresh and
+hid directory/key controls after a focus-triggered demotion. Browser fixture
+POSTs never reached an account database. Authenticated positive **network**
+HTTP and live NAS acceptance remain untested.
+
+Independent security review found and corrected unchanged-role audit no-ops
+and incomplete final disable confirmation. A separate persistence review
+reproduced a logout-all timestamp rollback; the account version is now
+monotonic and a stale disable rejects. Both follow-up read-only reviews
+reported no remaining scoped finding. The first focused HTTP run found a
+test assuming JSON for Vite’s foreign-origin 403; the corrected boundary
+test passes 3/3, and the full local HTTP suite passes 55/55.
+
+`npm run check` passes typecheck, lint and 5,780/5,780 offline cases;
+`npm run build` and `drizzle-kit check` pass. These results do not certify
+complete administration, authenticated production mutations or deployment.
+
 ## 29 September 2026 — Advanced Moritani assassination sample matrix
 
 The reusable offline runner now supports the explicitly gated

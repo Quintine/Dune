@@ -46,6 +46,9 @@ prints a newly generated initial owner access key in its log only if there are
 no administrator accounts. Save it privately: log readers can use it, and later
 starts do not print it again. See [room controls](docs/ADMIN_ROOM_CONTROLS.md)
 and [initial owner setup](docs/ADMIN_PANEL.md#initial-owner-and-access-recovery).
+Owners can [manage administrator accounts](docs/ADMIN_ACCOUNTS.md) with
+one-time personal keys, role changes and access disabling. Save a new key
+privately before clearing its tab-scoped recovery record.
 Owners/operators can [create a configured lobby](docs/ADMIN_ROOM_CREATION.md) with
 an explicitly owned new host seat and initial AI players.
 [Configure lobby](docs/ADMIN_LOBBY_CONFIGURATION.md) manages supported rules, AI
@@ -59,8 +62,10 @@ retaining their tables and history; unarchiving leaves play closed.
 [Participant AI](docs/ADMIN_PARTICIPANT_AI.md) supports an absent human in a paused
 game while preserving their seat and takeback control.
 [Discussion controls](docs/ADMIN_DISCUSSION.md) mute or unmute new messages from
-a human seat while preserving history and gameplay. Permanent deletion, further
-participant support and backup tools are still being built.
+a human seat while preserving history and gameplay.
+[Owner-only backups](docs/ADMIN_BACKUPS.md) capture and download private room
+snapshots without changing play. Import/restore, permanent deletion and further
+participant support remain unfinished.
 [Action history](docs/ADMIN_ACTION_HISTORY.md) searches recorded admin operations,
 with role-limited reasons and public before/after settings.
 

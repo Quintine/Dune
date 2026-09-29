@@ -1,0 +1,21 @@
+.admin-accounts { max-width: 1060px; }
+.admin-accounts .admin-room-control { max-width: none; }
+.admin-accounts .admin-room-control > label.admin-check { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.admin-accounts .admin-check input { width: 22px; height: 22px; min-height: 22px; flex: none; accent-color: var(--primary); }
+.admin-accounts .admin-room-control > label:not(.admin-check) { margin: 14px 0 8px; }
+.accounts-review { display: grid; grid-template-columns: minmax(100px, max-content) minmax(0, 1fr); gap: 8px 20px; overflow-wrap: anywhere; }
+.accounts-review dt { color: #b7bbaf; }
+.accounts-review dd { margin: 0; }
+.accounts-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.accounts-list { list-style: none; padding: 0; display: grid; gap: 12px; }
+.accounts-list li { border: 1px solid var(--border); padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 20px; overflow-wrap: anywhere; }
+.accounts-list li p { margin: 8px 0 0; }
+.accounts-id { font-family: monospace; }
+#accounts-private-key { font-family: monospace; overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .accounts-list li { flex-direction: column; align-items: stretch; }
+  .accounts-actions { flex-direction: column; align-items: stretch; }
+  .accounts-review { grid-template-columns: minmax(0, 1fr); }
+  .accounts-review dd { margin-bottom: 8px; }
+  #accounts-private-key { font-size: 0.85rem; }
+}

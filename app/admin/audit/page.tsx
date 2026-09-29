@@ -78,7 +78,7 @@ export default function ActionHistory() {
           <span>Page {result.page} of {Math.max(1,Math.ceil(result.total/result.pageSize))}</span>
           {result.page*result.pageSize < result.total && <a className="admin-room-link" href={link(result.page+1)}>Next page</a>}
         </nav>
-        <p className="admin-secondary">Times use your device’s time zone; date filters use UTC. Names reflect current administrator accounts. External provisioning and revocation records do not identify the person who ran the database operation. Rejected attempts are not yet recorded here. New actions may move records between pages.</p>
+        <p className="admin-secondary">Times use your device’s time zone; date filters use UTC. Names reflect current administrator accounts. External CLI account operations may lack actor attribution; web-managed account changes record the acting owner. Rejected attempts are not yet recorded here. New actions may move records between pages.</p>
       </section>}
     </>}
   </main>;
