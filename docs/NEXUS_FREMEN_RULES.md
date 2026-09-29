@@ -12,6 +12,27 @@ The [November 2020 FAQ, pp.2–3](https://www.gf9games.com/dune/wp-content/uploa
 
 The [E1 FAQ, p.11](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=11) describes Sandtrout's anti-Nexus and immediate replacement-card behavior. Its Karama table distinguishes destroying Fremen at a worm from stopping additional-worm placement. The [E3 rules, pp.11–12 and 16](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=12), reread in the cached publisher-authored PDF text and fresh publisher-indexed excerpts, give common Nexus timing and distinguish Great Maker's reserve ride from ordinary board-origin riding. Great Maker remains a separate integration boundary.
 
+## Bounded Betrayal: movement range
+
+An unallied non-Fremen holder of the physical Fremen Nexus card may spend it
+during Shipment and Movement **before Fremen move** to suppress their native
+two-territory movement advantage for the rest of that turn. This bounded path
+uses a clean action boundary in classic-only tables with no other optional
+modules. It does not suppress independent city ornithopters, Planetologist,
+movement cards or the ordinary one-territory move. A move-specific Karama
+interruption remains separate; no extra Karama response to the Nexus card is
+invented.
+
+The owner-only offer binds the holder, seated Fremen target and turn. The
+physical card enters the Nexus discard once; a saved receipt and player turn
+marker preserve suppression through JSON/SQLite recovery and reject replay or
+malformed ownership. The public movement view shows the restriction without
+revealing who held the card before play. All four AI profiles can spend the
+card before an active Fremen bot moves; the owner control labels this
+alternative and keeps the printed worm-riding suppression alternative visibly
+unavailable. The latter is **not** covered by this prototype. This does not
+open the complete Nexus module or public expansion starts.
+
 ## Cunning: source-backed scope and implementation composition
 
 The following are implementation consequences of the inspected text, not additional quoted rules:

@@ -57,7 +57,7 @@ export function OrnithopterMovement({
     if (Object.entries(selectedForces).some(([from, count]) => count > 0 &&
       !botGroundMoveAllowed(game, me, from,
         location(String(move.territory), Number(move.sector)), 0)))
-      reason = 'Karama removed this group’s two-territory advantage. Choose a reachable destination within the remaining normal range.';
+      reason = 'The Fremen two-territory advantage is unavailable. Choose a reachable destination within the remaining normal range.';
   }
   const physicalSource =
     typeof move?.from === 'string'

@@ -57,6 +57,7 @@ import { createNexusSardaukar, validateNexusSardaukar, type NexusSardaukarReceip
 import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement, type NexusMoritaniReceipt } from './nexus-moritani';
 import { moritaniBetrayalOffer } from './nexus-moritani-betrayal';
 import { ecazBetrayalOffer, quoteEcazBetrayal, validateEcazBetrayalSnapshot, type EcazBetrayalSnapshot } from './nexus-ecaz-betrayal';
+import { fremenBetrayalOffer, fremenBetrayalSignature, validateFremenBetrayal, type FremenNexusBetrayal } from './nexus-fremen-betrayal';
 import { nexusMoritaniRecordSignature, terrorLocationAllowed, terrorEntryLocationAllowed } from './terror-location';
 import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
@@ -108,6 +109,7 @@ import {
 } from './homeworld-revival-return';
 import { homeworldRevivalDestinations, quoteHomeworldRevivalDestination } from './homeworld-revival-destinations';
 import { terrorEntrySignature, terrorSelectionSignature, validateTerrorEntrySignature } from './terror-entry-receipt';
+import { arrivalOverlapSignature, overlapOwnsWormTerror } from './arrival-overlap';
 import {
   homeworldLowBonus,
   homeworldRevivalKaramaBlock,
@@ -422,6 +424,7 @@ import {
   copiedAmbassadorEffects,
   canTriggerAmbassador,
   type AmbassadorEffect,
+  type AmbassadorToken,
   type AmbassadorState,
 } from './ecaz-ambassadors';
 import {
@@ -587,6 +590,7 @@ export type Player = {
   gholaBlocked?: Record<string, number>;
   ixMovementBlocked?: { turn: number; move: number };
   fremenMovementBlocked?: { turn: number; move: number };
+  fremenNexusMovementBlockedTurn?: number;
   elites?: {
     reserves: number;
     tanks: number;
@@ -1388,6 +1392,27 @@ export type Game = {
     resume: 'none' | 'wormRide' | 'ambassador';
     ambassadorEvent?: string;
   } | null;
+  /** One committed entry with two independently optional expansion reactions. */
+  pendingArrivalOverlap?: {
+    event: string;
+    signature: string;
+    turn: number;
+    phase: number;
+    entrant: string;
+    territory: string;
+    sector: number;
+    amount: number;
+    elite: number;
+    cause: NonNullable<Game['pendingTerrorEntry']>['cause'];
+    resume: 'none' | 'wormRide';
+    ecaz: string;
+    moritani: string;
+    first: 'ambassador' | 'terror';
+    stage: 'first' | 'second';
+    ambassadorToken: string;
+    terrorTokens: string[];
+    ambassadorEvent?: string;
+  } | null;
   moritaniTerror?: TerrorState;
   moritaniExtortion?: ExtortionState;
   grummanCollection?: GrummanCollection;
@@ -1534,6 +1559,8 @@ export type Game = {
   }[];
   /** A spent Ecaz card binds one exact allied force group until Karama settles. */
   nexusEcazBetrayalHistory?: { snapshot: EcazBetrayalSnapshot; stage: 'pending' | 'complete' }[];
+  /** A spent Fremen card suppresses the native two-territory advantage through its turn. */
+  nexusFremenBetrayalHistory?: FremenNexusBetrayal[];
   /** One actual Sardaukar battle advantage suppressed by a spent Emperor card. */
   nexusEmperorBetrayalHistory?: { event: string; turn: number; territory: string; owner: string; target: string }[];
   /** Original native Voice canceled by a spent Bene Gesserit Nexus card. */
@@ -2093,6 +2120,47 @@ function playNexusEmperorBetrayal(g: Game, p: Player, action: Action) {
   finishResponse(g, true);
   log(g, `${p.name} spent Emperor Nexus Betrayal to suppress ${getPlayer(g, record.target).name}'s Sardaukar strength in this battle. Actual starred counters remain Sardaukar.`,
     { faction: p.faction, name: 'Emperor Nexus Betrayal' });
+}
+function nexusFremenBetrayalIntegrity(g: Game) {
+  const history = g.nexusFremenBetrayalHistory;
+  const fremen = byFaction(g, 'fremen');
+  if (history === undefined) {
+    requireRule(fremen?.fremenNexusMovementBlockedTurn === undefined,
+      'Fremen movement suppression has no spent Nexus card receipt.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && fremen && Array.isArray(history) &&
+    history.length > 0, 'Fremen Betrayal has lost its physical card module.');
+  const turns = new Set<number>();
+  for (const record of history) {
+    nexusRule(() => validateFremenBetrayal(g, record));
+    requireRule(!turns.has(record.turn),
+      'Fremen Betrayal cannot suppress movement twice in one turn.');
+    turns.add(record.turn);
+  }
+  const last = history.at(-1)!;
+  requireRule(fremen.fremenNexusMovementBlockedTurn === last.turn,
+    'Fremen Betrayal has lost its turn-long movement suppression.');
+  if (last.turn === g.turn)
+    requireRule(g.nexusCards.cards.discard.includes('fremen'),
+      'Fremen Betrayal has lost its spent physical card.');
+}
+function playNexusFremenBetrayal(g: Game, p: Player, action: Action) {
+  const offer = fremenBetrayalOffer(g, p.id);
+  requireRule(offer && !offer.blocked && action.event === offer.event &&
+    Object.keys(action).sort().join(',') === 'event,type',
+    'Use Fremen Betrayal before Fremen movement begins.');
+  const record: FremenNexusBetrayal = {
+    event: offer.event, owner: p.id, target: offer.target, turn: g.turn,
+    phase: 5, signature: '',
+  };
+  record.signature = fremenBetrayalSignature(record);
+  g.nexusCards!.cards = nexusRule(() =>
+    discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  getPlayer(g, offer.target).fremenNexusMovementBlockedTurn = g.turn;
+  (g.nexusFremenBetrayalHistory ??= []).push(record);
+  log(g, `${p.name} spent Fremen Nexus Betrayal to suppress the Fremen two-territory movement advantage this turn. Independent ornithopters and movement abilities remain available.`,
+    { faction: p.faction, name: 'Fremen Nexus Betrayal' });
 }
 function bgBetrayalWindow(g: Game) {
   const response = g.response, battle = g.battle;
@@ -5114,7 +5182,7 @@ function treacheryDiscardIntegrity(g: Game) {
         (entry.cause === 'ambassador'
           ? ambassadorTerrorEntryMatches(g, entry)
           : entry.cause === 'wormRide'
-            ? entry.resume === 'wormRide' &&
+            ? (entry.resume === 'wormRide' || overlapOwnsWormTerror(g, entry)) &&
               g.phase === 1 &&
               entrant.faction === 'fremen'
             : entry.resume === 'none') &&
@@ -5919,7 +5987,8 @@ function requireFreshSetup(g: Game, allowIxElites = false) {
       !p.specialKaramaUsed && p.kwisatz === undefined && p.charityTurn === undefined &&
       p.noField === undefined && p.noFieldEvent === undefined && p.noFieldBlockedTurn === undefined &&
       p.advisors === undefined && p.gholaBlocked === undefined && p.ixMovementBlocked === undefined &&
-      p.fremenMovementBlocked === undefined && p.faceDancers === undefined &&
+      p.fremenMovementBlocked === undefined && p.fremenNexusMovementBlockedTurn === undefined &&
+      p.faceDancers === undefined &&
       p.faceDancerReplacedTurn === undefined && p.revealedTraitors === undefined;
   }), 'Starting setup requires unused native leaders and no prior alliance, revival or battle history.');
   requireRule(Object.keys(g.playerPositions ?? {}).every(id => g.players.some(p => p.id === id)),
@@ -7355,6 +7424,7 @@ function afterWorm(g: Game) {
   } else if (
     g.pendingAmbassador?.resume === 'wormRide' ||
     g.pendingTerrorEntry?.resume === 'wormRide' ||
+    g.pendingArrivalOverlap?.resume === 'wormRide' ||
     (g.pendingKarama?.use.kind === 'cancel' &&
       g.pendingKarama.use.response.kind === 'advisorFlip' &&
       g.pendingKarama.use.response.advisorResume === 'wormRide') ||
@@ -10630,7 +10700,8 @@ function movementRange(g: Game, p: Player, elite: number) {
     faction: p.faction,
     cityOrnithopters: !!(fighterCount(p, 'arrakeen') || fighterCount(p, 'carthag')),
     selectedElites: elite,
-    nativeBlocked: blocked?.turn === g.turn && blocked.move === p.moved,
+    nativeBlocked: (blocked?.turn === g.turn && blocked.move === p.moved) ||
+      (p.faction === 'fremen' && p.fremenNexusMovementBlockedTurn === g.turn),
     choamBonus: p.faction === 'choam' && g.choamMovement?.turn === g.turn ? g.choamMovement.bonus : 0,
   });
 }
@@ -10817,6 +10888,7 @@ function quoteMovementArrival(
 ) {
   return quoteCompletedMovementArrival({
       advanced: g.advanced,
+      overlapSupported: arrivalOverlapModeSupported(g),
       players: g.players,
       order: move,
       ambassadors: g.ecazAmbassadors?.tokens ?? [],
@@ -10883,6 +10955,7 @@ function quoteShipmentArrival(
   );
   return quoteCompletedMovementArrival({
     advanced: g.advanced,
+    overlapSupported: arrivalOverlapModeSupported(g),
     players: g.players,
     order: {
       player: p.id,
@@ -11153,6 +11226,8 @@ function ambassadorEffectBlock(
   beneficiary: Player,
   entrant: Player,
 ): string | null {
+  if (g.pendingArrivalOverlap && (effect === 'fremen' || effect === 'guild'))
+    return 'Finish the overlapping Terror before another Ambassador-created arrival; decline this effect.';
   if (!implementedAmbassadorEffects.includes(effect))
     return 'This Ambassador effect is still being implemented.';
   if (effect === 'ecaz') {
@@ -11179,7 +11254,101 @@ function ambassadorEffectBlock(
     return 'The entrant has no held Traitor Card to inspect.';
   return null;
 }
-/** The original entry is committed once. Competing arrival ordering remains gated. */
+function arrivalOverlapModeSupported(g: Game): boolean {
+  return !!byFaction(g, 'ecaz') && !!byFaction(g, 'moritani') &&
+    g.players.every(player => CLASSIC_FACTIONS[player.faction] === true ||
+      player.faction === 'ecaz' || player.faction === 'moritani') &&
+    g.expansions.every(expansion => expansion === 'ecaz') &&
+    !g.homeworlds && !g.nexusCards && !g.leaderSkills &&
+    !g.discoveryEnabled && !g.techTokens && !g.strongholdCards &&
+    !g.ecazTreachery;
+}
+function arrivalOverlapIntegrity(g: Game) {
+  const record = g.pendingArrivalOverlap;
+  if (!record) return;
+  const ecazIndex = g.order.indexOf(record.ecaz);
+  const moritaniIndex = g.order.indexOf(record.moritani);
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const ambassador = g.pendingAmbassador ??
+    (continuation?.kind === 'ambassador' ? continuation.entry : null);
+  const terror = g.pendingTerrorEntry ??
+    (continuation?.kind === 'terrorDiscard' ? continuation.entry : null);
+  const active = record.stage === 'first' ? record.first :
+    record.first === 'ambassador' ? 'terror' : 'ambassador';
+  requireRule(g.status === 'playing' && arrivalOverlapModeSupported(g) &&
+    record.turn === g.turn && record.phase === g.phase &&
+    typeof record.event === 'string' && record.event.length > 0 &&
+    typeof record.signature === 'string' &&
+    record.signature === arrivalOverlapSignature(record) &&
+    g.players.some(p => p.id === record.ecaz && p.faction === 'ecaz') &&
+    g.players.some(p => p.id === record.moritani && p.faction === 'moritani') &&
+    g.players.some(p => p.id === record.entrant &&
+      p.id !== record.ecaz && p.id !== record.moritani) &&
+    ecazIndex >= 0 && moritaniIndex >= 0 && ecazIndex !== moritaniIndex &&
+    g.order.lastIndexOf(record.ecaz) === ecazIndex &&
+    g.order.lastIndexOf(record.moritani) === moritaniIndex &&
+    record.first === (ecazIndex < moritaniIndex ? 'ambassador' : 'terror') &&
+    (record.stage === 'first' || record.stage === 'second') &&
+    Number.isSafeInteger(record.sector) &&
+    TERROR_STRONGHOLDS.includes(record.territory) &&
+    territory(record.territory).sectors.includes(record.sector) &&
+    Number.isSafeInteger(record.amount) && record.amount >= 0 &&
+    Number.isSafeInteger(record.elite) && record.elite >= 0 &&
+    record.elite <= record.amount &&
+    (record.resume === 'none' || record.resume === 'wormRide') &&
+    typeof record.ambassadorToken === 'string' && record.ambassadorToken.length > 0 &&
+    Array.isArray(record.terrorTokens) && record.terrorTokens.length > 0 &&
+    record.terrorTokens.every(id => typeof id === 'string' && id.length > 0) &&
+    new Set(record.terrorTokens).size === record.terrorTokens.length &&
+    (active === 'ambassador'
+      ? !!ambassador && !terror &&
+        ambassador.event === record.ambassadorEvent &&
+        ambassador.owner === record.ecaz &&
+        ambassador.entrant === record.entrant &&
+        ambassador.token === record.ambassadorToken &&
+        ambassador.territory === record.territory &&
+        ambassador.turn === record.turn && ambassador.phase === record.phase
+      : !!terror && !ambassador &&
+        terror.entrant === record.entrant &&
+        terror.territory === record.territory &&
+        terror.turn === record.turn && terror.phase === record.phase &&
+        terror.cause === record.cause &&
+        record.terrorTokens.includes(terror.token)),
+    'The saved Ambassador/Terror overlap lost its original ordered arrival.');
+}
+function openAmbassadorEntry(
+  g: Game, owner: Player, token: AmbassadorToken, entrant: Player, to: string,
+  sector: number, resume: 'none' | 'wormRide',
+): boolean {
+  g.pendingAmbassador = {
+    event: `ambassador:${g.turn}:${g.phase}:${(g.log.at(-1)?.seq ?? 0) + 1}`,
+    owner: owner.id,
+    entrant: entrant.id,
+    token: token.id,
+    territory: to,
+    sector,
+    turn: g.turn,
+    phase: g.phase,
+    stage: 'offer',
+    resume,
+    ...(resume === 'wormRide' ? { wormRider: entrant.id } : {}),
+    copyChoices:
+      token.effect === 'beneGesserit'
+        ? copiedAmbassadorEffects(g.ecazAmbassadors!)
+        : [],
+  };
+  g.decision = { kind: 'ecazAmbassador', player: owner.id };
+  log(g, `${owner.name} may trigger the ${faction(token.effect).name} Ambassador because ${entrant.name} entered ${territory(to).name}. The entrant’s remaining actions wait for this opportunity.`);
+  return true;
+}
+function finishArrivalOverlap(g: Game, overlap: NonNullable<Game['pendingArrivalOverlap']>) {
+  requireRule(!g.pendingAmbassador && !g.pendingTerrorEntry,
+    'Both reactions must finish before resuming the original arrival.');
+  g.pendingArrivalOverlap = null;
+  log(g, 'Both optional Ambassador and Terror reactions to the original entry have finished.');
+  if (overlap.resume === 'wormRide') nextWormRide(g);
+}
+/** The original entry is committed once; eligible overlapping owners act in storm order. */
 function openTerritoryEntry(
   g: Game,
   entrant: Player,
@@ -11217,44 +11386,34 @@ function openTerritoryEntry(
       resume,
     );
   const moritani = byFaction(g, 'moritani');
-  const terror =
-    moritani &&
+  const terrorTokens = moritani &&
     entrant.id !== moritani.id &&
     entrant.id !== moritani.ally &&
-    !homeworldTerrorEntryBlock(g, amount) &&
-    g.moritaniTerror?.tokens.some(
-      (t) => t.status === 'placed' && t.location === to,
-    );
-  requireRule(
-    !g.response &&
-      !g.decision &&
-      !g.pendingTerrorEntry &&
-      !g.pendingAmbassador &&
-      !terror,
-    'Ambassadors combined with another arrival reaction are still being implemented. This entry has not been committed.',
-  );
-  g.pendingAmbassador = {
-    event: `ambassador:${g.turn}:${g.phase}:${(g.log.at(-1)?.seq ?? 0) + 1}`,
-    owner: owner.id,
-    entrant: entrant.id,
-    token: token.id,
-    territory: to,
-    sector,
-    turn: g.turn,
-    phase: g.phase,
-    stage: 'offer',
-    resume,
-    ...(resume === 'wormRide' ? { wormRider: entrant.id } : {}),
-    copyChoices:
-      token.effect === 'beneGesserit'
-        ? copiedAmbassadorEffects(g.ecazAmbassadors!)
-        : [],
+    !homeworldTerrorEntryBlock(g, amount)
+      ? g.moritaniTerror?.tokens.filter(t => t.status === 'placed' && t.location === to) ?? []
+      : [];
+  requireRule(!g.response && !g.decision && !g.pendingTerrorEntry && !g.pendingAmbassador,
+    'Finish the other arrival reaction before opening this entry.');
+  if (!terrorTokens.length)
+    return openAmbassadorEntry(g, owner, token, entrant, to, sector, resume);
+  requireRule(arrivalOverlapModeSupported(g) && !g.pendingArrivalOverlap &&
+    moritani && g.order.includes(owner.id) && g.order.includes(moritani.id),
+    'Ambassador and Terror overlap still needs a supported classic Ecaz/Moritani table.');
+  const first = g.order.indexOf(owner.id) < g.order.indexOf(moritani.id)
+    ? 'ambassador' : 'terror';
+  const overlap: NonNullable<Game['pendingArrivalOverlap']> = {
+    event: crypto.randomUUID(), signature: '', turn: g.turn, phase: g.phase,
+    entrant: entrant.id, territory: to, sector, amount, elite, cause, resume,
+    ecaz: owner.id, moritani: moritani.id, first, stage: 'first',
+    ambassadorToken: token.id, terrorTokens: terrorTokens.map(t => t.id),
   };
-  g.decision = { kind: 'ecazAmbassador', player: owner.id };
-  log(
-    g,
-    `${owner.name} may trigger the ${faction(token.effect).name} Ambassador because ${entrant.name} entered ${territory(to).name}. The entrant’s remaining actions wait for this opportunity.`,
-  );
+  overlap.signature = arrivalOverlapSignature(overlap);
+  g.pendingArrivalOverlap = overlap;
+  log(g, `${owner.name} and ${moritani.name} both have optional reactions to ${entrant.name}'s entry in ${territory(to).name}; ${first === 'ambassador' ? owner.name : moritani.name} acts first in storm order.`);
+  if (first === 'terror')
+    return openTerrorEntry(g, entrant, to, sector, amount, elite, cause, 'none');
+  openAmbassadorEntry(g, owner, token, entrant, to, sector, 'none');
+  overlap.ambassadorEvent = g.pendingAmbassador!.event;
   return true;
 }
 function finishAmbassador(g: Game, deferResume = false) {
@@ -11281,6 +11440,26 @@ function finishAmbassador(g: Game, deferResume = false) {
     );
   }
   g.pendingAmbassador = null;
+  const overlap = g.pendingArrivalOverlap;
+  if (overlap?.ambassadorEvent === pending.event) {
+    requireRule(pending.entrant === overlap.entrant &&
+      pending.territory === overlap.territory &&
+      pending.turn === overlap.turn && pending.phase === overlap.phase &&
+      pending.resume === 'none',
+      'The Ambassador has lost its original overlapping arrival.');
+    if (overlap.stage === 'first' && overlap.first === 'ambassador') {
+      overlap.stage = 'second';
+      requireRule(openTerrorEntry(g, getPlayer(g, overlap.entrant),
+        overlap.territory, overlap.sector, overlap.amount, overlap.elite,
+        overlap.cause, 'none'),
+      'The originally triggered Terror token is no longer in the stronghold.');
+      return;
+    }
+    requireRule(overlap.stage === 'second' && overlap.first === 'terror',
+      'The second Ambassador reaction is out of order.');
+    finishArrivalOverlap(g, overlap);
+    return;
+  }
   if (!deferResume && pending.resume === 'wormRide') nextWormRide(g);
 }
 function currentFremenAmbassador(g: Game, event?: string, completed = false) {
@@ -12806,17 +12985,19 @@ function openTerrorEntry(
   ambassadorEvent?: string,
 ) {
   const moritani = byFaction(g, 'moritani');
-  const tokens = g.moritaniTerror?.tokens.filter(
-    (t) => t.status === 'placed' && t.location === to,
-  ) ?? [];
+  const overlap = g.pendingArrivalOverlap;
+  const originallyTriggered = !!overlap &&
+    overlap.stage === 'second' && overlap.first === 'ambassador' &&
+    overlap.entrant === entrant.id && overlap.territory === to &&
+    overlap.turn === g.turn && overlap.phase === g.phase &&
+    overlap.cause === cause;
+  const tokens = g.moritaniTerror?.tokens.filter(t =>
+    t.status === 'placed' && t.location === to &&
+    (!originallyTriggered || overlap!.terrorTokens.includes(t.id))) ?? [];
   const token = tokens[0];
-  if (
-    !moritani ||
-    !token ||
-    entrant.id === moritani.id ||
-    entrant.id === moritani.ally ||
-    homeworldTerrorEntryBlock(g, amount)
-  )
+  if (!moritani || !token || entrant.id === moritani.id ||
+    (entrant.id === moritani.ally && !originallyTriggered) ||
+    homeworldTerrorEntryBlock(g, amount))
     return false;
   requireRule(!g.pendingTerrorEntry, 'Resolve the pending Terror entry first.');
   requireRule(
@@ -12862,6 +13043,27 @@ function openTerrorEntry(
 function finishTerrorEntry(g: Game) {
   const pending = g.pendingTerrorEntry!;
   g.pendingTerrorEntry = null;
+  const overlap = g.pendingArrivalOverlap;
+  if (overlap && pending.entrant === overlap.entrant &&
+      pending.territory === overlap.territory && pending.turn === overlap.turn &&
+      pending.phase === overlap.phase && pending.cause === overlap.cause) {
+    requireRule(pending.resume === 'none', 'The overlapping Terror must not resume its parent twice.');
+    if (overlap.stage === 'first' && overlap.first === 'terror') {
+      overlap.stage = 'second';
+      const token = g.ecazAmbassadors?.tokens.find(t =>
+        t.id === overlap.ambassadorToken && t.zone === 'placed' &&
+        t.location === overlap.territory);
+      requireRule(token, 'The originally triggered Ambassador token is no longer present.');
+      openAmbassadorEntry(g, getPlayer(g, overlap.ecaz), token,
+        getPlayer(g, overlap.entrant), overlap.territory, overlap.sector, 'none');
+      overlap.ambassadorEvent = g.pendingAmbassador!.event;
+      return;
+    }
+    requireRule(overlap.stage === 'second' && overlap.first === 'ambassador',
+      'The second Terror reaction is out of order.');
+    finishArrivalOverlap(g, overlap);
+    return;
+  }
   if (pending.resume === 'wormRide') nextWormRide(g);
   else if (pending.resume === 'ambassador')
     continueAmbassadorArrival(g, pending.ambassadorEvent!);
@@ -15542,6 +15744,7 @@ function marketGholaIntegrity(g: Game) {
   nexusCardsIntegrity(g);
   nexusEmperorSecretIntegrity(g);
   nexusEmperorBetrayalIntegrity(g);
+  nexusFremenBetrayalIntegrity(g);
   nexusBgBetrayalIntegrity(g);
   nexusFremenRevivalIntegrity(g);
   nexusFremenCunningIntegrity(g);
@@ -20393,7 +20596,7 @@ function validateGuildShipmentDecision(
   validatePhysicalShipment(g, shipment);
   return shipment;
 }
-const GUILD_RATE_CLASSIC_FACTIONS: Partial<Record<FactionId, true>> = {
+const CLASSIC_FACTIONS: Partial<Record<FactionId, true>> = {
   atreides: true, harkonnen: true, emperor: true,
   fremen: true, guild: true, beneGesserit: true,
 };
@@ -20402,7 +20605,7 @@ const GUILD_RATE_CLASSIC_FACTIONS: Partial<Record<FactionId, true>> = {
 function guildRateModeSupported(g: Game): boolean {
   return !g.expansions.length && !g.homeworlds && !g.leaderSkills &&
     !g.nexusCards && !g.discoveryEnabled && !g.techTokens && !g.strongholdCards &&
-    g.players.every(player => GUILD_RATE_CLASSIC_FACTIONS[player.faction] === true);
+    g.players.every(player => CLASSIC_FACTIONS[player.faction] === true);
 }
 function ordinaryGuildRateFullCost(g: Game, shipment: PendingShipment): number | null {
   const guild = byFaction(g, 'guild');
@@ -22509,6 +22712,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
+  arrivalOverlapIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -22692,6 +22896,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   harkonnenExchangeIntegrity(g);
   moritaniExtortionIntegrity(g);
   guildRateIntegrity(g);
+  arrivalOverlapIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
@@ -22801,6 +23006,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
+  arrivalOverlapIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
   nexusChoamTradeIntegrity(state);
@@ -22856,6 +23062,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   harkonnenExchangeIntegrity(g);
   moritaniExtortionIntegrity(g);
   guildRateIntegrity(g);
+  arrivalOverlapIntegrity(g);
   return g;
 }
 
@@ -22956,6 +23163,7 @@ function applyActionInner(
   if (t === 'nexusFremenRevive') { playNexusFremenRevive(g,p,action); return g; }
   if (t === 'nexusMoritaniBetrayal') { playMoritaniBetrayal(g, p, action); return g; }
   if (t === 'nexusEcazBetrayal') { playEcazBetrayal(g, p, action); return g; }
+  if (t === 'nexusFremenBetrayal') { playNexusFremenBetrayal(g, p, action); return g; }
   if (t === 'nexusAtreides') { playNexusAtreides(g, p, action); return g; }
   requireRule(
     !(
@@ -26156,6 +26364,7 @@ function applyActionInner(
     } else if (
       !move.ornithopterRange && !move.discoveryFlight &&
       p.faction === 'fremen' &&
+      p.fremenNexusMovementBlockedTurn !== g.turn &&
       !(p.fremenMovementBlocked?.turn === g.turn && p.fremenMovementBlocked.move === p.moved) &&
       !fighterCount(p, 'arrakeen') && !fighterCount(p, 'carthag') &&
       (move.sandmaster
@@ -26626,6 +26835,7 @@ export function viewGame(state: Game, id: string) {
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
+  arrivalOverlapIntegrity(state);
   discoveryFlightIntegrity(state);
   discoveryIntegrity(state);
   greatMakerIntegrity(state);
@@ -26752,6 +26962,17 @@ export function viewGame(state: Game, id: string) {
       : null,
     moritaniTerror: g.moritaniTerror
       ? projectTerror(g.moritaniTerror, me.faction === 'moritani')
+      : null,
+    arrivalOverlapMode: arrivalOverlapModeSupported(g),
+    arrivalOverlap: g.pendingArrivalOverlap
+      ? {
+          first: g.pendingArrivalOverlap.first,
+          active: g.pendingArrivalOverlap.stage === 'first'
+            ? g.pendingArrivalOverlap.first
+            : g.pendingArrivalOverlap.first === 'ambassador' ? 'terror' : 'ambassador',
+          entrant: g.pendingArrivalOverlap.entrant,
+          territory: g.pendingArrivalOverlap.territory,
+        }
       : null,
     extortion: {
       deferred: g.moritaniExtortion?.stage === 'reserved' ? 5 : 0,
@@ -26987,6 +27208,8 @@ export function viewGame(state: Game, id: string) {
     nexusMoritaniBetrayal: moritaniBetrayalOffer(g,id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
     nexusEcazBetrayal: ecazBetrayalOffer(g, id,
+      g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
+    nexusFremenBetrayal: fremenBetrayalOffer(g, id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),
     nexusRichese: nexusRicheseOffer(g,id),
     nexusRicheseCunning: nexusRicheseCunningOffer(g, id),
@@ -27336,8 +27559,10 @@ export function viewGame(state: Game, id: string) {
       advisorSetup: p.advisorSetup,
       specialKaramaUsed: p.specialKaramaUsed ?? false,
       fremenMovementBlocked:
-        p.fremenMovementBlocked?.turn === g.turn &&
-        p.fremenMovementBlocked.move === p.moved,
+        p.fremenNexusMovementBlockedTurn === g.turn ||
+        (p.fremenMovementBlocked?.turn === g.turn &&
+          p.fremenMovementBlocked.move === p.moved),
+      fremenNexusMovementBlocked: p.fremenNexusMovementBlockedTurn === g.turn,
       ixMovementBlocked:
         p.ixMovementBlocked?.turn === g.turn &&
         p.ixMovementBlocked.move === p.moved,

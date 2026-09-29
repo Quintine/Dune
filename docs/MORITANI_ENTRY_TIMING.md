@@ -15,6 +15,14 @@ Reviewed 2026-09-06. This supplements `MORITANI_TERROR_RULES.md`; it does not en
 
 Consequently, the exact relationship between paying the shipment, transferring forces, opening Terror and completing other arrival reactions remains an implementation policy requiring an explicit qualification. It should not be described as a publisher-certified interrupt-before-arrival or a generic simultaneous-effects rule.
 
+## Selected bounded overlap order — 29 September 2026
+
+No targeted publisher/designer clarification establishes which of Ecaz's Ambassador and Moritani's Terror acts first when both were eligible on one entry. Under the user's standing instruction to use the recommended option rather than reopen a missing ruling, this table chooses **the current storm order `g.order` of those two owners** in Basic/Advanced classic plus Ecaz/Moritani development games. This is a provisional implementation interpretation, **not** a GF9 simultaneous-effects ruling.
+
+Both optional trigger opportunities belong to the **same already committed entry**. Snapshot the original entrant, token identities, physical arrival amount and turn; finish the first owner's choice and its allowable continuations before offering the second. Revalidate the second effect's physical requirements without replaying the original shipment payment, movement or force transfer. Owner-private Terror identity remains concealed until revealed. If the first reaction changes an alliance, the other owner keeps the trigger earned at the original entry; it does not gain a new trigger from a later action.
+
+This bounded path excludes competing BG fighter Intrusion, Guild income/advisor and CHOAM prevention windows, Homeworlds, Nexus, Discoveries, Leader Skills and the still-unfinished Atomics effect. Fremen relocation or Guild free-shipment Ambassador effects can create nested arrivals before the second owner; they remain declineable but cannot be activated in this overlap until their child continuation is integrated. These guards are development boundaries, not physical-game prohibitions.
+
 ## Atomics and later allies
 
 The current official indexed p. 5 still says: “From this turn forward, your hand limit is reduced by 1 (as well as your ally’s)”. It does not specify how a later alliance change affects either former or new allies. Both a continuing current-ally modifier and a detonation-time recipient remain interpretations. No targeted clarification was found. [GF9 E3, p. 5](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=5)

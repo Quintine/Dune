@@ -6,6 +6,21 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+A bounded [Ecaz Ambassador/Moritani Terror same-entry continuation](MORITANI_ENTRY_TIMING.md#selected-bounded-overlap-order--29-september-2026)
+now snapshots both original optional triggers and offers their owners sequential
+choices in current storm order on classic plus Ecaz/Moritani Basic/Advanced
+tables. This order is a conservative provisional table interpretation, not
+a publisher ruling. The original shipment, move or Fremen worm ride transfers
+forces only once; JSON/SQLite recovery keeps token custody private and proceeds
+to the second owner even after the first declines or resolves a supported effect.
+A summoned worm during the overlap retains its Nexus before the queued ride;
+Robbery overflow and Sabotage discards preserve physical custody. The table
+shows public owner order without disclosing the hidden Terror face; existing
+owned controls and minimal legal AI remain usable. Competing BG Intrusion,
+Fremen/Guild Ambassador child arrivals, Atomics and optional-module combinations
+remain gated, as do normal public expansion starts. This source is not in the
+last verified live image.
+
 A bounded [Guild native rate Karama path](GUILD_RATE_KARAMA_RULES.md#native-transport-extension--29-september-2026)
 now interrupts classic Guild/reciprocal-ally ordinary reserve shipments and
 eligible cross-planet transport before payment, including Guild's own return

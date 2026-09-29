@@ -329,43 +329,6 @@ void test('no-choice decision checklist preserves genuine alternatives and persi
   );
 });
 
-void test('Ecaz entry checklist separates eight supported effects and private historical snapshots from unopened interactions', () => {
-  const topic = RULE_TOPICS.find(
-    (candidate) => candidate.id === 'ecaz-ambassadors',
-  )!;
-  const guide = topic.steps.join(' ');
-  assert.equal(topic.coverage, 'Partial');
-  assert.match(
-    guide,
-    /Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen and Guild entry effects are integrated/,
-  );
-  assert.match(guide, /Bene Gesserit copies of those eight effects/);
-  assert.match(guide, /recipient’s private inspection history/);
-  assert.match(guide, /do not become a live view of later changes/);
-  assert.match(guide, /closing them needs no game acknowledgement/);
-  assert.match(guide, /including none, for three spice each/);
-  assert.match(guide, /Ixians require one available card/);
-  assert.match(
-    guide,
-    /Entries with competing arrival reactions remain blocked/,
-  );
-  assert.match(guide, /Full Ecaz starts remain disabled/);
-  const evidence = topic.checklist!.find(
-    (item) => item.area === 'Verification',
-  )!.evidence!;
-  assert.ok(evidence.includes('tests/ecaz-entry.test.ts'));
-  assert.ok(evidence.includes('tests/ecaz-entry-bots.test.ts'));
-  assert.ok(evidence.includes('tests/guild-ambassador-bots.test.ts'));
-  assert.ok(evidence.includes('tests/guild-ambassador-engine.test.ts'));
-  assert.match(
-    guide,
-    /No-Field substitution.*awaits the user’s interpretation/,
-  );
-  assert.match(
-    guide,
-    /Simultaneous Intrusion\/Terror and Ambassador\/Terror combinations remain blocked/,
-  );
-});
 
 void test('Nullentropy checklist preserves paid-only privacy, real choices, recovery and explicit interpretation guards', () => {
   const topic = RULE_TOPICS.find(

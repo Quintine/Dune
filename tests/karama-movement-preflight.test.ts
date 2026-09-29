@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   quoteCompletedMovementArrival,
-  MovementArrivalError,
   type CompletedMovementArrivalInput,
 } from '../game/karama-movement-preflight';
 import {
@@ -69,14 +68,120 @@ void test('a plain movement has no arrival reaction, and an eligible token opens
     quoteCompletedMovementArrival({ ...input, terror: [terror] }).reaction,
     'terror',
   );
+});
+
+void test('supported simultaneous Ambassador and Terror arrival quotes one bounded overlap without changing the original entry', () => {
+  const input = {
+    ...fixture(),
+    overlapSupported: true,
+    ambassadors: [ambassador],
+    terror: [terror],
+  };
+  const before = structuredClone(input);
+  assert.deepEqual(quoteCompletedMovementArrival(input), {
+    intrusion: false,
+    reaction: 'overlap',
+    retiresOrnithopter: false,
+  });
+  assert.deepEqual(quoteCompletedMovementArrival(input), {
+    intrusion: false,
+    reaction: 'overlap',
+    retiresOrnithopter: false,
+  });
+  assert.deepEqual(input, before);
+  assert.throws(
+    () => quoteCompletedMovementArrival({ ...input, overlapSupported: false }),
+    /Ambassadors combined with another arrival reaction/,
+  );
+  assert.throws(
+    () => quoteCompletedMovementArrival({ ...input, overlapSupported: undefined }),
+    /Ambassadors combined with another arrival reaction/,
+  );
+  assert.equal(
+    quoteCompletedMovementArrival({ ...input, terror: [] }).reaction,
+    'ambassador',
+  );
+  assert.equal(
+    quoteCompletedMovementArrival({ ...input, ambassadors: [] }).reaction,
+    'terror',
+  );
+});
+
+void test('overlap support does not bypass competing controls, fighter response, or BG intrusion', () => {
+  const input = {
+    ...fixture(),
+    overlapSupported: true,
+    ambassadors: [ambassador],
+    terror: [terror],
+  };
+  for (const flag of [
+    'response',
+    'decision',
+    'pendingTerror',
+    'pendingAmbassador',
+  ] as const)
+    assert.throws(
+      () =>
+        quoteCompletedMovementArrival({
+          ...input,
+          controls: { ...input.controls, [flag]: true },
+        }),
+      /Ambassadors combined with another arrival reaction/,
+      flag,
+    );
   assert.throws(
     () =>
       quoteCompletedMovementArrival({
         ...input,
-        ambassadors: [ambassador],
-        terror: [terror],
+        order: { ...input.order, wantsFighters: true },
       }),
-    MovementArrivalError,
+    /Ambassadors combined with another arrival reaction/,
+  );
+  assert.throws(
+    () =>
+      quoteCompletedMovementArrival({
+        ...input,
+        players: input.players.map((p) =>
+          p.id === 'b' ? { ...p, forces: { 'broken_land:9': 1 } } : p,
+        ),
+      }),
+    /Ambassadors combined with another arrival reaction/,
+  );
+});
+
+void test('overlap support never turns same-territory movement or shared ownership into an entry', () => {
+  const input = {
+    ...fixture(),
+    overlapSupported: true,
+    ambassadors: [ambassador],
+    terror: [terror],
+  };
+  assert.equal(
+    quoteCompletedMovementArrival({
+      ...input,
+      order: { ...input.order, origin: 'broken_land' },
+    }).reaction,
+    null,
+  );
+  assert.equal(
+    quoteCompletedMovementArrival({
+      ...input,
+      order: {
+        ...input.order,
+        origins: ['broken_land', 'broken_land'],
+      },
+    }).reaction,
+    null,
+  );
+  assert.throws(
+    () =>
+      quoteCompletedMovementArrival({
+        ...input,
+        players: input.players.map((p) =>
+          p.id === 'm' ? { ...p, id: 'e' } : p,
+        ),
+      }),
+    /Ambassadors combined with another arrival reaction/,
   );
 });
 

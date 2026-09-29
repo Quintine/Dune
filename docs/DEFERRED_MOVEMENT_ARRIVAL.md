@@ -28,13 +28,14 @@ forces in the marked territory. The current gate remains; no storm-order
 policy or lost-opportunity rule is inferred from tests.
 [GF9 Ecaz & Moritani, pp. 5, 7 and 15](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=5)
 
-The user has been asked whether this overlap should stay gated pending an
-official ruling or use clearly labeled provisional storm order. No answer
-has been applied. The broader [Ambassador](ECAZ_AMBASSADORS_RULES.md) and
-[Terror](MORITANI_TERROR_RULES.md) contracts retain other arrival-order gaps,
-including Bene Gesserit reactions and child arrivals. An unavailable reaction
-combination is unfinished implementation, not a rule forbidding that move in
-the physical game.
+At this 13 September checkpoint, the user clarification about a possible
+storm-order policy was pending, so the gate below remained. The user's later
+standing instruction to choose the conservative recommended interpretation
+instead of asking again led to a bounded storm-order continuation on
+29 September; see [the source distinction and selected policy](MORITANI_ENTRY_TIMING.md#selected-bounded-overlap-order--29-september-2026).
+The gate remains for competing BG Intrusion, child-producing Ambassador
+effects, other modules and unfinished Atomics. An unavailable combination is
+unfinished software scope, not a physical-game prohibition.
 
 ## Continuation contract
 
@@ -82,3 +83,14 @@ Richese auction, private cards and spice after reload. This checks outage recove
 the new movement-return path is covered by engine and SQLite tests, not a staged
 browser claim. All 632 opening saved games and original seat records matched the
 backup, and the healthy development server was reused.
+
+## Bounded storm-order continuation — 29 September 2026
+
+Classic plus Ecaz/Moritani development tables now snapshot a genuine shared
+entry and offer each eligible owner one optional response in current storm
+order, with the same original arrival receipt across JSON/SQLite restart.
+The first resolution precedes the next prompt; neither response replays
+shipment cost, physical force arrival or the mover's action. Public owner
+order and current actor are visible without projecting a concealed Terror face.
+This provisional table order does not certify Atomics, Intrusion, Ambassador
+child arrivals or all expansion combinations, and no existing game is reset.

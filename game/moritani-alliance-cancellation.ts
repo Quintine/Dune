@@ -11,6 +11,7 @@ import {
 } from './karama-movement-cancellation';
 import { TERROR_KINDS } from './moritani-terror';
 import { validateTerrorEntrySignature } from './terror-entry-receipt';
+import { overlapOwnsWormTerror } from './arrival-overlap';
 
 export class MoritaniAllianceCancellationError extends Error {
   constructor(message: string) {
@@ -25,6 +26,7 @@ export type MoritaniAllianceCancellationContext = Pick<
   | 'phase'
   | 'players'
   | 'pendingTerrorEntry'
+  | 'pendingArrivalOverlap'
   | 'moritaniTerror'
   | 'pendingAmbassador'
   | 'ecazAmbassadors'
@@ -164,7 +166,7 @@ export function quoteMoritaniAllianceCancellation(
     requireSource(
       entry.cause === 'wormRide'
         ? g.phase === 1 &&
-            entry.resume === 'wormRide' &&
+            (entry.resume === 'wormRide' || overlapOwnsWormTerror(g, entry)) &&
             entrants[0].faction === 'fremen'
         : g.phase === 5 &&
             entry.resume === 'none' &&

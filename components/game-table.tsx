@@ -33,6 +33,7 @@ import { NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { NexusMoritaniBetrayal } from './nexus-moritani-betrayal';
 import { buildRevision, buildRevisionLabel } from '@/lib/build-revision';
 import { NexusEcazBetrayal } from './nexus-ecaz-betrayal';
+import { NexusFremenBetrayal } from './nexus-fremen-betrayal';
 import { NexusEcazInquiry } from './nexus-ecaz-inquiry';
 import { NexusEcazDuke } from './nexus-ecaz-duke';
 import { NexusTleilaxu } from './nexus-tleilaxu';
@@ -1050,6 +1051,18 @@ export function GameTable({
       <EcazLoyaltyCard loyalty={g.ecazLoyalty} />
       <MoritaniTerrorSupply game={g} />
       <MoritaniExtortionNotice game={g} />
+      {g.arrivalOverlap && (
+        <section className="notice" aria-label="Ambassador and Terror response order">
+          <p>
+            {g.players.find((player) => player.id === g.arrivalOverlap!.entrant)?.name ?? 'The entrant'}
+            {' '}entered {territory(g.arrivalOverlap.territory).name}. Ecaz Ambassador
+            and Moritani Terror resolve in storm order:{' '}
+            {g.arrivalOverlap.first === 'ambassador' ? 'Ecaz, then Moritani' : 'Moritani, then Ecaz'}.
+            {' '}{g.arrivalOverlap.active === 'ambassador' ? 'Ecaz' : 'Moritani'} decides now;
+            the original entry is not repeated.
+          </p>
+        </section>
+      )}
       <MoritaniAssassinateHistory game={g} />
       <AmbassadorSupply game={g} />
       <AmbassadorInsights key={`${g.code}-${g.me}`} game={g} />
@@ -1607,6 +1620,7 @@ export function GameTable({
           <NexusChoamBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusMoritaniBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusEcazBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
+          <NexusFremenBetrayal game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusEcazInquiry game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
           <NexusEcazDuke game={g} act={act} busy={busy} />
           <NexusTleilaxu game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
@@ -4044,10 +4058,9 @@ export function GameTable({
                 me.faction === 'fremen' &&
                 me.fremenMovementBlocked && (
                   <p className="notice">
-                    Karama limited this move to one territory. Your forces have
-                    not moved yet. Available ornithopters still allow their
-                    normal range; a later extra move can use your two-territory
-                    advantage again.
+                    {me.fremenNexusMovementBlocked
+                      ? 'Fremen Nexus Betrayal suppresses your two-territory movement advantage for this turn. Available ornithopters still use their normal range.'
+                      : 'Karama limited this move to one territory. Your forces have not moved yet. Available ornithopters still allow their normal range; a later extra move can use your two-territory advantage again.'}
                   </p>
                 )}
               {g.phase === 5 && me.faction === 'ixians' && (

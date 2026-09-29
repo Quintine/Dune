@@ -23,6 +23,8 @@ export type MovementArrivalPlayer = Readonly<
 
 export type CompletedMovementArrivalInput = Readonly<{
   advanced: boolean;
+  /** The caller supports resolving both optional arrival windows on this entry. */
+  overlapSupported?: boolean;
   players: readonly MovementArrivalPlayer[];
   order: Readonly<{
     player: string;
@@ -54,7 +56,7 @@ export type CompletedMovementArrivalInput = Readonly<{
 
 export type CompletedMovementArrivalQuote = Readonly<{
   intrusion: boolean;
-  reaction: 'ambassador' | 'terror' | null;
+  reaction: 'ambassador' | 'terror' | 'overlap' | null;
   retiresOrnithopter: boolean;
 }>;
 
@@ -119,6 +121,17 @@ export function quoteCompletedMovementArrival(
   );
   const response = controls.response || order.wantsFighters;
   const decision = controls.decision || intrusion;
+  if (
+    triggersAmbassador &&
+    triggersTerror &&
+    input.overlapSupported &&
+    ecaz!.id !== moritani!.id &&
+    !response &&
+    !decision &&
+    !controls.pendingTerror &&
+    !controls.pendingAmbassador
+  )
+    return { ...base, reaction: 'overlap' };
   if (triggersAmbassador) {
     if (
       response ||

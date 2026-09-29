@@ -17,9 +17,11 @@ import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildHajrAction,
 import { nexusMoritaniBotActions } from './nexus-moritani-options';
 import { moritaniBetrayalBotActions } from './nexus-moritani-betrayal-options';
 import { ecazBetrayalBotActions } from './nexus-ecaz-betrayal-options';
+import { fremenBetrayalBotActions } from './nexus-fremen-betrayal-options';
 import { ecazInquiryBotActions } from './nexus-ecaz-inquiry-options';
 import { nexusEcazDukeBotActions } from './nexus-ecaz-duke-options';
 import { ecazBetrayalOffer } from './nexus-ecaz-betrayal';
+import { fremenBetrayalOffer } from './nexus-fremen-betrayal';
 import { ECAZ_START_FORCES, ECAZ_START_LOCATIONS, quoteEcazStartingForces } from './ecaz-setup';
 import { choamPowerAction, choamPowerBotPlay } from './choam-power-options';
 import { nexusCardBotActions } from './nexus-card-options';
@@ -3907,6 +3909,8 @@ export function botActions(g: GameView): Action[] {
   if (moritaniBetrayal.length) return moritaniBetrayal;
   const ecazBetrayal = ecazBetrayalBotActions(g);
   if (ecazBetrayal.length) return ecazBetrayal;
+  const fremenBetrayal = fremenBetrayalBotActions(g);
+  if (fremenBetrayal.length) return fremenBetrayal;
   const ecazInquiry = ecazInquiryBotActions(g);
   if (ecazInquiry.length) return ecazInquiry;
   const sardaukar = nexusSardaukarBotActions(g);
@@ -4043,9 +4047,13 @@ export function runBots(state: Game, limit = 96): Game {
       ? actors.find(actor => g.nexusCards!.cards!.hands[actor.id] === 'ecaz' &&
         ecazBetrayalOffer(g, actor.id)?.blocked === null)
       : undefined;
-    const priorityEcaz = ecazDukeHolder ?? ecazHolder;
-    if (priorityEcaz)
-      actors.sort((a, b) => Number(b.id === priorityEcaz.id) - Number(a.id === priorityEcaz.id));
+    const fremenHolder = g.phase === 5 && g.nexusCards?.cards
+      ? actors.find(actor => g.nexusCards!.cards!.hands[actor.id] === 'fremen' &&
+        fremenBetrayalOffer(g, actor.id)?.blocked === null)
+      : undefined;
+    const priorityNexus = ecazDukeHolder ?? ecazHolder ?? fremenHolder;
+    if (priorityNexus)
+      actors.sort((a, b) => Number(b.id === priorityNexus.id) - Number(a.id === priorityNexus.id));
     else if (g.phase === 5 && junctionSponsor(g) && !currentJunctionOffer(g))
       actors.sort((a, b) => Number(b.faction === 'guild') - Number(a.faction === 'guild'));
     for (const p of actors) {

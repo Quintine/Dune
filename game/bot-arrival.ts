@@ -56,9 +56,9 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
       return null;
     const guild = g.players.find((p) => p.faction === 'guild');
     const halfRate =
-      me.faction === 'guild' ||
-      guild?.id === me.ally ||
-      g.karamaShipping?.player === me.id;
+      g.karamaShipping?.player === me.id ||
+      (!g.guildRateCanceled &&
+        (me.faction === 'guild' || guild?.id === me.ally));
     // A No-Field's concealed value and optional companion never change its price.
     const smuggler =
       action.noField === undefined && action.smuggler === true
@@ -162,6 +162,7 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
   try {
     quoteCompletedMovementArrival({
       advanced: g.advanced,
+      overlapSupported: g.arrivalOverlapMode === true,
       players: g.players,
       order,
       ambassadors: (g.ambassadors?.tokens ?? []).map(

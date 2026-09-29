@@ -1,5 +1,59 @@
 # Dune implementation status
 
+## 29 September 2026 — bounded Fremen Nexus Betrayal movement alternative
+
+An unallied holder may spend the one physical Fremen Nexus card before Fremen
+move during Shipment and Movement in classic-only Nexus games. The native
+two-territory advantage stays suppressed through that turn; ordinary movement,
+city ornithopters and other independent movement remain available. The
+server-bound event and saved receipt reject duplicate or malformed plays.
+The holder-only control and all four AI profiles share the same private offer,
+with bot priority before Fremen's first move. Basic/Advanced real second-turn
+Nexus draws, JSON continuation, expiry, corrupted receipt rejection and a
+concurrent authenticated SQLite CAS/reconnect check pass seven focused cases.
+The actual React control rendered an owner button and no rival control in a
+read-only static preview; no room was written. Typecheck, lint, the app build,
+5,735/5,735 offline tests and 54/54 local HTTP integration cases passed.
+Independent read-only review found no actionable issue in bounded timing,
+privacy, custody, receipt or movement.
+The card's separate worm-riding suppression remains
+unimplemented, and combined modules/public Nexus starts remain gated. See
+[Fremen Nexus rules](NEXUS_FREMEN_RULES.md#bounded-betrayal-movement-range).
+
+## 29 September 2026 — bounded Ambassador/Terror storm-order continuation
+
+An original entry into a shared Ecaz Ambassador and Moritani Terror stronghold
+is now committed once, then two distinct optional owner reactions are saved
+in current storm order. Ecaz and Moritani can each decline or use a supported
+face/effect; the second owner still receives the original entrant, territory,
+token entitlement and turn after JSON restoration. The signed receipt remains
+server-only, the public notice shows current/next faction without hidden
+Terror identity, and physical shipment spice, counters and movement allowance
+never replay on continuation. This is a provisional conservative table
+priority chosen after a targeted source review found no publisher ruling,
+not a certified simultaneous-effects rule.
+
+The first focused engine/quote/in-memory SQLite group passed 41 cases across
+three files. A direct non-test Basic game smoke put Moritani before Ecaz:
+the entrant shipped two forces for two spice once, Moritani revealed Robbery
+and collected nine of the remaining eighteen, then Ecaz's Emperor Ambassador
+collected five bank spice. JSON reloads between responses preserved owner
+order and the original two forces; rival views kept Robbery's face hidden
+before revelation. BG fighter Intrusion, Fremen/Guild Ambassador child
+arrivals, Atomics, optional modules and public expansion starts remain
+separate unfinished work. The table order and its limits are in
+[the source-bound policy](MORITANI_ENTRY_TIMING.md#selected-bounded-overlap-order--29-september-2026).
+
+Follow-up regression coverage now exercises Basic/Advanced Fremen worm rides
+through both saved arrival stages in SQLite, Robbery hand overflow, Sabotage
+discard/gift, and a special-Karama summon whose Nexus precedes the queued
+ride. The bot owner-view quote accepts a supported ordinary overlap. The
+focused overlap/guide suite passed 30 cases. The obsolete prose-matching
+reference test was removed rather than re-pinned; full typecheck, lint, the
+app build and 5,735/5,735 offline tests now pass with the separate Fremen
+Nexus movement alternative integrated. This local coverage does not certify
+an expansion start or deployment.
+
 ## 29 September 2026 — native Guild cross/return rate response
 
 The classic Basic/Advanced Guild rate interruption now owns a typed, persisted
