@@ -4,14 +4,14 @@ export const AUDIT_CATEGORIES = {
 } as const;
 export type AuditCategory = keyof typeof AUDIT_CATEGORIES;
 export const AUDIT_ACTIONS = {
-  provision: 'Provision administrator', revoke: 'Revoke administrator', role: 'Change administrator role', login: 'Sign in', logout: 'Sign out', logout_all: 'Sign out everywhere',
+  provision: 'Provision administrator', revoke: 'Revoke administrator', role: 'Change administrator role', rotate: 'Rotate administrator key', login: 'Sign in', logout: 'Sign out', logout_all: 'Sign out everywhere',
   room_control: 'Apply room controls', create: 'Create room', rules: 'Change rules', techTokens: 'Change Tech Tokens', strongholdCards: 'Change Stronghold Cards',
   addBot: 'Add AI player', removeBot: 'Remove AI player', assignHost: 'Assign host', configureBot: 'Configure AI player',
   remove: 'Remove room', restore: 'Restore room', close: 'Close room', reopen: 'Reopen room', archive: 'Archive room', unarchive: 'Unarchive room',
   participant_ai: 'Enable participant AI', mute: 'Mute discussion', unmute: 'Unmute discussion', unknown: 'Unrecognized recorded action',
 } as const;
 export type AuditAction = keyof typeof AUDIT_ACTIONS;
-export const AUDIT_FIELDS = ['Role','Rules','Tech Tokens','Stronghold Cards','Host seat','Host faction','AI seats','Player count','Paused','Joining locked','Removed','Closed','Archived','Game version','Setting revision','Difficulty','Discussion muted','Player circle'] as const;
+export const AUDIT_FIELDS = ['Role','Enabled','Rules','Tech Tokens','Stronghold Cards','Host seat','Host faction','AI seats','Player count','Paused','Joining locked','Removed','Closed','Archived','Game version','Setting revision','Difficulty','Discussion muted','Player circle'] as const;
 export type AuditChange = { field: typeof AUDIT_FIELDS[number]; before: string | null; after: string | null };
 export type AdminAuditEvent = {
   id: string; category: AuditCategory; action: AuditAction; createdAt: number | null;

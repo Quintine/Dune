@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 30 September 2026 — owner key rotation and safe re-enable
+
+The [account panel](ADMIN_ACCOUNTS.md) now rotates another enabled or
+disabled administrator’s personal access key with one exact tab-scoped
+request. A disabled target becomes enabled only with the new key; all
+old sessions are revoked and historical hashes prevent A→B→A key reuse.
+The owner reviews name, ID, role, enabled state, reason and revocation
+impact; one-time key disclosure remains confined to the confirmed tab.
+Additive migration `0020` preserves previous account receipts and games.
+Live SQL owner/version/key checks, one durable rotation receipt and
+actor-attributed safe audit prevent stale or duplicate changes.
+
+Independent persistence review found no scoped issue. Security review
+identified an exact historical replay that could show a superseded key
+as currently usable. The client now compares its receipt with the
+last-read account metadata, warns when changed/unlisted, and advises
+sign-in verification even when matching. The focused security follow-up
+found no remaining issue in those changed lines. A phone-width
+authenticated local page showed exact pre-send confirmation; a
+completed-record fixture showed the superseded warning without sending
+a mutation.
+The isolated built-worker network smoke provisioned, rotated, replayed,
+disabled and re-enabled a disposable target, rejected old keys and
+sessions, refused key reuse and preserved safe audit and origin denial.
+No live account or saved game was modified.
+
+`npm run check` passes typecheck, lint and 5,787/5,787 offline cases;
+`npm run build`, `drizzle-kit check` and all 55/55 development-server
+HTTP cases pass. A second full HTTP run against the local production
+bundle did not pass: workerd intermittently returned 503 mid-request
+under the suite. Draining oversized admin bodies removed an early
+unread-stream return; isolated built requests returned 413 and later
+requests remained healthy, but the full bundle load issue remains
+unresolved. None of this proves a deployed revision, complete
+administration or production recovery.
+
 ## 29 September 2026 — natural Advanced Moritani reveal and replacement
 
 A source-unchanged genuine six-seat sample at base seed `20261307`

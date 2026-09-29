@@ -22,9 +22,10 @@ export async function adminBody(request: Request, configuredOrigin?: string): Pr
     const { done, value } = await reader.read();
     if (done) break;
     size += value.byteLength;
-    if (size > 2048) { void reader.cancel(); throw new AdminError('Request too large.', 413); }
-    chunks.push(value);
+    // Drain the request without retaining bytes beyond the limit.
+    if (size <= 2048) chunks.push(value);
   }
+  if (size > 2048) throw new AdminError('Request too large.', 413);
   const bytes = new Uint8Array(size);
   let offset = 0;
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }

@@ -47,8 +47,9 @@ no administrator accounts. Save it privately: log readers can use it, and later
 starts do not print it again. See [room controls](docs/ADMIN_ROOM_CONTROLS.md)
 and [initial owner setup](docs/ADMIN_PANEL.md#initial-owner-and-access-recovery).
 Owners can [manage administrator accounts](docs/ADMIN_ACCOUNTS.md) with
-one-time personal keys, role changes and access disabling. Save a new key
-privately before clearing its tab-scoped recovery record.
+one-time personal keys, role changes, disabling and fresh-key rotation
+that can safely re-enable a disabled account. Save a new key privately
+before clearing its tab-scoped recovery record; an old key cannot be reused.
 Owners/operators can [create a configured lobby](docs/ADMIN_ROOM_CREATION.md) with
 an explicitly owned new host seat and initial AI players.
 [Configure lobby](docs/ADMIN_LOBBY_CONFIGURATION.md) manages supported rules, AI

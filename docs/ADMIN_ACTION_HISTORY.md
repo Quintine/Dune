@@ -18,12 +18,14 @@ operational reason when permitted, and bounded before/after settings. Expand
 **Recorded settings** for the public configuration, lifecycle flags, revisions,
 AI difficulty or changed player circle. Names come from current administrator
 accounts; deleted accounts retain their recorded identifiers. Web-managed
-provisioning, role changes and disabling identify the acting owner and record
-the supplied reason. External CLI provisioning/revocation may lack human
-actor attribution, and the page says so. A **Recorded** outcome means the
-operation was applied; a
-room-control operation may successfully save identical settings, and later
-operations may supersede it. It does not assert the room's current state.
+provisioning, role changes, disabling and fresh-key rotation/re-enable
+identify the acting owner and record the supplied reason. Rotation shows
+only the before/after enabled state, never the old or new key, hash or
+session. External CLI provisioning/revocation may lack human actor
+attribution, and the page says so. A **Recorded** outcome means the
+operation was applied; a room-control operation may successfully save
+identical settings; later operations may supersede it. It does not assert
+the room's current state.
 
 ## Access and privacy
 
@@ -55,8 +57,10 @@ Implementation: [query/projection](../db/admin-audit.ts),
 [route](../app/api/admin/audit/route.ts), [page](../app/admin/audit/page.tsx).
 The original nine-source read needed no migration. Owner account management
 adds a safe `reason` field and durable retry receipts in additive
-[migration 0019](../drizzle/0019_admin_accounts.sql); it does not add a
-new raw game or message source.
+[migration 0019](../drizzle/0019_admin_accounts.sql). Additive
+[migration 0020](../drizzle/0020_admin_key_rotation.sql) keeps rotation
+receipts and retired key hashes out of the history projection. Neither
+adds a raw game or message source.
 
 ```sh
 npm test -- admin-audit
@@ -76,7 +80,7 @@ sources under its five-term compound-query limit, with live role demotion and
 filtered reads. Materialized groups keep the unified query within that limit.
 
 Existing records cover successful operations only. Failed/rejected attempts,
-key rotation and re-enable, full operational health/diagnostics,
-backup/import/restore and the remaining participant support are still required.
-Local/browser/source-bound evidence is separate from deployed acceptance, which
-must identify the actual running revision and use authorized QA access.
+full operational health/diagnostics, backup/import/restore and the
+remaining participant support are still required. Local/browser/source-bound
+evidence is separate from deployed acceptance, which must identify the
+actual running revision and use authorized QA access.

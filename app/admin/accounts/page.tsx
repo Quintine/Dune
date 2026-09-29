@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ClientRequestError, requestJson, requestMayHaveCompleted } from '@/lib/client-request';
 import type { AdminAccountInput, AdminAccountRow, AdminAccountsDirectory, AdminAccountResult } from '@/lib/admin-accounts';
-import { clearAdminAccountRecord, completeAdminAccountRequest, newAdminAccountRequest, readAdminAccountRecord, saveAdminAccountRequest, validAdminAccountResult, type AdminAccountRecord } from '@/lib/admin-accounts-client';
+import { adminAccountKeyStatus, clearAdminAccountRecord, completeAdminAccountRequest, newAdminAccountRequest, readAdminAccountRecord, saveAdminAccountRequest, validAdminAccountResult, type AdminAccountRecord } from '@/lib/admin-accounts-client';
 import '../admin.css';
 import './accounts.css';
 
 type SessionAccount = { id: string; name: string; role: 'owner' | 'operator' | 'viewer' };
-type Mutation = 'provision' | 'role' | 'disable';
+type Mutation = 'provision' | 'role' | 'disable' | 'rotate';
 const message = (error: unknown) => error instanceof Error ? error.message : 'The account request could not be completed.';
 const denied = (error: unknown) => error instanceof ClientRequestError && [401, 403].includes(error.status ?? 0);
 
@@ -101,12 +101,12 @@ export default function AccountsPage() {
     try {
       const input = action === 'provision'
         ? newAdminAccountRequest({ action, name, role, reason })
-        : target && target.enabled && target.id !== owner.id
+        : selected && selected.id !== owner.id
           ? action === 'role'
-            ? newAdminAccountRequest({ action, target: target.id, expectedUpdatedAt: target.updatedAt, role, reason })
-            : newAdminAccountRequest({ action, target: target.id, expectedUpdatedAt: target.updatedAt, reason })
+            ? newAdminAccountRequest({ action, target: selected.id, expectedUpdatedAt: selected.updatedAt, role, reason })
+            : newAdminAccountRequest({ action, target: selected.id, expectedUpdatedAt: selected.updatedAt, reason })
           : null;
-      if (!input) throw new Error('Choose a current, enabled account other than your own.');
+      if (!input) throw new Error('Choose a current account other than your own; role changes and disabling require an enabled account.');
       saveAdminAccountRequest(window.sessionStorage, owner.id, input);
       setRecord({ kind: 'pending', input }); setConfirmed(false); setStale(false);
       setNotice('Review the exact request below. No account change has been sent yet.');
@@ -115,7 +115,7 @@ export default function AccountsPage() {
 
   async function submit(input: AdminAccountInput) {
     if (!owner || inFlight.current || !confirmed || storageProblem || stale || record?.kind !== 'pending' ||
-      (input.action !== 'provision' && !directory?.accounts.some(row => row.id === input.target))) return;
+      (input.action !== 'provision' && (input.target === owner.id || !directory?.accounts.some(row => row.id === input.target)))) return;
     inFlight.current = true; setBusy(true); setConfirmed(false);
     try {
       // A restored tab must not submit under another or a demoted account.
@@ -128,10 +128,10 @@ export default function AccountsPage() {
       if (!validAdminAccountResult(result, input)) throw new Error('The server did not confirm the exact account request. Keep the saved retry.');
       completeAdminAccountRequest(window.sessionStorage, owner.id, input, result);
       if (!mounted.current) return;
-      setRecord(input.action === 'provision' ? { kind: 'completed', input, account: result.account } : null);
+      setRecord(input.action === 'provision' || input.action === 'rotate' ? { kind: 'completed', input, account: result.account } : null);
       setTarget(null); setReason(''); setName(''); setStale(false);
       setNotice(result.replayed ? 'The original account operation was confirmed; no duplicate change was made.' : 'Account operation confirmed.');
-      try { await loadDirectory(owner, 1); }
+      try { await loadDirectory(owner, input.action === 'rotate' ? directory?.page ?? 1 : 1); }
       catch (error) { if (denied(error)) loseAccess(); else setNotice(`Account operation confirmed, but refresh failed: ${message(error)}`); }
     } catch (error) {
       if (!mounted.current) return;
@@ -156,51 +156,57 @@ export default function AccountsPage() {
   }
 
   function select(row: AdminAccountRow, next: Mutation) {
-    if (!owner || row.id === owner.id || !row.enabled || record || busy) return;
+    if (!owner || row.id === owner.id || (next !== 'rotate' && !row.enabled) || record || busy) return;
     setTarget(row); setAction(next); setRole(row.role); setReason(''); setConfirmed(false); setNotice('');
   }
 
   const pending = record?.kind === 'pending' ? record.input : null;
   const pendingTarget = pending?.action !== 'provision' && pending ? directory?.accounts.find(row => row.id === pending.target) : null;
   const completed = record?.kind === 'completed' ? record : null;
-  const selected = target && directory?.accounts.find(item => item.id === target.id && item.updatedAt === target.updatedAt && item.enabled);
+  const keyStatus = completed ? adminAccountKeyStatus(completed, directory) : null;
+  const selected = target && directory?.accounts.find(item => item.id === target.id && item.updatedAt === target.updatedAt && (action === 'rotate' || item.enabled));
   const totalPages = directory ? Math.max(1, Math.ceil(directory.total / directory.pageSize)) : 1;
 
   return <main className="admin-shell admin-accounts">
     <header className="admin-header"><div><a className="admin-return" href="/admin">Administration</a><h1>Administrator accounts</h1></div>
       {owner && <span>{owner.name} <span className="admin-tag">owner</span></span>}</header>
-    <p>Only an owner can provision accounts, change roles or disable account access. Account changes do not change games or seats.</p>
+    <p>Only an owner can provision accounts, change roles, disable access or rotate another account’s key. Account changes do not change games or seats.</p>
     {notice && <p role="alert" className="admin-notice">{notice}</p>}
     {loading ? <output>Checking owner access and account directory…</output> : !owner ?
       <p><a className="admin-room-link" href="/admin">Return to administrator sign-in</a></p> : <>
       {storageProblem ? <section className="admin-room-control" aria-labelledby="accounts-storage"><h2 id="accounts-storage">Unreadable local request</h2>
-        <p>Account changes are blocked. Inspect the account directory before discarding the unreadable record. A previously submitted operation may have committed, and a provisioned key may be lost if you discard it.</p>
+        <p>Account changes are blocked. Inspect the account directory before discarding the unreadable record. A previously submitted operation may have committed, and a newly issued key may be lost if you discard it.</p>
         <label className="admin-check"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} />I checked the directory and understand this tab’s saved retry or key may be lost.</label>
         <Button disabled={!confirmed || busy || !directory} onClick={discard}>Discard unreadable local record</Button>
       </section> : pending ? <section className="admin-room-control" aria-labelledby="accounts-pending"><h2 id="accounts-pending">Saved account request</h2>
         <p>{stale ? 'This request conflicted. Inspect the refreshed directory and explicitly discard it to prepare another request.' : 'The exact operation is saved in this tab. A previous attempt may have succeeded. Retry only this request to confirm its outcome.'}</p>
         <dl className="accounts-review"><dt>Action</dt><dd>{pending.action}</dd><dt>Account name</dt><dd>{pending.action === 'provision' ? pending.name : pendingTarget?.name ?? 'Find this account in the directory before sending'}</dd>
           <dt>Account ID</dt><dd>{pending.action === 'provision' ? pending.id : pending.target}</dd>
-          {pending.action !== 'provision' && <><dt>Current role</dt><dd>{pendingTarget?.role ?? 'Unavailable'}</dd><dt>Reviewed version</dt><dd>{new Date(pending.expectedUpdatedAt).toLocaleString()}</dd></>}
-          {pending.action !== 'disable' && <><dt>Desired role</dt><dd>{pending.role}</dd></>}
+          {pending.action !== 'provision' && <><dt>Current role</dt><dd>{pendingTarget?.role ?? 'Unavailable'}</dd><dt>Current state</dt><dd>{pendingTarget ? pendingTarget.enabled ? 'Enabled' : 'Disabled' : 'Unavailable'}</dd><dt>Reviewed version</dt><dd>{new Date(pending.expectedUpdatedAt).toLocaleString()}</dd></>}
+          {(pending.action === 'provision' || pending.action === 'role') && <><dt>Desired role</dt><dd>{pending.role}</dd></>}
           <dt>Reason</dt><dd>{pending.reason}</dd><dt>Operation ID</dt><dd>{pending.operationId}</dd></dl>
-        {pending.action === 'disable' && <p role="alert">Disabling {pendingTarget?.name ?? pending.target} blocks the existing access key and permanently revokes every current session. This page cannot re-enable the account. Check its current role and exact ID before proceeding.</p>}
-        <p className="admin-secondary">Provisioning key stays hidden until the exact operation is confirmed. Do not enter credentials in the reason. Discarding an uncertain provision request can permanently lose the only copy of its key.</p>
-        <label className="admin-check"><input type="checkbox" checked={confirmed} disabled={busy} onChange={event => setConfirmed(event.target.checked)} />{pending.action === 'disable' ? `I confirm disabling ${pendingTarget?.name ?? pending.target} (${pending.target}) and revoking its sessions for the recorded reason.` : 'I verified this exact account ID, name, action, desired role and reason before changing administrator access.'}</label>
-        <div className="accounts-actions"><Button disabled={busy || !confirmed || stale || (pending.action !== 'provision' && !pendingTarget)} onClick={() => void submit(pending)}>{busy ? 'Checking request…' : 'Confirm and send exact saved request'}</Button>
+        {pending.action !== 'provision' && pendingTarget?.updatedAt !== pending.expectedUpdatedAt && <p role="alert">This account’s current version differs from the reviewed version. Only the exact saved operation can be retried; a new request requires discarding it after checking the directory.</p>}
+        {pending.action === 'disable' && <p role="alert">Disabling {pendingTarget?.name ?? pending.target} blocks the existing access key and permanently revokes every current session. Re-enabling requires a new key rotation; its old key will never work again. Check its current role and exact ID before proceeding.</p>}
+        {pending.action === 'rotate' && <p role="alert">Rotating {pendingTarget?.name ?? pending.target} ({pending.target}) replaces its key with a fresh one and revokes every existing session. Its role and name stay unchanged. A disabled account is re-enabled with the new key; its old key remains invalid. Save the new key securely after confirmation. Do not rotate your own account.</p>}
+        <p className="admin-secondary">A new key stays hidden until the exact operation is confirmed. Do not enter credentials in the reason. Discarding an uncertain provision or rotation request can permanently lose the only copy of its key.</p>
+        <label className="admin-check"><input type="checkbox" checked={confirmed} disabled={busy} onChange={event => setConfirmed(event.target.checked)} />{pending.action === 'disable' ? `I confirm disabling ${pendingTarget?.name ?? pending.target} (${pending.target}) and revoking its sessions for the recorded reason.` : pending.action === 'rotate' ? `I confirm rotating the key for ${pendingTarget?.name ?? pending.target} (${pending.target}), revoking all its sessions${pendingTarget?.enabled === false ? ', and re-enabling access with only the new key' : ''} for the recorded reason.` : 'I verified this exact account ID, name, action, desired role and reason before changing administrator access.'}</label>
+        <div className="accounts-actions"><Button disabled={busy || !confirmed || stale || (pending.action !== 'provision' && (!pendingTarget || pending.target === owner.id))} onClick={() => void submit(pending)}>{busy ? 'Checking request…' : 'Confirm and send exact saved request'}</Button>
           <Button variant="outline" disabled={busy || !confirmed || !directory} onClick={discard}>Discard saved request after checking directory</Button></div>
-      </section> : completed ? <section className="admin-room-control" aria-labelledby="accounts-key"><h2 id="accounts-key">Save this account key now</h2>
-        <p>Account <strong>{completed.account.name}</strong> ({completed.account.id}) is provisioned. This key is available only in this tab until you explicitly clear its local record. It is not returned by the server. Give it privately to its owner; it cannot be recovered after clearing.</p>
+      </section> : completed ? <section className="admin-room-control" aria-labelledby="accounts-key"><h2 id="accounts-key">Save or verify this account key</h2>
+        <p>Account <strong>{completed.account.name}</strong> ({completed.account.id}) {completed.input.action === 'rotate' ? 'was rotated and enabled by this operation; its previous key and sessions were revoked at that time.' : 'was provisioned by this operation.'} This key is available only in this tab until you explicitly clear its local record. It is not returned by the server. Do not distribute it without checking its current access; it cannot be recovered after clearing.</p>
+        {keyStatus === 'matching' ? <p>The directory matched this operation at the last read. A later change can still invalidate the key; verify sign-in before distributing it.</p> :
+          <p role="alert">{keyStatus === 'changed' ? 'The account changed or was disabled after this operation.' : 'The account is not shown on the current directory page, so its current access cannot be confirmed.'} This saved key may no longer work. Do not distribute it; check the account and rotate a fresh key if needed.</p>}
         <label htmlFor="accounts-private-key">One-time account access key</label>
         <Input id="accounts-private-key" readOnly value={completed.input.key} autoComplete="off" spellCheck={false} onFocus={event => event.currentTarget.select()} />
         <label className="admin-check"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} />I saved this key securely and understand clearing this record cannot recover it.</label>
         <Button disabled={!confirmed || busy} onClick={discard}>Clear saved key and start another request</Button>
-      </section> : <section className="admin-room-control" aria-labelledby="accounts-new"><h2 id="accounts-new">{action === 'provision' ? 'Provision an account' : action === 'role' ? 'Change account role' : 'Disable an account'}</h2>
+      </section> : <section className="admin-room-control" aria-labelledby="accounts-new"><h2 id="accounts-new">{action === 'provision' ? 'Provision an account' : action === 'role' ? 'Change account role' : action === 'rotate' ? 'Rotate account key' : 'Disable an account'}</h2>
         <form onSubmit={startReview}>
           {action === 'provision' ? <><label htmlFor="accounts-name">Account name<Input id="accounts-name" required maxLength={80} value={name} disabled={busy} onChange={event => setName(event.target.value)} /></label>
             <label htmlFor="accounts-role">Initial role<select id="accounts-role" value={role} disabled={busy} onChange={event => setRole(event.target.value as AdminAccountRow['role'])}><option value="viewer">Viewer</option><option value="operator">Operator</option><option value="owner">Owner</option></select></label></> : selected ? <><p>Target: <strong>{selected.name}</strong> ({selected.id}) · current role {selected.role}</p>
             {action === 'role' && <label htmlFor="accounts-role">Desired role<select id="accounts-role" value={role} disabled={busy} onChange={event => setRole(event.target.value as AdminAccountRow['role'])}><option value="viewer">Viewer</option><option value="operator">Operator</option><option value="owner">Owner</option></select></label>}
-            {action === 'disable' && <p>Disabling blocks this account’s existing key and permanently revokes its current sessions. It cannot be re-enabled here.</p>}</> : <p>The selected account changed. Refresh and choose it again.</p>}
+            {action === 'disable' && <p>Disabling blocks this account’s existing key and permanently revokes its current sessions. Re-enabling requires a fresh key rotation; its old key cannot be used again.</p>}
+            {action === 'rotate' && <p>Current state: {selected.enabled ? 'enabled' : 'disabled'}. Rotation revokes all existing sessions, replaces the old key, preserves the current role and name, and enables this account with only the newly generated key. Your own key cannot be rotated here.</p>}</> : <p>The selected account changed. Refresh and choose it again.</p>}
           <label htmlFor="accounts-reason">Reason for action history<Input id="accounts-reason" required maxLength={300} value={reason} disabled={busy} onChange={event => setReason(event.target.value)} /></label>
           <p className="admin-secondary">Use an operational reason without access keys, credentials or private game information. The next screen shows the exact request for confirmation before anything is sent.</p>
           <Button type="submit" disabled={busy || !directory || !reason.trim() || (action === 'provision' ? !name.trim() : !selected || action === 'role' && role === selected.role)}>Review exact account request</Button>
@@ -210,8 +216,9 @@ export default function AccountsPage() {
         {directory ? <><p>{directory.total.toLocaleString()} accounts · page {directory.page} of {totalPages}</p>
           <ul className="accounts-list">{directory.accounts.map(row => <li key={row.id}><div><strong>{row.name}</strong> <span className="admin-tag">{row.role}</span> <span className="admin-tag">{row.enabled ? 'Enabled' : 'Disabled'}</span>
             <p className="accounts-id">{row.id}</p><p>Updated {new Date(row.updatedAt).toLocaleString()}</p></div>
-            {row.enabled && row.id !== owner.id && !record && !storageProblem && <div className="accounts-actions"><Button variant="outline" disabled={busy} onClick={() => select(row, 'role')}>Change role · {row.name}</Button>
-              <Button variant="outline" disabled={busy} onClick={() => select(row, 'disable')}>Disable · {row.name}</Button></div>}</li>)}</ul>
+            {row.id !== owner.id && !record && !storageProblem && <div className="accounts-actions">{row.enabled && <><Button variant="outline" disabled={busy} onClick={() => select(row, 'role')}>Change role · {row.name}</Button>
+              <Button variant="outline" disabled={busy} onClick={() => select(row, 'disable')}>Disable · {row.name}</Button></>}
+              <Button variant="outline" disabled={busy} onClick={() => select(row, 'rotate')}>Rotate key · {row.name}</Button></div>}</li>)}</ul>
           {directory.accounts.length === 0 && <p>No accounts on this page.</p>}
           <nav className="admin-pagination" aria-label="Account pages"><Button variant="outline" disabled={busy || directory.page <= 1} onClick={() => void refreshAccounts(directory.page - 1)}>Previous</Button>
             <span>Page {directory.page} of {totalPages}</span><Button variant="outline" disabled={busy || directory.page >= totalPages} onClick={() => void refreshAccounts(directory.page + 1)}>Next</Button></nav></> : <p>Account directory unavailable. Changes are blocked until it loads.</p>}

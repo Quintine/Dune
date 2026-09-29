@@ -27,6 +27,16 @@ void test('admin HTTP denies anonymous, forged admin, room-host and spoofed iden
     assert.equal(account.status, 401);
     assert.equal(account.headers.get('set-cookie'), null);
     assert.deepEqual(Object.keys(await account.json()), ['error']);
+    const target=crypto.randomUUID();
+    const rotate=await fetch(base + '/api/admin/accounts', {
+      method: 'POST',headers:{ ...headers,origin:base,'Content-Type':'application/json' },
+      body:JSON.stringify({ action:'rotate',operationId:crypto.randomUUID(),target,expectedUpdatedAt:1000,
+        key:`dune-admin.${target}.${'a'.repeat(64)}`,reason:'Denied rotation request' }),
+      signal:AbortSignal.timeout(15000),
+    });
+    assert.equal(rotate.status,401);
+    assert.equal(rotate.headers.get('set-cookie'),null);
+    assert.deepEqual(Object.keys(await rotate.json()),['error']);
     const write = await fetch(`${base}/api/admin/rooms/${room}/control`, {
       method: 'POST', headers: { ...headers, origin: base, 'Content-Type': 'application/json' },
       body: JSON.stringify({ operationId: crypto.randomUUID(), expectedRevision: 0, paused: true, joinLocked: true, reason: 'Denied QA request' }),

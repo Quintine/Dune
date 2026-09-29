@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 29 September 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 30 September 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -34,14 +34,19 @@ arrival composition, natural assassination reveal coverage, normal
 expansion starts or deployed acceptance.
 
 The owner-only [administrator accounts](ADMIN_ACCOUNTS.md) prototype now
-lists accounts, provisions a browser-generated one-time personal key, changes
-another account’s role and disables access. Server actions repeat live owner
-authority and target-version checks at commit, preserve exact tab-scoped
-retries and attribute successful changes in action history without exposing
-keys or saved games. Key rotation/re-enable, rejected-attempt history,
-authenticated positive **network** HTTP on a dedicated isolated QA account, deployed
-acceptance and the rest of full administration remain unfinished. This code
-is not in the last verified live image.
+lists, provisions, changes roles, disables and rotates another account’s
+personal key. Rotation can re-enable a disabled target only with a fresh
+key; old credentials and sessions remain revoked, including attempted
+A→B→A reuse. Live owner/target fences, durable exact retries and safe
+actor-attributed history preserve rooms and seats. A disposable owner
+and target completed authenticated local **network** rotation and
+re-enable on an isolated built-worker D1 store, and mobile browser review
+showed exact impact and a superseded-replay warning. The supported dev
+HTTP suite passes 55/55; the built-worker full suite hit intermittent
+local workerd 503 restarts and is not a green production-bundle suite.
+Failed-attempt history, the rest of administration, deployment and
+production acceptance remain unfinished. This code is not in the last
+verified live image.
 
 The bounded [Advanced Moritani Assassinate Leaders preview](MORITANI_ASSASSINATE_LEADERS.md)
 now has repeatable genuine games across two through six supported seats.

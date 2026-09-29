@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { register } from 'node:module';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { clearAdminAccountRecord, completeAdminAccountRequest, newAdminAccountRequest, readAdminAccountRecord, saveAdminAccountRequest, validAdminAccountResult } from '../lib/admin-accounts-client';
+import { adminAccountKeyStatus, clearAdminAccountRecord, completeAdminAccountRequest, newAdminAccountRequest, readAdminAccountRecord, saveAdminAccountRequest, validAdminAccountResult } from '../lib/admin-accounts-client';
 import type { AdminAccountRow } from '../lib/admin-accounts';
 
 function storage() {
@@ -20,7 +20,7 @@ void test('SSR exposes no account directory or private key before owner session 
   const { default: AccountsPage } = await import('../app/admin/accounts/page');
   const html = renderToStaticMarkup(createElement(AccountsPage));
   assert.match(html, /Checking owner access and account directory/);
-  assert.doesNotMatch(html, /One-time account access key|Change role ·|Disable ·|dune-admin\./);
+  assert.doesNotMatch(html, /One-time account access key|Change role ·|Disable ·|Rotate key ·|accounts-private-key|dune-admin\./);
 });
 
 void test('provisioned key is generated only in the browser, saved exactly before sending, and recoverable from its original tab', () => {
@@ -77,6 +77,68 @@ void test('role and disable requests retain exact target version and reason unti
     assert.equal(readAdminAccountRecord(tab, owner), null);
     assert.equal([...tab.values.values()].join('').includes(input.reason), false);
   }
+});
+
+void test('disabled-account rotation keeps one fresh target-bound key through exact replay and local recovery', () => {
+  const owner = crypto.randomUUID(), target = crypto.randomUUID(), tab = storage();
+  const disabled = { ...account(target, 'owner'), enabled: false };
+  const input = newAdminAccountRequest({ action: 'rotate', target, expectedUpdatedAt: disabled.updatedAt, reason: '  Replace compromised key  ' });
+  const next = newAdminAccountRequest({ action: 'rotate', target, expectedUpdatedAt: disabled.updatedAt, reason: 'Replace compromised key' });
+  assert.equal(input.action, 'rotate');
+  assert.equal(next.action, 'rotate');
+  if (input.action !== 'rotate' || next.action !== 'rotate') return;
+  assert.equal(input.reason, 'Replace compromised key');
+  assert.equal(new RegExp(`^dune-admin\\.${target}\\.[0-9a-f]{64}$`).test(input.key), true);
+  assert.equal(input.key === next.key, false);
+  assert.notEqual(input.operationId, next.operationId);
+  saveAdminAccountRequest(tab, owner, input);
+  const pending = readAdminAccountRecord(tab, owner);
+  assert.equal(pending?.kind, 'pending');
+  assert.equal(pending?.input.operationId, input.operationId);
+  assert.equal(pending?.input.action === 'rotate' && pending.input.key === input.key, true);
+  assert.throws(() => saveAdminAccountRequest(tab, owner, next));
+  const original = { ...disabled, enabled: true, updatedAt: disabled.updatedAt + 1 };
+  const receipt = { operationId: input.operationId, replayed: true, account: original };
+  for (const badAccount of [
+    { ...original, id: crypto.randomUUID() },
+    { ...original, enabled: false },
+    { ...original, updatedAt: input.expectedUpdatedAt },
+  ]) {
+    assert.equal(validAdminAccountResult({ ...receipt, account: badAccount }, input), false);
+    assert.throws(() => completeAdminAccountRequest(tab, owner, input, { ...receipt, account: badAccount }));
+    assert.equal(readAdminAccountRecord(tab, owner)?.kind, 'pending');
+  }
+  assert.equal(validAdminAccountResult({ ...receipt, account: { ...original, key: 'returned-secret' } }, input), false);
+  completeAdminAccountRequest(tab, owner, input, receipt);
+  const completed = readAdminAccountRecord(tab, owner);
+  assert.equal(completed?.kind === 'completed' && completed.input.action === 'rotate' &&
+    completed.input.key === input.key && completed.account.updatedAt === original.updatedAt, true);
+  assert.throws(() => saveAdminAccountRequest(tab, owner, next));
+  const storageKey = [...tab.values.keys()][0], savedRecord = tab.values.get(storageKey)!;
+  tab.values.set(storageKey, JSON.stringify({ kind: 'completed', input: { ...input, target: crypto.randomUUID() }, account: original }));
+  assert.throws(() => readAdminAccountRecord(tab, owner));
+  tab.values.set(storageKey, JSON.stringify({ kind: 'completed', input, account: { ...original, enabled: false } }));
+  assert.throws(() => readAdminAccountRecord(tab, owner));
+  tab.values.set(storageKey, savedRecord);
+  clearAdminAccountRecord(tab, owner);
+  assert.equal(readAdminAccountRecord(tab, owner), null);
+});
+
+void test('a historic exact replay never presents its superseded key as current access', () => {
+  const owner = crypto.randomUUID(), target = crypto.randomUUID(), tab = storage();
+  const input = newAdminAccountRequest({ action: 'rotate', target, expectedUpdatedAt: 1700000000000, reason: 'Staff handover' });
+  if (input.action !== 'rotate') throw new Error('Expected a rotation request.');
+  const receipt = { operationId: input.operationId, replayed: true,
+    account: { ...account(target), updatedAt: input.expectedUpdatedAt + 1 } };
+  saveAdminAccountRequest(tab, owner, input);
+  completeAdminAccountRequest(tab, owner, input, receipt);
+  const completed = readAdminAccountRecord(tab, owner);
+  if (completed?.kind !== 'completed') throw new Error('Expected a retained one-time key.');
+  const directory = { accounts: [receipt.account], total: 1, page: 1, pageSize: 25 as const };
+  assert.equal(adminAccountKeyStatus(completed, directory), 'matching');
+  assert.equal(adminAccountKeyStatus(completed, { ...directory, accounts: [{ ...receipt.account, updatedAt: receipt.account.updatedAt + 1 }] }), 'changed');
+  assert.equal(adminAccountKeyStatus(completed, { ...directory, accounts: [{ ...receipt.account, enabled: false }] }), 'changed');
+  assert.equal(adminAccountKeyStatus(completed, { ...directory, accounts: [] }), 'unverified');
 });
 
 void test('unavailable, corrupt or changed storage fails closed and never replaces an uncertain credential', () => {

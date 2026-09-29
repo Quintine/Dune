@@ -21,6 +21,11 @@ function newProvision(role: 'owner'|'operator'|'viewer' = 'viewer'): Extract<Adm
   const id = randomUUID();
   return { action:'provision',operationId:randomUUID(),id,key:`dune-admin.${id}.${randomBytes(32).toString('hex')}`,name:'New administrator',role,reason:'Staff rotation' };
 }
+function newRotation(target: string, expectedUpdatedAt = 1000): Extract<AdminAccountInput,{action:'rotate'}> {
+  return { action:'rotate',operationId:randomUUID(),target,expectedUpdatedAt,
+    key:`dune-admin.${target}.${randomBytes(32).toString('hex')}`,reason:'Replace compromised credential' };
+}
+
 
 void test('account receipt migration adds metadata without changing existing games or credentials',() => {
   const sqlite=new DatabaseSync(':memory:');
@@ -45,9 +50,18 @@ void test('account receipt migration adds metadata without changing existing gam
     ]);
     const before=saved();
     sqlite.exec(readFileSync(new URL('../drizzle/0019_admin_accounts.sql',import.meta.url),'utf8'));
+    const operation=randomUUID();
+    sqlite.prepare(`INSERT INTO admin_account_operations
+      (operation_id,actor_admin_id,request_hash,target_admin_id,action,name,role,enabled,created_at,updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?)`).run(operation,id,'a'.repeat(64),id,'role','Original owner','owner',1,1000,1000);
+    const previousReceipt=sqlite.prepare('SELECT * FROM admin_account_operations WHERE operation_id=?').get(operation);
+    sqlite.exec(readFileSync(new URL('../drizzle/0020_admin_key_rotation.sql',import.meta.url),'utf8'));
+    assert.deepEqual(sqlite.prepare('SELECT * FROM admin_account_operations WHERE operation_id=?').get(operation),previousReceipt);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM admin_account_rotations').get()!.n,0);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM admin_account_retired_keys').get()!.n,0);
     assert.equal(saved(),before);
     assert.equal(sqlite.prepare('SELECT reason FROM admin_audit WHERE target_admin_id=?').get(id)!.reason,null);
-    assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM admin_account_operations').get()!.n,0);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM admin_account_operations').get()!.n,1);
     assert.throws(()=>sqlite.prepare('UPDATE admin_accounts SET enabled=0 WHERE id=?').run(id));
     assert.equal(saved(),before);
   } finally {sqlite.close();}
@@ -194,6 +208,113 @@ void test('logout-all cannot roll back an account version and admit a stale disa
     assert.equal(f.sqlite.prepare('SELECT enabled FROM admin_accounts WHERE id=?').get(f.target.id)!.enabled,1);
   } finally {f.sqlite.close();}
 });
+void test('rotating an enabled administrator invalidates old keys and sessions while preserving account and game state',async () => {
+  const f=await fixture();
+  try {
+    f.sqlite.prepare('INSERT INTO rooms(code,state,version,updated_at) VALUES(?,?,?,?)').run('ROTATE01','{"private":"saved"}',3,1000);
+    f.sqlite.prepare('INSERT INTO seats(token_hash,revoked,room_code,player_id) VALUES(?,?,?,?)').run('e'.repeat(64),0,'ROTATE01','player');
+    const saved=JSON.stringify([f.sqlite.prepare('SELECT * FROM rooms').all(),f.sqlite.prepare('SELECT * FROM seats').all()]);
+    const oldSession=await adminLogin(f.database,f.target.key,now);
+    const input=newRotation(f.target.id), result=await applyAdminAccount(f.database,f.identity,input,now);
+    assert.equal(result.replayed,false);
+    assert.deepEqual({id:result.account.id,name:result.account.name,role:result.account.role,enabled:result.account.enabled},
+      {id:f.target.id,name:f.target.name,role:f.target.role,enabled:true});
+    assert.ok(result.account.updatedAt>1000);
+    const row=f.sqlite.prepare('SELECT key_hash,session_generation,updated_at FROM admin_accounts WHERE id=?').get(f.target.id)!;
+    assert.equal(row.key_hash,sha256(input.key));assert.equal(row.session_generation,1);
+    assert.equal(row.updated_at,result.account.updatedAt);
+    assert.ok(f.sqlite.prepare('SELECT revoked_at FROM admin_sessions WHERE token_hash=?').get(sha256(oldSession.token))!.revoked_at);
+    await assert.rejects(adminLogin(f.database,f.target.key,now),denied(401));
+    await assert.rejects(requireAdmin(f.database,oldSession.token,undefined,now),denied(401));
+    const fresh=await adminLogin(f.database,input.key,now);
+    assert.equal((await requireAdmin(f.database,fresh.token,undefined,now)).id,f.target.id);
+    const audit=f.sqlite.prepare("SELECT action,actor_admin_id,detail,reason FROM admin_audit WHERE target_admin_id=? AND action='rotate'").all(f.target.id);
+    assert.equal(audit.length,1);
+    assert.equal(audit[0].action,'rotate');
+    assert.equal(audit[0].actor_admin_id,f.owner.id);
+    assert.equal(audit[0].reason,input.reason);
+    assert.deepEqual(JSON.parse(String(audit[0].detail)),{previousEnabled:1,enabled:1});
+    assert.deepEqual((await readAdminAudit(f.database,f.identity,new URLSearchParams('category=account'),now))
+      .events.find(event=>event.action==='rotate' && event.targetAdminId===f.target.id)?.changes,[{field:'Enabled',before:'Yes',after:'Yes'}]);
+    assert.equal(f.sqlite.prepare('SELECT admin_id FROM admin_account_retired_keys WHERE key_hash=?').get(sha256(f.target.key))!.admin_id,f.target.id);
+    assert.deepEqual(await applyAdminAccount(f.database,f.identity,input,now),{...result,replayed:true});
+    const second=newRotation(f.target.id,result.account.updatedAt);
+    const rotatedAgain=await applyAdminAccount(f.database,f.identity,second,now);
+    const revive={...newRotation(f.target.id,rotatedAgain.account.updatedAt),key:f.target.key};
+    await assert.rejects(applyAdminAccount(f.database,f.identity,revive,now),denied(409));
+    assert.equal(f.sqlite.prepare('SELECT key_hash FROM admin_accounts WHERE id=?').get(f.target.id)!.key_hash,sha256(second.key));
+    await assert.rejects(adminLogin(f.database,f.target.key,now),denied(401));
+    await assert.rejects(requireAdmin(f.database,fresh.token,undefined,now),denied(401));
+    assert.deepEqual(await applyAdminAccount(f.database,f.identity,input,now),{...result,replayed:true});
+    assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM admin_account_retired_keys WHERE admin_id=?').get(f.target.id)!.n,2);
+    assert.equal(JSON.stringify([f.sqlite.prepare('SELECT * FROM rooms').all(),f.sqlite.prepare('SELECT * FROM seats').all()]),saved);
+    const persisted=JSON.stringify([f.sqlite.prepare('SELECT * FROM admin_account_rotations').all(),audit,result]);
+    assert.equal(persisted.includes(input.key),false);assert.equal(persisted.includes(sha256(input.key)),false);
+  } finally {f.sqlite.close();}
+});
+
+void test('disabled administrators return only with a fresh key, and replay retains original metadata after later changes',async () => {
+  const f=await fixture();
+  try {
+    const disable:AdminAccountInput={action:'disable',operationId:randomUUID(),target:f.target.id,expectedUpdatedAt:1000,reason:'Disable access'};
+    const stopped=await applyAdminAccount(f.database,f.identity,disable,now);
+    await assert.rejects(adminLogin(f.database,f.target.key,now),denied(401));
+    const reuse={...newRotation(f.target.id,stopped.account.updatedAt),key:f.target.key};
+    await assert.rejects(applyAdminAccount(f.database,f.identity,reuse,now),denied(409));
+    assert.equal(f.sqlite.prepare('SELECT enabled FROM admin_accounts WHERE id=?').get(f.target.id)!.enabled,0);
+    const rotate=newRotation(f.target.id,stopped.account.updatedAt);
+    const restored=await applyAdminAccount(f.database,f.identity,rotate,now);
+    assert.equal(restored.account.enabled,true);assert.ok(restored.account.updatedAt>stopped.account.updatedAt);
+    await assert.rejects(adminLogin(f.database,f.target.key,now),denied(401));
+    assert.equal((await adminLogin(f.database,rotate.key,now)).admin.id,f.target.id);
+    const audit=(await readAdminAudit(f.database,f.identity,new URLSearchParams('category=account'),now)).events.find(event=>event.action==='rotate' && event.targetAdminId===f.target.id);
+    assert.deepEqual(audit?.changes,[{field:'Enabled',before:'No',after:'Yes'}]);assert.equal(audit?.reason,rotate.reason);
+    const role:AdminAccountInput={action:'role',operationId:randomUUID(),target:f.target.id,expectedUpdatedAt:restored.account.updatedAt,role:'operator',reason:'New duty'};
+    await applyAdminAccount(f.database,f.identity,role,now);
+    assert.deepEqual(await applyAdminAccount(f.database,f.identity,rotate,now),{...restored,replayed:true});
+    assert.equal(f.sqlite.prepare('SELECT role FROM admin_accounts WHERE id=?').get(f.target.id)!.role,'operator');
+    assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM admin_audit WHERE target_admin_id=? AND action=?').get(f.target.id,'rotate')!.n,1);
+  } finally {f.sqlite.close();}
+});
+
+void test('rotation rejects stale versions, simultaneous target changes, other owners and reused operation IDs',async () => {
+  const f=await fixture();
+  try {
+    const original=newRotation(f.target.id);
+    for(const bad of [{...original,key:f.owner.key},{...original,key:original.key.toUpperCase()},
+      {...original,key:original.key+'\\n'},{...original,reason:original.key},{...original,unknown:true}])
+      assert.equal(validAdminAccountInput(bad),false);
+    assert.equal(validAdminAccountInput(original),true);
+    const self=newRotation(f.owner.id);
+    await assert.rejects(applyAdminAccount(f.database,f.identity,self,now),denied(409));
+    const winner=await applyAdminAccount(f.database,f.identity,original,now);
+    const stale=newRotation(f.target.id);
+    await assert.rejects(applyAdminAccount(f.database,f.identity,stale,now),denied(409));
+    await assert.rejects(applyAdminAccount(f.database,f.identity,{...original,key:stale.key},now),denied(409));
+    await assert.rejects(applyAdminAccount(f.database,f.identity,{...original,reason:'Changed reason'},now),denied(409));
+    const another=f.provision('owner'), login=await adminLogin(f.database,another.key,now);
+    const other=await requireAdmin(f.database,login.token,['owner'],now);
+    await assert.rejects(applyAdminAccount(f.database,other,original,now),denied(409));
+    const cross:AdminAccountInput={action:'role',operationId:original.operationId,target:f.target.id,
+      expectedUpdatedAt:winner.account.updatedAt,role:'operator',reason:'Cross-table operation ID'};
+    await assert.rejects(applyAdminAccount(f.database,f.identity,cross,now),denied(409));
+    const before=Number(f.sqlite.prepare('SELECT COUNT(*) n FROM admin_account_rotations').get()!.n);
+    const race=newRotation(f.target.id,winner.account.updatedAt);
+    f.hooks.beforeBatch=async()=>{f.hooks.beforeBatch=async()=>{
+      delete f.hooks.beforeBatch;f.sqlite.prepare('UPDATE admin_accounts SET updated_at=updated_at+1 WHERE id=?').run(f.target.id);
+    };};
+    await assert.rejects(applyAdminAccount(f.database,f.identity,race,now),denied(409));
+    assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM admin_account_rotations').get()!.n,before);
+    const expired=newRotation(f.target.id,Number(f.sqlite.prepare('SELECT updated_at FROM admin_accounts WHERE id=?').get(f.target.id)!.updated_at));
+    f.hooks.beforeBatch=async()=>{f.hooks.beforeBatch=async()=>{
+      delete f.hooks.beforeBatch;f.sqlite.prepare('UPDATE admin_sessions SET revoked_at=1 WHERE admin_id=?').run(f.owner.id);
+    };};
+    await assert.rejects(applyAdminAccount(f.database,f.identity,expired,now),denied(401));
+    assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM admin_account_rotations').get()!.n,before);
+    await assert.rejects(applyAdminAccount(f.database,f.identity,original,now),denied(401));
+  } finally {f.sqlite.close();}
+});
+
 
 void test('workerd D1 applies provision, exact retry and revocation in transactional batches',async () => {
   const { Miniflare }=await import('miniflare');
@@ -226,6 +347,20 @@ void test('workerd D1 applies provision, exact retry and revocation in transacti
     const result=await applyAdminAccount(database,f.identity,disable,now);
     assert.equal(result.account.enabled,false);
     assert.equal((await db.prepare('SELECT COUNT(*) n FROM admin_audit WHERE target_admin_id=?').bind(input.id).first<{n:number}>())?.n,2);
+    const rotation=newRotation(input.id,result.account.updatedAt);
+    const restored=await applyAdminAccount(database,f.identity,rotation,now);
+    assert.equal(restored.account.enabled,true);
+    assert.equal((await adminLogin(database,rotation.key,now)).admin.id,input.id);
+    await assert.rejects(adminLogin(database,input.key,now),denied(401));
+    const competingA=newRotation(input.id,restored.account.updatedAt),competingB=newRotation(input.id,restored.account.updatedAt);
+    const outcomes=await Promise.allSettled([
+      applyAdminAccount(database,f.identity,competingA,now),
+      applyAdminAccount(database,f.identity,competingB,now),
+    ]);
+    assert.equal(outcomes.filter(outcome=>outcome.status==='fulfilled').length,1);
+    assert.equal(outcomes.filter(outcome=>outcome.status==='rejected' && denied(409)(outcome.reason)).length,1);
+    assert.deepEqual(await applyAdminAccount(database,f.identity,rotation,now),{...restored,replayed:true});
+    assert.equal((await db.prepare("SELECT COUNT(*) n FROM admin_audit WHERE target_admin_id=? AND action='rotate'").bind(input.id).first<{n:number}>())?.n,2);
     await assert.rejects(adminLogin(database,input.key,now),denied(401));
   } finally {await worker.dispose();f.sqlite.close();}
 });

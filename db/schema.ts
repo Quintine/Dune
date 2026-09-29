@@ -495,6 +495,35 @@ export const adminAccountOperations = sqliteTable(
   ],
 );
 
+// Rotation receipts use a separate table: the original operation CHECK remains intact.
+// Only the request fingerprint and safe account metadata persist, never either key.
+export const adminAccountRotations = sqliteTable(
+  'admin_account_rotations',
+  {
+    operationId: text('operation_id').primaryKey(),
+    actorAdminId: text('actor_admin_id').notNull(),
+    requestHash: text('request_hash').notNull(),
+    targetAdminId: text('target_admin_id').notNull(),
+    name: text('name').notNull(),
+    role: text('role', { enum: ['owner', 'operator', 'viewer'] }).notNull(),
+    previousEnabled: integer('previous_enabled').notNull(),
+    enabled: integer('enabled').notNull(),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+    expectedUpdatedAt: integer('expected_updated_at').notNull(),
+    reason: text('reason').notNull(),
+    rotatedAt: integer('rotated_at').notNull(),
+  },
+  table => [index('admin_account_rotations_target').on(table.targetAdminId, table.rotatedAt)],
+);
+
+// Credential history is deliberately separate from public receipts and audit.
+// Retained hashes prevent a later A -> B -> A rotation from reactivating A.
+export const adminAccountRetiredKeys = sqliteTable('admin_account_retired_keys', {
+  keyHash: text('key_hash').primaryKey(),
+  adminId: text('admin_id').notNull(),
+});
+
 // Immutable private room snapshots survive room/account deletion; only owner APIs expose them.
 export const adminRoomBackups = sqliteTable(
   'admin_room_backups',

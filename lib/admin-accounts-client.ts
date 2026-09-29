@@ -1,9 +1,22 @@
-import { validAdminAccountInput, type AdminAccountInput, type AdminAccountResult, type AdminAccountRow } from './admin-accounts';
+import { validAdminAccountInput, type AdminAccountInput, type AdminAccountResult, type AdminAccountRow, type AdminAccountsDirectory } from './admin-accounts';
 
 type Storage = Pick<globalThis.Storage, 'getItem' | 'setItem' | 'removeItem'>;
 export type AdminAccountRecord =
   | { kind: 'pending'; input: AdminAccountInput }
-  | { kind: 'completed'; input: Extract<AdminAccountInput, { action: 'provision' }>; account: AdminAccountRow };
+  | { kind: 'completed'; input: Extract<AdminAccountInput, { action: 'provision' | 'rotate' }>; account: AdminAccountRow };
+
+/** A receipt describes a past write. The directory can only confirm whether
+ * its account metadata still matched at the most recent read, not future key validity. */
+export function adminAccountKeyStatus(
+  record: Extract<AdminAccountRecord, { kind: 'completed' }>,
+  directory: AdminAccountsDirectory | null,
+): 'matching' | 'changed' | 'unverified' {
+  const live = directory?.accounts.find(row => row.id === record.account.id);
+  if (!live) return 'unverified';
+  return live.enabled && live.updatedAt === record.account.updatedAt &&
+    live.createdAt === record.account.createdAt && live.name === record.account.name &&
+    live.role === record.account.role ? 'matching' : 'changed';
+}
 
 const storageKey = (owner: string) => `dune.admin-accounts.v1:${owner}`;
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -36,20 +49,24 @@ export function validAdminAccountResult(value: unknown, input: AdminAccountInput
   if (input.action === 'provision')
     return account.enabled && account.name === input.name && account.role === input.role;
   return account.updatedAt > input.expectedUpdatedAt &&
-    (input.action === 'role' ? account.enabled && account.role === input.role : !account.enabled);
+    (input.action === 'role' ? account.enabled && account.role === input.role :
+      input.action === 'rotate' ? account.enabled : !account.enabled);
 }
+
+const newSecret = () => Array.from(crypto.getRandomValues(new Uint8Array(32)), byte => byte.toString(16).padStart(2, '0')).join('');
 
 export function newAdminAccountRequest(fields:
   | { action: 'provision'; name: string; role: AdminAccountRow['role']; reason: string }
   | { action: 'role'; target: string; expectedUpdatedAt: number; role: AdminAccountRow['role']; reason: string }
-  | { action: 'disable'; target: string; expectedUpdatedAt: number; reason: string },
+  | { action: 'disable' | 'rotate'; target: string; expectedUpdatedAt: number; reason: string },
 ): AdminAccountInput {
   const operationId = crypto.randomUUID();
   const input = fields.action === 'provision' ? (() => {
     const id = crypto.randomUUID();
-    const secret = Array.from(crypto.getRandomValues(new Uint8Array(32)), byte => byte.toString(16).padStart(2, '0')).join('');
-    return { action: 'provision' as const, operationId, id, key: `dune-admin.${id}.${secret}`, name: fields.name.trim(), role: fields.role, reason: fields.reason.trim() };
-  })() : { ...fields, operationId, reason: fields.reason.trim() };
+    return { action: 'provision' as const, operationId, id, key: `dune-admin.${id}.${newSecret()}`, name: fields.name.trim(), role: fields.role, reason: fields.reason.trim() };
+  })() : fields.action === 'rotate'
+    ? { ...fields, operationId, key: `dune-admin.${fields.target}.${newSecret()}`, reason: fields.reason.trim() }
+    : { ...fields, operationId, reason: fields.reason.trim() };
   if (!validAdminAccountInput(input)) throw new Error('Check the account, role and operational reason. Do not include credentials in the reason.');
   return input;
 }
@@ -63,10 +80,10 @@ export function readAdminAccountRecord(storage: Storage, owner: string): AdminAc
     const record = value as Record<string, unknown>;
     if (Object.keys(record).length === 2 && record.kind === 'pending' && validAdminAccountInput(record.input)) return value as AdminAccountRecord;
     if (Object.keys(record).length === 3 && record.kind === 'completed' && validAdminAccountInput(record.input) &&
-      record.input.action === 'provision' && validAdminAccountRow(record.account)) {
+      (record.input.action === 'provision' || record.input.action === 'rotate') && validAdminAccountRow(record.account)) {
       const input = record.input, account = record.account;
-      if (account.id === input.id && account.name === input.name &&
-        account.role === input.role && account.enabled) return value as AdminAccountRecord;
+      if (validAdminAccountResult({ operationId: input.operationId, replayed: false, account }, input))
+        return value as AdminAccountRecord;
     }
   }
   throw new Error('This tab’s saved account request is unreadable. Do not send a new request or discard this record until you have checked the account directory.');
@@ -91,7 +108,8 @@ export function completeAdminAccountRequest(storage: Storage, owner: string, inp
   const previous = readAdminAccountRecord(storage, owner);
   if (!previous || previous.kind !== 'pending' || JSON.stringify(previous.input) !== JSON.stringify(input))
     throw new Error('The saved account request changed. Keep it and inspect the directory.');
-  if (input.action === 'provision') persist(storage, owner, { kind: 'completed', input, account: result.account });
+  if (input.action === 'provision' || input.action === 'rotate')
+    persist(storage, owner, { kind: 'completed', input, account: result.account });
   else clearAdminAccountRecord(storage, owner);
 }
 

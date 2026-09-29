@@ -7,7 +7,8 @@ export type AdminAccountsDirectory = { accounts: AdminAccountRow[]; total: numbe
 export type AdminAccountInput =
   | { action: 'provision'; operationId: string; id: string; key: string; name: string; role: AdminRole; reason: string }
   | { action: 'role'; operationId: string; target: string; expectedUpdatedAt: number; role: AdminRole; reason: string }
-  | { action: 'disable'; operationId: string; target: string; expectedUpdatedAt: number; reason: string };
+  | { action: 'disable'; operationId: string; target: string; expectedUpdatedAt: number; reason: string }
+  | { action: 'rotate'; operationId: string; target: string; expectedUpdatedAt: number; key: string; reason: string };
 export type AdminAccountResult = { operationId: string; replayed: boolean; account: AdminAccountRow };
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -40,5 +41,10 @@ export function validAdminAccountInput(value: unknown): value is AdminAccountInp
   if (input.action === 'disable')
     return exact(input, ['action','operationId','target','expectedUpdatedAt','reason']) &&
       typeof input.target === 'string' && uuid.test(input.target) && timestamp(input.expectedUpdatedAt);
+  if (input.action === 'rotate')
+    return exact(input, ['action','operationId','target','expectedUpdatedAt','key','reason']) &&
+      typeof input.target === 'string' && uuid.test(input.target) && timestamp(input.expectedUpdatedAt) &&
+      typeof input.key === 'string' && input.key === `dune-admin.${input.target}.${input.key.slice(-64)}` &&
+      /^dune-admin\.[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.[0-9a-f]{64}$/.test(input.key);
   return false;
 }

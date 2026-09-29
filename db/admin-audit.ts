@@ -14,7 +14,7 @@ const actionType = `json_extract(${json('action')},'$.type')`;
 // bounded groups so SQLite cannot flatten the nine sources back into one union.
 const rawEvents = `WITH first_events AS MATERIALIZED (
   SELECT 'account' category,rowid row_key,id receipt_id,actor_admin_id actor_id,NULL room_code,target_admin_id target_admin_id,NULL target_seat_id,
-    CASE WHEN action IN ('provision','revoke','role','login','logout','logout_all') THEN action ELSE 'unknown' END action,
+    CASE WHEN action IN ('provision','revoke','role','rotate','login','logout','logout_all') THEN action ELSE 'unknown' END action,
     reason,NULL before_json,substr(detail,1,8192) after_json,created_at FROM admin_audit
   UNION ALL SELECT 'control',rowid,operation_id,actor_admin_id,room_code,NULL,NULL,'room_control',reason,
     json_object('paused',before_paused,'joinLocked',before_join_locked,'revision',expected_revision),
@@ -73,6 +73,7 @@ export function projectAdminAudit(row: Row, reasonsVisible: boolean): AdminAudit
   const before = parse(row.before_json), after = parse(row.after_json), changes: AuditChange[] = [];
   const add = (field: AuditChange['field'], a: string | null, b: string | null) => { if (a !== null || b !== null) changes.push({ field,before:a,after:b }); };
   if (row.category === 'account') add('Role',role(after.previousRole),role(after.role));
+  if (row.category === 'account' && row.action === 'rotate') add('Enabled',flag(after.previousEnabled),flag(after.enabled));
   if (row.category === 'lobby' || row.category === 'creation') {
     const a = configuration(before), b = configuration(after);
     for (const field of ['Rules','Tech Tokens','Stronghold Cards','Host seat','Host faction','Player count','AI seats'] as const) add(field,a[field],b[field]);
