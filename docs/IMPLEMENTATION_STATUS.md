@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 29 September 2026 — natural Advanced Moritani reveal and replacement
+
+A source-unchanged genuine six-seat sample at base seed `20261307`
+completed 1,666 accepted actions, no rejected candidates and 45 JSON
+continuations. The Easy Moritani bot declined one turn-six opportunity,
+then revealed its held `emperor-1` Traitor Card against a different
+Emperor leader on a later normal battle loss. The target was already dead,
+so bounty was zero. At accepted action 987 the card remained physically
+held; automatic Mentat replacement at action 995 moved it face up out
+of hand and privately drew `fremen-4`. A separate replay JSON-restored
+all six projected views at both custody transitions. The runner verified
+physical inventory after every accepted action through final turn ten.
+
+The [bounded feature record](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
+links the source-bound private report. This demonstrates a natural
+dead-target reveal, not a living-target kill, all optional modules,
+publication readiness or deployed acceptance.
+
 ## 29 September 2026 — worm-ride arrival candidate correction
 
 A natural six-seat Moritani Advanced sample at base seed `20261007`

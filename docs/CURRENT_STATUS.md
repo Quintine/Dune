@@ -6,6 +6,15 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
+now proceeds from genuine battle loss to a dead-target Traitor reveal,
+face-up retirement and private Mentat replacement. The six-seat game
+completed 1,666 accepted actions, zero rejected candidates and 45 JSON
+restores; a separate replay checked every private view across reveal and
+replacement. A natural living-target kill, exceptional combinations and
+the unresolved duration/UX rulings remain open. Public expansion starts
+and deployed acceptance remain gated.
+
 Another natural six-seat Moritani game exposed two illegal Fremen worm
 rides into a placed Terror with a pending BG fighter intrusion. The
 [worm-arrival bot preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-worm-ride-into-terror-with-bg-intrusion)
@@ -38,10 +47,10 @@ The bounded [Advanced Moritani Assassinate Leaders preview](MORITANI_ASSASSINATE
 now has repeatable genuine games across two through six supported seats.
 Five samples completed 2,511 accepted actions, no rejected candidates
 and 65 JSON continuations. The six-seat game reached two private
-assassination offers, both declined; real reveal and replacement still
-depend on the focused physical-custody evidence, not a natural full-game
-sample. The unresolved duration/UX questions and public expansion gate
-remain unchanged. This source is not in the last verified live image.
+assassination offers, both declined. The separate natural reveal sample
+above adds one dead-target use, not a complete Moritani rules claim. The
+unresolved duration/UX questions and public expansion gate remain
+unchanged. This source is not in the last verified live image.
 
 The independent Ecaz three-card variant now has a repeatable
 [genuine-game sample profile](VERIFICATION_WORKFLOW.md#reusable-base-and-faction-sample-games)

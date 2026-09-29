@@ -133,3 +133,25 @@ The existing staged battle/replacement cases and the external physical
 custody check cover the actual reveal, retirement and new-card draw, but
 the natural full-game samples do **not** demonstrate a reveal. The source
 boundaries and pending user timing/UX questions above remain unchanged.
+
+## 29 September 2026 — natural revealed-card game
+
+An additional unchanged-source six-seat Advanced game using base seed
+`20261307` and the existing `moritani-assassinate` profile completed
+1,666 accepted actions, zero rejected candidates and 45 JSON view
+restores. A genuine turn-six battle loss first produced a private offer
+that Moritani declined. A second loss let its Easy bot reveal its
+actually held `emperor-1` Traitor Card against a different Emperor leader.
+That named leader was already dead, so the legal reveal paid no second
+bounty. The physical card remained held at accepted action 987; automatic
+Mentat replacement at action 995 set it aside and privately drew
+`fremen-4`. A separate Node replay JSON-restored every seat view at
+both boundaries; the whole-game runner checked physical custody
+after every accepted action through final turn ten.
+
+Source-bound private report:
+`/tmp/dune-assassinate-natural-reveal-20261307/report.json`, based on
+`583cd97a250bce4b2a9f570bc1e2893e9d49db41`. This establishes one
+natural dead-target reveal and replacement, not a natural living-target
+kill, full module composition, an official resolution of normal-traitor
+duration, or public Advanced Moritani readiness.
