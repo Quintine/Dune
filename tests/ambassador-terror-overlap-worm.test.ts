@@ -12,6 +12,7 @@ import { baseDeck } from '../game/cards';
 import { createAmbassadors, placeAmbassador } from '../game/ecaz-ambassadors';
 import { createTerrorState, placeTerror, type TerrorKind } from '../game/moritani-terror';
 import { botArrivalBlock } from '../game/bot-arrival';
+import { botActions } from '../game/bots';
 
 const seat = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
@@ -191,4 +192,30 @@ void test('bots treat the supported overlapping stronghold as a legal ordinary a
   assert.equal(entered.pendingTerrorEntry?.cause, 'movement');
   assert.equal(entered.pendingTerrorEntry?.resume, 'none');
   assert.equal(seat(entered, 'in').forces['arrakeen:10'], 2);
+});
+
+void test('worm-riding bots avoid Terror arrival while BG fighter intrusion is pending', () => {
+  const { g } = table('robbery');
+  g.ecazAmbassadors = createAmbassadors(() => 0.2);
+  const bg = newPlayer('bg', 'Bene Gesserit', 'beneGesserit');
+  bg.forces = { 'arrakeen:10': 1 };
+  bg.reserves = 19;
+  g.players.push(bg);
+  g.order.push(bg.id);
+  g.movementRemaining!.push(bg.id);
+  g.decision = { kind: 'wormRide', player: 'in', territory: 'imperial_basin' };
+  g.wormRides = ['hagga_basin'];
+  const before = JSON.stringify(g);
+  assert.throws(() => action(g, 'in', ride),
+    /Terror combined with another arrival reaction/);
+  for (const bot of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
+    const view = viewGame(g, 'in');
+    view.players.find(p => p.id === 'in')!.bot = bot;
+    const choices = botActions(view);
+    assert.ok(choices.length, bot);
+    assert.equal(choices.some(choice => choice.type === 'decision' &&
+      choice.accept === true && choice.territory === 'arrakeen'), false, bot);
+    assert.ok(applyAction(g, 'in', choices[0]));
+  }
+  assert.equal(JSON.stringify(g), before);
 });

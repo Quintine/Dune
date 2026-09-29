@@ -224,3 +224,37 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
     throw error;
   }
 }
+
+/** The worm decision itself is replaced before entry reactions; only a new
+ * intrusion or another pending control conflicts with the destination.
+ * Homeworld riders retain their separate unsupported-combination policy.
+ */
+export function botWormRideArrivalBlock(g: GameView, to: string, sector: number): string | null {
+  const ride = g.decision;
+  if (g.status !== 'playing' || g.phase !== 1 || ride?.kind !== 'wormRide' ||
+    ride.player !== g.me || g.homeworlds || !validLocation(to, sector))
+    return null;
+  try {
+    quoteCompletedMovementArrival({
+      advanced: g.advanced,
+      overlapSupported: g.arrivalOverlapMode === true,
+      players: g.players,
+      order: { player: g.me, origin: ride.territory, to,
+        advisors: false, wantsFighters: false },
+      ambassadors: (g.ambassadors?.tokens ?? []).map(
+        ({ zone, location, effect }) => ({ zone, location, effect })),
+      terror: (g.moritaniTerror?.tokens ?? []).map(
+        ({ status, location }) => ({ status, location })),
+      controls: {
+        response: !!g.response, decision: false,
+        pendingTerror: !!g.terrorEntry, pendingAmbassador: !!g.ambassadorEntry,
+        paidBox: false,
+      },
+      flight: null,
+    });
+    return null;
+  } catch (error) {
+    if (error instanceof MovementArrivalError) return error.message;
+    throw error;
+  }
+}

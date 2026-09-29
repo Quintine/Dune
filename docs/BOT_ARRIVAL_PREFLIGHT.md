@@ -96,3 +96,21 @@ zero rejected candidates and 34 JSON continuations. Both actual
 assassination opportunities were declined; this is not a natural reveal or
 replacement sample. The unsupported reaction combination and public
 expansion gate remain unchanged.
+
+## 29 September: worm ride into Terror with BG intrusion
+
+Another unmodified six-seat Advanced Moritani game at base seed `20261007`
+finished in 1,541 accepted actions, two rejected Fremen worm-ride candidates
+and 41 JSON continuations. Each rejected ride targeted a placed Terror while
+a Bene Gesserit fighter intrusion would open another arrival decision.
+
+The owned bot candidate now quotes the same public destination triggers
+before choosing a worm ride; its current worm decision is the parent, not a
+second reaction. It leaves legal single reactions and supported Ambassador/
+Terror overlap available. The focused regression reproduced the engine
+rejection, then showed all four bot profiles skip the conflicting destination
+and execute an alternative. The same-seed genuine game completes 1,541
+accepted attempts, zero rejects and 41 JSON continuations. No hidden Terror
+face or rival hand enters the quote. Homeworld rides and other special
+arrivals retain their own gates; this does not implement the conflicting
+reaction or open public expansion starts.

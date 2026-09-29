@@ -1,5 +1,23 @@
 # Dune implementation status
 
+## 29 September 2026 — worm-ride arrival candidate correction
+
+A natural six-seat Moritani Advanced sample at base seed `20261007`
+completed 1,541 actions with two rejected Fremen worm rides into a placed
+Terror while a BG intrusion would open. Both were rejected without mutating
+the game. The [owner-view preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-worm-ride-into-terror-with-bg-intrusion)
+now quotes that public worm destination and excludes the unsupported
+combined reaction before the bot selects an action. A focused engine
+regression reproduced the rejection first and covers four legal AI
+fallbacks. The same genuine game finishes 1,541 accepted attempts, zero
+rejects and 41 JSON continuations. Two assassination opportunities were
+declined; no natural reveal/replacement was proved. The authoritative
+reaction-order gap and public expansion gate remain.
+
+`npm run check` passes typecheck, lint and 5,782/5,782 offline cases.
+No app route or persistence schema changed; build and HTTP checks were not
+repeated for this bot candidate filter.
+
 ## 29 September 2026 — Guild transport arrival preflight
 
 The [arrival preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-guild-cross-planet-transport-and-terror)

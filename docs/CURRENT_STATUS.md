@@ -6,6 +6,14 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+Another natural six-seat Moritani game exposed two illegal Fremen worm
+rides into a placed Terror with a pending BG fighter intrusion. The
+[worm-arrival bot preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-worm-ride-into-terror-with-bg-intrusion)
+now omits only that public reaction conflict. Same-seed replay completes
+1,541 accepted actions, zero rejects and 41 JSON restores. This does not
+implement the simultaneous reaction or demonstrate a natural assassination
+reveal; expansion starts and deployment remain gated.
+
 A six-seat Advanced Moritani sample exposed six illegal bot Guild
 cross-planet transport candidates into a placed Terror while Guild income
 was pending. [Arrival preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-guild-cross-planet-transport-and-terror)

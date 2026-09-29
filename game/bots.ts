@@ -100,7 +100,7 @@ import { sandmasterDefaultChoice } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
-import { botArrivalBlock } from './bot-arrival';
+import { botArrivalBlock, botWormRideArrivalBlock } from './bot-arrival';
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
@@ -2667,7 +2667,8 @@ function policyActions(g: GameView): Action[] {
       ...destinations(g)
         .filter(
           (to) =>
-            to.t !== d.territory && botEntryAllowed(g, me, to.t, to.s, 'move'),
+            to.t !== d.territory && botEntryAllowed(g, me, to.t, to.s, 'move') &&
+            !botWormRideArrivalBlock(g, to.t, to.s),
         )
         .slice(0, 16)
         .map(
