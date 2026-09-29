@@ -8,22 +8,23 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
 pauses clean public ordinary-card, paid Box, retired Ornithopter,
-private Distrans, final definite Truthtrance, movement-order Sapho
-and winner-selected battle-card discards without pending rewards.
+private Distrans, final definite Truthtrance, movement-order Sapho,
+mandatory winner or later optional winner battle-card discards without
+pending rewards. The two winner batches are separate: a claim on the
+mandatory Hero can resume the winner's optional weapon choice once.
 Every seat sees a neutral offer regardless of hidden Semuta possession.
-A sole eligible card transfers on commitment; a simultaneous
-winner-card batch first requires public commitment, then reveals
-only to that holder the eligible fresh faces to select exactly one.
-Other cards remain in the pile and the resolved battle resumes once.
-The early-ended flight queue, completed-flight arrival, private gift,
-answer history and Sapho order also resume without replay. Minimal
-legal AI, exact JSON/SQLite continuation and competing-room CAS are
-connected. Phone width showed owned Commit and rival Continue without
-a private card face. Mixed arrivals, auction/battle Sapho, queued or
-promise-bound Truthtrance, mandatory or reward-pending battle batches,
-other discard producers, full-hand ordering, normal Richese starts
-and deployed acceptance remain unfinished. Neutral passes and the
-free-slot guard are product safety choices, not publisher rulings.
+A sole eligible card transfers on commitment; a simultaneous winner
+batch first requires public commitment, then reveals eligible faces
+only to the holder for one-card selection. Other cards remain in the
+pile and the resolved battle resumes once. The flight queue, committed
+arrival, private gift, answer history and Sapho order also resume
+without replay. Minimal legal AI, exact JSON/SQLite continuation and
+competing-room CAS are connected. Mixed arrivals, auction/battle
+Sapho, queued or promise-bound Truthtrance, loser/mixed-owner battle
+batches, pending battle rewards, other discard producers, full-hand
+ordering, normal Richese starts and deployed acceptance remain
+unfinished. Neutral passes and free-slot guard are product safety
+choices, not publisher rulings.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,

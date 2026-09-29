@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta between mandatory and optional winner cleanup
+
+The explicit Richese Semuta preview now pauses a clean public
+`winnerMandatoryDiscard` frame after the loser/battle discard but
+before optional winning-card cleanup. A physically used Hero is
+already in the ordinary pile; every seat receives the same neutral
+offer. Another holder with free hand capacity may recover that one
+Hero and discard Semuta. All-seat decline leaves it on the pile.
+The committed casualty counts and winner remain fixed; `finishWinner`
+continues once to the still-held optional weapon decision. Its later
+discard is a distinct fresh batch, not another chance at the Hero.
+
+Genuine setup covers two combatants, preparation, Hero plus retained
+projectile, the mandatory Hero offer, neutral passes, legal AI claim,
+JSON continuation and exact physical census. An isolated migrated
+SQLite room restores that offer, authenticates the Hero claim, then
+opens and declines the later optional weapon batch without repeating
+Semuta disposal or battle rewards. Loser/mixed-owner mandatory cleanup,
+pending battle rewards, full-hand ordering, normal Richese starts
+and deployed acceptance remain gated.
+
+Independent rules/continuation and privacy/recovery reviews found no
+scoped defect. A direct production-engine run completed genuine AI
+setup, a mandatory Hero discard, neutral offer and bot claim, then
+showed the retained projectile in the original winner's optional
+card decision. Phone-width local rules rendered the two-batch boundary
+as Partial. `npm run check` passed typecheck, lint and 5,810/5,810
+offline cases; `npm run build` and all 55 Vite development HTTP
+cases passed. No deployed revision was exercised.
+
 ## 30 September 2026 — Semuta choice among simultaneous winner cards
 
 The explicit Richese Semuta preview now recognizes a clean batch of

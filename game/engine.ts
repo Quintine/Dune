@@ -5754,6 +5754,7 @@ function semutaOfferSupported(
     continuation.kind !== 'distransDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
+    continuation.kind !== 'winnerMandatoryDiscard' &&
     !(continuation.kind === 'ornithopterDiscard' &&
       (continuation.source === 'end' ||
         (continuation.source === 'move' &&
@@ -5763,7 +5764,8 @@ function semutaOfferSupported(
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&
       continuation.remaining === null && continuation.promise === null)) return false;
-  if (continuation.kind === 'battleCleanup' &&
+  if ((continuation.kind === 'battleCleanup' ||
+    continuation.kind === 'winnerMandatoryDiscard') &&
     (g.pendingAuditor || g.pendingCapture || g.pendingTech ||
       g.pendingFaceDance || g.pendingChoamBattleIncome ||
       g.pendingWinnerDiscards || g.moritaniRetention ||
@@ -5777,10 +5779,12 @@ function semutaOfferSupported(
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
-    (continuation.kind === 'battleCleanup'
+    (continuation.kind === 'battleCleanup' ||
+      continuation.kind === 'winnerMandatoryDiscard'
       ? entries.every(entry => entry.publicFace)
       : entries.length === 1 && entries[0].publicFace) &&
     (continuation.kind === 'battleCleanup' ||
+      continuation.kind === 'winnerMandatoryDiscard' ||
       (!continuation.resume.response && !continuation.resume.decision &&
         !continuation.resume.pendingKarama && !continuation.resume.phaseOpening)) &&
     !g.karamaShipping && !g.auction && !g.richeseAuction && !g.battle &&
