@@ -1,5 +1,26 @@
 # Dune implementation status
 
+## 29 September 2026 — Homeworld-sourced AI arrival preflight
+
+A genuine five-seat Advanced combined Homeworld/Nexus/expansion game on
+`41fd6fe` exposed two rejected Tleilaxu shipments from its own Homeworld
+into unsupported Ambassador/Terror entry combinations. The public AI
+[preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-homeworld-sourced-shipment-overlap)
+had skipped Homeworld sources. It now quotes their off-planet arrival through
+the same authoritative public reaction helper, without sampling private
+Terror faces or recreating source pricing. A failing-before/passing-after
+real-engine regression exercises all four AI profiles and executable
+fallbacks. The identical genuine game completes after the fix with
+786 accepted attempts, no rejected candidates, 21 JSON continuations and
+a fourth-turn shared victory. Other Homeworld payment-dependent reactions
+and unsupported combined arrivals remain gated; no public start was opened.
+
+The initial full check exposed an existing Guild shipment test that asserted
+payment before a legitimately opened Karama rate response. That test now
+resolves the response before checking the rounded cost. The final
+`npm run check` passes typecheck, lint and 5,757/5,757 offline cases. No HTTP
+contract, database schema or player-facing control changed.
+
 ## 29 September 2026 — Sapho finite-bid boundary and pending source questions
 
 The existing Once Around Juice of Sapho adapter permits an unacted holder to

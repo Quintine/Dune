@@ -6,6 +6,14 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+A five-seat Advanced combined Homeworld/Nexus/expansion sample exposed two
+known-unsupported Ecaz Ambassador/Moritani Terror shipment candidates from
+Tleilaxu's own Homeworld. [AI arrival preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-homeworld-sourced-shipment-overlap)
+now excludes them using only public entry reactions. The same genuine game
+completed with 786/786 legal attempts and 21 JSON continuations; this is a
+candidate-legality repair, not support for the combined arrival or a public
+expansion start. The source is not in the last verified live image.
+
 A bounded [Ecaz Ambassador/Moritani Terror same-entry continuation](MORITANI_ENTRY_TIMING.md#selected-bounded-overlap-order--29-september-2026)
 now snapshots both original optional triggers and offers their owners sequential
 choices in current storm order on classic plus Ecaz/Moritani Basic/Advanced

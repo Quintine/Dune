@@ -882,10 +882,10 @@ void test('Guild groups from several sectors pay one rounded shipment cost', () 
     type: 'guildShip',
     forces: { 'pasty_mesa:5': 1, 'pasty_mesa:6': 2 },
   };
-  const returned = applyAction(g, 'p0', { ...action, territory: 'reserves' });
+  const returned = passResponses(applyAction(g, 'p0', { ...action, territory: 'reserves' }));
   assert.equal(returned.players[0].spice, before - 2);
   assert.equal(returned.players[0].reserves, 18);
-  g = applyAction(g, 'p0', { ...action, territory: 'sietch_tabr', sector: 14 });
+  g = passResponses(applyAction(g, 'p0', { ...action, territory: 'sietch_tabr', sector: 14 }));
   assert.equal(g.players[0].spice, before - 2);
   assert.equal(g.players[0].forces['sietch_tabr:14'], 3);
   conservation(g);

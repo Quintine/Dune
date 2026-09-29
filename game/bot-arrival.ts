@@ -14,10 +14,11 @@ import {
 import { quoteSmugglerShipment } from './smuggler-shipment';
 
 /**
- * Known arrival support for ordinary owner-view candidates, not a complete
- * action validator. Homeworld, explicit Nexus and special movement routes keep
- * their own adapters and fallbacks. No hidden Terror face or rival hand enters
- * this quote, and unexpected failures are never treated as rejected candidates.
+ * Known arrival support for ordinary owner-view candidates, plus the public
+ * overlap guard for Homeworld-sourced shipments. This is not a complete action
+ * validator. Explicit Nexus and special movement routes retain their adapters.
+ * No hidden Terror face or rival hand enters this quote; unexpected failures
+ * are never treated as rejected candidates.
  */
 export function botArrivalBlock(g: GameView, action: Action): string | null {
   if (
@@ -25,10 +26,8 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
     g.phase !== 5 ||
     g.active !== g.me ||
     !['ship', 'move'].includes(action.type) ||
-    g.homeworlds ||
     action.nexus !== undefined ||
     action.source !== undefined ||
-    action.homeworldSources !== undefined ||
     typeof action.territory !== 'string' ||
     typeof action.sector !== 'number' ||
     !validLocation(action.territory, action.sector)
@@ -45,9 +44,21 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
     paidBox: g.decision?.kind === 'nullentropy',
   };
   let order: CompletedMovementArrivalInput['order'];
-  if (action.type === 'ship') {
-    if (g.moritaniAtomics?.territory === to)
-      return 'Atomics Aftermath permanently blocks shipments into this territory.';
+  if (action.type === 'ship' && g.moritaniAtomics?.territory === to)
+    return 'Atomics Aftermath permanently blocks shipments into this territory.';
+  if (g.homeworlds || action.homeworldSources !== undefined) {
+    if (action.type !== 'ship' || !g.homeworlds || action.homeworldSources === undefined)
+      return null;
+    // Off-planet Homeworld pools have the same arrival triggers. Only the
+    // public reaction overlap is quoted here; the engine owns source and price.
+    order = {
+      player: me.id,
+      origin: 'homeworld',
+      to,
+      advisors: arrivalAsAdvisor(g, me, to),
+      wantsFighters: false,
+    };
+  } else if (action.type === 'ship') {
     const amount = action.noField === undefined ? action.amount : 1;
     if (
       typeof amount !== 'number' ||

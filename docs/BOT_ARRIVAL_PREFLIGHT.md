@@ -36,10 +36,14 @@ and Face Dancers are unnecessary. It does not mutate the view or sample
 randomness. Only the known typed arrival error excludes a candidate; unexpected
 faults propagate. The engine remains authoritative for every actual action.
 
-Homeworlds, explicit Nexus shipments, special movement and unrecognized action
-shapes retain their existing adapters and legal fallback search. They are not
-classified as illegal by this narrower preview. This is not a complete action
-validator or certification that every AI candidate in every module is legal.
+Homeworld-sourced ordinary shipments now quote the same public arrival triggers,
+including a colocated Ambassador and Terror, after the bot selects its own
+physical source. Their off-planet origin is sufficient for the arrival quote;
+Homeworld source eligibility, tariffs and any payment-dependent Guild response
+remain authoritative engine checks, not duplicated AI rules. Other Homeworld
+routes, explicit Nexus shipments, special movement and unrecognized actions
+retain their own adapters and legal fallback search. This is not a complete
+action validator or certification that every AI candidate is legal.
 
 ## Evidence
 
@@ -53,3 +57,18 @@ stance settlement does not turn a lone advisor group into fighters.
 Final checks and same-seed integrated results are recorded with the source-bound
 private checkpoint and Git message. Existing saved games remain protected; no
 server restart or database change is required.
+
+## 29 September: Homeworld-sourced shipment overlap
+
+A genuine five-seat Advanced combined Homeworld/Nexus/expansion game on
+`41fd6fe` completed in 786 actions but proposed two Tleilaxu shipments from
+its own Homeworld into unsupported Ambassador/Terror arrival combinations.
+Both were rejected without writes before a legal alternative was chosen. The
+owner-view preflight formerly skipped every Homeworld shipment. It now passes
+off-planet Homeworld-source arrivals through the same public quote without
+assuming a price or hidden Terror face. All four AI profiles exclude the
+reproduced action while retaining an executable alternative. A same-seed
+genuine-setup replay completes in 786 accepted attempts, zero rejections,
+21 JSON continuations and the same fourth-turn shared victory. This repairs
+candidate legality, not the unsupported arrival-rule composition or public
+expansion start gate.

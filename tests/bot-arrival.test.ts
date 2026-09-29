@@ -3,6 +3,9 @@ import test from 'node:test';
 import { botArrivalBlock } from '../game/bot-arrival';
 import { botActions } from '../game/bots';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
+import { createHomeworldCustody } from '../game/homeworld-custody';
+import { homeworldContext } from '../game/homeworld-game';
+import { createTerrorState } from '../game/moritani-terror';
 import {
   arrivalMove,
   arrivalPlayer,
@@ -50,6 +53,35 @@ void test('all four profiles avoid the reproduced Ambassador/Terror entries and 
     }
     assert.equal(JSON.stringify(game), before);
   }
+});
+
+void test('Homeworld-sourced AI shipments avoid unsupported paired entry reactions', () => {
+  const game = movementArrivalGame();
+  game.homeworlds = { custody: createHomeworldCustody(homeworldContext(game)) };
+  arrivalPlayer(game, 'tleilaxu').shipped = false;
+  const action: Action = {
+    type: 'ship',
+    territory: 'carthag',
+    sector: 11,
+    amount: 1,
+    elite: 0,
+    homeworldSources: { 'homeworld:tleilaxu': { normal: 1, elite: 0 } },
+  };
+  assert.throws(() => applyAction(game, 'tleilaxu', action), overlap);
+  const before = JSON.stringify(game);
+  for (const profile of profiles) {
+    const view = ownView(game, profile);
+    assert.match(botArrivalBlock(view, action) ?? '', overlap);
+    const choices = botActions(view);
+    assert.ok(choices.length, profile);
+    assert.equal(choices.some(candidate => candidate.type === 'ship' &&
+      candidate.territory === 'carthag'), false, profile);
+    assert.ok(applyAction(game, view.me, choices[0]));
+  }
+  assert.equal(JSON.stringify(game), before);
+  game.moritaniTerror = createTerrorState(() => 0.2);
+  assert.equal(botArrivalBlock(ownView(game), action), null);
+  assert.ok(applyAction(game, 'tleilaxu', action));
 });
 
 void test('single reactions and matching-faction Ambassador immunity remain playable', () => {
