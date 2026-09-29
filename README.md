@@ -61,6 +61,8 @@ game while preserving their seat and takeback control.
 [Discussion controls](docs/ADMIN_DISCUSSION.md) mute or unmute new messages from
 a human seat while preserving history and gameplay. Permanent deletion, further
 participant support and backup tools are still being built.
+[Action history](docs/ADMIN_ACTION_HISTORY.md) searches recorded admin operations,
+with role-limited reasons and public before/after settings.
 
 ## Saved seats and reconnecting
 

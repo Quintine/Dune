@@ -60,3 +60,18 @@
   .admin-room-table td:nth-child(3)::before { content: 'Progress: '; color: var(--primary); }
   .admin-room-table td:nth-child(4)::before { content: 'Last game change: '; color: var(--primary); }
 }
+
+.admin-audit-list { list-style: none; padding: 0; display: grid; gap: 20px; }
+.admin-audit-list article { padding: 20px; border: 1px solid var(--border); background: #171c16; overflow-wrap: anywhere; }
+.admin-audit-list h3 { margin: 0; }
+.admin-audit-list time { color: #b7bbaf; }
+.admin-audit-envelope { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 18px; }
+.admin-audit-envelope dt, .admin-audit-changes dt { color: #b7bbaf; }
+.admin-audit-envelope dd, .admin-audit-changes dd { margin: 0; }
+.admin-audit-list summary { cursor: pointer; min-height: 44px; padding: 10px 0; color: var(--primary); }
+.admin-audit-changes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
+@media (max-width: 700px) {
+  .admin-audit-list article { padding: 16px; }
+  .admin-audit-envelope { grid-template-columns: minmax(0, 1fr); }
+  .admin-audit-envelope dd { margin-bottom: 10px; }
+}

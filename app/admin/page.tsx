@@ -123,7 +123,7 @@ export default function Administration() {
       </section> : <>
       <section aria-labelledby="admin-rooms-title">
         <div className="admin-section-heading"><div><h2 id="admin-rooms-title">Rooms</h2><p className="admin-secondary">Public room details. Cards, sealed choices and private discussion stay hidden.</p></div>
-          <div className="admin-room-actions">{account.role !== 'viewer' && <Button disabled={controlsBusy} onClick={() => { setSelectedDiscussion(null); setSelectedSeatAi(null); setSelectedRoom(null); setSelectedLobby(null); setSelectedRemoval(null); setSelectedClosure(null); setSelectedArchive(null); setCreatingRoom(true); }}>Create a room</Button>}
+          <div className="admin-room-actions"><a className="admin-room-link" href="/admin/audit">Action history</a>{account.role !== 'viewer' && <Button disabled={controlsBusy} onClick={() => { setSelectedDiscussion(null); setSelectedSeatAi(null); setSelectedRoom(null); setSelectedLobby(null); setSelectedRemoval(null); setSelectedClosure(null); setSelectedArchive(null); setCreatingRoom(true); }}>Create a room</Button>}
             {account.role === 'owner' && <a className="admin-room-link" href="/admin/backups">Room backups</a>}
             {account.role === 'owner' && <a className="admin-room-link" href="/admin/operations">Operations</a>}
             <Button variant="outline" disabled={controlsBusy} onClick={() => void load(applied, directory?.page ?? 1)}><RefreshCw aria-hidden="true" /> Refresh</Button></div></div>

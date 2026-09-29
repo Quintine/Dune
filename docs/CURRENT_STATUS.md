@@ -92,6 +92,19 @@ authorization and desktop/mobile local UI checks passed. It does not inspect
 SQLite integrity, disk space, stalled turns or restore safety; no live NAS
 deployment or production administrator acceptance is claimed.
 
+Current work adds [action history](ADMIN_ACTION_HISTORY.md): a searchable,
+paginated view of nine durable admin receipt sources with public before/after
+settings. Owners/operators receive operational reasons; viewers do not. Queries
+preserve live authority and reject private or malformed metadata from search.
+Failed-attempt coverage, operational health and the remaining full admin scope
+are still unfinished.
+
+Discussion checkpoint `160fdc1` is pushed. Types/lint, 5,431 offline tests,
+52 HTTP tests, build, twenty-four administrator HTTP groups and desktop/mobile
+browser checks passed; all 2,230 baseline games and 4,746 seats were preserved.
+Its container workflow `36218058095` succeeded; the later NAS Apps deployment
+and current live revision are recorded above.
+
 The bounded [Fremen Nexus Cunning](NEXUS_FREMEN_RULES.md#connected-native-cunning-path)
 prototype connects an initially empty worm's public offer, one spent private
 card, a Karama response, a typed remote ride after the Nexus, human controls

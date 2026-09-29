@@ -37,7 +37,7 @@ async function request(path, body, cookie, origin = base, expectedAdminId = admi
   const response = await fetch(base + path, {
     method: body === undefined ? 'GET' : 'POST',
     headers: { ...(body === undefined ? {} : { 'content-type': 'application/json', origin }), ...(cookie ? { cookie } : {}),
-      ...(expectedAdminId && (path === '/api/admin/rooms' && body !== undefined || /^\/api\/admin\/rooms\/[^/]+\/(control|lobby|removal|closure|archive|seat-ai|discussion)$/.test(path)) ? { 'X-Dune-Admin-Id': expectedAdminId } : {}) },
+      ...(expectedAdminId && (path === '/api/admin/audit' || path.startsWith('/api/admin/audit?') || path === '/api/admin/rooms' && body !== undefined || /^\/api\/admin\/rooms\/[^/]+\/(control|lobby|removal|closure|archive|seat-ai|discussion)$/.test(path)) ? { 'X-Dune-Admin-Id': expectedAdminId } : {}) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(15000),
   });
   report.lastRequest = { path, status: response.status };
@@ -97,6 +97,19 @@ try {
     await verifyRoomArchive(request, session1, report);
     await verifyParticipantAi(request, session1, report);
     await verifyDiscussionModeration(request, session1, report);
+  }
+  if (report.discussionRoom) {
+    const history = await request('/api/admin/audit?q=' + report.discussionRoom + '&category=discussion', undefined, session1);
+    assert.equal(history.status, 200); assert.equal(history.data.total, 2);
+    assert.equal(history.data.reasonsVisible, true);
+    assert.deepEqual(history.data.events.map(event => event.action).sort(), ['mute','unmute']);
+    for (const event of history.data.events) {
+      assert.equal(event.roomCode, report.discussionRoom); assert.equal(event.actorId, adminId);
+      assert.equal(event.reason, 'Discussion moderation QA');
+      for (const field of ['state','sessionHash','request_hash','session_hash','messages','before_json','after_json']) assert.equal(Object.hasOwn(event, field), false);
+    }
+    assert.equal((await request('/api/admin/audit', undefined, session1, undefined, crypto.randomUUID())).status, 401);
+    report.checks.push('Unified action history returns durable moderation events, safe settings and operator reasons; account mismatch is denied');
   }
   report.passed = true;
 } catch (error) {

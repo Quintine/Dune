@@ -15,7 +15,7 @@ recovery and persistence systems where suitable.
 | Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. [Archive/unarchive](ADMIN_ROOM_ARCHIVE.md) has separate directory filters and exact retries. Permanent deletion and bulk actions remain missing. | Prototyped, partial |
 | Participant support | [Participant AI](ADMIN_PARTICIPANT_AI.md) enables an existing difficulty on an eligible human seat in a paused game, retaining access/takeback and private custody. [Discussion controls](ADMIN_DISCUSSION.md) mute/unmute new sends while retaining history and gameplay. Participant removal, access revocation, assisted recovery and further replacement remain. Existing lobby controls can reassign the host. | Prototyped, partial |
 | Saved-game operations | [Owner-only room backups](ADMIN_BACKUPS.md) capture/list/download a size-limited, version-fenced room snapshot without changing play or access; import validation, safe checkpoint restore and interrupted-work diagnosis/resume remain missing. | Prototyped, partial |
-| Operations and audit | The owner-only [operations page](../app/admin/operations/page.tsx) samples build revision, room/seat flags, JSON syntax failures and backup/export counts without exposing game contents. Searchable action history, failed-attempt records, integrity/disk checks, stalled-decision diagnosis and maintenance controls remain. | Prototyped, partial |
+| Operations and audit | [Action history](ADMIN_ACTION_HISTORY.md) searches existing durable operations with safe settings and role-limited reasons. The owner-only [operations page](../app/admin/operations/page.tsx) samples build revision, room/seat flags, JSON syntax failures and backup/export counts without exposing game contents. Failed-attempt records, integrity/disk checks, stalled-decision diagnosis and maintenance controls remain. | Prototyped, partial |
 
 Track each area through Missing, Prototyped, Integrated, Verified and Polished.
 As implementation begins, link its controls, server actions, persistence,
@@ -85,7 +85,8 @@ Implementation: [panel](../app/admin/page.tsx), [access](../db/admin-access.ts),
 [additive migration](../drizzle/0008_admin_access.sql), and
 [operator CLI](../tools/admin-access.mjs). The migration's explicit SQLite triggers
 enforce final-owner protection and account revocation/provisioning audit; retain
-them when generating future schema changes. Audit browsing is still pending.
+them when generating future schema changes. [Action history](ADMIN_ACTION_HISTORY.md)
+unifies the existing successful-operation records; broader audit coverage remains.
 
 ### Initial owner and access recovery
 

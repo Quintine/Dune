@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 29 September 2026 — administrator action history prototype
+
+The existing [Action history](ADMIN_ACTION_HISTORY.md) draft now has a bounded
+source-bound checkpoint. Its read-only endpoint joins nine durable receipt
+families, projects only public operational settings and identifier/name fields,
+and returns reasons only to a live owner/operator role. Search excludes raw
+JSON, messages, saved games, secrets and reasons; pagination/count and role
+rechecks share the same database batch. Viewer and anonymous access stay
+restricted. No game row is read or changed by the history query.
+
+Ten focused offline audit/D1 cases pass, including a workerd compound-query
+regression, malformed metadata, deleted accounts, filtered pagination and
+commit-time demotion/revocation. The administrator HTTP boundary passes two
+focused cases (54/54 in the last full local HTTP suite). An isolated non-test
+in-memory query returned only the two account-event envelopes, without
+credential contents. Browser inspection showed signed-out denial and read-only
+operator/viewer fixtures at desktop/mobile widths; viewer reasons stayed
+hidden and mobile had no horizontal overflow. Independent read-only security
+review found no concrete authorization or privacy defect. Typecheck, lint,
+5,756/5,756 offline tests and the app build passed with this draft present.
+The dedicated signed-in QA operator HTTP verifier was not run: it revokes
+all sessions for its account and requires a separate authorized QA key.
+This is not deployed acceptance or complete administration; failed-attempt
+history, broader operations and backup/restore remain pending.
+
 ## 29 September 2026 — Fremen Nexus Betrayal pre-blow worm suppression
 
 The second printed Betrayal alternative now spends the physical Fremen Nexus
