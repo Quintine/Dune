@@ -112,6 +112,7 @@ supersedes the older inactive-card observations above for one
 explicitly opted-in Richese development profile. Neutral all-seat
 responses, physical one-card recovery, a provisional free-slot guard,
 minimal legal AI and saved continuation now work after clean public
-ordinary-card discards. The other semantic discard families and
-full-hand ordering are not connected; the ten-card inventory, cache
-custody and public expansion start gate remain unchanged.
+ordinary-card discards and the used Box after a completed paid search.
+Other semantic discard families and full-hand ordering remain
+unconnected; the ten-card inventory, cache custody and public expansion
+start gate are unchanged.

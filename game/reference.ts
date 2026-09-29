@@ -941,7 +941,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'An active Truthtrance question and exact card or transaction commitments must resolve as required. A full hand is currently guarded: the printed sequence adds the recovered card before discarding the Box, and the temporary capacity question is unresolved. The current implementation requires a pre-existing free hand slot. This is not a verified prohibition on every net-zero exchange.',
       'A pending Guild refund claim on a discarded shipping Karama also blocks starting the search while that provisional refund policy is unresolved. The guard protects the competing claim to that card; it is not a general ban on Box during Shipment. Empty or only-Box searches are rejected before payment under the current unsupported-empty-search policy; there is no fallback deck draw.',
       'All four AI profiles start only when their own projected availability and spice reserve allow it. They do not inspect unpaid discard contents. Once paid, they choose from their entitled cards, prefer existing functional effects over unfinished Richese faces and complete a legal selection even if only unfinished effects remain. A paid search takes priority over optional actions.',
-      'This bounded search, its controls and recovery are integrated in development fixtures. Full-hand activation, the provisional Guild refund interaction and Semuta response to the used Box remain unresolved or unfinished. Mirror Weapon has a separate bounded CHOAM/Richese-deck classic-faction battle path; Semuta Drug has a separate clean public ordinary-card preview, and full Richese starts remain disabled. Complete browser, mobile and full-game acceptance is not claimed here.',
+      'This bounded search, its controls and recovery are integrated in development fixtures. Full-hand activation and the provisional Guild refund interaction remain unresolved. In the explicit Semuta preview, another holder may recover the used Box after a clean completed search without replaying payment or shuffle; other Semuta discard sources remain unfinished. Mirror Weapon has a separate bounded CHOAM/Richese-deck classic-faction battle path, and full Richese starts remain disabled. Complete browser, mobile and full-game acceptance is not claimed here.',
     ],
     related: [
       'card-richese-nullentropy-box',
@@ -1155,7 +1155,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard. Continue or commit your held Semuta with a free hand slot; the sole eligible card transfers automatically. Other discard producers, full-hand sequencing and normal Richese starts remain unfinished.'
+                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard or the used Box following a completed paid search. Continue or commit your held Semuta with a free hand slot; the sole eligible card transfers automatically. Other discard producers, full-hand sequencing and normal Richese starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1165,7 +1165,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'An explicitly opted-in Richese profile now interrupts clean public ordinary-card discards with a neutral all-seat offer. Committing a held Semuta atomically claims the sole eligible other-player card, discards Semuta and resumes the saved ordinary-card suffix once. Other typed discard producers and full-hand exchange remain unfinished.',
+                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card and completed paid Box discards with a neutral all-seat offer. Committing held Semuta atomically claims the sole eligible other-player card, discards Semuta and resumes the saved ordinary-card or Box parent once. Other typed discard producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
@@ -1189,7 +1189,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and all four legal AI profiles cover the bounded ordinary-card reaction. Other discard producers, full games and live deployment remain unverified.',
+                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and all four legal AI profiles cover clean ordinary-card and paid Box reactions. Other discard producers, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',

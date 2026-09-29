@@ -5642,17 +5642,18 @@ function treacheryDiscardIntegrity(g: Game) {
       'The committed Kaitain discard no longer matches its payment and closing opportunity.');
   } else throw new RuleError('Unknown saved discard continuation.');
 }
-/** First playable Semuta boundary: one public ordinary-card discard with no
- * competing suspended transaction. Other typed frames retain their existing
- * automatic continuation until their reaction composition is integrated. */
+/** Bounded public single-card reaction after a completed ordinary effect or
+ * paid Box search, without any competing suspended transaction. Other typed
+ * frames retain automatic continuation until their composition is integrated. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   entries: FreshDiscardBatch['entries'],
 ) {
+  if (continuation.kind !== 'ordinaryCardDiscard' &&
+    continuation.kind !== 'nullentropyDiscard') return false;
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
-    continuation.kind === 'ordinaryCardDiscard' &&
     entries.length === 1 && entries[0].publicFace &&
     !continuation.resume.response && !continuation.resume.decision &&
     !continuation.resume.pendingKarama && !continuation.resume.phaseOpening &&

@@ -16,7 +16,7 @@ function take(g: Game, identity: string) {
   throw new Error('The genuine setup lost a physical card.');
 }
 
-void test('authenticated fresh discard survives restart and duplicate Semuta commits transfer one physical card', async () => {
+void test('authenticated ordinary and paid-Box discards preserve one Semuta claim through restart and room CAS', async () => {
   const f = unitStore();
   try {
     const created = await f.rooms.createRoom('Semuta QA', 'richese', false, ['choam']);
@@ -93,5 +93,41 @@ void test('authenticated fresh discard survives restart and duplicate Semuta com
     assert.equal(new Set(cards.map(card => card.id)).size, cards.length);
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths) assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(done, auth.playerId));
+
+    const next = structuredClone(done);
+    const usedSemuta = take(next, SEMUTA_DRUG_ID);
+    const box = take(next, 'richese-nullentropy-box');
+    seat(next, ids[0]).hand.push(usedSemuta);
+    seat(next, ids[1]).hand.push(box);
+    const older = [next.deck.shift(), next.deck.shift()];
+    assert.ok(older[0] && older[1]);
+    next.discard.push(older[0], older[1]);
+    Object.assign(next, { turn: 3, phase: 4, active: null, ready: [], decision: null,
+      response: null, phaseOpening: null, stormPending: null });
+    next.version = done.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(next), next.version, code, done.version).changes, 1);
+    const beforeSpice = seat(next, ids[1]).spice;
+    const paid = await act(1, { type: 'card', card: box.id });
+    assert.ok(paid.pendingNullentropy);
+    const selected = paid.discard[0].id;
+    const offered = await act(1, { type: 'decision', event: paid.pendingNullentropy.event, card: selected });
+    assert.equal(offered.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, offered.version);
+    const claimedBox = await act(0, { type: 'semutaCommit', event: offered.pendingTreacheryDiscard!.batch.event });
+    assert.equal(claimedBox.pendingTreacheryDiscard, null);
+    assert.equal(seat(claimedBox, ids[1]).spice, beforeSpice - 2);
+    assert.equal(seat(claimedBox, ids[1]).hand.filter(card => card.id === selected).length, 1);
+    assert.equal(seat(claimedBox, ids[0]).hand.filter(card => card.id === box.id).length, 1);
+    assert.equal(claimedBox.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.equal(claimedBox.discard.some(card => card.id === box.id), false);
+    const finalCards = [...claimedBox.deck, ...claimedBox.discard, ...claimedBox.richeseCache!,
+      ...claimedBox.players.flatMap(p => p.hand)];
+    assert.equal(new Set(finalCards.map(card => card.id)).size, finalCards.length);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimedBox, auth.playerId));
   } finally { f.sqlite.close(); }
 });

@@ -7,14 +7,15 @@ Expansion starts and full rules/publication acceptance remain gated.**
 ## Current checkpoint and work
 
 The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
-now pauses a clean public ordinary-card discard with the same neutral
-offer for every seat, independently of hidden Semuta possession. A
-holder with a free hand slot can commit to the one fresh other-player
-card; its physical claim and Semuta disposal resume the original
-effect once. All-seat decline, four minimal legal AI profiles, exact
+now pauses a clean public ordinary-card discard or the used Box after
+a completed paid search with the same neutral offer for every seat,
+independently of hidden Semuta possession. A holder with a free hand
+slot can commit to the one fresh other-player card; its physical claim
+and Semuta disposal resume the original effect or Box parent once.
+All-seat decline, four minimal legal AI profiles, exact
 JSON/SQLite continuation and competing-room CAS are connected. Phone
 width showed the owned Commit control and the identical rival Continue
-event without a private card face. Multi-card and other discard
+event without a private card face. Multi-card and most other discard
 producers, full-hand ordering, normal Richese starts and deployed
 acceptance remain unfinished; the neutral passes and free-slot guard
 are product safety choices, not publisher timing rulings.

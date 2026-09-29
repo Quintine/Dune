@@ -166,3 +166,49 @@ void test('an impossible saved all-passed offer rejects instead of waiting forev
   assert.throws(() => normalizeAutomaticGame(corrupt));
   assert.equal(JSON.stringify(corrupt), before);
 });
+
+void test('a completed paid Box discard can be claimed before resumption without repeating its search', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const box = take(g, 'richese-nullentropy-box');
+  player(g, 'a').hand.push(box);
+  g.discard.push(g.deck.shift()!, g.deck.shift()!);
+  g.phase = 4;
+  g.active = null;
+  const original = inventory(g);
+  const spice = player(g, 'a').spice;
+  const paid = applyAction(g, 'a', { type: 'card', card: box.id });
+  assert.ok(paid.pendingNullentropy);
+  assert.equal(player(paid, 'a').spice, spice - 2);
+  const target = paid.discard[0].id;
+  const pending = applyAction(paid, 'a', {
+    type: 'decision', event: paid.pendingNullentropy.event, card: target,
+  });
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'nullentropyDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  const shuffled = pending.discard.filter(card => card.id !== box.id).map(card => card.id);
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.equal(viewGame(pending, 'a').semutaReaction?.canCommit, false);
+  assert.deepEqual(viewGame(pending, 'r').semutaReaction?.candidates, []);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  let declined = reload(pending);
+  for (const id of ['r', 'e', 'a']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.deepEqual(declined.discard, pending.discard);
+  assert.equal(player(declined, 'a').spice, spice - 2);
+  assert.equal(player(declined, 'a').hand.filter(card => card.id === target).length, 1);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(player(claimed, 'a').spice, spice - 2);
+  assert.equal(player(claimed, 'a').hand.filter(card => card.id === target).length, 1);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === box.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.deepEqual(claimed.discard.filter(card => card.id !== semuta.id).map(card => card.id), shuffled);
+  assert.deepEqual(inventory(claimed), original);
+  for (const p of claimed.players)
+    assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
+  assert.deepEqual(normalizeAutomaticGame(reload(claimed)), reload(claimed));
+});

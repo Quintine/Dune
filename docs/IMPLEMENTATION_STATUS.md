@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after a completed paid Box search
+
+The explicit Richese Semuta preview now opens the same neutral
+all-seat response when a clean paid Nullentropy Box search finishes
+and places its used physical Box on the discard pile. The search
+owner has already paid two spice, privately recovered its chosen
+card and shuffled the remaining pile once. Another holder may commit
+Semuta and take only the freshly discarded Box; declining preserves
+the Box on top. Neither path re-pays, reselects, reshuffles or
+reopens the search. Older discard cards and the privately recovered
+card are not fresh targets.
+
+Genuine-setup engine cases verify both claim and all-pass paths,
+exact card census and discard order, every-seat JSON restoration
+and stable two-spice payment. An isolated migrated SQLite room
+restores the Box reaction after the paid selection, leaves automatic
+recovery idle until a real choice and commits the claim through
+authenticated seat control without changing saved seat rows.
+Independent privacy and continuation reviews found no scoped issue.
+This extends the previous phone-width neutral control surface; no
+new browser POST was sent. Auction/CHOAM-market overlaps, multiple
+fresh cards, other producer families and full-hand ordering remain
+gated. This is not a complete Semuta, Richese or deployed claim.
+
+`npm run check` passes typecheck, lint and 5,802/5,802 offline cases;
+`npm run build` and the 55/55 local development HTTP cases pass.
+The phone-width rules deep link shows the updated Box target boundary
+and partial checklist. No authenticated production Box/Semuta play or
+deployed revision was exercised.
+
 ## 30 September 2026 — neutral Semuta clean-discard prototype
 
 The [bounded runtime](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
