@@ -1,5 +1,28 @@
 # Dune implementation status
 
+## 29 September 2026 — Sapho finite-bid boundary and pending source questions
+
+The existing Once Around Juice of Sapho adapter permits an unacted holder to
+move first after another bidder's completed bid. New engine and persisted-room
+regressions cover the committed bid, remaining single opportunities, exact
+discard, stale/duplicate rejection and private projections. The hand-panel
+unavailability explanation and [Sapho contract](JUICE_OF_SAPHO_RUNTIME.md)
+now describe this bounded behavior rather than a pre-first-bid restriction.
+Thirty focused Sapho cases pass. A separate direct engine run after an earlier
+bid reported `canFirst:true`, one completed bidder, the holder next, unchanged
+standing bid 1 and one physical discard after JSON reload. A React-rendered
+owner-panel fixture inspected in Chromium displayed the corrected guidance;
+this is not a live-room UI check. `npm run check` passes typecheck, lint and
+5,756/5,756 offline cases; the app build also passes. No engine rule or public
+start gate changed.
+
+The [source follow-up](NEXUS_TLEILAXU_RULES.md#source-search-follow-up) records
+that the requested publisher/designer search did not settle Tleilaxu Secret
+Ally revival accounting, leader eligibility or partial use; the
+[decision index](RULE_DECISIONS.md#pending-interpretations-preserve-existing-questions)
+also retains the Moritani Atomics alliance-change ambiguity. Neither receives
+an inferred rule or an implementation unlock.
+
 ## 29 September 2026 — administrator action history prototype
 
 The existing [Action history](ADMIN_ACTION_HISTORY.md) draft now has a bounded

@@ -33,6 +33,8 @@ The narrow last adapter is expressly supported: move an eligible, not-yet-acted 
 
 Discard frees a hand slot. Determine eligibility for a previously full holder using the actual post-discard state if the current action remains available; a static initial eligible array should not by itself make that legal use impossible. Conversely do not reopen a settled lot, restore a completed pass, or silently undo other bids. These cases deserve explicit adapter tests.
 
+The connected follow-up now offers first after earlier bids whenever the holder is unacted and not already the next bidder. Earlier bid amounts, funding, completed opportunities and storm tie order remain unchanged; this does not resolve ordinary cyclic auction duration.
+
 ### Ordinary cyclic and normal Black Market bidding
 
 The source guarantees an order effect exists for ordered actions, but does not specify the cycle anchor or duration in a cyclic auction. Plausible implementations (one upcoming circuit, whole current lot, or full Bidding Phase) have different winners and opener sequences. None was resolved by this review.

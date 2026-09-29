@@ -176,7 +176,29 @@ void test('Once Around last preserves prior bids and permits a final outbid afte
   assert.deepEqual(g.order, ['a', 'e', 'g']);
 });
 
-void test('Once Around rejects late first, completed opportunity, no-op and stale event without card loss', () => {
+void test('Once Around first after a prior bid moves only unacted bidders and preserves the committed bid', () => {
+  let g = auction('g');
+  const first = g.richeseAuction!.active!;
+  g = bid(g, first, 1);
+  const before = reload(g);
+  assert.ok(viewGame(g, 'g').saphoOptions.some((o) => o.scope === 'onceAround' && o.mode === 'first'));
+  g = applyAction(reload(g), 'g', action(g, 'first'));
+  assert.deepEqual(g.richeseAuction!.acted, [first]);
+  assert.equal(g.richeseAuction!.bid, 1);
+  assert.equal(g.richeseAuction!.bidder, first);
+  assert.deepEqual(g.richeseAuction!.tieOrder, before.richeseAuction!.tieOrder);
+  assert.equal(g.richeseAuction!.active, 'g');
+  assert.equal(g.discard.filter((c) => c.id === card).length, 1);
+  g = bid(reload(g), 'g', 2);
+  assert.equal(g.richeseAuction!.active, 'e');
+  assert.deepEqual(g.richeseAuction!.acted, [first, 'g']);
+  const sold = g.richeseAuction!.cardId;
+  g = bid(g, 'e', 3);
+  assert.ok(g.players[1].hand.some((c) => c.id === sold));
+  assert.equal(g.players[1].spice, 17);
+});
+
+void test('Once Around rejects no-op first, completed opportunity, no-op last and stale event without card loss', () => {
   let g = auction();
   g = bid(g, g.richeseAuction!.active!, 1);
   reject(g, 'e', action(g, 'first'));

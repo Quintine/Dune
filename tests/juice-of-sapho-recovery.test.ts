@@ -96,7 +96,7 @@ const clock: Rooms.RoomsClock = { now: () => 10000, sleep: async () => {} };
 
 const SAPHO = 'richese-juice-of-sapho';
 type Scope = 'onceAround' | 'movement';
-async function fixture(scope: Scope, advanced = false) {
+async function fixture(scope: Scope, advanced = false, lateFirst = false) {
   const store = unitStore();
   const made = await store.rooms.createRoom(
     'First player',
@@ -107,7 +107,7 @@ async function fixture(scope: Scope, advanced = false) {
   const code = made.view.code;
   const holder = await store.rooms.joinRoom(code, 'Sapho holder', 'emperor');
   const guild = await store.rooms.joinRoom(code, 'Guild', 'guild');
-  const fourth = advanced
+  const fourth = advanced || lateFirst
     ? await store.rooms.joinRoom(code, 'Later player', 'harkonnen')
     : null;
   const seats = await Promise.all(
@@ -165,7 +165,9 @@ async function fixture(scope: Scope, advanced = false) {
       'Roster',
       'richese',
     ).leaders;
-    initial.order = [seats[2].playerId, seats[1].playerId, seats[0].playerId];
+    initial.order = lateFirst
+      ? [seats[2].playerId, seats[3].playerId, seats[1].playerId, seats[0].playerId]
+      : [seats[2].playerId, seats[1].playerId, seats[0].playerId];
   }
   const save = (g: engine.Game) =>
     store.sqlite
@@ -192,11 +194,9 @@ async function fixture(scope: Scope, advanced = false) {
       direction: 'clockwise',
     });
     g = await f.restart().readRoom(code);
-    assert.deepEqual(g.richeseAuction!.order, [
-      seats[2].playerId,
-      seats[1].playerId,
-      seats[0].playerId,
-    ]);
+    assert.deepEqual(g.richeseAuction!.order, lateFirst
+      ? [seats[3].playerId, seats[2].playerId, seats[1].playerId, seats[0].playerId]
+      : [seats[2].playerId, seats[1].playerId, seats[0].playerId]);
   } else if (advanced) {
     const g = await f.restart().readRoom(code);
     assert.equal(g.decision?.kind, 'guildTiming');
@@ -392,6 +392,37 @@ void test('Once Around last survives duplicate cardplay and restart without repl
       allyPayment: 0,
     });
     assert.deepEqual(await stable(f), g);
+  } finally {
+    f.hooks.beforeWrite = undefined;
+    f.sqlite.close();
+  }
+});
+
+void test('a prior persisted bid survives duplicate Sapho first and the remaining one-bid order', async () => {
+  const f = await fixture('onceAround', false, true);
+  try {
+    let g = await stable(f);
+    const event = g.richeseAuction!.event;
+    g = await act(f, 3, bid(g, 2));
+    const previous = structuredClone(g.richeseAuction!);
+    await privacy(f, 'onceAround', event, ['first', 'last']);
+    g = await duplicate(f, action('onceAround', event, 'first'));
+    assert.deepEqual(g.richeseAuction!.order, [
+      f.seats[3].playerId, f.seats[1].playerId,
+      f.seats[2].playerId, f.seats[0].playerId,
+    ]);
+    assert.equal(g.richeseAuction!.active, f.seats[1].playerId);
+    for (const key of ['acted', 'bid', 'bidder', 'tieOrder', 'sealed'] as const)
+      assert.deepEqual(g.richeseAuction![key], previous[key]);
+    await privacy(f, 'onceAround', event, []);
+    g = await act(f, 1, bid(g, 3));
+    assert.equal(g.richeseAuction!.active, f.seats[2].playerId);
+    g = await act(f, 2, bid(g, null));
+    assert.equal(g.richeseAuction!.active, f.seats[0].playerId);
+    g = await act(f, 0, bid(g, null));
+    assert.equal(g.players[1].spice, 17);
+    assert.equal(g.discard.filter((card) => card.id === SAPHO).length, 1);
+    await rejectsWithoutWrite(f, 1, action('onceAround', event, 'first'));
   } finally {
     f.hooks.beforeWrite = undefined;
     f.sqlite.close();
