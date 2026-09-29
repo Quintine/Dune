@@ -76,6 +76,7 @@ import { BureaucratPayment } from './bureaucrat-payment';
 import { Bribes } from './bribes';
 import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
+import { SemutaReaction } from './semuta-reaction';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
@@ -297,8 +298,9 @@ export function GameTable({
         ]
       : [],
   );
-  const busy =
-    transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot || g.automaticContinuationPending;
+  const reactionBusy =
+    transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot;
+  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction;
   const traitorBattle = g.battle;
   const traitorBeneficiary =
     traitorBattle &&
@@ -1002,6 +1004,8 @@ export function GameTable({
                       faction(g.players.find((p) => p.id === id)!.faction).name,
                   )
                   .join(' + ') || 'No winner'
+              : g.semutaReaction
+                ? 'Fresh discard response'
               : g.automaticContinuationPending
                 ? 'Completing the card action'
                 : g.truthtrance
@@ -1613,6 +1617,7 @@ export function GameTable({
           </div>
           {g.battle?.revealed && <a className="battle-display-link" href="#revealed-battle-plans">Compare revealed battle plans</a>}
           <PrivateBattlePlan game={g} />
+          {g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
           <NexusCards game={g} act={act} busy={busy} />
           <Recruits game={g} act={act} busy={busy} />
           <NexusTraitors game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />

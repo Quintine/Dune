@@ -104,3 +104,14 @@ Five physical effects now have bounded development handlers: Karama, Distrans, N
 ## Portable Snooper and retention clarification (2026-09-06)
 
 Six effects now have bounded development handlers: Karama, Distrans, Nullentropy Box, Ornithopter, Residual Poison and Portable Snooper. Portable supports normal and late poison defense with separate public played-card custody and ordinary winner/Moritani retention. The November 2020 official FAQ corrects the earlier overly strict assumption that a discard footer always denies winner retention; Mirror’s copied mandatory-discard exception remains a separate pending ruling. Four effects and complete combined games remain unfinished. See [PORTABLE_SNOOPER_ENGINE_AUDIT.md](PORTABLE_SNOOPER_ENGINE_AUDIT.md) and [MIRROR_WEAPON_ENGINE_AUDIT.md](MIRROR_WEAPON_ENGINE_AUDIT.md).
+
+## 30 September 2026 — Semuta clean-discard preview
+
+The [bounded Semuta runtime](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
+supersedes the older inactive-card observations above for one
+explicitly opted-in Richese development profile. Neutral all-seat
+responses, physical one-card recovery, a provisional free-slot guard,
+minimal legal AI and saved continuation now work after clean public
+ordinary-card discards. The other semantic discard families and
+full-hand ordering are not connected; the ten-card inventory, cache
+custody and public expansion start gate remain unchanged.

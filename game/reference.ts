@@ -414,7 +414,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A player whose hand becomes full is automatically passed, or submits zero in an unfinished Silent lot. A full-hand owner’s unbid cache card is removed automatically. If every hand is full, preparing the normal pool does not draw and lose unseen cards.',
       'AI supports cache choices and all three offered bidding methods using its own projected information. It currently skips the optional Black Market prelude. A seller in an already offered Black Market lot passes or submits zero.',
       'Some unresolved rules are explicitly blocked: changing the normal card count after cache-auction cancellation, exhausted-cache arithmetic, positive Black Market self-bids, and advanced Ixian Technology substitution on special lots. These are implementation guards while the rules are resolved, not claims of official prohibitions.',
-      'Juice of Sapho now supports bounded first/last Once Around, movement and remaining battle-choice ordering; see its timing guide for current limits. Richese’s Karama uses the existing generic handler, Distrans supports a separate private hand transfer, Nullentropy Box supports a paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment in development fixtures. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies opposing revealed attacks, with independent copy-first choices for Tooth and Stone in bounded CHOAM/Richese-deck classic-faction battles. A winning physical Mirror may be kept even after copying activated Tooth or Artillery under the user-selected interpretation, not a publisher clarification. Semuta Drug and other Sapho timing modes remain unfinished; this does not certify every Karama interaction. Richese expansion starts remain disabled. Each component guide identifies its currently available action. Independent continuation and persisted-room checks pass. Desktop checks confirmed all ten enlarged guides, direct topic links, Once Around payment and restored private Silent bidding. Mobile and full Richese-game verification remain unfinished.',
+      'Juice of Sapho now supports bounded first/last Once Around, movement and remaining battle-choice ordering; see its timing guide for current limits. Richese’s Karama uses the existing generic handler, Distrans supports a separate private hand transfer, Nullentropy Box supports a paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment in development fixtures. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies opposing revealed attacks, with independent copy-first choices for Tooth and Stone in bounded CHOAM/Richese-deck classic-faction battles. A winning physical Mirror may be kept even after copying activated Tooth or Artillery under the user-selected interpretation, not a publisher clarification. Semuta Drug has a bounded clean public ordinary-discard preview; other discard producers and Sapho timing modes remain unfinished. This does not certify every Karama interaction. Richese expansion starts remain disabled. Each component guide identifies its currently available action. Independent continuation and persisted-room checks pass. Desktop checks confirmed all ten enlarged guides, direct topic links, Once Around payment and restored private Silent bidding. Mobile and full Richese-game verification remain unfinished.',
     ],
     related: [
       'choam-modules',
@@ -625,7 +625,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The server checks alliance, exact card ownership, capacity and commitments again before transfer. An obsolete pending gift aborts without a partial transfer and restores its interrupted flow. Unrelated players see the gift power, not its private card identity. A pending card cannot also be spent, exchanged or randomly extracted.',
       'After cancellation, trying the same card again in the same phase is currently blocked pending a ruling on repeated use. This is an explicit implementation guard, not a printed once-per-phase limit on all gifts. Other legally available cards are assessed separately.',
       'All four AI profiles conservatively give only the canonical Richese Karama during Bidding to free a full hand when the ally’s public card count is lower and there is room. They do not inspect ally hand contents or infer an unknown need for a card. Pending responses, decisions and Truthtrance take priority.',
-      'All ten canonical Richese cards may be transferred when legal, and Karama has its existing card-effect handler. Distrans supports its separate card-transfer effect, Nullentropy Box supports paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies an opposing revealed weapon in bounded CHOAM/Richese-deck classic-faction battles, with copy-first Tooth/Stone choices; physical-Mirror winner retention even after copied activated Tooth/Artillery is a user-selected interpretation. Juice of Sapho supports bounded Once Around and movement ordering. Semuta Drug and other Sapho timing modes remain unfinished. Desktop gift transfer and fresh-tab pending recovery have been checked in a synthetic table. Mobile, broader interactions and full Richese games remain pending; Richese starts remain disabled.',
+      'All ten canonical Richese cards may be transferred when legal, and Karama has its existing card-effect handler. Distrans supports its separate card-transfer effect, Nullentropy Box supports paid private discard search, Ornithopter supports its two movement modes, and Residual Poison supports a random opposing leader death before leader commitment. Portable Snooper supports ordinary and late poison defense. Stone Burner supports a guarded weapon commitment and revealed leader-effect choice. Mirror Weapon copies an opposing revealed weapon in bounded CHOAM/Richese-deck classic-faction battles, with copy-first Tooth/Stone choices; physical-Mirror winner retention even after copied activated Tooth/Artillery is a user-selected interpretation. Juice of Sapho supports bounded Once Around and movement ordering. Semuta Drug has a bounded clean ordinary-discard preview; other discard producers and Sapho timing modes remain unfinished. Desktop gift transfer and fresh-tab pending recovery have been checked in a synthetic table. Mobile, broader interactions and full Richese games remain pending; Richese starts remain disabled.',
     ],
     related: [
       'richese-cards',
@@ -690,7 +690,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A transfer must preserve binding battle answers, compulsory discards and both sides of a pending Harkonnen hand exchange. The recipient must retain room for its mandatory incoming return. Optional proposals that become unavailable can still finish through their existing decline or no-effect path.',
       'A different legal transfer can fill or free space for a pending Richese gift. The ordinary Distrans transfer resolves first, and the pending gift rechecks capacity before moving its own card. A canceled alliance gift does not automatically prevent using this separate card effect.',
       'All four AI profiles use their own legal projected cards. They may give an allied Bene Gesserit or CHOAM a Worthless card, or share a duplicate ordinary weapon, defense or Karama to free a full hand. They do not inspect the recipient’s private cards and preserve existing decision priority.',
-      'Semuta discard reactions, mobile acceptance, the unresolved bid and self-transfer cases, and full combined Richese games remain unfinished. Completing this transfer does not enable all remaining Richese cards or expansion starts.',
+      'Semuta responses to a fresh Distrans discard, mobile acceptance, the unresolved bid and self-transfer cases, and full combined Richese games remain unfinished. The separate clean public ordinary-card Semuta preview does not enable this transfer composition, all remaining Richese cards or expansion starts.',
     ],
     related: [
       'card-richese-distrans',
@@ -704,7 +704,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Synchronous two-card custody, private transfer, normal Distrans disposal, both-card reservations and prospective transaction/promise checks are integrated. Open-lot timing and self-transfer remain explicit guards; future Semuta reactions are unfinished.',
+          'Synchronous two-card custody, private transfer, normal Distrans disposal, both-card reservations and prospective transaction/promise checks are integrated. Open-lot timing and self-transfer remain explicit guards; Semuta reaction to Distrans disposal is not yet integrated.',
       },
       {
         area: 'Player controls',
@@ -941,7 +941,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'An active Truthtrance question and exact card or transaction commitments must resolve as required. A full hand is currently guarded: the printed sequence adds the recovered card before discarding the Box, and the temporary capacity question is unresolved. The current implementation requires a pre-existing free hand slot. This is not a verified prohibition on every net-zero exchange.',
       'A pending Guild refund claim on a discarded shipping Karama also blocks starting the search while that provisional refund policy is unresolved. The guard protects the competing claim to that card; it is not a general ban on Box during Shipment. Empty or only-Box searches are rejected before payment under the current unsupported-empty-search policy; there is no fallback deck draw.',
       'All four AI profiles start only when their own projected availability and spice reserve allow it. They do not inspect unpaid discard contents. Once paid, they choose from their entitled cards, prefer existing functional effects over unfinished Richese faces and complete a legal selection even if only unfinished effects remain. A paid search takes priority over optional actions.',
-      'This bounded search, its controls and recovery are integrated in development fixtures. Full-hand activation, the provisional Guild refund interaction and future Semuta discard reactions remain unresolved or unfinished. Mirror Weapon has a separate bounded CHOAM/Richese-deck classic-faction battle path; Semuta Drug remains inactive, and full Richese starts remain disabled. Complete browser, mobile and full-game acceptance is not claimed here.',
+      'This bounded search, its controls and recovery are integrated in development fixtures. Full-hand activation, the provisional Guild refund interaction and Semuta response to the used Box remain unresolved or unfinished. Mirror Weapon has a separate bounded CHOAM/Richese-deck classic-faction battle path; Semuta Drug has a separate clean public ordinary-card preview, and full Richese starts remain disabled. Complete browser, mobile and full-game acceptance is not claimed here.',
     ],
     related: [
       'card-richese-nullentropy-box',
@@ -1154,6 +1154,8 @@ export const RULE_TOPICS: RuleTopic[] = [
                         ? 'Choose Mirror Weapon in the battle weapon slot in a supported CHOAM/Richese-deck table. Its attack copies the opposing revealed weapon; copied Tooth or Stone choices resolve first and independently. Under the user-selected interpretation, a winning physical Mirror may be retained even after a copied Tooth or Artillery attack. Full Richese starts and combined modules remain guarded.'
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
+                        : definition.card.effect === 'semutaDrug'
+                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard. Continue or commit your held Semuta with a free hand slot; the sole eligible card transfers automatically. Other discard producers, full-hand sequencing and normal Richese starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1163,32 +1165,36 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Fresh-card recovery has isolated transfer rules. Ixian and CHOAM exchanges, battle cleanup, Sabotage, Robbery, the used Nullentropy Box, retired Ornithopter, answered Truthtrance and completed ordinary card effects preserve unfinished steps for recovery. Random victims, completed draws and the paid Box shuffle are not repeated. Semuta activation and the remaining discard timings are unfinished.',
+                  'An explicitly opted-in Richese profile now interrupts clean public ordinary-card discards with a neutral all-seat offer. Committing a held Semuta atomically claims the sole eligible other-player card, discards Semuta and resumes the saved ordinary-card suffix once. Other typed discard producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The complete card can be inspected. Playing Semuta, declining its opportunity and choosing a fresh discard are not enabled.',
+                  'All seats can Continue at the neutral fresh-discard boundary; only the actual holder sees Commit. A committed multi-card selection control is available when that later producer family is integrated. Normal Richese starts remain gated.',
               },
               {
                 area: 'AI' as const,
                 status: 'Partial' as const,
                 detail:
-                  'AI resumes saved exchanges, battle cleanup, forced Terror discards, completed Box searches, retired Ornithopter movement, answered Truthtrance queues and completed ordinary card effects automatically. No difficulty can yet play Semuta or choose its claimed card.',
+                  'All four AI profiles use their own projected hand to commit or pass the exact current event, and can choose only privately projected committed candidates. This is minimal legal participation, not tuned strategy.',
               },
               {
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide explains one fresh other-player discard and selection from simultaneous discards. Reaction timing and full-hand use remain unresolved.',
+                  'The guide distinguishes the bounded public ordinary-card prototype, privacy-neutral acknowledgements and conservative free-slot policy from unresolved full-hand sequencing and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Isolated transfer, private exchange, battle, Box, Ornithopter, Truthtrance and ordinary-card recovery, and concurrent settlement checks pass. These do not verify an actual Semuta opportunity or a complete Richese game.',
+                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and all four legal AI profiles cover the bounded ordinary-card reaction. Other discard producers, full games and live deployment remain unverified.',
                 evidence: [
+                  'tests/semuta-engine.test.ts',
+                  'tests/semuta-recovery.test.ts',
+                  'tests/bot-semuta.test.ts',
+                  'tests/semuta-reaction-controls.test.tsx',
                   'tests/semuta-drug.test.ts',
                   'tests/treachery-discard-continuations.test.ts',
                   'tests/multiplayer-discard-continuations.test.ts',

@@ -58,3 +58,30 @@ Useful acceptance test: hold public state and clock/event progression fixed; rep
 The existing unresolved **Guild-stopped shipping-Karama refund** also constrains claiming that exact provisionally refundable card. Do not ask it again as a new Semuta question. Fence its competing custody or resolve the existing underlying ruling; this does not prohibit every shipment-phase Semuta event. Current Box guard in `game/engine.ts` near `:1209` already identifies this composition.
 
 Do not ask again about normal targets, forced-discard owner bookkeeping, simultaneous selection, zero fee, automatic singleton selection or semantic batch implementation. Do not repeat the three pending Sapho questions. No new authoritative capacity/priority ruling was obtained by this review.
+
+## 30 September 2026 — bounded clean-discard runtime
+
+The explicit `semuta` development profile starts a fresh Richese roster
+without opening ordinary expansion starts. It now interrupts **one public
+ordinary-card discard** from a clean transaction with a neutral
+fresh-discard opportunity for every seat, regardless of hidden Semuta
+possession. Each seat can Continue; only the canonical holder with a
+free hand slot and a card discarded by another player can commit. The
+sole eligible fresh card transfers automatically in the same accepted
+action, then Semuta goes to the normal discard pile. The saved ordinary
+card effect resumes once; passing by every seat preserves the original
+discard and effect. No face from an undisclosed event is projected before
+commitment. Owner-only multi-candidate selection support exists in the
+reaction component and bot adapter, but no multi-discard producer is
+activated in this first boundary.
+
+This neutral all-seat acknowledgement is a conservative **application
+policy**, not a newly discovered publisher timing rule. The explicit
+free-slot requirement is a provisional safety guard, not the printed
+resolution of full-hand take-before-discard. Auction, CHOAM market,
+pending gifts, competing responses and other typed discard producers
+retain their existing automatic continuation; Semuta cannot claim those
+events yet. No source ruling is inferred from this omission. The
+separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
+auto-closing only when nobody secretly holds the card would leak
+possession. The main game and public expansion gates remain closed.

@@ -39,6 +39,8 @@ export function richeseCardActionBlock(card: VisibleCard): string | null {
     return 'Use the Juice of Sapho panel to choose an available order change or become battle aggressor before plans.';
   if (definition?.card.effect === 'distrans')
     return 'Choose a recipient and card in the Distrans transfer panel.';
+  if (definition?.card.effect === 'semutaDrug')
+    return 'Use the neutral fresh-discard response in the Semuta development preview. Only clean public ordinary-card discards are connected; other discard events remain unfinished.';
   return definition && definition.card.effect !== 'karama'
     ? 'This Richese card’s effect is not implemented yet. You can inspect its rules.'
     : null;
@@ -89,6 +91,8 @@ export function cardPresentation(card: VisibleCard): CardPresentation {
       availability:
         richese.card.effect === 'juiceOfSapho'
           ? 'Richese effect integration and verification are incomplete. Supported controls cover Once Around first or last while your bid remains open, bounded movement and battle-choice ordering, and aggressor during the shared pre-plan opportunity. Earlier bids stay committed. Later aggressor intervention and other phase or auction modes remain unfinished; expansion starts remain disabled.'
+          : richese.card.effect === 'semutaDrug'
+            ? 'The explicit Semuta development preview offers neutral responses after clean public ordinary-card discards, with owner-only commitment and a conservative free-slot requirement. Other discard producers, full-hand sequencing and normal expansion starts remain unfinished.'
           : richese.card.effect === 'mirrorWeapon'
             ? 'Mirror Weapon works in bounded CHOAM/Richese-deck classic-faction battles; copied Tooth and Stone choices resolve separately, and a winning physical Mirror may be kept even after copying Tooth or Artillery. This winner-retention treatment is a user-selected interpretation, not an official clarification. Combined modes and full Richese starts remain gated.'
           : richese.card.effect === 'stoneBurner'

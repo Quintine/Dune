@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 30 September 2026 — neutral Semuta clean-discard prototype
+
+The [bounded runtime](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
+uses an explicit fresh Richese development profile. A real Hajr discard
+after genuine setup opens an identical public event for all seats;
+only the actual holder sees Commit, no one inspects a fresh face
+before commitment, and the sole eligible other-player card transfers
+automatically with Semuta's physical disposal. All-seat passes preserve
+the card and effect. Free hand space is a conservative, provisional
+guard. Other discard producers and full-hand sequencing remain
+unfinished; normal Richese/public starts remain closed.
+
+Focused engine cases preserve exact custody through JSON, hide possession
+under an equal-card-count private swap, reject stale/forged actions and
+corrupt saved reactions, and complete each original effect once.
+An isolated production room module with migrated SQLite restored the
+same owner-private offer and committed one of two competing Semuta
+requests under room CAS; the fixture's seat rows remained intact.
+The actual `start-prototype.ts --profile semuta` CLI started a fresh
+disposable ready lobby with its seat preserved. Mobile browser GET
+fixtures showed the owned Commit button and rival Continue-only panel
+at the same event; no browser POST or real local room was mutated.
+
+Independent privacy review found no scoped leak. Rules review identified
+and prompted fixes for a deleted-reaction auto-retire, duplicate
+Semuta custody, a suspended CHOAM sale crossing the clean gate, and a
+forged all-passed deadlock. Deleted-reaction, duplicate-card and
+all-passed corruption each have failing-before/passing-after regressions;
+the CHOAM sale exclusion was source-reviewed without a direct fixture.
+A final read-only review found no remaining scoped issue. Focused
+Semuta/ordinary-continuation and room-start tests pass; full-game and
+deployed acceptance do not follow from this bounded preview.
+
+An unstaged six-seat Basic Richese preview at RNG seed `20260930`
+completed 916 accepted actions, zero rejected candidates, 24 JSON view
+restores and six neutral passes at one ordinary-card discard. No
+natural Semuta acquisition/commitment occurred in that game; the
+focused genuine-setup and production-D1 fixtures cover the committed
+claim. `npm run check` passes typecheck, lint and 5,801/5,801 offline
+cases; `npm run build` and all 55/55 local development HTTP tests pass.
+These results and one complete sampled game do not certify the
+remaining card sources, full Richese mode or deployment.
+
 ## 30 September 2026 — owner key rotation and safe re-enable
 
 The [account panel](ADMIN_ACCOUNTS.md) now rotates another enabled or

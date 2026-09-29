@@ -377,7 +377,7 @@ import {
   resolveNullentropyBox,
 } from './nullentropy-box';
 import { transferDistrans } from './distrans';
-import type { FreshDiscardBatch } from './semuta-drug';
+import { SEMUTA_DRUG_ID, committedSemutaCandidates, resolveSemutaDrug, type FreshDiscardBatch, type SemutaContext } from './semuta-drug';
 import {
   prepareRicheseGift,
   transferRicheseGift,
@@ -1105,6 +1105,9 @@ export type Game = {
   pendingTreacheryDiscard?: {
     sequence: number;
     batch: FreshDiscardBatch;
+    reaction?:
+      | { stage: 'offer'; passed: string[] }
+      | { stage: 'select'; player: string; candidates: string[] };
     continuation:
       | { kind: 'ambassador'; entry: NonNullable<Game['pendingAmbassador']> }
       | { kind: 'discoveryStash'; event: string; owner: string; card: string }
@@ -1682,6 +1685,8 @@ export type Game = {
   mentatQuestionPreview?: true;
   /** Private development opt-in while uniform hidden-eligibility UX is pending. */
   moritaniAssassinatePreview?: true;
+  /** Explicit development-only neutral Semuta reaction profile. */
+  semutaPreview?: true;
   moritaniAssassinate?: MoritaniAssassinateState;
   moritaniAssassinateCallEvents?: string[];
   moritaniAssassinateResume?: {
@@ -4838,6 +4843,11 @@ function suspendedControlsIntegrity(
   auditorIntegrity(context);
 }
 function treacheryDiscardIntegrity(g: Game) {
+  requireRule(g.semutaPreview === undefined || g.semutaPreview === true &&
+    g.expansions.includes('choam') && !!byFaction(g, 'richese') &&
+    !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.discoveries &&
+    !g.discoveryEnabled && !g.techTokens && !g.strongholdCards,
+  'This Semuta preview no longer matches its original Richese profile.');
   const pending = g.pendingTreacheryDiscard;
   const sequence = g.treacheryDiscardSequence ?? 0;
   const resolved = g.resolvedTreacheryDiscardSequence ?? 0;
@@ -4909,6 +4919,32 @@ function treacheryDiscardIntegrity(g: Game) {
       'The fresh discard receipt has conflicting physical custody.',
     );
     ids.add(card.id);
+  }
+  const reaction = pending.reaction;
+  requireRule(reaction !== undefined || !semutaOfferSupported(g, continuation, batch.entries),
+    'The saved fresh discard lost its neutral Semuta reaction.');
+  if (reaction !== undefined) {
+    requireRule(semutaOfferSupported(g, continuation, batch.entries),
+      'This saved Semuta opportunity has no supported fresh discard.');
+    const physical = physicalTreacheryCards(g).filter(card => card.id === SEMUTA_DRUG_ID);
+    requireRule(physical.length === 1 &&
+      richeseCardDefinition(physical[0])?.card.effect === 'semutaDrug',
+    'The saved Semuta reaction lost unique physical card custody.');
+    if (reaction.stage === 'offer') {
+      requireRule(Object.keys(reaction).sort().join(',') === 'passed,stage' &&
+        Array.isArray(reaction.passed) &&
+        new Set(reaction.passed).size === reaction.passed.length &&
+        reaction.passed.length < g.players.length &&
+        reaction.passed.every(id => g.players.some(p => p.id === id)),
+      'The neutral Semuta passes lost their original participants.');
+    } else if (reaction.stage === 'select') {
+      const owner = g.players.find(p => p.id === reaction.player);
+      requireRule(Object.keys(reaction).sort().join(',') === 'candidates,player,stage' &&
+        owner && Array.isArray(reaction.candidates) && reaction.candidates.length >= 1 &&
+        JSON.stringify(reaction.candidates) ===
+          JSON.stringify(semutaCandidates(g, owner).map(card => card.id)),
+      'The committed Semuta claim lost its private fresh candidates.');
+    } else throw new RuleError('Unknown saved Semuta reaction stage.');
   }
   if (continuation?.kind === 'nullentropyDiscard') {
     const c = continuation;
@@ -5606,6 +5642,71 @@ function treacheryDiscardIntegrity(g: Game) {
       'The committed Kaitain discard no longer matches its payment and closing opportunity.');
   } else throw new RuleError('Unknown saved discard continuation.');
 }
+/** First playable Semuta boundary: one public ordinary-card discard with no
+ * competing suspended transaction. Other typed frames retain their existing
+ * automatic continuation until their reaction composition is integrated. */
+function semutaOfferSupported(
+  g: Game,
+  continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  entries: FreshDiscardBatch['entries'],
+) {
+  return g.semutaPreview === true && g.status === 'playing' &&
+    g.players.some(p => p.faction === 'richese') &&
+    continuation.kind === 'ordinaryCardDiscard' &&
+    entries.length === 1 && entries[0].publicFace &&
+    !continuation.resume.response && !continuation.resume.decision &&
+    !continuation.resume.pendingKarama && !continuation.resume.phaseOpening &&
+    !g.karamaShipping && !g.auction && !g.richeseAuction && !g.battle &&
+    !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
+    !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
+    !g.pendingHomeworldShipment && !g.pendingRicheseGift &&
+    !g.pendingRichesePurchaseIncome && !g.choamMarket &&
+    !g.pendingChoamMarketGhola;
+}
+function semutaContext(g: Game, owner: Player): SemutaContext {
+  const pending = g.pendingTreacheryDiscard!;
+  return {
+    batch: pending.batch, event: pending.batch.event, turn: g.turn, phase: g.phase,
+    owner: owner.id, ownerHand: owner.hand, discard: g.discard,
+    semutaId: SEMUTA_DRUG_ID, handLimit: handLimit(owner),
+    incomingReservedSlots: 0, capacityPolicy: 'freeSlot', reservedTargetIds: [],
+  };
+}
+function semutaCandidates(g: Game, owner: Player) {
+  const context = semutaContext(g, owner);
+  try {
+    return committedSemutaCandidates(context,
+      { event: context.event, player: owner.id, semutaId: SEMUTA_DRUG_ID });
+  } catch {
+    throw new RuleError('This fresh Semuta claim is not available.');
+  }
+}
+
+function projectedSemutaReaction(g: Game, me: Player) {
+  const pending = g.pendingTreacheryDiscard;
+  const reaction = pending?.reaction;
+  if (!pending || !reaction) return null;
+  if (reaction.stage === 'select')
+    return {
+      event: pending.batch.event, stage: 'select' as const, passed: true,
+      canCommit: false, blocked: null,
+      candidates: reaction.player === me.id ? semutaCandidates(g, me) : [] as Card[],
+    };
+  const passed = reaction.passed.includes(me.id);
+  const held = me.hand.some(card => card.id === SEMUTA_DRUG_ID &&
+    richeseCardDefinition(card)?.card.effect === 'semutaDrug');
+  const blocked = !held || passed ? null
+    : me.hand.length >= handLimit(me)
+      ? 'A free hand slot is required before taking a card with Semuta Drug.'
+      : pending.batch.entries.every(entry => entry.discardedBy === me.id)
+        ? 'No other player discarded a card in this fresh event.'
+        : null;
+  return {
+    event: pending.batch.event, stage: 'offer' as const, passed,
+    canCommit: held && !passed && !blocked, blocked, candidates: [] as Card[],
+  };
+}
+
 function stageTreacheryDiscard(
   g: Game,
   cause: string,
@@ -5625,20 +5726,38 @@ function stageTreacheryDiscard(
       cause,
       entries: structuredClone(entries),
     },
+    ...(semutaOfferSupported(g, continuation, entries)
+      ? { reaction: { stage: 'offer' as const, passed: [] as string[] } } : {}),
     continuation: structuredClone(continuation),
   };
   treacheryDiscardIntegrity(g);
 }
-/** No reaction policy is selected here. Semuta activation remains unavailable.
- * The existing exchanges resume automatically from their exact committed stage. */
-function finishTreacheryDiscard(g: Game) {
+/** Retire a completed fresh discard before its typed continuation resumes. */
+function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string }, finalPass?: string) {
   treacheryDiscardIntegrity(g);
   const pending = g.pendingTreacheryDiscard;
   if (!pending) return;
   const next = pending.continuation;
-  // Retire before any suffix can draw or create the next semantic discard.
+  requireRule(!pending.reaction ||
+    (claim ? pending.reaction.stage === 'select' &&
+      pending.reaction.player === claim.player &&
+      pending.reaction.candidates.includes(claim.card) :
+      pending.reaction.stage === 'offer' && finalPass !== undefined &&
+      pending.reaction.passed.length === g.players.length - 1 &&
+      g.players.some(p => p.id === finalPass) &&
+      !pending.reaction.passed.includes(finalPass)),
+    'Finish the fresh discard reaction before its continuation.');
+  const owner = claim ? getPlayer(g, claim.player) : null;
+  const result = claim && owner ? resolveSemutaDrug(semutaContext(g, owner), claim.card) : null;
+  // Retire before the Semuta transfer or any suffix can draw the fresh card.
   g.resolvedTreacheryDiscardSequence = pending.sequence;
   g.pendingTreacheryDiscard = null;
+  if (result && owner) {
+    owner.hand = result.ownerHand;
+    g.discard = result.discard;
+    log(g, `${owner.name} played Semuta Drug and recovered one freshly discarded Treachery Card. The acquired card stays private.`,
+      { faction: owner.faction, name: 'Semuta Drug' });
+  }
   if (next.kind === 'winnerMandatoryDiscard') {
     finishWinner(g, getPlayer(g, next.player), next.territory, next.optional);
     return;
@@ -5721,6 +5840,40 @@ function finishTreacheryDiscard(g: Game) {
   } else {
     finishBattle(g);
   }
+}
+
+function applySemutaReaction(g: Game, id: string, action: Action) {
+  const pending = g.pendingTreacheryDiscard;
+  const reaction = pending?.reaction;
+  requireRule(pending && reaction && action.event === pending.batch.event,
+    'This fresh discard reaction is no longer available.');
+  const player = getPlayer(g, id);
+  if (reaction.stage === 'offer') {
+    requireRule(!reaction.passed.includes(id), 'You already passed this discard.');
+    if (action.type === 'semutaPass') {
+      requireRule(Object.keys(action).sort().join(',') === 'event,type',
+        'Pass only the current fresh discard.');
+      if (reaction.passed.length + 1 === g.players.length)
+        finishTreacheryDiscard(g, undefined, id);
+      else reaction.passed.push(id);
+      return;
+    }
+    requireRule(action.type === 'semutaCommit' &&
+      Object.keys(action).sort().join(',') === 'event,type',
+    'Choose whether to commit Semuta to this discard.');
+    const candidates = semutaCandidates(g, player).map(card => card.id);
+    pending.reaction = { stage: 'select', player: id, candidates };
+    if (candidates.length === 1) finishTreacheryDiscard(g, { player: id, card: candidates[0] });
+    else log(g, `${player.name} committed Semuta Drug to this fresh discard and must choose one card privately.`,
+      { faction: player.faction, name: 'Semuta Drug' });
+    return;
+  }
+  requireRule(action.type === 'semutaSelect' &&
+    Object.keys(action).sort().join(',') === 'card,event,type' &&
+    id === reaction.player && typeof action.card === 'string' &&
+    reaction.candidates.includes(action.card),
+  'Choose one committed Semuta card from this fresh discard.');
+  finishTreacheryDiscard(g, { player: id, card: action.card });
 }
 function place(p: Player, t: string, s: number, n: number, elite = 0) {
   const k = location(t, s);
@@ -7011,6 +7164,15 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   g.moritaniAssassinatePreview = true;
   g.moritaniAssassinate = {version:1,owner:byFaction(g,'moritani')!.id,normalTraitorCall:false,opportunities:[]};
   g.moritaniAssassinateCallEvents = [];
+  return g;
+}
+/** Development-only Semuta reaction in a fresh Richese roster; public starts stay gated. */
+export function initializeSemutaGameForAudit(state: Game): Game {
+  requireRule(!state.semutaPreview && state.expansions.length === 1 &&
+    state.expansions[0] === 'choam' && state.players.some(p => p.faction === 'richese'),
+  'Semuta needs a fresh Richese faction game without other modules.');
+  const g = initializeFactionExpansionsGameForAudit(state);
+  g.semutaPreview = true;
   return g;
 }
 /** Prototype-only Discovery setup. Public starts stay gated while remaining effects are connected. */
@@ -22966,6 +23128,13 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   }
   if (state.pendingTreacheryDiscard) {
     getPlayer(state, id);
+    if (state.pendingTreacheryDiscard.reaction &&
+      ['semutaPass', 'semutaCommit', 'semutaSelect'].includes(action?.type)) {
+      const g = structuredClone(state);
+      applySemutaReaction(g, id, action);
+      treacheryDiscardIntegrity(g);
+      return g.pendingTreacheryDiscard?.reaction ? g : normalizeAutomaticGame(g);
+    }
     requireRule(
       action?.type === 'advanceBots',
       'Finish the committed discard continuation before another game action.',
@@ -23064,6 +23233,10 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     }
   }
   finishActionContinuations(g);
+  if (g.pendingTreacheryDiscard?.reaction) {
+    treacheryDiscardIntegrity(g);
+    return g;
+  }
   harkonnenExchangeIntegrity(g);
   finishLeaderSkillCustody(g, state);
   leaderSkillsIntegrity(g);
@@ -23099,7 +23272,9 @@ function finishActionContinuations(g: Game) {
   if (g.pendingNullentropy) return;
   // Losing cleanup may finish casualties and produce the winner's mandatory
   // discard. Retire that next physical batch before exposing optional choices.
-  for (let i = 0; g.pendingTreacheryDiscard && i < 16; i++) finishTreacheryDiscard(g);
+  for (let i = 0; g.pendingTreacheryDiscard && !g.pendingTreacheryDiscard.reaction && i < 16; i++)
+    finishTreacheryDiscard(g);
+  if (g.pendingTreacheryDiscard?.reaction) return;
   requireRule(!g.pendingTreacheryDiscard, 'The automatic discard chain did not finish.');
   if (pendingNexusTraitors(g)) return;
   observeOccupation(g);
@@ -23233,6 +23408,10 @@ export function normalizeAutomaticGame(state: Game): Game {
   normalizeCardNames(g);
   normalizeBattle(g);
   finishActionContinuations(g);
+  if (g.pendingTreacheryDiscard?.reaction) {
+    treacheryDiscardIntegrity(g);
+    return g;
+  }
   reconcileBattlePromises(g);
   reconcileShipmentPromises(g);
   settleAutomaticContinuations(g);
@@ -27144,7 +27323,8 @@ export function viewGame(state: Game, id: string) {
         : null,
     schema: g.schema,
     botsPending: g.botsPending ?? false,
-    automaticContinuationPending: !!g.pendingTreacheryDiscard || homeworldRevealPending(g) || homeworldShipmentAutomatic(g) || grummanCollectionAutomatic(g),
+    semutaReaction: projectedSemutaReaction(g, me),
+    automaticContinuationPending: (!!g.pendingTreacheryDiscard && !g.pendingTreacheryDiscard.reaction) || homeworldRevealPending(g) || homeworldShipmentAutomatic(g) || grummanCollectionAutomatic(g),
     botNextActionAt: g.botNextActionAt ?? null,
     code: g.code,
     version: g.version,
