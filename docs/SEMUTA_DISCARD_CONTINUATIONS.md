@@ -35,6 +35,14 @@ sources. The final forces and move counter are held in the existing
 bound flight frame; claim or decline retires that frame and logs the
 arrival once. Mixed entry reactions remain unsupported for Semuta.
 
+A single winner-selected public played card now pauses on the existing
+`battleCleanup` frame after the battle is resolved and any earlier
+mandatory discard has retired. Its winner, combatants and card custody
+remain bound while every seat receives a neutral offer; claim or
+decline retires the frame before `finishBattle` runs once. Multiple
+cards, Moritani loser retention and pending Auditor, capture, tech,
+Face Dance or CHOAM rewards remain automatic without this reaction.
+
 ## Main findings
 
 A post-`applyAction` pile diff cannot implement immediate Semuta. Ix Ambassador and Ixian ally replacement discard then draw directly. Ordinary Karama cancellation/purchase can reach replacement, Harkonnen bonus or a new auction pool indirectly. A stopped frame must resume at a named stage, never rerun its original public action.

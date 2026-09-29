@@ -494,3 +494,72 @@ void test('a completed clean Ornithopter flight offers the retired card before i
     assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
 });
+
+void test('a clean winner-selected battle card can be claimed after the resolved battle', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const weaponIndex = g.deck.findIndex(card => card.kind === 'projectile');
+  const [weapon] = g.deck.splice(weaponIndex, 1);
+  const [defense] = g.deck.splice(g.deck.findIndex(card => card.kind === 'snooper'), 1);
+  assert.ok(weapon && defense);
+  player(g, 'a').hand.push(weapon);
+  player(g, 'e').hand.push(defense);
+  for (const id of ['a', 'e']) {
+    player(g, id).forces = { 'arrakeen:10': 5 };
+    player(g, id).reserves = 15;
+    for (const leader of player(g, id).leaders) leader.strength = 0;
+  }
+  Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+    response: null, decision: null, phaseOpening: null, ready: [] });
+  const original = inventory(g);
+  let battle = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+  for (let step = 0; step < 40; step++) {
+    if (battle.response) {
+      const p = battle.players.find(p => !battle.response!.passed.includes(p.id))!;
+      battle = applyAction(battle, p.id, { type: 'passResponse' });
+    } else if (battle.battle?.preparation)
+      battle = applyAction(battle, battle.battle.preparation.owner, { type: 'declineBattlePower' });
+    else break;
+  }
+  if (battle.battle?.preLeader && !battle.battle.preLeader.closed)
+    for (const id of ['a', 'e'])
+      battle = applyAction(battle, id, {
+        type: 'battlePreparationReady', event: battle.battle!.preLeader!.event,
+      });
+  battle = applyAction(battle, 'a', { type: 'battlePlan', dial: 2, support: 2,
+    leader: player(battle, 'a').leaders[0].id, weapon: weapon.id });
+  battle = applyAction(battle, 'e', { type: 'battlePlan', dial: 0, support: 0,
+    leader: player(battle, 'e').leaders[0].id, defense: defense.id });
+  battle = applyAction(battle, 'a', { type: 'traitorCall', call: false });
+  battle = applyAction(battle, 'e', { type: 'traitorCall', call: false });
+  assert.equal(battle.decision?.kind, 'battleCards');
+  const pending = applyAction(battle, 'a', { type: 'decision', discard: [weapon.id] });
+  assert.equal(pending.pendingTreacheryDiscard?.batch.cause, 'battle:winner');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.discard.filter(card => card.id === weapon.id).length, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  let declined = reload(pending);
+  for (const id of ['e', 'a', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(declined.discard.filter(card => card.id === weapon.id).length, 1);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === weapon.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(claimed.discard.some(card => card.id === weapon.id), false);
+  const settled = (game: Game) => game.players.map(p => ({
+    id: p.id, spice: p.spice, forces: p.forces, reserves: p.reserves,
+    tanks: p.tanks, leaderDeaths: p.leaders.map(leader => leader.deaths),
+  }));
+  assert.deepEqual(settled(claimed), settled(declined));
+  assert.deepEqual(claimed.lastBattle, declined.lastBattle);
+  assert.deepEqual(inventory(claimed), original);
+  for (const p of claimed.players)
+    assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
+  assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});

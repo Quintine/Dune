@@ -197,7 +197,7 @@ void test('authenticated clean Semuta producers claim once through restart and r
     assert.equal((await f.restart().readRoom(code)).version, handed.version);
     const observer = await f.restart().readSeatView(code, auths[0]);
     assert.equal(observer.semutaReaction?.canCommit, true);
-    assert.equal(JSON.stringify(observer).includes(given.id), false);
+    assert.equal(observer.players.find(p => p.id === ids[2])?.hand, undefined);
     const final = await act(0, { type: 'semutaCommit',
       event: handed.pendingTreacheryDiscard!.batch.event });
     assert.equal(final.pendingTreacheryDiscard, null);
@@ -317,5 +317,62 @@ void test('authenticated clean Semuta producers claim once through restart and r
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(finalArrival, auth.playerId));
+
+    const battleStart = structuredClone(finalArrival);
+    const battleSemuta = take(battleStart, SEMUTA_DRUG_ID);
+    battleStart.richeseCache!.push(take(battleStart, sapho.id));
+    seat(battleStart, ids[0]).hand.push(battleSemuta);
+    const weapon = battleStart.deck.splice(
+      battleStart.deck.findIndex(card => card.kind === 'projectile'), 1)[0];
+    const defense = battleStart.deck.splice(
+      battleStart.deck.findIndex(card => card.kind === 'snooper'), 1)[0];
+    assert.ok(weapon && defense);
+    seat(battleStart, ids[1]).hand.push(weapon);
+    seat(battleStart, ids[2]).hand.push(defense);
+    for (const id of [ids[1], ids[2]]) {
+      const p = seat(battleStart, id);
+      p.reserves += Object.values(p.forces).reduce((sum, n) => sum + n, 0) - 5;
+      p.forces = { 'arrakeen:10': 5 };
+      for (const leader of p.leaders) leader.strength = 0;
+    }
+    Object.assign(battleStart, { turn: 9, phase: 6, active: ids[1], order: [ids[1], ids[2], ids[0]],
+      ready: [], decision: null, response: null, phaseOpening: null, stormPending: null });
+    battleStart.version = finalArrival.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(battleStart), battleStart.version, code, finalArrival.version).changes, 1);
+    let duel = await act(1, { type: 'chooseBattle', territory: 'arrakeen', target: ids[2] });
+    for (let step = 0; step < 40; step++) {
+      if (duel.response) {
+        const p = duel.players.find(p => !duel.response!.passed.includes(p.id))!;
+        duel = await act(ids.indexOf(p.id), { type: 'passResponse' });
+      } else if (duel.battle?.preparation)
+        duel = await act(ids.indexOf(duel.battle.preparation.owner), { type: 'declineBattlePower' });
+      else break;
+    }
+    if (duel.battle?.preLeader && !duel.battle.preLeader.closed)
+      for (const index of [1, 2])
+        duel = await act(index, { type: 'battlePreparationReady', event: duel.battle!.preLeader!.event });
+    duel = await act(1, { type: 'battlePlan', dial: 2, support: 2,
+      leader: seat(duel, ids[1]).leaders[0].id, weapon: weapon.id });
+    duel = await act(2, { type: 'battlePlan', dial: 0, support: 0,
+      leader: seat(duel, ids[2]).leaders[0].id, defense: defense.id });
+    duel = await act(1, { type: 'traitorCall', call: false });
+    duel = await act(2, { type: 'traitorCall', call: false });
+    assert.equal(duel.decision?.kind, 'battleCards');
+    const chosen = await act(1, { type: 'decision', discard: [weapon.id] });
+    assert.equal(chosen.pendingTreacheryDiscard?.batch.cause, 'battle:winner');
+    assert.equal(chosen.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, chosen.version);
+    assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
+    const battleClaim = await act(0, { type: 'semutaCommit',
+      event: chosen.pendingTreacheryDiscard!.batch.event });
+    assert.equal(battleClaim.pendingTreacheryDiscard, null);
+    assert.equal(seat(battleClaim, ids[0]).hand.filter(card => card.id === weapon.id).length, 1);
+    assert.equal(battleClaim.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.equal(battleClaim.discard.some(card => card.id === weapon.id), false);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(battleClaim, auth.playerId));
   } finally { f.sqlite.close(); }
 });

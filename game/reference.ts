@@ -1156,7 +1156,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard, paid Box search, retired Ornithopter, private Distrans transfer, final definite Truthtrance answer or movement-order Sapho discard. Continue or commit held Semuta with a free hand slot; only the freshly discarded public card transfers. An early-ended flight advances the queue, while a completed flight resumes its already committed arrival once when no BG, Ecaz or Moritani entry reaction can open. Private gifts and bound answers stay intact. Competing transactions, other arrival compositions, full-hand sequencing and normal Richese starts remain unfinished.'
+                          ? 'In an explicitly opted-in Richese development game, every seat sees a neutral response after a clean public ordinary-card discard, paid Box search, retired Ornithopter, private Distrans transfer, final definite Truthtrance answer, movement-order Sapho discard or one winner-selected battle card with no pending battle rewards. Continue or commit held Semuta with a free hand slot; only the freshly discarded public card transfers. The original flight arrival, private gift, answered history, reordered movement or resolved battle resumes once. BG/Ecaz/Moritani arrival reactions, multi-card battle batches, other competing transactions, full-hand sequencing and normal Richese starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1166,7 +1166,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final definite Truthtrance and movement-order Sapho discards with a neutral all-seat offer. Committing held Semuta claims only the other-player discarded card and discards Semuta. Early-ended flights advance the queue; completed flights with no BG/Ecaz/Moritani entry reaction resume their committed arrival. Private gifts and answered history remain intact. Other arrivals, auction/battle Sapho, competing transactions, other typed producers and full-hand exchange remain unfinished.',
+                  'An explicitly opted-in Richese profile interrupts clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final definite Truthtrance, movement-order Sapho and one winner-selected battle card with a neutral all-seat offer. Committing held Semuta claims only the other-player discarded card and disposes Semuta. The original movement, private gift, answer history or resolved battle resumes once. Mixed arrival reactions, multiple battle cards, pending battle rewards, other typed producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
@@ -1184,13 +1184,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide distinguishes bounded public ordinary-card, paid Box, both clean Ornithopter retirement paths, Distrans, final definite Truthtrance and movement-order Sapho previews, privacy-neutral acknowledgements and conservative free-slot policy from unresolved full-hand sequencing and remaining discard sources.',
+                  'The guide distinguishes bounded public ordinary-card, paid Box, both clean Ornithopter retirement paths, Distrans, final definite Truthtrance, movement-order Sapho and one clean winner battle-card preview from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, physical card custody, neutral hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, retired Ornithopter, private Distrans, final definite Truthtrance and movement-order Sapho reactions. BG/Ecaz/Moritani arrival composition, other producers, full games and live deployment remain unverified.',
+                  'Genuine setup, physical custody, neutral hidden-hand parity, JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, retired Ornithopter, private Distrans, final definite Truthtrance, movement-order Sapho and one winner-selected battle-card reactions. Other battle batches, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',

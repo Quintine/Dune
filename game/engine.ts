@@ -5741,9 +5741,9 @@ function treacheryDiscardIntegrity(g: Game) {
       'The committed Kaitain discard no longer matches its payment and closing opportunity.');
   } else throw new RuleError('Unknown saved discard continuation.');
 }
-/** Bounded public single-card reaction after clean completed effects. A final
- * Ornithopter arrival qualifies only without factions that can open a new
- * intrusion or territory-entry response from the committed movement. */
+/** Bounded public single-card reaction after clean completed effects. Battle
+ * winner cleanup may resume only without other pending battle rewards; final
+ * flight arrival excludes factions that open intrusion or entry responses. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -5753,6 +5753,7 @@ function semutaOfferSupported(
     continuation.kind !== 'nullentropyDiscard' &&
     continuation.kind !== 'distransDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
+    !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     !(continuation.kind === 'ornithopterDiscard' &&
       (continuation.source === 'end' ||
         (continuation.source === 'move' &&
@@ -5762,6 +5763,11 @@ function semutaOfferSupported(
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&
       continuation.remaining === null && continuation.promise === null)) return false;
+  if (continuation.kind === 'battleCleanup' &&
+    (g.pendingAuditor || g.pendingCapture || g.pendingTech ||
+      g.pendingFaceDance || g.pendingChoamBattleIncome ||
+      g.pendingWinnerDiscards || g.moritaniRetention ||
+      g.pendingIxSubstitution)) return false;
   if ((continuation.kind === 'distransDiscard' ||
     continuation.kind === 'truthtranceDiscard' ||
     continuation.kind === 'saphoMovementDiscard' ||
@@ -5771,8 +5777,9 @@ function semutaOfferSupported(
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length === 1 && entries[0].publicFace &&
-    !continuation.resume.response && !continuation.resume.decision &&
-    !continuation.resume.pendingKarama && !continuation.resume.phaseOpening &&
+    (continuation.kind === 'battleCleanup' ||
+      (!continuation.resume.response && !continuation.resume.decision &&
+        !continuation.resume.pendingKarama && !continuation.resume.phaseOpening)) &&
     !g.karamaShipping && !g.auction && !g.richeseAuction && !g.battle &&
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&

@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after one winner-selected battle card
+
+The explicit Richese Semuta preview now pauses a clean single public
+winner-selected battle-card discard after the battle result and
+mandatory cleanup are committed. The played card is physically on
+the ordinary discard pile; every seat sees the same neutral event.
+An eligible holder may recover exactly that card and discard Semuta;
+all-seat decline leaves it in place. Neither path re-resolves battle,
+re-awards casualties or bounty, nor lets an old card be claimed.
+The existing `battleCleanup` frame retires before `finishBattle`
+continues the phase once.
+
+Genuine setup exercises a real two-combatant plan and traitor call,
+mandatory loser-card retirement, optional winner discard, legal AI
+claim, all-seat decline, physical card census and JSON views. An
+isolated migrated SQLite room restores the pending reaction without
+auto-advancing, authenticates the claim and preserves seat rows.
+Multi-card winner selection, Moritani loser retention and pending
+battle rewards remain automatic without Semuta; full-hand ordering,
+normal Richese starts and deployed acceptance remain gated.
+
+Independent rule/continuation and privacy/recovery reviews found no
+scoped defect. A direct production-engine run completed genuine AI
+setup, battle preparation and plans, a public winner discard, neutral
+offer and bot claim without replaying the recorded winner. Phone-width
+rules rendered the battle boundary as Partial. A recovery assertion
+that searched the entire observer view for an earlier public card ID
+was too strict; it now checks that the current recipient hand is not
+projected. `npm run check` passed typecheck, lint and 5,809/5,809
+offline cases; `npm run build` and all 55 Vite development HTTP
+cases passed. No deployed revision was exercised.
+
 ## 30 September 2026 — Semuta after a clean completed Ornithopter flight
 
 The explicit Richese Semuta preview now pauses a completed range-three
