@@ -9477,14 +9477,30 @@ function recruitsModeSupported(g: Game) {
     !g.discoveryEnabled
   );
 }
+function ecazAllyAtBattle(g: Game, side: Player, territoryId: string) {
+  const ally = g.players.find(player => player.id === side.ally && player.ally === side.id);
+  return !!ally && (side.faction === 'ecaz' || ally.faction === 'ecaz') &&
+    Object.entries(ally.forces).some(([key, amount]) => amount > 0 && splitLocation(key).territory === territoryId);
+}
+
 function reinforcementsModeSupported(g: Game) {
+  const pairedEcaz = g.expansions.length === 1 && g.expansions[0] === 'ecaz';
   return !!g.ecazTreachery && recruitsModeSupported(g) && !g.sandtrout &&
-    g.expansions.length === 0 &&
-    g.players.every(player => faction(player.faction).expansion === 'base');
+    (g.expansions.length === 0 || pairedEcaz) &&
+    g.players.every(player => {
+      const expansion = faction(player.faction).expansion;
+      return expansion === 'base' || (pairedEcaz && expansion === 'ecaz');
+    });
 }
 function currentReinforcementsCost(g: Game, p: Player) {
   requireRule(reinforcementsModeSupported(g),
-    'Reinforcements currently requires the standalone Ecaz card variant with classic factions.');
+    'Reinforcements requires the standalone Ecaz card variant with classic or Ecaz/Moritani factions.');
+  if (g.battle) {
+    const other = getPlayer(g, g.battle.attacker === p.id ? g.battle.defender : g.battle.attacker);
+    requireRule(!ecazAllyAtBattle(g, p, g.battle.territory) &&
+      !ecazAllyAtBattle(g, other, g.battle.territory),
+      'Reinforcements with co-present Ecaz allies awaits combined-army battle integration.');
+  }
   try {
     return quoteReinforcements(p.reserves - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
   } catch (error) {
@@ -9500,9 +9516,12 @@ function reinforcementsPreview(g: Game, p: Player) {
   const elite = Math.min(3 - normal, Math.max(0, p.elites?.reserves ?? 0));
   let blocked: string | null = null;
   if (!reinforcementsModeSupported(g))
-    blocked = 'Reinforcements currently requires the standalone Ecaz card variant with classic factions.';
+    blocked = 'Reinforcements requires the standalone Ecaz card variant with classic or Ecaz/Moritani factions.';
   else if (g.status !== 'playing' || g.phase !== 6 || battle.revealed || battle.plans[p.id])
     blocked = 'Choose Reinforcements before sealing your Battle Plan.';
+  else if (ecazAllyAtBattle(g, p, battle.territory) ||
+    ecazAllyAtBattle(g, getPlayer(g, battle.attacker === p.id ? battle.defender : battle.attacker), battle.territory))
+    blocked = 'Reinforcements with co-present Ecaz allies awaits combined-army battle integration.';
   else if (normal + elite < 3)
     blocked = 'Reinforcements needs three physical forces in your reserves.';
   return { blocked, normal, elite };
@@ -15186,11 +15205,8 @@ function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
     blocked = 'Harass & Withdraw with other optional modules, including Homeworlds, is still being implemented.';
   else if (g.players.some(player => player.faction === 'richese') || g.richeseCache !== undefined || g.richeseRemoved !== undefined)
     blocked = 'Harass & Withdraw with the Richese card family awaits the Stone Burner timing ruling.';
-  else if ([p, other].some(side => {
-    const ally = g.players.find(player => player.id === side.ally && player.ally === side.id);
-    return ally && (side.faction === 'ecaz' || ally.faction === 'ecaz') &&
-      Object.entries(ally.forces).some(([key, amount]) => amount > 0 && splitLocation(key).territory === b.territory);
-  })) blocked = 'Harass & Withdraw with co-present Ecaz allies awaits combined-army battle integration.';
+  else if (ecazAllyAtBattle(g, p, b.territory) || ecazAllyAtBattle(g, other, b.territory))
+    blocked = 'Harass & Withdraw with co-present Ecaz allies awaits combined-army battle integration.';
   else if (p.noField?.deployed?.location.territory === b.territory)
     blocked = 'Reveal your No-Field before using Harass & Withdraw.';
   const locations = Object.fromEntries(Object.entries(p.forces)

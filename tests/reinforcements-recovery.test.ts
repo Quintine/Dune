@@ -13,17 +13,22 @@ const rows = (sqlite: DatabaseSync) => ({
 });
 
 void test('a privately sealed Reinforcements plan and its one-time physical cost survive D1-style restart and competing final writes', async t => {
-  for (const advanced of [false, true]) {
+  for (const { advanced, factions } of [
+    { advanced: false, factions: ['emperor', 'atreides', 'harkonnen'] as const },
+    { advanced: true, factions: ['emperor', 'atreides', 'harkonnen'] as const },
+    { advanced: true, factions: ['moritani', 'ecaz', 'atreides'] as const },
+  ]) {
     const store = unitStore();
     t.after(() => store.sqlite.close());
-    const made = await store.rooms.createRoom('Reinforcements recovery', 'emperor', advanced, []);
+    const made = await store.rooms.createRoom('Reinforcements recovery', factions[0], advanced,
+      factions[0] === 'moritani' ? ['ecaz'] : []);
     const code = made.view.code;
-    const tokens = [made.token,
-      (await store.rooms.joinRoom(code, 'Atreides', 'atreides')).token!,
-      (await store.rooms.joinRoom(code, 'Harkonnen', 'harkonnen')).token!];
+    const tokens = [made.token];
+    for (const faction of factions.slice(1))
+      tokens.push((await store.rooms.joinRoom(code, faction, faction)).token!);
     const auths = await Promise.all(tokens.map(token => store.rooms.authenticate(code, token)));
     const ids = auths.map(auth => auth.playerId) as [string, string, string];
-    let game = harassWithdrawGame({ advanced, ids, factions: ['emperor', 'atreides', 'harkonnen'] });
+    let game = harassWithdrawGame({ advanced, ids, factions });
     game.code = code;
     game.version = (await store.rooms.readRoom(code)).version;
     takeHarassCard(game, ids[0], 'ecaz-reinforcements');
@@ -38,7 +43,7 @@ void test('a privately sealed Reinforcements plan and its one-time physical cost
       return rooms.readRoom(code);
     };
     game = await act(0, { type: 'battlePlan', dial: 1, support: advanced ? 1 : 0,
-      leader: 'emperor-0', defense: 'ecaz-reinforcements' });
+      leader: `${factions[0]}-0`, defense: 'ecaz-reinforcements' });
     const preReveal = rows(store.sqlite);
     for (const [index, token] of tokens.entries()) {
       const rooms = store.restart();
@@ -53,7 +58,7 @@ void test('a privately sealed Reinforcements plan and its one-time physical cost
     }
     assert.deepEqual(rows(store.sqlite), preReveal);
     game = await act(1, { type: 'battlePlan', dial: 1, support: advanced ? 1 : 0,
-      leader: 'atreides-0' });
+      leader: `${factions[1]}-0` });
     game = await act(0, { type: 'traitorCall', call: false });
     const before = rows(store.sqlite);
     const version = game.version;

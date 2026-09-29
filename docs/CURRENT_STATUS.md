@@ -6,6 +6,16 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+The separate [Reinforcements card prototype](REINFORCEMENTS_RUNTIME.md)
+now works in clean Ecaz/Moritani expansion battles as well as classic-faction
+tables in Basic and Advanced. Genuine setup, owner-only two-slot controls,
+legal AI offers, typed reserve-to-Tanks payment and saved D1 continuation
+follow the existing card contract. Co-present Ecaz allied armies, Richese,
+Ixians/Tleilaxu and other optional modules remain gated; the printed cost
+timing is still a documented product interpretation, not a publisher ruling.
+This does not open public expansion or card-variant starts, and this source is
+not in the last verified live image.
+
 A five-seat Advanced combined Homeworld/Nexus/expansion sample exposed two
 known-unsupported Ecaz Ambassador/Moritani Terror shipment candidates from
 Tleilaxu's own Homeworld. [AI arrival preflight](BOT_ARRIVAL_PREFLIGHT.md#29-september-homeworld-sourced-shipment-overlap)

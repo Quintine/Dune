@@ -33,9 +33,9 @@ function battle(advanced = false): Game {
   return game;
 }
 
-function selections(view: GameView) {
+function selections(view: GameView, leader = 'emperor-0') {
   return (['weapon', 'defense'] as const).map(slot =>
-    battlePlanCardOptions(view, slot, 'emperor-0', '', '').some(card => card.id === cardId));
+    battlePlanCardOptions(view, slot, leader, '', '').some(card => card.id === cardId));
 }
 
 function selector(html: string, slot: 'weapon' | 'defense') {
@@ -59,6 +59,28 @@ void test('a held Reinforcements card with an owner offer is selectable in eithe
   assert.deepEqual(selections(opponent), [false, false]);
   const opponentHtml = renderToStaticMarkup(createElement(GameTable, { game: opponent, send: async () => {}, onExit() {}, busy: false }));
   assert.doesNotMatch(opponentHtml, /value="ecaz-reinforcements"/);
+});
+
+void test('paired Ecaz/Moritani holders have private two-slot controls and legal AI plans', () => {
+  for (const advanced of [false, true]) for (const owner of ['ecaz', 'moritani'] as const) {
+    const game = harassWithdrawGame({ advanced, factions: [owner, owner === 'ecaz' ? 'moritani' : 'ecaz', 'atreides'] });
+    takeHarassCard(game, 'a', cardId);
+    const view = viewGame(game, 'a');
+    assert.deepEqual(selections(view, `${owner}-0`), [true, true]);
+    const html = renderToStaticMarkup(createElement(GameTable, { game: view, send: async () => {}, onExit() {}, busy: false }));
+    assert.match(selector(html, 'weapon'), /value="ecaz-reinforcements"/);
+    assert.match(selector(html, 'defense'), /value="ecaz-reinforcements"/);
+    const opponent = viewGame(game, 'd');
+    assert.equal(opponent.battle?.reinforcements, null);
+    assert.ok(!opponent.players.find(player => player.id === 'a')?.hand?.some(card => card.id === cardId));
+    for (const profile of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
+      view.players.find(player => player.id === 'a')!.bot = profile;
+      const choice = botActions(view).find(action =>
+        action.type === 'battlePlan' && (action.weapon === cardId || action.defense === cardId));
+      assert.ok(choice, `${owner} ${profile} ${advanced ? 'Advanced' : 'Basic'}`);
+      assert.ok(applyAction(game, 'a', choice).battle?.plans.a);
+    }
+  }
 });
 
 void test('a no-category inspection permits a held Reinforcements card but a second slot cannot reuse it', () => {

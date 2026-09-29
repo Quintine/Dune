@@ -153,6 +153,7 @@ export function harassCustody(g: Game) {
   );
   assert.deepEqual(
     [
+      ...(g.ecazLoyalty?.card ? [g.ecazLoyalty.card] : []),
       ...(g.traitorReserve ?? []),
       ...g.players.flatMap((p) => [
         ...p.traitors,

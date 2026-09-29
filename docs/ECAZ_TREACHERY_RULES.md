@@ -133,3 +133,16 @@ publisher adjudications or an answer to the pending user question. The card
 cannot share a plan with Harass & Withdraw or Stone Burner until those
 combinations are resolved. The earlier “remains disabled” statement describes
 the 14 September snapshot rather than this bounded current prototype.
+
+## 29 September paired-faction extension
+
+The independent card variant now permits the same bounded Reinforcements
+Battle Plan in clean Ecaz/Moritani expansion games with classic opponents,
+in Basic and Advanced. It reuses the physical reserve cost and score-only
+modifier; the earlier provisional outcome/type/Atreides-loss interpretation
+is unchanged and does not become a publisher ruling by applying to another
+faction. Co-present Ecaz allied armies, Richese, Ixians/Tleilaxu and other
+optional modules remain gated. The [runtime boundary](REINFORCEMENTS_RUNTIME.md)
+and [checkpoint](IMPLEMENTATION_STATUS.md#29-september-2026--reinforcements-in-paired-ecazmoritani-battles)
+record the exact evidence; the 27 September classic-only statement above is
+historical.

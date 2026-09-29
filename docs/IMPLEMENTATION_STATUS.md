@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 29 September 2026 — Reinforcements in paired Ecaz/Moritani battles
+
+The independently selected three-card Ecaz variant now allows its physical
+Reinforcements card in clean Basic/Advanced Ecaz/Moritani battles, as well as
+the prior classic-only profile. The existing battle quote pays three own
+reserve counters into typed Tanks, adds two to normal score without changing
+the physical dial, and mandates one discard after reveal. Owner-only card
+slots and all four minimal AI policies follow the server offer. Co-present
+Ecaz allied armies, Richese, Ixians/Tleilaxu and other optional modules stay
+guarded; prior provisional cost rulings are unchanged.
+
+A failing-before/passing-after genuine-setup regression covers each paired
+faction as holder in both rules modes, private plans, physical custody and
+JSON recovery. A paired Advanced room also survives restart and a competing
+final D1 write with one cost and discard. Forty-five focused
+Reinforcements/Harass cases pass. A separate engine smoke settled one paired
+battle with 15→12 own reserves and one discard, while the co-present-ally
+attempt was rejected without mutation. A React-rendered owner fixture in a
+mobile Chromium tab showed Reinforcements selectable; it was not a live-room
+UI check. Independent static review found no patch-introduced defect and noted
+co-present Ecaz armies as a separate boundary, now guarded in the server and
+owner offer. No public start or complete module acceptance is claimed.
+
+`npm run check` passes typecheck, lint and 5,761/5,761 offline cases;
+`npm run build` passes. No route, database schema or public start gate changed.
+The last verified NAS image predates this source; local results are not
+deployed acceptance.
+
 ## 29 September 2026 — Moritani and Tleilaxu Leader Skills samples
 
 At source revision `29aedf1`, all five Basic Moritani plus Leader Skills
