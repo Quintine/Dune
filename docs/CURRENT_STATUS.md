@@ -12,11 +12,11 @@ the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, private Distrans, final Truthtrance, Once Around,
 movement-order, between-battles chooser or pre-plan aggressor Sapho,
 clean pre-leader Residual Poison, printed Karama canceling clean
-CHOAM Charity, Inflation or Bene Gesserit Charity or purchasing a
-clean normal-auction lot, battle-card and Ix-deck Thumper/Amal discards
-open the same neutral offer regardless of hidden Semuta custody.
-Karama waits after its public cost but before cancellation or the
-reserved free purchase settles.
+CHOAM Charity, Inflation or Bene Gesserit Charity or using a clean
+normal-auction lot for a free purchase or winning-bid payment,
+battle-card and Ix-deck Thumper/Amal discards open the same neutral
+offer regardless of hidden Semuta custody. Karama waits after its
+public cost but before cancellation or the reserved lot settles.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
@@ -32,11 +32,18 @@ full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
 
-The clean printed Karama normal-auction purchase passed engine,
-authenticated SQLite and guide/browser checks. `npm run check` passed
-5,835 offline tests and the build passed. An isolated built-worker
-HTTP suite passed 51/55 cases; four origin/malformed-request cases
-returned 503 instead of 403/400. The HTTP gate remains open.
+Clean printed Karama normal-auction purchase and winning-bid payment
+passed engine and authenticated SQLite checks. `npm run check` passed
+types, lint and 5,837 offline tests; the build and phone-width guide
+inspection passed. A focused built-worker Advanced-lobby HTTP test
+timed out at its 15-second request limit; direct QA-room create/join
+and two authenticated reads passed. The previous purchase build's
+full HTTP suite passed 51/55 cases; four origin/malformed-request
+cases returned 503 instead of 403/400. The full HTTP gate remains open.
+
+The previous purchase revision `eede77a` passed container workflow
+`36664985601`, including its isolated storage/HTTP gate, and published
+an image. This does not deploy it to the live NAS.
 
 Container workflow `36656043783` built `32d9ef4` but failed
 isolated storage/HTTP verification; that image was not published and

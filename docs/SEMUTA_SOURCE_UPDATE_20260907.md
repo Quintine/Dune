@@ -67,8 +67,8 @@ opening public expansion starts. It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
 printed Karama canceling clean CHOAM Charity, Inflation or Bene
-Gesserit Charity or buying a clean normal-auction lot, battle and
-Ix-deck Thumper/Amal discards**. Other
+Gesserit Charity or settling a clean normal-auction purchase or
+winning bid, battle and Ix-deck Thumper/Amal discards**. Other
 than the one explicitly suspended charity/Inflation response, the
 parent transaction has no competing response. Every seat sees the
 same neutral fresh-discard opportunity
@@ -101,14 +101,16 @@ its accepted cancellation runs. The sole suspended response is bound
 to the saved receipt; claim or decline resumes the same cancellation
 once. CHOAM income or BG's extra allowance is withheld, while
 Inflation retains its spent placement attempt without a token.
-Worthless conversion, other cancellations, shipping, auction payment
-and nested Karama responses retain their separate automatic paths.
+Worthless conversion, other cancellations, shipping and nested
+Karama responses retain their separate automatic paths.
 
 A clean printed Karama purchase of an unresolved normal auction lot
-also pauses after its public card cost. The lot, deck and seating order
+or free payment of an already won bid pauses after its public card
+cost. The lot, bidder, bid, Richese round, deck and seating order
 remain bound while every seat sees the neutral offer. Claim or decline
-settles that same free purchase once; no second bid, payment or draw
-precedes the offer. Richese lots and other Karama forms are unchanged.
+settles that same free transaction once; no second bid, spice payment
+or draw precedes the offer. Richese lots and other Karama forms remain
+unchanged.
 
 For a genuine Ix-deck Thumper, its played physical card reaches
 the discard before an injected worm or actual spice-card draw.

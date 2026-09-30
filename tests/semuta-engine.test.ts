@@ -48,6 +48,68 @@ function fixture(ix = false) {
   return { g, semuta, hajr };
 }
 
+void test('printed Karama auction payment offers its card before the winning lot settles', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [take(g, 'karama')];
+  g.deck.push(hajr);
+  const karama = player(g, 'a').hand[0], lot = g.deck.shift()!;
+  Object.assign(g, { phase: 3, active: 'a', order: ['a', 'e', 'r'],
+    movementRemaining: [], auction: { cards: [lot], index: 0, bid: 0,
+      bidder: null, active: 'a', passed: [], opener: 0 } });
+  g.richeseBidding = { owner: 'r', event: 'richese-normal:2', turn: g.turn,
+    stage: 'normal', position: 'last', normalCount: 1,
+    blackMarketSold: false, cacheCanceled: false, opener: 0 };
+  g.richeseFunding = {};
+  const startingSpice = player(g, 'a').spice;
+  const original = [...inventory(g), lot.id].sort();
+  let bidding = applyAction(g, 'a', { type: 'bid', amount: startingSpice + 2 });
+  for (const id of ['e', 'r'])
+    bidding = applyAction(bidding, id, { type: 'passBid' });
+  assert.equal(bidding.decision?.kind, 'auctionPayment');
+  assert.equal(bidding.auction?.bidder, 'a');
+  const pending = applyAction(bidding, 'a',
+    { type: 'decision', karama: true, card: karama.id });
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'karamaPaymentDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(player(pending, 'a').spice, startingSpice);
+  assert.equal(player(pending, 'a').hand.some(card => card.id === lot.id), false);
+  assert.equal(pending.auction?.bidder, 'a');
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  for (const mutate of [
+    (state: Game) => { state.auction!.bidder = 'e'; },
+    (state: Game) => { state.richeseBidding!.position = 'first'; },
+    (state: Game) => {
+      const c = state.pendingTreacheryDiscard!.continuation;
+      if (c.kind === 'karamaPaymentDiscard') c.stateSignature = 'wrong';
+    },
+  ]) {
+    const altered = reload(pending);
+    mutate(altered);
+    const before = JSON.stringify(altered);
+    assert.throws(() => applyAction(altered, 'r', { type: 'semutaCommit', event }));
+    assert.equal(JSON.stringify(altered), before);
+  }
+  let declined = reload(pending);
+  for (const id of ['a', 'r', 'e'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  for (const state of [declined, claimed]) {
+    assert.equal(state.pendingTreacheryDiscard, null);
+    assert.equal(state.auction, null);
+    assert.equal(state.richeseBidding?.stage, 'cacheOffer');
+    assert.equal(state.decision?.kind, 'richeseCache');
+    assert.equal(player(state, 'a').spice, startingSpice);
+    assert.equal(player(state, 'a').hand.filter(card => card.id === lot.id).length, 1);
+    assert.deepEqual([...inventory(state)].sort(), original);
+    assert.throws(() => applyAction(state, 'r', { type: 'semutaCommit', event }));
+  }
+  assert.equal(declined.discard.filter(card => card.id === karama.id).length, 1);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === karama.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+});
+
 void test('printed Karama purchase offers its spent card before one normal auction settlement', () => {
   const { g, semuta, hajr } = fixture();
   player(g, 'a').hand = [take(g, 'karama')];

@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after printed Karama winning-bid payment
+
+The explicit Richese preview now stages a second normal-auction
+Karama discard when the winning bidder chooses its printed card
+instead of a spice payment. The bid and bidder are already fixed;
+the card enters the public pile before the same neutral Semuta offer.
+Claim or all-seat decline settles the reserved lot once, without
+charging bid spice, and preserves the following Richese cache offer.
+The saved receipt binds the bid winner, round, cache, deck and hand
+custody. Richese lots, Worthless conversion and nested responses stay
+outside this bounded reaction.
+
+Engine and authenticated SQLite tests cover the winning decision,
+full bid above available spice, legal AI claim, JSON/restart
+continuation, forged bidder/round rejection, exact stale retry,
+physical card custody and the following cache choice. A direct engine
+smoke settled the printed card, lot and cache sequence. Public
+expansion starts and complete Semuta coverage remain gated.
+
+`npm run check` passed types, lint and 5,837 offline tests; the
+production build passed. A phone-width browser view of the rules
+guide visibly included the winning-bid timing. Independent review
+found no scoped defect. The prior purchase checkpoint passed its
+container workflow's isolated storage/HTTP check and published an
+image; it is not deployed to the NAS. On this paid-payment build, a
+focused built-worker HTTP Advanced-lobby test timed out at its
+15-second request limit; a separate direct QA-room create/join and
+two authenticated seat reads returned 201/200/200/200 with distinct
+seat identities. The prior full local HTTP suite passed 51/55;
+four origin/malformed-request cases returned 503 instead of 403/400.
+Full HTTP acceptance remains open. No production game was touched.
+
 ## 30 September 2026 — Semuta after printed Karama normal-auction purchase
 
 The explicit Richese development preview now offers a neutral Semuta
