@@ -1199,6 +1199,13 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'karamaPurchaseDiscard';
+          player: string;
+          card: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'thumperDiscard';
           player: string;
           card: string;
@@ -4885,6 +4892,24 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
     })),
   });
 }
+type KaramaPurchaseDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'karamaPurchaseDiscard' }
+>;
+function karamaPurchaseDiscardSignature(g: Game, c: KaramaPurchaseDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, card: c.card,
+    parent: nullentropyParentSignature(g, c.resume, `karama:purchase:${c.card}`),
+    turn: g.turn, phase: g.phase, active: g.active, auction: g.auction,
+    richeseBidding: g.richeseBidding, richeseFunding: g.richeseFunding,
+    richeseCache: g.richeseCache?.map(card => card.id),
+    deck: g.deck.map(card => card.id), order: g.order,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, ally: p.ally,
+      hand: p.hand.map(card => card.id), spice: p.spice,
+    })),
+  });
+}
 type ThumperDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'thumperDiscard' }
@@ -5475,6 +5500,20 @@ function treacheryDiscardIntegrity(g: Game) {
       c.stateSignature === karamaResponseDiscardSignature(g, c),
       'The spent Karama no longer matches its suspended charity or Inflation cancellation.',
     );
+  } else if (continuation?.kind === 'karamaPurchaseDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    requireRule(
+      g.phase === 3 && !g.response && !g.decision && !g.pendingKarama &&
+      !g.phaseOpening && !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      batch.cause === 'karama:purchase' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card && entry.card.effect === 'karama' &&
+      g.players.some(p => p.id === c.player) &&
+      c.stateSignature === karamaPurchaseDiscardSignature(g, c),
+      'The spent Karama no longer matches its reserved auction purchase.',
+    );
+    normalKaramaAuction(g, getPlayer(g, c.player), false);
   } else if (continuation?.kind === 'thumperDiscard') {
     const c = continuation, entry = batch.entries[0];
     requireRule(
@@ -6135,6 +6174,7 @@ function semutaOfferSupported(
     continuation.kind !== 'karamaCharityDiscard' &&
     continuation.kind !== 'karamaInflationDiscard' &&
     continuation.kind !== 'karamaBgCharityDiscard' &&
+    continuation.kind !== 'karamaPurchaseDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
     continuation.kind !== 'amalDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
@@ -6208,7 +6248,10 @@ function semutaOfferSupported(
           (continuation.kind === 'amalDiscard'
             ? continuation.resume.phaseOpening?.passed.length === 0
             : !continuation.resume.phaseOpening)))) &&
-    !g.karamaShipping && !g.auction &&
+    !g.karamaShipping &&
+    (continuation.kind === 'karamaPurchaseDiscard'
+      ? !!g.auction && !g.currentAuctionSale && !g.richeseAuction
+      : !g.auction) &&
     (continuation.kind === 'saphoAuctionDiscard' || !g.richeseAuction) &&
     (continuation.kind === 'saphoAggressorDiscard' ||
       continuation.kind === 'residualPoisonDiscard' || !g.battle) &&
@@ -6412,12 +6455,14 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
       battle.preLeader.ready = battle.preLeader.ready.filter(id => id !== next.player);
   } else if (next.kind === 'karamaCharityDiscard' ||
     next.kind === 'karamaInflationDiscard' ||
-    next.kind === 'karamaBgCharityDiscard') {
+    next.kind === 'karamaBgCharityDiscard' ||
+    next.kind === 'karamaPurchaseDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
-    completeKarama(g, getPlayer(g, next.player), next.use);
+    completeKarama(g, getPlayer(g, next.player),
+      next.kind === 'karamaPurchaseDiscard' ? { kind: 'purchase' } : next.use);
   } else if (next.kind === 'amalDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -10784,6 +10829,20 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse) {
       g.response = null;
       continuation.stateSignature = karamaResponseDiscardSignature(g, continuation);
       stageTreacheryDiscard(g, `karama:${use.response.kind}`, entries, continuation);
+      return;
+    }
+  }
+  if (g.semutaPreview && card.effect === 'karama' && use.kind === 'purchase') {
+    const continuation: KaramaPurchaseDiscardContinuation = {
+      kind: 'karamaPurchaseDiscard', player: p.id, card: used.id,
+      resume: { response: g.response, decision: g.decision,
+        pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+      stateSignature: '',
+    };
+    const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+    if (semutaOfferSupported(g, continuation, entries)) {
+      continuation.stateSignature = karamaPurchaseDiscardSignature(g, continuation);
+      stageTreacheryDiscard(g, 'karama:purchase', entries, continuation);
       return;
     }
   }

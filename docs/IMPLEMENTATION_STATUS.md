@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after printed Karama normal-auction purchase
+
+The explicit Richese development preview now offers a neutral Semuta
+response after a clean printed Karama pays its public normal-auction
+purchase cost but before the reserved lot settles. A committed holder
+may exchange one physical Semuta for that newly spent card; all-seat
+decline leaves it in the discard. Both paths settle the original free
+purchase once, with the lot, round, cache, deck and hand custody bound
+to the saved receipt. A pending Richese cache offer after the normal
+auction remains owed. Richese lots, paid Karama bids, Worthless
+conversion, shipping and nested responses retain their automatic paths.
+Normal expansion starts remain gated.
+
+Engine and authenticated SQLite tests cover the neutral offer, legal
+AI claim, reserved lot, spent-card custody, JSON/restart continuation,
+Richese cache suffix, stale exact retry and rejected altered receipts.
+An isolated engine smoke completed the purchase after the Semuta claim,
+placing the lot once, exchanging the printed card and closing Bidding.
+The wider Semuta discard inventory and deployed acceptance remain open.
+
+`npm run check` passed types, lint and 5,835 offline tests; the
+production build passed. The isolated built Wrangler worker rendered
+the revised Semuta guide on a phone-width browser. Its HTTP integration
+suite passed 51/55 cases, including normal lobby and saved-seat flows;
+four existing origin and malformed-request cases received HTTP 503
+instead of their expected 403/400. Those failures are not attributed
+to this purchase path, and the HTTP gate is **not green**. A separate
+standard Vite server startup timed out before it could host a rerun.
+No production image or game database was changed.
+
 ## 30 September 2026 — Owner-only manual integrity check
 
 Administration → Operations now has a separate **Run integrity check**

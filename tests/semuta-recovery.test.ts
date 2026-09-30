@@ -728,6 +728,69 @@ void test('authenticated pre-plan Sapho discard restores one aggressor choice be
   } finally { f.sqlite.close(); }
 });
 
+void test('authenticated printed Karama purchase preserves the lot across a saved Semuta claim', async () => {
+  const f = unitStore();
+  try {
+    const made = await f.rooms.createRoom('Semuta Purchase', 'richese', false, ['choam']);
+    const code = made.view.code;
+    const buyer = await f.rooms.joinRoom(code, 'Atreides', 'atreides');
+    const third = await f.rooms.joinRoom(code, 'Emperor', 'emperor');
+    const auths = await Promise.all([made.token!, buyer.token!, third.token!]
+      .map(token => f.restart().authenticate(code, token)));
+    const existing = await f.restart().readRoom(code);
+    const g = createGame(code, newPlayer(auths[0].playerId, 'Richese', 'richese'), false, ['choam']);
+    g.players.push(newPlayer(auths[1].playerId, 'Atreides', 'atreides'),
+      newPlayer(auths[2].playerId, 'Emperor', 'emperor'));
+    Object.assign(g, { status: 'playing', phase: 3, active: auths[1].playerId,
+      order: auths.map(auth => auth.playerId), deck: baseDeck(),
+      richeseCache: richeseCards(), semutaPreview: true });
+    for (const p of g.players) {
+      p.hand = [];
+      p.traitors = p.leaders.length ? [p.leaders[0].id] : [];
+      p.traitorChoices = [];
+    }
+    const karama = take(g, 'karama'), semuta = take(g, SEMUTA_DRUG_ID);
+    const lot = g.deck.shift()!;
+    seat(g, auths[1].playerId).hand.push(karama);
+    seat(g, auths[0].playerId).hand.push(semuta);
+    g.auction = { cards: [lot], index: 0, bid: 0, bidder: null,
+      active: auths[1].playerId, passed: [], opener: 0 };
+    g.richeseBidding = { owner: auths[0].playerId, event: 'richese-normal:1',
+      turn: g.turn, stage: 'normal', position: 'last', normalCount: 1,
+      blackMarketSold: false, cacheCanceled: false, opener: 0 };
+    g.richeseFunding = {};
+    g.version = existing.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(g), g.version, code, existing.version).changes, 1);
+    const seats = f.sqlite.prepare('SELECT * FROM seats').all();
+    await f.restart().act(code, auths[1], g.version,
+      { type: 'card', card: karama.id, mode: 'purchase' }, clock);
+    const pending = await f.restart().readRoom(code);
+    assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(pending.auction?.cards[0].id, lot.id);
+    assert.equal(seat(pending, auths[1].playerId).hand.some(card => card.id === lot.id), false);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, pending.version);
+    assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
+    const event = pending.pendingTreacheryDiscard!.batch.event;
+    await f.restart().act(code, auths[0], pending.version,
+      { type: 'semutaCommit', event }, clock);
+    const claimed = await f.restart().readRoom(code);
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.equal(seat(claimed, auths[1].playerId).hand.filter(card => card.id === lot.id).length, 1);
+    assert.equal(seat(claimed, auths[0].playerId).hand.filter(card => card.id === karama.id).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+    assert.equal(claimed.auction, null);
+    assert.equal(claimed.richeseBidding?.stage, 'cacheOffer');
+    assert.equal(claimed.decision?.kind, 'richeseCache');
+    await assert.rejects(f.restart().act(code, auths[0], pending.version,
+      { type: 'semutaCommit', event }, clock));
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+  } finally { f.sqlite.close(); }
+});
+
 void test('authenticated printed Karama cost pauses and restores one canceled CHOAM Charity response', async () => {
   const f = unitStore();
   try {

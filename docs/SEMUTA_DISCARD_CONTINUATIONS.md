@@ -54,7 +54,14 @@ card cost but before accepted cancellation. The first two retain
 their existing saved receipt signatures. Each binds the sole
 suspended response, spent card and hand/spice custody; claim or
 decline restores that response and finishes cancellation once.
-Other Karama forms and nested responses remain automatic.
+Other cancellations and shipping retain their automatic paths.
+
+Clean printed Karama normal-auction purchase now stages
+`karamaPurchaseDiscard` after the public cost and before the reserved
+lot is settled. The receipt binds the original lot, order, deck and
+hands; a neutral claim or decline completes the same free purchase
+once. Richese lots, paid auction Karama and nested responses retain
+their previous automatic paths.
 
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
