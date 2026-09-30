@@ -151,6 +151,40 @@ void test('prior-turn CHOAM Charity receipt does not block a fresh Karama Semuta
   assert.equal(resumed.players[0].spice, 0);
 });
 
+void test('clean BG charity Karama cancellation offers Semuta without awarding extra charity', () => {
+  let g = fixture(true);
+  g.players[1] = newPlayer('e', 'Richese', 'richese');
+  g.richeseCache = richeseCards();
+  g.semutaPreview = true;
+  const semuta = g.richeseCache.findIndex(c => c.id === SEMUTA_DRUG_ID);
+  assert.ok(semuta >= 0);
+  g.players[0].hand.push(g.richeseCache.splice(semuta, 1)[0]);
+  g = allow(ready(g));
+  contest(g);
+  g.players[2].spice = 12;
+  g = applyAction(g, 'b', { type: 'charity' });
+  assert.equal(g.response?.kind, 'bgCharity');
+  assert.equal(viewGame(g, 'b').players[2].charityClaimed, true);
+  const beforeSpice = g.players.map(p => p.spice);
+  g = cancel(g);
+  const event = g.pendingTreacheryDiscard!.batch.event;
+  assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(g.response, null);
+  assert.equal(viewGame(g, 'c').semutaReaction?.canCommit, true);
+  assert.equal(viewGame(g, 'b').semutaReaction?.canCommit, false);
+  let declined: Game = JSON.parse(JSON.stringify(g));
+  for (const id of ['c', 'e', 'b'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.deepEqual(declined.players.map(p => p.spice), beforeSpice);
+  const claimed = applyAction(JSON.parse(JSON.stringify(g)), 'c', { type: 'semutaCommit', event });
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.deepEqual(claimed.players.map(p => p.spice), beforeSpice);
+  assert.equal(claimed.players[0].hand.filter(c => c.effect === 'karama').length, 1);
+  assert.equal(claimed.discard.filter(c => c.id === SEMUTA_DRUG_ID).length, 1);
+  assert.equal(viewGame(claimed, 'b').players[2].charityClaimed, true);
+});
+
 void test('CHOAM receives two spice per faction, including itself, only after its opening response', () => {
   const initial = contest(fixture());
   let g = ready(initial);

@@ -47,14 +47,14 @@ binds the victim, leader custody and unsealed battle. The neutral
 offer is limited to a pre-leader board with no inspection or ready
 combatant; other accepted plays retain automatic continuation.
 
-Printed Karama canceling clean CHOAM Charity or Inflation stages
-`karamaCharityDiscard` or `karamaInflationDiscard` after its public
-card cost but before accepted cancellation. Charity retains its
-existing saved receipt format; Inflation binds its attempt marker
-and absent token. Each receipt binds the sole suspended response,
-spent card and hand/spice custody; claim or decline restores that
-response and finishes cancellation once. Other Karama forms and
-nested responses remain automatic.
+Printed Karama canceling clean CHOAM Charity, Inflation or Bene
+Gesserit Charity stages `karamaCharityDiscard`,
+`karamaInflationDiscard` or `karamaBgCharityDiscard` after the public
+card cost but before accepted cancellation. The first two retain
+their existing saved receipt signatures. Each binds the sole
+suspended response, spent card and hand/spice custody; claim or
+decline restores that response and finishes cancellation once.
+Other Karama forms and nested responses remain automatic.
 
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without

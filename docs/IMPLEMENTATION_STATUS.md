@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after BG Charity Karama
+
+In the explicit Richese preview, a clean printed Karama
+cancellation of Bene Gesserit Charity now pauses after its public
+card cost but before that extra charity response settles. A neutral
+all-seat Semuta offer can transfer only the used Karama to a
+different holder. Claim or decline restores the original response
+and finishes its cancellation once: BG's declared charity remains
+spent without granting spice or undoing CHOAM's earlier income.
+The new `karamaBgCharityDiscard` receipt binds the BG charity turn,
+saved response and physical card/spice custody. Previously saved
+CHOAM Charity and Inflation receipts retain their distinct kinds
+and signatures; Worthless conversion and other Karama uses remain
+automatic.
+
+Focused claim/decline and authenticated SQLite restart/CAS checked
+owner-only projection, exact card transfer, unchanged balances and
+saved-seat parity. A direct production-engine smoke run observed the
+same outcome. Two independent read-only rules/privacy reviews found
+no scoped defect. `npm run check` passed typecheck, lint and 5,831
+offline tests; `npm run build` and 55 local HTTP tests passed. The
+phone-width local guide rendered the new scope. No deployed revision
+was exercised. `e9f9994` passed isolated container verification and
+image publication in workflow `36659099415`; the live footer was
+separately observed at `ab5c782`, not this new source.
+
 ## 30 September 2026 — Semuta after printed CHOAM Inflation Karama
 
 The explicit Richese preview now also pauses after printed Karama

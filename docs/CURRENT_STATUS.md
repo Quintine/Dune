@@ -12,10 +12,10 @@ the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, private Distrans, final Truthtrance, Once Around,
 movement-order, between-battles chooser or pre-plan aggressor Sapho,
 clean pre-leader Residual Poison, printed Karama canceling clean
-CHOAM Charity or Inflation, battle-card and Ix-deck Thumper/Amal
-discards open the same neutral offer regardless of hidden Semuta
-custody. Karama waits after its public cost but before settling the
-canceled response.
+CHOAM Charity, Inflation or Bene Gesserit Charity, battle-card and
+Ix-deck Thumper/Amal discards open the same neutral offer regardless
+of hidden Semuta custody. Karama waits after its public cost but
+before settling the canceled response.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
