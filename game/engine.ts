@@ -1154,6 +1154,13 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'thumperDiscard';
+          player: string;
+          card: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'truthtranceDiscard';
           consumed: TruthQueueEntry;
           historyIndex: number;
@@ -4721,6 +4728,28 @@ function saphoMovementDiscardSignature(g: Game, c: SaphoMovementDiscardContinuat
     })),
   });
 }
+type ThumperDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'thumperDiscard' }
+>;
+function thumperDiscardSignature(g: Game, c: ThumperDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, card: c.card,
+    parent: nullentropyParentSignature(g, c.resume, `thumper:${c.card}`),
+    turn: g.turn, phase: g.phase, advanced: g.advanced,
+    expansions: g.expansions, active: g.active, order: g.order,
+    ready: g.ready, storm: g.storm, nexus: g.nexus, sandtrout: g.sandtrout,
+    summonedBeforeBlow: g.summonedBeforeBlow, wormRides: g.wormRides,
+    wormPlacementCanceledTurn: g.wormPlacementCanceledTurn,
+    spiceDeck: g.spiceDeck, spiceDiscard: g.spiceDiscard, spice: g.spice,
+    aid: g.aid, allianceOffers: g.allianceOffers,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, ally: p.ally, forces: p.forces,
+      reserves: p.reserves, tanks: p.tanks, advisors: p.advisors,
+      noField: p.noField, elites: p.elites,
+    })),
+  });
+}
 type TruthDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'truthtranceDiscard' }
@@ -5162,6 +5191,21 @@ function treacheryDiscardIntegrity(g: Game) {
       !c.resume.pendingKarama && !c.resume.phaseOpening &&
       c.stateSignature === saphoMovementDiscardSignature(g, c),
       'The used Juice of Sapho no longer matches its committed movement order.',
+    );
+  } else if (continuation?.kind === 'thumperDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    requireRule(
+      g.players.some(p => p.id === c.player) &&
+      g.phase === 1 && !g.spiceSequence && !g.spiceResolution &&
+      !g.spiceWindow && !g.nexus &&
+      batch.cause === 'thumper' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card && entry.card.name === 'Thumper' &&
+      entry.card.kind === 'special' && entry.card.effect === 'thumper' &&
+      !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature === thumperDiscardSignature(g, c),
+      'The used Thumper no longer matches its undrawn Spice Blow.',
     );
   } else if (continuation?.kind === 'truthtranceDiscard') {
     const c = continuation,
@@ -5778,6 +5822,7 @@ function semutaOfferSupported(
     continuation.kind !== 'nullentropyDiscard' &&
     continuation.kind !== 'distransDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
+    continuation.kind !== 'thumperDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
@@ -5805,6 +5850,9 @@ function semutaOfferSupported(
     (continuation.kind === 'ornithopterDiscard' && continuation.source === 'move')) &&
     (g.pendingChoamMove || g.pendingIxMove || g.pendingFremenMove ||
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0)) return false;
+  if (continuation.kind === 'thumperDiscard' &&
+    (g.summonedBeforeBlow || g.summonedWorm || g.wormRides.length > 0 ||
+      g.pendingFremenMove || g.pendingIxMove || g.pendingChoamMove)) return false;
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
@@ -5986,6 +6034,12 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
     if (g.active !== g.movementRemaining?.[0]) movementTurn(g);
+  } else if (next.kind === 'thumperDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
+    blowSpice(g, true);
   } else if (next.kind === 'ornithopterDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -7339,11 +7393,14 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   g.moritaniAssassinateCallEvents = [];
   return g;
 }
-/** Development-only Semuta reaction in a fresh Richese roster; public starts stay gated. */
+/** Development-only Semuta reaction in fresh Richese games, optionally with
+ * the physical Ix Treachery deck; public expansion starts stay gated. */
 export function initializeSemutaGameForAudit(state: Game): Game {
-  requireRule(!state.semutaPreview && state.expansions.length === 1 &&
-    state.expansions[0] === 'choam' && state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game without other modules.');
+  requireRule(!state.semutaPreview &&
+    state.expansions.includes('choam') &&
+    state.expansions.every(id => id === 'choam' || id === 'ix') &&
+    state.players.some(p => p.faction === 'richese'),
+  'Semuta needs a fresh Richese faction game with no optional modules.');
   const g = initializeFactionExpansionsGameForAudit(state);
   g.semutaPreview = true;
   return g;
@@ -27316,11 +27373,25 @@ function applyActionInner(
           !g.nexus,
         'Use Thumper at the beginning of Spice Blow, before the first draw.',
       );
-      discard(g, p, c.id);
+      const used = discard(g, p, c.id);
       log(
         g,
         `${p.name} played Thumper in place of the next spice-card reveal.`,
       );
+      if (g.semutaPreview) {
+        const continuation: ThumperDiscardContinuation = {
+          kind: 'thumperDiscard', player: p.id, card: used.id,
+          resume: { response: g.response, decision: g.decision,
+            pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+          stateSignature: '',
+        };
+        const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+        if (semutaOfferSupported(g, continuation, entries)) {
+          continuation.stateSignature = thumperDiscardSignature(g, continuation);
+          stageTreacheryDiscard(g, 'thumper', entries, continuation);
+          return g;
+        }
+      }
       blowSpice(g, true);
       return g;
     }

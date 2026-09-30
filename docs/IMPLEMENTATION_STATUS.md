@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after Ix-deck Thumper
+
+The explicit Richese Semuta development profile now permits a fresh
+CHOAM & Richese game with the physical Ix deck. Only that deck
+supplies canonical Thumper. Playing it at a clean Spice Blow opening
+places its public card on the discard pile, then pauses before the
+injected worm or next actual spice-card draw. Every seat sees the
+same neutral offer; another holder may take the used Thumper and
+discard Semuta, or all seats may decline. Both choices run one
+saved `blowSpice` suffix: the prior territory is devoured once,
+the next land card is drawn once, and phase/Nexus consequences
+retain the existing rules. CHOAM-only Semuta games have no Thumper
+to offer; public expansion starts remain closed.
+
+Genuine Ix-deck setup exercises owner-only legal AI claim, all-seat
+decline, pre-draw deck invariance, one force/spice casualty outcome
+and physical census across JSON. An isolated migrated SQLite room
+preserves the undrawn state through automatic recovery and commits
+one authenticated claim while retaining seat rows. Nested opening
+responses, other discard producers, full-hand ordering, normal
+Richese starts and deployed acceptance remain gated.
+
+Independent privacy/recovery review found no scoped defect. Rules
+review found the initial saved Thumper receipt omitted Advanced
+mode, elite/No-Field custody, Ix expansion selection and the
+additional-worm cancellation turn. Failing-before/passing-after
+regressions now bind those inputs; follow-up rules review found no
+remaining scoped defect. A direct production-engine run completed
+genuine Ix-deck setup, undrawn neutral offer and bot claim, then
+one worm casualty and one spice draw. No original play was modified.
+
+The actual phone-width rules page rendered the Ix-deck Thumper
+boundary and Partial checklist. `npm run check` passed typecheck,
+lint and 5,813/5,813 offline cases after the receipt corrections;
+`npm run build` and all 55 Vite development HTTP cases passed.
+No deployed revision was exercised.
+
 ## 30 September 2026 — Semuta at first mandatory battle discard
 
 The explicit Richese Semuta preview now pauses a clean public

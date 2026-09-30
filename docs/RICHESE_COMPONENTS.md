@@ -12,7 +12,7 @@ Audited 6 September 2026. The ten physical identities and their readable face in
 
 - Player controls show both original plans, exact undialed counts or honest possible totals, the mode choice and a complete internal guide. No victim/death confirmation is added. The card stays physically reserved until standard cleanup; stale events, duplicate requests and corrupted source custody fail before resources change. All four AI profiles use public force possibilities, legal low-dial plans and revealed leader/bounty information. They preserve leader value when Artillery suppresses bounty and leave traitor/explosion precedence intact.
 
-- Semuta Drug has an explicit bounded preview for clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final definite Truthtrance, movement-order Sapho and three distinct battle discard stages: initial mandatory combatants, mandatory winner and optional winner. A multi-card batch, including two-owner mutual-Traitor cleanup, exposes candidates only after holder commitment and transfers one other-player physical card. Private gifts, unresolved promises, reactive arrivals, auction/battle Sapho and pending battle rewards remain outside scope. Other producers, full-hand ordering and normal Richese starts are unfinished. Mirror Weapon and Juice of Sapho have separate bounded paths, not complete combined-mode certification. Other systems, mobile acceptance, difficulty calibration and complete Advanced/expansion games still prevent goal completion. No start gate was removed.
+- Semuta Drug has a bounded preview for clean public ordinary-card, paid Box, retired Ornithopter, private Distrans, final Truthtrance, movement-order Sapho and separate initial/mandatory-winner/optional-winner battle batches. A fresh Richese roster may explicitly include the physical Ix deck, whose Thumper discard pauses before its worm and spice draw. Multiple public battle cards reveal candidates only after holder commitment and transfer one other-player card. Private gifts, unresolved promises, reactive arrivals, auction/battle Sapho and pending battle rewards remain outside scope. Other producers, full-hand ordering and normal Richese starts are unfinished. Mirror Weapon and Juice of Sapho retain separate bounded paths, not combined-mode certification. Other systems, mobile acceptance, difficulty calibration and complete Advanced/expansion games still prevent goal completion. No start gate was removed.
 
 The complete integrated validation checkpoint is recorded in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 
@@ -108,16 +108,16 @@ Six effects now have bounded development handlers: Karama, Distrans, Nullentropy
 ## 30 September 2026 — Semuta clean-discard preview
 
 The [bounded Semuta runtime](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
-supersedes the older inactive-card observations above for one
-explicitly opted-in Richese development profile. Neutral all-seat
-responses, physical one-card recovery, a provisional free-slot guard,
-minimal legal AI and saved continuation work after clean public
-ordinary-card, paid Box, retired Ornithopter, private Distrans, final
-definite Truthtrance, movement-order Sapho and three separate battle
-card stages: initial mandatory combatants, mandatory winner and
-optional winner. Multi-owner batches require committed owner-only
-selection of one other-player card. Queued questions, promises,
-reactive arrivals, auction/battle Sapho, pending battle rewards and
-other semantic discard families remain unconnected. Full-hand
-ordering, ten-card inventory, cache custody and public expansion
-start gate are unchanged.
+supersedes older inactive-card observations for one explicitly
+opted-in fresh Richese profile, optionally with the physical Ix deck.
+Neutral all-seat responses, physical one-card recovery, provisional
+free-slot policy, minimal legal AI and saved continuation work after
+clean ordinary-card, paid Box, retired Ornithopter, private Distrans,
+final Truthtrance, movement-order Sapho, Ix-deck Thumper and three
+battle discard stages. Thumper pauses before injecting its worm or
+drawing a spice card; claim or decline resumes once. Multi-owner
+batches require committed owner-only selection of another player's
+card. Queued questions, promises, reactive arrivals, auction/battle
+Sapho, pending battle rewards and other discard families remain
+unconnected. Full-hand ordering, ten-card inventory, cache custody
+and public expansion start gate are unchanged.

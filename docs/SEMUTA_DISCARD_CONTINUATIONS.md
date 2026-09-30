@@ -47,6 +47,13 @@ select one fresh card, leave the others in the pile and resume exactly
 once. Pending Auditor, capture, tech, Face Dance or CHOAM rewards
 remain automatic without Semuta.
 
+The explicit Richese preview also accepts a fresh physical Ix deck.
+Clean Thumper disposal stages `thumperDiscard` before `blowSpice`
+injects a worm or draws from either spice pile. The saved frame binds
+the undrawn decks, previous land/discard, forces and alliance state;
+Semuta claim or all-seat decline retires it before one ordinary
+Spice Blow suffix. A CHOAM-only preview has no Thumper identity.
+
 ## Main findings
 
 A post-`applyAction` pile diff cannot implement immediate Semuta. Ix Ambassador and Ixian ally replacement discard then draw directly. Ordinary Karama cancellation/purchase can reach replacement, Harkonnen bonus or a new auction pool indirectly. A stopped frame must resume at a named stage, never rerun its original public action.

@@ -4,6 +4,7 @@ import { startPrototypeRoom } from '../tools/prototype-room';
 import { botActions } from '../game/bots';
 import { viewGame, type Game, type Action } from '../game/engine';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
+import { spiceDeck } from '../game/cards';
 import { unitStore } from './fixture-nexus-room-store';
 
 const clock = { now: () => 10000, sleep: async () => {} };
@@ -541,5 +542,81 @@ void test('authenticated clean Semuta producers claim once through restart and r
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(mixedClaim, auth.playerId));
+  } finally { f.sqlite.close(); }
+});
+
+void test('an authenticated Ix-deck Thumper pause retains the undrawn blow through restart', async () => {
+  const f = unitStore();
+  try {
+    const created = await f.rooms.createRoom('Semuta Thumper QA', 'richese', false, ['choam', 'ix']);
+    const code = created.view.code;
+    const second = await f.rooms.joinRoom(code, 'Atreides', 'atreides');
+    const third = await f.rooms.joinRoom(code, 'Emperor', 'emperor');
+    const auths = await Promise.all([created.token!, second.token!, third.token!]
+      .map(token => f.restart().authenticate(code, token)));
+    const ids = auths.map(auth => auth.playerId);
+    const act = async (index: number, action: Action) => {
+      const before = await f.restart().readRoom(code);
+      await f.restart().act(code, auths[index], before.version, action, clock);
+      return f.restart().readRoom(code);
+    };
+    for (let index = 0; index < auths.length; index++) await act(index, { type: 'ready' });
+    let game = await f.restart().readRoom(code);
+    startPrototypeRoom(f.sqlite, code, game.version, 'semuta');
+    game = await f.restart().readRoom(code);
+    for (let step = 0; game.status === 'setup' && step < 80; step++) {
+      let moved = false;
+      for (let index = 0; index < auths.length; index++) {
+        const view = viewGame(game, ids[index]);
+        view.players.find(p => p.id === view.me)!.bot = 'Medium';
+        const choice = botActions(view)[0];
+        if (choice) { game = await act(index, choice); moved = true; break; }
+      }
+      assert.ok(moved, 'genuine Ix-deck setup needs a legal AI choice');
+    }
+    assert.equal(game.status, 'playing');
+    const originalSeats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const semuta = take(game, SEMUTA_DRUG_ID), thumper = take(game, 'thumper');
+    game.deck.push(...game.players.flatMap(p => p.hand));
+    for (const p of game.players) p.hand = [];
+    seat(game, ids[0]).hand.push(semuta);
+    seat(game, ids[1]).hand.push(thumper);
+    const lands = spiceDeck().filter(card => 'territory' in card);
+    const prior = lands[0], next = lands[1];
+    if (!('territory' in prior) || !('territory' in next))
+      throw Error('Missing real spice territories');
+    seat(game, ids[2]).forces = { [`${prior.territory}:${prior.sector}`]: 3 };
+    seat(game, ids[2]).reserves = 17;
+    Object.assign(game, { turn: 2, phase: 1, active: null, ready: [],
+      decision: null, response: null, phaseOpening: null,
+      spiceWindow: null, spiceResolution: null, spiceSequence: null, nexus: false,
+      spice: { [`${prior.territory}:${prior.sector}`]: 8 },
+      spiceDiscard: [[prior], []], spiceDeck: [next, ...spiceDeck().filter(card => 'worm' in card)] });
+    const beforeDeck = structuredClone(game.spiceDeck);
+    game.version++;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(game), game.version, code, game.version - 1).changes, 1);
+    const pending = await act(1, { type: 'card', card: thumper.id });
+    assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.deepEqual(pending.spiceDeck, beforeDeck);
+    assert.equal(seat(pending, ids[2]).tanks, 0);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, pending.version);
+    const holder = await f.restart().readSeatView(code, auths[0]);
+    const rival = await f.restart().readSeatView(code, auths[2]);
+    assert.equal(holder.semutaReaction?.canCommit, true);
+    assert.equal(rival.semutaReaction?.canCommit, false);
+    const claimed = await act(0, { type: 'semutaCommit',
+      event: pending.pendingTreacheryDiscard!.batch.event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.equal(seat(claimed, ids[2]).tanks, 3);
+    assert.equal(claimed.spiceWindow?.territory, next.territory);
+    assert.equal(claimed.spiceDeck.length, beforeDeck.length - 1);
+    assert.equal(seat(claimed, ids[0]).hand.filter(card => card.id === thumper.id).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.equal(claimed.discard.some(card => card.id === thumper.id), false);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
   } finally { f.sqlite.close(); }
 });

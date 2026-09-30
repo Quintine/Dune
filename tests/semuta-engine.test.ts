@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { applyAction, createGame, initializeSemutaGameForAudit, joinGame, newPlayer, normalizeAutomaticGame, viewGame, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
+import { spiceDeck } from '../game/cards';
 
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
 const player = (g: Game, id: string) => g.players.find(p => p.id === id)!;
@@ -19,8 +20,8 @@ function inventory(g: Game) {
   assert.equal(new Set(ids).size, ids.length);
   return ids;
 }
-function fixture() {
-  let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), false, ['choam']);
+function fixture(ix = false) {
+  let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), false, ix ? ['choam', 'ix'] : ['choam']);
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
   joinGame(g, newPlayer('e', 'Emperor', 'emperor'));
   for (const p of g.players) { p.bot = 'Medium'; p.ready = true; }
@@ -746,4 +747,69 @@ void test('a mutual-traitor battle offers one mixed-owner mandatory batch with o
   assert.deepEqual(inventory(selected), original);
   for (const p of selected.players)
     assert.deepEqual(viewGame(reload(selected), p.id), viewGame(selected, p.id));
+});
+
+void test('a clean Thumper discard pauses before its injected worm and resumes one Spice Blow', () => {
+  const { g, semuta, hajr } = fixture(true);
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const thumper = take(g, 'thumper');
+  player(g, 'a').hand.push(thumper);
+  const lands = spiceDeck().filter(card => 'territory' in card);
+  const prior = lands[0], next = lands[1];
+  if (!('territory' in prior) || !('territory' in next))
+    throw Error('Missing real spice territory cards');
+  player(g, 'e').forces = { [`${prior.territory}:${prior.sector}`]: 3 };
+  player(g, 'e').reserves = 17;
+  g.spice = { [`${prior.territory}:${prior.sector}`]: 8 };
+  g.spiceDiscard = [[prior], []];
+  g.spiceDeck = [next, ...spiceDeck().filter(card => 'worm' in card)];
+  Object.assign(g, { phase: 1, turn: 2, active: null, ready: [],
+    decision: null, response: null, phaseOpening: null,
+    spiceWindow: null, spiceResolution: null, spiceSequence: null, nexus: false });
+  const original = inventory(g), deck = reload(g).spiceDeck;
+  const pending = applyAction(g, 'a', { type: 'card', card: thumper.id });
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.spiceWindow, null);
+  assert.deepEqual(pending.spiceDeck, deck);
+  assert.equal(player(pending, 'e').tanks, 0);
+  assert.equal(pending.spice[`${prior.territory}:${prior.sector}`], 8);
+  assert.equal(pending.discard.filter(card => card.id === thumper.id).length, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  const profile = reload(pending);
+  profile.advanced = !profile.advanced;
+  assert.throws(() => viewGame(profile, 'r'));
+  const custody = reload(pending);
+  player(custody, 'r').noField = undefined;
+  assert.throws(() => normalizeAutomaticGame(custody));
+  const expansion = reload(pending);
+  expansion.expansions = ['choam'];
+  assert.throws(() => viewGame(expansion, 'r'));
+  const placement = reload(pending);
+  placement.wormPlacementCanceledTurn = pending.turn;
+  assert.throws(() => normalizeAutomaticGame(placement));
+  let declined = reload(pending);
+  for (const id of ['e', 'a', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(player(declined, 'e').tanks, 3);
+  assert.equal(declined.spice[`${prior.territory}:${prior.sector}`], undefined);
+  assert.equal(declined.spiceWindow?.territory, next.territory);
+  assert.equal(declined.discard.filter(card => card.id === thumper.id).length, 1);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(player(claimed, 'e').tanks, 3);
+  assert.equal(claimed.spiceWindow?.territory, next.territory);
+  assert.deepEqual(claimed.spiceDeck, declined.spiceDeck);
+  assert.deepEqual(claimed.spiceDiscard, declined.spiceDiscard);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === thumper.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(claimed.discard.some(card => card.id === thumper.id), false);
+  assert.deepEqual(inventory(claimed), original);
+  for (const p of claimed.players)
+    assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
+  assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
 });
