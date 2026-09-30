@@ -20,8 +20,11 @@ selections remain rejected. The fresh Spice Deck excludes Sandtrout.
 Types, lint, **6,022 offline tests**, build and actual Basic/Advanced
 CLI/runtime/phone success/prevention/refresh pass with conserved physical
 cards and unchanged spice. Local HTTP is **49/55**, four POST 503s plus two
-timeouts, not green. Proxy-free CI/live deployment and full-mode acceptance
-remain separate; no public release or deployed claim.
+timeouts, not green. Code `0d9d0a72d63b29d93161857cee2d1a2cd6acd7e3`
+is pushed and [workflow 36770260638](https://github.com/Quintine/Dune/actions/runs/36770260638)
+reports completed/success for that immutable source; the mandatory
+isolated storage/HTTP verifier precedes image publication. Live deployment
+and full-mode acceptance remain separate; no public/deployed claim.
 
 Five implementation lanes now connect the bounded
 [Richese Nexus Betrayal](NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026)

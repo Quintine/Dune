@@ -43,9 +43,14 @@ proof retains full physical inventory, exact source history and unchanged spice.
 No existing human games, seats or credentials were reset/modified.
 
 Current local built-worker HTTP is **49/55**: four POST 503s and two timeouts
-retain the Wrangler-dev limitation, not green acceptance. Exact proxy-free
-container CI/publication is recorded after the push; live NAS, wider modules,
-full CHOAM/Nexus games and calibrated AI remain open. No public gate changes.
+retain the Wrangler-dev limitation, not green local acceptance. Code
+`0d9d0a72d63b29d93161857cee2d1a2cd6acd7e3` is pushed, and
+[workflow 36770260638](https://github.com/Quintine/Dune/actions/runs/36770260638)
+reports completed/success for that exact revision. The mandatory isolated
+container verifier runs full HTTP/storage checks before publishing
+`ghcr.io/quintine/dune:sha-0d9d0a72d63b29d93161857cee2d1a2cd6acd7e3`.
+Live NAS, wider modules, full CHOAM/Nexus games and calibrated AI remain
+open; publication is not deployment and no public gate changes.
 
 ## 30 September 2026 — bounded Richese Nexus Betrayal auction integration
 
