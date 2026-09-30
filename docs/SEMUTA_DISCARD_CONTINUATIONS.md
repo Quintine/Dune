@@ -104,6 +104,15 @@ decline installs the one saved restriction; shipment remains
 possible. Declared moves, Nexus conversion and overlapping
 arrival parents retain their automatic paths.
 
+Clean proactive ordinary Trip to Gamont stages
+`choamGamontDiscard` after the accepted public card cost but
+before returning one selected opponent force to reserves. The
+receipt binds the selected location, target force/reserve
+custody and CHOAM hand; claim or decline completes the one
+return without replaying the response. Elite, concealed
+No-Field, closing Mentat decision, Nexus and competing parents
+retain their automatic paths.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response

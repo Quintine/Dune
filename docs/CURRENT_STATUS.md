@@ -13,8 +13,8 @@ Ornithopter, used Distrans, final Truthtrance, four bounded Sapho,
 pre-leader Residual Poison, printed Karama canceling clean CHOAM
 Charity, Inflation or Bene Gesserit Charity or settling a clean
 normal-auction lot, a completed CHOAM sale or clean
-Kulon/La La La/Baliset Worthless, battle-card and
-Ix-deck Thumper/Amal discards
+Kulon/La La La/Baliset/ordinary Trip to Gamont
+Worthless, battle-card and Ix-deck Thumper/Amal discards
 open the same neutral offer regardless of hidden Semuta custody.
 A clean **private** normal-auction Ixian ally replacement discard
 also pauses before its draw; no unknown face is shown before a
@@ -28,6 +28,9 @@ selected target loses remaining free revival; paid revival remains
 available. Proactive Baliset spends its public card before the
 selected player is barred from movement into CHOAM's occupied
 territory; shipment stays legal.
+Clean ordinary Trip to Gamont spends its public card before
+one opponent force returns to reserves; elite and concealed
+No-Field returns retain their earlier automatic path.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
@@ -43,6 +46,18 @@ full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
 
+Clean ordinary Trip to Gamont passes focused engine and
+authenticated SQLite checks, a direct physical claim/force
+return smoke and independent review without findings.
+`npm run check` passed types, lint and 5,851 offline tests;
+typecheck, lint and 18 guide/Semuta tests passed after the
+in-app text update, and the production build passed. The
+built phone-width rules guide displayed both new CHOAM
+discard scopes. Isolated built-worker HTTP passed 50/55:
+four Wrangler-dev proxy 503s and one timeout. It is not a
+green local HTTP suite or a live deployment; proxy-free CI
+for this exact checkpoint is pending.
+
 Clean proactive Baliset passes focused engine and authenticated
 SQLite checks, a direct engine claim/restriction smoke and
 independent review without findings. `npm run check` passed
@@ -50,8 +65,9 @@ types, lint and 5,849 offline tests; the production build
 passed. Isolated built-worker HTTP passed 49/55: four POSTs
 returned the Wrangler-dev proxy's 503 rather than app statuses,
 and two requests timed out. This is **not** a green local HTTP
-suite or production deployment; proxy-free CI remains pending
-for this exact checkpoint.
+suite or production deployment. Proxy-free workflow
+`36673190056` passed the full isolated HTTP suite for
+`756af19` and published its image; this is not NAS deployment.
 
 Clean proactive La La La passes engine, authenticated SQLite,
 direct engine smoke and phone-width guide checks. `npm run check`

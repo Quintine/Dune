@@ -5,6 +5,7 @@ import {
   createGame,
   newPlayer,
   viewGame,
+  normalizeAutomaticGame,
   RuleError,
   type Game,
   type Action,
@@ -13,6 +14,8 @@ import { baseDeck } from '../game/cards';
 import { TERRITORIES, MOBILE_LOCATION } from '../game/board';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
+import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 const key = (id: string) =>
   `${id}:${TERRITORIES.find((t) => t.id === id)!.sectors[0]}`;
 const player = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
@@ -149,6 +152,75 @@ void test('Trip may be played during ordinary Mentat and clears readiness before
   g = done(closing(g));
   assert.equal(g.turn, 2);
 });
+void test('clean proactive ordinary Trip discard offers Semuta before one force returns', () => {
+  const initial = fixture();
+  initial.players[1] = newPlayer('e', 'Richese', 'richese');
+  player(initial, 'e').forces = Object.fromEntries(
+    ['arrakeen', 'carthag', 'sietch_tabr'].map(t => [key(t), 1]));
+  player(initial, 'e').reserves = 17;
+  initial.richeseCache = richeseCards();
+  initial.semutaPreview = true;
+  const index = initial.richeseCache.findIndex(card => card.id === SEMUTA_DRUG_ID);
+  assert.ok(index >= 0);
+  const semuta = initial.richeseCache.splice(index, 1)[0];
+  player(initial, 'e').hand.push(semuta);
+  contest(initial, 'b');
+  const card = player(initial, 'c').hand.find(card => card.name === 'Trip to Gamont')!.id;
+  const physical = (state: Game) => [
+    ...state.deck, ...state.discard, ...state.richeseCache!,
+    ...state.players.flatMap(p => p.hand),
+  ].map(card => card.id).sort();
+  const original = physical(initial);
+  const absent = structuredClone(initial);
+  player(absent, 'e').hand = [absent.richeseCache!.splice(0, 1)[0]];
+  absent.richeseCache!.push(semuta);
+  const pending = allow(trip(mentat(initial)));
+  const neutral = allow(trip(mentat(absent)));
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'choamGamontDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(neutral.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(player(pending, 'e').forces[key('arrakeen')], 1);
+  assert.equal(player(pending, 'e').reserves, 17);
+  assert.equal(pending.discard.filter(used => used.id === card).length, 1);
+  for (const id of ['c', 'b', 'g'])
+    assert.deepEqual(viewGame(pending, id), viewGame(neutral, id));
+  assert.equal(viewGame(pending, 'e').semutaReaction?.canCommit, true);
+  assert.equal(botActions(viewGame(pending, 'e'))[0]?.type, 'semutaCommit');
+  assert.deepEqual(normalizeAutomaticGame(JSON.parse(JSON.stringify(pending))), pending);
+  for (const change of [
+    (state: Game) => {
+      const c = state.pendingTreacheryDiscard!.continuation;
+      if (c.kind === 'choamGamontDiscard') c.target = 'b';
+    },
+    (state: Game) => { delete player(state, 'e').forces[key('arrakeen')]; },
+    (state: Game) => { state.pendingTreacheryDiscard!.batch.entries[0].card.name = 'Forgery'; },
+  ]) {
+    const corrupt: Game = JSON.parse(JSON.stringify(pending));
+    change(corrupt);
+    const before = JSON.stringify(corrupt);
+    assert.throws(() => send(corrupt, 'e', { type: 'semutaCommit', event }));
+    assert.equal(JSON.stringify(corrupt), before);
+  }
+  let declined: Game = JSON.parse(JSON.stringify(pending));
+  for (const id of ['c', 'b', 'g', 'e'])
+    declined = send(declined, id, { type: 'semutaPass', event });
+  const claimed = send(JSON.parse(JSON.stringify(pending)), 'e',
+    { type: 'semutaCommit', event });
+  for (const state of [declined, claimed]) {
+    assert.equal(state.pendingTreacheryDiscard, null);
+    assert.equal(player(state, 'e').forces[key('arrakeen')], undefined);
+    assert.equal(player(state, 'e').reserves, 18);
+    assert.deepEqual(state.ready, []);
+    assert.deepEqual(physical(state), original);
+    assert.equal(done(closing(state)).turn, 2);
+    assert.throws(() => send(state, 'e', { type: 'semutaCommit', event }));
+  }
+  assert.equal(declined.discard.filter(used => used.id === card).length, 1);
+  assert.equal(player(claimed, 'e').hand.filter(used => used.id === card).length, 1);
+  assert.equal(claimed.discard.filter(used => used.id === semuta.id).length, 1);
+});
+
 void test('a Karama cancellation keeps both the selected force and Trip card and does not skip the victory opportunity', () => {
   const initial = fixture();
   const karama = hold(initial, 'e', 'Karama');

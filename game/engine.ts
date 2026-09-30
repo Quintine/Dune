@@ -1237,6 +1237,14 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'choamGamontDiscard';
+          player: string;
+          card: string;
+          target: string;
+          location: string;
+          stateSignature: string;
+        }
+      | {
           kind: 'thumperDiscard';
           player: string;
           card: string;
@@ -5005,6 +5013,24 @@ function choamBalisetDiscardSignature(g: Game, c: ChoamBalisetDiscardContinuatio
     ownerElites: owner.elites?.forces, ownerSpice: owner.spice,
   });
 }
+type ChoamGamontDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'choamGamontDiscard' }
+>;
+function choamGamontDiscardSignature(g: Game, c: ChoamGamontDiscardContinuation) {
+  const owner = getPlayer(g, c.player), target = getPlayer(g, c.target);
+  return JSON.stringify({
+    player: c.player, card: c.card, target: c.target, location: c.location,
+    turn: g.turn, phase: g.phase, active: g.active, order: g.order,
+    ready: g.ready, storm: g.storm,
+    parent: nullentropyParentSignature(g,
+      { response: null, decision: null, pendingKarama: null, phaseOpening: null },
+      `choam:gamont:${c.card}`),
+    ownerHand: owner.hand.map(card => card.id),
+    targetForces: target.forces, targetReserves: target.reserves,
+    targetElites: target.elites, targetNoField: target.noField,
+  });
+}
 type ThumperDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'thumperDiscard' }
@@ -5679,6 +5705,22 @@ function treacheryDiscardIntegrity(g: Game) {
       c.stateSignature === choamBalisetDiscardSignature(g, c),
       'The used Baliset no longer matches its pending territory restriction.',
     );
+  } else if (continuation?.kind === 'choamGamontDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    const owner = g.players.find(p => p.id === c.player);
+    requireRule(
+      g.phase === 8 && owner?.faction === 'choam' &&
+      c.target !== c.player &&
+      gamontAvailable(g, c.target, c.location, 0) &&
+      !g.pendingChoamWorthless && !g.response && !g.decision &&
+      !g.phaseOpening && !g.choamMarket &&
+      batch.cause === 'choam:gamont' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card && entry.card.kind === 'worthless' &&
+      entry.card.name === 'Trip to Gamont' &&
+      c.stateSignature === choamGamontDiscardSignature(g, c),
+      'The used Trip to Gamont no longer matches its pending ordinary force return.',
+    );
   } else if (continuation?.kind === 'thumperDiscard') {
     const c = continuation, entry = batch.entries[0];
     requireRule(
@@ -6348,6 +6390,7 @@ function semutaOfferSupported(
     continuation.kind !== 'choamKulonDiscard' &&
     continuation.kind !== 'choamLaLaLaDiscard' &&
     continuation.kind !== 'choamBalisetDiscard' &&
+    continuation.kind !== 'choamGamontDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
@@ -6418,6 +6461,7 @@ function semutaOfferSupported(
       continuation.kind === 'choamKulonDiscard' ||
       continuation.kind === 'choamLaLaLaDiscard' ||
       continuation.kind === 'choamBalisetDiscard' ||
+      continuation.kind === 'choamGamontDiscard' ||
       (continuation.kind === 'karamaCharityDiscard' ||
         continuation.kind === 'karamaInflationDiscard' ||
         continuation.kind === 'karamaBgCharityDiscard' ||
@@ -6444,6 +6488,9 @@ function semutaOfferSupported(
       (!g.pendingRevival && !g.pendingChoamMove && !g.ornithopter)) &&
     (continuation.kind !== 'choamBalisetDiscard' ||
       (!g.pendingChoamMove && !g.ornithopter && !g.pendingArrivalOverlap)) &&
+    (continuation.kind !== 'choamGamontDiscard' ||
+      (!g.pendingChoamMove && !g.pendingArrivalOverlap &&
+        !g.pendingRevival && !g.ornithopter)) &&
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
     !g.pendingHomeworldShipment && !g.pendingRicheseGift &&
@@ -6600,6 +6647,9 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     completeChoamLaLaLa(g, next.target);
   } else if (next.kind === 'choamBalisetDiscard') {
     completeChoamBaliset(g, next.target, next.territory);
+  } else if (next.kind === 'choamGamontDiscard') {
+    completeChoamGamont(g, getPlayer(g, next.player), next.target,
+      next.location, 0);
   } else if (next.kind === 'nullentropyDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -20434,6 +20484,24 @@ function completeChoamBaliset(g: Game, target: string, location: string) {
   (g.choamBaliset ??= []).push({ turn: g.turn, player: target, territory: location });
   log(g, `${getPlayer(g, target).name} cannot move into CHOAM's ${territory(location).name} this phase; shipment remains possible.`);
 }
+function completeChoamGamont(
+  g: Game, owner: Player, targetId: string, from: string,
+  elite: number, noFieldEvent?: string,
+) {
+  const target = getPlayer(g, targetId);
+  if (noFieldEvent) revealPlayerNoField(g, target, 'gamont');
+  const returned = (target.forces[from] ?? 0) > 0;
+  if (returned) {
+    removeGroup(target, [[from, 1]], { [from]: elite });
+    target.reserves++;
+    if (target.elites) target.elites.reserves += elite;
+  }
+  observeOccupation(g);
+  settleAdvisors(g);
+  log(g, returned
+    ? `${owner.name} sent one of ${target.name}’s forces to reserves with Trip to Gamont.`
+    : `${owner.name} used Trip to Gamont to reveal ${target.name}’s No-Field. No force was present to return; the card is still used.`);
+}
 function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) {
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
@@ -20837,24 +20905,24 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
           if (ambassador) offerAmbassadorRelocation(g);
         }
       } else if (pending.effect === 'gamont') {
-        const target = getPlayer(g, pending.target!);
-        if (pending.noFieldEvent) revealPlayerNoField(g, target, 'gamont');
-        const returned = (target.forces[pending.location!] ?? 0) > 0;
-        if (returned) {
-          removeGroup(target, [[pending.location!, 1]], {
-            [pending.location!]: pending.elite!,
-          });
-          target.reserves++;
-          if (target.elites) target.elites.reserves += pending.elite!;
+        if (g.semutaPreview && used.name === 'Trip to Gamont' &&
+          pending.elite === 0 && !pending.noFieldEvent &&
+          !pending.storm && !pending.revival && !pending.movement &&
+          !pending.mentat && !pending.nexusEvent) {
+          const continuation: ChoamGamontDiscardContinuation = {
+            kind: 'choamGamontDiscard', player: choam.id,
+            card: used.id, target: pending.target!,
+            location: pending.location!, stateSignature: '',
+          };
+          const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
+          if (semutaOfferSupported(g, continuation, entries)) {
+            continuation.stateSignature = choamGamontDiscardSignature(g, continuation);
+            stageTreacheryDiscard(g, 'choam:gamont', entries, continuation);
+            return;
+          }
         }
-        observeOccupation(g);
-        settleAdvisors(g);
-        log(
-          g,
-          returned
-            ? `${choam.name} sent one of ${target.name}’s forces to reserves with Trip to Gamont.`
-            : `${choam.name} used Trip to Gamont to reveal ${target.name}’s No-Field. No force was present to return; the card is still used.`,
-        );
+        completeChoamGamont(g, choam, pending.target!, pending.location!,
+          pending.elite!, pending.noFieldEvent);
       } else {
         if (g.semutaPreview && used.name === 'La La La' &&
           !pending.storm && !pending.revival && !pending.movement &&

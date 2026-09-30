@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after proactive ordinary Trip cost
+
+In the explicit Richese preview, an accepted ordinary Trip to
+Gamont Worthless response now discards its named public card
+before the selected opponent force leaves its board sector.
+Every seat sees the same neutral Semuta offer regardless of
+the private holder. A claim can take that physical card, and
+either claim or all-seat decline then returns exactly one
+ordinary force to reserves. The saved receipt binds target
+and location, original target force/elite/reserve custody,
+owner hand and suspended parent state. No second Karama
+response or duplicate force return occurs. Elite and No-Field
+returns, closing Mentat decisions, Nexus conversion and
+competing parents retain the existing direct path.
+
+Focused engine checks cover hidden-holder parity, pre-return
+timing, JSON normalization, corrupted target/location and
+force custody rejection, single claim or decline, legal AI,
+physical cards and subsequent Mentat continuation.
+Authenticated in-memory SQLite verifies seat views, restart,
+stale retry, card custody and one actual force return. The
+full Semuta and expansion gates remain open.
+
+`npm run check` passed types, lint and 5,851 offline
+tests. After the in-app guide update, typecheck, lint and 18
+focused reference/Semuta cases passed; the production build
+passed. Independent rule review found no scoped defect. A
+direct engine smoke observed the accepted public discard,
+pre-return custody, exact physical claim and single ordinary
+force return. The built phone-width rules guide visibly named
+Baliset and ordinary Trip before their effects. Isolated
+Wrangler-dev HTTP passed 50/55: four requests returned its
+proxy-layer 503 and one Advanced-preview request timed out.
+This is not a green local HTTP suite. Proxy-free container
+verification and live deployment remain pending for this
+checkpoint; no complete expansion claim follows.
+
 ## 30 September 2026 — Semuta after proactive CHOAM Baliset cost
 
 In the explicit Richese preview, an accepted proactive Baliset
@@ -28,8 +65,9 @@ including 23 Baliset and 13 Semuta recovery cases. The
 production build passed; independent review had no scoped
 finding. Isolated built-worker HTTP passed 49/55: four
 Wrangler-dev proxy 503s and two 15-second timeouts. This does
-not certify the HTTP suite; proxy-free container CI for the
-checkpoint is pending. No NAS deployment is claimed.
+not certify local HTTP. Proxy-free workflow `36673190056`
+passed the full HTTP suite for `756af19` and published its
+image. No NAS deployment is claimed.
 
 ## 30 September 2026 — Semuta after proactive CHOAM La La La cost
 

@@ -68,8 +68,9 @@ ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
 printed Karama canceling clean CHOAM Charity, Inflation or Bene
 Gesserit Charity or settling a clean normal-auction lot, a completed
-CHOAM sale or clean Kulon/proactive La La La/Baliset Worthless
-discard, battle and Ix-deck Thumper/Amal discards**, plus
+CHOAM sale or clean Kulon/proactive La La La/Baliset/ordinary
+Trip to Gamont Worthless discard, battle and Ix-deck
+Thumper/Amal discards**, plus
 a clean **private** normal-auction Ixian ally replacement discard
 before its draw. Other
 than the one explicitly suspended charity/Inflation response, the
@@ -116,6 +117,14 @@ and existing restrictions. Claim or decline installs one
 restriction without replaying the response. Shipment remains
 legal. Reactive declared movement, Nexus conversion and
 competing arrivals retain their original automatic paths.
+
+A clean proactive ordinary Trip to Gamont response pauses after
+its named public card cost but before moving one selected force
+from a player's board sector to reserves. The saved receipt binds
+the target, location and pre-return force custody; a claim or
+decline returns that one force and reconciles occupation once.
+Elite, concealed No-Field, closing Mentat, Nexus and competing
+parents retain their prior automatic paths.
 
 An early-ended Ornithopter advances the saved queue; a completed
 flight resumes one committed arrival only without BG, Ecaz or
