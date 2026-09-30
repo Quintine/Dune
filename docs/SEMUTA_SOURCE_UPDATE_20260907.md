@@ -68,8 +68,8 @@ ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
 printed Karama canceling clean CHOAM Charity, Inflation or Bene
 Gesserit Charity or settling a clean normal-auction lot, a completed
-CHOAM sale or clean Kulon/proactive La La La Worthless discard,
-battle and Ix-deck Thumper/Amal discards**, plus
+CHOAM sale or clean Kulon/proactive La La La/Baliset Worthless
+discard, battle and Ix-deck Thumper/Amal discards**, plus
 a clean **private** normal-auction Ixian ally replacement discard
 before its draw. Other
 than the one explicitly suspended charity/Inflation response, the
@@ -107,6 +107,15 @@ target and old Revival rules; claim or decline installs the block
 once without replaying the response. Paid revival remains legal.
 A reactive free-revival request, Nexus conversion and other
 Worthless effects retain their earlier automatic paths.
+
+A clean proactive Baliset response pauses after its public
+Worthless card cost but before restricting the selected player
+from moving into the CHOAM-occupied territory. The saved
+receipt binds that target, territory, current CHOAM occupancy
+and existing restrictions. Claim or decline installs one
+restriction without replaying the response. Shipment remains
+legal. Reactive declared movement, Nexus conversion and
+competing arrivals retain their original automatic paths.
 
 An early-ended Ornithopter advances the saved queue; a completed
 flight resumes one committed arrival only without BG, Ecaz or

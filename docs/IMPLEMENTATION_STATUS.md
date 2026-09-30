@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after proactive CHOAM Baliset cost
+
+In the explicit Richese preview, an accepted proactive Baliset
+response now discards the named public Worthless card before a
+neutral Semuta offer. The chosen player's movement restriction
+into the occupied CHOAM territory is installed only after claim
+or all-seat decline; shipment remains possible. The saved receipt
+binds target, territory, owner forces and hand, existing
+restrictions, phase and public card cost. It cannot replay the
+Karama response, restrict twice or remove the original mover's
+forces. Declared-move responses, Nexus conversion and competing
+arrival parents retain the prior automatic path.
+
+Engine tests cover hidden-holder parity, pre-restriction timing,
+card/target/territory and occupancy custody, JSON normalization,
+one saved block after claim or decline, rejection without mutation,
+physical card conservation and legal AI claim. Authenticated
+in-memory SQLite checks cover seat projections, restart, exact
+stale retry, preserved seat rows and rejected restricted movement.
+A direct engine smoke observed a public offer, one physical claim
+and a turn-scoped restriction. Full Semuta and expansion gates
+remain open.
+
+`npm run check` passed types, lint and 5,849 offline tests,
+including 23 Baliset and 13 Semuta recovery cases. The
+production build passed; independent review had no scoped
+finding. Isolated built-worker HTTP passed 49/55: four
+Wrangler-dev proxy 503s and two 15-second timeouts. This does
+not certify the HTTP suite; proxy-free container CI for the
+checkpoint is pending. No NAS deployment is claimed.
+
 ## 30 September 2026 — Semuta after proactive CHOAM La La La cost
 
 In the explicit Richese preview, a clean proactive La La La

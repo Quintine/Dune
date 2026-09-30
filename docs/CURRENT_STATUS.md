@@ -12,8 +12,9 @@ the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, used Distrans, final Truthtrance, four bounded Sapho,
 pre-leader Residual Poison, printed Karama canceling clean CHOAM
 Charity, Inflation or Bene Gesserit Charity or settling a clean
-normal-auction lot, a completed CHOAM sale or clean Kulon/La La La
-Worthless discard, battle-card and Ix-deck Thumper/Amal discards
+normal-auction lot, a completed CHOAM sale or clean
+Kulon/La La La/Baliset Worthless, battle-card and
+Ix-deck Thumper/Amal discards
 open the same neutral offer regardless of hidden Semuta custody.
 A clean **private** normal-auction Ixian ally replacement discard
 also pauses before its draw; no unknown face is shown before a
@@ -22,9 +23,11 @@ before the offer and resumes the same market afterward. Karama waits
 after its public cost but before cancellation or the reserved lot settles.
 Kulon's public card is spent before this offer; its single movement
 range bonus and same turn resume only after claim or all-seat decline.
-Proactive La La La likewise spends its public card before the offer;
-the selected target loses remaining free revival only after the
-reaction, while paid revival remains available.
+Proactive La La La likewise spends its public card before the
+selected target loses remaining free revival; paid revival remains
+available. Proactive Baliset spends its public card before the
+selected player is barred from movement into CHOAM's occupied
+territory; shipment stays legal.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
@@ -39,6 +42,16 @@ promise-bound Truthtrance, other Karama uses, pending rewards,
 full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
+
+Clean proactive Baliset passes focused engine and authenticated
+SQLite checks, a direct engine claim/restriction smoke and
+independent review without findings. `npm run check` passed
+types, lint and 5,849 offline tests; the production build
+passed. Isolated built-worker HTTP passed 49/55: four POSTs
+returned the Wrangler-dev proxy's 503 rather than app statuses,
+and two requests timed out. This is **not** a green local HTTP
+suite or production deployment; proxy-free CI remains pending
+for this exact checkpoint.
 
 Clean proactive La La La passes engine, authenticated SQLite,
 direct engine smoke and phone-width guide checks. `npm run check`

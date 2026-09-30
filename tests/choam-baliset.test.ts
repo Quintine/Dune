@@ -5,6 +5,7 @@ import {
   createGame,
   newPlayer,
   viewGame,
+  normalizeAutomaticGame,
   type Game,
   type Action,
 } from '../game/engine';
@@ -12,6 +13,8 @@ import { baseDeck } from '../game/cards';
 import { TERRITORIES, gameDistance, splitLocation } from '../game/board';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
+import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 const p = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
 const send = (g: Game, id: string, a: Action) => applyAction(g, id, a);
 function hold(g: Game, id: string, name: string) {
@@ -183,6 +186,77 @@ void test('proactive Baliset restricts only the selected player and territory', 
   g.active = 'e';
   assert.throws(() => move(g), /Baliset prevents/);
 });
+void test('clean proactive Baliset discard offers Semuta before one territory restriction', () => {
+  const initial = fixture();
+  initial.players[1] = newPlayer('e', 'Richese', 'richese');
+  p(initial, 'e').forces = { 'red_chasm:7': 3 };
+  p(initial, 'e').reserves = 17;
+  initial.richeseCache = richeseCards();
+  initial.semutaPreview = true;
+  const index = initial.richeseCache.findIndex(card => card.id === SEMUTA_DRUG_ID);
+  assert.ok(index >= 0);
+  const semuta = initial.richeseCache.splice(index, 1)[0];
+  p(initial, 'e').hand.push(semuta);
+  contest(initial, 'b');
+  const card = p(initial, 'c').hand.find(card => card.name === 'Baliset')!.id;
+  const territory = dest(initial).territory;
+  const physical = (state: Game) => [
+    ...state.deck, ...state.discard, ...state.richeseCache!,
+    ...state.players.flatMap(player => player.hand),
+  ].map(card => card.id).sort();
+  const original = physical(initial);
+  const absent = structuredClone(initial);
+  p(absent, 'e').hand = [absent.richeseCache!.splice(0, 1)[0]];
+  absent.richeseCache!.push(semuta);
+  const pending = allow(play(initial)), neutral = allow(play(absent));
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'choamBalisetDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(neutral.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.choamBaliset, undefined);
+  assert.equal(pending.discard.filter(used => used.id === card).length, 1);
+  assert.deepEqual(viewGame(pending, 'c'), viewGame(neutral, 'c'));
+  assert.deepEqual(viewGame(pending, 'b'), viewGame(neutral, 'b'));
+  assert.equal(viewGame(pending, 'e').semutaReaction?.canCommit, true);
+  assert.equal(botActions(viewGame(pending, 'e'))[0]?.type, 'semutaCommit');
+  assert.deepEqual(normalizeAutomaticGame(JSON.parse(JSON.stringify(pending))), pending);
+  for (const change of [
+    (state: Game) => {
+      const c = state.pendingTreacheryDiscard!.continuation;
+      if (c.kind === 'choamBalisetDiscard') c.territory = 'red_chasm';
+    },
+    (state: Game) => {
+      const c = state.pendingTreacheryDiscard!.continuation;
+      if (c.kind === 'choamBalisetDiscard') c.target = 'b';
+    },
+    (state: Game) => { p(state, 'c').forces = {}; },
+    (state: Game) => { state.choamBaliset = [{ turn: state.turn, player: 'e', territory }]; },
+    (state: Game) => { state.pendingTreacheryDiscard!.batch.entries[0].card.name = 'Forgery'; },
+  ]) {
+    const corrupt: Game = JSON.parse(JSON.stringify(pending));
+    change(corrupt);
+    const before = JSON.stringify(corrupt);
+    assert.throws(() => send(corrupt, 'e', { type: 'semutaCommit', event }));
+    assert.equal(JSON.stringify(corrupt), before);
+  }
+  let declined: Game = JSON.parse(JSON.stringify(pending));
+  for (const id of ['c', 'b', 'e'])
+    declined = send(declined, id, { type: 'semutaPass', event });
+  const claimed = send(JSON.parse(JSON.stringify(pending)), 'e',
+    { type: 'semutaCommit', event });
+  for (const state of [declined, claimed]) {
+    assert.equal(state.pendingTreacheryDiscard, null);
+    assert.deepEqual(state.choamBaliset, [{ turn: state.turn, player: 'e', territory }]);
+    assert.equal(viewGame(state, 'e').balisetRestrictions.length, 1);
+    assert.throws(() => move(state), /Baliset prevents/);
+    assert.deepEqual(physical(state), original);
+    assert.throws(() => send(state, 'e', { type: 'semutaCommit', event }));
+  }
+  assert.equal(declined.discard.filter(used => used.id === card).length, 1);
+  assert.equal(p(claimed, 'e').hand.filter(used => used.id === card).length, 1);
+  assert.equal(claimed.discard.filter(used => used.id === semuta.id).length, 1);
+});
+
 void test('Baliset permits ordinary shipment into the restricted territory', () => {
   let g = allow(play(fixture()));
   g = send(g, 'e', { type: 'ship', amount: 1, ...dest(g) });

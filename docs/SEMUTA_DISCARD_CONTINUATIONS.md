@@ -95,6 +95,15 @@ Revival rules and physical card. A neutral claim or decline applies
 the one saved block; paid revival remains legal. Reactive requests,
 Nexus and other Worthless effects retain their automatic paths.
 
+Clean proactive Baliset stages `choamBalisetDiscard` after its
+accepted public Worthless card cost but before restricting the
+chosen player from movement into CHOAM's occupied territory. The
+receipt binds the target, territory, CHOAM's current forces,
+existing restrictions and physical card. A neutral claim or
+decline installs the one saved restriction; shipment remains
+possible. Declared moves, Nexus conversion and overlapping
+arrival parents retain their automatic paths.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response
