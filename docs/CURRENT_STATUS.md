@@ -12,7 +12,7 @@ the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, used Distrans, final Truthtrance, four bounded Sapho,
 pre-leader Residual Poison, printed Karama canceling clean CHOAM
 Charity, Inflation or Bene Gesserit Charity or settling a clean
-normal-auction lot, a completed CHOAM sale or a clean Kulon
+normal-auction lot, a completed CHOAM sale or clean Kulon/La La La
 Worthless discard, battle-card and Ix-deck Thumper/Amal discards
 open the same neutral offer regardless of hidden Semuta custody.
 A clean **private** normal-auction Ixian ally replacement discard
@@ -22,6 +22,9 @@ before the offer and resumes the same market afterward. Karama waits
 after its public cost but before cancellation or the reserved lot settles.
 Kulon's public card is spent before this offer; its single movement
 range bonus and same turn resume only after claim or all-seat decline.
+Proactive La La La likewise spends its public card before the offer;
+the selected target loses remaining free revival only after the
+reaction, while paid revival remains available.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
@@ -37,13 +40,21 @@ full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
 
+Clean proactive La La La now passes engine, authenticated SQLite,
+direct engine smoke and phone-width guide inspection. `npm run check`
+passed types, lint and 5,847 offline tests; the build passed. Direct
+Wrangler-dev HTTP passed 50/55; four tests saw HTTP 503 and one
+discussion request timed out at 15 seconds. The proxy-free container
+run for this new code remains to be verified after push.
+
 Clean Kulon-before-bonus continuation passed engine, authenticated
 SQLite and genuine-setup targeted smoke checks. `npm run check`
 passed types, lint and 5,845 offline tests; build and phone-width
 guide inspection passed. Direct Wrangler-dev HTTP passed 48/55;
 six tests saw HTTP 503 instead of their expected status, and one
 Advanced-lobby request timed out at 15 seconds. The proxy-free
-container run for this change remains to be verified after push.
+container workflow `36670493579` for `88bcb33` passed the full
+HTTP suite and published its image; this is not a NAS deployment.
 
 The completed CHOAM card-sale reaction passed two- and three-spice
 engine cases, canceled-sale exclusion, authenticated SQLite recovery,

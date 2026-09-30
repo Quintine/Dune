@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after proactive CHOAM La La La cost
+
+In the explicit Richese preview, a clean proactive La La La
+Worthless response now discards its public physical card before
+a neutral Semuta offer. The selected target's remaining free
+force revival is blocked only after a claim or all-seat decline.
+A claimant may take the spent card; the block still applies
+once without a second response or card cost. Paid revival
+remains legal. The saved receipt binds the target, original
+Revival rules, owner/card custody and current phase. Reactive
+pending-revival requests, Nexus conversion and other Worthless
+effects remain outside this bounded reaction.
+
+Focused engine checks cover hidden Semuta-holder parity,
+pre-block timing, target and Revival-rule corruption rejection,
+physical custody, legal AI claim, decline and paid revival.
+Authenticated SQLite checks cover restart, exact stale retry,
+seat/private-view continuity and a later paid revival. A
+direct engine smoke observed the accepted public cost, one
+claim and target block. Expansion and full Semuta gates remain open.
+
+`npm run check` passed types, lint and 5,847 offline tests; the
+production build and phone-width guide inspection passed.
+Independent review found no scoped defect. Direct Wrangler-dev
+HTTP passed 50/55: four tests saw HTTP 503 and one discussion
+request exceeded its 15-second limit. The proxy-free
+container/full-HTTP gate for this revision and live NAS
+acceptance remain open.
+
 ## 30 September 2026 — Semuta after clean CHOAM Kulon cost
 
 In the explicit Richese preview, a clean accepted Kulon Worthless

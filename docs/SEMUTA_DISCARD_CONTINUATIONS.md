@@ -88,6 +88,13 @@ unspent movement. A neutral claim or decline restores the same
 one-range increment without replaying the response. Reactive,
 Nexus and overlapping movement parents retain their automatic path.
 
+Clean proactive La La La stages `choamLaLaLaDiscard` after its
+accepted public Worthless card cost but before blocking a selected
+target's free force revival. The receipt binds the target, old
+Revival rules and physical card. A neutral claim or decline applies
+the one saved block; paid revival remains legal. Reactive requests,
+Nexus and other Worthless effects retain their automatic paths.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response

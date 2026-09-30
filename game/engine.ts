@@ -1222,6 +1222,13 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'choamLaLaLaDiscard';
+          player: string;
+          card: string;
+          target: string;
+          stateSignature: string;
+        }
+      | {
           kind: 'thumperDiscard';
           player: string;
           card: string;
@@ -4956,6 +4963,23 @@ function choamKulonDiscardSignature(g: Game, c: ChoamKulonDiscardContinuation) {
     shipped: owner.shipped, spice: owner.spice,
   });
 }
+type ChoamLaLaLaDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'choamLaLaLaDiscard' }
+>;
+function choamLaLaLaDiscardSignature(g: Game, c: ChoamLaLaLaDiscardContinuation) {
+  const owner = getPlayer(g, c.player), target = getPlayer(g, c.target);
+  return JSON.stringify({
+    player: c.player, card: c.card, target: c.target,
+    turn: g.turn, phase: g.phase, active: g.active, order: g.order,
+    revivalRules: g.revivalRules, pendingRevival: g.pendingRevival,
+    parent: nullentropyParentSignature(g,
+      { response: null, decision: null, pendingKarama: null, phaseOpening: null },
+      `choam:laLaLa:${c.card}`),
+    ownerHand: owner.hand.map(card => card.id), targetRevived: target.revived,
+    targetSpice: target.spice,
+  });
+}
 type ThumperDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'thumperDiscard' }
@@ -5597,6 +5621,22 @@ function treacheryDiscardIntegrity(g: Game) {
       c.before === (g.choamMovement?.turn === g.turn ? g.choamMovement.bonus : 0) &&
       c.stateSignature === choamKulonDiscardSignature(g, c),
       'The used Kulon no longer matches its pending movement bonus.',
+    );
+  } else if (continuation?.kind === 'choamLaLaLaDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    const owner = g.players.find(p => p.id === c.player);
+    requireRule(
+      g.phase === 4 && owner?.faction === 'choam' &&
+      g.players.some(p => p.id === c.target) &&
+      !g.revivalRules?.freeBlocked?.includes(c.target) &&
+      !g.pendingChoamWorthless && !g.pendingRevival &&
+      !g.response && !g.decision && !g.phaseOpening &&
+      batch.cause === 'choam:laLaLa' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card && entry.card.kind === 'worthless' &&
+      entry.card.name === 'La La La' &&
+      c.stateSignature === choamLaLaLaDiscardSignature(g, c),
+      'The used La La La no longer matches its pending revival block.',
     );
   } else if (continuation?.kind === 'thumperDiscard') {
     const c = continuation, entry = batch.entries[0];
@@ -6265,6 +6305,7 @@ function semutaOfferSupported(
     continuation.kind !== 'ixAllyCard' &&
     continuation.kind !== 'choamSaleDiscard' &&
     continuation.kind !== 'choamKulonDiscard' &&
+    continuation.kind !== 'choamLaLaLaDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
@@ -6333,6 +6374,7 @@ function semutaOfferSupported(
       continuation.kind === 'ixAllyCard' ||
       continuation.kind === 'choamSaleDiscard' ||
       continuation.kind === 'choamKulonDiscard' ||
+      continuation.kind === 'choamLaLaLaDiscard' ||
       (continuation.kind === 'karamaCharityDiscard' ||
         continuation.kind === 'karamaInflationDiscard' ||
         continuation.kind === 'karamaBgCharityDiscard' ||
@@ -6355,6 +6397,8 @@ function semutaOfferSupported(
     (continuation.kind !== 'choamKulonDiscard' ||
       (!g.ornithopter && !g.pendingChoamMove && !g.summonedWorm &&
         g.wormRides.length === 0)) &&
+    (continuation.kind !== 'choamLaLaLaDiscard' ||
+      (!g.pendingRevival && !g.pendingChoamMove && !g.ornithopter)) &&
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
     !g.pendingHomeworldShipment && !g.pendingRicheseGift &&
@@ -6507,6 +6551,8 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     resumeChoamMarket(g);
   } else if (next.kind === 'choamKulonDiscard') {
     completeChoamKulon(g, getPlayer(g, next.player));
+  } else if (next.kind === 'choamLaLaLaDiscard') {
+    completeChoamLaLaLa(g, next.target);
   } else if (next.kind === 'nullentropyDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -20332,6 +20378,11 @@ function completeChoamKulon(g: Game, owner: Player) {
   };
   log(g, `${owner.name} used Kulon to move one extra territory this turn.`);
 }
+function completeChoamLaLaLa(g: Game, target: string) {
+  g.revivalRules ??= newRevivalRules();
+  (g.revivalRules.freeBlocked ??= []).push(target);
+  log(g, `${getPlayer(g, target).name} cannot take free force revival this phase.`);
+}
 function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) {
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
@@ -20747,12 +20798,21 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
             : `${choam.name} used Trip to Gamont to reveal ${target.name}’s No-Field. No force was present to return; the card is still used.`,
         );
       } else {
-        g.revivalRules ??= newRevivalRules();
-        (g.revivalRules.freeBlocked ??= []).push(pending.target!);
-        log(
-          g,
-          `${getPlayer(g, pending.target!).name} cannot take free force revival this phase.`,
-        );
+        if (g.semutaPreview && used.name === 'La La La' &&
+          !pending.storm && !pending.revival && !pending.movement &&
+          !pending.mentat && !pending.nexusEvent) {
+          const continuation: ChoamLaLaLaDiscardContinuation = {
+            kind: 'choamLaLaLaDiscard', player: choam.id,
+            card: used.id, target: pending.target!, stateSignature: '',
+          };
+          const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
+          if (semutaOfferSupported(g, continuation, entries)) {
+            continuation.stateSignature = choamLaLaLaDiscardSignature(g, continuation);
+            stageTreacheryDiscard(g, 'choam:laLaLa', entries, continuation);
+            return;
+          }
+        }
+        completeChoamLaLaLa(g, pending.target!);
         if (pending.revival) {
           g.pendingRevival = null;
           log(

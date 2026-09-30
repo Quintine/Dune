@@ -296,6 +296,73 @@ void test('La La La proactively removes only remaining ordinary free revivals; p
   assert.equal(player(g, 'e').spice, 6);
   assert.equal(player(g, 'e').revived, 3);
 });
+void test('proactive La La La discard offers Semuta before one free-revival block', () => {
+  const initial = fixture();
+  initial.players[1] = newPlayer('e', 'Richese', 'richese');
+  player(initial, 'e').spice = 10;
+  player(initial, 'e').tanks = 6;
+  player(initial, 'e').reserves = 14;
+  initial.richeseCache = richeseCards();
+  initial.semutaPreview = true;
+  const index = initial.richeseCache.findIndex(card => card.id === SEMUTA_DRUG_ID);
+  assert.ok(index >= 0);
+  const semuta = initial.richeseCache.splice(index, 1)[0];
+  player(initial, 'e').hand.push(semuta);
+  contest(initial, 'b');
+  const card = named(initial, 'La La La');
+  const physical = (state: Game) => [
+    ...state.deck, ...state.discard, ...state.richeseCache!,
+    ...state.players.flatMap(p => p.hand),
+  ].map(c => c.id).sort();
+  const original = physical(initial);
+  const absent = structuredClone(initial);
+  player(absent, 'e').hand = [absent.richeseCache!.splice(0, 1)[0]];
+  absent.richeseCache!.push(semuta);
+  const offered = (state: Game) => allow(play(state, 'La La La', 'e'));
+  const pending = offered(initial), neutral = offered(absent);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'choamLaLaLaDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(neutral.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.ok(!pending.revivalRules?.freeBlocked?.includes('e'));
+  assert.equal(pending.discard.filter(c => c.id === card).length, 1);
+  assert.deepEqual(viewGame(pending, 'c'), viewGame(neutral, 'c'));
+  assert.deepEqual(viewGame(pending, 'b'), viewGame(neutral, 'b'));
+  assert.equal(viewGame(pending, 'e').semutaReaction?.canCommit, true);
+  assert.equal(botActions(viewGame(pending, 'e'))[0]?.type, 'semutaCommit');
+  assert.deepEqual(normalizeAutomaticGame(JSON.parse(JSON.stringify(pending))), pending);
+  for (const change of [
+    (state: Game) => {
+      const c = state.pendingTreacheryDiscard!.continuation;
+      if (c.kind === 'choamLaLaLaDiscard') c.target = 'b';
+    },
+    (state: Game) => { state.revivalRules!.freeBlocked = ['e']; },
+    (state: Game) => { state.pendingTreacheryDiscard!.batch.entries[0].card.name = 'Forgery'; },
+  ]) {
+    const corrupt: Game = JSON.parse(JSON.stringify(pending));
+    change(corrupt);
+    const before = JSON.stringify(corrupt);
+    assert.throws(() => applyAction(corrupt, 'e', { type: 'semutaCommit', event }));
+    assert.equal(JSON.stringify(corrupt), before);
+  }
+  let declined: Game = JSON.parse(JSON.stringify(pending));
+  for (const id of ['c', 'b', 'e'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(JSON.parse(JSON.stringify(pending)), 'e',
+    { type: 'semutaCommit', event });
+  for (const state of [declined, claimed]) {
+    assert.equal(state.pendingTreacheryDiscard, null);
+    assert.deepEqual(state.revivalRules?.freeBlocked, ['e']);
+    assert.equal(viewGame(state, 'e').revival.freeRemaining, 0);
+    assert.equal(forceRevivalQuote(state, player(state, 'e'), 1).cost, 2);
+    assert.deepEqual(physical(state), original);
+    assert.throws(() => applyAction(state, 'e', { type: 'semutaCommit', event }));
+  }
+  assert.equal(declined.discard.filter(c => c.id === card).length, 1);
+  assert.equal(claimed.players[1].hand.filter(c => c.id === card).length, 1);
+  assert.equal(claimed.discard.filter(c => c.id === semuta.id).length, 1);
+});
+
 void test('every CHOAM table offers the same public free-revival response regardless of its private hand', () => {
   const a = fixture(),
     b = structuredClone(a);

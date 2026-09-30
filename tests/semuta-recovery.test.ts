@@ -6,6 +6,7 @@ import { applyAction, createGame, newPlayer, viewGame, type Game, type Action } 
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { baseDeck, spiceDeck, treacheryDeck } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
+import { newRevivalRules } from '../game/revival';
 import { unitStore } from './fixture-nexus-room-store';
 import { saphoAggressorGame, aggressorAction } from './fixture-sapho-aggressor';
 import { takeSaphoBattleCard } from './fixture-sapho-battle-order';
@@ -805,6 +806,81 @@ void test('authenticated private Ixian ally discard waits for Semuta before its 
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+  } finally { f.sqlite.close(); }
+});
+
+void test('authenticated proactive La La La Semuta offer retains the paid-revival block', async () => {
+  const f = unitStore();
+  try {
+    const made = await f.rooms.createRoom('Semuta La La La', 'choam', false, ['choam']);
+    const code = made.view.code;
+    const richese = await f.rooms.joinRoom(code, 'Richese', 'richese');
+    const bg = await f.rooms.joinRoom(code, 'BG', 'beneGesserit');
+    const auths = await Promise.all([made.token!, richese.token!, bg.token!]
+      .map(token => f.restart().authenticate(code, token)));
+    const existing = await f.restart().readRoom(code);
+    const g = createGame(code, newPlayer(auths[0].playerId, 'CHOAM', 'choam'), false, ['choam']);
+    g.players.push(newPlayer(auths[1].playerId, 'Richese', 'richese'),
+      newPlayer(auths[2].playerId, 'BG', 'beneGesserit'));
+    Object.assign(g, { status: 'playing', phase: 4, turn: 2, active: auths[0].playerId,
+      order: auths.map(auth => auth.playerId), deck: baseDeck(),
+      richeseCache: richeseCards(), semutaPreview: true,
+      revivalRules: newRevivalRules() });
+    for (const p of g.players) {
+      p.spice = 10;
+      p.tanks = 6;
+      p.reserves = 14;
+      p.hand = [];
+      p.traitors = p.leaders.length ? [p.leaders[0].id] : [];
+      p.traitorChoices = [];
+    }
+    const semuta = take(g, SEMUTA_DRUG_ID), karama = take(g, 'karama');
+    const index = g.deck.findIndex(card => card.name === 'La La La');
+    assert.ok(index >= 0);
+    const used = g.deck.splice(index, 1)[0];
+    g.players[0].hand.push(used);
+    g.players[1].hand.push(semuta);
+    g.players[2].hand.push(karama);
+    g.version = existing.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(g), g.version, code, existing.version).changes, 1);
+    const seats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const act = async (index: number, action: Action) => {
+      const current = await f.restart().readRoom(code);
+      await f.restart().act(code, auths[index], current.version, action, clock);
+      return f.restart().readRoom(code);
+    };
+    let current = await act(0, {
+      type: 'card', mode: 'choam', card: used.id, target: auths[1].playerId,
+    });
+    assert.equal(current.response?.kind, 'choamWorthless');
+    for (let i = 0; current.response?.kind === 'choamWorthless' && i < 3; i++) {
+      const index = auths.findIndex(auth =>
+        !viewGame(current, auth.playerId).responseControls?.hasPassed &&
+        !!viewGame(current, auth.playerId).responseControls?.cancelCards.length);
+      assert.ok(index >= 0);
+      current = await act(index, { type: 'passResponse' });
+    }
+    const event = current.pendingTreacheryDiscard!.batch.event;
+    assert.equal(current.pendingTreacheryDiscard?.continuation.kind, 'choamLaLaLaDiscard');
+    assert.equal(current.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.ok(!current.revivalRules?.freeBlocked?.includes(auths[1].playerId));
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, current.version);
+    assert.equal((await f.restart().readSeatView(code, auths[1])).semutaReaction?.canCommit, true);
+    const claimed = await act(1, { type: 'semutaCommit', event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.deepEqual(claimed.revivalRules?.freeBlocked, [auths[1].playerId]);
+    assert.equal(claimed.players[1].hand.filter(card => card.id === used.id).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+    await assert.rejects(f.restart().act(code, auths[1], current.version,
+      { type: 'semutaCommit', event }, clock));
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+    const revived = await act(1, { type: 'revive', amount: 1 });
+    assert.equal(revived.players[1].spice, 8);
+    assert.equal(revived.players[1].revived, 1);
   } finally { f.sqlite.close(); }
 });
 
