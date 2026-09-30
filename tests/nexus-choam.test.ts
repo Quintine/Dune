@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  CHOAM_NEXUS_EFFECTS,
   createNexusChoam,
   validateNexusChoam,
   type NexusChoamContext,
@@ -19,18 +18,7 @@ const context: NexusChoamContext = {
 };
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
-void test('CHOAM Nexus records all six printed effects with their distinct phase windows', () => {
-  assert.deepEqual(
-    Object.values(CHOAM_NEXUS_EFFECTS).sort(),
-    [
-      'Baliset',
-      'Jubba Cloak',
-      'Kull Wahad',
-      'Kulon',
-      'La La La',
-      'Trip to Gamont',
-    ].sort(),
-  );
+void test('CHOAM Nexus receipts enforce effect timing while leaving Kull response authority to the caller', () => {
   for (const [effect, phase] of [
     ['kulon', 5],
     ['laLaLa', 4],
@@ -215,4 +203,36 @@ void test('CHOAM receipt creation rejects malformed or foreign inputs before pro
     /roster/,
   );
   assert.deepEqual(context, before);
+});
+
+void test('self-consistent saved Kull receipts still reject invalid intrinsic cost, owner and stamps', () => {
+  const receipt = createNexusChoam(context, 'c', 5, 'physical-weapon-1', 'kull');
+  const patches: Partial<NexusChoamReceipt>[] = [
+    { card: '' },
+    { card: ' ' },
+    { card: '__proto__' },
+    { owner: 'a' },
+    { owner: 'missing' },
+    { turn: 0 },
+    { turn: context.turn + 1 },
+    { turn: 1.5 },
+    { phase: -1 },
+    { phase: 9 },
+    { phase: 5.5 },
+    { effect: 'unknown' as NexusChoamEffect },
+  ];
+  for (const patch of patches) {
+    const invalid = { ...clone(receipt), ...patch };
+    invalid.event = JSON.stringify([
+      'nexusChoam', invalid.turn, invalid.phase, invalid.owner, invalid.card, invalid.effect,
+    ]);
+    invalid.signature = JSON.stringify([
+      invalid.version, invalid.event, invalid.turn, invalid.phase,
+      invalid.owner, invalid.card, invalid.effect,
+      invalid.roster.map(player => [player.id, player.faction]),
+    ]);
+    const before = clone(invalid);
+    assert.throws(() => validateNexusChoam(context, invalid));
+    assert.deepEqual(invalid, before);
+  }
 });

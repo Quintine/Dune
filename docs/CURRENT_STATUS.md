@@ -1,10 +1,27 @@
 # Current development status
 
-Updated 30 September 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 1 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
+
+Five implementation lanes connect [CHOAM Nexus Cunning Kull](NEXUS_CHOAM_RUNTIME.md#bounded-nexus-kull-profile)
+through the new fresh `nexus-kull` profile. Actual canonical Treachery fuel
+and physical Nexus are distinct costs: Nexus spends at accepted declaration,
+fuel remains held pending response, and only success disposes fuel and bans
+the original actor for the phase. Distinct prevention retains fuel, leaves
+Nexus spent and resumes the reserved original once; BG is still preconversion.
+Review repaired counterfeit descriptor trust, native suspended-parent
+ownership, nested reserved counters and CHOAM winning-payment coverage.
+Verified old printed counter saves migrate their binding immutably without
+enabling new choices or accepting source-omitting Use; new corrupt Nexus
+selections remain rejected. The fresh Spice Deck excludes Sandtrout.
+Types, lint, **6,022 offline tests**, build and actual Basic/Advanced
+CLI/runtime/phone success/prevention/refresh pass with conserved physical
+cards and unchanged spice. Local HTTP is **49/55**, four POST 503s plus two
+timeouts, not green. Proxy-free CI/live deployment and full-mode acceptance
+remain separate; no public release or deployed claim.
 
 Five implementation lanes now connect the bounded
 [Richese Nexus Betrayal](NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026)

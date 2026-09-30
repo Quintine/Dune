@@ -216,7 +216,7 @@ void test('real Kull offer gives CHOAM public decision ownership before the susp
   const saved = JSON.parse(JSON.stringify(offered)) as Game;
   assert.deepEqual(owners(saved), owners(offered));
   const counter = applyAction(saved, choam, {
-    type: 'kullDecision', event: saved.pendingKull!.event, card: 'ix-kull-wahad',
+    type: 'kullDecision', event: saved.pendingKull!.event, source: 'printed', card: 'ix-kull-wahad',
   });
   assert.equal(counter.response?.kind, 'choamWorthless');
   assert.deepEqual(owners(counter), counter.players.map(() => null));

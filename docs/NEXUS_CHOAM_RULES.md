@@ -1,10 +1,10 @@
 # CHOAM Nexus Cunning
 
-Source audit: 2026-09-10. This source audit defines native Cunning and its saved-receipt contract. The separate [runtime checkpoint](NEXUS_CHOAM_RUNTIME.md) implements five effects; this audit does not resolve the other CHOAM Nexus panels or lift any [Nexus/expansion release gate](NEXUS_CARD_RUNTIME.md).
+Source audit: 2026-09-10; bounded Kull integration contract updated 30 September 2026. This source audit defines native Cunning and its saved-receipt contract. The separate [runtime checkpoint](NEXUS_CHOAM_RUNTIME.md) preserves the earlier five-effect evidence and records the new explicit `nexus-kull` profile separately. Neither scope resolves the other CHOAM Nexus panels or lifts any [Nexus/expansion release gate](NEXUS_CARD_RUNTIME.md).
 
 ## Authority and printed scope
 
-The [original GF9 Nexus component photograph](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), independently inspected at `/tmp/dune-nexus-cards.jpg`, permits native CHOAM to discard any Treachery Card to use any Worthless Card special effect. The choice is one held physical card and one effect. It does not require holding the corresponding named Worthless card, transform the chosen card's printed identity, grant money, or supply a phase-long conversion permission.
+The [original GF9 Nexus component photograph](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), independently inspected at `/tmp/dune-nexus-cards.jpg`, gives CHOAM Cunning this printed instruction: **“Discard any Treachery Card to obtain a Worthless Card special effect of your choice.”** The choice is one held physical card and one effect. It does not require holding the corresponding named Worthless card, transform the chosen card's printed identity, grant money, or supply a phase-long conversion permission.
 
 The [GF9 Ecaz & Moritani rulebook, p.11](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=11) classifies Cunning as enhancement of a native advantage. The holder must remain unallied, and a played Nexus Card is discarded. Those common conditions still apply. Publisher-indexed text and the previously fetched [publisher-authored E3 mirror](https://gamers-hq.de/media/pdf/0f/7a/86/Dune_EcazMoritani_Rulebook_EN.pdf) were used; no community compilation supplies a ruling.
 
@@ -12,7 +12,7 @@ CHOAM's Treachery advantage is on the ordinary faction-rules page, before its Ad
 
 ## Six effects and their timing
 
-E2 lists **six**, not five. Five have current Cunning engine effect handlers. The separate opt-in [printed Kull preview](CHOAM_KULL_DESIGN.md) does not admit Nexus Cards and does not enable Cunning's sixth effect.
+E2 lists **six**, not five. The earlier Cunning runtime implemented five. The separate opt-in [printed Kull profile](CHOAM_KULL_DESIGN.md#opt-in-development-scope) still does not admit Nexus Cards. Only the new explicit `nexus-kull` profile enables Cunning's Kull choice at the existing attempted-Karama opportunity; other Nexus previews retain their Kull guard. This is one bounded interaction, not a silent retrofit or a full-family release.
 
 | Chosen effect | Printed outcome and timing |
 | --- | --- |
@@ -39,10 +39,33 @@ The effect choice and native use may be public without revealing the rest of CHO
 
 ## Existing boundaries to preserve
 
-- **Kull:** the [source update](CHOAM_KULL_SOURCE_UPDATE.md#user-selected-preview-timing--30-september-2026) records approved distinct-card counters and BG-before-conversion custody as product policy, not publisher clarification. Unpayable winning-overbid recovery is deliberately deferred. The printed-card Kull development profile excludes optional modules, so Cunning Kull remains unavailable. Five supported Cunning effects must not be presented as all six.
+- **Kull:** the [source update](CHOAM_KULL_SOURCE_UPDATE.md#user-selected-preview-timing--30-september-2026) records approved distinct-card counters and BG-before-conversion custody as user-selected product policy, not publisher clarification. The new `nexus-kull` profile composes those policies with physical any-Treachery fuel and CHOAM Nexus Cunning. It reserves the interrupted original, retains it and any special once-use on success, and resumes it once on decline or prevention. Unpayable winning-overbid recovery is deliberately deferred; the existing private precommitment fence remains independent of hidden ownership. The old `kull` profile still excludes Nexus, and other Nexus previews do not gain this choice.
 - **Phase cancellation scope:** the existing [Worthless continuation audit](CHOAM_WORTHLESS_CONTINUATION_AUDIT.md) records unresolved scope across other physical copies or effects. Current runtime binds a canceled physical card for the phase. A new Nexus use should preserve the selected policy rather than silently broaden or erase that historical restriction. The spent Nexus itself cannot be retried.
 - **Inherited effect boundaries:** fixed Ornithopter range versus Kulon, reactive movement/Revival/storm parents, special force custody, No-Field Gamont and other already documented exclusions remain properties of the selected effect. They are not reasons to reject an ordinary source-supported Cunning use with a different effect.
-- **No fresh hidden reaction policy:** native CHOAM's existing effect opportunities and public circumstances supply the interaction points. Extend those owner's controls without pausing only because a secret Nexus card exists, adding compulsory no-choice confirmations, or reopening another player's completed action. Printed Kull uses a neutral attempted-play opportunity; adding a Cunning Kull cost still requires genuine Nexus integration and acceptance.
+- **No fresh hidden reaction policy:** native CHOAM's existing effect opportunities and public circumstances supply the interaction points. Kull reuses the same neutral validated-attempt opportunity regardless of CHOAM's Nexus identity or eligible fuel. Do not pause only because a secret Nexus card exists, expose private cost lists to opponents, add compulsory no-choice confirmations, or reopen another player's completed action. This privacy protocol is application policy, not publisher-prescribed priority.
+
+## Kull source, cost and action boundary
+
+Fresh Basic or Advanced `nexus-kull` games require two to six ready seats with native CHOAM and otherwise classic factions, exactly the physical CHOAM and Ix Treachery decks, and Nexus alone. `initializeNexusKullGameForAudit` sets the explicit `nexusKullPreview` capability together with the shared `kullPreview` interception capability. It is not an in-play upgrade. No other expansion faction, Homeworld, Leader Skills, Discovery, Tech Token, Stronghold, Sandtrout, Ecaz variant, Semuta or Richese Betrayal composition is admitted by this profile.
+
+| Source | Required physical cost | When spent |
+| --- | --- | --- |
+| `printed` | One eligible held printed Kull Wahad | That card remains held while pending; discard once only on successful Kull. No Nexus is spent. |
+| `nexus` | Unallied native CHOAM's actual singleton CHOAM Nexus **and** one eligible held canonical Treachery fuel card | The Nexus is spent once at accepted declaration, even if Kull is later prevented. Fuel remains held until successful settlement and is retained on prevention. |
+
+Any Treachery fuel identity is eligible in principle; live physical custody, reservations and own binding promises remain authoritative. This is not a free effect or a manufactured Worthless card. The pure `kullNexusCostCards(held, physicalCards, reservedIds)` helper classifies uniquely held canonical fuel and excludes reserved IDs; it does not authorize a profile, Nexus ownership, alliance, phase or promise. The engine proves those separately. A declaration must not reuse the original reserved attempt as a cost or counter.
+
+The API uses `kullReaction.plays`, not a bare `cards` list. Each private choice is `{ source: 'printed' | 'nexus', effect: 'kull', card, event, blocked }`. The selected `card` is the real fuel descriptor. Other viewers receive an empty plays list and the same public event/player/target/purpose. Client Use supplies only the canonical event, source and actual card ID; decline has no source or cost:
+
+```ts
+{ type: 'kullDecision', event, decline: true }
+{ type: 'kullDecision', event, source: 'printed', card }
+{ type: 'kullDecision', event, source: 'nexus', card }
+```
+
+**Source is required on every Use, including printed Kull.** There is no omitted-source fallback and no client-selected effect, target, price or Nexus ID. The generic any-time Nexus action does not play Kull: the validated pending Karama opportunity is required. Reject stale/foreign events, malformed costs or broken saved ownership before costs or writes.
+
+The accepted-declaration Nexus spend and retained pending fuel reuse the existing native Cunning application convention. E3 establishes that a played Nexus is discarded; it does not prescribe this internal transaction boundary or a Kull nested-response priority. A distinct eligible counter acts before the stamped phase ban; the original remains reserved. Success discards fuel once, keeps the original printed/BG card unplayed and special once-use unspent, and restricts its activating player for the current turn and phase. Prevention retains fuel under the existing exact-cost phase policy, leaves Nexus spent and resumes the saved original once. Decline spends neither cost and resumes it once. BG interception is before conversion; the original ordinary conversion and its FAQ disposal rules resume only after decline or prevention.
 
 ## Pure saved receipt and integration contract
 
@@ -65,12 +88,12 @@ type NexusChoamReceipt = {
 };
 ```
 
-[game/nexus-choam.ts](../game/nexus-choam.ts) exports the six-name `CHOAM_NEXUS_EFFECTS` map, `NexusChoamEffect`, `NexusChoamContext`, `NexusChoamReceipt`, `createNexusChoam(context, owner, phase, card, effect)` and `validateNexusChoam(context, receipt)`. Context contains the current turn and ID/faction roster only. Intrinsic validation checks exact keys, effect/phase compatibility, original native owner/roster, nonempty card ID, safe numbers and signature. The event is `JSON.stringify(['nexusChoam', turn, phase, owner, card, effect])`. Kull's intrinsic timing admits phases 0–8; this does not authorize playing its unavailable Cunning effect. Historical validation neither reads private hands nor requires the card still held, CHOAM still unallied or the old Nexus still present.
+[game/nexus-choam.ts](../game/nexus-choam.ts) exports the six-name `CHOAM_NEXUS_EFFECTS` map, `NexusChoamEffect`, `NexusChoamContext`, `NexusChoamReceipt`, `createNexusChoam(context, owner, phase, card, effect)` and `validateNexusChoam(context, receipt)`. Context contains the current turn and ID/faction roster only. Intrinsic validation checks exact keys, effect/phase compatibility, original native owner/roster, nonempty card ID, safe numbers and signature. The event is `JSON.stringify(['nexusChoam', turn, phase, owner, card, effect])`. Kull's intrinsic timing admits phases 0–8; only the engine's explicit profile and canonical pending attempt authorize its use. Historical validation neither reads private hands nor requires the card still held, CHOAM still unallied or the old Nexus still present.
 
 The engine should separately bind progress (`pending`, `canceled`, `discarded`, `complete`) and the exact original resume context. An independently retained latest-progress marker prevents deleting or rewinding the detailed frame from restoring the Nexus or causing another discard. Bind target, territory/sector, elite type, No-Field event and movement/revival/storm parent only where the selected effect uses them. Avoid freezing unrelated hidden hands, resource changes or nested response passes in a signature.
 
 Integrate through the existing native effect validator with an explicit selected effect, preserving the original selected Card. Do not construct a fake Worthless hand entry merely to satisfy name-based checks. On cancellation, validate and resume the existing denied suffix without applying or paying for the chosen effect. On allowed disposal, record the physical event before yielding to a fresh-discard child; the continuation must know whether the card and effect have already committed. Reject stale actor/event/effect/target/custody before costs or private output.
 
-Four focused pure tests in [tests/nexus-choam.test.ts](../tests/nexus-choam.test.ts) pass: six-effect timing, later-turn/reordered-roster recovery with private getter traps, edited receipt rejection, and malformed/foreign creation. Type-aware lint and whitespace checks pass. These are receipt checks, not gameplay integration certification.
+At the source-audit checkpoint, four focused pure tests in [tests/nexus-choam.test.ts](../tests/nexus-choam.test.ts) passed: six-effect timing, later-turn/reordered-roster recovery with private getter traps, edited receipt rejection, and malformed/foreign creation. Type-aware lint and whitespace checks passed then. These are preserved historical receipt checks, not new Kull gameplay integration certification.
 
-Meaningful integration tests should cover all five currently supported effects in their genuine producers, Basic/Advanced parity, arbitrary canonical card families, successful and canceled selected-card custody, normal Worthless parity, denied-card phase behavior, poison-income and fresh-discard children, real BG/Box interruption, exact saved parent, private owner projection, bots, JSON/CAS recovery and failed-action immutability. Kull remains a named **Cunning integration** boundary, not an unanswered counter/BG product choice. Pure receipts alone do not establish gameplay acceptance or blanket Nexus immunity to Karama.
+The historical five-effect matrix remains separate from the new source-aware Kull evidence. The frozen Kull checkpoint passes types, lint, 6,022 offline tests and build, plus actual Basic/Advanced CLI/runtime/phone Use and distinct prevention with refresh and conserved source costs. Authenticated SQLite cases cover saved source ownership, races, corrupt rejection and bounded old printed-counter migration; other Nexus profiles do not gain Kull. Wider verification remains **Partial**: local HTTP is 49/55 with four POST 503s and two timeouts, and full-mode/deployed acceptance stays open. See [current evidence and boundaries](NEXUS_CHOAM_RUNTIME.md#bounded-nexus-kull-profile). Pure receipts alone do not establish publisher priority or blanket Nexus immunity to Karama.

@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 1 October 2026 — source-aware CHOAM Nexus Cunning Kull
+
+Five implementation lanes connected runtime, canonical fuel/receipt policy,
+real source/fuel controls and legal bots, authenticated SQLite recovery and
+internal source guidance. The safe fresh `nexus-kull` CLI admits native CHOAM
+plus classic 2..6-seat Basic/Advanced rosters with CHOAM/Ix Treachery and Nexus
+alone; it supplies no physical Sandtrout or new public/retrofit gate.
+
+Use now requires source/event/card and private `plays` replaces old `cards`.
+Nexus declaration spends actual CHOAM Nexus once; canonical retained fuel
+is reserved until success. Distinct prevention keeps fuel but not Nexus and
+resumes the original once. Success discards fuel, retains the original and
+special once-use, and stamps the actor's activation ban. BG original
+interception remains before conversion; decline spends neither source cost.
+
+Independent reviews found and repaired canonical self-authorization,
+native Nexus response discoverability through Kull parents, reserved parent
+fuel advertised as a nested counter, and loss of CHOAM winning-payment
+coverage. A retained Karama's canceled Cunning effect is not ordinary payment
+ineligibility. Verified old printed counter saves receive a bounded immutable
+source-binding migration; malformed signatures and new Nexus missing-selection
+frames still reject. There is no source-omitting action shim. Fresh setup's
+Ix Treachery requirement no longer accidentally admits Sandtrout.
+
+Final `npm run check`: types, lint and **6,022 offline tests** pass.
+`npm run build` passes. Engine/production authenticated SQLite cases include
+native Atreides, Sardaukar, advisor and Guild parents, BG overlays, actual
+auction payment, races, no-write corrupt/orphan rejection and later recycled
+custody. The existing Fremen remote-Cunning pre-offer scope guard remains;
+native special summon and its unsupported remote offer boundary are exercised.
+Both final scoped independent re-reviews report no remaining finding.
+
+Four actual CLI entries continued owned ready QA rooms from version 5 to setup
+6. Genuine setup/Storm/Spice completed before conserved pre-action resources
+were arranged. Standalone runtime and 390-pixel controls prove Basic/Advanced
+weapon fuel success and distinct prevention. Actual selectors and separate
+fuel/Nexus inspectors pass; rivals see no private fuel inspector. Success
+retains Karama/BG Baliset and bans activation; prevention retains fuel, spends
+Nexus and resumes original shipment/conversion. Refresh/direct saved-state
+proof retains full physical inventory, exact source history and unchanged spice.
+No existing human games, seats or credentials were reset/modified.
+
+Current local built-worker HTTP is **49/55**: four POST 503s and two timeouts
+retain the Wrangler-dev limitation, not green acceptance. Exact proxy-free
+container CI/publication is recorded after the push; live NAS, wider modules,
+full CHOAM/Nexus games and calibrated AI remain open. No public gate changes.
+
 ## 30 September 2026 — bounded Richese Nexus Betrayal auction integration
 
 Five implementation lanes delivered pure source/invoice/custody policy,

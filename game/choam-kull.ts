@@ -152,6 +152,17 @@ export function kullNativeCostCards(
     !reservedIds.includes(card.id) && uniquelyHeld(card, held, physicalCards));
 }
 
+/** Any canonical held Treachery card can pay Nexus Kull.
+ * Nexus authority, timing and live promise eligibility belong to the caller. */
+export function kullNexusCostCards(
+  held: readonly Card[],
+  physicalCards: readonly Card[],
+  reservedIds: readonly string[] = [],
+): Card[] {
+  return held.filter(card => card && !reservedIds.includes(card.id) &&
+    uniquelyHeld(card, held, physicalCards));
+}
+
 /** The caller supplies effective eligibility (BG, Shrine, phase bans and live reservations).
  * This helper never reads a Game or infers activatability from a printed card alone. */
 export function kullCounterCards(

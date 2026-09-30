@@ -7,11 +7,14 @@ export function botChoamKullActions(g: GameView): Action[] {
       !offer.canDecline) return [];
   const own = g.players.find((player) => player.id === g.me);
   if (!(own?.bot ?? own?.autopilot)) return [];
-  const card = !offer.blocked && offer.target !== own.ally
-    ? offer.cards[0]
+  const play = !offer.blocked && offer.target !== own.ally
+    ? offer.plays.find((candidate) => !candidate.blocked)
     : undefined;
-  return card
-    ? [{ type: 'kullDecision', event: offer.event, card: card.id }]
+  return play
+    ? [{
+        type: 'kullDecision', event: offer.event,
+        source: play.source, card: play.card.id,
+      }]
     : [{ type: 'kullDecision', event: offer.event, decline: true }];
 }
 

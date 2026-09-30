@@ -79,8 +79,10 @@ export function ChoamWorthless({
         (play) => play.source === 'nexus' && play.effect === 'kull',
       ) && (
         <p className="fine">
-          Kull Wahad’s Karama prevention effect is not implemented. CHOAM
-          Cunning cannot use it yet.
+          Kull Wahad reacts only to another player’s Karama attempt.{' '}
+          {g.nexusKullPreview
+            ? 'Choose printed or Nexus fuel in that opportunity.'
+            : 'Nexus Kull is unavailable outside its explicit preview.'}
         </p>
       )}
       {reactive && (

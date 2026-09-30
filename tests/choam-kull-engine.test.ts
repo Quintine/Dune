@@ -16,7 +16,7 @@ function inventory(g: Game) {
 }
 function declare(g: Game) {
   const reaction = viewGame(g, 'c').kullReaction!;
-  return applyAction(reload(g), 'c', { type: 'kullDecision', event: reaction.event, card: 'ix-kull-wahad' });
+  return applyAction(reload(g), 'c', { type: 'kullDecision', event: reaction.event, source: 'printed', card: 'ix-kull-wahad' });
 }
 function finishKull(g: Game) {
   for (let step = 0; g.pendingKull && step < 12; step++) {
@@ -62,11 +62,11 @@ void test('ordinary printed attempts offer neutral CHOAM timing before cost with
   assert.ok(held(offered, 'e', original));
   assert.equal(offered.discard.some(card => card.id === original), false);
   for (const id of ['e', 'b', 'h']) {
-    assert.deepEqual(viewGame(offered, id).kullReaction?.cards, []);
+    assert.deepEqual(viewGame(offered, id).kullReaction?.plays, []);
     assert.equal(viewGame(offered, id).kullReaction?.canDecline, false);
     assert.equal(viewGame(offered, id).response, null);
   }
-  assert.deepEqual(viewGame(offered, 'c').kullReaction?.cards.map(card => card.id), ['ix-kull-wahad']);
+  assert.deepEqual(viewGame(offered, 'c').kullReaction?.plays.map(play => [play.source, play.card.id]), [['printed', 'ix-kull-wahad']]);
   assert.deepEqual(normalizeAutomaticGame(reload(offered)), reload(offered));
   const event = offered.pendingKull!.event;
   for (const [id, bad] of [
@@ -570,11 +570,11 @@ void test('CHOAM cannot voluntarily spend the Kull card required by its own batt
   }];
   g.response = { kind: 'eliteStrength', owner: 'e', passed: [] };
   const offered = applyAction(g, 'h', { type: 'card', mode: 'cancel', card: player(g, 'h').hand[0].id });
-  assert.deepEqual(viewGame(offered, 'c').kullReaction?.cards, []);
+  assert.deepEqual(viewGame(offered, 'c').kullReaction?.plays, []);
   assert.equal(viewGame(offered, 'c').kullReaction?.canDecline, true);
   const before = JSON.stringify(offered);
   assert.throws(() => applyAction(offered, 'c', {
-    type: 'kullDecision', event: offered.pendingKull!.event, card: 'ix-kull-wahad',
+    type: 'kullDecision', event: offered.pendingKull!.event, source: 'printed', card: 'ix-kull-wahad',
   }), /eligible held Kull/);
   assert.equal(JSON.stringify(offered), before);
   const declined = applyAction(offered, 'c', {

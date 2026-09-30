@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
-import { CardInspector, CardRules } from './card-inspector';
+import { choamPowerKey } from '@/game/choam-power-options';
+import { ChoamPowerCost } from './choam-power-cost';
+import { NexusCardFace } from './nexus-cards';
 import { Button } from './ui/button';
 
 export function ChoamKull({
@@ -13,12 +16,18 @@ export function ChoamKull({
   act: (action: Action) => void;
   busy: boolean;
 }) {
+  const [selected, select] = useState('');
   const reaction = game.kullReaction;
   if (!reaction) return null;
   const reactor = game.players.find((player) => player.id === reaction.player);
   const target = game.players.find((player) => player.id === reaction.target);
   const ownsOffer = game.me === reaction.player && reaction.canDecline;
   const disabled = busy || game.status !== 'playing';
+  // Foreign projections never authorize private cost controls or inspectors.
+  const plays = ownsOffer ? reaction.plays : [];
+  const play = plays.find((candidate) => choamPowerKey(candidate) === selected) ??
+    plays.find((candidate) => !candidate.blocked) ?? plays[0];
+  const canUse = !disabled && !reaction.blocked && !!play && !play.blocked;
 
   return (
     <section aria-label="Kull Wahad response" className="notice min-w-0 space-y-3">
@@ -32,9 +41,11 @@ export function ChoamKull({
       ) : (
         <>
           <p>
-            Decline to continue the original play, or use a listed physical Kull
-            Wahad card. Successful Kull retains the attempted card and prevents
-            that player’s Karama activations for this phase. A different eligible
+            Decline to continue the original play, or choose a listed physical
+            cost for Kull Wahad. Printed Kull uses its own Worthless Card;
+            CHOAM Nexus Cunning can use any eligible Treachery Card.
+            Successful Kull retains the attempted card and prevents that
+            player’s Karama activations for this phase. A different eligible
             Karama can prevent Kull before that restriction takes effect.
           </p>
           {reaction.blocked && <p className="fine">{reaction.blocked}</p>}
@@ -48,29 +59,26 @@ export function ChoamKull({
           >
             Decline Kull · allow the attempted play
           </Button>
-          {!reaction.blocked && (
-            <div
-              className="grid min-w-0 gap-4"
-              style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 16rem), 1fr))' }}
-            >
-              {reaction.cards.map((card) => (
-                <article key={card.id} className="flex min-w-0 flex-col gap-3 rounded-lg border border-[#65644b] p-4">
-                  <h4 className="m-0 break-words font-serif text-lg">{card.name}</h4>
-                  <p className="fine">Physical cost: {card.id}</p>
-                  <CardRules card={card} />
-                  <CardInspector card={card} />
-                  <Button
-                    className="game-action min-h-11 whitespace-normal"
-                    disabled={disabled}
-                    onClick={() => {
-                      if (!disabled)
-                        act({ type: 'kullDecision', event: reaction.event, card: card.id });
-                    }}
-                  >
-                    Use {card.name} ({card.id})
-                  </Button>
-                </article>
-              ))}
+          {!reaction.blocked && play && (
+            <div className="min-w-0 space-y-3">
+              <ChoamPowerCost plays={plays} play={play} select={select} busy={disabled} />
+              {play.source === 'nexus' && game.nexusCards?.card === 'choam' && (
+                <NexusCardFace card={game.nexusCards.card} mode="cunning" />
+              )}
+              <p className="fine">Physical Treachery cost: {play.card.id}</p>
+              <Button
+                className="game-action min-h-11 whitespace-normal"
+                disabled={!canUse}
+                onClick={() => {
+                  if (canUse)
+                    act({
+                      type: 'kullDecision', event: reaction.event,
+                      source: play.source, card: play.card.id,
+                    });
+                }}
+              >
+                Use Kull Wahad · {play.card.name} ({play.card.id})
+              </Button>
             </div>
           )}
         </>

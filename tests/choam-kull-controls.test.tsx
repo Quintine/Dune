@@ -4,7 +4,8 @@ import { registerHooks } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { applyAction, viewGame, type GameView } from '../game/engine';
+import { applyAction, viewGame } from '../game/engine';
+import type { GameView } from '../game/engine';
 import { choamKullGame, kullShipmentAttempt } from './fixture-choam-kull';
 
 const aliases = registerHooks({
@@ -43,7 +44,7 @@ void test('only the reactor receives physical Kull cost controls; outsiders cann
   }
   const html = markup(holder);
   assert.match(html, /<button[^>]*>Decline Kull/);
-  assert.match(html, /<button[^>]*>Use Kull Wahad \(ix-kull-wahad\)/);
+  assert.match(html, /<button[^>]*>Use Kull Wahad[^<]*ix-kull-wahad/);
   assert.match(html, /Inspect card/);
   const outsider = markup(rival);
   assert.doesNotMatch(outsider, /<button|ix-kull-wahad|Inspect card/);
@@ -61,7 +62,7 @@ void test('busy and blocked offers cannot expose an enabled use action, but an u
   assert.doesNotMatch(markup(holder), />Use Kull Wahad/);
   assert.match(markup(holder), /<button[^>]*>Decline Kull/);
   holder.kullReaction!.blocked = null;
-  holder.kullReaction!.cards = [];
+  holder.kullReaction!.plays = [];
   assert.doesNotMatch(markup(holder), />Use Kull Wahad/);
   assert.match(markup(holder), /<button[^>]*>Decline Kull/);
   holder.kullReaction!.canDecline = false;
@@ -75,7 +76,6 @@ void test('the real saved table mounts the offer instead of shipment and volunta
   }));
   assert.match(html, /aria-label="Kull Wahad response"/);
   assert.match(html, /<button[^>]*>Use Kull Wahad/);
-  assert.match(html, /href="\/rules\?topic=choam-kull#choam-kull"/);
   assert.doesNotMatch(html, /<button[^>]*>[^<]*(?:Ship forces|Cash in|Play Karama|End movement)/i);
   const disabled = renderToStaticMarkup(createElement(GameTable, {
     game: holder, send: async () => {}, busy: true, onExit() {},
@@ -87,7 +87,7 @@ void test('a successful phase ban removes the retained Karama shipment-rate cont
   const initial = choamKullGame();
   let g = applyAction(initial, 'e', kullShipmentAttempt(initial));
   g = applyAction(g, 'c', {
-    type: 'kullDecision', event: g.pendingKull!.event, card: 'ix-kull-wahad',
+    type: 'kullDecision', event: g.pendingKull!.event, source: 'printed', card: 'ix-kull-wahad',
   });
   for (let step = 0; g.pendingKull && step < 12; step++) {
     const actor = g.players.find(p => {

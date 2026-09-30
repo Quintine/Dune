@@ -1031,7 +1031,15 @@ export function GameTable({
         </span>
       </div>
       {g.advanced && g.status !== 'lobby' && <AdvancedPreviewNotice compact />}
-      {g.kullPreview && (
+      {g.nexusKullPreview ? (
+        <p className="notice" role="status">
+          CHOAM Nexus Cunning · Kull Wahad development preview. Any eligible
+          Treachery Card can pay for the pending Karama interception; accepted
+          declarations spend the Nexus even if a distinct Karama prevents Kull.
+          This is not complete CHOAM or certified Nexus rules.{' '}
+          <a href="/rules?topic=nexus-choam-kull#nexus-choam-kull">Preview rules and limits</a>
+        </p>
+      ) : g.kullPreview && (
         <p className="notice" role="status">
           Kull Wahad development preview · provisional interception timing, not
           complete CHOAM or certified expansion rules.{' '}

@@ -12,6 +12,7 @@ import {
   startIxPrototypeRoom,
   startPrototypeRoom,
 } from '../tools/prototype-room';
+import { NEXUS_FACTIONS } from '../game/nexus-cards';
 
 function fixture(t: test.TestContext) {
   const db = new DatabaseSync(':memory:');
@@ -301,3 +302,30 @@ void test('Richese Betrayal profile initializes one fresh paired Nexus game and 
   assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
   assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
 });
+
+for (const advanced of [false, true]) {
+  void test(`Nexus Kull ${advanced ? 'Advanced' : 'Basic'} entry preserves canonical inventories and cannot redeal a saved game`, (t) => {
+    const { db } = fixture(t);
+    const game = createGame('PROTOTYP', newPlayer('c', 'CHOAM', 'choam'), advanced, ['choam', 'ix']);
+    joinGame(game, newPlayer('a', 'Atreides', 'atreides'));
+    for (const p of game.players) p.ready = true;
+    db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), game.code);
+    const seats = db.prepare('SELECT * FROM seats').all();
+    const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+    startPrototypeRoom(db, game.code, 7, 'nexus-kull');
+    const saved = JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(game.code)!.state as string) as Game;
+    assert.equal(saved.status, 'setup');
+    assert.equal(saved.nexusKullPreview, true);
+    assert.equal(saved.kullPreview, true);
+    assert.deepEqual([...saved.nexusCards!.cards!.deck].sort((a,b) => a.localeCompare(b)),
+      [...NEXUS_FACTIONS].sort((a,b) => a.localeCompare(b)));
+    const cards = [...saved.deck, ...saved.players.flatMap(p => p.hand), ...(saved.ixSetupCards ?? [])];
+    assert.equal(cards.filter(card => card.id === 'ix-kull-wahad').length, 1);
+    const rows = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    assert.throws(() => startPrototypeRoom(db, game.code, 7, 'nexus-kull'));
+    assert.throws(() => startPrototypeRoom(db, game.code, 8, 'nexus-kull'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), rows);
+    assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+    assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+  });
+}

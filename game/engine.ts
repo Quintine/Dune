@@ -465,7 +465,7 @@ import {
 import { reserveExtortion, collectExtortion, answerExtortion, validateExtortionState, type ExtortionState } from './moritani-extortion';
 import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
-import { kullBlocksKarama, activeKullRestrictions, validateKullPhaseRestrictions, validateKullAttemptStamp, kullNativeCostCards, kullCounterCards, type KullPhaseRestriction } from './choam-kull';
+import { kullBlocksKarama, activeKullRestrictions, validateKullPhaseRestrictions, validateKullAttemptStamp, kullNativeCostCards, kullNexusCostCards, kullCounterCards, type KullPhaseRestriction } from './choam-kull';
 import { quoteRicheseBetrayalInvoice, requiredRicheseBetrayalResponders, richeseBetrayalEligibility, richeseBetrayalEvent, createRicheseBetrayalReceipt, validateRicheseBetrayalCursor, type RicheseBetrayalCursor, type RicheseBetrayalReceipt } from './nexus-richese-betrayal';
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
 import { highKaitainDiscardsAvailable, quoteKaitainDiscards, homeworldWorthlessSaleBlock } from './homeworld-card-economy';
@@ -1092,6 +1092,7 @@ export type Game = {
   } | null;
   /** Explicit development profile; never enabled by a public start or player action. */
   kullPreview?: boolean;
+  nexusKullPreview?: boolean;
   kullSequence?: number;
   kullRestrictions?: KullPhaseRestriction[];
   pendingKull?: {
@@ -1103,6 +1104,7 @@ export type Game = {
     phase: number;
     form: 'printed' | 'substitution';
     stage: 'offer' | 'counter';
+    selection?: { source: 'printed' | 'nexus'; card: string; nexusEvent?: string };
     intent: { kind: 'ordinary'; use: KaramaUse } | { kind: 'special'; use: SpecialKaramaIntent };
     resume: NonNullable<Game['pendingNullentropy']>['resume'];
     worthless: Game['pendingChoamWorthless'];
@@ -2639,21 +2641,17 @@ function nexusFremenCunningIntegrity(g: Game) {
       'Fremen Cunning has lost its current rider choice.');
     }
     if (stage === 'pending') {
-      const live = g.response;
-      const prior = suspended?.response;
-      const liveKarama = g.pendingKarama;
-      const priorKarama = suspended?.pendingKarama;
-      requireRule(
-        (live?.kind === 'nexusFremenCunning' &&
-          live.owner === authorization.owner && live.intent === occurrence.event) ||
-        (prior?.kind === 'nexusFremenCunning' &&
-          prior.owner === authorization.owner && prior.intent === occurrence.event) ||
-        (liveKarama?.use.kind === 'cancel' &&
-          liveKarama.use.response.kind === 'nexusFremenCunning' &&
-          liveKarama.use.response.intent === occurrence.event) ||
-        (priorKarama?.use.kind === 'cancel' &&
-          priorKarama.use.response.kind === 'nexusFremenCunning' &&
-          priorKarama.use.response.intent === occurrence.event),
+      const controls = [g, suspended, g.pendingKull?.resume];
+      requireRule(controls.some(control => {
+        const response = control?.response;
+        const karama = control?.pendingKarama;
+        return (response?.kind === 'nexusFremenCunning' &&
+          response.owner === authorization.owner && response.intent === occurrence.event) ||
+          (karama?.use.kind === 'cancel' &&
+            karama.use.response.kind === 'nexusFremenCunning' &&
+            karama.use.response.owner === authorization.owner &&
+            karama.use.response.intent === occurrence.event);
+      }),
       'Fremen Cunning has lost its pending cancellation window.');
     }
   }
@@ -3179,7 +3177,7 @@ function validateNexusAdvisorResponse(g: Game, response: ResponseWindow) {
 function nexusAdvisorIntegrity(g: Game) {
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
-    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,g.bureaucratPayments?.pending?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,g.bureaucratPayments?.pending?.resume, g.pendingKull?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
   const responses = contexts.flatMap(context => {
     const pending = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
@@ -3296,7 +3294,7 @@ function validateNexusSardaukarResponse(g: Game, response: ResponseWindow) {
 function nexusSardaukarIntegrity(g: Game) {
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
-    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume, g.pendingKull?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
   const responses = contexts.flatMap(context => {
     const pending = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
@@ -3464,7 +3462,7 @@ function nexusInspectionIntegrity(g: Game) {
   nexusRule(() => validateNexusInspection(battleInspectionContext(g), record));
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
-    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume, g.pendingKull?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
   const responses = contexts.flatMap(context => {
     const pending = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
@@ -8189,13 +8187,35 @@ export function initializeSemutaGameForAudit(state: Game): Game {
 }
 /** Opt-in printed Kull gameplay with the physical Ix deck, not a public release gate. */
 export function initializeKullGameForAudit(state: Game): Game {
-  requireRule(!state.kullPreview && !state.pendingKull && !state.kullRestrictions &&
+  requireRule(!state.kullPreview && !state.nexusKullPreview && !state.pendingKull && !state.kullRestrictions &&
     state.expansions.length === 2 && state.expansions.includes('choam') &&
     state.expansions.includes('ix') && state.players.some(p => p.faction === 'choam') &&
     state.players.every(p => p.faction === 'choam' || faction(p.faction).expansion === 'base'),
   'Kull preview needs a fresh CHOAM and classic-faction lobby with CHOAM and Ix decks.');
   const g = initializeFactionExpansionsGameForAudit(state);
   g.kullPreview = true;
+  return g;
+}
+/** Fresh native CHOAM Kull with the physical Ix deck and only Nexus Cards. */
+export function initializeNexusKullGameForAudit(state: Game): Game {
+  requireRule(!state.kullPreview && !state.nexusKullPreview && !state.pendingKull &&
+    state.kullRestrictions === undefined && state.kullSequence === undefined &&
+    !state.semutaPreview && !state.richeseBetrayalPreview && !state.richeseBetrayal &&
+    !state.pendingRicheseBetrayal && !state.homeworlds && !state.leaderSkills &&
+    !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
+    !state.techTokens && !state.strongholdCards && !state.ecazTreachery &&
+    state.nexusCards?.cards === null && state.nexusCards.phase === null &&
+    typeof state.advanced === 'boolean' && state.expansions.length === 2 &&
+    state.expansions.includes('choam') && state.expansions.includes('ix') &&
+    state.players.some(p => p.faction === 'choam') &&
+    state.players.every(p => p.faction === 'choam' || faction(p.faction).expansion === 'base'),
+  'Nexus Kull requires a fresh native CHOAM/classic lobby, CHOAM and Ix decks, and only Nexus Cards.');
+  requireFreshBaseRuntime(state);
+  const g = initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
+  g.kullPreview = true;
+  g.nexusKullPreview = true;
+  // Ix supplies Treachery cards here, not the optional Sandtrout Spice card.
+  g.spiceDeck = shuffle(spiceDeck());
   return g;
 }
 /** Prototype-only Discovery setup. Public starts stay gated while remaining effects are connected. */
@@ -10573,7 +10593,8 @@ function karamaSpendingBlock(g: Game, p: Player, card: Card): string | null {
   if (g.kullPreview && kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id))
     return 'Kull Wahad prevents your Karama activations for this phase.';
   if (g.pendingKull?.stage === 'counter' &&
-    (g.pendingKull.card === card.id || g.pendingChoamWorthless?.card === card.id))
+    (g.pendingKull.card === card.id || g.pendingChoamWorthless?.card === card.id ||
+      g.pendingKull.worthless?.card === card.id))
     return 'This physical card is reserved for the interrupted Kull transaction.';
   if (g.pendingIxRicheseTechnology?.card.id === card.id)
     return 'This card is reserved for the pending Richese lot and Ixian choice.';
@@ -11369,31 +11390,76 @@ function assertKaramaPromiseFeasibility(
   return true;
 }
 type KullFrame = NonNullable<Game['pendingKull']>;
-function kullCostPromisesAllow(g: Game, p: Player, card: Card): boolean {
-  const battlePromises = g.battle && !g.battle.revealed && !g.battle.plans[p.id]
-    ? (g.battle.truthPromises ?? []).filter(promise => promise.player === p.id && !promise.released)
-    : [];
-  const shipmentPromises = liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn);
-  if (!battlePromises.length && !shipmentPromises.length) return true;
-  const projected = structuredClone(g.pendingKull ? kullSource(g, g.pendingKull) : g);
-  const owner = getPlayer(projected, p.id);
-  owner.hand = owner.hand.filter(held => held.id !== card.id);
-  if (g.pendingKull)
-    projected.kullRestrictions = [
-      ...activeKullRestrictions(projected.kullRestrictions, projected.turn, projected.phase),
-      { player: g.pendingKull.owner, turn: projected.turn, phase: projected.phase },
-    ];
-  projected.response = null;
-  projected.decision = null;
-  projected.pendingKarama = null;
-  return (!battlePromises.length ||
-      !!findReachableBattlePlan(projected, owner, { promises: battlePromises })) &&
-    (!shipmentPromises.length || !!findShipmentCompletion(projected, owner, shipmentPromises));
+// Independent printed descriptors, assembled once rather than trusting a saved
+// hand to define its own identity or rebuilding the physical deck per quote.
+const kullCanonicalCards: Readonly<Record<string, Card>> =
+  Object.fromEntries(treacheryDeck(['choam', 'ix']).map(card => [card.id, card]));
+function canonicalKullCard(card: Card): boolean {
+  const expected = Object.hasOwn(kullCanonicalCards, card.id) ? kullCanonicalCards[card.id] : undefined;
+  return !!expected && card.name === expected.name && card.kind === expected.kind &&
+    card.effect === expected.effect;
 }
-function kullCostCards(g: Game, p: Player): Card[] {
-  return kullNativeCostCards(cashInCards(g, p), physicalTreacheryCards(g))
-    .filter(card => !choamWorthlessBlocked(g, card.id) && !giftReserved(g, p.id, card.id) &&
-      !transferCardBlock(g, p, card) && kullCostPromisesAllow(g, p, card));
+function kullCostRetainsAuctionPayment(g: Game, p: Player, card: Card, physical: readonly Card[]): boolean {
+  return !g.auction || g.auction.bidder !== p.id || auctionSpicePaymentFunded(g, p) ||
+    p.hand.some(held => held.id !== card.id && canonicalKullCard(held) &&
+      physical.reduce((count, candidate) => count + Number(candidate.id === held.id), 0) === 1 &&
+      !karamaSpendingBlock(g, p, held));
+}
+function kullCostPromisesAllow(g: Game, p: Player, card: Card, fuelSource: 'printed' | 'nexus'): boolean {
+  const source = g.pendingKull ? kullSource(g, g.pendingKull) : g;
+  const battlePromises = source.battle && !source.battle.revealed && !source.battle.plans[p.id]
+    ? (source.battle.truthPromises ?? []).filter(promise => promise.player === p.id && !promise.released)
+    : [];
+  const shipmentPromises = liveShipmentPromises(source.shipmentPromises ?? [], p.id, source.turn);
+  if (!battlePromises.length && !shipmentPromises.length) return true;
+  for (const success of [true, false]) {
+    const projected = structuredClone(source);
+    const owner = getPlayer(projected, p.id);
+    // Acceptance spends Cunning in either outcome. Do not let feasibility
+    // reuse its physical Nexus as a future preparation or shipment resource.
+    if (fuelSource === 'nexus' && projected.nexusCards?.cards?.hands[p.id] === 'choam')
+      projected.nexusCards.cards = nexusRule(() => discardNexusCard(projected.nexusCards!.cards!, p.id, projected.players));
+    if (success) {
+      owner.hand = owner.hand.filter(held => held.id !== card.id);
+      if (g.pendingKull)
+        projected.kullRestrictions = [
+          ...activeKullRestrictions(projected.kullRestrictions, projected.turn, projected.phase),
+          { player: g.pendingKull.owner, turn: projected.turn, phase: projected.phase },
+        ];
+    }
+    projected.response = null;
+    projected.decision = null;
+    projected.pendingKarama = null;
+    if ((battlePromises.length && !findReachableBattlePlan(projected, owner, { promises: battlePromises })) ||
+      (shipmentPromises.length && !findShipmentCompletion(projected, owner, shipmentPromises)))
+      return false;
+  }
+  return true;
+}
+function kullCostCards(g: Game, p: Player, source: 'printed' | 'nexus' = 'printed'): Card[] {
+  const original = g.pendingKull ? kullSource(g, g.pendingKull) : g;
+  if (source === 'nexus' && (!g.nexusKullPreview || p.faction !== 'choam' || p.ally ||
+    (g.pendingKull?.selection?.source !== 'nexus' && g.nexusCards?.cards?.hands[p.id] !== 'choam')))
+    return [];
+  const reserved = [
+    g.pendingKull?.card, g.pendingKull?.worthless?.card,
+  ].filter((id): id is string => typeof id === 'string');
+  const physical = physicalTreacheryCards(g);
+  const candidates = source === 'nexus'
+    ? kullNexusCostCards(p.hand, physical, reserved)
+    : kullNativeCostCards(cashInCards(g, p), physical).filter(card => !reserved.includes(card.id));
+  return candidates.filter(card => canonicalKullCard(card) &&
+    kullCostRetainsAuctionPayment(original, p, card, physical) && !choamWorthlessBlocked(original, card.id) &&
+    !giftReserved(original, p.id, card.id) && !transferCardBlock(original, p, card) &&
+    !retentionReservesCard(original, p.id, card.id) && original.battle?.lateDefense?.[p.id] !== card.id &&
+    ![original.battle?.plans[p.id]?.weapon, original.battle?.plans[p.id]?.defense,
+      original.battle?.plans[p.id]?.leader].includes(card.id) &&
+    !(original.battle && committedPlanElements(original.battle, p.id).some(element => element.value === card.id)) &&
+    kullCostPromisesAllow(g, p, card, source));
+}
+function kullPlays(g: Game, p: Player) {
+  return (['printed', 'nexus'] as const).flatMap(source => kullCostCards(g, p, source).map(card =>
+    ({ source, effect: 'kull' as const, card, event: g.pendingKull!.event, blocked: null as string | null })));
 }
 function kullSource(g: Game, frame: KullFrame): Game {
   return { ...g, ...frame.resume, pendingKull: null, pendingChoamWorthless: frame.worthless };
@@ -11403,6 +11469,7 @@ function kullSignature(g: Game, frame: KullFrame): string {
   return JSON.stringify({
     event: frame.event, player: frame.player, owner: frame.owner, card: frame.card,
     turn: frame.turn, phase: frame.phase, form: frame.form, intent: frame.intent,
+    selection: frame.selection,
     controls: nullentropyParentSignature(source, frame.resume, frame.event),
     status: source.status, advanced: source.advanced, active: source.active,
     order: source.order, ready: source.ready, hajr: source.hajr, choamMarket: source.choamMarket,
@@ -11412,8 +11479,35 @@ function kullSignature(g: Game, frame: KullFrame): string {
     stormResolution: source.stormResolution, worthless: frame.worthless,
   });
 }
+/** Only the verified pre-source printed profile may bind its old held cost. */
+function migratePrintedKullCounter(state: Game): Game {
+  const frame = state.pendingKull;
+  if (!frame || frame.stage !== 'counter' || frame.selection !== undefined ||
+    state.nexusKullPreview || state.nexusCards) return state;
+  const declaration = state.pendingChoamWorthless;
+  requireRule(state.kullPreview === true && declaration?.effect === 'kull' &&
+    !declaration.nexusEvent && declaration.owner === frame.player &&
+    frame.signature === kullSignature(state, frame),
+  'The legacy printed Kull counter has lost its original declaration or signature.');
+  const migrated = structuredClone(state);
+  migrated.pendingKull!.selection = { source: 'printed', card: declaration.card };
+  migrated.pendingKull!.signature = kullSignature(migrated, migrated.pendingKull!);
+  // All original stamp, intent, custody, response and quote checks still apply.
+  kullIntegrity(migrated);
+  return migrated;
+}
 function kullIntegrity(g: Game): void {
   try {
+    requireRule(g.nexusKullPreview === undefined || g.nexusKullPreview === true &&
+      g.kullPreview === true && !!g.nexusCards?.cards &&
+      g.expansions.length === 2 && g.expansions.includes('choam') && g.expansions.includes('ix') &&
+      g.players.some(p => p.faction === 'choam') &&
+      g.players.every(p => p.faction === 'choam' || faction(p.faction).expansion === 'base') &&
+      !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled && !g.discoveries &&
+      !g.discoveryStash && !g.greatMaker && !g.sandtrout &&
+      !g.techTokens && !g.strongholdCards && !g.ecazTreachery && !g.semutaPreview &&
+      !g.richeseBetrayalPreview && !g.richeseBetrayal && !g.pendingRicheseBetrayal,
+    'The Nexus Kull profile has lost its supported native inventory and modules.');
     if (g.kullRestrictions !== undefined) validateKullPhaseRestrictions(g, g.kullRestrictions);
     const frame = g.pendingKull;
     if (!frame) {
@@ -11434,6 +11528,12 @@ function kullIntegrity(g: Game): void {
     requireRule(frame.signature === kullSignature(g, frame),
       'The saved Kull attempt no longer matches its original controls and opportunity.');
     const source = kullSource(g, frame), owner = getPlayer(source, frame.owner);
+    if (frame.worthless) {
+      const parentOwner = getPlayer(source, frame.worthless.owner);
+      requireRule(kullNexusCostCards(parentOwner.hand, physicalTreacheryCards(g))
+        .some(card => card.id === frame.worthless!.card && canonicalKullCard(card)),
+      'The interrupted CHOAM declaration must retain its exact unique physical cost.');
+    }
     const card = owner.hand.find(card => card.id === frame.card);
     requireRule(card, 'The original attempted Karama must remain in its owner’s hand.');
     requireRule(frame.form === (card.kind === 'worthless' ? 'substitution' : 'printed'),
@@ -11449,21 +11549,25 @@ function kullIntegrity(g: Game): void {
       requireRule(JSON.stringify(prepared) === JSON.stringify(frame.intent.use),
         'The saved special Karama selection has changed.');
     }
-    if (frame.stage === 'offer')
+    if (frame.stage === 'offer') {
+      requireRule(frame.selection === undefined, 'An undeclared Kull offer cannot reserve a selected source.');
       requireRule(JSON.stringify(g.response) === JSON.stringify(frame.resume.response) &&
         JSON.stringify(g.decision) === JSON.stringify(frame.resume.decision) &&
         JSON.stringify(g.pendingKarama ?? null) === JSON.stringify(frame.resume.pendingKarama ?? null) &&
         JSON.stringify(g.pendingChoamWorthless ?? null) === JSON.stringify(frame.worthless ?? null),
       'The Kull offer no longer owns its original controls.');
-    else {
+    } else {
       const declaration = g.pendingChoamWorthless;
       const response = g.pendingKarama?.use.kind === 'cancel'
         ? g.pendingKarama.use.response : g.response;
-      requireRule(declaration?.effect === 'kull' && declaration.owner === frame.player &&
+      requireRule(frame.selection && ['printed','nexus'].includes(frame.selection.source) &&
+        declaration?.effect === 'kull' && declaration.owner === frame.player &&
+        declaration.card === frame.selection.card && declaration.nexusEvent === frame.selection.nexusEvent &&
+        (frame.selection.source === 'nexus' ? !!declaration.nexusEvent : !declaration.nexusEvent) &&
         declaration.target === frame.owner && response?.kind === 'choamWorthless' &&
         response.owner === frame.player && response.intent === 'Kull Wahad' &&
         response.recipient === frame.owner &&
-        kullCostCards(g, getPlayer(g, frame.player)).some(card => card.id === declaration.card),
+        kullCostCards(g, getPlayer(g, frame.player), frame.selection.source).some(card => card.id === declaration.card),
       'The Kull counter no longer matches its held cost and original attempted player.');
       currentChoamWorthlessCancellationQuote(g, response);
     }
@@ -11522,25 +11626,33 @@ function resumeKullAttempt(g: Game, prevented: boolean): void {
 function decideKull(g: Game, p: Player, action: Action): void {
   const frame = g.pendingKull!;
   requireRule(action.type === 'kullDecision' && action.event === frame.event &&
-    p.id === frame.player && Object.keys(action).every(key => ['type','event','decline','card'].includes(key)),
+    p.id === frame.player && Object.keys(action).every(key => ['type','event','decline','source','card'].includes(key)),
   'Choose the current Kull opportunity as CHOAM.');
   if (action.decline === true) {
-    requireRule(action.card === undefined, 'Decline or choose one Kull card, not both.');
+    requireRule(action.card === undefined && action.source === undefined, 'Decline or choose one Kull source and card, not both.');
     resumeKullAttempt(g, false);
     return;
   }
-  requireRule(action.decline === undefined && typeof action.card === 'string' &&
-    kullCostCards(g, p).some(card => card.id === action.card),
-  'Choose your exact eligible held Kull Wahad card.');
+  requireRule(action.decline === undefined && (action.source === 'printed' || action.source === 'nexus') &&
+    typeof action.card === 'string' && kullCostCards(g, p, action.source).some(card => card.id === action.card),
+  'Choose your exact eligible held Kull source and card.');
+  const source = action.source;
+  const card = p.hand.find(card => card.id === action.card)!;
+  const nexusEvent = source === 'nexus'
+    ? JSON.stringify(['nexusChoam', g.turn, g.phase, p.id, card.id, 'kull']) : undefined;
+  frame.selection = { source, card: card.id, ...(nexusEvent ? { nexusEvent } : {}) };
+  frame.signature = kullSignature(g, frame);
   frame.stage = 'counter';
   g.decision = null;
   g.pendingKarama = null;
   g.phaseOpening = null;
   g.pendingChoamWorthless = {
     owner: p.id, card: action.card, effect: 'kull', target: frame.owner, revival: false,
+    ...(nexusEvent ? { nexusEvent } : {}),
   };
   g.response = { kind: 'choamWorthless', owner: p.id, recipient: frame.owner,
     intent: 'Kull Wahad', passed: [] };
+  if (source === 'nexus') recordNexusChoam(g, p, card, 'kull');
   log(g, `${p.name} declared Kull Wahad. Only a different Karama can prevent it.`);
 }
 function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered = false) {
@@ -23228,7 +23340,7 @@ function finishGuildCunningShipment(g: Game, owner: string, kind: 'reserve'|'gui
 }
 function nexusGuildCunningIntegrity(g: Game) {
   const continuation = g.pendingTreacheryDiscard?.continuation;
-  const contexts = [g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,g.pendingRichesePurchaseIncome?.resume,g.summonedWorm?.resume,
+  const contexts = [g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,g.pendingRichesePurchaseIncome?.resume,g.summonedWorm?.resume,g.pendingKull?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
   const responses = contexts.flatMap(c => {
     if (!c) return [];
@@ -23690,21 +23802,30 @@ function nexusChoamParent(g: Game, pending: NonNullable<Game['pendingChoamWorthl
     revival: pending.revival ? g.pendingRevival : undefined,
     storm: pending.storm ? g.stormResolution : undefined,
     mentat: pending.mentat ? g.choamMentatPending : undefined,
+    kull: pending.effect === 'kull' ? {
+      event: g.pendingKull?.event, signature: g.pendingKull?.signature,
+      selection: g.pendingKull?.selection,
+    } : undefined,
   });
 }
 function nexusChoamIntegrity(g: Game) {
-  const pending = g.pendingChoamWorthless;
   const continuation = g.pendingTreacheryDiscard?.continuation;
-  const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+  const controls = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
     g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null];
-  const responses = contexts.flatMap(context => {
+  const responseList = (contexts: typeof controls) => contexts.flatMap(context => {
     const karama = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
     return [context?.response, karama?.use.kind === 'cancel' ? karama.use.response : null];
-  }).filter(response => response?.kind === 'choamWorthless');
+  }).filter((response): response is ResponseWindow => response?.kind === 'choamWorthless');
+  const transactions = [
+    { state: g, pending: g.pendingChoamWorthless, responses: responseList(controls) },
+    ...(g.pendingKull ? [{ state: kullSource(g, g.pendingKull), pending: g.pendingKull.worthless,
+      responses: responseList([g.pendingKull.resume]) }] : []),
+  ];
+  const declared = transactions.filter(transaction => transaction.pending?.nexusEvent);
   const history = g.nexusChoamHistory;
   if (history === undefined) {
-    requireRule(!g.nexusChoamLast && !pending?.nexusEvent, 'CHOAM Cunning has lost its original saved history.');
+    requireRule(!g.nexusChoamLast && !declared.length, 'CHOAM Cunning has lost its original saved history.');
     return;
   }
   requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0,
@@ -23723,19 +23844,22 @@ function nexusChoamIntegrity(g: Game) {
   const last = history.at(-1)!;
   requireRule(JSON.stringify(g.nexusChoamLast) === JSON.stringify({event:last.receipt.event,stage:last.stage}),
     'CHOAM Cunning has lost its latest completed or pending outcome.');
-  requireRule((last.stage === 'pending') === !!pending?.nexusEvent,
+  requireRule((last.stage === 'pending') === (declared.length > 0) &&
+    declared.every(transaction => transaction.pending?.nexusEvent === last.receipt.event),
     'CHOAM Cunning has lost or reopened its declared effect.');
   if (last.stage === 'pending') {
-    requireRule(pending && pending.nexusEvent === last.receipt.event &&
-      pending.owner === last.receipt.owner && pending.card === last.receipt.card && pending.effect === last.receipt.effect &&
-      g.turn === last.receipt.turn && g.phase === last.receipt.phase &&
-      JSON.stringify(pending) === last.frame && nexusChoamParent(g,pending) === last.parent && responses.length > 0 && g.nexusCards.cards.discard.includes('choam'),
+    for (const { state, pending, responses } of declared) {
+      requireRule(pending && pending.owner === last.receipt.owner && pending.card === last.receipt.card &&
+        pending.effect === last.receipt.effect && g.turn === last.receipt.turn && g.phase === last.receipt.phase &&
+        JSON.stringify(pending) === last.frame && nexusChoamParent(state,pending) === last.parent &&
+        responses.length > 0 && g.nexusCards.cards.discard.includes('choam'),
       'CHOAM Cunning no longer matches its original card, selected effect or response.');
-    for (const response of responses) {
-      try { quoteChoamWorthlessCancellation(g,response!); }
-      catch(error) {
-        if (error instanceof ChoamWorthlessCancellationError) throw new RuleError(error.message);
-        throw error;
+      for (const response of responses) {
+        try { quoteChoamWorthlessCancellation(state,response); }
+        catch(error) {
+          if (error instanceof ChoamWorthlessCancellationError) throw new RuleError(error.message);
+          throw error;
+        }
       }
     }
   }
@@ -24693,6 +24817,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
@@ -24780,7 +24905,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   if (g.pendingRicheseBetrayal) {richeseBetrayalIntegrity(g);return g;}
   if (g.pendingKull) {
     settleAutomaticContinuations(g);
-    if (g.pendingKull) { kullIntegrity(g); return g; }
+    if (g.pendingKull) { kullIntegrity(g); marketGholaIntegrity(g); return g; }
   }
   finishLeaderSkillCustody(g, state);
   observeOccupation(g);
@@ -25014,6 +25139,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
@@ -28927,6 +29053,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
@@ -29441,13 +29568,14 @@ export function viewGame(state: Game, id: string) {
         })()
       : null,
     kullPreview: !!g.kullPreview,
+    nexusKullPreview: !!g.nexusKullPreview,
     kullCounterEvent: g.pendingKull?.stage === 'counter' ? g.pendingKull.event : null,
     karamaBlocked: g.kullPreview && kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, id)
       ? 'Kull Wahad prevents your Karama activations for this phase.' : null,
     kullReaction: g.pendingKull?.stage === 'offer'
       ? { event: g.pendingKull.event, player: g.pendingKull.player, target: g.pendingKull.owner,
           intent: g.pendingKull.intent.kind === 'ordinary' ? g.pendingKull.intent.use.kind : 'special',
-          cards: id === g.pendingKull.player ? kullCostCards(g, me) : [],
+          plays: id === g.pendingKull.player ? kullPlays(g, me) : [],
           canDecline: id === g.pendingKull.player, blocked: null as string | null }
       : null,
     choamWorthless:

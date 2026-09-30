@@ -24,7 +24,7 @@ void test('every profile uses the projected physical Kull and cannot act from a 
       }
     }
     const actions = botActions(own);
-    assert.deepEqual(actions, [{ type: 'kullDecision', event: own.kullReaction!.event, card: 'ix-kull-wahad' }]);
+    assert.deepEqual(actions, [{ type: 'kullDecision', event: own.kullReaction!.event, source: 'printed', card: 'ix-kull-wahad' }]);
     assert.deepEqual(botActions(viewGame(saved, 'h')), []);
     let settled = applyAction(saved, 'c', actions[0]);
     // A non-target declines the native response with its own legal card held.
@@ -74,7 +74,7 @@ void test('every profile counters Kull only with a distinct projected card and r
     game.players[1].hand.push(counter);
     const offer = applyAction(game, 'e', kullShipmentAttempt(game));
     const declared = applyAction(offer, 'c', {
-      type: 'kullDecision', event: offer.pendingKull!.event, card: 'ix-kull-wahad',
+      type: 'kullDecision', event: offer.pendingKull!.event, source: 'printed', card: 'ix-kull-wahad',
     });
     const own = viewGame(JSON.parse(JSON.stringify(declared)), 'e');
     assert.ok(!own.responseControls!.cancelCards.includes(reserved));
@@ -97,7 +97,7 @@ void test('a blocked projected cost is declined rather than treated as a playabl
     const offer = applyAction(game, 'e', kullShipmentAttempt(game));
     const own = viewGame(offer, 'c');
     own.kullReaction!.blocked = 'The cost is reserved for another continuation.';
-    Object.defineProperty(own.kullReaction, 'cards', {
+    Object.defineProperty(own.kullReaction, 'plays', {
       get() { throw new Error('Read ineligible cost choices'); },
     });
     const action = botActions(own)[0];
@@ -118,7 +118,7 @@ void test('BG counter conversion keeps all profiles in standard response control
     const counter = game.players[2].hand[0].id;
     const offer = applyAction(game, 'e', kullShipmentAttempt(game));
     const declared = applyAction(offer, 'c', {
-      type: 'kullDecision', event: offer.pendingKull!.event, card: 'ix-kull-wahad',
+      type: 'kullDecision', event: offer.pendingKull!.event, source: 'printed', card: 'ix-kull-wahad',
     });
     const action = botActions(viewGame(declared, 'b'))[0];
     assert.deepEqual(action, { type: 'card', mode: 'cancel', card: counter });

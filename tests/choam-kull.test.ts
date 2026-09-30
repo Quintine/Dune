@@ -9,6 +9,7 @@ import {
   kullBlocksKarama,
   kullCounterCards,
   kullNativeCostCards,
+  kullNexusCostCards,
   validateKullAttemptStamp,
   validateKullPhaseRestrictions,
   type KullAttemptStamp,
@@ -148,6 +149,48 @@ void test('native Kull costs require canonical identity and unique actual custod
   ]) {
     assert.deepEqual(kullNativeCostCards([fake], physical), []);
   }
+  assert.deepEqual({ held, physical }, before);
+});
+
+void test('Nexus Kull accepts canonical non-Worthless Treachery fuel without narrowing to printed Kull', () => {
+  const physical = [...baseDeck(), ...ixStandardCards()];
+  const weapon = physical.find(card => card.kind === 'projectile')!;
+  const karama = physical.find(card => card.effect === 'karama')!;
+  const worthless = physical.find(card => card.kind === 'worthless' && card.id !== 'ix-kull-wahad')!;
+  const kull = physical.find(card => card.id === 'ix-kull-wahad')!;
+  const held: Card[] = JSON.parse(JSON.stringify([weapon, karama, worthless, kull]));
+  const before = structuredClone({ held, physical });
+  assert.deepEqual(kullNexusCostCards(held, physical).map(card => card.id),
+    [weapon.id, karama.id, worthless.id, kull.id]);
+  assert.deepEqual(kullNativeCostCards(held, physical).map(card => card.id), [kull.id]);
+  assert.deepEqual(kullNexusCostCards(held, physical, [karama.id, kull.id, 'absent']).map(card => card.id),
+    [weapon.id, worthless.id]);
+  assert.deepEqual(kullNexusCostCards([], physical), []);
+  assert.deepEqual({ held, physical }, before);
+});
+
+void test('Nexus Kull excludes counterfeit, duplicated and reserved custody without losing unrelated real fuel', () => {
+  const physical = [...baseDeck(), ...ixStandardCards()];
+  const weapon = physical.find(card => card.kind === 'projectile')!;
+  const karama = physical.find(card => card.effect === 'karama')!;
+  const held = Object.freeze([Object.freeze({ ...weapon }), Object.freeze({ ...karama })]);
+  const before = structuredClone({ held, physical });
+  for (const fake of [
+    { ...weapon, id: 'invented' },
+    { ...weapon, id: '' },
+    { ...weapon, name: 'counterfeit' },
+    { ...weapon, kind: 'worthless' as const },
+    { ...weapon, effect: 'karama' },
+  ]) {
+    assert.deepEqual(kullNexusCostCards([fake, karama], physical).map(card => card.id), [karama.id]);
+  }
+  assert.deepEqual(kullNexusCostCards([weapon, { ...weapon }, karama], physical).map(card => card.id),
+    [karama.id]);
+  assert.deepEqual(kullNexusCostCards(held, [...physical, { ...weapon }]).map(card => card.id),
+    [karama.id]);
+  assert.deepEqual(kullNexusCostCards(held, physical.filter(card => card.id !== weapon.id)).map(card => card.id),
+    [karama.id]);
+  assert.deepEqual(kullNexusCostCards(held, physical, [weapon.id, karama.id]), []);
   assert.deepEqual({ held, physical }, before);
 });
 

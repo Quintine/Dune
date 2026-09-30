@@ -142,6 +142,14 @@ counter; BG interception is before conversion. Unpayable overbid recovery remain
 guarded. See the [selected policy and boundaries](docs/CHOAM_KULL_SOURCE_UPDATE.md).
 This does not enable public expansion starts or certify full CHOAM.
 
+For local **CHOAM Nexus Cunning Kull**, use `node --import tsx tools/start-prototype.ts --profile nexus-kull`
+on a fresh ready Basic/Advanced CHOAM-plus-classic lobby with `choam,ix` Treachery
+and Nexus alone. It omits physical Sandtrout. The same exact-version/private-backup
+safeguards apply. Choose printed Kull or a canonical own Treachery fuel:
+Nexus spends on accepted declaration, fuel only on success; distinct prevention
+retains fuel while leaving Nexus spent. See [verified bounded runtime and limits](docs/NEXUS_CHOAM_RUNTIME.md#bounded-nexus-kull-profile).
+Older printed-only games do not gain Nexus choices, and public starts stay gated.
+
 For local **Richese Nexus Betrayal** testing, use `node --import tsx tools/start-prototype.ts --profile richese-betrayal`
 on a fresh ready Basic/Advanced CHOAM/Richese-plus-classic lobby with the `choam`
 deck and Nexus only. The same exact-version/private-backup safeguards apply.

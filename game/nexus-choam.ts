@@ -65,8 +65,7 @@ function phaseMatches(effect: NexusChoamEffect, phase: number): boolean {
       return phase === 8;
     case 'jubba':
       return phase === 0;
-    // This describes printed timing only; the engine must separately authorize
-    // a real Karama attempt and retains Kull's unresolved implementation gate.
+    // Any phase can contain a Karama attempt; the caller authorizes that timing.
     case 'kull':
       return true;
     default:

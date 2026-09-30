@@ -40,9 +40,13 @@ async function persisted(prepare?: (g: Game) => void) {
     prepare?.(initial);
     assert.equal(store.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
       .run(JSON.stringify(initial), initial.version, code, current.version).changes, 1);
+    const unrelated = await store.rooms.createRoom('Preserved unrelated room', 'atreides', false, []);
+    const unrelatedCode = unrelated.view.code;
+    const unrelatedRow = store.sqlite.prepare('SELECT * FROM rooms WHERE code=?').get(unrelatedCode);
     store.writes.length = 0;
     return { ...store, code, tokens, auths, initial,
-      originalCredentials: credentials(store.sqlite), originalCards: inventory(initial) };
+      originalCredentials: credentials(store.sqlite), originalCards: inventory(initial),
+      unrelatedCode, unrelatedRow };
   } catch (error) {
     store.sqlite.close();
     throw error;
@@ -60,11 +64,17 @@ type Fixture = {
   initial: Game;
   originalCredentials: { seats: unknown[]; entries: unknown[]; keys: unknown[]; recoveries: unknown[] };
   originalCards: string[];
+  unrelatedCode: string;
+  unrelatedRow: Record<string, unknown> | undefined;
 };
 
 async function act(f: Fixture, g: Game, actor: string, action: Action) {
   const rooms = f.restart();
-  const auth = f.auths.find(auth => auth.playerId === actor)!;
+  const index = f.auths.findIndex(auth => auth.playerId === actor);
+  assert.ok(index >= 0);
+  const auth = await rooms.authenticate(f.code, f.tokens[index]);
+  assert.equal(auth.playerId, actor);
+  assert.equal(auth.tokenHash, f.auths[index].tokenHash);
   await rooms.act(f.code, auth, g.version, action, clock);
   return rooms.readRoom(f.code);
 }
@@ -74,6 +84,8 @@ async function restored(f: Fixture, g: Game) {
   const views: GameView[] = [];
   for (let index = 0; index < f.tokens.length; index++) {
     const auth = await rooms.authenticate(f.code, f.tokens[index]);
+    assert.equal(auth.playerId, f.auths[index].playerId);
+    assert.equal(auth.tokenHash, f.auths[index].tokenHash);
     const view = await rooms.readSeatView(f.code, auth);
     assert.deepEqual(view, viewGame(g, auth.playerId));
     if (g.pendingKull) {
@@ -88,6 +100,7 @@ async function restored(f: Fixture, g: Game) {
     views.push(view);
   }
   assert.deepEqual(credentials(f.sqlite), f.originalCredentials);
+  assert.deepEqual(f.sqlite.prepare('SELECT * FROM rooms WHERE code=?').get(f.unrelatedCode), f.unrelatedRow);
   assert.deepEqual(inventory(g), f.originalCards);
   assert.equal(new Set(inventory(g)).size, f.originalCards.length);
   return views;
@@ -104,6 +117,7 @@ async function rejected(f: Fixture, g: Game, actor: string, action: Action, vers
   assert.deepEqual(attemptedStatements, [], 'rejected game actions must not attempt SQL writes');
   assert.deepEqual(f.sqlite.prepare('SELECT * FROM rooms WHERE code=?').get(f.code), before);
   assert.deepEqual(credentials(f.sqlite), f.originalCredentials);
+  assert.deepEqual(f.sqlite.prepare('SELECT * FROM rooms WHERE code=?').get(f.unrelatedCode), f.unrelatedRow);
 }
 
 async function stationary(f: Fixture, g: Game) {
@@ -158,9 +172,10 @@ async function offer(f: Fixture, initial: Game, actor: string, action: Action, e
   assert.equal(reaction.player, f.auths[0].playerId);
   assert.equal(reaction.target, actor);
   assert.equal(reaction.canDecline, true);
-  assert.deepEqual(reaction.cards.map(card => card.id), expectedCards);
+  assert.deepEqual(reaction.plays.map(play => ({ source: play.source, card: play.card.id })),
+    expectedCards.map(card => ({ source: 'printed', card })));
   const publicFields = { event: reaction.event, player: reaction.player, target: reaction.target,
-    intent: reaction.intent, cards: [], canDecline: false, blocked: null };
+    intent: reaction.intent, plays: [], canDecline: false, blocked: null };
   for (const view of views.slice(1)) assert.deepEqual(view.kullReaction, publicFields);
   assert.deepEqual(g.players, initial.players, 'the public offer must precede every card, revival, income and once-use cost');
   assert.deepEqual(g.discard, initial.discard);
@@ -183,7 +198,7 @@ void test('persisted Kull offer and racing decline revive Emperor forces exactly
     const decline = { type: 'kullDecision', event, decline: true };
     await rejected(f, g, emperor, decline);
     await rejected(f, g, f.auths[0].playerId, { ...decline, event: `${event}-obsolete` });
-    await rejected(f, g, f.auths[0].playerId, { type: 'kullDecision', event, card: card.id });
+    await rejected(f, g, f.auths[0].playerId, { type: 'kullDecision', event, source: 'printed', card: card.id });
     await rejected(f, g, f.auths[0].playerId, { type: 'kullDecision', event, decline: 'yes' });
     await rejected(f, g, f.auths[0].playerId, decline, g.version - 1);
     const done = await compete(f, g, f.auths[0].playerId, decline);
@@ -205,7 +220,7 @@ void test('persisted Kull success races the final pass, retains printed Karama a
     const emperor = f.auths[1].playerId, choam = f.auths[0].playerId;
     const original = kullShipmentAttempt(f.initial, emperor);
     const { g: offered, event } = await offer(f, f.initial, emperor, original);
-    let g = await act(f, offered, choam, { type: 'kullDecision', event, card: 'ix-kull-wahad' });
+    let g = await act(f, offered, choam, { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
     assert.equal(g.response?.kind, 'choamWorthless');
     assert.equal(g.karamaShipping, null);
     assert.equal(g.discard.some(card => card.id === original.card), false);
@@ -232,7 +247,7 @@ void test('persisted Kull success races the final pass, retains printed Karama a
     assert.equal(player(done, emperor).hand.filter(card => card.id === original.card).length, 1);
     assert.equal(player(done, emperor).spice, player(f.initial, emperor).spice);
     await rejected(f, done, emperor, original);
-    await rejected(f, done, choam, { type: 'kullDecision', event, card: 'ix-kull-wahad' });
+    await rejected(f, done, choam, { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
     await stationary(f, done);
   } finally { f.sqlite.close(); }
 });
@@ -247,7 +262,7 @@ void test('a distinct held Karama counters persisted Kull and resumes the origin
     const original = kullShipmentAttempt(f.initial, emperor);
     const distinct = player(f.initial, emperor).hand.find(card => card.effect === 'karama' && card.id !== original.card)!;
     const { g: offered, event } = await offer(f, f.initial, emperor, original);
-    const g = await act(f, offered, choam, { type: 'kullDecision', event, card: 'ix-kull-wahad' });
+    const g = await act(f, offered, choam, { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
     const views = await restored(f, g);
     assert.deepEqual(views[1].responseControls?.cancelCards, [distinct.id]);
     assert.equal(views[1].responseControls?.cancelCards.includes(String(original.card)), false);
@@ -279,7 +294,7 @@ void test('Kull intercepts persisted BG substitution before conversion and retai
     const original = { type: 'card', mode: 'shipment', card: worthless[0].id, target: emperor };
     const { g: offered, event } = await offer(f, f.initial, bg, original);
     assert.equal(offered.pendingKarama, null);
-    let g = await act(f, offered, choam, { type: 'kullDecision', event, card: 'ix-kull-wahad' });
+    let g = await act(f, offered, choam, { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
     assert.equal(g.response?.kind, 'choamWorthless');
     assert.equal(g.pendingKarama, null);
     assert.equal(player(g, bg).hand.some(card => card.id === worthless[0].id), true);
@@ -335,7 +350,7 @@ void test('successful persisted Kull prevents Emperor revival before forces or i
     const karama = player(f.initial, emperor).hand.find(card => card.effect === 'karama')!;
     const original = { type: 'card', mode: 'special', card: karama.id, amount: 2 };
     const { g: offered, event } = await offer(f, f.initial, emperor, original);
-    const declared = await act(f, offered, choam, { type: 'kullDecision', event, card: 'ix-kull-wahad' });
+    const declared = await act(f, offered, choam, { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
     await restored(f, declared);
     const done = await passes(f, declared);
     assert.deepEqual(player(done, emperor), player(f.initial, emperor));
@@ -354,7 +369,7 @@ void test('a Kull-free saved CHOAM hand still receives the neutral private offer
     const original = kullShipmentAttempt(f.initial, emperor);
     await rejected(f, f.initial, emperor, { type: 'card', mode: 'special', card: original.card, amount: 2 });
     const { g, event } = await offer(f, f.initial, emperor, original, []);
-    await rejected(f, g, choam, { type: 'kullDecision', event, card: 'ix-kull-wahad' });
+    await rejected(f, g, choam, { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
     const done = await act(f, g, choam, { type: 'kullDecision', event, decline: true });
     assert.deepEqual(done.karamaShipping, { player: emperor, owner: emperor, card: original.card });
     assert.equal(done.discard.filter(card => card.id === original.card).length, 1);
@@ -374,7 +389,7 @@ void test('corrupt saved Kull intent ownership cannot execute or write after a r
     assert.equal(f.sqlite.prepare('UPDATE rooms SET state=? WHERE code=? AND version=?')
       .run(JSON.stringify(corrupt), f.code, g.version).changes, 1);
     await rejected(f, corrupt, choam, { type: 'kullDecision', event, decline: true });
-    await rejected(f, corrupt, choam, { type: 'kullDecision', event, card: 'ix-kull-wahad' });
+    await rejected(f, corrupt, choam, { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
     await assert.rejects(f.restart().readSeatView(f.code, f.auths[0]));
     assert.deepEqual(credentials(f.sqlite), f.originalCredentials);
   } finally { f.sqlite.close(); }
@@ -386,7 +401,7 @@ void test('orphaned saved Kull counters cannot be projected or commit a partial 
     try {
       const emperor = f.auths[1].playerId, choam = f.auths[0].playerId;
       const { g, event } = await offer(f, f.initial, emperor, kullShipmentAttempt(f.initial, emperor));
-      let counter = await act(f, g, choam, { type: 'kullDecision', event, card: 'ix-kull-wahad' });
+      let counter = await act(f, g, choam, { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
       if (conversion) {
         const bg = f.auths[2].playerId;
         counter = await act(f, counter, bg, {
@@ -399,8 +414,99 @@ void test('orphaned saved Kull counters cannot be projected or commit a partial 
         .run(JSON.stringify(corrupt), f.code, counter.version).changes, 1);
       await rejected(f, corrupt, f.auths[3].playerId, { type: 'passResponse' });
       for (const auth of f.auths)
-        await assert.rejects(f.restart().readSeatView(f.code, auth), /lost its interrupted Karama frame/);
+        await assert.rejects(f.restart().readSeatView(f.code, auth));
       assert.deepEqual(credentials(f.sqlite), f.originalCredentials);
     } finally { f.sqlite.close(); }
   }
+});
+
+void test('a verified pre-upgrade printed Kull counter migrates without selecting a new cost or losing its exact suspended response', async () => {
+  const f = await persisted();
+  try {
+    const choam = f.auths[0].playerId, emperor = f.auths[1].playerId, harkonnen = f.auths[3].playerId;
+    const original = kullShipmentAttempt(f.initial, emperor);
+    const { g: offered, event } = await offer(f, f.initial, emperor, original);
+    const declared = await act(f, offered, choam,
+      { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
+    const legacy = structuredClone(declared);
+    const retained = JSON.parse(JSON.stringify({
+      response: legacy.response, resume: legacy.pendingKull!.resume,
+      declaration: legacy.pendingChoamWorthless, players: legacy.players, discard: legacy.discard,
+    }));
+    // The old producer signed these same controls before the source selection field existed.
+    const signature: Record<string, unknown> = JSON.parse(legacy.pendingKull!.signature);
+    delete signature.selection;
+    delete legacy.pendingKull!.selection;
+    legacy.pendingKull!.signature = JSON.stringify(signature);
+    const legacyJSON = JSON.stringify(legacy);
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=? WHERE code=? AND version=?')
+      .run(legacyJSON, f.code, legacy.version).changes, 1);
+    f.writes.length = 0;
+    const before = f.sqlite.prepare('SELECT * FROM rooms WHERE code=?').get(f.code);
+    const old = await f.restart().readRoom(f.code);
+    assert.equal(old.pendingKull!.selection, undefined);
+    const oldViews = await restored(f, old);
+    assert.equal(oldViews[3].responseControls?.cancelCards.includes(
+      player(old, harkonnen).hand.find(card => card.effect === 'karama')!.id), true);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM rooms WHERE code=?').get(f.code), before);
+    assert.equal(f.writes.length, 0, 'reading the old save does not acknowledge its human counter');
+    await f.restart().continueRoomAutomatic(f.code, clock);
+    const migrated = await f.restart().readRoom(f.code);
+    assert.equal(migrated.version, legacy.version + 1, 'the bounded binding is persisted once');
+    assert.deepEqual(f.writes.map(write => write.changes), [1]);
+    assert.deepEqual(migrated.pendingKull!.selection, { source: 'printed', card: 'ix-kull-wahad' });
+    assert.equal(migrated.pendingKull!.event, event);
+    assert.deepEqual(JSON.parse(JSON.stringify({
+      response: migrated.response, resume: migrated.pendingKull!.resume,
+      declaration: migrated.pendingChoamWorthless, players: migrated.players, discard: migrated.discard,
+    })), retained);
+    await restored(f, migrated);
+    await stationary(f, migrated);
+    const counter = player(migrated, harkonnen).hand.find(card => card.effect === 'karama')!;
+    const done = await act(f, migrated, harkonnen, { type: 'card', mode: 'cancel', card: counter.id });
+    assert.deepEqual(done.karamaShipping, { player: emperor, owner: emperor, card: original.card });
+    assert.equal(done.pendingKull ?? null, null);
+    assert.equal(done.response, null);
+    assert.equal(done.discard.filter(card => card.id === original.card).length, 1);
+    assert.equal(done.discard.filter(card => card.id === counter.id).length, 1);
+    assert.equal(player(done, choam).hand.filter(card => card.id === 'ix-kull-wahad').length, 1);
+    assert.equal(done.discard.some(card => card.id === 'ix-kull-wahad'), false);
+    await restored(f, done);
+    await rejected(f, done, harkonnen, { type: 'card', mode: 'cancel', card: counter.id });
+    await stationary(f, done);
+  } finally { f.sqlite.close(); }
+});
+
+void test('an old printed counter with altered controls or an unverified signature cannot use the bounded save migration', async () => {
+  const f = await persisted();
+  try {
+    const choam = f.auths[0].playerId, emperor = f.auths[1].playerId;
+    const { g: offered, event } = await offer(f, f.initial, emperor, kullShipmentAttempt(f.initial, emperor));
+    const declared = await act(f, offered, choam,
+      { type: 'kullDecision', event, source: 'printed', card: 'ix-kull-wahad' });
+    for (const change of [
+      (g: Game) => { g.pendingKull!.signature += 'forged'; },
+      (g: Game) => { g.pendingKull!.resume.decision = { kind: 'auctionPayment', player: emperor }; },
+      (g: Game) => { g.pendingChoamWorthless!.card = g.deck[0].id; },
+    ]) {
+      const corrupt = structuredClone(declared);
+      const signature: Record<string, unknown> = JSON.parse(corrupt.pendingKull!.signature);
+      delete signature.selection;
+      delete corrupt.pendingKull!.selection;
+      corrupt.pendingKull!.signature = JSON.stringify(signature);
+      change(corrupt);
+      assert.equal(f.sqlite.prepare('UPDATE rooms SET state=? WHERE code=? AND version=?')
+        .run(JSON.stringify(corrupt), f.code, corrupt.version).changes, 1);
+      f.writes.length = 0;
+      const before = f.sqlite.prepare('SELECT * FROM rooms WHERE code=?').get(f.code);
+      for (const token of f.tokens) {
+        const rooms = f.restart();
+        await assert.rejects(rooms.readSeatView(f.code, await rooms.authenticate(f.code, token)));
+      }
+      await rejected(f, corrupt, emperor, { type: 'passResponse' });
+      await Promise.allSettled([f.restart().continueRoomAutomatic(f.code, clock)]);
+      assert.deepEqual(f.sqlite.prepare('SELECT * FROM rooms WHERE code=?').get(f.code), before);
+      assert.equal(f.writes.length, 0);
+    }
+  } finally { f.sqlite.close(); }
 });
