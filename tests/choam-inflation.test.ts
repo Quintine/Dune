@@ -9,6 +9,8 @@ import {
   RuleError,
 } from '../game/engine';
 import { baseDeck, treacheryDeck } from '../game/cards';
+import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { charityAmount, charityMultiplier } from '../game/charity';
 import { createTechTokens } from '../game/tech-tokens';
 import { botActions } from '../game/bots';
@@ -82,6 +84,41 @@ function mentat(state: Game) {
   g.ready = [];
   return ready(g);
 }
+void test('clean printed Karama cancellation offers Semuta before CHOAM Inflation settles', () => {
+  let g = fixture();
+  g.players[1] = newPlayer('e', 'Richese', 'richese');
+  g.richeseCache = richeseCards();
+  g.semutaPreview = true;
+  const semuta = g.richeseCache.findIndex(c => c.id === SEMUTA_DRUG_ID);
+  assert.ok(semuta >= 0);
+  g.players[2].hand.push(g.richeseCache.splice(semuta, 1)[0]);
+  contest(g);
+  g = place(ready(g), 'double');
+  assert.equal(g.response?.kind, 'choamInflation');
+  const spent = g.players[1].hand.find(c => c.effect === 'karama')!;
+  g = cancel(g);
+  const event = g.pendingTreacheryDiscard!.batch.event;
+  assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(g.response, null);
+  assert.equal(g.inflation, undefined);
+  assert.equal(g.inflationAttemptTurn, g.turn);
+  assert.equal(viewGame(g, 'b').semutaReaction?.canCommit, true);
+  assert.equal(viewGame(g, 'c').semutaReaction?.canCommit, false);
+  let declined: Game = JSON.parse(JSON.stringify(g));
+  for (const id of ['c', 'e', 'b'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(declined.inflation, undefined);
+  assert.equal(declined.inflationAttemptTurn, g.turn);
+  const claimed = applyAction(JSON.parse(JSON.stringify(g)), 'b', { type: 'semutaCommit', event });
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(claimed.inflation, undefined);
+  assert.equal(claimed.inflationAttemptTurn, g.turn);
+  assert.equal(claimed.players[2].hand.filter(c => c.id === spent.id).length, 1);
+  assert.equal(claimed.discard.filter(c => c.id === SEMUTA_DRUG_ID).length, 1);
+  assert.throws(() => place(claimed), /already attempted/);
+});
+
 void test('Inflation placement is a CHOAM Mentat action with a response before the token enters play', () => {
   const initial = contest(fixture());
   assert.throws(() => place(initial), /Mentat/);

@@ -12,9 +12,10 @@ the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, private Distrans, final Truthtrance, Once Around,
 movement-order, between-battles chooser or pre-plan aggressor Sapho,
 clean pre-leader Residual Poison, printed Karama canceling clean
-CHOAM Charity, battle-card and Ix-deck Thumper/Amal discards open
-the same neutral offer regardless of hidden Semuta custody. Karama
-waits after its public cost but before settling the canceled income.
+CHOAM Charity or Inflation, battle-card and Ix-deck Thumper/Amal
+discards open the same neutral offer regardless of hidden Semuta
+custody. Karama waits after its public cost but before settling the
+canceled response.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
@@ -30,11 +31,12 @@ full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
 
-The previous `32d9ef4` container workflow built successfully but
-failed isolated storage/HTTP verification; its image was not published.
-The public job exposes no assertion log. Local Docker/Podman and
-authenticated GitHub logs are unavailable. A later checkpoint must
-pass container verification before it is a deployable candidate.
+Container workflow `36656043783` built `32d9ef4` but failed
+isolated storage/HTTP verification; that image was not published and
+the public job exposes no assertion log. The next checkpoint
+`d9c67ca` passed the same verification and published its image in
+workflow `36657454120`. Neither push is a live NAS deployment;
+the latest independently verified live revision remains `c9a3625`.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,

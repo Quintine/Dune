@@ -789,3 +789,61 @@ void test('authenticated printed Karama cost pauses and restores one canceled CH
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
   } finally { f.sqlite.close(); }
 });
+
+void test('authenticated printed Karama cost suspends CHOAM Inflation placement across restart', async () => {
+  const f = unitStore();
+  try {
+    const made = await f.rooms.createRoom('Semuta Inflation', 'choam', false, ['choam']);
+    const code = made.view.code;
+    const richese = await f.rooms.joinRoom(code, 'Richese', 'richese');
+    const bg = await f.rooms.joinRoom(code, 'BG', 'beneGesserit');
+    const auths = await Promise.all([made.token!, richese.token!, bg.token!]
+      .map(token => f.restart().authenticate(code, token)));
+    const existing = await f.restart().readRoom(code);
+    let g = createGame(code, newPlayer(auths[0].playerId, 'CHOAM', 'choam'), false, ['choam']);
+    g.players.push(newPlayer(auths[1].playerId, 'Richese', 'richese'),
+      newPlayer(auths[2].playerId, 'BG', 'beneGesserit'));
+    Object.assign(g, {
+      status: 'playing', phase: 8, turn: 2,
+      order: g.players.map(p => p.id), deck: baseDeck(),
+      richeseCache: richeseCards(), semutaPreview: true,
+    });
+    for (const player of g.players) {
+      player.spice = 20;
+      player.hand = [];
+      player.traitorChoices = [];
+    }
+    const karama = take(g, 'karama');
+    g.players[1].hand.push(karama);
+    const semuta = take(g, SEMUTA_DRUG_ID);
+    g.players[2].hand.push(semuta);
+    g = applyAction(g, auths[0].playerId, { type: 'choamInflation', side: 'double' });
+    assert.equal(g.response?.kind, 'choamInflation');
+    g.version = existing.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(g), g.version, code, existing.version).changes, 1);
+    const seats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const act = async (index: number, action: Action) => {
+      const before = await f.restart().readRoom(code);
+      await f.restart().act(code, auths[index], before.version, action, clock);
+      return f.restart().readRoom(code);
+    };
+    const pending = await act(1, { type: 'card', card: karama.id, mode: 'cancel' });
+    assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(pending.inflation, undefined);
+    assert.equal(pending.inflationAttemptTurn, 2);
+    const event = pending.pendingTreacheryDiscard!.batch.event;
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, pending.version);
+    assert.equal((await f.restart().readSeatView(code, auths[2])).semutaReaction?.canCommit, true);
+    const claimed = await act(2, { type: 'semutaCommit', event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.equal(claimed.inflation, undefined);
+    assert.equal(claimed.inflationAttemptTurn, 2);
+    assert.equal(claimed.players[2].hand.filter(card => card.id === karama.id).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+  } finally { f.sqlite.close(); }
+});

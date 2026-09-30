@@ -66,9 +66,9 @@ with CHOAM & Richese and optionally the physical Ix deck, without
 opening public expansion starts. It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
-printed Karama canceling clean CHOAM Charity, battle and Ix-deck
-Thumper/Amal discards**. Other than the one explicitly suspended
-CHOAM Charity response, the parent transaction has no competing
+printed Karama canceling clean CHOAM Charity or Inflation, battle
+and Ix-deck Thumper/Amal discards**. Other than the one explicitly
+suspended CHOAM response, the parent transaction has no competing
 response. Every seat sees the same neutral fresh-discard opportunity
 regardless of hidden Semuta custody.
 An early-ended Ornithopter advances the saved queue; a completed
@@ -93,12 +93,13 @@ card before the offer. Claim or decline resumes the same pre-leader
 preparation once; an inspected or partly ready battle retains the
 automatic death path without this preview interruption.
 
-For clean printed Karama cancellation of CHOAM Charity, the spent
-public card reaches the pile before its accepted cancellation runs.
-The sole suspended response is bound to the saved receipt; claim or
-decline resumes the same canceled income once. Worthless conversion,
-other cancellations, shipping, purchases and nested Karama responses
-retain their separate automatic paths.
+For clean printed Karama cancellation of CHOAM Charity or Inflation,
+the spent public card reaches the pile before its accepted cancellation
+runs. The sole suspended response is bound to the saved receipt;
+claim or decline resumes the same cancellation once. Charity pays no
+income; Inflation retains its spent placement attempt without a token.
+Worthless conversion, other cancellations, shipping, purchases and
+nested Karama responses retain their separate automatic paths.
 
 For a genuine Ix-deck Thumper, its played physical card reaches
 the discard before an injected worm or actual spice-card draw.

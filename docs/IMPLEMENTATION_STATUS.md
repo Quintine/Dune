@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after printed CHOAM Inflation Karama
+
+The explicit Richese preview now also pauses after printed Karama
+publicly discards to cancel a clean CHOAM Inflation response.
+CHOAM's placement attempt has already been spent; the token is not
+placed until the response settles. A neutral Semuta offer permits a
+different holder to claim only the used card, or all seats to decline.
+The saved Inflation receipt binds the attempt turn, absent token,
+original response and physical card/spice custody. Completion
+restores and cancels the response once; no Inflation token appears
+or same-turn attempt reopens. CHOAM Charity retains its existing
+distinct serialized receipt and signature so a saved pending Charity
+offer remains readable; a new Inflation receipt has its own kind.
+
+Focused Charity/Inflation paths, authenticated SQLite restart/CAS and
+owner-only projections passed. A direct production-engine smoke run
+observed the neutral offer and recovered card without an Inflation
+token. Independent rules/privacy review found and resolved a saved
+Charity receipt compatibility regression; follow-up source review
+found no remaining mismatch. `npm run check` passed typecheck, lint
+and 5,829 offline tests; `npm run build` and 55 local HTTP tests
+passed. The phone-width local reference rendered Inflation scope.
+No deployed revision was exercised. Other Karama uses, pending
+rewards, normal Richese starts and publication acceptance remain
+gated. Container workflow `36657454120` for the previous
+`d9c67ca` checkpoint verified isolated storage/HTTP and published
+that image; the failed `32d9ef4` image was not published.
+
 ## 30 September 2026 — Semuta after printed CHOAM Charity Karama
 
 In the explicit Richese preview, a clean printed Karama cancellation

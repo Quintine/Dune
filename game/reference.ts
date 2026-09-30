@@ -1140,7 +1140,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         definition.card.effect === 'juiceOfSapho'
           ? 'Use the Juice of Sapho panel for an available order change or pre-plan aggressor. Later intervention and other timing modes remain unfinished; consult the timing guide.'
           : definition.card.effect === 'karama'
-            ? 'This physical Karama uses the existing generic handler in development fixtures. In the explicit Semuta preview, a clean printed Karama cancellation of CHOAM Charity can pause on its public discard before canceling that response. Full Richese starts and other Karama/Semuta interactions remain unavailable.'
+            ? 'This physical Karama uses the existing generic handler in development fixtures. In the explicit Semuta preview, clean printed Karama cancellations of CHOAM Charity or Inflation pause on the public cost before settling that response. Full Richese starts and other Karama-to-Semuta reactions remain unavailable.'
             : definition.card.effect === 'distrans'
               ? 'Use the Distrans transfer panel to choose another player and a separate held card. Open-bid timing and self-transfer remain guarded pending clarification.'
               : definition.card.effect === 'nullentropyBox'
@@ -1156,7 +1156,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In the explicit Richese development preview, every seat sees a neutral response to supported clean public discards. A CHOAM & Richese game may include the Ix deck: Thumper pauses before worm/spice draw; Amal pauses after halving spice before opening resumes. Other sources include ordinary cards, paid Box, Ornithopter, Distrans, final Truthtrance, four clean Sapho scopes, pre-leader Residual Poison, printed Karama canceling clean CHOAM Charity and three battle batches. Commit held Semuta with a free hand slot; for multiple eligible cards, inspect and select exactly one after commitment. Saved effects resume once. Other Karama uses, inspected/partly ready battles, nested responses, pending rewards, full-hand sequencing and public starts remain unfinished.'
+                          ? 'In the explicit Richese development preview, every seat sees a neutral response to supported clean public discards. A CHOAM & Richese game may include the Ix deck: Thumper pauses before worm/spice draw; Amal pauses after halving spice before opening resumes. Other sources include ordinary cards, paid Box, Ornithopter, Distrans, final Truthtrance, four clean Sapho scopes, pre-leader Residual Poison, printed Karama canceling clean CHOAM Charity or Inflation, and three battle batches. Commit held Semuta with a free hand slot; for multiple eligible cards, inspect and select exactly one after commitment. Saved effects resume once. Other Karama uses, inspected/partly ready battles, nested responses, pending rewards, full-hand sequencing and public starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1166,7 +1166,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The Richese preview interrupts clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four Sapho scopes, pre-leader Residual Poison, printed Karama canceling clean CHOAM Charity, Ix-deck Thumper/Amal and three battle discard stages. Karama’s physical cost is discarded before a neutral offer, then the original response is canceled once. Residual Poison commits one random leader death; Sapho commits its applicable finite priority. Thumper waits before worm/spice draw; Amal restores an already-halved opening. Neutral offers, owner-only candidates and one physical Semuta transfer retain privacy. Other Karama uses, nested responses, pending rewards, other producers and full-hand exchange remain unfinished.',
+                  'The Richese preview interrupts clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four Sapho scopes, pre-leader Residual Poison, printed Karama canceling clean CHOAM Charity or Inflation, Ix-deck Thumper/Amal and three battle discard stages. Karama’s physical cost is discarded before a neutral offer, then its original CHOAM response is canceled once. Residual Poison commits one random leader death; Sapho commits its applicable finite priority. Thumper waits before worm/spice draw; Amal restores an already-halved opening. Neutral offers, owner-only candidates and one physical Semuta transfer retain privacy. Other Karama uses, nested responses, pending rewards, other producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
@@ -1184,13 +1184,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide distinguishes clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four Sapho scopes, pre-leader Residual Poison, printed Karama cancellation of CHOAM Charity, Ix-deck Thumper/Amal and three battle batches from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
+                  'The guide distinguishes clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four Sapho scopes, pre-leader Residual Poison, printed Karama cancellation of CHOAM Charity or Inflation, Ix-deck Thumper/Amal and three battle batches from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, custody, hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four Sapho scopes, pre-leader Residual Poison, printed Karama cancellation of CHOAM Charity, Ix-deck Thumper/Amal and three battle discard stages. Other Karama uses, pending rewards, full games and live deployment remain unverified.',
+                  'Genuine setup, custody, hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four Sapho scopes, pre-leader Residual Poison, printed Karama cancellation of CHOAM Charity or Inflation, Ix-deck Thumper/Amal and three battle discard stages. Other Karama uses, pending rewards, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',
