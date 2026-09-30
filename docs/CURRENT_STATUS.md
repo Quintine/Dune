@@ -39,10 +39,21 @@ The completed CHOAM card-sale reaction passed two- and three-spice
 engine cases, canceled-sale exclusion, authenticated SQLite recovery,
 direct engine smoke and rendered phone-width guide inspection.
 `npm run check` passed types, lint and 5,843 offline tests; the build
-passed. The isolated built-worker HTTP suite passed 50/55; four
-origin/validation cases returned 503 instead of 403/400 and one
-Advanced-lobby request timed out after 15 seconds. Full HTTP
-acceptance remains open.
+passed. A direct Wrangler-dev HTTP suite passed 50/55; four
+origin/validation requests returned 503 and one Advanced-lobby
+request timed out after 15 seconds. This local proxy run is not
+a green suite; the proxy-free container run below passed.
+
+One diagnostic POST returned Wrangler's literal "Your worker restarted
+mid-request" 503 body; 100 subsequent identical requests returned the
+application's expected 400. [Cloudflare workers-sdk issue #14641](https://github.com/cloudflare/workers-sdk/issues/14641)
+documents a local dev-proxy disconnect with this misleading status.
+This points to the proxy for those transient failures, not to a
+verified application fix. The existing [container verifier](../tools/verify-container.mjs)
+runs the **full** HTTP suite against isolated Docker without that
+Wrangler dev proxy. Revision `4c07e1b` passed workflow
+`36668822954`, including this full HTTP suite, and published its
+image. Live NAS deployment and acceptance remain open.
 
 The private normal-auction Ixian ally reaction passed genuine-setup
 engine, authenticated SQLite and direct engine smoke checks. The full

@@ -23,11 +23,13 @@ expansion and complete Semuta gates remain closed.
 `npm run check` passed types, lint and 5,843 offline tests; the
 production build passed. The phone-width built-worker guide showed
 the sold-card timing. Independent review found no scoped defect.
-The isolated built-worker HTTP suite passed 50/55: four origin/
+The direct Wrangler-dev HTTP suite passed 50/55: four origin/
 validation requests returned 503 instead of expected 403/400,
-and one Advanced-lobby request timed out after 15 seconds.
-Full HTTP and production acceptance remain open; no production
-game was touched.
+and one Advanced-lobby request timed out after 15 seconds. The
+proxy-free container workflow `36668822954` passed its isolated
+storage checks and **full** HTTP integration suite, then published
+the `4c07e1b` image. This is not a live NAS deployment or
+production acceptance; no production game was touched.
 
 ## 30 September 2026 — Semuta before private Ixian ally replacement
 
