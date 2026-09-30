@@ -42,10 +42,17 @@ exact card custody and buyer/seller balances. No human games or seats were
 reset or modified.
 
 Current built-worker local HTTP is **51/55**, with three POST 503s and one
-Advanced-preview timeout; it is not green acceptance. Proxy-free container
-CI and publication are recorded separately after the push. Full Richese
-games, hidden normal-deck self-purchases, private special-Karama veto,
-broader modules and live NAS acceptance remain open; no public gate changes.
+Advanced-preview timeout; it is not green acceptance. Code checkpoint
+`9c0000e469935d9f0fae1605358d5e6a2617be56` is pushed, and
+[workflow 36720704874](https://github.com/Quintine/Dune/actions/runs/36720704874)
+reports completed/success for that exact source. The checked-in workflow
+requires `tools/verify-container.mjs`, including the full proxy-free HTTP
+suite, before publishing `ghcr.io/quintine/dune:sha-9c0000e469935d9f0fae1605358d5e6a2617be56`.
+GitHub's job step array retained stale pending/in-progress entries despite
+its final success metadata; no individual step timings or test totals are
+asserted from that array. Full Richese games, hidden normal-deck self-buys,
+private special-Karama veto, broader modules and live NAS acceptance remain
+open; image publication is not deployment and no public gate changes.
 
 ## 30 September 2026 — opt-in printed Kull Wahad integration
 

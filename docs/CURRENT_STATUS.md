@@ -20,9 +20,13 @@ exhausted-cache preflight. Types, lint, 5,953 offline tests, build and
 Basic veto, Advanced all-pass and Basic cache/Advanced Black Market
 diversion, exact custody and refresh. Local Wrangler HTTP is **51/55**:
 three POST 503s and one Advanced timeout, not green HTTP acceptance.
-Proxy-free CI and live deployment are separate. Normal hidden self-buys,
-private special acquisition, wider compositions and full-family completion
-remain open; no public start or live deployment is claimed.
+Code checkpoint `9c0000e469935d9f0fae1605358d5e6a2617be56` is pushed.
+The [container workflow](https://github.com/Quintine/Dune/actions/runs/36720704874)
+reports completed/success for that exact revision; its mandatory isolated
+storage/HTTP verifier and immutable-image publication are separate from
+local Wrangler and live deployment. Normal hidden self-buys, private special
+acquisition, wider compositions and full-family completion remain open;
+no public start or live NAS deployment is claimed.
 
 The explicit `kull` development profile now connects printed Kull
 Wahad interception in Basic/Advanced CHOAM-plus-classic rosters
