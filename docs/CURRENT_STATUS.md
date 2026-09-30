@@ -28,7 +28,8 @@ and phase ban; Advanced resumed BG conversion and its saved
 cancellation once. Independent repair reviews found no remaining
 scoped defect. Isolated Wrangler-dev HTTP passed 49/55 with five
 proxy 503s and one timeout, not a green local HTTP suite.
-Proxy-free CI remains pending for this checkpoint.
+Proxy-free workflow `36706704939` passed the full isolated
+HTTP suite for `aeae152` and published its image.
 Nexus Cunning Kull, wider modules and full expansion acceptance
 remain separate; no public starts or live NAS deployment are claimed.
 

@@ -51,7 +51,8 @@ and no shipment rate or ban was fabricated.
 
 Isolated Wrangler-dev HTTP passed 49/55: five proxy-layer 503s
 and one 15-second timeout. This is not a green local HTTP suite;
-proxy-free checkpoint container CI remains pending.
+proxy-free workflow `36706704939` passed the full isolated
+HTTP suite for `aeae152` and published its image.
 Nexus Cunning Kull, combined modules and full CHOAM completion
 remain unfinished. No NAS deployment is claimed.
 
