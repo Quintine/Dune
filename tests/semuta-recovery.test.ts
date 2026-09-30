@@ -4,7 +4,7 @@ import { startPrototypeRoom } from '../tools/prototype-room';
 import { botActions } from '../game/bots';
 import { applyAction, createGame, newPlayer, viewGame, type Game, type Action } from '../game/engine';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
-import { baseDeck, spiceDeck } from '../game/cards';
+import { baseDeck, spiceDeck, treacheryDeck } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
 import { unitStore } from './fixture-nexus-room-store';
 import { saphoAggressorGame, aggressorAction } from './fixture-sapho-aggressor';
@@ -725,6 +725,86 @@ void test('authenticated pre-plan Sapho discard restores one aggressor choice be
       prepared = await act(index, { type: 'battlePreparationReady', event: claimed.battle!.event });
     assert.equal(prepared.battle?.preLeader?.closed, true);
     assert.equal(prepared.battle?.saphoAggressor?.uses.length, 1);
+  } finally { f.sqlite.close(); }
+});
+
+void test('authenticated private Ixian ally discard waits for Semuta before its replacement', async () => {
+  const f = unitStore();
+  try {
+    const made = await f.rooms.createRoom('Semuta Ix ally', 'richese', false, ['choam', 'ix']);
+    const code = made.view.code;
+    const buyer = await f.rooms.joinRoom(code, 'Atreides', 'atreides');
+    const ixians = await f.rooms.joinRoom(code, 'Ixians', 'ixians');
+    const auths = await Promise.all([made.token!, buyer.token!, ixians.token!]
+      .map(token => f.restart().authenticate(code, token)));
+    const existing = await f.restart().readRoom(code);
+    const g = createGame(code, newPlayer(auths[0].playerId, 'Richese', 'richese'),
+      false, ['choam', 'ix']);
+    g.players.push(newPlayer(auths[1].playerId, 'Atreides', 'atreides'),
+      newPlayer(auths[2].playerId, 'Ixians', 'ixians'));
+    Object.assign(g, { status: 'playing', phase: 3, active: auths[1].playerId,
+      order: auths.map(auth => auth.playerId), deck: treacheryDeck(['ix']),
+      richeseCache: richeseCards(), semutaPreview: true });
+    for (const p of g.players) {
+      p.hand = [];
+      p.spice = 20;
+      p.traitors = p.leaders.length ? [p.leaders[0].id] : [];
+      p.traitorChoices = [];
+    }
+    const semuta = take(g, SEMUTA_DRUG_ID), lot = g.deck.shift()!;
+    seat(g, auths[0].playerId).hand.push(semuta);
+    seat(g, auths[1].playerId).ally = auths[2].playerId;
+    seat(g, auths[2].playerId).ally = auths[1].playerId;
+    g.auction = { cards: [lot], index: 0, bid: 0, bidder: null,
+      active: auths[1].playerId, passed: [], opener: 0 };
+    g.richeseBidding = { owner: auths[0].playerId, event: 'richese-normal:1',
+      turn: g.turn, stage: 'normal', position: 'last', normalCount: 1,
+      blackMarketSold: false, cacheCanceled: false, opener: 0 };
+    g.richeseFunding = {};
+    g.version = existing.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(g), g.version, code, existing.version).changes, 1);
+    const seats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const act = async (index: number, action: Action) => {
+      const current = await f.restart().readRoom(code);
+      await f.restart().act(code, auths[index], current.version, action, clock);
+      return f.restart().readRoom(code);
+    };
+    await act(1, { type: 'bid', amount: 2 });
+    await act(2, { type: 'passBid' });
+    let next = await act(0, { type: 'passBid' });
+    if (next.decision?.kind === 'auctionPayment')
+      next = await act(1, { type: 'decision', karama: false });
+    assert.equal(next.decision?.kind, 'ixAllyCard');
+    next = await act(1, { type: 'decision', accept: true });
+    for (let i = 0; next.response?.kind === 'ixAllyCard' && i < 3; i++) {
+      const index = auths.findIndex(auth => !next.response!.passed.includes(auth.playerId));
+      next = await act(index, { type: 'passResponse' });
+    }
+    const event = next.pendingTreacheryDiscard!.batch.event;
+    assert.equal(next.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(next.pendingTreacheryDiscard?.batch.entries[0].publicFace, false);
+    assert.equal(next.discard.filter(card => card.id === lot.id).length, 1);
+    const deckTop = next.deck[0]?.id;
+    const buyerView = await f.restart().readSeatView(code, auths[1]);
+    assert.equal(buyerView.semutaReaction?.canCommit, false);
+    assert.deepEqual(buyerView.semutaReaction?.candidates, []);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, next.version);
+    assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
+    const claimed = await act(0, { type: 'semutaCommit', event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.equal(claimed.auction, null);
+    assert.equal(claimed.richeseBidding?.stage, 'cacheOffer');
+    assert.equal(claimed.decision?.kind, 'richeseCache');
+    assert.equal(seat(claimed, auths[0].playerId).hand.filter(card => card.id === lot.id).length, 1);
+    assert.equal(seat(claimed, auths[1].playerId).hand.filter(card => card.id === deckTop).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+    await assert.rejects(f.restart().act(code, auths[0], next.version,
+      { type: 'semutaCommit', event }, clock));
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
   } finally { f.sqlite.close(); }
 });
 

@@ -6180,6 +6180,7 @@ function semutaOfferSupported(
     continuation.kind !== 'karamaPaymentDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
     continuation.kind !== 'amalDiscard' &&
+    continuation.kind !== 'ixAllyCard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
@@ -6227,11 +6228,13 @@ function semutaOfferSupported(
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
-    (continuation.kind === 'battleCleanup' ||
-      continuation.kind === 'winnerMandatoryDiscard' ||
-      continuation.kind === 'battleResolved'
-      ? entries.every(entry => entry.publicFace)
-      : entries.length === 1 && entries[0].publicFace) &&
+    (continuation.kind === 'ixAllyCard'
+      ? entries.length === 1 && !entries[0].publicFace
+      : continuation.kind === 'battleCleanup' ||
+        continuation.kind === 'winnerMandatoryDiscard' ||
+        continuation.kind === 'battleResolved'
+        ? entries.every(entry => entry.publicFace)
+        : entries.length === 1 && entries[0].publicFace) &&
     (continuation.kind === 'karamaCharityDiscard' ||
       continuation.kind === 'karamaInflationDiscard' ||
       continuation.kind === 'karamaBgCharityDiscard'
@@ -6243,6 +6246,7 @@ function semutaOfferSupported(
     (continuation.kind === 'battleCleanup' ||
       continuation.kind === 'winnerMandatoryDiscard' ||
       continuation.kind === 'battleResolved' ||
+      continuation.kind === 'ixAllyCard' ||
       (continuation.kind === 'karamaCharityDiscard' ||
         continuation.kind === 'karamaInflationDiscard' ||
         continuation.kind === 'karamaBgCharityDiscard' ||
@@ -6252,10 +6256,13 @@ function semutaOfferSupported(
             ? continuation.resume.phaseOpening?.passed.length === 0
             : !continuation.resume.phaseOpening)))) &&
     !g.karamaShipping &&
-    (continuation.kind === 'karamaPurchaseDiscard' ||
-      continuation.kind === 'karamaPaymentDiscard'
-      ? !!g.auction && !g.currentAuctionSale && !g.richeseAuction
-      : !g.auction) &&
+    (continuation.kind === 'ixAllyCard'
+      ? !!g.auction && g.currentAuctionSale?.origin === 'normal' &&
+        continuation.sale.origin === 'normal' && !g.richeseAuction
+      : continuation.kind === 'karamaPurchaseDiscard' ||
+        continuation.kind === 'karamaPaymentDiscard'
+        ? !!g.auction && !g.currentAuctionSale && !g.richeseAuction
+        : !g.auction) &&
     (continuation.kind === 'saphoAuctionDiscard' || !g.richeseAuction) &&
     (continuation.kind === 'saphoAggressorDiscard' ||
       continuation.kind === 'residualPoisonDiscard' || !g.battle) &&

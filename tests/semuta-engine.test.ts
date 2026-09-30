@@ -22,10 +22,11 @@ function inventory(g: Game) {
   assert.equal(new Set(ids).size, ids.length);
   return ids;
 }
-function fixture(ix = false) {
+function fixture(ix = false, ixianAlly = false) {
   let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), false, ix ? ['choam', 'ix'] : ['choam']);
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
-  joinGame(g, newPlayer('e', 'Emperor', 'emperor'));
+  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : 'Emperor',
+    ixianAlly ? 'ixians' : 'emperor'));
   for (const p of g.players) { p.bot = 'Medium'; p.ready = true; }
   g = initializeSemutaGameForAudit(g);
   for (let step = 0; g.status === 'setup' && step < 80; step++) {
@@ -47,6 +48,74 @@ function fixture(ix = false) {
     response: null, phaseOpening: null, stormPending: null, movementRemaining: ['a', 'r', 'e'] });
   return { g, semuta, hajr };
 }
+
+void test('private Ixian ally discard offers Semuta before replacement without revealing its face', () => {
+  const { g, semuta, hajr } = fixture(true, true);
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  player(g, 'a').ally = 'e';
+  player(g, 'e').ally = 'a';
+  const lot = g.deck.shift()!;
+  Object.assign(g, { phase: 3, active: 'a', order: ['a', 'e', 'r'],
+    movementRemaining: [], auction: { cards: [lot], index: 0, bid: 0,
+      bidder: null, active: 'a', passed: [], opener: 0 } });
+  g.richeseBidding = { owner: 'r', event: 'richese-normal:2', turn: g.turn,
+    stage: 'normal', position: 'last', normalCount: 1,
+    blackMarketSold: false, cacheCanceled: false, opener: 0 };
+  g.richeseFunding = {};
+  const absent = reload(g);
+  player(absent, 'r').hand = [take(absent, 'richese-distrans')];
+  absent.richeseCache!.push(semuta);
+  const original = [...inventory(g), lot.id].sort();
+  const offer = (state: Game) => {
+    let next = applyAction(state, 'a', { type: 'bid', amount: 2 });
+    for (const id of ['e', 'r']) next = applyAction(next, id, { type: 'passBid' });
+    if (next.decision?.kind === 'auctionPayment')
+      next = applyAction(next, 'a', { type: 'decision', karama: false });
+    assert.equal(next.decision?.kind, 'ixAllyCard');
+    next = applyAction(next, 'a', { type: 'decision', accept: true });
+    for (let i = 0; next.response?.kind === 'ixAllyCard' && i < 3; i++) {
+      const other = next.players.find(p => !next.response!.passed.includes(p.id))!;
+      next = applyAction(next, other.id, { type: 'passResponse' });
+    }
+    return next;
+  };
+  const pending = offer(g), neutral = offer(absent);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'ixAllyCard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(neutral.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.pendingTreacheryDiscard?.batch.entries[0].publicFace, false);
+  assert.equal(pending.discard.filter(card => card.id === lot.id).length, 1);
+  assert.equal(pending.deck[0].id, neutral.deck[0].id);
+  assert.equal(player(pending, 'a').hand.some(card => card.id === lot.id), false);
+  assert.deepEqual(viewGame(pending, 'a'), viewGame(neutral, 'a'));
+  assert.deepEqual(viewGame(pending, 'e'), viewGame(neutral, 'e'));
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  const corrupted = reload(pending);
+  corrupted.pendingTreacheryDiscard!.batch.entries[0].card.name = 'Forged face';
+  const before = JSON.stringify(corrupted);
+  assert.throws(() => applyAction(corrupted, 'r', { type: 'semutaCommit', event }));
+  assert.equal(JSON.stringify(corrupted), before);
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  for (const state of [declined, claimed]) {
+    assert.equal(state.pendingTreacheryDiscard, null);
+    assert.equal(state.auction, null);
+    assert.equal(state.richeseBidding?.stage, 'cacheOffer');
+    assert.equal(state.decision?.kind, 'richeseCache');
+    assert.deepEqual(inventory(state), original);
+    assert.equal(player(state, 'a').spice, player(pending, 'a').spice);
+    assert.equal(player(state, 'a').hand.length, 1);
+    assert.throws(() => applyAction(state, 'r', { type: 'semutaCommit', event }));
+  }
+  assert.equal(declined.discard.filter(card => card.id === lot.id).length, 1);
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === lot.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+});
 
 void test('printed Karama auction payment offers its card before the winning lot settles', () => {
   const { g, semuta, hajr } = fixture();

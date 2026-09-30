@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta before private Ixian ally replacement
+
+The explicit Richese preview with the Ix expansion now interrupts a
+clean normal-auction Ixian ally card replacement at its original
+private discard, before the replacement draw. The buyer paid for the
+lot and accepted the alliance; every seat sees the same neutral
+Semuta offer without its card face or a named claimant. A committed
+holder can take the exact fresh card; claim or all-seat decline
+then draws one replacement for the buyer and finishes the saved
+sale/Richese cache continuation. The original buyer is the
+discarder, not the Ixians. Cache and Black Market sales, nested
+interactions and other private discard producers remain guarded.
+
+An engine scenario through genuine three-seat setup checked hidden
+Semuta-holder parity in both outsider views, unspent deck order,
+physical custody, one replacement and legal AI claim. An authenticated
+SQLite scenario checked restart, owner-only controls, stale retry and
+the owed Richese cache choice. A separate direct engine smoke
+exercised a paid lot, one private reaction and the replacement.
+Normal expansion starts and full Semuta acceptance remain gated.
+
+`npm run check` passed types, lint and 5,839 offline tests, and the
+production build passed. A phone-width browser view of the built
+worker showed the private-discard timing in the rules guide.
+Independent review found no scoped defect. The isolated built-worker
+HTTP suite passed 49/55; five origin/validation or ordinary-success
+requests returned 503 and one Advanced-lobby request timed out at
+15 seconds. Full HTTP acceptance remains open. This code was not
+deployed to the NAS and no production game was modified.
+
 ## 30 September 2026 — Semuta after printed Karama winning-bid payment
 
 The explicit Richese preview now stages a second normal-auction

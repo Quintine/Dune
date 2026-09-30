@@ -9,14 +9,15 @@ Expansion starts and full rules/publication acceptance remain gated.**
 The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
 accepts a fresh Richese roster with CHOAM & Richese and optionally
 the physical Ix deck. Clean public ordinary-card, paid Box, retired
-Ornithopter, private Distrans, final Truthtrance, Once Around,
-movement-order, between-battles chooser or pre-plan aggressor Sapho,
-clean pre-leader Residual Poison, printed Karama canceling clean
-CHOAM Charity, Inflation or Bene Gesserit Charity or using a clean
-normal-auction lot for a free purchase or winning-bid payment,
-battle-card and Ix-deck Thumper/Amal discards open the same neutral
-offer regardless of hidden Semuta custody. Karama waits after its
-public cost but before cancellation or the reserved lot settles.
+Ornithopter, used Distrans, final Truthtrance, four bounded Sapho,
+pre-leader Residual Poison, printed Karama canceling clean CHOAM
+Charity, Inflation or Bene Gesserit Charity or settling a clean
+normal-auction lot, battle-card and Ix-deck Thumper/Amal discards
+open the same neutral offer regardless of hidden Semuta custody.
+A clean **private** normal-auction Ixian ally replacement discard
+also pauses before its draw; no unknown face is shown before a
+holder commits. Karama waits after its public cost but before
+cancellation or the reserved lot settles.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
@@ -32,18 +33,25 @@ full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
 
-Clean printed Karama normal-auction purchase and winning-bid payment
-passed engine and authenticated SQLite checks. `npm run check` passed
-types, lint and 5,837 offline tests; the build and phone-width guide
-inspection passed. A focused built-worker Advanced-lobby HTTP test
-timed out at its 15-second request limit; direct QA-room create/join
-and two authenticated reads passed. The previous purchase build's
-full HTTP suite passed 51/55 cases; four origin/malformed-request
-cases returned 503 instead of 403/400. The full HTTP gate remains open.
+The private normal-auction Ixian ally reaction passed genuine-setup
+engine, authenticated SQLite and direct engine smoke checks. The full
+`npm run check` passed types, lint and 5,839 offline tests; build and
+phone-width guide inspection passed. The isolated built-worker HTTP
+suite passed 49/55 tests: five returned 503 instead of expected
+authorization/validation/success statuses, and one Advanced-lobby
+request exceeded its 15-second limit. Full HTTP acceptance remains open.
+
+The previous printed Karama purchase/payment checkpoints passed
+engine and authenticated SQLite checks; their local HTTP caveats
+are recorded in the implementation log.
 
 The previous purchase revision `eede77a` passed container workflow
 `36664985601`, including its isolated storage/HTTP gate, and published
 an image. This does not deploy it to the live NAS.
+
+The following paid Karama revision `8f6b1c8` also passed container
+workflow `36665999972` through isolated storage/HTTP verification
+and published its image. Neither checkpoint has been deployed to the NAS.
 
 Container workflow `36656043783` built `32d9ef4` but failed
 isolated storage/HTTP verification; that image was not published and

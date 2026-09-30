@@ -64,6 +64,15 @@ a neutral claim or decline completes the same free settlement once.
 Richese lots, Worthless conversion and nested responses retain their
 previous automatic paths.
 
+A clean private normal-auction Ixian ally replacement now stages the
+existing `ixAllyCard` continuation as a neutral Semuta offer before
+`draw(g)`. The original buyer owns the discarded card. Its face stays
+unknown to rivals and uncommitted holders; a sole committed claim
+moves that exact card before one saved replacement draw and ordinary
+sale continuation. Richese cache and Black Market sales retain the
+automatic path until their distinct custody and offer windows are
+integrated.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response

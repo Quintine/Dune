@@ -67,12 +67,21 @@ opening public expansion starts. It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
 printed Karama canceling clean CHOAM Charity, Inflation or Bene
-Gesserit Charity or settling a clean normal-auction purchase or
-winning bid, battle and Ix-deck Thumper/Amal discards**. Other
+Gesserit Charity or settling a clean normal-auction lot, battle and
+Ix-deck Thumper/Amal discards**, plus a clean **private** normal-auction
+Ixian ally replacement discard before its draw. Other
 than the one explicitly suspended charity/Inflation response, the
 parent transaction has no competing response. Every seat sees the
 same neutral fresh-discard opportunity
 regardless of hidden Semuta custody.
+
+The Ixian ally discard belongs to the original buyer, not the Ixians.
+Every seat sees the neutral offer without its face or a named claimant;
+only a committed eligible holder takes the exact fresh card. A claim
+removes it before the saved single replacement draw and subsequent
+normal-auction settlement. Richese cache and Black Market replacement
+discards, competing parents and other private producers remain separate.
+
 An early-ended Ornithopter advances the saved queue; a completed
 flight resumes one committed arrival only without BG, Ecaz or
 Moritani entry reactions. Distrans's gift remains private with its
