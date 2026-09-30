@@ -35,8 +35,10 @@ Container workflow `36656043783` built `32d9ef4` but failed
 isolated storage/HTTP verification; that image was not published and
 the public job exposes no assertion log. The next checkpoint
 `d9c67ca` passed the same verification and published its image in
-workflow `36657454120`. Neither push is a live NAS deployment;
-the latest independently verified live revision remains `c9a3625`.
+workflow `36657454120`. The live homepage footer now displays
+`ab5c782`, confirmed in an independent browser view and screenshot.
+This marker is not a complete production gameplay or administrator
+check, nor evidence that the later pushed revisions are deployed.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,
