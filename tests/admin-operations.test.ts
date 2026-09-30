@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import test from 'node:test';
 import { adminLogin, requireAdmin, AdminError } from '../db/admin-access';
-import { readAdminOperations } from '../db/admin-operations';
+import { readAdminIntegrity, readAdminOperations } from '../db/admin-operations';
 import { adminStore } from './admin-access-fixture';
 
 const now = 10_000;
@@ -35,6 +35,9 @@ void test('owner operations sample counts saved states and backup provenance wit
     });
     assert.equal(JSON.stringify(result).includes('secret'), false);
     assert.deepEqual(store.sqlite.prepare('SELECT code,state,version FROM rooms ORDER BY code').all(), before);
+    assert.deepEqual(await readAdminIntegrity(store.database, identity, now),
+      { observedAt: now, sqlite: 'passed', foreignKeys: 'passed' });
+    assert.deepEqual(store.sqlite.prepare('SELECT code,state,version FROM rooms ORDER BY code').all(), before);
   } finally { store.sqlite.close(); }
 });
 
@@ -51,5 +54,42 @@ void test('stale owner identity, demotion and revoked session cannot sample oper
     store.sqlite.prepare("UPDATE admin_accounts SET role='owner' WHERE id=?").run(owner.id);
     store.sqlite.prepare('UPDATE admin_sessions SET revoked_at=? WHERE token_hash=?').run(now, identity.sessionHash);
     await assert.rejects(readAdminOperations(store.database, identity, now), denied);
+  } finally { store.sqlite.close(); }
+});
+
+void test('manual integrity check detects orphaned foreign keys without exposing their rows', async () => {
+  const store = adminStore();
+  try {
+    const owner = store.provision('owner');
+    const login = await adminLogin(store.database, owner.key, now);
+    const identity = await requireAdmin(store.database, login.token, ['owner'], now);
+    store.sqlite.exec('PRAGMA foreign_keys=OFF');
+    store.sqlite.prepare('INSERT INTO seats(token_hash,room_code,player_id,revoked) VALUES(?,?,?,0)')
+      .run('private-orphan-token', 'GHOSTABC', 'private-player');
+    store.sqlite.exec('PRAGMA foreign_keys=ON');
+    const before = store.sqlite.prepare('SELECT * FROM seats').all();
+    const result = await readAdminIntegrity(store.database, identity, now);
+    assert.deepEqual(result, { observedAt: now, sqlite: 'passed', foreignKeys: 'failed' });
+    assert.equal(JSON.stringify(result).includes('private'), false);
+    assert.deepEqual(store.sqlite.prepare('SELECT * FROM seats').all(), before);
+    store.provision('owner', 'Backup owner');
+    store.sqlite.prepare("UPDATE admin_accounts SET role='operator' WHERE id=?").run(owner.id);
+    await assert.rejects(readAdminIntegrity(store.database, identity, now),
+      (error: unknown) => error instanceof AdminError && error.status === 403);
+  } finally { store.sqlite.close(); }
+});
+
+void test('manual integrity check revalidates owner authority before returning results', async () => {
+  const store = adminStore();
+  try {
+    const owner = store.provision('owner');
+    store.provision('owner', 'Remaining owner');
+    const login = await adminLogin(store.database, owner.key, now);
+    const identity = await requireAdmin(store.database, login.token, ['owner'], now);
+    store.hooks.beforeBatch = async () => {
+      store.sqlite.prepare("UPDATE admin_accounts SET role='viewer' WHERE id=?").run(owner.id);
+    };
+    await assert.rejects(readAdminIntegrity(store.database, identity, now),
+      (error: unknown) => error instanceof AdminError && error.status === 403);
   } finally { store.sqlite.close(); }
 });

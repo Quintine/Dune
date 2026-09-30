@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 30 September 2026 — Owner-only manual integrity check
+
+Administration → Operations now has a separate **Run integrity check**
+control. An owner-only request batches live owner authority with
+SQLite `quick_check(1)` and a bounded foreign-key existence query;
+the response contains only pass/fail and sample time. It exposes no
+database diagnostic, table, row, game state or credential and makes
+no repair. Refresh/owner changes clear stale browser results. A
+failed check advises a protected snapshot and private investigation,
+not automatic restore.
+
+Focused in-memory SQLite tests verified healthy structure, an actual
+orphaned foreign key, unchanged seats and live-role demotion. Both
+query forms succeeded separately in a disposable Wrangler D1 store;
+an isolated programmatic Miniflare batch timed out, so it did not
+prove the combined workerd path. Local HTTP tests covered anonymous
+denial; the owner UI was visually exercised on phone width with
+explicitly mocked owner responses, not a real authenticated network
+integrity request. Independent rules/security reviews found no scoped
+defect. `npm run check` passed typecheck, lint and 5,833 offline
+tests; `npm run build` and 55 local HTTP tests passed. No production
+database scan or deployed revision was exercised. Disk capacity,
+backup restore safety, stalled-decision diagnosis and complete
+administration remain unfinished.
+
 ## 30 September 2026 — Semuta after BG Charity Karama
 
 In the explicit Richese preview, a clean printed Karama

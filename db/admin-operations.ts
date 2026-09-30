@@ -15,6 +15,16 @@ export type AdminOperations = {
   backupDownloads: number;
 };
 
+export type AdminIntegrity = {
+  observedAt: number;
+  sqlite: 'passed' | 'failed';
+  foreignKeys: 'passed' | 'failed';
+};
+
+const ownerAuthority = `SELECT a.role FROM admin_sessions s JOIN admin_accounts a ON a.id=s.admin_id
+  WHERE s.token_hash=? AND a.id=? AND a.enabled=1 AND a.role='owner'
+  AND s.revoked_at IS NULL AND s.expires_at>? AND s.generation=a.session_generation`;
+
 type Counts = Omit<AdminOperations, 'observedAt'>;
 
 /** Aggregate only operational counters, never serialized game or private backup rows. */
@@ -31,10 +41,24 @@ export async function readAdminOperations(database: D1Database, identity: AdminI
     (SELECT COUNT(*) FROM admin_room_backups) backupSnapshots,
     (SELECT COALESCE(SUM(size_bytes),0) FROM admin_room_backups) backupBytes,
     (SELECT COUNT(*) FROM admin_room_backup_downloads) backupDownloads
-    WHERE EXISTS (SELECT 1 FROM admin_sessions s JOIN admin_accounts a ON a.id=s.admin_id
-      WHERE s.token_hash=? AND a.id=? AND a.enabled=1 AND a.role='owner'
-      AND s.revoked_at IS NULL AND s.expires_at>? AND s.generation=a.session_generation)`)
+    WHERE EXISTS (${ownerAuthority})`)
     .bind(identity.sessionHash, identity.id, now).first<Counts>();
   if (!row) throw new AdminError('Owner sign-in required.', 403);
   return { observedAt: now, ...row };
+}
+
+/** Explicit owner request; report only pass/fail, never SQLite diagnostics or row IDs. */
+export async function readAdminIntegrity(database: D1Database, identity: AdminIdentity, now = Date.now()): Promise<AdminIntegrity> {
+  const results = await database.batch([
+    database.prepare(ownerAuthority).bind(identity.sessionHash, identity.id, now),
+    database.prepare('PRAGMA quick_check(1)'),
+    database.prepare('SELECT EXISTS(SELECT 1 FROM pragma_foreign_key_check LIMIT 1) AS violation'),
+  ]);
+  if (!results[0].results.length) throw new AdminError('Owner sign-in required.', 403);
+  const quick = (results[1].results[0] as { quick_check?: unknown } | undefined)?.quick_check;
+  const foreign = (results[2].results[0] as { violation?: unknown } | undefined)?.violation;
+  if (typeof quick !== 'string' || foreign !== 0 && foreign !== 1)
+    throw new AdminError('Database integrity check unavailable.', 503);
+  return { observedAt: now, sqlite: quick === 'ok' ? 'passed' : 'failed',
+    foreignKeys: foreign === 0 ? 'passed' : 'failed' };
 }

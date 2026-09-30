@@ -13,7 +13,7 @@ void test('admin HTTP denies anonymous, forged admin, room-host and spoofed iden
   assert.ok(cookie);
   const room = (await created.json() as { code: string }).code;
   for (const headers of [{}, { cookie }, { cookie: 'dune_admin_session=' + 'a'.repeat(64) }, { 'oai-authenticated-user-id': 'owner', 'oai-authenticated-user-email': 'owner@example.test' }] as Record<string, string>[]) {
-    for (const path of ['/api/admin/session', '/api/admin/accounts', '/api/admin/audit', '/api/admin/rooms', `/api/admin/rooms/${room}/control`, `/api/admin/rooms/${room}/lobby`, `/api/admin/rooms/${room}/removal`, `/api/admin/rooms/${room}/closure`, `/api/admin/rooms/${room}/archive`, `/api/admin/rooms/${room}/seat-ai`, `/api/admin/rooms/${room}/discussion`]) {
+    for (const path of ['/api/admin/session', '/api/admin/accounts', '/api/admin/audit', '/api/admin/operations?integrity=1', '/api/admin/rooms', `/api/admin/rooms/${room}/control`, `/api/admin/rooms/${room}/lobby`, `/api/admin/rooms/${room}/removal`, `/api/admin/rooms/${room}/closure`, `/api/admin/rooms/${room}/archive`, `/api/admin/rooms/${room}/seat-ai`, `/api/admin/rooms/${room}/discussion`]) {
       const result = await fetch(base + path, { headers, signal: AbortSignal.timeout(15000) });
       assert.equal(result.status, 401, path);
       assert.equal(result.headers.get('cache-control'), 'no-store');

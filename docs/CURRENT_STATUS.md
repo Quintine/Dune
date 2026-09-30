@@ -209,12 +209,14 @@ limits, missing import/restore and absent unified action-history entries keep
 the saved-game operations gate open. Local isolated capture/export and a
 signed-out browser denial passed; this is not deployed evidence.
 
-The owner-only [read-only operations sample](ADMIN_PANEL.md) now exposes the
-build revision, saved-room and active-seat counts, lifecycle flags, invalid
-JSON room counts, latest room write and backup/export usage. Live SQL owner
-authorization and desktop/mobile local UI checks passed. It does not inspect
-SQLite integrity, disk space, stalled turns or restore safety; no live NAS
-deployment or production administrator acceptance is claimed.
+The owner-only [operations page](ADMIN_PANEL.md) samples build revision,
+room/seat and lifecycle counts, invalid JSON, latest write and backup usage.
+It now also offers a separate **manual** SQLite quick/foreign-key check.
+Only owner requests can run it; the result contains pass/fail and time, never
+private rows or raw diagnostics. In-memory SQLite tests and disposable
+local D1 command probes passed; built-worker owner UI and live NAS checks
+remain unverified. It is not a disk-capacity, restore-safety or game-rule
+validation tool. No game or seat changes during a check.
 
 Current work adds [action history](ADMIN_ACTION_HISTORY.md): a searchable,
 paginated view of nine durable admin receipt sources with public before/after
