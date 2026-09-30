@@ -25,6 +25,16 @@ database scan or deployed revision was exercised. Disk capacity,
 backup restore safety, stalled-decision diagnosis and complete
 administration remain unfinished.
 
+Follow-up isolated built-worker verification used a disposable migrated D1
+database and provisioned owner: authenticated `GET /api/admin/operations?integrity=1`
+returned only time and two pass flags (both passed). After inserting one
+orphaned test seat while the worker was stopped, the same endpoint returned
+`sqlite: passed`, `foreignKeys: failed` and no row details. The actual owner
+Operations page displayed both outcomes at phone width, including the
+protected-snapshot/no-auto-repair warning. The earlier programmatic Miniflare
+batch timeout remains an initial test limitation; this later workerd run proves
+the HTTP path locally, not the live NAS database or deployed revision.
+
 ## 30 September 2026 — Semuta after BG Charity Karama
 
 In the explicit Richese preview, a clean printed Karama

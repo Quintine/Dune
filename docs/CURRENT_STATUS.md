@@ -213,10 +213,12 @@ The owner-only [operations page](ADMIN_PANEL.md) samples build revision,
 room/seat and lifecycle counts, invalid JSON, latest write and backup usage.
 It now also offers a separate **manual** SQLite quick/foreign-key check.
 Only owner requests can run it; the result contains pass/fail and time, never
-private rows or raw diagnostics. In-memory SQLite tests and disposable
-local D1 command probes passed; built-worker owner UI and live NAS checks
-remain unverified. It is not a disk-capacity, restore-safety or game-rule
-validation tool. No game or seat changes during a check.
+private rows or raw diagnostics. In-memory SQLite tests and an authenticated
+owner request against an isolated built Wrangler worker passed. The same worker
+reported a deliberately orphaned foreign key as failed without exposing its row;
+the phone-width owner UI showed both outcomes and the no-auto-repair warning.
+Live NAS checks remain unverified. This is not a disk-capacity, restore-safety
+or game-rule validation tool. No game or seat changes during a check.
 
 Current work adds [action history](ADMIN_ACTION_HISTORY.md): a searchable,
 paginated view of nine durable admin receipt sources with public before/after
