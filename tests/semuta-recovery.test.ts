@@ -808,6 +808,77 @@ void test('authenticated private Ixian ally discard waits for Semuta before its 
   } finally { f.sqlite.close(); }
 });
 
+void test('authenticated Kulon Semuta offer restores one movement bonus across restart', async () => {
+  const f = unitStore();
+  try {
+    const made = await f.rooms.createRoom('Semuta Kulon', 'choam', false, ['choam']);
+    const code = made.view.code;
+    const richese = await f.rooms.joinRoom(code, 'Richese', 'richese');
+    const bg = await f.rooms.joinRoom(code, 'BG', 'beneGesserit');
+    const auths = await Promise.all([made.token!, richese.token!, bg.token!]
+      .map(token => f.restart().authenticate(code, token)));
+    const existing = await f.restart().readRoom(code);
+    const g = createGame(code, newPlayer(auths[0].playerId, 'CHOAM', 'choam'), false, ['choam']);
+    g.players.push(newPlayer(auths[1].playerId, 'Richese', 'richese'),
+      newPlayer(auths[2].playerId, 'BG', 'beneGesserit'));
+    Object.assign(g, { status: 'playing', phase: 5, turn: 2, storm: 18,
+      active: auths[0].playerId, order: auths.map(auth => auth.playerId),
+      movementRemaining: auths.map(auth => auth.playerId), deck: baseDeck(),
+      richeseCache: richeseCards(), semutaPreview: true });
+    for (const p of g.players) {
+      p.spice = 10;
+      p.hand = [];
+      p.traitors = p.leaders.length ? [p.leaders[0].id] : [];
+      p.traitorChoices = [];
+    }
+    const semuta = take(g, SEMUTA_DRUG_ID), karama = take(g, 'karama');
+    const index = g.deck.findIndex(card => card.name === 'Kulon');
+    assert.ok(index >= 0);
+    const kulon = g.deck.splice(index, 1)[0];
+    g.players[0].hand.push(kulon);
+    g.players[0].forces = { 'red_chasm:7': 3 };
+    g.players[0].reserves = 11;
+    g.players[1].hand.push(semuta);
+    g.players[2].hand.push(karama);
+    g.version = existing.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(g), g.version, code, existing.version).changes, 1);
+    const seats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const act = async (index: number, action: Action) => {
+      const current = await f.restart().readRoom(code);
+      await f.restart().act(code, auths[index], current.version, action, clock);
+      return f.restart().readRoom(code);
+    };
+    let current = await act(0, { type: 'card', mode: 'choam', card: kulon.id });
+    assert.equal(current.response?.kind, 'choamWorthless');
+    for (let i = 0; current.response?.kind === 'choamWorthless' && i < 3; i++) {
+      const index = auths.findIndex(auth =>
+        !viewGame(current, auth.playerId).responseControls?.hasPassed &&
+        !!viewGame(current, auth.playerId).responseControls?.cancelCards.length);
+      assert.ok(index >= 0);
+      current = await act(index, { type: 'passResponse' });
+    }
+    const event = current.pendingTreacheryDiscard!.batch.event;
+    assert.equal(current.pendingTreacheryDiscard?.continuation.kind, 'choamKulonDiscard');
+    assert.equal(current.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(current.choamMovement, undefined);
+    assert.equal(current.discard.filter(card => card.id === kulon.id).length, 1);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, current.version);
+    assert.equal((await f.restart().readSeatView(code, auths[1])).semutaReaction?.canCommit, true);
+    const claimed = await act(1, { type: 'semutaCommit', event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.deepEqual(claimed.choamMovement, { turn: 2, bonus: 1 });
+    assert.equal(claimed.players[1].hand.filter(card => card.id === kulon.id).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+    await assert.rejects(f.restart().act(code, auths[1], current.version,
+      { type: 'semutaCommit', event }, clock));
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+  } finally { f.sqlite.close(); }
+});
+
 void test('authenticated CHOAM sale retains paid spice and market after a saved Semuta claim', async () => {
   const f = unitStore();
   try {

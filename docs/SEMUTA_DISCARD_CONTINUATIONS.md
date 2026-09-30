@@ -81,6 +81,13 @@ restores the same owner's next market decision without paying again.
 Canceled/invalid sales have no batch; competing market parents retain
 their automatic continuation.
 
+Clean Kulon stages `choamKulonDiscard` after its accepted public
+Worthless card cost but before adding one turn-scoped movement range.
+The receipt binds the active CHOAM player, prior bonus, card and
+unspent movement. A neutral claim or decline restores the same
+one-range increment without replaying the response. Reactive,
+Nexus and overlapping movement parents retain their automatic path.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response

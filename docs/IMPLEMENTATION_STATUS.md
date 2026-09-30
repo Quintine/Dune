@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after clean CHOAM Kulon cost
+
+In the explicit Richese preview, a clean accepted Kulon Worthless
+response now discards its public physical card and opens the same
+neutral Semuta opportunity before adding CHOAM's turn-scoped
+movement range. A claimant takes that exact card; all-seat decline
+leaves it in the pile. Both paths add one range once and return
+the still-active mover to the same movement turn. The saved receipt
+binds the spent card, owner, prior bonus, hand and movement state.
+Reactive movement, fixed Ornithopter range, Nexus and other
+Worthless effects remain outside this bounded reaction.
+
+Focused engine checks cover hidden-holder parity, pre-bonus blocking,
+legal AI claim, physical custody, forged receipt rejection,
+claim/decline and the resulting legal longer move. Authenticated
+SQLite checks retain the offer and exact bonus through restart,
+preserve seats/private views and reject stale replay. A direct engine
+smoke exercised the accepted card cost, one claim and resumed mover.
+Public expansion and complete Semuta acceptance remain gated.
+
+`npm run check` passed types, lint and 5,845 offline tests; the
+production build and phone-width guide inspection passed. A
+targeted phase-five smoke after genuine Richese/CHOAM/BG setup also
+restored the active mover and one range bonus after a claim.
+Independent review found no scoped defect. Direct Wrangler-dev
+HTTP passed 48/55: six tests saw HTTP 503 and one
+15-second Advanced-lobby timeout. The proxy-free container/full
+HTTP gate for this revision and live NAS acceptance are still open.
+
 ## 30 September 2026 — Semuta after completed CHOAM card sale
 
 In the explicit Richese preview, a clean CHOAM market sale now pays

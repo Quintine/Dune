@@ -68,7 +68,8 @@ ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
 printed Karama canceling clean CHOAM Charity, Inflation or Bene
 Gesserit Charity or settling a clean normal-auction lot, a completed
-CHOAM card sale, battle and Ix-deck Thumper/Amal discards**, plus
+CHOAM sale or clean Kulon Worthless discard, battle and Ix-deck
+Thumper/Amal discards**, plus
 a clean **private** normal-auction Ixian ally replacement discard
 before its draw. Other
 than the one explicitly suspended charity/Inflation response, the
@@ -90,6 +91,14 @@ batch. The saved receipt binds the exact sold card, optional duplicate
 witness, earned spice and still-open market; claim or decline resumes
 the market once without paying or discarding again. Nested card
 responses and other sale families retain their previous paths.
+
+A clean accepted Kulon Worthless response now places its named public
+card in discard before the neutral offer. No movement bonus accrues
+until claim or decline retires that event; the saved receipt binds
+the original active mover, prior turn bonus, card and hand custody.
+The same one-range effect then applies exactly once. Fixed-range
+Ornithopter combinations, reactive movement parents and other
+Worthless powers retain their original automatic paths.
 
 An early-ended Ornithopter advances the saved queue; a completed
 flight resumes one committed arrival only without BG, Ecaz or

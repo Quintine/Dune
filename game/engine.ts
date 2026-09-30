@@ -1215,6 +1215,13 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'choamKulonDiscard';
+          player: string;
+          card: string;
+          before: number;
+          stateSignature: string;
+        }
+      | {
           kind: 'thumperDiscard';
           player: string;
           card: string;
@@ -4932,6 +4939,23 @@ function choamSaleDiscardSignature(g: Game, c: ChoamSaleDiscardContinuation) {
     hand: owner.hand.map(card => card.id), spice: owner.spice,
   });
 }
+type ChoamKulonDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'choamKulonDiscard' }
+>;
+function choamKulonDiscardSignature(g: Game, c: ChoamKulonDiscardContinuation) {
+  const owner = getPlayer(g, c.player);
+  return JSON.stringify({
+    player: c.player, card: c.card, before: c.before,
+    turn: g.turn, phase: g.phase, active: g.active, order: g.order,
+    movement: g.choamMovement, remaining: g.movementRemaining,
+    parent: nullentropyParentSignature(g,
+      { response: null, decision: null, pendingKarama: null, phaseOpening: null },
+      `choam:kulon:${c.card}`),
+    hand: owner.hand.map(card => card.id), moved: owner.moved,
+    shipped: owner.shipped, spice: owner.spice,
+  });
+}
 type ThumperDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'thumperDiscard' }
@@ -5556,6 +5580,23 @@ function treacheryDiscardIntegrity(g: Game) {
       owner.spice === c.spiceAfter &&
       c.stateSignature === choamSaleDiscardSignature(g, c),
       'The sold CHOAM card no longer matches its saved income and market.',
+    );
+  } else if (continuation?.kind === 'choamKulonDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    const owner = g.players.find(p => p.id === c.player);
+    requireRule(
+      g.phase === 5 && g.active === c.player &&
+      owner?.faction === 'choam' && owner.moved < movesAllowed(g, owner) &&
+      !g.pendingChoamWorthless && !g.response && !g.decision &&
+      !g.phaseOpening && !g.ornithopter && !g.pendingChoamMove &&
+      batch.cause === 'choam:kulon' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card && entry.card.kind === 'worthless' &&
+      entry.card.name === 'Kulon' &&
+      Number.isSafeInteger(c.before) && c.before >= 0 &&
+      c.before === (g.choamMovement?.turn === g.turn ? g.choamMovement.bonus : 0) &&
+      c.stateSignature === choamKulonDiscardSignature(g, c),
+      'The used Kulon no longer matches its pending movement bonus.',
     );
   } else if (continuation?.kind === 'thumperDiscard') {
     const c = continuation, entry = batch.entries[0];
@@ -6223,6 +6264,7 @@ function semutaOfferSupported(
     continuation.kind !== 'amalDiscard' &&
     continuation.kind !== 'ixAllyCard' &&
     continuation.kind !== 'choamSaleDiscard' &&
+    continuation.kind !== 'choamKulonDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
@@ -6290,6 +6332,7 @@ function semutaOfferSupported(
       continuation.kind === 'battleResolved' ||
       continuation.kind === 'ixAllyCard' ||
       continuation.kind === 'choamSaleDiscard' ||
+      continuation.kind === 'choamKulonDiscard' ||
       (continuation.kind === 'karamaCharityDiscard' ||
         continuation.kind === 'karamaInflationDiscard' ||
         continuation.kind === 'karamaBgCharityDiscard' ||
@@ -6309,6 +6352,9 @@ function semutaOfferSupported(
     (continuation.kind === 'saphoAuctionDiscard' || !g.richeseAuction) &&
     (continuation.kind === 'saphoAggressorDiscard' ||
       continuation.kind === 'residualPoisonDiscard' || !g.battle) &&
+    (continuation.kind !== 'choamKulonDiscard' ||
+      (!g.ornithopter && !g.pendingChoamMove && !g.summonedWorm &&
+        g.wormRides.length === 0)) &&
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
     !g.pendingHomeworldShipment && !g.pendingRicheseGift &&
@@ -6459,6 +6505,8 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     finishAmbassador(g);
   } else if (next.kind === 'choamSaleDiscard') {
     resumeChoamMarket(g);
+  } else if (next.kind === 'choamKulonDiscard') {
+    completeChoamKulon(g, getPlayer(g, next.player));
   } else if (next.kind === 'nullentropyDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -20277,6 +20325,13 @@ function currentPlacementCancellationQuote(g: Game, response: ResponseWindow) {
     throw error;
   }
 }
+function completeChoamKulon(g: Game, owner: Player) {
+  g.choamMovement = {
+    turn: g.turn,
+    bonus: (g.choamMovement?.turn === g.turn ? g.choamMovement.bonus : 0) + 1,
+  };
+  log(g, `${owner.name} used Kulon to move one extra territory this turn.`);
+}
 function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) {
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
@@ -20626,18 +20681,25 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
       (pending.effect !== 'jubba' ||
         choamStormOptions(g).some((t) => t.territory === pending.location))
     ) {
-      discard(g, choam, pending.card);
+      const used = discard(g, choam, pending.card);
       finishNexusChoam(g,pending,'complete');
       if (pending.effect === 'kulon') {
-        g.choamMovement = {
-          turn: g.turn,
-          bonus:
-            (g.choamMovement?.turn === g.turn ? g.choamMovement.bonus : 0) + 1,
-        };
-        log(
-          g,
-          `${choam.name} used Kulon to move one extra territory this turn.`,
-        );
+        if (g.semutaPreview && used.name === 'Kulon' &&
+          !pending.storm && !pending.revival && !pending.movement &&
+          !pending.mentat && !pending.nexusEvent) {
+          const continuation: ChoamKulonDiscardContinuation = {
+            kind: 'choamKulonDiscard', player: choam.id, card: used.id,
+            before: g.choamMovement?.turn === g.turn ? g.choamMovement.bonus : 0,
+            stateSignature: '',
+          };
+          const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
+          if (semutaOfferSupported(g, continuation, entries)) {
+            continuation.stateSignature = choamKulonDiscardSignature(g, continuation);
+            stageTreacheryDiscard(g, 'choam:kulon', entries, continuation);
+            return;
+          }
+        }
+        completeChoamKulon(g, choam);
       } else if (pending.effect === 'jubba') {
         (g.stormResolution!.choamProtected ??= []).push(pending.location!);
         log(
