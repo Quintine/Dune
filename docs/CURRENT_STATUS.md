@@ -12,12 +12,14 @@ the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, used Distrans, final Truthtrance, four bounded Sapho,
 pre-leader Residual Poison, printed Karama canceling clean CHOAM
 Charity, Inflation or Bene Gesserit Charity or settling a clean
-normal-auction lot, battle-card and Ix-deck Thumper/Amal discards
-open the same neutral offer regardless of hidden Semuta custody.
+normal-auction lot, a clean completed CHOAM card sale, battle-card
+and Ix-deck Thumper/Amal discards open the same neutral offer
+regardless of hidden Semuta custody.
 A clean **private** normal-auction Ixian ally replacement discard
 also pauses before its draw; no unknown face is shown before a
-holder commits. Karama waits after its public cost but before
-cancellation or the reserved lot settles.
+holder commits. A completed CHOAM sale pays its quoted bank spice
+before the offer and resumes the same market afterward. Karama waits
+after its public cost but before cancellation or the reserved lot settles.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
@@ -32,6 +34,15 @@ promise-bound Truthtrance, other Karama uses, pending rewards,
 full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
+
+The completed CHOAM card-sale reaction passed two- and three-spice
+engine cases, canceled-sale exclusion, authenticated SQLite recovery,
+direct engine smoke and rendered phone-width guide inspection.
+`npm run check` passed types, lint and 5,843 offline tests; the build
+passed. The isolated built-worker HTTP suite passed 50/55; four
+origin/validation cases returned 503 instead of 403/400 and one
+Advanced-lobby request timed out after 15 seconds. Full HTTP
+acceptance remains open.
 
 The private normal-auction Ixian ally reaction passed genuine-setup
 engine, authenticated SQLite and direct engine smoke checks. The full
@@ -52,6 +63,10 @@ an image. This does not deploy it to the live NAS.
 The following paid Karama revision `8f6b1c8` also passed container
 workflow `36665999972` through isolated storage/HTTP verification
 and published its image. Neither checkpoint has been deployed to the NAS.
+
+The subsequent private Ixian ally revision `9bfc3ec` passed workflow
+`36667534804` and published after isolated storage/HTTP verification.
+It too is not a live NAS deployment.
 
 Container workflow `36656043783` built `32d9ef4` but failed
 isolated storage/HTTP verification; that image was not published and

@@ -73,6 +73,14 @@ sale continuation. Richese cache and Black Market sales retain the
 automatic path until their distinct custody and offer windows are
 integrated.
 
+A clean completed CHOAM market sale stages `choamSaleDiscard` only after
+the accepted public card disposal and its quoted two- or three-spice
+income. The saved receipt binds the sold card, duplicate witness when
+present, earned balance and still-open market; claim or decline
+restores the same owner's next market decision without paying again.
+Canceled/invalid sales have no batch; competing market parents retain
+their automatic continuation.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response

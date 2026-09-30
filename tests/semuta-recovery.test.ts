@@ -808,6 +808,83 @@ void test('authenticated private Ixian ally discard waits for Semuta before its 
   } finally { f.sqlite.close(); }
 });
 
+void test('authenticated CHOAM sale retains paid spice and market after a saved Semuta claim', async () => {
+  const f = unitStore();
+  try {
+    const made = await f.rooms.createRoom('Semuta Sale', 'choam', false, ['choam']);
+    const code = made.view.code;
+    const richese = await f.rooms.joinRoom(code, 'Richese', 'richese');
+    const bg = await f.rooms.joinRoom(code, 'BG', 'beneGesserit');
+    const auths = await Promise.all([made.token!, richese.token!, bg.token!]
+      .map(token => f.restart().authenticate(code, token)));
+    const existing = await f.restart().readRoom(code);
+    let g = createGame(code, newPlayer(auths[0].playerId, 'CHOAM', 'choam'), false, ['choam']);
+    g.players.push(newPlayer(auths[1].playerId, 'Richese', 'richese'),
+      newPlayer(auths[2].playerId, 'BG', 'beneGesserit'));
+    Object.assign(g, { status: 'playing', phase: 2, order: auths.map(auth => auth.playerId),
+      deck: baseDeck(), richeseCache: richeseCards(), semutaPreview: true,
+      choamCharity: { turn: 1, canceled: false } });
+    for (const p of g.players) {
+      p.spice = 20;
+      p.hand = [];
+      p.traitors = p.leaders.length ? [p.leaders[0].id] : [];
+      p.traitorChoices = [];
+    }
+    const semuta = take(g, SEMUTA_DRUG_ID), karama = take(g, 'karama');
+    const index = g.deck.findIndex(card => card.name === 'Baliset');
+    assert.ok(index >= 0);
+    const sold = g.deck.splice(index, 1)[0];
+    g.players[0].hand.push(sold);
+    g.players[1].hand.push(semuta);
+    g.players[2].hand.push(karama);
+    for (const p of g.players)
+      g = applyAction(g, p.id, { type: 'ready' });
+    assert.equal(g.decision?.kind, 'choamMarket');
+    g.version = existing.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(g), g.version, code, existing.version).changes, 1);
+    const seats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const act = async (index: number, action: Action) => {
+      const current = await f.restart().readRoom(code);
+      await f.restart().act(code, auths[index], current.version, action, clock);
+      return f.restart().readRoom(code);
+    };
+    let current = await act(0, { type: 'decision', mode: 'sell', card: sold.id });
+    assert.equal(current.response?.kind, 'choamSale');
+    for (let i = 0; current.response?.kind === 'choamSale' && i < 3; i++) {
+      const index = auths.findIndex(auth =>
+        !viewGame(current, auth.playerId).responseControls?.hasPassed &&
+        !!viewGame(current, auth.playerId).responseControls?.cancelCards.length);
+      assert.ok(index >= 0);
+      current = await act(index, { type: 'passResponse' });
+    }
+    const event = current.pendingTreacheryDiscard!.batch.event;
+    assert.equal(current.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(current.players[0].spice, 22);
+    assert.equal(current.choamMarket?.sale, undefined);
+    assert.equal(current.decision, null);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, current.version);
+    const ownerView = await f.restart().readSeatView(code, auths[1]);
+    assert.equal(ownerView.semutaReaction?.canCommit, true);
+    assert.deepEqual((await f.restart().readSeatView(code, auths[0])).semutaReaction?.candidates, []);
+    const claimed = await act(1, { type: 'semutaCommit', event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.equal(claimed.decision?.kind, 'choamMarket');
+    assert.equal(claimed.players[0].spice, 22);
+    assert.equal(claimed.players[1].hand.filter(card => card.id === sold.id).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+    await assert.rejects(f.restart().act(code, auths[1], current.version,
+      { type: 'semutaCommit', event }, clock));
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+    const resumed = await act(0, { type: 'decision', done: true });
+    assert.equal(resumed.phase, 3);
+    assert.equal(resumed.players[0].spice, 22);
+  } finally { f.sqlite.close(); }
+});
+
 void test('authenticated printed Karama auction payment resumes one saved Richese cache offer', async () => {
   const f = unitStore();
   try {

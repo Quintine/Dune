@@ -67,9 +67,10 @@ opening public expansion starts. It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
 printed Karama canceling clean CHOAM Charity, Inflation or Bene
-Gesserit Charity or settling a clean normal-auction lot, battle and
-Ix-deck Thumper/Amal discards**, plus a clean **private** normal-auction
-Ixian ally replacement discard before its draw. Other
+Gesserit Charity or settling a clean normal-auction lot, a completed
+CHOAM card sale, battle and Ix-deck Thumper/Amal discards**, plus
+a clean **private** normal-auction Ixian ally replacement discard
+before its draw. Other
 than the one explicitly suspended charity/Inflation response, the
 parent transaction has no competing response. Every seat sees the
 same neutral fresh-discard opportunity
@@ -81,6 +82,14 @@ only a committed eligible holder takes the exact fresh card. A claim
 removes it before the saved single replacement draw and subsequent
 normal-auction settlement. Richese cache and Black Market replacement
 discards, competing parents and other private producers remain separate.
+
+A clean CHOAM card sale commits its one named public discard and the
+quoted two- or three-spice bank payment before the neutral offer.
+Canceled or invalid sales leave the card in hand and have no fresh
+batch. The saved receipt binds the exact sold card, optional duplicate
+witness, earned spice and still-open market; claim or decline resumes
+the market once without paying or discarding again. Nested card
+responses and other sale families retain their previous paths.
 
 An early-ended Ornithopter advances the saved queue; a completed
 flight resumes one committed arrival only without BG, Ecaz or

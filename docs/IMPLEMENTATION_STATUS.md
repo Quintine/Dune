@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after completed CHOAM card sale
+
+In the explicit Richese preview, a clean CHOAM market sale now pays
+its printed two- or three-spice income and discards the one publicly
+named physical card before a neutral Semuta offer. A canceled or
+invalid sale leaves its card in hand and creates no fresh batch.
+Claim or all-seat decline resumes the same CHOAM market choice
+without repeating income or disposal. The saved receipt binds
+owner, exact card, duplicate witness if used, earned balance and
+the open market. Concurrent market obligations and other sale
+families retain their earlier automatic paths.
+
+Focused engine checks cover hidden Semuta-holder parity in outsider
+views, a quoted Worthless sale, income once, exact card custody,
+rejected altered receipts, legal AI claim and resumed market choice.
+Authenticated SQLite checks cover restart, stale retry, preserved
+seats and the next market decision. A direct engine smoke exercised
+the committed income, one claim and same market return. The public
+expansion and complete Semuta gates remain closed.
+
+`npm run check` passed types, lint and 5,843 offline tests; the
+production build passed. The phone-width built-worker guide showed
+the sold-card timing. Independent review found no scoped defect.
+The isolated built-worker HTTP suite passed 50/55: four origin/
+validation requests returned 503 instead of expected 403/400,
+and one Advanced-lobby request timed out after 15 seconds.
+Full HTTP and production acceptance remain open; no production
+game was touched.
+
 ## 30 September 2026 — Semuta before private Ixian ally replacement
 
 The explicit Richese preview with the Ix expansion now interrupts a

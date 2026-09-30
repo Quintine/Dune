@@ -4,6 +4,7 @@ import {
   applyAction,
   createGame,
   newPlayer,
+  normalizeAutomaticGame,
   viewGame,
   RuleError,
   type Game,
@@ -13,6 +14,8 @@ import { saleOptions } from '../game/choam-market';
 import { createTechTokens } from '../game/tech-tokens';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
+import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 function fixture() {
   const g = createGame('MARKET22', newPlayer('c', 'CHOAM', 'choam'), false, [
     'choam',
@@ -128,6 +131,117 @@ void test('Worthless sale reveals its card but only discards and pays after the 
   assert.equal(g.decision?.kind, 'choamMarket');
   assert.equal(g.phase, 2);
   assert.deepEqual(live(g), live(initial));
+});
+void test('clean CHOAM sale offers Semuta after committed income before the market resumes', () => {
+  const g = fixture();
+  g.players[1] = newPlayer('e', 'Richese', 'richese');
+  g.players[1].spice = 20;
+  g.richeseCache = richeseCards();
+  g.semutaPreview = true;
+  const index = g.richeseCache.findIndex(card => card.id === SEMUTA_DRUG_ID);
+  assert.ok(index >= 0);
+  const semuta = g.richeseCache.splice(index, 1)[0];
+  g.players[1].hand.push(semuta);
+  contest(g, 1, 'b');
+  const sold = hold(g, 'c', 'Baliset');
+  const original = live(g);
+  const absent = structuredClone(g);
+  absent.players[1].hand = [absent.richeseCache!.splice(0, 1)[0]];
+  absent.richeseCache!.push(semuta);
+  const offered = (state: Game) => allow(sell(ready(state), sold.id));
+  const pending = offered(g), neutral = offered(absent);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'choamSaleDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(neutral.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.choamMarket?.sale, undefined);
+  assert.equal(pending.decision, null);
+  assert.equal(pending.players[0].spice, 22);
+  assert.equal(pending.players[0].hand.some(card => card.id === sold.id), false);
+  assert.equal(pending.discard.filter(card => card.id === sold.id).length, 1);
+  assert.deepEqual(viewGame(pending, 'c'), viewGame(neutral, 'c'));
+  assert.deepEqual(viewGame(pending, 'b'), viewGame(neutral, 'b'));
+  assert.equal(viewGame(pending, 'e').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(JSON.parse(JSON.stringify(pending))), pending);
+  for (const change of [
+    (state: Game) => {
+      const next = state.pendingTreacheryDiscard!.continuation;
+      if (next.kind === 'choamSaleDiscard') next.price = 3;
+    },
+    (state: Game) => { state.players[0].spice += 2; },
+    (state: Game) => { state.pendingTreacheryDiscard!.batch.entries[0].card.name = 'Forgery'; },
+  ]) {
+    const corrupt: Game = JSON.parse(JSON.stringify(pending));
+    change(corrupt);
+    const before = JSON.stringify(corrupt);
+    assert.throws(() => applyAction(corrupt, 'e', { type: 'semutaCommit', event }));
+    assert.equal(JSON.stringify(corrupt), before);
+  }
+  let declined: Game = JSON.parse(JSON.stringify(pending));
+  for (const id of ['c', 'b', 'e'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(JSON.parse(JSON.stringify(pending)), 'e',
+    botActions(viewGame(pending, 'e'))[0]!);
+  for (const state of [declined, claimed]) {
+    assert.equal(state.pendingTreacheryDiscard, null);
+    assert.equal(state.decision?.kind, 'choamMarket');
+    assert.equal(state.players[0].spice, 22);
+    assert.deepEqual(live(state), original);
+    assert.throws(() => applyAction(state, 'e', { type: 'semutaCommit', event }));
+  }
+  assert.equal(declined.discard.filter(card => card.id === sold.id).length, 1);
+  assert.equal(claimed.players[1].hand.filter(card => card.id === sold.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  const resumed = done(claimed);
+  assert.equal(resumed.choamMarket, null);
+  assert.equal(resumed.phase, 3);
+});
+void test('CHOAM duplicate sale retains its witness and three spice through Semuta', () => {
+  const g = fixture();
+  g.players[1] = newPlayer('e', 'Richese', 'richese');
+  g.players[1].spice = 20;
+  g.richeseCache = richeseCards();
+  g.semutaPreview = true;
+  const semutaIndex = g.richeseCache.findIndex(card => card.id === SEMUTA_DRUG_ID);
+  const semuta = g.richeseCache.splice(semutaIndex, 1)[0];
+  g.players[1].hand.push(semuta);
+  contest(g, 1, 'b');
+  const sold = hold(g, 'c', 'Snooper'), witness = hold(g, 'c', 'Snooper');
+  const pending = allow(sell(ready(g), sold.id, witness.id));
+  const continuation = pending.pendingTreacheryDiscard?.continuation;
+  assert.equal(continuation?.kind, 'choamSaleDiscard');
+  if (continuation?.kind === 'choamSaleDiscard') {
+    assert.equal(continuation.witness, witness.id);
+    assert.equal(continuation.price, 3);
+  }
+  assert.equal(pending.players[0].spice, 23);
+  assert.deepEqual(pending.players[0].hand.map(card => card.id), [witness.id]);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  const claimed = applyAction(pending, 'e', { type: 'semutaCommit', event });
+  assert.equal(claimed.players[0].spice, 23);
+  assert.deepEqual(claimed.players[0].hand.map(card => card.id), [witness.id]);
+  assert.equal(claimed.players[1].hand.filter(card => card.id === sold.id).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(claimed.decision?.kind, 'choamMarket');
+});
+void test('canceled CHOAM sale creates no Semuta event or bank income', () => {
+  const g = fixture();
+  g.players[1] = newPlayer('e', 'Richese', 'richese');
+  g.richeseCache = richeseCards();
+  g.semutaPreview = true;
+  const semutaIndex = g.richeseCache.findIndex(card => card.id === SEMUTA_DRUG_ID);
+  g.players[1].hand.push(g.richeseCache.splice(semutaIndex, 1)[0]);
+  contest(g, 1, 'b');
+  const sold = hold(g, 'c', 'Baliset');
+  const declaration = sell(ready(g), sold.id);
+  const karama = declaration.players[2].hand.find(card => card.effect === 'karama')!;
+  const canceled = applyAction(declaration, 'b',
+    { type: 'card', card: karama.id, mode: 'cancel' });
+  assert.ok(!canceled.pendingTreacheryDiscard);
+  assert.equal(canceled.players[0].spice, 20);
+  assert.equal(canceled.players[0].hand.filter(card => card.id === sold.id).length, 1);
+  assert.equal(canceled.choamMarket?.sale, undefined);
+  assert.equal(canceled.decision?.kind, 'choamMarket');
 });
 void test('surplus sales keep one exact duplicate and permit selling several surplus copies', () => {
   let g = fixture();

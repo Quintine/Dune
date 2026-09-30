@@ -1206,6 +1206,15 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'choamSaleDiscard';
+          owner: string;
+          card: string;
+          witness: string | null;
+          price: number;
+          spiceAfter: number;
+          stateSignature: string;
+        }
+      | {
           kind: 'thumperDiscard';
           player: string;
           card: string;
@@ -4910,6 +4919,19 @@ function karamaAuctionDiscardSignature(g: Game, c: KaramaAuctionDiscardContinuat
     })),
   });
 }
+type ChoamSaleDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'choamSaleDiscard' }
+>;
+function choamSaleDiscardSignature(g: Game, c: ChoamSaleDiscardContinuation) {
+  const owner = getPlayer(g, c.owner);
+  return JSON.stringify({
+    owner: c.owner, card: c.card, witness: c.witness, price: c.price,
+    spiceAfter: c.spiceAfter, turn: g.turn, phase: g.phase,
+    active: g.active, order: g.order, market: g.choamMarket,
+    hand: owner.hand.map(card => card.id), spice: owner.spice,
+  });
+}
 type ThumperDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'thumperDiscard' }
@@ -5516,6 +5538,25 @@ function treacheryDiscardIntegrity(g: Game) {
       'The spent Karama no longer matches its reserved auction settlement.',
     );
     normalKaramaAuction(g, getPlayer(g, c.player), c.kind === 'karamaPaymentDiscard');
+  } else if (continuation?.kind === 'choamSaleDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    const owner = g.players.find(p => p.id === c.owner);
+    requireRule(
+      g.choamMarket?.owner === c.owner && !g.choamMarket.sale &&
+      !g.choamMarket.trade && !g.response && !g.decision &&
+      !g.pendingKarama && !g.phaseOpening &&
+      owner?.faction === 'choam' &&
+      batch.cause === 'choamSale' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.owner &&
+      entry.card.id === c.card &&
+      (c.witness === null
+        ? c.price === 2 && entry.card.kind === 'worthless'
+        : c.price === 3 && owner.hand.some(card =>
+          card.id === c.witness && card.name === entry.card.name)) &&
+      owner.spice === c.spiceAfter &&
+      c.stateSignature === choamSaleDiscardSignature(g, c),
+      'The sold CHOAM card no longer matches its saved income and market.',
+    );
   } else if (continuation?.kind === 'thumperDiscard') {
     const c = continuation, entry = batch.entries[0];
     requireRule(
@@ -6181,6 +6222,7 @@ function semutaOfferSupported(
     continuation.kind !== 'thumperDiscard' &&
     continuation.kind !== 'amalDiscard' &&
     continuation.kind !== 'ixAllyCard' &&
+    continuation.kind !== 'choamSaleDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
@@ -6247,6 +6289,7 @@ function semutaOfferSupported(
       continuation.kind === 'winnerMandatoryDiscard' ||
       continuation.kind === 'battleResolved' ||
       continuation.kind === 'ixAllyCard' ||
+      continuation.kind === 'choamSaleDiscard' ||
       (continuation.kind === 'karamaCharityDiscard' ||
         continuation.kind === 'karamaInflationDiscard' ||
         continuation.kind === 'karamaBgCharityDiscard' ||
@@ -6269,7 +6312,11 @@ function semutaOfferSupported(
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
     !g.pendingHomeworldShipment && !g.pendingRicheseGift &&
-    !g.pendingRichesePurchaseIncome && !g.choamMarket &&
+    !g.pendingRichesePurchaseIncome &&
+    (continuation.kind === 'choamSaleDiscard'
+      ? !!g.choamMarket && !g.choamMarket.sale &&
+        !g.choamMarket.trade && !g.biddingEnd && !g.currentAuctionSale
+      : !g.choamMarket) &&
     !g.pendingChoamMarketGhola;
 }
 function semutaContext(g: Game, owner: Player): SemutaContext {
@@ -6410,6 +6457,8 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     // CHOAM's selected-count payout was already committed with its discard.
     g.pendingAmbassador = next.entry;
     finishAmbassador(g);
+  } else if (next.kind === 'choamSaleDiscard') {
+    resumeChoamMarket(g);
   } else if (next.kind === 'nullentropyDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -20924,18 +20973,34 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     const saleBlock = saleCard
       ? homeworldRule(() => homeworldWorthlessSaleBlock(g, owner.id, saleCard))
       : null;
-    if (quoteSale(owner.hand, sale.card, sale.witness) && !saleBlock) {
-      discard(g, owner, sale.card);
+    const quoted = quoteSale(owner.hand, sale.card, sale.witness);
+    if (quoted?.price === sale.price && !saleBlock) {
+      const used = discard(g, owner, sale.card);
       owner.spice += sale.price;
       log(g, `${owner.name} received ${sale.price} spice from the card sale.`);
-    } else
+      delete market.sale;
+      if (g.semutaPreview) {
+        const continuation: ChoamSaleDiscardContinuation = {
+          kind: 'choamSaleDiscard', owner: owner.id, card: used.id,
+          witness: sale.witness ?? null, price: sale.price,
+          spiceAfter: owner.spice, stateSignature: '',
+        };
+        const entries = [{ card: used, discardedBy: owner.id, publicFace: true }];
+        if (semutaOfferSupported(g, continuation, entries)) {
+          continuation.stateSignature = choamSaleDiscardSignature(g, continuation);
+          stageTreacheryDiscard(g, 'choamSale', entries, continuation);
+          return;
+        }
+      }
+    } else {
       log(
         g,
         saleBlock
           ? 'Tupile is now high population, so the declared Worthless sale cannot finish. The card stays in hand and no spice is paid.'
           : 'The declared card sale is no longer possible; no spice was paid.',
       );
-    delete market.sale;
+      delete market.sale;
+    }
     resumeChoamMarket(g);
   } else if (response.kind === 'choamInflation') {
     if (!canceled) {
