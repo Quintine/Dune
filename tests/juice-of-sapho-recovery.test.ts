@@ -10,6 +10,7 @@ import * as bots from '../game/bots';
 import * as seatAiDelegation from '../lib/seat-ai-delegation';
 import { baseDeck } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import type * as Rooms from '../db/rooms';
 
 /** Execute the production room module and SQL, with a hook immediately before its CAS. */
@@ -549,6 +550,42 @@ void test('persisted last protection survives the Guild choosing to wait at a la
     assert.deepEqual(await stable(f), g);
   } finally {
     f.hooks.beforeWrite = undefined;
+    f.sqlite.close();
+  }
+});
+
+void test('authenticated Once Around Sapho offer survives restart and one committed claim', async () => {
+  const f = await fixture('onceAround');
+  try {
+    let g = await stable(f);
+    g.semutaPreview = true;
+    g.expansions = ['choam'];
+    const semuta = g.richeseCache!.findIndex(card => card.id === SEMUTA_DRUG_ID);
+    assert.ok(semuta >= 0);
+    g.players[0].hand.push(g.richeseCache!.splice(semuta, 1)[0]);
+    f.save(g);
+    const cards = physical(g), lotEvent = g.richeseAuction!.event;
+    g = await act(f, 1, action('onceAround', lotEvent, 'first'));
+    const offered = g, event = g.pendingTreacheryDiscard!.batch.event;
+    assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(g.richeseAuction?.active, f.seats[1].playerId);
+    assert.deepEqual(await stable(f), offered);
+    const holder = await f.restart().readSeatView(f.code, f.seats[0]);
+    const outsider = await f.restart().readSeatView(f.code, f.seats[2]);
+    assert.equal(holder.semutaReaction?.canCommit, true);
+    assert.equal(outsider.semutaReaction?.canCommit, false);
+    g = await act(f, 0, { type: 'semutaCommit', event });
+    assert.equal(g.pendingTreacheryDiscard, null);
+    assert.equal(g.richeseAuction?.event, lotEvent);
+    assert.equal(g.richeseAuction?.active, f.seats[1].playerId);
+    assert.equal(g.players[0].hand.filter(card => card.id === SAPHO).length, 1);
+    assert.equal(g.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.deepEqual(physical(g), cards);
+    assert.deepEqual(await stable(f), g);
+    g = await act(f, 1, bid(g, 2));
+    assert.ok(g.richeseAuction?.acted.includes(f.seats[1].playerId));
+    assert.deepEqual(physical(g), cards);
+  } finally {
     f.sqlite.close();
   }
 });

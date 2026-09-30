@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after Once Around Sapho
+
+The explicit Richese preview now pauses after a clean Once Around
+Juice of Sapho public discard and finite bidder reorder, before the
+lot's settlement suffix. Previously acted bids and funding remain
+committed; discarding Sapho can admit its formerly full-hand holder
+to the still-open lot. Every seat sees the neutral offer, and only
+an eligible held Semuta owner can claim the used card. Claim or
+all-seat decline resumes the same saved lot and active bidder once.
+The receipt binds the auction event, bidding round, order, funding,
+hands and spice. A Black Market Semuta reserved as the offered lot
+remains in its seller's hand: the neutral offer persists, but the
+owner's Commit is disabled and an attempted commit rejects before
+any card moves.
+
+Genuine auction setup, both first/last and full-hand paths, private
+projection, JSON corruption checks and authenticated SQLite restart
+were exercised. A direct production-engine smoke run observed
+`offer`, active reordered bidder and one recovered physical Sapho.
+The independent read-only rules/privacy reviews found two defects:
+Black Market reservation and unbound bidding-round state; both were
+corrected with focused regressions. `npm run check` passed typecheck,
+lint and 5,819 offline tests; `npm run build` and all 55 local HTTP
+tests passed. The phone-width local reference rendered the Once
+Around guide. No deployed revision was exercised. Remaining
+battle-choice Sapho, competing parents, full-hand take-before-discard
+and public Richese starts remain gated.
+
 ## 30 September 2026 — Semuta after pre-plan Sapho aggressor
 
 The explicit Richese preview now stages a clean pre-plan Juice of

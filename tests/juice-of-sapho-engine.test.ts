@@ -15,6 +15,7 @@ import {
 } from '../game/engine';
 import { baseDeck, leaders } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { JuiceOfSapho } from '../components/juice-of-sapho';
@@ -621,6 +622,79 @@ void test('discarding Sapho creates eligibility for a full-hand holder excluded 
     assert.equal(g.players[1].hand.length, 4);
     assert.equal(g.discard.filter((c) => c.id === card).length, 1);
   }
+});
+
+void test('Semuta pauses a clean Once Around Sapho order and preserves remaining bidders', () => {
+  for (const mode of ['first', 'last'] as const) {
+    let g = auction('e', 'onceAround', true);
+    g.semutaPreview = true;
+    g.expansions = ['choam'];
+    const semuta = g.richeseCache!.findIndex(c => c.id === SEMUTA_DRUG_ID);
+    assert.ok(semuta >= 0);
+    g.players[0].hand.push(g.richeseCache!.splice(semuta, 1)[0]);
+    const original = reload(g), lotEvent = g.richeseAuction!.event;
+    g = applyAction(g, 'e', action(g, mode));
+    const batchEvent = g.pendingTreacheryDiscard!.batch.event;
+    assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(g.richeseAuction?.event, lotEvent);
+    assert.equal(g.richeseAuction?.eligible.includes('e'), true);
+    assert.equal(g.players[1].hand.length, 3);
+    assert.equal(viewGame(g, 'a').semutaReaction?.canCommit, true);
+    assert.equal(viewGame(g, 'g').semutaReaction?.canCommit, false);
+    assert.deepEqual(normalizeAutomaticGame(reload(g)), reload(g));
+    for (const [index, change] of [
+      (saved: Game) => { saved.richeseAuction!.order.reverse(); },
+      (saved: Game) => { saved.richeseAuction!.bid = 5; },
+      (saved: Game) => { saved.richeseAuction!.active = mode === 'first' ? 'a' : 'e'; saved.active = saved.richeseAuction!.active; },
+      (saved: Game) => { saved.richeseBidding!.position = 'last'; },
+      (saved: Game) => { saved.players[1].hand.pop(); },
+    ].entries()) {
+      const corrupt = reload(g), before = reload(corrupt);
+      change(corrupt);
+      const unchanged = reload(corrupt);
+      assert.throws(() => applyAction(corrupt, 'a', { type: 'semutaCommit', event: batchEvent }), `corruption ${index}`);
+      assert.deepEqual(corrupt, unchanged);
+      assert.notDeepEqual(corrupt, before);
+    }
+    let declined = reload(g);
+    for (const id of ['a', 'e', 'g'])
+      declined = applyAction(declined, id, { type: 'semutaPass', event: batchEvent });
+    assert.equal(declined.pendingTreacheryDiscard, null);
+    assert.equal(declined.discard.filter(c => c.id === card).length, 1);
+    const claimed = applyAction(reload(g), 'a', { type: 'semutaCommit', event: batchEvent });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.deepEqual(claimed.richeseAuction, declined.richeseAuction);
+    assert.equal(claimed.players[0].hand.filter(c => c.id === card).length, 1);
+    assert.equal(claimed.discard.filter(c => c.id === SEMUTA_DRUG_ID).length, 1);
+    assert.equal(claimed.richeseAuction?.acted.length, original.richeseAuction?.acted.length);
+    assert.throws(() => applyAction(claimed, 'a', { type: 'semutaCommit', event: batchEvent }));
+    const next = claimed.richeseAuction!.active!;
+    const continued = bid(claimed, next, 1);
+    assert.equal(continued.richeseAuction?.acted.includes(next), true);
+  }
+});
+
+void test('a reserved Black Market Semuta cannot claim an auction Sapho discard', () => {
+  let g = auction('e');
+  g.semutaPreview = true;
+  g.expansions = ['choam'];
+  const semuta = g.richeseCache!.findIndex(c => c.id === SEMUTA_DRUG_ID);
+  assert.ok(semuta >= 0);
+  g.players[2].hand.push(g.richeseCache!.splice(semuta, 1)[0]);
+  g.richeseAuction!.source = 'blackMarket';
+  g.richeseAuction!.cardId = SEMUTA_DRUG_ID;
+  g = applyAction(g, 'e', action(g, 'first'));
+  const event = g.pendingTreacheryDiscard!.batch.event;
+  assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(viewGame(g, 'g').semutaReaction?.canCommit, false);
+  assert.match(viewGame(g, 'g').semutaReaction?.blocked ?? '', /Black Market/);
+  const before = reload(g);
+  assert.throws(() => applyAction(g, 'g', { type: 'semutaCommit', event }));
+  assert.deepEqual(reload(g), before);
+  for (const id of ['a', 'e', 'g'])
+    g = applyAction(g, id, { type: 'semutaPass', event });
+  assert.equal(g.pendingTreacheryDiscard, null);
+  assert.equal(g.players[2].hand.filter(c => c.id === SEMUTA_DRUG_ID).length, 1);
 });
 
 void test('Sapho options are owner-only and do not reveal hidden cards through another player view', () => {

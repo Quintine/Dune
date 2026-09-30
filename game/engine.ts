@@ -1154,6 +1154,15 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'saphoAuctionDiscard';
+          player: string;
+          card: string;
+          event: string;
+          mode: 'first' | 'last';
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'saphoAggressorDiscard';
           player: string;
           card: string;
@@ -4745,6 +4754,22 @@ function saphoMovementDiscardSignature(g: Game, c: SaphoMovementDiscardContinuat
     })),
   });
 }
+type SaphoAuctionDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'saphoAuctionDiscard' }
+>;
+function saphoAuctionDiscardSignature(g: Game, c: SaphoAuctionDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, card: c.card, event: c.event, mode: c.mode,
+    parent: nullentropyParentSignature(g, c.resume, c.event),
+    turn: g.turn, phase: g.phase, active: g.active, order: g.order,
+    lot: g.richeseAuction, bidding: g.richeseBidding, funding: g.richeseFunding,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, ally: p.ally,
+      hand: p.hand.map(card => card.id), spice: p.spice,
+    })),
+  });
+}
 type SaphoAggressorDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'saphoAggressorDiscard' }
@@ -5252,6 +5277,25 @@ function treacheryDiscardIntegrity(g: Game) {
       !c.resume.pendingKarama && !c.resume.phaseOpening &&
       c.stateSignature === saphoMovementDiscardSignature(g, c),
       'The used Juice of Sapho no longer matches its committed movement order.',
+    );
+  } else if (continuation?.kind === 'saphoAuctionDiscard') {
+    const c = continuation, entry = batch.entries[0], lot = g.richeseAuction;
+    const remaining = lot?.order.filter(id => !lot.acted.includes(id));
+    requireRule(
+      g.phase === 3 && lot?.method === 'onceAround' &&
+      lot.event === c.event && !lot.outcome &&
+      lot.eligible.includes(c.player) && !lot.acted.includes(c.player) &&
+      (c.mode === 'first'
+        ? remaining?.[0] === c.player && lot.active === c.player
+        : c.mode === 'last' && remaining?.at(-1) === c.player) &&
+      g.active === lot.active && batch.cause === 'sapho:auction' &&
+      batch.entries.length === 1 && entry.publicFace &&
+      entry.discardedBy === c.player && entry.card.id === c.card &&
+      richeseCardDefinition(entry.card)?.card.effect === 'juiceOfSapho' &&
+      !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature === saphoAuctionDiscardSignature(g, c),
+      'The used Juice of Sapho no longer matches its committed Once Around order.',
     );
   } else if (continuation?.kind === 'saphoAggressorDiscard') {
     const c = continuation, entry = batch.entries[0], battle = g.battle;
@@ -5928,6 +5972,7 @@ function semutaOfferSupported(
     continuation.kind !== 'distransDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
     continuation.kind !== 'saphoAggressorDiscard' &&
+    continuation.kind !== 'saphoAuctionDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
     continuation.kind !== 'amalDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
@@ -5981,7 +6026,8 @@ function semutaOfferSupported(
         (continuation.kind === 'amalDiscard'
           ? continuation.resume.phaseOpening?.passed.length === 0
           : !continuation.resume.phaseOpening))) &&
-    !g.karamaShipping && !g.auction && !g.richeseAuction &&
+    !g.karamaShipping && !g.auction &&
+    (continuation.kind === 'saphoAuctionDiscard' || !g.richeseAuction) &&
     (continuation.kind === 'saphoAggressorDiscard' || !g.battle) &&
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
@@ -6000,6 +6046,10 @@ function semutaContext(g: Game, owner: Player): SemutaContext {
 }
 function semutaCandidates(g: Game, owner: Player) {
   const context = semutaContext(g, owner);
+  const semuta = owner.hand.find(card => card.id === SEMUTA_DRUG_ID &&
+    richeseCardDefinition(card)?.card.effect === 'semutaDrug');
+  requireRule(semuta && !transferCardBlock(g, owner, semuta),
+    'This Semuta Drug is reserved for an unfinished transaction.');
   try {
     return committedSemutaCandidates(context,
       { event: context.event, player: owner.id, semutaId: SEMUTA_DRUG_ID });
@@ -6019,14 +6069,16 @@ function projectedSemutaReaction(g: Game, me: Player) {
       candidates: reaction.player === me.id ? semutaCandidates(g, me) : [] as Card[],
     };
   const passed = reaction.passed.includes(me.id);
-  const held = me.hand.some(card => card.id === SEMUTA_DRUG_ID &&
+  const semuta = me.hand.find(card => card.id === SEMUTA_DRUG_ID &&
     richeseCardDefinition(card)?.card.effect === 'semutaDrug');
+  const held = !!semuta;
   const blocked = !held || passed ? null
-    : me.hand.length >= handLimit(me)
-      ? 'A free hand slot is required before taking a card with Semuta Drug.'
-      : pending.batch.entries.every(entry => entry.discardedBy === me.id)
-        ? 'No other player discarded a card in this fresh event.'
-        : null;
+    : transferCardBlock(g, me, semuta!) ??
+      (me.hand.length >= handLimit(me)
+        ? 'A free hand slot is required before taking a card with Semuta Drug.'
+        : pending.batch.entries.every(entry => entry.discardedBy === me.id)
+          ? 'No other player discarded a card in this fresh event.'
+          : null);
   return {
     event: pending.batch.event, stage: 'offer' as const, passed,
     canCommit: held && !passed && !blocked, blocked, candidates: [] as Card[],
@@ -6150,6 +6202,12 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
     if (g.active !== g.movementRemaining?.[0]) movementTurn(g);
+  } else if (next.kind === 'saphoAuctionDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
+    settleRicheseLot(g);
   } else if (next.kind === 'saphoAggressorDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -14495,12 +14553,27 @@ function playSapho(g: Game, p: Player, action: Action) {
       option.mode,
     );
     g.active = g.richeseAuction.active;
-    discard(g, p, 'richese-juice-of-sapho');
+    const used = discard(g, p, 'richese-juice-of-sapho');
     log(
       g,
       `${p.name} discarded Juice of Sapho to bid ${option.mode} in this Once Around auction. Completed bids and their funding remain committed; no bidder receives another bid.`,
       { faction: p.faction, name: 'Juice of Sapho' },
     );
+    if (g.semutaPreview) {
+      const continuation: SaphoAuctionDiscardContinuation = {
+        kind: 'saphoAuctionDiscard', player: p.id, card: used.id,
+        event: lot.event, mode: option.mode,
+        resume: { response: g.response, decision: g.decision,
+          pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+        stateSignature: '',
+      };
+      const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+      if (semutaOfferSupported(g, continuation, entries)) {
+        continuation.stateSignature = saphoAuctionDiscardSignature(g, continuation);
+        stageTreacheryDiscard(g, 'sapho:auction', entries, continuation);
+        return;
+      }
+    }
     settleRicheseLot(g);
   } else if (option.scope === 'battleOrder') {
     const next = battleOrderRule(() => reorderBattleChoosers({state: g.battleOrder, physicalOrder: g.order,
