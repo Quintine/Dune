@@ -3,6 +3,7 @@ import {
   applyAction,
   createGame,
   initializeFactionExpansionsGameForAudit,
+  initializeSemutaGameForAudit,
   joinGame,
   newPlayer,
   viewGame,
@@ -39,6 +40,7 @@ export function saphoBattleOrderGame({
   holder = 'c',
   seatIds = ['a', 'b', 'c', 'r'] as readonly [string, string, string, string],
   geometry = 'shared' as 'shared' | 'separate',
+  semutaPreview = false,
 } = {}): Game {
   const factions = ['emperor', 'guild', 'atreides', 'richese'] as const;
   let g = createGame(
@@ -50,7 +52,7 @@ export function saphoBattleOrderGame({
   for (let i = 1; i < seatIds.length; i++)
     joinGame(g, newPlayer(seatIds[i], factions[i], factions[i]));
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
-  g = initializeFactionExpansionsGameForAudit(g);
+  g = semutaPreview ? initializeSemutaGameForAudit(g) : initializeFactionExpansionsGameForAudit(g);
   for (let step = 0; g.status === 'setup' && step < 100; step++) {
     const next = nextSaphoBattleAction(g);
     assert.ok(next, 'Genuine setup must have an owned action.');

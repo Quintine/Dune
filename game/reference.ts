@@ -488,7 +488,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'During your open pre-plan preparation, use Sapho to become the current battle’s aggressor before declaring ready. You win ordinary ties, while the Habbanya Stronghold advantage still takes precedence. Physical participants, plans and later battle-choice order do not swap. The accepted priority survives refresh.',
       'Finish existing shipment, movement, card preparation and pending decisions before changing order. Your hand panel lists only currently available choices. A reserved card or a position you already hold cannot be selected.',
       'Completed bids and turns stay completed. Storm order, committed funding and movement counters do not reset. Refreshing preserves the same remaining opportunities and any declared last position.',
-      'In the explicitly opted-in Semuta preview, a clean movement-order Sapho discard pauses after its queue reorder. Every seat receives the same neutral offer before the active turn changes. A claim transfers only the used Sapho card; the saved queue and any protected last position resume once. Auction and battle Sapho discards remain automatic without this preview reaction.',
+      'In the explicitly opted-in Semuta preview, a clean movement-order Sapho discard pauses after its queue reorder; a clean pre-plan aggressor discard pauses after tie priority changes but before battle readiness. Every seat receives the same neutral offer. Claim or decline transfers only the used card or leaves it discarded; the original queue or unsealed battle stays intact. Once Around and remaining battle-choice Sapho discards remain automatic without this preview reaction.',
       'These are the supported development controls, not additional printed restrictions. Later aggressor intervention, ordinary cyclic auction scope, other phase ordering and intervention during a partly completed combined turn remain unfinished. Silent bids are simultaneous; their storm-order tie rule is unchanged.',
     ],
     example:
@@ -1156,7 +1156,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In the explicit Richese development preview, every seat sees a neutral response to supported clean public discards. A CHOAM & Richese game may include the Ix deck: Thumper pauses before its injected worm and spice draw; Amal pauses after halving everyone’s spice but before the opening resumes. Other sources include ordinary cards, paid Box, Ornithopter, Distrans, final Truthtrance, movement-order Sapho and three battle batches. Commit held Semuta with a free hand slot; for several eligible cards, inspect and select exactly one after commitment. Saved effects resume once. Nested responses, pending rewards, other sources, full-hand sequencing and public starts remain unfinished.'
+                          ? 'In the explicit Richese development preview, every seat sees a neutral response to supported clean public discards. A CHOAM & Richese game may include the Ix deck: Thumper pauses before its worm/spice draw, and Amal pauses after halving spice before its opening resumes. Other sources include ordinary cards, paid Box, Ornithopter, Distrans, final Truthtrance, clean movement-order or pre-plan aggressor Sapho and three battle batches. Commit held Semuta with a free hand slot; for several eligible cards, inspect and select exactly one after commitment. Original effects and an unsealed battle resume once. Nested responses, remaining Sapho order scopes, pending rewards, full-hand sequencing and public starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1166,7 +1166,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The explicit Richese profile interrupts clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order Sapho, Ix-deck Thumper and Amal, and three battle discard stages. Thumper waits before injecting its worm or drawing spice. Amal has already halved each personal spice amount and reset prior opening passes; claim or decline restores the same phase opening once. A neutral offer precedes every eligible batch, owner-only committed candidates remain private, and Semuta transfers one physical card. Competing responses, pending rewards, other producers and full-hand exchange remain unfinished.',
+                  'The explicit Richese preview interrupts clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order and pre-plan aggressor Sapho, Ix-deck Thumper/Amal, and three battle discard stages. Sapho’s aggressor priority is committed before the offer; the pre-leader battle remains unsealed afterward. Thumper waits before worm/spice draw; Amal restores an already-halved phase opening. Neutral offers and committed owner-only candidates remain private, and Semuta transfers one physical card. Competing responses, pending rewards, other producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
@@ -1184,13 +1184,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide distinguishes clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order Sapho, Ix-deck Thumper/Amal and three battle batches from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
+                  'The guide distinguishes clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement/pre-plan Sapho, Ix-deck Thumper/Amal and three battle batches from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, custody, hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement-order Sapho, Ix-deck Thumper/Amal and three battle discard stages. Pending rewards, full games and live deployment remain unverified.',
+                  'Genuine setup, custody, hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, movement/pre-plan Sapho, Ix-deck Thumper/Amal and three battle discard stages. Remaining Sapho scopes, pending rewards, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',

@@ -6,6 +6,8 @@ import { viewGame, type Game, type Action } from '../game/engine';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { spiceDeck } from '../game/cards';
 import { unitStore } from './fixture-nexus-room-store';
+import { saphoAggressorGame, aggressorAction } from './fixture-sapho-aggressor';
+import { takeSaphoBattleCard } from './fixture-sapho-battle-order';
 
 const clock = { now: () => 10000, sleep: async () => {} };
 const seat = (g: Game, id: string) => g.players.find(p => p.id === id)!;
@@ -665,5 +667,62 @@ void test('an authenticated Ix-deck Thumper pause retains the undrawn blow throu
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(resumedAmal, auth.playerId));
+  } finally { f.sqlite.close(); }
+});
+
+void test('authenticated pre-plan Sapho discard restores one aggressor choice before battle plans', async () => {
+  const f = unitStore();
+  try {
+    const created = await f.rooms.createRoom('Semuta Sapho QA', 'emperor', false, ['choam']);
+    const code = created.view.code;
+    const joined = [
+      await f.rooms.joinRoom(code, 'Guild', 'guild'),
+      await f.rooms.joinRoom(code, 'Atreides', 'atreides'),
+      await f.rooms.joinRoom(code, 'Richese', 'richese'),
+    ];
+    const auths = await Promise.all([created.token!, ...joined.map(row => row.token!)]
+      .map(token => f.restart().authenticate(code, token)));
+    const ids = auths.map(auth => auth.playerId);
+    const originalSeats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const initial = await f.restart().readRoom(code);
+    const battle = saphoAggressorGame({
+      semutaPreview: true, seatIds: ids as [string, string, string, string],
+    });
+    takeSaphoBattleCard(battle, ids[3], SEMUTA_DRUG_ID);
+    battle.code = code;
+    battle.version = initial.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(battle), battle.version, code, initial.version).changes, 1);
+    const act = async (index: number, action: Action) => {
+      const before = await f.restart().readRoom(code);
+      await f.restart().act(code, auths[index], before.version, action, clock);
+      return f.restart().readRoom(code);
+    };
+    const option = aggressorAction(battle, ids[1]);
+    const offered = await act(1, option);
+    assert.equal(offered.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(offered.battle?.preLeader?.closed, false);
+    assert.equal(offered.battle?.saphoAggressor?.uses.length, 1);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, offered.version);
+    const holder = await f.restart().readSeatView(code, auths[3]);
+    const rival = await f.restart().readSeatView(code, auths[0]);
+    assert.equal(holder.semutaReaction?.canCommit, true);
+    assert.equal(rival.semutaReaction?.canCommit, false);
+    const claimed = await act(3, { type: 'semutaCommit',
+      event: offered.pendingTreacheryDiscard!.batch.event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.equal(claimed.battle?.event, battle.battle?.event);
+    assert.equal(claimed.battle?.saphoAggressor?.uses.length, 1);
+    assert.equal(seat(claimed, ids[3]).hand.filter(card => card.id === option.card).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+    let prepared = claimed;
+    for (const index of [0, 1])
+      prepared = await act(index, { type: 'battlePreparationReady', event: claimed.battle!.event });
+    assert.equal(prepared.battle?.preLeader?.closed, true);
+    assert.equal(prepared.battle?.saphoAggressor?.uses.length, 1);
   } finally { f.sqlite.close(); }
 });

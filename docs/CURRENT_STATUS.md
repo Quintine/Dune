@@ -10,19 +10,20 @@ The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-se
 accepts a fresh Richese roster with CHOAM & Richese and optionally
 the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, private Distrans, final Truthtrance, movement-order
-Sapho, battle-card and Ix-deck Thumper/Amal discards open the same
-neutral offer regardless of hidden Semuta custody. Thumper pauses
-before its injected worm or spice draw; Amal pauses after halving
-personal spice and clearing earlier opening passes, before phase
-initialization. Claim or decline resumes each saved suffix once.
-Mixed-owner battle cards require committed, owner-only selection of
-another player's fresh card. Mandatory and optional winner cleanup
-remain separate. Minimal legal AI, JSON/SQLite continuation and
-competing-room CAS are connected. Mixed arrivals, auction/battle
-Sapho, queued or promise-bound Truthtrance, pending rewards, other
-discard producers, full-hand ordering, normal Richese starts and
-deployed acceptance remain unfinished. Neutral passes and free-slot
-guard are product safety choices, not rulings.
+or pre-plan aggressor Sapho, battle-card and Ix-deck Thumper/Amal
+discards open the same neutral offer regardless of hidden Semuta
+custody. Pre-plan Sapho has already committed ordinary tie priority;
+claim or decline restores the unsealed shared battle preparation
+without another aggressor change. Thumper waits before its injected
+worm/spice draw; Amal waits after halving personal spice and clearing
+earlier opening passes. Mixed-owner battle cards require committed
+owner-only selection of another player's fresh card; mandatory and
+optional winner cleanup remain separate. Minimal legal AI, JSON/
+SQLite continuation and competing-room CAS are connected. Mixed
+arrivals, Once Around/remaining battle-choice Sapho, queued or
+promise-bound Truthtrance, pending rewards, other producers, full-hand
+ordering, normal Richese starts and deployed acceptance remain
+unfinished. Neutral passes and free-slot guard are product choices.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,
@@ -285,21 +286,6 @@ AI policies and concurrent SQLite continuation are connected. Other expansion
 payment families, gifts and combined modules remain gated; this is not a
 complete Leader Skills or Tleilaxu certification.
 
-The main page
-labels its build's Git commit in the lobby and active-table masthead; local
-Git HEAD does not represent uncommitted work. The main-branch container
-workflow publishes an image but does not deploy the live site automatically.
-
-Current work adds [discussion moderation](ADMIN_DISCUSSION.md): owners/operators
-can mute or unmute new public/private messages from a human seat. History,
-incoming messages, game state and credentials remain saved; the setting follows
-recovery/handover. Atomic authority/version fences, durable audit and exact
-admin/message retries are connected. This is partial participant support;
-access revocation, participant removal, assisted recovery, permanent deletion,
-bulk actions and backup/operations tools remain unfinished.
-
-[Participant AI](ADMIN_PARTICIPANT_AI.md) checkpoint `2cddf03` is pushed. Types/lint,
-
 Earlier [complete-game integration samples](IMPLEMENTATION_STATUS.md)
 finished 62 genuine games: Basic Leader Skills with Tleilaxu, Moritani,
 Ixians or CHOAM; Basic/Advanced classic Homeworld + Nexus; all three paired
@@ -346,6 +332,20 @@ regardless of hidden card custody; this privacy-preserving timing is
 allied splits, non-Bidding sources, Betrayal and complete Nexus remain gated.
 This source is not in the live image.
 
+The main page
+labels its build's Git commit in the lobby and active-table masthead; local
+Git HEAD does not represent uncommitted work. The main-branch container
+workflow publishes an image but does not deploy the live site automatically.
+
+[Discussion moderation](ADMIN_DISCUSSION.md): owners/operators
+can mute or unmute new public/private messages from a human seat. History,
+incoming messages, game state and credentials remain saved; the setting follows
+recovery/handover. Atomic authority/version fences, durable audit and exact
+admin/message retries are connected. This is partial participant support;
+access revocation, participant removal, assisted recovery, permanent deletion,
+bulk actions and backup/operations tools remain unfinished.
+
+[Participant AI](ADMIN_PARTICIPANT_AI.md) checkpoint `2cddf03` is pushed. Types/lint,
 5,408 offline tests, 52 HTTP tests, build, twenty-two administrator HTTP groups
 and desktop/mobile browser acceptance passed. Deployment delivery was
 unconfirmed at that checkpoint; the current production revision is recorded
@@ -541,7 +541,7 @@ These links define bounded working behavior, not complete module certification.
 | Expansion factions | [Ixians/Tleilaxu](IX_PROTOTYPE.md) and [all seven faction selections](EXPANSION_FACTIONS_PROTOTYPE.md): genuine setup, Ecaz six-force placement and [Advanced Loyalty](ECAZ_LOYALTY.md), separate optional card variants, private controls and saved per-lot Ixian/Richese decline. Actual special-lot exchange remains pending. |
 | Leader Skills | [Common lifecycle](LEADER_SKILLS_RUNTIME.md), [known skilled capture](LEADER_SKILLS_CAPTURE.md), [Mentat question preview](MENTAT_QUESTION.md), [Bureaucrat payments](BUREAUCRAT_PAYMENTS.md), five battle disciplines, [Planetologist](PLANETOLOGIST_RULES.md), [Suk Graduate](SUK_GRADUATE_RULES.md), [Rihani and other battle effects](LEADER_BATTLE_EFFECTS.md), [Smuggler shipment](SMUGGLER_SHIPMENT.md), [No-Field](SMUGGLER_NO_FIELD.md) and [battle collection](SMUGGLER_BATTLE.md), [Sandmaster routes](SANDMASTER_MOVEMENT.md) and [worm rides](SANDMASTER_WORM.md), [Banker spending](SPICE_BANKER_RUNTIME.md), [Diplomat defense](DIPLOMAT_DEFENSE.md) and [bounded retreat](LEADER_SKILLS_RULES.md#bounded-diplomat-retreat-interpretation). Remaining bands and combinations are explicit in those contracts. |
 | Discoveries | [Prototype](DISCOVERY_PROTOTYPE.md): genuine setup, Great Maker, seven cards/eight tokens, inspection and stash rewards, nested sites, signed later free entry, carried Ornithopter, sole Cistern, bounded Orgiz transfers, Jacurutu income, Testing Station and Shrine. Orgiz's per-deposit interpretation, contested/shared benefits and mixed physical allocation remain provisional or pending. The Orgiz path in current source is not yet deployed. |
-| Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Secret Ally trade and bounded after-victory inspection](NEXUS_CHOAM_SECRET_ALLY.md), [Moritani Secret Ally losing-card retention](NEXUS_MORITANI_RULES.md#secret-ally-losing-card-retention-prototype), [Ecaz private yes/no traitor inquiry](NEXUS_ECAZ_RULES.md#bounded-secret-ally-traitor-inquiry-runtime) and [Emperor extra revival](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected. Uniform CHOAM winner/Moritani loser windows and Ecaz inquiry scope/audience are explicit product inferences, not publisher rulings; Emperor purchase remains pending. A source audit or helper alone is not a completed effect. |
+| Nexus/Homeworlds | [Decision index](RULE_DECISIONS.md) links each integrated faction family, native/borrowed effects, physical custody, private choices, payments and transport. [CHOAM Secret Ally trade and bounded after-victory inspection](NEXUS_CHOAM_SECRET_ALLY.md), [Moritani Secret Ally losing-card retention](NEXUS_MORITANI_RULES.md#secret-ally-losing-card-retention-prototype), [Ecaz private yes/no inquiry and bounded native Duke Cunning](NEXUS_ECAZ_RULES.md#bounded-native-cunning-duke-vidal), [Emperor extra revival and bounded bank-auction purchase](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) are connected. Uniform CHOAM winner/Moritani loser windows, Ecaz inquiry scope/audience and Ecaz Cunning's Battle-only window are product inferences, not publisher rulings. Source audits or helpers alone do not certify full module games. |
 | Truthtrance | [Spice facts](TRUTHTRANCE_SPICE_FACTS.md), [card counts](TRUTHTRANCE_CARD_COUNT.md), [hand inventory](TRUTHTRANCE_HAND_INVENTORY.md), [recorded knowledge](TRUTHTRANCE_KNOWLEDGE.md), and [Basic/no-Guild Advanced reserve-shipment promises](TRUTHTRANCE_SHIPMENT_PROMISES.md) use authoritative private state. Earlier readiness audits do not supersede these follow-ups. |
 | Other cards | [Sapho runtime](JUICE_OF_SAPHO_RUNTIME.md) includes first among remaining unstarted movement turns after Advanced Guild has finished. [Recruits](RECRUITS_RUNTIME.md) connects clean Revival play; [Harass & Withdraw](HARASS_WITHDRAW_RUNTIME.md) and [Reinforcements](REINFORCEMENTS_RUNTIME.md) connect bounded battle effects in the same independent three-card preview. Richese card contracts and the checklist identify other connected effects and explicit gaps. |
 | Multiplayer | [Public and private discussion](TABLE_DISCUSSION.md), saved rooms/seats, [recovery](../README.md#saved-seats-and-reconnecting), uncertain-request retry, [own-seat AI](AUTOPILOT.md), [named-player AI permission](SEAT_AI_PERMISSION.md) and [voluntary seat handover](SEAT_HANDOVER.md) have connected controls and recovery evidence. |

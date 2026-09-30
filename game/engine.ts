@@ -1154,6 +1154,15 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'saphoAggressorDiscard';
+          player: string;
+          card: string;
+          battleEvent: string;
+          saphoEvent: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'thumperDiscard';
           player: string;
           card: string;
@@ -4736,6 +4745,32 @@ function saphoMovementDiscardSignature(g: Game, c: SaphoMovementDiscardContinuat
     })),
   });
 }
+type SaphoAggressorDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'saphoAggressorDiscard' }
+>;
+function saphoAggressorDiscardSignature(g: Game, c: SaphoAggressorDiscardContinuation) {
+  const battle = g.battle;
+  return JSON.stringify({
+    player: c.player, card: c.card, battleEvent: c.battleEvent,
+    saphoEvent: c.saphoEvent,
+    parent: nullentropyParentSignature(g, c.resume, c.saphoEvent),
+    turn: g.turn, phase: g.phase, advanced: g.advanced,
+    active: g.active, order: g.order,
+    battle: battle && {
+      event: battle.event, attacker: battle.attacker, defender: battle.defender,
+      chooser: battle.chooser, territory: battle.territory,
+      preLeader: battle.preLeader, preparation: battle.preparation,
+      saphoAggressor: battle.saphoAggressor,
+      saphoAggressorEvents: battle.saphoAggressorEvents,
+      plans: battle.plans, revealed: battle.revealed,
+      voice: battle.voice, prescience: battle.prescience,
+      fullPlan: battle.fullPlan, nexusInspection: battle.nexusInspection,
+      truthPromises: battle.truthPromises,
+    },
+    players: g.players.map(p => ({ id: p.id, faction: p.faction, ally: p.ally })),
+  });
+}
 type ThumperDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'thumperDiscard' }
@@ -5218,6 +5253,27 @@ function treacheryDiscardIntegrity(g: Game) {
       c.stateSignature === saphoMovementDiscardSignature(g, c),
       'The used Juice of Sapho no longer matches its committed movement order.',
     );
+  } else if (continuation?.kind === 'saphoAggressorDiscard') {
+    const c = continuation, entry = batch.entries[0], battle = g.battle;
+    requireRule(
+      g.phase === 6 && battle && battle.event === c.battleEvent &&
+      battle.preLeader?.event === c.battleEvent && !battle.preLeader.closed &&
+      !battle.preLeader.ready.includes(c.player) &&
+      [battle.attacker, battle.defender].includes(c.player) &&
+      !battle.revealed && Object.keys(battle.plans).length === 0 &&
+      battle.saphoAggressor?.uses.at(-1)?.event === c.saphoEvent &&
+      battle.saphoAggressor.uses.at(-1)?.player === c.player &&
+      battle.saphoAggressorEvents?.includes(c.saphoEvent) &&
+      batch.cause === 'sapho:aggressor' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card &&
+      richeseCardDefinition(entry.card)?.card.effect === 'juiceOfSapho' &&
+      !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature === saphoAggressorDiscardSignature(g, c),
+      'The used Juice of Sapho no longer matches its pre-plan aggressor choice.',
+    );
+    saphoAggressorIntegrity(g);
   } else if (continuation?.kind === 'thumperDiscard') {
     const c = continuation, entry = batch.entries[0];
     requireRule(
@@ -5871,6 +5927,7 @@ function semutaOfferSupported(
     continuation.kind !== 'nullentropyDiscard' &&
     continuation.kind !== 'distransDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
+    continuation.kind !== 'saphoAggressorDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
     continuation.kind !== 'amalDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
@@ -5900,6 +5957,11 @@ function semutaOfferSupported(
     (continuation.kind === 'ornithopterDiscard' && continuation.source === 'move')) &&
     (g.pendingChoamMove || g.pendingIxMove || g.pendingFremenMove ||
       g.ornithopter || g.summonedWorm || g.wormRides.length > 0)) return false;
+  if (continuation.kind === 'saphoAggressorDiscard' &&
+    (!g.battle || g.pendingAuditor || g.pendingCapture || g.pendingTech ||
+      g.pendingFaceDance || g.pendingChoamBattleIncome ||
+      g.pendingWinnerDiscards || g.moritaniRetention ||
+      g.pendingIxSubstitution)) return false;
   if (continuation.kind === 'thumperDiscard' &&
     (g.summonedBeforeBlow || g.summonedWorm || g.wormRides.length > 0 ||
       g.pendingFremenMove || g.pendingIxMove || g.pendingChoamMove)) return false;
@@ -5919,7 +5981,8 @@ function semutaOfferSupported(
         (continuation.kind === 'amalDiscard'
           ? continuation.resume.phaseOpening?.passed.length === 0
           : !continuation.resume.phaseOpening))) &&
-    !g.karamaShipping && !g.auction && !g.richeseAuction && !g.battle &&
+    !g.karamaShipping && !g.auction && !g.richeseAuction &&
+    (continuation.kind === 'saphoAggressorDiscard' || !g.battle) &&
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
     !g.pendingHomeworldShipment && !g.pendingRicheseGift &&
@@ -6087,6 +6150,11 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
     if (g.active !== g.movementRemaining?.[0]) movementTurn(g);
+  } else if (next.kind === 'saphoAggressorDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
   } else if (next.kind === 'amalDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -14392,11 +14460,25 @@ function playSapho(g: Game, p: Player, action: Action) {
     const b = g.battle!;
     const next = saphoAggressorRule(() => changeSaphoAggressor(b.saphoAggressor,
       b.saphoAggressorEvents, b, g.turn, p.id, option.event));
-    discard(g, p, 'richese-juice-of-sapho');
+    const used = discard(g, p, 'richese-juice-of-sapho');
     b.saphoAggressor = next;
     (b.saphoAggressorEvents ??= []).push(option.event);
     log(g, `${p.name} discarded Juice of Sapho to become this battle’s aggressor before plans. They now win ordinary ties; a Habbanya Stronghold advantage still takes precedence. Battle participants and later battle choices stay unchanged.`,
       {faction: p.faction, name: 'Juice of Sapho'});
+    if (g.semutaPreview) {
+      const continuation: SaphoAggressorDiscardContinuation = {
+        kind: 'saphoAggressorDiscard', player: p.id, card: used.id,
+        battleEvent: b.event!, saphoEvent: option.event!,
+        resume: { response: g.response, decision: g.decision,
+          pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+        stateSignature: '',
+      };
+      const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+      if (semutaOfferSupported(g, continuation, entries)) {
+        continuation.stateSignature = saphoAggressorDiscardSignature(g, continuation);
+        stageTreacheryDiscard(g, 'sapho:aggressor', entries, continuation);
+      }
+    }
   } else if (option.scope === 'onceAround') {
     const lot = g.richeseAuction!;
     // Discarding this card frees a slot even when a full hand excluded its holder

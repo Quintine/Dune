@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after pre-plan Sapho aggressor
+
+The explicit Richese preview now stages a clean pre-plan Juice of
+Sapho discard after its public card and single aggressor/tie-priority
+choice commit, before either combatant closes shared preparation.
+Every seat sees the same neutral offer; a different held Semuta owner
+may recover exactly that card or all seats may decline. The saved
+receipt binds the battle event, Sapho event, committed priority,
+unsealed readiness, hands and force custody. A resolved response
+retires the frame without replaying the aggressor choice or battle;
+both combatants can still declare ready and choose plans.
+
+Genuine faction setup, owner-only projection, saved JSON, authenticated
+SQLite room CAS/restart and legal AI claim/pass were exercised. A direct
+production-engine smoke run observed `offer`, an unsealed battle and
+one recovered card with unchanged priority. Focused tests passed;
+`npm run check` passed typecheck, lint and 5,816 offline tests;
+`npm run build` passed; all 55 development HTTP tests passed. The
+phone-width local rules page rendered the pre-plan guidance. Two
+independent read-only rules/privacy reviews found no scoped defect.
+No deployed revision was exercised. Once Around and remaining
+battle-choice Sapho, competing parents, full-hand sequencing, normal
+Richese starts and publication acceptance remain gated.
+
 ## 30 September 2026 — Semuta after Ix-deck Amal
 
 In the explicit Richese preview with the physical Ix deck, playing
@@ -1041,7 +1065,8 @@ validated restore, server health display or unified action-history entry yet.
 
 Twelve isolated in-memory D1 backup cases pass, including exact replay, revoked
 access, unversioned concurrent changes, highly escaped state rejection, the
-32,768-record download-audit capacity boundary and duplicate snapshots. A throwaway genuine game created in an isolated store was
+32,768-record download-audit capacity boundary and duplicate snapshots.
+A throwaway genuine game created in an isolated store was
 captured, listed and downloaded once; its room version remained zero and its
 export receipt count was one. The signed-out local browser showed the owner
 gate. A separate intercepted local UI view showed an older snapshot available
@@ -1054,7 +1079,8 @@ passed 5,662/5,662 cases with zero failures.
 missing `Player.fremenNexusMovementBlockedTurn` type field. The 1,800,000-byte
 per-snapshot cap, 16 MiB per-room and 64 MiB global quotas, bounded export
 ledger without archival, absent chunked backups, and unavailable live NAS Apps
-session keep saved-game and deployed acceptance open. No production game or credential was modified.
+session keep saved-game and deployed acceptance open. No production game or
+credential was modified.
 
 ## 28 September 2026 — rules-reference duplicate links
 
@@ -1339,7 +1365,25 @@ force creation bug that was reproduced and fixed. Browser QA exercised natural
 and summoned offer/response/ride controls from genuine projected views with
 isolated GET interception and blocked POST; no room was mutated. Full module
 games, second Cunning offers during interrupted controls and Great Maker,
-combined modules and the absent-faction protection remain gated.
+combined modules and the absent-faction protection remain gated. A disconnected
+Moritani Atomics quote is not a runtime effect.
+
+## 26 September 2026 — Unified administrator action history
+
+[Action history](ADMIN_ACTION_HISTORY.md) reads the nine existing durable audit
+sources with date/group/search filters, pagination, actor/target attribution and
+public recorded settings. Live owners/operators receive reasons; viewers receive
+none, and reasons are never searched. No saved-game or message table is read.
+Records remain available after target removal, with malformed metadata handled
+without leaking raw contents or breaking the page.
+
+Independent review found and corrected unsafe role coercion, a rejected-field
+search oracle, affected-account name lookup and missing player-circle changes.
+Focused source/SQL regressions and genuine configuration receipts cover these
+boundaries. Real-runtime HTTP checking exposed workerd’s five-term compound-query
+limit; materialized source groups and an isolated D1 regression cover the fix. Required checks, HTTP/browser acceptance and preservation accompany
+the checkpoint separately. This is successful-operation history; failed attempts,
+full operational diagnostics and the remaining admin/game goal are unfinished.
 
 ## 26 September 2026 — Administrative discussion moderation prototype
 

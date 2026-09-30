@@ -21,12 +21,16 @@ promise or competing parent qualifies. A claim may move that consumed
 card, never re-answer the question or rewrite its history; other
 Truthtrance continuations remain automatic.
 
-Clean movement-order Sapho now stages `saphoMovementDiscard` after
-its finite first/last queue and public card disposal are committed.
+Clean movement-order Sapho stages `saphoMovementDiscard` after its
+finite first/last queue and public card disposal are committed.
 The reaction retires before `movementTurn` opens the new actor's turn;
-the queue, prior active seat and protected-last receipt bind saved
-continuation. Once Around and Battle Sapho remain outside this
-Semuta preview.
+the queue, prior active seat and protected-last receipt bind its suffix.
+Clean pre-plan aggressor Sapho stages `saphoAggressorDiscard` after
+the aggressor event, ordinary tie priority and card disposal commit.
+The receipt binds the same unsealed battle, readiness, player hands
+and reserves. Claim or decline restores shared pre-leader preparation
+without rerunning the aggressor change. Once Around and remaining
+battle-choice Sapho remain outside this preview.
 
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without

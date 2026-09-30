@@ -4,6 +4,8 @@ import { applyAction, createGame, initializeSemutaGameForAudit, joinGame, newPla
 import { botActions } from '../game/bots';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { spiceDeck } from '../game/cards';
+import { saphoAggressorGame, aggressorAction, prepareAggressorPlans } from './fixture-sapho-aggressor';
+import { takeSaphoBattleCard } from './fixture-sapho-battle-order';
 
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
 const player = (g: Game, id: string) => g.players.find(p => p.id === id)!;
@@ -867,5 +869,40 @@ void test('a clean Ix-deck Amal discard pauses after halving spice but before ph
   assert.equal(after.richeseBidding?.turn, after.turn);
   assert.deepEqual(after.players.map(p => p.spice), [5, 4, 3]);
   assert.deepEqual(inventory(after), original);
+  assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});
+
+void test('clean pre-plan Sapho aggressor discard offers Semuta before battle readiness resumes', () => {
+  const g = saphoAggressorGame({ semutaPreview: true });
+  takeSaphoBattleCard(g, 'r', SEMUTA_DRUG_ID);
+  const original = inventory(g), battleEvent = g.battle!.event;
+  const action = aggressorAction(g);
+  const pending = applyAction(g, 'b', action);
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.battle?.event, battleEvent);
+  assert.equal(pending.battle?.preLeader?.closed, false);
+  assert.equal(pending.battle?.saphoAggressor?.uses.length, 1);
+  assert.equal(pending.discard.filter(card => card.id === action.card).length, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.deepEqual(normalizeAutomaticGame(reload(pending)), reload(pending));
+  let declined = reload(pending);
+  for (const id of ['a', 'b', 'c', 'r'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.equal(declined.battle?.saphoAggressor?.uses.length, 1);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = applyAction(reload(pending), 'r', botActions(viewGame(pending, 'r'))[0]!);
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(claimed.battle?.event, battleEvent);
+  assert.equal(claimed.battle?.saphoAggressor?.uses.length, 1);
+  assert.equal(viewGame(claimed, 'a').battle?.aggressor, 'b');
+  assert.equal(player(claimed, 'r').hand.filter(card => card.id === action.card).length, 1);
+  assert.equal(claimed.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+  assert.equal(claimed.discard.some(card => card.id === action.card), false);
+  assert.deepEqual(inventory(claimed), original);
+  const prepared = prepareAggressorPlans(reload(claimed));
+  assert.equal(prepared.battle?.preLeader?.closed, true);
+  assert.equal(prepared.battle?.saphoAggressor?.uses.length, 1);
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
 });
