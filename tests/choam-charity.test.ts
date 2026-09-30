@@ -10,6 +10,8 @@ import {
 } from '../game/engine';
 import { baseDeck, treacheryDeck } from '../game/cards';
 import { createTechTokens } from '../game/tech-tokens';
+import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 
@@ -77,6 +79,78 @@ function cancel(g: Game) {
   assert.ok(card, 'canceller must hold Karama before the declaration');
   return applyAction(g, 'e', { type: 'card', card: card.id, mode: 'cancel' });
 }
+void test('clean printed Karama cancellation offers Semuta before CHOAM Charity is canceled', () => {
+  let g = fixture();
+  g.players[1] = newPlayer('e', 'Richese', 'richese');
+  g.richeseCache = richeseCards();
+  g.semutaPreview = true;
+  const semuta = g.richeseCache.findIndex(c => c.id === SEMUTA_DRUG_ID);
+  assert.ok(semuta >= 0);
+  g.players[2].hand.push(g.richeseCache.splice(semuta, 1)[0]);
+  contest(g);
+  g = ready(g);
+  assert.equal(g.response?.kind, 'choamCharity');
+  assert.equal(g.players[0].spice, 0);
+  g = cancel(g);
+  const event = g.pendingTreacheryDiscard!.batch.event;
+  assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(g.response, null);
+  assert.equal(g.choamCharity, undefined);
+  assert.equal(viewGame(g, 'b').semutaReaction?.canCommit, true);
+  assert.equal(viewGame(g, 'c').semutaReaction?.canCommit, false);
+  for (const change of [
+    (saved: Game) => {
+      const continuation = saved.pendingTreacheryDiscard!.continuation;
+      assert.equal(continuation.kind, 'karamaCharityDiscard');
+      if (continuation.kind === 'karamaCharityDiscard')
+        continuation.stateSignature = 'wrong';
+    },
+    (saved: Game) => { saved.players[1].spice = 1; },
+    (saved: Game) => { saved.pendingTreacheryDiscard!.batch.entries[0].card.name = 'Forgery'; },
+  ]) {
+    const corrupted: Game = JSON.parse(JSON.stringify(g));
+    change(corrupted);
+    const snapshot = JSON.stringify(corrupted);
+    assert.throws(() => applyAction(corrupted, 'b', { type: 'semutaCommit', event }));
+    assert.equal(JSON.stringify(corrupted), snapshot);
+  }
+  let declined: Game = JSON.parse(JSON.stringify(g));
+  for (const id of ['c', 'e', 'b'])
+    declined = applyAction(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.deepEqual(declined.choamCharity, { turn: 1, canceled: true });
+  assert.equal(declined.players[0].spice, 0);
+  const claimed = applyAction(JSON.parse(JSON.stringify(g)), 'b', { type: 'semutaCommit', event });
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.deepEqual(claimed.choamCharity, declined.choamCharity);
+  assert.equal(claimed.players[2].hand.some(c => c.effect === 'karama'), true);
+  assert.equal(claimed.discard.filter(c => c.id === SEMUTA_DRUG_ID).length, 1);
+  assert.equal(claimed.players[0].spice, 0);
+});
+
+void test('prior-turn CHOAM Charity receipt does not block a fresh Karama Semuta response', () => {
+  let g = fixture();
+  g.players[1] = newPlayer('e', 'Richese', 'richese');
+  g.richeseCache = richeseCards();
+  g.semutaPreview = true;
+  g.turn = 2;
+  g.choamCharity = { turn: 1, canceled: false };
+  const semuta = g.richeseCache.findIndex(c => c.id === SEMUTA_DRUG_ID);
+  g.players[2].hand.push(g.richeseCache.splice(semuta, 1)[0]);
+  contest(g);
+  g = ready(g);
+  assert.equal(g.response?.kind, 'choamCharity');
+  const pending = cancel(g);
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(pending.choamCharity, { turn: 1, canceled: false });
+  let resumed = pending;
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  for (const id of ['c', 'e', 'b'])
+    resumed = applyAction(resumed, id, { type: 'semutaPass', event });
+  assert.deepEqual(resumed.choamCharity, { turn: 2, canceled: true });
+  assert.equal(resumed.players[0].spice, 0);
+});
+
 void test('CHOAM receives two spice per faction, including itself, only after its opening response', () => {
   const initial = contest(fixture());
   let g = ready(initial);

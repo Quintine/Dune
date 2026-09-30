@@ -47,6 +47,13 @@ binds the victim, leader custody and unsealed battle. The neutral
 offer is limited to a pre-leader board with no inspection or ready
 combatant; other accepted plays retain automatic continuation.
 
+Printed Karama canceling a clean CHOAM Charity response stages
+`karamaCharityDiscard` after its public card cost but before the
+accepted cancellation. The receipt binds its sole suspended response,
+spent card and unchanged spice/hand custody; claim or decline restores
+the original response and finishes its cancellation once. Other
+Karama forms and nested responses remain automatic.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response

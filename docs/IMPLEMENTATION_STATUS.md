@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after printed CHOAM Charity Karama
+
+In the explicit Richese preview, a clean printed Karama cancellation
+of CHOAM Charity now pauses after the public activating card reaches
+the discard but before canceled income settles. Every seat receives
+the same neutral offer; a different Semuta holder can claim the
+spent Karama, or all seats may decline. The receipt binds the exact
+suspended response, spent card and spice/hand custody. Completion
+retires it, restores that response and cancels CHOAM income once.
+Prior-turn charity receipts remain valid; no current-turn cancellation
+is accepted twice. Worthless conversion, other Karama uses and nested
+responses retain their automatic paths.
+
+Authenticated SQLite restart/CAS, owner-only projection, corrupted
+receipt rejection, first- and later-turn cancellation and one-card
+custody were exercised. A direct production-engine smoke run observed
+the parent response, neutral offer and one cancellation with zero
+CHOAM income. Two independent read-only reviews found the prior-turn
+receipt and test type-narrowing defects; both were corrected.
+`npm run check` passed typecheck, lint and 5,827 offline tests;
+`npm run build` and 55 local HTTP tests passed. The phone-width reference
+rendered the new scope. No deployed revision was exercised. The
+previous `32d9ef4` container workflow built but failed its isolated
+storage/HTTP step; public logs expose only exit code 1, not the
+underlying assertion. Docker, Podman and authenticated GitHub logs
+were unavailable locally. Do not treat that image as published.
+
 ## 30 September 2026 — Semuta after clean Residual Poison
 
 In the explicit Richese preview, Residual Poison now pauses after

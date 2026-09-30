@@ -65,12 +65,12 @@ The explicit `semuta` development profile starts a fresh Richese roster
 with CHOAM & Richese and optionally the physical Ix deck, without
 opening public expansion starts. It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
-Truthtrance, Once Around, movement-order, between-battles chooser
-or pre-plan aggressor Sapho, pre-leader Residual Poison, battle and
-Ix-deck Thumper/Amal discards**, provided the parent transaction
-has no competing response.
-Every seat sees the same neutral fresh-discard opportunity regardless
-of hidden Semuta custody.
+Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
+printed Karama canceling clean CHOAM Charity, battle and Ix-deck
+Thumper/Amal discards**. Other than the one explicitly suspended
+CHOAM Charity response, the parent transaction has no competing
+response. Every seat sees the same neutral fresh-discard opportunity
+regardless of hidden Semuta custody.
 An early-ended Ornithopter advances the saved queue; a completed
 flight resumes one committed arrival only without BG, Ecaz or
 Moritani entry reactions. Distrans's gift remains private with its
@@ -92,6 +92,13 @@ has already chosen one random physical victim and discarded the used
 card before the offer. Claim or decline resumes the same pre-leader
 preparation once; an inspected or partly ready battle retains the
 automatic death path without this preview interruption.
+
+For clean printed Karama cancellation of CHOAM Charity, the spent
+public card reaches the pile before its accepted cancellation runs.
+The sole suspended response is bound to the saved receipt; claim or
+decline resumes the same canceled income once. Worthless conversion,
+other cancellations, shipping, purchases and nested Karama responses
+retain their separate automatic paths.
 
 For a genuine Ix-deck Thumper, its played physical card reaches
 the discard before an injected worm or actual spice-card draw.

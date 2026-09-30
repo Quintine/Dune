@@ -11,24 +11,30 @@ accepts a fresh Richese roster with CHOAM & Richese and optionally
 the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, private Distrans, final Truthtrance, Once Around,
 movement-order, between-battles chooser or pre-plan aggressor Sapho,
-clean pre-leader Residual Poison, battle-card and Ix-deck Thumper/Amal
-discards open the same neutral offer regardless of hidden Semuta custody.
+clean pre-leader Residual Poison, printed Karama canceling clean
+CHOAM Charity, battle-card and Ix-deck Thumper/Amal discards open
+the same neutral offer regardless of hidden Semuta custody. Karama
+waits after its public cost but before settling the canceled income.
 Residual Poison commits one random death before the offer; only an
-uninspected battle with no preparation ready qualifies. Once Around
-commits bidder order and a freed slot; other Sapho scopes commit
-chooser or aggressor priority. Claim or decline resumes the same lot,
-chooser queue or unsealed battle without repeating its prior effect;
-a Black Market Semuta reserved as the offered card cannot Commit.
-Thumper waits before its injected
-worm/spice draw; Amal waits after halving personal spice and clearing
-earlier opening passes. Mixed-owner battle cards require committed
-owner-only selection of another player's fresh card; mandatory and
-optional winner cleanup remain separate. Minimal legal AI, JSON/
-SQLite continuation and competing-room CAS are connected. Mixed
-arrivals, queued or promise-bound Truthtrance, pending rewards, other
-producers, full-hand ordering, normal Richese starts and deployed
-acceptance remain unfinished. Neutral passes and free-slot guard are
-product choices.
+uninspected battle with nobody ready qualifies. Once Around commits
+bidder order and frees a slot; other Sapho scopes commit chooser or
+aggressor priority. Claim or decline resumes the saved effect once.
+A Black Market Semuta reserved as the offered card cannot Commit.
+Thumper waits before worm/spice draw; Amal waits after halving spice
+and clearing opening passes. Mixed-owner battle cards require
+committed owner-only selection; mandatory and optional winner cleanup
+remain separate. Minimal legal AI, JSON/SQLite continuation and
+competing-room CAS are connected. Mixed arrivals, queued or
+promise-bound Truthtrance, other Karama uses, pending rewards,
+full-hand ordering, normal Richese starts and deployed acceptance
+remain unfinished. Neutral passes and free-slot guard are product
+choices.
+
+The previous `32d9ef4` container workflow built successfully but
+failed isolated storage/HTTP verification; its image was not published.
+The public job exposes no assertion log. Local Docker/Podman and
+authenticated GitHub logs are unavailable. A later checkpoint must
+pass container verification before it is a deployable candidate.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,
