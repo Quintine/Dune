@@ -40,12 +40,15 @@ full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
 
-Clean proactive La La La now passes engine, authenticated SQLite,
-direct engine smoke and phone-width guide inspection. `npm run check`
-passed types, lint and 5,847 offline tests; the build passed. Direct
-Wrangler-dev HTTP passed 50/55; four tests saw HTTP 503 and one
-discussion request timed out at 15 seconds. The proxy-free container
-run for this new code remains to be verified after push.
+Clean proactive La La La passes engine, authenticated SQLite,
+direct engine smoke and phone-width guide checks. `npm run check`
+passed types, lint and 5,847 offline tests; the build passed.
+In an isolated QA room, the actual Richese seat showed Continue
+and Commit, acquired the physical card, then retained zero free
+revivals and a two-spice paid quote across refresh. Direct
+Wrangler-dev HTTP passed 50/55 with four 503s and one timeout;
+proxy-free workflow `36671450678` passed the **full** HTTP suite
+for `b130cff` and published its image. This is not NAS deployment.
 
 Clean Kulon-before-bonus continuation passed engine, authenticated
 SQLite and genuine-setup targeted smoke checks. `npm run check`

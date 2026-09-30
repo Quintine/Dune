@@ -23,11 +23,14 @@ claim and target block. Expansion and full Semuta gates remain open.
 
 `npm run check` passed types, lint and 5,847 offline tests; the
 production build and phone-width guide inspection passed.
-Independent review found no scoped defect. Direct Wrangler-dev
-HTTP passed 50/55: four tests saw HTTP 503 and one discussion
-request exceeded its 15-second limit. The proxy-free
-container/full-HTTP gate for this revision and live NAS
-acceptance remain open.
+Independent review found no scoped defect. An isolated authenticated
+browser seat displayed neutral Continue and held-only Commit, took
+the physical La La La, showed zero free revivals and a two-spice
+paid quote, and preserved that state after refresh. Direct
+Wrangler-dev HTTP passed 50/55 with four 503s and one timeout;
+proxy-free workflow `36671450678` passed isolated storage and
+the **full** HTTP suite for `b130cff`, then published its image.
+No live NAS deployment or production gameplay check is claimed.
 
 ## 30 September 2026 — Semuta after clean CHOAM Kulon cost
 
