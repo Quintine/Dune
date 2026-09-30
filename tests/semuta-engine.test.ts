@@ -308,19 +308,46 @@ void test('neutral Semuta passes do not reveal hidden possession and resume a de
   assert.deepEqual(normalizeAutomaticGame(reload(declined)), reload(declined));
 });
 
-void test('the provisional free-slot guard is private and never spends a full-hand Semuta', () => {
+void test('a full-hand Semuta exchanges one card without revealing private capacity', () => {
   const { g, semuta, hajr } = fixture();
   for (let n = 0; n < 3; n++) player(g, 'r').hand.push(g.deck.shift()!);
   const pending = applyAction(g, 'a', { type: 'card', card: hajr.id });
   const event = pending.pendingTreacheryDiscard!.batch.event;
-  const richese = viewGame(pending, 'r').semutaReaction!;
-  assert.equal(richese.canCommit, false);
-  assert.match(richese.blocked ?? '', /free hand slot/);
+  assert.equal(viewGame(pending, 'r').semutaReaction?.canCommit, true);
+  assert.equal(viewGame(pending, 'r').semutaReaction?.blocked, null);
   assert.equal(viewGame(pending, 'a').semutaReaction?.blocked, null);
-  const before = JSON.stringify(pending);
-  assert.throws(() => applyAction(pending, 'r', { type: 'semutaCommit', event }));
-  assert.equal(JSON.stringify(pending), before);
-  assert.equal(player(pending, 'r').hand.some(card => card.id === semuta.id), true);
+  const done = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  assert.equal(player(done, 'r').hand.length, 4);
+  assert.ok(player(done, 'r').hand.some(card => card.id === hajr.id));
+  assert.ok(!player(done, 'r').hand.some(card => card.id === semuta.id));
+  assert.equal(done.discard.filter(card => card.id === semuta.id).length, 1);
+  assert.equal(done.pendingTreacheryDiscard, null);
+  assert.deepEqual(inventory(done), inventory(pending));
+  assert.equal(done.hajr.filter(id => id === 'a').length, 1);
+  assert.throws(() => applyAction(done, 'r', { type: 'semutaCommit', event }));
+});
+
+void test('Harkonnen exchanges Semuta at eight cards while an already overfull hand rejects immutably', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'r').hand = [];
+  g.players[2] = newPlayer('e', 'Harkonnen', 'harkonnen');
+  player(g, 'e').hand = [semuta, ...g.deck.splice(0, 7)];
+  player(g, 'r').hand.push(g.deck.shift()!);
+  const pending = applyAction(g, 'a', { type: 'card', card: hajr.id });
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.equal(viewGame(pending, 'e').semutaReaction?.canCommit, true);
+  const overfull = reload(pending);
+  player(overfull, 'e').hand.push(player(overfull, 'r').hand.pop()!);
+  assert.equal(viewGame(overfull, 'e').semutaReaction?.canCommit, false);
+  assert.deepEqual(viewGame(overfull, 'a'), viewGame(pending, 'a'));
+  const before = JSON.stringify(overfull);
+  assert.throws(() => applyAction(overfull, 'e', { type: 'semutaCommit', event }));
+  assert.equal(JSON.stringify(overfull), before);
+  const done = applyAction(reload(pending), 'e', { type: 'semutaCommit', event });
+  assert.equal(player(done, 'e').hand.length, 8);
+  assert.ok(player(done, 'e').hand.some(card => card.id === hajr.id));
+  assert.ok(!player(done, 'e').hand.some(card => card.id === semuta.id));
+  assert.deepEqual(inventory(done), inventory(pending));
 });
 
 void test('a saved neutral reaction cannot be deleted to auto-retire the fresh discard', () => {

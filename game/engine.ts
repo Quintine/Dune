@@ -6554,7 +6554,7 @@ function semutaContext(g: Game, owner: Player): SemutaContext {
     batch: pending.batch, event: pending.batch.event, turn: g.turn, phase: g.phase,
     owner: owner.id, ownerHand: owner.hand, discard: g.discard,
     semutaId: SEMUTA_DRUG_ID, handLimit: handLimit(owner),
-    incomingReservedSlots: 0, capacityPolicy: 'freeSlot', reservedTargetIds: [],
+    incomingReservedSlots: 0, reservedTargetIds: [],
   };
 }
 function semutaCandidates(g: Game, owner: Player) {
@@ -6587,8 +6587,8 @@ function projectedSemutaReaction(g: Game, me: Player) {
   const held = !!semuta;
   const blocked = !held || passed ? null
     : transferCardBlock(g, me, semuta!) ??
-      (me.hand.length >= handLimit(me)
-        ? 'A free hand slot is required before taking a card with Semuta Drug.'
+      (me.hand.length > handLimit(me)
+        ? 'Resolve your excess hand cards before using Semuta Drug.'
         : pending.batch.entries.every(entry => entry.discardedBy === me.id)
           ? 'No other player discarded a card in this fresh event.'
           : null);

@@ -25,8 +25,6 @@ export type SemutaContext = {
   semutaId: string;
   handLimit: number;
   incomingReservedSlots: number;
-  /** Mandatory caller policy; neither full-hand ruling is inferred here. */
-  capacityPolicy: 'exchange' | 'freeSlot';
   reservedTargetIds: readonly string[];
 };
 export type SemutaCommitment = {
@@ -96,23 +94,14 @@ function validate(context: SemutaContext) {
     throw new Error(
       'Semuta requires a current owner, event and physical card custody.',
     );
-  if (
-    !count(context.handLimit) ||
-    !count(context.incomingReservedSlots) ||
-    !['exchange', 'freeSlot'].includes(context.capacityPolicy)
-  )
+  if (!count(context.handLimit) || !count(context.incomingReservedSlots))
     throw new Error(
-      'Semuta requires an explicit capacity policy and nonnegative safe hand limits and reservations.',
+      'Semuta requires nonnegative safe hand limits and reservations.',
     );
-  const occupied = context.ownerHand.length;
-  const room = context.handLimit - context.incomingReservedSlots;
-  if (
-    occupied > room ||
-    (context.capacityPolicy === 'freeSlot' && occupied >= room)
-  )
-    throw new Error(
-      'The selected Semuta capacity policy leaves no available hand capacity.',
-    );
+  // User-selected exchange: the acquired card replaces Semuta atomically.
+  // Mandatory incoming cards still require capacity in the completed hand.
+  if (context.ownerHand.length > context.handLimit - context.incomingReservedSlots)
+    throw new Error('Semuta exchange exceeds available hand capacity.');
   const seen = new Set<string>();
   for (const card of [
     ...Array.from(context.ownerHand),
@@ -206,7 +195,7 @@ export function committedSemutaCandidates(
  * Fresh-event transfer only. Engine owns timing, globally unique custody outside
  * these supplied zones, activation reservations and persisted commitment. A
  * direct selection is also usable when the target face is already authorized.
- * Capacity is evaluated under the caller's explicit ruling; no spice is paid.
+ * Acquisition and disposal form an atomic exchange; no spice is paid.
  */
 export function resolveSemutaDrug(
   context: SemutaContext,

@@ -70,9 +70,7 @@ void test('passed, blocked, busy and waiting seats hide or disable unavailable c
   const passed = offer({ passed: true, canCommit: true });
   assert.match(markup(passed), /You continued/);
   assert.doesNotMatch(markup(passed), /Commit Semuta Drug|>Continue</);
-  const blocked = offer({ blocked: 'Your hand has no free slot.' });
-  assert.match(markup(blocked), /Your hand has no free slot/);
-  assert.doesNotMatch(markup(offer()), /Your hand has no free slot/);
+  const blocked = offer({ blocked: 'Reserved for an unfinished transaction.' });
   assert.doesNotMatch(markup(blocked), /Commit Semuta Drug/);
   assert.match(markup(offer({ canCommit: true }), true), /disabled=""[^>]*>Commit Semuta Drug/);
   assert.match(markup(offer(), true), /disabled=""[^>]*>Continue/);

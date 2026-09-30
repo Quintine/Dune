@@ -2,6 +2,20 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## User-selected full-hand exchange — 30 September 2026
+
+The user selected **Allow exchange**: treat the acquisition and
+Semuta disposal as one allowed atomic exchange, accepting its
+temporary take-before-discard order at the faction hand limit.
+The completed hand has the same count. This applies to ordinary
+and Harkonnen limits; reserved mandatory incoming cards still
+consume capacity, and an already overfull hand cannot claim.
+This is a product ruling, not a newly found publisher FAQ. It
+supersedes the earlier unanswered full-hand question and
+provisional free-slot guard. Box and special Richese purchase
+capacity are separate, unchanged boundaries.
+
+
 ## What is actually confirmed
 
 The readable publisher card face at `/tmp/dune-rules/choam-semuta-reading.png` says to take a Treachery Card immediately after another player discards it, add it to hand, choose one when multiple cards are discarded together, and discard Semuta after use. Canonical card: `richese-semuta-drug`, Special. The [photographed component](https://cdn.anyfinder.eu/assets/QsUJtVktEC87xwK08oLlwnKyaozUWfuaLzG0LFEn67ENEEVgNrDGoITy3608Dqe7) and provenance limits are recorded in `docs/RICHESE_COMPONENTS.md`; this is visible publisher-authored text on an externally hosted photograph, not a newly located official FAQ or verified printing history.
@@ -10,7 +24,7 @@ Fresh official search retrieved [CHOAM/Richese p4](https://www.gf9games.com/dune
 
 Direct official CHOAM PDF and [November 2020 FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf) opens returned HTTP 403. Indexed publisher search furnished the two passages above. Searches for Semuta, Semuta Drug, full-hand, discard and relevant FAQ terms found no Semuta-specific publisher answer. Some broad searches returned other GF9 games, including the separate movie Dune game; these were excluded. Local Ecaz/Ix text searches found no Semuta reference. I could not freshly retrieve the historical audit's Harkonnen-exchange FAQ passage, and do not promote that earlier citation into independently reverified Semuta evidence.
 
-**No newly found primary source resolves full-hand take-before-discard.** The original audit's material capacity limitation remains. This is distinct from Sapho: Sapho is discarded before its holder later buys an auction card, whereas Semuta's face places acquisition before its disposal instruction.
+**No newly found primary source resolves full-hand take-before-discard.** The user-selected atomic exchange above resolves the product policy, not publisher provenance. This is distinct from Sapho: Sapho is discarded before its holder later buys an auction card, whereas Semuta's face places acquisition before its disposal instruction.
 
 ## Target and effect contract
 
@@ -53,7 +67,7 @@ Useful acceptance test: hold public state and clock/event progression fixed; rep
 
 ## Smallest unresolved ruling set
 
-**One Semuta-specific question remains:** may a holder already at their faction hand limit use Semuta as an exchange, or must a free slot exist before taking the card because Semuta is discarded afterward? Apply the eventual answer to normal and Harkonnen limits and separately retain capacity reserved for compulsory incoming exchanges. A temporary free-slot guard is defensible as an explicitly unfinished boundary; it must not be presented as wording printed on Semuta.
+The earlier full-hand question is now answered by the user-selected exchange above. Normal and Harkonnen completed hands must still fit their limits after accounting for reserved compulsory incoming cards.
 
 The existing unresolved **Guild-stopped shipping-Karama refund** also constrains claiming that exact provisionally refundable card. Do not ask it again as a new Semuta question. Fence its competing custody or resolve the existing underlying ruling; this does not prohibit every shipment-phase Semuta event. Current Box guard in `game/engine.ts` near `:1209` already identifies this composition.
 
@@ -191,9 +205,10 @@ follow it once. Mandatory winning-card cleanup, if present, is a
 separate later batch; optional winner-selected disposal is later
 again. No Semuta claim replays combat or combines these events.
 
-Each seat can Continue; only the canonical holder with a free hand
-slot and a card discarded by another player can commit. A sole
-eligible fresh card transfers automatically in that same action.
+Each seat can Continue; a canonical holder at or below the faction
+hand limit with capacity for incoming reservations and a card
+discarded by another player can commit. A sole eligible fresh card
+transfers automatically in that same action.
 Multiple eligible public battle cards open a committed, owner-only
 inspection and exact one-card selection; the other cards remain in
 the pile and Semuta is discarded once. The saved ordinary effect or
@@ -201,10 +216,10 @@ Box parent resumes once. No undisclosed face is projected before
 commitment. Other simultaneous discard producers remain unfinished.
 
 This neutral all-seat acknowledgement is a conservative **application
-policy**, not a newly discovered publisher timing rule. The explicit
-free-slot requirement is a provisional safety guard, not the printed
-resolution of full-hand take-before-discard. Normal auction/CHOAM
-market, pending gifts, competing responses, completed Ornithopter
+policy**, not a newly discovered publisher timing rule. Full-hand
+Semuta uses the explicit user-approved atomic exchange; its completed
+hand count is unchanged. Pending gifts, competing responses,
+completed Ornithopter
 arrivals with BG intrusion, Ecaz Ambassador or Moritani Terror,
 queued or promise-bound Truthtrance, pending battle rewards and other
 typed producers retain their automatic continuation; Semuta cannot

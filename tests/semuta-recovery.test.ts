@@ -1045,7 +1045,7 @@ void test('authenticated proactive Baliset Semuta claim restores only the select
   } finally { f.sqlite.close(); }
 });
 
-void test('authenticated ordinary Trip Semuta claim returns one force after saved offer', async () => {
+void test('authenticated full-hand Trip Semuta exchange returns one force after saved offer', async () => {
   const f = unitStore();
   try {
     const made = await f.rooms.createRoom('Semuta Trip', 'choam', false, ['choam']);
@@ -1073,6 +1073,7 @@ void test('authenticated ordinary Trip Semuta claim returns one force after save
     const used = g.deck.splice(index, 1)[0];
     g.players[0].hand.push(used);
     g.players[1].hand.push(semuta);
+    g.players[1].hand.push(...g.deck.splice(0, 3));
     g.players[1].forces = { 'arrakeen:10': 1 };
     g.players[1].reserves = 19;
     g.players[2].hand.push(karama);
@@ -1111,6 +1112,7 @@ void test('authenticated ordinary Trip Semuta claim returns one force after save
     assert.equal(claimed.players[1].forces['arrakeen:10'], undefined);
     assert.equal(claimed.players[1].reserves, 20);
     assert.equal(claimed.players[1].hand.filter(card => card.id === used.id).length, 1);
+    assert.equal(claimed.players[1].hand.length, 4);
     assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
     await assert.rejects(f.restart().act(code, auths[1], current.version,
       { type: 'semutaCommit', event }, clock));

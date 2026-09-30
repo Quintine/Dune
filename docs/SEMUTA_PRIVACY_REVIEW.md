@@ -2,6 +2,12 @@
 
 7 September 2026. Read-only audit of `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, current engine, Truthtrance, bots and room persistence. No new timing or capacity ruling is assumed. No shared source edits. The existing audit's verified physical face and official CHOAM rulebook provide the effect/provenance: one fresh Treachery discard from another player, optional activation, choose one from simultaneous discards, then discard Semuta. Private discard inspection does not become freely available merely by holding Semuta.
 
+30 September follow-up: this is a historical audit. The bounded
+neutral reaction is now connected, and the user approved atomic
+full-hand exchange; see the [current source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+The earlier capacity question below is not still unanswered.
+
+
 ## Decision that cannot be solved by hiding a player name
 
 The following three requirements cannot all be guaranteed by a server-only secret-eligibility check:

@@ -2,6 +2,24 @@
 
 Checked 2026-09-07 for classic GF9 Dune and CHOAM & Richese. This supplements [CHOAM_KULL_DESIGN.md](CHOAM_KULL_DESIGN.md) and the Kull section of [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md). No runtime behavior changes in this audit.
 
+## User-selected preview timing — 30 September 2026
+
+The user selected **Different Karama**: reserve the interrupted
+physical card; a distinct eligible Karama may counter Kull before
+the phase restriction takes effect. The interrupted card cannot
+serve both the original attempt and its counter. They selected
+**Before conversion** for Bene Gesserit's Worthless-as-Karama:
+intercept while the card is still held; a successful Kull retains
+the unplayed card. They selected **Defer interaction** for a winning
+overbid made unpayable by loss of its only Karama payment. That
+composition must remain guarded, not restart bidding, cap hidden
+reaction-dependent bids, grant a free card or fabricate funding.
+
+These are explicit provisional product interpretations, not a
+publisher clarification. They supersede the older unanswered
+counter/BG proposals below; full CHOAM starts remain gated.
+
+
 ## Result and provenance
 
 No additional verified publisher or designer ruling was located that settles Kull counter priority, Bene Gesserit conversion timing, interrupted-card custody, or an unfunded winning overbid. This is a bounded retrieval result, not proof that no clarification exists.

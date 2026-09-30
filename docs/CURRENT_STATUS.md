@@ -46,9 +46,23 @@ committed owner-only selection; mandatory and optional winner cleanup
 remain separate. Minimal legal AI, JSON/SQLite continuation and
 competing-room CAS are connected. Mixed arrivals, queued or
 promise-bound Truthtrance, other Karama uses, pending rewards,
-full-hand ordering, normal Richese starts and deployed acceptance
-remain unfinished. Neutral passes and free-slot guard are product
-choices.
+normal Richese starts and deployed acceptance remain unfinished.
+Neutral passes are application policy. The user approved Semuta's
+atomic exchange at the faction hand limit; completed hand counts
+and reserved incoming capacity remain protected.
+
+Full-hand Semuta exchange passes normal/faction-limit and
+incoming-reservation regressions, authenticated SQLite and
+independent review. `npm run check` passed types, lint and
+5,854 offline tests; build passed. Direct smoke and an actual
+phone-width full-hand QA seat acquired Hajr, spent Semuta,
+kept four cards and preserved that result across refresh.
+Isolated Wrangler-dev HTTP passed 49/55 with five proxy 503s
+and one timeout; this is not a green local HTTP suite.
+Proxy-free CI for the exact checkpoint remains pending.
+Kull's approved distinct counter/BG-before-conversion timing
+is recorded but runtime remains unfinished; unpayable
+winning-overbid recovery is deliberately not chosen.
 
 Accepted printed Jubba Cloak passes focused engine and
 authenticated SQLite, a direct one-storm claim smoke and
@@ -56,9 +70,10 @@ independent review without findings. `npm run check` passed
 types, lint and 5,853 offline tests; the production build
 and phone-width in-app guide passed. Isolated built-worker
 HTTP passed 50/55 with four Wrangler-dev proxy 503s and
-one timeout. The local suite is not green; proxy-free CI
-for this exact checkpoint is pending. No NAS deployment
-or complete faction claim follows.
+one timeout. The local suite is not green. Proxy-free workflow
+`36676105785` passed the full isolated HTTP suite for `98d556a`
+and published its image. No NAS deployment or complete faction
+claim follows.
 
 Clean ordinary Trip to Gamont passes focused engine and
 authenticated SQLite checks, a direct physical claim/force

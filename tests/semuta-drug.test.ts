@@ -26,7 +26,6 @@ function fixture(): SemutaContext {
     semutaId: SEMUTA_DRUG_ID,
     handLimit: 4,
     incomingReservedSlots: 0,
-    capacityPolicy: 'freeSlot',
     reservedTargetIds: [],
     batch: {
       event: 'fresh-1',
@@ -173,24 +172,22 @@ void test('canonical Semuta identity is required and every supplied physical zon
     rejected(c);
   }
 });
-void test('both explicit capacity policies account for incoming reservations without selecting a default ruling', () => {
-  for (const capacityPolicy of ['exchange', 'freeSlot'] as const)
-    for (let held = 1; held <= 5; held++)
+void test('atomic Semuta exchange preserves normal and Harkonnen capacity and incoming reservations', () => {
+  for (const limit of [4, 8])
+    for (let held = 1; held <= limit + 1; held++)
       for (let reserved = 0; reserved <= 3; reserved++) {
         const c = fixture();
+        c.handLimit = limit;
         c.ownerHand = [semuta(), ...baseDeck().slice(10, 10 + held - 1)];
-        c.capacityPolicy = capacityPolicy;
         c.incomingReservedSlots = reserved;
-        const legal =
-          held + reserved + (capacityPolicy === 'freeSlot' ? 1 : 0) <=
-          c.handLimit;
-        if (legal) {
+        if (held + reserved <= limit) {
           const result = resolveSemutaDrug(c, target(c));
           assert.equal(result.ownerHand.length, held);
+          assert.ok(result.ownerHand.some(card => card.id === target(c)));
+          assert.ok(!result.ownerHand.some(card => card.id === SEMUTA_DRUG_ID));
+          assert.equal(result.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
         } else rejected(c);
       }
-  for (const capacityPolicy of [undefined, null, 'automatic', ''])
-    rejected({ ...fixture(), capacityPolicy } as SemutaContext);
   for (const n of [-1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
     rejected({ ...fixture(), handLimit: n });
     rejected({ ...fixture(), incomingReservedSlots: n });

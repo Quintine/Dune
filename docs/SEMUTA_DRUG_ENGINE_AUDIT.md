@@ -1,6 +1,6 @@
 # Semuta Drug: discard interception audit
 
-Audited 6 September 2026. This document originally proposed an implementation contract. The 7 September [discard continuation checkpoint](TREACHERY_DISCARD_CONTINUATIONS.md) now implements isolated claim rules and three saved exchange stages. Semuta activation remains unavailable and expansion starts remain gated.
+Audited 6 September 2026. This document originally proposed an implementation contract. The 7 September [discard continuation checkpoint](TREACHERY_DISCARD_CONTINUATIONS.md) implemented isolated claim rules and saved exchange stages. The [current source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md) supersedes historical absence claims: bounded preview activation and user-approved full-hand exchange are now connected. Full Semuta and expansion starts remain gated.
 
 ## Printed effect and primary evidence
 

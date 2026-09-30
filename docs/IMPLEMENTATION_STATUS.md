@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 30 September 2026 — user-approved full-hand Semuta exchange
+
+The user selected atomic acquisition/disposal at the faction
+hand limit. Engine commitment and private controls now allow
+a full hand; the claimed card replaces Semuta without increasing
+the completed hand. Already overfull hands still reject, and
+the pure exchange quote preserves incoming reservations.
+The obsolete caller-selectable free-slot policy was removed.
+Normal and Harkonnen capacity boundaries, physical conservation,
+private projection, JSON continuation and authenticated full-hand
+Trip recovery have focused regressions.
+
+The same conversation approved Kull's distinct-card counter and
+pre-conversion BG interception, while deferring an unpayable
+winning-overbid remedy. These rulings are recorded in the
+decision index and source update; Kull runtime is not yet
+implemented by this capacity checkpoint.
+
+`npm run check` passed types, lint and 5,854 offline tests;
+the production build passed. Independent review found no
+scoped defect. Direct engine smoke kept four cards before
+and after claiming Hajr. In an isolated authenticated
+phone-width QA room, the real full-hand seat showed enabled
+Commit, exchanged Semuta for Hajr and retained 4/4 after
+refresh. The throwaway staging script was removed.
+Isolated Wrangler-dev HTTP passed 49/55: five proxy 503s
+and one timeout. This local HTTP run is not green;
+proxy-free CI and NAS deployment are separate pending gates.
+
 ## 30 September 2026 — Semuta after accepted CHOAM Jubba Cloak cost
 
 In the explicit Richese preview, CHOAM's printed moving-storm
@@ -28,8 +57,9 @@ found no scoped defect. The built phone-width guide visibly
 described Jubba's before-protection offer. Isolated
 Wrangler-dev HTTP passed 50/55: four requests returned its
 proxy-layer 503 and one discussion request timed out. This
-is not a green local HTTP suite. Proxy-free CI and live NAS
-deployment remain pending for this checkpoint.
+is not a green local HTTP suite. Proxy-free workflow `36676105785`
+passed the full isolated HTTP suite for `98d556a` and published its
+image. No live NAS deployment is claimed.
 
 ## 30 September 2026 — Semuta after proactive ordinary Trip cost
 
