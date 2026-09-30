@@ -54,6 +54,14 @@ the undrawn decks, previous land/discard, forces and alliance state;
 Semuta claim or all-seat decline retires it before one ordinary
 Spice Blow suffix. A CHOAM-only preview has no Thumper identity.
 
+The same Ix deck supplies Amal. In a clean phase opening, its
+public disposal precedes halving every personal spice amount and
+clearing prior opening passes. `amalDiscard` binds original balances,
+the halved result and suspended opening; a neutral offer retires
+before restoring that opening. Bidding pool draws, phase income and
+other opening effects therefore still occur only after everyone
+finishes the opening. Nested openings remain unintegrated.
+
 ## Main findings
 
 A post-`applyAction` pile diff cannot implement immediate Semuta. Ix Ambassador and Ixian ally replacement discard then draw directly. Ordinary Karama cancellation/purchase can reach replacement, Harkonnen bonus or a new auction pool indirectly. A stopped frame must resume at a named stage, never rerun its original public action.

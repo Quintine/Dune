@@ -10,19 +10,19 @@ The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-se
 accepts a fresh Richese roster with CHOAM & Richese and optionally
 the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, private Distrans, final Truthtrance, movement-order
-Sapho, battle-card and Ix-deck Thumper discards open the same
+Sapho, battle-card and Ix-deck Thumper/Amal discards open the same
 neutral offer regardless of hidden Semuta custody. Thumper pauses
-before its injected worm or spice draw; claim or decline resumes
-one saved Spice Blow. Mixed-owner battle cards require a committed,
-owner-only selection of another player's freshly discarded card.
-Mandatory and optional winner cleanup remain separate events.
-Casualties, flight arrival, private gifts, answer history and Sapho
-order resume without replay. Minimal legal AI, exact JSON/SQLite
-continuation and competing-room CAS are connected. Mixed arrivals,
-auction/battle Sapho, queued or promise-bound Truthtrance, pending
-battle rewards, other discard producers, full-hand ordering, normal
-Richese starts and deployed acceptance remain unfinished. Neutral
-passes and free-slot guard are product safety choices, not rulings.
+before its injected worm or spice draw; Amal pauses after halving
+personal spice and clearing earlier opening passes, before phase
+initialization. Claim or decline resumes each saved suffix once.
+Mixed-owner battle cards require committed, owner-only selection of
+another player's fresh card. Mandatory and optional winner cleanup
+remain separate. Minimal legal AI, JSON/SQLite continuation and
+competing-room CAS are connected. Mixed arrivals, auction/battle
+Sapho, queued or promise-bound Truthtrance, pending rewards, other
+discard producers, full-hand ordering, normal Richese starts and
+deployed acceptance remain unfinished. Neutral passes and free-slot
+guard are product safety choices, not rulings.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,

@@ -618,5 +618,52 @@ void test('an authenticated Ix-deck Thumper pause retains the undrawn blow throu
     assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
     for (const auth of auths)
       assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+
+    const bidding = structuredClone(claimed);
+    const again = take(bidding, SEMUTA_DRUG_ID);
+    bidding.deck.push(take(bidding, thumper.id));
+    seat(bidding, ids[0]).hand.push(again);
+    const amal = take(bidding, 'amal');
+    seat(bidding, ids[1]).hand.push(amal);
+    seat(bidding, ids[0]).spice = 11;
+    seat(bidding, ids[1]).spice = 9;
+    seat(bidding, ids[2]).spice = 7;
+    Object.assign(bidding, { turn: 3, phase: 2, active: null, ready: [],
+      decision: null, response: null, phaseOpening: null, auction: null,
+      spiceWindow: null, spiceResolution: null, spiceSequence: null, nexus: false });
+    bidding.version = claimed.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(bidding), bidding.version, code, claimed.version).changes, 1);
+    for (let index = 0; index < auths.length; index++)
+      await act(index, { type: 'ready' });
+    const opening = await f.restart().readRoom(code);
+    assert.equal(opening.phase, 3);
+    assert.ok(opening.phaseOpening);
+    assert.deepEqual((await act(2, { type: 'ready' })).phaseOpening?.passed, [ids[2]]);
+    const deckBefore = structuredClone(opening.deck);
+    const offeredAmal = await act(1, { type: 'card', card: amal.id });
+    assert.equal(offeredAmal.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.deepEqual(offeredAmal.players.map(p => p.spice), [5, 4, 3]);
+    assert.deepEqual(offeredAmal.deck, deckBefore);
+    assert.equal(offeredAmal.phaseOpening, null);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, offeredAmal.version);
+    assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
+    const recoveredAmal = await act(0, { type: 'semutaCommit',
+      event: offeredAmal.pendingTreacheryDiscard!.batch.event });
+    assert.equal(recoveredAmal.pendingTreacheryDiscard, null);
+    assert.deepEqual(recoveredAmal.phaseOpening?.passed, []);
+    assert.deepEqual(recoveredAmal.players.map(p => p.spice), [5, 4, 3]);
+    assert.equal(seat(recoveredAmal, ids[0]).hand.filter(card => card.id === amal.id).length, 1);
+    assert.equal(recoveredAmal.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+    for (let index = 0; index < auths.length; index++)
+      await act(index, { type: 'ready' });
+    const resumedAmal = await f.restart().readRoom(code);
+    assert.equal(resumedAmal.phaseOpening, null);
+    assert.equal(resumedAmal.richeseBidding?.turn, resumedAmal.turn);
+    assert.deepEqual(resumedAmal.players.map(p => p.spice), [5, 4, 3]);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), originalSeats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(resumedAmal, auth.playerId));
   } finally { f.sqlite.close(); }
 });

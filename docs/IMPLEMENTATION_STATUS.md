@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after Ix-deck Amal
+
+In the explicit Richese preview with the physical Ix deck, playing
+Amal at a clean phase opening now publicly discards its one held
+card, halves every faction's available personal spice and resets
+earlier opening passes before a neutral all-seat Semuta offer. A
+different holder with hand space may claim only that used Amal and
+discard Semuta; all-seat decline leaves Amal in the ordinary pile.
+The exact phase-opening window then resumes once. No auction card
+draw, Bidding prelude or other opening effect runs ahead, and the
+same spice is not halved again.
+
+Genuine Ix-deck setup covers prior-pass reset, odd/even spice,
+owner-only legal AI claim, all-seat decline, physical card census,
+JSON continuation and later Richese Bidding prelude. An isolated
+migrated SQLite room restores the paused reaction, commits an
+authenticated Amal claim and completes the opening without changing
+saved seats or double-paying. Independent rules/continuation and
+privacy/recovery reviews found no scoped defect. Nested opening
+interactions, other discard producers, full-hand ordering, normal
+Richese starts and deployed acceptance remain gated.
+
+A direct production-engine run completed genuine Ix-deck setup,
+halved 11/9/7 personal spice to 5/4/3, showed a neutral offer,
+let the legal bot recover used Amal and restored cleared opening
+passes. Three real ready actions then opened Richese's Bidding
+prelude without another halving. The phone-width rules deep link
+rendered the boundary as Partial. `npm run check` passed typecheck,
+lint and 5,814/5,814 offline cases; `npm run build` and all 55
+Vite development HTTP cases passed. No deployed revision was exercised.
+
 ## 30 September 2026 — Semuta after Ix-deck Thumper
 
 The explicit Richese Semuta development profile now permits a fresh

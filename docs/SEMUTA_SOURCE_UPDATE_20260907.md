@@ -65,7 +65,7 @@ The explicit `semuta` development profile starts a fresh Richese roster
 with CHOAM & Richese and optionally the physical Ix deck, without
 opening public expansion starts. It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
-Truthtrance, movement-order Sapho, battle and Ix-deck Thumper
+Truthtrance, movement-order Sapho, battle and Ix-deck Thumper/Amal
 discards**, provided the parent transaction has no competing response.
 Every seat sees the same neutral fresh-discard opportunity regardless
 of hidden Semuta custody.
@@ -80,6 +80,11 @@ the discard before an injected worm or actual spice-card draw.
 Semuta claim or all-seat decline resumes the one saved Spice Blow;
 it neither injects a second worm nor replays any earlier effect.
 Thumper without the Ix deck is not a physical card in this profile.
+
+An Ix-deck Amal is already publicly discarded after halving every
+personal spice amount and resetting previous phase-opening passes.
+Semuta claim or all-seat decline restores that exact opening; no
+auction pool, phase income or other opening work runs ahead or twice.
 
 The first battle mandatory batch may contain public cards belonging
 to both combatants. Its accepted result and card custody precede

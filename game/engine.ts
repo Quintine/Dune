@@ -1161,6 +1161,14 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'amalDiscard';
+          player: string;
+          card: string;
+          before: { player: string; spice: number }[];
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'truthtranceDiscard';
           consumed: TruthQueueEntry;
           historyIndex: number;
@@ -4750,6 +4758,24 @@ function thumperDiscardSignature(g: Game, c: ThumperDiscardContinuation) {
     })),
   });
 }
+type AmalDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'amalDiscard' }
+>;
+function amalDiscardSignature(g: Game, c: AmalDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, card: c.card, before: c.before,
+    parent: nullentropyParentSignature(g, c.resume, `amal:${c.card}`),
+    turn: g.turn, phase: g.phase, advanced: g.advanced, expansions: g.expansions,
+    active: g.active, order: g.order, ready: g.ready, storm: g.storm,
+    deck: g.deck, richeseCache: g.richeseCache, auction: g.auction,
+    spice: g.spice, spiceDeck: g.spiceDeck,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, spice: p.spice, bribes: p.bribes,
+      forces: p.forces, reserves: p.reserves, tanks: p.tanks,
+    })),
+  });
+}
 type TruthDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'truthtranceDiscard' }
@@ -5207,6 +5233,29 @@ function treacheryDiscardIntegrity(g: Game) {
       c.stateSignature === thumperDiscardSignature(g, c),
       'The used Thumper no longer matches its undrawn Spice Blow.',
     );
+  } else if (continuation?.kind === 'amalDiscard') {
+    const c = continuation, entry = batch.entries[0];
+    requireRule(
+      g.expansions.includes('ix') &&
+      g.players.some(p => p.id === c.player) &&
+      batch.cause === 'amal' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card && entry.card.name === 'Amal' &&
+      entry.card.kind === 'special' && entry.card.effect === 'amal' &&
+      c.resume && !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama &&
+      c.resume.phaseOpening &&
+      Array.isArray(c.resume.phaseOpening.passed) &&
+      c.resume.phaseOpening.passed.length === 0 &&
+      typeof c.resume.phaseOpening.initialize === 'boolean' &&
+      Array.isArray(c.before) && c.before.length === g.players.length &&
+      c.before.every((row, index) => row.player === g.players[index].id &&
+        Number.isSafeInteger(row.spice) && row.spice >= 0 &&
+        g.players[index].spice === Math.floor(row.spice / 2)) &&
+      c.stateSignature === amalDiscardSignature(g, c),
+      'The used Amal no longer matches its halved spice and saved phase opening.',
+    );
+    suspendedControlsIntegrity(g, c.resume);
   } else if (continuation?.kind === 'truthtranceDiscard') {
     const c = continuation,
       entry = batch.entries[0],
@@ -5823,6 +5872,7 @@ function semutaOfferSupported(
     continuation.kind !== 'distransDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
+    continuation.kind !== 'amalDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
@@ -5865,7 +5915,10 @@ function semutaOfferSupported(
       continuation.kind === 'winnerMandatoryDiscard' ||
       continuation.kind === 'battleResolved' ||
       (!continuation.resume.response && !continuation.resume.decision &&
-        !continuation.resume.pendingKarama && !continuation.resume.phaseOpening)) &&
+        !continuation.resume.pendingKarama &&
+        (continuation.kind === 'amalDiscard'
+          ? continuation.resume.phaseOpening?.passed.length === 0
+          : !continuation.resume.phaseOpening))) &&
     !g.karamaShipping && !g.auction && !g.richeseAuction && !g.battle &&
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
@@ -6034,6 +6087,11 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
     if (g.active !== g.movementRemaining?.[0]) movementTurn(g);
+  } else if (next.kind === 'amalDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
   } else if (next.kind === 'thumperDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -24030,7 +24088,10 @@ function applyActionInner(
         t === 'card' && card && !action.mode,
         'Play Amal or pass the phase opening before taking other actions.',
       );
-      discard(g, p, card.id);
+      const before = g.semutaPreview
+        ? g.players.map(player => ({ player: player.id, spice: player.spice }))
+        : null;
+      const used = discard(g, p, card.id);
       for (const player of g.players)
         player.spice = Math.floor(player.spice / 2);
       g.phaseOpening.passed = [];
@@ -24038,6 +24099,20 @@ function applyActionInner(
         g,
         `${p.name} played Amal. Each faction returned half its available spice to the bank, rounded up.`,
       );
+      if (before) {
+        const continuation: AmalDiscardContinuation = {
+          kind: 'amalDiscard', player: p.id, card: used.id, before,
+          resume: { response: g.response, decision: g.decision,
+            pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+          stateSignature: '',
+        };
+        const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+        if (semutaOfferSupported(g, continuation, entries)) {
+          g.phaseOpening = null;
+          continuation.stateSignature = amalDiscardSignature(g, continuation);
+          stageTreacheryDiscard(g, 'amal', entries, continuation);
+        }
+      }
     }
     return g;
   }
