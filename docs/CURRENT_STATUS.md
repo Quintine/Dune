@@ -10,22 +10,23 @@ The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-se
 accepts a fresh Richese roster with CHOAM & Richese and optionally
 the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, private Distrans, final Truthtrance, Once Around,
-movement-order or pre-plan aggressor Sapho, battle-card and Ix-deck
-Thumper/Amal discards open the same neutral offer regardless of hidden
-Semuta custody. Once Around has already committed remaining bidder
-order and a freed hand slot; pre-plan Sapho has committed tie priority.
-Claim or decline retains the lot or unsealed shared battle preparation
-without another order/aggressor change; a Black Market Semuta reserved
+movement-order, between-battles chooser or pre-plan aggressor Sapho,
+battle-card and Ix-deck Thumper/Amal discards open the same neutral
+offer regardless of hidden Semuta custody. Once Around has committed
+remaining bidder order and a freed hand slot; between-battles Sapho
+has committed chooser priority, and pre-plan Sapho tie priority.
+Claim or decline retains the lot, chooser queue or unsealed battle
+without replaying its order/aggressor change; a Black Market Semuta reserved
 as the offered card cannot Commit. Thumper waits before its injected
 worm/spice draw; Amal waits after halving personal spice and clearing
 earlier opening passes. Mixed-owner battle cards require committed
 owner-only selection of another player's fresh card; mandatory and
 optional winner cleanup remain separate. Minimal legal AI, JSON/
 SQLite continuation and competing-room CAS are connected. Mixed
-arrivals, remaining battle-choice Sapho, queued or promise-bound
-Truthtrance, pending rewards, other producers, full-hand ordering,
-normal Richese starts and deployed acceptance remain unfinished.
-Neutral passes and free-slot guard are product choices.
+arrivals, queued or promise-bound Truthtrance, pending rewards, other
+producers, full-hand ordering, normal Richese starts and deployed
+acceptance remain unfinished. Neutral passes and free-slot guard are
+product choices.
 
 One [natural Advanced Moritani assassination](MORITANI_ASSASSINATE_LEADERS.md#29-september-2026--natural-revealed-card-game)
 now proceeds from genuine battle loss to a dead-target Traitor reveal,

@@ -1163,6 +1163,15 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'saphoBattleOrderDiscard';
+          player: string;
+          card: string;
+          event: string;
+          mode: 'first' | 'last';
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'saphoAggressorDiscard';
           player: string;
           card: string;
@@ -4770,6 +4779,23 @@ function saphoAuctionDiscardSignature(g: Game, c: SaphoAuctionDiscardContinuatio
     })),
   });
 }
+type SaphoBattleOrderDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'saphoBattleOrderDiscard' }
+>;
+function saphoBattleOrderDiscardSignature(g: Game, c: SaphoBattleOrderDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, card: c.card, event: c.event, mode: c.mode,
+    parent: nullentropyParentSignature(g, c.resume, c.event),
+    turn: g.turn, phase: g.phase, active: g.active, order: g.order,
+    battleOrder: g.battleOrder, useEvents: g.battleOrderUseEvents,
+    afterBattle: g.lastBattleContext, battles: quoteCombatBoard(g).battles,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, ally: p.ally,
+      hand: p.hand.map(card => card.id), forces: p.forces,
+    })),
+  });
+}
 type SaphoAggressorDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'saphoAggressorDiscard' }
@@ -5296,6 +5322,23 @@ function treacheryDiscardIntegrity(g: Game) {
       !c.resume.pendingKarama && !c.resume.phaseOpening &&
       c.stateSignature === saphoAuctionDiscardSignature(g, c),
       'The used Juice of Sapho no longer matches its committed Once Around order.',
+    );
+  } else if (continuation?.kind === 'saphoBattleOrderDiscard') {
+    const c = continuation, entry = batch.entries[0], order = g.battleOrder;
+    const use = order?.uses.at(-1);
+    requireRule(
+      g.phase === 6 && !g.battle && order && use &&
+      use.event === c.event && use.player === c.player && use.mode === c.mode &&
+      g.battleOrderUseEvents?.at(-1) === c.event &&
+      g.active === battleOrderQuote(g).current &&
+      batch.cause === 'sapho:battleOrder' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card &&
+      richeseCardDefinition(entry.card)?.card.effect === 'juiceOfSapho' &&
+      !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature === saphoBattleOrderDiscardSignature(g, c),
+      'The used Juice of Sapho no longer matches its committed battle chooser order.',
     );
   } else if (continuation?.kind === 'saphoAggressorDiscard') {
     const c = continuation, entry = batch.entries[0], battle = g.battle;
@@ -5973,6 +6016,7 @@ function semutaOfferSupported(
     continuation.kind !== 'saphoMovementDiscard' &&
     continuation.kind !== 'saphoAggressorDiscard' &&
     continuation.kind !== 'saphoAuctionDiscard' &&
+    continuation.kind !== 'saphoBattleOrderDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
     continuation.kind !== 'amalDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
@@ -6208,6 +6252,11 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
     settleRicheseLot(g);
+  } else if (next.kind === 'saphoBattleOrderDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
   } else if (next.kind === 'saphoAggressorDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -14579,12 +14628,26 @@ function playSapho(g: Game, p: Player, action: Action) {
     const next = battleOrderRule(() => reorderBattleChoosers({state: g.battleOrder, physicalOrder: g.order,
       turn: g.turn, afterBattle: battleOrderAfterBattle(g), pairs: quoteCombatBoard(g).battles,
       event: option.event, player: p.id, mode: option.mode}));
-    discard(g, p, 'richese-juice-of-sapho');
+    const used = discard(g, p, 'richese-juice-of-sapho');
     g.battleOrder = next;
     (g.battleOrderUseEvents ??= []).push(option.event);
     g.active = battleOrderQuote(g).current;
     log(g, `${p.name} discarded Juice of Sapho to choose their remaining battles ${option.mode} this Battle Phase. Other players may still choose to fight them earlier. Physical storm order and battle aggressor are unchanged.`,
       {faction: p.faction, name: 'Juice of Sapho'});
+    if (g.semutaPreview) {
+      const continuation: SaphoBattleOrderDiscardContinuation = {
+        kind: 'saphoBattleOrderDiscard', player: p.id, card: used.id,
+        event: option.event!, mode: option.mode,
+        resume: { response: g.response, decision: g.decision,
+          pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+        stateSignature: '',
+      };
+      const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+      if (semutaOfferSupported(g, continuation, entries)) {
+        continuation.stateSignature = saphoBattleOrderDiscardSignature(g, continuation);
+        stageTreacheryDiscard(g, 'sapho:battleOrder', entries, continuation);
+      }
+    }
   } else {
     const queue = saphoMovementQueue(g)!;
     const next =

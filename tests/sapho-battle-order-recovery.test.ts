@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { DatabaseSync } from "node:sqlite";
 import { viewGame, type Action, type Game } from "../game/engine";
+import { SEMUTA_DRUG_ID } from "../game/semuta-drug";
 import type { RoomsClock } from "../db/rooms";
 import { unitStore } from "./fixture-nexus-room-store";
 import {
@@ -11,6 +12,7 @@ import {
   saphoBattleCustody,
   saphoBattleOrderAction,
   saphoBattleOrderGame,
+  takeSaphoBattleCard,
 } from "./fixture-sapho-battle-order";
 
 const clock: RoomsClock = { now: () => 87000, sleep: async () => {} };
@@ -281,4 +283,37 @@ void test("authenticated first and last claims survive CAS, a defender-owned bat
     );
     assert.deepEqual(rows(f.sqlite).seats, seatRows);
   }
+});
+
+void test("authenticated Semuta claim restores one between-battle chooser order", async (t) => {
+  const f = await fixture(t, false, 2);
+  let game = await f.restart().readRoom(f.code);
+  game.semutaPreview = true;
+  takeSaphoBattleCard(game, f.ids[3], SEMUTA_DRUG_ID);
+  f.sqlite.prepare("UPDATE rooms SET state=? WHERE code=?")
+    .run(JSON.stringify(game), f.code);
+  const seatRows = rows(f.sqlite).seats;
+  game = await act(f, f.holder, saphoBattleOrderAction(game, f.holder, "first"));
+  const event = game.pendingTreacheryDiscard!.batch.event;
+  assert.equal(game.pendingTreacheryDiscard?.reaction?.stage, "offer");
+  assert.equal(game.active, f.holder);
+  assert.equal(game.battleOrder?.uses.length, 1);
+  const version = game.version;
+  await f.restart().continueRoomAutomatic(f.code, clock);
+  assert.equal((await f.restart().readRoom(f.code)).version, version);
+  const ownerView = await f.restart().readSeatView(f.code, f.auths[3]);
+  const rivalView = await f.restart().readSeatView(f.code, f.auths[1]);
+  assert.equal(ownerView.semutaReaction?.canCommit, true);
+  assert.equal(rivalView.semutaReaction?.canCommit, false);
+  game = await act(f, f.ids[3], { type: "semutaCommit", event });
+  assert.equal(game.pendingTreacheryDiscard, null);
+  assert.equal(game.active, f.holder);
+  assert.equal(game.battleOrder?.uses.length, 1);
+  assert.equal(game.players[3].hand.filter(card => card.id === SAPHO_BATTLE_CARD).length, 1);
+  assert.equal(game.discard.filter(card => card.id === SEMUTA_DRUG_ID).length, 1);
+  assert.deepEqual(rows(f.sqlite).seats, seatRows);
+  const choice = chooseSaphoBattleAction(game);
+  game = await act(f, choice.player, choice.action);
+  assert.ok(game.battle);
+  assert.equal(game.battleOrder?.uses.length, 1);
 });

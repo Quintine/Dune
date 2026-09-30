@@ -7,6 +7,7 @@ import {
   type Action,
   type Game,
 } from '../game/engine';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import {
   battleChooserEvent,
   quoteBattleChoosers,
@@ -93,6 +94,40 @@ void test('first and last reorder Basic/Advanced remaining choosers without chan
       );
       restore(next);
     }
+});
+
+void test('clean between-battle Sapho discard offers Semuta before chooser acts', () => {
+  for (const [owner, mode, nextChooser] of [
+    ['c', 'first', 'c'],
+    ['a', 'last', 'b'],
+  ] as const) {
+    let g = saphoBattleOrderGame({ holder: owner, semutaPreview: true });
+    takeSaphoBattleCard(g, 'r', SEMUTA_DRUG_ID);
+    const initialPairs = pairs(g);
+    g = applyAction(g, owner, saphoBattleOrderAction(g, owner, mode));
+    const event = g.pendingTreacheryDiscard!.batch.event;
+    assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(g.active, nextChooser);
+    assert.equal(g.battleOrder?.uses.length, 1);
+    assert.deepEqual(pairs(g), initialPairs);
+    assert.equal(viewGame(g, 'r').semutaReaction?.canCommit, true);
+    assert.equal(viewGame(g, 'b').semutaReaction?.canCommit, false);
+    assert.deepEqual(normalizeAutomaticGame(restore(g)), restore(g));
+    let declined = restore(g);
+    for (const id of ['a', 'b', 'c', 'r'])
+      declined = applyAction(declined, id, { type: 'semutaPass', event });
+    assert.equal(declined.pendingTreacheryDiscard, null);
+    assert.equal(declined.battleOrder?.uses.length, 1);
+    const claimed = applyAction(restore(g), 'r', { type: 'semutaCommit', event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.equal(claimed.players.find(p => p.id === 'r')!.hand.filter(c => c.id === SAPHO_BATTLE_CARD).length, 1);
+    assert.equal(claimed.discard.filter(c => c.id === SEMUTA_DRUG_ID).length, 1);
+    assert.deepEqual(claimed.battleOrder, declined.battleOrder);
+    const chosen = choose(claimed);
+    assert.ok(chosen.battle);
+    assert.equal(chosen.battleOrder?.uses.length, 1);
+    reject(claimed, 'r', { type: 'semutaCommit', event }, /fresh|available/i);
+  }
 });
 
 void test('a later physical defender chooses its opponent while original combat roles, powers and tie owner stay fixed', () => {

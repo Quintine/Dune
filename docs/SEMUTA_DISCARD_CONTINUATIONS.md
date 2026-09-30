@@ -29,12 +29,16 @@ Clean movement-order Sapho stages `saphoMovementDiscard` after its
 finite first/last queue and public card disposal are committed.
 The reaction retires before `movementTurn` opens the new actor's turn;
 the queue, prior active seat and protected-last receipt bind its suffix.
+Clean between-battles Sapho stages `saphoBattleOrderDiscard` after
+its finite chooser priority and public card disposal commit, before
+any next battle is selected. The receipt binds the last battle,
+unselected board, chooser uses, hands and card identity; claim or
+decline resumes the same active chooser without repeating the reorder.
 Clean pre-plan aggressor Sapho stages `saphoAggressorDiscard` after
 the aggressor event, ordinary tie priority and card disposal commit.
 The receipt binds the same unsealed battle, readiness, player hands
 and reserves. Claim or decline restores shared pre-leader preparation
-without rerunning the aggressor change. Remaining battle-choice Sapho
-stays outside this preview.
+without rerunning the aggressor change.
 
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without

@@ -1,5 +1,28 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after between-battles Sapho
+
+The explicit Richese preview now pauses after Juice of Sapho
+commits a clean between-battles chooser reorder and publicly
+discards its physical card. The next battle has not been selected.
+All seats see the same neutral offer; claim transfers only that
+used card, and all-seat decline leaves it discarded. The saved
+receipt binds the chooser use/event, last battle, unselected board,
+hands and force geometry. Its completion restores the current
+chooser without replaying the reorder or opening another battle.
+
+Genuine CHOAM/Richese setup, first/last chooser order, claim/decline,
+owner-only projection, JSON normalization and authenticated SQLite
+restart/room CAS were exercised. A direct production-engine smoke
+run observed the offer, single card transfer and next battle chosen
+by the preserved actor. Two independent read-only rules/privacy
+reviews found no scoped defect. `npm run check` passed typecheck,
+lint and 5,821 offline tests; `npm run build` and all 55 local HTTP
+tests passed. The local phone-width reference rendered the updated
+Semuta guidance. No deployed revision was exercised. Competing
+responses, other discard producers, full-hand sequencing, normal
+Richese starts and publication acceptance remain gated.
+
 ## 30 September 2026 — Semuta after Once Around Sapho
 
 The explicit Richese preview now pauses after a clean Once Around

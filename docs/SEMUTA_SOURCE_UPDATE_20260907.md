@@ -65,9 +65,9 @@ The explicit `semuta` development profile starts a fresh Richese roster
 with CHOAM & Richese and optionally the physical Ix deck, without
 opening public expansion starts. It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
-Truthtrance, Once Around, movement-order or pre-plan aggressor Sapho,
-battle and Ix-deck Thumper/Amal discards**, provided the parent
-transaction has no competing response.
+Truthtrance, Once Around, movement-order, between-battles chooser
+or pre-plan aggressor Sapho, battle and Ix-deck Thumper/Amal
+discards**, provided the parent transaction has no competing response.
 Every seat sees the same neutral fresh-discard opportunity regardless
 of hidden Semuta custody.
 An early-ended Ornithopter advances the saved queue; a completed
@@ -79,6 +79,9 @@ finite bidder order, retains prior bids/funding and frees the holder's
 hand slot before the offer; the saved lot resumes without another
 reorder. If Semuta itself is reserved as an offered Black Market card,
 its owner cannot Commit, while every seat still sees the neutral offer.
+A clean between-battles Sapho discard commits its finite chooser
+priority after a resolved battle; claim or decline restores the same
+unselected battle board without repeating that order change.
 A clean pre-plan Sapho aggressor choice commits its
 ordinary tie priority and physical card before the Semuta offer; the
 unsealed battle's shared readiness then resumes without another
@@ -117,9 +120,9 @@ free-slot requirement is a provisional safety guard, not the printed
 resolution of full-hand take-before-discard. Normal auction/CHOAM
 market, pending gifts, competing responses, completed Ornithopter
 arrivals with BG intrusion, Ecaz Ambassador or Moritani Terror,
-queued or promise-bound Truthtrance, remaining battle-choice Sapho,
-pending battle rewards and other typed producers retain their
-automatic continuation; Semuta cannot claim those events yet.
+queued or promise-bound Truthtrance, pending battle rewards and other
+typed producers retain their automatic continuation; Semuta cannot
+claim those events yet.
 The completed Box's selected
 search card stays private and its paid shuffle is not repeated
 when another seat takes the used Box. No source ruling is inferred
