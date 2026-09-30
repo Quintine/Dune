@@ -142,6 +142,14 @@ counter; BG interception is before conversion. Unpayable overbid recovery remain
 guarded. See the [selected policy and boundaries](docs/CHOAM_KULL_SOURCE_UPDATE.md).
 This does not enable public expansion starts or certify full CHOAM.
 
+For local **Richese Nexus Betrayal** testing, use `node --import tsx tools/start-prototype.ts --profile richese-betrayal`
+on a fresh ready Basic/Advanced CHOAM/Richese-plus-classic lobby with the `choam`
+deck and Nexus only. The same exact-version/private-backup safeguards apply.
+The preview connects public self-cache purchase veto without payment and
+other-buyer cache/Black Market sale diversion with unchanged delivery and price.
+See the [cost, private timing, recovery evidence and remaining boundaries](docs/NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026).
+This does not enable public expansion starts or certify the full Nexus family.
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

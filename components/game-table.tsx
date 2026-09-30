@@ -78,6 +78,7 @@ import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { SemutaReaction } from './semuta-reaction';
 import { ChoamKull } from './choam-kull';
+import { NexusRicheseBetrayal } from './nexus-richese-betrayal';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
@@ -301,8 +302,8 @@ export function GameTable({
   );
   const reactionBusy =
     transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot;
-  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction;
-  const kullOwnsControls = !!g.kullReaction || !!g.kullCounterEvent;
+  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction;
+  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction;
   const canActivateKarama = (card: Card) =>
     !g.karamaBlocked && canUseAsKaramaRole(g, me, card);
   const traitorBattle = g.battle;
@@ -1008,6 +1009,8 @@ export function GameTable({
                       faction(g.players.find((p) => p.id === id)!.faction).name,
                   )
                   .join(' + ') || 'No winner'
+              : g.richeseBetrayalReaction
+                ? 'Richese auction acknowledgement'
               : g.kullReaction
                 ? 'CHOAM Karama response'
               : g.semutaReaction
@@ -1033,6 +1036,14 @@ export function GameTable({
           Kull Wahad development preview · provisional interception timing, not
           complete CHOAM or certified expansion rules.{' '}
           <a href="/rules?topic=choam-kull#choam-kull">Preview rules and limits</a>
+        </p>
+      )}
+      {g.richeseBetrayalPreview && (
+        <p className="notice" role="status">
+          Richese Nexus Betrayal development preview · public cache self-purchase
+          veto and ordinary other-buyer sale diversion only; not complete Richese
+          or certified Nexus rules.{' '}
+          <a href="/rules?topic=nexus-richese-betrayal#nexus-richese-betrayal">Preview rules and limits</a>
         </p>
       )}
       {g.status !== 'lobby' && (
@@ -1630,9 +1641,9 @@ export function GameTable({
           </div>
           {g.battle?.revealed && <a className="battle-display-link" href="#revealed-battle-plans">Compare revealed battle plans</a>}
           <PrivateBattlePlan game={g} />
-          {!kullOwnsControls && g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
+          {!reactionOwnsControls && g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
           {g.karamaBlocked && <p className="notice" role="status">{g.karamaBlocked}</p>}
-          {!kullOwnsControls && <>
+          {!reactionOwnsControls && <>
           <NexusCards game={g} act={act} busy={busy} />
           <Recruits game={g} act={act} busy={busy} />
           <NexusTraitors game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
@@ -1673,7 +1684,9 @@ export function GameTable({
             onSectorChange={setSector}
           />
           </>}
-          {g.kullReaction ? (
+          {g.richeseBetrayalReaction ? (
+            <NexusRicheseBetrayal game={g} act={act} busy={reactionBusy} />
+          ) : g.kullReaction ? (
             <ChoamKull game={g} act={act} busy={reactionBusy} />
           ) : g.nexusCards?.waiting.length ? (
             <p className="muted">The next phase begins when the remaining Nexus card choices are finished.</p>
@@ -5083,7 +5096,7 @@ export function GameTable({
             : ' · Flips at the next Mentat Pause'}
         </p>
       )}
-      {!kullOwnsControls && <Bribes game={g} act={act} busy={busy} />}
+      {!reactionOwnsControls && <Bribes game={g} act={act} busy={busy} />}
       <TruthHistory game={g} />
       <HarkonnenExchangeInspection game={g} />
       <section className="player-console">
@@ -5105,7 +5118,7 @@ export function GameTable({
             </button>
           ))}
         </nav>
-        {panel === 'hand' && kullOwnsControls ? (
+        {panel === 'hand' && reactionOwnsControls ? (
           <HandBrowser key={`${g.code}:${me.id}`} cards={me.hand ?? []} empty={<p className="muted">Your Treachery hand is empty.</p>}>
             {(card) => (
               <article className="treachery-card" key={card.id}>

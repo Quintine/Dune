@@ -263,6 +263,9 @@ function calculate(
     sale = { ...s, legacy: false };
     cardId = lot.cardId;
   }
+  requireAuction(sale.recipient === undefined ||
+    (sale.recipient === 'bank' && sale.origin !== 'normal' && sale.seller !== sale.winner && sale.amount > 0),
+  'A bank recipient override requires a positive Richese sale to another buyer.');
   requireAuction(
     count(sale.amount) && typeof sale.free === 'boolean',
     'The paid auction amount or free flag is invalid.',
@@ -342,17 +345,19 @@ function calculate(
   ): AuctionContinuationQuote => ({ sale, steps, next });
   if (stage === 'sale') {
     if (sale.origin !== 'normal' && sale.seller !== winner.id) {
-      const seller = seated(sale.seller!)!;
-      requireAuction(
-        count(seller.spice) && count(seller.spice + sale.amount),
-        'The seller credit would overflow its current balance.',
-      );
-      steps.push({
-        kind: 'sellerCredit',
-        player: seller.id,
-        amount: sale.amount,
-        balance: seller.spice + sale.amount,
-      });
+      if (sale.recipient !== 'bank') {
+        const seller = seated(sale.seller!)!;
+        requireAuction(
+          count(seller.spice) && count(seller.spice + sale.amount),
+          'The seller credit would overflow its current balance.',
+        );
+        steps.push({
+          kind: 'sellerCredit',
+          player: seller.id,
+          amount: sale.amount,
+          balance: seller.spice + sale.amount,
+        });
+      }
     } else {
       const emperor = input.players.find((p) => p.faction === 'emperor');
       if (!sale.free && emperor && emperor.id !== winner.id)

@@ -6,6 +6,24 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+Five implementation lanes now connect the bounded
+[Richese Nexus Betrayal](NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026)
+preview: original public self-cache purchase veto without payment,
+and another buyer's cache/Black Market sale diversion to bank with
+unchanged price, contributions, physical delivery and earned Harkonnen
+bonus. Fresh `richese-betrayal` CLI entry requires paired CHOAM/Richese,
+classic remaining seats, the CHOAM deck and Nexus alone. Public possible
+responders acknowledge uniformly; only own canonical eligibility shows Use.
+Independent review repaired escrow double-counting and post-bonus
+exhausted-cache preflight. Types, lint, 5,953 offline tests, build and
+80 focused cases pass. Genuine local CLI/runtime and phone controls prove
+Basic veto, Advanced all-pass and Basic cache/Advanced Black Market
+diversion, exact custody and refresh. Local Wrangler HTTP is **51/55**:
+three POST 503s and one Advanced timeout, not green HTTP acceptance.
+Proxy-free CI and live deployment are separate. Normal hidden self-buys,
+private special acquisition, wider compositions and full-family completion
+remain open; no public start or live deployment is claimed.
+
 The explicit `kull` development profile now connects printed Kull
 Wahad interception in Basic/Advanced CHOAM-plus-classic rosters
 with the physical CHOAM/Ix deck. Five implementation lanes delivered

@@ -9,6 +9,7 @@ import {
   initializeEcazTreacheryGameForAudit,
   initializeSemutaGameForAudit,
   initializeKullGameForAudit,
+  initializeRicheseBetrayalGameForAudit,
   viewGame,
   type Game,
 } from '../game/engine';
@@ -23,6 +24,7 @@ export const PROTOTYPE_PROFILES = [
   'ecaz-treachery',
   'semuta',
   'kull',
+  'richese-betrayal',
 ] as const;
 export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
@@ -73,6 +75,11 @@ export function startPrototypeRoom(
         ? initializeSemutaGameForAudit(initial)
       : profile === 'kull'
         ? initializeKullGameForAudit(initial)
+      : profile === 'richese-betrayal'
+        ? initializeRicheseBetrayalGameForAudit({
+            ...initial,
+            nexusCards: initial.nexusCards ?? { cards: null, phase: null },
+          })
       : profile === 'factions'
         ? initializeFactionExpansionsGameForAudit(initial)
         : profile === 'nexus'

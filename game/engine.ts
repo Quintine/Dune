@@ -414,6 +414,7 @@ import {
   quoteRicheseSettlement,
   requireRicheseDeclarationCache,
   RicheseSettlementError,
+  type RicheseSettlementQuote,
 } from './richese-settlement';
 import {
   validateAmbassadors,
@@ -465,6 +466,7 @@ import { reserveExtortion, collectExtortion, answerExtortion, validateExtortionS
 import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
 import { kullBlocksKarama, activeKullRestrictions, validateKullPhaseRestrictions, validateKullAttemptStamp, kullNativeCostCards, kullCounterCards, type KullPhaseRestriction } from './choam-kull';
+import { quoteRicheseBetrayalInvoice, requiredRicheseBetrayalResponders, richeseBetrayalEligibility, richeseBetrayalEvent, createRicheseBetrayalReceipt, validateRicheseBetrayalCursor, type RicheseBetrayalCursor, type RicheseBetrayalReceipt } from './nexus-richese-betrayal';
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
 import { highKaitainDiscardsAvailable, quoteKaitainDiscards, homeworldWorthlessSaleBlock } from './homeworld-card-economy';
 import { biddingEndError, biddingEndQuiet, biddingEndPubliclyEmpty, type BiddingEnd } from './bidding-end';
@@ -1079,6 +1081,15 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** Explicit bounded Nexus/Richese auction profile; never inferred for old saves. */
+  richeseBetrayalPreview?: boolean;
+  richeseBetrayal?: RicheseBetrayalCursor;
+  pendingRicheseBetrayal?: {
+    receipt: RicheseBetrayalReceipt;
+    lot: RicheseAuction;
+    quote: Extract<RicheseSettlementQuote, {kind:'sold'}>;
+    signature: string;
+  } | null;
   /** Explicit development profile; never enabled by a public start or player action. */
   kullPreview?: boolean;
   kullSequence?: number;
@@ -1445,6 +1456,8 @@ export type Game = {
     free: boolean;
     origin: 'normal' | 'cache' | 'blackMarket';
     seller: string | null;
+    /** Original seller remains the source owner when the invoice is sent to bank. */
+    recipient?: 'bank';
   } | null;
   pendingAmbassador?: {
     revivalEvent?: string;
@@ -8088,6 +8101,19 @@ export function initializePairedNexusGameForAudit(state: Game): Game {
   return initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
 }
 
+/** Genuine opt-in auction source interruption; ordinary/public starts stay gated. */
+export function initializeRicheseBetrayalGameForAudit(state: Game): Game {
+  requireRule(!state.richeseBetrayalPreview && !state.richeseBetrayal && !state.pendingRicheseBetrayal &&
+    richeseBetrayalModeSupported(state) &&
+    state.nexusCards?.cards === null && state.nexusCards.phase === null,
+  'Richese Betrayal needs a fresh CHOAM/Richese lobby, the CHOAM deck and only Nexus Cards.');
+  const g = initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
+  g.richeseBetrayalPreview = true;
+  g.richeseBetrayal = {sequence:0,current:null,completed:[]};
+  g.pendingRicheseBetrayal = null;
+  return g;
+}
+
 /** Offline-only all-expansion Nexus composition, optionally with Homeworlds; not a public start gate. */
 export function initializeCombinedNexusGameForAudit(state: Game, homeworlds = false): Game {
   requireRule(state.expansions.length === 3 &&
@@ -9379,6 +9405,188 @@ function finishRicheseLot(g: Game) {
     nextPhase(g);
   }
 }
+function richeseBetrayalModeSupported(g: Game): boolean {
+  return g.expansions.length === 1 && g.expansions[0] === 'choam' &&
+    g.players.length >= 2 && g.players.length <= 6 &&
+    g.players.some(p => p.faction === 'richese') && g.players.some(p => p.faction === 'choam') &&
+    g.players.every(p => RICHESE_CUNNING_ROSTER.has(p.faction)) &&
+    !!g.nexusCards && !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled &&
+    !g.ecazTreachery && !g.sandtrout && !g.techTokens && !g.strongholdCards &&
+    !g.semutaPreview && !g.kullPreview;
+}
+function richeseBetrayalResponders(g: Game): string[] {
+  return requiredRicheseBetrayalResponders(g.players.map(p => ({
+    id:p.id,faction:p.faction,ally:p.ally,nexusHeld:!!g.nexusCards?.cards?.hands[p.id],
+  })));
+}
+function richeseBetrayalSourceSignature(g: Game, frame: NonNullable<Game['pendingRicheseBetrayal']>): string {
+  return JSON.stringify({
+    event:frame.receipt.event,lot:frame.lot,quote:frame.quote,turn:g.turn,phase:g.phase,status:g.status,
+    round:g.richeseBidding,auction:g.richeseAuction,order:g.order,positions:normalizedPlayerPositions(g),
+    funding:g.richeseFunding,aid:g.aid,cache:g.richeseCache,offered:g.richeseOfferedCard,
+    players:g.players.map(p => ({id:p.id,faction:p.faction,ally:p.ally,hand:p.hand,spice:p.spice})),
+    active:g.active,decision:g.decision,response:g.response,phaseOpening:g.phaseOpening,
+    peek:g.richesePeekKnown,claim:g.richeseClaim,
+  });
+}
+function richeseBetrayalInvoice(g: Game, quote: Extract<RicheseSettlementQuote,{kind:'sold'}>) {
+  const lot = g.richeseAuction!;
+  return nexusRule(() => quoteRicheseBetrayalInvoice({
+    players:g.players,lot,quote,donor:quote.allyPayment ? getPlayer(g,quote.winner).ally : null,
+    originalRecipient:quote.winner === lot.owner ? byFaction(g,'emperor')?.id ?? null : lot.owner,
+    sourceCards:lot.source === 'cache' ? g.richeseCache! : getPlayer(g,lot.owner).hand,
+    physicalCards:physicalTreacheryCards(g),
+  }));
+}
+function richeseBetrayalSourcePreflight(g: Game, quote: Extract<RicheseSettlementQuote,{kind:'sold'}>): void {
+  requireRule(richeseBetrayalModeSupported(g) && g.status === 'playing' && g.phase === 3 &&
+    g.richeseBidding?.stage === 'lot' && g.richeseBidding.turn === g.turn &&
+    !g.auction && !g.currentAuctionSale && !g.response && !g.decision && !g.phaseOpening &&
+    !g.truthtrance && !g.pendingKarama && !g.pendingNullentropy && !g.pendingTreacheryDiscard &&
+    !g.pendingKull && !g.pendingChoamWorthless && !g.choamMarket && !g.pendingIxAlly &&
+    !g.pendingRicheseGift && !g.pendingRichesePurchaseIncome && !g.pendingIxRicheseTechnology &&
+    !g.biddingEnd && !g.bureaucratPayments?.pending &&
+    !pendingNexusTraitors(g),
+  'Richese Betrayal requires a clean ordinary Richese lot before payment, without another effect overlay.');
+  const lot = g.richeseAuction!, donor = quote.allyPayment ? getPlayer(g,quote.winner).ally : null;
+  const players = g.players.map(p => ({
+    ...p,
+    spice:p.spice - (p.id === quote.winner ? quote.amount - quote.allyPayment : 0),
+    hand:[...(lot.source === 'blackMarket' && p.id === lot.owner
+      ? p.hand.filter(c => c.id !== quote.card.id) : p.hand),...(p.id === quote.winner ? [quote.card] : [])],
+  }));
+  const projected:Game = {
+    ...g,players,richeseCache:lot.source === 'cache' ? g.richeseCache!.filter(c => c.id !== quote.card.id) : g.richeseCache,
+    aid:donor ? {...g.aid,[donor]:{...g.aid[donor],amount:g.aid[donor].amount - quote.allyPayment}} : g.aid,
+    currentAuctionSale:{winner:quote.winner,amount:quote.amount,free:false,origin:lot.source,seller:lot.owner},
+  };
+  // Both original and redirected settlement must retire this same lot. This
+  // includes native exhausted-cache and Harkonnen continuation fences.
+  currentAuctionContinuationQuote(projected,{kind:'sale',free:false});
+  currentAuctionContinuationQuote(projected,{kind:'bonus'});
+  currentAuctionContinuationQuote(projected,{kind:'next'});
+  for (const p of players) {
+    const promises = liveShipmentPromises(g.shipmentPromises ?? [],p.id,g.turn);
+    requireRule(!promises.length || !!findShipmentCompletion(projected,p,promises),
+      'This settlement would make a committed shipment answer impossible.');
+  }
+}
+function richeseBetrayalUseBlock(g: Game, owner: string): string | null {
+  const frame = g.pendingRicheseBetrayal;
+  if (!frame || !frame.receipt.required.includes(owner) || frame.receipt.passed.includes(owner))
+    return 'This seat has no current Richese Betrayal acknowledgement.';
+  const blocked = nexusRule(() => richeseBetrayalEligibility({players:g.players,cards:g.nexusCards!.cards!},owner));
+  if (blocked) return blocked;
+  const p = getPlayer(g,owner), promises = liveShipmentPromises(g.shipmentPromises ?? [],owner,g.turn);
+  if (promises.length) {
+    const projected:Game = {...g,nexusCards:{...g.nexusCards!,
+      cards:nexusRule(() => discardNexusCard(g.nexusCards!.cards!,owner,g.players))}};
+    if (!findShipmentCompletion(projected,p,promises))
+      return 'Spending this Nexus card would make your committed shipment answer impossible.';
+  }
+  return null;
+}
+function richeseBetrayalIntegrity(g: Game): void {
+  const cursor = g.richeseBetrayal, frame = g.pendingRicheseBetrayal;
+  if (!g.richeseBetrayalPreview) {
+    requireRule(!cursor && !frame,'Richese Betrayal lost its explicit preview profile.');
+    requireRule(!g.currentAuctionSale?.recipient,'The bank override lost its Richese Betrayal receipt.');
+    return;
+  }
+  requireRule(richeseBetrayalModeSupported(g) && cursor,'The Richese Betrayal profile lost its supported inventory or cursor.');
+  nexusCardsIntegrity(g);
+  nexusRule(() => validateRicheseBetrayalCursor(g,cursor,frame?.receipt ?? null));
+  if (frame) {
+    requireRule(Object.keys(frame).sort().join(',') === 'lot,quote,receipt,signature' &&
+      frame.quote?.kind === 'sold' && frame.lot && typeof frame.signature === 'string',
+    'The saved Richese Betrayal source frame is malformed.');
+    richeseBetrayalSourcePreflight(g,frame.quote);
+    requireRule(frame.signature === richeseBetrayalSourceSignature(g,frame) &&
+      JSON.stringify(frame.lot) === JSON.stringify(g.richeseAuction) &&
+      JSON.stringify(frame.quote) === JSON.stringify(richeseSettlementQuote(g)) &&
+      JSON.stringify(frame.receipt.invoice) === JSON.stringify(richeseBetrayalInvoice(g,frame.quote)) &&
+      frame.receipt.round === g.richeseBidding!.event && frame.receipt.lot === g.richeseAuction!.event &&
+      frame.receipt.turn === g.turn &&
+      JSON.stringify(frame.receipt.required) === JSON.stringify(richeseBetrayalResponders(g)),
+    'The saved Richese Betrayal opportunity lost its original quote, custody, responders or source continuation.');
+  }
+  const sale = g.currentAuctionSale;
+  const completed = cursor.completed.at(-1);
+  if (completed && completed.lot === g.richeseAuction?.event) {
+    requireRule(g.status === 'playing' && g.phase === 3 && completed.turn === g.turn &&
+      completed.round === g.richeseBidding?.event &&
+      !(completed.stage === 'used' && completed.invoice.kind === 'purchase') &&
+      sale && sale.winner === completed.invoice.buyer && sale.seller === completed.invoice.target &&
+      sale.origin === completed.invoice.source && sale.amount === completed.invoice.price && sale.free === false &&
+      sale.recipient === (completed.stage === 'used' ? 'bank' : undefined),
+    'The completed Richese reaction lost or reopened its original paid-sale continuation.');
+    const responses = savedNoFieldResponses(g).filter(response =>
+      response.kind === 'emperorIncome' || response.kind === 'harkonnenBonus');
+    requireRule(responses.length === 1,'The completed Richese sale lost its native income or bonus continuation.');
+    currentAuctionContinuationQuote(g,{kind:'cancel',response:responses[0]});
+  }
+  if (sale?.recipient) {
+    const receipt = cursor.completed.at(-1);
+    requireRule(sale.recipient === 'bank' && receipt?.stage === 'used' && receipt.invoice.kind === 'sale' &&
+      receipt.lot === g.richeseAuction?.event && receipt.round === g.richeseBidding?.event &&
+      receipt.invoice.buyer === sale.winner && receipt.invoice.target === sale.seller &&
+      receipt.invoice.price === sale.amount && receipt.invoice.source === sale.origin,
+    'The diverted auction invoice lost its committed source receipt.');
+  }
+}
+function beginRicheseBetrayal(g: Game, quote: Extract<RicheseSettlementQuote,{kind:'sold'}>): boolean {
+  if (!g.richeseBetrayalPreview) return false;
+  richeseBetrayalSourcePreflight(g,quote);
+  const required = richeseBetrayalResponders(g);
+  if (!required.length) return false;
+  const cursor = g.richeseBetrayal!, lot = g.richeseAuction!, round = g.richeseBidding!;
+  const sequence = cursor.sequence + 1;
+  const receipt = nexusRule(() => createRicheseBetrayalReceipt(g,{
+    event:richeseBetrayalEvent(g.turn,sequence,round.event,lot.event),turn:g.turn,sequence,
+    round:round.event,lot:lot.event,invoice:richeseBetrayalInvoice(g,quote),
+    required,passed:[],stage:'pending',actor:null,nexusDiscardIndex:null,
+  }));
+  const frame:NonNullable<Game['pendingRicheseBetrayal']> = {receipt,lot:structuredClone(lot),quote:structuredClone(quote),signature:''};
+  frame.signature = richeseBetrayalSourceSignature(g,frame);
+  cursor.sequence = sequence;
+  cursor.current = receipt.event;
+  g.pendingRicheseBetrayal = frame;
+  return true;
+}
+function decideRicheseBetrayal(g: Game, p: Player, action: Action): void {
+  const frame = g.pendingRicheseBetrayal!, receipt = frame.receipt;
+  requireRule(['richeseBetrayalPass','richeseBetrayalUse'].includes(action.type) &&
+    action.event === receipt.event && Object.keys(action).every(key => ['type','event'].includes(key)) &&
+    receipt.required.includes(p.id) && !receipt.passed.includes(p.id),
+  'Choose your exact current Richese Betrayal acknowledgement.');
+  const use = action.type === 'richeseBetrayalUse';
+  if (use) {
+    const blocked = richeseBetrayalUseBlock(g,p.id);
+    requireRule(!blocked,blocked ?? 'This Nexus card cannot be used.');
+  }
+  const passed = use ? receipt.passed : [...receipt.passed,p.id];
+  const stage = use ? 'used' : passed.length === receipt.required.length ? 'passed' : 'pending';
+  const next = nexusRule(() => createRicheseBetrayalReceipt(g,{
+    ...receipt,passed,stage,actor:use ? p.id : null,
+    nexusDiscardIndex:use ? g.nexusCards!.cards!.discard.length : null,
+  }));
+  if (stage === 'pending') {frame.receipt = next;return;}
+  if (use) g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
+  g.richeseBetrayal!.completed.push(next);
+  g.richeseBetrayal!.current = null;
+  g.pendingRicheseBetrayal = null;
+  if (use && receipt.invoice.kind === 'purchase') {
+    const card = frame.quote.card;
+    g.richeseCache = g.richeseCache!.filter(c => c.id !== card.id);
+    g.discard.push(card);
+    g.richeseFunding = {};
+    log(g,`${p.name} spent Richese Nexus Betrayal to discard ${card.name} before Richese could buy it. No purchase payment or acquisition occurred.`);
+    finishRicheseLot(g);
+  } else {
+    if (use) log(g,`${p.name} spent Richese Nexus Betrayal: the ${receipt.invoice.price}-spice Richese sale payment goes to the Spice Bank instead.`);
+    settleRicheseSoldLot(g,frame.quote,use);
+  }
+}
 function settleRicheseLot(g: Game) {
   const lot = g.richeseAuction!;
   const quote = richeseSettlementQuote(g);
@@ -9405,8 +9613,12 @@ function settleRicheseLot(g: Game) {
     } else richeseDecision(g, 'richeseUnbid');
     return;
   }
-  const winner = getPlayer(g, quote.winner),
-    card = quote.card;
+  if (beginRicheseBetrayal(g,quote)) return;
+  settleRicheseSoldLot(g,quote,false);
+}
+function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{kind:'sold'}>, bank: boolean) {
+  const lot = g.richeseAuction!, owner = getPlayer(g,lot.owner);
+  const winner = getPlayer(g, quote.winner), card = quote.card;
   payWithAlly(g, winner, quote.amount, quote.allyPayment);
   g.richeseFunding = {};
   if (lot.source === 'cache')
@@ -9419,6 +9631,7 @@ function settleRicheseLot(g: Game) {
     free: false,
     origin: lot.source,
     seller: owner.id,
+    ...(bank ? {recipient:'bank' as const} : {}),
     ...stampAuctionBureaucrat(g,winner,quote.amount,quote.allyPayment,owner.id),
   };
   log(
@@ -17416,6 +17629,7 @@ function marketGholaIntegrity(g: Game) {
   nexusGuildSecretIntegrity(g);
   nexusRicheseIntegrity(g);
   richesePairIntegrity(g);
+  richeseBetrayalIntegrity(g);
   nexusGuildCunningIntegrity(g);
   traitorDeclarationIntegrity(g);
   nexusInspectionIntegrity(g);
@@ -18055,7 +18269,7 @@ function reconcileShipmentPromises(
   g: Game,
   voluntary?: { actor: string; action: Action },
 ) {
-  if (g.pendingKull) return;
+  if (g.pendingKull || g.pendingRicheseBetrayal) return;
   const kept: ShipmentPromise[] = [];
   for (const promise of g.shipmentPromises ?? []) {
     if (promise.turn !== g.turn || promise.released || promise.fulfilled)
@@ -18118,7 +18332,7 @@ function reconcileBattlePromises(
   g: Game,
   voluntary?: { actor: string; action: Action },
 ) {
-  if (g.pendingKull) return;
+  if (g.pendingKull || g.pendingRicheseBetrayal) return;
   const b = g.battle;
   if (
     !b ||
@@ -24479,6 +24693,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  richeseBetrayalIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -24562,6 +24777,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  if (g.pendingRicheseBetrayal) {richeseBetrayalIntegrity(g);return g;}
   if (g.pendingKull) {
     settleAutomaticContinuations(g);
     if (g.pendingKull) { kullIntegrity(g); return g; }
@@ -24677,6 +24893,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   nexusEcazInquiryIntegrity(g);
   nexusEcazDukeIntegrity(g);
   richesePairIntegrity(g);
+  richeseBetrayalIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -24691,6 +24908,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   return g;
 }
 function finishActionContinuations(g: Game) {
+  if (g.pendingRicheseBetrayal) return;
   if (g.pendingKull) return;
   finishLeaderSkillCustody(g);
   finishMandatorySkillVisibility(g);
@@ -24753,10 +24971,12 @@ function finishActionContinuations(g: Game) {
     finishMoritaniPlacement(g);
 }
 function settleAutomaticContinuations(g: Game) {
+  if (g.pendingRicheseBetrayal) return;
   if (g.pendingKull?.stage === 'offer') return;
   if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
   for (let iteration = 0; iteration < 128; iteration++) {
+    if (g.pendingRicheseBetrayal) return;
     if (g.truthtrance || g.phaseOpening || g.status === 'finished') return;
     const response = g.response;
     const before = JSON.stringify(g);
@@ -24778,6 +24998,7 @@ function settleAutomaticContinuations(g: Game) {
       finishResponse(g, false);
     } else if (!finishAutomaticDecision(g)) return;
     finishActionContinuations(g);
+    if (g.pendingRicheseBetrayal) return;
     // Opposing/automatic consequences can release a now-impossible promise;
     // they are not the original actor voluntarily spending a promised resource.
     reconcileBattlePromises(g);
@@ -24793,6 +25014,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  richeseBetrayalIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -24826,6 +25048,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingRicheseBetrayal) return g;
   if (g.pendingKull?.stage === 'offer') return g;
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
@@ -24853,6 +25076,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   nexusEcazInquiryIntegrity(g);
   nexusEcazDukeIntegrity(g);
   richesePairIntegrity(g);
+  richeseBetrayalIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -24875,6 +25099,12 @@ function applyActionInner(
 ): Game {
   ecazTreacheryIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingRicheseBetrayal) {
+    const p = getPlayer(g,id);
+    if (action?.type === 'advanceBots') return g;
+    decideRicheseBetrayal(g,p,action);
+    return g;
+  }
   if (g.biddingEnd && action.type !== 'advanceBots' &&
       !(action.type === 'biddingEnd' && action.mode === 'ready'))
     g.biddingEnd.ready = [];
@@ -24937,6 +25167,8 @@ function applyActionInner(
   );
   requireRule(g.status !== 'finished', 'This game has ended.');
   const t = action.type;
+  requireRule(t !== 'richeseBetrayalPass' && t !== 'richeseBetrayalUse',
+    'This Richese Betrayal opportunity is no longer pending.');
   if (g.pendingKull) {
     if (t === 'advanceBots') return g;
     if (g.pendingKull.stage === 'offer') {
@@ -28695,6 +28927,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  richeseBetrayalIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -29196,6 +29429,17 @@ export function viewGame(state: Game, id: string) {
         ? g.stormDials
         : null,
     me: id,
+    richeseBetrayalPreview: !!g.richeseBetrayalPreview,
+    richeseBetrayalReaction: g.pendingRicheseBetrayal
+      ? (() => {
+          const receipt = g.pendingRicheseBetrayal.receipt, invoice = receipt.invoice;
+          const hasPassed = receipt.passed.includes(id);
+          const canPass = receipt.required.includes(id) && !hasPassed;
+          const blocked = richeseBetrayalUseBlock(g,id);
+          return {event:receipt.event,kind:invoice.kind,target:invoice.target,buyer:invoice.buyer,
+            source:invoice.source,price:invoice.price,canPass,hasPassed,canUse:canPass && !blocked,blocked};
+        })()
+      : null,
     kullPreview: !!g.kullPreview,
     kullCounterEvent: g.pendingKull?.stage === 'counter' ? g.pendingKull.event : null,
     karamaBlocked: g.kullPreview && kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, id)
@@ -29334,7 +29578,7 @@ export function viewGame(state: Game, id: string) {
           g.moritaniRetention.keep,
         ) ?? null)
       : null,
-    decision: g.pendingKull?.stage === 'offer' ? null :
+    decision: g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null :
       g.decision?.kind === 'capturedLeader' &&
       !g.leaderSkills?.assignments.some((a) => a.leader === (g.decision as Extract<Decision,{kind:'capturedLeader'}>).leader) &&
       ![g.decision.player, g.decision.controller ?? g.decision.owner].includes(
@@ -29346,7 +29590,7 @@ export function viewGame(state: Game, id: string) {
           : g.decision?.kind === 'guildShipment' && g.decision.noFieldSkillProof !== undefined
             ? { ...g.decision, noFieldSkillProof: undefined }
             : (g.decision ?? null),
-    response: g.pendingKull?.stage === 'offer' ? null : g.response
+    response: g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null : g.response
       ? {
           ...g.response,
           ...(g.response.bureaucratPayment ? {bureaucratPayment:undefined,bureaucratPaymentEvent:undefined} : {}),
@@ -29370,7 +29614,7 @@ export function viewGame(state: Game, id: string) {
         }
       : null,
     paymentIncome: currentFactionPayment(g),
-    responseControls: g.pendingKull?.stage === 'offer' ? undefined : g.response
+    responseControls: g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? undefined : g.response
       ? {
           cancelCards: responseCancelCards(g, me, g.response),
           hasPassed: g.response.passed.includes(id),

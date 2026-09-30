@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 30 September 2026 — bounded Richese Nexus Betrayal auction integration
+
+Five implementation lanes delivered pure source/invoice/custody policy,
+typed prepayment engine continuation, human controls and minimal legal bots,
+authenticated SQLite recovery, and source-bound internal guidance.
+Fresh `richese-betrayal` entry supports Basic/Advanced paired CHOAM/Richese
+plus classic seats, the physical CHOAM deck and Nexus alone.
+
+A public cache auction won by native Richese may be vetoed before payment:
+the exact intended card enters ordinary discard, nobody pays or acquires,
+and the original lot retires once. Another buyer's positive cache or
+concealed Black Market sale keeps the original price, authorized escrow
+split, physical delivery and earned Harkonnen bonus; only its recipient
+changes from Richese to bank. All-pass keeps the Nexus and settles the
+unchanged original purchase. Public held-Nexus presence determines neutral
+acknowledgement membership; actual identity affects only own private Use.
+Independent pending/completed cursor history binds saved source ownership
+and rejects orphaned frames before disclosure or SQL writes.
+
+Independent review found and repaired donor escrow double-counting and a
+Harkonnen bonus path that skipped exhausted-cache preflight. Regressions
+cover a seller funding its buyer with zero unpledged spice and rejection
+of an unfinishable closing bid before any receipt, payment or delivery.
+Existing wording/incidental assertions were removed rather than re-pinned.
+
+Verification: `npm run check` passes types, lint and **5,953 offline tests**;
+`npm run build` passes. Eight focused files pass **80 cases**, including
+both alternatives/all-pass, private timing parity, actual table controls,
+four legal bot profiles, JSON/production SQLite restart, competing Use/Pass,
+no-write rejections and later recyclable physical custody. Final independent
+economy and persistence re-reviews found no remaining scoped defect.
+
+Actual prototype CLI started four owned disposable rooms from version 5
+to setup 6. Genuine setup/bids created typed opportunities; a separate
+runtime smoke proves Basic/Advanced veto and cache/Black Market diversion.
+At 390 pixels, real controls prove Basic veto, Advanced all-pass, Basic
+cache diversion and refreshed Advanced Black Market diversion without an
+unknown-face inspector. Saved outcomes retain the original completed event,
+exact card custody and buyer/seller balances. No human games or seats were
+reset or modified.
+
+Current built-worker local HTTP is **51/55**, with three POST 503s and one
+Advanced-preview timeout; it is not green acceptance. Proxy-free container
+CI and publication are recorded separately after the push. Full Richese
+games, hidden normal-deck self-purchases, private special-Karama veto,
+broader modules and live NAS acceptance remain open; no public gate changes.
+
 ## 30 September 2026 — opt-in printed Kull Wahad integration
 
 Five implementation lanes supplied validated activation frames,

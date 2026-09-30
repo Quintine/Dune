@@ -278,3 +278,26 @@ void test('Kull preview starts a fresh ready CHOAM lobby once and preserves othe
   assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
   assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
 });
+
+void test('Richese Betrayal profile initializes one fresh paired Nexus game and preserves seats and other saves', (t) => {
+  const { db } = fixture(t);
+  const game = createGame('PROTOTYP', newPlayer('r', 'Richese', 'richese'), false, ['choam']);
+  joinGame(game, newPlayer('c', 'CHOAM', 'choam'));
+  for (const p of game.players) p.ready = true;
+  db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), game.code);
+  const seats = db.prepare('SELECT * FROM seats').all();
+  const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+  const result = startPrototypeRoom(db, game.code, 7, 'richese-betrayal');
+  const saved = JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(game.code)!.state as string) as Game;
+  assert.equal(result.status, 'setup');
+  assert.equal(saved.richeseBetrayalPreview, true);
+  assert.equal(saved.nexusCards!.cards!.deck.length, 12);
+  assert.equal(new Set(saved.nexusCards!.cards!.deck).size, 12);
+  assert.equal(saved.richeseCache?.length, 10);
+  const rows = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+  assert.throws(() => startPrototypeRoom(db, game.code, 7, 'richese-betrayal'));
+  assert.throws(() => startPrototypeRoom(db, game.code, 8, 'richese-betrayal'));
+  assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), rows);
+  assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+  assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+});

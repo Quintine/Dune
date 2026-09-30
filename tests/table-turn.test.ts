@@ -10,6 +10,7 @@ import {
 } from '../game/engine';
 import { tableActionOwner } from '../game/table-turn';
 import { choamKullGame, kullShipmentAttempt } from './fixture-choam-kull';
+import { createRicheseBetrayalFixture } from './fixture-richese-betrayal';
 
 function battle(advanced = false) {
   let g = createGame(
@@ -219,4 +220,18 @@ void test('real Kull offer gives CHOAM public decision ownership before the susp
   });
   assert.equal(counter.response?.kind, 'choamWorthless');
   assert.deepEqual(owners(counter), counter.players.map(() => null));
+});
+
+void test('neutral Richese Betrayal acknowledgement preempts an underlying buyer decision in every seat view', () => {
+  for (const kind of ['purchase', 'sale'] as const) {
+    const fixture = createRicheseBetrayalFixture(kind);
+    for (const player of fixture.game.players) {
+      const view = viewGame(fixture.game, player.id);
+      assert.ok(view.richeseBetrayalReaction);
+      assert.equal(tableActionOwner({
+        ...view, active: fixture.buyer,
+        decision: { kind: 'auctionPayment', player: fixture.buyer },
+      }), null);
+    }
+  }
 });
