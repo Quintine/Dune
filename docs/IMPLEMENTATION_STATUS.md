@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after accepted CHOAM Jubba Cloak cost
+
+In the explicit Richese preview, CHOAM's printed moving-storm
+Jubba Cloak now discards its named public Worthless card before
+a neutral Semuta reaction. No territory is protected and no
+storm casualties or spice clearing occurs before claim or
+all-seat decline. The saved receipt binds the selected territory,
+storm traversal, phase, CHOAM force custody and physical card.
+Claim or decline applies one protection then resumes the
+existing storm suffix once, including ordinary casualties and
+the next CHOAM market. A canceled card, Nexus conversion or
+competing parent retains its previous direct path.
+
+Focused engine checks cover hidden-holder parity, JSON
+normalization, forged territory/storm/force/card rejection,
+physical custody, legal AI, one claim or decline and exact
+casualties/spice movement. Authenticated in-memory SQLite
+verifies seat views, restart, stale retry and storm completion.
+Direct engine smoke observed pre-protection card custody,
+one claim, CHOAM survival and the opponent's three losses in
+one traversed storm. Full Semuta and expansion gates remain open.
+
+`npm run check` passed types, lint and 5,853 offline
+tests; the production build passed. Independent rule review
+found no scoped defect. The built phone-width guide visibly
+described Jubba's before-protection offer. Isolated
+Wrangler-dev HTTP passed 50/55: four requests returned its
+proxy-layer 503 and one discussion request timed out. This
+is not a green local HTTP suite. Proxy-free CI and live NAS
+deployment remain pending for this checkpoint.
+
 ## 30 September 2026 — Semuta after proactive ordinary Trip cost
 
 In the explicit Richese preview, an accepted ordinary Trip to
@@ -33,9 +64,10 @@ force return. The built phone-width rules guide visibly named
 Baliset and ordinary Trip before their effects. Isolated
 Wrangler-dev HTTP passed 50/55: four requests returned its
 proxy-layer 503 and one Advanced-preview request timed out.
-This is not a green local HTTP suite. Proxy-free container
-verification and live deployment remain pending for this
-checkpoint; no complete expansion claim follows.
+This is not a green local HTTP suite. Proxy-free workflow
+`36674543364` passed the full isolated HTTP suite for
+`953be21` and published its image. No NAS deployment or
+complete expansion claim follows.
 
 ## 30 September 2026 — Semuta after proactive CHOAM Baliset cost
 

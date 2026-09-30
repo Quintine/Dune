@@ -113,6 +113,14 @@ return without replaying the response. Elite, concealed
 No-Field, closing Mentat decision, Nexus and competing parents
 retain their automatic paths.
 
+Accepted printed Jubba Cloak stages `choamJubbaDiscard` after
+its public Worthless card cost but before protecting CHOAM's
+selected territory or resolving the moving storm. The receipt
+binds the current storm traversal and original CHOAM forces;
+claim or decline marks the one protected territory and resumes
+the same storm exactly once. Canceled cards, Nexus conversion
+and competing parents retain their direct paths.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response

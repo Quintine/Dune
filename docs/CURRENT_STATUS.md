@@ -13,9 +13,10 @@ Ornithopter, used Distrans, final Truthtrance, four bounded Sapho,
 pre-leader Residual Poison, printed Karama canceling clean CHOAM
 Charity, Inflation or Bene Gesserit Charity or settling a clean
 normal-auction lot, a completed CHOAM sale or clean
-Kulon/La La La/Baliset/ordinary Trip to Gamont
-Worthless, battle-card and Ix-deck Thumper/Amal discards
-open the same neutral offer regardless of hidden Semuta custody.
+Kulon/La La La/Baliset/ordinary Trip to Gamont, accepted
+Jubba Cloak Worthless, battle-card and Ix-deck
+Thumper/Amal discards open the same neutral offer regardless
+of hidden Semuta custody.
 A clean **private** normal-auction Ixian ally replacement discard
 also pauses before its draw; no unknown face is shown before a
 holder commits. A completed CHOAM sale pays its quoted bank spice
@@ -31,6 +32,9 @@ territory; shipment stays legal.
 Clean ordinary Trip to Gamont spends its public card before
 one opponent force returns to reserves; elite and concealed
 No-Field returns retain their earlier automatic path.
+Accepted Jubba Cloak spends its public card before protecting
+one CHOAM territory; the moving storm resolves only after a
+claim or all-seat decline.
 Residual Poison commits one random death before the offer; only an
 uninspected battle with nobody ready qualifies. Once Around commits
 bidder order and frees a slot; other Sapho scopes commit chooser or
@@ -46,6 +50,16 @@ full-hand ordering, normal Richese starts and deployed acceptance
 remain unfinished. Neutral passes and free-slot guard are product
 choices.
 
+Accepted printed Jubba Cloak passes focused engine and
+authenticated SQLite, a direct one-storm claim smoke and
+independent review without findings. `npm run check` passed
+types, lint and 5,853 offline tests; the production build
+and phone-width in-app guide passed. Isolated built-worker
+HTTP passed 50/55 with four Wrangler-dev proxy 503s and
+one timeout. The local suite is not green; proxy-free CI
+for this exact checkpoint is pending. No NAS deployment
+or complete faction claim follows.
+
 Clean ordinary Trip to Gamont passes focused engine and
 authenticated SQLite checks, a direct physical claim/force
 return smoke and independent review without findings.
@@ -55,8 +69,10 @@ in-app text update, and the production build passed. The
 built phone-width rules guide displayed both new CHOAM
 discard scopes. Isolated built-worker HTTP passed 50/55:
 four Wrangler-dev proxy 503s and one timeout. It is not a
-green local HTTP suite or a live deployment; proxy-free CI
-for this exact checkpoint is pending.
+green local HTTP suite or a live deployment. Proxy-free
+workflow `36674543364` passed the full isolated HTTP suite
+for `953be21` and published its image; this is not NAS
+deployment.
 
 Clean proactive Baliset passes focused engine and authenticated
 SQLite checks, a direct engine claim/restriction smoke and

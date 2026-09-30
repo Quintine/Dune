@@ -69,8 +69,8 @@ Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
 printed Karama canceling clean CHOAM Charity, Inflation or Bene
 Gesserit Charity or settling a clean normal-auction lot, a completed
 CHOAM sale or clean Kulon/proactive La La La/Baliset/ordinary
-Trip to Gamont Worthless discard, battle and Ix-deck
-Thumper/Amal discards**, plus
+Trip to Gamont Worthless discard, accepted moving-storm Jubba
+Cloak, battle and Ix-deck Thumper/Amal discards**, plus
 a clean **private** normal-auction Ixian ally replacement discard
 before its draw. Other
 than the one explicitly suspended charity/Inflation response, the
@@ -125,6 +125,14 @@ the target, location and pre-return force custody; a claim or
 decline returns that one force and reconciles occupation once.
 Elite, concealed No-Field, closing Mentat, Nexus and competing
 parents retain their prior automatic paths.
+
+An accepted printed Jubba Cloak response pauses after its
+public Worthless card cost but before the chosen CHOAM territory
+is protected. The saved receipt binds the storm traversal,
+territory and CHOAM forces. A claim or decline applies that
+protection once and resumes the same storm casualty and
+spice-clearance sequence. Canceled Jubba, Nexus conversion
+and competing parents retain their original direct paths.
 
 An early-ended Ornithopter advances the saved queue; a completed
 flight resumes one committed arrival only without BG, Ecaz or

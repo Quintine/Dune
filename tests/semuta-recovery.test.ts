@@ -1120,6 +1120,93 @@ void test('authenticated ordinary Trip Semuta claim returns one force after save
   } finally { f.sqlite.close(); }
 });
 
+void test('authenticated Jubba Semuta claim protects CHOAM before one saved storm', async () => {
+  const f = unitStore();
+  try {
+    const made = await f.rooms.createRoom('Semuta Jubba', 'choam', false, ['choam']);
+    const code = made.view.code;
+    const richese = await f.rooms.joinRoom(code, 'Richese', 'richese');
+    const bg = await f.rooms.joinRoom(code, 'BG', 'beneGesserit');
+    const auths = await Promise.all([made.token!, richese.token!, bg.token!]
+      .map(token => f.restart().authenticate(code, token)));
+    const existing = await f.restart().readRoom(code);
+    const g = createGame(code, newPlayer(auths[0].playerId, 'CHOAM', 'choam'), false, ['choam']);
+    g.players.push(newPlayer(auths[1].playerId, 'Richese', 'richese'),
+      newPlayer(auths[2].playerId, 'BG', 'beneGesserit'));
+    Object.assign(g, { status: 'playing', phase: 0, turn: 2, storm: 5,
+      stormPending: 3, active: auths[0].playerId,
+      order: auths.map(auth => auth.playerId),
+      deck: baseDeck(), richeseCache: richeseCards(),
+      spice: { 'red_chasm:7': 8 }, semutaPreview: true });
+    for (const p of g.players) {
+      p.spice = 10;
+      p.hand = [];
+      p.forces = {};
+      p.reserves = 20;
+      p.traitors = p.leaders.length ? [p.leaders[0].id] : [];
+      p.traitorChoices = [];
+    }
+    const semuta = take(g, SEMUTA_DRUG_ID), karama = take(g, 'karama');
+    const index = g.deck.findIndex(card => card.name === 'Jubba Cloak');
+    assert.ok(index >= 0);
+    const used = g.deck.splice(index, 1)[0];
+    g.players[0].hand.push(used);
+    g.players[0].forces = { 'red_chasm:7': 4 };
+    g.players[0].reserves = 16;
+    g.players[1].hand.push(semuta);
+    g.players[1].forces = { 'red_chasm:7': 3 };
+    g.players[1].reserves = 17;
+    g.players[2].hand.push(karama);
+    g.version = existing.version + 1;
+    assert.equal(f.sqlite.prepare('UPDATE rooms SET state=?,version=? WHERE code=? AND version=?')
+      .run(JSON.stringify(g), g.version, code, existing.version).changes, 1);
+    const seats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const act = async (index: number, action: Action) => {
+      const current = await f.restart().readRoom(code);
+      await f.restart().act(code, auths[index], current.version, action, clock);
+      return f.restart().readRoom(code);
+    };
+    let current = await f.restart().readRoom(code);
+    for (let i = 0; i < auths.length; i++)
+      current = await act(i, { type: 'ready' });
+    assert.equal(current.decision?.kind, 'choamStorm');
+    current = await act(0, { type: 'card', mode: 'choam',
+      card: used.id, territory: 'red_chasm' });
+    assert.equal(current.response?.kind, 'choamWorthless');
+    for (let i = 0; current.response?.kind === 'choamWorthless' && i < 3; i++) {
+      const index = auths.findIndex(auth =>
+        !viewGame(current, auth.playerId).responseControls?.hasPassed &&
+        !!viewGame(current, auth.playerId).responseControls?.cancelCards.length);
+      assert.ok(index >= 0);
+      current = await act(index, { type: 'passResponse' });
+    }
+    const event = current.pendingTreacheryDiscard!.batch.event;
+    assert.equal(current.pendingTreacheryDiscard?.continuation.kind, 'choamJubbaDiscard');
+    assert.equal(current.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(current.storm, 5);
+    assert.equal(current.stormResolution?.choamProtected, undefined);
+    assert.equal(current.players[0].forces['red_chasm:7'], 4);
+    assert.equal(current.players[1].forces['red_chasm:7'], 3);
+    await f.restart().continueRoomAutomatic(code, clock);
+    assert.equal((await f.restart().readRoom(code)).version, current.version);
+    assert.equal((await f.restart().readSeatView(code, auths[1])).semutaReaction?.canCommit, true);
+    const claimed = await act(1, { type: 'semutaCommit', event });
+    assert.equal(claimed.pendingTreacheryDiscard, null);
+    assert.equal(claimed.stormResolution, null);
+    assert.equal(claimed.storm, 8);
+    assert.equal(claimed.players[0].forces['red_chasm:7'], 4);
+    assert.equal(claimed.players[1].forces['red_chasm:7'], undefined);
+    assert.equal(claimed.players[1].tanks, 3);
+    assert.equal(claimed.players[1].hand.filter(card => card.id === used.id).length, 1);
+    assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+    await assert.rejects(f.restart().act(code, auths[1], current.version,
+      { type: 'semutaCommit', event }, clock));
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
+    for (const auth of auths)
+      assert.deepEqual(await f.restart().readSeatView(code, auth), viewGame(claimed, auth.playerId));
+  } finally { f.sqlite.close(); }
+});
+
 void test('authenticated CHOAM sale retains paid spice and market after a saved Semuta claim', async () => {
   const f = unitStore();
   try {
