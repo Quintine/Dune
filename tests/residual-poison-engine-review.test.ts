@@ -11,6 +11,7 @@ import {
 } from '../game/engine';
 import { baseDeck, leaders } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { createDukeVidal, acquireDuke } from '../game/duke-vidal';
 
 function fixture() {
@@ -87,6 +88,52 @@ const inventory = (g: Game) =>
   ]
     .map((c) => c.id)
     .sort();
+
+void test('clean Residual Poison death offers Semuta once before shared battle preparation', () => {
+  let g = fixture();
+  g.semutaPreview = true;
+  hold(g, 'e', 'Semuta Drug');
+  const original = inventory(g);
+  g = poison(start(g));
+  const event = g.pendingTreacheryDiscard!.batch.event;
+  assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(g.players[1].leaders.filter(l => l.dead).length, 1);
+  assert.equal(g.battle!.preLeader?.closed, false);
+  assert.equal(viewGame(g, 'e').semutaReaction?.canCommit, true);
+  assert.equal(viewGame(g, 'g').semutaReaction?.canCommit, false);
+  assert.deepEqual(normalizeAutomaticGame(reload(g)), reload(g));
+  const corrupt = reload(g);
+  const victim = corrupt.players[1].leaders.find(l => l.dead)!;
+  victim.dead = false;
+  const before = reload(corrupt);
+  assert.throws(() => send(corrupt, 'e', { type: 'semutaCommit', event }));
+  assert.deepEqual(corrupt, before);
+  let declined = reload(g);
+  for (const id of ['r', 'g', 'e'])
+    declined = send(declined, id, { type: 'semutaPass', event });
+  assert.equal(declined.pendingTreacheryDiscard, null);
+  assert.deepEqual(inventory(declined), original);
+  const claimed = send(reload(g), 'e', { type: 'semutaCommit', event });
+  assert.equal(claimed.pendingTreacheryDiscard, null);
+  assert.equal(claimed.players[1].leaders.filter(l => l.dead).length, 1);
+  assert.equal(claimed.players[2].hand.filter(c => c.id === 'richese-residual-poison').length, 1);
+  assert.equal(claimed.discard.filter(c => c.id === SEMUTA_DRUG_ID).length, 1);
+  assert.deepEqual(inventory(claimed), original);
+  assert.deepEqual(claimed.battle!.preLeader?.ready, []);
+  assert.equal(ready(claimed, 'r').battle!.preLeader?.ready.includes('r'), true);
+  assert.throws(() => send(claimed, 'e', { type: 'semutaCommit', event }));
+});
+
+void test('an already-ready opponent retains the automatic Residual Poison suffix', () => {
+  let g = fixture();
+  g.semutaPreview = true;
+  hold(g, 'e', 'Semuta Drug');
+  g = poison(ready(start(g), 'g'));
+  assert.equal(g.pendingTreacheryDiscard ?? null, null);
+  assert.deepEqual(g.battle?.preLeader?.ready, ['g']);
+  assert.equal(g.players[1].leaders.filter(l => l.dead).length, 1);
+  assert.equal(g.discard.filter(c => c.id === 'richese-residual-poison').length, 1);
+});
 
 void test('a fast opponent cannot commit before both genuine preparation declarations, independent of card possession', () => {
   const withCard = start(fixture());

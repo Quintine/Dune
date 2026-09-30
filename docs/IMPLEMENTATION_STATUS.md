@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 30 September 2026 — Semuta after clean Residual Poison
+
+In the explicit Richese preview, Residual Poison now pauses after
+one random opposing leader is sent to the Tanks and its used public
+card is discarded, before battle inspection reconciliation and shared
+readiness resume. A neutral offer appears only for an uninspected,
+unready pre-leader battle without competing rewards or responses.
+Claim moves that physical card to another holder; all-seat decline
+leaves it in the pile. The saved receipt binds battle event, victim,
+leaders, hand/force custody and unsealed preparation. Neither choice
+rerolls the victim or repeats death. Accepted plays in inspected or
+partly ready battles retain the existing automatic path.
+
+An authenticated SQLite room restored the offer and a private holder
+claim without replaying death; focused JSON/custody and automatic
+fallback tests passed. A direct production-engine smoke run observed
+`offer`, one dead leader, a recovered card and unready preparation
+after claim. Independent read-only rules/privacy reviews found no
+scoped defect. `npm run check` passed typecheck, lint and 5,824 offline
+tests; `npm run build` and 55 development HTTP tests passed. The
+phone-width local reference rendered the clean Residual Poison note.
+No deployed revision was exercised. Inspected/partly ready pauses,
+other discard producers, full-hand timing, normal Richese starts and
+publication acceptance remain gated.
+
 ## 30 September 2026 — Semuta after between-battles Sapho
 
 The explicit Richese preview now pauses after Juice of Sapho

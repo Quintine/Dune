@@ -11,13 +11,15 @@ accepts a fresh Richese roster with CHOAM & Richese and optionally
 the physical Ix deck. Clean public ordinary-card, paid Box, retired
 Ornithopter, private Distrans, final Truthtrance, Once Around,
 movement-order, between-battles chooser or pre-plan aggressor Sapho,
-battle-card and Ix-deck Thumper/Amal discards open the same neutral
-offer regardless of hidden Semuta custody. Once Around has committed
-remaining bidder order and a freed hand slot; between-battles Sapho
-has committed chooser priority, and pre-plan Sapho tie priority.
-Claim or decline retains the lot, chooser queue or unsealed battle
-without replaying its order/aggressor change; a Black Market Semuta reserved
-as the offered card cannot Commit. Thumper waits before its injected
+clean pre-leader Residual Poison, battle-card and Ix-deck Thumper/Amal
+discards open the same neutral offer regardless of hidden Semuta custody.
+Residual Poison commits one random death before the offer; only an
+uninspected battle with no preparation ready qualifies. Once Around
+commits bidder order and a freed slot; other Sapho scopes commit
+chooser or aggressor priority. Claim or decline resumes the same lot,
+chooser queue or unsealed battle without repeating its prior effect;
+a Black Market Semuta reserved as the offered card cannot Commit.
+Thumper waits before its injected
 worm/spice draw; Amal waits after halving personal spice and clearing
 earlier opening passes. Mixed-owner battle cards require committed
 owner-only selection of another player's fresh card; mandatory and

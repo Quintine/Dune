@@ -10,6 +10,7 @@ import * as bots from '../game/bots';
 import * as seatAiDelegation from '../lib/seat-ai-delegation';
 import { baseDeck } from '../game/cards';
 import { richeseCards } from '../game/richese-cards';
+import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import type * as Rooms from '../db/rooms';
 
 /** Execute the production room module and SQL, with a hook immediately before its CAS. */
@@ -94,7 +95,7 @@ function unitStore(runBots = bots.runBots) {
 
 const clock: Rooms.RoomsClock = { now: () => 10000, sleep: async () => {} };
 
-async function fixture() {
+async function fixture(semutaPreview = false) {
   const store = unitStore();
   const created = await store.rooms.createRoom('Holder', 'guild', false, []),
     code = created.view.code;
@@ -145,6 +146,12 @@ async function fixture() {
     target: other.playerId,
     territory: 'arrakeen',
   });
+  if (semutaPreview) {
+    initial.semutaPreview = true;
+    const semuta = initial.richeseCache!.findIndex(c => c.id === SEMUTA_DRUG_ID);
+    assert.ok(semuta >= 0);
+    initial.players[2].hand.push(initial.richeseCache!.splice(semuta, 1)[0]);
+  }
   const save = (g: engine.Game) =>
     store.sqlite
       .prepare('UPDATE rooms SET state=?,version=? WHERE code=?')
@@ -339,6 +346,38 @@ void test('two simultaneous ready declarations require refreshed retry; stale ev
     assert.deepEqual(await f.restart().readRoom(f.code), current);
     assert.equal(current.players[1].leaders.filter((l) => l.dead).length, 0);
     assert.equal(current.players[0].hand.length, 1);
+  } finally {
+    f.sqlite.close();
+  }
+});
+
+void test('authenticated Residual Poison death pauses for a neutral Semuta offer before shared preparation', async () => {
+  const f = await fixture(true);
+  try {
+    const seats = f.sqlite.prepare('SELECT * FROM seats').all();
+    const before = await f.restart().readRoom(f.code);
+    await f.restart().act(f.code, f.owner, before.version, f.action, clock);
+    let g = await f.restart().readRoom(f.code);
+    assert.equal(g.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(g.players[1].leaders.filter(l => l.dead).length, 1);
+    assert.equal(g.battle?.preLeader?.closed, false);
+    const event = g.pendingTreacheryDiscard!.batch.event;
+    const offered = g.version;
+    await f.restart().continueRoomAutomatic(f.code, clock);
+    assert.equal((await f.restart().readRoom(f.code)).version, offered);
+    assert.equal((await f.restart().readSeatView(f.code, f.observer)).semutaReaction?.canCommit, true);
+    assert.equal((await f.restart().readSeatView(f.code, f.other)).semutaReaction?.canCommit, false);
+    await f.restart().act(f.code, f.observer, g.version, { type: 'semutaCommit', event }, clock);
+    g = await f.restart().readRoom(f.code);
+    assert.equal(g.pendingTreacheryDiscard, null);
+    assert.equal(g.players[1].leaders.filter(l => l.dead).length, 1);
+    assert.equal(g.players[2].hand.filter(c => c.id === f.action.card).length, 1);
+    assert.equal(g.discard.filter(c => c.id === SEMUTA_DRUG_ID).length, 1);
+    assert.deepEqual(g.battle?.preLeader?.ready, []);
+    assert.deepEqual(f.sqlite.prepare('SELECT * FROM seats').all(), seats);
+    await f.restart().act(f.code, f.owner, g.version, f.ready, clock);
+    const prepared = await f.restart().readRoom(f.code);
+    assert.deepEqual(prepared.battle?.preLeader?.ready, [f.owner.playerId]);
   } finally {
     f.sqlite.close();
   }

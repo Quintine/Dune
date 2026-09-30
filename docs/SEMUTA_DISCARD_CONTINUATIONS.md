@@ -40,6 +40,13 @@ The receipt binds the same unsealed battle, readiness, player hands
 and reserves. Claim or decline restores shared pre-leader preparation
 without rerunning the aggressor change.
 
+Clean Residual Poison stages `residualPoisonDiscard` only after its
+single random leader death and public used-card disposal, before
+reconciling battle inspections and preparation readiness. The receipt
+binds the victim, leader custody and unsealed battle. The neutral
+offer is limited to a pre-leader board with no inspection or ready
+combatant; other accepted plays retain automatic continuation.
+
 Completed Ornithopter movement now offers the same retired public card
 before its already committed arrival suffix only in a roster without
 Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response

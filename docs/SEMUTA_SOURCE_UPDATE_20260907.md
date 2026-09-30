@@ -66,8 +66,9 @@ with CHOAM & Richese and optionally the physical Ix deck, without
 opening public expansion starts. It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, Once Around, movement-order, between-battles chooser
-or pre-plan aggressor Sapho, battle and Ix-deck Thumper/Amal
-discards**, provided the parent transaction has no competing response.
+or pre-plan aggressor Sapho, pre-leader Residual Poison, battle and
+Ix-deck Thumper/Amal discards**, provided the parent transaction
+has no competing response.
 Every seat sees the same neutral fresh-discard opportunity regardless
 of hidden Semuta custody.
 An early-ended Ornithopter advances the saved queue; a completed
@@ -86,6 +87,11 @@ A clean pre-plan Sapho aggressor choice commits its
 ordinary tie priority and physical card before the Semuta offer; the
 unsealed battle's shared readiness then resumes without another
 aggressor change.
+A clean uninspected Residual Poison death with neither combatant ready
+has already chosen one random physical victim and discarded the used
+card before the offer. Claim or decline resumes the same pre-leader
+preparation once; an inspected or partly ready battle retains the
+automatic death path without this preview interruption.
 
 For a genuine Ix-deck Thumper, its played physical card reaches
 the discard before an injected worm or actual spice-card draw.

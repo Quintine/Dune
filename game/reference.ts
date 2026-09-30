@@ -1148,7 +1148,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 : definition.card.effect === 'ornithopter'
                   ? 'Use the Ornithopter movement controls with a selected group and destination. Hajr/prior-move composition, fixed-range Kulon and advanced advisors remain explicitly unresolved.'
                   : definition.card.effect === 'residualPoison'
-                    ? 'Use the Residual Poison panel before either combatant commits a leader. A shared preparation step provides an opportunity regardless of hand contents; advanced Harkonnen tables remain guarded pending the secret-captive ruling.'
+                    ? 'Use the Residual Poison panel before either combatant commits a leader. A shared preparation step provides an opportunity regardless of hand contents; advanced Harkonnen tables remain guarded pending the secret-captive ruling. In the explicit Semuta preview, a clean death with no readiness or inspection commitments pauses after public disposal for the neutral offer, then resumes the same preparation.'
                     : definition.card.effect === 'stoneBurner'
                       ? 'Use Stone Burner in the battle weapon selector and review the chosen dial/support guard before sealing. Choose the leader effect after revelation; combined timing remains guarded.'
                       : definition.card.effect === 'mirrorWeapon'
@@ -1156,7 +1156,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                       : definition.card.effect === 'portableSnooper'
                         ? 'Choose Portable Snooper as your ordinary poison defense, or use the late-defense panel after reveal before your own traitor decision. It uses ordinary winner retention and cannot stop Poison Tooth.'
                         : definition.card.effect === 'semutaDrug'
-                          ? 'In the explicit Richese development preview, every seat sees a neutral response to supported clean public discards. A CHOAM & Richese game may include the Ix deck: Thumper pauses before worm/spice draw; Amal pauses after halving spice before opening resumes. Other sources include ordinary cards, paid Box, Ornithopter, Distrans, final Truthtrance, clean Once Around/movement/battle-order/pre-plan Sapho and three battle batches. Commit held Semuta with a free hand slot; for multiple eligible cards, inspect and select exactly one after commitment. The committed queue or unsealed battle resumes once. Nested responses, pending rewards, full-hand sequencing and public starts remain unfinished.'
+                          ? 'In the explicit Richese development preview, every seat sees a neutral response to supported clean public discards. A CHOAM & Richese game may include the Ix deck: Thumper pauses before worm/spice draw; Amal pauses after halving spice before opening resumes. Other sources include ordinary cards, paid Box, Ornithopter, Distrans, final Truthtrance, clean Once Around/movement/battle-order/pre-plan Sapho, clean pre-leader Residual Poison and three battle batches. Commit held Semuta with a free hand slot; for multiple eligible cards, inspect and select exactly one after commitment. The committed death or order resumes once. Inspected/partly ready battles, nested responses, pending rewards, full-hand sequencing and public starts remain unfinished.'
                         : 'Reference component only: this Richese card’s game actions are not enabled.',
       ],
       ...(definition.card.effect === 'semutaDrug'
@@ -1166,7 +1166,7 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Implementation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The Richese preview interrupts clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four bounded Sapho scopes (Once Around, movement, between-battles chooser and pre-plan aggressor), Ix-deck Thumper/Amal and three battle discard stages. Once Around commits bidder order; the chooser commits battle priority; pre-plan Sapho commits aggressor priority while readiness remains unsealed. Thumper waits before worm/spice draw; Amal restores an already-halved opening. Neutral offers, owner-only candidates and one physical Semuta transfer retain privacy. Competing responses, pending rewards, other producers and full-hand exchange remain unfinished.',
+                  'The Richese preview interrupts clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison, Ix-deck Thumper/Amal and three battle discard stages. Residual Poison commits one random leader death before the neutral offer and restores an uninspected, unready battle once; Once Around commits bidder order, the chooser commits battle priority and pre-plan Sapho commits aggressor priority. Thumper waits before worm/spice draw; Amal restores an already-halved opening. Neutral offers, owner-only candidates and one physical Semuta transfer retain privacy. Inspected/partly ready battles, pending rewards, other producers and full-hand exchange remain unfinished.',
               },
               {
                 area: 'Player controls' as const,
@@ -1184,13 +1184,13 @@ export const RULE_TOPICS: RuleTopic[] = [
                 area: 'Documentation' as const,
                 status: 'Partial' as const,
                 detail:
-                  'The guide distinguishes clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, Once Around/movement/battle-order/pre-plan Sapho, Ix-deck Thumper/Amal and three battle batches from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
+                  'The guide distinguishes clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, Once Around/movement/battle-order/pre-plan Sapho, pre-leader Residual Poison, Ix-deck Thumper/Amal and three battle batches from privacy-neutral acknowledgements, provisional free-slot policy and remaining discard sources.',
               },
               {
                 area: 'Verification' as const,
                 status: 'Partial' as const,
                 detail:
-                  'Genuine setup, custody, hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, Once Around/movement/battle-order/pre-plan Sapho, Ix-deck Thumper/Amal and three battle discard stages. Pending rewards, full games and live deployment remain unverified.',
+                  'Genuine setup, custody, hidden-hand parity, saved JSON, authenticated SQLite CAS and legal AI participation cover clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four Sapho scopes, pre-leader Residual Poison, Ix-deck Thumper/Amal and three battle discard stages. Inspected/partly ready battles, pending rewards, full games and live deployment remain unverified.',
                 evidence: [
                   'tests/semuta-engine.test.ts',
                   'tests/semuta-recovery.test.ts',

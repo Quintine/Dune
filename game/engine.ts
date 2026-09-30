@@ -1181,6 +1181,16 @@ export type Game = {
           stateSignature: string;
         }
       | {
+          kind: 'residualPoisonDiscard';
+          player: string;
+          target: string;
+          victim: string;
+          battleEvent: string;
+          card: string;
+          resume: NonNullable<Game['pendingNullentropy']>['resume'];
+          stateSignature: string;
+        }
+      | {
           kind: 'thumperDiscard';
           player: string;
           card: string;
@@ -4822,6 +4832,24 @@ function saphoAggressorDiscardSignature(g: Game, c: SaphoAggressorDiscardContinu
     players: g.players.map(p => ({ id: p.id, faction: p.faction, ally: p.ally })),
   });
 }
+type ResidualPoisonDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'residualPoisonDiscard' }
+>;
+function residualPoisonDiscardSignature(g: Game, c: ResidualPoisonDiscardContinuation) {
+  return JSON.stringify({
+    player: c.player, target: c.target, victim: c.victim,
+    battleEvent: c.battleEvent, card: c.card,
+    parent: nullentropyParentSignature(g, c.resume, c.battleEvent),
+    turn: g.turn, phase: g.phase, active: g.active, order: g.order,
+    battle: g.battle, duke: g.dukeVidal,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, ally: p.ally,
+      hand: p.hand.map(card => card.id), leaders: p.leaders,
+      reserves: p.reserves, tanks: p.tanks, forces: p.forces,
+    })),
+  });
+}
 type ThumperDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
   { kind: 'thumperDiscard' }
@@ -5361,6 +5389,28 @@ function treacheryDiscardIntegrity(g: Game) {
       'The used Juice of Sapho no longer matches its pre-plan aggressor choice.',
     );
     saphoAggressorIntegrity(g);
+  } else if (continuation?.kind === 'residualPoisonDiscard') {
+    const c = continuation, entry = batch.entries[0], battle = g.battle;
+    const victim = g.players.some(p => p.id === c.target)
+      ? controlledLeaders(g, getPlayer(g, c.target)).find(l => l.id === c.victim)
+      : null;
+    requireRule(
+      g.phase === 6 && battle && battle.event === c.battleEvent &&
+      !battle.revealed && !Object.keys(battle.plans).length &&
+      [battle.attacker, battle.defender].includes(c.player) &&
+      c.target === (battle.attacker === c.player ? battle.defender : battle.attacker) &&
+      battle.preLeader?.event === c.battleEvent && !battle.preLeader.closed &&
+      battle.preLeader.ready.length === 0 &&
+      victim?.dead && !victim.capturedBy &&
+      batch.cause === 'residualPoison' && batch.entries.length === 1 &&
+      entry.publicFace && entry.discardedBy === c.player &&
+      entry.card.id === c.card &&
+      richeseCardDefinition(entry.card)?.card.effect === 'residualPoison' &&
+      !c.resume.response && !c.resume.decision &&
+      !c.resume.pendingKarama && !c.resume.phaseOpening &&
+      c.stateSignature === residualPoisonDiscardSignature(g, c),
+      'The used Residual Poison no longer matches its committed leader death.',
+    );
   } else if (continuation?.kind === 'thumperDiscard') {
     const c = continuation, entry = batch.entries[0];
     requireRule(
@@ -6017,6 +6067,7 @@ function semutaOfferSupported(
     continuation.kind !== 'saphoAggressorDiscard' &&
     continuation.kind !== 'saphoAuctionDiscard' &&
     continuation.kind !== 'saphoBattleOrderDiscard' &&
+    continuation.kind !== 'residualPoisonDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
     continuation.kind !== 'amalDiscard' &&
     !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
@@ -6051,6 +6102,15 @@ function semutaOfferSupported(
       g.pendingFaceDance || g.pendingChoamBattleIncome ||
       g.pendingWinnerDiscards || g.moritaniRetention ||
       g.pendingIxSubstitution)) return false;
+  if (continuation.kind === 'residualPoisonDiscard' &&
+    (!g.battle?.preLeader || g.battle.preLeader.closed ||
+      g.battle.preLeader.ready.length > 0 ||
+      g.battle.preparation || g.battle.prescience ||
+      g.battle.nexusInspection || g.battle.truthPromises?.length ||
+      g.pendingAuditor || g.pendingCapture || g.pendingTech ||
+      g.pendingFaceDance || g.pendingChoamBattleIncome ||
+      g.pendingWinnerDiscards || g.moritaniRetention ||
+      g.pendingIxSubstitution)) return false;
   if (continuation.kind === 'thumperDiscard' &&
     (g.summonedBeforeBlow || g.summonedWorm || g.wormRides.length > 0 ||
       g.pendingFremenMove || g.pendingIxMove || g.pendingChoamMove)) return false;
@@ -6072,7 +6132,8 @@ function semutaOfferSupported(
           : !continuation.resume.phaseOpening))) &&
     !g.karamaShipping && !g.auction &&
     (continuation.kind === 'saphoAuctionDiscard' || !g.richeseAuction) &&
-    (continuation.kind === 'saphoAggressorDiscard' || !g.battle) &&
+    (continuation.kind === 'saphoAggressorDiscard' ||
+      continuation.kind === 'residualPoisonDiscard' || !g.battle) &&
     !g.pendingExchange && !g.pendingIxAlly && !g.pendingNullentropy &&
     !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingShipment &&
     !g.pendingHomeworldShipment && !g.pendingRicheseGift &&
@@ -6262,6 +6323,15 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     g.decision = next.resume.decision;
     g.pendingKarama = next.resume.pendingKarama;
     g.phaseOpening = next.resume.phaseOpening;
+  } else if (next.kind === 'residualPoisonDiscard') {
+    g.response = next.resume.response;
+    g.decision = next.resume.decision;
+    g.pendingKarama = next.resume.pendingKarama;
+    g.phaseOpening = next.resume.phaseOpening;
+    reconcileChangedBattleInspections(g, 'the leader death');
+    const battle = g.battle!;
+    if (battle.preLeader && !battle.preLeader.closed)
+      battle.preLeader.ready = battle.preLeader.ready.filter(id => id !== next.player);
   } else if (next.kind === 'amalDiscard') {
     g.response = next.resume.response;
     g.decision = next.resume.decision;
@@ -16019,12 +16089,27 @@ function playResidualPoison(
     g.dukeVidal = consumeDuke(g.dukeVidal);
   const harkonnen = byFaction(g, 'harkonnen');
   if (harkonnen) returnCaptives(g, harkonnen);
-  discard(g, p, card.id);
+  const used = discard(g, p, card.id);
   log(
     g,
     `${p.name} played Residual Poison against ${target.name}. ${victim.name} was randomly selected from the available leaders and sent to the Tanks. No spice is awarded, no forces are lost, and battle preparation continues.`,
     { faction: p.faction, name: 'Residual Poison' },
   );
+  if (g.semutaPreview) {
+    const continuation: ResidualPoisonDiscardContinuation = {
+      kind: 'residualPoisonDiscard', player: p.id, target: target.id,
+      victim: victim.id, battleEvent: b.event!, card: used.id,
+      resume: { response: g.response, decision: g.decision,
+        pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },
+      stateSignature: '',
+    };
+    const entries = [{ card: used, discardedBy: p.id, publicFace: true }];
+    if (semutaOfferSupported(g, continuation, entries)) {
+      continuation.stateSignature = residualPoisonDiscardSignature(g, continuation);
+      stageTreacheryDiscard(g, 'residualPoison', entries, continuation);
+      return;
+    }
+  }
   reconcileChangedBattleInspections(g, 'the leader death');
   if (b.preLeader && !b.preLeader.closed)
     b.preLeader.ready = b.preLeader.ready.filter((id) => id !== p.id);
