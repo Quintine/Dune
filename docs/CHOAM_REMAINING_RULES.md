@@ -1,6 +1,6 @@
 # Remaining CHOAM rules: primary-source audit and engine contract
 
-Audit date: 2026-09-06. Scope: Jubba Cloak, Kull Wahad, Auditor, and CHOAM's printed leaders for the classic GF9 2019 game with CHOAM & Richese. This document separates retrieved official rules from proposed software behavior. It does not certify complete CHOAM support. Only this document was authored in this subtask.
+Audit date: 2026-09-06; Kull preview policy updated 30 September 2026. Scope: Jubba Cloak, Kull Wahad, Auditor, and CHOAM's printed leaders for the classic GF9 2019 game with CHOAM & Richese. This document separates retrieved official rules from software behavior and explicit product interpretation. Later runtime records supersede historical absence claims; this does not certify complete CHOAM support.
 
 ## Evidence, access, and precedence
 
@@ -39,30 +39,30 @@ Open timing questions: earliest declaration relative to final storm confirmation
 
 ## Kull: coverage and interruption design
 
-The printed trigger is broad, but the retrieved official text does not enumerate every Karama use. The table below gives recommended handling and the confidence limit, not an official scenario-by-scenario ruling.
+The printed trigger is broad, but the retrieved official text does not enumerate every Karama use. The table separates the approved preview handling from publisher confidence limits. The distinct counter and BG-before-conversion choices are recorded in the [source update](CHOAM_KULL_SOURCE_UPDATE.md#user-selected-preview-timing--30-september-2026); they are not outstanding user questions or publisher clarification.
 
-| Attempt or situation | Recommended behavior | Evidence limit |
+| Attempt or situation | Approved preview handling | Evidence limit |
 | --- | --- | --- |
-| Real Karama cancels a faction/alliance ability | Intercept before card consumption or canceled-effect settlement; CHOAM may declare Kull | Ordinary use of the named card fits the printed trigger; nested order is unspecified |
-| Real Karama funds shipment, takes an auction card, or pays a winning bid | Route through the same interception | No purpose restriction is stated; blocked-bid recovery remains unresolved |
-| Real Karama activates a once-per-game faction power | Intercept before setting `specialKaramaUsed` or paying its additional costs | Strong textual inference from attempted card play; distinguish this from ordinary Karama canceling an already activated special power |
-| Bene Gesserit Worthless-as-Karama | Expose an equivalent attempt, with an explicit conversion stage | Whether Kull acts before conversion/discard is not settled by the retrieved CHOAM text; November FAQ only settles ordinary Karama cancellation of the conversion |
-| Holding Karama permits an overspice bid | Do not consume Kull merely because a hidden card might fund a bid | Holding is not the same as attempting to play; whether an already blocked player retains that bidding permission needs clarification |
+| Real Karama cancels a faction/alliance ability | Intercept before card consumption or canceled-effect settlement; CHOAM may declare Kull | Ordinary use fits the printed trigger; response priority is explicit preview policy |
+| Real Karama funds shipment, takes an auction card, or pays a winning bid | Route through the same pre-cost interception; guard an unpayable winning-overbid composition | No purpose restriction is stated; no auction recovery remedy was approved |
+| Real Karama activates a once-per-game faction power | Intercept its prepared intent before setting `specialKaramaUsed`, paying additional costs or drawing randomly | Broad trigger is a textual inference; this differs from ordinary Karama canceling an already activated special power |
+| Bene Gesserit Worthless-as-Karama | Intercept before conversion/discard; successful Kull retains the unplayed Worthless card | Selected product policy; November FAQ's ordinary conversion cancellation still discards the card if that later stage is reached |
+| Holding Karama permits an overspice bid | Holding alone is not an attempted activation and never spends Kull | Winning-payment infeasibility remains deferred, not solved by hidden-card-dependent bidding limits |
 | Target already blocked in this turn/phase | Reject another Karama activation before mutations | Use a turn-and-phase stamp so the restriction expires at the right boundary |
 | An ally plays Karama for a recipient who is blocked | Apply the restriction to the **card player**, not automatically to its beneficiary | Recommended reading of the named-player restriction; scenario not explicitly answered |
 | Acquiring, trading, selling, or discarding Karama without activating it | Do not treat this as a Kull trigger | No primary support for preventing ownership or a non-Karama-effect discard |
-| The attempted Karama is aimed at Kull itself | Requires a staged response protocol and a declared provisional priority | The apparent circular case is not resolved by retrieved official text |
+| The attempted Karama is aimed at Kull itself | Reserve the original card; allow only a distinct eligible counter before activating the ban | Different-card response priority is selected product policy, not a retrieved publisher ruling |
 
-Current integration hazards:
+Implementation responsibilities:
 
-- `spendKarama()` discards immediately. Save a validated pending intent before that mutation, including owner, physical card ID, purpose, recipients, interrupted `response`/`decision`, and phase stamp. Revalidate custody/legality on resumption. A blocked attempt should provisionally keep its unplayed card; do not silently charge a cost for an effect prevented before play.
-- `completeKarama()` supports `cancel`, `shipment`, `purchase`, and `auctionPayment`. Preserve its continuation instead of recursively calling the original user action, which could reopen Kull indefinitely.
-- `specialKarama()` is separate and directly mutates many powers. A fix only in `spendKarama()` would leave special powers outside the gate. Centralize attempted-play interception or explicitly route every branch through the same protocol.
-- `pendingKarama` currently represents Bene Gesserit conversion and preserves its original canceled response. Kull cannot overwrite that state or `g.response` without saving the suspended context. Use a bounded explicit stage/continuation, not implicit global ordering.
-- `recoverAuctionPayment()` already calls unfunded canceled-payment recovery provisional. A Kull-blocked payment must not award the auction card for free, leave an impossible decision, or assume this routine is source-certified. Distinguish an inability to fund a bid from merely choosing not to use another available payment method.
-- Offer CHOAM the Kull opportunity from an actual declared public attempt regardless of private Kull ownership. Reveal only the attempted card and permitted intent, never the rest of either hand.
+- Save a validated typed intent before mutations, including activating owner, exact physical card, purpose, interrupted response/decision ownership and turn/phase stamp. Invalid attempts must not expose a public reaction or hidden payload.
+- Preserve the original continuation rather than recursively dispatching the original user action. Decline resumes it once; successful Kull stops it while retaining the unplayed original and unspent special once-use. No whole-Game rollback is permitted.
+- Route ordinary and prepared special activations through interception, including Emperor revival before any physical return and Harkonnen before a random transfer. A hook placed only at discard is too late.
+- Keep a BG counter conversion separate from the reserved original attempt and Kull's own cost. Ordinary conversion cancellation has its existing discard consequence; successful pre-conversion Kull does not.
+- Guard the deferred winning-overbid composition before payment costs or saving an unfinishable transaction. An actor-private refusal must not depend on hidden Kull custody, reveal funding or install a free award, restart, new subsidy or bid cap.
+- Offer CHOAM the same neutral opportunity from an eligible public attempt regardless of private Kull ownership. Only CHOAM sees its own legal costs; neither a raw special selection nor a saved response secret belongs in a rival projection.
 
-A possible provisional order is: validate attempted Karama; pause it; allow CHOAM's Kull declaration; resolve permitted responses to that declaration; establish the phase restriction if Kull succeeds; either abandon the still-unspent attempt or resume it once. The target's ability to use the same pending Karama or a second Karama against Kull, and priority for other players, need a primary ruling before this is called complete.
+An offered or declared Kull is **pending**, not an active ban. Resolve the ordinary CHOAM-effect response first, excluding the reserved original physical card from counter choices. Success then restricts the activating player for the stamped phase only. Prevention retains the Kull cost under existing native CHOAM semantics and resumes the original intent once. The wider publisher scope across canceled copies/effects and full combined-play acceptance remain boundaries.
 
 ## Auditor: integration and unresolved printed data
 
@@ -91,4 +91,4 @@ Recommended engine work, pending that roster verification:
 | Auditor | Survivor/dead and 0/1/2+ eligible-card cases; battle-used exclusions; full payment only; Karama prevention; private projection and stable random sampling; no capture/foreign ghola/skill; additional advanced setup identity; repeated revival and all listed battle outcomes. |
 | AI/UI | Easy/Medium/Hard/Brutal resolve every new decision using private projections; human controls explain target/scope and permit legal decline; normal/enlarged text tracks only verified behavior. |
 
-This was a read-only source/engine audit plus documentation creation. No gameplay tests were rerun for unimplemented behavior. Validation consisted of official indexed-source retrieval, inspection of current integration points, image inspection, metadata/file-type checks, and document checks. The unresolved questions above are remaining work, not newly established house rules.
+The original 6 September pass was a read-only source/engine audit plus documentation creation. Validation then consisted of official indexed-source retrieval, inspection of integration points, image inspection, metadata/file-type checks and document checks, not gameplay tests. The later 30 September Kull choices are explicitly selected product policy; remaining publisher clarification, deferred overbid recovery and full combined-play acceptance are not completion claims.

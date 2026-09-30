@@ -508,3 +508,35 @@ void test('pure unrelated responses stay with their own cancellation validators'
     null,
   );
 });
+
+void test('denied Kull phase-blocks the exact declared effect without consuming another phase context', () => {
+  for (let phase = 0; phase <= 8; phase++) {
+    const g = createGame('KULLDENY', newPlayer('c', 'CHOAM', 'choam'), true, ['choam', 'ix']);
+    g.players.push(newPlayer('a', 'Atreides', 'atreides'));
+    Object.assign(g, { status: 'playing', turn: 2, phase });
+    g.pendingChoamWorthless = {
+      owner: 'c', card: 'ix-kull-wahad', effect: 'kull', target: 'a', revival: false,
+    };
+    const response = {
+      kind: 'choamWorthless' as const, owner: 'c', recipient: 'a',
+      intent: 'Kull Wahad', passed: [],
+    };
+    const before = JSON.stringify(g);
+    const quote = quoteChoamWorthlessCancellation(g, response)!;
+    assert.deepEqual(quote.blocked, { turn: 2, phase, cards: ['ix-kull-wahad'] });
+    assert.deepEqual(quote.resume, { kind: 'none' });
+    assert.equal(quote.pendingChoamWorthless, null);
+    assert.equal(JSON.stringify(g), before);
+    for (const fields of [
+      { target: 'c' }, { target: 'foreign' }, { location: 'arrakeen' },
+      { elite: 0 }, { movement: true }, { noFieldEvent: 'foreign' },
+    ]) {
+      const corrupt = reload(g);
+      Object.assign(corrupt.pendingChoamWorthless!, fields);
+      const snapshot = JSON.stringify(corrupt);
+      assert.throws(() => quoteChoamWorthlessCancellation(corrupt, response),
+        ChoamWorthlessCancellationError);
+      assert.equal(JSON.stringify(corrupt), snapshot);
+    }
+  }
+});

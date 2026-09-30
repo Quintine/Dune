@@ -133,6 +133,15 @@ cyborg movement, HMS routes and battle aftermath through the same full deck; see
 connects ordinary skill actions and saved market/revival choices; see
 [CHOAM integration](docs/CHOAM_LEADER_SKILLS.md).
 
+For local printed **Kull Wahad** testing, use `node --import tsx tools/start-prototype.ts --profile kull`
+on a fresh ready Basic/Advanced CHOAM-plus-classic lobby with `choam,ix` decks
+and no optional modules, following the [safe prototype workflow](docs/DEVELOPMENT.md).
+The tool requires the exact room/version and a private backup output directory.
+The preview reserves the interrupted Karama and permits only a different eligible
+counter; BG interception is before conversion. Unpayable overbid recovery remains
+guarded. See the [selected policy and boundaries](docs/CHOAM_KULL_SOURCE_UPDATE.md).
+This does not enable public expansion starts or certify full CHOAM.
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

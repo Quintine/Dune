@@ -9,6 +9,7 @@ import {
   type Game,
 } from '../game/engine';
 import { tableActionOwner } from '../game/table-turn';
+import { choamKullGame, kullShipmentAttempt } from './fixture-choam-kull';
 
 function battle(advanced = false) {
   let g = createGame(
@@ -203,4 +204,19 @@ void test('full-plan prescience names its publicly selected target before either
   });
   assert.deepEqual(g.battle!.fullPlan, { owner: 'a', target: 'b' });
   assert.deepEqual(owners(g), ['b', 'b', 'b', 'b']);
+});
+
+void test('real Kull offer gives CHOAM public decision ownership before the suspended actor', () => {
+  const initial = choamKullGame();
+  const choam = initial.players[0].id, actor = initial.players[1].id;
+  const offered = applyAction(initial, actor, kullShipmentAttempt(initial, actor));
+  assert.ok(offered.pendingKull);
+  assert.deepEqual(owners(offered), offered.players.map(() => choam));
+  const saved = JSON.parse(JSON.stringify(offered)) as Game;
+  assert.deepEqual(owners(saved), owners(offered));
+  const counter = applyAction(saved, choam, {
+    type: 'kullDecision', event: saved.pendingKull!.event, card: 'ix-kull-wahad',
+  });
+  assert.equal(counter.response?.kind, 'choamWorthless');
+  assert.deepEqual(owners(counter), counter.players.map(() => null));
 });

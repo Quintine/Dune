@@ -42,6 +42,7 @@ const effects = {
   gamont: { phase: 8, name: 'Trip to Gamont' },
   baliset: { phase: 5, name: 'Baliset' },
   jubba: { phase: 0, name: 'Jubba Cloak' },
+  kull: { phase: null, name: 'Kull Wahad' },
 } as const;
 const id = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0;
@@ -84,7 +85,8 @@ export function quoteChoamWorthlessCancellation(
     'The denied Worthless effect needs its original CHOAM declaration.',
   );
   requireDeclaration(
-    g.phase === effects[p.effect].phase &&
+    whole(g.phase) && g.phase <= 8 &&
+      (p.effect === 'kull' || g.phase === effects[p.effect].phase) &&
       response.intent === effects[p.effect].name,
     'The Worthless effect does not match its phase and declared printed name.',
   );
@@ -147,6 +149,13 @@ export function quoteChoamWorthlessCancellation(
             target.faction === 'richese' &&
             p.elite === 0)),
       'Denied Gamont needs its original opposing sector and selected force type.',
+    );
+  } else if (p.effect === 'kull') {
+    requireDeclaration(
+      target && target.id !== p.owner &&
+        p.location === undefined && response.location === undefined &&
+        p.elite === undefined && !flags.some(flag => flag === true),
+      'Denied Kull needs the original Karama actor and no unrelated continuation.',
     );
   } else {
     const loc = key(response.location);

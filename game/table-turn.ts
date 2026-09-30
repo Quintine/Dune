@@ -12,12 +12,15 @@ type TurnView = Pick<
   | 'phaseOpening'
   | 'automaticContinuationPending'
 > &
-  Partial<Pick<GameView, 'biddingEnd'>>;
+  Partial<Pick<GameView, 'biddingEnd' | 'kullReaction'>>;
 
 /** The single current decision owner for the table banner and seat highlight.
  * Shared response windows have no single acting seat. Only public view fields
  * participate; this does not decide which gameplay actions are legal. */
 export function tableActionOwner(g: TurnView): string | null {
+  if (g.kullReaction && g.status === 'playing')
+    return g.players.some(p => p.id === g.kullReaction!.player)
+      ? g.kullReaction.player : null;
   if (
     g.status !== 'playing' ||
     g.automaticContinuationPending ||

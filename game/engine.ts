@@ -464,6 +464,7 @@ import {
 import { reserveExtortion, collectExtortion, answerExtortion, validateExtortionState, type ExtortionState } from './moritani-extortion';
 import { STORM_START_SECTOR, PLAYER_CIRCLE_SECTORS } from './player-positions';
 import { cashInCards } from './choam-karama';
+import { kullBlocksKarama, activeKullRestrictions, validateKullPhaseRestrictions, validateKullAttemptStamp, kullNativeCostCards, kullCounterCards, type KullPhaseRestriction } from './choam-kull';
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
 import { highKaitainDiscardsAvailable, quoteKaitainDiscards, homeworldWorthlessSaleBlock } from './homeworld-card-economy';
 import { biddingEndError, biddingEndQuiet, biddingEndPubliclyEmpty, type BiddingEnd } from './bidding-end';
@@ -1078,6 +1079,24 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** Explicit development profile; never enabled by a public start or player action. */
+  kullPreview?: boolean;
+  kullSequence?: number;
+  kullRestrictions?: KullPhaseRestriction[];
+  pendingKull?: {
+    event: string;
+    player: string;
+    owner: string;
+    card: string;
+    turn: number;
+    phase: number;
+    form: 'printed' | 'substitution';
+    stage: 'offer' | 'counter';
+    intent: { kind: 'ordinary'; use: KaramaUse } | { kind: 'special'; use: SpecialKaramaIntent };
+    resume: NonNullable<Game['pendingNullentropy']>['resume'];
+    worthless: Game['pendingChoamWorthless'];
+    signature: string;
+  } | null;
   stormMovementSource?: StormMovementSource;
   ecologicalStorm?: DiscoveryStorm;
   discoveryEnabled?: boolean;
@@ -1576,7 +1595,7 @@ export type Game = {
   pendingChoamWorthless?: {
     owner: string;
     card: string;
-    effect: 'kulon' | 'laLaLa' | 'gamont' | 'baliset' | 'jubba';
+    effect: 'kulon' | 'laLaLa' | 'gamont' | 'baliset' | 'jubba' | 'kull';
     storm?: boolean;
     movement?: boolean;
     location?: string;
@@ -8142,6 +8161,17 @@ export function initializeSemutaGameForAudit(state: Game): Game {
   g.semutaPreview = true;
   return g;
 }
+/** Opt-in printed Kull gameplay with the physical Ix deck, not a public release gate. */
+export function initializeKullGameForAudit(state: Game): Game {
+  requireRule(!state.kullPreview && !state.pendingKull && !state.kullRestrictions &&
+    state.expansions.length === 2 && state.expansions.includes('choam') &&
+    state.expansions.includes('ix') && state.players.some(p => p.faction === 'choam') &&
+    state.players.every(p => p.faction === 'choam' || faction(p.faction).expansion === 'base'),
+  'Kull preview needs a fresh CHOAM and classic-faction lobby with CHOAM and Ix decks.');
+  const g = initializeFactionExpansionsGameForAudit(state);
+  g.kullPreview = true;
+  return g;
+}
 /** Prototype-only Discovery setup. Public starts stay gated while remaining effects are connected. */
 export function initializeDiscoveryGameForAudit(state: Game): Game {
   requireRule(state.discoveryEnabled === true && !state.discoveries && !state.discoveryStash && !state.greatMaker,
@@ -10327,6 +10357,11 @@ function nextAuction(g: Game) {
 }
 /** Physical custody only: promise feasibility remains conservatively checked at commit. */
 function karamaSpendingBlock(g: Game, p: Player, card: Card): string | null {
+  if (g.kullPreview && kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id))
+    return 'Kull Wahad prevents your Karama activations for this phase.';
+  if (g.pendingKull?.stage === 'counter' &&
+    (g.pendingKull.card === card.id || g.pendingChoamWorthless?.card === card.id))
+    return 'This physical card is reserved for the interrupted Kull transaction.';
   if (g.pendingIxRicheseTechnology?.card.id === card.id)
     return 'This card is reserved for the pending Richese lot and Ixian choice.';
   if (g.battle?.lateDefense?.[p.id] === card.id)
@@ -10364,6 +10399,17 @@ function responseCancelCards(
   response: ResponseWindow,
 ): string[] {
   if (p.id === response.owner) return [];
+  if (g.pendingKull?.stage === 'counter')
+    return kullCounterCards(p.hand, physicalTreacheryCards(g), g.pendingKull.card,
+      card => {
+        if (!canUseAsKaramaRole(g, p, card) || karamaSpendingBlock(g, p, card)) return false;
+        try {
+          return assertKaramaPromiseFeasibility(g, p, { kind: 'cancel', response }, card);
+        } catch (error) {
+          if (error instanceof RuleError) return false;
+          throw error;
+        }
+      }).map(card => card.id);
   // Do not simulate cancellation here: it can execute RNG and continuations.
   // A physically spendable card whose Truthtrance feasibility is not proven
   // remains a possible choice; the authoritative action still checks promises.
@@ -10384,6 +10430,7 @@ function savedKaramaContexts(g: Game) {
     g.pendingRichesePurchaseIncome?.resume,
     g.summonedWorm?.resume,
     continuation && 'resume' in continuation ? continuation.resume : null,
+    g.pendingKull?.resume,
   ].flatMap((context) =>
     context?.pendingKarama
       ? [
@@ -10436,6 +10483,8 @@ function karamaSourceGame(
   g: Game,
   pending: NonNullable<Game['pendingKarama']>,
 ) {
+  if (g.pendingKull && controlsContainKarama(g, g.pendingKull.resume, pending))
+    return kullSource(g, g.pendingKull);
   const worm = g.summonedWorm;
   return worm && controlsContainKarama(g, worm.resume, pending)
     ? { ...g, ...worm.resume, summonedWorm: null }
@@ -11106,11 +11155,189 @@ function assertKaramaPromiseFeasibility(
     );
   return true;
 }
-function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse) {
+type KullFrame = NonNullable<Game['pendingKull']>;
+function kullCostPromisesAllow(g: Game, p: Player, card: Card): boolean {
+  const battlePromises = g.battle && !g.battle.revealed && !g.battle.plans[p.id]
+    ? (g.battle.truthPromises ?? []).filter(promise => promise.player === p.id && !promise.released)
+    : [];
+  const shipmentPromises = liveShipmentPromises(g.shipmentPromises ?? [], p.id, g.turn);
+  if (!battlePromises.length && !shipmentPromises.length) return true;
+  const projected = structuredClone(g.pendingKull ? kullSource(g, g.pendingKull) : g);
+  const owner = getPlayer(projected, p.id);
+  owner.hand = owner.hand.filter(held => held.id !== card.id);
+  if (g.pendingKull)
+    projected.kullRestrictions = [
+      ...activeKullRestrictions(projected.kullRestrictions, projected.turn, projected.phase),
+      { player: g.pendingKull.owner, turn: projected.turn, phase: projected.phase },
+    ];
+  projected.response = null;
+  projected.decision = null;
+  projected.pendingKarama = null;
+  return (!battlePromises.length ||
+      !!findReachableBattlePlan(projected, owner, { promises: battlePromises })) &&
+    (!shipmentPromises.length || !!findShipmentCompletion(projected, owner, shipmentPromises));
+}
+function kullCostCards(g: Game, p: Player): Card[] {
+  return kullNativeCostCards(cashInCards(g, p), physicalTreacheryCards(g))
+    .filter(card => !choamWorthlessBlocked(g, card.id) && !giftReserved(g, p.id, card.id) &&
+      !transferCardBlock(g, p, card) && kullCostPromisesAllow(g, p, card));
+}
+function kullSource(g: Game, frame: KullFrame): Game {
+  return { ...g, ...frame.resume, pendingKull: null, pendingChoamWorthless: frame.worthless };
+}
+function kullSignature(g: Game, frame: KullFrame): string {
+  const source = kullSource(g, frame);
+  return JSON.stringify({
+    event: frame.event, player: frame.player, owner: frame.owner, card: frame.card,
+    turn: frame.turn, phase: frame.phase, form: frame.form, intent: frame.intent,
+    controls: nullentropyParentSignature(source, frame.resume, frame.event),
+    status: source.status, advanced: source.advanced, active: source.active,
+    order: source.order, ready: source.ready, hajr: source.hajr, choamMarket: source.choamMarket,
+    auction: source.auction, battle: source.battle, movementRemaining: source.movementRemaining,
+    karamaShipping: source.karamaShipping, spiceWindow: source.spiceWindow,
+    spiceResolution: source.spiceResolution, spiceSequence: source.spiceSequence,
+    stormResolution: source.stormResolution, worthless: frame.worthless,
+  });
+}
+function kullIntegrity(g: Game): void {
+  try {
+    if (g.kullRestrictions !== undefined) validateKullPhaseRestrictions(g, g.kullRestrictions);
+    const frame = g.pendingKull;
+    if (!frame) {
+      const conversion = g.pendingKarama?.use;
+      requireRule(g.pendingChoamWorthless?.effect !== 'kull' &&
+        !(g.response?.kind === 'choamWorthless' && g.response.intent === 'Kull Wahad') &&
+        !(conversion?.kind === 'cancel' &&
+          conversion.response.kind === 'choamWorthless' &&
+          conversion.response.intent === 'Kull Wahad'),
+      'The saved Kull declaration has lost its interrupted Karama frame.');
+      return;
+    }
+    requireRule(g.kullPreview === true, 'This table has not opted into the Kull preview.');
+    validateKullAttemptStamp(g, frame, physicalTreacheryCards(g));
+    requireRule(Number.isSafeInteger(g.kullSequence) && g.kullSequence! > 0 &&
+      frame.event === JSON.stringify(['kull', g.turn, g.phase, g.kullSequence, frame.player, frame.owner]),
+    'The Kull attempt has lost its server-created opportunity identity.');
+    requireRule(frame.signature === kullSignature(g, frame),
+      'The saved Kull attempt no longer matches its original controls and opportunity.');
+    const source = kullSource(g, frame), owner = getPlayer(source, frame.owner);
+    const card = owner.hand.find(card => card.id === frame.card);
+    requireRule(card, 'The original attempted Karama must remain in its owner’s hand.');
+    requireRule(frame.form === (card.kind === 'worthless' ? 'substitution' : 'printed'),
+      'The Kull attempt no longer matches its original physical card form.');
+    requireRule(!karamaSpendingBlock(source, owner, card), 'The original Karama activation is no longer legal.');
+    if (frame.intent?.kind === 'ordinary') {
+      validateKaramaUse(source, owner, frame.intent.use, card);
+      requireRule(assertKaramaPromiseFeasibility(source, owner, frame.intent.use, card),
+        'The interrupted Karama has no proven Truthtrance continuation.');
+    } else {
+      requireRule(frame.intent?.kind === 'special', 'The Kull attempt has no validated intent.');
+      const prepared = prepareSpecialKaramaIntent(source, frame.owner, specialKaramaAction(frame.intent.use));
+      requireRule(JSON.stringify(prepared) === JSON.stringify(frame.intent.use),
+        'The saved special Karama selection has changed.');
+    }
+    if (frame.stage === 'offer')
+      requireRule(JSON.stringify(g.response) === JSON.stringify(frame.resume.response) &&
+        JSON.stringify(g.decision) === JSON.stringify(frame.resume.decision) &&
+        JSON.stringify(g.pendingKarama ?? null) === JSON.stringify(frame.resume.pendingKarama ?? null) &&
+        JSON.stringify(g.pendingChoamWorthless ?? null) === JSON.stringify(frame.worthless ?? null),
+      'The Kull offer no longer owns its original controls.');
+    else {
+      const declaration = g.pendingChoamWorthless;
+      const response = g.pendingKarama?.use.kind === 'cancel'
+        ? g.pendingKarama.use.response : g.response;
+      requireRule(declaration?.effect === 'kull' && declaration.owner === frame.player &&
+        declaration.target === frame.owner && response?.kind === 'choamWorthless' &&
+        response.owner === frame.player && response.intent === 'Kull Wahad' &&
+        response.recipient === frame.owner &&
+        kullCostCards(g, getPlayer(g, frame.player)).some(card => card.id === declaration.card),
+      'The Kull counter no longer matches its held cost and original attempted player.');
+      currentChoamWorthlessCancellationQuote(g, response);
+    }
+  } catch (error) {
+    if (error instanceof RuleError) throw error;
+    throw new RuleError(error instanceof Error ? error.message : 'Invalid saved Kull transaction.');
+  }
+}
+function beginKullAttempt(g: Game, p: Player, card: Card, intent: KullFrame['intent'], promiseProven = true): boolean {
+  if (!g.kullPreview || g.pendingKull) return false;
+  const choam = byFaction(g, 'choam');
+  if (!choam || choam.id === p.id) return false;
+  requireRule(promiseProven,
+    'Kull preview cannot interrupt this unproven Truthtrance cancellation continuation.');
+  // This composition is user-deferred. The guard is private and independent
+  // of CHOAM's hidden hand; never accept a transaction needing a made-up remedy.
+  requireRule(!g.auction || g.auction.bidder !== p.id ||
+    g.auction.bid <= p.spice + (g.auction.allyPayment ?? 0),
+  'Kull preview defers Karama activation while your winning overbid cannot be paid in spice.');
+  const resume: KullFrame['resume'] = {
+    response: g.response, decision: g.decision, pendingKarama: g.pendingKarama ?? null,
+    phaseOpening: g.phaseOpening,
+  };
+  if (intent.kind === 'ordinary' && intent.use.kind === 'auctionPayment')
+    resume.decision = { kind: 'auctionPayment', player: p.id };
+  const frame: KullFrame = {
+    event: JSON.stringify(['kull', g.turn, g.phase, (g.kullSequence ?? 0) + 1, choam.id, p.id]),
+    player: choam.id, owner: p.id, card: card.id,
+    turn: g.turn, phase: g.phase, form: card.kind === 'worthless' ? 'substitution' : 'printed',
+    stage: 'offer', intent: structuredClone(intent), resume: structuredClone(resume),
+    worthless: structuredClone(g.pendingChoamWorthless ?? null), signature: '',
+  };
+  // Payment dispatch removed this control before entering its native branch.
+  g.decision = resume.decision;
+  frame.signature = kullSignature(g, frame);
+  g.kullSequence = (g.kullSequence ?? 0) + 1;
+  g.pendingKull = frame;
+  log(g, `${p.name} attempted a Karama activation. CHOAM may react with Kull Wahad.`);
+  return true;
+}
+function resumeKullAttempt(g: Game, prevented: boolean): void {
+  const frame = g.pendingKull!;
+  Object.assign(g, frame.resume);
+  g.pendingChoamWorthless = frame.worthless;
+  // Retire ownership before executing. Neither resumed execution nor a saved
+  // retry can reopen this exact opportunity or consume its physical card twice.
+  g.pendingKull = null;
+  if (prevented) return;
+  const p = getPlayer(g, frame.owner);
+  if (frame.intent.kind === 'special') executeSpecialKaramaIntent(g, frame.intent.use);
+  else {
+    if (frame.intent.use.kind === 'auctionPayment') g.decision = null;
+    spendKarama(g, p, p.hand.find(card => card.id === frame.card)!, frame.intent.use, true);
+  }
+}
+function decideKull(g: Game, p: Player, action: Action): void {
+  const frame = g.pendingKull!;
+  requireRule(action.type === 'kullDecision' && action.event === frame.event &&
+    p.id === frame.player && Object.keys(action).every(key => ['type','event','decline','card'].includes(key)),
+  'Choose the current Kull opportunity as CHOAM.');
+  if (action.decline === true) {
+    requireRule(action.card === undefined, 'Decline or choose one Kull card, not both.');
+    resumeKullAttempt(g, false);
+    return;
+  }
+  requireRule(action.decline === undefined && typeof action.card === 'string' &&
+    kullCostCards(g, p).some(card => card.id === action.card),
+  'Choose your exact eligible held Kull Wahad card.');
+  frame.stage = 'counter';
+  g.decision = null;
+  g.pendingKarama = null;
+  g.phaseOpening = null;
+  g.pendingChoamWorthless = {
+    owner: p.id, card: action.card, effect: 'kull', target: frame.owner, revival: false,
+  };
+  g.response = { kind: 'choamWorthless', owner: p.id, recipient: frame.owner,
+    intent: 'Kull Wahad', passed: [] };
+  log(g, `${p.name} declared Kull Wahad. Only a different Karama can prevent it.`);
+}
+function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered = false) {
   const blocked = karamaSpendingBlock(g, p, card);
   requireRule(!blocked, blocked ?? 'This card cannot be spent as Karama.');
   validateKaramaUse(g, p, use, card);
-  assertKaramaPromiseFeasibility(g, p, use, card);
+  const promiseProven = assertKaramaPromiseFeasibility(g, p, use, card);
+  requireRule(!g.pendingKull || promiseProven,
+    'Kull preview cannot accept this unproven Truthtrance counter continuation.');
+  if (!kullOffered && beginKullAttempt(g, p, card, { kind: 'ordinary', use }, promiseProven)) return;
   const used = discard(g, p, card.id);
   if (g.semutaPreview && card.effect === 'karama' &&
     use.kind === 'cancel' &&
@@ -17828,6 +18055,7 @@ function reconcileShipmentPromises(
   g: Game,
   voluntary?: { actor: string; action: Action },
 ) {
+  if (g.pendingKull) return;
   const kept: ShipmentPromise[] = [];
   for (const promise of g.shipmentPromises ?? []) {
     if (promise.turn !== g.turn || promise.released || promise.fulfilled)
@@ -17890,6 +18118,7 @@ function reconcileBattlePromises(
   g: Game,
   voluntary?: { actor: string; action: Action },
 ) {
+  if (g.pendingKull) return;
   const b = g.battle;
   if (
     !b ||
@@ -19864,6 +20093,7 @@ function auditorIntegrity(g: Game) {
   const contexts = [
     g,
     g.pendingNullentropy?.resume,
+    g.pendingKull?.resume,
     g.pendingTreacheryDiscard?.continuation.kind === 'nullentropyDiscard' ||
     g.pendingTreacheryDiscard?.continuation.kind === 'truthtranceDiscard'
       ? g.pendingTreacheryDiscard.continuation.resume
@@ -20560,6 +20790,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
   const response = g.response!;
+  if (g.pendingKull?.stage === 'counter' && response.kind === 'choamWorthless') kullIntegrity(g);
   if (response.kind === 'nexusPrescience') validateNexusInspectionResponse(g, response);
   if (response.kind === 'nexusAdvisorFlip') validateNexusAdvisorResponse(g, response);
   if (response.kind === 'nexusSardaukar') validateNexusSardaukarResponse(g, response);
@@ -20656,6 +20887,8 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     else if (declaration.resume.kind === 'movement') resumeChoamMovement(g);
     else if (declaration.resume.kind === 'mentat')
       g.decision = declaration.resume.decision;
+    if (g.pendingKull?.stage === 'counter' && declaration.effect === 'kull')
+      resumeKullAttempt(g, false);
     return;
   }
   if (auctionCancellation) {
@@ -20907,6 +21140,13 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     ) {
       const used = discard(g, choam, pending.card);
       finishNexusChoam(g,pending,'complete');
+      if (pending.effect === 'kull') {
+        g.kullRestrictions = [...activeKullRestrictions(g.kullRestrictions, g.turn, g.phase),
+          { player: g.pendingKull!.owner, turn: g.turn, phase: g.phase }];
+        log(g, `${getPlayer(g, g.pendingKull!.owner).name} cannot activate Karama for this phase. The attempted card stays held.`);
+        resumeKullAttempt(g, true);
+        return;
+      }
       if (pending.effect === 'kulon') {
         if (g.semutaPreview && used.name === 'Kulon' &&
           !pending.storm && !pending.revival && !pending.movement &&
@@ -23306,11 +23546,11 @@ function choamPowerPlays(g: Game, p: Player) {
   const printed = p.hand.filter(card => card.kind === 'worthless' &&
     Object.values(CHOAM_NEXUS_EFFECTS).includes(card.name as typeof CHOAM_NEXUS_EFFECTS[NexusChoamEffect]) && !choamWorthlessBlocked(g,card.id))
     .map(card => ({source:'printed' as const,card,effect:Object.entries(CHOAM_NEXUS_EFFECTS).find(([,name]) => name === card.name)![0] as NexusChoamEffect,
-      blocked:card.name === 'Kull Wahad' ? 'Kull Wahad’s reaction and discard sequence is still being implemented.' : null}));
+      blocked:card.name === 'Kull Wahad' ? 'Kull Wahad is reactive: use the Kull opportunity when another player attempts Karama in the explicit preview.' : null}));
   if (p.faction !== 'choam' || p.ally || g.nexusCards?.cards?.hands[p.id] !== 'choam') return printed;
   return [...printed, ...p.hand.flatMap(card => (Object.keys(CHOAM_NEXUS_EFFECTS) as NexusChoamEffect[]).map(effect => {
     let blocked: string | null = null;
-    if (effect === 'kull') blocked = 'Kull Wahad’s reaction and discard sequence is still being implemented.';
+    if (effect === 'kull') blocked = 'Kull Wahad via CHOAM Cunning is unavailable in this printed-card preview.';
     else if (g.status !== 'playing' || g.truthtrance || g.response || g.phaseOpening || g.pendingKarama || g.pendingNullentropy || g.pendingTreacheryDiscard || g.choamMarket)
       blocked = 'Finish the current interaction before declaring CHOAM Cunning.';
     else if (choamWorthlessBlocked(g,card.id)) blocked = 'This card’s special-effect use is blocked for this phase.';
@@ -23610,6 +23850,8 @@ export function prepareSpecialKaramaIntent(
     (c) => c.id === action.card && canUseAsKaramaRole(g, p, c),
   );
   requireRule(card, 'Choose a Karama card in your hand.');
+  const activationBlock = karamaSpendingBlock(g, p, card);
+  requireRule(!activationBlock, activationBlock ?? 'This Karama is committed elsewhere.');
   const base = { owner: p.id, card: card.id, turn: g.turn, phase: g.phase };
   if (p.faction === 'richese') {
     const blocked = karamaSpendingBlock(g, p, card);
@@ -24141,7 +24383,10 @@ export function executeSpecialKaramaIntent(
   }
 }
 function specialKarama(g: Game, p: Player, action: Action) {
-  executeSpecialKaramaIntent(g, prepareSpecialKaramaIntent(g, p.id, action));
+  const intent = prepareSpecialKaramaIntent(g, p.id, action);
+  const card = p.hand.find(card => card.id === intent.card)!;
+  if (!beginKullAttempt(g, p, card, { kind: 'special', use: intent }))
+    executeSpecialKaramaIntent(g, intent);
 }
 
 /** Private, read-only choices; validation performs no draws or continuations. */
@@ -24234,6 +24479,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
@@ -24316,6 +24562,10 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  if (g.pendingKull) {
+    settleAutomaticContinuations(g);
+    if (g.pendingKull) { kullIntegrity(g); return g; }
+  }
   finishLeaderSkillCustody(g, state);
   observeOccupation(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -24441,6 +24691,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   return g;
 }
 function finishActionContinuations(g: Game) {
+  if (g.pendingKull) return;
   finishLeaderSkillCustody(g);
   finishMandatorySkillVisibility(g);
   if (g.pendingNullentropy) return;
@@ -24502,6 +24753,7 @@ function finishActionContinuations(g: Game) {
     finishMoritaniPlacement(g);
 }
 function settleAutomaticContinuations(g: Game) {
+  if (g.pendingKull?.stage === 'offer') return;
   if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
   for (let iteration = 0; iteration < 128; iteration++) {
@@ -24541,6 +24793,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
@@ -24573,6 +24826,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingKull?.stage === 'offer') return g;
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
   battleSpecialWeaponIntegrity(g);
@@ -24683,6 +24937,15 @@ function applyActionInner(
   );
   requireRule(g.status !== 'finished', 'This game has ended.');
   const t = action.type;
+  if (g.pendingKull) {
+    if (t === 'advanceBots') return g;
+    if (g.pendingKull.stage === 'offer') {
+      decideKull(g, p, action);
+      return g;
+    }
+    requireRule(t === 'passResponse' || (t === 'card' && action.mode === 'cancel'),
+      'Finish the Kull counter response before another action.');
+  } else requireRule(t !== 'kullDecision', 'This Kull opportunity is no longer pending.');
   if (t === 'advanceBots') return g;
   requireRule(!g.bureaucratPayments?.pending || t === 'decision','Resolve the pending Bureaucrat payment before another action.');
   requireRule(!(g.battle?.mentatQuestion?.stage === 'name' || g.battle?.mentatQuestion?.stage === 'reveal') || t === 'decision',
@@ -27002,11 +27265,16 @@ function applyActionInner(
       const quotedBid = quoteNormalAuctionBid({
         currentBid: a.bid,
         amount: action.amount,
-        maximum: karamaCard(g, p)
+        maximum: (g.kullPreview ? p.hand.some(card => canUseAsKaramaRole(g, p, card)) : !!karamaCard(g, p))
           ? Number.MAX_SAFE_INTEGER
           : p.spice + (aidFor(g, p)?.amount ?? 0),
       });
       if (!quotedBid.ok) throw new RuleError(quotedBid.reason);
+      requireRule(!g.kullPreview ||
+        (p.id === byFaction(g, 'choam')?.id &&
+          !kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, p.id)) ||
+        quotedBid.amount <= p.spice + (aidFor(g, p)?.amount ?? 0),
+      'Kull preview defers an unfunded Karama-dependent overbid before acceptance.');
       a.bid = quotedBid.amount;
       a.allyPayment =
         a.bid <= p.spice + (aidFor(g, p)?.amount ?? 0)
@@ -28427,6 +28695,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
@@ -28927,6 +29196,16 @@ export function viewGame(state: Game, id: string) {
         ? g.stormDials
         : null,
     me: id,
+    kullPreview: !!g.kullPreview,
+    kullCounterEvent: g.pendingKull?.stage === 'counter' ? g.pendingKull.event : null,
+    karamaBlocked: g.kullPreview && kullBlocksKarama(g.kullRestrictions, g.turn, g.phase, id)
+      ? 'Kull Wahad prevents your Karama activations for this phase.' : null,
+    kullReaction: g.pendingKull?.stage === 'offer'
+      ? { event: g.pendingKull.event, player: g.pendingKull.player, target: g.pendingKull.owner,
+          intent: g.pendingKull.intent.kind === 'ordinary' ? g.pendingKull.intent.use.kind : 'special',
+          cards: id === g.pendingKull.player ? kullCostCards(g, me) : [],
+          canDecline: id === g.pendingKull.player, blocked: null as string | null }
+      : null,
     choamWorthless:
       me.faction === 'choam'
         ? {
@@ -29055,7 +29334,7 @@ export function viewGame(state: Game, id: string) {
           g.moritaniRetention.keep,
         ) ?? null)
       : null,
-    decision:
+    decision: g.pendingKull?.stage === 'offer' ? null :
       g.decision?.kind === 'capturedLeader' &&
       !g.leaderSkills?.assignments.some((a) => a.leader === (g.decision as Extract<Decision,{kind:'capturedLeader'}>).leader) &&
       ![g.decision.player, g.decision.controller ?? g.decision.owner].includes(
@@ -29067,7 +29346,7 @@ export function viewGame(state: Game, id: string) {
           : g.decision?.kind === 'guildShipment' && g.decision.noFieldSkillProof !== undefined
             ? { ...g.decision, noFieldSkillProof: undefined }
             : (g.decision ?? null),
-    response: g.response
+    response: g.pendingKull?.stage === 'offer' ? null : g.response
       ? {
           ...g.response,
           ...(g.response.bureaucratPayment ? {bureaucratPayment:undefined,bureaucratPaymentEvent:undefined} : {}),
@@ -29091,7 +29370,7 @@ export function viewGame(state: Game, id: string) {
         }
       : null,
     paymentIncome: currentFactionPayment(g),
-    responseControls: g.response
+    responseControls: g.pendingKull?.stage === 'offer' ? undefined : g.response
       ? {
           cancelCards: responseCancelCards(g, me, g.response),
           hasPassed: g.response.passed.includes(id),

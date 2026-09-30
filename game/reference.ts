@@ -72,7 +72,7 @@ export const HELP = {
   summonedWorm:
     'Fremen’s special Karama summons a worm in sand once per game during Spice Blow and Nexus. Resolve destruction and protection immediately, then resume the spice blow. The worm causes a Nexus at the end of that blow, followed by Fremen rides. Calling the worm does not draw or discard a spice card.',
   choamWorthless:
-    'Kulon adds one territory of movement range on CHOAM’s turn. La La La prevents a player’s free force revival for the phase. Baliset blocks a player’s movement into a CHOAM-occupied territory while permitting shipment. Trip to Gamont returns another player’s force to reserves during Mentat, before victory. Jubba Cloak protects CHOAM’s forces in one territory during a storm movement. A Karama response precedes discarding these cards; canceled cards remain in hand.',
+    'Kulon adds one territory of movement range on CHOAM’s turn. La La La prevents free force revival. Baliset blocks movement into a CHOAM-occupied territory, not shipment. Trip to Gamont returns another player’s force during Mentat. Jubba Cloak protects one territory from a moving storm. In the opt-in Kull preview, Kull Wahad intercepts a Karama attempt; only successful settlement activates the phase ban. A distinct counter may prevent it. Canceled Worthless costs remain held.',
   choamCombat:
     'CHOAM may reserve spice for an ally’s advanced battle support. The ally chooses the payment split when sealing. A traitor victory costs the winner no support; any revealed traitor prevents CHOAM force-payment income.',
   fullPlan:
@@ -2421,8 +2421,9 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Advanced Bene Gesserit may spend Worthless cards as Karama. Each conversion opens a separate cancellation response; the Worthless card is discarded even if the power is canceled. Normal Karama cards resolve without that conversion response.',
       'A pending Worthless purchase keeps space for its original auction card. Gifts and hand exchanges must leave enough room for every committed incoming card. Refreshing restores the same auction, unused shipment opportunity or original canceled power.',
       'Atreides full-plan inspection, Emperor revival, Fremen’s summoned worm, Harkonnen hand exchange the Guild shipment stop and Tleilaxu revival prevention are implemented as once-per-game uses. Other cancellations and special Karamas are still being implemented.',
+      'In the opt-in Kull development preview, another player’s legal ordinary Karama or supported special activation pauses before its costs for CHOAM’s neutral reaction. A declared Kull is pending, not yet a phase ban. Only a different eligible physical Karama can counter it; the original stays reserved. Successful Kull retains the unplayed original, including an advanced Bene Gesserit Worthless card intercepted before conversion, and prevents further Karama activations for that phase. See Kull Wahad for the explicit preview policy and deferred winning-overbid warning.',
     ],
-    related: ['bidding', 'battle', 'advanced-combat', 'special-karama'],
+    related: ['bidding', 'battle', 'advanced-combat', 'special-karama', 'choam-kull'],
   },
   {
     id: 'truthtrance-forces',
@@ -2741,7 +2742,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         `advanced-${f.id}`,
         'faction-sheets',
         ...(f.id === 'richese' ? ['richese-cards', 'richese-no-field', 'richese-gift', 'richese-acquisition'] : []),
-        ...(f.id === 'choam' ? ['choam-auditor', 'choam-worthless', 'choam-combat'] : []),
+        ...(f.id === 'choam' ? ['choam-auditor', 'choam-worthless', 'choam-kull', 'choam-combat'] : []),
         ...(f.id === 'ecaz'
           ? ['ecaz-loyalty', 'ecaz-ambassadors', 'duke-vidal', 'implementation-checklist']
           : []),
@@ -3307,7 +3308,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Advanced & expansions',
     coverage: 'Partial',
     summary:
-      'Use Kulon for range, La La La to deny free revival, Baliset to prevent enemy movement, Jubba Cloak for storm protection or Trip to Gamont to return a force.',
+      'Six printed effects cover range, revival, movement, storm protection, force return and Kull Wahad’s opt-in Karama reaction.',
     steps: [
       'These CHOAM abilities work in basic and advanced games. Choose a printed Worthless card from the phase controls. Its name and intended effect are announced, then a Karama response occurs before discard. A canceled card remains in hand and cannot be retried for its effect during that phase.',
       'On your own Shipment and Movement turn, play Kulon while a movement remains. It adds one territory to your movement range, including ornithopters. It does not add another movement action, bypass the storm or relax alliance/stronghold entry rules. The current implementation applies the bonus to both movements if Hajr is used; this combination remains under audit.',
@@ -3315,17 +3316,47 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Whenever another faction requests a normal revival with a free portion, CHOAM receives a response decision independently of its private hand. Allow the request, or declare La La La for that requester. If the effect succeeds, the whole pending request stops without payment, force movement or quota use; a faction permitted to purchase normal revivals can submit a paid request. If the effect is canceled, the original quote resumes through any Tleilaxu and other applicable responses.',
       'La La La does not prevent otherwise legal paid revivals or separate Ghola card effects. With Tleilaxu in the game, Fremen may submit a paid request within their current limit after free revival is prevented. Without Tleilaxu, Fremen’s base purchase restriction leaves no normal force return available. Emperor-funded extras remain separate. The prohibition resets when the next Revival phase begins. Card custody is checked at settlement: if CHOAM cashed in the declared card during the response, no Worthless effect occurs and the interrupted revival resumes.',
       'During Shipment and Movement, use Baliset to select another player and a territory CHOAM occupies. The current implementation prevents that player from entering that territory by movement for the phase while CHOAM remains there; shipment is allowed. A declared move into a CHOAM territory pauses for CHOAM regardless of its private hand. Allow it or declare Baliset. A successful effect leaves the moving forces in place and the movement unspent; a canceled or unavailable card resumes the original move after checking its legality again.',
-      'Kulon, La La La, Baliset, Jubba Cloak and Trip to Gamont now have engine, private controls and AI support. See the linked Trip to Gamont topic for force selection and victory timing. See Jubba Cloak for protection during storm movement. Kull Wahad still needs its special effect. Exact cancellation scope, Hajr/ornithopter combinations, Baliset duration and destination scope, ordering of simultaneous prevention powers, and later module exceptions remain under audit. Full faction starts remain disabled.',
+      'Kulon, La La La, Baliset, Jubba Cloak and Trip to Gamont have engine, private controls and AI support. Printed Kull Wahad has a separate opt-in development preview; see Kull Wahad for distinct counters, pre-conversion Bene Gesserit custody and the deferred winning-overbid boundary. This is not six-effect Nexus Cunning: its Kull choice remains unavailable. Exact cancellation scope, Hajr/ornithopter combinations, Baliset duration and destination scope, simultaneous prevention and later module exceptions remain under audit. Normal expansion starts remain disabled.',
     ],
     related: [
       'faction-choam',
       'choam-gamont',
       'choam-jubba',
+      'choam-kull',
       'choam-market',
       'choam-revival',
       'movement',
       'revival',
       'card-karama',
+    ],
+  },
+  {
+    id: 'choam-kull',
+    title: 'Kull Wahad: Karama interception preview',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Prototyped',
+    summary: 'React before a Karama is played; a distinct counter can stop Kull before its phase restriction begins.',
+    steps: [
+      'This opt-in development preview supports CHOAM with classic factions in Basic or Advanced, using the physical CHOAM and Ix Treachery decks without optional modules. Basic supports printed ordinary Karama; Advanced also supports Bene Gesserit substitutions and the legal special powers of this roster. Existing games are not retrofitted. Normal expansion starts remain closed, and the visible preview warning is not rules-completion approval.',
+      'Another player’s legal Karama cancellation, shipment-rate use, immediate auction purchase, winning-bid payment or supported special activation pauses before its card and other costs. CHOAM sees the attempted player and purpose and may decline or choose a legal held Kull Wahad. The same public opportunity appears without Kull in hand, so waiting does not disclose hidden ownership. Invalid attempts never open this window; CHOAM does not receive a self-targeted Kull offer.',
+      'Decline resumes the original attempt once. Declaring Kull opens the ordinary CHOAM-effect response. Kull is still pending: its target may counter with a different eligible physical Karama before any phase ban applies. The interrupted card stays reserved and cannot serve as its own counter. Other eligible responders use their existing response controls.',
+      'If everyone allows Kull, CHOAM discards the exact Kull card. The original attempted card remains in its owner’s hand; its effect and additional costs do not occur, and an attempted special once-per-game use remains unspent. The activating player cannot activate printed or substituted Karama again during this turn’s current phase. An allied shipment recipient is not automatically the restricted player.',
+      'The successful restriction ends when the phase or turn changes, not during a temporary response, market or worm substep. It does not prohibit holding, acquiring, transferring or otherwise legally discarding a Karama without activating it.',
+      'A successful distinct counter spends or converts its own card under ordinary rules. Kull then stays held and its exact physical card cannot use its CHOAM effect again that phase. No Karama ban is established on the original player, and the reserved original attempt resumes once with its normal costs. Prevention is not a refund of a counter card.',
+      'Advanced Bene Gesserit is intercepted before Worthless conversion or discard: successful Kull keeps that original unplayed Worthless card held. If CHOAM declines or Kull is countered, the original proceeds to its separate conversion response. Ordinary cancellation of that conversion still leaves its Worthless card discarded. A different BG Worthless counter has its own conversion response; it is never the reserved original.',
+      'Winning overbids whose Karama payment would become unplayable remain deferred. To avoid accepting a bid that the preview cannot settle, a non-CHOAM unfunded Karama-dependent bid is refused privately before commitment, independently of CHOAM’s hidden Kull ownership. CHOAM self-activations are outside interception; normal non-preview bidding is unchanged. An already unfunded winning activation remains guarded. Holding Karama alone is not a reaction trigger. This unfinished-composition fence does not restart bidding, award the lot free, supply new funding or change numeric UI bid limits.',
+      'A live Truthtrance battle or shipment promise also constrains original attempts, Kull costs and counters. A cost that cannot be proved compatible is unavailable before disposal; CHOAM may decline instead. Proven supported cancellations remain available. Pending Kull cannot release a suspended promise, and its counter choices exclude unproven costs so legal AI can progress. Unsupported continuations remain an incomplete preview composition, not a publisher ban or permission to release the promise.',
+      'The different-card counter and before-conversion custody are explicitly selected development policy, not a located publisher clarification. Nexus Cunning Kull, other expansion rosters, optional modules, unpayable-auction recovery and full CHOAM acceptance remain outside this preview. Nexus cards do not receive blanket immunity to Karama.',
+    ],
+    example: 'Bene Gesserit attempts to use Baliset as Karama. CHOAM declares Kull. Baliset cannot also counter Kull; a different eligible Karama may. If Kull succeeds, Baliset stays held and BG cannot activate any Worthless-as-Karama again this phase. If a distinct counter prevents Kull, the original Baliset attempt proceeds to its normal conversion response.',
+    related: ['choam-worthless', 'faction-choam', 'card-karama', 'advanced-beneGesserit', 'special-karama', 'bidding', 'choam-karama', 'nexus-cards', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Opt-in printed Kull interception binds typed ordinary or prepared special intents, distinct physical counters and a stamped activation restriction. Deferred overbid recovery and combined-module support remain excluded.', evidence: ['game/choam-kull.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Owner-only legal held costs and decline use the Kull event; counters reuse ordinary response controls. Public viewers receive purpose/actors, not private intent payloads or hidden choices.', evidence: ['components/choam-kull.tsx', 'components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Legal preview participation uses projected reactor choices and ordinary distinct counter controls. Full strategy and difficulty calibration remain deferred.', evidence: ['game/bot-choam-kull.ts', 'game/bots.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Pending versus active restrictions, distinct custody, decline/prevention/success, BG-before-conversion and deferred overbid limits have internal explanations. Publisher-source and full-faction acceptance remain separate.', evidence: ['docs/CHOAM_KULL_DESIGN.md', 'docs/CHOAM_KULL_SOURCE_UPDATE.md', 'docs/NEXUS_CHOAM_RULES.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused engine, controls, all-profile legal bots and authenticated SQLite cover saved offer/counter/decline, exact custody, promises, orphan rejection and profile safeguards. Actual phone-width Basic/Advanced seats exercised Kull use, distinct counter and refreshed decline through the table. Complete combined games, proxy-free checkpoint HTTP and deployed acceptance remain separate.', evidence: ['tests/choam-kull-engine.test.ts', 'tests/choam-kull-recovery.test.ts', 'tests/choam-kull-controls.test.tsx', 'tests/bot-choam-kull.test.ts', 'tests/choam-kull.test.ts', 'tests/prototype-room.test.ts'] },
     ],
   },
   {
@@ -3364,7 +3395,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'In the advanced game, use the special Karama controls above your private hand. Choose the activating Karama and one or more other cards. Each selected card earns three spice, including Worthless cards or a second Karama.',
       'The activating Karama is spent separately and earns no spice in this implementation. All selected cards must be distinct and still in your hand. The entire operation succeeds or changes nothing.',
       'Cards fixed in your sealed battle plan or committed to prescience cannot be cashed in. You must also retain enough spice, committed allied funding or another Karama to honor a current winning auction bid.',
-      'Cash-in takes effect immediately and preserves a pending phase opening, revival, response, market sale or allied exchange. If it consumes a card already offered for a market sale or trade, that transaction later pays nothing or moves neither card.',
+      'Cash-in takes effect immediately and preserves a pending phase opening, revival, response, market sale or allied exchange. If it consumes a card already offered for a market sale or trade, that transaction later pays nothing or moves neither card. In the Kull preview, a declared original or counter cost remains reserved while that transaction is pending.',
       'The battle preparation guide can find a cash-in that funds a promised plan while retaining required cards. Complete the listed preparation before reviewing and sealing the plan. This can combine with Ghola preparation when both remain possible.',
       'The power is available in all nine playing phases. Finish an active Truthtrance question first. Its precise timing against other simultaneous effects, activation-card payment interpretation and remaining expansion interactions are still under audit; full CHOAM starts remain disabled.',
     ],
@@ -3372,6 +3403,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'faction-choam',
       'choam-market',
       'card-karama',
+      'choam-kull',
       'card-truthtrance',
       'battle',
       'bidding',
@@ -4048,7 +4080,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Native Fremen Cunning has a bounded Nexus-only path: when a natural, accepted additional, or Advanced special-Karama summoned worm appears in a territory initially containing no forces, Fremen may spend their own Nexus card before the worm resolves. The special summon retains its original Spice Blow parent. After the applicable Nexus, choose some forces from one occupied desert territory and ride to a legal Arrakis destination without using normal movement. The choice appears even without the secret card, so declining does not disclose custody. Karama provisionally prevents only the additional remote ride; the original worm still resolves and the card remains spent. An interrupted existing Cunning control is restored, and a selected ride waits for the summoned Nexus without granting a second Cunning offer; Great Maker and combined optional modules await integration.',
       'CHOAM Secret Ally has a working Collection trade: when CHOAM is absent, an unallied holder may discard one Worthless card and the Nexus card for two bank spice. After a battle victory, every winner in an eligible Nexus game receives the same use-or-continue window; an unallied CHOAM-card holder may instead spend that card to inspect one random unused card in the opposing combatant’s current hand. Played battle cards remain excluded even if retained. The inspected face is private, while use is public. The universal window protects concealed card custody; this is an interface interpretation, not a publisher-prescribed prompt. An ordinary Karama response to this Secret Ally inspection remains unestablished.',
       'With CHOAM seated, an unallied holder may spend CHOAM Betrayal at a clean play boundary to discard one uniformly random held CHOAM Treachery Card without spice compensation. The target name is public, but its hand count is offered only during Bidding; the holder cannot pick or inspect the card before the ordinary discard reveal.',
-      'CHOAM Cunning spends its Nexus card to use one held Treachery Card for one chosen Worthless effect at that effect’s normal timing, in Basic and Advanced. Choose the physical card separately from the effect. Kulon, La La La, Baliset, Jubba Cloak and Trip to Gamont are supported; Kull Wahad’s Karama-prevention reaction remains unavailable.',
+      'CHOAM Cunning spends its Nexus card to use one held Treachery Card for one chosen Worthless effect at that effect’s normal timing, in Basic and Advanced. Choose the physical card separately from the effect. Five of the six printed effects are supported: Kulon, La La La, Baliset, Jubba Cloak and Trip to Gamont. Cunning Kull remains unavailable; the separate printed Kull development preview excludes optional modules and does not authorize that sixth Nexus choice.',
       'One Karama response covers the CHOAM effect. Cancellation leaves the chosen Treachery Card in hand and the Nexus spent. An allowed use discards the actual card once, retaining its printed identity and applicable discard consequences; it does not create a named Worthless card or a turn-long conversion permission.',
       'Moritani Cunning modifies its normal Mentat placement: choose one available supply token and a territory on the printed Arrakis board, including a territory already containing Terror. The explicit Cunning toggle keeps ordinary placement and relocation unchanged. Homeworlds, the Hidden Mobile Stronghold, Cunning relocation and combined Grumman use are unavailable.',
       'With Moritani seated, an unallied holder of its Nexus card may spend Betrayal at a clean play boundary to return one placed Terror token to hidden Moritani supply without revealing its face. Choose the public location and token, not its secret effect; this does not use Moritani’s Mentat placement or trigger that token.',
@@ -4064,7 +4096,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Cunning spends its Nexus card and uses the native Mentat placement opportunity. A Karama response precedes placement; cancellation leaves the token where it was and the Nexus spent. Later Terror entry still uses the existing one-token stack selection and supported effect rules. If Extortion was revealed this turn, its bank award and payment choices follow that placement response; this does not implement Atomics or complete Moritani games.',
       'Hidden reactive Betrayal timing remains unresolved for other effects. Complete module games are unfinished, so public module starts remain disabled.',
     ],
-    related: ['ecaz-modules', 'spice-blow', 'alliance-funding'],
+    related: ['ecaz-modules', 'spice-blow', 'alliance-funding', 'choam-worthless', 'choam-kull'],
     checklist: [
       { area: 'Implementation', status: 'Partial', detail: 'Physical lifecycle, Atreides inspections, Harkonnen exchanges/declarations, Face Dancers, Suboids, advisors, native Voice, Emperor Sardaukar and Betrayal, bounded Fremen revival/Cunning, CHOAM effects, Moritani Cunning/Betrayal, Ecaz Betrayal, native Duke Cunning and private Secret Ally inquiry, Richese shipment, and bounded Emperor bank-auction purchase are integrated. Ecaz Cunning transfers the existing Duke at a quiet Battle boundary with a real card and distinct turn-end expiry. Ecaz inquiry scope/audience and Emperor purchase timing are provisional. Borrowed Voice, exceptional Duke custody, other reactions, Tleilaxu revival, Fremen worm protection and combined Cunning interactions remain unfinished.', evidence: ['game/nexus-cards.ts', 'game/nexus-card-phase.ts', 'game/nexus-traitor-exchange.ts', 'game/traitor-declarations.ts', 'game/nexus-face-dancers.ts', 'game/nexus-suboids.ts', 'game/nexus-advisors.ts', 'game/nexus-sardaukar-options.ts', 'game/nexus-fremen-revival.ts', 'game/nexus-fremen-cunning.ts', 'game/nexus-ecaz-betrayal.ts', 'game/nexus-ecaz-inquiry.ts', 'game/nexus-ecaz-duke.ts', 'game/duke-vidal.ts', 'game/nexus-emperor-secret-ally.ts', 'game/choam-power-options.ts', 'game/nexus-moritani-options.ts', 'game/nexus-moritani-betrayal.ts', 'game/nexus-richese-options.ts', 'game/nexus-guild-cunning-options.ts', 'game/nexus-guild-secret-ally-options.ts', 'game/engine.ts'] },
       { area: 'Player controls', status: 'Partial', detail: 'Private lifecycle, inspections, exchanges, Tleilaxu refresh, Ixian activation, advisor selection, temporary Sardaukar and CHOAM effects, Moritani Betrayal, Ecaz Betrayal and owner-only Secret Ally inquiry, native Duke Cunning, Richese shipment, Emperor purchase and Fremen Cunning controls are connected. Remaining effect controls are unfinished.', evidence: ['components/nexus-cards.tsx', 'components/nexus-traitors.tsx', 'components/nexus-tleilaxu.tsx', 'components/nexus-suboids.tsx', 'components/nexus-advisors.tsx', 'components/nexus-sardaukar.tsx', 'components/choam-power-cost.tsx', 'components/moritani-terror.tsx', 'components/nexus-moritani-betrayal.tsx', 'components/nexus-ecaz-betrayal.tsx', 'components/nexus-ecaz-inquiry.tsx', 'components/nexus-ecaz-duke.tsx', 'components/game-table.tsx'] },

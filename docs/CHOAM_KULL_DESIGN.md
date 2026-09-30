@@ -1,6 +1,6 @@
 # Kull Wahad: source limits and Karama interruption design
 
-Audit date: 2026-09-06. This is a proposed implementation design, not a rules completion claim. Only this document was changed. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable.
+Source audit: 2026-09-06; opt-in preview contract updated 30 September 2026. This is an engineering and product-policy record, not a rules-completion claim. The source audit in [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md) remains applicable. The user-approved counter and BG choices supersede the original proposal; publisher-source uncertainty and full expansion gates remain.
 
 ## Authoritative boundary
 
@@ -10,19 +10,28 @@ The [November 2020 official FAQ](https://www.gf9games.com/dune/wp-content/upload
 
 Evidence is indexed official publisher text retrieved in the preceding audit. Direct PDF access was unavailable: HTTP 403 through web retrieval, HTML through a local fetch. No inaccessible card face, tournament amendment, or community ruling is promoted to authority. No later official clarification settling the questions below was located.
 
-Unresolved rulings that must remain visible:
+## Selected policy and remaining source limits
 
-1. Whether the same Karama that Kull interrupts can instead cancel Kull, whether a second Karama by that target may do so, and how third-party responses are ordered.
-2. Whether Kull intercepts a Bene Gesserit Worthless conversion before discard, or only after conversion has succeeded; the resulting card custody in each case.
-3. Whether an already prevented player may still overbid using a held Karama, and the required recovery when an accepted winning bid becomes unpayable.
-4. Exact cancellation scope for CHOAM's prevented Worthless effect across other physical copies or another Worthless name.
-5. Self-targeting, simultaneous attempts, and phase-end abilities that may exchange a card while another declaration is unresolved.
+The user selected **Different Karama**: bind and reserve the interrupted physical card, allow a distinct eligible counter before Kull's restriction becomes active, and never let the original pay for both purposes. They selected **Before conversion** for advanced BG substitutions: successful Kull retains the still-unplayed Worthless card. A prevented original special activation leaves its once-per-game use and additional costs unspent. These are explicit product interpretations, not located publisher rulings; see [the recorded selection](CHOAM_KULL_SOURCE_UPDATE.md#user-selected-preview-timing--30-september-2026).
+
+The user selected **Defer interaction** for a winning overbid whose sole Karama payment becomes unplayable. A late payment guard accepted an unfunded bid and then could not settle it, so the preview now privately refuses non-CHOAM unfunded Karama-dependent bids before commitment, independently of hidden Kull custody. Existing unfunded winning activations also remain guarded. CHOAM self-activations are outside interception and retain their ordinary payment behavior; non-preview bidding is unchanged. This is an explicit unfinished-composition fence, not a printed bidding prohibition, numeric UI cap, auction restart, free award, invented funding or approval of an auction recovery.
+
+The wider publisher cancellation scope across other physical copies or Worthless names remains unclarified. Preserve existing exact-cost phase prevention rather than silently widening it. Combined modules, simultaneous-power ordering beyond supported continuations and complete CHOAM games remain acceptance boundaries, not a reason to call approved counter/BG choices unanswered.
+
+## Opt-in development scope
+
+The explicit `kull` development profile admits Basic or Advanced CHOAM with classic factions, the physical CHOAM and Ix Treachery decks, and **no optional modules**. It does not introduce Ixian/Tleilaxu factions merely because their physical deck is present. Basic uses ordinary printed Karama; Advanced additionally admits BG substitutions and the existing legal special powers of that roster. `initializeKullGameForAudit` opts the newly initialized Game into `kullPreview`; older saved games and ordinary public starts are not retrofitted.
+
+The visible preview warning and closed expansion/module gates remain mandatory. Printed Kull's preview is not Nexus Cunning Kull, complete CHOAM, full expansion certification or deployed evidence. Checkpoint verification belongs to the integration owner, not this source/guidance update.
+
+Ordinary cancellation with a live Truthtrance battle or shipment promise must pass the existing pure `assertKaramaPromiseFeasibility` post-cost proof. An unsupported/unprovable suffix is rejected actor-privately before a Kull offer or cost. Proven supported Voice, Prescience, elite, support and aid cancellation paths remain interruptible; no-obligation paths remain unaffected. This is an incomplete preview composition, **not** a publisher prohibition. Do not publicize an unvalidated attempt, release its promise or speculatively execute random effects merely to prove feasibility.
+
 
 Real Karama used for cancellation, shipment, purchase/payment, or a special faction power all fit the general attempted-play wording. Applying Kull to each is a strong textual inference, not an individually enumerated official ruling. Merely acquiring, holding, trading, selling, or discarding a card without activating Karama is not established as a trigger. Do not invent a phase-long ban on card ownership.
 
-## Current activation inventory
+## Pre-interception activation inventory
 
-The following paths were inspected in `game/engine.ts`; symbol names are the stable references because concurrent development changes line numbers.
+The following inventory records the original immediate-mutation hazards in `game/engine.ts`, before Kull interception. Symbol names are stable references because concurrent development changes line numbers. The preview must intercept the validated intent ahead of these effects.
 
 | Entry | Present execution | Required interception boundary |
 | --- | --- | --- |
@@ -48,70 +57,41 @@ Special branches bypassing `spendKarama()`:
 
 `applyActionInner()` deliberately permits CHOAM special cash-in before ordinary response/decision gating, and dispatches other special modes before `g.response`. Intercepting only the ordinary response handler leaves those paths uncovered. Adding a blanket denial of every special while a decision exists would remove already supported gameplay and is not justified by this task.
 
-## Proposed state and API responsibilities
+## State and API responsibilities
 
-Names below are illustrative; this document does not add these types to the engine.
+The pure [Kull module](../game/choam-kull.ts) owns `KullPhaseRestriction`, `activeKullRestrictions`, `kullBlocksKarama`, restriction/attempt-stamp validation, `distinctKullCounter`, `kullNativeCostCards` and `kullCounterCards`. It validates stamped phase policy and conserved canonical physical-card binding without mutating a Game. The engine remains authoritative for live custody, validated ordinary uses, prepared `SpecialKaramaIntent`, response ownership and once-only continuation. A saved attempt must not contain an arbitrary client `Action`, function closure, cyclic state or whole-Game rollback snapshot.
 
-```ts
-type KaramaBlock = { turn: number; phase: number; player: string };
+The original and counter cards have different obligations. The original stays reserved until Kull settles; ordinary counter eligibility excludes that exact physical ID. A different printed Karama or eligible BG substitution may counter while Kull is pending. A BG counter's own conversion response must not overwrite the original intent or its suspended response.
 
-type PendingKaramaIntent = {
-  id: string;                    // Stable server-issued attempt identity.
-  owner: string;                 // Player activating the card, not its recipient.
-  card: string;                  // Exact physical identity; no later auto-selection.
-  turn: number;
-  phase: number;
-  form: 'printed' | 'bg-conversion';
-  purpose: ValidatedOrdinaryOrSpecialIntent;
-  stage: 'offer-kull' | 'resolve-kull' | 'convert-bg' | 'commit';
-  offeredToChoam: boolean;
-  suspended: KaramaContinuation;
-};
-```
+The consumer interface is `GameView.kullReaction`: `null` or `{ event, player, target, intent, cards, canDecline, blocked }`. It is present during the offer stage; the counter stage uses existing `responseControls`. `player` is the public CHOAM reactor, `target` the attempted activating player, and `intent` the ordinary purpose kind or the generic `special` label, never a special selection. All viewers see the same event/actors/intent; only CHOAM sees actual legal `cards` and `canDecline: true`. The current offer uses `blocked: null`, including no-card offers that CHOAM can decline. Countering reuses ordinary `card/mode: cancel` or `passResponse` actions. Never project raw special choices, saved response secrets, signatures, funding or either hidden hand.
 
-`ValidatedOrdinaryOrSpecialIntent` should be a discriminated union, with only the fields needed for each use: shipment recipient; auction identity/index and payer; cancellation response identity; special target/leader/count/elite/route or selected cash-in IDs. Do not retain an arbitrary client `Action` object and replay it through the public dispatcher.
+`GameView.kullCounterEvent` is `null` or the same opaque public attempt event while the distinct-counter stage owns control, including a BG `worthlessKarama` overlay. Controls and bots use it only for precedence; legal physical choices still come from native `responseControls`. It reveals no original card, Kull cost or saved response payload. `GameView.karamaBlocked` is the current viewer's stamped activation-block reason or `null`, separate from a pending declaration; `kullPreview` supplies the visible opt-in warning.
 
-`KaramaContinuation` must describe which suspended operation resumes or aborts, and own its response/decision data. Maintain explicit nesting frames or an equivalent bounded continuation structure; the present single `pendingKarama` field cannot represent both a suspended BG conversion and a new Karama counter-response. A numeric nesting limit, if needed as a defensive assertion, is not a game rule and must not reject a reachable legal sequence arbitrarily.
+CHOAM submits `{ type: 'kullDecision', event, decline: true }` or `{ type: 'kullDecision', event, card }`. Bind event and actor before costs. The declared Kull is a real held printed card, not a manufactured card or a free power. Nexus Cunning is not admitted by this preview.
 
-Recommended helper responsibilities:
+## Settlement flow and cancellation
 
-- Keep `canUseAsKarama()` as the physical/type classifier. Add a stateful activatability predicate that considers Kull's turn/phase restriction, custody, committed cards, and purpose. Distinguish this from hand valuation and any separately resolved overbid permission.
-- `validateKaramaIntent()` performs the same preconditions as the current branch without mutation or random draws. Invalid attempts must not open a public Kull window or reveal a private card.
-- `beginKaramaIntent()` saves the exact continuation, then offers CHOAM a decision based on the public attempt, regardless of whether its private hand contains Kull. The action must not yet change game resources or reveal future random results.
-- `commitKaramaIntent()` is an internal, once-only executor. It revalidates relevant live state, consumes the exact card once, applies the effect, and resumes the proper continuation. The already-offered attempt cannot reopen its own Kull opportunity.
-- `abortKaramaIntent()` restores or completes the underlying opportunity without applying the prevented effect. It must not restore a whole saved `Game`: doing so would undo legitimate intervening cash-ins, card custody changes, or unrelated response outcomes.
+1. Validate an actual activation before discard, payment, physical movement, once-use flags or random effects. Reject an already effective stamped phase restriction before costs. Invalid plays create no public offer and reveal no private payload.
+2. Save the exact typed intent and its parent ownership. Offer the same neutral CHOAM opportunity whether Kull is held or absent. Mere holding, transfer or nonactivation discard is not an attempted play.
+3. Declining resumes the original intent once, without another offer for that same attempt. Declaring Kull opens the ordinary CHOAM-effect response; **pending is not active**.
+4. Resolve legal distinct counters using existing response ownership. The reserved original cannot cancel Kull. A valid counter follows its own ordinary consumption/conversion rules; it does not consume the original card as payment for the counter.
+5. On successful Kull, discard the exact Kull cost once, retain the original unplayed printed/BG card, leave the original special once-use unspent, and abort its effect. Restrict the **activating player**, not an allied shipment recipient, for the current turn/phase.
+6. If Kull is prevented, retain its cost and prevent that physical cost's effect for the phase under existing native CHOAM semantics. Resume the original attempt once. Recheck custody rather than substituting another same-name card.
+7. Stamp comparison expires the effective restriction on phase/turn change, not a temporary response, market or worm substep. It blocks Karama activations including substitutes, not ownership, trades or otherwise legal nonactivation discards.
 
-Persist attempt IDs, stages, and continuation ownership through JSON saves. Missing new fields in legacy rooms should normalize to no pending attempt/no block. A frame must not contain a function closure or cyclic object. Prevent two frames from independently owning the same original response or physical-card consumption.
-
-## State-machine flow and cancellation
-
-This is an implementation skeleton. It does **not** choose an answer to the unresolved nested-priority questions above.
-
-1. Receive a legal attempted activation; reject an already active phase restriction before costs. Capture its continuation and announce the minimum public intent.
-2. Offer CHOAM the reaction. Declining resumes this attempt exactly once. Declaring Kull stores its exact card ID as `pendingChoamWorthless`, its target actor, and the attempt ID; consume neither side until its appropriate stage.
-3. Resolve whichever counters the eventual authoritative timing interpretation permits. Save the interrupted Kull frame and original attempt when another card is activated; never overwrite them with the top-level `g.response`.
-4. If Kull settles successfully, establish the actor's turn/phase restriction and abort the interrupted activation. Proposed pre-play custody behavior is to retain the prevented Karama and leave once-per-game power use unspent. This is a reasonable implementation choice, but the retrieved text does not explicitly state its discard treatment.
-5. If Kull is prevented, use the existing CHOAM prevention-of-discard contract, then resume the saved activation once. If Kull was sold, exchanged, or otherwise lost, grant no restriction; revalidate the interrupted activation instead of assuming its card is still owned.
-6. A new phase clears the effective restriction by stamp comparison. A temporary worm-resolution suspension in the same phase does not. Do not permit ordinary phase advance while an unresolved frame owns its continuation.
-
-Do not silently install any of these as an official priority rule: target always wins the counter, CHOAM always wins the counter, same card may answer twice, same card can never answer, no counter is possible, or everyone gets an unlimited replacement response. The final engine may need a documented provisional policy under the existing expansion gate until primary clarification is available.
+This is the approved development interpretation, not an official nested-priority clarification. JSON continuation must preserve the same ownership and exact physical cards without a second random draw, payment or replayed effect.
 
 ## Bene Gesserit conversion
 
-Current behavior intentionally differs from CHOAM Worthless cancellation: `spendKarama()` has already discarded BG's Worthless card when it exposes `worthlessKarama`. `finishResponse()` clears the conversion pending record; allowing calls `completeKarama()`, canceling a cancellation restores the original response, and canceling auction payment invokes recovery.
+Kull intercepts **before** the original Worthless conversion or discard. Success therefore retains the original Worthless card and stops its attempted Karama use. If CHOAM declines or Kull is countered, the saved original proceeds to the established ordinary conversion stage.
 
-Preserve that established ordinary-cancellation behavior. Two possible Kull placements require a ruling:
-
-- **Before conversion:** Kull stops an attempted use-as-Karama while its physical Worthless card is still in hand. This needs an explicit custody policy and cannot reuse the existing post-discard conversion cancellation result blindly.
-- **After conversion:** normal BG conversion responses occur first; an allowed conversion then reaches Kull. This requires retaining the discarded card's identity and a suspended original intent, and clarifying whether/when that card returns if Kull succeeds.
-
-Whichever placement is eventually selected, a printed Karama canceling BG's conversion is itself an activation path. Test Kull on that counter as well as on the original substituted use. A successful Kull block must prevent the target bypassing it by choosing a different physical Worthless card on the next action, if substituted activation is included in the ruled scope.
+Ordinary conversion behavior remains different: `spendKarama()` discards the BG Worthless card before opening `worthlessKarama`; preventing that conversion leaves the card discarded. Kull's pre-conversion custody selection does not rewrite that FAQ-based consequence. A distinct BG Worthless counter likewise has its own ordinary conversion response, while the original remains reserved.
 
 ## Existing continuation and feasibility hazards
 
 | Integration point | Required design check |
 | --- | --- |
-| `recoverAuctionPayment()` | A held-but-blocked Karama must not keep returning an impossible payment decision. Its auction-restart fallback is already documented as provisional; Kull does not certify that fallback. Preserve card secrecy and actual funding while deciding recovery. |
+| `recoverAuctionPayment()` | A held-but-blocked Karama must not keep returning an impossible payment decision. Its existing auction-restart fallback is provisional and is not the selected Kull remedy. Preflight the deferred sole-Karama winning-overbid composition instead of reaching an unfinishable settlement. |
 | Bid validation | `karamaCard()` currently removes the normal maximum bid. Separate held-card classification from activation eligibility; do not accidentally disclose whether CHOAM holds Kull during bidding. |
 | `findReachableBattlePlan()` / `cashInPreparationActions()` | These call `specialKarama()` on cloned trial state, then clear response/conversion fields. A new asynchronous gate would otherwise enqueue unchanged trials or treat pending cash-in as paid income. Provide a pure allowed-branch simulation or an explicit internal trial executor; an already effective Kull restriction must still apply. |
 | `pendingBattleRevivalIncome()` | Currently searches only the live response or `pendingKarama.use.response`. It must find the suspended relevant income through any new Kull frames without counting it as already received. |
@@ -126,30 +106,30 @@ Whichever placement is eventually selected, a printed Karama canceling BG's conv
 
 - Public attempted-play metadata can include actor, purpose category, public recipient, and attempt ID. Do not expose raw continuation frames: they can contain private plans, hidden hand choices, revival terms, or future card transfers.
 - The CHOAM opportunity must not depend on its hand containing `ix-kull-wahad`; otherwise the presence of a prompt leaks possession. Its available reaction card and exact pending CHOAM card ID belong only in its private projection. Existing public `g.decision` projection must be reviewed before placing private fields in a new decision variant.
-- Kull's settled target and expiry are public. Selecting another player's Karama beneficiary must not change which player is restricted. Whether the actor may target itself remains a ruling gap, not a reason to silently extend ally benefits.
-- Bots must handle offer/decline, counters if permitted, restored underlying decisions, and all blocked-activation filters. A card remaining physically in hand is not evidence the bot can play it. Prevent repeated invalid-action generation from both proactive special branches and ordinary cancellation branches.
+- Kull's settled target and stamped phase expiry are public. Selecting another player's shipment beneficiary must not change which player is restricted. Do not silently extend CHOAM's powers to an ally.
+- Bots must handle offer/decline, distinct counters, restored underlying decisions and blocked-activation filters. A card remaining physically in hand is not evidence the bot can play it. Prevent repeated invalid-action generation from proactive special and ordinary cancellation branches.
 - Preserve `choamWorthless.pending` during pending Kull and nested responses, just as with Jubba; an AI should not cash in the card it is currently using as protection/prevention unless it deliberately chooses to abandon that effect.
-- Human controls should describe the actual attempted use and phase restriction. Keep unconfirmed timing explanations out of claims of official completeness. Full card inspection must remain available without exposing unplayed opponents' hands.
+- Human controls describe the attempted purpose and distinguish pending Kull from a successful active restriction. The opt-in preview warning must remain visible; approved timing is product policy, not official completeness. Card inspection must not expose unplayed opponents' hands.
 
 ## Minimum validation plan
 
 1. Conservation and no premature mutation for all four ordinary purposes and all eight existing special branches; validate Emperor revival and random Harkonnen transfer specifically.
 2. Direct cancellation nested under Kull, permitted counter-to-Kull, third-party counter, BG original conversion and BG counter-conversion; exact card IDs, one discard, once-use flag, response owner/passes and continuation preserved through JSON reconnect.
 3. Successful block rejects a second activation in the same phase and permits one next phase; distinguish actor/beneficiary. Verify unsupported acquisition/holding restrictions were not added accidentally.
-4. Payment with enough spice, alternate usable Karama, blocked held Karama, stale funding, hand-limit changes, and losing card custody. Mark auction recovery scenarios provisional where source interpretation is unresolved.
+4. Payment with enough spice, alternate usable Karama, blocked held Karama, stale funding, hand-limit changes and losing card custody. Confirm the deferred winning-overbid guard rejects before costs with the same private result whether hidden Kull is held or absent; no auction remedy is certified.
 5. Pending CHOAM cash-in, Fremen summon, Harkonnen exchange, revival-income preparation and Truthtrance feasibility; assert no response overwrite, false promise release, clone-search loop, duplicate random draw, or deadlock.
 6. Compare two states differing only in CHOAM's private Kull possession: rival/public opportunity shape must match. Check private selected special payloads and suspended contexts never appear in rival or spectator views.
 7. All four AI difficulties must complete each new continuation, including no-Kull/blocked-Kull decline and a response resumed after cancellation. Browser-check the new decision and its pending/canceled state after reconnect.
 
-This pass inspected the source paths above and validated document structure. It did not edit the engine, UI, bots, or tests, and did not run tests for behavior that remains unimplemented. Exact nested priority and BG placement remain source questions; the state design deliberately exposes those decisions instead of turning them into hidden house rules.
+The original 6 September pass was a source/engine and document audit, not runtime verification. Its unanswered counter/BG proposals are superseded by the explicit 30 September selections above. The minimum validation plan remains a coverage contract, not a claim that every combination is verified.
 
 
 ## Implemented prerequisite: prepared special intents
 
-The engine now exports `prepareSpecialKaramaIntent` and `executeSpecialKaramaIntent`. The intent union represents all eight implemented factions, with separate Emperor force/leader branches. It copies normalized selections, binds the original turn and phase plus relevant current battle/shipment/revival declaration, and contains no random Harkonnen hand selection. The executor re-prepares and compares the intent before consuming the exact physical card or applying effects. Existing public special actions still call preparation and execution synchronously.
+The engine exports `prepareSpecialKaramaIntent` and `executeSpecialKaramaIntent`. The intent union represents all eight implemented factions, with separate Emperor force/leader branches. It copies normalized selections, binds the original turn and phase plus relevant current battle/shipment/revival declaration, and contains no random Harkonnen hand selection. The executor re-prepares and compares the intent before consuming the exact physical card or applying effects. The original prerequisite called these synchronously; the Kull preview pauses the prepared intent before execution.
 
 Preparation includes public-dispatcher timing gates, with CHOAM's existing phase-opening/market/revival exceptions retained and all special activations blocked during unresolved Truthtrance. Feasibility clears Truthtrance only on its hypothetical future-state clone and retains binding battle promises. The executor mutates a disposable working Game; it is not independently transactional. Any future paused caller must restore its owned decision context, run on a clone, and publish only on success. Public `applyAction` remains the input-isolation boundary.
 
 Ten regression cases in `tests/karama-intents.test.ts` cover all variants, serialization, preparation purity/no random draw, stale timing/custody/resources, copied CHOAM selection, exact declaration binding, deferred Harkonnen randomness, injected execution failure isolation, dispatcher parity and preserved CHOAM exceptions. The full 728-case unit suite and 33 persisted/database cases pass.
 
-This prerequisite does not add a pending Kull frame or phase restriction. On 30 September the user approved the distinct-card counter and pre-conversion BG interpretation, while deferring unpayable winning overbids; see the [selected preview policy](CHOAM_KULL_SOURCE_UPDATE.md#user-selected-preview-timing--30-september-2026). Dependent Kull timing implementation remains unfinished.
+The prerequisite alone did not add a pending Kull frame or phase restriction. The later opt-in preview composes these prepared intents with the selected distinct-card/pre-conversion protocol. Full-game, combined-module, deployment and unpayable winning-overbid recovery acceptance are separate; the preview does not reopen public starts.

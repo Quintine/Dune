@@ -256,3 +256,25 @@ void test('Semuta development profile begins only a fresh Richese lobby without 
   assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
   assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
 });
+
+void test('Kull preview starts a fresh ready CHOAM lobby once and preserves other rooms and seats', (t) => {
+  const { db } = fixture(t);
+  const game = createGame('PROTOTYP', newPlayer('c', 'CHOAM', 'choam'), false, ['choam', 'ix']);
+  joinGame(game, newPlayer('a', 'Atreides', 'atreides'));
+  for (const p of game.players) p.ready = true;
+  db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), game.code);
+  const seats = db.prepare('SELECT * FROM seats').all();
+  const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+  const result = startPrototypeRoom(db, game.code, 7, 'kull');
+  const saved = JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(game.code)!.state as string) as Game;
+  assert.equal(result.status, 'setup');
+  assert.equal(saved.kullPreview, true);
+  const cards = [...saved.deck, ...saved.players.flatMap(p => p.hand), ...(saved.ixSetupCards ?? [])];
+  assert.equal(cards.filter(card => card.id === 'ix-kull-wahad').length, 1);
+  const rows = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+  assert.throws(() => startPrototypeRoom(db, game.code, 7, 'kull'));
+  assert.throws(() => startPrototypeRoom(db, game.code, 8, 'kull'));
+  assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), rows);
+  assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+  assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+});

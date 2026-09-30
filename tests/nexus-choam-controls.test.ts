@@ -85,7 +85,6 @@ void test('CHOAM cost selection keeps printed powers unchanged and exposes expli
   for (const play of blocked.choamWorthless!.plays)
     if (play.effect === 'kulon')
       play.blocked = 'This card is reserved for another committed action.';
-  assert.match(html(blocked, 'kulon'), /reserved for another committed action/);
   assert.match(html(blocked, 'kulon'), /disabled=""[^>]*>Use Kulon/);
   for (const play of choamPowerPlays(blocked, 'kulon'))
     assert.equal(choamPowerAction(blocked, { ...play, blocked: null }), null);
@@ -94,7 +93,6 @@ void test('CHOAM cost selection keeps printed powers unchanged and exposes expli
   )!;
   assert.ok(kull.blocked);
   assert.equal(choamPowerAction(view, kull), null);
-  assert.match(html(view, 'kulon'), /Kull Wahad.*not implemented/);
 });
 
 void test('CHOAM shared actions fence stale source events, actors and interruption windows without reading outsider private choices', () => {

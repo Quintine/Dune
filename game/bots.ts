@@ -102,6 +102,7 @@ import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
 import { botArrivalBlock, botWormRideArrivalBlock } from './bot-arrival';
 import { botSemutaActions } from './bot-semuta';
+import { botChoamKullActions, botChoamKullCounterActions } from './bot-choam-kull';
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
@@ -1275,6 +1276,7 @@ function policyActions(g: GameView): Action[] {
   }
   if (
     !g.battle &&
+    !g.karamaBlocked &&
     g.choamCashIn?.karamas.length &&
     (me.spice ?? 0) < (level === 0 ? 2 : 5)
   ) {
@@ -1321,6 +1323,7 @@ function policyActions(g: GameView): Action[] {
   const sapho = saphoAction(g);
   if (sapho) return [sapho];
   const specialCard =
+    !g.karamaBlocked &&
     !g.choamMarket &&
     (!g.revival.pending ||
       (me.faction === 'tleilaxu' && g.decision?.kind === 'revivalStop')) &&
@@ -2638,7 +2641,7 @@ function policyActions(g: GameView): Action[] {
     }
     if (d.kind === 'auctionPayment') {
       const karama = me.hand?.find((c) =>
-        canUseAsKaramaRole(g, me, c),
+        !g.karamaBlocked && canUseAsKaramaRole(g, me, c),
       );
       const use =
         !!karama &&
@@ -3823,6 +3826,9 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  if (g.kullReaction) return botChoamKullActions(g);
+  if (g.kullCounterEvent)
+    return botChoamKullCounterActions(g);
   if (g.semutaReaction) return botSemutaActions(g);
   const fremenRevival = g.nexusFremenRevival;
   if (fremenRevival && !fremenRevival.blocked && fremenRevival.eliteOptions.length) {

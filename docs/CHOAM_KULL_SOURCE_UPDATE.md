@@ -1,6 +1,6 @@
 # Kull Wahad: official-source update
 
-Checked 2026-09-07 for classic GF9 Dune and CHOAM & Richese. This supplements [CHOAM_KULL_DESIGN.md](CHOAM_KULL_DESIGN.md) and the Kull section of [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md). No runtime behavior changes in this audit.
+Checked 2026-09-07 for classic GF9 Dune and CHOAM & Richese; preview policy updated 30 September 2026. This supplements [CHOAM_KULL_DESIGN.md](CHOAM_KULL_DESIGN.md) and the Kull section of [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md). The source audit itself did not change runtime behavior; the later opt-in development implementation follows the explicit selections below.
 
 ## User-selected preview timing — 30 September 2026
 
@@ -38,16 +38,29 @@ Targeted official-domain and named-designer searches also surfaced a BGG discuss
 
 ## Implementable scope and remaining interpretation
 
-| Area | Supported scope | Remaining material choice |
+| Area | Publisher-supported scope | Selected preview policy and remaining source limit |
 | --- | --- | --- |
-| Trigger and expiry | React to an attempted Karama play; restrict that player for the current phase. The text does not ban ownership, transfers or a non-activation discard. | Applying the broad trigger to every ordinary and special activation is a strong textual inference, not a new enumerated FAQ ruling. |
-| Counter priority | The expansion explicitly makes CHOAM's Worthless effect preventable. | Whether the original attempted card can be redirected against Kull; whether a different card can counter before the restriction applies; and priority for a third party. No retrieved source supplies this response order. |
-| BG substitution and custody | Ordinary prevention of BG conversion discards the Worthless card. The [base rulebook, printed p. 14](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=14) discards a Karama after play. | Neither establishes whether Kull interrupts before or after BG conversion, or orders discard of a printed Karama whose play is prevented. Retaining the latter as unplayed is a reasonable implementation inference; applying BG's ordinary cancellation discard automatically to Kull is not an explicit ruling. |
-| Blocked overbids | Holding permission and actual Karama play are distinct in the FAQ. | Whether the permission persists after Kull, and how to settle a winning bid when Kull removes its only payment method. A bid cap, free award, forced alternative funding or auction restart would each add a policy absent from the retrieved Kull text. |
-| Countered CHOAM discard | The expansion supplies a phase-scoped prevention provision. | How that restriction applies to another physical copy or a different Worthless effect is not clarified here. This is shared CHOAM behavior, not a newly discovered Kull-only blocker. |
+| Trigger and expiry | React to an attempted Karama play; restrict that player for the current phase. The text does not ban ownership, transfers or a non-activation discard. | Applying the broad trigger to ordinary and implemented special activations is a textual inference, not a new enumerated FAQ ruling. Restrict the card's activating player, not a shipment beneficiary. |
+| Counter priority | The expansion explicitly makes CHOAM's Worthless effect preventable, but supplies no nested response order. | **Different Karama** is selected: reserve the original physical card; resolve an eligible distinct counter before the phase ban becomes active. The original cannot pay twice. Existing response ownership governs other eligible responders; this is product policy, not newly located publisher authority. |
+| BG substitution and custody | Ordinary prevention of BG conversion discards the Worthless card. The [base rulebook, printed p. 14](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=14) discards a Karama after play. | **Before conversion** is selected: successful Kull retains the still-unplayed printed Karama or BG Worthless card and leaves an attempted special once-use unspent. If Kull is declined or countered, the original attempt resumes, including the separate ordinary BG conversion/discard rules. |
+| Blocked overbids | Holding permission and actual Karama play are distinct in the FAQ. | **Defer interaction** is selected for a winning overbid whose only Karama payment would become unplayable. Preflight the unsupported composition before costs or an unfinishable transaction. Do not restart the auction, award a free card, invent funding or add a hidden-Kull-dependent bid cap. |
+| Countered CHOAM discard | The expansion supplies a phase-scoped prevention provision. | Preserve native prevention-of-discard semantics: retain the selected Kull cost and phase-block its effect. The wider official scope across different physical copies or Worthless names remains unclarified; the preview does not resolve it. |
 
-The first three unresolved interaction clusters—counter sequence, BG/custody sequence, and unfunded-auction recovery—need an explicit interpretation if those outcomes are shipped before further primary clarification. The existing design's provisional sequence remains a proposal; this audit neither endorses it as official nor records new user approval.
+The counter/BG choices are no longer unanswered user questions. They are approved preview policy with an unresolved **publisher-source** distinction. Unfunded-auction recovery was deliberately not selected. Full CHOAM, combined-module and publication acceptance therefore remain gated; an opt-in Kull preview is not official rules certification.
 
-These limits do not prevent implementation of validated intents, actor/phase restrictions, exact physical-card binding, safe continuation storage, private projections, or duplicate-action protection. Those are engineering responsibilities. They must preserve the selected rule interpretation without silently choosing a counter order or auction remedy. The older design's wider list of speculative edge cases is not evidence that every such case independently requires a user ruling.
+Validated intents, actor/phase restrictions, exact physical-card binding, safe continuation storage, private projections and duplicate-action protection must preserve that selected interpretation. A pending Kull declaration does not itself activate the phase restriction: only a successfully settled effect does. Decline or prevention resumes the reserved original intent once, not by replaying a public client action or restoring a whole Game snapshot.
+
+An additional engineering admission boundary is the existing pure post-cost feasibility proof for ordinary cancellation under a live Truthtrance battle/shipment promise. An unprovable suffix is refused privately before the offer or cost, while proven supported cancellations remain available. This bounded preview exclusion does not establish a publisher prohibition or settle additional rule interpretation.
+
+The runtime fence is before bid commitment, not only before payment:
+non-CHOAM unfunded Karama-dependent bids are privately unavailable in
+this explicit preview. The former late guard accepted such a bid and
+then could not settle it. The fence is independent of hidden Kull,
+does not change numeric UI bid limits or non-preview rules, and
+does not select an auction recovery. CHOAM self-activation stays
+outside interception and can use its ordinary Karama payment.
+Kull costs also receive a cloned post-cost own-promise check; counters
+are projected only when their same authoritative proof is available.
+
 
 Validation: reviewed both prior documents, publisher text and the local rulebook extract; repeated focused official searches; verified the designer FAQ redirect. No gameplay tests were run for this documentation-only update.

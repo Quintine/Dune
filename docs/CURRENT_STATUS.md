@@ -6,6 +6,32 @@ Expansion starts and full rules/publication acceptance remain gated.**
 
 ## Current checkpoint and work
 
+The explicit `kull` development profile now connects printed Kull
+Wahad interception in Basic/Advanced CHOAM-plus-classic rosters
+with the physical CHOAM/Ix deck. Five implementation lanes delivered
+the typed engine, pure policy, human controls/legal bots, authenticated
+SQLite scenarios and internal guide. An original Karama stays
+reserved; only a distinct eligible card can counter Kull before the
+phase ban. BG is intercepted before conversion. Unpayable winning
+overbid remedies remain deferred: non-CHOAM unfunded bids are
+privately fenced before commitment to avoid an unfinishable payment.
+Numeric UI limits and non-preview rules are unchanged. Original,
+counter and Kull costs honor live promises; unproven suffixes reject
+before disposal. Review exposed Auditor-parent, orphan-frame and
+promise defects, which are repaired with regressions. Focused rules,
+controls, legal AI and SQLite checks pass; direct smoke kept the
+original card, spent one Kull and applied a phase ban without a rate.
+`npm run check` passed types, lint and 5,907 offline tests; build
+passed. Phone-width Basic/Advanced QA exercised Use, a distinct
+counter and Decline after refresh: Basic retained the original
+and phase ban; Advanced resumed BG conversion and its saved
+cancellation once. Independent repair reviews found no remaining
+scoped defect. Isolated Wrangler-dev HTTP passed 49/55 with five
+proxy 503s and one timeout, not a green local HTTP suite.
+Proxy-free CI remains pending for this checkpoint.
+Nexus Cunning Kull, wider modules and full expansion acceptance
+remain separate; no public starts or live NAS deployment are claimed.
+
 The explicit [Semuta development preview](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime)
 accepts a fresh Richese roster with CHOAM & Richese and optionally
 the physical Ix deck. Clean public ordinary-card, paid Box, retired
@@ -59,7 +85,9 @@ phone-width full-hand QA seat acquired Hajr, spent Semuta,
 kept four cards and preserved that result across refresh.
 Isolated Wrangler-dev HTTP passed 49/55 with five proxy 503s
 and one timeout; this is not a green local HTTP suite.
-Proxy-free CI for the exact checkpoint remains pending.
+Proxy-free workflow `36684960601` passed the full isolated
+HTTP suite for `3285172` and published its image. No NAS
+deployment is claimed.
 Kull's approved distinct counter/BG-before-conversion timing
 is recorded but runtime remains unfinished; unpayable
 winning-overbid recovery is deliberately not chosen.

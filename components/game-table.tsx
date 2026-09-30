@@ -77,6 +77,7 @@ import { Bribes } from './bribes';
 import { SukGraduatePanel } from './suk-graduate';
 import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { SemutaReaction } from './semuta-reaction';
+import { ChoamKull } from './choam-kull';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
@@ -300,7 +301,10 @@ export function GameTable({
   );
   const reactionBusy =
     transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot;
-  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction;
+  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction;
+  const kullOwnsControls = !!g.kullReaction || !!g.kullCounterEvent;
+  const canActivateKarama = (card: Card) =>
+    !g.karamaBlocked && canUseAsKaramaRole(g, me, card);
   const traitorBattle = g.battle;
   const traitorBeneficiary =
     traitorBattle &&
@@ -1004,6 +1008,8 @@ export function GameTable({
                       faction(g.players.find((p) => p.id === id)!.faction).name,
                   )
                   .join(' + ') || 'No winner'
+              : g.kullReaction
+                ? 'CHOAM Karama response'
               : g.semutaReaction
                 ? 'Fresh discard response'
               : g.automaticContinuationPending
@@ -1022,6 +1028,13 @@ export function GameTable({
         </span>
       </div>
       {g.advanced && g.status !== 'lobby' && <AdvancedPreviewNotice compact />}
+      {g.kullPreview && (
+        <p className="notice" role="status">
+          Kull Wahad development preview · provisional interception timing, not
+          complete CHOAM or certified expansion rules.{' '}
+          <a href="/rules?topic=choam-kull#choam-kull">Preview rules and limits</a>
+        </p>
+      )}
       {g.status !== 'lobby' && (
         <nav className="phase-track" aria-label="Turn phases">
           {PHASES.map((p, i) => (
@@ -1617,7 +1630,9 @@ export function GameTable({
           </div>
           {g.battle?.revealed && <a className="battle-display-link" href="#revealed-battle-plans">Compare revealed battle plans</a>}
           <PrivateBattlePlan game={g} />
-          {g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
+          {!kullOwnsControls && g.semutaReaction && <SemutaReaction game={g} act={act} busy={reactionBusy} />}
+          {g.karamaBlocked && <p className="notice" role="status">{g.karamaBlocked}</p>}
+          {!kullOwnsControls && <>
           <NexusCards game={g} act={act} busy={busy} />
           <Recruits game={g} act={act} busy={busy} />
           <NexusTraitors game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
@@ -1657,7 +1672,10 @@ export function GameTable({
             sector={sector}
             onSectorChange={setSector}
           />
-          {g.nexusCards?.waiting.length ? (
+          </>}
+          {g.kullReaction ? (
+            <ChoamKull game={g} act={act} busy={reactionBusy} />
+          ) : g.nexusCards?.waiting.length ? (
             <p className="muted">The next phase begins when the remaining Nexus card choices are finished.</p>
           ) : g.truthtrance ? (
             <Truthtrance
@@ -2117,6 +2135,9 @@ export function GameTable({
               {g.response.kind === 'choamWorthless' && (
                 <p className="notice">
                   CHOAM declared {g.response.intent}.{' '}
+                  {g.response.intent === 'Kull Wahad' && (
+                    <>The attempted card is reserved. Use a different eligible Karama to prevent Kull and resume the original play; allowing Kull retains that attempted card but stops its actor’s Karama activations for this phase. </>
+                  )}
                   {g.response.location &&
                     (g.response.intent === 'Jubba Cloak'
                       ? `Protect CHOAM’s forces in ${territory(splitLocation(g.response.location).territory).name} during this storm movement. `
@@ -2697,7 +2718,7 @@ export function GameTable({
                     <p role="status">{g.revival.specialKaramaBlock}</p>
                   )}
                   {me.hand
-                    ?.filter((c) => canUseAsKaramaRole(g, me, c))
+                    ?.filter(canActivateKarama)
                     .map((c) => (
                       <div key={c.id}>
                         {actionButton(
@@ -2810,7 +2831,7 @@ export function GameTable({
                   </p>
                   <HelpTip topic="fullPlan" />
                   {me.hand
-                    ?.filter((c) => canUseAsKaramaRole(g, me, c))
+                    ?.filter(canActivateKarama)
                     .flatMap((c) =>
                       [g.battle!.attacker, g.battle!.defender].map((id) => (
                         <div key={`${c.id}-${id}`}>
@@ -2843,7 +2864,7 @@ export function GameTable({
                   </p>
                   <HelpTip topic="guildShipment" />
                   {actionButton('Allow Homeworld shipment', { type: 'decision', event: g.decision.event, allow: true })}
-                  {me.hand?.filter((c) => canUseAsKaramaRole(g, me, c)).map((c) => (
+                  {me.hand?.filter(canActivateKarama).map((c) => (
                     <div key={c.id}>{actionButton('Spend Karama · stop shipment', { type: 'card', mode: 'special', card: c.id })}</div>
                   ))}
                 </>
@@ -2870,7 +2891,7 @@ export function GameTable({
                     allow: true,
                   })}
                   {me.hand
-                    ?.filter((c) => canUseAsKaramaRole(g, me, c))
+                    ?.filter(canActivateKarama)
                     .map((c) => (
                       <div key={c.id}>
                         {actionButton('Spend Karama · stop shipment', {
@@ -3178,7 +3199,7 @@ export function GameTable({
                     (g.auction?.bid ?? 0) > (me.spice ?? 0) + g.aid.available,
                   )}
                   {me.hand
-                    ?.filter((c) => canUseAsKaramaRole(g, me, c))
+                    ?.filter(canActivateKarama)
                     .map((c) => (
                       <div key={c.id}>
                         {actionButton(
@@ -4102,7 +4123,7 @@ export function GameTable({
                       g.mobileStronghold?.location &&
                       (me.forces['hidden_mobile_stronghold:0'] ?? 0) > 0 &&
                       me.hand
-                        ?.filter((c) => canUseAsKaramaRole(g, me, c))
+                        ?.filter(canActivateKarama)
                         .slice(0, 1)
                         .map((c) => (
                           <details key={c.id}>
@@ -5062,7 +5083,7 @@ export function GameTable({
             : ' · Flips at the next Mentat Pause'}
         </p>
       )}
-      <Bribes game={g} act={act} busy={busy} />
+      {!kullOwnsControls && <Bribes game={g} act={act} busy={busy} />}
       <TruthHistory game={g} />
       <HarkonnenExchangeInspection game={g} />
       <section className="player-console">
@@ -5084,7 +5105,17 @@ export function GameTable({
             </button>
           ))}
         </nav>
-        {panel === 'hand' ? (
+        {panel === 'hand' && kullOwnsControls ? (
+          <HandBrowser key={`${g.code}:${me.id}`} cards={me.hand ?? []} empty={<p className="muted">Your Treachery hand is empty.</p>}>
+            {(card) => (
+              <article className="treachery-card" key={card.id}>
+                <h3>{card.name}</h3>
+                <CardRules card={card} />
+                <CardInspector card={card} />
+              </article>
+            )}
+          </HandBrowser>
+        ) : panel === 'hand' ? (
           <>
             <ChoamCashIn game={g} act={act} busy={busy} />
             <RicheseSpecialKarama game={g} act={act} busy={busy} />
@@ -5121,7 +5152,9 @@ export function GameTable({
                       ? 'Use the Nullentropy Box panel above to begin the paid search.'
                       : richeseCardActionBlock(c)) ??
                   (canUseAsKaramaRole(g, me, c)
-                    ? g.response
+                    ? g.karamaBlocked
+                      ? g.karamaBlocked
+                      : g.response
                       ? g.nexusTraitors?.pending
                         ? 'Finish the private Nexus Traitor card return before responding to this power.'
                         : !g.responseControls?.cancelCards.includes(c.id)
@@ -5354,7 +5387,7 @@ export function GameTable({
                       </>
                     )}
                     {g.advanced &&
-                      canUseAsKaramaRole(g, me, c) &&
+                      canActivateKarama(c) &&
                       !me.specialKaramaUsed &&
                       me.faction === 'harkonnen' &&
                       g.phase === 3 && (
@@ -5410,7 +5443,7 @@ export function GameTable({
                         </>
                       )}
                     {g.advanced &&
-                      canUseAsKaramaRole(g, me, c) &&
+                      canActivateKarama(c) &&
                       !me.specialKaramaUsed &&
                       me.faction === 'fremen' &&
                       g.phase === 1 && (
@@ -5461,7 +5494,7 @@ export function GameTable({
                         </>
                       )}
                     {g.advanced &&
-                      canUseAsKaramaRole(g, me, c) &&
+                      canActivateKarama(c) &&
                       !me.specialKaramaUsed &&
                       me.faction === 'emperor' &&
                       g.phase === 4 && (
@@ -5542,7 +5575,7 @@ export function GameTable({
                         />
                       </label>
                     )}
-                    {canUseAsKaramaRole(g, me, c) &&
+                    {canActivateKarama(c) &&
                       g.phase === 5 &&
                       g.active &&
                       (g.active === me.id ? shipmentAvailable : !g.players.find((p) => p.id === g.active)?.shipped) && (

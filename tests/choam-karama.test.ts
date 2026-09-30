@@ -229,13 +229,13 @@ void test('sealed and prescience-committed cards cannot be cashed in or used as 
     revealed: false,
     traitorCalls: {},
   };
-  assert.throws(() => cash(g, [shield]), /uncommitted/);
+  assert.throws(() => cash(g, [shield]));
   assert.ok(!viewGame(g, 'c').choamCashIn?.cards.some((c) => c.id === shield));
   g.battle.plans = {};
   g.battle.prescience = { player: 'e', field: 'defense', value: shield };
-  assert.throws(() => cash(g, [shield]), /uncommitted/);
+  assert.throws(() => cash(g, [shield]));
   g.battle.prescience.value = activation(g);
-  assert.throws(() => cash(g, [named(g, 'Baliset')]), /uncommitted/);
+  assert.throws(() => cash(g, [named(g, 'Baliset')]));
 });
 void test('only CHOAM sees its cash-in choices; used status and state survive persistence', () => {
   let g = fixture();

@@ -1,5 +1,60 @@
 # Dune implementation status
 
+## 30 September 2026 — opt-in printed Kull Wahad integration
+
+Five implementation lanes supplied validated activation frames,
+phase/physical-counter policy, mounted human controls and legal
+bot participation, authenticated SQLite regressions and source-bound
+internal guidance. The `kull` local profile starts only a fresh ready
+Basic/Advanced CHOAM-plus-classic roster with CHOAM/Ix physical cards,
+without public expansion starts or optional modules.
+
+A legal ordinary or prepared special attempt pauses before its cost.
+Every seat sees neutral CHOAM timing regardless of held Kull.
+The interrupted card stays held and reserved; Kull may be prevented
+only by another eligible physical card. BG interception precedes
+conversion. Decline or prevention resumes the original typed effect
+once. Successful Kull discards its native cost, retains the original,
+leaves a prevented special unspent and applies a turn/phase activation
+ban, not an ownership/transfer ban. Native denied Kull remains held
+but its physical effect is blocked for that phase.
+
+The user deferred unpayable winning-overbid recovery. The preview
+privately refuses non-CHOAM unfunded bids before commitment, as
+well as affected activations before cost. The former late guard
+accepted a bid that the preview could not settle; a targeted
+smoke reproduced that boundary before the early-fence repair.
+Numeric UI bounds and non-preview bidding are unchanged; no
+free award, funding or auction restart is invented.
+Unproven live-promise cancellation/counter suffixes likewise reject
+before cost. Pending-frame reconciliation cannot release a suspended
+promise; Auditor traversal now includes the saved parent; orphaned
+Kull declarations fail before private views or partial SQL writes.
+
+Focused rules/control/bot/SQLite regressions include real Voice
+and Auditor parents, distinct/BG counters, orphan rejection,
+promise-compatible costs, legal progress and profile safeguards.
+`npm run check` passed types, lint and 5,907 offline tests;
+the production build passed. Independent re-reviews of the
+repaired rules/privacy/persistence paths found no scoped defect.
+Direct Kull and local-profile CLI smoke passed.
+
+In isolated phone-width Basic/Advanced browser rooms, the actual
+reactor used Kull, Basic's other seat allowed it, and the original
+card and phase ban persisted across refresh with no rate-control
+shortcut. Advanced BG's held original could not counter Kull;
+its distinct printed card prevented Kull and resumed the original
+BG conversion. Another cancellation was then declined through
+the refreshed CHOAM offer and retired the same saved parent once.
+Kull stayed held, BG's already converted card remained discarded,
+and no shipment rate or ban was fabricated.
+
+Isolated Wrangler-dev HTTP passed 49/55: five proxy-layer 503s
+and one 15-second timeout. This is not a green local HTTP suite;
+proxy-free checkpoint container CI remains pending.
+Nexus Cunning Kull, combined modules and full CHOAM completion
+remain unfinished. No NAS deployment is claimed.
+
 ## 30 September 2026 — user-approved full-hand Semuta exchange
 
 The user selected atomic acquisition/disposal at the faction
@@ -27,7 +82,9 @@ Commit, exchanged Semuta for Hajr and retained 4/4 after
 refresh. The throwaway staging script was removed.
 Isolated Wrangler-dev HTTP passed 49/55: five proxy 503s
 and one timeout. This local HTTP run is not green;
-proxy-free CI and NAS deployment are separate pending gates.
+proxy-free workflow `36684960601` passed the full isolated
+HTTP suite for `3285172` and published its image. No live NAS
+deployment is claimed.
 
 ## 30 September 2026 — Semuta after accepted CHOAM Jubba Cloak cost
 
