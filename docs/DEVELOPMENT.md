@@ -15,6 +15,16 @@ The [expansion-faction profile](EXPANSION_FACTIONS_PROTOTYPE.md) extends genuine
 setup to selected faction sets without optional modules, including Ecaz starting
 placement. Remaining combined-play guards still apply.
 
+For rules work, use the [authorized source amendment](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
+The user-supplied root PDF `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`
+is now an authorized Advanced source of truth, including identified
+unofficial rulings. Cite physical pages and distinguish its rulings from
+publisher provenance; retain explicit user decisions and use components/GF9
+for omitted details. Its metadata says 2.3 while its editorial heading says
+2.2; the decision index binds the exact supplied file by SHA-256.
+Do not silently change Basic, enable unfinished modes, reset games or
+republish the local PDF merely because a new reference is available.
+
 ## OMP harness workflow
 
 When continuing the full project goal, explicitly read `GOAL.local.md` if it is

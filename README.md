@@ -158,6 +158,16 @@ other-buyer cache/Black Market sale diversion with unchanged delivery and price.
 See the [cost, private timing, recovery evidence and remaining boundaries](docs/NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026).
 This does not enable public expansion starts or certify the full Nexus family.
 
+For local **Guild Nexus Betrayal** testing, use `node --import tsx tools/start-prototype.ts --profile guild-betrayal`
+on a fresh ready Basic/Advanced classic lobby with native Guild, base decks
+and Nexus. Enable Homeworlds in the lobby before readiness only when exercising
+Homeworld/Junction routes; the tool does not add that module to an ordinary room.
+The exact-version/private-backup safeguards apply. The holder takes one whole
+funded shipment payment, including their own or income overridden at Junction;
+this is not a second shipment, free upfront financing or extra Guild income.
+See [payment custody and source boundaries](docs/NEXUS_GUILD_RULES.md#betrayal-payment-replacement).
+Existing games and public start gates remain unchanged.
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

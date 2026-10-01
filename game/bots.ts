@@ -104,6 +104,7 @@ import { botArrivalBlock, botWormRideArrivalBlock } from './bot-arrival';
 import { botSemutaActions } from './bot-semuta';
 import { botChoamKullActions, botChoamKullCounterActions } from './bot-choam-kull';
 import { botNexusRicheseBetrayalActions } from './bot-nexus-richese-betrayal';
+import { botNexusGuildBetrayalActions } from './bot-nexus-guild-betrayal';
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
@@ -3827,6 +3828,7 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  if (g.guildBetrayalReaction) return botNexusGuildBetrayalActions(g);
   if (g.richeseBetrayalReaction) return botNexusRicheseBetrayalActions(g);
   if (g.kullReaction) return botChoamKullActions(g);
   if (g.kullCounterEvent)

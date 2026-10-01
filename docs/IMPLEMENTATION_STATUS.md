@@ -1,5 +1,65 @@
 # Dune implementation status
 
+## 1 October 2026 — full funded Guild Nexus Betrayal payment
+
+Five implementation lanes integrated engine, pure funding/custody/history,
+actual controls and four minimal legal bots, authenticated SQLite recovery
+and source guidance. Fresh exact-version/private-backup `guild-betrayal`
+entry supports classic 2..6-seat Basic/Advanced with native Guild, base decks
+and Nexus, optionally genuine lobby-enabled Homeworlds; no retrofit/public gate.
+
+Typed reserve, native Guild transport, Homeworld and Junction adapters pause
+before the original fee/force commit. Actual eligible singleton Guild Nexus
+spends once; the same payer/authorized escrow funds the full original amount
+and the holder replaces bank/Guild/occupied-Junction income. Own payment
+requires existing funds before the later refund; it is not free financing.
+All-pass leaves native routing unchanged, while free/stopped transport
+creates no award or Nexus spend. Public possible held-card presence controls
+neutral acknowledgements, not secret identity; event-only private Use adds
+no otherwise private price/source or inspector entitlement.
+
+Independent review found an accepted Advanced Richese Secret Ally parent
+whose resumed shipment failed. Actual reproduction proved spent Nexus and
+undelivered source; its unsupported offer now blocks before card/parent
+commitment. A shared native Guild/reciprocal-ally grant is independently
+revalidated on declaration, restore and commit, separate from purchased
+rates and protected returns. Both final scoped re-reviews have no finding.
+Fixture current quotes/native turn progression preserve actual storm rules;
+real SQLite total_changes excludes durable rejection writes while permitting
+credential-fenced zero-row CAS. Same-source private-face swaps and existing
+physical-card allocation repair randomized fixture assumptions.
+
+Final `npm run check`: types, lint and **6,114 offline tests** pass;
+production build passes. Selected related checks pass **147/147** in nine
+files. Eighteen standalone Basic/Advanced paid/free cases prove full fee,
+upfront own refund, donor escrow once, exact native forces and JSON repeat
+rejection. Authenticated SQL covers all adapters, self-re-signed revoked
+native grants, corrupt/orphan receipts, privacy, races and later recycling.
+
+Eight actual ready QA rooms were privately backed up and entered once by
+CLI, retaining the same authenticated seats and admitted code/roster/setup.
+Real setup/native phases and source declarations preceded 390-pixel controls:
+Basic own refund, occupied low-Junction whole fee, Guild return and all-pass;
+Advanced Homeworld bank fee, donor escrow, native Junction and free Fremen.
+Non-holder Pass has no private Guild inspector/Use. Own inspector, actual
+contextual guide link and refresh pass. Read-only database proof matches all
+eight original native force suffixes, exact spice/escrow/card ledger and
+closed receipt. No existing human games or credentials were reset.
+
+The user supplied the root unofficial Advanced 2.3 PDF as a source of truth.
+Its 44-page metadata says 2.3 while the rendered editorial heading still
+says 2.2; exact SHA/physical-page authority and material future Advanced
+reconciliation targets are recorded in RULE_DECISIONS/DEVELOPMENT and local
+goal guidance. Relevant Guild/payment/Homeworld/Nexus clauses were compared;
+this does not certify that all Advanced differences are implemented.
+The user-owned local PDF is preserved, not republished as an app asset.
+
+Local built-worker HTTP is **48/55**, five POST 503s and two timeouts:
+known Wrangler-dev limitation, not green acceptance. Current code still
+needs exact immutable-container publication proof; prior CI and live
+deployment are separate. Full Guild/Nexus/Homeworld, wider combinations,
+AI calibration and public/live release remain open.
+
 ## 1 October 2026 — source-aware CHOAM Nexus Cunning Kull
 
 Five implementation lanes connected runtime, canonical fuel/receipt policy,

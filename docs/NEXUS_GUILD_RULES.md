@@ -1,6 +1,6 @@
 # Spacing Guild Nexus: shipment source contract
 
-**Later runtime checkpoints:** [Guild Cunning](NEXUS_GUILD_CUNNING_RUNTIME.md) implements the extra-shipment continuation. [Guild Secret Ally](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) implements supported paid routes using the [focused source resolution](NEXUS_GUILD_SECRET_ALLY_RULES.md). The original audit below remains historical source evidence; its Homeworld-return question has now been sent to the user.
+**Later runtime checkpoints:** [Guild Cunning](NEXUS_GUILD_CUNNING_RUNTIME.md) implements the extra-shipment continuation. [Guild Secret Ally](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) implements supported paid routes using the [focused source resolution](NEXUS_GUILD_SECRET_ALLY_RULES.md). The [bounded Betrayal checkpoint](#nexus-guild-betrayal) below records direct local full-payment verification, separately from wider and deployed acceptance. The original audit remains historical source evidence; revisit its Secret Ally Homeworld-return question against the newly authorized Advanced reference before reopening research.
 
 Source audit, 10 September 2026. This documents the three printed panels and their integration boundaries. It does not implement them or certify complete Guild, Homeworld, Nexus or expansion compliance. [Common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing release gates continue to apply. No user question was sent during this audit.
 
@@ -50,7 +50,7 @@ Bind one actual shipment payment and redirect that payment in full to the Nexus 
 
 The face expressly supersedes occupied Junction collection for that payment. Preserve the original charged amount before any native low-Junction division; do not hand the card holder only the Guild's reduced half while paying the remainder to an occupier. This follows the component's full-payment override, not the [unoccupied low-Junction runtime quote](HOMEWORLD_PAYMENT_INCOME_RULES.md). The existing contributor-rounding and occupation-lifecycle questions are not resolved generally by this one card.
 
-An implementation needs an original payment identity, exact charged contributions and a committed replacement recipient before ordinary Guild/bank/occupier settlement. Preserve hidden held Nexus identities until an actual play. The already pending private-reaction timing policy applies; this audit does not invent another pause, automatic response reveal, or duplicate user question. A zero-cost Guild Ambassador shipment cannot manufacture a Betrayal award.
+An implementation needs an original payment identity, exact charged contributions and a committed replacement recipient before ordinary Guild/bank/occupier settlement. Preserve hidden held Nexus identities until an actual play. The [bounded protocol below](#nexus-guild-betrayal) is an application privacy choice, not a resolution of the publisher timing gap. A zero-cost Guild Ambassador shipment cannot manufacture a Betrayal award.
 
 ## Existing integration points and required state
 
@@ -63,3 +63,60 @@ The pure [Cunning receipt module](../game/nexus-guild-cunning.ts) records the or
 `nexusGuildCunningMoves(receipt, currentHajrUsed, movesAfterSecond)` returns only the remaining Hajr extra allowance. Ending ordinary movement forgoes at least one ordinary slot, so original movement counts zero and one both permit at most one Hajr move; an original count of two permits none. A newly played Hajr supplies that same one extra slot, while losing a previously recorded Hajr or claiming more moves than that allowance rejects. This bounded helper excludes the separate physical Ornithopter-card composition; it does not reset or mutate the original movement counter. Its [pure tests](../tests/nexus-guild-cunning.test.ts) cover declined and used first actions, Hajr before and after, spent allowances, native ownership, exact signatures, JSON restoration and private-field getter traps.
 
 Integrated verification should exercise first shipment followed by moved/declined ordinary movement, all three second-shipment forms, Hajr before/after and already consumed, cancellation of only the selected native advantage, paid BG/entry continuations, native Homeworld routes, private offers, stale requests and actual SQLite restoration. Passing the pure receipt tests does not establish those engine or persistence behaviors.
+
+## Nexus Guild Betrayal
+
+1 October 2026 bounded prototype contract. The authority for the effect is the [original printed Guild face](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani), transcribed in [nexus-card-reference.ts](../game/nexus-card-reference.ts). The internal player guide is `/rules?topic=nexus-guild-betrayal#nexus-guild-betrayal`; source links stay in developer documentation, not the player-facing guide.
+
+### Entry, physical cost and funding
+
+The explicit fresh `guild-betrayal` development profile admits two to six ready classic-faction seats in Basic or Advanced, including native Guild and at least one other faction. It uses physical base decks and Nexus; Homeworlds are optional only when genuinely enabled and seeded during setup. It does not retrofit games, silently add Homeworlds, admit other expansion factions/decks or combine Leader Skills, Discoveries, Tech Tokens, Stronghold Cards, Semuta, Kull or Richese previews.
+
+Only original native shipment producers are admitted here. Native Guild Nexus Cunning's second shipment and Richese Nexus Secret Ally's discounted shipment are blocked in this profile **before** spending either singleton or creating a native parent. Those effects outside this profile remain unchanged. Guild Secret Ally is already unavailable because native Guild is seated, not because this preview establishes a new prohibition on its printed panel.
+
+Use requires an unallied non-Guild player holding the actual singleton Guild Nexus while another seated player is native Guild. The accepted Use discards that physical Nexus once. It spends no Treachery Card, Treachery hand slot or extra activation spice. Cunning and Secret Ally remain distinct modes; temporary leader control, a borrowed price or an empty Guild board does not change native roster identity.
+
+Bind the **full original positive charged fee**, its payer, authorized contributions and exact source quote before settlement. Redirect that one fee to the holder instead of any ordinary Guild, bank or occupied-Junction receipt. Do not reduce the award to `guildIncome`, add a bank award alongside normal income, or charge a second invoice.
+
+Own payment must already be affordable from personal spice and any actually authorized ally funding. Pay the original cost first, then receive the entire redirected fee; a solely self-funded holder has net zero spice change, not a free declaration financed by future income. `pledgeAid` has already removed the donor's spice into escrow: settlement consumes the original `g.aid` contribution once rather than debiting the donor again. The payer's own remainder and original donor allocation do not change because the recipient changes. Current voluntary-spend promises and committed-resource restrictions still apply.
+
+### Original native shipment adapters
+
+| Saved producer | Original adapter and facts to retain |
+| --- | --- |
+| `reserve` | `commitShipment`: ordinary physical reserves onto Arrakis, including native elite/advisor classification and valid explicitly selected native Homeworld reserve sources; original destination, tariff and own/authorized-ally contributions. |
+| `guildTransport` | `commitGuildTransport`: the exact native Guild cross-planet or return group, typed force identities, tariff and contributions. |
+| `homeworld` | `commitHomeworldShipment`: an already legal native Homeworld route, its exact source custody, destination, physical groups and paid quote. This grants no foreign route or Secret Ally Homeworld-return permission. |
+| `junction` | `performJunctionTransport`: the original accepted Junction sponsor/offer, route, physical sources, quote and contributions. Replacement does not create another sponsor or transport opportunity. |
+
+Source feasibility and full funding are rechecked before the gate. Existing native special-stop and applicable native rate responses occur first; a stopped, declined, invalid or zero-cost declaration supplies no positive payment and cannot spend Nexus or create an award. Ordinary free Fremen reinforcement and free Guild Ambassador transport stay free. This sequencing is the bounded application's settlement boundary, not a new general Nexus/Karama priority or immunity ruling.
+
+For every admitted producer, the original native payment and physical shipment complete once. Preserve reserve withdrawal, elite/advisor classification, source and destination custody, storm/entry checks, shipment-used flag and applicable arrival/response suffixes. Ordinary movement afterward remains the shipper's own opportunity; Betrayal grants no extra shipment, no extra move, no altered rate and no rerouted force.
+
+### Occupied Junction: full-payment override only
+
+The printed face expressly overrides income for occupying Junction. On accepted Use, deliver **all** of the original charged payment to the holder and suppress the ordinary Guild/bank/occupier allocation for that invoice. A four-spice fee produces four spice for the holder, not two while an occupier receives the other two. Preserve the full fee before any low-Junction division; neither an ordinary eligible Guild subtotal nor its rounded half is the card's award.
+
+This source-clear exception does not decide first-versus-current occupier entitlement, departure/replacement/contest expiry, retained occupation penalties or ordinary contributor rounding. Existing [Homeworld payment](HOMEWORLD_PAYMENT_INCOME_RULES.md) and [occupation](HOMEWORLD_OCCUPATION_RULES.md) restrictions remain for non-overridden settlement. Passing does not select a disputed owner or arithmetic interpretation; any source that cannot settle unchanged must retain its native pre-offer guard rather than use a hypothetical Betrayal play to bypass it.
+
+### Neutral acknowledgement, private Use and saved continuation
+
+Every publicly possible responder sees the same event and shipper: unallied non-Guild seats with public held-Nexus presence, including the shipper when eligible. A seat with an irrelevant secret face still acknowledges with Pass; only the privately eligible Guild-card holder sees Use and its own unavailable reason. Public membership never depends on the hidden face. No publicly possible responders means automatic ordinary settlement. This is an **application privacy protocol**, not printed timing authority, a new user ruling or blanket Karama immunity.
+
+The fixed projection is `{event, shipper, canPass, hasPassed, canUse, blocked}`. It reveals no new price, force count, route, source family/world, destination, donor, balances, recipient, raw signature or private receipt. Existing own-source and public inspection entitlements remain unchanged. The neutral wait/acknowledgement log does not disclose secret fee or source; only actual Use and the source's normal committed-result logging may report information already appropriate after shipment. A printed reference inspector is not evidence of anybody's held face.
+
+`guildBetrayalPass` and `guildBetrayalUse` carry only the offered event. The server binds the payment and recipient; a client cannot choose them. Pass keeps Nexus and spends nothing; a recorded pass cannot be undone for that event. Every required pass resumes the original settlement once with its original receiver. Accepted Use closes the gate, spends one physical Nexus and resumes the same native delivery with the fee receiver replaced. Underlying shipping, movement, pledging, cards and other decisions remain suspended until resolution.
+
+Save the typed producer continuation, original private invoice, pass set and independent pending/completed cursor/receipt. Restore must authenticate the acting seat and retain the same source, event and once-only outcome; never replay a raw shipment Action or infer permission from a missing frame. Stale/foreign events, malformed or orphaned ownership, competing Use/final-Pass and historical card recycling require unchanged rejection or one authenticated committed winner, not a repeat payment, donor debit, Nexus spend or force move.
+
+### Verification and release boundary
+
+**Bounded verification: locally verified; broader acceptance Partial.** `npm run check` passes types, lint and **6,114 offline tests**; the production build passes. The selected Guild/profile/turn/control and related Kull recovery set passes **147/147** across nine files. Engine and authenticated SQLite cases exercise all four native adapters, source-consistent revoked-grant rejection, own pre-funded refund, other/escrow payment, all-pass, occupied low Junction, singleton/force custody, neutral projections, JSON/restart, races and stale/orphan rejection. Source feasibility uses actual current native quotes rather than fixed storm-sensitive routes; durable rejection checks real SQLite changes, not attempted SQL text.
+
+Independent review and actual before/after reproduction repaired an accepted Advanced Richese Secret Ally parent that could not resume: the bounded profile now blocks that unsupported offer before card expenditure. Native transport permission is revalidated independently at declaration, restore and commit; a purchased rate is not a transport grant. Final scoped rules/persistence re-reviews report no actionable finding. Unrelated native Cunning/Secret Ally behavior remains outside this profile's guard.
+
+Eight actual ready QA lobbies entered via exact-version `guild-betrayal` CLI with private backups and their original authenticated seats. Preparation reused each admitted setup/code/roster, completed genuine native setup/phases and source actions, and arranged conserved pre-action resources; no saved room was replaced by a separately constructed game. At 390 pixels, actual controls and own printed-card inspector prove Basic own refund, occupied low-Junction full fee, native Guild return and all-pass; Advanced Homeworld bank fee, authorized escrow, native Junction and free Fremen; irrelevant-face Pass, private Use, source locking, contextual rules navigation and refresh. Read-only saved-state verification matches the original native force suffix, exact whole-fee money ledger, authorized escrow, physical Treachery/Nexus inventory and closed receipt across all eight rooms.
+
+Local built-worker HTTP is **48/55**: five POST 503 responses and two timeouts retain the known Wrangler-dev limitation, not green HTTP acceptance. The exact immutable code checkpoint still needs its mandatory isolated container verifier and separate live deployment evidence; earlier successful workflows do not verify this new source.
+
+The new preview does not inherit verification from Guild Cunning/Secret Ally, ordinary shipment tests or the twelve-face catalog. Complete Guild/Nexus/Homeworld families, wider factions/modules, strategic AI and difficulty calibration, full games, public starts and live deployment remain gated.

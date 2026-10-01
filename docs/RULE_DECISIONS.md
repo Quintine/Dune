@@ -1,6 +1,42 @@
 # Rule decision index
 
-Updated 30 September 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+Updated 1 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+
+## Authorized source amendment — 1 October 2026
+
+The user added `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf` at the
+checkout root and authorized it as a source of truth going forward.
+Use this supplied revision for Advanced rules and clarifications, including
+its explicitly identified unofficial rulings; the former publisher-only
+restriction does not exclude this document. Preserve specific recorded user
+decisions unless changed, and use printed components and GF9 material for
+details the supplied revision does not cover. Record material differences
+and their implementation cutovers explicitly rather than silently blending
+editions or describing unofficial rulings as publisher rulings.
+
+Source identity: 44 physical PDF pages; metadata title
+`UNOFFICIAL Revised Dune Rulebook v.2.3.pages`; the visible editorial heading
+on physical page 3 still says **Version 2.2**. Cite the supplied filename and
+physical PDF page, not an assumed corrected heading.
+SHA-256: `7077aa87a973221d86d4bd2da945b40c4dec3d371caa6a68cb209758ddf1e516`.
+The user-owned local PDF is preserved, not republished as an application asset.
+
+The current Guild Betrayal wave was compared with shipment/payment rules
+(physical page 10), separate Guild Karama targets (19), Homeworld transport
+and occupation (22), Nexus lifecycle/modes (23), and native Guild tariffs
+and special stop (37). Those passages do not replace the specific printed
+Guild Nexus full-payment/own-payment/Junction override or supply a new
+response order; its bounded prepayment contract remains source-consistent.
+This is a source comparison, not runtime verification.
+
+Future Advanced reconciliation must distinguish the revision's Storm Deck
+simplification even without native Fremen (6), its explicitly revised
+alliance-constraint timing and advisor coexistence (15, 40), secrecy of
+spice/discards and hand counts outside Bidding (16), and Duke Vidal's
+Tleilaxu-ghola exception (30). These are source-led reconciliation targets,
+not claims that existing behavior has already changed. Optional variants
+remain optional, Basic is not silently converted to Advanced, and no saved
+game is reset or redealt by adopting a source.
 
 ## Recorded contracts and implementation boundaries
 
@@ -36,6 +72,7 @@ Updated 30 September 2026. This is the authoritative navigation index for existi
 | Nexus faction effects | Preserve physical custody, original faction identity and durable effect receipts; use each printed family instead of borrowing another faction's rules by analogy. | [Atreides](NEXUS_ATREIDES_RULES.md), [Harkonnen](NEXUS_HARKONNEN_RULES.md), [BG](NEXUS_BENE_GESSERIT_RULES.md), [Emperor](NEXUS_EMPEROR_RULES.md), [Fremen](NEXUS_FREMEN_RULES.md), [Guild](NEXUS_GUILD_RULES.md) |
 | Expansion Nexus families | Source audit coverage does not imply every panel is playable; consult later runtime records in the status log. | [Ixian Cunning](NEXUS_IXIAN_CUNNING_RULES.md), [Ixian replacement](NEXUS_IXIAN_REPLACEMENT_RULES.md), [Tleilaxu](NEXUS_TLEILAXU_RULES.md), [CHOAM](NEXUS_CHOAM_RULES.md), [Richese](NEXUS_RICHESE_RULES.md), [Ecaz](NEXUS_ECAZ_RULES.md), [Moritani](NEXUS_MORITANI_RULES.md) |
 | Richese Nexus Betrayal auctions | Pause at a valid original prepayment quote. Public self-cache veto discards the exact card without debit/acquisition; another buyer's positive cache/Black Market invoice keeps price/contributions/delivery and earned Harkonnen bonus while overriding the recipient to bank. All publicly possible unallied other-faction held-Nexus seats acknowledge uniformly; private identity controls only own Use. This neutral protocol is an application choice, not publisher timing. Normal hidden-family self-purchases, special-Karama veto and unsupported overlays remain excluded; no native Karama exception certifies them. Bounded engine/SQL/bot/phone scenarios are verified locally; broader verification remains Partial and public starts/full Nexus gates stay closed. | [Printed face, profile, API and saved continuation](NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026), [common privacy protocol](NEXUS_CARD_RULES.md#richese-betrayal-prepayment-protocol), [auction source boundaries](RICHESE_AUCTION_RULES.md) |
+| Guild Nexus Betrayal shipment payment | Replace one original funded positive fee in full, including own pre-funded payment and the printed full occupied-Junction override; preserve original payer/contributions, consume already-debited donor escrow once and deliver the original physical shipment once. Native applicable stop/rate responses precede the bounded gate; zero/stopped shipments supply no award or Nexus cost. Public possible held-Nexus seats acknowledge uniformly; private Use changes no public price/source disclosure. Fresh classic/native-Guild/Nexus with optional genuinely seeded Homeworlds only; unsupported native Cunning/Richese shipment overlays block before card/parent commitment, and restored transport independently requires the native Guild grant. Bounded engine/SQL/bot/CLI/phone custody and refresh are locally verified; no new priority/immunity, ordinary occupation/rounding ruling or extra shipment. Broad/public/live gates remain closed. | [Printed source and bounded contract](NEXUS_GUILD_RULES.md#nexus-guild-betrayal), [common protocol](NEXUS_CARD_RULES.md#guild-betrayal-funded-payment-protocol), [internal checklist](../game/reference.ts) |
 | CHOAM Secret Ally | Absent-faction Collection trade spends one actual Worthless card and the Nexus for two bank spice. It is separate from native Cunning and Auditor; the battle inspection alternative remains missing. | [Prototype contract](NEXUS_CHOAM_SECRET_ALLY.md) |
 | Sapho movement | At a clean boundary, first reorders only remaining unstarted turns; completed turns stay completed. Advanced Guild must have finished or be absent. Last retains existing protection after Guild. | [Existing source contract](JUICE_OF_SAPHO_SOURCE_UPDATE.md#movement-firstlast), [runtime](JUICE_OF_SAPHO_RUNTIME.md) |
 | Basic CHOAM / Leader Skills | Compose existing ordinary skills with native sales and own-leader Ghola revival. Finish the private optional replacement before the exact suspended sale resumes. The free revival remains completed if the resumed sale is canceled. Basic uses five ordinary leaders and 35 Treachery Cards; Auditor remains Advanced and ineligible for skills. | [Integration and source contracts](CHOAM_LEADER_SKILLS.md) |

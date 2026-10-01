@@ -46,6 +46,7 @@ import { truthKnowledgeOf } from './truthtrance-knowledge';
 import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, moritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
 import { shipmentAvailable } from './shipment-opportunity';
+import { createGuildBetrayalInvoice, createGuildBetrayalReceipt, guildBetrayalEligible, guildBetrayalResponders, validateGuildBetrayalInvoice, validateGuildBetrayalHistory, nexusGuildBetrayalSourceReceipt, type GuildBetrayalInvoice, type GuildBetrayalCursor, type GuildBetrayalReceipt, type GuildBetrayalAuthority } from './nexus-guild-betrayal';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
 import { createNexusRichese, validateNexusRichese, quoteNexusRicheseShipment, type NexusRicheseReceipt } from './nexus-richese';
 import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
@@ -1070,6 +1071,20 @@ type PendingGuildTransport = {
   advisors: boolean;
 };
 type GuildTransportOrder = Omit<PendingGuildTransport, 'event' | 'signature' | 'fromReserves'>;
+type JunctionTransportDeclaration = {
+  player: string;
+  turn: number;
+  event: string;
+  offer: string;
+  destination: string;
+  sources: HomeworldShipmentIntent['sources'];
+  allyPayment: number;
+};
+type GuildBetrayalContinuation =
+  | {source: 'reserve'; shipment: PendingShipment}
+  | {source: 'guildTransport'; frame: GuildTransportOrder; fromReserves: boolean}
+  | {source: 'homeworld'; shipment: PendingHomeworldShipment}
+  | {source: 'junction'; transport: JunctionTransportDeclaration};
 type RicheseAllyOffer = {
   event: string;
   owner: string;
@@ -1081,6 +1096,18 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
+  guildBetrayalPreview?: boolean;
+  guildBetrayal?: GuildBetrayalCursor;
+  nexusGuildBetrayalHistory?: GuildBetrayalReceipt[];
+  guildBetrayalSourceReceipts?: {event: string; turn: number; shipper: string; sourceSignature: string; receipt: string}[];
+  pendingGuildBetrayal?: {
+    invoice: GuildBetrayalInvoice;
+    continuation: GuildBetrayalContinuation;
+    required: string[];
+    passed: string[];
+    signature: string;
+  } | null;
   /** Explicit bounded Nexus/Richese auction profile; never inferred for old saves. */
   richeseBetrayalPreview?: boolean;
   richeseBetrayal?: RicheseBetrayalCursor;
@@ -8078,6 +8105,253 @@ export function initializeNexusGameForAudit(state: Game): Game {
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null,
     'Enable Nexus cards in a fresh audit lobby first.');
   return initializeSetupGameForAudit(state, !!state.homeworlds, true);
+}
+/** Opt-in fresh classic setup through the real physical Nexus/Homeworld setup. */
+export function initializeGuildBetrayalGameForAudit(state: Game): Game {
+  requireRule(!state.guildBetrayalPreview && !state.guildBetrayal && !state.pendingGuildBetrayal &&
+    !state.nexusGuildBetrayalHistory && !state.guildBetrayalSourceReceipts &&
+    guildBetrayalModeSupported(state),
+  'Guild Betrayal needs a fresh classic native-Guild lobby with only Nexus and optional Homeworlds.');
+  const g = initializeNexusGameForAudit(state);
+  g.guildBetrayalPreview = true;
+  g.guildBetrayal = {sequence: 0, event: null, turn: null, sourceSignature: null, status: 'completed'};
+  g.nexusGuildBetrayalHistory = [];
+  g.guildBetrayalSourceReceipts = [];
+  g.pendingGuildBetrayal = null;
+  return g;
+}
+function guildBetrayalModeSupported(g: Game): boolean {
+  return !!g.nexusCards && g.expansions.length === 0 && g.players.length >= 2 &&
+    g.players.length <= 6 && !!byFaction(g, 'guild') &&
+    g.players.every(p => CLASSIC_FACTIONS[p.faction] === true) &&
+    !g.leaderSkills && !g.discoveryEnabled && !g.discoveries && !g.techTokens &&
+    !g.strongholdCards && !g.ecazTreachery && !g.kullPreview && !g.nexusKullPreview &&
+    !g.richeseBetrayalPreview && !g.mobileStronghold;
+}
+function guildBetrayalParentSignature(g: Game, continuation: GuildBetrayalContinuation): string {
+  return JSON.stringify({
+    continuation, status: g.status, turn: g.turn, phase: g.phase, active: g.active,
+    order: g.order, storm: g.storm, movementRemaining: g.movementRemaining,
+    players: g.players.map(p => ({id: p.id, faction: p.faction, ally: p.ally,
+      spice: p.spice, forces: p.forces, reserves: p.reserves, tanks: p.tanks,
+      elites: p.elites, advisors: p.advisors, shipped: p.shipped, moved: p.moved,
+      hand: p.hand, specialKaramaUsed: p.specialKaramaUsed})),
+    aid: g.aid, homeworlds: g.homeworlds, nexus: g.nexusCards,
+    promises: g.shipmentPromises, karama: g.karamaShipping, rate: g.guildRateBlocked,
+    offer: g.junctionOffer, decision: g.decision, response: g.response,
+    phaseOpening: g.phaseOpening, truthtrance: g.truthtrance,
+    pendingShipment: g.pendingShipment, pendingHomeworldShipment: g.pendingHomeworldShipment,
+    pendingGuildTransport: g.pendingGuildTransport,
+  });
+}
+function guildBetrayalCleanParent(g: Game): void {
+  requireRule(guildBetrayalModeSupported(g) && g.status === 'playing' && g.phase === 5 &&
+    !g.decision && !g.response && !g.phaseOpening && !g.truthtrance && !g.battle &&
+    !g.pendingNullentropy && !g.pendingTreacheryDiscard && !g.pendingExchange &&
+    !g.pendingRicheseGift && !g.pendingKarama && !g.pendingKull && !pendingNexusTraitors(g) &&
+    !g.pendingShipment && !g.pendingHomeworldShipment && !g.pendingGuildTransport &&
+    !g.pendingAmbassador && !g.pendingTerrorEntry && !g.pendingRicheseBetrayal &&
+    !g.bureaucratPayments?.pending,
+  'Guild Betrayal requires the original clean native shipment before funded payment.');
+}
+function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation): GuildBetrayalAuthority {
+  requireRule(continuation && typeof continuation === 'object' && !Array.isArray(continuation),
+    'The saved Guild shipment producer is malformed.');
+  const producerKeys: Record<GuildBetrayalContinuation['source'], string> = {
+    reserve: 'shipment,source', guildTransport: 'frame,fromReserves,source',
+    homeworld: 'shipment,source', junction: 'source,transport',
+  };
+  requireRule(Object.hasOwn(producerKeys, continuation.source) &&
+    Object.keys(continuation).sort().join(',') === producerKeys[continuation.source],
+  'The saved Guild shipment producer contains foreign action fields.');
+  let shipper: string, price: number, allyPayment: number, originalReceiver: string | null;
+  const guild = byFaction(g, 'guild')!;
+  switch (continuation.source) {
+    case 'reserve': {
+      const shipment = continuation.shipment;
+      requireRule(shipment && shipment.turn === g.turn &&
+        Object.keys(shipment).every(key => ['turn', 'player', 'territory', 'sector', 'amount', 'elite',
+          'cost', 'allyPayment', 'advisors', 'homeworldSources', 'guildRateEvent',
+          'smuggler', 'smugglerCompanion', 'guildSecretEvent', 'guildNexusEvent', 'nexusEvent',
+          'richesePair', 'noField', 'alliedNoField', 'noFieldSkillProof'].includes(key)),
+      'The saved reserve shipment contains foreign source fields.');
+      requireRule(!shipment.source && !shipment.noField && !shipment.alliedNoField &&
+        !shipment.smuggler && !shipment.smugglerCompanion && !shipment.richesePair &&
+        !shipment.guildSecretEvent && !shipment.guildNexusEvent && !shipment.nexusEvent,
+      'This Guild Betrayal profile supports native physical reserve shipments only.');
+      validatePhysicalShipment(g, shipment);
+      validateShipmentArrival(g, shipment);
+      checkShipmentIncomeRounding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
+      checkShipmentPromises(g, getPlayer(g, shipment.player), shipment);
+      shipper = shipment.player; price = shipment.cost; allyPayment = shipment.allyPayment;
+      const p = getPlayer(g, shipper);
+      originalReceiver = guildShipmentIncome({guild: guild.id, shipper, ally: p.ally,
+        cost: price, allyPayment, bankOnly: g.karamaShipping?.player === shipper}) > 0 ? guild.id : null;
+      break;
+    }
+    case 'guildTransport': {
+      requireRule(typeof continuation.fromReserves === 'boolean', 'The Guild transport source flag is malformed.');
+      const frame = continuation.frame;
+      requireRule(frame && Object.keys(frame).sort().join(',') ===
+        'advisors,allyPayment,amount,cost,elite,eliteGroup,group,origin,player,sector,to,turn',
+      'The saved Guild transport frame is malformed.');
+      const p = getPlayer(g, frame.player);
+      validateGuildTransportForCommit(g, p, frame, continuation.fromReserves);
+      shipper = p.id; price = frame.cost; allyPayment = frame.allyPayment;
+      originalReceiver = guildShipmentIncome({guild: guild.id, shipper, ally: p.ally,
+        cost: price, allyPayment, bankOnly: g.karamaShipping?.player === shipper}) > 0 ? guild.id : null;
+      break;
+    }
+    case 'homeworld': {
+      const shipment = continuation.shipment;
+      requireRule(shipment && Object.keys(shipment).every(key =>
+        ['player', 'destination', 'sources', 'route', 'event', 'turn', 'amount', 'elite', 'cost',
+          'allyPayment', 'pools', 'guildSecretEvent', 'guildNexusEvent'].includes(key)),
+      'The saved Homeworld shipment contains foreign source fields.');
+      requireRule(!shipment.guildSecretEvent && !shipment.guildNexusEvent,
+        'This Guild Betrayal profile supports native Homeworld shipment routes only.');
+      const quote = validateHomeworldShipment(g, shipment);
+      shipper = shipment.player; price = quote.cost; allyPayment = shipment.allyPayment;
+      originalReceiver = getPlayer(g, shipper).ally !== guild.id && allyPayment > 0 ? guild.id : null;
+      const income = getPlayer(g, shipper).ally !== guild.id ? allyPayment : 0;
+      if (income > 0) validateGuildPaymentRounding(g, guild.id, income, [income]);
+      break;
+    }
+    case 'junction': {
+      const declaration = continuation.transport;
+      requireRule(declaration && Object.keys(declaration).sort().join(',') ===
+        'allyPayment,destination,event,offer,player,sources,turn',
+      'The saved Junction declaration is malformed.');
+      const quote = quoteJunctionDeclaration(g, getPlayer(g, declaration.player), declaration);
+      shipper = declaration.player; price = quote.quote.cost; allyPayment = declaration.allyPayment;
+      originalReceiver = quote.option.owner;
+      break;
+    }
+    default: throw new RuleError('The saved Guild Betrayal producer is unsupported.');
+  }
+  const p = getPlayer(g, shipper);
+  contribution(g, p, price, allyPayment);
+  return {source: continuation.source, sourceSignature: guildBetrayalParentSignature(g, continuation),
+    shipper, price, allyPayment, ownSpice: p.spice, allyEscrow: aidFor(g, p)?.amount ?? 0,
+    donor: allyPayment ? p.ally! : null, originalReceiver};
+}
+function guildBetrayalFrameSignature(frame: NonNullable<Game['pendingGuildBetrayal']>): string {
+  return JSON.stringify([frame.invoice.signature, frame.invoice.sourceSignature, frame.required, frame.passed]);
+}
+function guildBetrayalIntegrity(g: Game): void {
+  const cursor = g.guildBetrayal, frame = g.pendingGuildBetrayal;
+  if (!g.guildBetrayalPreview) {
+    requireRule(!cursor && !frame && !g.nexusGuildBetrayalHistory && !g.guildBetrayalSourceReceipts,
+      'Guild Betrayal lost its explicit native profile.');
+    return;
+  }
+  requireRule(guildBetrayalModeSupported(g) && cursor &&
+    Array.isArray(g.nexusGuildBetrayalHistory) && Array.isArray(g.guildBetrayalSourceReceipts),
+  'The Guild Betrayal profile lost its cursor or independent native receipts.');
+  nexusCardsIntegrity(g);
+  nexusRule(() => validateGuildBetrayalHistory({turn: g.turn, players: g.players},
+    g.nexusGuildBetrayalHistory!, cursor!, frame?.invoice ?? null));
+  requireRule(g.guildBetrayalSourceReceipts!.length === g.nexusGuildBetrayalHistory!.length,
+    'A completed Guild invoice lost its native shipment receipt.');
+  for (let i = 0; i < g.nexusGuildBetrayalHistory!.length; i++) {
+    const receipt = g.nexusGuildBetrayalHistory![i], source = g.guildBetrayalSourceReceipts![i];
+    requireRule(source && source.event === receipt.invoice.event && source.turn === receipt.invoice.turn &&
+      source.shipper === receipt.invoice.shipper && source.sourceSignature === receipt.invoice.sourceSignature &&
+      source.receipt === receipt.sourceReceipt,
+    'A completed Guild invoice differs from its independently committed shipment.');
+    if (source.turn === g.turn && g.phase === 5)
+      requireRule(getPlayer(g, source.shipper).shipped,
+        'A completed Guild invoice reopened its already used shipment.');
+  }
+  if (!frame) return;
+  requireRule(Object.keys(frame).sort().join(',') === 'continuation,invoice,passed,required,signature' &&
+    frame.continuation && Array.isArray(frame.required) && Array.isArray(frame.passed),
+  'The saved Guild Betrayal continuation is malformed.');
+  guildBetrayalCleanParent(g);
+  const authority = guildBetrayalAuthority(g, frame.continuation);
+  nexusRule(() => validateGuildBetrayalInvoice({turn: g.turn, players: g.players},
+    frame.invoice, authority, cursor!.sequence));
+  requireRule(frame.signature === guildBetrayalFrameSignature(frame) &&
+    JSON.stringify(frame.required) === JSON.stringify(guildBetrayalResponders(g.nexusCards!.cards!, g.players)) &&
+    new Set(frame.passed).size === frame.passed.length &&
+    frame.passed.every(id => frame.required.includes(id)) && frame.passed.length < frame.required.length,
+  'The saved Guild invoice lost its original custody, funding, acknowledgements or parent.');
+}
+function beginGuildBetrayal(g: Game, continuation: GuildBetrayalContinuation): boolean {
+  if (!g.guildBetrayalPreview) return false;
+  // Release only the already accepted native declaration. No fee or custody
+  // changes have happened, and no suspended decision can authorize a new gate.
+  if (continuation.source === 'homeworld') g.pendingHomeworldShipment = null;
+  guildBetrayalCleanParent(g);
+  const authority = guildBetrayalAuthority(g, continuation);
+  if (authority.price === 0) return false;
+  const required = guildBetrayalResponders(g.nexusCards!.cards!, g.players);
+  if (!required.length) return false;
+  const sequence = g.guildBetrayal!.sequence + 1;
+  const invoice = nexusRule(() => createGuildBetrayalInvoice({turn: g.turn, players: g.players}, authority, sequence));
+  g.pendingGuildBetrayal = {invoice, continuation: structuredClone(continuation), required,
+    passed: [], signature: ''};
+  g.pendingGuildBetrayal.signature = guildBetrayalFrameSignature(g.pendingGuildBetrayal);
+  g.guildBetrayal = {sequence, event: invoice.event, turn: g.turn,
+    sourceSignature: invoice.sourceSignature, status: 'pending'};
+  return true;
+}
+function guildBetrayalUseBlock(g: Game, id: string): string | null {
+  const frame = g.pendingGuildBetrayal;
+  if (!frame || !frame.required.includes(id) || frame.passed.includes(id))
+    return 'This seat has no pending shipment acknowledgement.';
+  if (!nexusRule(() => guildBetrayalEligible(g.nexusCards!.cards!, g.players, id)))
+    return 'Your held Nexus card cannot take this shipment payment.';
+  const promises = liveShipmentPromises(g.shipmentPromises ?? [], id, g.turn);
+  if (promises.length && id !== frame.invoice.shipper) {
+    const projected: Game = {...g, nexusCards: {...g.nexusCards!,
+      cards: nexusRule(() => discardNexusCard(g.nexusCards!.cards!, id, g.players))}};
+    if (!findShipmentCompletion(projected, getPlayer(projected, id), promises))
+      return 'Spending this Nexus card would prevent your committed shipment answer.';
+  }
+  return null;
+}
+function decideGuildBetrayal(g: Game, p: Player, action: Action): void {
+  const frame = g.pendingGuildBetrayal!;
+  requireRule(['guildBetrayalPass', 'guildBetrayalUse'].includes(action?.type) &&
+    action.event === frame.invoice.event &&
+    Object.keys(action).every(key => key === 'type' || key === 'event') &&
+    frame.required.includes(p.id) && !frame.passed.includes(p.id),
+  'Choose your exact current Guild Betrayal acknowledgement.');
+  const use = action.type === 'guildBetrayalUse';
+  if (use) {
+    const blocked = guildBetrayalUseBlock(g, p.id);
+    requireRule(!blocked, blocked ?? 'This Nexus card cannot be used.');
+  } else {
+    frame.passed.push(p.id);
+    frame.signature = guildBetrayalFrameSignature(frame);
+    if (frame.passed.length < frame.required.length) return;
+  }
+  const discardIndex = use ? g.nexusCards!.cards!.discard.length : null;
+  if (use) g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  g.pendingGuildBetrayal = null;
+  const settlement = {recipient: use ? p.id : null};
+  const continuation = frame.continuation;
+  switch (continuation.source) {
+    case 'reserve': commitShipment(g, continuation.shipment, settlement); break;
+    case 'guildTransport': commitGuildTransport(g, getPlayer(g, continuation.frame.player),
+      continuation.frame, continuation.fromReserves, undefined, settlement); break;
+    case 'homeworld': commitHomeworldShipment(g, continuation.shipment, settlement); break;
+    case 'junction': commitJunctionTransport(g, getPlayer(g, continuation.transport.player),
+      continuation.transport, settlement); break;
+  }
+  requireRule(getPlayer(g, frame.invoice.shipper).shipped, 'The funded native shipment did not complete.');
+  const sourceReceipt = nexusGuildBetrayalSourceReceipt(frame.invoice);
+  const receipt = nexusRule(() => createGuildBetrayalReceipt({turn: g.turn, players: g.players},
+    frame.invoice, {recipient: settlement.recipient, holderFaction: use ? p.faction : null,
+      holderUnallied: use ? !p.ally : null, nexusDiscardIndex: discardIndex, sourceReceipt}));
+  g.nexusGuildBetrayalHistory!.push(receipt);
+  g.guildBetrayalSourceReceipts!.push({event: frame.invoice.event, turn: g.turn,
+    shipper: frame.invoice.shipper, sourceSignature: frame.invoice.sourceSignature, receipt: sourceReceipt});
+  g.guildBetrayal = {sequence: frame.invoice.sequence, event: frame.invoice.event, turn: g.turn,
+    sourceSignature: frame.invoice.sourceSignature, status: 'completed'};
+  if (use) log(g, `${p.name} spent Guild Nexus Betrayal to receive the full ${frame.invoice.price}-spice shipment payment. The original funded shipment completed once.`,
+    {faction: 'guild', name: 'Betrayal'});
 }
 /** Offline paired-faction Nexus setup; public expansion/module starts remain gated. */
 export function initializePairedNexusGameForAudit(state: Game): Game {
@@ -22300,22 +22574,23 @@ function junctionTransportWindow(g: Game) {
     canOffer: !blocked, offerEvent: junctionOfferEvent(g),
     event: JSON.stringify([homeworldShipmentEvent(g, recipient, 'arrakis'), offer])};
 }
-function performJunctionTransport(g: Game, p: Player, action: Action) {
+function quoteJunctionDeclaration(g: Game, p: Player, declaration: JunctionTransportDeclaration, automaticFunding = false) {
+  requireRule(declaration.player === p.id && declaration.turn === g.turn,
+    'This Junction shipment lost its original player or turn.');
+  const action = declaration;
   const option = junctionTransportWindow(g);
   requireRule(option && option.recipient === p.id && !option.blocked && option.offer,
     option?.blocked ?? 'Wait for Guild to offer Junction transport during your unused shipment.');
   requireRule(action.event === option.event && action.offer === option.offer.event,
     'This Junction offer or physical source selection has changed.');
-  requireRule(Object.keys(action).every((key) =>
-    ['type', 'event', 'offer', 'destination', 'sources', 'allyPayment'].includes(key)),
-    'Use the offered tariff and explicit physical forces without concealed tokens.');
+  const rate = option.offer.rate;
   const destination = stringField(action.destination);
   const context = {...homeworldContext(g), storm: g.storm, discoveries:g.discoveries,
     players: homeworldContext(g).players.map((seat) => ({...seat, ally: getPlayer(g, seat.id).ally})),
     mobileStronghold: g.mobileStronghold?.location ?? null,
     board: {[p.id]: {forces: p.forces, eliteForces: p.elites?.forces ?? {}, advisors: p.advisors}}};
   const quote = homeworldRule(() => quoteJunctionTransport(context, g.homeworlds!.custody!,
-    {player: p.id, sponsor: option.owner, rate: option.offer!.rate, destination,
+    {player: p.id, sponsor: option.owner, rate, destination,
       sources: action.sources as HomeworldShipmentIntent['sources']}));
   const arrival = quote.destinationKind === 'arrakis' ? splitLocation(destination) : null;
   const nativeDeparture = quote.originKind === 'homeworld' && quote.sources.every((source) =>
@@ -22333,10 +22608,24 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
       'New advisors cannot become fighters this turn.');
     allowedEntry(g, p, arrival.territory, arrival.sector, false, advisors);
   }
-  const allyPayment = contribution(g, p, quote.cost, action.allyPayment);
+  const allyPayment = contribution(g, p, quote.cost, automaticFunding ? undefined : action.allyPayment);
+  requireRule(automaticFunding || allyPayment === declaration.allyPayment, 'The original Junction funding changed.');
+  const ordinaryIncome = !!arrival && nativeDeparture && p.faction !== 'fremen';
+  const contributions = [ordinaryIncome ? quote.cost - allyPayment : 0,
+    p.ally === option.owner ? 0 : allyPayment];
+  validateGuildPaymentRounding(g, option.owner,
+    contributions.reduce((sum, amount) => sum + amount, 0), contributions);
+  return {option, rate, quote, arrival, nativeDeparture, promise, sourceLock, advisors, allyPayment, destination};
+}
+function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransportDeclaration,
+  settlement?: {recipient: string | null}) {
+  const {option, rate, quote, arrival, nativeDeparture, promise, sourceLock, advisors, allyPayment, destination} =
+    quoteJunctionDeclaration(g, p, declaration);
+  if (!settlement && beginGuildBetrayal(g, {source: 'junction', transport: declaration})) return;
   // Junction permission and tariff are Homeworld effects and resist Karama.
   // All validation precedes this atomic settlement; there is no special-stop frame.
   payWithAlly(g, p, quote.cost, allyPayment);
+  if (settlement?.recipient) getPlayer(g, settlement.recipient).spice += quote.cost;
   g.homeworlds!.custody = quote.state;
   p.forces = quote.boardForces;
   if (p.elites) p.elites.forces = quote.boardEliteForces;
@@ -22363,11 +22652,11 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
   const ordinaryIncome = !!arrival && nativeDeparture && p.faction !== 'fremen';
   const income = (ordinaryIncome ? quote.cost - allyPayment : 0) +
     (p.ally === option.owner ? 0 : allyPayment);
-  if (income > 0) g.response = guildPaymentResponse(g, option.owner,
+  if (!settlement?.recipient && income > 0) g.response = guildPaymentResponse(g, option.owner,
     [ordinaryIncome ? quote.cost - allyPayment : 0, p.ally === option.owner ? 0 : allyPayment]);
   const sourceName = quote.originKind === 'arrakis' ? territory(quote.origin).name :
     quote.sources.map((s) => combatLocationName(g, s.key)).join(' and ');
-  log(g, `${p.name} accepted ${getPlayer(g, option.owner).name}’s Junction ${option.offer.rate}-price offer and transported ${quote.amount} physical forces (${quote.elite} special) from ${sourceName} to ${arrival ? `${territory(arrival.territory).name}, sector ${arrival.sector}` : combatLocationName(g, destination)} for ${quote.cost} spice (${quote.cost - allyPayment} own, ${allyPayment} pledged). The shipment is used; movement remains available.`,
+  log(g, `${p.name} accepted ${getPlayer(g, option.owner).name}’s Junction ${rate}-price offer and transported ${quote.amount} physical forces (${quote.elite} special) from ${sourceName} to ${arrival ? `${territory(arrival.territory).name}, sector ${arrival.sector}` : combatLocationName(g, destination)} for ${quote.cost} spice (${quote.cost - allyPayment} own, ${allyPayment} pledged). The shipment is used; movement remains available.`,
     {faction: 'guild', name: 'Junction transport'});
   if (arrival) {
     const bg = byFaction(g, 'beneGesserit');
@@ -22377,6 +22666,22 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
       g.decision = {kind: 'advisor', player: bg!.id, ...followup};
     openTerritoryEntry(g, p, arrival.territory, arrival.sector, quote.amount, quote.elite, 'shipment');
   }
+}
+function performJunctionTransport(g: Game, p: Player, action: Action) {
+  requireRule(Object.keys(action).every(key =>
+    ['type', 'event', 'offer', 'destination', 'sources', 'allyPayment'].includes(key)),
+  'Use the offered tariff and explicit physical forces without concealed tokens.');
+  // Decode once into a source-specific declaration. Saved continuations are
+  // never actions and never dispatch through the action engine.
+  const declaration: JunctionTransportDeclaration = {
+    player: p.id, turn: g.turn, event: stringField(action.event), offer: stringField(action.offer),
+    destination: stringField(action.destination), sources: action.sources as HomeworldShipmentIntent['sources'],
+    allyPayment: typeof action.allyPayment === 'number' ? action.allyPayment : 0,
+  };
+  const quote = quoteJunctionDeclaration(g, p, declaration, action.allyPayment === undefined);
+  declaration.allyPayment = action.allyPayment === undefined ? quote.allyPayment :
+    contribution(g, p, quote.quote.cost, action.allyPayment);
+  commitJunctionTransport(g, p, declaration);
 }
 function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string}) {
   requireRule(g.homeworlds?.custody, 'Homeworld shipment requires saved physical custody.');
@@ -22436,12 +22741,14 @@ function homeworldShipmentIntegrity(g: Game) {
     d.amount === shipment.amount && d.event === shipment.event,
     'The saved Guild decision differs from its Homeworld declaration.');
 }
-function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment) {
+function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, settlement?: {recipient: string | null}) {
   const quote = validateHomeworldShipment(g, shipment);
+  if (!settlement && beginGuildBetrayal(g, {source: 'homeworld', shipment})) return;
   if (shipment.guildSecretEvent) recordGuildSecretShipment(g,shipment.player,shipment.guildSecretEvent,'homeworld',shipment);
   if (shipment.guildNexusEvent) finishGuildCunningShipment(g,shipment.player,'homeworld',shipment);
   const p = getPlayer(g, shipment.player);
   payWithAlly(g, p, quote.cost, shipment.allyPayment);
+  if (settlement?.recipient) getPlayer(g, settlement.recipient).spice += quote.cost;
   g.homeworlds!.custody = quote.state;
   if (shipment.route === 'arrakis') {
     p.forces = quote.boardForces!;
@@ -22461,7 +22768,7 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment) {
   // November FAQ contributor routing remains independent of that trigger.
   const guild = byFaction(g, 'guild');
   const income = guild && p.ally !== guild.id ? shipment.allyPayment : 0;
-  if (guild && income > 0)
+  if (!settlement?.recipient && guild && income > 0)
     g.response = guildPaymentResponse(g, guild.id, [income]);
   finishShipmentPromises(g, p, null);
   log(g, `${p.name} shipped ${quote.amount} physical forces (${quote.elite} special) from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.${shipment.guildSecretEvent ? ' Guild Secret Ally is spent for this half-price shipment; the payment goes to the bank.' : ''}`,
@@ -22868,6 +23175,11 @@ function validateGuildTransportRateResponse(g: Game, response: ResponseWindow) {
     'The saved Guild transport lost its original physical rate response.');
   return { intent, shipper, fullCost };
 }
+function nativeGuildTransportPermission(g: Game, p: Player): boolean {
+  if (p.faction === 'guild') return true;
+  const guild = byFaction(g, 'guild');
+  return !!guild && p.ally === guild.id && guild.ally === p.id;
+}
 function validateGuildTransportForCommit(
   g: Game, p: Player, frame: GuildTransportOrder, fromReserves: boolean,
 ) {
@@ -22875,6 +23187,8 @@ function validateGuildTransportForCommit(
   requireRule(g.status === 'playing' && g.phase === 5 && frame.turn === g.turn &&
     frame.player === p.id && g.active === p.id && shipmentAvailable(g, p),
     'This Guild transport no longer belongs to an unused shipment opportunity.');
+  requireRule(nativeGuildTransportPermission(g, p),
+    'Native Guild transport requires the Guild or its reciprocal ally.');
   if (fromReserves) {
     requireRule(p.faction === 'fremen' && origin === 'reserves' &&
       group.length === 0 && Object.keys(eliteGroup).length === 0,
@@ -22913,19 +23227,25 @@ function validateGuildTransportForCommit(
 function commitGuildTransport(
   g: Game, p: Player, frame: GuildTransportOrder, fromReserves: boolean,
   guildSecretEvent?: string,
+  settlement?: {recipient: string | null},
 ) {
+  requireRule(!g.guildBetrayalPreview || !guildSecretEvent,
+    'Guild Betrayal native transport does not combine with a Guild Secret Ally producer.');
+  if (!guildSecretEvent) validateGuildTransportForCommit(g, p, frame, fromReserves);
+  if (!settlement && beginGuildBetrayal(g, {source: 'guildTransport', frame, fromReserves})) return;
   const { origin, group, eliteGroup, to, sector, amount, elite, cost, allyPayment, advisors } = frame;
   const sourceLock = p.advisors?.[origin]?.lockedTurn;
   if (guildSecretEvent) recordGuildSecretShipment(g, p.id, guildSecretEvent, 'cross',
     { ...frame, guildSecretEvent });
   bindGuildCunningShipment(g, p, 'guild', frame);
   payWithAlly(g, p, cost, allyPayment);
+  if (settlement?.recipient) getPlayer(g, settlement.recipient).spice += cost;
   const guild = byFaction(g, 'guild');
   const guildPayment = guildShipmentIncome({
     guild: guild?.id, shipper: p.id, ally: p.ally, cost, allyPayment,
     bankOnly: g.karamaShipping?.player === p.id,
   });
-  if (guild && guildPayment > 0)
+  if (!settlement?.recipient && guild && guildPayment > 0)
     g.response = guildPaymentResponse(g, guild.id,
       shipmentIncomeContributions(g, p, cost, allyPayment),
       allyPayment ? undefined : p.id);
@@ -23016,13 +23336,14 @@ function offerShipment(g: Game, shipment: PendingShipment) {
     );
   } else if (!openGuildRate(g, shipment)) commitShipment(g, shipment);
 }
-function commitShipment(g: Game, shipment: PendingShipment) {
+function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipient: string | null}) {
   if (shipment.source === 'ambassador') {
     commitAmbassadorShipment(g, shipment);
     return;
   }
   validatePhysicalShipment(g, shipment);
   validateShipmentArrival(g, shipment);
+  if (!settlement && beginGuildBetrayal(g, {source: 'reserve', shipment})) return;
   if (shipment.guildSecretEvent) recordGuildSecretShipment(g,shipment.player,shipment.guildSecretEvent,'reserve',shipment);
   finishNexusRicheseShipment(g,shipment,'shipped');
   finishRichesePairShipment(g, shipment, 'shipped');
@@ -23104,6 +23425,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     owner.spice -= quote.ownerPayment;
     p.spice -= quote.recipientPayment;
   } else payWithAlly(g, p, cost, allyPayment);
+  if (settlement?.recipient) getPlayer(g, settlement.recipient).spice += cost;
   if (pairRevealed) {
     p.reserves -= pairRevealed.forces;
     if (pairRevealed.forces) place(p, to, s, pairRevealed.forces);
@@ -23146,7 +23468,7 @@ function commitShipment(g: Game, shipment: PendingShipment) {
     allyPayment,
     bankOnly: g.karamaShipping?.player === p.id,
   });
-  if (guild && guildPayment > 0)
+  if (!settlement?.recipient && guild && guildPayment > 0)
     g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),allyPayment ? undefined : p.id);
   g.karamaShipping = null;
   log(
@@ -23283,7 +23605,8 @@ function projectedNexusGuildCunning(g: Game, owner: string) {
     hajrAvailable:record.stage !== 'pending' && !g.hajr.includes(owner)}};
   if (g.nexusCards?.cards?.hands[owner] !== 'guild') return null;
   let blocked: string | null = null;
-  if (p.ally) blocked = 'Guild Cunning requires an unallied native Guild player.';
+  if (g.guildBetrayalPreview) blocked = 'This payment audit profile supports the original native shipment, not a Cunning second-shipment overlay.';
+  else if (p.ally) blocked = 'Guild Cunning requires an unallied native Guild player.';
   else if (g.status !== 'playing' || g.phase !== 5 || g.active !== owner)
     blocked = 'Use Cunning when finishing your own Shipment and Movement turn.';
   else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard ||
@@ -23470,7 +23793,8 @@ function nexusRicheseOffer(g: Game, owner: string) {
   const p = g.players.find(p => p.id === owner);
   if (!p || g.nexusCards?.cards?.hands[owner] !== 'richese' || byFaction(g,'richese')) return null;
   let blocked: string | null = null;
-  if (p.ally) blocked = 'Richese Secret Ally requires an unallied holder.';
+  if (g.guildBetrayalPreview) blocked = 'This payment audit profile supports the original native shipment, not a Richese Secret Ally shipment overlay.';
+  else if (p.ally) blocked = 'Richese Secret Ally requires an unallied holder.';
   else if (g.status !== 'playing' || g.phase !== 5 || g.active !== owner || p.shipped)
     blocked = 'Use Secret Ally for your unused reserve shipment before moving.';
   else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingKarama ||
@@ -24817,6 +25141,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
   kullIntegrity(state);
@@ -24902,6 +25227,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  if (g.pendingGuildBetrayal) {guildBetrayalIntegrity(g); return g;}
   if (g.pendingRicheseBetrayal) {richeseBetrayalIntegrity(g);return g;}
   if (g.pendingKull) {
     settleAutomaticContinuations(g);
@@ -25030,9 +25356,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   moritaniExtortionIntegrity(g);
   guildRateIntegrity(g);
   arrivalOverlapIntegrity(g);
+  guildBetrayalIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
+  if (g.pendingGuildBetrayal) return;
   if (g.pendingRicheseBetrayal) return;
   if (g.pendingKull) return;
   finishLeaderSkillCustody(g);
@@ -25096,11 +25424,13 @@ function finishActionContinuations(g: Game) {
     finishMoritaniPlacement(g);
 }
 function settleAutomaticContinuations(g: Game) {
+  if (g.pendingGuildBetrayal) return;
   if (g.pendingRicheseBetrayal) return;
   if (g.pendingKull?.stage === 'offer') return;
   if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
   for (let iteration = 0; iteration < 128; iteration++) {
+    if (g.pendingGuildBetrayal) return;
     if (g.pendingRicheseBetrayal) return;
     if (g.truthtrance || g.phaseOpening || g.status === 'finished') return;
     const response = g.response;
@@ -25123,6 +25453,7 @@ function settleAutomaticContinuations(g: Game) {
       finishResponse(g, false);
     } else if (!finishAutomaticDecision(g)) return;
     finishActionContinuations(g);
+    if (g.pendingGuildBetrayal) return;
     if (g.pendingRicheseBetrayal) return;
     // Opposing/automatic consequences can release a now-impossible promise;
     // they are not the original actor voluntarily spending a promised resource.
@@ -25139,6 +25470,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
   kullIntegrity(state);
@@ -25174,6 +25506,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingGuildBetrayal) return g;
   if (g.pendingRicheseBetrayal) return g;
   if (g.pendingKull?.stage === 'offer') return g;
   ornithopterIntegrity(g);
@@ -25225,6 +25558,12 @@ function applyActionInner(
 ): Game {
   ecazTreacheryIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingGuildBetrayal) {
+    const player = getPlayer(g, id);
+    if (action?.type === 'advanceBots') return g;
+    decideGuildBetrayal(g, player, action);
+    return g;
+  }
   if (g.pendingRicheseBetrayal) {
     const p = getPlayer(g,id);
     if (action?.type === 'advanceBots') return g;
@@ -25293,6 +25632,8 @@ function applyActionInner(
   );
   requireRule(g.status !== 'finished', 'This game has ended.');
   const t = action.type;
+  requireRule(t !== 'guildBetrayalPass' && t !== 'guildBetrayalUse',
+    'This Guild Betrayal opportunity is no longer pending.');
   requireRule(t !== 'richeseBetrayalPass' && t !== 'richeseBetrayalUse',
     'This Richese Betrayal opportunity is no longer pending.');
   if (g.pendingKull) {
@@ -28283,7 +28624,7 @@ function applyActionInner(
       g.phase === 5 &&
         g.active === id &&
         shipmentAvailable(g,p) &&
-        (p.faction === 'guild' || byFaction(g, 'guild')?.id === p.ally || !!guildSecretEvent),
+        (nativeGuildTransportPermission(g, p) || !!guildSecretEvent),
       'Guild shipment is not available.',
     );
     const fromReserves = action.from === 'reserves';
@@ -29053,6 +29394,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
   kullIntegrity(state);
@@ -29556,6 +29898,18 @@ export function viewGame(state: Game, id: string) {
         ? g.stormDials
         : null,
     me: id,
+    guildBetrayalPreview: !!g.guildBetrayalPreview,
+    guildBetrayalReaction: g.pendingGuildBetrayal
+      ? (() => {
+          const frame = g.pendingGuildBetrayal;
+          const hasPassed = frame.passed.includes(id);
+          const canPass = frame.required.includes(id) && !hasPassed;
+          const eligible = nexusRule(() => guildBetrayalEligible(g.nexusCards!.cards!, g.players, id));
+          const blocked = eligible ? guildBetrayalUseBlock(g, id) : null;
+          return {event: frame.invoice.event, shipper: frame.invoice.shipper,
+            canPass, hasPassed, canUse: canPass && eligible && !blocked, blocked};
+        })()
+      : null,
     richeseBetrayalPreview: !!g.richeseBetrayalPreview,
     richeseBetrayalReaction: g.pendingRicheseBetrayal
       ? (() => {
@@ -29706,7 +30060,7 @@ export function viewGame(state: Game, id: string) {
           g.moritaniRetention.keep,
         ) ?? null)
       : null,
-    decision: g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null :
+    decision: g.pendingGuildBetrayal || g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null :
       g.decision?.kind === 'capturedLeader' &&
       !g.leaderSkills?.assignments.some((a) => a.leader === (g.decision as Extract<Decision,{kind:'capturedLeader'}>).leader) &&
       ![g.decision.player, g.decision.controller ?? g.decision.owner].includes(
@@ -29718,7 +30072,7 @@ export function viewGame(state: Game, id: string) {
           : g.decision?.kind === 'guildShipment' && g.decision.noFieldSkillProof !== undefined
             ? { ...g.decision, noFieldSkillProof: undefined }
             : (g.decision ?? null),
-    response: g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null : g.response
+    response: g.pendingGuildBetrayal || g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null : g.response
       ? {
           ...g.response,
           ...(g.response.bureaucratPayment ? {bureaucratPayment:undefined,bureaucratPaymentEvent:undefined} : {}),

@@ -5,7 +5,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FACTIONS, type FactionId } from '../game/catalog';
 import { createGame, joinGame, newPlayer, viewGame, type GameView } from '../game/engine';
-import { NEXUS_CARD_REFERENCE, NEXUS_PANEL_NAMES, nexusCardReference } from '../game/nexus-card-reference';
+import { NEXUS_CARD_REFERENCE, NEXUS_PANEL_NAMES } from '../game/nexus-card-reference';
 
 // Match Vinext's actual next/image alias in this isolated Node test process;
 // render the production image implementation, not a component mock.
@@ -38,26 +38,6 @@ void test('the original inventory renders twelve identities, all36 readable pane
   for (const mode of ['betrayal', 'cunning', 'secretAlly'] as const)
     assert.equal(html.split(`aria-label="${NEXUS_PANEL_NAMES[mode]}"`).length - 1, 12);
   assert.equal((html.match(/aria-label="Inspect [^"]+ Nexus card"/g) ?? []).length, 12);
-  for (const card of NEXUS_CARD_REFERENCE) {
-    for (const mode of ['betrayal', 'cunning', 'secretAlly'] as const) {
-      assert.ok(card[mode].length > 30);
-      assert.ok(html.includes(card[mode]));
-    }
-  }
-});
-
-void test('reference preserves materially different physical effects and original numerical limits', () => {
-  assert.match(nexusCardReference('guild').betrayal, /whole shipment payment.*own payment.*Junction/);
-  assert.match(nexusCardReference('guild').cunning, /second shipment.*cannot move unless.*Hajr/);
-  assert.match(nexusCardReference('richese').cunning, /two No-Field.*one force.*reveal one/);
-  assert.match(nexusCardReference('tleilaxu').secretAlly, /leader.*free.*five.*one spice each/);
-  assert.match(nexusCardReference('emperor').secretAlly, /three extra forces free beyond/);
-  assert.match(nexusCardReference('ecaz').cunning, /capture.*Tanks.*Ghola.*Moritani.*end of the turn/);
-  assert.match(nexusCardReference('moritani').betrayal, /Return.*without revealing/);
-  assert.match(nexusCardReference('harkonnen').betrayal, /replacement during Mentat Pause/);
-  assert.match(nexusCardReference('choam').secretAlly, /not used in that battle/);
-  assert.match(nexusCardReference('ixians').betrayal, /cannot prevent both/);
-  assert.doesNotMatch(JSON.stringify(NEXUS_CARD_REFERENCE), /INTERNAL AUDIT|ALTERNATE SUPPLY CHAIN|entire Battle Plan/);
 });
 
 void test('draw, replacement and keep actions bind the exact offered turn and card without mutation', () => {

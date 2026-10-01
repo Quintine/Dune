@@ -11,6 +11,7 @@ import {
 import { tableActionOwner } from '../game/table-turn';
 import { choamKullGame, kullShipmentAttempt } from './fixture-choam-kull';
 import { createRicheseBetrayalFixture } from './fixture-richese-betrayal';
+import { createGuildBetrayalFixture } from './fixture-nexus-guild-betrayal';
 
 function battle(advanced = false) {
   let g = createGame(
@@ -233,5 +234,21 @@ void test('neutral Richese Betrayal acknowledgement preempts an underlying buyer
         decision: { kind: 'auctionPayment', player: fixture.buyer },
       }), null);
     }
+  }
+});
+
+void test('neutral Guild Betrayal acknowledgement has no sole turn owner for own or another payer', () => {
+  for (const payer of ['holder', 'other'] as const) {
+    const fixture = createGuildBetrayalFixture({ payer });
+    for (const player of fixture.game.players) {
+      const view = viewGame(fixture.game, player.id);
+      assert.ok(view.guildBetrayalReaction);
+      assert.equal(tableActionOwner(view), null);
+    }
+    const settled = applyAction(fixture.game, fixture.holder, {
+      type: 'guildBetrayalUse', event: fixture.event,
+    });
+    for (const player of settled.players)
+      assert.equal(tableActionOwner(viewGame(settled, player.id)), fixture.shipper);
   }
 });

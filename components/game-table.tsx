@@ -79,6 +79,7 @@ import { NullentropyBox, NullentropySearch } from './nullentropy-box';
 import { SemutaReaction } from './semuta-reaction';
 import { ChoamKull } from './choam-kull';
 import { NexusRicheseBetrayal } from './nexus-richese-betrayal';
+import { NexusGuildBetrayal } from './nexus-guild-betrayal';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
@@ -302,8 +303,8 @@ export function GameTable({
   );
   const reactionBusy =
     transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot;
-  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction;
-  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction;
+  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction;
+  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction;
   const canActivateKarama = (card: Card) =>
     !g.karamaBlocked && canUseAsKaramaRole(g, me, card);
   const traitorBattle = g.battle;
@@ -779,7 +780,16 @@ export function GameTable({
         count > 0 &&
         !botGroundMoveAllowed(g, me, key, boardLocation(selected, sector), 0),
     );
-  const act = (a: Action) => void send(a);
+  const act = (a: Action) => {
+    const guildReaction = g.guildBetrayalReaction;
+    if (guildReaction) {
+      if (reactionBusy || g.status !== 'playing' || !guildReaction.canPass || guildReaction.hasPassed ||
+          (a.type !== 'guildBetrayalPass' && a.type !== 'guildBetrayalUse') ||
+          a.event !== guildReaction.event ||
+          (a.type === 'guildBetrayalUse' && (!guildReaction.canUse || guildReaction.blocked))) return;
+    }
+    void send(a);
+  };
   const choose = (id: string) => {
     const location = gameTerritories(g).find((candidate) => candidate.id === id);
     if (!location) return;
@@ -1009,6 +1019,8 @@ export function GameTable({
                       faction(g.players.find((p) => p.id === id)!.faction).name,
                   )
                   .join(' + ') || 'No winner'
+              : g.guildBetrayalReaction
+                ? 'Shipment payment acknowledgement'
               : g.richeseBetrayalReaction
                 ? 'Richese auction acknowledgement'
               : g.kullReaction
@@ -1054,6 +1066,15 @@ export function GameTable({
           <a href="/rules?topic=nexus-richese-betrayal#nexus-richese-betrayal">Preview rules and limits</a>
         </p>
       )}
+      {g.guildBetrayalPreview && (
+        <p className="notice" role="status">
+          Guild Nexus Betrayal development preview · whole funded shipment
+          payment replacement, including your own payment and occupied Junction.
+          Classic factions with native Guild and Nexus; optional genuinely
+          seeded Homeworlds only. Not complete Guild or certified Nexus rules.{' '}
+          <a href="/rules?topic=nexus-guild-betrayal#nexus-guild-betrayal">Preview rules and limits</a>
+        </p>
+      )}
       {g.status !== 'lobby' && (
         <nav className="phase-track" aria-label="Turn phases">
           {PHASES.map((p, i) => (
@@ -1086,7 +1107,7 @@ export function GameTable({
           <SpiceCardInspector card={g.spicePeek} context="Private foresight" />
         </section>
       )}
-      <SeatAutopilot game={g} act={act} busy={transportBusy} />
+      <SeatAutopilot game={g} act={act} busy={transportBusy || !!g.guildBetrayalReaction} />
       <DukeVidal game={g} />
       <EcazLoyaltyCard loyalty={g.ecazLoyalty} />
       <MoritaniTerrorSupply game={g} />
@@ -1692,7 +1713,9 @@ export function GameTable({
             onSectorChange={setSector}
           />
           </>}
-          {g.richeseBetrayalReaction ? (
+          {g.guildBetrayalReaction ? (
+            <NexusGuildBetrayal game={g} act={act} busy={reactionBusy} />
+          ) : g.richeseBetrayalReaction ? (
             <NexusRicheseBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.kullReaction ? (
             <ChoamKull game={g} act={act} busy={reactionBusy} />

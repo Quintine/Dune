@@ -8,6 +8,7 @@ import type * as Rooms from '../db/rooms';
 import { unitStore } from './fixture-nexus-room-store';
 import { createNexusChoamKullFixture, createNexusKullNativeParent,
   createNexusKullNestedParent, createNexusKullAuctionParent } from './fixture-nexus-choam-kull';
+import { takeKullCard } from './fixture-choam-kull';
 
 const clock: RoomsClock = { now: () => 10000, sleep: async () => {} };
 const plain = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
@@ -624,9 +625,7 @@ void test('SQLite a new Nexus-profile printed counter without a selection is cor
   const f = await persisted(t);
   const { choam, actor, event } = f;
   const beforeDeclaration = structuredClone(f.initial);
-  const cost = beforeDeclaration.deck.find(card => card.id === 'ix-kull-wahad')!;
-  assert.ok(cost);
-  beforeDeclaration.deck.splice(beforeDeclaration.deck.indexOf(cost), 1);
+  const cost = takeKullCard(beforeDeclaration, 'ix-kull-wahad');
   player(beforeDeclaration, choam).hand.push(cost);
   f.save(beforeDeclaration);
   const declared = await act(f, beforeDeclaration, choam,

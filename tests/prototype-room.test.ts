@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import {
+  applyAction,
   createGame,
   joinGame,
   newPlayer,
@@ -328,4 +329,39 @@ for (const advanced of [false, true]) {
     assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
     assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
   });
+}
+
+for (const advanced of [false, true]) {
+  for (const homeworlds of [false, true]) {
+    void test(`Guild Betrayal ${advanced ? 'Advanced' : 'Basic'} ${homeworlds ? 'Homeworld' : 'base'} entry preserves explicit modules and rejects redealing without touching other saves`, (t) => {
+      const { db } = fixture(t);
+      let game = createGame('PROTOTYP', newPlayer('g', 'Guild', 'guild'), advanced);
+      joinGame(game, newPlayer('e', 'Emperor', 'emperor'));
+      if (homeworlds)
+        game = applyAction(game, game.host, { type: 'homeworlds', enabled: true });
+      for (const p of game.players) p.ready = true;
+      db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), game.code);
+      db.prepare('UPDATE seats SET player_id=? WHERE room_code=?').run('g', game.code);
+      db.prepare('INSERT INTO seats VALUES(?,?,?)').run(game.code, 'e', 'unchanged-emperor-session');
+      const seats = db.prepare('SELECT * FROM seats').all();
+      const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+      const result = startPrototypeRoom(db, game.code, 7, 'guild-betrayal');
+      const saved = JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(game.code)!.state as string) as Game;
+      assert.equal(result.version, 8);
+      assert.equal(saved.status, 'setup');
+      assert.equal(saved.guildBetrayalPreview, true);
+      assert.equal(!!saved.homeworlds, homeworlds);
+      assert.deepEqual([...saved.nexusCards!.cards!.deck].sort((a,b) => a.localeCompare(b)),
+        [...NEXUS_FACTIONS].sort((a,b) => a.localeCompare(b)));
+      assert.deepEqual(saved.expansions, []);
+      for (const p of game.players)
+        assert.equal(saved.players.find(seat => seat.id === p.id)!.name, p.name);
+      const rows = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+      assert.throws(() => startPrototypeRoom(db, game.code, 7, 'guild-betrayal'));
+      assert.throws(() => startPrototypeRoom(db, game.code, 8, 'guild-betrayal'));
+      assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), rows);
+      assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+      assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+    });
+  }
 }

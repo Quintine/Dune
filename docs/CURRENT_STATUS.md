@@ -4,7 +4,41 @@ Updated 1 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
+The user-supplied `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf` is now
+an [authorized Advanced source of truth](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026),
+including its identified unofficial rulings. The 44-page file has 2.3
+metadata but a visibly retained 2.2 editorial heading; the index records its
+SHA-256 and physical-page citations. Current Guild payment/source passages
+were compared with the wave. Wider Advanced reconciliation is not yet
+implemented, and adoption does not reset games, convert Basic, republish
+the local PDF or open mode gates.
+
+
 ## Current checkpoint and work
+
+Five implementation lanes connected [Guild Nexus Betrayal](NEXUS_GUILD_RULES.md#nexus-guild-betrayal):
+full funded shipment-payment replacement, including own upfront payment
+and the explicit occupied-Junction override. Fresh `guild-betrayal` admits
+classic/native-Guild plus base decks/Nexus, optionally genuine lobby-enabled
+Homeworlds; no in-play retrofit or public start. Four typed native source
+adapters retain exact payer/escrow, force custody and one shipment suffix.
+Neutral public acknowledgements reveal no otherwise private fee/routes;
+only own canonical eligibility exposes Use. Both scoped final reviews have
+no finding after fixing precommitted Richese parents and independently
+revalidating the native transport grant. Unsupported Cunning/Richese producer
+overlays block before spending; outside-profile behavior stays unchanged.
+Current-quote fixture progression, durable SQL rejection and same-source
+private-face comparisons replace random-route/SQL-text/independent-seed pins.
+Types, lint, **6,114 offline tests**, build and **147 selected cases** pass.
+Eighteen standalone Basic/Advanced paid/free scenarios, eight exact-version
+backed-up real CLI entries, 390-pixel Use/Pass/inspector/context-link/refresh
+and read-only saved-state checks prove exact native forces, whole-fee ledger,
+single donor escrow consumption and physical cards. Original authenticated
+seats and all unrelated games remain preserved.
+Local built-worker HTTP is **48/55**, five POST 503s plus two timeouts,
+not green. Current immutable-code container verification/push are pending;
+prior workflows and the last live footer do not verify this new code.
+Full modes, strategic AI, public starts and live deployment stay gated.
 
 Five implementation lanes connect [CHOAM Nexus Cunning Kull](NEXUS_CHOAM_RUNTIME.md#bounded-nexus-kull-profile)
 through the new fresh `nexus-kull` profile. Actual canonical Treachery fuel

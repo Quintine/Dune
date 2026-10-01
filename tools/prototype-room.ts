@@ -11,6 +11,7 @@ import {
   initializeKullGameForAudit,
   initializeRicheseBetrayalGameForAudit,
   initializeNexusKullGameForAudit,
+  initializeGuildBetrayalGameForAudit,
   viewGame,
   type Game,
 } from '../game/engine';
@@ -27,6 +28,7 @@ export const PROTOTYPE_PROFILES = [
   'kull',
   'richese-betrayal',
   'nexus-kull',
+  'guild-betrayal',
 ] as const;
 export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
@@ -84,6 +86,11 @@ export function startPrototypeRoom(
           })
       : profile === 'nexus-kull'
         ? initializeNexusKullGameForAudit({
+            ...initial,
+            nexusCards: initial.nexusCards ?? { cards: null, phase: null },
+          })
+      : profile === 'guild-betrayal'
+        ? initializeGuildBetrayalGameForAudit({
             ...initial,
             nexusCards: initial.nexusCards ?? { cards: null, phase: null },
           })
