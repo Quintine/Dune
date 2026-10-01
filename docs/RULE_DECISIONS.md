@@ -50,6 +50,17 @@ opt-in profile or a publisher ruling:
   coexistence remain exceptions. Homeworlds are not Dune territories, and
   their native allied-entry prohibitions are unchanged.
 
+The supplied revision's **Leaders, physical PDF page 11** also requires a
+player unable to use a leader and not playing Cheap Hero to announce that fact
+before revealing plans; no Treachery Cards can be part of that plan. Existing
+leader/card legality remains unchanged. Advanced now publishes the legal
+leaderless declaration when the original plan is sealed, before any reveal
+or special full-plan read continuation, without exposing dial/support or
+other private choices. The current battle status and chronicle preserve it
+across refresh; no extra reaction, confirmation or plan submission is added.
+Basic announcement behavior remains intentionally unchanged by this Advanced
+source cutover.
+
 The page 15 footnote explicitly identifies the changed timing and advisor
 coexistence as departures from the original rules and November 2020 FAQ.
 Page 40 explains that choice; it is the supplied revision's unofficial

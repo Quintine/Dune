@@ -29521,6 +29521,8 @@ function applyActionInner(
       'Wait for the plan requested by special prescience.',
     );
     b.plans[id] = validatePlan(g, p, action);
+    if (g.advanced && b.plans[id].leader === null)
+      log(g, `${p.name} announced a Battle Plan without a leader or Cheap Hero; no battle cards can be played.`);
     if (b.fullPlan?.target === id) {
       recordFullPlanInspection(g, b.fullPlan.owner);
       return g;
@@ -30880,6 +30882,9 @@ export function viewGame(state: Game, id: string) {
               })
             : [],
           submitted: Object.keys(b.plans),
+          leaderless: g.advanced
+            ? Object.keys(b.plans).filter(playerId => b.plans[playerId].leader === null)
+            : [],
           plans: b.revealed
             ? b.plans
             : b.plans[id]

@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 1 October 2026 — Advanced leaderless declaration before reveal
+
+The supplied authorized Advanced PDF, physical page 11 **Leaders**, requires
+announcement before reveal when a player cannot use a leader and is not playing
+Cheap Hero; that plan may include no Treachery Cards. Current validation already
+enforced leader availability and empty card slots. Its accepted plan lacked the
+public announcement. Parent rejected a historical scout claim that live
+Homeworld combat was disconnected: the later runtime checkpoint already connects
+that path. No duplicate Homeworld implementation was introduced.
+
+Advanced sealing now appends the public announcement before ordinary reveal or
+the original special full-plan read continuation. The public view derives only
+leaderless submitted player IDs from the existing sealed plans; no second saved
+flag or authority is created. A shared pre-reveal table notice names the declared
+combatant while keeping dial, support and other choices private. The original
+plan guard prevents duplicate submissions and announcements. Basic behavior
+remains unchanged by this Advanced-source cutover. Existing legal bots, Voice,
+Prescience, full-plan inspections, combat and casualty continuations are retained.
+
+The meaningful privacy regression fails before the implementation with missing
+public announcement after an actual legal seal; it passes afterward, retaining
+opponent/observer masking, JSON refresh, read immutability, duplicate rejection
+and original reveal. Parent types/lint and **6,316/6,316** offline cases pass;
+the selected ninety-file union is **1,025/1,025**. Final reference **10/10**
+and build pass.
+
+Actual native normal Advanced-preview start/setup plus a conserved staged battle
+with previously used living leaders exercises legal rejection, one pre-reveal
+declaration, JSON normalization, duplicate rejection and canonical thirty-three
+card/typed-force conservation. The stage is not a claimed natural full game.
+Fresh exact-version private-backed-up room `3Y5U53RW` starts through the real
+HTTP preview action, keeps its actual setup/dealt cards/identities, then exercises
+390px human Emperor leaderless sealing and the opponent's refresh. The other
+plan stays private until human Atreides sealing; original Traitor declines
+advance to Collection v9 once. Read-only saved proof confirms one chronicle
+announcement before reveal, all cards/typed forces, unchanged identities and
+the original single native Arrakeen income, not a fictitious unchanged setup
+wallet. The ready phone notice is 354px wide within a 390px page. The actual
+guide explains this timing; all **57 original seats in nineteen QA rooms**
+reauthenticate. No reset, public-mode change or deployment is performed.
+
 ## 1 October 2026 — Ixian Nexus Betrayal at original native attempts
 
 Fresh local `ixian-betrayal` integrates native Ixian Bidding inspection/draw in

@@ -4695,6 +4695,13 @@ export function GameTable({
                     {' '}Tied battle: {g.players.find(p => p.id === g.battle!.tieWinner)?.name}
                     {g.battle.tieWinner !== g.battle.aggressor ? ' (Habbanya Stronghold advantage)' : ''}.
                   </p>
+                  {!g.battle.revealed && g.battle.leaderless.length > 0 && (
+                    <p className="notice block" role="status">
+                      {g.battle.leaderless.map(id => g.players.find(p => p.id === id)?.name).join(', ')}
+                      {' '}announced a Battle Plan without a leader or Cheap Hero.
+                      No battle cards can be played; other plan choices remain sealed.
+                    </p>
+                  )}
                   {!!g.battle.native && (
                     <p className="notice">
                       Only the native faction may reveal Traitors or Face

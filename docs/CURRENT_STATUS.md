@@ -16,6 +16,25 @@ open mode gates.
 
 ## Current checkpoint and work
 
+The authorized Advanced **leaderless Battle Plan announcement** is now
+connected. Physical PDF page 11 requires disclosure before reveal when no
+leader or Cheap Hero can be used; existing leader/card legality was already
+enforced. Sealing that legal plan now records one public announcement and
+shows a shared table notice while dial, support and other choices remain sealed.
+No extra decision, cost, confirmation or serialized duplicate state is added;
+Basic behavior is intentionally unchanged by this Advanced cutover.
+Failing-before/passing-after privacy/refresh/duplicate regression passes.
+Types/lint, **6,316 offline tests**, the **1,025-case selected union**, final
+guide **10/10** and build pass. Actual native Advanced preview setup followed
+by a conserved staged exhausted-leader battle proves public-before-reveal,
+private other choices, JSON continuation and unchanged physical stock.
+Backed-up real room `3Y5U53RW` v9 exercised human phone sealing, opponent
+refresh, original reveal and native Collection continuation once. Saved proof
+retains all thirty-three cards, typed forces, original identities and one
+native stronghold income, with no announcement cost. The actual 390px notice
+is 354px wide; all **57 original seats in nineteen QA rooms** reauthenticate.
+This source-bound behavior is not a complete Advanced-game or deployed claim.
+
 Ixian Nexus Betrayal now connects both actual native attempts: Bidding's
 extra-card inspection and Advanced Technology. Fresh local `ixian-betrayal`
 uses native Ix/allowed classic or Tleilaxu, the physical Ix deck and Nexus only.

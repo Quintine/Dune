@@ -99,6 +99,30 @@ function allow(state: Game) {
 function seal(g: Game, plan: Plan, id = 'e') {
   return applyAction(g, id, { type: 'battlePlan', ...plan });
 }
+
+void test('Advanced leaderless announcement is public before reveal without exposing sealed choices', () => {
+  let game = fixture(true);
+  for (const leader of game.players[0].leaders) leader.usedAt = 'carthag';
+  game = seal(game, { dial: 1, support: 0, leader: null, weapon: null, defense: null }, 'a');
+  assert.equal(game.battle!.revealed, false);
+  for (const observer of ['e', 'b']) {
+    const view = viewGame(game, observer);
+    assert.deepEqual(view.battle!.leaderless, ['a']);
+    assert.deepEqual(view.battle!.plans, {});
+    assert.deepEqual(view.battle!.cards, []);
+  }
+  assert.equal(viewGame(game, 'a').battle!.plans.a.dial, 1);
+  const saved = JSON.stringify(game);
+  game = JSON.parse(saved);
+  assert.deepEqual(viewGame(game, 'b').battle!.leaderless, ['a']);
+  assert.equal(JSON.stringify(game), saved);
+  assert.throws(() => seal(game, { dial: 1, support: 0, leader: null, weapon: null, defense: null }, 'a'), RuleError);
+  assert.equal(JSON.stringify(game), saved);
+  game = seal(game, { dial: 1, support: 0, leader: game.players[1].leaders[1].id, weapon: null, defense: null });
+  assert.equal(game.battle!.revealed, true);
+  assert.deepEqual(viewGame(game, 'b').battle!.leaderless, ['a']);
+  assert.equal(viewGame(game, 'b').battle!.plans.a.dial, 1);
+});
 const leaderClaim: PlanClaim = { kind: 'leader', leader: 'emperor-0' };
 const supportClaim: PlanClaim = { kind: 'support', compare: 'gte', value: 1 };
 const liveCards = (g: Game) =>

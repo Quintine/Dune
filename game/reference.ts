@@ -2299,7 +2299,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary: 'Build a legal combination and decide what to keep after winning.',
     steps: [
       'Choose one weapon, one defense, both, or neither. A worthless card can occupy a weapon or defense slot.',
-      'Choose an available leader or Cheap Hero when required. Without either, battle cards cannot be played.',
+      'Choose an available leader or Cheap Hero when required. Without either, battle cards cannot be played. In Advanced, sealing a legal leaderless plan announces that fact to the whole table before reveal; its dial, spice and other choices remain sealed. Refresh retains the same announcement without submitting another plan.',
       'A loser normally discards all played cards. If allied with Moritani and the battle has a winner, the defeated ally may retain one played card that a winner could keep. A winner may discard selected played cards; Cheap Heroes are discarded after use.',
     ],
     related: ['battle', 'card-karama', 'moritani-ally-retention'],
