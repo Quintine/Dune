@@ -55,9 +55,13 @@ this does not certify that all Advanced differences are implemented.
 The user-owned local PDF is preserved, not republished as an app asset.
 
 Local built-worker HTTP is **48/55**, five POST 503s and two timeouts:
-known Wrangler-dev limitation, not green acceptance. Current code still
-needs exact immutable-container publication proof; prior CI and live
-deployment are separate. Full Guild/Nexus/Homeworld, wider combinations,
+known Wrangler-dev limitation, not green acceptance. Code
+`8a56299155d0f12c8c4678bfbe5913be71fea5bb` is pushed, and
+[workflow 36798718410](https://github.com/Quintine/Dune/actions/runs/36798718410)
+reports completed/success for that exact source. Its mandatory isolated
+storage/full HTTP verifier precedes publication of
+`ghcr.io/quintine/dune:sha-8a56299155d0f12c8c4678bfbe5913be71fea5bb`.
+Live deployment is separate. Full Guild/Nexus/Homeworld, wider combinations,
 AI calibration and public/live release remain open.
 
 ## 1 October 2026 — source-aware CHOAM Nexus Cunning Kull

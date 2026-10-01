@@ -36,9 +36,12 @@ and read-only saved-state checks prove exact native forces, whole-fee ledger,
 single donor escrow consumption and physical cards. Original authenticated
 seats and all unrelated games remain preserved.
 Local built-worker HTTP is **48/55**, five POST 503s plus two timeouts,
-not green. Current immutable-code container verification/push are pending;
-prior workflows and the last live footer do not verify this new code.
-Full modes, strategic AI, public starts and live deployment stay gated.
+not green. Code `8a56299155d0f12c8c4678bfbe5913be71fea5bb` is pushed;
+[workflow 36798718410](https://github.com/Quintine/Dune/actions/runs/36798718410)
+reports completed/success for that exact source. Its mandatory isolated
+full HTTP/storage verifier precedes immutable-image publication.
+Full modes, strategic AI, public starts and live deployment stay gated;
+container publication does not update the last observed live revision.
 
 Five implementation lanes connect [CHOAM Nexus Cunning Kull](NEXUS_CHOAM_RUNTIME.md#bounded-nexus-kull-profile)
 through the new fresh `nexus-kull` profile. Actual canonical Treachery fuel
