@@ -190,6 +190,7 @@ import { HarassWithdrawGuide, harassWithdrawControlState } from './harass-withdr
 import { HarassWithdrawChoice } from './harass-withdraw-choice';
 import { PrivateBattlePlan } from './private-battle-plan';
 import { SpiceBankerControl, spiceBankerControlState } from './spice-banker';
+import { SpiceBankerIncome } from './spice-banker-income';
 import { canUsePlanetologistBattleSpecial } from '../game/leader-skill-combat';
 import type { Card } from '../game/cards';
 import { RevealedBattle } from './revealed-battle';
@@ -1409,6 +1410,7 @@ export function GameTable({
           </div>
         </aside>
         <section className="board-column">
+          <SpiceBankerIncome game={g} />
           <DrawPiles piles={g.drawPiles} />
           <div className="board-toolbar">
             <span>

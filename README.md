@@ -215,6 +215,18 @@ exchange. This is a bounded provisional local timing/privacy convention;
 bounded verification is Partial/Development Verified; the universal reaction-policy question stays open.
 See the [source contract and excluded modes](docs/NEXUS_HARKONNEN_RULES.md#bounded-betrayal-preview-contract--1-october-2026).
 
+For local **normal Spice Banker income**, use
+`node --import tsx tools/start-prototype.ts --profile banker-income`
+on a fresh ready Basic/Advanced classic lobby with base Treachery and all
+fourteen Leader Skills alone. Existing exact-version/private-backup safeguards
+apply; public starts and existing games are unchanged. Another payer's one
+actual bank payment of at least four gains one mandatory front-shield spice
+once per phase; it stays unspendable until automatic native Mentat collection.
+Original payment, recipient and separate payer legs stay intact. Earned
+original-faction retention after death/capture/reassignment is provisional
+in this profile; bounded verification is Partial/Development Verified and the existing question stays open.
+See the [normal-band source and scope](docs/SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

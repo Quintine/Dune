@@ -1,5 +1,65 @@
 # Dune implementation status
 
+## 2 October 2026 — normal Spice Banker final-bank income and native Mentat collection
+
+Three exclusive implementation owners connect the fresh `banker-income`
+classic2..6-seat Basic/Advanced base33/all14-skills-only profile. Parent
+integrates the small public notice/source guide, actual proof and shipping.
+Three is the useful slice count, not a five-agent minimum.
+
+The photographed normal band gains1 additional bank spice when ANOTHER
+payer makes ONE actual bank payment of at least4, once per physical card,
+turn and phase. Native paid auctions (including Emperor self-purchase),
+ordinary/cross/return shipment, actual paid force/leader/KH/Emperor-extra
+revival and resolved support use their original final bank portions.
+Real counter-free allowances remain automatic; actual held counters retain
+native suspension/cancellation. Income paid to a player, free/stopped/waived
+sources, self-payment and smaller individual payer legs do not qualify.
+Distinct source/payer legs and lower Banker spending never pool into4.
+Original money/recipient/card/force/suffix costs finish once; deferred income
+does not fund its source or any pre-Mentat spending.
+
+New grants follow the actual living available trainer and post-battle
+survival/posture, not hidden pre-reveal plans. A physical-card stamp cannot
+reset through death/return/reassignment. Already-earned currency stays with
+its ORIGINAL gaining faction under an explicit conservative LOCAL policy;
+the earlier death/capture question and universal split interpretation remain
+open. Real Mentat atomically marks and credits all uncollected grants once
+before optional actions/victory. Closed fixed-size consistency history does
+not depend on today's wallet/trainer/card; no arbitrary read heal or
+fictitious persisted half-phase8 collect choice is used. Public projection
+exposes only physical owner/count and current-phase use, not source invoices.
+
+Integrated verification reproduced and repaired nonbattle trainer completion,
+Emperor own-auction final recipient and secret suspended-invoice projection.
+Genuine fixture repairs distinguish economic payer from final auction actor,
+native Harkonnen free2/cost2 from Emperor free1/cost4, KH revival cost2,
+actual skilled death/revival offers and already-held weapon custody. Native
+bounty/Collection quotes replace incorrect gross-wallet cost assertions.
+Two final independent money and recovery/privacy reviews have no finding.
+Types/lint, **6,487 offline tests**, **140 focused Banker/profile cases** and
+build pass. Eighteen native payment/trainer/threshold cases conserve all33
+Treachery Cards/14 skills through original source and actual Mentat. All four
+minimal legal policies preserve available-budget actions with deferred money.
+
+Original private-backed-up six-seat CLI rooms **6VZ8G5BY Basic v38** and
+**8TN8BTLT Advanced v31** retained native setup/decks/offers/identities/circles.
+Human390px native Emperor self-auction and Guild own-bank shipment/allow
+earn1 while wallets stay unchanged. Refresh retains the physical notice;
+actual final Collection readiness opens Mentat once (Banker10→11 and3→4).
+Phone evidence caught a26px player-strip notice squeeze; moving it into the
+main column gives354px width. Necessary isolated-worker reload preserved
+Basicv14/Advancedv13 continuation before further actions. All card/skill/
+normal and elite force inventories are conserved;23 prior isolated QA rooms'
+states/versions are unchanged. Final guide10/10, types/lint/build and expanded
+390px Partial/DevelopmentVerified guidance pass. All82 original saved seats
+across25 targeted QA rooms restore after final guide-worker reload; the two
+Banker rooms remain at native Mentat without double collection. Local HTTP
+is **49/55** with six existing upstream503 rejection failures, not green.
+Owned temporary drivers are removed; private inputs/backups remain outside
+the checkout. Checkpoint push is being finished; full skill/module,
+combined-mode and deployed acceptance remain open.
+
 ## 2 October 2026 — original Harkonnen Nexus traitor retirement and Mentat replacement
 
 Four exclusive implementation owners connect fresh local `harkonnen-betrayal`:

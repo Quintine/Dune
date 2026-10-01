@@ -20,6 +20,7 @@ import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported
 import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterRouteDistance, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
+import { BankerIncomeError, createBankerIncomeState, validateBankerIncomeState, quoteBankerIncome, commitBankerIncome, quoteBankerIncomeCollection, commitBankerIncomeCollection, projectBankerIncome, type BankerIncomeState, type BankerIncomeAuthority, type BankerIncomeContext } from './spice-banker-income';
 import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
 import { diplomatRetreatChoices, type DiplomatRetreatSelection, type DiplomatRetreatDestination } from './diplomat-retreat';
 import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
@@ -927,7 +928,17 @@ export type Decision =
       event?: string;
     }
   | { kind: 'battleCards'; player: string; territory: string; cards: string[] };
+type SpiceBankerIncomePayment = {
+  event: string;
+  turn: number;
+  phase: number;
+  kind: BankerIncomeAuthority['kind'];
+  legs: {payer: string; amount: number; recipient: 'bank' | 'player'}[];
+  signature: string;
+};
+
 export type ResponseWindow = {
+  spiceBankerIncomePayment?: SpiceBankerIncomePayment;
   bureaucratPayment?: BureaucratPaymentSource;
   bureaucratPaymentEvent?: string;
   noFieldSkillProof?: string;
@@ -1516,6 +1527,7 @@ export type Game = {
   };
   ixRicheseTechnologyEvent?: string;
   currentAuctionSale?: {
+    spiceBankerIncomePayment?: SpiceBankerIncomePayment;
     bureaucratPayment?: BureaucratPaymentSource;
     bureaucratPaymentEvent?: string;
     winner: string;
@@ -1904,6 +1916,9 @@ export type Game = {
   /** Absent on legacy rooms whose starting cards were already dealt. */
   setupStage?: 'prediction' | 'skillTreachery' | 'leaderSkills' | 'traitors' | 'forces';
   leaderSkills?: LeaderSkillsState;
+  /** Fresh local classic profile; earned custody remains with its original faction. */
+  spiceBankerIncomePreview?: true;
+  spiceBankerIncome?: BankerIncomeState;
   bureaucratPayments?: {used:BureaucratPaymentUse[];pending?:{
     source:BureaucratPaymentSource;owner:string;leader:string;
     resume:{response:ResponseWindow|null;decision:Decision|null};
@@ -7569,6 +7584,7 @@ function replaceMoritaniAssassinationTraitors(g: Game) {
   }
 }
 function leaderSkillsIntegrity(g: Game) {
+  spiceBankerIncomeIntegrity(g);
   moritaniAssassinateIntegrity(g);
   bureaucratPaymentIntegrity(g);
   mentatQuestionIntegrity(g);
@@ -7666,6 +7682,129 @@ function nativeLeaderSkill(g: Game, owner: string) {
   return g.leaderSkills?.assignments.find(
     (a) => a.owner === owner && leaderSkillController(g, a) === owner,
   );
+}
+function bankerIncomeRule<T>(operation: () => T): T {
+  try { return operation(); } catch (error) {
+    if (error instanceof BankerIncomeError) throw new RuleError(error.message);
+    throw error;
+  }
+}
+function bankerIncomeContext(g: Game): BankerIncomeContext {
+  return {turn: g.turn, phase: g.phase,
+    players: g.players.map(p => ({id: p.id, leaders: p.leaders.map(l => ({
+      id: l.id, dead: l.dead, ...(l.capturedBy ? {capturedBy: l.capturedBy} : {}),
+      ...(l.gholaBy ? {gholaBy: l.gholaBy} : {}),
+    }))})),
+    assignments: g.leaderSkills?.assignments ?? []};
+}
+function bankerIncomeProfile(g: Game): boolean {
+  return g.players.length >= 2 && g.players.length <= 6 &&
+    new Set(g.players.map(p => p.faction)).size === g.players.length &&
+    g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base')) &&
+    g.expansions.length === 0 && !g.nexusCards && !g.homeworlds && !g.techTokens &&
+    !g.strongholdCards && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
+    !g.greatMaker && !g.ecazTreachery && !g.semutaPreview && !g.mentatQuestionPreview &&
+    !g.moritaniAssassinatePreview && !g.moritaniAssassinate && !g.advancedPreview &&
+    !g.kullPreview && !g.nexusKullPreview && !g.guildBetrayalPreview && !g.richeseBetrayalPreview &&
+    !g.nexusIxianReplacementPreview && !g.nexusIxianBetrayalPreview && !g.nexusHarkonnenBetrayalPreview;
+}
+function bankerIncomePaymentSignature(payment: SpiceBankerIncomePayment): string {
+  return JSON.stringify([payment.event, payment.turn, payment.phase, payment.kind, payment.legs]);
+}
+function spiceBankerIncomeIntegrity(g: Game): void {
+  if (!g.spiceBankerIncomePreview) {
+    requireRule(g.spiceBankerIncomePreview === undefined && g.spiceBankerIncome === undefined,
+      'Deferred Spice Banker income requires its fresh local profile.');
+    return;
+  }
+  requireRule(g.spiceBankerIncomePreview === true && bankerIncomeProfile(g) && !!g.leaderSkills && !!g.spiceBankerIncome,
+    'The saved Spice Banker income profile lost its classic physical setup.');
+  bankerIncomeRule(() => validateBankerIncomeState(g.spiceBankerIncome!, bankerIncomeContext(g)));
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const responses = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
+    g.pendingRichesePurchaseIncome?.resume, g.summonedWorm?.resume, g.bureaucratPayments?.pending?.resume,
+    continuation && 'resume' in continuation ? continuation.resume : null]
+    .flatMap(context => context?.response ? [context.response] : []);
+  if (g.pendingKarama?.use.kind === 'cancel') responses.push(g.pendingKarama.use.response);
+  for (const carrier of [g.currentAuctionSale, ...responses]) {
+    const payment = carrier?.spiceBankerIncomePayment;
+    if (!payment) {
+      requireRule(!carrier || ('winner' in carrier ? carrier.free || carrier.origin !== 'normal' : carrier.kind !== 'guildIncome'),
+        'The original paid transaction lost its native bank invoice.');
+      continue;
+    }
+    requireRule(payment.signature === bankerIncomePaymentSignature(payment) && payment.turn === g.turn &&
+      payment.phase === g.phase && typeof payment.event === 'string' && payment.event.length > 0 &&
+      Array.isArray(payment.legs) && payment.legs.every(leg => g.players.some(p => p.id === leg.payer) &&
+        Number.isSafeInteger(leg.amount) && leg.amount > 0 && ['bank', 'player'].includes(leg.recipient)) &&
+      new Set(payment.legs.map(leg => leg.payer)).size === payment.legs.length,
+    'The original paid bank transaction changed its event or contribution legs.');
+    if (carrier && 'winner' in carrier)
+      requireRule(payment.kind === 'auction' && !carrier.free && carrier.origin === 'normal' &&
+        payment.legs.reduce((sum, leg) => sum + leg.amount, 0) === carrier.amount &&
+        payment.legs.every(leg => leg.payer === carrier.winner || leg.payer === getPlayer(g, carrier.winner).ally),
+      'The deferred bank invoice no longer matches its original normal auction.');
+    else if (carrier)
+      requireRule(carrier.kind === 'guildIncome' && payment.kind === 'shipment' &&
+        payment.legs.filter(leg => leg.recipient === 'player').reduce((sum, leg) => sum + leg.amount, 0) === carrier.amount,
+      'The deferred bank invoice no longer matches its original Guild income.');
+  }
+}
+function bankerIncomePayment(g: Game, kind: BankerIncomeAuthority['kind'],
+  legs: SpiceBankerIncomePayment['legs']): SpiceBankerIncomePayment | undefined {
+  if (!g.spiceBankerIncomePreview) return undefined;
+  const payment = {event: crypto.randomUUID(), turn: g.turn, phase: g.phase, kind,
+    legs: legs.filter(leg => leg.amount > 0), signature: ''};
+  payment.signature = bankerIncomePaymentSignature(payment);
+  return payment;
+}
+function awardBankerIncome(g: Game, payment: SpiceBankerIncomePayment | undefined,
+  canceled = false, resolvedBattle = false): void {
+  if (!payment) return;
+  const bankLegs = payment.legs.filter(leg => leg.recipient === 'bank' || canceled)
+    .map(({payer, amount}) => ({payer, amount}));
+  if (!bankLegs.length) return;
+  const assignment = g.leaderSkills?.assignments.find(a => a.skill === 'spice-banker');
+  const leader = assignment && getPlayer(g, assignment.owner).leaders.find(l => l.id === assignment.leader);
+  const trainer = assignment && leader && !leader.dead && !leader.capturedBy && !leader.gholaBy ? {
+    assignment: {...assignment}, faceUp: !g.battle?.leaderSkillHidden?.[assignment.owner],
+    captured: false, selected: resolvedBattle && g.battle?.plans[assignment.owner]?.leader === assignment.leader,
+    resolved: payment.kind !== 'battle-support' || resolvedBattle, survived: true,
+  } : null;
+  const authority: BankerIncomeAuthority = {kind: payment.kind, event: payment.event,
+    turn: payment.turn, phase: payment.phase, bankLegs, trainer};
+  const context = bankerIncomeContext(g);
+  const quote = bankerIncomeRule(() => quoteBankerIncome(g.spiceBankerIncome!, context, authority));
+  g.spiceBankerIncome = bankerIncomeRule(() => commitBankerIncome(g.spiceBankerIncome!, context, authority, quote.receipt));
+  if (quote.receipt?.grant) {
+    const owner = getPlayer(g, quote.receipt.grant.owner);
+    log(g, `${owner.name} gained 1 Spice Banker spice in front of the shield, unavailable until Mentat Pause.`,
+      {faction: owner.faction, name: 'Spice Banker'});
+  }
+}
+function collectBankerIncome(g: Game): void {
+  if (!g.spiceBankerIncomePreview) return;
+  const context = bankerIncomeContext(g), authority = {event: crypto.randomUUID(), turn: g.turn, phase: 8 as const};
+  const quote = bankerIncomeRule(() => quoteBankerIncomeCollection(g.spiceBankerIncome!, context, authority));
+  g.spiceBankerIncome = bankerIncomeRule(() => commitBankerIncomeCollection(g.spiceBankerIncome!, context, authority, quote.collection));
+  for (const credit of quote.credits) {
+    const owner = getPlayer(g, credit.owner);
+    owner.spice += credit.amount;
+    log(g, `${owner.name} collected ${credit.amount} deferred Spice Banker spice during Mentat Pause.`,
+      {faction: owner.faction, name: 'Spice Banker'});
+  }
+}
+function settleBankerShipmentIncome(g: Game, p: Player, cost: number, allyPayment: number): void {
+  if (!g.spiceBankerIncomePreview) return;
+  const guild = byFaction(g, 'guild');
+  const bankOnly = !guild || g.karamaShipping?.player === p.id;
+  const payment = bankerIncomePayment(g, 'shipment', [
+    {payer: p.id, amount: cost - allyPayment, recipient: bankOnly || p.id === guild?.id ? 'bank' : 'player'},
+    ...(allyPayment ? [{payer: p.ally!, amount: allyPayment,
+      recipient: bankOnly || p.ally === guild?.id ? 'bank' as const : 'player' as const}] : []),
+  ]);
+  if (g.response?.kind === 'guildIncome') g.response.spiceBankerIncomePayment = payment;
+  else awardBankerIncome(g, payment);
 }
 function nativeBureaucrat(g: Game) {
   return g.leaderSkills?.assignments.find(a => a.skill === 'bureaucrat' &&
@@ -9023,6 +9162,18 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   g.leaderSkills = createLeaderSkills(random);
   return initializeSetupGameForAudit(g, false, false, false, false, true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', basicExpansionLeaderSkillsProfile(g));
+}
+/** Fresh private all-fourteen-card classic setup; no public action enables income. */
+export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
+  requireRule(bankerIncomeProfile(state) && !state.leaderSkills &&
+    !state.spiceBankerIncomePreview && state.spiceBankerIncome === undefined,
+    'Spice Banker income requires a fresh classic lobby, base Treachery and Leader Skills alone.');
+  requireFreshSetup(state);
+  const g = structuredClone(state);
+  g.leaderSkills = createLeaderSkills(random);
+  g.spiceBankerIncomePreview = true;
+  g.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(g)));
+  return initializeSetupGameForAudit(g, false, false, false, false, true);
 }
 /** Gated development setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
@@ -11257,7 +11408,15 @@ function settleAuction(g: Game, free = false, automatic = false, emperorNexus = 
   const winner = getPlayer(g, a.bidder!);
   if (!free) payWithAlly(g, winner, a.bid, a.allyPayment ?? 0);
   winner.hand.push(a.cards[a.index]);
+  const emperor = byFaction(g, 'emperor');
+  const paysEmperor = !!emperor && emperor.id !== winner.id;
+  const incomePayment = !free && g.spiceBankerIncomePreview ? bankerIncomePayment(g, 'auction', [
+    {payer: winner.id, amount: a.bid - (a.allyPayment ?? 0), recipient: paysEmperor ? 'player' : 'bank'},
+    ...(a.allyPayment ? [{payer: winner.ally!, amount: a.allyPayment,
+      recipient: paysEmperor ? 'player' as const : 'bank' as const}] : []),
+  ]) : undefined;
   g.currentAuctionSale = {
+    ...(incomePayment ? {spiceBankerIncomePayment: incomePayment} : {}),
     winner: winner.id,
     amount: a.bid,
     free,
@@ -11265,6 +11424,7 @@ function settleAuction(g: Game, free = false, automatic = false, emperorNexus = 
     seller: null,
     ...(!free ? stampAuctionBureaucrat(g,winner,a.bid,a.allyPayment ?? 0) : {}),
   };
+  if (!paysEmperor) awardBankerIncome(g, incomePayment);
   log(
     g,
     `${faction(winner.faction).name} won a treachery card for ${emperorNexus ? `the Emperor Nexus card after proving ${a.bid} spice` : free ? 'a Karama' : `${a.bid} spice`}.${automatic ? ' The declared spice payment was the only available payment method.' : ''}`,
@@ -17175,6 +17335,7 @@ function beginPhase(g: Game) {
     collect(g);
   }
   if (g.phase === 8) {
+    collectBankerIncome(g);
     drawHarkonnenNexusBetrayalReplacement(g);
     replaceMoritaniAssassinationTraitors(g);
     if (g.inflation && g.inflation.updatedTurn < g.turn) {
@@ -20283,6 +20444,13 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
         : { faction: winner!.faction, name: 'Battle' },
     );
   }
+  if (g.spiceBankerIncomePreview) for (const payment of quote.payments) {
+    const player = getPlayer(g, payment.player);
+    awardBankerIncome(g, bankerIncomePayment(g, 'battle-support', [
+      {payer: player.id, amount: payment.ownPayment, recipient: 'bank'},
+      ...(payment.allyPayment ? [{payer: player.ally!, amount: payment.allyPayment, recipient: 'bank' as const}] : []),
+    ]), false, true);
+  }
   if (jacurutuIncome?.kind === 'income' && jacurutuIncome.amount > 0) {
     winner!.spice += jacurutuIncome.amount;
     log(
@@ -21691,6 +21859,10 @@ function finishRevival(
       })
     : null;
   payer.spice -= revival.cost;
+  if (g.spiceBankerIncomePreview && !byFaction(g, 'tleilaxu')) awardBankerIncome(g, bankerIncomePayment(g,
+    revival.emperorExtra ? 'emperor-extra-revival' : revival.kind === 'forces' ? 'force-revival' :
+      revival.kind === 'kwisatz' ? 'kh-revival' : 'leader-revival',
+    [{payer: payer.id, amount: revival.cost, recipient: 'bank'}]));
   if (revival.kind === 'forces') {
     const n = revival.amount!,
       elite = revival.elite ?? 0;
@@ -22091,6 +22263,8 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     return;
   }
   if (auctionCancellation) {
+    if (response.kind === 'emperorIncome')
+      awardBankerIncome(g, g.currentAuctionSale?.spiceBankerIncomePayment, true);
     if (response.kind === 'harkonnenBonus')
       log(g, 'Karama prevented the Harkonnen bonus treachery card.');
     commitAuctionContinuation(g, auctionCancellation);
@@ -22952,6 +23126,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     }
   } else if (response.kind === 'guildIncome') {
     const payment = !canceled ? creditFactionPayment(g, response.owner, 'shipment', response.amount!-(bureaucratDiversion ?? 0)) : null;
+    awardBankerIncome(g, response.spiceBankerIncomePayment, canceled);
     log(
       g,
       canceled
@@ -23806,6 +23981,7 @@ function commitGuildTransport(
     g.response = guildPaymentResponse(g, guild.id,
       shipmentIncomeContributions(g, p, cost, allyPayment),
       allyPayment ? undefined : p.id);
+  settleBankerShipmentIncome(g, p, cost, allyPayment);
   if (fromReserves) {
     p.reserves -= amount;
     if (p.elites) p.elites.reserves -= elite;
@@ -24027,6 +24203,7 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
   });
   if (!settlement?.recipient && guild && guildPayment > 0)
     g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),allyPayment ? undefined : p.id);
+  settleBankerShipmentIncome(g, p, cost, allyPayment);
   g.karamaShipping = null;
   log(
     g,
@@ -25698,6 +25875,22 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  if (state.spiceBankerIncomePreview) {
+    const keysBySource: Record<string, readonly string[]> = {
+      bid: ['type','amount','allyPayment'], passBid: ['type'],
+      ship: ['type','territory','sector','amount','elite','allyPayment','smuggler'],
+      guildShip: ['type','from','forces','eliteForces','territory','sector','amount','elite','allyPayment'],
+      revive: ['type','amount','elite'], reviveLeader: ['type','leader'], reviveKwisatz: ['type'],
+      emperorRevival: ['type','amount','elite'], passResponse: ['type'],
+      traitorCall: ['type','call','leader'],
+    };
+    const allowed = action.type === 'decision' && state.decision?.kind === 'auctionPayment'
+      ? ['type','karama','card'] : keysBySource[action.type];
+    requireRule(!allowed || Object.keys(action).every(key => allowed.includes(key)),
+      'Use only the original native payment fields; Spice Banker income is automatic.');
+    requireRule(!Object.keys(action).some(key => ['actor','bankerIncome','paymentSource','spiceBankerIncome','bankLegs','trainer'].includes(key)),
+      'Spice Banker payment authority comes only from the original native transaction.');
+  }
   harkonnenNexusBetrayalIntegrity(state);
   ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
@@ -30143,6 +30336,9 @@ export function viewGame(state: Game, id: string) {
     setupPending: setupPending(g),
     leaderSkills: projectedLeaderSkills(g, id),
     bureaucrat: projectedBureaucrat(g, id),
+    spiceBankerIncomePreview: g.spiceBankerIncomePreview === true,
+    spiceBankerIncome: g.spiceBankerIncomePreview
+      ? bankerIncomeRule(() => projectBankerIncome(g.spiceBankerIncome!, bankerIncomeContext(g))) : null,
     bribeOptions: projectedBribes(g, me),
     mentat: projectedMentat(g, id),
     rihani: projectedRihani(g, id),
@@ -30705,6 +30901,7 @@ export function viewGame(state: Game, id: string) {
     response: g.pendingGuildBetrayal || g.pendingRicheseBetrayal || g.pendingKull?.stage === 'offer' ? null : g.response
       ? {
           ...g.response,
+          ...(g.response.spiceBankerIncomePayment ? {spiceBankerIncomePayment: undefined} : {}),
           ...(g.response.bureaucratPayment ? {bureaucratPayment:undefined,bureaucratPaymentEvent:undefined} : {}),
           ...(g.response.guildContributions ? { guildContributions: undefined } : {}),
           ...(g.response.guildPaymentProof ? { guildPaymentProof: undefined } : {}),

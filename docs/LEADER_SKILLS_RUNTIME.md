@@ -5,6 +5,21 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+**2 October normal Banker checkpoint:** the separate fresh local `banker-income`
+profile connects actual final-bank payment legs, one physical Banker phase
+grant and automatic current Mentat collection. The full deck14
+and existing lower Banker spending remain intact. Read-only public front-shield
+counts explain unavailable currency; no collect action/confirmation is added.
+Original earned-faction retention after death/capture/reassignment and per-payer
+nonaggregation are explicit conservative LOCAL prototype choices, not answers
+to the earlier pending custody/split questions or full-module certification.
+Bounded verification is Partial / Development Verified: 6,487 offline tests,
+140 focused cases, eighteen native source-to-Mentat cases, four legal budgets
+and two preserved six-seat CLI/human-phone rooms pass; local HTTP remains
+49/55 with six upstream503 failures. Full-module/deployed acceptance stays open; see the
+[existing Banker normal-band contract](SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026).
+
+
 ## Connected boundary
 
 The [Basic Tleilaxu follow-up](TLEILAXU_LEADER_SKILLS.md) adds the full-deck
@@ -67,9 +82,12 @@ posture and saved history under an explicit private opt-in. The uniform mandator
 response step awaits the user's UX decision; ordinary activation remains disabled.
 [Bureaucrat payment redirection](BUREAUCRAT_PAYMENTS.md) connects the ordinary
 auction, shipment, Richese sale and paid-bribe families within its recorded
-boundary. Other payments and split funding remain incomplete. Spice Banker
-income remains missing. [Banker battle spending](SPICE_BANKER_RUNTIME.md)
-now connects its lower band with separate sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
+boundary. Other Bureaucrat payments and split funding remain incomplete.
+[Banker normal income](SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026)
+is connected only in its separate fresh classic `banker-income` profile;
+ordinary/default and combined skill starts gain no new activation.
+[Banker battle spending](SPICE_BANKER_RUNTIME.md) retains its separate
+sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).
 [Diplomat defense](DIPLOMAT_DEFENSE.md) connects its normal band for a physical
 Worthless card copying a canonical base Shield or Snooper. Its bounded lower

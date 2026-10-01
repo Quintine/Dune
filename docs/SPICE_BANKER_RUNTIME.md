@@ -1,8 +1,92 @@
-# Spice Banker battle commitment prototype
+# Spice Banker battle commitment and normal income prototypes
 
-13 September 2026. **Prototyped**, with **Partial** rules coverage. This connects
-the lower battle band. The normal income band and combined-module acceptance
-remain unfinished; public mode starts and publication stay gated.
+**2 October normal-band checkpoint:** a separate fresh local `banker-income`
+classic/base33/all-fourteen-skills-only Basic/Advanced profile connects actual
+positive bank payments to automatic current Mentat collection.
+Bounded coverage is **Partial / Development Verified**. No public start,
+old-game retrofit or other module is enabled; this is not deployed acceptance.
+
+## Normal income local contract — 2 October 2026
+
+The original photographed card says gain one spice when another player makes
+one bank payment of at least four, once per phase. This is a mandatory
+additional bank grant, not skimming the original payer or recipient; no new
+action, Karama response or confirmation is invented. Ordinary costs and
+their original counters/recipient/physical suffix finish once before the grant.
+
+The private-backed-up profile admits unique2..6 classic factions,
+Basic or Advanced, base33 Treachery and all14 Leader Skills alone. Actual
+paid normal auctions, funded shipments, paid force/leader/KH/Emperor-extra
+revivals and resolved bank support use original final-bank receipts. Player
+income, free/waived/stopped/invalid sources and self-payment do not qualify.
+The original bank recipient matters: canceled Emperor or Guild income may
+leave a bank payment, while income actually received by a player does not.
+
+One payment is not several smaller payments summed together. Actual own/donor
+legs keep their payer identity; two payers at two each do not make one payer
+at four. The lower1..3 Banker battle payment stays separate from support.
+This per-payer/source composition is a conservative local interpretation,
+not a separately located publisher split-funding example. No future award
+can finance the original payment.
+
+An actual available living native trainer supplies new normal income. A
+captive supplies no upper band; concealed unselected skills are unavailable.
+Own-battle selected-trainer eligibility uses actual resolved survival, not
+private pre-reveal timing. One physical card's turn/phase stamp cannot reset
+through death, return, refresh or same-phase reassignment.
+
+The already-earned front-shield pile remains bound to its ORIGINAL gaining
+faction provisionally in this fresh profile even if the trainer dies, is
+captured or the card returns/reassigns. This conserves earned currency and
+does not transfer it with a skill card. It does **not** answer the previously
+asked death/capture question or create universal completed-mode authority.
+The historical pending boundary below remains recorded outside this profile.
+
+Deferred spice is not added to a spendable wallet before actual native Mentat
+opening. Human/four-policy bids, shipping, revival, support and lower Banker
+spending use original available money. Mentat atomically marks/credits each
+uncollected grant once before optional work/victory; collection is not a
+qualifying payment and creates no recursive income. There is no arbitrary
+read heal or fictitious persisted half-phase collect choice.
+
+Only physical public front-shield owner/count and current-phase use are
+projected. Private bank amounts, source/receipt, hidden plans and later skill
+entitlement stay private. Current-source corrupt/stale/duplicate/foreign
+actions and recovery reject immutably; closed history no longer requires the
+original trainer/card or old wallet to remain in place. Bounded signatures
+check consistency, not authentication of wholesale rewritten saved JSON.
+
+Frozen verification passes types/lint, **6,487 offline tests**, the **140-case**
+Banker/profile union and build. Eighteen actual native producer/threshold/
+trainer cases conserve all33 Treachery Cards and14 skills through original
+payment and real Mentat; independent combat/Collection quotes separate native
+bounty/income from support costs. All four minimal legal policies exclude the
+front-shield pile from available budgets. Native death/capture/reassignment,
+once-phase and separate payer legs have meaningful JSON/authenticated SQLite
+regressions, including actual final Collection races and private suspended
+Emperor/Guild invoices. Two final independent scoped reviews have no finding.
+
+Original private-backed-up six-seat CLI setups were continued without
+redealing: Basic **6VZ8G5BY v38** used native Emperor self-auction payment to
+the Bank; Advanced **8TN8BTLT v31** used native Guild own-bank shipment and
+its genuine allow decision. Human390px controls earned1 without changing the
+Banker's available wallet, retained the notice through refresh and collected
+at actual final Collection readiness to Mentat exactly once (10→11 and3→4).
+The notice's initial26px player-strip squeeze was reproduced visually and
+fixed by placing it in the main column; fresh proof shows354px width.
+All cards/skills/normal and elite force inventories remain conserved, with
+the23 prior isolated QA rooms' states/versions unchanged. Final guide10/10,
+types/lint/build and expanded390px guidance pass; all82 original seats in25
+targeted QA rooms restore after final worker reload without double collection.
+Local HTTP is **49/55**, with six known upstream503 rejection failures:
+not a green suite. Publication/deployment and complete skill/module acceptance
+remain open.
+
+
+The historical13 September checkpoint below is **Prototyped**, with **Partial**
+rules coverage, and connects the lower battle band only. The normal band is
+now connected solely in the fresh profile above; combined acceptance and
+public mode starts remain gated.
 
 ## Source and payment contract
 
@@ -33,7 +117,8 @@ Mentat Pause. Neither publisher nor designer material located in the renewed
 search settles custody of that accumulated income if the trainer dies or is
 captured first. The user has been asked whether to retain the pending boundary
 or rule that already-earned spice stays with the original faction. No answer
-or income implementation is assumed here.
+is assumed; only the explicitly provisional fresh profile above implements
+normal income. This historical question remains open outside that profile.
 
 ## Connected behavior
 

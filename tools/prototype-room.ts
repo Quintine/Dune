@@ -3,6 +3,7 @@ import {
   initializeIxGameForAudit,
   initializeDiscoveryGameForAudit,
   initializeLeaderSkillsGameForAudit,
+  initializeSpiceBankerIncomeGameForAudit,
   initializeFactionExpansionsGameForAudit,
   initializeNexusGameForAudit,
   initializeMoritaniAssassinateGameForAudit,
@@ -23,6 +24,7 @@ export const PROTOTYPE_PROFILES = [
   'ix',
   'discovery',
   'leader-skills',
+  'banker-income',
   'factions',
   'nexus',
   'moritani-assassinate',
@@ -124,6 +126,8 @@ export function startPrototypeRoom(
             })
           : profile === 'leader-skills'
             ? initializeLeaderSkillsGameForAudit(initial)
+          : profile === 'banker-income'
+            ? initializeSpiceBankerIncomeGameForAudit(initial)
             : initializeDiscoveryGameForAudit({
                 ...initial,
                 discoveryEnabled: true,

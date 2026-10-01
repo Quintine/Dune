@@ -16,6 +16,35 @@ open mode gates.
 
 ## Current checkpoint and work
 
+Normal Spice Banker income now connects every reachable actual final-bank
+auction, shipment, paid revival and resolved support source in fresh local
+`banker-income`: unique classic2..6-seat Basic/Advanced, base33/all14-skills only.
+One physical-card turn/phase stamp gains1 unavailable front-shield spice;
+real native Mentat collects once before optional work/victory. No public
+start, existing-game retrofit or combined overlay is activated. Original
+earned-faction retention after trainer death/capture/reassignment and separate
+payer/source nonaggregation remain explicit LOCAL provisional boundaries,
+not an answer to the existing custody question or a publisher split FAQ.
+
+Three implementation owners and two final independent reviews covered runtime,
+canonical history and private authenticated entry/recovery; both final reviews
+have no finding. Types/lint, **6,487 offline tests**, **140 focused cases** and
+build pass. Eighteen native source-to-Mentat cases conserve all33 Treachery
+Cards/14 skills; all four legal policies exclude deferred money from budgets.
+Original private-backed-up six-seat setups **6VZ8G5BY Basic v38** and
+**8TN8BTLT Advanced v31** exercised native Emperor self-auction and Guild
+own-bank shipment/allow, human390px controls, refresh and final Collection
+readiness to actual Mentat (original Banker wallets10→11 and3→4).
+The initial26px notice squeeze was reproduced and repaired in the main column;
+fresh notice width is354px. Cards/skills/normal and elite forces are conserved;
+the23 prior isolated QA rooms' states/versions are unchanged. After final
+guide-worker reload, all82 original seats across25 targeted QA rooms restore;
+Basicv38/Advancedv31 remain at native Mentat without double collection.
+Local HTTP remains **49/55 with six upstream503 rejection failures**, not green.
+Guide coverage is Partial / Development Verified; final guide10/10,
+types/lint/build and expanded390px guide pass. Checkpoint push is being
+finished. No deployed/full-module claim.
+
 Harkonnen Nexus Betrayal now connects actual personal and allied native traitor
 calls, exact immediate physical retirement, the surviving original battle once
 and one private actual Mentat replacement. Fresh local `harkonnen-betrayal`
