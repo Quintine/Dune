@@ -76,6 +76,14 @@ No unsafe retries, authorization weakening, database reset or deployed
 acceptance is inferred. Broader Ixian/Nexus effects, special origins,
 Harkonnen priority, combined games, strategy and public/live gates remain open.
 
+Code `a2b04dbfba13eeb913c93de87981a58cb6b7d99d` is pushed.
+[Workflow 36829040552](https://github.com/Quintine/Dune/actions/runs/36829040552)
+and container job `110261177048` report completed/success for that exact
+source. Mandatory isolated storage/full HTTP verification and subsequent
+verified-image publication steps both succeeded. The configured immutable
+tag is `ghcr.io/quintine/dune:sha-a2b04dbfba13eeb913c93de87981a58cb6b7d99d`.
+This is source-bound publication, not live deployment or invented CI counts.
+
 ## 1 October 2026 — authorized Advanced Storm and allied separation defaults
 
 Five implementation lanes connected the user-supplied revised Advanced

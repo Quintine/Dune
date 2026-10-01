@@ -38,6 +38,14 @@ and eleven prior QA rooms; all **42 original seats in fourteen rooms**
 reauthenticate after isolated build reload. Actual expanded guide shows
 Partial / Development Verified. Local HTTP is **51/55**, four POST 503s,
 not green. Full families, modes, strategy and live acceptance remain open.
+Code `a2b04dbfba13eeb913c93de87981a58cb6b7d99d` is pushed.
+[Workflow 36829040552](https://github.com/Quintine/Dune/actions/runs/36829040552)
+and its exact-source container job report completed/success. Mandatory
+isolated storage/full HTTP verification and verified-image publication
+both succeeded. Immutable image:
+`ghcr.io/quintine/dune:sha-a2b04dbfba13eeb913c93de87981a58cb6b7d99d`.
+Publication is not deployment; the last observed live revision is unchanged.
+
 
 Five implementation lanes reconciled two source-clear Advanced defaults
 from the authorized revised rulebook: all new post-first Storm openings
