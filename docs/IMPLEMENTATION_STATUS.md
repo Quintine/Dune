@@ -57,6 +57,14 @@ No POST retry/auth weakening or database reset was added. The user-owned
 heading versus 2.3 filename/metadata. Broader source differences, full modes,
 strategic AI, public gates and final-revision live acceptance remain open.
 
+Code `e1056a4db0a546400fd9a4461507f93ae6ca57d2` is pushed.
+[Workflow 36814701820](https://github.com/Quintine/Dune/actions/runs/36814701820)
+and container job `110217121688` report completed/success for that exact
+source. The mandatory isolated storage/full HTTP verifier and subsequent
+verified-image publication steps both succeeded. The configured immutable
+tag is `ghcr.io/quintine/dune:sha-e1056a4db0a546400fd9a4461507f93ae6ca57d2`.
+No unpublished CI counts/timings or live deployment are inferred.
+
 ## 1 October 2026 — full funded Guild Nexus Betrayal payment
 
 Five implementation lanes integrated engine, pure funding/custody/history,

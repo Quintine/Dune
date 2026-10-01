@@ -16,6 +16,16 @@ open mode gates.
 
 ## Current checkpoint and work
 
+Five implementation lanes now connect the missing Ixian Nexus Secret Ally
+purchased-card replacement in a fresh local `ixian-replacement` prototype:
+exact paid normal-auction source, private neutral buyer controls, pure
+physical custody/history, legal bots, authenticated recovery/CLI entry and
+existing source guidance. Original fees and native auction continuation
+must complete once. Richese-origin and Harkonnen-buyer priority questions
+remain gated; no public start, existing-game retrofit or full-card claim.
+The parent retains actual runtime/UI, frozen checks/review and shipping.
+This next wave is **in progress**, not exercised or completed evidence.
+
 Five implementation lanes reconciled two source-clear Advanced defaults
 from the authorized revised rulebook: all new post-first Storm openings
 draw the Storm Deck, even without Fremen; each player's own combined-turn
@@ -41,6 +51,14 @@ The actual expanded source guide retains Partial gates and exercised evidence.
 Local built-worker HTTP is **51/55**, four POST 503s, not green.
 Full Advanced, wider source differences, strategic AI and live acceptance
 remain open; container publication is not deployment.
+Code `e1056a4db0a546400fd9a4461507f93ae6ca57d2` is pushed.
+[Workflow 36814701820](https://github.com/Quintine/Dune/actions/runs/36814701820)
+and its exact-source container job report completed/success. The mandatory
+isolated storage/full HTTP verifier and verified-image publication steps
+both succeeded. Immutable image:
+`ghcr.io/quintine/dune:sha-e1056a4db0a546400fd9a4461507f93ae6ca57d2`.
+This is publication evidence, not a change to the last observed live revision.
+
 
 Five implementation lanes connected [Guild Nexus Betrayal](NEXUS_GUILD_RULES.md#nexus-guild-betrayal):
 full funded shipment-payment replacement, including own upfront payment
