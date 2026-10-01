@@ -88,6 +88,17 @@ the known Wrangler proxy 503. No automatic write retry, authorization weakening
 or reset. Complete Harkonnen/Nexus games, universal reaction policy, combined
 modules, strategic calibration, public starts and live deployment remain open.
 
+Code checkpoint **1cf8ff72c721691f1924e2f27db5936ce79dd4d2** is pushed.
+The [source-bound workflow 36890229643](https://github.com/Quintine/Dune/actions/runs/36890229643)
+and container job **110463692950** completed/succeeded for that exact SHA.
+Mandatory **Verify isolated storage and HTTP behavior** passed before
+**Publish the verified image** succeeded. The configured immutable image is
+`ghcr.io/quintine/dune:sha-1cf8ff72c721691f1924e2f27db5936ce79dd4d2`.
+No unobserved CI case count or deployment is inferred; local 49/55 stays
+not green. Protected NAS snapshot, human safe point and exact point-of-risk
+interactive approval remain unavailable. The last observed live marker is
+**ab5c782**; no saved-game reset or provider-approval bypass follows.
+
 ## 1 October 2026 — Advanced leaderless declaration before reveal
 
 The supplied authorized Advanced PDF, physical page 11 **Leaders**, requires

@@ -41,7 +41,14 @@ authorization is introduced. After the final isolated worker reload, all
 **70 original seats in twenty-three QA rooms** reauthenticate; saved proof
 preserves all four outcomes and nineteen earlier rooms. The actual expanded
 390px guide shows **Partial / Development: Verified** without page overflow.
-Shipping and exact-revision container evidence remain pending.
+Code **1cf8ff72c721691f1924e2f27db5936ce79dd4d2** is pushed.
+Its [exact workflow](https://github.com/Quintine/Dune/actions/runs/36890229643)
+and container job **110463692950** completed successfully: mandatory isolated
+storage/HTTP verification and verified image publication both pass. Immutable
+image: `ghcr.io/quintine/dune:sha-1cf8ff72c721691f1924e2f27db5936ce79dd4d2`.
+Publication does not deploy or turn local 49/55 into green. Protected NAS
+snapshot, human safe point and exact interactive deployment approval remain
+unavailable; the last observed live marker remains **ab5c782**.
 
 The authorized Advanced **leaderless Battle Plan announcement** is now
 connected. Physical PDF page 11 requires disclosure before reveal when no
