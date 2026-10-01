@@ -1,0 +1,2189 @@
+{
+  "schema": 1,
+  "code": "DEPLETED",
+  "version": 0,
+  "host": "a",
+  "status": "playing",
+  "advanced": false,
+  "expansions": [],
+  "players": [
+    {
+      "id": "a",
+      "name": "Atreides",
+      "faction": "atreides",
+      "ready": true,
+      "spice": 2,
+      "reserves": 11,
+      "tanks": 8,
+      "forces": {
+        "false_wall_south:5": 1
+      },
+      "hand": [
+        {
+          "name": "Karama",
+          "kind": "special",
+          "effect": "karama",
+          "id": "treachery-29"
+        }
+      ],
+      "leaders": [
+        {
+          "id": "atreides-0",
+          "name": "Thufir Hawat",
+          "strength": 5,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "atreides-1",
+          "name": "Lady Jessica",
+          "strength": 5,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "atreides-2",
+          "name": "Gurney Halleck",
+          "strength": 4,
+          "faction": "atreides",
+          "dead": true,
+          "deaths": 1
+        },
+        {
+          "id": "atreides-3",
+          "name": "Duncan Idaho",
+          "strength": 2,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "atreides-4",
+          "name": "Dr. Yueh",
+          "strength": 1,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        }
+      ],
+      "traitors": [
+        "harkonnen-1"
+      ],
+      "traitorChoices": [],
+      "ally": null,
+      "bribes": 0,
+      "revived": 2,
+      "freeForcesRevived": 2,
+      "leaderRevived": false,
+      "revivalCycle": 0,
+      "shipped": true,
+      "moved": 1,
+      "battleLosses": 12
+    },
+    {
+      "id": "native-1",
+      "name": "emperor",
+      "faction": "emperor",
+      "ready": true,
+      "spice": 19,
+      "reserves": 17,
+      "tanks": 2,
+      "forces": {
+        "habbanya_ridge_flat:17": 1
+      },
+      "hand": [
+        {
+          "name": "Chaumas",
+          "kind": "poison",
+          "id": "treachery-4"
+        },
+        {
+          "name": "Snooper",
+          "kind": "snooper",
+          "id": "treachery-14"
+        },
+        {
+          "name": "Family Atomics",
+          "kind": "special",
+          "effect": "atomics",
+          "id": "treachery-24"
+        },
+        {
+          "name": "Slip Tip",
+          "kind": "projectile",
+          "id": "treachery-2"
+        }
+      ],
+      "leaders": [
+        {
+          "id": "emperor-0",
+          "name": "Hasimir Fenring",
+          "strength": 6,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "emperor-1",
+          "name": "Captain Aramsham",
+          "strength": 5,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "emperor-2",
+          "name": "Caid",
+          "strength": 3,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "emperor-3",
+          "name": "Burseg",
+          "strength": 3,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "emperor-4",
+          "name": "Bashar",
+          "strength": 2,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        }
+      ],
+      "traitors": [
+        "fremen-4"
+      ],
+      "traitorChoices": [],
+      "ally": "native-2",
+      "bribes": 0,
+      "revived": 0,
+      "freeForcesRevived": 0,
+      "leaderRevived": false,
+      "revivalCycle": 0,
+      "shipped": true,
+      "moved": 1,
+      "battleLosses": 0,
+      "allySinceTurn": 2
+    },
+    {
+      "id": "native-2",
+      "name": "guild",
+      "faction": "guild",
+      "ready": true,
+      "spice": 19,
+      "reserves": 16,
+      "tanks": 2,
+      "forces": {
+        "carthag:11": 1,
+        "cielago_depression:1": 1
+      },
+      "hand": [
+        {
+          "name": "Hajr",
+          "kind": "special",
+          "effect": "hajr",
+          "id": "treachery-26"
+        },
+        {
+          "name": "Gom Jabbar",
+          "kind": "poison",
+          "id": "treachery-6"
+        },
+        {
+          "name": "Weather Control",
+          "kind": "special",
+          "effect": "weather",
+          "id": "treachery-25"
+        },
+        {
+          "name": "Baliset",
+          "kind": "worthless",
+          "id": "treachery-17"
+        }
+      ],
+      "leaders": [
+        {
+          "id": "guild-0",
+          "name": "Staban Tuek",
+          "strength": 5,
+          "faction": "guild",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "guild-1",
+          "name": "Master Bewt",
+          "strength": 3,
+          "faction": "guild",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "guild-2",
+          "name": "Esmar Tuek",
+          "strength": 3,
+          "faction": "guild",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "guild-3",
+          "name": "Soo-Soo Sook",
+          "strength": 2,
+          "faction": "guild",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "guild-4",
+          "name": "Guild Representative",
+          "strength": 1,
+          "faction": "guild",
+          "dead": false,
+          "deaths": 0
+        }
+      ],
+      "traitors": [
+        "harkonnen-4"
+      ],
+      "traitorChoices": [],
+      "ally": "native-1",
+      "bribes": 0,
+      "revived": 3,
+      "freeForcesRevived": 1,
+      "leaderRevived": false,
+      "revivalCycle": 0,
+      "shipped": true,
+      "moved": 1,
+      "battleLosses": 6,
+      "allySinceTurn": 2
+    },
+    {
+      "id": "native-3",
+      "name": "harkonnen",
+      "faction": "harkonnen",
+      "ready": true,
+      "spice": 4,
+      "reserves": 10,
+      "tanks": 4,
+      "forces": {
+        "false_wall_east:9": 5,
+        "red_chasm:7": 1
+      },
+      "hand": [
+        {
+          "name": "Truthtrance",
+          "kind": "special",
+          "effect": "truthtrance",
+          "id": "treachery-32"
+        },
+        {
+          "name": "Karama",
+          "kind": "special",
+          "effect": "karama",
+          "id": "treachery-30"
+        },
+        {
+          "name": "La La La",
+          "kind": "worthless",
+          "id": "treachery-20"
+        },
+        {
+          "name": "Tleilaxu Ghola",
+          "kind": "special",
+          "effect": "ghola",
+          "id": "treachery-27"
+        },
+        {
+          "name": "Stunner",
+          "kind": "projectile",
+          "id": "treachery-3"
+        },
+        {
+          "name": "Jubba Cloak",
+          "kind": "worthless",
+          "id": "treachery-18"
+        },
+        {
+          "name": "Shield",
+          "kind": "shield",
+          "id": "treachery-9"
+        }
+      ],
+      "leaders": [
+        {
+          "id": "harkonnen-0",
+          "name": "Feyd-Rautha",
+          "strength": 6,
+          "faction": "harkonnen",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "harkonnen-1",
+          "name": "Beast Rabban",
+          "strength": 4,
+          "faction": "harkonnen",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "harkonnen-2",
+          "name": "Piter de Vries",
+          "strength": 3,
+          "faction": "harkonnen",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "harkonnen-3",
+          "name": "Captain Iakin Nefud",
+          "strength": 2,
+          "faction": "harkonnen",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "harkonnen-4",
+          "name": "Umman Kudu",
+          "strength": 1,
+          "faction": "harkonnen",
+          "dead": false,
+          "deaths": 0
+        }
+      ],
+      "traitors": [
+        "atreides-3",
+        "atreides-0",
+        "beneGesserit-2",
+        "fremen-1"
+      ],
+      "traitorChoices": [],
+      "ally": null,
+      "bribes": 0,
+      "revived": 3,
+      "freeForcesRevived": 2,
+      "leaderRevived": false,
+      "revivalCycle": 0,
+      "shipped": true,
+      "moved": 1,
+      "battleLosses": 6,
+      "revealedTraitors": [
+        "beneGesserit-2"
+      ]
+    },
+    {
+      "id": "native-4",
+      "name": "fremen",
+      "faction": "fremen",
+      "ready": true,
+      "spice": 6,
+      "reserves": 7,
+      "tanks": 1,
+      "forces": {
+        "the_greater_flat:16": 1,
+        "meridian:1": 1,
+        "imperial_basin:10": 10
+      },
+      "hand": [
+        {
+          "name": "Shield",
+          "kind": "shield",
+          "id": "treachery-10"
+        }
+      ],
+      "leaders": [
+        {
+          "id": "fremen-0",
+          "name": "Stilgar",
+          "strength": 7,
+          "faction": "fremen",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "fremen-1",
+          "name": "Chani",
+          "strength": 6,
+          "faction": "fremen",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "fremen-2",
+          "name": "Otheym",
+          "strength": 5,
+          "faction": "fremen",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "fremen-3",
+          "name": "Shadout Mapes",
+          "strength": 3,
+          "faction": "fremen",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "fremen-4",
+          "name": "Jamis",
+          "strength": 2,
+          "faction": "fremen",
+          "dead": false,
+          "deaths": 0
+        }
+      ],
+      "traitors": [
+        "atreides-2"
+      ],
+      "traitorChoices": [],
+      "ally": null,
+      "bribes": 0,
+      "revived": 0,
+      "freeForcesRevived": 0,
+      "leaderRevived": false,
+      "revivalCycle": 0,
+      "shipped": true,
+      "moved": 1,
+      "battleLosses": 1
+    },
+    {
+      "id": "native-5",
+      "name": "beneGesserit",
+      "faction": "beneGesserit",
+      "ready": true,
+      "spice": 2,
+      "reserves": 4,
+      "tanks": 10,
+      "forces": {
+        "cielago_north:1": 3,
+        "polar_sink:0": 3
+      },
+      "hand": [],
+      "leaders": [
+        {
+          "id": "beneGesserit-0",
+          "name": "Alia",
+          "strength": 5,
+          "faction": "beneGesserit",
+          "dead": true,
+          "deaths": 1
+        },
+        {
+          "id": "beneGesserit-1",
+          "name": "Wanna Marcus",
+          "strength": 5,
+          "faction": "beneGesserit",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "beneGesserit-2",
+          "name": "Princess Irulan",
+          "strength": 5,
+          "faction": "beneGesserit",
+          "dead": true,
+          "deaths": 1
+        },
+        {
+          "id": "beneGesserit-3",
+          "name": "Reverend Mother Ramallo",
+          "strength": 5,
+          "faction": "beneGesserit",
+          "dead": true,
+          "deaths": 1
+        },
+        {
+          "id": "beneGesserit-4",
+          "name": "Margot Lady Fenring",
+          "strength": 5,
+          "faction": "beneGesserit",
+          "dead": false,
+          "deaths": 0
+        }
+      ],
+      "traitors": [
+        "fremen-2"
+      ],
+      "traitorChoices": [],
+      "ally": null,
+      "bribes": 0,
+      "revived": 0,
+      "freeForcesRevived": 0,
+      "leaderRevived": false,
+      "revivalCycle": 0,
+      "shipped": true,
+      "moved": 1,
+      "battleLosses": 9,
+      "prediction": {
+        "faction": "atreides",
+        "turn": 7
+      },
+      "charityTurn": 5
+    }
+  ],
+  "playerPositions": {
+    "a": 1,
+    "native-1": 2,
+    "native-2": 3,
+    "native-3": 4,
+    "native-4": 5,
+    "native-5": 6
+  },
+  "turn": 5,
+  "phase": 3,
+  "storm": 12,
+  "order": [
+    "native-4",
+    "native-5",
+    "a",
+    "native-1",
+    "native-2",
+    "native-3"
+  ],
+  "active": "a",
+  "movementRemaining": [],
+  "guildTimingGranted": false,
+  "guildTimingLocked": false,
+  "ready": [],
+  "deck": [],
+  "discard": [
+    {
+      "name": "Trip to Gamont",
+      "kind": "worthless",
+      "id": "treachery-21"
+    },
+    {
+      "name": "Cheap Heroine",
+      "kind": "hero",
+      "id": "treachery-23"
+    },
+    {
+      "name": "Kulon",
+      "kind": "worthless",
+      "id": "treachery-19"
+    },
+    {
+      "name": "Snooper",
+      "kind": "snooper",
+      "id": "treachery-13"
+    },
+    {
+      "name": "Maula Pistol",
+      "kind": "projectile",
+      "id": "treachery-1"
+    },
+    {
+      "name": "Crysknife",
+      "kind": "projectile",
+      "id": "treachery-0"
+    },
+    {
+      "name": "Cheap Hero",
+      "kind": "hero",
+      "id": "treachery-22"
+    },
+    {
+      "name": "Chaumurky",
+      "kind": "poison",
+      "id": "treachery-5"
+    },
+    {
+      "name": "Snooper",
+      "kind": "snooper",
+      "id": "treachery-16"
+    },
+    {
+      "name": "Ellaca Drug",
+      "kind": "poison",
+      "id": "treachery-7"
+    },
+    {
+      "name": "Shield",
+      "kind": "shield",
+      "id": "treachery-12"
+    },
+    {
+      "name": "Harvester",
+      "kind": "special",
+      "effect": "harvester",
+      "id": "treachery-28"
+    }
+  ],
+  "spiceDeck": [
+    {
+      "territory": "the_minor_erg",
+      "amount": 8,
+      "sector": 8
+    },
+    {
+      "territory": "broken_land",
+      "amount": 8,
+      "sector": 12
+    },
+    {
+      "territory": "south_mesa",
+      "amount": 10,
+      "sector": 5
+    },
+    {
+      "worm": true
+    },
+    {
+      "territory": "oh_gap",
+      "amount": 6,
+      "sector": 10
+    },
+    {
+      "territory": "rock_outcroppings",
+      "amount": 6,
+      "sector": 13
+    },
+    {
+      "territory": "cielago_north",
+      "amount": 8,
+      "sector": 3
+    },
+    {
+      "territory": "funeral_plain",
+      "amount": 6,
+      "sector": 15
+    },
+    {
+      "territory": "cielago_south",
+      "amount": 12,
+      "sector": 2
+    },
+    {
+      "territory": "habbanya_erg",
+      "amount": 8,
+      "sector": 16
+    },
+    {
+      "territory": "sihaya_ridge",
+      "amount": 6,
+      "sector": 9
+    },
+    {
+      "worm": true
+    }
+  ],
+  "spicePeekKnown": true,
+  "spiceDiscard": [
+    [
+      {
+        "territory": "habbanya_ridge_flat",
+        "amount": 10,
+        "sector": 18
+      },
+      {
+        "worm": true
+      },
+      {
+        "territory": "hagga_basin",
+        "amount": 6,
+        "sector": 12
+      },
+      {
+        "worm": true
+      },
+      {
+        "territory": "the_great_flat",
+        "amount": 10,
+        "sector": 15
+      },
+      {
+        "worm": true
+      },
+      {
+        "territory": "wind_pass_north",
+        "amount": 6,
+        "sector": 17
+      },
+      {
+        "worm": true
+      },
+      {
+        "territory": "red_chasm",
+        "amount": 8,
+        "sector": 7
+      }
+    ],
+    []
+  ],
+  "spice": {
+    "sietch_tabr:14": 0,
+    "polar_sink:0": 0,
+    "cielago_west:1": 0,
+    "the_greater_flat:16": 0,
+    "meridian:1": 0,
+    "habbanya_ridge_flat:17": 0,
+    "red_chasm:7": 16,
+    "cielago_north:1": 0,
+    "false_wall_south:5": 0,
+    "cielago_depression:1": 0
+  },
+  "log": [
+    {
+      "seq": 1,
+      "text": "Atreides opened the table."
+    },
+    {
+      "seq": 2,
+      "text": "emperor joined as Emperor."
+    },
+    {
+      "seq": 3,
+      "text": "guild joined as Spacing Guild."
+    },
+    {
+      "seq": 4,
+      "text": "harkonnen joined as Harkonnen."
+    },
+    {
+      "seq": 5,
+      "text": "fremen joined as Fremen."
+    },
+    {
+      "seq": 6,
+      "text": "beneGesserit joined as Bene Gesserit."
+    },
+    {
+      "seq": 7,
+      "text": "Player positions are fixed. Bene Gesserit must lock its prediction before private cards are dealt."
+    },
+    {
+      "seq": 8,
+      "text": "Traitor Cards were dealt privately. Choose traitors before starting force placement; Treachery Cards remain undealt."
+    },
+    {
+      "seq": 9,
+      "text": "Traitor choices are complete. Starting spice and fixed forces are placed; complete faction force placement before receiving Treachery Cards."
+    },
+    {
+      "seq": 10,
+      "text": "Atreides received 1 starting Treachery Card after force placement.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Starting cards"
+      }
+    },
+    {
+      "seq": 11,
+      "text": "emperor received 1 starting Treachery Card after force placement.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Starting cards"
+      }
+    },
+    {
+      "seq": 12,
+      "text": "guild received 1 starting Treachery Card after force placement.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Starting cards"
+      }
+    },
+    {
+      "seq": 13,
+      "text": "harkonnen received 2 starting Treachery Cards after force placement.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Starting cards"
+      }
+    },
+    {
+      "seq": 14,
+      "text": "fremen received 1 starting Treachery Card after force placement.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Starting cards"
+      }
+    },
+    {
+      "seq": 15,
+      "text": "beneGesserit received 1 starting Treachery Card after force placement.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Starting cards"
+      }
+    },
+    {
+      "seq": 16,
+      "text": "Setup complete. The first storm awaits two secret dials."
+    },
+    {
+      "seq": 17,
+      "text": "Storm distance revealed: 0 sectors. Resolve storm cards before moving."
+    },
+    {
+      "seq": 18,
+      "text": "Storm moved 0 sectors to sector 1."
+    },
+    {
+      "seq": 19,
+      "text": "10 spice appeared in Habbanya Ridge Flat."
+    },
+    {
+      "seq": 20,
+      "text": "Turn 2 begins."
+    },
+    {
+      "seq": 21,
+      "text": "Storm distance revealed: 2 sectors. Resolve storm cards before moving."
+    },
+    {
+      "seq": 22,
+      "text": "Storm moved 2 sectors to sector 3."
+    },
+    {
+      "seq": 23,
+      "text": "Shai-Hulud appeared in Habbanya Ridge Flat."
+    },
+    {
+      "seq": 24,
+      "text": "6 spice appeared in Hagga Basin."
+    },
+    {
+      "seq": 25,
+      "text": "Nexus: alliances may be formed or broken."
+    },
+    {
+      "seq": 26,
+      "text": "emperor offered an alliance to guild; both players must agree before an alliance forms."
+    },
+    {
+      "seq": 27,
+      "text": "guild and emperor formed an alliance."
+    },
+    {
+      "seq": 28,
+      "text": "Spice Blow and Nexus is ending. Unallied factions may draw a secret Nexus Card, replace their held card, or keep their current position. Alliances are settled."
+    },
+    {
+      "seq": 29,
+      "text": "Atreides drew a secret Nexus Card."
+    },
+    {
+      "seq": 30,
+      "text": "harkonnen finished their Nexus card choice."
+    },
+    {
+      "seq": 31,
+      "text": "fremen finished their Nexus card choice."
+    },
+    {
+      "seq": 32,
+      "text": "beneGesserit finished their Nexus card choice."
+    },
+    {
+      "seq": 33,
+      "text": "Atreides won a treachery card for 2 spice."
+    },
+    {
+      "seq": 34,
+      "text": "emperor received 2 spice from another faction’s 2-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 35,
+      "text": "Harkonnen won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 36,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 37,
+      "text": "harkonnen drew one bonus treachery card because Harkonnen receives an extra card after winning an auction while below its eight-card limit. Its identity remains private.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Bonus treachery card"
+      }
+    },
+    {
+      "seq": 38,
+      "text": "Harkonnen won a treachery card for 1 spice."
+    },
+    {
+      "seq": 39,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 40,
+      "text": "harkonnen drew one bonus treachery card because Harkonnen receives an extra card after winning an auction while below its eight-card limit. Its identity remains private.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Bonus treachery card"
+      }
+    },
+    {
+      "seq": 41,
+      "text": "Harkonnen won a treachery card for 1 spice."
+    },
+    {
+      "seq": 42,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 43,
+      "text": "harkonnen drew one bonus treachery card because Harkonnen receives an extra card after winning an auction while below its eight-card limit. Its identity remains private.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Bonus treachery card"
+      }
+    },
+    {
+      "seq": 44,
+      "text": "Emperor won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 45,
+      "text": "Emperor won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 46,
+      "text": "emperor shipped 1 forces to Polar Sink, sector 0.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 47,
+      "text": "guild collected 1 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 48,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 49,
+      "text": "emperor moved 1 forces from Polar Sink to Wind Pass North.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 50,
+      "text": "guild shipped 1 forces to Imperial Basin, sector 9.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 51,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 52,
+      "text": "guild moved 5 forces from Tuek’s Sietch to Pasty Mesa.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 53,
+      "text": "harkonnen shipped 1 forces to False Wall East, sector 9.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 54,
+      "text": "guild collected 2 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 55,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 56,
+      "text": "harkonnen moved 10 forces from Carthag to False Wall East.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 57,
+      "text": "fremen shipped 1 forces to Cielago West, sector 1.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 58,
+      "text": "fremen's two-territory movement advantage was allowed. The declared movement continues.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Fremen movement"
+      }
+    },
+    {
+      "seq": 59,
+      "text": "fremen moved 10 forces from Sietch Tabr to Broken Land.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 60,
+      "text": "beneGesserit shipped 1 forces to Red Chasm, sector 7.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 61,
+      "text": "guild collected 2 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 62,
+      "text": "beneGesserit moved 4 forces from Polar Sink to False Wall East.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 63,
+      "text": "Atreides shipped 1 forces to Imperial Basin, sector 11.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 64,
+      "text": "guild collected 2 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 65,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 66,
+      "text": "Atreides moved 10 forces from Arrakeen to Imperial Basin.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 67,
+      "text": "guild chose the battle between guild and Atreides in Imperial Basin. guild remains the aggressor."
+    },
+    {
+      "seq": 68,
+      "text": "Both battle plans are revealed."
+    },
+    {
+      "seq": 69,
+      "text": "Atreides won in Imperial Basin (3–13).",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Battle"
+      }
+    },
+    {
+      "seq": 70,
+      "text": "Atreides discarded 1 of their played battle cards."
+    },
+    {
+      "seq": 71,
+      "text": "harkonnen chose the battle between harkonnen and beneGesserit in False Wall East. harkonnen remains the aggressor."
+    },
+    {
+      "seq": 72,
+      "text": "beneGesserit declined the Voice."
+    },
+    {
+      "seq": 73,
+      "text": "Both battle plans are revealed."
+    },
+    {
+      "seq": 74,
+      "text": "harkonnen revealed Princess Irulan as a traitor."
+    },
+    {
+      "seq": 75,
+      "text": "Harkonnen revealed a traitor and won without losses."
+    },
+    {
+      "seq": 76,
+      "text": "harkonnen discarded 2 of their played battle cards."
+    },
+    {
+      "seq": 77,
+      "text": "beneGesserit retained no battle card through the postbattle Nexus choice."
+    },
+    {
+      "seq": 78,
+      "text": "Turn 3 begins."
+    },
+    {
+      "seq": 79,
+      "text": "Storm distance revealed: 3 sectors. Resolve storm cards before moving."
+    },
+    {
+      "seq": 80,
+      "text": "Storm moved 3 sectors to sector 6."
+    },
+    {
+      "seq": 81,
+      "text": "Shai-Hulud appeared in Hagga Basin."
+    },
+    {
+      "seq": 82,
+      "text": "10 spice appeared in The Great Flat."
+    },
+    {
+      "seq": 83,
+      "text": "Nexus: alliances may be formed or broken."
+    },
+    {
+      "seq": 84,
+      "text": "Spice Blow and Nexus is ending. Unallied factions may draw a secret Nexus Card, replace their held card, or keep their current position. Alliances are settled."
+    },
+    {
+      "seq": 85,
+      "text": "Atreides finished their Nexus card choice."
+    },
+    {
+      "seq": 86,
+      "text": "harkonnen drew a secret Nexus Card."
+    },
+    {
+      "seq": 87,
+      "text": "fremen drew a secret Nexus Card."
+    },
+    {
+      "seq": 88,
+      "text": "beneGesserit drew a secret Nexus Card."
+    },
+    {
+      "seq": 89,
+      "text": "Harkonnen won a treachery card for 1 spice."
+    },
+    {
+      "seq": 90,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 91,
+      "text": "harkonnen drew one bonus treachery card because Harkonnen receives an extra card after winning an auction while below its eight-card limit. Its identity remains private.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Bonus treachery card"
+      }
+    },
+    {
+      "seq": 92,
+      "text": "Harkonnen won a treachery card for 1 spice."
+    },
+    {
+      "seq": 93,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 94,
+      "text": "Emperor won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 95,
+      "text": "Spacing Guild won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 96,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 97,
+      "text": "Spacing Guild won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 98,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 99,
+      "text": "Spacing Guild won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 100,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 101,
+      "text": "Atreides revived 2 forces.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Revival"
+      }
+    },
+    {
+      "seq": 102,
+      "text": "guild revived 1 forces.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Revival"
+      }
+    },
+    {
+      "seq": 103,
+      "text": "guild shipped 1 forces to Carthag, sector 11.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 104,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 105,
+      "text": "guild moved 5 forces from Pasty Mesa to Carthag.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 106,
+      "text": "harkonnen shipped 1 forces to Basin, sector 9.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 107,
+      "text": "guild collected 2 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 108,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 109,
+      "text": "harkonnen moved 1 forces from Basin to Oh Gap.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 110,
+      "text": "fremen shipped 1 forces to The Greater Flat, sector 16.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 111,
+      "text": "fremen moved 1 forces from Cielago West to Meridian.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 112,
+      "text": "beneGesserit shipped 1 forces to Carthag, sector 11.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 113,
+      "text": "guild collected 1 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 114,
+      "text": "beneGesserit moved 3 forces from Polar Sink to Carthag.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 115,
+      "text": "Atreides shipped 1 forces to False Wall East, sector 8.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 116,
+      "text": "guild collected 2 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 117,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 118,
+      "text": "Atreides moved 1 forces from False Wall East to False Wall East.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 119,
+      "text": "emperor shipped 1 forces to Habbanya Ridge Flat, sector 17.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 120,
+      "text": "guild collected 1 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 121,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 122,
+      "text": "emperor moved 1 forces from Wind Pass North to Wind Pass North.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 123,
+      "text": "guild chose the battle between guild and beneGesserit in Carthag. guild remains the aggressor."
+    },
+    {
+      "seq": 124,
+      "text": "beneGesserit declined the Voice."
+    },
+    {
+      "seq": 125,
+      "text": "Both battle plans are revealed."
+    },
+    {
+      "seq": 126,
+      "text": "Spacing Guild won in Carthag (6–2).",
+      "automatic": {
+        "faction": "guild",
+        "name": "Battle"
+      }
+    },
+    {
+      "seq": 127,
+      "text": "guild discarded 1 of their played battle cards."
+    },
+    {
+      "seq": 128,
+      "text": "harkonnen chose the battle between harkonnen and Atreides in False Wall East. harkonnen remains the aggressor."
+    },
+    {
+      "seq": 129,
+      "text": "Both battle plans are revealed."
+    },
+    {
+      "seq": 130,
+      "text": "Harkonnen won in False Wall East (6–0).",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Battle"
+      }
+    },
+    {
+      "seq": 131,
+      "text": "harkonnen discarded 2 of their played battle cards."
+    },
+    {
+      "seq": 132,
+      "text": "Turn 4 begins."
+    },
+    {
+      "seq": 133,
+      "text": "Storm distance revealed: 3 sectors. Resolve storm cards before moving."
+    },
+    {
+      "seq": 134,
+      "text": "Storm moved 3 sectors to sector 9."
+    },
+    {
+      "seq": 135,
+      "text": "Shai-Hulud appeared in The Great Flat."
+    },
+    {
+      "seq": 136,
+      "text": "6 spice appeared in Wind Pass North."
+    },
+    {
+      "seq": 137,
+      "text": "Nexus: alliances may be formed or broken."
+    },
+    {
+      "seq": 138,
+      "text": "Spice Blow and Nexus is ending. Unallied factions may draw a secret Nexus Card, replace their held card, or keep their current position. Alliances are settled."
+    },
+    {
+      "seq": 139,
+      "text": "Atreides finished their Nexus card choice."
+    },
+    {
+      "seq": 140,
+      "text": "harkonnen finished their Nexus card choice."
+    },
+    {
+      "seq": 141,
+      "text": "fremen finished their Nexus card choice."
+    },
+    {
+      "seq": 142,
+      "text": "beneGesserit finished their Nexus card choice."
+    },
+    {
+      "seq": 143,
+      "text": "Harkonnen won a treachery card for 1 spice."
+    },
+    {
+      "seq": 144,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 145,
+      "text": "harkonnen drew one bonus treachery card because Harkonnen receives an extra card after winning an auction while below its eight-card limit. Its identity remains private.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Bonus treachery card"
+      }
+    },
+    {
+      "seq": 146,
+      "text": "Harkonnen won a treachery card for 1 spice."
+    },
+    {
+      "seq": 147,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 148,
+      "text": "Spacing Guild won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 149,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 150,
+      "text": "Fremen won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 151,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 152,
+      "text": "Fremen won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 153,
+      "text": "emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 154,
+      "text": "Atreides revived 2 forces.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Revival"
+      }
+    },
+    {
+      "seq": 155,
+      "text": "guild revived 3 forces.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Revival"
+      }
+    },
+    {
+      "seq": 156,
+      "text": "harkonnen revived 3 forces.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Revival"
+      }
+    },
+    {
+      "seq": 157,
+      "text": "harkonnen shipped 1 forces to Red Chasm, sector 7.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 158,
+      "text": "guild collected 2 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 159,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 160,
+      "text": "harkonnen moved 1 forces from Oh Gap to Broken Land.",
+      "automatic": {
+        "faction": "harkonnen",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 161,
+      "text": "fremen shipped 1 forces to Cielago West, sector 1.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 162,
+      "text": "fremen's two-territory movement advantage was allowed. The declared movement continues.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Fremen movement"
+      }
+    },
+    {
+      "seq": 163,
+      "text": "fremen moved 10 forces from Broken Land to Imperial Basin.",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 164,
+      "text": "beneGesserit shipped 1 forces to Cielago West, sector 1.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 165,
+      "text": "guild collected 2 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 166,
+      "text": "beneGesserit moved 3 forces from Polar Sink to Cielago North.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 167,
+      "text": "Atreides shipped 1 forces to Cielago North, sector 2.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 168,
+      "text": "guild collected 2 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 169,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 170,
+      "text": "Atreides moved 1 forces from Cielago North to False Wall South.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 171,
+      "text": "emperor shipped 1 forces to Plastic Basin, sector 14.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 172,
+      "text": "guild collected 1 spice paid by other factions for shipment. Spice contributed by the Guild itself goes to the bank.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment income"
+      }
+    },
+    {
+      "seq": 173,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 174,
+      "text": "emperor moved 1 forces from Plastic Basin to Plastic Basin.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 175,
+      "text": "guild shipped 1 forces to Cielago Depression, sector 2.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Shipment"
+      }
+    },
+    {
+      "seq": 176,
+      "text": "beneGesserit sent 1 free force to Polar Sink.",
+      "automatic": {
+        "faction": "beneGesserit",
+        "name": "Spiritual Advisors"
+      }
+    },
+    {
+      "seq": 177,
+      "text": "guild moved 1 forces from Cielago Depression to Cielago Depression.",
+      "automatic": {
+        "faction": "guild",
+        "name": "Movement"
+      }
+    },
+    {
+      "seq": 178,
+      "text": "fremen chose the battle between fremen and beneGesserit in Cielago West. fremen remains the aggressor."
+    },
+    {
+      "seq": 179,
+      "text": "beneGesserit declined the Voice."
+    },
+    {
+      "seq": 180,
+      "text": "Both battle plans are revealed."
+    },
+    {
+      "seq": 181,
+      "text": "Fremen won in Cielago West (4–0).",
+      "automatic": {
+        "faction": "fremen",
+        "name": "Battle"
+      }
+    },
+    {
+      "seq": 182,
+      "text": "fremen discarded 2 of their played battle cards."
+    },
+    {
+      "seq": 183,
+      "text": "Turn 5 begins."
+    },
+    {
+      "seq": 184,
+      "text": "Storm distance revealed: 3 sectors. Resolve storm cards before moving."
+    },
+    {
+      "seq": 185,
+      "text": "Storm moved 3 sectors to sector 12."
+    },
+    {
+      "seq": 186,
+      "text": "Shai-Hulud appeared in Wind Pass North."
+    },
+    {
+      "seq": 187,
+      "text": "8 spice appeared in Red Chasm."
+    },
+    {
+      "seq": 188,
+      "text": "harkonnen played Harvester."
+    },
+    {
+      "seq": 189,
+      "text": "Nexus: alliances may be formed or broken."
+    },
+    {
+      "seq": 190,
+      "text": "Spice Blow and Nexus is ending. Unallied factions may draw a secret Nexus Card, replace their held card, or keep their current position. Alliances are settled."
+    },
+    {
+      "seq": 191,
+      "text": "Atreides finished their Nexus card choice."
+    },
+    {
+      "seq": 192,
+      "text": "harkonnen finished their Nexus card choice."
+    },
+    {
+      "seq": 193,
+      "text": "fremen finished their Nexus card choice."
+    },
+    {
+      "seq": 194,
+      "text": "beneGesserit finished their Nexus card choice."
+    },
+    {
+      "seq": 195,
+      "text": "beneGesserit claimed CHOAM charity."
+    }
+  ],
+  "stormDials": {},
+  "stormPending": null,
+  "stormCard": null,
+  "stormCardKnown": false,
+  "stormResolution": null,
+  "karamaShipping": null,
+  "stormDialers": [
+    "native-4",
+    "native-5"
+  ],
+  "lastBattle": [
+    "native-4",
+    "native-5"
+  ],
+  "auction": {
+    "cards": [
+      {
+        "name": "Snooper",
+        "kind": "snooper",
+        "id": "treachery-15"
+      },
+      {
+        "name": "Truthtrance",
+        "kind": "special",
+        "effect": "truthtrance",
+        "id": "treachery-31"
+      },
+      {
+        "name": "Shield",
+        "kind": "shield",
+        "id": "treachery-11"
+      },
+      {
+        "name": "Lasgun",
+        "kind": "lasgun",
+        "id": "treachery-8"
+      }
+    ],
+    "index": 0,
+    "bid": 1,
+    "bidder": "a",
+    "active": "native-5",
+    "passed": [
+      "native-3",
+      "native-4",
+      "native-5"
+    ],
+    "opener": 0,
+    "peekKnown": true,
+    "allyPayment": 0
+  },
+  "battle": null,
+  "nexus": false,
+  "allianceOffers": {},
+  "winner": [],
+  "shieldWallDestroyed": false,
+  "spiceWindow": null,
+  "hajr": [],
+  "decision": {
+    "kind": "auctionPayment",
+    "player": "a"
+  },
+  "pendingCapture": null,
+  "response": null,
+  "wormRides": [],
+  "wormPlacementCanceledTurn": 0,
+  "spiceResolution": null,
+  "spiceSequence": null,
+  "freeRevival": [],
+  "emperorExtra": {},
+  "aid": {},
+  "nexusCards": {
+    "cards": {
+      "version": 1,
+      "deck": [
+        "richese",
+        "choam",
+        "tleilaxu",
+        "beneGesserit",
+        "atreides",
+        "ecaz",
+        "fremen",
+        "emperor"
+      ],
+      "discard": [],
+      "hands": {
+        "a": "ixians",
+        "native-1": null,
+        "native-2": null,
+        "native-3": "moritani",
+        "native-4": "harkonnen",
+        "native-5": "guild"
+      }
+    },
+    "phase": {
+      "turn": 5,
+      "occurred": true,
+      "stage": "complete",
+      "eligible": [
+        "a",
+        "native-3",
+        "native-4",
+        "native-5"
+      ],
+      "done": [
+        "a",
+        "native-3",
+        "native-4",
+        "native-5"
+      ],
+      "signature": "[\"nexusCardPhase\",5,true,\"complete\",[\"a\",\"native-3\",\"native-4\",\"native-5\"],[\"a\",\"native-3\",\"native-4\",\"native-5\"]]"
+    }
+  },
+  "sandtrout": false,
+  "nexusIxianReplacementPreview": true,
+  "pendingNexusIxianReplacement": null,
+  "nexusIxianReplacementHistory": [
+    {
+      "source": {
+        "version": 1,
+        "event": "[\"ixianReplacement\",2,\"a\",0,0]",
+        "buyer": "a",
+        "turn": 2,
+        "sequence": 0,
+        "auctionIndex": 0,
+        "amount": 2,
+        "free": false,
+        "card": {
+          "name": "Trip to Gamont",
+          "kind": "worthless",
+          "id": "treachery-21"
+        },
+        "parent": "{\"status\":\"playing\",\"turn\":2,\"phase\":3,\"advanced\":false,\"order\":[\"native-1\",\"native-2\",\"native-3\",\"native-4\",\"native-5\",\"a\"],\"active\":\"a\",\"auction\":{\"cards\":[{\"name\":\"Trip to Gamont\",\"kind\":\"worthless\",\"id\":\"treachery-21\"},{\"name\":\"Kulon\",\"kind\":\"worthless\",\"id\":\"treachery-19\"},{\"name\":\"Cheap Heroine\",\"kind\":\"hero\",\"id\":\"treachery-23\"},{\"name\":\"Cheap Hero\",\"kind\":\"hero\",\"id\":\"treachery-22\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-14\"},{\"name\":\"Family Atomics\",\"kind\":\"special\",\"effect\":\"atomics\",\"id\":\"treachery-24\"}],\"index\":0,\"bid\":2,\"bidder\":\"a\",\"active\":\"native-5\",\"passed\":[\"native-1\",\"native-2\",\"native-3\",\"native-4\",\"native-5\"],\"opener\":0,\"peekKnown\":true,\"allyPayment\":0},\"sale\":{\"winner\":\"a\",\"amount\":2,\"free\":false,\"origin\":\"normal\",\"seller\":null},\"players\":[{\"id\":\"a\",\"faction\":\"atreides\",\"ally\":null,\"spice\":8,\"hand\":[{\"name\":\"Karama\",\"kind\":\"special\",\"effect\":\"karama\",\"id\":\"treachery-29\"},{\"name\":\"Trip to Gamont\",\"kind\":\"worthless\",\"id\":\"treachery-21\"}]},{\"id\":\"native-1\",\"faction\":\"emperor\",\"ally\":\"native-2\",\"spice\":10,\"hand\":[{\"name\":\"Chaumas\",\"kind\":\"poison\",\"id\":\"treachery-4\"}]},{\"id\":\"native-2\",\"faction\":\"guild\",\"ally\":\"native-1\",\"spice\":5,\"hand\":[{\"name\":\"Hajr\",\"kind\":\"special\",\"effect\":\"hajr\",\"id\":\"treachery-26\"}]},{\"id\":\"native-3\",\"faction\":\"harkonnen\",\"ally\":null,\"spice\":10,\"hand\":[{\"name\":\"Harvester\",\"kind\":\"special\",\"effect\":\"harvester\",\"id\":\"treachery-28\"},{\"name\":\"Truthtrance\",\"kind\":\"special\",\"effect\":\"truthtrance\",\"id\":\"treachery-32\"}]},{\"id\":\"native-4\",\"faction\":\"fremen\",\"ally\":null,\"spice\":3,\"hand\":[{\"name\":\"Ellaca Drug\",\"kind\":\"poison\",\"id\":\"treachery-7\"}]},{\"id\":\"native-5\",\"faction\":\"beneGesserit\",\"ally\":null,\"spice\":5,\"hand\":[{\"name\":\"Maula Pistol\",\"kind\":\"projectile\",\"id\":\"treachery-1\"}]}],\"deck\":[{\"name\":\"Karama\",\"kind\":\"special\",\"effect\":\"karama\",\"id\":\"treachery-30\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-13\"},{\"name\":\"Chaumurky\",\"kind\":\"poison\",\"id\":\"treachery-5\"},{\"name\":\"La La La\",\"kind\":\"worthless\",\"id\":\"treachery-20\"},{\"name\":\"Tleilaxu Ghola\",\"kind\":\"special\",\"effect\":\"ghola\",\"id\":\"treachery-27\"},{\"name\":\"Slip Tip\",\"kind\":\"projectile\",\"id\":\"treachery-2\"},{\"name\":\"Gom Jabbar\",\"kind\":\"poison\",\"id\":\"treachery-6\"},{\"name\":\"Crysknife\",\"kind\":\"projectile\",\"id\":\"treachery-0\"},{\"name\":\"Weather Control\",\"kind\":\"special\",\"effect\":\"weather\",\"id\":\"treachery-25\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-16\"},{\"name\":\"Stunner\",\"kind\":\"projectile\",\"id\":\"treachery-3\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-9\"},{\"name\":\"Baliset\",\"kind\":\"worthless\",\"id\":\"treachery-17\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-12\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-10\"},{\"name\":\"Jubba Cloak\",\"kind\":\"worthless\",\"id\":\"treachery-18\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-15\"},{\"name\":\"Truthtrance\",\"kind\":\"special\",\"effect\":\"truthtrance\",\"id\":\"treachery-31\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-11\"},{\"name\":\"Lasgun\",\"kind\":\"lasgun\",\"id\":\"treachery-8\"}],\"discard\":[],\"aid\":{},\"nexus\":{\"cards\":{\"version\":1,\"deck\":[\"moritani\",\"harkonnen\",\"guild\",\"richese\",\"choam\",\"tleilaxu\",\"beneGesserit\",\"atreides\",\"ecaz\",\"fremen\",\"emperor\"],\"discard\":[],\"hands\":{\"a\":\"ixians\",\"native-1\":null,\"native-2\":null,\"native-3\":null,\"native-4\":null,\"native-5\":null}},\"phase\":{\"turn\":2,\"occurred\":true,\"stage\":\"complete\",\"eligible\":[\"a\",\"native-3\",\"native-4\",\"native-5\"],\"done\":[\"a\",\"native-3\",\"native-4\",\"native-5\"],\"signature\":\"[\\\"nexusCardPhase\\\",2,true,\\\"complete\\\",[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"]]\"}},\"decision\":{\"kind\":\"nexusIxianReplacement\",\"player\":\"a\",\"event\":\"[\\\"ixianReplacement\\\",2,\\\"a\\\",0,0]\"},\"response\":null}",
+        "signature": "[\"ixianReplacementSource\",1,\"[\\\"ixianReplacement\\\",2,\\\"a\\\",0,0]\",\"a\",2,0,0,2,false,[\"treachery-21\",\"Trip to Gamont\",\"worthless\",null],\"{\\\"status\\\":\\\"playing\\\",\\\"turn\\\":2,\\\"phase\\\":3,\\\"advanced\\\":false,\\\"order\\\":[\\\"native-1\\\",\\\"native-2\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\",\\\"a\\\"],\\\"active\\\":\\\"a\\\",\\\"auction\\\":{\\\"cards\\\":[{\\\"name\\\":\\\"Trip to Gamont\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-21\\\"},{\\\"name\\\":\\\"Kulon\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-19\\\"},{\\\"name\\\":\\\"Cheap Heroine\\\",\\\"kind\\\":\\\"hero\\\",\\\"id\\\":\\\"treachery-23\\\"},{\\\"name\\\":\\\"Cheap Hero\\\",\\\"kind\\\":\\\"hero\\\",\\\"id\\\":\\\"treachery-22\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-14\\\"},{\\\"name\\\":\\\"Family Atomics\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"atomics\\\",\\\"id\\\":\\\"treachery-24\\\"}],\\\"index\\\":0,\\\"bid\\\":2,\\\"bidder\\\":\\\"a\\\",\\\"active\\\":\\\"native-5\\\",\\\"passed\\\":[\\\"native-1\\\",\\\"native-2\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],\\\"opener\\\":0,\\\"peekKnown\\\":true,\\\"allyPayment\\\":0},\\\"sale\\\":{\\\"winner\\\":\\\"a\\\",\\\"amount\\\":2,\\\"free\\\":false,\\\"origin\\\":\\\"normal\\\",\\\"seller\\\":null},\\\"players\\\":[{\\\"id\\\":\\\"a\\\",\\\"faction\\\":\\\"atreides\\\",\\\"ally\\\":null,\\\"spice\\\":8,\\\"hand\\\":[{\\\"name\\\":\\\"Karama\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"karama\\\",\\\"id\\\":\\\"treachery-29\\\"},{\\\"name\\\":\\\"Trip to Gamont\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-21\\\"}]},{\\\"id\\\":\\\"native-1\\\",\\\"faction\\\":\\\"emperor\\\",\\\"ally\\\":\\\"native-2\\\",\\\"spice\\\":10,\\\"hand\\\":[{\\\"name\\\":\\\"Chaumas\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-4\\\"}]},{\\\"id\\\":\\\"native-2\\\",\\\"faction\\\":\\\"guild\\\",\\\"ally\\\":\\\"native-1\\\",\\\"spice\\\":5,\\\"hand\\\":[{\\\"name\\\":\\\"Hajr\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"hajr\\\",\\\"id\\\":\\\"treachery-26\\\"}]},{\\\"id\\\":\\\"native-3\\\",\\\"faction\\\":\\\"harkonnen\\\",\\\"ally\\\":null,\\\"spice\\\":10,\\\"hand\\\":[{\\\"name\\\":\\\"Harvester\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"harvester\\\",\\\"id\\\":\\\"treachery-28\\\"},{\\\"name\\\":\\\"Truthtrance\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"truthtrance\\\",\\\"id\\\":\\\"treachery-32\\\"}]},{\\\"id\\\":\\\"native-4\\\",\\\"faction\\\":\\\"fremen\\\",\\\"ally\\\":null,\\\"spice\\\":3,\\\"hand\\\":[{\\\"name\\\":\\\"Ellaca Drug\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-7\\\"}]},{\\\"id\\\":\\\"native-5\\\",\\\"faction\\\":\\\"beneGesserit\\\",\\\"ally\\\":null,\\\"spice\\\":5,\\\"hand\\\":[{\\\"name\\\":\\\"Maula Pistol\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-1\\\"}]}],\\\"deck\\\":[{\\\"name\\\":\\\"Karama\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"karama\\\",\\\"id\\\":\\\"treachery-30\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-13\\\"},{\\\"name\\\":\\\"Chaumurky\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-5\\\"},{\\\"name\\\":\\\"La La La\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-20\\\"},{\\\"name\\\":\\\"Tleilaxu Ghola\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"ghola\\\",\\\"id\\\":\\\"treachery-27\\\"},{\\\"name\\\":\\\"Slip Tip\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-2\\\"},{\\\"name\\\":\\\"Gom Jabbar\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-6\\\"},{\\\"name\\\":\\\"Crysknife\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-0\\\"},{\\\"name\\\":\\\"Weather Control\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"weather\\\",\\\"id\\\":\\\"treachery-25\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-16\\\"},{\\\"name\\\":\\\"Stunner\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-3\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-9\\\"},{\\\"name\\\":\\\"Baliset\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-17\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-12\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-10\\\"},{\\\"name\\\":\\\"Jubba Cloak\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-18\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-15\\\"},{\\\"name\\\":\\\"Truthtrance\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"truthtrance\\\",\\\"id\\\":\\\"treachery-31\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-11\\\"},{\\\"name\\\":\\\"Lasgun\\\",\\\"kind\\\":\\\"lasgun\\\",\\\"id\\\":\\\"treachery-8\\\"}],\\\"discard\\\":[],\\\"aid\\\":{},\\\"nexus\\\":{\\\"cards\\\":{\\\"version\\\":1,\\\"deck\\\":[\\\"moritani\\\",\\\"harkonnen\\\",\\\"guild\\\",\\\"richese\\\",\\\"choam\\\",\\\"tleilaxu\\\",\\\"beneGesserit\\\",\\\"atreides\\\",\\\"ecaz\\\",\\\"fremen\\\",\\\"emperor\\\"],\\\"discard\\\":[],\\\"hands\\\":{\\\"a\\\":\\\"ixians\\\",\\\"native-1\\\":null,\\\"native-2\\\":null,\\\"native-3\\\":null,\\\"native-4\\\":null,\\\"native-5\\\":null}},\\\"phase\\\":{\\\"turn\\\":2,\\\"occurred\\\":true,\\\"stage\\\":\\\"complete\\\",\\\"eligible\\\":[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],\\\"done\\\":[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],\\\"signature\\\":\\\"[\\\\\\\"nexusCardPhase\\\\\\\",2,true,\\\\\\\"complete\\\\\\\",[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"]]\\\"}},\\\"decision\\\":{\\\"kind\\\":\\\"nexusIxianReplacement\\\",\\\"player\\\":\\\"a\\\",\\\"event\\\":\\\"[\\\\\\\"ixianReplacement\\\\\\\",2,\\\\\\\"a\\\\\\\",0,0]\\\"},\\\"response\\\":null}\"]"
+      },
+      "outcome": "pass",
+      "replacement": null,
+      "previous": "ixian-replacement:0",
+      "signature": "[\"ixianReplacementReceipt\",\"[\\\"ixianReplacementSource\\\",1,\\\"[\\\\\\\"ixianReplacement\\\\\\\",2,\\\\\\\"a\\\\\\\",0,0]\\\",\\\"a\\\",2,0,0,2,false,[\\\"treachery-21\\\",\\\"Trip to Gamont\\\",\\\"worthless\\\",null],\\\"{\\\\\\\"status\\\\\\\":\\\\\\\"playing\\\\\\\",\\\\\\\"turn\\\\\\\":2,\\\\\\\"phase\\\\\\\":3,\\\\\\\"advanced\\\\\\\":false,\\\\\\\"order\\\\\\\":[\\\\\\\"native-1\\\\\\\",\\\\\\\"native-2\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\",\\\\\\\"a\\\\\\\"],\\\\\\\"active\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"auction\\\\\\\":{\\\\\\\"cards\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Trip to Gamont\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-21\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Kulon\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-19\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Cheap Heroine\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"hero\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-23\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Cheap Hero\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"hero\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-22\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-14\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Family Atomics\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"atomics\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-24\\\\\\\"}],\\\\\\\"index\\\\\\\":0,\\\\\\\"bid\\\\\\\":2,\\\\\\\"bidder\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"active\\\\\\\":\\\\\\\"native-5\\\\\\\",\\\\\\\"passed\\\\\\\":[\\\\\\\"native-1\\\\\\\",\\\\\\\"native-2\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],\\\\\\\"opener\\\\\\\":0,\\\\\\\"peekKnown\\\\\\\":true,\\\\\\\"allyPayment\\\\\\\":0},\\\\\\\"sale\\\\\\\":{\\\\\\\"winner\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"amount\\\\\\\":2,\\\\\\\"free\\\\\\\":false,\\\\\\\"origin\\\\\\\":\\\\\\\"normal\\\\\\\",\\\\\\\"seller\\\\\\\":null},\\\\\\\"players\\\\\\\":[{\\\\\\\"id\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"atreides\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":8,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Karama\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"karama\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-29\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Trip to Gamont\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-21\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-1\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"emperor\\\\\\\",\\\\\\\"ally\\\\\\\":\\\\\\\"native-2\\\\\\\",\\\\\\\"spice\\\\\\\":10,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Chaumas\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-4\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-2\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"guild\\\\\\\",\\\\\\\"ally\\\\\\\":\\\\\\\"native-1\\\\\\\",\\\\\\\"spice\\\\\\\":5,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Hajr\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"hajr\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-26\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-3\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"harkonnen\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":10,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Harvester\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"harvester\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-28\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Truthtrance\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"truthtrance\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-32\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"fremen\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":3,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Ellaca Drug\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-7\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-5\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"beneGesserit\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":5,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Maula Pistol\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-1\\\\\\\"}]}],\\\\\\\"deck\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Karama\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"karama\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-30\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-13\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Chaumurky\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-5\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"La La La\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-20\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Tleilaxu Ghola\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"ghola\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-27\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Slip Tip\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-2\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Gom Jabbar\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-6\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Crysknife\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-0\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Weather Control\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"weather\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-25\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-16\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Stunner\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-3\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-9\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Baliset\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-17\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-12\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-10\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Jubba Cloak\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-18\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-15\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Truthtrance\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"truthtrance\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-31\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-11\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Lasgun\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"lasgun\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-8\\\\\\\"}],\\\\\\\"discard\\\\\\\":[],\\\\\\\"aid\\\\\\\":{},\\\\\\\"nexus\\\\\\\":{\\\\\\\"cards\\\\\\\":{\\\\\\\"version\\\\\\\":1,\\\\\\\"deck\\\\\\\":[\\\\\\\"moritani\\\\\\\",\\\\\\\"harkonnen\\\\\\\",\\\\\\\"guild\\\\\\\",\\\\\\\"richese\\\\\\\",\\\\\\\"choam\\\\\\\",\\\\\\\"tleilaxu\\\\\\\",\\\\\\\"beneGesserit\\\\\\\",\\\\\\\"atreides\\\\\\\",\\\\\\\"ecaz\\\\\\\",\\\\\\\"fremen\\\\\\\",\\\\\\\"emperor\\\\\\\"],\\\\\\\"discard\\\\\\\":[],\\\\\\\"hands\\\\\\\":{\\\\\\\"a\\\\\\\":\\\\\\\"ixians\\\\\\\",\\\\\\\"native-1\\\\\\\":null,\\\\\\\"native-2\\\\\\\":null,\\\\\\\"native-3\\\\\\\":null,\\\\\\\"native-4\\\\\\\":null,\\\\\\\"native-5\\\\\\\":null}},\\\\\\\"phase\\\\\\\":{\\\\\\\"turn\\\\\\\":2,\\\\\\\"occurred\\\\\\\":true,\\\\\\\"stage\\\\\\\":\\\\\\\"complete\\\\\\\",\\\\\\\"eligible\\\\\\\":[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],\\\\\\\"done\\\\\\\":[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],\\\\\\\"signature\\\\\\\":\\\\\\\"[\\\\\\\\\\\\\\\"nexusCardPhase\\\\\\\\\\\\\\\",2,true,\\\\\\\\\\\\\\\"complete\\\\\\\\\\\\\\\",[\\\\\\\\\\\\\\\"a\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-3\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-4\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-5\\\\\\\\\\\\\\\"],[\\\\\\\\\\\\\\\"a\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-3\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-4\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-5\\\\\\\\\\\\\\\"]]\\\\\\\"}},\\\\\\\"decision\\\\\\\":{\\\\\\\"kind\\\\\\\":\\\\\\\"nexusIxianReplacement\\\\\\\",\\\\\\\"player\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"event\\\\\\\":\\\\\\\"[\\\\\\\\\\\\\\\"ixianReplacement\\\\\\\\\\\\\\\",2,\\\\\\\\\\\\\\\"a\\\\\\\\\\\\\\\",0,0]\\\\\\\"},\\\\\\\"response\\\\\\\":null}\\\"]\",\"pass\",null,\"ixian-replacement:0\"]"
+    },
+    {
+      "source": {
+        "version": 1,
+        "event": "[\"ixianReplacement\",4,\"native-4\",1,3]",
+        "buyer": "native-4",
+        "turn": 4,
+        "sequence": 1,
+        "auctionIndex": 3,
+        "amount": 1,
+        "free": false,
+        "card": {
+          "name": "Shield",
+          "kind": "shield",
+          "id": "treachery-12"
+        },
+        "parent": "{\"status\":\"playing\",\"turn\":4,\"phase\":3,\"advanced\":false,\"order\":[\"native-3\",\"native-4\",\"native-5\",\"a\",\"native-1\",\"native-2\"],\"active\":\"native-4\",\"auction\":{\"cards\":[{\"name\":\"Stunner\",\"kind\":\"projectile\",\"id\":\"treachery-3\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-9\"},{\"name\":\"Baliset\",\"kind\":\"worthless\",\"id\":\"treachery-17\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-12\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-10\"}],\"index\":3,\"bid\":1,\"bidder\":\"native-4\",\"active\":\"a\",\"passed\":[\"native-5\",\"a\"],\"opener\":3,\"peekKnown\":true,\"allyPayment\":0},\"sale\":{\"winner\":\"native-4\",\"amount\":1,\"free\":false,\"origin\":\"normal\",\"seller\":null},\"players\":[{\"id\":\"a\",\"faction\":\"atreides\",\"ally\":null,\"spice\":4,\"hand\":[{\"name\":\"Karama\",\"kind\":\"special\",\"effect\":\"karama\",\"id\":\"treachery-29\"}]},{\"id\":\"native-1\",\"faction\":\"emperor\",\"ally\":\"native-2\",\"spice\":18,\"hand\":[{\"name\":\"Chaumas\",\"kind\":\"poison\",\"id\":\"treachery-4\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-14\"},{\"name\":\"Family Atomics\",\"kind\":\"special\",\"effect\":\"atomics\",\"id\":\"treachery-24\"},{\"name\":\"Slip Tip\",\"kind\":\"projectile\",\"id\":\"treachery-2\"}]},{\"id\":\"native-2\",\"faction\":\"guild\",\"ally\":\"native-1\",\"spice\":17,\"hand\":[{\"name\":\"Hajr\",\"kind\":\"special\",\"effect\":\"hajr\",\"id\":\"treachery-26\"},{\"name\":\"Gom Jabbar\",\"kind\":\"poison\",\"id\":\"treachery-6\"},{\"name\":\"Weather Control\",\"kind\":\"special\",\"effect\":\"weather\",\"id\":\"treachery-25\"},{\"name\":\"Baliset\",\"kind\":\"worthless\",\"id\":\"treachery-17\"}]},{\"id\":\"native-3\",\"faction\":\"harkonnen\",\"ally\":null,\"spice\":8,\"hand\":[{\"name\":\"Harvester\",\"kind\":\"special\",\"effect\":\"harvester\",\"id\":\"treachery-28\"},{\"name\":\"Truthtrance\",\"kind\":\"special\",\"effect\":\"truthtrance\",\"id\":\"treachery-32\"},{\"name\":\"Karama\",\"kind\":\"special\",\"effect\":\"karama\",\"id\":\"treachery-30\"},{\"name\":\"La La La\",\"kind\":\"worthless\",\"id\":\"treachery-20\"},{\"name\":\"Tleilaxu Ghola\",\"kind\":\"special\",\"effect\":\"ghola\",\"id\":\"treachery-27\"},{\"name\":\"Stunner\",\"kind\":\"projectile\",\"id\":\"treachery-3\"},{\"name\":\"Jubba Cloak\",\"kind\":\"worthless\",\"id\":\"treachery-18\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-9\"}]},{\"id\":\"native-4\",\"faction\":\"fremen\",\"ally\":null,\"spice\":2,\"hand\":[{\"name\":\"Ellaca Drug\",\"kind\":\"poison\",\"id\":\"treachery-7\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-12\"}]},{\"id\":\"native-5\",\"faction\":\"beneGesserit\",\"ally\":null,\"spice\":2,\"hand\":[]}],\"deck\":[{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-15\"},{\"name\":\"Truthtrance\",\"kind\":\"special\",\"effect\":\"truthtrance\",\"id\":\"treachery-31\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-11\"},{\"name\":\"Lasgun\",\"kind\":\"lasgun\",\"id\":\"treachery-8\"}],\"discard\":[{\"name\":\"Trip to Gamont\",\"kind\":\"worthless\",\"id\":\"treachery-21\"},{\"name\":\"Cheap Heroine\",\"kind\":\"hero\",\"id\":\"treachery-23\"},{\"name\":\"Kulon\",\"kind\":\"worthless\",\"id\":\"treachery-19\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-13\"},{\"name\":\"Maula Pistol\",\"kind\":\"projectile\",\"id\":\"treachery-1\"},{\"name\":\"Crysknife\",\"kind\":\"projectile\",\"id\":\"treachery-0\"},{\"name\":\"Cheap Hero\",\"kind\":\"hero\",\"id\":\"treachery-22\"},{\"name\":\"Chaumurky\",\"kind\":\"poison\",\"id\":\"treachery-5\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-16\"}],\"aid\":{},\"nexus\":{\"cards\":{\"version\":1,\"deck\":[\"richese\",\"choam\",\"tleilaxu\",\"beneGesserit\",\"atreides\",\"ecaz\",\"fremen\",\"emperor\"],\"discard\":[],\"hands\":{\"a\":\"ixians\",\"native-1\":null,\"native-2\":null,\"native-3\":\"moritani\",\"native-4\":\"harkonnen\",\"native-5\":\"guild\"}},\"phase\":{\"turn\":4,\"occurred\":true,\"stage\":\"complete\",\"eligible\":[\"a\",\"native-3\",\"native-4\",\"native-5\"],\"done\":[\"a\",\"native-3\",\"native-4\",\"native-5\"],\"signature\":\"[\\\"nexusCardPhase\\\",4,true,\\\"complete\\\",[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"]]\"}},\"decision\":{\"kind\":\"nexusIxianReplacement\",\"player\":\"native-4\",\"event\":\"[\\\"ixianReplacement\\\",4,\\\"native-4\\\",1,3]\"},\"response\":null}",
+        "signature": "[\"ixianReplacementSource\",1,\"[\\\"ixianReplacement\\\",4,\\\"native-4\\\",1,3]\",\"native-4\",4,1,3,1,false,[\"treachery-12\",\"Shield\",\"shield\",null],\"{\\\"status\\\":\\\"playing\\\",\\\"turn\\\":4,\\\"phase\\\":3,\\\"advanced\\\":false,\\\"order\\\":[\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\",\\\"a\\\",\\\"native-1\\\",\\\"native-2\\\"],\\\"active\\\":\\\"native-4\\\",\\\"auction\\\":{\\\"cards\\\":[{\\\"name\\\":\\\"Stunner\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-3\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-9\\\"},{\\\"name\\\":\\\"Baliset\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-17\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-12\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-10\\\"}],\\\"index\\\":3,\\\"bid\\\":1,\\\"bidder\\\":\\\"native-4\\\",\\\"active\\\":\\\"a\\\",\\\"passed\\\":[\\\"native-5\\\",\\\"a\\\"],\\\"opener\\\":3,\\\"peekKnown\\\":true,\\\"allyPayment\\\":0},\\\"sale\\\":{\\\"winner\\\":\\\"native-4\\\",\\\"amount\\\":1,\\\"free\\\":false,\\\"origin\\\":\\\"normal\\\",\\\"seller\\\":null},\\\"players\\\":[{\\\"id\\\":\\\"a\\\",\\\"faction\\\":\\\"atreides\\\",\\\"ally\\\":null,\\\"spice\\\":4,\\\"hand\\\":[{\\\"name\\\":\\\"Karama\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"karama\\\",\\\"id\\\":\\\"treachery-29\\\"}]},{\\\"id\\\":\\\"native-1\\\",\\\"faction\\\":\\\"emperor\\\",\\\"ally\\\":\\\"native-2\\\",\\\"spice\\\":18,\\\"hand\\\":[{\\\"name\\\":\\\"Chaumas\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-4\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-14\\\"},{\\\"name\\\":\\\"Family Atomics\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"atomics\\\",\\\"id\\\":\\\"treachery-24\\\"},{\\\"name\\\":\\\"Slip Tip\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-2\\\"}]},{\\\"id\\\":\\\"native-2\\\",\\\"faction\\\":\\\"guild\\\",\\\"ally\\\":\\\"native-1\\\",\\\"spice\\\":17,\\\"hand\\\":[{\\\"name\\\":\\\"Hajr\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"hajr\\\",\\\"id\\\":\\\"treachery-26\\\"},{\\\"name\\\":\\\"Gom Jabbar\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-6\\\"},{\\\"name\\\":\\\"Weather Control\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"weather\\\",\\\"id\\\":\\\"treachery-25\\\"},{\\\"name\\\":\\\"Baliset\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-17\\\"}]},{\\\"id\\\":\\\"native-3\\\",\\\"faction\\\":\\\"harkonnen\\\",\\\"ally\\\":null,\\\"spice\\\":8,\\\"hand\\\":[{\\\"name\\\":\\\"Harvester\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"harvester\\\",\\\"id\\\":\\\"treachery-28\\\"},{\\\"name\\\":\\\"Truthtrance\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"truthtrance\\\",\\\"id\\\":\\\"treachery-32\\\"},{\\\"name\\\":\\\"Karama\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"karama\\\",\\\"id\\\":\\\"treachery-30\\\"},{\\\"name\\\":\\\"La La La\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-20\\\"},{\\\"name\\\":\\\"Tleilaxu Ghola\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"ghola\\\",\\\"id\\\":\\\"treachery-27\\\"},{\\\"name\\\":\\\"Stunner\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-3\\\"},{\\\"name\\\":\\\"Jubba Cloak\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-18\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-9\\\"}]},{\\\"id\\\":\\\"native-4\\\",\\\"faction\\\":\\\"fremen\\\",\\\"ally\\\":null,\\\"spice\\\":2,\\\"hand\\\":[{\\\"name\\\":\\\"Ellaca Drug\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-7\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-12\\\"}]},{\\\"id\\\":\\\"native-5\\\",\\\"faction\\\":\\\"beneGesserit\\\",\\\"ally\\\":null,\\\"spice\\\":2,\\\"hand\\\":[]}],\\\"deck\\\":[{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-15\\\"},{\\\"name\\\":\\\"Truthtrance\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"truthtrance\\\",\\\"id\\\":\\\"treachery-31\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-11\\\"},{\\\"name\\\":\\\"Lasgun\\\",\\\"kind\\\":\\\"lasgun\\\",\\\"id\\\":\\\"treachery-8\\\"}],\\\"discard\\\":[{\\\"name\\\":\\\"Trip to Gamont\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-21\\\"},{\\\"name\\\":\\\"Cheap Heroine\\\",\\\"kind\\\":\\\"hero\\\",\\\"id\\\":\\\"treachery-23\\\"},{\\\"name\\\":\\\"Kulon\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-19\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-13\\\"},{\\\"name\\\":\\\"Maula Pistol\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-1\\\"},{\\\"name\\\":\\\"Crysknife\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-0\\\"},{\\\"name\\\":\\\"Cheap Hero\\\",\\\"kind\\\":\\\"hero\\\",\\\"id\\\":\\\"treachery-22\\\"},{\\\"name\\\":\\\"Chaumurky\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-5\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-16\\\"}],\\\"aid\\\":{},\\\"nexus\\\":{\\\"cards\\\":{\\\"version\\\":1,\\\"deck\\\":[\\\"richese\\\",\\\"choam\\\",\\\"tleilaxu\\\",\\\"beneGesserit\\\",\\\"atreides\\\",\\\"ecaz\\\",\\\"fremen\\\",\\\"emperor\\\"],\\\"discard\\\":[],\\\"hands\\\":{\\\"a\\\":\\\"ixians\\\",\\\"native-1\\\":null,\\\"native-2\\\":null,\\\"native-3\\\":\\\"moritani\\\",\\\"native-4\\\":\\\"harkonnen\\\",\\\"native-5\\\":\\\"guild\\\"}},\\\"phase\\\":{\\\"turn\\\":4,\\\"occurred\\\":true,\\\"stage\\\":\\\"complete\\\",\\\"eligible\\\":[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],\\\"done\\\":[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],\\\"signature\\\":\\\"[\\\\\\\"nexusCardPhase\\\\\\\",4,true,\\\\\\\"complete\\\\\\\",[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"]]\\\"}},\\\"decision\\\":{\\\"kind\\\":\\\"nexusIxianReplacement\\\",\\\"player\\\":\\\"native-4\\\",\\\"event\\\":\\\"[\\\\\\\"ixianReplacement\\\\\\\",4,\\\\\\\"native-4\\\\\\\",1,3]\\\"},\\\"response\\\":null}\"]"
+      },
+      "outcome": "pass",
+      "replacement": null,
+      "previous": "[\"ixianReplacementHead\",\"[\\\"ixianReplacement\\\",2,\\\"a\\\",0,0]\",\"pass\",null]",
+      "signature": "[\"ixianReplacementReceipt\",\"[\\\"ixianReplacementSource\\\",1,\\\"[\\\\\\\"ixianReplacement\\\\\\\",4,\\\\\\\"native-4\\\\\\\",1,3]\\\",\\\"native-4\\\",4,1,3,1,false,[\\\"treachery-12\\\",\\\"Shield\\\",\\\"shield\\\",null],\\\"{\\\\\\\"status\\\\\\\":\\\\\\\"playing\\\\\\\",\\\\\\\"turn\\\\\\\":4,\\\\\\\"phase\\\\\\\":3,\\\\\\\"advanced\\\\\\\":false,\\\\\\\"order\\\\\\\":[\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\",\\\\\\\"a\\\\\\\",\\\\\\\"native-1\\\\\\\",\\\\\\\"native-2\\\\\\\"],\\\\\\\"active\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"auction\\\\\\\":{\\\\\\\"cards\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Stunner\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-3\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-9\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Baliset\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-17\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-12\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-10\\\\\\\"}],\\\\\\\"index\\\\\\\":3,\\\\\\\"bid\\\\\\\":1,\\\\\\\"bidder\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"active\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"passed\\\\\\\":[\\\\\\\"native-5\\\\\\\",\\\\\\\"a\\\\\\\"],\\\\\\\"opener\\\\\\\":3,\\\\\\\"peekKnown\\\\\\\":true,\\\\\\\"allyPayment\\\\\\\":0},\\\\\\\"sale\\\\\\\":{\\\\\\\"winner\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"amount\\\\\\\":1,\\\\\\\"free\\\\\\\":false,\\\\\\\"origin\\\\\\\":\\\\\\\"normal\\\\\\\",\\\\\\\"seller\\\\\\\":null},\\\\\\\"players\\\\\\\":[{\\\\\\\"id\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"atreides\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":4,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Karama\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"karama\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-29\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-1\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"emperor\\\\\\\",\\\\\\\"ally\\\\\\\":\\\\\\\"native-2\\\\\\\",\\\\\\\"spice\\\\\\\":18,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Chaumas\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-4\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-14\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Family Atomics\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"atomics\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-24\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Slip Tip\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-2\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-2\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"guild\\\\\\\",\\\\\\\"ally\\\\\\\":\\\\\\\"native-1\\\\\\\",\\\\\\\"spice\\\\\\\":17,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Hajr\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"hajr\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-26\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Gom Jabbar\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-6\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Weather Control\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"weather\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-25\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Baliset\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-17\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-3\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"harkonnen\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":8,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Harvester\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"harvester\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-28\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Truthtrance\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"truthtrance\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-32\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Karama\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"karama\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-30\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"La La La\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-20\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Tleilaxu Ghola\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"ghola\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-27\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Stunner\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-3\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Jubba Cloak\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-18\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-9\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"fremen\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":2,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Ellaca Drug\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-7\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-12\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-5\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"beneGesserit\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":2,\\\\\\\"hand\\\\\\\":[]}],\\\\\\\"deck\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-15\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Truthtrance\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"truthtrance\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-31\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-11\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Lasgun\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"lasgun\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-8\\\\\\\"}],\\\\\\\"discard\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Trip to Gamont\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-21\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Cheap Heroine\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"hero\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-23\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Kulon\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-19\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-13\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Maula Pistol\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-1\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Crysknife\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-0\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Cheap Hero\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"hero\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-22\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Chaumurky\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-5\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-16\\\\\\\"}],\\\\\\\"aid\\\\\\\":{},\\\\\\\"nexus\\\\\\\":{\\\\\\\"cards\\\\\\\":{\\\\\\\"version\\\\\\\":1,\\\\\\\"deck\\\\\\\":[\\\\\\\"richese\\\\\\\",\\\\\\\"choam\\\\\\\",\\\\\\\"tleilaxu\\\\\\\",\\\\\\\"beneGesserit\\\\\\\",\\\\\\\"atreides\\\\\\\",\\\\\\\"ecaz\\\\\\\",\\\\\\\"fremen\\\\\\\",\\\\\\\"emperor\\\\\\\"],\\\\\\\"discard\\\\\\\":[],\\\\\\\"hands\\\\\\\":{\\\\\\\"a\\\\\\\":\\\\\\\"ixians\\\\\\\",\\\\\\\"native-1\\\\\\\":null,\\\\\\\"native-2\\\\\\\":null,\\\\\\\"native-3\\\\\\\":\\\\\\\"moritani\\\\\\\",\\\\\\\"native-4\\\\\\\":\\\\\\\"harkonnen\\\\\\\",\\\\\\\"native-5\\\\\\\":\\\\\\\"guild\\\\\\\"}},\\\\\\\"phase\\\\\\\":{\\\\\\\"turn\\\\\\\":4,\\\\\\\"occurred\\\\\\\":true,\\\\\\\"stage\\\\\\\":\\\\\\\"complete\\\\\\\",\\\\\\\"eligible\\\\\\\":[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],\\\\\\\"done\\\\\\\":[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],\\\\\\\"signature\\\\\\\":\\\\\\\"[\\\\\\\\\\\\\\\"nexusCardPhase\\\\\\\\\\\\\\\",4,true,\\\\\\\\\\\\\\\"complete\\\\\\\\\\\\\\\",[\\\\\\\\\\\\\\\"a\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-3\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-4\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-5\\\\\\\\\\\\\\\"],[\\\\\\\\\\\\\\\"a\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-3\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-4\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-5\\\\\\\\\\\\\\\"]]\\\\\\\"}},\\\\\\\"decision\\\\\\\":{\\\\\\\"kind\\\\\\\":\\\\\\\"nexusIxianReplacement\\\\\\\",\\\\\\\"player\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"event\\\\\\\":\\\\\\\"[\\\\\\\\\\\\\\\"ixianReplacement\\\\\\\\\\\\\\\",4,\\\\\\\\\\\\\\\"native-4\\\\\\\\\\\\\\\",1,3]\\\\\\\"},\\\\\\\"response\\\\\\\":null}\\\"]\",\"pass\",null,\"[\\\"ixianReplacementHead\\\",\\\"[\\\\\\\"ixianReplacement\\\\\\\",2,\\\\\\\"a\\\\\\\",0,0]\\\",\\\"pass\\\",null]\"]"
+    },
+    {
+      "source": {
+        "version": 1,
+        "event": "[\"ixianReplacement\",4,\"native-4\",2,4]",
+        "buyer": "native-4",
+        "turn": 4,
+        "sequence": 2,
+        "auctionIndex": 4,
+        "amount": 1,
+        "free": false,
+        "card": {
+          "name": "Shield",
+          "kind": "shield",
+          "id": "treachery-10"
+        },
+        "parent": "{\"status\":\"playing\",\"turn\":4,\"phase\":3,\"advanced\":false,\"order\":[\"native-3\",\"native-4\",\"native-5\",\"a\",\"native-1\",\"native-2\"],\"active\":\"native-4\",\"auction\":{\"cards\":[{\"name\":\"Stunner\",\"kind\":\"projectile\",\"id\":\"treachery-3\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-9\"},{\"name\":\"Baliset\",\"kind\":\"worthless\",\"id\":\"treachery-17\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-12\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-10\"}],\"index\":4,\"bid\":1,\"bidder\":\"native-4\",\"active\":\"a\",\"passed\":[\"native-5\",\"a\"],\"opener\":1,\"peekKnown\":true,\"allyPayment\":0},\"sale\":{\"winner\":\"native-4\",\"amount\":1,\"free\":false,\"origin\":\"normal\",\"seller\":null},\"players\":[{\"id\":\"a\",\"faction\":\"atreides\",\"ally\":null,\"spice\":4,\"hand\":[{\"name\":\"Karama\",\"kind\":\"special\",\"effect\":\"karama\",\"id\":\"treachery-29\"}]},{\"id\":\"native-1\",\"faction\":\"emperor\",\"ally\":\"native-2\",\"spice\":19,\"hand\":[{\"name\":\"Chaumas\",\"kind\":\"poison\",\"id\":\"treachery-4\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-14\"},{\"name\":\"Family Atomics\",\"kind\":\"special\",\"effect\":\"atomics\",\"id\":\"treachery-24\"},{\"name\":\"Slip Tip\",\"kind\":\"projectile\",\"id\":\"treachery-2\"}]},{\"id\":\"native-2\",\"faction\":\"guild\",\"ally\":\"native-1\",\"spice\":17,\"hand\":[{\"name\":\"Hajr\",\"kind\":\"special\",\"effect\":\"hajr\",\"id\":\"treachery-26\"},{\"name\":\"Gom Jabbar\",\"kind\":\"poison\",\"id\":\"treachery-6\"},{\"name\":\"Weather Control\",\"kind\":\"special\",\"effect\":\"weather\",\"id\":\"treachery-25\"},{\"name\":\"Baliset\",\"kind\":\"worthless\",\"id\":\"treachery-17\"}]},{\"id\":\"native-3\",\"faction\":\"harkonnen\",\"ally\":null,\"spice\":8,\"hand\":[{\"name\":\"Harvester\",\"kind\":\"special\",\"effect\":\"harvester\",\"id\":\"treachery-28\"},{\"name\":\"Truthtrance\",\"kind\":\"special\",\"effect\":\"truthtrance\",\"id\":\"treachery-32\"},{\"name\":\"Karama\",\"kind\":\"special\",\"effect\":\"karama\",\"id\":\"treachery-30\"},{\"name\":\"La La La\",\"kind\":\"worthless\",\"id\":\"treachery-20\"},{\"name\":\"Tleilaxu Ghola\",\"kind\":\"special\",\"effect\":\"ghola\",\"id\":\"treachery-27\"},{\"name\":\"Stunner\",\"kind\":\"projectile\",\"id\":\"treachery-3\"},{\"name\":\"Jubba Cloak\",\"kind\":\"worthless\",\"id\":\"treachery-18\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-9\"}]},{\"id\":\"native-4\",\"faction\":\"fremen\",\"ally\":null,\"spice\":1,\"hand\":[{\"name\":\"Ellaca Drug\",\"kind\":\"poison\",\"id\":\"treachery-7\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-12\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-10\"}]},{\"id\":\"native-5\",\"faction\":\"beneGesserit\",\"ally\":null,\"spice\":2,\"hand\":[]}],\"deck\":[{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-15\"},{\"name\":\"Truthtrance\",\"kind\":\"special\",\"effect\":\"truthtrance\",\"id\":\"treachery-31\"},{\"name\":\"Shield\",\"kind\":\"shield\",\"id\":\"treachery-11\"},{\"name\":\"Lasgun\",\"kind\":\"lasgun\",\"id\":\"treachery-8\"}],\"discard\":[{\"name\":\"Trip to Gamont\",\"kind\":\"worthless\",\"id\":\"treachery-21\"},{\"name\":\"Cheap Heroine\",\"kind\":\"hero\",\"id\":\"treachery-23\"},{\"name\":\"Kulon\",\"kind\":\"worthless\",\"id\":\"treachery-19\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-13\"},{\"name\":\"Maula Pistol\",\"kind\":\"projectile\",\"id\":\"treachery-1\"},{\"name\":\"Crysknife\",\"kind\":\"projectile\",\"id\":\"treachery-0\"},{\"name\":\"Cheap Hero\",\"kind\":\"hero\",\"id\":\"treachery-22\"},{\"name\":\"Chaumurky\",\"kind\":\"poison\",\"id\":\"treachery-5\"},{\"name\":\"Snooper\",\"kind\":\"snooper\",\"id\":\"treachery-16\"}],\"aid\":{},\"nexus\":{\"cards\":{\"version\":1,\"deck\":[\"richese\",\"choam\",\"tleilaxu\",\"beneGesserit\",\"atreides\",\"ecaz\",\"fremen\",\"emperor\"],\"discard\":[],\"hands\":{\"a\":\"ixians\",\"native-1\":null,\"native-2\":null,\"native-3\":\"moritani\",\"native-4\":\"harkonnen\",\"native-5\":\"guild\"}},\"phase\":{\"turn\":4,\"occurred\":true,\"stage\":\"complete\",\"eligible\":[\"a\",\"native-3\",\"native-4\",\"native-5\"],\"done\":[\"a\",\"native-3\",\"native-4\",\"native-5\"],\"signature\":\"[\\\"nexusCardPhase\\\",4,true,\\\"complete\\\",[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"]]\"}},\"decision\":{\"kind\":\"nexusIxianReplacement\",\"player\":\"native-4\",\"event\":\"[\\\"ixianReplacement\\\",4,\\\"native-4\\\",2,4]\"},\"response\":null}",
+        "signature": "[\"ixianReplacementSource\",1,\"[\\\"ixianReplacement\\\",4,\\\"native-4\\\",2,4]\",\"native-4\",4,2,4,1,false,[\"treachery-10\",\"Shield\",\"shield\",null],\"{\\\"status\\\":\\\"playing\\\",\\\"turn\\\":4,\\\"phase\\\":3,\\\"advanced\\\":false,\\\"order\\\":[\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\",\\\"a\\\",\\\"native-1\\\",\\\"native-2\\\"],\\\"active\\\":\\\"native-4\\\",\\\"auction\\\":{\\\"cards\\\":[{\\\"name\\\":\\\"Stunner\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-3\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-9\\\"},{\\\"name\\\":\\\"Baliset\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-17\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-12\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-10\\\"}],\\\"index\\\":4,\\\"bid\\\":1,\\\"bidder\\\":\\\"native-4\\\",\\\"active\\\":\\\"a\\\",\\\"passed\\\":[\\\"native-5\\\",\\\"a\\\"],\\\"opener\\\":1,\\\"peekKnown\\\":true,\\\"allyPayment\\\":0},\\\"sale\\\":{\\\"winner\\\":\\\"native-4\\\",\\\"amount\\\":1,\\\"free\\\":false,\\\"origin\\\":\\\"normal\\\",\\\"seller\\\":null},\\\"players\\\":[{\\\"id\\\":\\\"a\\\",\\\"faction\\\":\\\"atreides\\\",\\\"ally\\\":null,\\\"spice\\\":4,\\\"hand\\\":[{\\\"name\\\":\\\"Karama\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"karama\\\",\\\"id\\\":\\\"treachery-29\\\"}]},{\\\"id\\\":\\\"native-1\\\",\\\"faction\\\":\\\"emperor\\\",\\\"ally\\\":\\\"native-2\\\",\\\"spice\\\":19,\\\"hand\\\":[{\\\"name\\\":\\\"Chaumas\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-4\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-14\\\"},{\\\"name\\\":\\\"Family Atomics\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"atomics\\\",\\\"id\\\":\\\"treachery-24\\\"},{\\\"name\\\":\\\"Slip Tip\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-2\\\"}]},{\\\"id\\\":\\\"native-2\\\",\\\"faction\\\":\\\"guild\\\",\\\"ally\\\":\\\"native-1\\\",\\\"spice\\\":17,\\\"hand\\\":[{\\\"name\\\":\\\"Hajr\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"hajr\\\",\\\"id\\\":\\\"treachery-26\\\"},{\\\"name\\\":\\\"Gom Jabbar\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-6\\\"},{\\\"name\\\":\\\"Weather Control\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"weather\\\",\\\"id\\\":\\\"treachery-25\\\"},{\\\"name\\\":\\\"Baliset\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-17\\\"}]},{\\\"id\\\":\\\"native-3\\\",\\\"faction\\\":\\\"harkonnen\\\",\\\"ally\\\":null,\\\"spice\\\":8,\\\"hand\\\":[{\\\"name\\\":\\\"Harvester\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"harvester\\\",\\\"id\\\":\\\"treachery-28\\\"},{\\\"name\\\":\\\"Truthtrance\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"truthtrance\\\",\\\"id\\\":\\\"treachery-32\\\"},{\\\"name\\\":\\\"Karama\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"karama\\\",\\\"id\\\":\\\"treachery-30\\\"},{\\\"name\\\":\\\"La La La\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-20\\\"},{\\\"name\\\":\\\"Tleilaxu Ghola\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"ghola\\\",\\\"id\\\":\\\"treachery-27\\\"},{\\\"name\\\":\\\"Stunner\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-3\\\"},{\\\"name\\\":\\\"Jubba Cloak\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-18\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-9\\\"}]},{\\\"id\\\":\\\"native-4\\\",\\\"faction\\\":\\\"fremen\\\",\\\"ally\\\":null,\\\"spice\\\":1,\\\"hand\\\":[{\\\"name\\\":\\\"Ellaca Drug\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-7\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-12\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-10\\\"}]},{\\\"id\\\":\\\"native-5\\\",\\\"faction\\\":\\\"beneGesserit\\\",\\\"ally\\\":null,\\\"spice\\\":2,\\\"hand\\\":[]}],\\\"deck\\\":[{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-15\\\"},{\\\"name\\\":\\\"Truthtrance\\\",\\\"kind\\\":\\\"special\\\",\\\"effect\\\":\\\"truthtrance\\\",\\\"id\\\":\\\"treachery-31\\\"},{\\\"name\\\":\\\"Shield\\\",\\\"kind\\\":\\\"shield\\\",\\\"id\\\":\\\"treachery-11\\\"},{\\\"name\\\":\\\"Lasgun\\\",\\\"kind\\\":\\\"lasgun\\\",\\\"id\\\":\\\"treachery-8\\\"}],\\\"discard\\\":[{\\\"name\\\":\\\"Trip to Gamont\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-21\\\"},{\\\"name\\\":\\\"Cheap Heroine\\\",\\\"kind\\\":\\\"hero\\\",\\\"id\\\":\\\"treachery-23\\\"},{\\\"name\\\":\\\"Kulon\\\",\\\"kind\\\":\\\"worthless\\\",\\\"id\\\":\\\"treachery-19\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-13\\\"},{\\\"name\\\":\\\"Maula Pistol\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-1\\\"},{\\\"name\\\":\\\"Crysknife\\\",\\\"kind\\\":\\\"projectile\\\",\\\"id\\\":\\\"treachery-0\\\"},{\\\"name\\\":\\\"Cheap Hero\\\",\\\"kind\\\":\\\"hero\\\",\\\"id\\\":\\\"treachery-22\\\"},{\\\"name\\\":\\\"Chaumurky\\\",\\\"kind\\\":\\\"poison\\\",\\\"id\\\":\\\"treachery-5\\\"},{\\\"name\\\":\\\"Snooper\\\",\\\"kind\\\":\\\"snooper\\\",\\\"id\\\":\\\"treachery-16\\\"}],\\\"aid\\\":{},\\\"nexus\\\":{\\\"cards\\\":{\\\"version\\\":1,\\\"deck\\\":[\\\"richese\\\",\\\"choam\\\",\\\"tleilaxu\\\",\\\"beneGesserit\\\",\\\"atreides\\\",\\\"ecaz\\\",\\\"fremen\\\",\\\"emperor\\\"],\\\"discard\\\":[],\\\"hands\\\":{\\\"a\\\":\\\"ixians\\\",\\\"native-1\\\":null,\\\"native-2\\\":null,\\\"native-3\\\":\\\"moritani\\\",\\\"native-4\\\":\\\"harkonnen\\\",\\\"native-5\\\":\\\"guild\\\"}},\\\"phase\\\":{\\\"turn\\\":4,\\\"occurred\\\":true,\\\"stage\\\":\\\"complete\\\",\\\"eligible\\\":[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],\\\"done\\\":[\\\"a\\\",\\\"native-3\\\",\\\"native-4\\\",\\\"native-5\\\"],\\\"signature\\\":\\\"[\\\\\\\"nexusCardPhase\\\\\\\",4,true,\\\\\\\"complete\\\\\\\",[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"]]\\\"}},\\\"decision\\\":{\\\"kind\\\":\\\"nexusIxianReplacement\\\",\\\"player\\\":\\\"native-4\\\",\\\"event\\\":\\\"[\\\\\\\"ixianReplacement\\\\\\\",4,\\\\\\\"native-4\\\\\\\",2,4]\\\"},\\\"response\\\":null}\"]"
+      },
+      "outcome": "pass",
+      "replacement": null,
+      "previous": "[\"ixianReplacementHead\",\"[\\\"ixianReplacement\\\",4,\\\"native-4\\\",1,3]\",\"pass\",null]",
+      "signature": "[\"ixianReplacementReceipt\",\"[\\\"ixianReplacementSource\\\",1,\\\"[\\\\\\\"ixianReplacement\\\\\\\",4,\\\\\\\"native-4\\\\\\\",2,4]\\\",\\\"native-4\\\",4,2,4,1,false,[\\\"treachery-10\\\",\\\"Shield\\\",\\\"shield\\\",null],\\\"{\\\\\\\"status\\\\\\\":\\\\\\\"playing\\\\\\\",\\\\\\\"turn\\\\\\\":4,\\\\\\\"phase\\\\\\\":3,\\\\\\\"advanced\\\\\\\":false,\\\\\\\"order\\\\\\\":[\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\",\\\\\\\"a\\\\\\\",\\\\\\\"native-1\\\\\\\",\\\\\\\"native-2\\\\\\\"],\\\\\\\"active\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"auction\\\\\\\":{\\\\\\\"cards\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Stunner\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-3\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-9\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Baliset\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-17\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-12\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-10\\\\\\\"}],\\\\\\\"index\\\\\\\":4,\\\\\\\"bid\\\\\\\":1,\\\\\\\"bidder\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"active\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"passed\\\\\\\":[\\\\\\\"native-5\\\\\\\",\\\\\\\"a\\\\\\\"],\\\\\\\"opener\\\\\\\":1,\\\\\\\"peekKnown\\\\\\\":true,\\\\\\\"allyPayment\\\\\\\":0},\\\\\\\"sale\\\\\\\":{\\\\\\\"winner\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"amount\\\\\\\":1,\\\\\\\"free\\\\\\\":false,\\\\\\\"origin\\\\\\\":\\\\\\\"normal\\\\\\\",\\\\\\\"seller\\\\\\\":null},\\\\\\\"players\\\\\\\":[{\\\\\\\"id\\\\\\\":\\\\\\\"a\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"atreides\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":4,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Karama\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"karama\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-29\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-1\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"emperor\\\\\\\",\\\\\\\"ally\\\\\\\":\\\\\\\"native-2\\\\\\\",\\\\\\\"spice\\\\\\\":19,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Chaumas\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-4\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-14\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Family Atomics\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"atomics\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-24\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Slip Tip\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-2\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-2\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"guild\\\\\\\",\\\\\\\"ally\\\\\\\":\\\\\\\"native-1\\\\\\\",\\\\\\\"spice\\\\\\\":17,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Hajr\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"hajr\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-26\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Gom Jabbar\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-6\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Weather Control\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"weather\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-25\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Baliset\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-17\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-3\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"harkonnen\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":8,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Harvester\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"harvester\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-28\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Truthtrance\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"truthtrance\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-32\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Karama\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"karama\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-30\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"La La La\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-20\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Tleilaxu Ghola\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"ghola\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-27\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Stunner\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-3\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Jubba Cloak\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-18\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-9\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"fremen\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":1,\\\\\\\"hand\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Ellaca Drug\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-7\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-12\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-10\\\\\\\"}]},{\\\\\\\"id\\\\\\\":\\\\\\\"native-5\\\\\\\",\\\\\\\"faction\\\\\\\":\\\\\\\"beneGesserit\\\\\\\",\\\\\\\"ally\\\\\\\":null,\\\\\\\"spice\\\\\\\":2,\\\\\\\"hand\\\\\\\":[]}],\\\\\\\"deck\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-15\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Truthtrance\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"special\\\\\\\",\\\\\\\"effect\\\\\\\":\\\\\\\"truthtrance\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-31\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Shield\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"shield\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-11\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Lasgun\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"lasgun\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-8\\\\\\\"}],\\\\\\\"discard\\\\\\\":[{\\\\\\\"name\\\\\\\":\\\\\\\"Trip to Gamont\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-21\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Cheap Heroine\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"hero\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-23\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Kulon\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"worthless\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-19\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-13\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Maula Pistol\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-1\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Crysknife\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"projectile\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-0\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Cheap Hero\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"hero\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-22\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Chaumurky\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"poison\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-5\\\\\\\"},{\\\\\\\"name\\\\\\\":\\\\\\\"Snooper\\\\\\\",\\\\\\\"kind\\\\\\\":\\\\\\\"snooper\\\\\\\",\\\\\\\"id\\\\\\\":\\\\\\\"treachery-16\\\\\\\"}],\\\\\\\"aid\\\\\\\":{},\\\\\\\"nexus\\\\\\\":{\\\\\\\"cards\\\\\\\":{\\\\\\\"version\\\\\\\":1,\\\\\\\"deck\\\\\\\":[\\\\\\\"richese\\\\\\\",\\\\\\\"choam\\\\\\\",\\\\\\\"tleilaxu\\\\\\\",\\\\\\\"beneGesserit\\\\\\\",\\\\\\\"atreides\\\\\\\",\\\\\\\"ecaz\\\\\\\",\\\\\\\"fremen\\\\\\\",\\\\\\\"emperor\\\\\\\"],\\\\\\\"discard\\\\\\\":[],\\\\\\\"hands\\\\\\\":{\\\\\\\"a\\\\\\\":\\\\\\\"ixians\\\\\\\",\\\\\\\"native-1\\\\\\\":null,\\\\\\\"native-2\\\\\\\":null,\\\\\\\"native-3\\\\\\\":\\\\\\\"moritani\\\\\\\",\\\\\\\"native-4\\\\\\\":\\\\\\\"harkonnen\\\\\\\",\\\\\\\"native-5\\\\\\\":\\\\\\\"guild\\\\\\\"}},\\\\\\\"phase\\\\\\\":{\\\\\\\"turn\\\\\\\":4,\\\\\\\"occurred\\\\\\\":true,\\\\\\\"stage\\\\\\\":\\\\\\\"complete\\\\\\\",\\\\\\\"eligible\\\\\\\":[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],\\\\\\\"done\\\\\\\":[\\\\\\\"a\\\\\\\",\\\\\\\"native-3\\\\\\\",\\\\\\\"native-4\\\\\\\",\\\\\\\"native-5\\\\\\\"],\\\\\\\"signature\\\\\\\":\\\\\\\"[\\\\\\\\\\\\\\\"nexusCardPhase\\\\\\\\\\\\\\\",4,true,\\\\\\\\\\\\\\\"complete\\\\\\\\\\\\\\\",[\\\\\\\\\\\\\\\"a\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-3\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-4\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-5\\\\\\\\\\\\\\\"],[\\\\\\\\\\\\\\\"a\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-3\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-4\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"native-5\\\\\\\\\\\\\\\"]]\\\\\\\"}},\\\\\\\"decision\\\\\\\":{\\\\\\\"kind\\\\\\\":\\\\\\\"nexusIxianReplacement\\\\\\\",\\\\\\\"player\\\\\\\":\\\\\\\"native-4\\\\\\\",\\\\\\\"event\\\\\\\":\\\\\\\"[\\\\\\\\\\\\\\\"ixianReplacement\\\\\\\\\\\\\\\",4,\\\\\\\\\\\\\\\"native-4\\\\\\\\\\\\\\\",2,4]\\\\\\\"},\\\\\\\"response\\\\\\\":null}\\\"]\",\"pass\",null,\"[\\\"ixianReplacementHead\\\",\\\"[\\\\\\\"ixianReplacement\\\\\\\",4,\\\\\\\"native-4\\\\\\\",1,3]\\\",\\\"pass\\\",null]\"]"
+    }
+  ],
+  "nexusIxianReplacementCursor": {
+    "sequence": 3,
+    "signature": "[\"ixianReplacementHead\",\"[\\\"ixianReplacement\\\",4,\\\"native-4\\\",2,4]\",\"pass\",null]"
+  },
+  "traitorReserve": [
+    "harkonnen-3",
+    "emperor-3",
+    "emperor-2",
+    "guild-4",
+    "atreides-1",
+    "atreides-4",
+    "guild-0",
+    "emperor-1",
+    "guild-3",
+    "emperor-0",
+    "harkonnen-0",
+    "emperor-4",
+    "harkonnen-2",
+    "beneGesserit-0",
+    "fremen-0",
+    "beneGesserit-3",
+    "beneGesserit-1",
+    "fremen-3",
+    "guild-1",
+    "beneGesserit-4",
+    "guild-2"
+  ],
+  "summonedBeforeBlow": false,
+  "revivalRules": {
+    "expanded": [],
+    "limitBlocked": false,
+    "fullPrice": false,
+    "allyDiscount": null,
+    "discountBlocked": false,
+    "earlyBlocked": []
+  },
+  "revivalRequests": {},
+  "saphoMovementLast": null,
+  "recruits": null,
+  "auditorInsight": null,
+  "nexusChoamInsight": null,
+  "currentAuctionSale": null,
+  "pendingFremenMove": null,
+  "lastBattleContext": {
+    "event": "d15e1abb-e7d1-40d7-b243-d3911fd617b3",
+    "turn": 4,
+    "territory": "cielago_west",
+    "combatants": [
+      "native-4",
+      "native-5"
+    ],
+    "winner": "native-4",
+    "result": "normal"
+  },
+  "treacheryDiscardSequence": 9,
+  "pendingTreacheryDiscard": null,
+  "resolvedTreacheryDiscardSequence": 9,
+  "moritaniRetention": null,
+  "pendingWinnerDiscards": null,
+  "nexusFremenCunningOffer": null,
+  "pendingRevival": null
+}

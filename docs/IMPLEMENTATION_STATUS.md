@@ -1,5 +1,81 @@
 # Dune implementation status
 
+## 1 October 2026 — exact Ixian Nexus purchased-card replacement
+
+Five implementation lanes integrated runtime, pure source/custody/history,
+actual controls/four minimal legal bots, authenticated SQLite/CLI entry and
+existing source guidance. Fresh `ixian-replacement` admits unique classic
+2..6-seat Basic/Advanced with base Treachery/Nexus alone; no public start,
+existing-game retrofit or wider-module activation. Normal paid and actual
+printed Karama purchases, including direct zero-bid free acquisition, are
+connected. Harkonnen buyers and Richese/special origins remain guarded by
+their material priority/source questions. Native Ixian allied replacement
+remains a separate ability, not an alias or a Nexus Karama response.
+
+The typed source binds the exact canonical purchased physical ID, original
+normal lot/payment and independently progressed cursor before Nexus cost
+or draw. A publicly possible unallied held-Nexus buyer receives a uniform
+neutral choice, regardless of private face. Only that buyer receives its
+owned purchase and canonical eligibility; rivals get no face, private price,
+deck, receipt or blocked reason. Use spends one physical Ixian Nexus,
+discards that purchase first, draws the actual deck top and continues the
+native sale once; Keep retains both cards. No refund, extra fee or re-auction.
+Full hands and recycled same-card draw remain legal. Own-seat control is
+independent of the pending gameplay lock.
+
+Initial fixture failures assumed a Nexus draw without an alliance. Native
+publisher semantics were preserved: no initial deal or automatic empty-hand
+draw, and a qualifying closing phase requires a settled alliance. Genuine
+nonrecipient allies now open the draw. Original rosters are selected before
+creation, not added to an admitted game: effect scenarios need three seats,
+or four for simultaneous unallied recipients. The initializer still admits
+two-seat base continuation without inventing an unreachable Secret Ally.
+CLI-produced undealt native setup continues without reinitializing/redealing.
+
+Independent review found recursive history and an enabled-but-dropped
+Take back control action. Actual nine-Pass reproduction grew to 7,030,825
+bytes; bounded nonrecursive event/outcome/replacement head links now use
+134,145, with a permanent linear-history/corruption regression. Actual
+390-pixel before-fix Take back control sent no POST and retained Easy;
+after-fix it sends one 200, restores the same seat controller and retains
+the same paid event. Both final source/persistence/privacy rereviews are clean.
+Exhaustive decision dispatch/shape consumers are migrated, and incidental
+attribute-order/attempted-SQL-write pins are removed rather than re-pinned.
+
+Counterfeit depleted tests inflated the allocated row. Those were replaced
+with a captured native six-seat seed-11 turn-five payment source reached by
+real auctions, legal Battle Plans and winner discards: seventeen held cards,
+twelve discards, four reserved lots, empty draw deck, exactly all 33 cards.
+Actual payment plus controlled native shuffle proves original-card redraw
+and existing-discard draw while keeping unsold lots and force stock intact.
+The permanent JSON fixture is synthetic QA source, not human game data.
+
+Final broad check passes types, lint and **6,227 offline cases**. The six-file
+selected union passes **73/73**; final reference check **10/10** and build
+pass. Fourteen actual standalone native Basic/Advanced paid/free Use/Keep,
+wrong-face, full-hand and two legal depletion outcomes preserve original
+ledger, Treachery/forces/elites, Nexus cost, JSON and repeat rejection.
+Authenticated SQLite covers original payment through restart, Pass/Use CAS,
+foreign/revoked credentials, private-face parity, source/cursor corruption,
+zero durable rejection and later physical recycling.
+
+Actual ready rooms `GTCHEGKU`, `JUXLJXHC` and `HJ5Q64T5` entered once by
+exact-version CLI with private consistent backups, then continued the same
+native setup/IDs/circles before real API payment and phone choices.
+Basic paid Use changes buyer 10->8 and Emperor 10->12 exactly once;
+Advanced printed free Use keeps buyer 12 and skips purchase income;
+irrelevant-face Keep retains its original physical purchase and Richese Nexus,
+with no Use or Ixian inspector. Inspection, native income and refresh work.
+Read-only saved proof conserves original native Treachery/Nexus/force/elite
+inventories and eleven prior QA rooms. All 42 original seats in fourteen
+rooms authenticate after required isolated build reloads. Actual expanded
+internal guidance retains Partial / Development Verified boundaries.
+
+Local built-worker HTTP is **51/55**, four known POST 503s, not green.
+No unsafe retries, authorization weakening, database reset or deployed
+acceptance is inferred. Broader Ixian/Nexus effects, special origins,
+Harkonnen priority, combined games, strategy and public/live gates remain open.
+
 ## 1 October 2026 — authorized Advanced Storm and allied separation defaults
 
 Five implementation lanes connected the user-supplied revised Advanced

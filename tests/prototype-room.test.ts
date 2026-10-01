@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync, statSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   applyAction,
   createGame,
@@ -365,3 +370,120 @@ for (const advanced of [false, true]) {
     });
   }
 }
+
+for (const advanced of [false, true]) {
+  void test(`Ixian Nexus replacement ${advanced ? 'Advanced' : 'Basic'} starts only the exact fresh classic lobby without changing seats or native options`, t => {
+    const { db } = fixture(t);
+    const game = createGame('PROTOTYP', newPlayer('i', 'Atreides', 'atreides'), advanced);
+    joinGame(game, newPlayer('e', 'Emperor', 'emperor'));
+    for (const p of game.players) p.ready = true;
+    db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), game.code);
+    const seats = db.prepare('SELECT * FROM seats').all();
+    const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+    const lobbyRows = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    assert.throws(() => startPrototypeRoom(db, game.code, 6, 'ixian-replacement'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), lobbyRows);
+    const result = startPrototypeRoom(db, game.code, 7, 'ixian-replacement');
+    const saved = JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(game.code)!.state as string) as Game;
+    assert.equal(result.version, 8);
+    assert.equal(saved.status, 'setup');
+    assert.equal(saved.code, game.code);
+    assert.equal(saved.host, game.host);
+    assert.equal(saved.advanced, advanced);
+    assert.deepEqual(saved.expansions, game.expansions);
+    assert.deepEqual(saved.playerPositions, game.playerPositions);
+    assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]),
+      game.players.map(p => [p.id, p.name, p.faction]));
+    assert.equal(saved.nexusIxianReplacementPreview, true);
+    assert.deepEqual([...saved.nexusCards!.cards!.deck].sort(), [...NEXUS_FACTIONS].sort());
+    for (const p of saved.players) {
+      const view = viewGame(saved, p.id);
+      assert.equal(view.nexusIxianReplacementPreview, true);
+      assert.equal(view.nexusCards!.card, null);
+      assert.equal(Object.hasOwn(view.nexusCards!, 'deck'), false);
+    }
+    const startedRows = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    assert.throws(() => startPrototypeRoom(db, game.code, 8, 'ixian-replacement'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), startedRows);
+    assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+    assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+  });
+}
+
+void test('Ixian Nexus replacement rejects unready, expansion, native Ixian and Homeworld lobbies without reconfiguring them', t => {
+  const { db } = fixture(t);
+  const classic = createGame('PROTOTYP', newPlayer('i', 'Atreides', 'atreides'), true);
+  joinGame(classic, newPlayer('e', 'Emperor', 'emperor'));
+  for (const p of classic.players) p.ready = true;
+  const unready = structuredClone(classic);
+  unready.players[0].ready = false;
+  const expansion = structuredClone(classic);
+  expansion.expansions = ['ix'];
+  const native = createGame('PROTOTYP', newPlayer('i', 'Ixians', 'ixians'), true, ['ix']);
+  joinGame(native, newPlayer('e', 'Emperor', 'emperor'));
+  for (const p of native.players) p.ready = true;
+  const homeworld = applyAction(classic, classic.host, { type: 'homeworlds', enabled: true });
+  for (const p of homeworld.players) p.ready = true;
+  for (const game of [unready, expansion, native, homeworld]) {
+    db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), game.code);
+    const rooms = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    const seats = db.prepare('SELECT * FROM seats').all();
+    assert.throws(() => startPrototypeRoom(db, game.code, 7, 'ixian-replacement'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), rooms);
+    assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+  }
+});
+
+void test('Ixian replacement CLI takes a private exact-version backup before starting and cannot overwrite a started game or prior proof', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'dune-ixian-replacement-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const database = join(directory, 'rooms.sqlite');
+  const db = new DatabaseSync(database);
+  db.exec('CREATE TABLE rooms(code TEXT PRIMARY KEY,state TEXT,version INTEGER,updated_at INTEGER); CREATE TABLE seats(room_code TEXT,player_id TEXT,token_hash TEXT);');
+  const game = createGame('PROTOTYP', newPlayer('a', 'Atreides', 'atreides'), true);
+  joinGame(game, newPlayer('e', 'Emperor', 'emperor'));
+  for (const p of game.players) p.ready = true;
+  db.prepare('INSERT INTO rooms VALUES(?,?,?,?)').run(game.code, JSON.stringify(game), 7, 100);
+  const other = structuredClone(game);
+  other.code = 'KEEPGAME';
+  db.prepare('INSERT INTO rooms VALUES(?,?,?,?)').run(other.code, JSON.stringify(other), 9, 50);
+  startPrototypeRoom(db, other.code, 9, 'ixian-replacement');
+  for (const p of game.players)
+    db.prepare('INSERT INTO seats VALUES(?,?,?)').run(game.code, p.id, 'isolated-test-' + p.id);
+  const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+  const seats = db.prepare('SELECT * FROM seats ORDER BY player_id').all();
+  db.close();
+  const output = join(directory, 'private-proof');
+  const invoke = (version: number, out: string) => spawnSync(process.execPath, [
+    '--import', 'tsx', fileURLToPath(new URL('../tools/start-prototype.ts', import.meta.url)),
+    '--profile', 'ixian-replacement', '--db', database, '--room', game.code,
+    '--version', String(version), '--out', out,
+  ], { encoding: 'utf8', timeout: 120000 });
+  const started = invoke(7, output);
+  assert.equal(started.status, 0, started.stderr);
+  assert.equal(statSync(output).mode & 0o777, 0o700);
+  for (const name of ['games.sqlite', 'snapshot.json', 'prototype.json'])
+    assert.equal(statSync(join(output, name)).mode & 0o777, 0o600);
+  const backup = new DatabaseSync(join(output, 'games.sqlite'), { readOnly: true });
+  assert.deepEqual(backup.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+  assert.deepEqual(backup.prepare('SELECT * FROM seats ORDER BY player_id').all(), seats);
+  backup.close();
+  const current = new DatabaseSync(database, { readOnly: true });
+  t.after(() => current.close());
+  const after = current.prepare('SELECT * FROM rooms ORDER BY code').all();
+  assert.deepEqual(current.prepare('SELECT * FROM rooms WHERE code=?').get(other.code), before.find(row => row.code === other.code));
+  assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), seats);
+  const savedRow = current.prepare('SELECT state,version FROM rooms WHERE code=?').get(game.code)!;
+  assert.equal(savedRow.version, 8);
+  const saved = JSON.parse(savedRow.state as string) as Game;
+  assert.equal(saved.nexusIxianReplacementPreview, true);
+  assert.equal(saved.status, 'setup');
+  assert.equal(saved.advanced, game.advanced);
+  assert.deepEqual(saved.playerPositions, game.playerPositions);
+  assert.deepEqual(saved.players.map(p => [p.id,p.name,p.faction]), game.players.map(p => [p.id,p.name,p.faction]));
+  assert.notEqual(invoke(8, output).status, 0, 'existing proof directory cannot be reused');
+  assert.notEqual(invoke(7, join(directory, 'stale-proof')).status, 0, 'stale backup version cannot be admitted');
+  assert.notEqual(invoke(8, join(directory, 'redeal-proof')).status, 0, 'current version cannot redeal a started game');
+  assert.deepEqual(current.prepare('SELECT * FROM rooms ORDER BY code').all(), after);
+  assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), seats);
+});

@@ -12,7 +12,7 @@ type TurnView = Pick<
   | 'phaseOpening'
   | 'automaticContinuationPending'
 > &
-  Partial<Pick<GameView, 'biddingEnd' | 'kullReaction' | 'richeseBetrayalReaction' | 'guildBetrayalReaction'>>;
+  Partial<Pick<GameView, 'biddingEnd' | 'kullReaction' | 'richeseBetrayalReaction' | 'guildBetrayalReaction' | 'nexusIxianReplacement'>>;
 
 /** The single current decision owner for the table banner and seat highlight.
  * Shared response windows have no single acting seat. Only public view fields
@@ -32,6 +32,7 @@ export function tableActionOwner(g: TurnView): string | null {
     return null;
   const seated = (id: string | null | undefined) =>
     g.players.some((p) => p.id === id) ? id! : null;
+  if (g.nexusIxianReplacement) return seated(g.nexusIxianReplacement.buyer);
   if (g.decision) return seated(g.decision.player);
   if (g.biddingEnd) {
     const pending = g.biddingEnd.owners.filter(

@@ -176,6 +176,19 @@ this is not a second shipment, free upfront financing or extra Guild income.
 See [payment custody and source boundaries](docs/NEXUS_GUILD_RULES.md#betrayal-payment-replacement).
 Existing games and public start gates remain unchanged.
 
+For local **Ixian Nexus purchased-card replacement**, use
+`node --import tsx tools/start-prototype.ts --profile ixian-replacement`
+on a fresh ready classic Basic/Advanced lobby with base Treachery and Nexus
+alone. Exact-version/private-backup safeguards apply; existing games and
+public starts are unchanged. A real alliance-qualified Nexus must first
+give an unallied buyer its card, so effect scenarios need at least three
+seats. **Keep purchased card** retains both cards; eligible **Use Ixian Nexus**
+discards exactly the normal paid/printed-Karama purchase before drawing the
+real deck top, with the original payment and auction continuation once.
+Full hands and same-card redraw from an exhausted deck are supported.
+Harkonnen buyers and special sale origins remain guarded; see
+[verified source, privacy and runtime boundaries](docs/NEXUS_IXIAN_REPLACEMENT_RULES.md).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

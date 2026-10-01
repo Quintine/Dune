@@ -16,15 +16,28 @@ open mode gates.
 
 ## Current checkpoint and work
 
-Five implementation lanes now connect the missing Ixian Nexus Secret Ally
-purchased-card replacement in a fresh local `ixian-replacement` prototype:
-exact paid normal-auction source, private neutral buyer controls, pure
-physical custody/history, legal bots, authenticated recovery/CLI entry and
-existing source guidance. Original fees and native auction continuation
-must complete once. Richese-origin and Harkonnen-buyer priority questions
-remain gated; no public start, existing-game retrofit or full-card claim.
-The parent retains actual runtime/UI, frozen checks/review and shipping.
-This next wave is **in progress**, not exercised or completed evidence.
+Five implementation lanes connected the missing Ixian Nexus Secret Ally
+purchased-card replacement through fresh local `ixian-replacement`: exact
+normal paid/printed-Karama source, own private controls, native discard/draw
+and original fee/income/auction suffix once. Full hands and genuinely
+depleted-pool same-card redraw are supported. Native Nexus still requires
+a settled alliance and has no initial deal; actual effects need three seats.
+Richese origins, Harkonnen buyers, wider modules and public starts stay gated.
+Independent review repaired recursive saved-history growth and silently
+dropped seat-control actions. Nine Pass records now serialize to 134,145
+bytes rather than 7,030,825; nonrecursive links retain source/replay checks.
+Actual pending-choice Take back control now sends one 200 and preserves
+the same source. Both final scoped rules/privacy reviews have no finding.
+Types, lint, **6,227 offline tests**, **73 selected cases** and build pass.
+Fourteen standalone native scenarios retain exact original ledger/custody,
+including captured legal six-seat depletion with four reserved lots.
+Three privately backed-up same-setup CLI/390-pixel QA rooms prove Basic
+paid Use, Advanced printed free Use, irrelevant-face Keep, inspection,
+takeback and refresh. Saved proof preserves Treachery/Nexus/forces/elites
+and eleven prior QA rooms; all **42 original seats in fourteen rooms**
+reauthenticate after isolated build reload. Actual expanded guide shows
+Partial / Development Verified. Local HTTP is **51/55**, four POST 503s,
+not green. Full families, modes, strategy and live acceptance remain open.
 
 Five implementation lanes reconciled two source-clear Advanced defaults
 from the authorized revised rulebook: all new post-first Storm openings

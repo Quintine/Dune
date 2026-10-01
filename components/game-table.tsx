@@ -81,6 +81,7 @@ import { SemutaReaction } from './semuta-reaction';
 import { ChoamKull } from './choam-kull';
 import { NexusRicheseBetrayal } from './nexus-richese-betrayal';
 import { NexusGuildBetrayal } from './nexus-guild-betrayal';
+import { NexusIxianReplacement } from './nexus-ixian-replacement';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
@@ -305,8 +306,8 @@ export function GameTable({
   );
   const reactionBusy =
     transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot;
-  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction;
-  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction;
+  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement;
+  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement;
   const canActivateKarama = (card: Card) =>
     !g.karamaBlocked && canUseAsKaramaRole(g, me, card);
   const traitorBattle = g.battle;
@@ -790,6 +791,13 @@ export function GameTable({
           a.event !== guildReaction.event ||
           (a.type === 'guildBetrayalUse' && (!guildReaction.canUse || guildReaction.blocked))) return;
     }
+    const replacement = g.nexusIxianReplacement;
+    if (replacement && a.type !== 'setAutopilot') {
+      if (reactionBusy || g.status !== 'playing' || !replacement.canPass || replacement.buyer !== me.id ||
+          (a.type !== 'nexusIxianReplacementPass' && a.type !== 'nexusIxianReplacementUse') ||
+          a.event !== replacement.event ||
+          (a.type === 'nexusIxianReplacementUse' && (!replacement.canUse || replacement.blocked))) return;
+    }
     void send(a);
   };
   const choose = (id: string) => {
@@ -1075,6 +1083,14 @@ export function GameTable({
           Classic factions with native Guild and Nexus; optional genuinely
           seeded Homeworlds only. Not complete Guild or certified Nexus rules.{' '}
           <a href="/rules?topic=nexus-guild-betrayal#nexus-guild-betrayal">Preview rules and limits</a>
+        </p>
+      )}
+      {g.nexusIxianReplacementPreview && (
+        <p className="notice" role="status">
+          Ixian Nexus purchased-card replacement development preview · classic Basic/Advanced,
+          base Treachery and Nexus only. Normal paid and printed Karama purchases are supported;
+          Harkonnen buyers and special auctions are guarded. Not complete Ixian or certified Nexus rules.{' '}
+          <a href="/rules?topic=nexus-ixian-replacement#nexus-ixian-replacement">Preview rules and limits</a>
         </p>
       )}
       {g.status !== 'lobby' && (
@@ -1721,6 +1737,8 @@ export function GameTable({
             <NexusRicheseBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.kullReaction ? (
             <ChoamKull game={g} act={act} busy={reactionBusy} />
+          ) : g.nexusIxianReplacement ? (
+            <NexusIxianReplacement game={g} act={act} busy={reactionBusy} />
           ) : g.nexusCards?.waiting.length ? (
             <p className="muted">The next phase begins when the remaining Nexus card choices are finished.</p>
           ) : g.truthtrance ? (
@@ -2607,6 +2625,8 @@ export function GameTable({
                   {g.players.find((p) => p.id === g.decision?.player)?.name} to
                   complete this decision.
                 </p>
+              ) : g.decision.kind === 'nexusIxianReplacement' ? (
+                <NexusIxianReplacement game={g} act={act} busy={reactionBusy} />
               ) : g.decision.kind === 'nullentropy' ? (
                 <NullentropySearch game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'richeseAllyOpportunity' ? (
@@ -3484,7 +3504,7 @@ export function GameTable({
                     accept: false,
                   })}
                 </>
-              ) : (
+              ) : g.decision.kind === 'battleCards' && (
                 <>
                   <p className="muted">
                     You may keep or discard each card played in this battle.

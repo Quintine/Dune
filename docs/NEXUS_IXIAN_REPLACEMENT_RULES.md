@@ -1,6 +1,6 @@
 # Ixian Nexus Secret Ally: purchased-card replacement
 
-Source audit: 2026-09-10. This is a source contract and proposed implementation boundary, not a runtime or expansion-completion claim. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
+Source audit: 2026-09-10. Bounded local prototype integration and verification: 2026-10-01. **Partial development verified**, not complete Ixian/Nexus family or expansion acceptance. This document records the source and runtime boundary of the fresh `ixian-replacement` profile. Existing [Nexus release gates](NEXUS_CARD_RUNTIME.md) remain in force.
 
 ## Primary evidence
 
@@ -12,6 +12,8 @@ Source audit: 2026-09-10. This is a source contract and proposed implementation 
 - **E2:** [GF9 CHOAM & Richese rules, pp.4,10–11](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=10), freshly retrieved publisher-indexed discard secrecy and purchase FAQ.
 
 Direct official PDF retrieval returned 403. Several older temporary `.pdf` paths contain HTML error pages; they were not treated as readable PDFs. No tournament rewrite or community compilation supplies a ruling here.
+
+The user-supplied `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf` is the adopted source for relevant Advanced core rules, including later Storm determination. It does not contain the Nexus Cards or this face. It therefore supplies no new Ixian replacement, cache-scope, bonus-order or Nexus-cancellation ruling; the photographed publisher card and cited publisher rules remain this feature's evidence.
 
 ## Printed operation
 
@@ -48,16 +50,81 @@ November's Karama table expressly permits stopping the native Ixian ally from di
 
 **Nullentropy and custody interruptions:** a paid Box search freezes the searched pile in the existing subsystem. The replacement cannot draw or reshuffle that pile while browsing. Conversely, playing or transferring the just-purchased card cannot leave a live replacement offer pointing at custody it no longer owns. Preserve or settle the exact purchase continuation; do not reopen an expired purchase from an arbitrary historical card ID. Whether a player can interleave a particular anytime power before exercising an immediate purchase right needs an explicit sequencing policy, not an invisible loss of the right. See the [Box audit](NULLENTROPY_BOX_ENGINE_AUDIT.md).
 
-**Private opportunity timing:** a pause offered only to the holder may reveal possession of a specific secret Nexus identity. Reuse the project's existing unresolved private-response timing policy rather than inventing compulsory confirmations or claiming every buyer has an actual choice. No duplicate user question was sent by this audit.
+**Private opportunity timing:** a pause offered only to the eligible Ixian-card holder may reveal the secret identity. This bounded prototype instead gives every publicly unallied supported buyer with public held-Nexus presence the same neutral **Purchased card choice**, independently of its hidden face. An irrelevant-face buyer can Pass but cannot Use. This is an inferred development privacy convention, not publisher-prescribed timing, a ruling on all anytime interleavings or approval of every unresolved private-response design. The Harkonnen-buyer and unsupported-origin guards depend on public faction/origin, not secret face.
 
-## Proposed pure and engine contract
+## Bounded local runtime contract
 
-The following is an implementation design, not additional rule text. It deliberately keeps purchase eligibility separate from physical replacement so unresolved origin or ordering policy does not contaminate custody.
+The fresh `ixian-replacement` profile is a working development integration of the independently printed Secret Ally grant. It admits two through six unique classic factions in Basic or Advanced with the base Treachery deck and Nexus alone. Native Ixians, expansion factions/decks, Leader Skills, Homeworlds, Semuta, Discoveries, Ecaz variants and other module overlays are excluded. It does not retrofit an in-play game, enable a public start, reset a saved room or change existing native Ixian allied replacement.
 
-1. Create an immutable purchase receipt from the real completed acquisition: version, event, buyer, turn, phase, sale origin, sale event/lot, purchased physical ID, original paid amount and contribution/recipient evidence. Record the original Harkonnen-bonus entitlement separately. Never reconstruct the target from the last card in the current hand.
-2. A pure replacement helper accepts an already authorized receipt, exact canonical hand/deck/discard, the exact purchased ID and a shuffle function. Reject duplicate physical custody and wrong target before RNG. Remove that held card, append its discard, recycle only if necessary, transfer exactly the top card, and return immutable resulting custody plus a private outcome receipt. If discard reactions suspend the operation, split disposal and draw with an independently bound pending stage.
-3. The engine owns common Nexus eligibility, sale-origin policy, immediate opportunity lifetime, response/decision preservation, Nexus-card disposal, normal discard hooks, bonus ordering and payment continuation. A declined opportunity closes for that purchase without spending the Nexus card. An accepted play cannot reopen after receipt deletion, replay, a later purchase or JSON reload.
-4. Bind latest progress independently of the detailed receipt. Historical outcomes must survive later transfers and deck recycling without requiring the old card to remain in discard. Signatures are consistency evidence, not cryptographic protection against arbitrary rewritten saves.
-5. Project the purchased face and replacement result only to entitled owners. A public discarded identity does not authorize exporting replacement identity, deck order, private receipt signatures or old hand contents. Other seats may receive ordinary counts and a played-Nexus event. Do not grant Atreides automatic inspection of a card drawn outside its auction inspection opportunity.
+There is no starting Nexus deal. Native draws require a qualifying closing
+Nexus with a settled alliance, so a two-seat profile can continue its base
+game but cannot naturally produce an unallied Secret Ally holder. Actual
+replacement scenarios need at least three seats; two simultaneous unallied
+recipients need at least four. Fixtures form genuine nonrecipient alliances
+and never add seats to an admitted game or fabricate Nexus hands.
 
-Meaningful verification should include genuine ordinary and Karama purchases, both source-supported Richese origins once policy is settled, Harkonnen bonus/cancellation/cap sequencing, empty deck with same-card redraw, canonical expansion cards, poison discard hooks, reserved-card interruption, all-seat privacy, replay/stale rejection without mutation, JSON recovery and production SQLite races. This audit implements none of those paths and does not certify their integration.
+### Connected purchase and choice
+
+1. Only an actual normal-auction purchase is connected: paid spice or a genuine printed Karama-paid purchase, including direct printed Karama acquisition before a positive bid is recorded. The free purchase must originate from the actual printed Karama; native Bene Gesserit Worthless/Truthtrance substitutions continue unchanged without this new offer. This is a bounded producer restriction, not a ruling that those acquisitions cease to be purchases. The original source, purchased physical card and native sale continuation are bound after the genuine acquisition. Gifts, bonus draws, Technology swaps, old hand cards and historical purchase IDs cannot create an opportunity.
+2. A Harkonnen **buyer** and Richese cache, Black Market or special-acquisition origins are guarded, not adjudicated. A Harkonnen rival is allowed and retains its ordinary native play outside this offer. These bounds preserve the unresolved independent Nexus cache scope and Harkonnen bonus priority above; they are not printed prohibitions or imports of the native `ixAllyCard` origin filter.
+3. Every publicly possible supported buyer receives the same event and public buyer identity, regardless of its secret Nexus face. Only that buyer receives Pass and the exact already-owned purchased card for inspection; only a truly eligible unallied holder of the physical Ixian Nexus receives Use. Opponents receive neither the purchased/replacement face nor private price, receipt, deck order or eligibility reason. The buyer may inspect its own actually held Nexus through the existing authorized inspector; the neutral prompt grants no rival entitlement.
+4. **Pass** retains the purchased card and Nexus, closes this opportunity and continues the original sale once. **Use** spends that singleton Nexus once, discards exactly the just-purchased physical Treachery Card, then draws the actual next deck card privately. There is no card selector, arbitrary hand exchange, new Karama counter, refund, repayment or re-auction.
+5. The discard opens a full legal hand's slot before the draw. An exhausted deck recycles eligible Treachery discards, including that just-discarded card; drawing the same physical card again is legal. The unsold auction row is not the draw deck. Earlier Atreides auction inspection does not grant a new peek of this replacement.
+6. The original funded amount, own/authorized-ally contribution and recorded free/paid source are preserved. Already completed payment is not repeated, and original income and native auction suffix run once through their genuine continuation. Other response/decision priorities remain native: finish the source-bound choice before another payment, lot, transfer or card effect can change its reserved source. No expiry bypass or raw-action replay is added.
+7. Refresh restores the same pending event or closed outcome without another payment, shuffle, draw or Nexus spend. Closed, stale, foreign or malformed events cannot reopen that purchase. Historical receipts remain valid after later transfers, reshuffles and same-card recycling; they do not require an old purchased card to stay in discard forever. Cursor/descriptor consistency is not authentication against arbitrary rewritten saves; authenticated sessions and production compare-and-swap remain required.
+
+### Public APIs and ownership
+
+- `initializeIxianNexusReplacementGameForAudit(state: Game): Game` in `game/engine.ts` is the fresh-only initializer; `Game.nexusIxianReplacementPreview?: true` marks the admitted profile. Genuine setup and Nexus dealing remain native.
+- `GameView.nexusIxianReplacementPreview` reports the profile. `GameView.nexusIxianReplacement` is the neutral event/buyer view with `canPass`, `canUse`, `blocked` and `purchased`; rivals have no face or private blocked reason.
+- `{ type: 'nexusIxianReplacementPass', event }` and `{ type: 'nexusIxianReplacementUse', event }` accept only that event-bound shape. There is no client-chosen purchased ID, replacement, recipient, price or Nexus identity.
+- `game/nexus-ixian-replacement.ts` owns canonical physical/source/custody/history validation through `createIxianReplacementSource`, `validateIxianReplacementSource`, `closeIxianReplacementSource` and `validateIxianReplacementHistory`, with `initialIxianReplacementCursor` and `ixianReplacementEvent` for bounded progress. The source snapshots the exact purchased descriptor, not a whole-Game undo or payment replay. Canonical descriptor, original parent, owned exact target, legal hand cap and single physical custody are validated before Nexus cost or randomness. The closed receipt chain and independent cursor do not require an old discard to remain in its historical location. The engine alone owns purchase authorization, original payment and native discard/draw/sale continuation. Existing native Ixian ally response remains a distinct cancelable ability, not an alias or fallback for the absent-faction Nexus grant.
+- `components/nexus-ixian-replacement.tsx` and `components/game-table.tsx` own the private inspector and neutral controls; `game/bots.ts` consumes each bot's own legal projection. Easy, Medium, Hard and Brutal have minimal legal Use/Pass policies, not calibrated Nexus strategy.
+- The local CLI entry is `node --import tsx tools/start-prototype.ts --profile ixian-replacement --db PATH --room CODE --version NUMBER --out /private/new-directory`. It requires the exact current room version, a fresh supported setup and a private new backup/kit directory; it preserves room/seat/setup identity and existing saves rather than replacing or resetting a game. `tools/prototype-room.ts` owns admission and the private backup transaction.
+
+## Verification and retained release gates
+
+**Partial development verified.** Types, lint, 6,227 offline cases and the
+73-case selected six-file union pass. Actual standalone native execution
+covers fourteen Basic/Advanced paid/printed-Karama Use/Pass, wrong-face
+Keep, full-hand and depleted-source outcomes with exact original ledger,
+physical Treachery/Nexus/force/elite custody and replay rejection.
+
+The depleted source is captured from genuine six-seat play, seed 11:
+turn five, native `auctionPayment`, seventeen held cards, twelve actual
+discards, four native reserved lots and an empty draw deck. All 33 cards
+are present. Legal purchases, Battle Plans and winner discards produced
+it; no row inflation, stock deletion or phase rewrite was used.
+`tests/fixtures/nexus-ixian-native-depleted.json` then exercises the actual
+payment and native replenishment shuffle, including exact same-card redraw.
+
+Independent rules/privacy rereviews have no finding after two actual fixes.
+Nine retained purchase records grew to 7,030,825 bytes under recursive
+signature nesting; nonrecursive result-head links reduce them to 134,145
+bytes. A permanent linear-history regression retains corruption/replay
+checks without a cryptographic-authentication claim.
+Actual phone Take back control previously sent no POST during a pending
+choice; it now sends one 200, restores the original seat controller and
+retains that same paid-source event. Gameplay locks still protect the offer.
+Incidental disabled-attribute-order and attempted-SQL-write pins were removed;
+actual room/eligibility locks, durable `total_changes()` and credential CAS
+remain checked.
+
+Three same-admitted setup/seat/circle QA rooms were privately backed up and
+entered by exact-version CLI: `GTCHEGKU` Basic paid Use plus independent
+takeback, `JUXLJXHC` Advanced printed free Use, and `HJ5Q64T5` Basic
+irrelevant-face Keep. Actual 390-pixel inspection, actions, native income
+and refresh retain the source. The wrong-face owner receives no Use or
+Ixian inspector. Read-only saved proof conserves original native inventories,
+exact spice and one closed outcome; all eleven previous QA rooms are unchanged.
+
+Repository evidence: `tests/nexus-ixian-replacement.test.ts` (pure source,
+custody/history), `tests/nexus-ixian-replacement-engine.test.ts` and genuine
+`tests/fixture-nexus-ixian-replacement.ts` (native acquisition/continuation),
+`tests/nexus-ixian-replacement-controls.test.tsx` (private controls),
+`tests/bot-nexus-ixian-replacement.test.ts` (four legal policies),
+`tests/nexus-ixian-replacement-recovery.test.ts` (authenticated SQLite) and
+`tests/prototype-room.test.ts` (fresh profile and exact-version backed-up CLI).
+This evidence is not complete family/module or deployed acceptance.
+
+Native Harkonnen-buyer bonus/cancellation/cap sequencing, independent Richese cache/Black Market/special scope, expansion-card discard reactions, Semuta/Ecaz priority and anytime interleaving remain pending outside this profile. Full Ixian/Nexus families, combined modules, public starts, complete games and live release acceptance remain separate gates.

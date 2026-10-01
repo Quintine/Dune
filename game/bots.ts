@@ -1513,6 +1513,9 @@ function policyActions(g: GameView): Action[] {
   if (g.decision) {
     if (g.decision.player !== me.id) return [];
     const d = g.decision;
+    // The dedicated pending-purchase policy owns event-only choices.
+    // A decision without its private view offer must not become an ordinary action.
+    if (d.kind === 'nexusIxianReplacement') return [];
     if (d.kind === 'leaderSkillVisibility' || d.kind === 'leaderSkillRevival' || d.kind === 'mentatQuestion' || d.kind === 'bureaucratPayment') return [];
     if (d.kind === 'harassWithdraw') {
       const offer = g.battle?.harassAllocation;
@@ -2669,7 +2672,7 @@ function policyActions(g: GameView): Action[] {
           ),
         },
       ];
-    return [
+    if (d.kind === 'wormRide') return [
       ...destinations(g)
         .filter(
           (to) =>
@@ -3834,6 +3837,23 @@ export function botActions(g: GameView): Action[] {
   if (g.kullCounterEvent)
     return botChoamKullCounterActions(g);
   if (g.semutaReaction) return botSemutaActions(g);
+  const replacement = g.nexusIxianReplacement;
+  if (replacement) {
+    const own = g.players.find((player) => player.id === g.me);
+    if (!(own?.bot ?? own?.autopilot) || g.status !== 'playing' || g.phase !== 3 ||
+        g.roomControl?.paused || g.roomControl?.closed || g.automaticContinuationPending ||
+        g.truthtrance || g.response || g.phaseOpening || g.nexusCards?.waiting.length ||
+        g.nexusTraitors?.pending || !replacement.event || replacement.buyer !== g.me || !replacement.canPass ||
+        (g.decision && (g.decision.kind !== 'nexusIxianReplacement' ||
+          g.decision.player !== g.me || g.decision.event !== replacement.event))) return [];
+    // Value only the authorized purchased card; the runtime owns custody,
+    // eligibility, original payment and the native continuation.
+    const use = replacement.canUse && !replacement.blocked && replacement.purchased &&
+      (replacement.purchased.kind === 'worthless' ||
+        technologyCardValue(g, replacement.purchased) < (rank(g) === 0 ? 0.5 : 4));
+    return [{ type: use ? 'nexusIxianReplacementUse' : 'nexusIxianReplacementPass', event: replacement.event }];
+  }
+  if (g.decision?.kind === 'nexusIxianReplacement') return [];
   const fremenRevival = g.nexusFremenRevival;
   if (fremenRevival && !fremenRevival.blocked && fremenRevival.eliteOptions.length) {
     const own = g.players.find(player => player.id === g.me);

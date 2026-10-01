@@ -86,6 +86,7 @@ const decisions = {
   capturedLeader: true,
   guildTiming: true,
   auctionPayment: true,
+  nexusIxianReplacement: true,
   advisor: true,
   intrusion: true,
   advisorBattle: true,

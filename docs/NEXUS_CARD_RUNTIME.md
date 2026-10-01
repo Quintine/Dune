@@ -1,5 +1,7 @@
 # Nexus cards: common lifecycle checkpoint
 
+**Later Ixian Secret Ally replacement prototype:** [NEXUS_IXIAN_REPLACEMENT_RULES.md](NEXUS_IXIAN_REPLACEMENT_RULES.md#bounded-local-runtime-contract) records the fresh local `ixian-replacement` profile: exact just-purchased normal paid/printed Karama card, discard before private deck draw, full-hand and genuinely depleted-deck same-card behavior, unchanged original payment and native sale continuation once. Harkonnen buyers, cache/Black Market/special origins and combined modules remain guarded. The neutral buyer choice is an inferred development privacy convention, not publisher timing. Its bounded native/SQLite/four-bot/CLI/phone evidence is **Partial development verified**; this historical lifecycle checkpoint does not certify full effects or enable public/module starts.
+
 The later [Emperor Secret Ally revival prototype](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) adds exactly three additional free force returns, separate ordinary allowances, private controls and saved continuation. Its purchase alternative and full module acceptance remain pending.
 
 **Later Guild Secret Ally runtime:** [NEXUS_GUILD_SECRET_ALLY_RUNTIME.md](NEXUS_GUILD_SECRET_ALLY_RUNTIME.md) records explicitly selected Guild prices, cross/return routes, typed Homeworld sources, paid Fremen reinforcement and committed shipment history. The card changes one shipment, without creating a native Guild or a real alliance. The Homeworld-return ruling and full module completion remain pending.
