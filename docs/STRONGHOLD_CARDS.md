@@ -1,12 +1,53 @@
 # Advanced Stronghold Cards
 
-Implemented development module, 7 September 2026. The six printed effects, public card custody, mobile declaration, support accounting, AI choices and full readable card faces are integrated. Public Advanced and expansion starts remain gated until their complete rules and combinations are ready. This checkpoint does not certify all optional-module combinations.
+Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
+
+## Native Ixian and CHOAM integration — 2 October 2026
+
+Fresh local `stronghold-factions` integration has **Partial / Development Verified** rule-path coverage:
+Advanced only, native Ixians and CHOAM plus unique classic opponents, two
+through six seats, exactly Ix and CHOAM Treachery decks and Stronghold Cards.
+The combined deck has **47**, not49, physical cards: CHOAM replaces the two
+shared Ix cards rather than adding duplicate identities. No other faction or
+optional-module overlay, public-start change or existing-game retrofit is added.
+
+Genuine first end-Mentat custody, all six effects, all five HMS copied
+advantages, current-control zero/sole/multiple choices, native CHOAM bank
+support and actual donor funding are connected. Eighteen native source-replay
+cases and all four projected legal policies pass. Five unstaged Advanced
+games (2..6 seats) complete with3,129 accepted actions, no rejections and82
+JSON restorations. Earlier affected162/162 and full6,513/type/lint/build
+evidence was recorded before the user's rules-first assurance deferral;
+it is not a new per-feature gate.
+
+Original local CLI room **LAUDR2WN v14** continued its actual undealt setup
+without redealing. At390px the human Ixian chose Arrakeen from its real
+HMS copy choices, entered dial6/support3 with bank2/personal1, and sealed
+the native plan. The original opposed battle completed: personal1→0,
+three actual cyborg losses and native CHOAM income1. Refresh showed the
+real Collection opening, not a fictitious completed collection.
+
+Fixture repairs use native CHOAM market `done`, phase-opening priority,
+legal Weirding pairing and actual Collection timing. A rare original
+private deal (initial seed12) used the real Guild-held Thumper for native
+Nexus alliance, without stealing/redealing it. Prior scoped reviews found
+no remaining defect. Save/privacy/custody assurance is deferred until all
+rules under the2 October priority; no new seat/database audit is scheduled.
+Ecaz rounding, Richese/cache/Stone and other overlays remain outside this
+profile. Complete factions/cards/modules and deployed acceptance remain open.
+Final focused guide/tooling25/25, `check:quick`, build and expanded390px
+Partial/DevelopmentVerified guide pass. No full-suite or assurance rerun
+was added after the user's priority amendment.
 
 ## Authority and inventory
 
 The original CHOAM & Richese module contains **six separate Stronghold Cards, one of each**. They never enter the Treachery deck, hands, discard, bidding pool or hand limit. The publisher rulebook requires Advanced play; neither CHOAM nor Richese needs to be a participating faction. The mobile card remains set aside when no placed mobile stronghold exists.
 
-Sources, in precedence order:
+The user-authorized root Advanced2.3 PDF governs Advanced differences from
+1 October onward; metadata2.3/editorial2.2 and physical-page provenance are in
+[the source amendment](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
+Printed faces and GF9 material supply details omitted there. The historical
+checkpoint's original sources are:
 
 1. Publisher [CHOAM & Richese rulebook](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf), printed pp4, 6, 9–12: inventory, Advanced prerequisite, end-turn custody, CHOAM bank-funded support income and advisor timing. Readable publisher-authored mirror SHA-256 `b628cef05b167953c2f192c8acfdefea92aee8f5497eea779edacf7be25e6299`.
 2. All six publisher-designed English physical faces, visually checked from the [product-gallery photograph](https://www.tabletopfinder.eu/en/boardgame/32692/dune-choam-richese). [Image](https://cdn.anyfinder.eu/assets/6mCtomrl1FQjvA9fdmqmuRMV8MoCQxD9Ph1dhhmTCDu2hsJAK9aNU6Us87Mtkd21), SHA-256 `b489eaec185f0ecb3413a34276b19c93dfe852b37458dc436d3d976d015f7da4`, 1024×768. This is a third-party photograph of the printed components; photographer, date and printing are unverified. It is research evidence, not a bundled asset.

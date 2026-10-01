@@ -13,6 +13,11 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import type { Game } from '../game/engine';
+import { isAuditorLeader, treacheryDeck } from '../game/cards';
+import { STRONGHOLD_CARDS } from '../game/stronghold-cards';
+import { sampleInventory, verifySampleCustody } from '../tools/sample-custody';
+import { createTechTokens } from '../game/tech-tokens';
 const root = new URL('../', import.meta.url).pathname;
 const cli = new URL('../tools/faction-games.ts', import.meta.url).pathname;
 type CliResult = {
@@ -93,6 +98,83 @@ function assertFailedEvidence(
     assert.equal(statSync(join(out, file)).mode & 0o777, 0o600);
   return report;
 }
+
+void test('native Stronghold samples admit every two-to-six-seat roster and preserve canonical physical inventories', (t) => {
+  const area = temporary(t);
+  const out = join(area, 'native');
+  assert.equal(run(out, '--profile', 'stronghold-factions',
+    '--players', 'all', '--seed', '1000', '--max-actions', '1').status, 1);
+  const results = json<{ results: CliResult[] }>(join(out, 'results.json')).results;
+  assert.deepEqual(results.map(result => result.name),
+    [2, 3, 4, 5, 6].map(seats => `stronghold-factions-${seats}-advanced`));
+  const roster = ['ixians', 'choam', 'emperor', 'fremen', 'harkonnen', 'beneGesserit'];
+  const canonical = treacheryDeck(['ix', 'choam']).map(card => card.id).sort();
+  assert.equal(canonical.length, 47);
+  assert.equal(new Set(canonical).size, 47);
+  for (const [index, result] of results.entries()) {
+    assert.equal(result.error, 'Error: Action limit');
+    assert.equal(result.actions, 1);
+    const game = json<Game>(join(out, `failed-${result.name}.json`));
+    assert.equal(game.advanced, true);
+    assert.deepEqual(game.expansions, ['ix', 'choam']);
+    assert.deepEqual(game.players.map(player => player.faction), roster.slice(0, index + 2));
+    assert.deepEqual(game.players.map(player => player.bot),
+      ['Easy', 'Medium', 'Hard', 'Brutal', 'Easy', 'Medium'].slice(0, index + 2));
+    const inventory = sampleInventory(game);
+    assert.deepEqual(inventory.cards, canonical);
+    verifySampleCustody(game, inventory);
+    assert.deepEqual(Object.keys(game.strongholdCards!.owners).sort(),
+      STRONGHOLD_CARDS.map(card => card.id).sort());
+    assert.ok(Object.values(game.strongholdCards!.owners).every(owner => owner === null));
+    assert.equal(game.strongholdCards!.claimedTurn, 0);
+    assert.equal(game.players.find(player => player.faction === 'choam')!.leaders
+      .filter(isAuditorLeader).length, 1);
+  }
+  const snapshot = join(out, 'failed-stronghold-factions-6-advanced.json');
+  const original = readFileSync(snapshot, 'utf8');
+  const continued = join(area, 'continued');
+  assert.equal(run(continued, '--resume', snapshot, '--seed', '1000',
+    '--max-actions', '1').status, 1);
+  const report = assertFailedEvidence(continued, 'stronghold-factions-6-advanced', 1155, true);
+  assert.equal(report.options.resume?.path, snapshot);
+  verifySampleCustody(json<Game>(join(continued, 'failed-stronghold-factions-6-advanced.json')),
+    sampleInventory(json<Game>(snapshot)), json<Game>(snapshot));
+  assert.equal(readFileSync(snapshot, 'utf8'), original);
+});
+
+void test('native Stronghold admission and resume reject foreign profiles and corrupted custody before gameplay', (t) => {
+  const area = temporary(t);
+  const basic = join(area, 'basic');
+  assert.equal(run(basic, '--profile', 'stronghold-factions', '--rules', 'basic').status, 1);
+  assert.equal(existsSync(basic), false);
+  const out = join(area, 'native');
+  assert.equal(run(out, '--profile', 'stronghold-factions', '--players', '2',
+    '--max-actions', '1').status, 1);
+  const source = json<Game>(join(out, 'failed-stronghold-factions-2-advanced.json'));
+  const corruptions: [string, (game: Game) => void][] = [
+    ['basic', game => { game.advanced = false; }],
+    ['wrong-deck', game => { game.expansions = ['ix']; }],
+    ['foreign-faction', game => { game.players[1].faction = 'richese'; }],
+    ['missing-module', game => { delete game.strongholdCards; }],
+    ['nexus', game => { game.nexusCards = { cards: null, phase: null }; }],
+    ['tech', game => { game.techTokens = createTechTokens(); }],
+    ['missing-stronghold', game => { Reflect.deleteProperty(game.strongholdCards!.owners, 'arrakeen'); }],
+    ['foreign-owner', game => { game.strongholdCards!.owners.arrakeen = 'foreign-seat'; }],
+    ['future-custody', game => { game.strongholdCards!.claimedTurn = game.turn + 1; }],
+    ['missing-treachery', game => { game.deck.pop(); }],
+  ];
+  for (const [label, corrupt] of corruptions) {
+    const game = structuredClone(source);
+    corrupt(game);
+    const snapshot = join(area, `${label}.json`);
+    writeFileSync(snapshot, JSON.stringify(game), { mode: 0o600 });
+    const before = readFileSync(snapshot, 'utf8');
+    const rejected = join(area, `${label}-resume`);
+    assert.equal(run(rejected, '--resume', snapshot, '--max-actions', '1').status, 1, label);
+    assert.equal(existsSync(rejected), false, label);
+    assert.equal(readFileSync(snapshot, 'utf8'), before, label);
+  }
+});
 
 void test('Ecaz card samples keep all three physical identities through saved resume', (t) => {
   const area = temporary(t);

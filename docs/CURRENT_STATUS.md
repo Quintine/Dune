@@ -16,6 +16,49 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Requested priority — 2 October 2026:** development-speed improvements now
+precede resuming rule content. Implement all remaining rules first; comprehensive
+review and save/recovery/privacy/custody assurance follow afterward, not at each
+prototype. Keep legal rule behavior, usable controls, minimal legal AI and
+changed-path smoke. Existing games are not reset/deleted; secret protection,
+authorization and deployment/publication safeguards remain intact. Use the
+[bounded context index](DEVELOPMENT.md#context-index) and
+[feedback/proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule).
+
+**Development-throughput improvements implemented and verified:** default
+test output preserves failures/details/stdout/stderr/counts while omitting
+passing rows; `--verbose` retains full spec. Empty/bad file or name selections
+and zero executed cases fail, including source-bound `verify focused --name`.
+Cancellation remains non-success even when a driver exits zero. Actual tooling
+contracts15/15, six negative CLI cases, positive/negative source-bound runs,
+`check:quick` and206 local doc links pass. Final scoped review has no finding.
+Identical15-case native rule runs emitted278 bytes/12 lines concise versus
+2,455 bytes/27 lines verbose (2.35s versus2.36s: no computation-speed claim).
+Named Carthag feedback took0.90s; discovery-only list0.18s. The earlier162-case
+union took100.22s with different coverage; use narrow failing-case feedback
+before one coherent affected batch. Canonical context index/handoff avoids
+mass file moves or duplicate ruling registries. Resume preserved Stronghold
+rule/control work now; do not restart save/privacy/custody/seat audit campaigns.
+
+**Stronghold rule integration — bounded Development Verified:** fresh
+`stronghold-factions` connects Advanced native Ixians/CHOAM plus classic2..6,
+canonical combined47 Treachery Cards and six Stronghold Cards alone.
+Eighteen native battle/copy cases, all four legal policy paths and five
+unstaged complete games pass (3,129 accepted actions, no rejection,82JSON
+restores). Earlier162 affected cases and6,513 full checks/type/lint/build
+were recorded before the new assurance deferral, not rerun as a prototype gate.
+Human390px original CLI room **LAUDR2WN v14** chose HMS Arrakeen copy,
+sealed dial6/support3 with bank2/personal1 and completed the real battle
+(personal1→0, three cyborg losses, CHOAM income1). Existing classic preview,
+public expansion and pending Ecaz rounding boundaries stay unchanged.
+New save/privacy/custody/seat campaigns remain deferred until all rules.
+See [the bounded integration](STRONGHOLD_CARDS.md#native-ixian-and-choam-integration--2-october-2026).
+
+The checkpoint counts, room/seat observations and live markers below are
+historical evidence recorded by **2 October 2026**, tied to their named
+revisions/reports. They do not describe a fresh result or require repeating
+those assurance loops under the new priority.
+
 Normal Spice Banker income now connects every reachable actual final-bank
 auction, shipment, paid revival and resolved support source in fresh local
 `banker-income`: unique classic2..6-seat Basic/Advanced, base33/all14-skills only.
@@ -985,9 +1028,9 @@ answer is assumed. See the [source follow-up](LEADER_SKILLS_RULES.md#20-septembe
   verification, plus Missing, Prototyped, Integrated, Verified and Polished stages.
 - [Rule decision index](RULE_DECISIONS.md): settled contracts, source precedence
   and pending material interpretations. Consult it before reopening research.
-- [Development guide](DEVELOPMENT.md) and [verification tools](VERIFICATION_WORKFLOW.md):
-  architecture, focused checks, source-bound reports, reusable faction samples,
-  private backup and saved-seat restoration.
+- [Development context index](DEVELOPMENT.md#context-index), [canonical lookup](DEVELOPMENT.md#canonical-feature-lookup)
+  and [verification tools](VERIFICATION_WORKFLOW.md): bounded paths, narrow
+  feedback, frozen-batch proof and deferred final assurance.
 - [Implementation history](IMPLEMENTATION_STATUS.md): newest first. Historical
   evidence and outage records stay there and in feature documents; read bounded
   relevant sections and verify old absence claims against current code/tests.
@@ -1028,20 +1071,28 @@ record their measured scope. [README](../README.md) retains publication gates.
 
 ## Working sequence and preservation
 
-Prototype every remaining function in dependency order, using existing controls,
-legal AI and the saved-state model. Continue independent functions while material
-rulings are pending. Then run integrated games, repair failures, deepen combination
-and recovery coverage, and complete all non-AI features. Only then fully implement
-and refine AI strategy and calibrate the adjacent difficulty pairs. Keep focused
-checks for crashes, deadlocks, legality, custody and privacy; complete required
-broad checkpoint checks.
-Use selective subagents and independent review for complex rules/privacy/persistence.
+Prototype all remaining rules in dependency-related batches using existing
+controls and minimal legal AI. Continue independent functions while material
+rulings are pending. The integration owner freezes each batch, repairs the
+smallest failing case first, then runs affected tests/types/lint and changed-path
+smoke once. Do not run the full offline suite or repeat HTTP/seat/save/privacy/
+custody audits at every tiny prototype.
+
+After all rules are implemented, run full proof, comprehensive independent
+review, integration games and save/recovery/privacy/custody assurance; repair
+failures and finish all non-AI scope, including complete administration. Only
+then fully implement/refine AI and calibrate adjacent difficulty pairs. Final
+components, human journeys, browser/deployed and publication acceptance remain
+required. The [proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule) records
+the checkpoints without duplicating the rules checklist.
 Commit and push verified checkpoints under **“Push all from now on”**, verify push
 success. The user removed the usage cutoff and routine account-usage checks;
 efficient work, Git delivery and selective subagents remain required.
 
 The user-authorized 13 September reset happened once; preserve all games created
 since it. Keep `.wrangler/state`, credentials and private backup artifacts out of
-Git. Reuse a healthy server; restart only for a relevant change or observed problem,
-with a fresh backup, safe human-play boundary and verified restoration. No hourly
-restart or recurring maintenance automation is installed; do not recreate one.
+Git. Reuse a healthy server; restart only for a relevant change or observed
+problem, warn before interrupting human play and use a safe point. Observe health;
+comprehensive restoration assurance follows all rules, while actual production
+deployments retain their existing safeguards. No hourly restart or recurring
+maintenance automation is installed; do not recreate one.

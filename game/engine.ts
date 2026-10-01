@@ -8065,7 +8065,7 @@ function finishMandatorySkillVisibility(g: Game) {
   }
 }
 
-function initializeSetup(g: Game) {
+function initializeSetup(g: Game, strongholds = !!g.strongholdCards) {
   const ecaz = byFaction(g, 'ecaz');
   if (ecaz && g.advanced) g.ecazLoyalty = { player: ecaz.id, card: null };
   if (g.discoveryEnabled) g.discoveries = createDiscoveryState(random);
@@ -8073,7 +8073,7 @@ function initializeSetup(g: Game) {
   const choam = byFaction(g, 'choam');
   if (choam && g.advanced && !choam.leaders.some(isAuditorLeader))
     choam.leaders.push(createAuditorLeader());
-  if (g.strongholdCards) {
+  if (strongholds) {
     requireRule(g.advanced, 'Stronghold Cards require Advanced rules.');
     g.strongholdCards = createStrongholdCards();
   }
@@ -9077,6 +9077,27 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
     !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
     !state.techTokens && !state.strongholdCards,
     'The faction prototype excludes optional modules, including Leader Skills and Discoveries.');
+  requireFreshFactionInventory(state);
+  return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
+}
+/** Fresh Advanced Ixian/CHOAM composition; normal starts and other modules stay gated. */
+export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
+  requireRule(state.advanced === true && state.expansions.length === 2 &&
+    state.expansions.includes('ix') && state.expansions.includes('choam') &&
+    state.players.some(p => p.faction === 'ixians') &&
+    state.players.some(p => p.faction === 'choam') &&
+    state.players.every(p => p.faction === 'ixians' || p.faction === 'choam' || faction(p.faction).expansion === 'base'),
+    'Stronghold factions require Advanced native Ixians and CHOAM, classic opponents, and exactly the Ix and CHOAM decks.');
+  requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
+    !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
+    !state.techTokens && !state.ecazTreachery &&
+    (!state.strongholdCards || JSON.stringify(state.strongholdCards) === JSON.stringify(createStrongholdCards())),
+    'Stronghold factions admit only unused Stronghold Cards, without other optional modules.');
+  requireFreshFactionInventory(state);
+  requireFreshBaseRuntime(state);
+  return initializeSetupGameForAudit(state, false, false, false, false, false, false, true, false, true);
+}
+function requireFreshFactionInventory(state: Game) {
   requireRule(state.richeseCache === undefined && state.richeseRemoved === undefined &&
     state.ecazAmbassadors === undefined && state.moritaniTerror === undefined && state.dukeVidal === undefined &&
     state.mobileStronghold === undefined && state.ixSetupCards === undefined &&
@@ -9091,7 +9112,6 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
             Object.entries(expected).every(([key, value]) => actual[key as keyof Leader] === value);
         });
     }), 'The faction initializer cannot overwrite existing inventories, leader custody or revival history.');
-  return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
 }
 /** Genuine, explicitly opted-in preview; no player action enables this profile. */
 export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
@@ -9182,7 +9202,7 @@ export function initializeEcazTreacheryGameForAudit(state: Game): Game {
   g.ecazTreachery = true;
   return initializeSetupGameForAudit(g, false, false, false, false, false, false, true, true);
 }
-function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false): Game {
+function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = false, ix = false, discovery = false, leaderSkills = false, choam = false, factions = false, ecazTreachery = false, strongholdFactions = false): Game {
   nexusCardsIntegrity(state);
   homeworldRule(() => homeworldGameIntegrity(state));
   homeworldBattleLossIntegrity(state);
@@ -9200,14 +9220,16 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
       !g.techTokens &&
-      !g.strongholdCards &&
+      (strongholdFactions || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(
           (f) => f.id === p.faction && (homeworlds || nexus || f.expansion === 'base' || (ix && f.expansion === 'ix') || (choam && f.expansion === 'choam') || (factions && g.expansions.includes(f.expansion))),
         ),
       ),
-    factions && nexus
+    strongholdFactions
+      ? 'The Stronghold faction audit needs a fresh Advanced Ixian/CHOAM lobby without other optional modules.'
+      : factions && nexus
       ? 'The paired expansion Nexus audit needs a fresh lobby without other optional modules.'
       : factions
       ? 'The faction prototype supports base factions and the selected expansion factions without optional modules.'
@@ -9219,7 +9241,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       ? 'The Homeworld setup audit supports implemented deck sets without Tech Tokens or Stronghold Cards.'
       : 'The audit initializer supports base factions without expansions or optional modules.',
   );
-  initializeSetup(g);
+  initializeSetup(g, strongholdFactions || !!g.strongholdCards);
   return normalizeAutomaticGame(g);
 }
 function ecazStartingForcesComplete(p: Player): boolean {

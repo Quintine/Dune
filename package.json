@@ -20,7 +20,8 @@
     "test:recovery": "node --import tsx tools/test.ts --suite recovery",
     "test:integration": "node --import tsx tools/test.ts --suite integration",
     "test:all": "node --import tsx tools/test.ts --suite all",
-    "check": "npm run typecheck && npm run lint && npm test"
+    "check": "npm run typecheck && npm run lint && npm test",
+    "check:quick": "npm run typecheck && npm run lint"
   },
   "dependencies": {
     "react": "19.2.6",

@@ -1,5 +1,73 @@
 # Dune implementation status
 
+## 2 October 2026 — rules-first development throughput and compact context
+
+The user prioritizes full rules implementation, with comprehensive review,
+save/recovery, privacy and custody assurance afterward rather than per-feature
+gates. Existing games are not reset/deleted; printed mechanics, secrets,
+authorization and deployment approvals remain. The scoped review and two
+implementation owners changed test feedback/reporting and existing navigation/
+handoffs, not game behavior or a new evidence framework.
+
+`npm run check:quick` runs types/lint only. Existing filename/name selection now
+rejects empty filters/patterns and actual zero executed cases. Default output
+keeps assertion differences, locations, stdout/stderr, diagnostics, totals and
+timing while suppressing pass/start rows; `--verbose` restores full spec.
+Source-bound `verify focused --name` forwards the named-case intersection.
+SIGINT/SIGTERM remain failures even if the driver exits zero. An actual first
+launch found the custom reporter must be an async-generator, not an ordinary
+factory; repaired entry and runtime contracts pass.
+
+Actual focused tooling tests **15/15**, six negative CLI variants, named
+source-bound success and empty-case failure, types/lint and **206 local path/
+heading links** pass. Final scoped static review has no finding. Same15-case
+native rule file: concise **278 bytes/12 lines/2.35s**; verbose **2,455 bytes/
+27 lines/2.36s**. This reduces output, not rule computation. Named Carthag
+feedback **0.90s**, discovery-only list **0.18s**; earlier162-case union
+**100.22s** has different coverage, so no speed factor is inferred.
+
+Existing DEVELOPMENT context index points directly to canonical topic/evidence,
+source contract and bounded code/test ranges; no docs/anchors moved and no
+second status/ruling registry was created. Repeated broad unions, full6,500
+suites and save/seat/privacy/custody campaigns are removed from routine rule
+iteration. Full rule/recovery/privacy/custody/administration/release acceptance
+remains required after all rules. Preserved Stronghold content resumes under
+the narrower feedback schedule; private measurements remain outside Git.
+
+## 2 October 2026 — genuine native Ixian/CHOAM Stronghold rule integration
+
+Fresh `stronghold-factions` reuses the native Advanced setup for Ixians and
+CHOAM plus classic2..6 seats, exact combined47-card deck and six Stronghold
+Cards alone. No public expansion start, existing-game retrofit or other
+overlay. Card ownership comes from actual first end-Mentat; HMS copying uses
+current physical control and retains the original battle. Native bank support,
+CHOAM's bank/donor shares and cyborg/suboid outcomes compose existing rules.
+
+Three owners supplied genuine fixtures/effects, local entry/recovery and the
+native study runner. Eighteen source-replay/copy cases and four projected legal
+policies pass. Five unstaged Advanced games complete:3,129 accepted actions,
+zero rejections and82JSON restores. Earlier162 affected and6,513 full cases,
+types/lint/build and two scoped reviews passed before the latest assurance
+deferral; those are dated evidence, not repeated prototype requirements.
+
+Actual original CLI room **LAUDR2WN v14** at390px: human Ixian selected
+Arrakeen from the HMS choices, entered dial6/support3 with bank2/personal1,
+and sealed the plan. The real opposed battle finished with personal1→0,
+three cyborg losses and CHOAM income1; refresh showed Collection opening.
+Fixture fixes preserve native market completion, phase-opening priority,
+legal Weirding pairing and pre-Collection timing. Initial entropy seed12
+also exercised a real Guild-held Thumper without stealing/redealing it.
+
+Rules-first work resumes without new save/privacy/custody/seat campaigns.
+Ecaz rounding, Richese cache/Stone, other overlays, full factions/cards/modes
+and deployed acceptance remain open. Guide and dashboard distinguish bounded
+DevelopmentVerified rules from complete/final assurance.
+Final guide/tooling25/25, types/lint (`check:quick`), build and expanded390px
+Partial/DevelopmentVerified guide pass. Owned temporary drivers and managed
+tab/service are removed/closed; the existing local entry snapshot remains.
+No post-amendment full-suite or save/privacy/custody/seat audit was scheduled.
+
+
 ## 2 October 2026 — normal Spice Banker final-bank income and native Mentat collection
 
 Three exclusive implementation owners connect the fresh `banker-income`

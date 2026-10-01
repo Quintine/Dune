@@ -5,6 +5,7 @@ import {
   initializeLeaderSkillsGameForAudit,
   initializeSpiceBankerIncomeGameForAudit,
   initializeFactionExpansionsGameForAudit,
+  initializeStrongholdFactionsGameForAudit,
   initializeNexusGameForAudit,
   initializeMoritaniAssassinateGameForAudit,
   initializeEcazTreacheryGameForAudit,
@@ -26,6 +27,7 @@ export const PROTOTYPE_PROFILES = [
   'leader-skills',
   'banker-income',
   'factions',
+  'stronghold-factions',
   'nexus',
   'moritani-assassinate',
   'ecaz-treachery',
@@ -79,6 +81,8 @@ export function startPrototypeRoom(
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)
+      : profile === 'stronghold-factions'
+        ? initializeStrongholdFactionsGameForAudit(initial)
       : profile === 'ecaz-treachery'
         ? initializeEcazTreacheryGameForAudit(initial)
       : profile === 'moritani-assassinate'

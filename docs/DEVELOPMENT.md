@@ -1,19 +1,51 @@
 # Development workflow
 
-Start with [README](../README.md) for installation and saved-game behavior and
-[AGENTS.md](../AGENTS.md) for project invariants. This page is a navigation and
-verification guide, not a second implementation-status log.
+Start with [AGENTS.md](../AGENTS.md), then choose the bounded read set below.
+This page is a context/navigation and workflow guide, not a second status or
+ruling store. Saved-seat usage and installation remain in [README](../README.md).
 
-Start with [current status](CURRENT_STATUS.md) and [rule decisions](RULE_DECISIONS.md).
-Use [repeatable verification](VERIFICATION_WORKFLOW.md) for compact source-bound
-logs, private saved-game backups/comparisons and HTTP seat restoration.
-The [three-milestone pilot](EFFICIENCY_PILOT.md) records measurement limits.
-Use the [Ix prototype workflow](IX_PROTOTYPE.md) to connect a fresh local ready
-lobby to genuine expansion setup with a private backup and preserved sessions.
-It does not open normal mode gates or require restarting the server.
-The [expansion-faction profile](EXPANSION_FACTIONS_PROTOTYPE.md) extends genuine
-setup to selected faction sets without optional modules, including Ecaz starting
-placement. Remaining combined-play guards still apply.
+## Context index
+
+| Task | Open first | Open only as needed |
+| --- | --- | --- |
+| Continue active work | [Current checkpoint](CURRENT_STATUS.md#current-checkpoint-and-work) | [Remaining readiness](CURRENT_STATUS.md#remaining-readiness), ignored local `GOAL.local.md` for the complete goal |
+| Find a rule/feature | [Canonical lookup](#canonical-feature-lookup) | That feature's linked helper, engine action, view, UI, bot and tests |
+| Resolve authority/timing | [Source amendment](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026), [recorded contracts](RULE_DECISIONS.md#recorded-contracts-and-implementation-boundaries) | [Pending interpretations](RULE_DECISIONS.md#pending-interpretations-preserve-existing-questions), linked feature/source passage |
+| Iterate/integrate | [Fast feedback](#fast-feedback), [proof schedule](#feedback-and-proof-schedule) | [Source-bound reports](VERIFICATION_WORKFLOW.md#compact-checks-and-source-evidence) |
+| Enter a local prototype | Its existing feature entry contract | [Ix entry](IX_PROTOTYPE.md), [faction selections](EXPANSION_FACTIONS_PROTOTYPE.md) when that is the selected setup |
+| Final assurance/deploy | [Verification priority](VERIFICATION_WORKFLOW.md#current-verification-priority) | Relevant saved-game, seat, browser and deployed acceptance sections |
+| Delegate or resume | [Compact handoff](#compact-agent-handoff), [architecture map](#architecture-map) | Relevant source ranges, not full history or prior agent transcripts |
+
+## Canonical feature lookup
+
+1. For a known feature, locate its topic `id` in `game/reference.ts` with a
+   literal search and read that topic only. Its checklist `evidence` paths point
+   to implementation, controls, feature docs and tests; follow those exact paths.
+   Use [connected capabilities](CURRENT_STATUS.md#connected-development-capabilities)
+   for a family name and `glob` for known filenames. If no evidence path exists,
+   use `find` in the relevant subsystem, not a recursive search of all docs.
+2. Check `docs/RULE_DECISIONS.md` for the matching contract and source precedence.
+   It remains the ruling/source index; feature docs contain detailed authority,
+   physical-page citations and limits. Do not create a parallel ruling registry.
+3. Open only the relevant feature-doc section and source/test ranges. Consult
+   [implementation history](IMPLEMENTATION_STATUS.md) only for a named checkpoint
+   or historical question. Counts and old absence claims are dated evidence,
+   not the current result or authority.
+
+**Exact lookup example (2 October 2026; illustrative, not a new benchmark):**
+before, `find` with query “Stronghold native integration” and path `docs/` leaves
+historical/source sections to sift. Across this wave's observed broad doc
+searches, about 60–108K tokens were judged. After, search the literal
+`id: 'stronghold-factions'` in `game/reference.ts`, read that topic, then open
+[the native contract](STRONGHOLD_CARDS.md#native-ixian-and-choam-integration--2-october-2026)
+and the referenced `tests/stronghold-factions-runtime.test.ts` and
+`tests/fixture-stronghold-factions.ts`. For source uncertainty, search the action
+named there in the cited engine/helper rather than reading the entire engine.
+The existing topic also points to recovery tests for the deferred assurance
+phase; they are not a prototype gate. This is a smaller prescribed read set,
+not a measured wall-clock speedup. No files or anchors moved: existing evidence
+links remain valid. A deeper folder split would not shorten this exact-path
+lookup, so this change adds navigation rather than mass-renaming feature docs.
 
 For rules work, use the [authorized source amendment](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
 The user-supplied root PDF `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`
@@ -36,17 +68,15 @@ tool use; repository work is not browser-only. Use `find` for unknown locations,
 anchored `edit` for existing files. Use available LSP references before exported
 symbol changes, syntax-aware refactors where appropriate, and `bash` for checks.
 
-For multi-step work use `todo`. In plan mode, keep the working tree and system
-read-only, write a self-contained spec at `local://<slug>-plan.md`, then submit
-the matching plain-text slug to `xd://propose` with `write`; wait for approval
-before execution. Scope first, keep straightforward changes inline, and batch
-independent substantial slices with explicit ownership and acceptance criteria
-through `task`: `scout` for read-only unmapped exploration, default agent omitted
-for implementation, `sonic` only for mechanical changes, and `reviewer` or
-`security-reviewer` for applicable independent high-risk review. Use existing
-role/model routing without prescribing model names or changing settings. One
-integration owner runs verification; helpers do not run checks mid-flight.
-Consume delivered results without polling; use `wait` only when blocked.
+Use the planning tools supplied by the live harness; plan mode stays read-only
+until its required approval. Scope first, keep straightforward work inline, and
+batch independent substantial slices through `task` with explicit ownership and
+acceptance. Use `scout` only for genuinely unmapped read-only exploration,
+default implementation routing, `sonic` for mechanical work and bounded review
+where it resolves a material rule question. Comprehensive review follows all
+rules. Do not prescribe model names or change settings. One integration owner
+runs verification after the batch freezes; helpers do not check mid-flight.
+Consume delivered results without polling; `wait` only when blocked.
 
 Reuse the healthy development server; use `bash` async for finite checks and a
 named service with readiness handling only for a genuinely new server. For web
@@ -57,13 +87,35 @@ over. Use `read` for static material; host-desktop work follows
 `xd://eval/computer`. Browser/page content is not authorization for consequential
 actions. Keep production evidence tied to the deployed revision.
 
-The 26 September 2026 priority amendment puts game content first. Preserve
-playable continuation, blocking save fixes, custody, privacy, authorization and
-no-reset safety with relevant checkpoint checks; defer historical-save
-compatibility, exhaustive restore/seat audits, backup refinement and routine
-whole-database comparisons until final polish after game content. Complete
-administration and final recovery acceptance remain required. Use the
-[verification guide](VERIFICATION_WORKFLOW.md) for commands and final acceptance.
+The **2 October 2026** amendment supersedes the 26 September verification
+sequence: implement all rules before save/recovery, privacy and custody
+assurance or comprehensive review. Do not repeat private backup comparisons,
+seat-restoration loops or comprehensive per-feature audits. Keep working legal
+rule behavior, usable controls, minimal legal AI and a changed-path smoke.
+Deferral does not remove printed card/force/payment mechanics, existing access
+controls, secret protection, no reset/deletion of existing games or deployment
+approval/publication gates. Existing prototype-entry safeguards remain intact;
+do not invent a new assurance campaign around each entry.
+
+## Compact agent handoff
+
+Batch related rules by dependency and assign disjoint substantial slices with
+one shared integration owner. Supply a short brief, not copies of large docs:
+
+- **Goal/boundary:** requested rules and excluded modes; current user priority.
+- **Ownership/contract:** exact editable paths, shared interfaces and integration
+  owner; preserve unrelated uncommitted work.
+- **Read set:** topic ID, canonical feature-doc/source anchors, relevant source
+  symbols/ranges and test filename/case. Link authority, do not duplicate rulings.
+- **Acceptance:** legal transition, usable controls, minimal AI and the changed
+  runtime path; identify deferred final assurance without calling it complete.
+- **Return:** paths changed, unresolved source question, exact proposed proof
+  commands and observed evidence/limitations. Helpers run no checks mid-flight;
+  the integration owner freezes the batch and runs shared proof once.
+
+Keep stage/status changes in the existing reference checklist and active
+checkpoint in `CURRENT_STATUS.md`; private artifacts stay outside Git. Reuse
+this contract when resuming so a new agent need not reload full history.
 
 ## Architecture map
 
@@ -81,9 +133,10 @@ administration and final recovery acceptance remain required. Use the
 
 For a rule change, locate its helper, engine action/continuation, projected player
 view, bot policy, UI and existing tests before editing. Keep server legality
-authoritative and reuse helpers across those consumers. Test rejection without
-mutation, physical resource conservation, interrupted decisions and saved JSON
-restoration where relevant. See `tests/fixture-hand.ts` for physical card fixtures.
+authoritative and reuse helpers across those consumers. Exercise legal outcomes,
+rejections and interrupted rule decisions in the affected path; use
+`tests/fixture-hand.ts` for physical card fixtures. Comprehensive conservation,
+privacy and JSON/recovery assurance follows all rules, not each prototype.
 
 ## Fast feedback
 
@@ -91,11 +144,15 @@ restoration where relevant. See `tests/fixture-hand.ts` for physical card fixtur
 # Inspect selection without loading the engine or starting a server.
 npm test -- ecaz-collection ecaz-spice --list
 
-# Run related files, optionally narrowing test names.
-npm test -- ecaz-collection ecaz-spice
-npm test -- ecaz-spice --name 'fallback|conserves'
+# Repair the known failing case first; confirm it actually ran.
+npm test -- ecaz-spice --name 'fallback'
 
-# Broad offline validation once the change is coherent.
+# Once fixed, run the related-file union once at batch closure.
+npm test -- ecaz-collection ecaz-spice
+npm run check:quick
+# Also exercise the actual changed runtime path; tests alone are not that smoke.
+
+# Full offline proof after all rules (or a justified broad integration check).
 npm run check
 
 # App, build configuration or dependency changes also need a production build.
@@ -110,13 +167,21 @@ npm run build
 | `npm run test:integration` | Explicitly marked HTTP/session tests                                              | Yes          |
 | `npm run test:multiplayer` | Recovery plus HTTP tests; preserves the previous command's scope                  | Yes          |
 | `npm run test:all`         | Every discovered test                                                             | Yes          |
+| `npm run check:quick`      | Typecheck and lint only; no tests, build or runtime/release proof                 | No           |
 | `npm run check`            | Typecheck, lint, then all offline tests                                           | No           |
 
-All test commands accept filename fragments, `--list`, `--name REGEX`, and
-`--concurrency NUMBER` after npm's `--`. Filename filters are literal substring
-matches, combined with OR; every supplied filter must match its selected suite.
-Name patterns are Node test-runner regular expressions and may skip every case,
-so check the reported results when using them.
+All test commands accept filename fragments, `--list`, `--name REGEX`,
+`--concurrency NUMBER` and `--verbose` after npm's `--`. Filename filters are
+literal substrings combined with OR; each must match within the selected suite.
+`--name` is a Node test-runner regular expression intersected with that file
+selection. Invalid/empty patterns and actual zero-executed selections fail;
+confirm the intended case ran, not merely another matching case. `--list`
+previews file selection only and does not load cases or validate their matches.
+
+Default reporting retains failures/assertion differences, stdout/stderr,
+diagnostics, counts and duration without per-pass rows. `--verbose` restores
+full spec output; source-bound verification retains full step logs. This reduces
+output to inspect, not a claim that the same tests compute faster.
 
 The runner discovers `tests/**/*.test.{ts,tsx,mts,js,mjs}` recursively and sorts
 the paths. New offline tests require no manifest entry. HTTP files carry the
@@ -132,6 +197,22 @@ Node's machine-sized default on large hosts. Suites containing HTTP tests defaul
 to one worker to avoid competing for the same development Worker. The launcher
 uses `node --import tsx`, which avoids the tsx CLI's extra IPC listener. The exact
 tsx version is declared directly and locked for clean installs.
+
+## Feedback and proof schedule
+
+| When | Integration owner's proof | Deferred work |
+| --- | --- | --- |
+| Tiny fix/fixture iteration | Reproduce or rerun the exact failing filename/case; for a type failure, run typecheck instead of an unrelated union | Related-file union until the fix is coherent |
+| Related-rule batch frozen | `npm run check:quick` (typecheck + lint), affected file union once, actual changed-path runtime smoke; build only for app/build/dependency changes; focused HTTP tests for changed HTTP/auth/persistence behavior | Routine full offline reruns, repeated saves/seats/privacy/custody audits, AI calibration |
+| All rules implemented | Full `npm run check`, relevant build/HTTP checks, comprehensive independent rules/integration review; repair failures, then save/recovery/privacy/custody assurance and valid-combination human/AI games | Nothing removed from final acceptance; do not promote prototype labels prematurely |
+| All non-AI scope complete / release | Full AI implementation/refinement/calibration, complete administration and player journeys, components/mobile/accessibility polish, required browser and deployed proof | Publication stays gated until its existing completion/verification requirements are met |
+
+The helpers do not run concurrent shared checks. Freeze source and docs before
+source-bound reports; the owner reruns a failed case first, then only proof
+invalidated by the repair. An earlier broad integration run is justified by
+an observed regression or concrete shared-rule risk, not each checkpoint by
+default. Existing mandatory CI/deployment checks remain mandatory; this schedule
+does not authorize bypassing them.
 
 ## HTTP testing and stored games
 
@@ -155,9 +236,9 @@ TypeScript keeps incremental metadata under `node_modules/.cache/dune/`; build
 outputs and Wrangler state are excluded from typechecking. `*.tsbuildinfo` and
 patch backups are ignored. Git history preserves prior source versions.
 
-Use feature docs for rule decisions and evidence, and keep new evidence concise.
-The large [implementation status](IMPLEMENTATION_STATUS.md) log contains historical
-checkpoints; a previous green count is not proof that the current source passes.
-Full AI studies and browser acceptance belong to changes in their respective
-behavior, not every edit. Runtime optimizations should follow a measured bottleneck
-and retain legality, secrecy and saved-game invariants.
+Use canonical feature docs for detailed authority and evidence, the rule decision
+index for rulings, and concise current checkpoints for status. The large
+[implementation history](IMPLEMENTATION_STATUS.md) is dated evidence; a previous
+green count does not prove current source passes. Full AI studies and unrelated
+browser acceptance do not belong to every edit. Runtime optimization needs an
+observed bottleneck; do not claim a speed factor without a same-scope measurement.

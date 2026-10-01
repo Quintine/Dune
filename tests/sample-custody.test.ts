@@ -19,6 +19,7 @@ import {
   resolveAssassinationBattle,
   stageAssassinationBattle,
 } from './moritani-assassinate-fixture';
+import { createStrongholdFactionsFixture } from './fixture-stronghold-factions';
 
 void test('Moritani Skills sample custody checks the physical skill and Traitor inventories after genuine setup', () => {
   const game = completedMoritaniSkillsGame();
@@ -51,6 +52,48 @@ void test('Moritani assassination samples conserve retired Traitors after real b
   const duplicated = structuredClone(settled);
   duplicated.traitorReserve!.push('guild-1');
   assert.throws(() => verifySampleCustody(duplicated, inventory), /physical traitor custody/);
+});
+void test('native Stronghold sample custody survives real end-Mentat acquisition and retained next-turn ownership', () => {
+  const fixture = createStrongholdFactionsFixture();
+  const inventory = sampleInventory(fixture.initial);
+  assert.equal(inventory.cards.length, 47);
+  assert.equal(inventory.strongholds?.length, 6);
+  verifySampleCustody(fixture.beforeFirstMentat, inventory);
+  verifySampleCustody(fixture.afterFirstMentat, inventory, fixture.beforeFirstMentat);
+  assert.equal(fixture.afterFirstMentat.strongholdCards!.claimedTurn, 1);
+  const owner = fixture.afterFirstMentat.strongholdCards!.owners.hidden_mobile_stronghold;
+  assert.ok(owner, 'actual end-Mentat claims the mobile card');
+  verifySampleCustody(fixture.beforeBattle, inventory, fixture.afterFirstMentat);
+  const saved = JSON.parse(JSON.stringify(fixture.game));
+  verifySampleCustody(saved, inventory, fixture.beforeBattle);
+  const missing = structuredClone(fixture.game);
+  delete missing.strongholdCards;
+  assert.throws(() => verifySampleCustody(missing, inventory), /Stronghold Cards module custody/);
+  const missingCard = structuredClone(fixture.game);
+  Reflect.deleteProperty(missingCard.strongholdCards!.owners, 'arrakeen');
+  assert.throws(() => verifySampleCustody(missingCard, inventory), /Each Stronghold Card/);
+  const foreign = structuredClone(fixture.game);
+  foreign.strongholdCards!.owners.arrakeen = 'not-a-seat';
+  assert.throws(() => verifySampleCustody(foreign, inventory), /current seat/);
+  const future = structuredClone(fixture.game);
+  future.strongholdCards!.claimedTurn = future.turn + 1;
+  assert.throws(() => verifySampleCustody(future, inventory), /future/);
+  const transferred = structuredClone(fixture.game);
+  const other = transferred.players.find(player => player.id !== owner)!;
+  transferred.strongholdCards!.owners.hidden_mobile_stronghold = other.id;
+  assert.throws(() => verifySampleCustody(transferred, inventory, fixture.game),
+    /holders must persist/);
+  const missingCyborg = structuredClone(fixture.game);
+  const ixians = missingCyborg.players.find(player => player.faction === 'ixians')!;
+  assert.ok(ixians.elites);
+  if (ixians.elites.reserves > 0) ixians.elites.reserves--;
+  else if (ixians.elites.tanks > 0) ixians.elites.tanks--;
+  else {
+    const location = Object.keys(ixians.elites.forces).find(key => ixians.elites!.forces[key] > 0);
+    assert.ok(location);
+    ixians.elites.forces[location]--;
+  }
+  assert.throws(() => verifySampleCustody(missingCyborg, inventory), /elite custody ixians/);
 });
 
 function fixture(advanced = false) {

@@ -6,15 +6,26 @@ they do not replace rules, browser or release acceptance.
 
 ## Current verification priority
 
-The 26 September 2026 amendment prioritizes remaining game content before
-extensive saved-game polish. Keep focused current-feature playable continuation,
-custody, privacy, authorization, no-reset and blocking save checks and required
-checkpoint commands. Historical-save compatibility, exhaustive restore/seat
-audits, backup refinement and routine whole-database comparisons wait until
-final polish after game content; final recovery acceptance is still required.
-The tools below remain available, not a mandate to run every preservation
-command for each content checkpoint. See the
-[OMP harness workflow](DEVELOPMENT.md#omp-harness-workflow) for execution mechanics.
+The **2 October 2026** amendment supersedes the 26 September sequence: implement
+all rules first; save/recovery, privacy and custody assurance and comprehensive
+review follow afterward. They are not per-prototype gates. Keep legal rule
+transitions, usable controls, minimal legal AI and changed-path runtime smoke.
+Printed card/force/payment mechanics, existing authorization, secret protection,
+no reset/deletion of existing games and deployment safeguards remain in force.
+
+Use the [feedback/proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule):
+exact failing case first, related tests once at frozen batch closure with one
+integration owner, full offline/integration proof and comprehensive review after
+all rules. Earlier broad checks need an observed failure or concrete integration
+risk. Do not repeat HTTP/save comparisons or seat-restoration loops for routine
+rule checkpoints. Helpers run no shared checks mid-flight.
+
+The recovery/backup/seat tools below remain available for final assurance and
+authorized operations, not a checklist to repeat at every feature. Final
+recovery, privacy, custody, complete administration and deployed/release
+acceptance are deferred, not deleted. Historical sample counts retain their
+dated/source-bound scope and are not fresh evidence for a later revision.
+Existing mandatory CI, prototype-entry and deployment safeguards are unchanged.
 
 ## Verify the deployed application
 
@@ -29,16 +40,17 @@ occurred, what revision actually ran, the routes/actions exercised, results and
 remaining limitations. If the deployed revision is older, label the results for
 that older revision; do not claim that new source passed deployed acceptance.
 If access or deployment is unavailable, report the gap and keep acceptance open.
-Each pushed application checkpoint also needs a separate live deployment; a
-successful GitHub container publication alone is not a deployment. Follow
-[the manual TrueNAS update](TRUENAS.md#applying-an-update) only after the image
-passes CI, the persistent volume is backed up and play reaches a safe point.
+A pushed image is not a deployment. Do not make a separate live rollout a
+per-prototype gate; deployed acceptance remains required after all rules and for
+actual deployments. Follow [the manual TrueNAS update](TRUENAS.md#applying-an-update)
+only after the image passes CI, the persistent volume is backed up, human play
+reaches a safe point and required interactive approval is obtained.
 
-For subsequent checkpoints, delegate the NAS Apps update and live verification
-to a dedicated deployment agent while the integration owner continues other
-work. Supply the exact successful immutable image tag; the agent changes only
-the `dune` app in Apps, retains its `/data` volume, and reports the displayed
-revision and saved-room continuity before the checkpoint is called deployed.
+For an authorized deployment, use a dedicated deployment agent if useful while
+the integration owner continues other work. Supply the exact successful immutable
+image tag; the agent changes only the `dune` app in Apps, retains its `/data`
+volume, and reports the displayed revision and deployment-required continuity
+before the checkpoint is called deployed.
 
 If access, the backup or a safe point is missing, report the push as **not
 deployed** and keep its production verification open rather than claiming the
@@ -60,10 +72,11 @@ checks restricted to designated test records and appropriate recovery snapshots.
 Do not reset production storage, interrupt live human play, weaken permissions
 or restart the server merely to run a routine smoke test.
 
-When a deployment or necessary restart occurs, verify saved-game and seat
-continuity afterward, distinguishing legitimate gameplay changes from data loss.
-Use the existing hosting/deployment procedure and additive migrations; testing
-requirements do not authorize bypassing completion or publication gates.
+Actual production deployments retain their existing continuity safeguards.
+A routine local content checkpoint or dev-server reload is not a mandate to
+reaudit every saved seat. Comprehensive save/recovery/privacy/custody assurance
+waits until all rules. Use additive migrations and the hosting procedure;
+sequencing changes do not bypass completion, publication or provider approval.
 Documentation-only checkpoints need documentation/link review, not an unrelated
 production gameplay run. Record production evidence separately from the local
 source-bound checks below, and repair runtime-specific failures before treating
@@ -72,13 +85,24 @@ the affected deployed feature as verified.
 ## Compact checks and source evidence
 
 ```sh
+# Exact failing case first (file selection plus name regex).
+node --import tsx tools/verify.ts --out /tmp/dune-new-case focused --focus test-workflow --name 'each filename filter'
+# Related union at frozen batch closure; repeat --focus for another fragment.
 node --import tsx tools/verify.ts --out /tmp/dune-new-focused focused --focus guild-payment
+# Full offline proof after all rules or a justified broad integration checkpoint.
 node --import tsx tools/verify.ts --out /tmp/dune-new-check check
-# Add build for app/build/dependency changes, integration for HTTP/auth/persistence.
+# Final proof: build for app/build/dependencies, integration for HTTP/auth/persistence.
 node --import tsx tools/verify.ts --out /tmp/dune-new-release check build integration
-# Only for relevant AI/gameplay work; the existing study covers Basic base factions.
+# Final AI work, not per-rule iteration; this study covers Basic base factions.
 node --import tsx tools/verify.ts --out /tmp/dune-new-study base-games --games 20 --seed 20260913
 ```
+
+`focused` accepts repeated `--focus` filename fragments and optional `--name
+REGEX`, using the test runner's union/file-plus-name semantics. Use
+`npm test -- <fragment> --list` before the run to inspect file selection; it does
+not preview matching cases. Invalid selectors or a name that executes no cases
+fail instead of producing false-green proof. Console output is compact; full
+emitted command output remains in each private step log.
 
 Each output must be a new directory outside the checkout, with an existing parent.
 It is created with private permissions. Full command output stays in step logs;
@@ -92,6 +116,11 @@ nor the contents of dependencies, ignored files or an external HTTP server.
 An interrupted or incomplete report is never evidence of success.
 
 ## Saved games and online backups
+
+Saved-game and private-seat assurance in this section is scheduled **after all
+rules**. Do not run every sample matrix or preservation command per prototype.
+Existing genuine-game harness checks stay intact when a relevant game smoke
+uses them; their presence does not require a separate assurance campaign.
 
 ### Reusable base and faction sample games
 
@@ -261,9 +290,9 @@ The source database is opened read-only. Snapshots store room versions and state
 hashes, not private game state. New rooms are allowed; every changed or missing
 original room fails comparison. Legitimate human play can change a room: investigate
 and document it, never overwrite progress to make a comparison pass. When a
-targeted storage-risk maintenance operation warrants a baseline, snapshot the
-current set rather than reusing historical room counts; routine content-only
-checkpoints do not require full-database comparisons.
+targeted authorized storage operation warrants a baseline, snapshot the current
+set rather than reusing historical room counts. Routine rule checkpoints do not
+require these comparisons; comprehensive assurance follows all rules.
 Online backup includes WAL contents and requires Node 22.16 or newer; snapshot and
 comparison retain the project's Node 22.13 minimum. Backup files contain private
 state and session records, remain outside Git, and never overwrite an earlier run.
@@ -313,4 +342,5 @@ and time out. Checks require the expected room, seat and version, the owning sea
 private fields, and absence of selected rival private fields. No session tokens,
 response bodies or hands are printed. This is HTTP seat restoration, not recovery-key
 rotation, exact hand-content proof, a complete privacy audit or browser rendering.
-Pair it with saved-game comparison and feature-specific browser acceptance.
+During final assurance, pair it with saved-game comparison and relevant browser
+acceptance; it is not a repeated per-prototype seat audit.

@@ -20,6 +20,8 @@ import {
 } from '../tools/prototype-room';
 import { NEXUS_FACTIONS } from '../game/nexus-cards';
 import { createLeaderSkills } from '../game/leader-skills';
+import { createStrongholdCards } from '../game/stronghold-cards';
+import { treacheryDeck } from '../game/cards';
 
 function fixture(t: test.TestContext) {
   const db = new DatabaseSync(':memory:');
@@ -946,6 +948,155 @@ void test('Banker income CLI requires a fresh exact-version private backup and p
   assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]), lobby.players.map(p => [p.id, p.name, p.faction]));
   assert.deepEqual(saved.players.map(p => p.hand), lobby.players.map(p => p.hand));
   assert.deepEqual(saved.leaderSkills!.offers, {});
+  assert.notEqual(invoke(8, output).status, 0);
+  assert.notEqual(invoke(7, join(directory, 'stale-proof')).status, 0);
+  assert.notEqual(invoke(8, join(directory, 'redeal-proof')).status, 0);
+  assert.deepEqual(current.prepare('SELECT * FROM rooms ORDER BY code').all(), after);
+  assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), credentials);
+});
+
+function strongholdFactionsLobby(count = 3) {
+  const game = createGame('PROTOTYP', newPlayer('i', 'Native Ixians', 'ixians'), true, ['ix', 'choam']);
+  const factions = ['choam', 'atreides', 'harkonnen', 'emperor', 'guild'] as const;
+  for (let index = 1; index < count; index++)
+    joinGame(game, newPlayer('seat-' + index, factions[index - 1], factions[index - 1]));
+  game.players.forEach(player => { player.ready = true; });
+  return game;
+}
+
+void test('Stronghold factions admits only fresh exact-version native Advanced lobbies without changing seats or other rooms', t => {
+  const { db } = fixture(t);
+  for (const count of [2, 3, 4, 5, 6]) {
+    const lobby = strongholdFactionsLobby(count);
+    const original = structuredClone(lobby);
+    db.prepare('UPDATE rooms SET state=?,version=7 WHERE code=?').run(JSON.stringify(lobby), lobby.code);
+    const seats = db.prepare('SELECT * FROM seats').all();
+    const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+    const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    assert.throws(() => startPrototypeRoom(db, lobby.code, 6, 'stronghold-factions'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+    startPrototypeRoom(db, lobby.code, 7, 'stronghold-factions');
+    const row = db.prepare('SELECT state,version FROM rooms WHERE code=?').get(lobby.code)!;
+    const saved = JSON.parse(row.state as string) as Game;
+    assert.equal(saved.version, 8);
+    assert.equal(row.version, 8);
+    assert.equal(saved.status, 'setup');
+    assert.equal(saved.advanced, true);
+    assert.deepEqual(saved.expansions, ['ix', 'choam']);
+    assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]),
+      original.players.map(p => [p.id, p.name, p.faction]));
+    assert.deepEqual(saved.playerPositions, original.playerPositions);
+    const cards = [...saved.deck, ...saved.discard, ...(saved.ixSetupCards ?? []), ...saved.players.flatMap(p => p.hand)];
+    assert.deepEqual(cards.map(card => card.id).sort(), treacheryDeck(['ix', 'choam']).map(card => card.id).sort());
+    assert.equal(new Set(cards.map(card => card.id)).size, 47);
+    assert.deepEqual(saved.strongholdCards, createStrongholdCards());
+    const ix = saved.players.find(p => p.faction === 'ixians')!;
+    assert.equal((ix.elites?.reserves ?? 0) + (ix.elites?.tanks ?? 0) +
+      Object.values(ix.elites?.forces ?? {}).reduce((sum, amount) => sum + amount, 0), 7);
+    const choam = saved.players.find(p => p.faction === 'choam')!;
+    assert.equal(choam.leaders.filter(leader => leader.id === 'choam-auditor').length, 1);
+    for (const p of saved.players) {
+      const view = viewGame(saved, p.id);
+      assert.deepEqual(view.strongholdCards, saved.strongholdCards);
+      assert.equal('deck' in view, false);
+      for (const otherPlayer of view.players)
+        if (otherPlayer.id !== p.id) assert.equal(otherPlayer.hand, undefined);
+    }
+    assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+    assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+    const started = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    assert.throws(() => startPrototypeRoom(db, lobby.code, 8, 'stronghold-factions'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), started);
+  }
+});
+
+void test('Stronghold faction admission rejects incompatible modules, history, ownership and public retrofit immutably', t => {
+  const { db } = fixture(t);
+  const native = strongholdFactionsLobby();
+  const variants: ((game: Game) => void)[] = [
+    game => { game.advanced = false; },
+    game => { game.expansions = ['ix']; },
+    game => { game.expansions = ['ix', 'choam', 'ecaz']; },
+    game => { game.players[1] = newPlayer(game.players[1].id, 'Classic', 'guild'); game.players[1].ready = true; },
+    game => { game.players[2] = newPlayer(game.players[2].id, 'Tleilaxu', 'tleilaxu'); game.players[2].ready = true; },
+    game => { game.players[0].ready = false; },
+    game => { game.turn = 2; },
+    game => { game.players[0].battleLosses = 1; },
+    game => { game.strongholdCards = createStrongholdCards(); game.strongholdCards.owners.arrakeen = game.host; },
+    game => { game.strongholdCards = createStrongholdCards(); game.strongholdCards.claimedTurn = 1; },
+    game => { game.nexusCards = { cards: null, phase: null }; },
+    game => { game.leaderSkills = createLeaderSkills(() => 0); },
+  ];
+  for (const mutate of variants) {
+    const game = structuredClone(native);
+    mutate(game);
+    db.prepare('UPDATE rooms SET state=?,version=7 WHERE code=?').run(JSON.stringify(game), native.code);
+    const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    const seats = db.prepare('SELECT * FROM seats').all();
+    assert.throws(() => startPrototypeRoom(db, native.code, 7, 'stronghold-factions'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+    assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+  }
+  for (const type of ['homeworlds', 'techTokens']) {
+    const game = applyAction(native, native.host, { type, enabled: true });
+    game.players.forEach(player => { player.ready = true; });
+    db.prepare('UPDATE rooms SET state=?,version=7 WHERE code=?').run(JSON.stringify(game), native.code);
+    const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    assert.throws(() => startPrototypeRoom(db, native.code, 7, 'stronghold-factions'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+  }
+  const original = structuredClone(native);
+  for (const action of [{ type: 'start', profile: 'stronghold-factions' },
+    { type: 'initializeStrongholdFactionsGameForAudit' }, { type: 'strongholdFactions', enabled: true }])
+    assert.throws(() => applyAction(native, native.host, action));
+  assert.deepEqual(native, original);
+});
+
+void test('Stronghold factions CLI privately backs up the exact original native lobby and cannot reset or overwrite proof', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'dune-stronghold-factions-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const database = join(directory, 'rooms.sqlite');
+  const db = new DatabaseSync(database);
+  db.exec('CREATE TABLE rooms(code TEXT PRIMARY KEY,state TEXT,version INTEGER,updated_at INTEGER); CREATE TABLE seats(room_code TEXT,player_id TEXT,token_hash TEXT);');
+  const lobby = strongholdFactionsLobby(6);
+  db.prepare('INSERT INTO rooms VALUES(?,?,?,?)').run(lobby.code, JSON.stringify(lobby), 7, 100);
+  db.prepare('INSERT INTO rooms VALUES(?,?,?,?)').run('KEEPGAME', JSON.stringify(harkonnenLobby(false, 2)), 9, 50);
+  for (const p of lobby.players)
+    db.prepare('INSERT INTO seats VALUES(?,?,?)').run(lobby.code, p.id, 'private-native-session-' + p.id);
+  const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+  const credentials = db.prepare('SELECT * FROM seats ORDER BY player_id').all();
+  db.close();
+  const output = join(directory, 'private-proof');
+  const invoke = (version: number, out: string) => spawnSync(process.execPath, [
+    '--import', 'tsx', fileURLToPath(new URL('../tools/start-prototype.ts', import.meta.url)),
+    '--profile', 'stronghold-factions', '--db', database, '--room', lobby.code,
+    '--version', String(version), '--out', out,
+  ], { encoding: 'utf8', timeout: 120000 });
+  const result = invoke(7, output);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(statSync(output).mode & 0o777, 0o700);
+  for (const name of ['games.sqlite', 'snapshot.json', 'prototype.json'])
+    assert.equal(statSync(join(output, name)).mode & 0o777, 0o600);
+  const backup = new DatabaseSync(join(output, 'games.sqlite'), { readOnly: true });
+  assert.deepEqual(backup.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+  assert.deepEqual(backup.prepare('SELECT * FROM seats ORDER BY player_id').all(), credentials);
+  backup.close();
+  const current = new DatabaseSync(database, { readOnly: true });
+  t.after(() => current.close());
+  const after = current.prepare('SELECT * FROM rooms ORDER BY code').all();
+  assert.deepEqual(current.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPGAME'), before.find(row => row.code === 'KEEPGAME'));
+  assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), credentials);
+  const row = current.prepare('SELECT state,version FROM rooms WHERE code=?').get(lobby.code)!;
+  const saved = JSON.parse(row.state as string) as Game;
+  assert.equal(row.version, 8);
+  assert.equal(saved.version, 8);
+  assert.equal(saved.status, 'setup');
+  assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]),
+    lobby.players.map(p => [p.id, p.name, p.faction]));
+  assert.deepEqual(saved.playerPositions, lobby.playerPositions);
+  assert.deepEqual(saved.strongholdCards, createStrongholdCards());
+  assert.deepEqual([...saved.deck, ...(saved.ixSetupCards ?? []), ...saved.players.flatMap(p => p.hand)].map(card => card.id).sort(),
+    treacheryDeck(['ix', 'choam']).map(card => card.id).sort());
   assert.notEqual(invoke(8, output).status, 0);
   assert.notEqual(invoke(7, join(directory, 'stale-proof')).status, 0);
   assert.notEqual(invoke(8, join(directory, 'redeal-proof')).status, 0);

@@ -14,6 +14,7 @@ async function main() {
       list: { type: 'boolean', default: false },
       name: { type: 'string' },
       concurrency: { type: 'string' },
+      verbose: { type: 'boolean', default: false },
       help: { type: 'boolean', short: 'h' },
     },
   });
@@ -24,6 +25,7 @@ async function main() {
   --list                 Print selected files without running tests
   --name REGEX           Run matching test names within selected files
   --concurrency NUMBER   Parallel test files (default: up to 4; HTTP: 1)
+  --verbose              Include passing test rows (default: failures + summary)
 
 Examples:
   npm test -- ecaz-collection ecaz-spice
@@ -46,12 +48,13 @@ Examples:
     values.suite as TestSuite,
     positionals,
   );
+  if (values.name !== undefined) new RegExp(values.name);
+  if (values.name === '') throw new Error('--name must not be empty.');
   if (values.list) {
     for (const file of selected) console.log(`${file.kind}\t${file.path}`);
     console.log(`${selected.length} test files`);
     return;
   }
-  if (values.name) new RegExp(values.name);
   const network = selected.some(({ kind }) => kind === 'integration');
   const concurrency =
     values.concurrency === undefined
@@ -85,23 +88,43 @@ Examples:
       'tsx',
       '--test',
       `--test-concurrency=${concurrency}`,
-      ...(values.name ? [`--test-name-pattern=${values.name}`] : []),
+      '--test-reporter=./tools/test-reporter.ts',
+      ...(values.name !== undefined
+        ? [`--test-name-pattern=${values.name}`]
+        : []),
       ...selected.map(({ path }) => path),
     ],
-    { cwd: root, stdio: 'inherit' },
+    {
+      cwd: root,
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        DUNE_TEST_VERBOSE: values.verbose ? '1' : '0',
+      },
+    },
   );
   // Forward cancellation so a stopped check does not leave test workers behind.
-  const interrupt = () => child.kill('SIGINT');
-  const terminate = () => child.kill('SIGTERM');
+  let interrupted = 0;
+  const interrupt = () => {
+    interrupted = 130;
+    child.kill('SIGINT');
+  };
+  const terminate = () => {
+    interrupted = 143;
+    child.kill('SIGTERM');
+  };
   process.on('SIGINT', interrupt);
   process.on('SIGTERM', terminate);
   try {
-    process.exitCode = await new Promise<number>((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) =>
-        resolve(code ?? (signal === 'SIGINT' ? 130 : 1)),
-      );
-    });
+    const { promise, resolve, reject } = Promise.withResolvers<number>();
+    child.once('error', reject);
+    child.once('close', (code, signal) =>
+      resolve(
+        interrupted ||
+          (code ?? (signal === 'SIGINT' ? 130 : signal === 'SIGTERM' ? 143 : 1)),
+      ),
+    );
+    process.exitCode = await promise;
   } finally {
     process.off('SIGINT', interrupt);
     process.off('SIGTERM', terminate);

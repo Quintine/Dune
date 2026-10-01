@@ -37,6 +37,8 @@ export function selectTests(
   suite: TestSuite,
   filters: string[] = [],
 ): TestFile[] {
+  if (filters.some((filter) => !filter))
+    throw new Error('Filename filters must not be empty.');
   const selected = files.filter(({ path, kind }) => {
     const included =
       suite === 'all' ||

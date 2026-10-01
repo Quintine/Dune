@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import {
+  cpSync,
   mkdtempSync,
   mkdirSync,
   writeFileSync,
@@ -13,6 +14,7 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   privateOutputDirectory,
   runVerification,
@@ -37,6 +39,70 @@ void test('focused wrapper cannot turn a filename into a list-only or test-skipp
   );
   assert.equal(result.status, 1);
   assert.equal(existsSync(out), false);
+});
+
+void test('focused verification executes only matching names and cannot certify an empty selection', (t) => {
+  const { root, area } = fixture(t);
+  mkdirSync(join(root, 'tools'));
+  mkdirSync(join(root, 'tests'));
+  for (const tool of [
+    'verify.ts',
+    'verification.ts',
+    'test.ts',
+    'test-discovery.ts',
+    'test-reporter.ts',
+  ])
+    cpSync(new URL(`../tools/${tool}`, import.meta.url), join(root, 'tools', tool));
+  symlinkSync(
+    fileURLToPath(new URL('../node_modules', import.meta.url)),
+    join(root, 'node_modules'),
+    'dir',
+  );
+  writeFileSync(
+    join(root, 'package.json'),
+    JSON.stringify({
+      type: 'module',
+      scripts: { test: 'node --import tsx tools/test.ts' },
+    }),
+  );
+  writeFileSync(
+    join(root, 'tests/rules.test.mjs'),
+    `import test from 'node:test';
+    test('chosen case', () => console.log('selected case executed'));
+    test('excluded case', () => { throw new Error('excluded failure'); });\n`,
+  );
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  for (const [name, status] of [
+    ['chosen case', 'passed'],
+    ['no matching case', 'failed'],
+  ]) {
+    const out = join(area, status);
+    const result = spawnSync(
+      process.execPath,
+      [
+        '--import',
+        import.meta.resolve('tsx'),
+        'tools/verify.ts',
+        '--out',
+        out,
+        'focused',
+        '--focus',
+        'rules',
+        '--name',
+        name,
+      ],
+      { cwd: root, env, encoding: 'utf8', timeout: 15_000 },
+    );
+    assert.ifError(result.error);
+    assert.equal(result.status, status === 'passed' ? 0 : 1);
+    const report = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
+    assert.equal(report.status, status);
+    const log = readFileSync(join(out, 'focused.log'), 'utf8');
+    if (status === 'passed') assert.match(log, /selected case executed/);
+    else assert.doesNotMatch(log, /selected case executed/);
+    assert.doesNotMatch(log, /excluded failure/);
+  }
 });
 
 function fixture(t: test.TestContext) {

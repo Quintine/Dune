@@ -227,6 +227,17 @@ original-faction retention after death/capture/reassignment is provisional
 in this profile; bounded verification is Partial/Development Verified and the existing question stays open.
 See the [normal-band source and scope](docs/SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026).
 
+For local **Ixians + CHOAM + Stronghold Cards** integration, use
+`node --import tsx tools/start-prototype.ts --profile stronghold-factions`
+on a fresh ready Advanced native-Ixian/native-CHOAM lobby with unique classic
+opponents and exactly `ix,choam` decks. Canonical combined Treachery count is47,
+not49; the six separate cards start unowned and use native end-Mentat custody.
+The same exact-version/private-backup contract applies. Other rosters/modules,
+public expansion starts and existing games are unchanged. Bounded native
+rules, legal AI, complete-game and human phone controls are Development Verified;
+save/privacy/custody assurance follows all rules under the2 October priority. See the
+[bounded integration](docs/STRONGHOLD_CARDS.md#native-ixian-and-choam-integration--2-october-2026).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).
@@ -258,20 +269,40 @@ completes automatically; see [private exchange history](docs/HARKONNEN_EXCHANGE.
 
 ## Verify changes
 
-Use the [development guide](docs/DEVELOPMENT.md) for architecture, focused tests
-and the [repeatable verification tools](docs/VERIFICATION_WORKFLOW.md). Tests are discovered automatically; the default
-suite includes in-memory persistence recovery and needs no server:
+Use the [bounded context index](docs/DEVELOPMENT.md#context-index) for canonical
+feature/source paths and the [feedback/proof schedule](docs/DEVELOPMENT.md#feedback-and-proof-schedule).
+The **2 October 2026** priority implements all rules before comprehensive review
+and save/recovery/privacy/custody assurance; those remain final requirements,
+not per-prototype gates. Keep legal behavior, usable controls, minimal legal AI
+and actual changed-path smoke. Batch related rules with one integration owner;
+helpers do not run shared checks while edits are in flight.
 
 ```sh
+# Inspect file selection, then repair the exact failing case first.
+npm test -- ecaz-spice --list
+npm test -- ecaz-spice --name 'fallback'
+# Run the related union once the batch is coherent.
 npm test -- ecaz-collection ecaz-spice
+npm run check:quick
+# Also exercise the actual changed runtime path.
+# Full offline proof after all rules or a justified broad integration check.
 npm run check
+# App/build/dependency changes also need a build.
 npm run build
 ```
 
-Run `npm run test:integration` against a development server for HTTP/session
-changes. `npm run test:multiplayer` remains available for recovery plus HTTP
-checks; `npm run test:recovery` runs only in-memory persistence tests. All test
-commands accept filename fragments and `--list` after `--`.
+Tests are discovered automatically. The offline suite includes in-memory
+persistence recovery and needs no server. Run relevant `test:integration` cases
+against a development server for changed HTTP/session behavior, not repeated
+assurance at every rule checkpoint. `test:multiplayer` retains recovery plus HTTP;
+`test:recovery` selects in-memory persistence. Filename fragments form a union;
+`--name REGEX` narrows cases. `--list` previews files, not matching case names.
+Bad fragments/patterns and zero-executed selections fail. Default output retains
+failures, diagnostics and counts; use `--verbose` for full per-pass output.
+`check:quick` runs typecheck and lint only; it is not full-suite or release proof.
+See [source-bound verification](docs/VERIFICATION_WORKFLOW.md#compact-checks-and-source-evidence)
+for private full logs/reports and deferred final audits. Existing games, access
+controls, secret protection and CI/deployment/publication gates remain protected.
 
 The production build is written to `dist`. `npm start` runs that build with Wrangler; apply its database migrations to the intended storage environment before use. The included local migration command targets the development database, not a remote deployment.
 
@@ -287,6 +318,6 @@ See [AI calibration](docs/AI_CALIBRATION.md), [multiplayer audit](docs/MULTIPLAY
 
 The user-authorized 13 September 2026 local reset established a fresh saved-game baseline; see the [reset record](docs/VERIFICATION_WORKFLOW.md#authorized-reset-13-september-2026). Preserve all games created after that checkpoint.
 
-Reuse the running development server. Restart only when a code or configuration change, or an observed server condition, makes leaving it running likely to cause issues; use judgment rather than an hourly schedule. Preserve database state, warn before interrupting human play, and defer until a safe decision point. Verify server health and restoration after a necessary restart. No recurring automation is installed; the user requested leaving it removed. Fix causes of crashes and lost progress rather than relying on restarts.
+Reuse the running development server. Restart only for a relevant code/configuration change or observed problem, not an hourly schedule. Preserve database state, warn before interrupting human play and defer to a safe point. Observe health after a necessary local restart; comprehensive restoration assurance follows all rules, while actual production deployments retain their existing safeguards. No recurring automation is installed; leave it removed. Fix crashes and broken rule continuation rather than relying on restarts.
 
 The application bundles its artwork, fonts and rules guidance. Source provenance and third-party notices live in developer documentation; the player-facing reference uses internal links. Publication remains gated on completion and integrated verification of the requested rules, expansions and critical player journeys.

@@ -9,6 +9,7 @@ async function main() {
     options: {
       out: { type: 'string' },
       focus: { type: 'string', multiple: true },
+      name: { type: 'string' },
       games: { type: 'string' },
       seed: { type: 'string' },
       help: { type: 'boolean' },
@@ -16,7 +17,7 @@ async function main() {
   });
   if (values.help) {
     console.log(
-      'Usage: node --import tsx tools/verify.ts --out /tmp/new-run check [build] [integration]\nOr: --out /tmp/new-run focused --focus fragment [--focus fragment]\nOr: --out /tmp/new-run base-games --games 20 --seed 20260913\nLogs and source-bound report.json stay outside the checkout. Commands stop on failure; changed source invalidates success.',
+      'Usage: node --import tsx tools/verify.ts --out /tmp/new-run check [build] [integration]\nOr: --out /tmp/new-run focused --focus fragment [--focus fragment] [--name REGEX]\nOr: --out /tmp/new-run base-games --games 20 --seed 20260913\nLogs and source-bound report.json stay outside the checkout. Commands stop on failure; changed source invalidates success.',
     );
     return;
   }
@@ -24,6 +25,12 @@ async function main() {
     throw new Error('Provide --out and verification steps; see --help.');
   if (values.focus?.some((fragment) => !fragment || fragment.startsWith('-')))
     throw new Error('--focus accepts filename fragments, not runner options.');
+  if (values.name !== undefined) {
+    if (!values.name) throw new Error('--name must not be empty.');
+    new RegExp(values.name);
+    if (!positionals.includes('focused'))
+      throw new Error('--name requires the focused step.');
+  }
   const root = fileURLToPath(new URL('../', import.meta.url));
   const steps: VerificationStep[] = positionals.map((name) => {
     if (['check', 'build', 'integration'].includes(name))
@@ -33,7 +40,16 @@ async function main() {
         args: ['run', name === 'integration' ? 'test:integration' : name],
       };
     if (name === 'focused' && values.focus?.length)
-      return { name, command: 'npm', args: ['test', '--', ...values.focus] };
+      return {
+        name,
+        command: 'npm',
+        args: [
+          'test',
+          '--',
+          ...values.focus,
+          ...(values.name !== undefined ? ['--name', values.name] : []),
+        ],
+      };
     if (name === 'base-games') {
       const games = Number(values.games),
         seed = Number(values.seed);

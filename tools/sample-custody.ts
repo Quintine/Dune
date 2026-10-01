@@ -6,11 +6,15 @@ import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { traitorDeck } from '../game/traitors';
 import { basicExpansionLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { validateLeaderSkills } from '../game/leader-skills';
+import { ownedStrongholdCards, STRONGHOLD_CARDS } from '../game/stronghold-cards';
 
 /** Fixed inventory captured after genuine setup initialization, before any choices. */
 export function sampleInventory(game: Game) {
   return {
     leaderSkills: !!game.leaderSkills,
+    strongholds: game.strongholdCards
+      ? STRONGHOLD_CARDS.map(card => card.id).sort()
+      : null,
     cards: [
       ...treacheryDeck(game.expansions),
       ...(game.ecazTreachery ? ecazTreacheryCards() : []),
@@ -34,9 +38,35 @@ export function sampleInventory(game: Game) {
 export function verifySampleCustody(
   game: Game,
   inventory: ReturnType<typeof sampleInventory>,
+  previous?: Game,
 ) {
   assert.equal(!!game.leaderSkills, inventory.leaderSkills, 'Leader Skills module custody');
   if (game.leaderSkills) validateLeaderSkills(game.leaderSkills, game.players);
+  assert.equal(!!game.strongholdCards, !!inventory.strongholds, 'Stronghold Cards module custody');
+  if (game.strongholdCards) {
+    const state = game.strongholdCards;
+    // Reuse the module's physical map and acquisition-turn validation. Custody
+    // is retained during play; current board control is not a custody census.
+    ownedStrongholdCards(state, game.players[0].id);
+    assert.deepEqual(Object.keys(state.owners).sort(), inventory.strongholds,
+      'physical Stronghold Card custody');
+    assert.ok(state.claimedTurn <= game.turn, 'Stronghold acquisition cannot be in the future');
+    for (const owner of Object.values(state.owners))
+      assert.ok(owner === null || game.players.some(player => player.id === owner),
+        'Stronghold owner must be a current seat');
+    if (state.claimedTurn === 0)
+      assert.ok(Object.values(state.owners).every(owner => owner === null),
+        'unclaimed Stronghold Cards must be unowned');
+    if (game.status === 'setup')
+      assert.equal(state.claimedTurn, 0, 'Stronghold setup cannot have settled custody');
+    if (previous?.strongholdCards) {
+      assert.ok(state.claimedTurn >= previous.strongholdCards.claimedTurn,
+        'Stronghold acquisition cannot move backward');
+      if (state.claimedTurn === previous.strongholdCards.claimedTurn)
+        assert.deepEqual(state.owners, previous.strongholdCards.owners,
+          'Stronghold holders must persist until the next end-Mentat settlement');
+    }
+  }
   const cards = [
     ...game.players.flatMap((player) => player.hand),
     ...game.deck,
