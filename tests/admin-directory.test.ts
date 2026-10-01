@@ -7,6 +7,7 @@ import { projectAdminRoom, readAdminDirectory } from '../db/admin-directory';
 import { applyAction, viewGame } from '../game/engine';
 import { tableActionOwner } from '../game/table-turn';
 import { createIxianNexusBetrayalFixture } from './fixture-nexus-ixian-betrayal';
+import { createHarkonnenNexusBetrayalFixture } from './fixture-nexus-harkonnen-betrayal';
 
 const state = (name = 'Directory QA', status = 'lobby', advanced = false) => ({
   status, advanced, host: 'p1', turn: 1, phase: 0, expansions: [],
@@ -53,6 +54,75 @@ void test('admin directory allowlist reveals no private state, role power or sea
 });
 
 const project = (value: unknown) => projectAdminRoom({ code: 'IXADMINA', version: 3, updated_at: 100, state: JSON.stringify(value) });
+
+void test('Harkonnen acknowledgement ownership supersedes combatants and exposes only the unfinished public responder', () => {
+  for (const advanced of [false, true]) for (const remote of [false, true]) {
+    const f = createHarkonnenNexusBetrayalFixture({ advanced, remote, receiverCount: 2 });
+    assert.equal(f.required.length, 2);
+    const shared = project(f.game);
+    assert.deepEqual(shared.pending.owners, []);
+    for (const player of f.game.players)
+      assert.equal(tableActionOwner(viewGame(f.game, player.id)), null);
+    const partial = applyAction(f.game, f.holder, { type: 'nexusHarkonnenBetrayalPass', event: f.event });
+    const remaining = f.required.find(id => id !== f.holder)!;
+    const sole = project(partial);
+    assert.deepEqual(sole.pending.owners, [remaining]);
+    for (const player of partial.players)
+      assert.equal(tableActionOwner(viewGame(partial, player.id)), remaining);
+    const privateChanges = {
+      ...partial,
+      players: partial.players.map(player => ({ ...player, hand: ['SECRET_HAND'], traitors: ['SECRET_TRAITOR'], spice: 'SECRET_SPICE' })),
+      traitorReserve: ['SECRET_RESERVE'],
+      pendingNexusHarkonnenBetrayal: {
+        ...partial.pendingNexusHarkonnenBetrayal,
+        source: { eligible: 'SECRET_ELIGIBILITY', parent: 'SECRET_PARENT', declaration: 'SECRET_DECLARATION' },
+      },
+    };
+    assert.deepEqual(project(privateChanges), sole);
+    assert.equal(JSON.stringify(sole).includes('SECRET'), false);
+  }
+});
+
+void test('Harkonnen admin progress is independent of private eligible and irrelevant Nexus faces', () => {
+  for (const remote of [false, true]) {
+    const eligible = createHarkonnenNexusBetrayalFixture({ advanced: true, remote, receiverCount: 2, face: 'harkonnen' });
+    const irrelevant = createHarkonnenNexusBetrayalFixture({ advanced: true, remote, receiverCount: 2, face: 'richese' });
+    assert.equal(viewGame(eligible.game, eligible.holder).nexusHarkonnenBetrayalReaction!.canUse, true);
+    assert.equal(viewGame(irrelevant.game, irrelevant.holder).nexusHarkonnenBetrayalReaction!.canUse, false);
+    assert.deepEqual(project(eligible.game), project(irrelevant.game));
+    const partial = (f: typeof eligible) => applyAction(f.game, f.holder, { type: 'nexusHarkonnenBetrayalPass', event: f.event });
+    assert.deepEqual(project(partial(eligible)), project(partial(irrelevant)));
+  }
+});
+
+void test('Harkonnen acknowledgement metadata preserves higher pending priorities and neutral malformed membership', () => {
+  const input = {
+    ...state('Harkonnen membership QA', 'playing'), phase: 6,
+    battle: { attacker: 'p1', defender: 'UNSEATED_SECRET' },
+    pendingNexusHarkonnenBetrayal: { required: ['p1'], passed: [], source: 'SECRET_SOURCE' },
+  };
+  for (const priority of [
+    { status: 'finished' }, { status: 'lobby' }, { status: 'setup' },
+    { pendingTreacheryDiscard: { card: 'SECRET_CARD' } },
+    { response: { kind: 'SECRET_RESPONSE' } }, { phaseOpening: { passed: [] } },
+    { truthtrance: { question: 'SECRET_QUESTION' } },
+    { decision: { player: 'p1', card: 'SECRET_CARD' } },
+  ]) {
+    const value = { ...input, ...priority };
+    assert.deepEqual(project(value), project({ ...value, pendingNexusHarkonnenBetrayal: null }));
+  }
+  for (const membership of [
+    { required: ['UNSEATED_SECRET'], passed: [] },
+    { required: [null, 17, { id: 'SECRET_OBJECT' }], passed: [] },
+    { required: [], passed: [] }, { required: ['p1'], passed: ['p1'] },
+    { required: 'SECRET_REQUIRED', passed: [] }, { required: ['p1'], passed: 'SECRET_PASSED' }, {},
+  ]) {
+    const output = project({ ...input, pendingNexusHarkonnenBetrayal: { ...membership, source: 'SECRET_SOURCE' } });
+    assert.deepEqual(output.pending.owners, []);
+    assert.equal(output.status, 'playing');
+    assert.equal(JSON.stringify(output).includes('SECRET'), false);
+  }
+});
 
 void test('directory ownership follows genuine shared and sole Ixian acknowledgements instead of the native bidder', () => {
   for (const kind of ['technology', 'bidding'] as const) {

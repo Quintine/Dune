@@ -2,6 +2,81 @@
 
 Source audit, 10 September 2026. This is a rules contract, not a runtime completion claim. The [common Nexus lifecycle](NEXUS_CARD_RULES.md) and existing expansion release gates still apply. The pending reaction-privacy question remains unresolved; this audit does not authorize a Betrayal reaction policy.
 
+**1 October bounded local follow-up, verified 2 October:** `harkonnen-betrayal`
+connects a separate fresh classic/base-deck/Nexus-only Basic/Advanced preview.
+Native allied Harkonnen counters precede a uniform acknowledgement by public
+possible unallied held-Nexus owners before the original battle outcome.
+This is an explicitly provisional local ordering/privacy convention, not an
+answer to the previously asked universal reaction policy or a publisher ruling.
+The old audit's pending questions remain open outside this profile. No public
+start, old-game retrofit or combined-module gate is opened. Verification is
+**Partial**, with development stage **Verified** for the bounded evidence below.
+
+## Bounded Betrayal preview contract — 1 October 2026
+
+The profile requires native Harkonnen and unique 2..6 classic seats,
+the physical base33 Treachery Deck and twelve Nexus cards alone. Ix/CHOAM/Ecaz
+decks and factions, Homeworlds, Leader Skills, Discoveries, Semuta and other
+overlays are excluded. Natural alliance-qualified closing Nexus rights still
+apply; no initial deal is added. An effect needs at least three actual seats;
+two simultaneous unallied receivers need four. Two-seat ordinary continuation
+is valid without a fabricated card or alliance.
+
+Admit only an actual legally matching native personal or allied traitor call
+with canonical original battle/event, revealed plans, provider, combatant
+beneficiary, target and physical identity. Original allied Karama/BG counter
+allowance comes first; native cancellation opens no Nexus gate or cost.
+Personal calls gain no new native counter. Invalid, false, protected,
+non-Harkonnen, finished or changed sources reject rather than offering a retry.
+
+After genuine native allowance, the actual matched traitor is publicly declared
+before its outcome. Every publicly possible unallied non-Harkonnen held-Nexus
+owner acknowledges uniformly, independently of private face; only own eligibility
+exposes Use or a blocked reason. Public roles and that actual identity grant no
+other Harkonnen traitor, rival Nexus, reserve order, source or receipt entitlement.
+Other unsubmitted traitor choices stay private. Own Nexus inspection uses only
+the existing actual-card entitlement.
+
+Pass retains both cards; all required passes preserve the original call once.
+Use spends one physical Harkonnen Nexus, removes only the declared Harkonnen
+Traitor Card, shuffles it into the actual reserve immediately, prevents that call
+and resumes the surviving original battle once. Preserve a consistent historical
+declaration without implying current Harkonnen ownership after return. No battle
+rewind, automatic refund, other traitor cancellation, Treachery slot, spice,
+force or leader cost is added.
+
+One exact successful-Use obligation survives to actual current Mentat opening.
+The native transition draws the actual reserve top privately once before optional
+Mentat work/victory acceptance in this bounded profile, records drawn provenance
+and retires the due marker. It can legitimately redraw the retired identity
+after its shuffle. There is no extra click or selector and no artificial saved
+half-phase draw state: final Collection readiness and Mentat opening are atomic.
+Refresh/recovery cannot reshuffle, redraw or repeat the battle/phase suffix.
+Nonrecursive history binds each Use obligation rather than whichever later
+all-pass receipt is last; closed history does not freeze retired-card ownership.
+
+Both actions submit the offered event only. Pending gates retain native
+response/decision/Truthtrance priority and independent own-seat autopilot, while
+blocking ordinary votes and competing custody mutation. All four difficulties
+use canonical private minimal Use/Pass choices, not strategic calibration.
+Current-source corruption and foreign/stale/extra payloads reject immutably.
+
+Parent verification is **Partial development verified**: types/lint and
+**6,401/6,401** offline tests pass; the affected eight-file union passed
+**138/138**. Ten actual native personal/allied Basic/Advanced Use/all-pass/
+partial-refresh cases reach the real Mentat transition; printed and Advanced
+BG Worthless preemption retain original cards and spend native fuel once.
+Four privately backed-up original-setup CLI/390px rooms exercise human Use,
+wrong-face Pass, both public/own inspectors, partial refresh and actual native
+HTTP battle/Collection/Mentat continuation. Read-only proof retains all33
+Treachery/all12 Nexus/Traitor stock, identity/circles, exact retired identity,
+one private actual reserve-top replacement and nineteen earlier QA rooms.
+Administrator progress matches the sole public unfinished acknowledgement.
+Both final scoped native and privacy reviews have no finding.
+The printed face, separate universal reaction question, competing-module/
+Traitor-Deck priority and deployment remain distinct. This is not complete
+Harkonnen/Nexus play or a deployed claim.
+
 ## Primary authority
 
 - [The original printed Nexus components](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani): the Harkonnen face was freshly inspected in the previously acquired 3024×4032 photograph, `/tmp/dune-nexus-cards.jpg`. Its three panels establish the effects below. The photographed publisher text is the authority, not the uploader's commentary.

@@ -83,6 +83,7 @@ import { NexusRicheseBetrayal } from './nexus-richese-betrayal';
 import { NexusGuildBetrayal } from './nexus-guild-betrayal';
 import { NexusIxianReplacement } from './nexus-ixian-replacement';
 import { NexusIxianBetrayal } from './nexus-ixian-betrayal';
+import { NexusHarkonnenBetrayal } from './nexus-harkonnen-betrayal';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
@@ -310,8 +311,11 @@ export function GameTable({
   const ixianBetrayalOwnsControls = !!g.nexusIxianBetrayalReaction &&
     !g.response && !g.decision && !g.truthtrance && !g.phaseOpening &&
     !g.automaticContinuationPending && !g.nexusCards?.waiting.length && !g.nexusTraitors?.pending;
-  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls;
-  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls;
+  const harkonnenBetrayalOwnsControls = !!g.nexusHarkonnenBetrayalReaction &&
+    !g.response && !g.decision && !g.truthtrance && !g.phaseOpening &&
+    !g.automaticContinuationPending && !g.nexusCards?.waiting.length && !g.nexusTraitors?.pending;
+  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
+  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls || harkonnenBetrayalOwnsControls;
   const canActivateKarama = (card: Card) =>
     !g.karamaBlocked && canUseAsKaramaRole(g, me, card);
   const traitorBattle = g.battle;
@@ -790,6 +794,13 @@ export function GameTable({
   const act = (a: Action) => {
     // Control of one's own seat is independent of every gameplay response.
     if (a.type === 'setAutopilot') { void send(a); return; }
+    const harkonnenReaction = g.nexusHarkonnenBetrayalReaction;
+    if (harkonnenReaction && harkonnenBetrayalOwnsControls) {
+      if (reactionBusy || g.status !== 'playing' || !harkonnenReaction.canPass || harkonnenReaction.hasPassed ||
+          (a.type !== 'nexusHarkonnenBetrayalPass' && a.type !== 'nexusHarkonnenBetrayalUse') ||
+          a.event !== harkonnenReaction.event ||
+          (a.type === 'nexusHarkonnenBetrayalUse' && (!harkonnenReaction.canUse || harkonnenReaction.blocked))) return;
+    }
     const ixianReaction = g.nexusIxianBetrayalReaction;
     if (ixianReaction && ixianBetrayalOwnsControls) {
       if (reactionBusy || g.status !== 'playing' || !ixianReaction.canPass || ixianReaction.hasPassed ||
@@ -1042,6 +1053,8 @@ export function GameTable({
                       faction(g.players.find((p) => p.id === id)!.faction).name,
                   )
                   .join(' + ') || 'No winner'
+              : harkonnenBetrayalOwnsControls
+                ? 'Declared Harkonnen traitor acknowledgement'
               : ixianBetrayalOwnsControls
                 ? 'Native Ixian advantage acknowledgement'
               : g.guildBetrayalReaction
@@ -1115,6 +1128,16 @@ export function GameTable({
           permitted classic/Tleilaxu seats, physical Ixian Treachery and Nexus only.
           Native Karama responses finish first. Not complete Ixian or certified Nexus rules.{' '}
           <a href="/rules?topic=nexus-ixian-betrayal#nexus-ixian-betrayal">Preview rules and limits</a>
+        </p>
+      )}
+      {g.nexusHarkonnenBetrayalPreview && (
+        <p className="notice" role="status">
+          Harkonnen Nexus Betrayal development preview · cancel an actually declared native Harkonnen
+          traitor call, return that physical card to the Traitor Deck, and draw one private replacement
+          automatically at this turn’s Mentat Pause. Classic Basic/Advanced, native Harkonnen, base
+          Treachery and Nexus only. Native allied Karama counters finish first. Not complete Harkonnen
+          or certified Nexus rules.{' '}
+          <a href="/rules?topic=nexus-harkonnen-betrayal#nexus-harkonnen-betrayal">Preview rules and limits</a>
         </p>
       )}
       {g.status !== 'lobby' && (
@@ -1765,6 +1788,8 @@ export function GameTable({
             <NexusIxianReplacement game={g} act={act} busy={reactionBusy} />
           ) : ixianBetrayalOwnsControls ? (
             <NexusIxianBetrayal game={g} act={act} busy={reactionBusy} />
+          ) : harkonnenBetrayalOwnsControls ? (
+            <NexusHarkonnenBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.nexusCards?.waiting.length ? (
             <p className="muted">The next phase begins when the remaining Nexus card choices are finished.</p>
           ) : g.truthtrance ? (

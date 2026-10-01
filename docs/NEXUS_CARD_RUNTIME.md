@@ -1,5 +1,16 @@
 # Nexus cards: common lifecycle checkpoint
 
+**Later Harkonnen Betrayal checkpoint:** the separate fresh local
+`harkonnen-betrayal` profile connects actual personal and allied native
+traitor calls. Native allied counters precede provisional neutral
+acknowledgements; Use returns only the declared physical traitor immediately,
+prevents that call and preserves one actual private Mentat replacement.
+The previously asked universal reaction-policy question remains open.
+Verification is **Partial development verified** for frozen native/private/
+SQLite/CLI/phone evidence, including immediate retirement and actual Mentat draw;
+see the [bounded existing source contract](NEXUS_HARKONNEN_RULES.md#bounded-betrayal-preview-contract--1-october-2026).
+No historical checkpoint verifies this path or opens public/combined modes.
+
 **Later Ixian Betrayal prototype:** the fresh local `ixian-betrayal` profile
 connects both printed alternatives to original native attempts: Bidding
 extra-card inspection/draw and Advanced Technology exchange. Native counters

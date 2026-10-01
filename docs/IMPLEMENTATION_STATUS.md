@@ -1,5 +1,93 @@
 # Dune implementation status
 
+## 2 October 2026 — original Harkonnen Nexus traitor retirement and Mentat replacement
+
+Four exclusive implementation owners connect fresh local `harkonnen-betrayal`:
+native personal/allied calls and original continuation, pure physical/current/
+historical obligations, private controls/four minimal legal policies, and
+authenticated SQLite/private-backed-up CLI entry. Parent integrates source
+guidance and raw administrator progress, all verification and shipping. Four is
+this wave's useful slice count, not a restoration of the removed five-agent minimum.
+
+The photographed printed face cancels one revealed Harkonnen traitor, returns
+that exact physical identity immediately and draws one replacement during
+Mentat Pause. The profile admits native Harkonnen plus unique classic 2..6-seat
+Basic/Advanced, base33 Treachery and Nexus alone. No initial Nexus deal,
+old-game retrofit, public start or optional/expansion overlay. Genuine
+alliance-qualified closing Nexus rights remain; effect fixtures need at least
+three seats, with four for two simultaneous unallied receivers.
+
+Original allied Harkonnen Karama/BG counters resolve first; native denial
+opens no Nexus gate or cost. A personal call gains no invented counter.
+After genuine allowance, publicly declare the actual canonical matching
+traitor and roles before outcome; every publicly possible unallied non-Harkonnen
+held-Nexus owner acknowledges uniformly. Private face controls only own Use.
+The local ordering/privacy convention is provisional, not publisher/user
+priority or an answer to the previously asked universal reaction question.
+Outside-profile Harkonnen Betrayal and arbitrary combined stacks remain gated.
+
+Use spends one physical Nexus, shuffles only that called Harkonnen traitor
+into the actual reserve, prevents only the original call and resumes the
+surviving battle once. All-pass retains both cards and original call. One
+successful-Use obligation survives to real current Mentat opening, where the
+actual reserve top is drawn privately once before optional work/victory.
+Final Collection readiness and Mentat opening are atomic; no fictitious
+persisted due-phase8 auto-recovery state is used. Nonrecursive history binds
+each Use even after later passing/recycling, without permanent retired-card
+custody or a second action/confirmation. Returned-card redraw remains legal.
+
+Initial integrated checks exposed missing typings, an invalid Polar Sink
+battle fixture, unwanted optional prescience commitments, incorrect
+two-receiver wrong-face assumptions and a test that mutated empty counter
+passes to the same empty array. Parent retains native source guards: choose
+conserved legal sand staging/native declines, explicit distinct singleton
+receiver faces and genuine live original counter evidence. Native counter-free
+automatic allowance remains legal rather than forcing a false pause.
+Independent review repaired an orphanable native allowance: it now requires
+its exact pending or closed acknowledgement. The public declared-Traitor
+inspector reuses the existing entitled component; original/current replacement
+identities remain correctly private. Both final scoped native and privacy/
+administrator reviews have no finding.
+
+Parent typecheck/lint and **6,401/6,401** offline tests pass; the affected
+eight-file union passed **138/138**. Final reference **10/10** and build pass.
+Actual program smoke exercises eight Basic/Advanced personal/allied Use/all-pass
+paths plus two irrelevant-face partial-pass/refresh paths, from original true
+call/counters through actual native battle/Collection/Mentat. Separate printed
+and Advanced BG Worthless preemption spend native fuel once and preserve the
+original Trait/Nexus stock, with no Nexus offer, cost or replacement.
+
+Four exact-version private-backed-up CLI rooms retain their actual admitted
+undealt setup, identities/circles/decks and native Nexus rights; no redeal:
+
+- `SHMPQ4FK` v14: Basic personal human Use; actual Lady Jessica Traitor
+  and own Harkonnen Nexus inspectors, immediate exact retirement and one
+  private actual reserve-top Mentat draw.
+- `ZAYDHGTU` v15: Advanced allied human Use; caller and Guild beneficiary
+  remain distinct, Thufir Hawat declaration prevented and replacement once.
+- `3ZLRKAYB` v19: Basic allied two-receiver wrong-face human Pass/all-pass;
+  Richese/Guild cards retained. Partial v11 refresh and raw administrator
+  projection agree on sole remaining Guild, without private source disclosure.
+- `GBFG2C75` v16: Advanced personal wrong-face human Pass; original
+  Soo-Soo Sook traitor outcome and native capture/Collection suffix retained.
+
+Original remaining native votes/cleanup/readiness continue through the real
+HTTP API to Mentat, not a scripted phase jump. Read-only saved proof retains
+all33 Treachery/all12 Nexus/Traitor identities, typed forces, original names/
+circles, exact returned identity and one private pre-Mentat reserve-top draw.
+Activation has no spice/force/Treachery cost; legitimate battle/income effects
+are preserved, not hidden in an incorrect unchanged-wallet assertion.
+Nineteen earlier QA states/versions remain unchanged. Actual 390px public
+declaration/own-card inspectors and Use/Pass controls are observed; panel width
+is 354px. After final isolated worker reload, all **70 original seats in
+twenty-three QA rooms** reauthenticate and all saved outcomes remain unchanged.
+The actual expanded guide displays **Partial / Development: Verified**.
+
+Current local HTTP integration is **49/55**, not green: six requests returned
+the known Wrangler proxy 503. No automatic write retry, authorization weakening
+or reset. Complete Harkonnen/Nexus games, universal reaction policy, combined
+modules, strategic calibration, public starts and live deployment remain open.
+
 ## 1 October 2026 — Advanced leaderless declaration before reveal
 
 The supplied authorized Advanced PDF, physical page 11 **Leaders**, requires

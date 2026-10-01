@@ -652,3 +652,156 @@ void test('Ixian Betrayal CLI preserves a private consistent exact-version backu
   assert.deepEqual(current.prepare('SELECT * FROM rooms ORDER BY code').all(), after);
   assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), credentials);
 });
+
+function harkonnenLobby(advanced = true, seats = 3) {
+  const game = createGame('PROTOTYP', newPlayer('h', 'Native Harkonnen', 'harkonnen'), advanced);
+  const factions = ['atreides', 'emperor', 'guild', 'fremen', 'beneGesserit'] as const;
+  for (let index = 0; index < seats - 1; index++)
+    joinGame(game, newPlayer(`p${index}`, `Original ${index}`, factions[index]));
+  for (const player of game.players) player.ready = true;
+  return game;
+}
+
+for (const advanced of [false, true]) {
+  for (const seats of [2, 3, 4, 5, 6]) {
+    void test(`Harkonnen Betrayal ${advanced ? 'Advanced' : 'Basic'} ${seats}-seat entry preserves seats and leaves all Nexus physically undealt`, t => {
+      const { db } = fixture(t);
+      const lobby = harkonnenLobby(advanced, seats);
+      db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(lobby), lobby.code);
+      const credentials = db.prepare('SELECT * FROM seats').all();
+      const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+      const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+      assert.throws(() => startPrototypeRoom(db, lobby.code, 6, 'harkonnen-betrayal'));
+      assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+      const result = startPrototypeRoom(db, lobby.code, 7, 'harkonnen-betrayal');
+      const saved = JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(lobby.code)!.state as string) as Game;
+      assert.equal(result.version, 8);
+      assert.equal(saved.version, 8);
+      assert.equal(saved.status, 'setup');
+      assert.equal(saved.nexusHarkonnenBetrayalPreview, true);
+      assert.equal(saved.advanced, advanced);
+      assert.equal(saved.host, lobby.host);
+      assert.deepEqual(saved.expansions, []);
+      assert.deepEqual(saved.playerPositions, lobby.playerPositions);
+      assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]), lobby.players.map(p => [p.id, p.name, p.faction]));
+      const stock = [...saved.deck, ...saved.discard, ...saved.players.flatMap(p => p.hand)];
+      assert.equal(stock.length, 33);
+      assert.equal(new Set(stock.map(card => card.id)).size, 33);
+      assert.deepEqual([...saved.nexusCards!.cards!.deck].sort(), [...NEXUS_FACTIONS].sort());
+      assert.deepEqual(saved.nexusCards!.cards!.discard, []);
+      for (const player of saved.players) {
+        assert.equal(saved.nexusCards!.cards!.hands[player.id], null);
+        const view = viewGame(saved, player.id);
+        assert.equal(view.nexusHarkonnenBetrayalReaction, null);
+        assert.equal(view.nexusCards!.card, null);
+        assert.equal(Object.hasOwn(view.nexusCards!, 'deck'), false);
+      }
+      const started = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+      assert.throws(() => startPrototypeRoom(db, lobby.code, 8, 'harkonnen-betrayal'));
+      assert.throws(() => startPrototypeRoom(db, lobby.code, 8, 'nexus'));
+      assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), started);
+      assert.deepEqual(db.prepare('SELECT * FROM seats').all(), credentials);
+      assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+    });
+  }
+}
+
+void test('Harkonnen Betrayal rejects incompatible lobbies, overlays and ordinary public starts without changing durable records', t => {
+  const { db } = fixture(t);
+  const native = harkonnenLobby();
+  const changes: ((game: Game) => void)[] = [
+    game => { game.players[0].ready = false; },
+    game => { game.code = 'NOTMATCH'; },
+    game => { game.players[0].faction = 'fremen'; },
+    game => { game.players[1].faction = 'harkonnen'; },
+    ...(['ixians', 'tleilaxu', 'choam', 'richese', 'ecaz', 'moritani'] as const).map(faction =>
+      (game: Game) => { game.players[1].faction = faction; }),
+    ...(['ix', 'choam', 'ecaz'] as const).map(expansion =>
+      (game: Game) => { game.expansions = [expansion]; }),
+    game => { game.discoveryEnabled = true; },
+    game => { game.ecazTreachery = true; },
+    game => { game.semutaPreview = true; },
+    game => { game.nexusIxianReplacementPreview = true; },
+    game => { game.nexusIxianBetrayalPreview = true; },
+    game => { game.nexusHarkonnenBetrayalPreview = true; },
+    game => { game.kullPreview = true; },
+    game => { game.nexusKullPreview = true; },
+    game => { game.guildBetrayalPreview = true; },
+    game => { game.richeseBetrayalPreview = true; },
+    game => { game.moritaniAssassinatePreview = true; },
+    game => { game.leaderSkills = createLeaderSkills(() => 0.5); },
+    game => { game.players.splice(1); },
+    game => { game.players.push(...Array.from({ length: 4 }, (_, index) => newPlayer(`extra${index}`, `Extra ${index}`, 'guild'))); },
+  ];
+  const modules = ['homeworlds', 'techTokens', 'strongholdCards'].map(type => {
+    const game = applyAction(native, native.host, { type, enabled: true });
+    for (const player of game.players) player.ready = true;
+    return game;
+  });
+  for (const game of [...changes.map(change => {
+    const game = structuredClone(native);
+    change(game);
+    return game;
+  }), ...modules]) {
+    db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), native.code);
+    const rooms = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    const seats = db.prepare('SELECT * FROM seats').all();
+    assert.throws(() => startPrototypeRoom(db, native.code, 7, 'harkonnen-betrayal'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), rooms);
+    assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
+  }
+  const original = structuredClone(native);
+  for (const action of [{ type: 'start', profile: 'harkonnen-betrayal' }, { type: 'initializeHarkonnenNexusBetrayalGameForAudit' }])
+    assert.throws(() => applyAction(native, native.host, action));
+  assert.deepEqual(native, original);
+});
+
+void test('Harkonnen Betrayal CLI backs up every room and seat privately before the exact fresh-version start and cannot redeal or overwrite proof', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'dune-harkonnen-betrayal-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const database = join(directory, 'rooms.sqlite');
+  const db = new DatabaseSync(database);
+  db.exec('CREATE TABLE rooms(code TEXT PRIMARY KEY,state TEXT,version INTEGER,updated_at INTEGER); CREATE TABLE seats(room_code TEXT,player_id TEXT,token_hash TEXT);');
+  const lobby = harkonnenLobby();
+  db.prepare('INSERT INTO rooms VALUES(?,?,?,?)').run(lobby.code, JSON.stringify(lobby), 7, 100);
+  const other = harkonnenLobby(false, 2);
+  other.code = 'KEEPGAME';
+  db.prepare('INSERT INTO rooms VALUES(?,?,?,?)').run(other.code, JSON.stringify(other), 9, 50);
+  startPrototypeRoom(db, other.code, 9, 'harkonnen-betrayal');
+  for (const player of lobby.players)
+    db.prepare('INSERT INTO seats VALUES(?,?,?)').run(lobby.code, player.id, 'isolated-test-' + player.id);
+  const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+  const seats = db.prepare('SELECT * FROM seats ORDER BY player_id').all();
+  db.close();
+  const output = join(directory, 'private-proof');
+  const invoke = (version: number, out: string) => spawnSync(process.execPath, [
+    '--import', 'tsx', fileURLToPath(new URL('../tools/start-prototype.ts', import.meta.url)),
+    '--profile', 'harkonnen-betrayal', '--db', database, '--room', lobby.code,
+    '--version', String(version), '--out', out,
+  ], { encoding: 'utf8', timeout: 120000 });
+  const result = invoke(7, output);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(statSync(output).mode & 0o777, 0o700);
+  for (const name of ['games.sqlite', 'snapshot.json', 'prototype.json'])
+    assert.equal(statSync(join(output, name)).mode & 0o777, 0o600);
+  const backup = new DatabaseSync(join(output, 'games.sqlite'), { readOnly: true });
+  assert.deepEqual(backup.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+  assert.deepEqual(backup.prepare('SELECT * FROM seats ORDER BY player_id').all(), seats);
+  backup.close();
+  const current = new DatabaseSync(database, { readOnly: true });
+  t.after(() => current.close());
+  const after = current.prepare('SELECT * FROM rooms ORDER BY code').all();
+  assert.deepEqual(current.prepare('SELECT * FROM rooms WHERE code=?').get(other.code), before.find(row => row.code === other.code));
+  assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), seats);
+  const row = current.prepare('SELECT state,version FROM rooms WHERE code=?').get(lobby.code)!;
+  const saved = JSON.parse(row.state as string) as Game;
+  assert.equal(row.version, 8);
+  assert.equal(saved.nexusHarkonnenBetrayalPreview, true);
+  assert.equal(saved.status, 'setup');
+  assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]), lobby.players.map(p => [p.id, p.name, p.faction]));
+  assert.notEqual(invoke(8, output).status, 0);
+  assert.notEqual(invoke(7, join(directory, 'stale-proof')).status, 0);
+  assert.notEqual(invoke(8, join(directory, 'redeal-proof')).status, 0);
+  assert.deepEqual(current.prepare('SELECT * FROM rooms ORDER BY code').all(), after);
+  assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), seats);
+});

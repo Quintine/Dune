@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 1 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 2 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -15,6 +15,33 @@ open mode gates.
 
 
 ## Current checkpoint and work
+
+Harkonnen Nexus Betrayal now connects actual personal and allied native traitor
+calls, exact immediate physical retirement, the surviving original battle once
+and one private actual Mentat replacement. Fresh local `harkonnen-betrayal`
+retains classic/base33/Nexus-only bounds, natural card rights and original
+allied counter preemption. Uniform acknowledgements are provisional; the
+previously asked universal reaction-policy question remains open.
+Independent review repaired an orphanable native allowance, added the public
+declared-Traitor inspector and corrected wrong-face bot fixture assumptions.
+Genuine sand battles/native declines replace an invalid Polar Sink fixture;
+real counter-free normalization is retained, not forced into a fictitious pause.
+Both final scoped reviews have no finding. Types/lint, **6,401 offline tests**,
+the **138-case affected union**, final guide **10/10** and build pass.
+Ten actual native cases and printed/BG preemption prove original stock and
+current Mentat continuation. Four privately backed-up same-setup CLI/390px
+rooms exercise human Use/Pass, actual public/own inspectors, partial refresh,
+administrator owner and original native HTTP battle/Collection/Mentat once.
+Saved proof retains all33 Treachery/all12 Nexus/Traitors, identity/circles,
+one actual private reserve-top draw and nineteen earlier QA games.
+The bounded path is **Partial development verified**, not full modes or
+deployment. Final local HTTP integration is **49/55**, not green: six requests
+returned the known Wrangler proxy 503. No automatic POST retry or weaker
+authorization is introduced. After the final isolated worker reload, all
+**70 original seats in twenty-three QA rooms** reauthenticate; saved proof
+preserves all four outcomes and nineteen earlier rooms. The actual expanded
+390px guide shows **Partial / Development: Verified** without page overflow.
+Shipping and exact-revision container evidence remain pending.
 
 The authorized Advanced **leaderless Battle Plan announcement** is now
 connected. Physical PDF page 11 requires disclosure before reveal when no

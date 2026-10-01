@@ -202,6 +202,19 @@ physical Nexus and prevents only that attempt; all-pass keeps its native
 effect and continuation. See the
 [bounded verified runtime](docs/NEXUS_CARD_RUNTIME.md#bounded-ixian-betrayal-local-runtime--1-october-2026).
 
+For local **Harkonnen Nexus Betrayal**, use
+`node --import tsx tools/start-prototype.ts --profile harkonnen-betrayal`
+on a fresh ready Basic/Advanced classic lobby with native Harkonnen and Nexus
+alone. Exact-version/private-backup safeguards and natural alliance-qualified
+Nexus rights apply; public starts and existing games are unchanged. After any
+original allied Karama counter allows an actual matching native traitor call,
+the declared-card acknowledgement offers **Pass** or privately eligible
+**Use Harkonnen Nexus**. Use returns that exact physical traitor immediately
+and preserves one automatic private actual Mentat replacement, not a draw-now
+exchange. This is a bounded provisional local timing/privacy convention;
+bounded verification is Partial/Development Verified; the universal reaction-policy question stays open.
+See the [source contract and excluded modes](docs/NEXUS_HARKONNEN_RULES.md#bounded-betrayal-preview-contract--1-october-2026).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

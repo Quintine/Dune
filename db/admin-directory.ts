@@ -36,6 +36,13 @@ export function projectAdminRoom(row: DirectoryRow): AdminRoom {
     else if (g.response || g.phaseOpening) pending = { label: 'Shared response window', owners: [] };
     else if (g.truthtrance) pending = { label: 'Truthtrance window', owners: [] };
     else if (g.decision) pending = { label: 'Special decision', owners: seated(g.decision.player) ? [g.decision.player] : [] };
+    else if (g.pendingNexusHarkonnenBetrayal) {
+      const { required, passed } = g.pendingNexusHarkonnenBetrayal;
+      const unfinished = Array.isArray(required) && Array.isArray(passed)
+        ? [...new Set(required.filter(seated).filter(id => !passed.includes(id)))]
+        : [];
+      pending = { label: 'Nexus acknowledgement', owners: unfinished.length === 1 ? unfinished : [] };
+    }
     else if (g.battle) pending = { label: 'Battle decisions', owners: [g.battle.attacker, g.battle.defender].filter(seated) };
     else if (g.nexus) pending = { label: 'Nexus negotiations', owners: [] };
     else if (g.phase === 0 && g.stormDialers?.length) pending = { label: 'Storm dials', owners: g.stormDialers.filter(id => g.stormDials?.[id] === undefined).filter(seated) };

@@ -49,6 +49,7 @@ import { shipmentAvailable } from './shipment-opportunity';
 import { createGuildBetrayalInvoice, createGuildBetrayalReceipt, guildBetrayalEligible, guildBetrayalResponders, validateGuildBetrayalInvoice, validateGuildBetrayalHistory, nexusGuildBetrayalSourceReceipt, type GuildBetrayalInvoice, type GuildBetrayalCursor, type GuildBetrayalReceipt, type GuildBetrayalAuthority } from './nexus-guild-betrayal';
 import { createIxianReplacementSource, validateIxianReplacementSource, closeIxianReplacementSource, validateIxianReplacementHistory, initialIxianReplacementCursor, ixianReplacementEvent, type IxianReplacementSource, type IxianReplacementReceipt, type IxianReplacementCursor } from './nexus-ixian-replacement';
 import { createIxianBetrayalSource, validateIxianBetrayalFrame, initialIxianBetrayalCursor, closeIxianBetrayalSource, validateIxianBetrayalHistory, ixianBetrayalResponders, ixianBetrayalEligible, type IxianBetrayalSource, type IxianBetrayalCursor, type IxianBetrayalReceipt } from './nexus-ixian-betrayal';
+import { createHarkonnenBetrayalSource, validateHarkonnenBetrayalFrame, initialHarkonnenBetrayalCursor, closeHarkonnenBetrayalSource, validateHarkonnenBetrayalHistory, harkonnenBetrayalResponders, harkonnenBetrayalEligible, createHarkonnenBetrayalReplacement, validateHarkonnenBetrayalReplacements, drawHarkonnenBetrayalReplacement, type HarkonnenBetrayalSource, type HarkonnenBetrayalCursor, type HarkonnenBetrayalReceipt, type HarkonnenBetrayalReplacement, type HarkonnenBetrayalAuthority } from './nexus-harkonnen-betrayal';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
 import { createNexusRichese, validateNexusRichese, quoteNexusRicheseShipment, type NexusRicheseReceipt } from './nexus-richese';
 import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
@@ -724,6 +725,13 @@ export type Battle = {
   plans: Record<string, Plan>;
   revealed: boolean;
   traitorCalls: Record<string, boolean>;
+  /** Original native allowance, retained separately from the Nexus source. */
+  nexusHarkonnenAllowance?: {
+    provider: string;
+    nativeWindow: 'direct' | 'harkonnenTraitor';
+    required: string[];
+    passed: string[];
+  };
   preparation?: {
     kind: 'voice' | 'prescience' | 'prescienceAnswer' | 'nexusPrescienceAnswer';
     owner: string;
@@ -1139,6 +1147,17 @@ export type Game = {
   } | null;
   nexusIxianBetrayalHistory?: IxianBetrayalReceipt[];
   nexusIxianBetrayalCursor?: IxianBetrayalCursor;
+  /** Fresh bounded native Harkonnen traitor-cancellation profile. */
+  nexusHarkonnenBetrayalPreview?: true;
+  pendingNexusHarkonnenBetrayal?: {
+    source: HarkonnenBetrayalSource;
+    required: string[];
+    passed: string[];
+  } | null;
+  nexusHarkonnenBetrayalHistory?: HarkonnenBetrayalReceipt[];
+  nexusHarkonnenBetrayalCursor?: HarkonnenBetrayalCursor;
+  pendingNexusHarkonnenReplacement?: HarkonnenBetrayalReplacement | null;
+  nexusHarkonnenReplacementHistory?: HarkonnenBetrayalReplacement[];
   kullSequence?: number;
   kullRestrictions?: KullPhaseRestriction[];
   pendingKull?: {
@@ -8124,6 +8143,217 @@ export function initializeNexusGameForAudit(state: Game): Game {
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null,
     'Enable Nexus cards in a fresh audit lobby first.');
   return initializeSetupGameForAudit(state, !!state.homeworlds, true);
+}
+/** Fresh audit admission only; ordinary games and public starts never opt in. */
+export function initializeHarkonnenNexusBetrayalGameForAudit(state: Game): Game {
+  requireRule(harkonnenNexusBetrayalModeSupported(state) &&
+    state.nexusCards?.cards === null && state.nexusCards.phase === null &&
+    state.nexusHarkonnenBetrayalPreview === undefined &&
+    state.pendingNexusHarkonnenBetrayal === undefined &&
+    state.nexusHarkonnenBetrayalHistory === undefined &&
+    state.nexusHarkonnenBetrayalCursor === undefined &&
+    state.pendingNexusHarkonnenReplacement === undefined &&
+    state.nexusHarkonnenReplacementHistory === undefined,
+  'Harkonnen Nexus Betrayal requires a fresh classic Harkonnen lobby with only base Treachery and Nexus.');
+  requireFreshBaseRuntime(state);
+  const g = initializeNexusGameForAudit(state);
+  g.nexusHarkonnenBetrayalPreview = true;
+  g.pendingNexusHarkonnenBetrayal = null;
+  g.nexusHarkonnenBetrayalHistory = [];
+  g.nexusHarkonnenBetrayalCursor = initialHarkonnenBetrayalCursor();
+  g.pendingNexusHarkonnenReplacement = null;
+  g.nexusHarkonnenReplacementHistory = [];
+  return g;
+}
+function harkonnenNexusBetrayalModeSupported(g: Game): boolean {
+  return typeof g.advanced === 'boolean' && !!g.nexusCards && g.expansions.length === 0 &&
+    g.players.length >= 2 && g.players.length <= 6 && !!byFaction(g,'harkonnen') &&
+    new Set(g.players.map(p => p.faction)).size === g.players.length &&
+    g.players.every(p => CLASSIC_FACTIONS[p.faction]) &&
+    !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled && !g.discoveries &&
+    !g.discoveryStash && !g.greatMaker && !g.techTokens && !g.strongholdCards &&
+    !g.ecazTreachery && !g.semutaPreview && !g.kullPreview && !g.nexusKullPreview &&
+    !g.richeseBetrayalPreview && !g.guildBetrayalPreview &&
+    !g.nexusIxianReplacementPreview && !g.nexusIxianBetrayalPreview && !g.moritaniAssassinatePreview;
+}
+function harkonnenNexusBetrayalContext(g: Game) {
+  const b = g.battle!;
+  const plans = Object.fromEntries([b.attacker,b.defender].map(id => [id,{
+    leader:b.plans[id].leader,...(b.plans[id].kwisatz === undefined ? {} : {kwisatz:b.plans[id].kwisatz}),
+  }]));
+  const battle = {event:b.event!,attacker:b.attacker,defender:b.defender,plans,heroLeaderIds:[]};
+  return {status:g.status,phase:g.phase,turn:g.turn,advanced:g.advanced,
+    sequence:g.nexusHarkonnenBetrayalCursor!.sequence,players:g.players,
+    cards:g.nexusCards!.cards!,physicalCards:physicalTreacheryCards(g),
+    traitors:nexusTraitorSnapshot(g),universe:nexusTraitorUniverse(g),battle};
+}
+function harkonnenNexusBetrayalAuthority(g: Game): HarkonnenBetrayalAuthority {
+  const b = g.battle, allowance = b?.nexusHarkonnenAllowance;
+  requireRule(b?.revealed && b.event && allowance && g.phase === 6 &&
+    b.traitorCalls[allowance.provider] === true &&
+    traitorVoters(g,b).includes(allowance.provider) &&
+    getPlayer(g,allowance.provider).faction === 'harkonnen',
+  'The Harkonnen reaction lost its original legal native call.');
+  const declaration = nexusRule(() => createTraitorDeclaration(traitorDeclarationContext(g),allowance.provider));
+  requireRule(JSON.stringify(declaration) === JSON.stringify(b.traitorDeclarations?.[allowance.provider]) &&
+    allowance.nativeWindow === ([b.attacker,b.defender].includes(allowance.provider) ? 'direct' : 'harkonnenTraitor'),
+  'The Harkonnen call lost its original canonical declaration or native window.');
+  const required = allowance.nativeWindow === 'direct' ? [] :
+    g.players.filter(p => responseCancelCards(g,p,{kind:'harkonnenTraitor',owner:allowance.provider,passed:[]}).length > 0).map(p => p.id);
+  requireRule(JSON.stringify(required) === JSON.stringify(allowance.required) &&
+    new Set(allowance.passed).size === allowance.passed.length &&
+    allowance.passed.every(id => g.players.some(p => p.id === id)) &&
+    required.every(id => allowance.passed.includes(id)) &&
+    (allowance.nativeWindow !== 'direct' || allowance.passed.length === 0),
+  'The original native Harkonnen counters were not legally completed.');
+  return {provider:allowance.provider,declaration,nativeWindow:allowance.nativeWindow,
+    nativeRequired:required,nativePassed:allowance.passed,
+    nativeContext:JSON.stringify({event:b.event,territory:b.territory,attacker:b.attacker,
+      defender:b.defender,plans:b.plans,allowance})};
+}
+function harkonnenNexusBetrayalParent(g: Game): string {
+  return JSON.stringify({status:g.status,turn:g.turn,phase:g.phase,advanced:g.advanced,
+    active:g.active,order:g.order,ready:g.ready,battle:g.battle,
+    players:g.players.map(p => ({id:p.id,faction:p.faction,ally:p.ally,spice:p.spice,
+      hand:p.hand,traitors:p.traitors,revealedTraitors:p.revealedTraitors,leaders:p.leaders,
+      forces:p.forces,reserves:p.reserves,tanks:p.tanks,elites:p.elites,advisors:p.advisors})),
+    deck:g.deck,discard:g.discard,traitorReserve:g.traitorReserve,nexus:g.nexusCards,
+    response:g.response,decision:g.decision,truthtrance:g.truthtrance,
+    phaseOpening:g.phaseOpening,pendingKarama:g.pendingKarama,
+    pendingNullentropy:g.pendingNullentropy,pendingTreacheryDiscard:g.pendingTreacheryDiscard,
+    replacement:g.pendingNexusHarkonnenReplacement});
+}
+function harkonnenNexusBetrayalIntegrity(g: Game, mentatOpening = false): void {
+  const frame = g.pendingNexusHarkonnenBetrayal;
+  if (!g.nexusHarkonnenBetrayalPreview) {
+    requireRule(g.nexusHarkonnenBetrayalPreview === undefined && !frame &&
+      g.nexusHarkonnenBetrayalHistory === undefined && g.nexusHarkonnenBetrayalCursor === undefined &&
+      !g.pendingNexusHarkonnenReplacement && g.nexusHarkonnenReplacementHistory === undefined,
+    'Harkonnen Nexus Betrayal lost its explicit fresh profile.');
+    return;
+  }
+  requireRule(harkonnenNexusBetrayalModeSupported(g) && g.nexusHarkonnenBetrayalCursor &&
+    Array.isArray(g.nexusHarkonnenBetrayalHistory) && Array.isArray(g.nexusHarkonnenReplacementHistory),
+  'The Harkonnen profile lost its bounded history.');
+  const universe = nexusTraitorUniverse(g);
+  nexusCardsIntegrity(g);
+  nexusRule(() => validateHarkonnenBetrayalHistory(g.nexusHarkonnenBetrayalHistory!,g.nexusHarkonnenBetrayalCursor!,universe));
+  nexusRule(() => validateHarkonnenBetrayalReplacements(g.nexusHarkonnenBetrayalHistory!,
+    g.nexusHarkonnenBetrayalCursor!,[...g.nexusHarkonnenReplacementHistory!,
+      ...(g.pendingNexusHarkonnenReplacement ? [g.pendingNexusHarkonnenReplacement] : [])],universe));
+  requireRule(g.nexusHarkonnenBetrayalHistory!.every(r => r.source.turn <= g.turn) &&
+    g.nexusHarkonnenReplacementHistory!.every(r => r.status === 'drawn' && r.turn <= g.turn) &&
+    (!g.pendingNexusHarkonnenReplacement || (g.status === 'playing' &&
+      g.pendingNexusHarkonnenReplacement.status === 'due' &&
+      g.pendingNexusHarkonnenReplacement.turn === g.turn &&
+      (g.phase === 6 || g.phase === 7 || (mentatOpening && g.phase === 8)))),
+  'The private replacement lost its current native Mentat obligation.');
+  if (g.status !== 'setup' && g.status !== 'lobby')
+    nexusRule(() => validateNexusTraitorSnapshot(nexusTraitorSnapshot(g),universe));
+  if (!frame) {
+    const battle = g.battle, allowance = battle?.nexusHarkonnenAllowance;
+    if (allowance) {
+      const closed = g.nexusHarkonnenBetrayalHistory!.find(receipt =>
+        receipt.source.declaration.event === battle!.event && receipt.source.provider === allowance.provider);
+      requireRule(closed && closed.source.nativeWindow === allowance.nativeWindow &&
+        JSON.stringify(closed.source.nativeRequired) === JSON.stringify(allowance.required) &&
+        JSON.stringify(closed.source.nativePassed) === JSON.stringify(allowance.passed) &&
+        JSON.stringify(closed.source.declaration) === JSON.stringify(battle!.traitorDeclarations?.[allowance.provider]) &&
+        battle!.traitorCalls[allowance.provider] === (closed.outcome === 'pass'),
+      'The original native Harkonnen allowance lost its pending or closed Nexus acknowledgement.');
+    }
+    return;
+  }
+  requireRule(Object.keys(frame).sort().join(',') === 'passed,required,source' &&
+    Array.isArray(frame.required) && Array.isArray(frame.passed) &&
+    frame.required.some(id => !frame.passed.includes(id)) &&
+    !g.response && !g.decision && !g.phaseOpening && !g.truthtrance &&
+    !g.pendingKarama && !g.pendingNullentropy && !g.pendingTreacheryDiscard,
+  'The Harkonnen acknowledgement lost original native priority.');
+  nexusRule(() => validateHarkonnenBetrayalFrame(harkonnenNexusBetrayalContext(g),frame.source,
+    harkonnenNexusBetrayalAuthority(g),harkonnenNexusBetrayalParent(g),frame.required,frame.passed));
+}
+function offerHarkonnenNexusBetrayal(g: Game, provider: string, response?: ResponseWindow): boolean {
+  if (!g.nexusHarkonnenBetrayalPreview || getPlayer(g,provider).faction !== 'harkonnen') return false;
+  const b = g.battle!;
+  const required = nexusRule(() => harkonnenBetrayalResponders(g.nexusCards!.cards!,g.players));
+  if (!required.length) return false;
+  requireRule(!b.nexusHarkonnenAllowance && (!response || response.kind === 'harkonnenTraitor'),
+    'The original Harkonnen declaration was already acknowledged.');
+  b.nexusHarkonnenAllowance = {provider,nativeWindow:response ? 'harkonnenTraitor' : 'direct',
+    required:response ? g.players.filter(p => responseCancelCards(g,p,response).length > 0).map(p => p.id) : [],
+    passed:response ? [...response.passed] : []};
+  const declaration = harkonnenNexusBetrayalAuthority(g).declaration;
+  const owner = getPlayer(g,provider);
+  owner.revealedTraitors = [...new Set([...(owner.revealedTraitors ?? []),declaration.identity])];
+  const name = g.players.flatMap(p => p.leaders).find(l => l.id === declaration.leader)?.name ?? declaration.leader;
+  log(g,`${owner.name} revealed ${name} as a traitor.`);
+  const source = nexusRule(() => createHarkonnenBetrayalSource(harkonnenNexusBetrayalContext(g),
+    harkonnenNexusBetrayalAuthority(g),harkonnenNexusBetrayalParent(g)));
+  g.pendingNexusHarkonnenBetrayal = {source,required,passed:[]};
+  return true;
+}
+function harkonnenNexusBetrayalView(g: Game,id: string) {
+  const frame = g.pendingNexusHarkonnenBetrayal;
+  if (!frame) return null;
+  const hasPassed = frame.passed.includes(id), canPass = frame.required.includes(id) && !hasPassed;
+  const d = frame.source.declaration;
+  return {event:frame.source.event,provider:frame.source.provider,beneficiary:d.beneficiary,
+    target:d.target,leader:d.leader,identity:d.identity,canPass,hasPassed,
+    canUse:canPass && nexusRule(() => harkonnenBetrayalEligible(g.nexusCards!.cards!,g.players,id)),blocked:null as string | null};
+}
+function decideHarkonnenNexusBetrayal(g: Game,id: string,action: Action): void {
+  harkonnenNexusBetrayalIntegrity(g);
+  const frame = g.pendingNexusHarkonnenBetrayal!;
+  requireRule(['nexusHarkonnenBetrayalPass','nexusHarkonnenBetrayalUse'].includes(action?.type) &&
+    action.event === frame.source.event && Object.keys(action).length === 2 &&
+    Object.keys(action).every(key => key === 'type' || key === 'event') &&
+    frame.required.includes(id) && !frame.passed.includes(id),
+  'A current required seat must acknowledge only the original Harkonnen event.');
+  const use = action.type === 'nexusHarkonnenBetrayalUse';
+  if (use) requireRule(!g.pendingNexusHarkonnenReplacement &&
+    nexusRule(() => harkonnenBetrayalEligible(g.nexusCards!.cards!,g.players,id)),
+  'You do not own an eligible Harkonnen Nexus card or the prior replacement is still due.');
+  if (!use) {
+    frame.passed.push(id);
+    if (frame.required.some(seat => !frame.passed.includes(seat))) return;
+  }
+  const closed = nexusRule(() => closeHarkonnenBetrayalSource(frame.source,use ? 'use' : 'pass',
+    use ? id : null,g.nexusHarkonnenBetrayalCursor!));
+  if (use) {
+    const owner = getPlayer(g,frame.source.provider), identity = frame.source.declaration.identity;
+    requireRule(owner.traitors.filter(card => card === identity).length === 1 && g.traitorReserve,
+      'The original called physical traitor is no longer held exactly once.');
+    const replacement = nexusRule(() => createHarkonnenBetrayalReplacement(closed.receipt));
+    g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,id,g.players));
+    owner.traitors = owner.traitors.filter(card => card !== identity);
+    owner.revealedTraitors = (owner.revealedTraitors ?? []).filter(card => card !== identity);
+    g.traitorReserve = shuffle([...g.traitorReserve,identity]);
+    g.battle!.traitorCalls[owner.id] = false;
+    g.pendingNexusHarkonnenReplacement = replacement;
+    log(g,`${getPlayer(g,id).name} spent Harkonnen Nexus Betrayal. The declared Traitor Card returned to the shuffled Traitor Deck; Harkonnen will draw one private replacement during this turn’s Mentat Pause.`);
+  }
+  g.nexusHarkonnenBetrayalHistory!.push(closed.receipt);
+  g.nexusHarkonnenBetrayalCursor = closed.cursor;
+  g.pendingNexusHarkonnenBetrayal = null;
+  if (traitorVoters(g,g.battle!).every(voter => g.battle!.traitorCalls[voter] !== undefined))
+    advanceBattleOutcome(g);
+}
+function drawHarkonnenNexusBetrayalReplacement(g: Game): void {
+  const due = g.pendingNexusHarkonnenReplacement;
+  if (!due) return;
+  harkonnenNexusBetrayalIntegrity(g,true);
+  requireRule(g.status === 'playing' && g.phase === 8 && due.turn === g.turn &&
+    g.traitorReserve && g.traitorReserve.length > 0,
+  'The private Harkonnen replacement requires its actual current Mentat opening and Traitor Deck.');
+  const identity = g.traitorReserve[0];
+  const drawn = nexusRule(() => drawHarkonnenBetrayalReplacement(due,g.nexusHarkonnenBetrayalHistory!,
+    g.nexusHarkonnenBetrayalCursor!,identity,nexusTraitorUniverse(g)));
+  g.pendingNexusHarkonnenReplacement = null;
+  g.nexusHarkonnenReplacementHistory!.push(drawn);
+  g.traitorReserve.shift();
+  getPlayer(g,due.provider).traitors.push(identity);
+  log(g,`${getPlayer(g,due.provider).name} drew the one private Traitor Card replacement owed by Harkonnen Nexus Betrayal.`);
 }
 /** Offline-only, fresh native Ixian/Ix47 + Nexus profile. */
 export function initializeIxianNexusBetrayalGameForAudit(state: Game): Game {
@@ -16945,6 +17175,7 @@ function beginPhase(g: Game) {
     collect(g);
   }
   if (g.phase === 8) {
+    drawHarkonnenNexusBetrayalReplacement(g);
     replaceMoritaniAssassinationTraitors(g);
     if (g.inflation && g.inflation.updatedTurn < g.turn) {
       if (g.inflation.flipped) {
@@ -19869,6 +20100,8 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   for (const revelation of quote.revelations) {
     const holder = getPlayer(g, revelation.player),
       identity = revelation.identity;
+    if (b.nexusHarkonnenAllowance?.provider === holder.id &&
+      b.traitorDeclarations?.[holder.id]?.identity === identity) continue;
     holder.revealedTraitors = [
       ...new Set([...(holder.revealedTraitors ?? []), identity]),
     ];
@@ -22732,6 +22965,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
   } else if (response.kind === 'harkonnenTraitor') {
     const b = g.battle!;
     if (canceled) b.traitorCalls[response.owner] = false;
+    else if (offerHarkonnenNexusBetrayal(g,response.owner,response)) return;
     if (
       traitorVoters(g, b).every((voter) => b.traitorCalls[voter] !== undefined)
     )
@@ -25464,6 +25698,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  harkonnenNexusBetrayalIntegrity(state);
   ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
   guildBetrayalIntegrity(state);
@@ -25552,6 +25787,8 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  harkonnenNexusBetrayalIntegrity(g);
+  if (g.pendingNexusHarkonnenBetrayal) return g;
   ixianNexusBetrayalIntegrity(g);
   if (g.pendingNexusIxianBetrayal) return g;
   ixianNexusReplacementIntegrity(g);
@@ -25686,9 +25923,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   guildRateIntegrity(g);
   arrivalOverlapIntegrity(g);
   guildBetrayalIntegrity(g);
+  harkonnenNexusBetrayalIntegrity(g);
   return g;
 }
 function finishActionContinuations(g: Game) {
+  if (g.pendingNexusHarkonnenBetrayal) return;
   if (g.pendingNexusIxianBetrayal) return;
   if (g.pendingGuildBetrayal) return;
   if (g.pendingRicheseBetrayal) return;
@@ -25754,6 +25993,7 @@ function finishActionContinuations(g: Game) {
     finishMoritaniPlacement(g);
 }
 function settleAutomaticContinuations(g: Game) {
+  if (g.pendingNexusHarkonnenBetrayal) return;
   if (g.pendingNexusIxianBetrayal) return;
   if (g.pendingNexusIxianReplacement) return;
   if (g.pendingGuildBetrayal) return;
@@ -25762,6 +26002,7 @@ function settleAutomaticContinuations(g: Game) {
   if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
   for (let iteration = 0; iteration < 128; iteration++) {
+    if (g.pendingNexusHarkonnenBetrayal) return;
     if (g.pendingNexusIxianBetrayal) return;
     if (g.pendingGuildBetrayal) return;
     if (g.pendingNexusIxianReplacement) return;
@@ -25787,6 +26028,7 @@ function settleAutomaticContinuations(g: Game) {
       finishResponse(g, false);
     } else if (!finishAutomaticDecision(g)) return;
     finishActionContinuations(g);
+    if (g.pendingNexusHarkonnenBetrayal) return;
     if (g.pendingNexusIxianBetrayal) return;
     if (g.pendingGuildBetrayal) return;
     if (g.pendingRicheseBetrayal) return;
@@ -25805,6 +26047,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  harkonnenNexusBetrayalIntegrity(state);
   ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
   guildBetrayalIntegrity(state);
@@ -25843,6 +26086,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingNexusHarkonnenBetrayal) return g;
   if (g.pendingNexusIxianBetrayal) return g;
   if (g.pendingNexusIxianReplacement) return g;
   if (g.pendingGuildBetrayal) return g;
@@ -25886,6 +26130,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   moritaniExtortionIntegrity(g);
   guildRateIntegrity(g);
   arrivalOverlapIntegrity(g);
+  harkonnenNexusBetrayalIntegrity(g);
   return g;
 }
 
@@ -25897,6 +26142,12 @@ function applyActionInner(
 ): Game {
   ecazTreacheryIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingNexusHarkonnenBetrayal) {
+    getPlayer(g,id);
+    if (action?.type === 'advanceBots') return g;
+    decideHarkonnenNexusBetrayal(g,id,action);
+    return g;
+  }
   if (g.pendingNexusIxianBetrayal) {
     getPlayer(g,id);
     if (action?.type === 'advanceBots') return g;
@@ -29592,6 +29843,7 @@ function applyActionInner(
       g.response = { kind: 'harkonnenTraitor', owner: id, passed: [] };
       return g;
     }
+    if (action.call && offerHarkonnenNexusBetrayal(g,id)) return g;
 
     if (
       traitorVoters(g, b).every((voter) => b.traitorCalls[voter] !== undefined)
@@ -29758,6 +30010,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  harkonnenNexusBetrayalIntegrity(state);
   ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
   guildBetrayalIntegrity(state);
@@ -30133,6 +30386,8 @@ export function viewGame(state: Game, id: string) {
       ? {...nexusRule(() => quoteDiscoveryEntry({...g,discoveries:g.discoveries!},g.discoveryEntry!,id)),event:g.decision.event} : null,
     greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,
     nexusCards: projectedNexusCards(g, id),
+    nexusHarkonnenBetrayalPreview: !!g.nexusHarkonnenBetrayalPreview,
+    nexusHarkonnenBetrayalReaction: harkonnenNexusBetrayalView(g,id),
     nexusIxianBetrayalPreview: !!g.nexusIxianBetrayalPreview,
     nexusIxianBetrayalReaction: ixianNexusBetrayalView(g,id),
     nexusIxianReplacementPreview: !!g.nexusIxianReplacementPreview,
@@ -30204,7 +30459,9 @@ export function viewGame(state: Game, id: string) {
     storm: g.status === 'lobby' ? STORM_START_SECTOR : g.storm,
     playerPositions: normalizedPlayerPositions(g),
     order: g.order,
-    active: g.pendingNexusIxianBetrayal
+    active: g.pendingNexusHarkonnenBetrayal
+      ? (() => {const remaining = g.pendingNexusHarkonnenBetrayal.required.filter(seat => !g.pendingNexusHarkonnenBetrayal!.passed.includes(seat)); return remaining.length === 1 ? remaining[0] : null;})()
+      : g.pendingNexusIxianBetrayal
       ? (() => {const remaining = g.pendingNexusIxianBetrayal.required.filter(seat => !g.pendingNexusIxianBetrayal!.passed.includes(seat)); return remaining.length === 1 ? remaining[0] : null;})()
       : g.active,
     movementRemaining: g.movementRemaining ?? null,
