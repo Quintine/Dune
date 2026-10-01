@@ -42,8 +42,15 @@ guide-worker reload, all82 original seats across25 targeted QA rooms restore;
 Basicv38/Advancedv31 remain at native Mentat without double collection.
 Local HTTP remains **49/55 with six upstream503 rejection failures**, not green.
 Guide coverage is Partial / Development Verified; final guide10/10,
-types/lint/build and expanded390px guide pass. Checkpoint push is being
-finished. No deployed/full-module claim.
+types/lint/build and expanded390px guide pass. Final frozen check after the
+phone repair again passes all6,487 offline cases. Code checkpoint
+**6785e622a7bc8b850aa5e3d338c63be5a33a9403** is pushed.
+[Exact CI run36923901367](https://github.com/Quintine/Dune/actions/runs/36923901367),
+container job110576362446, is completed/success: mandatory isolated storage/
+HTTP verification passes before verified-image publication. Image:
+`ghcr.io/quintine/dune:sha-6785e622a7bc8b850aa5e3d338c63be5a33a9403`.
+This does not turn local49/55 green or prove deployment. No deployed/full-module
+claim; protected NAS rollout/restoration prerequisites remain unavailable.
 
 Harkonnen Nexus Betrayal now connects actual personal and allied native traitor
 calls, exact immediate physical retirement, the surviving original battle once

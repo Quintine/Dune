@@ -79,8 +79,12 @@ the23 prior isolated QA rooms' states/versions unchanged. Final guide10/10,
 types/lint/build and expanded390px guidance pass; all82 original seats in25
 targeted QA rooms restore after final worker reload without double collection.
 Local HTTP is **49/55**, with six known upstream503 rejection failures:
-not a green suite. Publication/deployment and complete skill/module acceptance
-remain open.
+not a green suite. Code **6785e622a7bc8b850aa5e3d338c63be5a33a9403** is pushed;
+[exact CI36923901367](https://github.com/Quintine/Dune/actions/runs/36923901367)
+and container job110576362446 completed/success with mandatory isolated
+storage/HTTP verification before verified-image publication. Image:
+`ghcr.io/quintine/dune:sha-6785e622a7bc8b850aa5e3d338c63be5a33a9403`.
+Deployment and complete skill/module acceptance remain open.
 
 
 The historical13 September checkpoint below is **Prototyped**, with **Partial**

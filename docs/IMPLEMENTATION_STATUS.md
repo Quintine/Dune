@@ -57,8 +57,14 @@ across25 targeted QA rooms restore after final guide-worker reload; the two
 Banker rooms remain at native Mentat without double collection. Local HTTP
 is **49/55** with six existing upstream503 rejection failures, not green.
 Owned temporary drivers are removed; private inputs/backups remain outside
-the checkout. Checkpoint push is being finished; full skill/module,
-combined-mode and deployed acceptance remain open.
+the checkout; final frozen check after phone repair again passes all6,487.
+Code **6785e622a7bc8b850aa5e3d338c63be5a33a9403** is pushed.
+[CI36923901367](https://github.com/Quintine/Dune/actions/runs/36923901367),
+container job110576362446, completed/success for that exact head SHA.
+The mandatory isolated storage/HTTP verifier succeeds before verified-image
+publication: `ghcr.io/quintine/dune:sha-6785e622a7bc8b850aa5e3d338c63be5a33a9403`.
+No skipped verifier or deployment is inferred. Full skill/module, combined-mode
+and deployed acceptance remain open; local49/55 is still not green.
 
 ## 2 October 2026 — original Harkonnen Nexus traitor retirement and Mentat replacement
 
