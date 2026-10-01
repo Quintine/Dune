@@ -33,6 +33,14 @@ suites and save/seat/privacy/custody campaigns are removed from routine rule
 iteration. Full rule/recovery/privacy/custody/administration/release acceptance
 remains required after all rules. Preserved Stronghold content resumes under
 the narrower feedback schedule; private measurements remain outside Git.
+Code **e9830b6ced80c95253cfa112bb8ed2eb6e50b74c** is pushed.
+[Mandatory CI36941218637](https://github.com/Quintine/Dune/actions/runs/36941218637)
+and job110632894258 completed/success for the exact SHA; isolated storage/HTTP
+verification precedes publication of
+`ghcr.io/quintine/dune:sha-e9830b6ced80c95253cfa112bb8ed2eb6e50b74c`.
+This existing pipeline proof does not create a local assurance rerun or
+deployed/full-rule claim.
+
 
 ## 2 October 2026 — genuine native Ixian/CHOAM Stronghold rule integration
 

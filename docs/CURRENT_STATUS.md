@@ -39,6 +39,13 @@ union took100.22s with different coverage; use narrow failing-case feedback
 before one coherent affected batch. Canonical context index/handoff avoids
 mass file moves or duplicate ruling registries. Resume preserved Stronghold
 rule/control work now; do not restart save/privacy/custody/seat audit campaigns.
+Code checkpoint **e9830b6ced80c95253cfa112bb8ed2eb6e50b74c** is pushed.
+[Exact mandatory CI36941218637](https://github.com/Quintine/Dune/actions/runs/36941218637),
+job110632894258, completed/success: existing isolated storage/HTTP verification
+passed before image publication. This is observed pipeline evidence, not a
+new per-feature assurance campaign or deployment claim. Immutable image:
+`ghcr.io/quintine/dune:sha-e9830b6ced80c95253cfa112bb8ed2eb6e50b74c`.
+
 
 **Stronghold rule integration — bounded Development Verified:** fresh
 `stronghold-factions` connects Advanced native Ixians/CHOAM plus classic2..6,
