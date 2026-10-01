@@ -42,7 +42,7 @@ export type RuleTopic = {
 };
 
 export const PHASE_HELP = [
-  'Seal the storm dials. After the distance is revealed, play any storm cards and confirm movement.',
+  'Complete the table’s storm dials or card reveal. After the distance is revealed, play any storm cards and confirm movement.',
   'Reveal a spice blow, resolve worms and card responses, then finish any Nexus and Fremen rides.',
   'Claim charity once if below two spice. Advanced Bene Gesserit receives two spice regardless of wealth. Then mark yourself ready.',
   'Bid or pass in turn. A winning bidder chooses how to pay before income and bonus-card responses resolve.',
@@ -111,7 +111,7 @@ const phaseDetails = [
     'On the first turn, the players nearest the start on its two sides each secretly dial zero through twenty. Add both dials to move the storm. Later basic turns use the two players who last used the battle wheels, with dials one through three. If no battle intervened, the previous storm dialers continue. Both dials stay hidden until both are submitted.',
     'After revelation, everyone has a chance to play Weather Control or Family Atomics. A card change clears previous confirmations.',
     'Confirm movement to let the storm advance once everyone is ready.',
-    'In the advanced game with Fremen, later turns reveal the forecast storm card instead of collecting new dials. Storm casualties and Fremen foresight each resolve before the spice draw.',
+    'Every new Advanced turn after the first reveals a random Storm Deck card, one through six, even without Fremen. First-turn dials are unchanged. Native Fremen keeps its private forecast; without Fremen nobody receives one. An already recorded saved Storm finishes its existing dial or card protocol without a reroll.',
   ],
   [
     'Everyone confirms the draw. A new blow remains open for Harvester before the table accepts it.',
@@ -148,6 +148,8 @@ const phaseDetails = [
     'Ecaz and its reciprocal ally may share territories permanently and count as one faction toward stronghold capacity. This applies to normal shipment, ground routes and Ambassador arrivals. It does not grant extra movement, bypass storm or mobile-stronghold entry rules, or apply to homeworlds. Their three jointly occupied stronghold victory and shared desert allocation are supported. Allied Ecaz and Fremen together in Sietch Tabr do not block the Fremen final-turn victory; its other conditions still apply. Combined combat and the Habbanya extension remain unfinished.',
     'A restored pending physical shipment is checked again before forces or spice are committed. If its saved turn, force allocation, destination, price or authorized contribution no longer matches the table, it is rejected without changing the saved declaration.',
     'Finish shipment and movement explicitly. Any Bene Gesserit free-shipment decision and its response must finish first.',
+    'In Advanced, finishing your turn sends your own fighters in territories shared with your ally to Tanks, even if your ally acts later or the alliance formed this turn. Polar Sink, Bene Gesserit advisor coexistence in either direction and native Ecaz peaceful coexistence are exempt. The finish warning names affected territories without revealing concealed forces. Loss is mandatory, not a separate confirmation; finishing remains legal if you cannot escape.',
+    'Basic keeps its existing later-player separation deadline and same-turn alliance exemption; advisors have no new Basic exemption. Homeworlds keep their separate allied-entry restrictions.',
     'Advanced Guild may choose when to take its complete shipment-and-movement turn. The table offers a choice before another player starts. Guild cannot interrupt a turn already underway.',
   ],
   [
@@ -2133,6 +2135,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     summary: 'Inspect the six possible faces, your permitted private forecast, and a card already revealed to the table.',
     steps: [
       'The gallery shows the six possible values, one through six. It does not identify a live draw.',
+      'Every new Advanced Storm after the first uses these cards, even without Fremen. That does not give another faction Fremen’s private forecast. First-turn dials, Basic and an already recorded saved opening keep their own protocol.',
       'When the table grants Fremen its private forecast, Inspect Storm Card opens that exact face. Other players do not receive the private forecast.',
       'When the card is publicly revealed, its chronicle entry gains an inspector. The recorded face remains available while that entry remains in the chronicle, including after refresh.',
       'The card value and actual movement can differ. Weather Control and Ecological Testing Station do not rewrite the recorded card face. Read the current storm result for the distance actually moved.',
@@ -2140,7 +2143,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
     related: ['storm', 'advanced-storm-spice', 'faction-fremen', 'privacy', 'implementation-checklist'],
     checklist: [
-      { area: 'Implementation', status: 'Partial', detail: 'Six numeric faces and a public reveal record connect existing Storm Card state to inspection. Movement, draws and mode gates are unchanged; full component artwork and printed-face verification remain open.', evidence: ['game/storm-cards.ts', 'game/engine.ts'] },
+      { area: 'Implementation', status: 'Partial', detail: 'Six numeric faces and a public reveal record connect existing Storm Card state to inspection. Inspection itself changes no draw or movement; the later Advanced default is tracked separately. Full component artwork and printed-face verification remain open.', evidence: ['game/storm-cards.ts', 'game/engine.ts'] },
       { area: 'Player controls', status: 'Implemented', detail: 'Private forecasts, public revealed-card chronicle entries and the six-face reference gallery share a keyboard-accessible enlarged inspector.', evidence: ['components/storm-cards.tsx', 'components/game-table.tsx', 'components/rules-reference.tsx'] },
       { area: 'AI', status: 'Implemented', detail: 'Inspection adds no game action or AI decision. Existing forecast authorization, legal choices and profiles remain unchanged.' },
       { area: 'Documentation', status: 'Partial', detail: 'Guidance distinguishes private forecasts, public history, reference examples and modified storm distance. This is not complete physical-component certification.', evidence: ['docs/STORM_CARD_INSPECTION.md'] },
@@ -2907,7 +2910,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Supported entry opportunities offer private Moritani controls followed by a public Karama response and, if allowed, an accept/refuse decision for the entrant. The entrant sees the alliance terms, not the hidden token’s name, face or Moritani’s private eligibility details. Complete Moritani games remain unavailable.',
       'When an eligible faction would trigger Terror, Moritani may offer that entrant an alliance before revealing the token. This offer cannot be made to Ecaz.',
       'If accepted, Moritani and the entrant become allies immediately, ending any existing alliance either had. Return the unrevealed Terror token to Moritani’s supply.',
-      'If newly allied forces already share a territory, neither is immediately removed. If they still share it at the beginning of the next turn, one faction must leave during that turn’s Shipment and Movement; if the first does not leave, the second must leave or lose its forces there to the Tanks.',
+      'Accepting the alliance does not immediately remove shared forces. In Advanced, the ending player’s own shared fighters go to Tanks at each Shipment and Movement end, including this formation turn, unless a normal exception applies. Basic retains the later-player deadline on the following turn. This does not change the offer’s formation timing or open unsupported entry combinations.',
       'If the entrant refuses the offer, Moritani must reveal the token. Making an offer and receiving a refusal does not retain the ordinary option to decline the trigger.',
       'This alliance opportunity comes from the faction ability; it does not wait for a Nexus. Karama can prevent the alliance forming, while Moritani may still reveal the token.',
       'In the current controls, Karama is checked before the entrant replies. If canceled, the decision returns to Moritani: reveal the token or leave it hidden. The canceled offer cannot be offered again during this entry opportunity.',
@@ -3023,14 +3026,22 @@ export const RULE_TOPICS: RuleTopic[] = [
     category: 'Advanced & expansions',
     coverage: 'Partial',
     summary:
-      'Two spice piles, Fremen forecasts, half storm losses and additional worms.',
+      'Post-first-turn Storm Deck in every Advanced roster, native Fremen forecasts, two spice piles and worm responses.',
     steps: [
-      'These phase rules have engine support and focused tests. The six classic factions can start the unfinished Advanced preview while remaining powers are completed.',
+      'Advanced normally uses these phase rules, not an extra source profile. The adopted unofficial revision changes later Storm determination; it is not a publisher clarification or complete-mode certification. The six classic factions can start the unfinished Advanced preview while remaining powers are completed.',
       'Resolve blow A, its worms, Harvester window, Nexus and rides, then do the same for blow B. Each pile uses its own previous discard. First-turn worms are set aside and shuffled back only after both blows finish.',
-      'After the first storm, Fremen privately learns a random storm card for the next turn. A foresight cancellation hides that card from Fremen without changing its eventual distance. Weather Control may replace a revealed card distance before movement.',
+      'Keep the first storm’s two secret nearby-player dials, each zero through twenty. Every later newly opened Advanced Storm draws a random card from one through six, including without Fremen. The last revealed face is eligible again next time. A saved current dial or card opening finishes as recorded; returning to the table never rerolls it.',
+      'After the first storm, native Fremen privately learns the actual card for the next turn. Canceling foresight hides that card from Fremen without changing its eventual distance. Without Fremen, nobody gets a forecast or a foresight response. Weather Control may replace a revealed distance before movement without changing the recorded card face.',
       'Fremen storm losses are half the exposed group, rounded up. Choose ordinary and Fedaykin casualties when more than one combination is possible. A legal reserve shipment into storm applies this loss only to the arriving group.',
       'Fremen may place additional worms from a spice blow in a sand territory. Canceling this placement prevents further additional-worm placements for the rest of the turn. Ordinary worm appearances and their Nexus still resolve.',
       'Fremen worm survival and optional allied protection have separate responses before casualties. Canceling Fremen survival destroys the Fremen forces at that worm’s location and removes that ride; it does not cancel an allowed protection of allied forces.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'New post-first Advanced Storm openings use the canonical six-card source in every roster; first dials, native foresight and recorded current openings retain their own protocol. Wider Advanced interactions remain incomplete.', evidence: ['game/engine.ts', 'game/storm-cards.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Controls follow the current recorded dial or card opening. Public card inspection does not grant a private forecast; pending responses keep priority.', evidence: ['components/game-table.tsx', 'components/storm-cards.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'Legal Storm participation follows the projected opening, including recorded dials and no-Fremen cards. Strategy calibration and full-mode acceptance remain separate.', evidence: ['game/bots.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'Internal guidance distinguishes the authorized unofficial Advanced default, unchanged Basic rules, first dials, native forecasts and saved continuation.', evidence: ['docs/RULE_DECISIONS.md', 'docs/BASE_ADVANCED_READINESS_20260907.md', 'docs/STORM_CARD_INSPECTION.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Focused native and authenticated SQLite checks cover fresh no-Fremen cards, first dials, a genuinely captured prior Advanced dial opening, forecast privacy and unchanged Basic continuation. Actual phone inspection and confirmation continued a saved no-Fremen card opening; broader Advanced and deployment acceptance remain open.', evidence: ['tests/advanced-source-engine.test.ts', 'tests/advanced-source-recovery.test.ts', 'tests/advanced-source-controls.test.tsx', 'tests/bot-advanced-source.test.ts', 'docs/STORM_CARD_INSPECTION.md'] },
     ],
     example:
       'Five Fremen forces caught in storm lose three tokens. If the group includes two Fedaykin, Fremen can keep both by losing three ordinary tokens.',
@@ -3042,6 +3053,28 @@ export const RULE_TOPICS: RuleTopic[] = [
       'card-weather',
       'card-harvester',
     ],
+  },
+  {
+    id: 'advanced-allied-separation',
+    title: 'Advanced alliances: ending shared occupation',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    summary: 'Each ending player loses its own shared fighters; advisor coexistence, Polar Sink and native Ecaz coexistence are exempt.',
+    steps: [
+      'Under the adopted unofficial Advanced revision, finish each player’s Shipment and Movement separately. Your own fighters still sharing a territory with your ally go to Tanks when your turn ends. Your ally’s fighters stay; its later turn does not postpone your loss. An alliance formed this turn has no Advanced grace period.',
+      'Polar Sink is exempt. If either allied group is Bene Gesserit advisors, coexistence sends neither group to Tanks. Bene Gesserit fighters have no advisor exemption. Native Ecaz peaceful coexistence keeps its own conditions, including applicable Karama effects.',
+      'Before an ordinary finish, the table warns which public territories would lose your forces. It does not reveal force amounts or concealed No-Field values. Finish movement uses the existing action, without another loss confirmation. If no legal escape is available, you may still finish and accept the mandatory consequence.',
+      'Complete any pending shipment, movement, arrival or response before ordinary finish controls become available. Extra-move and deferred-turn endings use the same separation rule; they do not replay the arrival or charge shipment again.',
+      'Basic still uses its existing later-player deadline and formation-turn exemption, without this advisor exception. Homeworlds are outside this Dune-territory rule and keep their native allied-entry restrictions. The rule grants no new allied-entry permission or alliance formation window, and completed turns are not reevaluated.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'One canonical separation quote distinguishes Basic from Advanced timing and exceptions; native ending-group custody remains responsible for physical losses.', evidence: ['game/allied-separation.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'The own clean-turn warning contains public loss territories only; forced loss adds no action or confirmation and shared pending-control locks retain priority.', evidence: ['components/game-table.tsx'] },
+      { area: 'AI', status: 'Partial', detail: 'All four legal policies use native projected movement/ending availability and can finish with mandatory loss; no duplicate separation calculator or strategic alliance calibration was added.', evidence: ['game/bots.ts', 'tests/bot-advanced-source.test.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'The unofficial per-player/advisor departures are distinguished from the earlier publisher/FAQ and unchanged Basic policy.', evidence: ['docs/ALLIED_TRANSIT_RULES.md', 'docs/RULE_DECISIONS.md', 'docs/BASE_ADVANCED_READINESS_20260907.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Genuine native overlaps cover first/later newly allied ends, exact normal/elite custody, Hajr, advisor/Ecaz/Polar exceptions and unchanged Basic policy. Authenticated SQLite covers restart, races, privacy and immutable rejects. Actual phone ending moved only the ending group to Tanks and refresh retained it; wider combinations, full modes and deployment remain open.', evidence: ['tests/allied-separation.test.ts', 'tests/advanced-source-engine.test.ts', 'tests/advanced-source-recovery.test.ts', 'tests/bot-advanced-source.test.ts', 'docs/ALLIED_TRANSIT_RULES.md'] },
+    ],
+    related: ['movement', 'spice-blow', 'advanced-advisors', 'ecaz-ambassadors', 'homeworlds'],
   },
   {
     id: 'victory',
@@ -3687,6 +3720,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     steps: [
       'Bene Gesserit forces share one token type throughout a territory. The map marks advisors with a dashed outer ring and labels their stance in the territory details.',
       'Advisors do not fight, contest stronghold victory, block another faction’s entry, collect spice, earn stronghold income, grant ornithopters or enable Family Atomics. Storms, worms, explosions and Atomics still destroy them.',
+      'In Advanced, advisors may coexist with their ally without triggering the end-turn alliance constraint in either direction. Neither the advisors nor the allied fighters are lost for that coexistence. Bene Gesserit fighters remain subject to ordinary separation; Basic receives no new advisor exception.',
       'After Fremen setup, choose the starting advisor’s territory and sector. Advisors become fighters automatically whenever no other faction remains in their territory.',
       'A normal shipment enters as fighters unless joining existing advisors. Moving or shipping into your existing group must match its type. Advisors moved into an occupied territory without another Bene Gesserit group may remain peaceful or request a flip to fighters.',
       'When another faction ships, moves or worm rides into your fighters, immediately choose whether to become advisors. The choice opens a Karama response. Repeated entry can offer a new choice.',

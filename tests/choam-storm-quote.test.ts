@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createGame, newPlayer, applyAction, type Game } from '../game/engine';
 import { baseDeck } from '../game/cards';
+import { createStormSource } from '../game/discovery-storm';
 import {
   quoteChoamStormOffer,
   ChoamStormQuoteError,
 } from '../game/choam-storm-quote';
-function actual() {
+function actual(firstStorm = false) {
   let g = createGame('STORMQUOTE', newPlayer('c', 'CHOAM', 'choam'), true, [
     'choam',
   ]);
@@ -17,15 +18,19 @@ function actual() {
   Object.assign(g, {
     status: 'playing',
     phase: 0,
-    turn: 2,
-    storm: 5,
-    stormPending: 3,
+    turn: firstStorm ? 1 : 2,
+    storm: firstStorm ? 0 : 5,
+    stormPending: firstStorm ? null : 3,
     order: ['c', 'e', 'b'],
     deck: baseDeck(),
   });
+  if (firstStorm) g.stormDialers = ['c', 'e'];
+  else g.stormMovementSource = createStormSource(g.turn, 'card', g.stormPending!);
   for (const p of g.players)
     Object.assign(p, { forces: {}, reserves: 20, hand: [], spice: 10 });
-  g.players[0].forces = { 'red_chasm:7': 4 };
+  g.players[0].forces = firstStorm
+    ? { 'meridian:1': 2, 'cielago_north:3': 2 }
+    : { 'red_chasm:7': 4 };
   g.players[0].reserves = 16;
   g.players[1].forces = { 'red_chasm:7': 3 };
   g.players[1].reserves = 17;
@@ -39,13 +44,17 @@ function actual() {
   const jubba = hold(0, 'Jubba Cloak'),
     printed = hold(1, 'Karama'),
     bg = hold(2, 'Baliset');
+  if (firstStorm) {
+    g = applyAction(g, 'c', { type: 'stormDial', amount: 20 });
+    g = applyAction(g, 'e', { type: 'stormDial', amount: 20 });
+  }
   for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
   assert.equal(g.decision?.kind, 'choamStorm');
   g = applyAction(g, 'c', {
     type: 'card',
     mode: 'choam',
     card: jubba.id,
-    territory: 'red_chasm',
+    territory: firstStorm ? 'meridian' : 'red_chasm',
   });
   assert.equal(g.response?.kind, 'choamWorthless');
   return { g, jubba, printed, bg };
@@ -93,10 +102,7 @@ void test('lost current threat and prior protection both stop at storm protectio
   assert.equal(g.players[1].tanks, 0);
 });
 void test('initial storm origin zero and full forty-sector traversal remain finite and preserve sector identities', () => {
-  const { g } = actual();
-  g.storm = 0;
-  Object.assign(g.stormResolution!, { from: 0, distance: 40 });
-  g.players[0].forces = { 'meridian:1': 2, 'cielago_north:3': 2 };
+  const { g } = actual(true);
   const q = quoteChoamStormOffer(g);
   assert.equal(q.kind, 'decision');
   if (q.kind !== 'decision') throw Error('No decision');

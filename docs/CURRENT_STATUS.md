@@ -9,12 +9,38 @@ an [authorized Advanced source of truth](RULE_DECISIONS.md#authorized-source-ame
 including its identified unofficial rulings. The 44-page file has 2.3
 metadata but a visibly retained 2.2 editorial heading; the index records its
 SHA-256 and physical-page citations. Current Guild payment/source passages
-were compared with the wave. Wider Advanced reconciliation is not yet
-implemented, and adoption does not reset games, convert Basic, republish
-the local PDF or open mode gates.
+were compared with the wave. Wider Advanced reconciliation remains open.
+Adoption does not reset games, convert Basic, republish the local PDF or
+open mode gates.
 
 
 ## Current checkpoint and work
+
+Five implementation lanes reconciled two source-clear Advanced defaults
+from the authorized revised rulebook: all new post-first Storm openings
+draw the Storm Deck, even without Fremen; each player's own combined-turn
+end applies allied separation without waiting for the ally. Advisor
+coexistence in either direction, native Ecaz and Polar Sink remain exempt.
+Basic is unchanged; a genuine prior-revision recorded Advanced dial save
+finishes its original sum, then uses the Deck on its next new turn.
+Canonical engine quotes supply own public loss-territory names only,
+with unchanged native ending, force/elite/No-Field custody and pending locks.
+Four existing minimal bot policies use native availability, not a second
+separation calculator. Independent rules and storage reviews have no finding.
+Consumer fixture repairs retain original Storm bindings and native progress;
+they do not weaken source validation or remove the allied-entry guard.
+Types, lint, **6,169 offline tests**, **339 selected cases** and build pass.
+Standalone native continuation covers exact owned normal/elite losses,
+advisor/Ecaz/Polar exceptions, unchanged Basic and captured old Storm.
+Three backed-up fresh authenticated Advanced preview rooms exercise actual
+390-pixel public Storm inspection/confirmation, first/later human ending
+and refresh. Read-only proof conserves physical forces/elites/Treachery,
+retains the eight prior Guild rooms, and all **33 seats in 11 QA rooms**
+reauthenticate after necessary isolated-worker build reloads.
+The actual expanded source guide retains Partial gates and exercised evidence.
+Local built-worker HTTP is **51/55**, four POST 503s, not green.
+Full Advanced, wider source differences, strategic AI and live acceptance
+remain open; container publication is not deployment.
 
 Five implementation lanes connected [Guild Nexus Betrayal](NEXUS_GUILD_RULES.md#nexus-guild-betrayal):
 full funded shipment-payment replacement, including own upfront payment

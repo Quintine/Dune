@@ -5,6 +5,46 @@ remain unchanged. Six numeric Storm Card faces can be enlarged from the internal
 reference. An entitled Fremen player can inspect the existing private forecast,
 and every viewer can inspect a card after its public reveal in the chronicle.
 
+## Authorized Advanced Storm default — 1 October 2026
+
+The user authorized `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`,
+including marked unofficial rulings. **Storm Movement, physical PDF page 6**
+uses a random Storm Deck card after the first turn, expressly even without
+native Fremen; the last revealed card returns before the next determination.
+The source has 44 physical pages and SHA-256
+`7077aa87a973221d86d4bd2da945b40c4dec3d371caa6a68cb209758ddf1e516`.
+Its metadata says v.2.3, while the visible editorial heading on physical
+page 3 says Version 2.2. This is authorized unofficial provenance, not a
+publisher simplification. The local PDF is not republished or linked in-app.
+
+Every new Advanced opening after the first uses the existing six faces 1–6
+and structured source, rather than a new saved deck array. First Storm
+nearby-player 0–20 dials and Basic dials remain unchanged. A saved current
+dial/card opening finishes as recorded without a reroll; the next new
+Advanced turn uses the Deck. Native Fremen alone retains its actual private
+next-card forecast and separate peek cancellation. Without Fremen there is
+no forecast grant, canceled foresight power or extra private confirmation.
+Public reveals use the existing inspector in either roster; recorded card
+faces stay distinct from Weather Control or Testing Station movement.
+
+**Verification of the new default: Partial development verified.** The
+selected source-wave native/SQLite/control/bot checks pass 339/339 across
+seventeen files; full types/lint, 6,169 offline cases and build pass.
+A captured real prior-revision Advanced dial opening finishes
+its original sum, then the next native no-Fremen opening draws a canonical
+card. Actual new authenticated preview `PTSMVMDY`, privately backed up
+before native preparation, reveals five sectors at turn two. Its
+390-pixel inspector shows that public face, explains the roster-independent
+Deck and native-only forecast, then human confirmation advances Storm
+from one to six; refresh continues Spice Blow without a reroll.
+Saved native inventory and original seats remain intact after isolated
+build reloads. Local built-worker HTTP is 51/55, four POST 503s, not green
+or deployed acceptance. Older inspection evidence below covers its stated
+boundary. Public/faction/module gates and full-mode certification remain
+unchanged; inspection alone did not change rules, this cutover does.
+
+## Existing inspection contract
+
 `game/storm-cards.ts` is a face catalog, not a new deck or source of a live draw.
 The inspector accepts one already-authorized value and no game, deck or seat.
 The rules gallery shows all possibilities without selecting a live card.

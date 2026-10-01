@@ -18,6 +18,7 @@ import { botActions, runBots } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { baseDeck, treacheryDeck } from '../game/cards';
 import { createTechTokens } from '../game/tech-tokens';
+import { createStormSource } from '../game/discovery-storm';
 import {
   createDukeVidal,
   acquireDuke,
@@ -300,6 +301,7 @@ void test('Family Atomics can recover after killing its own qualifying Wall figh
     revived: 0,
   };
   g.stormPending = 1;
+  g.stormMovementSource = createStormSource(g.turn, 'card', g.stormPending);
   g.ready = ['t'];
   const { pending, done } = play(g, 'p', { type: 'card', card });
   assert.equal(pending.shieldWallDestroyed, true);

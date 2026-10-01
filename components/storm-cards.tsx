@@ -53,9 +53,9 @@ export function StormCardInspector({ distance, context = 'reference' }: {
           <DialogTitle className="m-0 font-serif text-2xl leading-tight text-[#fff3d6]">Storm Card — {sectors(distance)}</DialogTitle>
           <DialogDescription className="m-0 text-base leading-7 text-[#d9d4c7]">{guide.description}</DialogDescription>
           <StormCardFace distance={distance} />
-          <p className="m-0 text-base leading-7">In the Advanced game with Fremen, the first storm uses the Battle Wheels.
-            For later turns, the selected Storm Card is revealed and supplies the storm’s counterclockwise distance.
-            It returns to the deck before the next forecast is drawn.</p>
+          <p className="m-0 text-base leading-7">The first Advanced storm uses the Battle Wheels.
+            Every later new Advanced Storm opening reveals a Storm Card for its counterclockwise distance, even without Fremen.
+            The card returns to the deck before the next draw. Only native Fremen has the private forecast advantage.</p>
           <p className="m-0 text-base leading-7">This face shows the card’s value. Weather Control and other effects can change
             the actual movement; the table’s storm result records that movement.</p>
         </div>

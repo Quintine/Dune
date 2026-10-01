@@ -15,6 +15,7 @@ import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { richeseCards } from '../game/richese-cards';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
+import { createStormSource } from '../game/discovery-storm';
 
 const player = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
 const send = (g: Game, id: string, action: Action) =>
@@ -44,6 +45,8 @@ function fixture(advanced = false) {
   g.turn = 2;
   g.storm = 5;
   g.stormPending = 3;
+  if (advanced)
+    g.stormMovementSource = createStormSource(g.turn, 'card', g.stormPending);
   g.order = ['c', 'e', 'b'];
   for (const p of g.players) {
     p.hand = [];

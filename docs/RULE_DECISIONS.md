@@ -29,14 +29,48 @@ Guild Nexus full-payment/own-payment/Junction override or supply a new
 response order; its bounded prepayment contract remains source-consistent.
 This is a source comparison, not runtime verification.
 
-Future Advanced reconciliation must distinguish the revision's Storm Deck
-simplification even without native Fremen (6), its explicitly revised
-alliance-constraint timing and advisor coexistence (15, 40), secrecy of
-spice/discards and hand counts outside Bidding (16), and Duke Vidal's
-Tleilaxu-ghola exception (30). These are source-led reconciliation targets,
-not claims that existing behavior has already changed. Optional variants
-remain optional, Basic is not silently converted to Advanced, and no saved
-game is reset or redealt by adopting a source.
+## Advanced core cutover — 1 October 2026
+
+The supplied revision now resolves two normal Advanced defaults, not a new
+opt-in profile or a publisher ruling:
+
+- **Storm Movement, physical PDF page 6:** after the first turn, draw a
+  random Storm Deck card and return the last revealed card before the next
+  determination, expressly even without native Fremen. The first Storm
+  still uses the two nearby players' secret 0–20 dials. The implementation
+  reuses the six canonical faces 1–6 and its structured Storm source; native
+  Fremen keeps its private next-card forecast and separate peek cancellation.
+  Without Fremen, nobody gains a forecast or a borrowed Fremen advantage.
+- **Alliance Constraint, physical PDF page 15 and rationale on 40:** at
+  each player's Shipment and Movement end, that ending player's own forces
+  in territories shared with its ally go to Tanks. Advanced does not wait
+  for the ally's later turn or exempt an alliance formed this turn. Bene
+  Gesserit advisors do not trigger this constraint in either direction;
+  fighters remain ordinary forces. Polar Sink and native Ecaz peaceful
+  coexistence remain exceptions. Homeworlds are not Dune territories, and
+  their native allied-entry prohibitions are unchanged.
+
+The page 15 footnote explicitly identifies the changed timing and advisor
+coexistence as departures from the original rules and November 2020 FAQ.
+Page 40 explains that choice; it is the supplied revision's unofficial
+authority, not a later GF9 clarification. See the
+[allied separation source comparison](ALLIED_TRANSIT_RULES.md#authorized-advanced-source-cutover--1-october-2026)
+and [readiness follow-up](BASE_ADVANCED_READINESS_20260907.md#authorized-advanced-source-follow-up--1-october-2026).
+
+Basic retains its existing dials and later-player/formation-turn separation
+policy. A saved current Storm completes its already recorded dial/card
+protocol without resetting, rerolling or redealing; the next new Advanced
+Storm opening uses the Deck. Completed movement consequences are not
+reevaluated. The own-turn warning exposes only affected public territory
+names through `GameView.advancedAllySeparation`; the ordinary `endMovement`
+action stays unchanged, with no confirmation for mandatory losses.
+
+Verification of this cutover is **Planned** pending the coordinator's
+frozen native, authenticated SQLite and phone/browser evidence. Existing
+focused tests and old calibration counts do not verify these new defaults.
+Public, faction, optional-module and full-mode readiness gates are unchanged.
+Secrecy (physical page 16), Duke Vidal's ghola exception (30), Kull and other
+independent decisions are not reconciled by this cutover.
 
 ## Recorded contracts and implementation boundaries
 

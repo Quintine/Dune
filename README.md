@@ -19,6 +19,14 @@ or use the same selector as host in an existing base-game lobby. Everyone must
 ready again after changing rules, then the host chooses **Begin Advanced preview**.
 This mode is unfinished; see [preview scope and limits](docs/ADVANCED_PREVIEW.md).
 
+Advanced uses the user-authorized revised rules: every newly opened Storm
+after the first draws the Storm Deck, even without Fremen. Finishing your
+Shipment and Movement sends your own shared allied fighters to Tanks;
+advisors, Polar Sink and native Ecaz coexistence retain their exceptions.
+Basic and an already recorded current Storm keep their existing protocol.
+See [Advanced source boundaries](docs/BASE_ADVANCED_READINESS_20260907.md#authorized-advanced-source-follow-up--1-october-2026)
+and [allied separation](docs/ALLIED_TRANSIT_RULES.md).
+
 Before starting, open **Configure** on an AI seat to change its difficulty,
 faction or player circle without replacing it. Changes save immediately and
 clear human readiness. See [lobby AI configuration](docs/LOBBY_AI_CONFIGURATION.md).

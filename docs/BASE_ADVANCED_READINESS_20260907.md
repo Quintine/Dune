@@ -16,6 +16,63 @@ The coordinator subsequently implemented the two bounded findings concerning Fre
 
 The later implementation now provides the shared, strict offline initializer described in [ADVANCED_SETUP_TEST_SEAM.md](ADVANCED_SETUP_TEST_SEAM.md). New Basic and offline Advanced tables enforce prediction before private traitors, all traitor selections before force placement, Fremen before the Advanced advisor, and Treachery after every placement. Legacy saved setup continues without redealing. All 456 setup combinations pass. The old `tests/bots.test.ts` Basic-then-flip helper discussed below has been replaced: four profiles now complete registered games from genuine Advanced creation through the shared initializer. The older descriptions below remain the original audit snapshot. The larger [456-game Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md) now also completes with 116,270 accepted actions and zero rejections or checked failures across all base rosters and player counts. Its selected invariants and 5,943 actual JSON continuations broaden the evidence; they do not resolve the named rules, strength-calibration or browser acceptance gaps.
 
+## Authorized Advanced source follow-up — 1 October 2026
+
+The user authorized the root `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`,
+including its marked unofficial rulings. Its SHA-256 is
+`7077aa87a973221d86d4bd2da945b40c4dec3d371caa6a68cb209758ddf1e516`.
+It has 44 physical PDF pages; metadata says v.2.3 while the visible editorial
+heading on physical page 3 says Version 2.2. This is a supplied unofficial
+revision, not publisher provenance or a newly published application rulebook.
+See the [source amendment and cutover](RULE_DECISIONS.md#advanced-core-cutover--1-october-2026).
+
+Physical page 6 makes every newly opened Advanced Storm after the first
+use a random Storm Deck card, even without Fremen. The six canonical faces
+are 1–6; the previous revealed card is eligible again at the next determination.
+First-turn nearby-player 0–20 dials remain unchanged. Native Fremen still
+privately learns its next card through its existing cancellable foresight;
+absence of Fremen grants no player that knowledge. Already recorded current
+Storm dials or cards finish their saved protocol without a reset or reroll.
+The next new Advanced turn uses the Deck. Basic's dial rules are unchanged.
+
+Physical page 15's Alliance Constraint and explicit departure footnote,
+with the rationale on physical page 40, require the ending player's own
+shared allied force groups to go to Tanks at **each** Shipment and Movement
+end. Neither the ally's later turn nor formation this turn postpones that
+Advanced consequence. Advisor coexistence is exempt in both directions:
+neither the advisors nor the allied fighters are lost for sharing with advisors.
+BG fighters remain subject to ordinary separation. Polar Sink and native
+Ecaz peaceful coexistence, including its existing Karama conditions, remain;
+Homeworlds are outside this Dune-territory rule and keep their native alliance
+prohibitions. Basic retains its existing later-player/formation-turn policy.
+These clauses settle the Advanced timing and advisor questions in
+[the earlier allied-transit audit](ALLIED_TRANSIT_RULES.md), not every entry
+permission, optional arrival composition or Basic no-exit remedy.
+
+The engine's canonical allied-separation quote supplies the existing finish
+consequence and the own clean-turn `GameView.advancedAllySeparation` warning,
+whose only payload is affected public territory names. The ordinary
+`endMovement` action is unchanged. Pending responses retain priority; forced
+loss adds no confirmation. Ending remains legal when no escape is available.
+Actual loss custody continues through the native force/elite/No-Field handling,
+without exposing concealed values in that warning or reevaluating completed
+turns. These are core Advanced defaults, not a secret opt-in source profile.
+
+**Verification: Partial development verified.** Selected native source,
+authenticated SQLite, controls and four-profile legal-bot checks pass
+339/339 across seventeen files. Full types/lint, 6,169 offline cases and
+build pass. Standalone native continuation proves exact owned normal/elite
+loss and advisor/Ecaz/Polar exceptions, plus a genuine prior-revision
+Advanced dial save followed by a new no-Fremen card opening.
+Actual 390-pixel human Storm inspection/confirmation, first/later ending
+and expanded guide in three privately backed-up new QA rooms survive
+refresh. Saved native inventory, eight prior rooms and all 33 original
+seats in eleven QA rooms remain preserved after isolated build reloads.
+Local HTTP is 51/55, four POST 503s, not green or deployed acceptance.
+Earlier calibration and subsystem evidence below remain historical.
+Public/faction/optional-module gates and full Advanced certification remain
+unchanged. Duke revival/ghola, Kull and broader secrecy work remain separate.
+
 ## Concrete remaining behavior
 
 | Priority | Finding and evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Next edit or audit target                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |

@@ -11,6 +11,8 @@ import {
 } from '../game/engine';
 import { spiceDeck, baseDeck } from '../game/cards';
 import { TERRITORIES } from '../game/board';
+import { createStormSource } from '../game/discovery-storm';
+import { isStormCardDistance, stormCardDistance } from '../game/storm-cards';
 function fixture() {
   let g = createGame('ADVTEST2', newPlayer('f', 'Fremen', 'fremen'));
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
@@ -346,23 +348,57 @@ void test('canceling storm shipment protection destroys only the arriving group 
 
 void test('Weather Control overrides an advanced storm card after revelation and a new private forecast follows', () => {
   let g = fixture();
-  g.turn = 2;
-  g.phase = 0;
-  g.stormDialers = [];
-  g.stormPending = 3;
+  g = applyAction(g, 'f', { type: 'stormDial', amount: 0 });
+  g = applyAction(g, 'a', { type: 'stormDial', amount: 0 });
+  g = allow(ready(g));
+  const original = g.stormCard!;
+  assert.ok(isStormCardDistance(original));
+  g.phase = 8;
+  g.ready = [];
+  g = ready(g);
+  assert.equal(g.turn, 2);
+  assert.equal(g.phase, 0);
+  assert.equal(g.stormPending, original);
+  assert.deepEqual(
+    g.stormMovementSource,
+    createStormSource(g.turn, 'card', original),
+  );
+  const inspection = g.log.find(
+    (entry) => stormCardDistance(entry.component) === original,
+  )!;
+  assert.equal(stormCardDistance(inspection.component), original);
   const previous = g.storm;
   const weather = baseDeck().find((c) => c.effect === 'weather')!;
-  placeFixtureHand(g, 1, [weather]);
+  const karama = baseDeck().find((c) => c.effect === 'karama')!;
+  placeFixtureHand(g, 1, [weather, karama]);
   g = applyAction(g, 'f', { type: 'ready' });
   g = applyAction(g, 'a', { type: 'card', card: weather.id, amount: 9 });
   assert.equal(g.stormPending, 9);
+  assert.deepEqual(
+    g.stormMovementSource,
+    createStormSource(g.turn, 'weather', 9),
+  );
+  for (const player of g.players)
+    assert.equal(
+      stormCardDistance(
+        viewGame(g, player.id).log.find((entry) => entry.seq === inspection.seq)
+          ?.component,
+      ),
+      original,
+    );
   assert.deepEqual(g.ready, []);
   g = ready(g);
   assert.equal(g.storm, ((previous - 1 + 9) % 18) + 1);
-  assert.equal(g.response, null);
-  assert.equal(viewGame(g, 'f').stormForecast, g.stormCard);
+  assert.equal(g.stormMovementSource, undefined);
+  assert.equal(g.stormPending, null);
+  assert.equal(g.discard.filter((card) => card.id === weather.id).length, 1);
+  assert.equal(g.response?.kind, 'stormPeek');
+  const forecast = g.stormCard!;
+  assert.ok(isStormCardDistance(forecast));
+  assert.equal(viewGame(g, 'f').stormForecast, null);
+  assert.equal(viewGame(g, 'a').stormForecast, null);
   g = allow(g);
-  assert.ok(viewGame(g, 'f').stormForecast);
+  assert.equal(viewGame(g, 'f').stormForecast, forecast);
   assert.equal(viewGame(g, 'a').stormForecast, null);
 });
 

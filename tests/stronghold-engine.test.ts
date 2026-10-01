@@ -16,6 +16,7 @@ import {
   type StrongholdId,
 } from '../game/stronghold-cards';
 import { MOBILE_STRONGHOLD, MOBILE_LOCATION, territory } from '../game/board';
+import { finishToMovement } from './fixture-advanced-source';
 const key = (t: string) => `${t}:${territory(t).sectors[0]}`;
 const seat = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
 function fixture(t: StrongholdId = 'arrakeen', owner = 'p', choam = false) {
@@ -199,11 +200,14 @@ void test('Stronghold Cards are unowned at the start and transfer only at the fi
   assert.equal(g.strongholdCards!.owners.arrakeen, 'p');
   const restored = normalizeAutomaticGame(JSON.parse(JSON.stringify(g)));
   assert.deepEqual(restored.strongholdCards, g.strongholdCards);
-  g.phase = 8;
-  g.active = null;
-  g.ready = [];
-  g.decision = null;
-  g.response = null;
+  g = finishToMovement(g);
+  while (g.phase === 5)
+    g = applyAction(g, g.active!, { type: 'endMovement' });
+  assert.equal(g.phase, 7);
+  assert.equal(g.strongholdCards!.owners.arrakeen, 'p');
+  g = readyAll(g);
+  assert.equal(g.phase, 8);
+  assert.equal(g.strongholdCards!.claimedTurn, 1);
   seat(g, 'p').forces = {};
   seat(g, 'p').reserves = 20;
   seat(g, 'q').forces = { 'arrakeen:10': 1 };

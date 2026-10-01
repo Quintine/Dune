@@ -139,9 +139,13 @@ function opportunity(kind: Case, advanced = true) {
     return applyAction(g, 'p', { type: 'choamInflation', side: 'double' });
   }
   if (kind === 'stormPeek') {
-    g.phase = 0;
-    g.stormPending = 1;
-    g.stormDialers = [];
+    g.phase = 8;
+    g.turn = 1;
+    g.active = null;
+    g = openPhase(g);
+    assert.equal(g.turn, 2);
+    assert.equal(g.phase, 0);
+    assert.equal(g.stormMovementSource?.kind, 'card');
     return openPhase(g);
   }
   if (kind === 'atreidesSpice') {

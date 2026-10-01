@@ -293,7 +293,21 @@ for (const bg of [false, true])
       } else {
         assert.equal(done.pendingMobileMove, null);
         assert.deepEqual(done.mobileStronghold, g.mobileStronghold);
-        assert.deepEqual(done.stormDialers, g.lastBattle);
+        assert.equal(done.turn, g.turn);
+        assert.equal(done.phase, 0);
+        assert.ok(
+          Number.isInteger(done.stormPending) &&
+            done.stormPending! >= 1 &&
+            done.stormPending! <= 6,
+        );
+        assert.equal(done.stormMovementSource?.kind, 'card');
+        assert.equal(done.stormMovementSource?.turn, done.turn);
+        assert.equal(done.stormMovementSource?.distance, done.stormPending);
+        for (const dialer of g.lastBattle)
+          assert.throws(
+            () => applyAction(done, dialer, { type: 'stormDial', amount: 1 }),
+            /not dialing/,
+          );
         assert.equal(player(done, 'p').elites!.revived, 0);
         assert.equal(
           done.log.filter((l) => l.text === `Turn ${g.turn} begins.`).length,

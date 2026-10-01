@@ -10,6 +10,7 @@ import * as bots from '../game/bots';
 import * as seatAiDelegation from '../lib/seat-ai-delegation';
 import { baseDeck } from '../game/cards';
 import { newRevivalRules } from '../game/revival';
+import { createStormSource } from '../game/discovery-storm';
 import type * as Rooms from '../db/rooms';
 
 /** Execute the production room module and SQL, with a hook immediately before its CAS. */
@@ -153,6 +154,7 @@ async function fixture(source: Source, converted = true) {
     Object.assign(g.players[2], { reserves: 14, tanks: 6 });
   else {
     g.stormPending = 3;
+    g.stormMovementSource = createStormSource(g.turn, 'card', g.stormPending);
     Object.assign(g.players[1], { forces: { 'red_chasm:7': 4 }, reserves: 16 });
     Object.assign(g.players[2], { forces: { 'red_chasm:7': 3 }, reserves: 17 });
     g.spice = { 'red_chasm:7': 8, 'basin:9': 4 };

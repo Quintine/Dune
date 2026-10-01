@@ -1,0 +1,602 @@
+{
+  "schema": 1,
+  "code": "OLDSTORM",
+  "version": 0,
+  "host": "00000000-0000-4000-8000-0000000000a1",
+  "status": "playing",
+  "advanced": true,
+  "expansions": [],
+  "players": [
+    {
+      "id": "00000000-0000-4000-8000-0000000000a1",
+      "name": "Recorded QA Atreides",
+      "faction": "atreides",
+      "ready": true,
+      "spice": 11,
+      "reserves": 10,
+      "tanks": 0,
+      "forces": {
+        "arrakeen:10": 10
+      },
+      "hand": [
+        {
+          "name": "Shield",
+          "kind": "shield",
+          "id": "treachery-9"
+        },
+        {
+          "name": "Maula Pistol",
+          "kind": "projectile",
+          "id": "treachery-1"
+        }
+      ],
+      "leaders": [
+        {
+          "id": "atreides-0",
+          "name": "Thufir Hawat",
+          "strength": 5,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "atreides-1",
+          "name": "Lady Jessica",
+          "strength": 5,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "atreides-2",
+          "name": "Gurney Halleck",
+          "strength": 4,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "atreides-3",
+          "name": "Duncan Idaho",
+          "strength": 2,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "atreides-4",
+          "name": "Dr. Yueh",
+          "strength": 1,
+          "faction": "atreides",
+          "dead": false,
+          "deaths": 0
+        }
+      ],
+      "traitors": [
+        "emperor-3"
+      ],
+      "traitorChoices": [],
+      "ally": null,
+      "bribes": 0,
+      "revived": 0,
+      "freeForcesRevived": 0,
+      "leaderRevived": false,
+      "revivalCycle": 0,
+      "shipped": false,
+      "moved": 0,
+      "battleLosses": 0
+    },
+    {
+      "id": "00000000-0000-4000-8000-0000000000e1",
+      "name": "Recorded QA Emperor",
+      "faction": "emperor",
+      "ready": true,
+      "spice": 10,
+      "reserves": 20,
+      "tanks": 0,
+      "forces": {},
+      "hand": [
+        {
+          "name": "Lasgun",
+          "kind": "lasgun",
+          "id": "treachery-8"
+        },
+        {
+          "name": "Shield",
+          "kind": "shield",
+          "id": "treachery-12"
+        }
+      ],
+      "leaders": [
+        {
+          "id": "emperor-0",
+          "name": "Hasimir Fenring",
+          "strength": 6,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "emperor-1",
+          "name": "Captain Aramsham",
+          "strength": 5,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "emperor-2",
+          "name": "Caid",
+          "strength": 3,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "emperor-3",
+          "name": "Burseg",
+          "strength": 3,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        },
+        {
+          "id": "emperor-4",
+          "name": "Bashar",
+          "strength": 2,
+          "faction": "emperor",
+          "dead": false,
+          "deaths": 0
+        }
+      ],
+      "traitors": [
+        "emperor-0"
+      ],
+      "traitorChoices": [],
+      "ally": null,
+      "bribes": 0,
+      "revived": 0,
+      "freeForcesRevived": 0,
+      "leaderRevived": false,
+      "revivalCycle": 0,
+      "shipped": false,
+      "moved": 0,
+      "battleLosses": 0,
+      "elites": {
+        "reserves": 5,
+        "tanks": 0,
+        "forces": {},
+        "revived": 0
+      }
+    }
+  ],
+  "playerPositions": {
+    "00000000-0000-4000-8000-0000000000a1": 1,
+    "00000000-0000-4000-8000-0000000000e1": 2
+  },
+  "turn": 2,
+  "phase": 0,
+  "storm": 16,
+  "order": [
+    "00000000-0000-4000-8000-0000000000a1",
+    "00000000-0000-4000-8000-0000000000e1"
+  ],
+  "active": null,
+  "movementRemaining": [],
+  "guildTimingGranted": false,
+  "guildTimingLocked": false,
+  "ready": [],
+  "deck": [
+    {
+      "name": "Tleilaxu Ghola",
+      "kind": "special",
+      "effect": "ghola",
+      "id": "treachery-27"
+    },
+    {
+      "name": "Crysknife",
+      "kind": "projectile",
+      "id": "treachery-0"
+    },
+    {
+      "name": "Cheap Heroine",
+      "kind": "hero",
+      "id": "treachery-23"
+    },
+    {
+      "name": "Shield",
+      "kind": "shield",
+      "id": "treachery-11"
+    },
+    {
+      "name": "Harvester",
+      "kind": "special",
+      "effect": "harvester",
+      "id": "treachery-28"
+    },
+    {
+      "name": "Snooper",
+      "kind": "snooper",
+      "id": "treachery-14"
+    },
+    {
+      "name": "Jubba Cloak",
+      "kind": "worthless",
+      "id": "treachery-18"
+    },
+    {
+      "name": "Truthtrance",
+      "kind": "special",
+      "effect": "truthtrance",
+      "id": "treachery-32"
+    },
+    {
+      "name": "Weather Control",
+      "kind": "special",
+      "effect": "weather",
+      "id": "treachery-25"
+    },
+    {
+      "name": "Gom Jabbar",
+      "kind": "poison",
+      "id": "treachery-6"
+    },
+    {
+      "name": "Ellaca Drug",
+      "kind": "poison",
+      "id": "treachery-7"
+    },
+    {
+      "name": "Stunner",
+      "kind": "projectile",
+      "id": "treachery-3"
+    },
+    {
+      "name": "Chaumas",
+      "kind": "poison",
+      "id": "treachery-4"
+    },
+    {
+      "name": "Chaumurky",
+      "kind": "poison",
+      "id": "treachery-5"
+    },
+    {
+      "name": "Family Atomics",
+      "kind": "special",
+      "effect": "atomics",
+      "id": "treachery-24"
+    },
+    {
+      "name": "Trip to Gamont",
+      "kind": "worthless",
+      "id": "treachery-21"
+    },
+    {
+      "name": "Kulon",
+      "kind": "worthless",
+      "id": "treachery-19"
+    },
+    {
+      "name": "Baliset",
+      "kind": "worthless",
+      "id": "treachery-17"
+    },
+    {
+      "name": "Shield",
+      "kind": "shield",
+      "id": "treachery-10"
+    },
+    {
+      "name": "Truthtrance",
+      "kind": "special",
+      "effect": "truthtrance",
+      "id": "treachery-31"
+    },
+    {
+      "name": "La La La",
+      "kind": "worthless",
+      "id": "treachery-20"
+    },
+    {
+      "name": "Snooper",
+      "kind": "snooper",
+      "id": "treachery-15"
+    },
+    {
+      "name": "Snooper",
+      "kind": "snooper",
+      "id": "treachery-16"
+    },
+    {
+      "name": "Karama",
+      "kind": "special",
+      "effect": "karama",
+      "id": "treachery-29"
+    },
+    {
+      "name": "Slip Tip",
+      "kind": "projectile",
+      "id": "treachery-2"
+    },
+    {
+      "name": "Snooper",
+      "kind": "snooper",
+      "id": "treachery-13"
+    },
+    {
+      "name": "Karama",
+      "kind": "special",
+      "effect": "karama",
+      "id": "treachery-30"
+    },
+    {
+      "name": "Cheap Hero",
+      "kind": "hero",
+      "id": "treachery-22"
+    },
+    {
+      "name": "Hajr",
+      "kind": "special",
+      "effect": "hajr",
+      "id": "treachery-26"
+    }
+  ],
+  "discard": [],
+  "spiceDeck": [
+    {
+      "territory": "rock_outcroppings",
+      "amount": 6,
+      "sector": 13
+    },
+    {
+      "territory": "habbanya_erg",
+      "amount": 8,
+      "sector": 16
+    },
+    {
+      "territory": "south_mesa",
+      "amount": 10,
+      "sector": 5
+    },
+    {
+      "worm": true
+    },
+    {
+      "worm": true
+    },
+    {
+      "territory": "habbanya_ridge_flat",
+      "amount": 10,
+      "sector": 18
+    },
+    {
+      "territory": "sihaya_ridge",
+      "amount": 6,
+      "sector": 9
+    },
+    {
+      "territory": "the_minor_erg",
+      "amount": 8,
+      "sector": 8
+    },
+    {
+      "territory": "cielago_north",
+      "amount": 8,
+      "sector": 3
+    },
+    {
+      "territory": "the_great_flat",
+      "amount": 10,
+      "sector": 15
+    },
+    {
+      "worm": true
+    },
+    {
+      "worm": true
+    },
+    {
+      "worm": true
+    },
+    {
+      "territory": "broken_land",
+      "amount": 8,
+      "sector": 12
+    },
+    {
+      "territory": "red_chasm",
+      "amount": 8,
+      "sector": 7
+    },
+    {
+      "territory": "funeral_plain",
+      "amount": 6,
+      "sector": 15
+    },
+    {
+      "worm": true
+    },
+    {
+      "territory": "cielago_south",
+      "amount": 12,
+      "sector": 2
+    },
+    {
+      "territory": "wind_pass_north",
+      "amount": 6,
+      "sector": 17
+    }
+  ],
+  "spicePeekKnown": true,
+  "spiceDiscard": [
+    [
+      {
+        "territory": "oh_gap",
+        "amount": 6,
+        "sector": 10
+      }
+    ],
+    [
+      {
+        "territory": "hagga_basin",
+        "amount": 6,
+        "sector": 12
+      }
+    ]
+  ],
+  "spice": {
+    "oh_gap:10": 6,
+    "hagga_basin:12": 6,
+    "arrakeen:10": 0
+  },
+  "log": [
+    {
+      "seq": 1,
+      "text": "Recorded QA Atreides opened the table."
+    },
+    {
+      "seq": 2,
+      "text": "Recorded QA Emperor joined as Emperor."
+    },
+    {
+      "seq": 3,
+      "text": "Player positions are fixed. Private traitor selection comes before force placement and starting Treachery Cards."
+    },
+    {
+      "seq": 4,
+      "text": "Traitor Cards were dealt privately. Choose traitors before starting force placement; Treachery Cards remain undealt."
+    },
+    {
+      "seq": 5,
+      "text": "Traitor choices are complete. Starting spice and fixed forces are placed; complete faction force placement before receiving Treachery Cards."
+    },
+    {
+      "seq": 6,
+      "text": "Recorded QA Atreides received 1 starting Treachery Card after force placement.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Starting cards"
+      }
+    },
+    {
+      "seq": 7,
+      "text": "Recorded QA Emperor received 1 starting Treachery Card after force placement.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Starting cards"
+      }
+    },
+    {
+      "seq": 8,
+      "text": "Setup complete. The first storm awaits two secret dials."
+    },
+    {
+      "seq": 9,
+      "text": "Storm distance revealed: 15 sectors. Resolve storm cards before moving."
+    },
+    {
+      "seq": 10,
+      "text": "Storm moved 15 sectors to sector 16."
+    },
+    {
+      "seq": 11,
+      "text": "6 spice appeared in Oh Gap."
+    },
+    {
+      "seq": 12,
+      "text": "6 spice appeared in Hagga Basin."
+    },
+    {
+      "seq": 13,
+      "text": "Atreides won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "atreides",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 14,
+      "text": "Recorded QA Emperor received 1 spice from another faction’s 1-spice paid auction bid.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction income"
+      }
+    },
+    {
+      "seq": 15,
+      "text": "Emperor won a treachery card for 1 spice. The declared spice payment was the only available payment method.",
+      "automatic": {
+        "faction": "emperor",
+        "name": "Auction payment"
+      }
+    },
+    {
+      "seq": 16,
+      "text": "Atreides received 2 spice from strongholds."
+    },
+    {
+      "seq": 17,
+      "text": "Turn 2 begins."
+    }
+  ],
+  "stormDials": {},
+  "stormPending": null,
+  "stormCard": null,
+  "stormCardKnown": false,
+  "stormResolution": null,
+  "karamaShipping": null,
+  "stormDialers": [
+    "00000000-0000-4000-8000-0000000000a1",
+    "00000000-0000-4000-8000-0000000000e1"
+  ],
+  "lastBattle": [
+    "00000000-0000-4000-8000-0000000000a1",
+    "00000000-0000-4000-8000-0000000000e1"
+  ],
+  "auction": null,
+  "battle": null,
+  "nexus": false,
+  "allianceOffers": {},
+  "winner": [],
+  "shieldWallDestroyed": false,
+  "spiceWindow": null,
+  "hajr": [],
+  "decision": null,
+  "pendingCapture": null,
+  "response": null,
+  "wormRides": [],
+  "wormPlacementCanceledTurn": 0,
+  "spiceResolution": null,
+  "spiceSequence": null,
+  "freeRevival": [],
+  "emperorExtra": {},
+  "aid": {},
+  "sandtrout": false,
+  "advancedPreview": true,
+  "traitorReserve": [
+    "emperor-2",
+    "atreides-1",
+    "emperor-1",
+    "atreides-0",
+    "atreides-4",
+    "atreides-2",
+    "emperor-4",
+    "atreides-3"
+  ],
+  "summonedBeforeBlow": false,
+  "currentAuctionSale": null,
+  "revivalRules": {
+    "expanded": [],
+    "limitBlocked": false,
+    "fullPrice": false,
+    "allyDiscount": null,
+    "discountBlocked": false,
+    "earlyBlocked": []
+  },
+  "revivalRequests": {},
+  "saphoMovementLast": null,
+  "recruits": null,
+  "auditorInsight": null,
+  "nexusChoamInsight": null
+}

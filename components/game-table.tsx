@@ -2,6 +2,7 @@
 import { integerInputValue } from '../lib/integer-input';
 import { EcazSetup } from './ecaz-setup';
 import { StormCardInspector, StormCardLogInspector } from './storm-cards';
+import { stormCardDistance } from '@/game/storm-cards';
 import { KwisatzInspector } from './kwisatz-inspector';
 import { ForceInspector } from './force-inspector';
 import { FactionInspector } from './faction-inspector';
@@ -220,6 +221,7 @@ import { TERROR_DEFINITIONS } from '@/game/moritani-terror';
 import { MoritaniRetention } from './moritani-retention';
 import { MoritaniAssassinate, MoritaniAssassinateHistory } from './moritani-assassinate';
 import { MoritaniExtortion, MoritaniExtortionNotice } from './moritani-extortion';
+import { AdvancedAllySeparation } from './advanced-ally-separation';
 export function GameTable({
   game: g,
   send,
@@ -3596,6 +3598,11 @@ export function GameTable({
                       {Object.values(g.stormRevealed).join(' + ')}
                     </p>
                   )}
+                  {g.stormDialers.length === 0 && !g.stormRevealed && (
+                    <StormCardLogInspector component={g.log.findLast(
+                      entry => stormCardDistance(entry.component) !== null,
+                    )?.component} />
+                  )}
                   {actionButton(
                     g.ready.includes(me.id)
                       ? 'Waiting for the table'
@@ -3605,7 +3612,7 @@ export function GameTable({
                   )}
                 </>
               )}
-              {g.phase === 0 && g.stormPending === null && (
+              {g.phase === 0 && g.stormPending === null && g.stormDialers.length > 0 && (
                 <>
                   <p className="muted">
                     The two storm dialers choose secretly. Their sum moves the
@@ -4551,6 +4558,7 @@ export function GameTable({
                         )}
                       </>
                     )}
+                    <AdvancedAllySeparation quote={g.advancedAllySeparation} />
                     {g.nexusGuildCunning?.offer && (
                       <section className="notice">
                         <p>Guild Cunning ends your ordinary shipment and movement, then offers one second shipment at normal Guild prices. Only an unused Hajr move can follow it. The physical Ornithopter card combination remains unavailable.</p>
@@ -4568,7 +4576,8 @@ export function GameTable({
                       nexusGuildSkipShipmentAction(g, guildCunning.event) ?? {type: 'endMovement'},
                       !nexusGuildSkipShipmentAction(g, guildCunning.event))}
                     {actionButton(guildCunning?.stage === 'secondShipment' ? 'Decline second shipment and finish' :
-                      guildCunning ? 'Finish Guild turn' : 'Finish shipment & movement', {type: 'endMovement'})}
+                      guildCunning ? 'Finish Guild turn' : 'Finish shipment & movement', {type: 'endMovement'}, false,
+                      g.advancedAllySeparation?.territories.length ? 'advanced-ally-separation' : undefined)}
                   </>
                 ) : (
                   <p className="muted">

@@ -10,6 +10,7 @@ import {
 } from '../game/engine';
 import { baseDeck } from '../game/cards';
 import { newRevivalRules } from '../game/revival';
+import { createStormSource } from '../game/discovery-storm';
 import {
   quoteChoamWorthlessCancellation,
   ChoamWorthlessCancellationError,
@@ -136,6 +137,7 @@ function source(kind: Case, advanced = true) {
     g.phase = 0;
     g.storm = 5;
     g.stormPending = 3;
+    g.stormMovementSource = createStormSource(g.turn, 'card', g.stormPending);
     player(g, 'c').forces = { 'red_chasm:7': 4 };
     player(g, 'c').reserves = 16;
     g = ready(g);

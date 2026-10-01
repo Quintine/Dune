@@ -541,6 +541,7 @@ import {
   settleAdvisors,
   arrivalAsAdvisor,
 } from './advisors';
+import { quoteAlliedSeparation } from './allied-separation';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, validCombatForces, type Casualties, type CombatForces } from './combat';
 import { FACTIONS, faction, type FactionId } from './catalog';
 import { quoteLobbyBotConfiguration } from './lobby-bot-configuration';
@@ -9114,9 +9115,14 @@ function discoveryIntegrity(g: Game) {
 }
 function ecologicalStormIntegrity(g: Game) {
   const frame = g.ecologicalStorm, continuation = g.pendingTreacheryDiscard?.continuation;
+  requireRule(!(g.status === 'playing' && g.phase === 0 && g.advanced && g.turn > 1 &&
+    g.stormDialers.length === 0 && g.stormPending !== null) || !!g.stormMovementSource,
+  'The revealed Advanced storm has lost its original movement source.');
   if (g.stormMovementSource) {
     nexusRule(() => validateStormSource(g.stormMovementSource!));
     const source = g.stormMovementSource;
+    requireRule(source.kind !== 'card' || isStormCardDistance(source.distance),
+      'The revealed Storm Card must retain a canonical distance.');
     requireRule(g.status === 'playing' && g.phase === 0 && source.turn === g.turn &&
       g.stormPending === (frame?.stage === 'traversal' ? source.distance+frame.delta! : source.distance),
       'The storm must retain its current turn and original movement source.');
@@ -13286,9 +13292,53 @@ function finishMovedGroup(g: Game, move: CompletedMovement) {
   intrusion(g, p, to);
   if (movementOrigins(move).some(source => source !== to)) openTerritoryEntry(g, p, to, s, n, elite, 'movement');
 }
+/** Native board classification is shared by the consequence and its own-seat preview. */
+function alliedSeparationTerritories(g: Game, p: Player) {
+  const ally = p.ally ? getPlayer(g, p.ally) : null;
+  return quoteAlliedSeparation({
+    advanced: g.advanced,
+    turn: g.turn,
+    player: p.id,
+    ally: ally?.id ?? null,
+    playerAllySinceTurn: p.allySinceTurn,
+    allySinceTurn: ally?.allySinceTurn,
+    remaining: g.movementRemaining ?? g.order.slice(g.order.indexOf(p.id)),
+    territories: gameTerritories(g).map(terr => ({
+      territory: terr.id,
+      polar: terr.type === 'polar',
+      ownPresent: at(p, terr.id) > 0,
+      allyPresent: !!ally && at(ally, terr.id) > 0,
+      ownAdvisors: isAdvisor(p, terr.id),
+      allyAdvisors: !!ally && isAdvisor(ally, terr.id),
+      ecazCoexist: !!ally && sharesEcazOccupation(g, p, terr.id),
+    })),
+  });
+}
+function requireAlliedSeparationCustody(g: Game, p: Player) {
+  const deployed = p.noField?.deployed;
+  requireRule(!deployed || !alliedSeparationTerritories(g, p).includes(deployed.location.territory),
+    'This removal of a concealed No-Field awaits its specific reveal and casualty rules.');
+}
+function advancedAllySeparationView(g: Game, p: Player): {territories: string[]} | null {
+  if (!g.advanced || g.status !== 'playing' || g.phase !== 5 || g.active !== p.id ||
+      g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingKarama ||
+      g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange ||
+      g.pendingRicheseGift || g.pendingRichesePurchaseIncome || g.pendingShipment ||
+      g.pendingHomeworldShipment || g.pendingGuildTransport || g.pendingGuildBetrayal ||
+      g.pendingRicheseBetrayal || g.pendingKull || g.pendingAmbassador || g.pendingTerrorEntry ||
+      g.pendingArrivalOverlap || g.pendingCapture || g.pendingIxAlly || g.pendingIxMove ||
+      g.pendingFremenMove || g.pendingChoamMove || g.bureaucratPayments?.pending ||
+      pendingNexusTraitors(g) || g.nexusCards?.phase?.stage === 'drawing' ||
+      currentGuildCunning(g, p.id)?.stage === 'pending' ||
+      currentGuildCunning(g, p.id)?.stage === 'secondShipment') return null;
+  const territories = alliedSeparationTerritories(g, p).map(id => territory(id).name);
+  return territories.length ? {territories} : null;
+}
+
 /** A played movement card is already retired before queue advancement. */
 function finishMovementTurn(g: Game, id: string) {
   const p = getPlayer(g, id);
+  requireAlliedSeparationCustody(g, p);
   const cunning = currentGuildCunning(g,id);
   if (cunning) { requireRule(cunning.stage !== 'pending' && cunning.shipment?.stage !== 'pending', 'Finish the Guild Cunning response or shipment first.'); cunning.stage = 'completed'; saveGuildCunning(g,cunning); }
   g.karamaShipping = null;
@@ -13308,20 +13358,8 @@ function finishMovementTurn(g: Game, id: string) {
       `${p.name} and ${getPlayer(g, p.ally!).name} remain together in ${shared.map((t) => t.name).join(', ')} under Ecaz Occupy. No allied separation losses apply.`,
       { faction: 'ecaz', name: 'Occupy' },
     );
-  if (p.ally)
-    for (const terr of gameTerritories(g))
-      if (
-        terr.type !== 'polar' &&
-        at(p, terr.id) &&
-        at(getPlayer(g, p.ally), terr.id) &&
-        !sharesEcazOccupation(g, p, terr.id) &&
-        !g.movementRemaining.includes(p.ally) &&
-        !(
-          p.allySinceTurn === g.turn &&
-          getPlayer(g, p.ally).allySinceTurn === g.turn
-        )
-      )
-        killTerritory(g, p, terr.id);
+  for (const terr of alliedSeparationTerritories(g, p))
+    killTerritory(g, p, terr);
   g.movementRemaining = g.movementRemaining.filter((other) => other !== id);
   if (g.saphoMovementLast?.player === id) g.saphoMovementLast = null;
   movementTurn(g);
@@ -16666,9 +16704,9 @@ function beginStormTurn(g: Game) {
   if (g.dukeVidal) delete g.dukeVidal.leader.usedAt;
   for (const p of g.players) if (p.elites) p.elites.revived = 0;
   g.stormDialers = g.lastBattle;
-  if (g.advanced && byFaction(g, 'fremen')) {
+  if (g.advanced) {
     g.stormDialers = [];
-    g.stormPending = g.stormCard ?? shuffle([1, 2, 3, 4, 5, 6])[0];
+    g.stormPending = (byFaction(g, 'fremen') ? g.stormCard : null) ?? shuffle([1, 2, 3, 4, 5, 6])[0];
     g.stormMovementSource = nexusRule(() => createStormSource(g.turn,'card',g.stormPending!));
     g.stormCard = null;
     g.stormCardKnown = false;
@@ -28956,6 +28994,9 @@ function applyActionInner(
       'Wait for your movement turn.',
     );
     if (action.nexus !== undefined) { declareGuildCunning(g,p,action.nexus); return g; }
+    // Reject unsupported concealed custody before retiring a played movement
+    // card and parking its native ending continuation.
+    requireAlliedSeparationCustody(g, p);
     if (g.ornithopter?.player === id) finishOrnithopter(g, 'end');
     else finishMovementTurn(g, id);
     return g;
@@ -29889,6 +29930,7 @@ export function viewGame(state: Game, id: string) {
     guildRateCanceled: g.guildRateBlocked?.turn === g.turn &&
       g.guildRateBlocked.player === id,
     stormPending: g.stormPending ?? null,
+    advancedAllySeparation: advancedAllySeparationView(g, me),
     stormForecast:
       me.faction === 'fremen' && g.stormCardKnown ? g.stormCard : null,
     stormRevealed:

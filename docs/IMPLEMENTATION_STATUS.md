@@ -1,5 +1,62 @@
 # Dune implementation status
 
+## 1 October 2026 — authorized Advanced Storm and allied separation defaults
+
+Five implementation lanes connected the user-supplied revised Advanced
+source's physical pages 6, 15 and 40 without a source-fork profile or reset.
+Every newly opened post-first Advanced Storm draws one of the six canonical
+faces, even without Fremen. First-turn wheels, Basic's protocol and an
+already recorded current opening remain unchanged; native Fremen alone
+keeps cancellable private foresight. Public inspection retains the original
+card face when Weather Control changes actual movement.
+
+A focused canonical policy now quotes the ending player's own shared
+territories in Advanced without the later-ally/formation-turn grace period.
+BG advisors are exempt in both directions; native Ecaz and Polar Sink
+coexistence remain. Basic retains its earlier deadline and formation policy.
+Native ordinary/deferred endings keep force, elite and concealed No-Field
+custody, with preflight before parking a retiring Ornithopter.
+The own clean-turn warning exposes public names only, not counts or source
+receipts, and adds no forced-loss confirmation. It is a block-layout semantic
+output; all existing pending controls retain priority.
+
+Independent frozen rules/storage reviews have no finding. Full verification
+initially found 40 consumers assuming missing original Storm frames or
+superseded Advanced timing/dial protocols. Four repair lanes retained
+counter/SQL/privacy/custody coverage, migrated native phase progression
+and removed an incidental HTML-role pin. Genuine ordinary overlaps use
+paid Emperor/Atreides Basin groups in opposite sectors separated by first
+Storm 10, then a natural Nexus alliance; no allied-entry guard was weakened.
+A permanent captured real `8a562991` Advanced dial save is genuinely
+Advanced, not a Basic-flag flip, and preserves its original continuation.
+
+`npm run check` passes types, lint and **6,169 offline cases**; the selected
+17-file union passes **339/339**, and production build passes.
+Standalone runtime covers seven Advanced loss/exception scenarios, Basic
+new-alliance preservation and prior recorded dials followed by a new
+no-Fremen Deck opening. Authenticated SQLite covers first/next Storm,
+private foresight, restore, concurrency, owned losses, Hajr, exceptions,
+corrupt sources and durable rejected-action immutability.
+
+Actual admitted previews `CA6FVKVD`, `PTSMVMDY` and `U5335T2L` were
+privately backed up before exact-version native preparation, retaining
+the same room, rules, circles, IDs and credentials. Phone-sized human
+first/later ending sends only Emperor's two physical forces, including one
+elite, to Tanks, leaves its ally intact and survives refresh. No-Fremen
+turn-two inspection shows the drawn five-sector face; human confirmation
+moves Storm from one to six and refresh retains Spice Blow. The final
+warning is a 354-pixel block within a 390-pixel viewport. Actual expanded
+guidance exposes the contract and Partial verification boundary.
+Read-only saved proof conserves original native setup inventory and cards;
+eight prior Guild rooms are unchanged. All 33 original authenticated seats
+in those eleven QA rooms restore after required isolated build reloads.
+
+Local HTTP is **51/55**, four known Wrangler-proxy POST 503s, not green.
+No POST retry/auth weakening or database reset was added. The user-owned
+44-page PDF remains local/unpublished, including its retained 2.2 editorial
+heading versus 2.3 filename/metadata. Broader source differences, full modes,
+strategic AI, public gates and final-revision live acceptance remain open.
+
 ## 1 October 2026 — full funded Guild Nexus Betrayal payment
 
 Five implementation lanes integrated engine, pure funding/custody/history,

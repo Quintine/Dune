@@ -157,18 +157,51 @@ void test('Karama can stop Guild delaying its normal turn, but taking that norma
   assert.deepEqual(g.movementRemaining, ['g', 'h', 'f']);
   assert.equal(g.guildTimingLocked, true);
 });
-void test('allied co-occupation after Nexus uses actual completed movement turns when Guild changes order', () => {
-  let g = fixture();
-  g.players[0].ally = 'g';
-  g.players[1].ally = 'e';
-  g.players[0].forces = { 'arrakeen:10': 1 };
-  g.players[0].reserves = 19;
-  g.players[1].forces = { 'arrakeen:10': 5 };
-  g = allow(choose(g, true));
-  g = end(g);
-  assert.equal(g.players[1].forces['arrakeen:10'], 5);
-  assert.equal(g.active, 'e');
-  g = end(g);
-  assert.equal(g.players[0].forces['arrakeen:10'], undefined);
-  assert.equal(g.players[0].tanks, 1);
+void test('allied co-occupation loses only the ending faction’s fighters when Guild changes order', () => {
+  for (const guildFirst of [true, false]) {
+    let g = fixture();
+    g.players[0].ally = 'g';
+    g.players[1].ally = 'e';
+    g.players[0].forces = { 'arrakeen:10': 1 };
+    g.players[0].reserves = 19;
+    g.players[1].forces = { 'arrakeen:10': 5 };
+    g.players[1].reserves = 15;
+    g = allow(choose(g, guildFirst));
+    const first = guildFirst ? 'g' : 'e';
+    const survivor = guildFirst ? 'e' : 'g';
+    const lost = guildFirst ? 5 : 1;
+    const retained = guildFirst ? 1 : 5;
+    assert.equal(g.active, first);
+    g = end(g);
+    assert.deepEqual(g.players.find((p) => p.id === first)!.forces, {});
+    assert.equal(g.players.find((p) => p.id === first)!.tanks, lost);
+    assert.deepEqual(g.players.find((p) => p.id === survivor)!.forces, {
+      'arrakeen:10': retained,
+    });
+    assert.equal(g.players.find((p) => p.id === survivor)!.tanks, 0);
+    const acted = [first];
+    while (g.phase === 5) {
+      if (g.decision?.kind === 'guildTiming') g = allow(choose(g, false));
+      acted.push(g.active!);
+      g = end(g);
+    }
+    assert.deepEqual(
+      acted,
+      guildFirst ? ['g', 'e', 'h', 'f'] : ['e', 'h', 'f', 'g'],
+    );
+    assert.deepEqual(g.players.find((p) => p.id === survivor)!.forces, {
+      'arrakeen:10': retained,
+    });
+    assert.equal(g.players.find((p) => p.id === survivor)!.tanks, 0);
+    for (const id of ['e', 'g']) {
+      const p = g.players.find((p) => p.id === id)!;
+      assert.equal(p.reserves, id === 'e' ? 19 : 15);
+      assert.equal(
+        p.reserves +
+          p.tanks +
+          Object.values(p.forces).reduce((sum, n) => sum + n, 0),
+        20,
+      );
+    }
+  }
 });
