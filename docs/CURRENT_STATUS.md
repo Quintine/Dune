@@ -43,6 +43,16 @@ fourteen earlier games. The actual phone guide shows **Partial / Development:
 Verified** at 390px without horizontal overflow. Current HTTP integration is
 **52/55**, not green: three requests returned the known Wrangler proxy 503.
 No authorization weakening, automatic write retry, reset or deployment follows.
+Code checkpoint **cdfe0e5370d6fd9f6844f064bafd8198ce897252** is pushed.
+Its [exact container workflow](https://github.com/Quintine/Dune/actions/runs/36858699841)
+and container job **110357305474** completed successfully: mandatory isolated
+storage/HTTP verification and verified image publication both pass.
+Published immutable image:
+`ghcr.io/quintine/dune:sha-cdfe0e5370d6fd9f6844f064bafd8198ce897252`.
+This proxy-free CI evidence does not turn local 52/55 into green or deploy
+the checkpoint. Protected NAS snapshot, human safe point and exact interactive
+deployment approval remain unavailable; the last observed live marker is
+**ab5c782**.
 
 Five implementation lanes connected the missing Ixian Nexus Secret Ally
 purchased-card replacement through fresh local `ixian-replacement`: exact

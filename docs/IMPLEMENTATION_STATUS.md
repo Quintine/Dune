@@ -61,6 +61,16 @@ Complete Ixian/Nexus games, wider modules, public starts, strategic calibration
 and live acceptance remain open. The user removed the five-agent minimum:
 future waves choose useful agent count for speed and integration cost.
 
+Code checkpoint **cdfe0e5370d6fd9f6844f064bafd8198ce897252** is pushed.
+The [source-bound workflow](https://github.com/Quintine/Dune/actions/runs/36858699841)
+and container job **110357305474** both completed/succeeded for that exact SHA.
+Mandatory **Verify isolated storage and HTTP behavior** passed before
+**Publish the verified image** succeeded. The configured immutable tag is
+`ghcr.io/quintine/dune:sha-cdfe0e5370d6fd9f6844f064bafd8198ce897252`.
+No unobserved CI test count or deployed acceptance is inferred. This publication
+is not a NAS deployment; protected snapshot, human safe point and exact
+point-of-risk interactive approval remain unavailable.
+
 ## 1 October 2026 — exact Ixian Nexus purchased-card replacement
 
 Five implementation lanes integrated runtime, pure source/custody/history,
