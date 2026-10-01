@@ -41,6 +41,26 @@ wallet. The ready phone notice is 354px wide within a 390px page. The actual
 guide explains this timing; all **57 original seats in nineteen QA rooms**
 reauthenticate. No reset, public-mode change or deployment is performed.
 
+Code checkpoint **44d90bb9aea4032fb8ffda51daa64cc53d11d7f8** is pushed.
+[Exact workflow 36862512991](https://github.com/Quintine/Dune/actions/runs/36862512991)
+and container job **110369907670** completed/succeeded for that exact SHA.
+Mandatory isolated storage/HTTP verification passed before verified image
+publication. Immutable tag:
+`ghcr.io/quintine/dune:sha-44d90bb9aea4032fb8ffda51daa64cc53d11d7f8`.
+Publication is not deployment and supplies no unobserved CI case count.
+
+Existing genuine `faction-games` CLI continuation, seed 20261001 and a
+3500-action bound, reports all ten classic Basic/Advanced 2..6-seat games
+complete with unchanged source and custody/JSON checks. The combined
+Homeworld/Nexus four-sample run completes six-seat Advanced and five-seat
+Basic; six-seat Basic and five-seat Advanced stop at turn-six CHOAM Charity.
+Captured actions reject on the existing unresolved low-Tupile opening-income
+guard, without mutation; automatic normalization preserves the same pending
+source. The supplied PDF's physical pages 8/22 do not resolve that recorded
+modifier question. The guard remains; no fallback, automatic cancellation,
+fabricated payout or reset is introduced. These native samples establish
+their actual continuation only, not complete factions/modules or strategic AI.
+
 ## 1 October 2026 — Ixian Nexus Betrayal at original native attempts
 
 Fresh local `ixian-betrayal` integrates native Ixian Bidding inspection/draw in

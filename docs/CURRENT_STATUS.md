@@ -34,6 +34,19 @@ retains all thirty-three cards, typed forces, original identities and one
 native stronghold income, with no announcement cost. The actual 390px notice
 is 354px wide; all **57 original seats in nineteen QA rooms** reauthenticate.
 This source-bound behavior is not a complete Advanced-game or deployed claim.
+Code checkpoint **44d90bb9aea4032fb8ffda51daa64cc53d11d7f8** is pushed.
+Its [exact workflow](https://github.com/Quintine/Dune/actions/runs/36862512991)
+and container job **110369907670** completed successfully: mandatory isolated
+storage/HTTP verification and verified image publication both pass. Immutable
+image: `ghcr.io/quintine/dune:sha-44d90bb9aea4032fb8ffda51daa64cc53d11d7f8`.
+This is publication, not deployment; protected NAS snapshot, human safe point
+and exact interactive approval remain unavailable.
+Subsequent source-frozen genuine continuation completes all ten classic
+Basic/Advanced 2..6-seat samples. Combined Homeworld/Nexus samples complete
+six-seat Advanced and five-seat Basic; six-seat Basic and five-seat Advanced
+stop at turn-six CHOAM Charity on the existing unresolved low-Tupile income
+guard. Those stops are not new crashes or permission to remove that ruling
+boundary, and do not certify complete combined games.
 
 Ixian Nexus Betrayal now connects both actual native attempts: Bidding's
 extra-card inspection and Advanced Technology. Fresh local `ixian-betrayal`
