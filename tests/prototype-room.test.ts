@@ -19,6 +19,7 @@ import {
   startPrototypeRoom,
 } from '../tools/prototype-room';
 import { NEXUS_FACTIONS } from '../game/nexus-cards';
+import { createLeaderSkills } from '../game/leader-skills';
 
 function fixture(t: test.TestContext) {
   const db = new DatabaseSync(':memory:');
@@ -486,4 +487,168 @@ void test('Ixian replacement CLI takes a private exact-version backup before sta
   assert.notEqual(invoke(8, join(directory, 'redeal-proof')).status, 0, 'current version cannot redeal a started game');
   assert.deepEqual(current.prepare('SELECT * FROM rooms ORDER BY code').all(), after);
   assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), seats);
+});
+
+for (const advanced of [false, true]) {
+  for (const seats of [2, 3, 4, 6]) {
+    void test(`Ixian Betrayal fresh ${advanced ? 'Advanced' : 'Basic'} ${seats}-seat entry keeps original identity and undealt Nexus`, t => {
+      const { db } = fixture(t);
+      const game = createGame('PROTOTYP', newPlayer('i', 'Native Ixians', 'ixians'), advanced, ['ix']);
+      const factions = ['atreides', 'emperor', 'guild', 'tleilaxu', 'fremen'] as const;
+      for (let index = 0; index < seats - 1; index++)
+        joinGame(game, newPlayer(`p${index}`, `Original ${index}`, factions[index]));
+      for (const p of game.players) p.ready = true;
+      db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), game.code);
+      const credentials = db.prepare('SELECT * FROM seats').all();
+      const other = db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00');
+      const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+      assert.throws(() => startPrototypeRoom(db, game.code, 6, 'ixian-betrayal'));
+      assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+      const started = startPrototypeRoom(db, game.code, 7, 'ixian-betrayal');
+      const saved = JSON.parse(db.prepare('SELECT state FROM rooms WHERE code=?').get(game.code)!.state as string) as Game;
+      assert.equal(started.version, 8);
+      assert.equal(saved.version, 8);
+      assert.equal(saved.status, 'setup');
+      assert.equal(saved.code, game.code);
+      assert.equal(saved.host, game.host);
+      assert.equal(saved.advanced, game.advanced);
+      assert.deepEqual(saved.expansions, game.expansions);
+      assert.deepEqual(saved.playerPositions, game.playerPositions);
+      assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]), game.players.map(p => [p.id, p.name, p.faction]));
+      assert.equal(saved.nexusIxianBetrayalPreview, true);
+      const physical = [...saved.deck, ...saved.discard, ...saved.players.flatMap(p => p.hand), ...(saved.ixSetupCards ?? [])];
+      assert.equal(physical.length, 47);
+      assert.equal(new Set(physical.map(card => card.id)).size, 47);
+      assert.deepEqual([...saved.nexusCards!.cards!.deck].sort(), [...NEXUS_FACTIONS].sort());
+      assert.deepEqual(saved.nexusCards!.cards!.discard, []);
+      for (const p of saved.players) {
+        assert.equal(saved.nexusCards!.cards!.hands[p.id], null);
+        const view = viewGame(saved, p.id);
+        assert.equal(view.nexusIxianBetrayalPreview, true);
+        assert.equal(view.nexusIxianBetrayalReaction, null);
+        assert.equal(view.nexusCards!.card, null);
+        assert.equal(Object.hasOwn(view.nexusCards!, 'deck'), false);
+      }
+      const after = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+      assert.throws(() => startPrototypeRoom(db, game.code, 8, 'ixian-betrayal'));
+      assert.throws(() => startPrototypeRoom(db, game.code, 8, 'ix'));
+      assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), after);
+      assert.deepEqual(db.prepare('SELECT * FROM seats').all(), credentials);
+      assert.deepEqual(db.prepare('SELECT * FROM rooms WHERE code=?').get('KEEPME00'), other);
+    });
+  }
+}
+
+void test('Ixian Betrayal rejects incompatible original lobbies and public start without durable changes', t => {
+  const { db } = fixture(t);
+  const native = createGame('PROTOTYP', newPlayer('i', 'Ixians', 'ixians'), true, ['ix']);
+  joinGame(native, newPlayer('a', 'Atreides', 'atreides'));
+  for (const p of native.players) p.ready = true;
+  const alterations: ((g: Game) => void)[] = [
+    g => { g.players[0].ready = false; },
+    g => { g.code = 'NOTMATCH'; },
+    g => { g.players[0].faction = 'emperor'; },
+    g => { g.players[1].faction = 'ixians'; },
+    g => { g.players[1].faction = 'choam'; },
+    g => { g.players[1].faction = 'richese'; },
+    g => { g.players[1].faction = 'ecaz'; },
+    g => { g.players[1].faction = 'moritani'; },
+    g => { g.expansions = []; },
+    g => { g.expansions = ['ix', 'choam']; },
+    g => { g.expansions = ['ix', 'ecaz']; },
+    g => { g.discoveryEnabled = true; },
+    g => { g.ecazTreachery = true; },
+    g => { g.semutaPreview = true; },
+    g => { g.nexusIxianReplacementPreview = true; },
+    g => { g.nexusIxianBetrayalPreview = true; },
+    g => { g.kullPreview = true; },
+    g => { g.nexusKullPreview = true; },
+    g => { g.guildBetrayalPreview = true; },
+    g => { g.richeseBetrayalPreview = true; },
+    g => { g.moritaniAssassinatePreview = true; },
+    g => { g.leaderSkills = createLeaderSkills(() => 0.5); },
+    g => { g.players.pop(); },
+    g => { g.players.push(...Array.from({ length: 5 }, (_, index) => newPlayer(`extra${index}`, `Extra ${index}`, 'guild'))); },
+  ];
+  const modules = ['homeworlds', 'techTokens', 'strongholdCards'].map(type => {
+    const game = applyAction(native, native.host, { type, enabled: true });
+    for (const p of game.players) p.ready = true;
+    return game;
+  });
+  const candidates = alterations.map(change => {
+    const game = structuredClone(native);
+    change(game);
+    return game;
+  }).concat(modules);
+  for (const game of candidates) {
+    db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), native.code);
+    const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+    const credentials = db.prepare('SELECT * FROM seats').all();
+    const changes = db.prepare('SELECT total_changes() AS changes').get()!.changes;
+    assert.throws(() => startPrototypeRoom(db, native.code, 7, 'ixian-betrayal'));
+    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+    assert.deepEqual(db.prepare('SELECT * FROM seats').all(), credentials);
+    assert.equal(db.prepare('SELECT total_changes() AS changes').get()!.changes, changes);
+  }
+  const original = structuredClone(native);
+  for (const action of [{ type: 'start' }, { type: 'start', advancedPreview: true }])
+    assert.throws(() => applyAction(native, native.host, action));
+  assert.deepEqual(native, original);
+});
+
+void test('Ixian Betrayal CLI preserves a private consistent exact-version backup and never overwrites proof or resets a started room', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'dune-ixian-betrayal-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const database = join(directory, 'rooms.sqlite');
+  const db = new DatabaseSync(database);
+  db.exec('CREATE TABLE rooms(code TEXT PRIMARY KEY,state TEXT,version INTEGER,updated_at INTEGER); CREATE TABLE seats(room_code TEXT,player_id TEXT,token_hash TEXT);');
+  const game = createGame('PROTOTYP', newPlayer('i', 'Native Ixians', 'ixians'), true, ['ix']);
+  joinGame(game, newPlayer('a', 'Atreides', 'atreides'));
+  joinGame(game, newPlayer('e', 'Emperor', 'emperor'));
+  for (const p of game.players) p.ready = true;
+  db.prepare('INSERT INTO rooms VALUES(?,?,?,?)').run(game.code, JSON.stringify(game), 7, 100);
+  const other = createGame('KEEPGAME', newPlayer('a', 'Atreides', 'atreides'), true);
+  joinGame(other, newPlayer('e', 'Emperor', 'emperor'));
+  for (const p of other.players) p.ready = true;
+  db.prepare('INSERT INTO rooms VALUES(?,?,?,?)').run(other.code, JSON.stringify(other), 9, 50);
+  startPrototypeRoom(db, other.code, 9, 'ixian-replacement');
+  for (const p of game.players)
+    db.prepare('INSERT INTO seats VALUES(?,?,?)').run(game.code, p.id, 'isolated-test-' + p.id);
+  const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
+  const credentials = db.prepare('SELECT * FROM seats ORDER BY player_id').all();
+  db.close();
+  const output = join(directory, 'private-proof');
+  const invoke = (version: number, out: string) => spawnSync(process.execPath, [
+    '--import', 'tsx', fileURLToPath(new URL('../tools/start-prototype.ts', import.meta.url)),
+    '--profile', 'ixian-betrayal', '--db', database, '--room', game.code,
+    '--version', String(version), '--out', out,
+  ], { encoding: 'utf8', timeout: 120000 });
+  const started = invoke(7, output);
+  assert.equal(started.status, 0, started.stderr);
+  assert.equal(statSync(output).mode & 0o777, 0o700);
+  for (const name of ['games.sqlite', 'snapshot.json', 'prototype.json'])
+    assert.equal(statSync(join(output, name)).mode & 0o777, 0o600);
+  const backup = new DatabaseSync(join(output, 'games.sqlite'), { readOnly: true });
+  assert.deepEqual(backup.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
+  assert.deepEqual(backup.prepare('SELECT * FROM seats ORDER BY player_id').all(), credentials);
+  backup.close();
+  const current = new DatabaseSync(database, { readOnly: true });
+  t.after(() => current.close());
+  const after = current.prepare('SELECT * FROM rooms ORDER BY code').all();
+  assert.deepEqual(current.prepare('SELECT * FROM rooms WHERE code=?').get(other.code), before.find(row => row.code === other.code));
+  assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), credentials);
+  const savedRow = current.prepare('SELECT state,version FROM rooms WHERE code=?').get(game.code)!;
+  assert.equal(savedRow.version, 8);
+  const saved = JSON.parse(savedRow.state as string) as Game;
+  assert.equal(saved.nexusIxianBetrayalPreview, true);
+  assert.equal(saved.status, 'setup');
+  assert.equal(saved.advanced, game.advanced);
+  assert.deepEqual(saved.expansions, game.expansions);
+  assert.deepEqual(saved.playerPositions, game.playerPositions);
+  assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]), game.players.map(p => [p.id, p.name, p.faction]));
+  assert.notEqual(invoke(8, output).status, 0);
+  assert.notEqual(invoke(7, join(directory, 'stale-proof')).status, 0);
+  assert.notEqual(invoke(8, join(directory, 'redeal-proof')).status, 0);
+  assert.deepEqual(current.prepare('SELECT * FROM rooms ORDER BY code').all(), after);
+  assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), credentials);
 });

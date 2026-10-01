@@ -189,6 +189,19 @@ Full hands and same-card redraw from an exhausted deck are supported.
 Harkonnen buyers and special sale origins remain guarded; see
 [verified source, privacy and runtime boundaries](docs/NEXUS_IXIAN_REPLACEMENT_RULES.md).
 
+For local **Ixian Nexus Betrayal**, use
+`node --import tsx tools/start-prototype.ts --profile ixian-betrayal`
+on a fresh ready Basic/Advanced lobby with native Ixians, otherwise classic
+factions or Tleilaxu, the forty-seven-card Ix Treachery Deck and Nexus alone.
+Exact-version/private-backup safeguards apply; no existing-game retrofit or
+public start is enabled. Native alliance-qualified Nexus rights still apply.
+Original Karama counters resolve first; neutral rival acknowledgements then
+offer **Pass** or privately eligible **Use Ixian Nexus** before the original
+Bidding inspection/draw or Advanced Technology exchange. Use spends one
+physical Nexus and prevents only that attempt; all-pass keeps its native
+effect and continuation. See the
+[bounded verified runtime](docs/NEXUS_CARD_RUNTIME.md#bounded-ixian-betrayal-local-runtime--1-october-2026).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

@@ -128,6 +128,7 @@ const phaseDetails = [
     'The highlighted player may raise the bid or pass. A new high bid clears previous passes.',
     'Holding Karama permits a bid above your available spice. If outbid, keep the card. A winning bid above your funds requires Karama.',
     'After everyone else passes, the winner chooses spice payment or Karama. The table then resolves applicable Emperor-income and Harkonnen-bonus responses.',
+    'In the fresh local ixian-betrayal preview, native Ixian Bidding inspection and Advanced Technology first finish their original Karama responses, then pause for neutral Nexus acknowledgements before their effects. A legal rival Use prevents only the current attempt; all required passes allow it. See Ixian Nexus Betrayal for both alternatives, private-card limits and the unchanged public release gate.',
     'In Homeworld development tables with Emperor, the last completed auction opens End of Bidding. High Kaitain paid discards and CHOAM closing sales or trades may occur in either order. Finish your opportunity when ready; another card action clears readiness before the phase advances.',
   ],
   [
@@ -214,6 +215,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'ecaz-ambassadors',
       'richese-cards',
       'nexus-richese-betrayal',
+      'nexus-ixian-betrayal',
       'richese-acquisition',
       'richese-gift',
       'distrans-transfer',
@@ -1652,9 +1654,10 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A full Ixian hand does not prevent its inspection advantage. The number of auction cards is determined by factions able to bid. The private pool record is unordered and includes cards already auctioned; it is not a view of another player’s hand or the upcoming card.',
       'In advanced play, before bidding on a card and before Atreides gets its peek, Ixians may offer one hand card for the upcoming unseen card. Declining saves the option for a later card. Declaring an exchange spends the once-per-round attempt and opens a separate Karama response; cancellation keeps both cards where they are.',
       'After a paid or Karama-paid purchase, an Ixian ally may keep the purchased card or request its replacement. A response resolves before discarding that exact card and drawing the deck’s top card privately. Payment still settles normally. Harkonnen’s separate bonus draw follows the replacement.',
+      'The separate fresh ixian-betrayal profile connects both Nexus Betrayal alternatives to those original native attempts. After native counters pass, a neutral acknowledgement precedes the draw or declared Advanced exchange. Use prevents just that attempt: ordinary Bidding count without Ixian inspection, or unchanged hand/lot custody with the Technology declaration still used. All-pass keeps the native advantage. This bounded ordering/privacy convention is an inference, not a universal publisher priority.',
       'The controls preserve decisions and private cards across reconnects. Complete expansion starts, Richese/other auction modes, exact phase-opening ordering, short-deck behavior and interruption timing remain under audit.',
     ],
-    related: ['bidding', 'setup', 'ix-forces', 'nexus-ixian-replacement'],
+    related: ['bidding', 'setup', 'ix-forces', 'nexus-ixian-replacement', 'nexus-ixian-betrayal'],
   },
   {
     id: 'mobile-stronghold',
@@ -2119,11 +2122,13 @@ export const RULE_TOPICS: RuleTopic[] = [
               ]
             : phase === 4
               ? ['ecaz-ambassadors', 'tleilaxu-revival']
-              : phase === 1
-                ? ['card-harvester', 'faction-fremen']
-                : phase === 0
-                  ? ['storm-cards', 'advanced-storm-spice', 'faction-fremen']
-                  : undefined,
+              : phase === 3
+                ? ['ix-technology', 'nexus-ixian-betrayal', 'nexus-ixian-replacement', 'richese-cards']
+                : phase === 1
+                  ? ['card-harvester', 'faction-fremen']
+                  : phase === 0
+                    ? ['storm-cards', 'advanced-storm-spice', 'faction-fremen']
+                    : undefined,
     }),
   ),
   {
@@ -4212,6 +4217,42 @@ export const RULE_TOPICS: RuleTopic[] = [
     ],
   },
   {
+    id: 'nexus-ixian-betrayal',
+    title: 'Ixian Nexus Betrayal: prevent Bidding or Technology',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Verified',
+    summary: 'In the fresh local ixian-betrayal preview, an unallied rival may spend the physical Ixian Nexus to prevent one original native Bidding inspection/draw attempt or one Advanced Technology exchange before its effect.',
+    searchText: 'Ixian Nexus Betrayal Bidding extra card inspection draw Advanced Technology exchange native counter neutral acknowledgement',
+    steps: [
+      'This fresh local profile admits two to six unique Basic or Advanced seats with native Ixians and otherwise classic factions or Tleilaxu, the physical forty-seven-card Ix Treachery Deck and Nexus alone. CHOAM, Richese, Ecaz, Moritani, Homeworlds, Leader Skills, Semuta, Discoveries and other optional overlays are excluded. It is not a public start, reset or upgrade to an old save.',
+      'Nexus has no initial deal or automatic draw. Finish a genuine qualifying closing Nexus with an alliance before an unallied seat may draw. One natural receiver needs at least three actual seats; two simultaneous receivers need four. A two-seat profile can continue ordinary play without fabricating an unreachable Betrayal card.',
+      'The photographed publisher face grants both alternatives, but one card cannot prevent both. Remain unallied and hold the actual singleton Ixian Nexus while another seat is native Ixians. Use discards that physical Nexus once, without a Treachery Card, Karama, activation spice, hand slot or force cost. Cunning and absent-Ixian Secret Ally remain separate modes.',
+      'The current original native attempt determines the alternative. Bidding works in Basic and Advanced; Technology requires Advanced and an actual accepted exchange declaration before bidding or Atreides inspection. You cannot choose a different source, provider, draw count, hand card, lot, price or completed attempt.',
+      'Resolve the original native Karama window first, including legal Advanced Bene Gesserit substitutions. A successful native counter takes the original denied transition once without opening a Nexus gate or spending Nexus. After all native passes, pause before the actual draw, exchange or Atreides peek.',
+      'Original native response ownership survives legal BG Worthless-Karama conversion and hand-exchange suspension. If a legal pre-offer Harkonnen exchange removes the declared Technology card, the native attempt completes without an exchange or Nexus offer; the declared attempt stays used. An already-open Nexus source still rejects changed card custody or parent state.',
+      'All publicly possible unallied non-Ixian seats with public held-Nexus presence receive the same Native Ixian advantage acknowledgement, irrespective of secret face. An irrelevant-face seat may Pass; only the canonical privately eligible owner sees Use and their own unavailable reason. Native-counter-first and neutral acknowledgement are explicit bounded privacy/ordering inferences, not publisher-prescribed universal priority or a ruling for other pending stacks.',
+      'Pass · allow the original advantage spends nothing and retains Nexus. Your saved pass cannot be undone for this event. All required passes allow the original native effect once; no publicly possible responders allow it immediately. Use Ixian Nexus · prevent this Bidding advantage or Technology advantage spends the singleton card and denies just this source.',
+      'Bidding prevention draws exactly the normal allocated count, without an extra inspection card, Ixian private inspection or return selector. All-pass retains the native extra draw, private top/bottom return and auction continuation. The real native deck allocation still governs depleted stock; Nexus does not manufacture cards or rebuild the pool.',
+      'Technology prevention keeps the selected Ixian hand card and unseen lot where they were, preserves the declaration’s spent once-per-turn attempt, then resumes the original normal Atreides/auction continuation once. All-pass performs the actual declared exchange and its continuation once. A native decline before declaration still saves the option.',
+      'This is one current attempt, not a whole-phase ban, removal of all Ixian powers or undo of already completed draws, selections, exchanges, inspections or purchases. A later legally available native attempt may open a new event, including after later physical card recycling. General duration over other multiple-lot situations remains outside this bounded profile.',
+      'The acknowledgement exposes only its public event, Bidding/Technology kind and native provider. It reveals no selected Ixian hand card, unseen lot, extra inspection faces, deck order, rival Nexus identity, private source or rival eligibility reason. Inspect only your own actually held Nexus through its existing inspector; a neutral prompt grants no new card entitlement.',
+      'Both actions submit only the offered event. Refresh resumes the same source and passes without another declaration, native counter cost, Nexus spend, draw, swap or suffix. Closed events expire; nonrecursive saved history remains valid when cards later move or recycle. Stale, foreign, malformed or orphaned sources reject instead of silently allowing the native effect.',
+      'Finish the pending source before ordinary bidding, draws, exchanges or competing card mutation. Existing responses, decisions and Truthtrance retain priority; independent own-seat autopilot changes remain available to every seat. No additional Karama counter to direct Nexus prevention is invented, and no blanket Nexus immunity follows.',
+      'Easy, Medium, Hard and Brutal use their own projected legal Use/Pass choices for minimal continuation, not calibrated Nexus strategy. Frozen native, private controls, bots, authenticated recovery, exact-version CLI and phone evidence verify this bounded path. Raw administrator progress follows the same public unfinished acknowledgements; full modes and deployment remain separate gates.',
+      'Advanced Technology on Richese cache/Black Market lots remains unresolved and excluded; its separate saved decline elsewhere is not an exchange ruling. General competing-effect priority, combined modules, complete Ixian/Nexus games, strategic calibration, public release and live deployment remain separate gates. The adopted unofficial Advanced PDF supplies core defaults, not this Nexus face or a new Nexus ruling.',
+    ],
+    example: 'After native counters pass, a rival spends Ixian Nexus on Bidding: only the ordinary allocated auction cards are drawn and Ixians inspect none. On an Advanced Technology declaration instead, Use keeps both cards in place and the declared attempt used; the normal Atreides/auction suffix follows. Passing permits the corresponding original advantage unchanged.',
+    related: ['nexus-cards', 'bidding', 'ix-technology', 'ix-deck', 'card-karama', 'advanced-beneGesserit', 'privacy', 'implementation-checklist'],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Both current-attempt alternatives bind original native source and continuation, separate singleton Nexus cost, native counters first, uniform public membership and nonrecursive pending/closed history. Wider producers, duration and combined modules remain excluded.', evidence: ['game/nexus-ixian-betrayal.ts', 'game/engine.ts', 'game/ix-auction-draw-quote.ts', 'game/ix-technology-cancellation.ts', 'tools/prototype-room.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Neutral native-advantage acknowledgement separates public Pass/wait from private eligible Use and own-held Nexus inspection, with event-only actions, no rival card/source disclosure and pending native controls suspended. Broader presentation acceptance remains open.', evidence: ['components/nexus-ixian-betrayal.tsx', 'components/game-table.tsx', 'game/table-turn.ts'] },
+      { area: 'AI', status: 'Partial', detail: 'All four minimal legal policies consume only canonical own-view Use/Pass eligibility and preserve pending priority. Full Nexus strategy and difficulty calibration remain unfinished.', evidence: ['game/bot-nexus-ixian-betrayal.ts', 'game/bots.ts'] },
+      { area: 'Documentation', status: 'Partial', detail: 'Photographed face, native source order, both alternatives, current-attempt duration, physical cost, inferred privacy/ordering, fresh natural Nexus rights and explicit Richese/module/public/deployment boundaries are recorded without PDF Nexus authority or full-family claims.', evidence: ['docs/NEXUS_CARD_RULES.md', 'docs/NEXUS_CARD_RUNTIME.md', 'docs/RULE_DECISIONS.md'] },
+      { area: 'Verification', status: 'Partial', detail: 'Genuine native Basic/Advanced Bidding and Advanced Technology allow/prevent, printed/BG priority, exact stock/count/attempt/suffix, public face parity, legal bots and authenticated restart/races/rejection pass. Actual backed-up CLI/phone Use/Pass/partial refresh and saved stock prove both endpoints. Native Harkonnen/BG and public admin ownership regressions retain prior continuation; wider modes and deployment remain open.', evidence: ['tests/nexus-ixian-betrayal.test.ts', 'tests/nexus-ixian-betrayal-runtime.test.ts', 'tests/fixture-nexus-ixian-betrayal.ts', 'tests/nexus-ixian-betrayal-controls.test.tsx', 'tests/bot-nexus-ixian-betrayal.test.ts', 'tests/nexus-ixian-betrayal-recovery.test.ts', 'tests/prototype-room.test.ts', 'tests/ix-technology.test.ts', 'tests/admin-directory.test.ts'] },
+    ],
+  },
+  {
     id: 'nexus-cards',
     title: 'Nexus Cards',
     searchText: NEXUS_CARD_REFERENCE.map(card => `${card.faction} ${card.betrayal} ${card.cunning} ${card.secretAlly}`).join(' '),
@@ -4236,6 +4277,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Tleilaxu Cunning sets aside all your revealed Face Dancers, draws their replacements secretly, and only then shuffles the set-aside cards into the Traitor Deck. Unrevealed dancers stay in your hand. This single operation does not use or renew your ordinary Mentat replacement; the native all-three-revealed reset keeps its separate shuffle-before-draw order.',
       'Ixian Cunning is used in your battle before submitting your Battle Plan. Your Suboids then count as strength one without spice support in every battle for the rest of the turn, in Basic and Advanced. Cyborg strength and support are unchanged. Earlier inspected or promised plan elements remain binding; you cannot activate the card if the new strength would make them impossible.',
       'Ixian Secret Ally has a fresh local ixian-replacement profile for normal paid or printed Karama-paid auction purchases in classic base-deck/Nexus Basic or Advanced games. A supported unallied buyer may spend its actual Nexus to discard exactly the just-purchased card and draw the real deck top privately; Pass keeps both cards. Full-hand replacement and empty-deck same-card redraw are allowed, and original payment/income/auction continuation occur once. Harkonnen buyers, cache/Black Market/special origins and combined modules remain guarded. The neutral buyer choice is an inferred privacy convention, not publisher timing. See the dedicated guide for bounded verified native, private, recovery and phone evidence; this is not full-module certification.',
+      'Ixian Betrayal has a separate fresh native-Ixian ixian-betrayal profile for both original Bidding inspection/draw and Advanced Technology attempts. Native counters resolve first; then every publicly possible unallied rival held-Nexus seat acknowledges uniformly before the effect. A legal Use spends one physical Ixian Nexus to deny only that attempt; all-pass preserves the native effect once. No completed-card undo or whole-phase ban is added. This bounded ordering/privacy is an inference, not universal publisher priority; see its bounded verified native/private/recovery/phone evidence and unchanged Richese/module/public/deployment gates.',
       'Tleilaxu Secret Ally revival remains unavailable pending its ordinary-allowance, leader-eligibility and optional-leader rulings. The printed fixed force price does not resolve those questions.',
       'In Advanced play, Bene Gesserit Cunning converts selected whole advisor territories during your own Shipment and Movement action. All your counters in each selected territory become fighters together across sectors. It spends the Nexus card once, with no spice, shipment or movement cost.',
       'One Karama response covers the entire declared territory set. Cancellation keeps every selected group as advisors and leaves the Nexus card spent. Existing territory restrictions still apply; fresh accompanied advisors and storm-related conversion remain unavailable pending their rulings.',
@@ -4266,7 +4308,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Cunning spends its Nexus card and uses the native Mentat placement opportunity. A Karama response precedes placement; cancellation leaves the token where it was and the Nexus spent. Later Terror entry still uses the existing one-token stack selection and supported effect rules. If Extortion was revealed this turn, its bank award and payment choices follow that placement response; this does not implement Atomics or complete Moritani games.',
       'Hidden reactive Betrayal timing remains unresolved for other effects. Complete module games are unfinished, so public module starts remain disabled.',
     ],
-    related: ['ecaz-modules', 'spice-blow', 'alliance-funding', 'choam-worthless', 'choam-kull', 'nexus-choam-kull', 'nexus-richese-betrayal', 'nexus-guild-betrayal', 'nexus-ixian-replacement'],
+    related: ['ecaz-modules', 'spice-blow', 'alliance-funding', 'choam-worthless', 'choam-kull', 'nexus-choam-kull', 'nexus-richese-betrayal', 'nexus-guild-betrayal', 'nexus-ixian-replacement', 'nexus-ixian-betrayal'],
     checklist: [
       { area: 'Implementation', status: 'Partial', detail: 'Physical lifecycle, Atreides inspections, Harkonnen exchanges/declarations, Face Dancers, Suboids, advisors, native Voice, Emperor Sardaukar and Betrayal, bounded Fremen revival/Cunning, CHOAM effects, Moritani Cunning/Betrayal, Ecaz Betrayal, native Duke Cunning and private Secret Ally inquiry, Richese shipment and bounded auction Betrayal, and bounded Emperor bank-auction purchase are integrated. Ecaz Cunning transfers the existing Duke at a quiet Battle boundary with a real card and distinct turn-end expiry. Ecaz inquiry scope/audience and Emperor purchase timing are provisional. Borrowed Voice, exceptional Duke custody, other reactions, Tleilaxu revival, Fremen worm protection and combined Cunning interactions remain unfinished.', evidence: ['game/nexus-cards.ts', 'game/nexus-card-phase.ts', 'game/nexus-traitor-exchange.ts', 'game/traitor-declarations.ts', 'game/nexus-face-dancers.ts', 'game/nexus-suboids.ts', 'game/nexus-advisors.ts', 'game/nexus-sardaukar-options.ts', 'game/nexus-fremen-revival.ts', 'game/nexus-fremen-cunning.ts', 'game/nexus-ecaz-betrayal.ts', 'game/nexus-ecaz-inquiry.ts', 'game/nexus-ecaz-duke.ts', 'game/duke-vidal.ts', 'game/nexus-emperor-secret-ally.ts', 'game/choam-power-options.ts', 'game/nexus-moritani-options.ts', 'game/nexus-moritani-betrayal.ts', 'game/nexus-richese-options.ts', 'game/nexus-richese-betrayal.ts', 'game/nexus-guild-cunning-options.ts', 'game/nexus-guild-secret-ally-options.ts', 'game/engine.ts'] },
       { area: 'Player controls', status: 'Partial', detail: 'Private lifecycle, inspections, exchanges, Tleilaxu refresh, Ixian activation, advisor selection, temporary Sardaukar and CHOAM effects, Moritani Betrayal, Ecaz Betrayal and owner-only Secret Ally inquiry, native Duke Cunning, Richese shipment and bounded auction Betrayal, Emperor purchase and Fremen Cunning controls are connected. Remaining effect controls are unfinished.', evidence: ['components/nexus-cards.tsx', 'components/nexus-traitors.tsx', 'components/nexus-tleilaxu.tsx', 'components/nexus-suboids.tsx', 'components/nexus-advisors.tsx', 'components/nexus-sardaukar.tsx', 'components/choam-power-cost.tsx', 'components/moritani-terror.tsx', 'components/nexus-moritani-betrayal.tsx', 'components/nexus-ecaz-betrayal.tsx', 'components/nexus-ecaz-inquiry.tsx', 'components/nexus-ecaz-duke.tsx', 'components/nexus-richese-betrayal.tsx', 'components/game-table.tsx'] },

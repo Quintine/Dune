@@ -48,6 +48,7 @@ import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGui
 import { shipmentAvailable } from './shipment-opportunity';
 import { createGuildBetrayalInvoice, createGuildBetrayalReceipt, guildBetrayalEligible, guildBetrayalResponders, validateGuildBetrayalInvoice, validateGuildBetrayalHistory, nexusGuildBetrayalSourceReceipt, type GuildBetrayalInvoice, type GuildBetrayalCursor, type GuildBetrayalReceipt, type GuildBetrayalAuthority } from './nexus-guild-betrayal';
 import { createIxianReplacementSource, validateIxianReplacementSource, closeIxianReplacementSource, validateIxianReplacementHistory, initialIxianReplacementCursor, ixianReplacementEvent, type IxianReplacementSource, type IxianReplacementReceipt, type IxianReplacementCursor } from './nexus-ixian-replacement';
+import { createIxianBetrayalSource, validateIxianBetrayalFrame, initialIxianBetrayalCursor, closeIxianBetrayalSource, validateIxianBetrayalHistory, ixianBetrayalResponders, ixianBetrayalEligible, type IxianBetrayalSource, type IxianBetrayalCursor, type IxianBetrayalReceipt } from './nexus-ixian-betrayal';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
 import { createNexusRichese, validateNexusRichese, quoteNexusRicheseShipment, type NexusRicheseReceipt } from './nexus-richese';
 import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
@@ -1128,6 +1129,16 @@ export type Game = {
   pendingNexusIxianReplacement?: IxianReplacementSource | null;
   nexusIxianReplacementHistory?: IxianReplacementReceipt[];
   nexusIxianReplacementCursor?: IxianReplacementCursor;
+  /** Fresh native Ixian attempt prevention; never inferred from held cards. */
+  nexusIxianBetrayalPreview?: true;
+  pendingNexusIxianBetrayal?: {
+    source: IxianBetrayalSource;
+    continuation: ResponseWindow;
+    required: string[];
+    passed: string[];
+  } | null;
+  nexusIxianBetrayalHistory?: IxianBetrayalReceipt[];
+  nexusIxianBetrayalCursor?: IxianBetrayalCursor;
   kullSequence?: number;
   kullRestrictions?: KullPhaseRestriction[];
   pendingKull?: {
@@ -8114,6 +8125,159 @@ export function initializeNexusGameForAudit(state: Game): Game {
     'Enable Nexus cards in a fresh audit lobby first.');
   return initializeSetupGameForAudit(state, !!state.homeworlds, true);
 }
+/** Offline-only, fresh native Ixian/Ix47 + Nexus profile. */
+export function initializeIxianNexusBetrayalGameForAudit(state: Game): Game {
+  requireRule(ixianNexusBetrayalModeSupported(state) &&
+    state.nexusIxianBetrayalPreview === undefined && state.pendingNexusIxianBetrayal === undefined &&
+    state.nexusIxianBetrayalHistory === undefined && state.nexusIxianBetrayalCursor === undefined &&
+    state.nexusCards?.cards === null && state.nexusCards.phase === null,
+  'Ixian Nexus Betrayal needs a fresh native Ixian lobby with only Ix Treachery and Nexus Cards.');
+  requireFreshBaseRuntime(state);
+  const g = initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
+  g.nexusIxianBetrayalPreview = true;
+  g.pendingNexusIxianBetrayal = null;
+  g.nexusIxianBetrayalHistory = [];
+  g.nexusIxianBetrayalCursor = initialIxianBetrayalCursor();
+  // This profile does not opt into the optional Sandtrout Spice card.
+  g.spiceDeck = shuffle(spiceDeck());
+  return g;
+}
+function ixianNexusBetrayalModeSupported(g: Game): boolean {
+  return typeof g.advanced === 'boolean' && !!g.nexusCards &&
+    g.expansions.length === 1 && g.expansions[0] === 'ix' &&
+    g.players.length >= 2 && g.players.length <= 6 &&
+    new Set(g.players.map(p => p.faction)).size === g.players.length &&
+    !!byFaction(g, 'ixians') &&
+    g.players.every(p => CLASSIC_FACTIONS[p.faction] || p.faction === 'ixians' || p.faction === 'tleilaxu') &&
+    !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled && !g.discoveries &&
+    !g.discoveryStash && !g.greatMaker && !g.techTokens && !g.strongholdCards &&
+    !g.ecazTreachery && !g.semutaPreview && !g.kullPreview && !g.nexusKullPreview &&
+    !g.richeseBetrayalPreview && !g.guildBetrayalPreview && !g.nexusIxianReplacementPreview &&
+    !g.moritaniAssassinatePreview;
+}
+function ixianNexusBetrayalContext(g: Game) {
+  return {status:g.status,phase:g.phase,turn:g.turn,advanced:g.advanced,
+    sequence:g.nexusIxianBetrayalCursor!.sequence,players:g.players,
+    cards:g.nexusCards!.cards!,physicalCards:physicalTreacheryCards(g)};
+}
+function ixianNexusBetrayalAuthority(g: Game, response: ResponseWindow) {
+  requireRule(response.kind === 'ixAuction' || response.kind === 'ixTechnology',
+    'The saved Nexus continuation is not an original native Ixian window.');
+  requireRule(Object.keys(response).sort().join(',') === 'kind,owner,passed',
+    'The native Ixian continuation changed its original response shape.');
+  if (response.kind === 'ixAuction') currentIxAuctionDrawQuote(g,response,false);
+  else {
+    auctionTechnologyQuote(() => quoteIxTechnologyCancellation(g,response));
+    requireRule(getPlayer(g,response.owner).hand.filter(c => c.id === g.pendingIxTechnology!.card).length === 1,
+      'The original Ixian Technology declaration lost its selected hand card.');
+  }
+  return {kind:response.kind === 'ixAuction' ? 'bidding' as const : 'technology' as const,
+    provider:response.owner,nativeWindow:response.kind,
+    nativeContext:JSON.stringify({ixAuction:g.ixAuction,pendingIxTechnology:g.pendingIxTechnology,
+      ixTechnologyTurn:g.ixTechnologyTurn,auction:g.auction}),
+    nativeRequired:g.players.filter(p => responseCancelCards(g,p,response).length > 0).map(p => p.id),
+    nativePassed:response.passed};
+}
+function ixianNexusBetrayalParent(g: Game, response: ResponseWindow): string {
+  return JSON.stringify({continuation:response,status:g.status,phase:g.phase,turn:g.turn,advanced:g.advanced,
+    active:g.active,order:g.order,auction:g.auction,sale:g.currentAuctionSale,ixAuction:g.ixAuction,
+    ixKnown:g.ixAuctionKnown,technology:g.pendingIxTechnology,technologyTurn:g.ixTechnologyTurn,
+    players:g.players.map(p => ({id:p.id,faction:p.faction,ally:p.ally,spice:p.spice,hand:p.hand,
+      forces:p.forces,reserves:p.reserves,tanks:p.tanks,elites:p.elites,advisors:p.advisors})),
+    deck:g.deck,discard:g.discard,aid:g.aid,nexus:g.nexusCards,decision:g.decision,response:g.response,
+    phaseOpening:g.phaseOpening,truthtrance:g.truthtrance,pendingKarama:g.pendingKarama,
+    pendingNullentropy:g.pendingNullentropy,pendingTreacheryDiscard:g.pendingTreacheryDiscard});
+}
+function ixianNexusBetrayalIntegrity(g: Game): void {
+  const frame = g.pendingNexusIxianBetrayal;
+  if (!g.nexusIxianBetrayalPreview) {
+    requireRule(g.nexusIxianBetrayalPreview === undefined && !frame &&
+      g.nexusIxianBetrayalHistory === undefined && g.nexusIxianBetrayalCursor === undefined,
+    'Ixian Nexus Betrayal lost its explicit fresh profile.');
+    return;
+  }
+  requireRule(ixianNexusBetrayalModeSupported(g) && g.nexusIxianBetrayalCursor &&
+    Array.isArray(g.nexusIxianBetrayalHistory), 'The native Ixian Nexus profile lost its history or cursor.');
+  nexusCardsIntegrity(g);
+  nexusRule(() => validateIxianBetrayalHistory(g.nexusIxianBetrayalHistory!,
+    g.nexusIxianBetrayalCursor!,physicalTreacheryCards(g)));
+  if (!frame) {
+    if (g.ixAuction?.cards.length === 0 || g.pendingIxTechnology) {
+      const continuation = g.pendingTreacheryDiscard?.continuation;
+      const contexts = [g, g.pendingExchange, g.pendingNullentropy?.resume,
+        g.pendingRicheseGift?.resume, g.pendingRichesePurchaseIncome?.resume,
+        g.summonedWorm?.resume, continuation && 'resume' in continuation ? continuation.resume : null];
+      const provider = byFaction(g, 'ixians')!.id;
+      const ownsWindow = (kind: 'ixAuction' | 'ixTechnology') => contexts.some(context => {
+        const pending = context && 'pendingKarama' in context ? context.pendingKarama as Game['pendingKarama'] : null;
+        const original = pending?.use.kind === 'cancel' ? pending.use.response : null;
+        return (context?.response?.kind === kind && context.response.owner === provider) ||
+          (original?.kind === kind && original.owner === provider);
+      });
+      requireRule((!g.ixAuction || g.ixAuction.cards.length > 0 || ownsWindow('ixAuction')) &&
+        (!g.pendingIxTechnology || ownsWindow('ixTechnology')),
+      'The native Ixian attempt lost its original counter or Nexus acknowledgement.');
+    }
+    return;
+  }
+  requireRule(Object.keys(frame).sort().join(',') === 'continuation,passed,required,source' &&
+    Array.isArray(frame.required) && Array.isArray(frame.passed) && frame.required.length > 0 &&
+    frame.required.some(id => !frame.passed.includes(id)) &&
+    !g.response && !g.decision && !g.phaseOpening && !g.truthtrance &&
+    !g.pendingKarama && !g.pendingNullentropy && !g.pendingTreacheryDiscard,
+  'The Ixian Nexus acknowledgement lost its original native priority.');
+  nexusRule(() => validateIxianBetrayalFrame(ixianNexusBetrayalContext(g),frame.source,
+    ixianNexusBetrayalAuthority(g,frame.continuation),ixianNexusBetrayalParent(g,frame.continuation),
+    frame.required,frame.passed));
+}
+function offerIxianNexusBetrayal(g: Game,response: ResponseWindow): boolean {
+  if (!g.nexusIxianBetrayalPreview) return false;
+  if (response.kind === 'ixTechnology') {
+    auctionTechnologyQuote(() => quoteIxTechnologyCancellation(g, response));
+    // Native interruptions may legally move the declared card before counters
+    // finish. That spent attempt fizzles without exposing a Nexus offer.
+    if (!getPlayer(g, response.owner).hand.some(c => c.id === g.pendingIxTechnology!.card)) return false;
+  }
+  const required = nexusRule(() => ixianBetrayalResponders(g.nexusCards!.cards!,g.players));
+  if (!required.length) return false;
+  const source = nexusRule(() => createIxianBetrayalSource(ixianNexusBetrayalContext(g),
+    ixianNexusBetrayalAuthority(g,response),ixianNexusBetrayalParent(g,response)));
+  g.pendingNexusIxianBetrayal = {source,continuation:structuredClone(response),required,passed:[]};
+  return true;
+}
+function ixianNexusBetrayalView(g: Game,id: string) {
+  const frame = g.pendingNexusIxianBetrayal;
+  if (!frame) return null;
+  const hasPassed = frame.passed.includes(id), canPass = frame.required.includes(id) && !hasPassed;
+  const eligible = canPass && nexusRule(() => ixianBetrayalEligible(g.nexusCards!.cards!,g.players,id));
+  return {event:frame.source.event,kind:frame.source.kind,provider:frame.source.provider,
+    canPass,hasPassed,canUse:eligible,blocked:null as string | null};
+}
+function decideIxianNexusBetrayal(g: Game,id: string,action: Action): void {
+  ixianNexusBetrayalIntegrity(g);
+  const frame = g.pendingNexusIxianBetrayal!;
+  requireRule(['nexusIxianBetrayalPass','nexusIxianBetrayalUse'].includes(action?.type) &&
+    action.event === frame.source.event && Object.keys(action).length === 2 &&
+    Object.keys(action).every(key => key === 'type' || key === 'event') &&
+    frame.required.includes(id) && !frame.passed.includes(id),
+  'A current required seat must acknowledge only the original Ixian event.');
+  const use = action.type === 'nexusIxianBetrayalUse';
+  if (use) requireRule(nexusRule(() => ixianBetrayalEligible(g.nexusCards!.cards!,g.players,id)),
+    'You do not own an eligible unallied Ixian Nexus card.');
+  if (!use) {
+    frame.passed.push(id);
+    if (frame.required.some(seat => !frame.passed.includes(seat))) return;
+  }
+  // Validation above precedes the one physical Nexus cost and native RNG.
+  const closed = nexusRule(() => closeIxianBetrayalSource(frame.source,use ? 'use' : 'pass',
+    use ? id : null,g.nexusIxianBetrayalCursor!));
+  if (use) g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,id,g.players));
+  g.nexusIxianBetrayalHistory!.push(closed.receipt);
+  g.nexusIxianBetrayalCursor = closed.cursor;
+  g.pendingNexusIxianBetrayal = null;
+  if (use) log(g,`${getPlayer(g,id).name} spent Ixian Nexus Betrayal to prevent the original native ${frame.source.kind} attempt.`);
+  finishIxianNativeAttempt(g,frame.continuation,use);
+}
 /** Fresh local classic profile only; no public start or existing-game retrofit. */
 export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
   requireRule(!state.nexusIxianReplacementPreview && !state.pendingNexusIxianReplacement &&
@@ -11503,6 +11667,50 @@ function currentIxAuctionDrawQuote(
     if (error instanceof IxAuctionDrawError) throw new RuleError(error.message);
     throw error;
   }
+}
+/** The original native suffix, shared by native Karama and Nexus closure.
+ * It consumes the accepted attempt directly; no declaration is replayed. */
+function finishIxianNativeAttempt(g: Game, response: ResponseWindow, canceled: boolean): void {
+  if (response.kind === 'ixAuction') {
+    const request = currentIxAuctionDrawQuote(g, response, canceled)!;
+    const pending = g.ixAuction!;
+    const cards: Card[] = [];
+    for (let i = 0; i < request.drawCount; i++) {
+      const card = draw(g);
+      if (card) cards.push(card);
+    }
+    if (!canceled && cards.length > 1) {
+      pending.cards = cards;
+      g.decision = { kind: 'ixAuction', player: response.owner };
+    } else {
+      g.ixAuction = null;
+      setAuction(g, cards);
+    }
+    return;
+  }
+  requireRule(response.kind === 'ixTechnology', 'Only an original Ixian native attempt may resume.');
+  const cancellation = auctionTechnologyQuote(() => quoteIxTechnologyCancellation(g, response))!;
+  if (canceled) {
+    g.pendingIxTechnology = cancellation.pendingIxTechnology;
+    g.auction!.peekKnown = cancellation.peek.peekKnown;
+    g.response = cancellation.peek.response;
+    log(g, 'Ixian auction substitution did not occur.');
+    return;
+  }
+  const pending = g.pendingIxTechnology!;
+  const ixians = getPlayer(g, response.owner);
+  const replacement = ixians.hand.find(c => c.id === pending.card);
+  if (replacement) {
+    const a = g.auction!, taken = a.cards[a.index];
+    ixians.hand = ixians.hand.filter(c => c.id !== replacement.id);
+    ixians.hand.push(taken);
+    a.cards[a.index] = replacement;
+    if (g.ixAuctionKnown?.turn === g.turn)
+      g.ixAuctionKnown.cards = [...g.ixAuctionKnown.cards.filter(c => c.id !== taken.id && c.id !== replacement.id), replacement];
+    log(g, `${ixians.name} exchanged a hand card for the upcoming auction card.`);
+  }
+  g.pendingIxTechnology = null;
+  offerAuctionPeek(g);
 }
 function ixSubstitutionCancellationQuote(
   g: Game,
@@ -21588,9 +21796,6 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
   const auctionCancellation = canceled
     ? validateAuctionContinuationCancellation(g, response)
     : null;
-  const technologyCancellation = canceled
-    ? auctionTechnologyQuote(() => quoteIxTechnologyCancellation(g, response))
-    : null;
   const richeseCancellation = canceled
     ? currentRicheseCancellationQuote(g, response)
     : null;
@@ -22044,52 +22249,9 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
         };
       else settleRicheseLot(g);
     }
-  } else if (response.kind === 'ixAuction') {
-    const request = currentIxAuctionDrawQuote(g, response, canceled)!;
-    const pending = g.ixAuction!;
-    const cards: Card[] = [];
-    for (let i = 0; i < request.drawCount; i++) {
-      const card = draw(g);
-      if (card) cards.push(card);
-    }
-    if (!canceled && cards.length > 1) {
-      pending.cards = cards;
-      g.decision = { kind: 'ixAuction', player: response.owner };
-    } else {
-      g.ixAuction = null;
-      setAuction(g, cards);
-    }
-  } else if (response.kind === 'ixTechnology') {
-    if (technologyCancellation) {
-      g.pendingIxTechnology = technologyCancellation.pendingIxTechnology;
-      g.auction!.peekKnown = technologyCancellation.peek.peekKnown;
-      g.response = technologyCancellation.peek.response;
-      log(g, 'Ixian auction substitution did not occur.');
-      return;
-    }
-    const pending = g.pendingIxTechnology!;
-    const ixians = getPlayer(g, response.owner);
-    const replacement = ixians.hand.find((c) => c.id === pending.card);
-    if (!canceled && replacement) {
-      const a = g.auction!,
-        taken = a.cards[a.index];
-      ixians.hand = ixians.hand.filter((c) => c.id !== replacement.id);
-      ixians.hand.push(taken);
-      a.cards[a.index] = replacement;
-      if (g.ixAuctionKnown?.turn === g.turn)
-        g.ixAuctionKnown.cards = [
-          ...g.ixAuctionKnown.cards.filter(
-            (c) => c.id !== taken.id && c.id !== replacement.id,
-          ),
-          replacement,
-        ];
-      log(
-        g,
-        `${ixians.name} exchanged a hand card for the upcoming auction card.`,
-      );
-    } else log(g, 'Ixian auction substitution did not occur.');
-    g.pendingIxTechnology = null;
-    offerAuctionPeek(g);
+  } else if (response.kind === 'ixAuction' || response.kind === 'ixTechnology') {
+    if (!canceled && offerIxianNexusBetrayal(g, response)) return;
+    finishIxianNativeAttempt(g, response, canceled);
   } else if (response.kind === 'ixAllyCard') {
     const pending = g.pendingIxAlly!;
     const buyer = getPlayer(g, pending.player);
@@ -25302,6 +25464,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
   guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
@@ -25389,6 +25552,8 @@ export function applyAction(state: Game, id: string, action: Action): Game {
     return normalizeAutomaticGame(state);
   }
   const g = applyActionInner(state, id, action);
+  ixianNexusBetrayalIntegrity(g);
+  if (g.pendingNexusIxianBetrayal) return g;
   ixianNexusReplacementIntegrity(g);
   if (g.pendingNexusIxianReplacement) return g;
   if (g.pendingGuildBetrayal) {guildBetrayalIntegrity(g); return g;}
@@ -25524,6 +25689,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   return g;
 }
 function finishActionContinuations(g: Game) {
+  if (g.pendingNexusIxianBetrayal) return;
   if (g.pendingGuildBetrayal) return;
   if (g.pendingRicheseBetrayal) return;
   if (g.pendingKull) return;
@@ -25588,6 +25754,7 @@ function finishActionContinuations(g: Game) {
     finishMoritaniPlacement(g);
 }
 function settleAutomaticContinuations(g: Game) {
+  if (g.pendingNexusIxianBetrayal) return;
   if (g.pendingNexusIxianReplacement) return;
   if (g.pendingGuildBetrayal) return;
   if (g.pendingRicheseBetrayal) return;
@@ -25595,6 +25762,7 @@ function settleAutomaticContinuations(g: Game) {
   if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
   for (let iteration = 0; iteration < 128; iteration++) {
+    if (g.pendingNexusIxianBetrayal) return;
     if (g.pendingGuildBetrayal) return;
     if (g.pendingNexusIxianReplacement) return;
     if (g.pendingRicheseBetrayal) return;
@@ -25619,6 +25787,7 @@ function settleAutomaticContinuations(g: Game) {
       finishResponse(g, false);
     } else if (!finishAutomaticDecision(g)) return;
     finishActionContinuations(g);
+    if (g.pendingNexusIxianBetrayal) return;
     if (g.pendingGuildBetrayal) return;
     if (g.pendingRicheseBetrayal) return;
     // Opposing/automatic consequences can release a now-impossible promise;
@@ -25636,6 +25805,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
   guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
@@ -25673,6 +25843,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingNexusIxianBetrayal) return g;
   if (g.pendingNexusIxianReplacement) return g;
   if (g.pendingGuildBetrayal) return g;
   if (g.pendingRicheseBetrayal) return g;
@@ -25726,6 +25897,12 @@ function applyActionInner(
 ): Game {
   ecazTreacheryIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingNexusIxianBetrayal) {
+    getPlayer(g,id);
+    if (action?.type === 'advanceBots') return g;
+    decideIxianNexusBetrayal(g,id,action);
+    return g;
+  }
   if (g.pendingNexusIxianReplacement) {
     getPlayer(g,id);
     if (action?.type === 'advanceBots') return g;
@@ -29579,6 +29756,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
   guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
@@ -29953,6 +30131,8 @@ export function viewGame(state: Game, id: string) {
       ? {...nexusRule(() => quoteDiscoveryEntry({...g,discoveries:g.discoveries!},g.discoveryEntry!,id)),event:g.decision.event} : null,
     greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,
     nexusCards: projectedNexusCards(g, id),
+    nexusIxianBetrayalPreview: !!g.nexusIxianBetrayalPreview,
+    nexusIxianBetrayalReaction: ixianNexusBetrayalView(g,id),
     nexusIxianReplacementPreview: !!g.nexusIxianReplacementPreview,
     nexusIxianReplacement: ixianNexusReplacementView(g,id),
     nexusChoamTrade: currentNexusChoamTrade(g, id),
@@ -30022,7 +30202,9 @@ export function viewGame(state: Game, id: string) {
     storm: g.status === 'lobby' ? STORM_START_SECTOR : g.storm,
     playerPositions: normalizedPlayerPositions(g),
     order: g.order,
-    active: g.active,
+    active: g.pendingNexusIxianBetrayal
+      ? (() => {const remaining = g.pendingNexusIxianBetrayal.required.filter(seat => !g.pendingNexusIxianBetrayal!.passed.includes(seat)); return remaining.length === 1 ? remaining[0] : null;})()
+      : g.active,
     movementRemaining: g.movementRemaining ?? null,
     guildTimingLocked: g.guildTimingLocked ?? false,
     ready: g.ready,

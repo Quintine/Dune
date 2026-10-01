@@ -4,6 +4,9 @@ import { DatabaseSync } from 'node:sqlite';
 import { adminStore, pauseAdminBatch } from './admin-access-fixture';
 import { adminLogin, requireAdmin, adminLogoutAll, AdminError } from '../db/admin-access';
 import { projectAdminRoom, readAdminDirectory } from '../db/admin-directory';
+import { applyAction, viewGame } from '../game/engine';
+import { tableActionOwner } from '../game/table-turn';
+import { createIxianNexusBetrayalFixture } from './fixture-nexus-ixian-betrayal';
 
 const state = (name = 'Directory QA', status = 'lobby', advanced = false) => ({
   status, advanced, host: 'p1', turn: 1, phase: 0, expansions: [],
@@ -47,6 +50,95 @@ void test('admin directory allowlist reveals no private state, role power or sea
   const decision = projectAdminRoom({ code: 'ABCDEFGH', version: 3, updated_at: 100, state: JSON.stringify({ ...input, status: 'playing', decision: { kind: 'capturedLeader', player: 'p1', leader: 'SECRET_CAPTURE', owner: 'SECRET_OWNER' } }) });
   assert.deepEqual(decision.pending, { label: 'Special decision', owners: ['p1'] });
   assert.equal(JSON.stringify(decision).includes('SECRET'), false);
+});
+
+const project = (value: unknown) => projectAdminRoom({ code: 'IXADMINA', version: 3, updated_at: 100, state: JSON.stringify(value) });
+
+void test('directory ownership follows genuine shared and sole Ixian acknowledgements instead of the native bidder', () => {
+  for (const kind of ['technology', 'bidding'] as const) {
+    const f = createIxianNexusBetrayalFixture({ kind, receiverCount: 2 });
+    assert.equal(f.required.length, 2);
+    const shared = project(f.game);
+    assert.deepEqual(shared.pending.owners, []);
+    for (const player of f.game.players) assert.equal(tableActionOwner(viewGame(f.game, player.id)), null);
+    const partial = applyAction(f.game, f.holder, { type: 'nexusIxianBetrayalPass', event: f.event });
+    const remaining = f.required.find(id => id !== f.holder)!;
+    const sole = project(partial);
+    assert.deepEqual(sole.pending.owners, [remaining]);
+    assert.notEqual(remaining, f.provider);
+    for (const player of partial.players) assert.equal(tableActionOwner(viewGame(partial, player.id)), remaining);
+    assert.equal(sole.pending.label, shared.pending.label, 'Passing does not reveal which private card can prevent the attempt.');
+
+    const privateChanges = {
+      ...partial,
+      players: partial.players.map(player => ({ ...player, hand: ['SECRET_HAND'], spice: 'SECRET_PRICE' })),
+      auction: partial.auction && { ...partial.auction, price: 'SECRET_PRICE' },
+      pendingNexusIxianBetrayal: {
+        ...partial.pendingNexusIxianBetrayal,
+        source: { eligible: 'SECRET_ELIGIBILITY', nativeContext: 'SECRET_NATIVE', parent: 'SECRET_PARENT', card: 'SECRET_SOURCE_CARD' },
+      },
+    };
+    assert.deepEqual(project(privateChanges), sole, 'Admin metadata depends on public membership, not private source validity or custody.');
+    assert.equal(JSON.stringify(sole).includes('SECRET'), false);
+  }
+});
+
+void test('an irrelevant held Nexus face has the same admin acknowledgement metadata as an eligible face', () => {
+  for (const kind of ['technology', 'bidding'] as const) {
+    const eligible = createIxianNexusBetrayalFixture({ kind, receiverCount: 2, face: 'ixians', secondFace: 'guild' });
+    const irrelevant = createIxianNexusBetrayalFixture({ kind, receiverCount: 2, face: 'richese', secondFace: 'guild' });
+    assert.equal(viewGame(eligible.game, eligible.holder).nexusIxianBetrayalReaction!.canUse, true);
+    assert.equal(viewGame(irrelevant.game, irrelevant.holder).nexusIxianBetrayalReaction!.canUse, false);
+    assert.deepEqual(project(eligible.game), project(irrelevant.game));
+    const eligiblePartial = applyAction(eligible.game, eligible.holder, { type: 'nexusIxianBetrayalPass', event: eligible.event });
+    const irrelevantPartial = applyAction(irrelevant.game, irrelevant.holder, { type: 'nexusIxianBetrayalPass', event: irrelevant.event });
+    assert.deepEqual(project(eligiblePartial), project(irrelevantPartial));
+  }
+});
+
+void test('Ixian admin acknowledgements preserve lifecycle and higher public pending priorities', () => {
+  const input = {
+    ...state('Priority QA', 'playing'), phase: 3,
+    pendingNexusIxianBetrayal: { required: ['p1'], passed: [], source: 'SECRET_SOURCE' },
+    auction: { active: 'p1', price: 'SECRET_PRICE' },
+  };
+  const higherPriority = [
+    { status: 'finished' }, { status: 'lobby' }, { status: 'setup' },
+    { pendingTreacheryDiscard: { card: 'SECRET_CARD' } },
+    { response: { kind: 'SECRET_RESPONSE' } }, { phaseOpening: { passed: [] } },
+    { truthtrance: { question: 'SECRET_QUESTION' } },
+    { decision: { player: 'p1', card: 'SECRET_CARD' } },
+    { battle: { attacker: 'p1', defender: 'UNSEATED_SECRET' } },
+    { nexus: true },
+    { phase: 0, stormDialers: ['p1'], stormDials: {} },
+  ];
+  for (const priority of higherPriority) {
+    const value = { ...input, ...priority };
+    const withGate = project(value);
+    const withoutGate = project({ ...value, pendingNexusIxianBetrayal: null });
+    assert.deepEqual(withGate, withoutGate);
+    assert.equal(JSON.stringify(withGate).includes('SECRET'), false);
+  }
+});
+
+void test('malformed or orphan Ixian membership cannot disclose an unseated owner or fall through to the bidder', () => {
+  const input = { ...state('Membership QA', 'playing'), phase: 3, auction: { active: 'p1' } };
+  for (const membership of [
+    { required: ['UNSEATED_SECRET'], passed: [] },
+    { required: [null, 17, { id: 'SECRET_OBJECT' }], passed: [] },
+    { required: [], passed: [] },
+    { required: ['p1'], passed: ['p1'] },
+    { required: 'SECRET_REQUIRED', passed: [] },
+    { required: ['p1'], passed: 'SECRET_PASSED' },
+    {},
+  ]) {
+    const output = project({ ...input, pendingNexusIxianBetrayal: { ...membership, source: 'SECRET_SOURCE' } });
+    assert.deepEqual(output.pending.owners, []);
+    assert.equal(output.status, 'playing', 'Malformed optional membership does not hide otherwise readable public room metadata.');
+    assert.equal(JSON.stringify(output).includes('SECRET'), false);
+  }
+  const duplicate = project({ ...input, pendingNexusIxianBetrayal: { required: ['p1', 'p1', 'UNSEATED_SECRET'], passed: [] } });
+  assert.deepEqual(duplicate.pending.owners, ['p1']);
 });
 void test('admin directory filters, stable pages, literal wildcard search and nested malformed saves', async () => {
   const f = await fixture();

@@ -1,5 +1,16 @@
 # Nexus cards: common lifecycle checkpoint
 
+**Later Ixian Betrayal prototype:** the fresh local `ixian-betrayal` profile
+connects both printed alternatives to original native attempts: Bidding
+extra-card inspection/draw and Advanced Technology exchange. Native counters
+resolve first; a uniform neutral acknowledgement then precedes the native
+effect. These are explicit bounded privacy/ordering inferences, not publisher
+priority. Verification is **Partial**, with development stage **Verified** for
+the bounded native/private/recovery/CLI/phone path recorded below.
+See the [source protocol](NEXUS_CARD_RULES.md#bounded-ixian-betrayal-source-protocol--1-october-2026)
+and [current local contract](#bounded-ixian-betrayal-local-runtime--1-october-2026);
+the historical lifecycle counts below do not verify this later feature.
+
 **Later Ixian Secret Ally replacement prototype:** [NEXUS_IXIAN_REPLACEMENT_RULES.md](NEXUS_IXIAN_REPLACEMENT_RULES.md#bounded-local-runtime-contract) records the fresh local `ixian-replacement` profile: exact just-purchased normal paid/printed Karama card, discard before private deck draw, full-hand and genuinely depleted-deck same-card behavior, unchanged original payment and native sale continuation once. Harkonnen buyers, cache/Black Market/special origins and combined modules remain guarded. The neutral buyer choice is an inferred development privacy convention, not publisher timing. Its bounded native/SQLite/four-bot/CLI/phone evidence is **Partial development verified**; this historical lifecycle checkpoint does not certify full effects or enable public/module starts.
 
 The later [Emperor Secret Ally revival prototype](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md) adds exactly three additional free force returns, separate ordinary allowances, private controls and saved continuation. Its purchase alternative and full module acceptance remain pending.
@@ -57,3 +68,115 @@ The panel also shows deck/discard/held counts and the names of players still cho
 ## Remaining release gates
 
 Every effect family still needs its own original-action timing, cancellation, payment/discard/force or leader custody, hidden-information, bot, UI and recovery integration. Atreides' inspected elements are a distinct upcoming family; they are not enabled merely because the panel is displayed. Existing unresolved Homeworld, revival, No-Field and occupation interpretations remain isolated. Original-format saved games without this optional module are not retroactively dealt cards, and arbitrary saved JSON is not a substitute for a genuine setup/draw history.
+
+## Bounded Ixian Betrayal local runtime — 1 October 2026
+
+### Fresh local entry and natural card rights
+
+The `ixian-betrayal` profile admits a fresh ready two-to-six-seat Basic or
+Advanced lobby with unique factions, native Ixians and otherwise classic
+factions or Tleilaxu. It uses the actual forty-seven-card Ix Treachery Deck and
+the independent Nexus module. It excludes CHOAM, Richese, Ecaz and Moritani
+factions/decks/variants, Homeworlds, Leader Skills, Semuta, Discoveries, Tech
+Tokens, Stronghold Cards and other optional overlays. This is a private local
+development entry, not a public start, reset, saved-game retrofit or approval
+of complete Ixian/Nexus play.
+
+`initializeIxianNexusBetrayalGameForAudit` in `game/engine.ts` initializes that
+fresh boundary. `tools/prototype-room.ts` and `tools/start-prototype.ts` retain
+the exact-version and private-backup safeguards of other prototype entries.
+For an existing named fresh lobby, use the starter's `--profile ixian-betrayal
+--db PATH --room CODE --version NUMBER --out /private/new-directory` options;
+the output directory must satisfy the existing private backup contract.
+Original room IDs, seats, names, rules and setup custody are preserved.
+
+There is **no starting Nexus deal or automatic draw**. Complete genuine setup,
+then the normal qualifying Spice Blow and Nexus phase: a Nexus must have
+occurred, negotiations and earlier responses must finish, and at least one
+alliance must exist at the whole phase's close. An unallied seat may then draw
+through the normal private policy. Three actual seats are the minimum for
+one unallied receiver alongside a two-seat alliance; four are needed for two
+simultaneous unallied receivers. A two-seat profile can continue base play but
+does not fabricate an unreachable Betrayal card.
+
+### Original-source continuation and controls
+
+`game/nexus-ixian-betrayal.ts` supplies the bounded source/custody protocol;
+the original native engine callback owns the actual allow/deny continuation.
+The source distinguishes `bidding` from `technology`, binding the original
+provider, native window, turn/phase and required public responders. It does
+not replay a raw action, snapshot/undo the whole game, duplicate native draw
+algorithms or fabricate a Karama-cost card.
+
+1. Complete the original native Karama responses first. A successful printed
+   or legal Advanced BG counter takes the native denied path once without
+   opening a Nexus gate or spending Nexus.
+2. After native passes, pause before the original Bidding draw or declared
+   Technology swap/Atreides peek. Publicly possible unallied non-Ixian held-
+   Nexus seats acknowledge uniformly, regardless of their concealed face.
+   Native role and publicly impossible source/seat membership can omit an
+   impossible offer; the concealed Nexus identity cannot determine the pause.
+3. Pass retains Nexus and records that seat's acknowledgement for this event.
+   Only an actually eligible unallied rival Ixian-card holder receives private
+   Use. Use spends exactly one physical Nexus and denies the current native
+   attempt. All required passes allow it; no possible seats allow immediately.
+4. Bidding denial draws only the original normal allocated count, without
+   private Ixian inspection/return. Allowance retains the real native extra
+   draw and selection. Technology denial preserves both original card
+   locations and the declaration's used attempt; allowance swaps them.
+   Both branches resume the original normal auction/Atreides suffix once.
+
+The table uses `GameView.nexusIxianBetrayalReaction` and the preview marker.
+The reaction carries only the public event, kind and provider plus that
+viewer's own `canPass`, `hasPassed`, `canUse` and private `blocked` reason.
+`nexusIxianBetrayalPass` and `nexusIxianBetrayalUse` submit exactly the offered
+event, not client-selected source, draw count, card ID, price or provider.
+Multiple outstanding public responders have no fabricated sole owner; the
+last remaining public responder may own the acknowledgement.
+
+The controls explain the selected native alternative and distinguish Pass
+from private eligible Use. The holder's existing own-Nexus inspector shows
+their actually held face; an irrelevant-face prompt cannot grant an Ixian
+identity inspector. Neither the prompt nor the rival view reveals selected
+Ixian cards, unseen lots, inspection faces, deck order, private source or
+other seats' eligibility reasons. The bounded native-counter-first/neutral-
+acknowledgement policy is an application inference, not universal publisher
+priority, blanket Nexus immunity or an invented Karama response to Nexus.
+
+### Saved boundaries and remaining acceptance
+
+Refresh preserves the same pending source, passes and event. A completed
+event expires; it cannot reopen or replay the original declaration, counter
+cost, Nexus spend, draw, exchange or suffix. Closed history uses nonrecursive
+bounded source links, so later real card recycling does not require an old
+card to remain forever in discard or recursively copy prior signatures.
+These are consistency safeguards, not cryptographic authentication of
+arbitrarily fabricated saved JSON.
+
+The pending source blocks ordinary bids, draws, exchanges and competing card
+mutation while preserving existing response/decision/Truthtrance priority.
+A missing or orphaned source must reject, not silently allow or heal during
+a read. Independent own-seat `setAutopilot` remains available to every seat.
+Easy, Medium, Hard and Brutal use only their own projected legal Use/Pass
+choices: minimal continuation, not calibrated Nexus strategy.
+
+Verification is **Partial**, with development stage **Verified** for this bounded
+profile. The frozen parent check passed **6,315/6,315** offline tests, types and
+lint; the affected nine-file union passed **167/167**. Actual native scripts
+exercised eight allow/prevent/partial-pass cases and both original BG
+Worthless-Karama interruptions. Genuine Harkonnen exchange and public
+administrator acknowledgement ownership retain the original continuation.
+Four exact-version, backed-up CLI rooms exercised 390px human Use, wrong-face
+Pass, two-receiver partial refresh, original Ixian return and Technology
+exchange. Read-only saved-state proof retained all forty-seven Treachery and
+twelve Nexus cards, original wallets/forces and fourteen earlier QA games.
+Earlier checkpoints and image publication do not deploy this path or certify
+complete Ixian/Nexus play; wider and deployed acceptance remain open.
+
+Both alternatives concern **one current attempt**, not a whole-phase ban or
+retroactive undo of completed inspection, selection, exchange or purchase.
+Advanced Technology on Richese cache/Black Market lots remains outside the
+profile and unresolved; its special-lot decline continuation elsewhere is not
+an exchange ruling. General multiple-lot duration, competing effect priority,
+other modules/rosters, complete Ixian/Nexus games, strategy calibration,
+public release and live deployment remain separate open gates.

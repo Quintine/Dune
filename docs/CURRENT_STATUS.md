@@ -16,6 +16,34 @@ open mode gates.
 
 ## Current checkpoint and work
 
+Ixian Nexus Betrayal now connects both actual native attempts: Bidding's
+extra-card inspection and Advanced Technology. Fresh local `ixian-betrayal`
+uses native Ix/allowed classic or Tleilaxu, the physical Ix deck and Nexus only.
+Native Karama counters resolve first; uniform public possible holders then
+acknowledge before the draw/exchange. Denial/allow uses the original transition
+once with exact Nexus cost, private controls, legal bots and saved continuation.
+This bounded ordering/privacy is an inference, not universal publisher priority.
+Original BG conversion and Harkonnen exchange suspensions retain native source
+ownership; legitimate pre-offer loss of a declared Technology card retains its
+spent attempt without a swap or fabricated Nexus gate. Public administrator
+progress follows the same unfinished acknowledgements as the player table.
+Final scoped native and privacy/administrator reviews have no finding.
+Types, lint, **6,315 offline tests**, **167 affected cases**, final guide
+**10/10** and build pass. Eight actual native scenarios plus both BG
+Worthless-Karama interruptions retain original stock and continuation.
+Four privately backed-up exact-version CLI/390px rooms prove Basic Bidding
+Use, Advanced Technology Use, wrong-face Bidding Pass and two-receiver
+Technology all-pass with partial refresh. Read-only proof retains all
+forty-seven Treachery/twelve Nexus cards and fourteen earlier QA games.
+The bounded path is **Partial development verified**, not full Ixian/Nexus
+completion, a public start or deployed acceptance.
+After the final isolated worker reload, all **55 original seats in eighteen
+rooms** reauthenticate; exact saved proof preserves all four outcomes and
+fourteen earlier games. The actual phone guide shows **Partial / Development:
+Verified** at 390px without horizontal overflow. Current HTTP integration is
+**52/55**, not green: three requests returned the known Wrangler proxy 503.
+No authorization weakening, automatic write retry, reset or deployment follows.
+
 Five implementation lanes connected the missing Ixian Nexus Secret Ally
 purchased-card replacement through fresh local `ixian-replacement`: exact
 normal paid/printed-Karama source, own private controls, native discard/draw

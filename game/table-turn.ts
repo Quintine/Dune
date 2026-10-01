@@ -12,7 +12,7 @@ type TurnView = Pick<
   | 'phaseOpening'
   | 'automaticContinuationPending'
 > &
-  Partial<Pick<GameView, 'biddingEnd' | 'kullReaction' | 'richeseBetrayalReaction' | 'guildBetrayalReaction' | 'nexusIxianReplacement'>>;
+  Partial<Pick<GameView, 'biddingEnd' | 'kullReaction' | 'richeseBetrayalReaction' | 'guildBetrayalReaction' | 'nexusIxianReplacement' | 'nexusIxianBetrayalReaction'>>;
 
 /** The single current decision owner for the table banner and seat highlight.
  * Shared response windows have no single acting seat. Only public view fields
@@ -32,6 +32,9 @@ export function tableActionOwner(g: TurnView): string | null {
     return null;
   const seated = (id: string | null | undefined) =>
     g.players.some((p) => p.id === id) ? id! : null;
+  // active is the runtime's public sole unfinished acknowledgement seat,
+  // never the private card holder or native advantage provider.
+  if (g.nexusIxianBetrayalReaction) return seated(g.active);
   if (g.nexusIxianReplacement) return seated(g.nexusIxianReplacement.buyer);
   if (g.decision) return seated(g.decision.player);
   if (g.biddingEnd) {

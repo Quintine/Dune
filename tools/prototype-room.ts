@@ -13,6 +13,7 @@ import {
   initializeNexusKullGameForAudit,
   initializeGuildBetrayalGameForAudit,
   initializeIxianNexusReplacementGameForAudit,
+  initializeIxianNexusBetrayalGameForAudit,
   viewGame,
   type Game,
 } from '../game/engine';
@@ -31,6 +32,7 @@ export const PROTOTYPE_PROFILES = [
   'nexus-kull',
   'guild-betrayal',
   'ixian-replacement',
+  'ixian-betrayal',
 ] as const;
 export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
@@ -98,6 +100,11 @@ export function startPrototypeRoom(
           })
       : profile === 'ixian-replacement'
         ? initializeIxianNexusReplacementGameForAudit({
+            ...initial,
+            nexusCards: initial.nexusCards ?? { cards: null, phase: null },
+          })
+      : profile === 'ixian-betrayal'
+        ? initializeIxianNexusBetrayalGameForAudit({
             ...initial,
             nexusCards: initial.nexusCards ?? { cards: null, phase: null },
           })

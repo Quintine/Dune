@@ -39,6 +39,13 @@ export function projectAdminRoom(row: DirectoryRow): AdminRoom {
     else if (g.battle) pending = { label: 'Battle decisions', owners: [g.battle.attacker, g.battle.defender].filter(seated) };
     else if (g.nexus) pending = { label: 'Nexus negotiations', owners: [] };
     else if (g.phase === 0 && g.stormDialers?.length) pending = { label: 'Storm dials', owners: g.stormDialers.filter(id => g.stormDials?.[id] === undefined).filter(seated) };
+    else if (g.pendingNexusIxianBetrayal) {
+      const { required, passed } = g.pendingNexusIxianBetrayal;
+      const unfinished = Array.isArray(required) && Array.isArray(passed)
+        ? [...new Set(required.filter(seated).filter(id => !passed.includes(id)))]
+        : [];
+      pending = { label: 'Nexus acknowledgement', owners: unfinished.length === 1 ? unfinished : [] };
+    }
     else if (g.auction) pending = { label: 'Auction decision', owners: seated(g.auction.active) ? [g.auction.active] : [] };
     else if (seated(g.active)) pending = { label: 'Turn decision', owners: [g.active] };
     return { ...base, status: g.status, host: seated(g.host) ? g.host : null, players,

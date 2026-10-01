@@ -1,5 +1,66 @@
 # Dune implementation status
 
+## 1 October 2026 — Ixian Nexus Betrayal at original native attempts
+
+Fresh local `ixian-betrayal` integrates native Ixian Bidding inspection/draw in
+Basic/Advanced and Advanced Technology exchange before the native effect.
+It admits unique 2..6 seats with native Ixians and otherwise classic/Tleilaxu,
+the physical Ix47 Treachery Deck and Nexus alone. Natural alliance-qualified
+Nexus draw remains required; no initial deal, old-save retrofit or public
+start is enabled. Richese/special lots and wider modules remain excluded.
+
+Actual native printed/BG Karama counters resolve first. Native denial spends
+no Nexus and opens no new gate. After all native passes, every publicly possible
+unallied non-Ixian held-Nexus owner gets a face-neutral acknowledgement.
+Privately eligible Use spends the actual singleton Ixian Nexus and prevents
+only this attempt; all-pass allows the original native transition once.
+Exact source/context/canonical stock/history checks reject stale, foreign,
+orphaned or changed committed parents without mutation. Nonrecursive history
+retains bounded serialization and later physical card recycling. Bots consume
+only canonical private Use/Pass projections; strategy remains uncalibrated.
+
+Independent review repaired original BG Worthless-Karama response ownership,
+retained native Harkonnen hand-exchange suspension, and restored the existing
+Technology fizzle when a legal pre-offer exchange removes the declared card.
+The spent native attempt stays used; no swap, Nexus spend or fabricated gate
+follows. Already-open Nexus source corruption still rejects. Administrator
+progress now uses only public unfinished acknowledgements, matching the player
+table instead of the original ordinary bidder; independent autopilot controls
+remain available during reactive gates. Both final scoped reviews report no
+findings.
+
+Parent verification: types/lint and **6,315/6,315** offline tests pass; the
+affected nine-file union is **167/167**. Final reference **10/10** and build
+pass. Actual scripts exercise eight Basic/Advanced allow/prevent/partial-pass
+scenarios plus both genuine BG Worthless counter interruptions; public
+administrator ownership goes from two responders to the actual sole remainder.
+Four exact-version private-backed-up CLI rooms continue their actual undealt
+setup without redealing, then declare/respond through the real HTTP API:
+
+- `MVLVQHVB` v11: Basic Bidding human Use spends Nexus, draws only the normal
+  allocation and resumes the original auction without private Ix inspection.
+- `T2XSABT4` v11: Advanced Technology human Use retains the selected hand card
+  and unseen lot, keeps the attempt spent and resumes original inspection.
+- `QBVHGDD5` v13: wrong-face Bidding Pass retains Nexus, then human Ix returns
+  Shield from the genuine extra-card inspection and declines Technology.
+- `7NKT45P7` v14: two wrong-face receivers Pass; partial refresh preserves the
+  first acknowledgement and exposes only the sole public remaining owner.
+  All-pass performs the original physical Technology swap once.
+
+Actual 390px controls/own inspector/refresh/native suffix and final expanded
+**Partial / Development: Verified** guide are observed. Read-only saved proof
+retains all forty-seven Treachery/twelve Nexus cards, unchanged spice/force
+cost, exact native suffix/history and fourteen earlier QA games. After the
+necessary final isolated worker reload, all **55 original seats in eighteen
+rooms** reauthenticate and all saved outcomes remain unchanged.
+
+Current HTTP integration is **52/55**, not green: three admin/discussion
+requests returned the known Wrangler proxy 503. No unsafe write retry,
+authorization change, game reset or deployment workaround is introduced.
+Complete Ixian/Nexus games, wider modules, public starts, strategic calibration
+and live acceptance remain open. The user removed the five-agent minimum:
+future waves choose useful agent count for speed and integration cost.
+
 ## 1 October 2026 — exact Ixian Nexus purchased-card replacement
 
 Five implementation lanes integrated runtime, pure source/custody/history,

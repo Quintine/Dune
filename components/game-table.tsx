@@ -82,6 +82,7 @@ import { ChoamKull } from './choam-kull';
 import { NexusRicheseBetrayal } from './nexus-richese-betrayal';
 import { NexusGuildBetrayal } from './nexus-guild-betrayal';
 import { NexusIxianReplacement } from './nexus-ixian-replacement';
+import { NexusIxianBetrayal } from './nexus-ixian-betrayal';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
@@ -306,8 +307,11 @@ export function GameTable({
   );
   const reactionBusy =
     transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot;
-  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement;
-  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement;
+  const ixianBetrayalOwnsControls = !!g.nexusIxianBetrayalReaction &&
+    !g.response && !g.decision && !g.truthtrance && !g.phaseOpening &&
+    !g.automaticContinuationPending && !g.nexusCards?.waiting.length && !g.nexusTraitors?.pending;
+  const busy = reactionBusy || g.automaticContinuationPending || !!g.semutaReaction || !!g.kullReaction || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls;
+  const reactionOwnsControls = !!g.kullReaction || !!g.kullCounterEvent || !!g.richeseBetrayalReaction || !!g.guildBetrayalReaction || !!g.nexusIxianReplacement || ixianBetrayalOwnsControls;
   const canActivateKarama = (card: Card) =>
     !g.karamaBlocked && canUseAsKaramaRole(g, me, card);
   const traitorBattle = g.battle;
@@ -784,6 +788,15 @@ export function GameTable({
         !botGroundMoveAllowed(g, me, key, boardLocation(selected, sector), 0),
     );
   const act = (a: Action) => {
+    // Control of one's own seat is independent of every gameplay response.
+    if (a.type === 'setAutopilot') { void send(a); return; }
+    const ixianReaction = g.nexusIxianBetrayalReaction;
+    if (ixianReaction && ixianBetrayalOwnsControls) {
+      if (reactionBusy || g.status !== 'playing' || !ixianReaction.canPass || ixianReaction.hasPassed ||
+          (a.type !== 'nexusIxianBetrayalPass' && a.type !== 'nexusIxianBetrayalUse') ||
+          a.event !== ixianReaction.event ||
+          (a.type === 'nexusIxianBetrayalUse' && (!ixianReaction.canUse || ixianReaction.blocked))) return;
+    }
     const guildReaction = g.guildBetrayalReaction;
     if (guildReaction) {
       if (reactionBusy || g.status !== 'playing' || !guildReaction.canPass || guildReaction.hasPassed ||
@@ -1029,6 +1042,8 @@ export function GameTable({
                       faction(g.players.find((p) => p.id === id)!.faction).name,
                   )
                   .join(' + ') || 'No winner'
+              : ixianBetrayalOwnsControls
+                ? 'Native Ixian advantage acknowledgement'
               : g.guildBetrayalReaction
                 ? 'Shipment payment acknowledgement'
               : g.richeseBetrayalReaction
@@ -1093,6 +1108,15 @@ export function GameTable({
           <a href="/rules?topic=nexus-ixian-replacement#nexus-ixian-replacement">Preview rules and limits</a>
         </p>
       )}
+      {g.nexusIxianBetrayalPreview && (
+        <p className="notice" role="status">
+          Ixian Nexus Betrayal development preview · native Ixian Bidding extra-card
+          inspection/draw and Advanced Technology exchange prevention. Native Ixians,
+          permitted classic/Tleilaxu seats, physical Ixian Treachery and Nexus only.
+          Native Karama responses finish first. Not complete Ixian or certified Nexus rules.{' '}
+          <a href="/rules?topic=nexus-ixian-betrayal#nexus-ixian-betrayal">Preview rules and limits</a>
+        </p>
+      )}
       {g.status !== 'lobby' && (
         <nav className="phase-track" aria-label="Turn phases">
           {PHASES.map((p, i) => (
@@ -1125,7 +1149,7 @@ export function GameTable({
           <SpiceCardInspector card={g.spicePeek} context="Private foresight" />
         </section>
       )}
-      <SeatAutopilot game={g} act={act} busy={transportBusy || !!g.guildBetrayalReaction} />
+      <SeatAutopilot game={g} act={act} busy={transportBusy} />
       <DukeVidal game={g} />
       <EcazLoyaltyCard loyalty={g.ecazLoyalty} />
       <MoritaniTerrorSupply game={g} />
@@ -1739,6 +1763,8 @@ export function GameTable({
             <ChoamKull game={g} act={act} busy={reactionBusy} />
           ) : g.nexusIxianReplacement ? (
             <NexusIxianReplacement game={g} act={act} busy={reactionBusy} />
+          ) : ixianBetrayalOwnsControls ? (
+            <NexusIxianBetrayal game={g} act={act} busy={reactionBusy} />
           ) : g.nexusCards?.waiting.length ? (
             <p className="muted">The next phase begins when the remaining Nexus card choices are finished.</p>
           ) : g.truthtrance ? (

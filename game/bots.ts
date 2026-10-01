@@ -105,6 +105,7 @@ import { botSemutaActions } from './bot-semuta';
 import { botChoamKullActions, botChoamKullCounterActions } from './bot-choam-kull';
 import { botNexusRicheseBetrayalActions } from './bot-nexus-richese-betrayal';
 import { botNexusGuildBetrayalActions } from './bot-nexus-guild-betrayal';
+import { botNexusIxianBetrayalActions } from './bot-nexus-ixian-betrayal';
 import { validateCohortSelection, type OrnithopterMode } from './ornithopter';
 import { fighterCount, isAdvisor } from './advisors';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, type CombatForces } from './combat';
@@ -3831,6 +3832,13 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  if (g.nexusIxianBetrayalReaction) {
+    if (g.status !== 'playing' || g.roomControl?.paused || g.roomControl?.closed ||
+        g.automaticContinuationPending) return [];
+    // Original native counters and existing private decisions retain priority.
+    if (g.response || g.truthtrance || g.decision) return policyActions(g);
+    return botNexusIxianBetrayalActions(g);
+  }
   if (g.guildBetrayalReaction) return botNexusGuildBetrayalActions(g);
   if (g.richeseBetrayalReaction) return botNexusRicheseBetrayalActions(g);
   if (g.kullReaction) return botChoamKullActions(g);

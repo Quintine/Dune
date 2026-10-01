@@ -1,6 +1,6 @@
 # Nexus cards: primary-source contract
 
-Source audit, 10 September 2026. This document establishes the printed component inventory and implementation contract; it does not claim runtime support or lift expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
+Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
 ## Authority and acquisition
 
@@ -52,6 +52,97 @@ Every row below is a semantic transcription of the photographed face, not a repr
 | **Moritani** | Return a board Terror token to Moritani without revealing it. | When placing a Terror token, permit any Arrakis territory, including an existing Terror location. | After losing a battle with a winner, retain one played Treachery Card that could have been retained after winning. |
 
 Source for the entire table: [the twelve original printed components](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani). All card identities appear once; the photograph is arranged Moritani/Tleilaxu/Richese/Ixians, Atreides/Bene Gesserit/CHOAM/Emperor, Guild/Ecaz/Harkonnen/Fremen.
+
+## Bounded Ixian Betrayal source protocol — 1 October 2026
+
+**Both printed alternatives are connected in the fresh local `ixian-betrayal`
+prototype:** prevent the native Ixian Bidding advantage, or prevent the native
+Advanced Technology advantage. This is an original-attempt interception, not
+just an inspectable catalog entry. Verification is **Partial**, with development
+stage **Verified** for genuine native, private, recovery, CLI and phone proof;
+it does not certify complete Ixian/Nexus play or deployment.
+The [runtime contract](NEXUS_CARD_RUNTIME.md#bounded-ixian-betrayal-local-runtime--1-october-2026)
+and internal `nexus-ixian-betrayal` topic describe the usable controls.
+
+### Source order and authority
+
+- **Face:** the [photographed publisher-authored Ixian Nexus face](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani)
+  grants either prevention alternative and expressly says one card cannot
+  prevent both. The photograph, not uploader commentary, supplies this panel.
+- **E3:** [Ecaz & Moritani rules, printed pp.11,16](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=11)
+  supply the separate physical Nexus inventory, unallied custody, opposing
+  native faction mode, discard-on-use and qualifying closing-phase draw.
+- **E1:** [Ixians & Tleilaxu rules, printed pp.8–9,12](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=8)
+  supply native auction preparation, the extra inspection card and return,
+  Advanced Technology before bidding and Atreides inspection, and native
+  cancellation. The [existing auction audit](RICHESE_AUCTION_RULES.md#evidence-and-limits)
+  records the retrieved publisher text and its limits.
+- **FAQ:** [November 2020 FAQ, printed pp.6–7](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=6)
+  distinguishes cancelable native Ixian advantages from other acquisition
+  effects. **E2**, [CHOAM & Richese rules, printed pp.10–11](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=10),
+  does not settle Technology's substituted cache/Black Market custody;
+  its Ixian ally replacement answer is not a Technology prohibition.
+
+The adopted user-owned `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf` remains
+the source for relevant Advanced core defaults, not this Nexus face. It supplies
+no Ixian Nexus alternative, duration or response-priority ruling and is not
+republished. Read the face with the native attempt's own source, rather than
+borrowing another Nexus family's ban, response or cost.
+
+### One current native attempt, one physical cost
+
+Use requires the actual unallied non-Ixian holder of the singleton Ixian Nexus
+while another seat is native Ixians. It discards that Nexus exactly once,
+spending no Treachery Card, Karama, activation spice or force. Pass retains the
+Nexus. The source fixes which alternative applies: the holder cannot choose
+another attempt, draw count, hand card, lot, price or provider.
+
+For **Bidding**, prevention takes the original native denied path before any
+auction draw: draw exactly the normal allocated pool count, without the extra
+inspection card, Ixian private inspection or return selector. All-pass takes
+the original allowed path, including the real extra draw, private return and
+normal auction continuation. Physical deck depletion remains the native
+allocation's responsibility; this adapter does not manufacture cards.
+
+For **Advanced Technology**, prevention occurs after the actual accepted native
+declaration but before its swap or Atreides peek. Keep the selected Ixian hand
+card and unseen lot in their original custody, preserve the declaration's
+already-spent once-per-turn attempt, then resume the normal Atreides/auction
+continuation once. All-pass performs the real declared exchange and its normal
+continuation once. Declining the native Technology offer before declaration
+still saves that option. Basic offers only the Bidding alternative.
+
+Neither alternative undoes completed draws, selections, exchanges, peeks or
+purchases, revokes other Ixian powers, or establishes a whole-phase ban.
+Later legally available native attempts can create new events, including after
+later physical Nexus recycling. General duration over other multiple-lot or
+combined-module situations remains unresolved outside this current-attempt
+profile; the word “advantage” is not an entire-phase ruling.
+
+### Native counters first, then neutral acknowledgement
+
+Resolve the existing native Karama window first, including its legal Advanced
+Bene Gesserit substitution protocol. A successful native counter completes
+the native denied transition once, with **no Nexus gate or Nexus cost**.
+Only after all native counter passes, before draw/exchange/Atreides peek,
+do publicly possible unallied non-Ixian seats with public held-Nexus presence
+receive a uniform neutral acknowledgement. Irrelevant concealed faces also
+receive Pass; only the canonical eligible owner's private view permits Use.
+No publicly possible seat means immediate native allowance. All required
+passes allow the original attempt once; accepted Use denies it once.
+
+**Native-counter-first and uniform acknowledgement are explicit bounded
+privacy/ordering inferences for this prototype, not publisher-prescribed
+universal priority or resolution of other pending stacks.** No additional
+Karama counter to the direct Nexus prevention is invented, and no blanket
+Nexus-immunity rule follows. The native counter's cost and the independent
+physical Nexus cost remain distinct.
+
+The public event names only the original publicly announced kind and native
+provider. It reveals no selected hand card, unseen lot, extra inspection
+faces, deck order, private source receipt, rival Nexus identity or private
+eligibility reason. Existing inspection of one's own actually held Nexus
+remains authorized; a neutral prompt grants no new inspection entitlement.
 
 ## Bounded CHOAM Betrayal runtime
 
