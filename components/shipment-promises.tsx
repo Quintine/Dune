@@ -1,6 +1,8 @@
 'use client';
 import type { Action, GameView } from '@/game/engine';
-import { liveShipmentPromises, shipmentClaimText } from '@/game/shipment-promises';
+import { liveShipmentPromises, matchesShipment, shipmentClaimText } from '@/game/shipment-promises';
+import { truthQuestionText } from '@/game/truthtrance';
+import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import { territory } from '@/game/board';
 import { reserveShipmentCost, guildShipmentCost } from '@/game/shipment-price';
 import { Button } from './ui/button';
@@ -63,16 +65,30 @@ export function ShipmentPromises({
       <ul>
         {promises.map((p, index) => (
           <li key={index}>
-            You answered {p.answer ? 'Yes' : 'No'} to: Will you{' '}
-            {shipmentClaimText(p)} this turn?
+            You answered {p.answer ? 'Yes' : 'No'} to:{' '}
+            {p.mixed
+              ? truthQuestionText(
+                  { kind: 'mixedShipment', target: p.player, mixed: p.mixed },
+                  id => id === CHEAP_HERO_TRAITOR
+                    ? 'Cheap Hero / Heroine'
+                    : g.allLeaders.find(leader => leader.id === id)?.name ?? id,
+                )
+              : `Will you ${shipmentClaimText(p)} this turn?`}
           </li>
         ))}
       </ul>
-      {promises.some((p) => p.answer) && (
+      {promises.some((p) => matchesShipment(p, null) !== p.answer) ? (
         <p>
           Complete a qualifying shipment before ground movement or finishing
-          your turn. You can choose any legal count, sector and funding that
-          honor your answers.
+          your turn: skipping would not honor the whole claim you answered.
+          You can choose any legal count, sector and funding that honor all
+          your answers. Current facts remain fixed at the time of your answer.
+        </p>
+      ) : (
+        <p>
+          Skipping shipment honors your whole claims. If you ship, choose a
+          legal shipment that honors every answer. Current facts are historical
+          and create no later card, spice or force holding obligation.
         </p>
       )}
       {next && (

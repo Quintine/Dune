@@ -7,6 +7,30 @@ export function invalidShipmentClause(claim: ShipmentClauseInput) {
   return !Number.isSafeInteger(claim.minimum) || claim.minimum < 1 || claim.minimum > 20;
 }
 
+/** Destination and physical minimum shared by flat and nested question builders. */
+export function ShipmentClauseFields({ id, value, onChange }: {
+  id: string;
+  value: ShipmentClauseInput;
+  onChange: (claim: ShipmentClauseInput) => void;
+}) {
+  return <>
+    <label htmlFor={`${id}-territory`}>This-turn shipment destination</label>
+    <select id={`${id}-territory`} value={value.territory}
+      onChange={event => onChange({ ...value, territory: event.target.value })}>
+      {TERRITORIES.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+    </select>
+    <label htmlFor={`${id}-minimum`}>Minimum physical forces from reserves</label>
+    <Input id={`${id}-minimum`} type="number" min={1} max={20} step={1} required
+      value={Number.isNaN(value.minimum) ? '' : value.minimum}
+      aria-invalid={invalidShipmentClause(value)} aria-describedby={`${id}-help`}
+      onChange={event => onChange({ ...value, minimum: event.currentTarget.valueAsNumber })} />
+    <p className="fine" id={`${id}-help`}>
+      A whole minimum of one to twenty physical forces in the same shipment from reserves this turn.
+      Skipping makes this shipment condition false.
+    </p>
+  </>;
+}
+
 export function ShipmentClaimFields({ id, clauses, join, onClauses, onJoin }: {
   id: string;
   clauses: ShipmentClauseInput[];
@@ -25,15 +49,7 @@ export function ShipmentClaimFields({ id, clauses, join, onClauses, onJoin }: {
       const update = (next: ShipmentClauseInput) => onClauses(clauses.map((previous, i) => i === index ? next : previous));
       return <fieldset key={index} className="grid gap-2">
         <legend>Shipment condition {index + 1}</legend>
-        <label htmlFor={`${id}-territory-${index}`}>Shipment destination</label>
-        <select id={`${id}-territory-${index}`} value={claim.territory} onChange={event => update({ ...claim, territory: event.target.value })}>
-          {TERRITORIES.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-        </select>
-        <label htmlFor={`${id}-minimum-${index}`}>Minimum physical forces</label>
-        <Input id={`${id}-minimum-${index}`} type="number" min={1} max={20} step={1} required
-          value={Number.isNaN(claim.minimum) ? '' : claim.minimum}
-          aria-invalid={invalidShipmentClause(claim)} aria-describedby={`${id}-help`}
-          onChange={event => update({ ...claim, minimum: event.currentTarget.valueAsNumber })} />
+        <ShipmentClauseFields id={`${id}-${index}`} value={claim} onChange={update} />
       </fieldset>;
     })}
     <p className="fine" id={`${id}-help`}>

@@ -154,10 +154,10 @@ void test('every canonical Ecaz face receives its full original gameplay guide a
       assert.equal(serialized.includes(note), false);
     assert.equal(serialized.includes('sourceRules'), false);
     assert.equal(serialized.includes('not-implemented'), false);
-    assert.deepEqual(presentation.topics.map((topic) => topic.id), [card.effect === 'harassWithdraw' ? 'card-harass-withdraw' : 'card-recruits']);
+    assert.deepEqual(presentation.topics.map((topic) => topic.id), [card.effect === 'harassWithdraw' ? 'card-harass-withdraw' : card.effect === 'reinforcements' ? 'card-reinforcements' : 'card-recruits']);
     assert.match(presentation.availability ?? '', card.effect === 'recruits'
       ? /development controls during Revival/ : card.effect === 'harassWithdraw'
-        ? /development controls in either battle-card slot/ : /battle effect is still being implemented/);
+        ? /development controls in either battle-card slot/ : /development controls in either battle-card slot/);
   }
 });
 

@@ -2687,9 +2687,9 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Declare Truthtrance, select the active player and choose Bind a shipment from reserves. Choose a printed destination and minimum of one to twenty forces, or combine two shipment conditions using AND or OR. Each describes the same shipment. Automatic enforcement supports base Basic games and base Advanced games without Guild or optional modules, before that player ships and after pending decisions finish.',
       'Yes requires the complete statement to match while possible: all AND conditions or at least one OR condition. No requires the whole statement to be false: at least one AND condition false, or every OR condition false. A smaller count, different destination, transport of forces already on the board or no shipment may satisfy No. Forces already in the destination and ground movement do not satisfy the question. Fremen reinforcements and Guild transport from southern reserves do count.',
       'The target privately sees feasible answers based on their own resources and earlier promises. Available Ghola revival, Karama discounts, incoming pledged aid and reclaiming their own unused pledge are included. Other players’ unplayed cards and future voluntary gifts are not assumed.',
-      'Accepted answers are public and constrain the actual shipment, including any earlier shipment promises. Yes leaves count, sector and legal funding choices open. The shipper cannot move first, finish movement or voluntarily spend away their last way to comply. A completed opposing effect that makes the answer impossible releases it with a public notice.',
-      'Your shipment promises remain visible during Movement. Open Suggested next step for a private executable preparation or funded shipment example. It is optional guidance; any legal action sequence honoring the answer is allowed. Shipment fulfillment survives later movement or losses because it records what was shipped.',
-      'All four AI profiles answer supported questions and retain a complete legal preparation route when their normal strategic shortlist misses the required count or destination. Earlier-phase questions, Advanced games with Guild or optional modules, expansion shipment promises, combined shipment/fact logic and arbitrary freeform promises remain unfinished.',
+      'Accepted whole answers are public and constrain the event together with earlier promises. When an answer requires a shipment, honor it before ground movement or finishing and do not voluntarily spend away the last legal completion. A completed opposing effect that makes compliance impossible releases it publicly.',
+      'Choose Mixed current fact and shipment for nested AND/OR groups of supported current facts and this-turn reserve shipments. Current facts freeze privately when answered: Yes OR a true current fact can allow skipping even after later losing that holding; No AND a false current fact can allow shipping even after that fact changes. Unknown is not false. Only the whole question and answer are public.',
+      'Your own promises show the original grouped question, not private compiled clause results. Optional private next-step guidance includes preparation, funding or shipment. All four legal policies use server-feasible choices and the same complete route. Earlier phases, Advanced Guild/other modules, expansion shipment modes, other future actions and arbitrary prose enforcement remain unfinished.',
     ],
     example:
       'Yes to at least six forces to Carthag and No to at least eight there leaves a shipment of six or seven. Moving existing forces into Carthag does not fulfill either shipment event.',
@@ -2699,13 +2699,13 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Authoritative base Basic and no-Guild Advanced reserve-origin commitments, shipment-only AND/OR, joint feasibility with owned preparation across all destination branches, actual shipment completion, voluntary-spend guards and opposing release. Broader timing and expansion routes remain unfinished.',
+          'Authoritative supported reserve-origin commitments, shipment and mixed current-fact AND/OR, frozen private clause values, joint legal preparation, actual shipment/skip, voluntary-spend guards and opposing release. Broader timing and expansion routes remain unfinished.',
       },
       {
         area: 'Player controls',
         status: 'Implemented',
         detail:
-          'Single or AND/OR destination/count questions, target-private feasible answers, visible accepted promises and private next-step guidance with costs.',
+          'Single shipment questions and complete bounded nested mixed authoring, grouped public preview, target-private feasible answers, original-question promise text and optional private next steps.',
       },
       {
         area: 'AI',
@@ -2732,6 +2732,8 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/compound-shipment-bots.test.ts',
           'tests/compound-shipment-controls.test.tsx',
           'tests/compound-shipment-recovery.test.ts',
+          'tests/mixed-shipment-question.test.ts',
+          'tests/mixed-shipment-engine.test.ts',
         ],
       },
     ],

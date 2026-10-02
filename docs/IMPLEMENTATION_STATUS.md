@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 3 October 2026 — mixed current-fact/shipment Truthtrance
+
+Two bounded owners supplied the public mixed tree/compiler/matcher (including
+internal frozen-constant storage) and complete nested AND/OR authoring controls.
+One integration owner owns game/truthtrance.ts, engine projection/promise
+receipt, bots, the shared table guide and this checkpoint.
+
+Current facts are evaluated once at the definite answer and stored privately as
+three-valued constants; later legal changes cannot rewrite them, and unknown is
+never collapsed to false. Future leaves still describe one eventual reserve
+shipment or its absence under the existing FAQ whole-question truth. Multiple
+ordinary and mixed promises constrain that same event together. Public
+projection filters mixed promises to their respondent and keeps only the
+original grouped question and whole answer in history.
+
+The first frozen run exposed three real integration defects, each fixed before
+verification: the discard-continuation receipt still required a legacy shipment
+shape; the pre-existing `promise.answer` shipment shortcut treated a satisfied
+mixed promise as if it must ship; and two workspace type errors
+(target-shipment projection and test literal narrowing). Ordinary
+shipment-only promises retain their original behavior.
+
+Types/lint, the affected truth/ship/discard batch88/88, mixed/reference23/23 and
+build pass. Twelve actual programs cover OR-true-skip, AND-false-ship,
+AND-true-required, OR-false-ship, a nested branch after spending, all four legal
+policies and a second joint pure+mixed promise. Fixtures use genuine base setup
+and conserved rule-unit movement positions; no staged phase or promise was
+fabricated.
+
+Human390px **4PVKRRWB v10** authored the actual "hold at least10 spice OR ship4
+to Arrakeen" question, answered Yes, spent all20 spice as a public bribe,
+skipped shipment and fulfilled the promise while the public answer stayed Yes;
+refresh retained it. Earlier phases, Advanced Guild/other modules, expansion
+shipment modes, other future actions and arbitrary prose enforcement remain
+unfinished. No new assurance campaign, public start or old-game retrofit.
+
+The full offline suite still reports one pre-existing failure unrelated to this
+wave: the `combined` Advanced CLI sample stalls at phase6 when a bot offers an
+Advanced combined-Occupy battle against a Richese/No-Field seat that the engine
+correctly rejects. The same 2353-action failure reproduces at the prior pushed
+checkpoint 0ceb28b, so this wave neither introduced nor hid it. It remains an
+open sample/bot-offer defect for a later combined-Occupy slice.
+
 ## 2 October 2026 — native Banker income and Ixian Nexus replacement
 
 Two independent bounded owners supplied native original setup/payment fixtures

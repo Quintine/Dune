@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 2 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 3 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -15,6 +15,24 @@ open mode gates.
 
 
 ## Current checkpoint and work
+
+**Mixed current-fact/shipment Truthtrance — bounded Development Verified:**
+structured questions now combine supported current facts with this-turn reserve
+shipments in bounded nested AND/OR trees. Current facts freeze privately at a
+definite answer; later legal card/force/spice changes cannot rewrite them, and
+unknown is never treated as false. One eventual shipment or skip honors every
+separate promise. Default public parsers reject caller-supplied frozen answers;
+only the respondent receives the compiled fixed answers.
+Two bounded owners supplied the pure expression logic and nested authoring
+controls; one integration owner wired the question, private projection,
+promise receipt, public redaction, policies and existing continuation.
+Types/lint, affected88/88, mixed/reference23/23 and build pass. Twelve actual
+program cases cover truth/skip/shipment/changed-spice, all four policies and a
+second joint promise. Human390px **4PVKRRWB v10** authored and answered the
+actual OR question, then spent all20 spice as a bribe, skipped shipment and
+fulfilled the promise while its public answer stayed Yes. Earlier phases, other
+future actions and existing module gates remain unfinished. See
+[mixed compounds](COMPOUND_SHIPMENT_PROMISES.md#mixed-current-facts-and-future-shipment--3-october-2026).
 
 **Requested priority — 2 October 2026:** throughput improvements are verified
 and rule content has resumed. Implement all remaining rules first; comprehensive

@@ -4523,7 +4523,7 @@ export function GameTable({
                                           g.shipmentPromises,
                                           me.id,
                                           g.turn,
-                                        ).some((promise) => promise.answer)
+                                        ).some(promise => matchesShipment(promise,null) !== promise.answer)
                                       ? 'Complete the promised shipment before moving.'
                                       : null
                           }
@@ -4589,7 +4589,7 @@ export function GameTable({
                                     g.shipmentPromises,
                                     me.id,
                                     g.turn,
-                                  ).some((promise) => promise.answer)
+                                    ).some(promise => matchesShipment(promise,null) !== promise.answer)
                                 ? 'Complete the promised shipment before moving.'
                                 : null
                       }

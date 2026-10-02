@@ -1168,6 +1168,11 @@ function policyActions(g: GameView): Action[] {
       return w.passed.includes(me.id) ? [] : [{ type: 'truthPass' }];
     if (w.stage === 'answer') {
       if (w.question?.target !== me.id) return [];
+      if (w.question.kind === 'mixedShipment') {
+        const choices = g.truthShipmentAnswers ?? [];
+        const answer = choices.find(choice => choice === 'yes' || choice === 'no') ?? choices[0];
+        return answer ? [{type:'truthAnswer',answer}] : [];
+      }
       if (w.question.kind === 'shipment') {
         const question = w.question;
         const choices = g.truthShipmentAnswers ?? [];
@@ -4070,7 +4075,8 @@ export function botActions(g: GameView): Action[] {
     );
   });
   const witness = g.shipmentCompletion?.actions[0];
-  if (promises.some((promise) => promise.answer) && witness) {
+  const mustShip = promises.some(promise => matchesShipment(promise,null) !== promise.answer);
+  if (mustShip && witness) {
     // A completion is a sequence, not interchangeable alternatives. Reproject
     // after its first preparation before offering the later funded shipment.
     return [
@@ -4080,7 +4086,7 @@ export function botActions(g: GameView): Action[] {
       ),
     ];
   }
-  return filtered.length || promises.some((promise) => promise.answer)
+  return filtered.length || mustShip
     ? filtered
     : [{ type: 'endMovement' }];
 }

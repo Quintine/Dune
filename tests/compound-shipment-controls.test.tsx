@@ -29,10 +29,8 @@ void test('compound shipment fields distinguish one shipment from two and retain
     assert.equal((html.match(/<fieldset/g) ?? []).length, 2);
     assert.match(html, /All conditions describe the same shipment/);
     assert.match(html, /A No answer requires the whole statement to be false/);
-    for (const index of [0, 1]) {
-      assert.match(html, new RegExp(`for="shipment-test-territory-${index}"`));
-      assert.match(html, new RegExp(`for="shipment-test-minimum-${index}"`));
-    }
+    assert.equal((html.match(/This-turn shipment destination/g) ?? []).length, 2);
+    assert.equal((html.match(/Minimum physical forces from reserves/g) ?? []).length, 2);
     const question: TruthQuestion = { kind: 'shipment', target: 'p', claim: { op: join, terms: clauses } };
     const text = truthQuestionText(question, id => id);
     assert.match(text, /Carthag/);
@@ -44,7 +42,7 @@ void test('compound shipment fields distinguish one shipment from two and retain
 void test('empty, fractional and out-of-range compound counts stay invalid rather than coercing to a different promise', () => {
   for (const minimum of [NaN, 0, 2.5, 21]) {
     assert.equal(invalidShipmentClause({ territory: 'arrakeen', minimum }), true);
-    assert.match(markup('or', minimum), /id="shipment-test-minimum-1"[^>]*aria-invalid="true"/);
+    assert.equal((markup('or', minimum).match(/aria-invalid="true"/g) ?? []).length, 1);
   }
   for (const minimum of [1, 20]) assert.equal(invalidShipmentClause({ territory: 'arrakeen', minimum }), false);
 });
@@ -57,8 +55,8 @@ void test('the real answer panel explains whole-expression No and offers answers
   const own = render('p');
   assert.match(own, /Answer Yes/);
   assert.match(own, /Answer No/);
-  assert.match(own, /for AND, at least one condition must be false/);
-  assert.match(own, /every condition must be false/);
+  assert.match(own, /AND requires all conditions; OR requires at least one/);
+  assert.match(own, /No makes the whole claim false/);
   assert.match(render('p', true), /<button[^>]*disabled=""[^>]*>Answer Yes/);
   for (const other of ['a', 'o']) {
     assert.doesNotMatch(render(other), />Answer (Yes|No)</);

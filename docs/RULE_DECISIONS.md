@@ -192,11 +192,13 @@ See [the cutover and Advanced sequence](MORITANI_ASSASSINATE_LEADERS.md#authorit
 | Kull Wahad preview timing | User selected a **distinct eligible counter** while the interrupted physical card stays reserved, and BG Worthless interception **before conversion/discard**. Pending declaration is not a ban; only success stamps turn/phase and retains original/special once-use. Decline or prevention resumes the original once. Old `kull` stays printed-only; fresh `nexus-kull` admits native CHOAM plus classic Basic/Advanced seats, CHOAM/Ix Treachery and Nexus alone, without physical Sandtrout. Nexus Use needs actual unallied CHOAM Nexus and canonical eligible own fuel: accepted declaration spends Nexus even if prevented, fuel stays held until success. Use requires source/event/card, with no old-source action shim or proactive Kull. Verified prior printed counter saves migrate only their selection binding; no new-choice retrofit. Reservations, promises and remaining winning-payment coverage constrain fuel/counters; ordinary retained Karama payment is not a canceled Cunning effect. Priority/custody/overbid are user policy; neutral timing/spend conventions are application policy. Bounded checks/CLI/runtime/phone cases pass; broader verification is Partial and no full/public/deployed gate opens. | [Selected preview policy](CHOAM_KULL_SOURCE_UPDATE.md#user-selected-preview-timing--30-september-2026), [source/cost boundary](NEXUS_CHOAM_RULES.md#kull-source-cost-and-action-boundary), [runtime and remaining limits](CHOAM_KULL_DESIGN.md), [new evidence](NEXUS_CHOAM_RUNTIME.md#five-part-status-for-the-new-interaction) |
 | Semuta full-hand exchange | User selected **Allow exchange**: acquisition followed by Semuta disposal is an atomic net-zero hand exchange at the faction limit. Existing incoming reservations still consume capacity; this does not permit an already overfull hand or settle Box/Richese purchase timing. | [Selected capacity policy](SEMUTA_SOURCE_UPDATE_20260907.md#user-selected-full-hand-exchange--30-september-2026) |
 
-Shipment-only AND/OR now follows the FAQ's whole-question truth: Yes to AND
-requires all conditions, Yes to OR requires one, and No negates the whole
-expression. One eventual shipment or skip is evaluated against every separate
-promise. See [compound shipment promises](COMPOUND_SHIPMENT_PROMISES.md); mixed
-present/future predicates and existing timing/module gates remain unfinished.
+Shipment and mixed current-fact/shipment AND/OR follow the FAQ's whole-question
+truth: Yes to AND requires all, Yes to OR requires one, and No negates the whole.
+Current facts freeze privately at definite answer; later legal holdings changes
+do not rewrite them or add a retention obligation. One eventual shipment or
+skip must honor all separate promises. Unknown is not false. See
+[mixed compounds](COMPOUND_SHIPMENT_PROMISES.md#mixed-current-facts-and-future-shipment--3-october-2026);
+earlier timing, other future actions and existing module gates remain unfinished.
 
 Current Truthtrance force facts count physical counters in reserves, the Tanks
 or one exact live board location. Totals include elites; normal counts subtract

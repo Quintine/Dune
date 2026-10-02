@@ -7,6 +7,12 @@ import {
   ShipmentClaimError,
 } from './shipment-promises';
 import {
+  parseMixedShipmentExpression,
+  compileMixedShipmentExpression,
+  mixedShipmentExpressionText,
+  type MixedShipmentExpression,
+} from './mixed-shipment-question';
+import {
   parseCardCountFact,
   cardCountFactMatches,
   cardCountFactText,
@@ -44,6 +50,7 @@ export type TruthFact =
   | { kind: 'and' | 'or'; terms: TruthFact[] };
 export type TruthQuestion =
   | ({ kind: 'shipment'; target: string } & ShipmentClaim)
+  | { kind: 'mixedShipment'; target: string; mixed: MixedShipmentExpression }
   | { kind: 'battlePlan'; target: string; territory: string; claim: PlanClaim }
   | { kind: 'fact'; target: string; fact: TruthFact }
   | {
@@ -180,7 +187,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       g.players.some((p) => p.id === v.target),
     'Ask one other player.',
   );
-  if (v.kind === 'shipment') {
+  if (v.kind === 'shipment' || v.kind === 'mixedShipment') {
     check(
       shipmentPromiseModeSupported(g) &&
         g.status === 'playing' &&
@@ -197,6 +204,13 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       'Structured shipment promises currently support base Basic games and base Advanced games without Guild or optional modules, during the active unused shipment. Finish any pending decision first.',
     );
     try {
+      if (v.kind === 'mixedShipment') {
+        check(Object.keys(v).sort().join(',') === 'kind,mixed,target',
+          'Supply only the mixed question and its respondent.');
+        const respondent = g.players.find(p => p.id === v.target)!;
+        return {kind:'mixedShipment',target:v.target,mixed:parseMixedShipmentExpression(v.mixed,
+          fact => parseFact(g,fact,respondent))};
+      }
       return { kind: 'shipment', target: v.target, ...parseShipmentClaim(v) };
     } catch (error) {
       if (error instanceof ShipmentClaimError)
@@ -288,7 +302,7 @@ export function validateSavedTruthtrance(g: Game) {
       'The saved fact question no longer matches its recorded form.');
     return;
   }
-  if (window?.question?.kind !== 'shipment') return;
+  if (window?.question?.kind !== 'shipment' && window?.question?.kind !== 'mixedShipment') return;
   check(
     (window.stage === 'answer' || window.stage === 'unknown') &&
       Array.isArray(window.queue) &&
@@ -364,6 +378,17 @@ export function truthFactAnswer(
       ? 'unknown'
       : 'no';
 }
+/** Resolve current clauses only for the respondent's private feasibility or definite answer. */
+export function truthShipmentClaim(
+  g: Game,
+  p: Player,
+  question: Extract<TruthQuestion,{kind:'shipment'|'mixedShipment'}>,
+): ShipmentClaim {
+  return question.kind === 'shipment' ? question : {
+    claim: compileMixedShipmentExpression(question.mixed,
+      fact => truthFactAnswer(p,fact,truthKnowledgeOf(g,p))),
+  };
+}
 export function truthQuestionText(
   q: TruthQuestion,
   leaderName: (id: string) => string,
@@ -384,7 +409,8 @@ export function truthQuestionText(
       return `you currently hold ${f.compare === 'eq' ? 'exactly' : f.compare === 'gte' ? 'at least' : 'at most'} ${f.value} spice`;
     return `(${f.terms.map(clause).join(f.kind === 'and' ? ' AND ' : ' OR ')})`;
   };
-  return `Is it true that ${clause(q.fact)}?`;
+  return `Is it true that ${q.kind === 'mixedShipment'
+    ? mixedShipmentExpressionText(q.mixed,clause) : clause(q.fact)}?`;
 }
 /** The interrupt overlays existing state. No battle/auction/response objects are moved or reconstructed. */
 export function resolveTruthAction(
@@ -405,6 +431,7 @@ export function resolveTruthAction(
       claim: ShipmentClaim,
       answer: boolean,
       asker: string,
+      mixed?: MixedShipmentExpression,
     ) => void;
     battleAnswers: (g: Game, p: Player, claim: PlanClaim) => TruthAnswer[];
     bindBattle: (
@@ -554,13 +581,15 @@ export function resolveTruthAction(
             a.answer === truthFactAnswer(p, q.fact, truthKnowledgeOf(g, p)),
             'Answer this fact question truthfully.',
           );
-        if (q.kind === 'shipment') {
+        if (q.kind === 'shipment' || q.kind === 'mixedShipment') {
+          const claim = truthShipmentClaim(g,p,q);
           check(
-            effects.shipmentAnswers(g, p, q).includes(a.answer),
+            effects.shipmentAnswers(g, p, claim).includes(a.answer),
             'Choose an answer consistent with your available shipment and earlier promises.',
           );
           if (a.answer !== 'unknown')
-            effects.bindShipment(g, p, q, a.answer === 'yes', current.player);
+            effects.bindShipment(g, p, claim, a.answer === 'yes', current.player,
+              q.kind === 'mixedShipment' ? q.mixed : undefined);
         }
         if (q.kind === 'battlePlan') {
           check(

@@ -4,13 +4,64 @@
 with shipment-only AND/OR questions. Public mode and publication gates remain
 unchanged.
 
+## Mixed current facts and future shipment — 3 October 2026
+
+The structured builder now supports bounded nested AND/OR trees containing
+current named-card, card-count, inventory, traitor, personal-spice, physical-force
+or knowledge facts alongside reserve-shipment conditions. Both kinds must be
+present; the existing software limit is sixteen logical leaves and four grouped
+levels, not a printed limit on game questions. Current fact legality comes from
+the existing fact parser; reserve shipment uses the original destination/count
+quote and the same active-unused-shipment/mode boundary.
+
+Evaluate current facts when a definite answer is given and freeze their
+three-valued results privately. Later legal card/force/spice changes cannot
+rewrite the past statement. Future leaves still describe one eventual reserve
+shipment or its absence, and the whole expression must match the public answer.
+For example:
+
+- **Yes** to “I currently hold at least10 spice OR I will ship4 to Arrakeen”
+  with20 spice permits later spending and no shipment.
+- **No** to “I currently hold at most10 spice AND I will ship4 to Arrakeen”
+  with20 spice permits shipment even if its cost later reduces the wallet to5.
+- **Yes AND** with a true current clause still requires the future shipment.
+  **No OR** with a true current clause is impossible.
+
+Unknown current information stays unknown: it is not converted to false for a
+No promise. A definite answer is available only when an actually legal future
+outcome makes the whole statement definite. Multiple ordinary and mixed
+promises constrain that same event together. Voluntary spending cannot remove
+the last legal completion, but need not preserve a current holding that was not
+itself a future promise.
+
+Only the respondent receives a mixed promise's compiled fixed answers and
+private feasible choices. Public question/history text keeps the original
+grouping and whole answer, never which current clause matched. Shared shipment,
+skip, preparation, release, controls and minimal legal policies use the same
+frozen expression. Default public parsers reject caller-supplied constants.
+
+The existing FAQ whole-question semantics and historical/current distinction
+support this composition; it is not a new expansion or timing ruling. Earlier
+phases, other future actions, expansion shipment modes and arbitrary prose
+enforcement remain outside the bounded implementation.
+
+Twelve actual programs cover mixed truth/skip/shipment/changed-spice, all four
+legal policies and a second joint pure+mixed promise. The affected
+truth/ship/discard rule batch passes88/88; mixed/reference23/23, types/lint and
+build pass. Human390px **4PVKRRWB v10** authored and answered the actual OR
+claim, then spent all20 spice as a bribe, skipped shipment and fulfilled the
+promise while the public answer stayed Yes. This is bounded local evidence, not
+complete Truthtrance, module or deployed acceptance.
+
+
 ## Meaning and authority
 
 The [GF9 November 2020 FAQ, printed page 8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf)
 permits AND/OR questions and binds definite answers while compliance remains
 possible. Each condition here describes the same eventual reserve shipment in
 the active opportunity, using a destination and minimum physical force count.
-This does not promise two shipments or combine present facts with future actions.
+The original shipment-only form does not promise two shipments; the later
+mixed form above adds current facts without turning them into future holdings.
 
 AND is true only if every condition matches. OR is true if any condition matches.
 A No answer negates the whole expression: No to AND requires at least one false
@@ -59,10 +110,11 @@ views, card/force custody and the original seat row were preserved. This is a
 targeted browser scenario, not a complete human game.
 
 The existing active-unused-shipment scope remains: base Basic, and supported
-base Advanced games without Guild or optional modules. Earlier timing, mixed
-fact/future predicates, expansion shipment combinations and arbitrary prose
-remain unfinished. This prototype does not settle pending material rulings or
-certify complete Truthtrance.
+base Advanced games without Guild or optional modules. Mixed current-fact/
+shipment trees now use that same opportunity. Earlier timing, other future
+actions, expansion shipment combinations and arbitrary prose remain unfinished.
+This prototype does not settle pending material rulings or certify complete
+Truthtrance.
 
 The opening backup preserves 1,004 local rooms and their seat/recovery records.
 Reuse the healthy server and keep all subsequent games.

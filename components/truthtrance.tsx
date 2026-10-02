@@ -1,18 +1,20 @@
 'use client';
 import { ShipmentClaimFields, invalidShipmentClause, type ShipmentClauseInput } from './shipment-claim-fields';
 import { BattleClaimFields } from './battle-promises';
-import { CardCountFields } from './truthtrance-card-count';
-import { KnowledgeFactFields } from './truthtrance-knowledge';
-import { ForceCountFields, forceCountInputError } from './truthtrance-force-count';
-import { isKnowledgeFact, knowledgeFactInputError } from '@/game/truthtrance-knowledge';
+import {
+  MixedShipmentFields,
+  TruthFactFields,
+  invalidTruthFact,
+  mixedShipmentInputError,
+} from './mixed-shipment-fields';
+import type { MixedShipmentExpression } from '@/game/mixed-shipment-question';
 import type { PlanClaim } from '@/game/battle-promises';
 import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { shipmentAvailable as targetShipmentAvailable } from '@/game/shipment-opportunity';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import { shipmentPromiseModeSupported } from '@/game/shipment-promises';
 import {
-  TRUTH_CARD_NAMES,
   truthQuestionText,
   type TruthFact,
   type TruthQuestion,
@@ -50,19 +52,27 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'battlePlan' | 'shipment'
+    'fact' | 'freeform' | 'battlePlan' | 'shipment' | 'mixedShipment'
   >('fact');
   const [shipmentJoin, setShipmentJoin] = useState<'single' | 'and' | 'or'>('single');
   const [shipmentClauses, setShipmentClauses] = useState<ShipmentClauseInput[]>([
     { territory: 'carthag', minimum: 6 },
     { territory: 'arrakeen', minimum: 4 },
   ]);
+  const [mixed, setMixed] = useState<MixedShipmentExpression>({
+    kind: 'and',
+    terms: [
+      { kind: 'fact', fact: { kind: 'hand', name: 'Shield' } },
+      { kind: 'shipment', territory: 'carthag', minimum: 6 },
+    ],
+  });
+  const invalidMixed = mixedShipmentInputError(mixed, g, target);
   const invalidShipment = shipmentClauses.slice(0, shipmentJoin === 'single' ? 1 : 2).some(invalidShipmentClause);
   const shipmentAvailable =
     shipmentPromiseModeSupported(g) &&
     g.phase === 5 &&
     g.active === target &&
-    !g.players.find((p) => p.id === target)?.shipped &&
+    targetShipmentAvailable(g, {id:target,shipped:g.players.find(p => p.id === target)?.shipped ?? false}) &&
     !g.response &&
     !g.decision &&
     !g.phaseOpening;
@@ -78,15 +88,9 @@ export function Truthtrance({
     { kind: 'hand', name: 'Snooper' },
   ]);
   const factId = useId();
-  const invalidSpice = (fact: TruthFact) =>
-    (fact.kind === 'spice' ||
-      fact.kind === 'handCount' ||
-      fact.kind === 'handInventory') &&
-    (!Number.isSafeInteger(fact.value) || fact.value < 0);
   const invalidFact = clauses
     .slice(0, join === 'single' ? 1 : 2)
-    .some((fact) => invalidSpice(fact) || (isKnowledgeFact(fact) && !!knowledgeFactInputError(fact)) ||
-      (fact.kind === 'forceCount' && !!forceCountInputError(fact, g, g.players.find(p => p.id === target)!)));
+    .some((fact) => invalidTruthFact(fact, g, target));
   const leaderName = (id: string) =>
     id === CHEAP_HERO_TRAITOR
       ? 'Cheap Hero / Heroine'
@@ -115,7 +119,9 @@ export function Truthtrance({
               target,
               ...(shipmentJoin === 'single' ? shipmentClauses[0] : { claim: { op: shipmentJoin, terms: shipmentClauses } }),
             }
-          : { kind, target, text, scope };
+          : kind === 'mixedShipment'
+            ? { kind, target, mixed }
+            : { kind, target, text, scope };
   const button = (label: string, action: Action, disabled = false) => (
     <Button
       className="game-action"
@@ -189,16 +195,19 @@ export function Truthtrance({
                   Your answer is public. Answer truthfully about the game; a
                   promise can only bind decisions in this turn.
                 </p>
-                {w.question!.kind === 'shipment' ? (
+                {w.question!.kind === 'shipment' || w.question!.kind === 'mixedShipment' ? (
                   <>
                     <p className="notice">
-                      A definite answer binds your shipment from reserves this
-                      turn. Available preparation includes your Ghola, Karama
-                      and recoverable allied funding. Yes leaves the exact
-                      count, sector and payment yours to choose within the
-                      complete statement. No requires that statement to be false;
-                      for AND, at least one condition must be false; for OR,
-                      every condition must be false.
+                      A definite answer binds the whole claim about your
+                      shipment from reserves this turn. Any current facts are
+                      fixed privately when you answer; they create no later
+                      card, spice or force holding obligation. Available
+                      preparation includes your Ghola, Karama and recoverable
+                      allied funding. Count, sector and payment remain yours
+                      to choose while honoring the whole claim. AND requires
+                      all conditions; OR requires at least one. No makes the
+                      whole claim false. A Yes answer may allow skipping
+                      shipment if a current-fact branch already satisfies it.
                     </p>
                     {(g.truthShipmentAnswers ?? []).map((answer) => (
                       <div key={answer}>
@@ -321,6 +330,9 @@ export function Truthtrance({
                   <option value="shipment">
                     Bind a shipment from reserves
                   </option>
+                  <option value="mixedShipment">
+                    Combine current facts and this-turn shipment
+                  </option>
                   <option value="freeform">Write a game question</option>
                   {g.battle && (
                     <option value="battlePlan">
@@ -329,10 +341,15 @@ export function Truthtrance({
                   )}
                 </select>
               </label>
-              {kind === 'shipment' ? (
+              {kind === 'shipment' || kind === 'mixedShipment' ? (
                 <>
-                  <ShipmentClaimFields id={`${factId}-shipment`} clauses={shipmentClauses}
-                    join={shipmentJoin} onClauses={setShipmentClauses} onJoin={setShipmentJoin} />
+                  {kind === 'mixedShipment' ? (
+                    <MixedShipmentFields id={`${factId}-mixed`} value={mixed}
+                      game={g} target={target} disabled={busy} onChange={setMixed} />
+                  ) : (
+                    <ShipmentClaimFields id={`${factId}-shipment`} clauses={shipmentClauses}
+                      join={shipmentJoin} onClauses={setShipmentClauses} onJoin={setShipmentJoin} />
+                  )}
                   <p className="fine">
                     Includes Fremen reinforcements and Guild transport from
                     southern reserves. Ground movement and transport of forces
@@ -348,10 +365,12 @@ export function Truthtrance({
                       unfinished.
                     </p>
                   )}
-                  <p className="notice">
-                    {invalidShipment
-                      ? 'Enter a whole minimum of one to twenty forces.'
-                      : truthQuestionText(question, leaderName)}
+                  <p className="notice" aria-label="Public grouped question preview">
+                    {kind === 'mixedShipment'
+                      ? invalidMixed ?? truthQuestionText(question, leaderName)
+                      : invalidShipment
+                        ? 'Enter a whole minimum of one to twenty forces.'
+                        : truthQuestionText(question, leaderName)}
                   </p>
                 </>
               ) : kind === 'battlePlan' ? (
@@ -411,220 +430,8 @@ export function Truthtrance({
                     .map((c, index) => (
                       <fieldset key={index}>
                         <legend>Fact {index + 1}</legend>
-                        <label>
-                          Fact type
-                          <select
-                            value={c.kind === 'prediction' ? c.field === 'faction' ? 'predictionFaction' : 'predictionTurn' : c.kind}
-                            onChange={(e) =>
-                              setClauses(
-                                clauses.map((old, n) =>
-                                  n === index
-                                    ? e.target.value === 'hand'
-                                      ? { kind: 'hand', name: 'Shield' }
-                                      : e.target.value === 'handCount'
-                                        ? {
-                                            kind: 'handCount',
-                                            name: 'Shield',
-                                            compare: 'gte',
-                                            value: 2,
-                                          }
-                                        : e.target.value === 'handInventory'
-                                          ? {
-                                              kind: 'handInventory',
-                                              category: 'all',
-                                              compare: 'gte',
-                                              value: 2,
-                                            }
-                                          : e.target.value === 'predictionFaction'
-                                            ? { kind: 'prediction', field: 'faction', faction: 'atreides' }
-                                            : e.target.value === 'predictionTurn'
-                                              ? { kind: 'prediction', field: 'turn', compare: 'gte', value: 1 }
-                                              : e.target.value === 'stormDial'
-                                                ? { kind: 'stormDial', compare: 'gte', value: 0 }
-                                                : e.target.value === 'stormForecast'
-                                                  ? { kind: 'stormForecast', compare: 'gte', value: 1 }
-                                          : e.target.value === 'forceCount'
-                                            ? { kind: 'forceCount', zone: { kind: 'reserves' }, counter: 'total', compare: 'gte', value: 6 }
-                                          : e.target.value === 'spice'
-                                            ? {
-                                                kind: 'spice',
-                                                compare: 'gte',
-                                                value: 6,
-                                              }
-                                            : {
-                                                kind: 'traitor',
-                                                leader: g.allLeaders[0].id,
-                                              }
-                                    : old,
-                                ),
-                              )
-                            }
-                          >
-                            <option value="hand">Holds a named card</option>
-                            <option value="handCount">
-                              Number of a named card
-                            </option>
-                            <option value="handInventory">
-                              Hand size or primary card role
-                            </option>
-                            <option value="traitor">Selected a traitor</option>
-                            <option value="predictionFaction">Stored faction prediction</option>
-                            <option value="predictionTurn">Stored turn prediction</option>
-                            <option value="stormDial">Known storm dial</option>
-                            <option value="stormForecast">Known storm forecast</option>
-                            <option value="spice">
-                              Current personal spice
-                            </option>
-                            <option value="forceCount">Current physical forces</option>
-                          </select>
-                        </label>
-                        {c.kind === 'hand' ? (
-                          <label>
-                            Card name
-                            <select
-                              value={c.name}
-                              onChange={(e) =>
-                                setClauses(
-                                  clauses.map((old, n) =>
-                                    n === index
-                                      ? { kind: 'hand', name: e.target.value }
-                                      : old,
-                                  ),
-                                )
-                              }
-                            >
-                              {TRUTH_CARD_NAMES.map((name) => (
-                                <option key={name}>{name}</option>
-                              ))}
-                            </select>
-                          </label>
-                        ) : c.kind === 'handCount' ||
-                          c.kind === 'handInventory' ? (
-                          <CardCountFields
-                            value={c}
-                            onChange={(next) =>
-                              setClauses(
-                                clauses.map((old, n) =>
-                                  n === index ? next : old,
-                                ),
-                              )
-                            }
-                          />
-                        ) : c.kind === 'forceCount' ? (
-                          <ForceCountFields value={c} game={g} player={g.players.find(p => p.id === target)!}
-                            onChange={next => setClauses(clauses.map((old, n) => n === index ? next : old))} />
-                        ) : c.kind === 'prediction' || c.kind === 'stormDial' || c.kind === 'stormForecast' ? (
-                          <KnowledgeFactFields
-                            value={c}
-                            onChange={(next) =>
-                              setClauses(clauses.map((old, n) => n === index ? next : old))
-                            }
-                          />
-                        ) : c.kind === 'spice' ? (
-                          <>
-                            <label>
-                              Compare personal spice
-                              <select
-                                value={c.compare}
-                                onChange={(e) =>
-                                  setClauses(
-                                    clauses.map((old, n) =>
-                                      n === index
-                                        ? {
-                                            ...c,
-                                            compare: e.target
-                                              .value as typeof c.compare,
-                                          }
-                                        : old,
-                                    ),
-                                  )
-                                }
-                              >
-                                <option value="eq">Exactly</option>
-                                <option value="gte">At least</option>
-                                <option value="lte">At most</option>
-                              </select>
-                            </label>
-                            <label htmlFor={`${factId}-${index}-spice-amount`}>
-                              Spice amount
-                              <Input
-                                id={`${factId}-${index}-spice-amount`}
-                                type="number"
-                                min={0}
-                                max={Number.MAX_SAFE_INTEGER}
-                                step={1}
-                                required
-                                value={Number.isNaN(c.value) ? '' : c.value}
-                                aria-invalid={invalidSpice(c)}
-                                aria-describedby={`${factId}-${index}-spice-help${invalidSpice(c) ? ` ${factId}-${index}-spice-error` : ''}`}
-                                onChange={(e) =>
-                                  setClauses(
-                                    clauses.map((old, n) =>
-                                      n === index
-                                        ? {
-                                            ...c,
-                                            value:
-                                              e.currentTarget.valueAsNumber,
-                                          }
-                                        : old,
-                                    ),
-                                  )
-                                }
-                              />
-                            </label>
-                            <p
-                              className="fine"
-                              id={`${factId}-${index}-spice-help`}
-                            >
-                              Counts spice the player personally holds now.
-                              Excludes pledged aid and incoming payments. This
-                              asks about the current balance; it does not
-                              promise future holdings or spending.
-                            </p>
-                            {invalidSpice(c) && (
-                              <p
-                                className="notice"
-                                role="alert"
-                                id={`${factId}-${index}-spice-error`}
-                              >
-                                {Number.isInteger(c.value) &&
-                                c.value > Number.MAX_SAFE_INTEGER
-                                  ? 'That spice amount is too large.'
-                                  : 'Enter a whole spice amount of zero or more.'}
-                              </p>
-                            )}
-                          </>
-                        ) : (
-                          c.kind === 'traitor' && (
-                            <label>
-                              Leader
-                              <select
-                                value={c.leader}
-                                onChange={(e) =>
-                                  setClauses(
-                                    clauses.map((old, n) =>
-                                      n === index
-                                        ? {
-                                            kind: 'traitor',
-                                            leader: e.target.value,
-                                          }
-                                        : old,
-                                    ),
-                                  )
-                                }
-                              >
-                                {g.allLeaders.map((l) => (
-                                  <option key={l.id} value={l.id}>
-                                    {l.name}
-                                  </option>
-                                ))}
-                                <option value={CHEAP_HERO_TRAITOR}>
-                                  Cheap Hero / Heroine
-                                </option>
-                              </select>
-                            </label>
-                          )
-                        )}
+                        <TruthFactFields value={c} game={g} target={target}
+                          onChange={next => setClauses(clauses.map((old, n) => n === index ? next : old))} />
                       </fieldset>
                     ))}
                   <p className="notice">
@@ -670,6 +477,8 @@ export function Truthtrance({
                 { type: 'truthAsk', question },
                 (kind === 'shipment' &&
                   (invalidShipment || !shipmentAvailable)) ||
+                  (kind === 'mixedShipment' &&
+                    (!!invalidMixed || !shipmentAvailable)) ||
                   (kind === 'freeform' && !text.trim()) ||
                   (kind === 'fact' && invalidFact) ||
                   (kind === 'battlePlan' &&

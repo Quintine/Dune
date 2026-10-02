@@ -498,12 +498,14 @@ import {
   validateTruthQuestionReceipt,
   queuedTruthCardMatches,
   truthFactAnswer,
+  truthShipmentClaim,
   TruthError,
   type TruthWindow,
   type TruthQueueEntry,
   type TruthRecord,
   type TruthAnswer,
 } from './truthtrance';
+import type { MixedShipmentExpression } from './mixed-shipment-question';
 import { controlsLeader, nativeAvailable } from './leader-control';
 import {
   newRevivalRules,
@@ -5261,7 +5263,7 @@ function finishTruthtranceAnswer(g: Game) {
   const record = g.truthHistory![historyIndex];
   const card = discard(g, getPlayer(g, consumed.player), consumed.card);
   let promise: TruthDiscardContinuation['promise'] = null;
-  if (record.question.kind === 'shipment')
+  if (record.question.kind === 'shipment' || record.question.kind === 'mixedShipment')
     promise = {
       kind: 'shipment',
       index: g.shipmentPromises!.length - 1,
@@ -5998,7 +6000,7 @@ function treacheryDiscardIntegrity(g: Game) {
     }
     const q = record.question,
       promise = c.promise;
-    const expectedShipment = q.kind === 'shipment';
+    const expectedShipment = q.kind === 'shipment' || q.kind === 'mixedShipment';
     const expectedBattle =
       q.kind === 'battlePlan' &&
       g.battle &&
@@ -6027,11 +6029,14 @@ function treacheryDiscardIntegrity(g: Game) {
       );
       if (promise.kind === 'shipment')
         requireRule(
-          q.kind === 'shipment' &&
+          (q.kind === 'shipment' || q.kind === 'mixedShipment') &&
             promise.value.turn === g.turn &&
             !promise.value.fulfilled &&
-            promise.value.territory === q.territory &&
-            promise.value.minimum === q.minimum,
+            (q.kind === 'mixedShipment'
+              ? JSON.stringify(promise.value.mixed) === JSON.stringify(q.mixed)
+              : promise.value.mixed === undefined &&
+                promise.value.territory === q.territory &&
+                promise.value.minimum === q.minimum),
           'The completed Truthtrance shipment promise differs from its answer.',
         );
       else
@@ -19289,7 +19294,7 @@ function shipmentPromiseIntegrity(g: Game) {
         g.players.some(
           (p) => p.id === promise.asker && p.id !== promise.player,
         ) &&
-        validShipmentClaim(promise) &&
+        validShipmentClaim(promise, {allowConstants: promise.mixed !== undefined}) &&
         typeof promise.answer === 'boolean' &&
         (promise.released === undefined ||
           typeof promise.released === 'boolean') &&
@@ -19513,12 +19518,14 @@ function bindShipmentTruth(
   claim: ShipmentClaim,
   answer: boolean,
   asker: string,
+  mixed?: MixedShipmentExpression,
 ) {
   (g.shipmentPromises ??= []).push({
     turn: g.turn,
     player: p.id,
     asker,
-    ...parseShipmentClaim(claim),
+    ...parseShipmentClaim(claim, {allowConstants: mixed !== undefined}),
+    ...(mixed ? {mixed} : {}),
     answer,
   });
 }
@@ -30511,15 +30518,17 @@ export function viewGame(state: Game, id: string) {
     truthShipmentAnswers:
       g.truthtrance?.stage === 'answer' &&
       g.truthtrance.question?.target === id &&
-      g.truthtrance.question.kind === 'shipment'
-        ? shipmentTruthAnswers(g, me, g.truthtrance.question)
+      (g.truthtrance.question.kind === 'shipment' || g.truthtrance.question.kind === 'mixedShipment')
+        ? shipmentTruthAnswers(g, me, truthShipmentClaim(g,me,g.truthtrance.question))
         : null,
-    shipmentPromises: g.shipmentPromises ?? [],
+    // Mixed compiled claims contain private past-clause answers. The complete
+    // original question and whole answer remain public through truthHistory.
+    shipmentPromises: (g.shipmentPromises ?? []).filter(p => !p.mixed || p.player === id),
     shipmentCompletion:
       !g.pendingTreacheryDiscard &&
       !g.response && !g.pendingKarama &&
       liveShipmentPromises(g.shipmentPromises ?? [], id, g.turn).some(
-        (p) => p.answer,
+        (p) => matchesShipment(p,null) !== p.answer,
       )
         ? findShipmentCompletion(g, me)
         : null,
