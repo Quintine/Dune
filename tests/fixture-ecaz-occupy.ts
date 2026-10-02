@@ -3,20 +3,31 @@ import { applyAction, createGame, initializeEcazOccupyGameForAudit, joinGame, ne
   viewGame, type Action, type Game, type Player } from '../game/engine';
 import { botActions } from '../game/bots';
 import { TERRITORIES, location as locationKey, splitLocation } from '../game/board';
-import { createAdvancedSourceFixture, finishToMovement, advanceToNextStorm } from './fixture-advanced-source';
+import { finishToMovement, advanceToNextStorm } from './fixture-advanced-source';
 import type { FactionId } from '../game/catalog';
-import { baseDeck } from '../game/cards';
+import { treacheryDeck } from '../game/cards';
+import { traitorDeck } from '../game/traitors';
+import { withoutEcazLoyalty } from '../game/ecaz-loyalty';
 
+export type EcazOccupyFixtureFaction = Exclude<FactionId, 'richese'>;
 export type EcazOccupyFixtureOptions = {
   initial?: Game;
   ecazForces?: number;
-  allyFaction?: 'fremen' | 'emperor' | 'beneGesserit' | 'guild';
+  allyFaction?: EcazOccupyFixtureFaction;
   order?: 'ecaz-first' | 'ally-first' | 'opponent-first';
-  opponentFaction?: 'guild' | 'emperor' | 'beneGesserit' | 'fremen';
+  opponentFaction?: EcazOccupyFixtureFaction;
+  expansions?: Game['expansions'];
+  roster?: EcazOccupyFixtureFaction[];
+  allyForces?: number;
+  allyElite?: number;
+  opponentForces?: number;
+  opponentElite?: number;
+  /** Seed only a still-pending original Face Dancer shuffle, never a later draw. */
+  faceDancerFaction?: EcazOccupyFixtureFaction;
   advisorAlly?: boolean;
 };
 export type EcazOccupyFixture = {
-  game: Game; ecaz: string; ally: string; opponent: string;
+  game: Game; initial: Game; afterSetup: Game; ecaz: string; ally: string; opponent: string;
   territory: string; location: string; ecazForces: number;
 };
 
@@ -41,6 +52,54 @@ function step(game: Game): Game {
     if (action) return applyAction(game, player.id, action);
   }
   throw new Error(`No native fixture action at ${game.status}/${game.turn}/${game.phase}/${game.decision?.kind}`);
+}
+
+/** Complete existing native offers. Entropy is scoped to the final first-draw
+ * action and forwards the Ix starting-card remainder shuffle unchanged. */
+export function finishEcazOccupySetup(state: Game, faceDancerFaction?: EcazOccupyFixtureFaction): Game {
+  let game = structuredClone(state);
+  for (let attempt = 0; attempt < 200 && game.status === 'setup'; attempt++) {
+    const tleilaxu = game.players.find(p => p.faction === 'tleilaxu');
+    const pending = viewGame(game, game.players[0].id).setupPending;
+    const finalForces = game.setupStage === 'forces' && !game.players.some(p => p.faction === 'ixians') &&
+      pending.length === 1 && (game.players.find(p => p.id === pending[0])!.faction === 'beneGesserit' ||
+        game.players.find(p => p.id === pending[0])!.faction === 'ecaz' &&
+        !game.players.some(p => p.faction === 'beneGesserit'));
+    if (!faceDancerFaction || !tleilaxu || tleilaxu.faceDancers ||
+        !(game.decision?.kind === 'ixSetup' || finalForces)) {
+      game = step(game);
+      continue;
+    }
+    const held = new Set(game.players.flatMap(p => p.traitors));
+    const source = withoutEcazLoyalty(traitorDeck(game.players, game.expansions.includes('ix')),
+      game.ecazLoyalty).filter(id => !held.has(id));
+    const owner = game.players.find(p => p.faction === faceDancerFaction);
+    assert.ok(owner);
+    const target = owner.leaders.filter(l => source.includes(l.id)).sort((a, b) => b.strength - a.strength)[0];
+    assert.ok(target, 'A real leader of the selected faction remains in the first native Face Dancer source.');
+    const targetIndex = source.indexOf(target.id);
+    const descriptor = Object.getOwnPropertyDescriptor(crypto, 'getRandomValues');
+    const originalRandom = crypto.getRandomValues.bind(crypto);
+    let prefixCalls = game.decision?.kind === 'ixSetup' ? Math.max(0, game.ixSetupCards!.length - 2) : 0;
+    let index = source.length - 1;
+    crypto.getRandomValues = <T extends ArrayBufferView | null>(array: T): T => {
+      assert.ok(array instanceof Uint32Array && array.length === 1);
+      if (prefixCalls > 0) { prefixCalls--; originalRandom(array); return array; }
+      if (index <= 0) { originalRandom(array); return array; }
+      array[0] = index === targetIndex ? 0 : 0xffffffff;
+      index--;
+      return array;
+    };
+    try { game = step(game); }
+    finally {
+      if (descriptor) Object.defineProperty(crypto, 'getRandomValues', descriptor);
+      else Reflect.deleteProperty(crypto, 'getRandomValues');
+    }
+    assert.equal(game.status, 'playing', 'Seed only an actually pending first Face Dancer draw.');
+    assert.ok(game.players.find(p => p.id === tleilaxu.id)!.faceDancers!.some(c => c.leader === target.id));
+  }
+  assert.equal(game.status, 'playing', 'Original native setup must finish without a redeal.');
+  return game;
 }
 
 export function settleEcazOccupyArrival(state: Game, accompany = false): Game {
@@ -106,40 +165,46 @@ export function stageEcazOccupyCard(game: Game, owner: string,
 /** Genuine fresh E3 faction setup, a natural worm Nexus, reciprocal alliance,
  * accepted shared shipment and actual chooseBattle. Returns BEFORE lead choice.
  * A supplied fresh setup retains its original deal and printed seat positions. */
-export function ecazOccupyFixture(options: EcazOccupyFixtureOptions = {}): EcazOccupyFixture {
+export function createEcazOccupySetup(options: EcazOccupyFixtureOptions = {}): Game {
   const allyFaction = options.allyFaction ?? 'fremen';
   const opponentFaction = options.opponentFaction ?? (allyFaction === 'guild' ? 'emperor' : 'guild');
   assert.notEqual(allyFaction, opponentFaction);
-  const ecazForces = options.ecazForces ?? 3;
-  assert.ok(Number.isInteger(ecazForces) && ecazForces >= 1 && ecazForces <= 5);
   let setup: Game;
   if (options.initial) {
     setup = structuredClone(options.initial);
     assert.equal(setup.status, 'setup', 'Captured input must be its original admitted fresh setup.');
     assert.equal(setup.ecazOccupyPreview, true);
     assert.equal(setup.advanced, true);
-    assert.deepEqual(setup.expansions, ['ecaz']);
+    if (options.expansions) assert.deepEqual(setup.expansions, options.expansions);
+    assert.ok(setup.expansions.includes('ecaz') && new Set(setup.expansions).size === setup.expansions.length);
     assert.equal(setup.turn, 1, 'Captured Occupy input is never a started-game retrofit.');
     assert.ok(!setup.ecazTreachery && !setup.homeworlds && !setup.nexusCards &&
       !setup.leaderSkills && !setup.strongholdCards && !setup.techTokens &&
       !setup.discoveryEnabled && !setup.discoveries && !setup.discoveryStash &&
       !setup.greatMaker && !setup.moritaniAssassinatePreview,
     'Captured Occupy inputs admit the explicit ordinary Advanced profile only.');
-    assert.deepEqual([...setup.deck, ...setup.discard, ...setup.players.flatMap(p => p.hand)]
-      .map(card => card.id).sort(), baseDeck().map(card => card.id).sort(),
-    'The original captured deal must retain the ordinary 33-card source.');
+    assert.deepEqual([...setup.deck, ...setup.discard, ...(setup.ixSetupCards ?? []),
+      ...setup.players.flatMap(p => p.hand)].map(card => card.id).sort(),
+    treacheryDeck(setup.expansions).map(card => card.id).sort(),
+    'The original captured deal must retain every selected physical card exactly once.');
   } else {
-    const roster: FactionId[] = ['ecaz', allyFaction, opponentFaction];
-    setup = createGame('ECAZOCCUPY', newPlayer('ecaz', 'Ecaz', 'ecaz'), true, ['ecaz']);
-    for (const faction of roster.slice(1)) joinGame(setup, newPlayer(faction, faction, faction));
-    const desired = options.order === 'ally-first' ? [allyFaction, opponentFaction, 'ecaz'] :
+    const roster: EcazOccupyFixtureFaction[] = options.roster ?? ['ecaz', allyFaction, opponentFaction];
+    const expansions = options.expansions ?? ['ecaz',
+      ...(roster.some(f => f === 'ixians' || f === 'tleilaxu') ? ['ix'] as const : []),
+      ...(roster.includes('choam') ? ['choam'] as const : [])];
+    const desired: EcazOccupyFixtureFaction[] = options.order === 'ally-first' ? [allyFaction, opponentFaction, 'ecaz'] :
       options.order === 'opponent-first' || opponentFaction === 'beneGesserit' ?
         [opponentFaction, 'ecaz', allyFaction] : ['ecaz', allyFaction, opponentFaction];
-    // Circles 3..5 remain in this order for every genuine second-turn Storm
-    // distance (1..6); the occupied initial circles are vacated via real actions.
+    desired.push(...roster.filter(f => !desired.includes(f)));
+    const joinOrder = roster.length > 4 ? desired : roster;
+    setup = createGame('ECAZOCCUPY', newPlayer(joinOrder[0], joinOrder[0], joinOrder[0]), true, expansions);
+    for (const faction of joinOrder.slice(1)) joinGame(setup, newPlayer(faction, faction, faction));
+    const firstCircle = Math.min(3, 7 - desired.length);
+    // Printed circles preserve the source order; all initial forces are
+    // subsequently returned through their actual physical reserves.
     for (let i = desired.length - 1; i >= 0; i--)
-      if (viewGame(setup, desired[i]).playerPositions[desired[i]] !== i + 3)
-        setup = applyAction(setup, desired[i], { type: 'seatPosition', position: i + 3 });
+      if (viewGame(setup, desired[i]).playerPositions[desired[i]] !== i + firstCircle)
+        setup = applyAction(setup, desired[i], { type: 'seatPosition', position: i + firstCircle });
     for (const player of setup.players) setup = applyAction(setup, player.id, { type: 'ready' });
     setup = initializeEcazOccupyGameForAudit(setup);
   }
@@ -147,16 +212,27 @@ export function ecazOccupyFixture(options: EcazOccupyFixtureOptions = {}): EcazO
     setup.players.some(p => p.faction === allyFaction) &&
     setup.players.some(p => p.faction === opponentFaction),
   'The original source roster must contain the three actual factions for this rule case.');
+  return setup;
+}
+
+export function ecazOccupyFixture(options: EcazOccupyFixtureOptions = {}): EcazOccupyFixture {
+  const allyFaction = options.allyFaction ?? 'fremen';
+  const opponentFaction = options.opponentFaction ?? (allyFaction === 'guild' ? 'emperor' : 'guild');
+  const ecazForces = options.ecazForces ?? 3;
+  assert.ok(Number.isInteger(ecazForces) && ecazForces >= 1 && ecazForces <= 5);
+  const setup = createEcazOccupySetup(options);
+  const initial = structuredClone(setup);
   const ecaz = setup.players.find(p => p.faction === 'ecaz')!.id;
   const ally = setup.players.find(p => p.faction === allyFaction)!.id;
   const opponent = setup.players.find(p => p.faction === opponentFaction)!.id;
-  let game = createAdvancedSourceFixture({ initial: setup }).game;
-  assert.equal(game.status, 'playing');
+  let game = finishEcazOccupySetup(setup, options.faceDancerFaction);
+  const afterSetup = structuredClone(game);
   returnBoardToReserves(game);
   orderBlow(game, false, 0);
   orderBlow(game, false, 1);
   game = finishToMovement(game);
-  while (game.phase === 5) game = applyAction(game, game.active!, { type: 'endMovement' });
+  while (game.phase === 5) game = game.response || game.phaseOpening || game.decision
+    ? step(game) : applyAction(game, game.active!, { type: 'endMovement' });
   game = advanceToNextStorm(game);
   orderBlow(game, true, 0);
   orderBlow(game, false, 1);
@@ -180,14 +256,20 @@ export function ecazOccupyFixture(options: EcazOccupyFixtureOptions = {}): EcazO
   const location = locationKey(territory, sector);
   stageEcazOccupyCard(game, opponent, card => card.effect === 'karama');
   while (game.phase === 5) {
+    if (game.response || game.phaseOpening || game.decision) {
+      game = step(game);
+      continue;
+    }
     const actor = game.active!;
     if (![ecaz, ally, opponent].includes(actor)) {
       game = applyAction(game, actor, { type: 'endMovement' });
       continue;
     }
     const player = game.players.find(p => p.id === actor)!;
-    const amount = actor === ecaz ? ecazForces : actor === ally ? 4 : 8;
-    const elite = actor === ally && player.elites ? 2 : 0;
+    const amount = actor === ecaz ? ecazForces :
+      actor === ally ? options.allyForces ?? 4 : options.opponentForces ?? 8;
+    const elite = actor === ally ? options.allyElite ?? (player.elites ? 2 : 0) :
+      actor === opponent ? options.opponentElite ?? 0 : 0;
     const action: Action = { type: 'ship', territory, sector, amount, ...(elite ? { elite } : {}) };
     game = settleEcazOccupyArrival(applyAction(game, actor, action), !!options.advisorAlly && actor === ecaz);
     if (actor === ally && options.advisorAlly) {
@@ -205,7 +287,7 @@ export function ecazOccupyFixture(options: EcazOccupyFixtureOptions = {}): EcazO
   game = applyAction(game, chooser, { type: 'chooseBattle', territory,
     target: choice.attacker === chooser ? choice.defender : choice.attacker });
   if (!options.advisorAlly) assert.equal(game.decision?.kind, 'ecazBattleLead');
-  return { game, ecaz, ally, opponent, territory, location, ecazForces };
+  return { game, initial, afterSetup, ecaz, ally, opponent, territory, location, ecazForces };
 }
 
 /** Resolve only existing native counter windows, never create one. */

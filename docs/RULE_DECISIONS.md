@@ -105,8 +105,11 @@ above the supplied sheet's contrary exception.
 The fresh, bounded `ecaz-occupy` rule/control implementation is **Partial /
 Development Verified**. Whole participating armies must be clear and connected
 under physical pages6/11; canonical co-side membership preserves voluntary BG
-advisor conversion. Basic is unchanged. Optional/exotic compositions and full
-Ecaz acceptance remain open. See the
+advisor conversion. Basic is unchanged. The existing profile now additionally
+composes native Ixian typed casualties/Suboid substitution, actual CHOAM payer/
+donor income and whole Ecaz co-side FaceDance return with original lead rewards.
+Exact selected E3/E1/E2 decks retain33/47/35 cards; Richese mixed planning,
+other overlays and full Ecaz acceptance remain open. See the
 [source comparison and exact cutover](ECAZ_OCCUPY_RULES.md#authorized-advanced-cutover--2-october-2026).
 Comprehensive recovery/privacy/custody review follows all rules rather than
 becoming another prototype assurance wave.

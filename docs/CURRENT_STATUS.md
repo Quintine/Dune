@@ -25,6 +25,23 @@ authorization and deployment/publication safeguards remain intact. Use the
 [bounded context index](DEVELOPMENT.md#context-index) and
 [feedback/proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule).
 
+**Native E1/E2 Ecaz Occupy — bounded Development Verified:** existing profile
+now composes Ixians/Tleilaxu/CHOAM with Ecaz/classic/optional Moritani2..6 and
+distinct selected E3/E1/E2 ordinary33/47/35 decks. Physical Ix owns native
+Suboid substitution, selected lead keeps card aftermath; CHOAM original paid
+support shares exclude free fixed Ecaz strength. External FaceDance returns
+both winning armies with combined maximum; own-winning Tleilaxu is excluded.
+Native34, affected191/191, types/lint and19 actual program cases pass;23
+unstaged games complete13,004 accepted/no rejects/339JSON continuations,
+source unchanged. They contain no combined lead choice; native cases and
+human390px **5B4FW8D3 v12** and **UVGT4DLN v10** prove that rule path.
+Two scoped rule reviews find no defect. Richese mixed planning, optional
+overlays, full factions/public starts remain gated; assurance follows all rules.
+See [native force-owner integration](ECAZ_OCCUPY_RULES.md#native-e1e2-force-owner-integration--2-october-2026).
+Final types/lint, canonical guide10/10, build and390px expanded guide pass;
+six changed-region local links/anchors are valid. Owned drivers/tabs/workers
+are removed/closed without a saved-game reset.
+
 **Advanced Ecaz Occupy — bounded Development Verified:** the authorized
 supplied PDF physical32/19 resolves ceiling-half free Ecaz contribution,
 floor-half ordinary survivors and selected-lead-own forces after Karama.

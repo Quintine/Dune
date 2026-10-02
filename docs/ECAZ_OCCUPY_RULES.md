@@ -48,8 +48,8 @@ save/privacy/custody assurance follows all rules under the2 October priority.
 
 ### Bounded native rule and control proof
 
-The fresh local `ecaz-occupy` profile admits Ecaz/classic/optional Moritani,
-2..6-seat Advanced, ordinary33 Treachery Cards and the E3 faction setup alone.
+The first checkpoint admitted Ecaz/classic/optional Moritani,2..6-seat
+Advanced, ordinary33 Treachery Cards and the E3 faction setup alone.
 It does not select the independent three-card variant, other overlays, public
 expansion starts or an existing-game retrofit.
 
@@ -76,6 +76,41 @@ and54JSON continuations, `sourceUnchanged:true`. No game sample triggers
 a combined lead choice: profile continuation is observed there, while the
 native cases and human rooms establish the actual combined rule path.
 
+
+### Native E1/E2 force-owner integration — 2 October 2026
+
+The existing profile now admits native Ixians, Tleilaxu and CHOAM with Ecaz,
+classic opponents and optional Moritani. Distinct selected decks include `ecaz`
+and each native `ix`/`choam` family:33 ordinary with Ecaz alone,47 with Ix,
+35 with CHOAM alone,47 with both. Genuine setup preserves original Ix offers/
+HMS, Tleilaxu Face Dancers and CHOAM Auditor. Richese mixed No-Field planning,
+independent E3 Treachery and optional overlays remain explicitly unfinished.
+
+Physical Ix variable losses lead to the actual Ixian's Suboid substitution
+decision/counter, including when Ecaz formed the plan. Accept, decline and
+Karama prevention retain the original selected lead's cards and winner suffix.
+CHOAM receives only its original eligible paid support shares; mandatory free
+Ecaz strength mints no support payment, donor share or traitor income.
+An actual Tleilaxu winning co-side cannot Face Dance itself. An external
+Face Dancer returns both surviving Ecaz/allied armies, with replacement maximum
+equal to their combined survivors, while original selected winner rewards/
+cards remain. Sources are real reserves/board choices; no fake merged player.
+
+Native34 rule cases, coherent affected191/191, types/lint and19 actual program
+cases pass, including Ix substitution decline/prevention and zero/full whole
+co-side replacement. Twenty-three unstaged classic/paired/mixed2..6 games
+complete with13,004 accepted actions/no rejection and339JSON continuations,
+`sourceUnchanged:true`. They contain no combined lead choice; those samples
+prove profile continuation, not the rare rule transitions covered by native
+cases and human controls. Two scoped rule reviews find no defect.
+
+Original CLI/human390px **5B4FW8D3 v12** let physical Ixians sacrifice two
+Suboids to recover two Cyborgs after an Ecaz-led plan; Ecaz retained its Shield
+and the real Collection opened with Ecaz2/Ix4 including two Cyborgs.
+**UVGT4DLN v10** exposed and used the full three-force replacement maximum,
+returned Ecaz1/Guild2 to their own reserves, placed three Tleilaxu forces and
+retained the original Ecaz Slip Tip and bounty. Both continue the original
+phase rather than manufacturing another battle or card owner.
 
 ## Provenance and attribution correction
 

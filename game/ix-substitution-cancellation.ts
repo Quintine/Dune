@@ -40,9 +40,10 @@ export function quoteIxSubstitutionCancellation(
     'This canceled Ixian substitution has no current declaration.',
   );
   const owner = g.players.find((player) => player.id === p.player);
+  const winner = g.players.find((player) => player.id === (p.winner ?? p.player));
   requireIx(
-    owner?.faction === 'ixians',
-    'The canceled substitution needs its Ixian winner.',
+    owner?.faction === 'ixians' && winner,
+    'The canceled substitution needs its actual Ixian force owner and selected winner.',
   );
   const homeworld = g.combatLocations?.find(
     (location) => location.id === p.territory && location.kind === 'homeworld',
@@ -69,7 +70,7 @@ export function quoteIxSubstitutionCancellation(
         ...(homeworld ? [homeworld.id] : []),
       ],
       territory: p.territory,
-      winner: p.player,
+      winner: winner.id,
       context: g.lastBattleContext,
     });
   } catch (error) {
@@ -115,7 +116,7 @@ export function quoteIxSubstitutionCancellation(
       new Set(p.cards).size === p.cards.length &&
       p.cards.every(
         (card) =>
-          owner.hand.filter((c) => c.id === card).length === 1 &&
+          winner.hand.filter((c) => c.id === card).length === 1 &&
           g.physicalCards.filter((c) => c.id === card).length === 1,
       ),
     'The winning battle cards must remain available for cleanup.',
@@ -127,7 +128,7 @@ export function quoteIxSubstitutionCancellation(
     decision: p.cards.length
       ? {
           kind: 'battleCards' as const,
-          player: owner.id,
+          player: winner.id,
           territory: p.territory,
           cards: [...p.cards],
         }

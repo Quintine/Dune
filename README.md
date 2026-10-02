@@ -242,9 +242,11 @@ save/privacy/custody assurance follows all rules. See the
 For local **Advanced Ecaz combined-army Occupy**, use
 `node --import tsx tools/start-prototype.ts --profile ecaz-occupy`
 with the existing `--db`, `--room`, `--version` and private `--out` arguments
-on a fresh ready2..6-seat Advanced lobby: native Ecaz, classic opponents,
-optional native Moritani, expansion `ecaz` alone and ordinary33 Treachery Cards.
-No three-card variant or other overlays. The selected lead owns leaders/cards/
+on a fresh ready2..6-seat Advanced lobby: native Ecaz with classic, Ixian,
+Tleilaxu and CHOAM opponents, optional native Moritani. Select distinct `ecaz`
+and each native `ix`/`choam` family: ordinary33/47/35 cards retain original
+offers/HMS/Auditor/Face Dancers. Richese mixed planning, three-card variant
+and other overlays remain unfinished. The selected lead owns leaders/cards/
 payment; total dial includes mandatory free `ceil(E/2)` plus native allied
 strength. Karama switches to the selected lead's own army, other ally zero.
 Whole participating armies must be clear and connected; BG's voluntary fighter

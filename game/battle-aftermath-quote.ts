@@ -81,6 +81,7 @@ export type AftermathAuditor = {
 export type AftermathFaceDance = {
   player: string;
   winner: string;
+  winners?: string[];
   leader: string | null;
   identity: string | null;
   territory: string;
@@ -431,6 +432,12 @@ function calculate(input: BattleAftermathInput): BattleAftermathQuote {
       'The Face Dance opportunity needs its Tleilaxu owner and another winning faction.',
     );
     winner(winning.id);
+    const winners = value.winners;
+    requireAftermath(winners === undefined ||
+      (ids(winners) && winners.length === 2 && winners.includes(winning.id) &&
+        !winners.includes(owner.id) && winners.every(id => input.players.some(p => p.id === id)) &&
+        winners.some(id => player(id).faction === 'ecaz')),
+      'Face Dance must replace the actual Ecaz winning coside, never its own faction.');
     const to = territory(value.territory);
     requireAftermath(
       value.leader === null || id(value.leader),
@@ -454,6 +461,7 @@ function calculate(input: BattleAftermathInput): BattleAftermathQuote {
     return {
       player: owner.id,
       winner: winning.id,
+      ...(winners === undefined ? {} : { winners: [...winners] }),
       leader: value.leader,
       identity: value.identity as string | null,
       territory: to,

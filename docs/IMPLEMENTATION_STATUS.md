@@ -1,5 +1,51 @@
 # Dune implementation status
 
+## 2 October 2026 — native Ixian, Tleilaxu and CHOAM Ecaz Occupy integration
+
+The existing Advanced `ecaz-occupy` profile now admits source-selected native
+Ixians/Tleilaxu/CHOAM with Ecaz/classic/optional Moritani2..6, distinct E3/E1/E2
+decks and ordinary33/47/35 cards. Genuine original setup, offers/HMS/Auditor/
+Face Dancers remain. No Richese mixed No-Field, independent E3 Treachery or
+optional overlays, public start or existing-game retrofit is activated.
+
+Three bounded owners integrated actual physical Ix casualties/Suboid exchange
+with selected lead card cleanup, native CHOAM original support shares, and
+external Face Dance returning both actual winning co-side armies while
+retaining selected winner rewards. Same-side Tleilaxu cannot Face Dance itself.
+Parent human/four-policy maximum now sums actual co-side fighters without a
+fake merged player. Two scoped rule reviews find no defect.
+
+First Ecaz-led funded Ix case passed. Exact FaceDance return/replacement passed
+but an incidental same-phase pin rejected valid automatic Collection; deleted,
+not re-pinned. Narrow feedback also retained real CHOAM movement decisions/
+opening passes and generic RNG original-input forwarding. Native34 cases,
+coherent affected191/191, types/lint and19 actual native-program cases pass.
+The program includes accept/decline/Karama-denied Ix exchange, own/other/donor/
+traitor CHOAM payments, and zero/full whole-co-side replacement.
+
+Twenty-three unstaged classic/paired/mixed2..6 games complete with13,004
+accepted actions/no rejection and339JSON continuations, `sourceUnchanged:true`.
+Exact family metadata33/47/35 matches selected decks. No sample reaches a
+combined lead choice; native programs/meaningful cases and human rooms establish
+that rare rule path, while game samples prove profile continuation.
+
+Original CLI/human390px **5B4FW8D3 v12** let actual Ixians exchange two
+surviving Suboids for two lost Cyborgs after Ecaz formed the plan. Ecaz retained
+its Shield; Collection opened with Ecaz2/Ix4 including two Cyborgs.
+**UVGT4DLN v10** displayed/used combined replacement maximum3, returned
+Ecaz1/Guild2 to their own reserves, placed three Tleilaxu forces and retained
+Ecaz’s original Slip Tip and bounty. Both continue original Collection.
+
+Final types/lint (`check:quick`), canonical guide10/10 and build pass. The
+final390px guide retains Partial / Development: Verified and the exact expanded
+rule boundaries; six changed-region local links/anchors are valid. Owned
+native drivers are removed, three managed human/guide tabs and both workers
+are closed. Private original setups and immutable game reports remain outside Git.
+
+No new recovery/privacy/custody/seat/getter/HTTP-suite/full6,500-suite assurance
+campaign. Full rules, combined modes, later comprehensive assurance,
+administration and deployment remain unfinished.
+
 ## 2 October 2026 — authorized Advanced Ecaz Occupy combined-army rules
 
 The user-authorized supplied revision, physical32/19, resolves the Advanced

@@ -839,6 +839,7 @@ export type Decision =
       blocked?: string;
       player: string;
       winner: string;
+      winners?: string[];
       leader: string | null;
       identity: string | null;
       territory: string;
@@ -1789,6 +1790,8 @@ export type Game = {
     receipt?: { event: string; turn: number; physical: string; signature: string };
     homeworld?: { pool: HomeworldForces; cyborgsLost: number; eliteTanks: number; normalTanks: number; battleLosses: number };
     player: string;
+    /** Physical Ix owner remains player; the selected lead owns the cleanup. */
+    winner?: string;
     territory: string;
     losses: Record<string, number>;
     cards: string[];
@@ -1802,6 +1805,7 @@ export type Game = {
   pendingFaceDance?: {
     player: string;
     winner: string;
+    winners?: string[];
     leader: string | null;
     identity: string | null;
     territory: string;
@@ -9113,13 +9117,24 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   requireFreshFactionInventory(state);
   return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
 }
+function ecazOccupyCompositionSupported(g: Game): boolean {
+  return g.advanced === true && Array.isArray(g.expansions) &&
+    g.expansions.includes('ecaz') &&
+    g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
+    new Set(g.expansions).size === g.expansions.length &&
+    g.players.length >= 2 && g.players.length <= 6 &&
+    g.players.some(p => p.faction === 'ecaz') &&
+    g.players.every(p => faction(p.faction).expansion === 'base' ||
+      (['ecaz', 'moritani', 'ixians', 'tleilaxu', 'choam'].includes(p.faction) &&
+        g.expansions.includes(faction(p.faction).expansion))) &&
+    !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.strongholdCards &&
+    !g.techTokens && !g.discoveryEnabled && !g.discoveries &&
+    !g.discoveryStash && !g.greatMaker && !g.ecazTreachery;
+}
 /** Fresh native Advanced Occupy profile; public starts and Basic are unchanged. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
-  requireRule(state.advanced === true && state.expansions.length === 1 && state.expansions[0] === 'ecaz' &&
-    state.players.length >= 2 && state.players.length <= 6 && state.players.some(p => p.faction === 'ecaz') &&
-    state.players.every(p => faction(p.faction).expansion === 'base' || p.faction === 'ecaz' || p.faction === 'moritani') &&
-    !state.ecazTreachery,
-    'Advanced Occupy requires fresh Ecaz and classic opponents, optional native Moritani, the Ecaz faction expansion and base Treachery.');
+  requireRule(ecazOccupyCompositionSupported(state),
+    'Advanced Occupy requires native Ecaz, classic/Moritani/Ixian/Tleilaxu/CHOAM factions and their distinct selected family decks, without Richese, optional modules or the independent Ecaz Treachery variant.');
   requireFreshBaseRuntime(state);
   const g = initializeFactionExpansionsGameForAudit(state);
   g.ecazOccupyPreview = true;
@@ -20567,12 +20582,15 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     );
   }
   const tleilaxu = byFaction(g, 'tleilaxu');
-  if (winner && tleilaxu && winner.id !== tleilaxu.id &&
+  const winningCoside = winner && b.ecazOccupy?.lead === winner.id
+    ? [b.ecazOccupy.ecaz, b.ecazOccupy.ally] : winner ? [winner.id] : [];
+  if (winner && tleilaxu && !winningCoside.includes(tleilaxu.id) &&
     (!b.territory.startsWith('homeworld:') || homeworldBattleLocation(g, b.territory)!.native === tleilaxu.id)) {
     const winningPlan = winner.id === a.id ? ap : dp;
     g.pendingFaceDance = {
       player: tleilaxu.id,
       winner: winner.id,
+      ...(winningCoside.length > 1 ? { winners: winningCoside } : {}),
       leader: winningPlan.leader,
       identity:
         cardOf(winner, winningPlan.leader)?.kind === 'hero'
@@ -20855,11 +20873,11 @@ function settleWinnerCasualties(
     `${physicalOwner.name} sent ${choice.normal} normal and ${choice.elite} elite forces from ${combatLocationName(g, to)} to the Tanks. ${automatic ? 'This was the only legal casualty allocation for the revealed battle plan, so it was applied automatically.' : 'This applies the selected casualty allocation for the revealed battle plan.'}`,
     automatic ? { faction: p.faction, name: 'Battle casualties' } : undefined,
   );
-  stageIxSubstitution(g, p, to, cards, losses);
+  stageIxSubstitution(g, physicalOwner, to, cards, losses, p.id);
   finishWinner(g, p, to, cards);
 }
 /** Stage faction substitution after actual Tank losses; skills finish before it opens. */
-function stageIxSubstitution(g: Game, p: Player, to: string, cards: string[], losses: Record<string, number>) {
+function stageIxSubstitution(g: Game, p: Player, to: string, cards: string[], losses: Record<string, number>, winner = p.id) {
   const cyborgsLost = Object.values(losses).reduce((sum, count) => sum + count, 0);
   const survivingSuboids = to.startsWith('homeworld:') ? combatArmy(g, p.id, to).normal : Object.entries(p.forces)
     .filter(([key]) => splitLocation(key).territory === to)
@@ -20869,6 +20887,7 @@ function stageIxSubstitution(g: Game, p: Player, to: string, cards: string[], lo
     );
   if (p.faction === 'ixians' && cyborgsLost > 0 && survivingSuboids > 0) {
     g.pendingIxSubstitution = { player: p.id, territory: to, losses, cards,
+      ...(winner !== p.id ? { winner } : {}),
       ...(to.startsWith('homeworld:') ? { homeworld: {
         pool: combatArmy(g, p.id, to), cyborgsLost,
         eliteTanks: p.elites!.tanks, normalTanks: p.tanks - p.elites!.tanks, battleLosses: p.battleLosses,
@@ -20885,6 +20904,7 @@ function stageIxSubstitution(g: Game, p: Player, to: string, cards: string[], lo
 function ixSubstitutionSignature(pending: NonNullable<Game['pendingIxSubstitution']>) {
   return JSON.stringify([pending.player, pending.territory, pending.losses, pending.cards,
     pending.receipt?.event, pending.receipt?.turn, pending.receipt?.physical,
+    ...(pending.winner === undefined ? [] : [pending.winner]),
     ...(pending.sources === undefined ? [] : [pending.sources, pending.recover])]);
 }
 function ixSubstitutionIntegrity(g: Game) {
@@ -20900,11 +20920,11 @@ function ixSubstitutionIntegrity(g: Game) {
   const owner = pending && g.players.find(p => p.id === pending.player);
   requireRule(pending?.receipt && owner?.faction === 'ixians' && obligation && !obligation.completed &&
     context.event === pending.receipt.event && context.turn === pending.receipt.turn && g.turn === context.turn &&
-    context.winner === pending.player && context.territory === pending.territory &&
+    context.winner === (pending.winner ?? pending.player) && context.territory === pending.territory &&
     g.phase === 6 && !g.battle && g.status === 'playing' &&
     pending.receipt.signature === obligation.signature && pending.receipt.signature === ixSubstitutionSignature(pending) &&
     pending.receipt.physical === sukPhysicalSignature(owner) &&
-    pending.cards.every(id => owner.hand.some(card => card.id === id)),
+    pending.cards.every(id => getPlayer(g, pending.winner ?? pending.player).hand.some(card => card.id === id)),
     'The saved Ixian substitution changed its original battle losses, cards or physical counters.');
   const decisions = homeworldSavedDecisions(g);
   const selecting = decisions.filter(d => d.kind === 'ixSubstitution');
@@ -21154,10 +21174,10 @@ function finishWinner(g: Game, winner: Player, t: string, cards: string[]) {
   if (startRihaniVictory(g, winner, t, cards)) return;
   if (g.pendingIxSubstitution) {
     const pending = g.pendingIxSubstitution;
-    requireRule(pending.player === winner.id && pending.territory === t &&
+    requireRule((pending.winner ?? pending.player) === winner.id && pending.territory === t &&
       JSON.stringify(pending.cards) === JSON.stringify(cards) && !pending.sources && !pending.recover,
       'Resume the original Ixian substitution after Leader Skills.');
-    g.decision = { kind: 'ixSubstitution', player: winner.id, territory: t, losses: pending.losses };
+    g.decision = { kind: 'ixSubstitution', player: pending.player, territory: t, losses: pending.losses };
     return;
   }
   if (g.pendingWinnerDiscards) {
@@ -22883,7 +22903,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
         'Karama prevented Ixian substitution. Original cyborg casualties remain in the Tanks; no surviving suboids were exchanged.',
       );
     }
-    finishWinner(g, player, pending.territory, pending.cards);
+    finishWinner(g, getPlayer(g, pending.winner ?? pending.player), pending.territory, pending.cards);
   } else if (
     [
       'choamRevival',
@@ -27534,7 +27554,7 @@ function applyActionInner(
       const pending = g.pendingIxSubstitution!;
       if (action.decline === true) {
         completeIxSubstitution(g);
-        finishWinner(g, p, pending.territory, pending.cards);
+        finishWinner(g, getPlayer(g, pending.winner ?? pending.player), pending.territory, pending.cards);
       } else {
         const parse = (input: unknown, available: Record<string, number>) => {
           requireRule(
@@ -27601,8 +27621,10 @@ function applyActionInner(
         requireRule(!blocked, blocked ?? 'This Face Dance return is unavailable.');
         const home = homeworldBattleLocation(g, decision.territory);
         requireRule(!home || home.native === p.id, 'Only the native faction may call a Face Dancer on a Homeworld.');
+        const winningArmies = (decision.winners ?? [winner.id]).map(owner => getPlayer(g, owner));
         const army = combatArmy(g, winner.id, decision.territory);
-        const maximum = home ? army.normal + army.elite : at(winner, decision.territory);
+        const maximum = home ? army.normal + army.elite :
+          winningArmies.reduce((sum, owner) => sum + at(owner, decision.territory), 0);
         const sources = action.sources;
         requireRule(
           sources && typeof sources === 'object' && !Array.isArray(sources),
@@ -27653,16 +27675,17 @@ function applyActionInner(
             if (owner.elites) owner.elites.reserves = update.eliteReserves;
           }
         } else {
-        for (const key of Object.keys(winner.forces).filter(
-          (key) => splitLocation(key).territory === decision.territory,
-        )) {
-          winner.reserves += winner.forces[key];
-          if (winner.elites) {
-            winner.elites.reserves += winner.elites.forces[key] ?? 0;
-            delete winner.elites.forces[key];
+        for (const owner of winningArmies)
+          for (const key of Object.keys(owner.forces).filter(
+            (key) => splitLocation(key).territory === decision.territory,
+          )) {
+            owner.reserves += owner.forces[key];
+            if (owner.elites) {
+              owner.elites.reserves += owner.elites.forces[key] ?? 0;
+              delete owner.elites.forces[key];
+            }
+            delete owner.forces[key];
           }
-          delete winner.forces[key];
-        }
         }
         const leader = g.players
           .flatMap((player) => player.leaders)
@@ -29942,10 +29965,10 @@ function applyActionInner(
         gameDistance(g, x, y, key => splitLocation(key).sector === g.storm) === 0));
     if (g.advanced && ecaz && ally?.ally === ecaz.id && connected &&
       !isAdvisor(ally, choice.territory) && [choice.attacker, choice.defender].some(seat => seat === ecaz.id || seat === ally.id)) {
-      requireRule(!g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.strongholdCards &&
-        !g.techTokens && !g.discoveryEnabled && !g.ecazTreachery &&
-        g.players.every(player => faction(player.faction).expansion === 'base' || ['ecaz', 'moritani'].includes(player.faction)),
-        'Advanced combined Occupy battles support native Ecaz/classic/Moritani with base cards; optional modules and exotic faction battle composition require their source ruling.');
+      requireRule(ecazOccupyCompositionSupported(g) &&
+        (g.ecazOccupyPreview === true || g.players.every(player =>
+          faction(player.faction).expansion === 'base' || ['ecaz', 'moritani'].includes(player.faction))),
+        'Advanced combined Occupy supports source-selected native factions only in the fresh Occupy profile; Richese/No-Field and optional overlays remain gated.');
       g.battle.ecazOccupy = { event: battleEvent, ecaz: ecaz.id, ally: ally.id, lead: null, canceled: false };
       g.decision = { kind: 'ecazBattleLead', player: ecaz.id, event: battleEvent, choices: [ecaz.id, ally.id] };
     } else {

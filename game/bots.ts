@@ -2181,7 +2181,8 @@ function policyActions(g: GameView): Action[] {
       if (
         d.blocked ||
         !me.faceDancers?.some((c) => !c.revealed && c.leader === d.identity) ||
-        me.ally === d.winner
+        me.ally === d.winner || d.winners?.includes(me.id) ||
+        (!!me.ally && d.winners?.includes(me.ally))
       )
         return [{ type: 'decision', reveal: false }];
       const winner = g.players.find((p) => p.id === d.winner)!;
@@ -2191,7 +2192,10 @@ function policyActions(g: GameView): Action[] {
       const pool = world?.forces?.[winner.id];
       let needed = world
         ? (pool?.normal ?? 0) + (pool?.elite ?? 0)
-        : countAt(winner, d.territory);
+        : d.winners
+          ? g.players.reduce((sum, player) => sum +
+            (d.winners!.includes(player.id) ? fighterCount(player, d.territory) : 0), 0)
+          : countAt(winner, d.territory);
       const sources: Record<string, number> = world
         ? {}
         : {

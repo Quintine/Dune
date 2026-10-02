@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { territory, splitLocation } from '@/game/board';
 import type { Action, GameView } from '@/game/engine';
+import { fighterCount } from '@/game/advisors';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 export function FaceDanceDecision({
@@ -27,9 +28,10 @@ export function FaceDanceDecision({
     d?.kind === 'faceDance'
       ? world
         ? (foreign?.normal ?? 0) + (foreign?.elite ?? 0)
-        : Object.entries(g.players.find((p) => p.id === d.winner)!.forces)
-            .filter(([key]) => splitLocation(key).territory === d.territory)
-            .reduce((sum, [, count]) => sum + count, 0)
+        : d.winners
+          ? g.players.reduce((sum, player) => sum +
+            (d.winners!.includes(player.id) ? fighterCount(player, d.territory) : 0), 0)
+          : fighterCount(g.players.find((player) => player.id === d.winner)!, d.territory)
       : 0;
   const [sources, setSources] = useState<Record<string, number>>(
     world
@@ -65,9 +67,9 @@ export function FaceDanceDecision({
       {held ? (
         <>
           <p>
-            Return the winner’s {maximum} remaining forces to reserves. Replace
-            up to {maximum} with your forces. Their leader goes to the tanks
-            without a spice bounty.
+            Return the {d.winners ? 'winning allied side’s' : 'winner’s'} {maximum} remaining
+            forces to reserves. Replace up to {maximum} with your forces. The
+            selected winning leader goes to the tanks without a spice bounty.
           </p>
           {world && (
             <p>
