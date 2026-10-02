@@ -98,10 +98,33 @@ export function settledBoard(g: BoardContext) {
   });
   return { players, released };
 }
+export type BattleBoardBattle = {
+  territory: string;
+  attacker: string;
+  defender: string;
+  /** Actual co-side members, retained when one seat represents the joint army. */
+  coalition?: readonly string[];
+};
 export function quoteBattleBoard(g: BoardContext) {
   const { players, released } = settledBoard(g);
-  const battles: { territory: string; attacker: string; defender: string }[] =
-    [];
+  const battles: BattleBoardBattle[] = [];
+  const connected = (a: BoardSeat, b: BoardSeat, site: string) => {
+    const left = Object.entries(presenceByLocation(a))
+      .filter(([key, n]) => n > 0 && splitLocation(key).territory === site);
+    const right = Object.entries(presenceByLocation(b))
+      .filter(([key, n]) => n > 0 && splitLocation(key).territory === site);
+    const clear = (x: string, y: string) => gameDistance(g, x, y,
+      key => splitLocation(key === MOBILE_LOCATION ? (g.mobileStronghold?.location ?? key) : key).sector === g.storm) === 0;
+    return g.advanced
+      ? left.length > 0 && right.length > 0 && left.every(([x]) => right.every(([y]) => clear(x, y)))
+      : left.some(([x]) => right.some(([y]) => clear(x, y)));
+  };
+  const members = (seat: BoardSeat, site: string) => {
+    const ally = players.find(other => other.id === seat.ally && other.ally === seat.id);
+    return g.advanced && ally && (seat.faction === 'ecaz' || ally.faction === 'ecaz') &&
+      fighterCount(ally, site) > 0 ? [seat, ally] : [seat];
+  };
+  const emitted = new Set<string>();
   for (const id of g.order) {
     const p = players.find((p) => p.id === id)!;
     for (const t of gameTerritories(g)) {
@@ -114,31 +137,16 @@ export function quoteBattleBoard(g: BoardContext) {
           g.order.indexOf(other.id) < g.order.indexOf(id)
         )
           continue;
-        const keys = (s: BoardSeat) =>
-          Object.entries(presenceByLocation(s))
-            .filter(
-              ([key, n]) => n > 0 && splitLocation(key).territory === t.id,
-            )
-            .map(([key]) => key);
-        if (
-          keys(p).some((x) =>
-            keys(other).some(
-              (y) =>
-                gameDistance(
-                  g,
-                  x,
-                  y,
-                  (key) =>
-                    splitLocation(
-                      key === MOBILE_LOCATION
-                        ? (g.mobileStronghold?.location ?? key)
-                        : key,
-                    ).sector === g.storm,
-                ) === 0,
-            ),
-          )
-        )
-          battles.push({ territory: t.id, attacker: id, defender: other.id });
+        const left = members(p, t.id), right = members(other, t.id);
+        if (!left.every(a => right.every(b => connected(a, b, t.id)))) continue;
+        const sides = [left, right].map(side => side.sort((a, b) => g.order.indexOf(a.id) - g.order.indexOf(b.id)))
+          .sort((a, b) => g.order.indexOf(a[0].id) - g.order.indexOf(b[0].id));
+        const key = JSON.stringify([t.id, sides.map(side => side.map(seat => seat.id).sort())]);
+        if (emitted.has(key)) continue;
+        emitted.add(key);
+        const coalition = sides.find(side => side.length > 1);
+        battles.push({ territory: t.id, attacker: sides[0][0].id, defender: sides[1][0].id,
+          ...(coalition ? { coalition: coalition.map(seat => seat.id) } : {}) });
       }
     }
   }

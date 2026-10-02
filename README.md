@@ -239,6 +239,19 @@ rules, legal AI and human phone controls are bounded Development Verified;
 save/privacy/custody assurance follows all rules. See the
 [bounded integration](docs/STRONGHOLD_CARDS.md#expanded-e1e2-faction-rules).
 
+For local **Advanced Ecaz combined-army Occupy**, use
+`node --import tsx tools/start-prototype.ts --profile ecaz-occupy`
+with the existing `--db`, `--room`, `--version` and private `--out` arguments
+on a fresh ready2..6-seat Advanced lobby: native Ecaz, classic opponents,
+optional native Moritani, expansion `ecaz` alone and ordinary33 Treachery Cards.
+No three-card variant or other overlays. The selected lead owns leaders/cards/
+payment; total dial includes mandatory free `ceil(E/2)` plus native allied
+strength. Karama switches to the selected lead's own army, other ally zero.
+Whole participating armies must be clear and connected; BG's voluntary fighter
+choice remains. Rule/390px controls are bounded Development Verified, not full
+Ecaz/Basic/public-start acceptance. See the
+[authorized source and native proof](docs/ECAZ_OCCUPY_RULES.md#authorized-advanced-cutover--2-october-2026).
+
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
 [draw-pile counts](docs/DRAW_PILES.md).

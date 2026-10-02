@@ -16,14 +16,35 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**Requested priority — 2 October 2026:** development-speed improvements now
-precede resuming rule content. Implement all remaining rules first; comprehensive
+**Requested priority — 2 October 2026:** throughput improvements are verified
+and rule content has resumed. Implement all remaining rules first; comprehensive
 review and save/recovery/privacy/custody assurance follow afterward, not at each
 prototype. Keep legal rule behavior, usable controls, minimal legal AI and
 changed-path smoke. Existing games are not reset/deleted; secret protection,
 authorization and deployment/publication safeguards remain intact. Use the
 [bounded context index](DEVELOPMENT.md#context-index) and
 [feedback/proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule).
+
+**Advanced Ecaz Occupy — bounded Development Verified:** the authorized
+supplied PDF physical32/19 resolves ceiling-half free Ecaz contribution,
+floor-half ordinary survivors and selected-lead-own forces after Karama.
+Whole-army Advanced storm eligibility (physical6/11) retains canonical
+co-side membership for native voluntary BG advisor conversion. Basic and the
+specific Ecaz-only Duke/Ghola decision stay unchanged.
+Seven actual native-program cases and named repair feedback18/18 pass, with
+types/lint, all four actual legal policies and two original CLI/human390px
+battles: **Q5Z2WH8X v22**, Ecaz lead total9/free Fedaykin leaves Ecaz2/Fremen0;
+**LZHMY454 v14**, printed Karama, own dial1/support1 leaves Ecaz2/Guild4 and
+debits exactly1. Both reach original Collection. Source/rule and integration
+reviews have no remaining finding. Fresh profile remains Ecaz/classic/optional
+Moritani2..6 Advanced, base33/no overlays; full Ecaz and public starts remain gated.
+See [the cutover and proof](ECAZ_OCCUPY_RULES.md#authorized-advanced-cutover--2-october-2026).
+Final coherent affected rule/guide **173/173** passes. Current-source five
+unstaged2..6 games complete:2,123 accepted actions, zero rejections and54JSON
+continuations, `sourceUnchanged:true`. They contain no combined lead choice;
+the seven native cases and human rooms prove that path, not these game samples.
+Final types/lint, corrected guide10/10, build and390px Partial/Development
+Verified guide pass; six changed-region local links/anchors are valid.
 
 **Development-throughput improvements implemented and verified:** default
 test output preserves failures/details/stdout/stderr/counts while omitting
@@ -37,8 +58,8 @@ Identical15-case native rule runs emitted278 bytes/12 lines concise versus
 Named Carthag feedback took0.90s; discovery-only list0.18s. The earlier162-case
 union took100.22s with different coverage; use narrow failing-case feedback
 before one coherent affected batch. Canonical context index/handoff avoids
-mass file moves or duplicate ruling registries. Resume preserved Stronghold
-rule/control work now; do not restart save/privacy/custody/seat audit campaigns.
+mass file moves or duplicate ruling registries. Preserved Stronghold work is
+verified and Advanced Ecaz rule work has resumed; no new assurance campaigns.
 Code checkpoint **e9830b6ced80c95253cfa112bb8ed2eb6e50b74c** is pushed.
 [Exact mandatory CI36941218637](https://github.com/Quintine/Dune/actions/runs/36941218637),
 job110632894258, completed/success: existing isolated storage/HTTP verification

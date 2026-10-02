@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 2 October 2026 — authorized Advanced Ecaz Occupy combined-army rules
+
+The user-authorized supplied revision, physical32/19, resolves the Advanced
+ceiling-half free Ecaz contribution, floor-half ordinary survivors and selected
+lead's own army after Karama. Basic is unchanged; specific Ecaz-only Duke/Ghola
+revival stays above the sheet's contrary exception. Fresh `ecaz-occupy` is
+Ecaz/classic/optional Moritani2..6 Advanced, base33/E3 faction source alone,
+no independent three-card variant or other overlays, public start or retrofit.
+
+Four bounded owners supplied pure rules, native runtime, usable controls and
+genuine setup/CLI/study entry. Two rule-only reviewers found a whole-army storm
+eligibility defect and suppressed voluntary BG conversion. The exact supplied
+physical6/11 wording rejects component-only plans/casualties: whole armies
+must be clear/connected. Canonical quote membership now preserves BG's native
+opportunity. Native before/after storm reproduction changes an isolated ally
+battle offer to none while clear armies retain one. Final reviews find no defect.
+
+Exact first E1 native case passed. Narrow feedback repaired seat-circle no-op,
+real arrival-decision suffix, exhaustive lead-decision registries and stable
+closure narrowing. A typed outcome test now checks printed-strength physical
+alternatives rather than incidental array order; copied plan echo assertions
+were removed. Named repaired cases18/18, types/lint, seven actual native-program
+cases and all four actual policy lead/cancellation branches pass.
+
+Original CLI/human390px **Q5Z2WH8X v22** selected Ecaz lead, minimum3/total9
+with free Fremen/Fedaykin6; native battle left Ecaz2/Fremen0 and unchanged
+Ecaz spice5. **LZHMY454 v14** used real printed Karama after Ecaz lead,
+recomputed minimum0/own pool3, sealed dial1/support1 and left Ecaz2/Guild4,
+with exactly1 Ecaz support debit. Both resumed original Collection.
+
+Final coherent affected rule/guide **173/173** passes. The current-rule five
+unstaged2..6 games complete with2,123 accepted actions/no rejections and54JSON
+continuations, `sourceUnchanged:true`, ordinary33/E3 report metadata. No sample
+uses a combined lead choice; those games prove profile continuation, while
+named actual native cases and human rooms prove the rare combined battle path.
+The earlier pre-storm-fix report is preserved as different-source evidence.
+
+Final `check:quick` types/lint, corrected canonical guide10/10 and build pass.
+The final390px guide shows Partial / Development: Verified, not full faction
+acceptance. Six changed-region local links/anchors are valid. Actual CLI help
+and both exact-version fresh starts pass. Owned temporary rule drivers are
+removed; four managed control/guide tabs and both isolated workers are closed.
+
+No new recovery/privacy/custody/seat/HTTP-suite or full6,500-suite assurance
+campaign was added. Full rules and later comprehensive review/assurance,
+administration and deployed acceptance remain unfinished.
+
 ## 2 October 2026 — expanded Stronghold No-Field, Stone and Face Dancer rules
 
 The existing `stronghold-factions` profile now composes selected E1/E2 native

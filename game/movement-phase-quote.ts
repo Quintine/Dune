@@ -92,7 +92,7 @@ export function quoteAdvisorBattleOffer(g: AdvisorContext) {
       });
       return candidate.battles.some(
         (b) =>
-          b.territory === t && (b.attacker === bg.id || b.defender === bg.id),
+          b.territory === t && (b.attacker === bg.id || b.defender === bg.id || b.coalition?.includes(bg.id)),
       );
     });
     return { released: board.released, owner: bg.id, territories };

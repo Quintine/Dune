@@ -23,6 +23,7 @@ const optionalCount = (value: unknown) => value === undefined || count(value);
 const nullableCount = (value: unknown) => value === null || count(value);
 
 const decisions = {
+  ecazBattleLead: true,
   harassWithdraw: true,
   diplomatDefense: true,
   diplomatRetreat: true,
@@ -108,6 +109,7 @@ const responses = {
   moritaniPlacement: true,
   ecazPlacement: true,
   ecazCollection: true,
+  ecazOccupy: true,
   moritaniAlliance: true,
   moritaniDuke: true,
   moritaniRetention: true,

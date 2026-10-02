@@ -12,6 +12,8 @@ import { HandBrowser } from './hand-browser';
 import { LobbyBotControls } from './lobby-bot-controls';
 import { AdvancedPreviewNotice, RulesetControls } from './ruleset-controls';
 import { IxRicheseTechnology } from './ix-richese-technology';
+import { EcazOccupyLeadChoice, EcazOccupyBattleSummary, EcazOccupyDialExplanation } from './ecaz-occupy';
+import { ecazOccupyOwnProfile, ecazOccupyPlanControl } from '@/game/ecaz-occupy-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
 import {
   matchesShipment,
@@ -424,27 +426,34 @@ export function GameTable({
     ),
   );
   const ownBattleForces = g.battle?.ownForces;
+  const occupyProfile = ecazOccupyOwnProfile(g);
+  const battleDialMinimum = occupyProfile?.fixedEcazDial ?? 0;
+  const battleFreeSupport = ownBattleForces?.freeSupport ??
+    (me.faction === 'fremen' && !g.battle?.fremenSupportBlocked);
+  const battleForceOwnerName = occupyProfile
+    ? g.players.find((player) => player.id === occupyProfile.forceOwner)?.name ?? occupyProfile.forceOwner
+    : me.name;
   const battleForces = ownBattleForces
     ? ownBattleForces.normal + ownBattleForces.elite
     : g.battle
       ? fighterCount(me, g.battle.territory)
       : 0;
-  const battleDialMaximum = ownBattleForces
+  const battleDialMaximum = occupyProfile?.maxDial ?? (ownBattleForces
     ? maxCombatDial(ownBattleForces)
     : g.advanced || me.faction === 'ixians'
       ? 40
-      : battleForces;
+      : battleForces);
   const battleDialStep = g.advanced || me.faction === 'ixians' ? 0.5 : 1;
   // A draft carried from a previous battle must show and submit the same bounded value.
   const battleDial = Number.isFinite(dial)
     ? Math.max(
-        0,
+        battleDialMinimum,
         Math.min(
           Math.round(dial / battleDialStep) * battleDialStep,
           battleDialMaximum,
         ),
       )
-    : 0;
+    : battleDialMinimum;
   const [support, setSupport] = useState(0);
   const [bankerSpice, setBankerSpice] = useState(0);
   const strongholdBankSupport =
@@ -537,12 +546,15 @@ export function GameTable({
     leader: me.leaders.find(l => l.id === selectedBattleLeader), weapon: selectedBattleWeapon,
     defense: selectedBattleDefense, kwisatz: selectedBattleKwisatz,
   }, smugglerBattleModeSupported(g), { territory: g.battle.territory, spice: g.spice }) : null;
+  const occupyControl = ecazOccupyPlanControl(g,
+    committed.dial ? Number(committed.dial.value) : battleDial,
+    battleFreeSupport ? 0 : battleSupport);
   const battlePairValid = validBattleSlotPair(selectedBattleWeapon, selectedBattleDefense,
     !!selectedBattleWeapon && planetologistSpecial(selectedBattleWeapon));
   const harassControl = harassWithdrawControlState(g.battle?.harassWithdraw,
     selectedWeaponId === 'ecaz-harass-withdraw' || selectedDefenseId === 'ecaz-harass-withdraw',
     committed.dial ? Number(committed.dial.value) : battleDial,
-    me.faction === 'fremen' && !g.battle?.fremenSupportBlocked ? 0 : battleSupport);
+    battleFreeSupport ? 0 : battleSupport);
   const selectedSpecialWeapon = me.hand?.find(
     (c) => c.id === selectedWeaponId && (isStoneBurner(c) || isMirrorWeapon(c)),
   );
@@ -2128,6 +2140,7 @@ export function GameTable({
                     moritaniDuke: 'Moritani · Duke Vidal acquisition',
                     ecazPlacement: 'Ecaz Ambassador placement',
                     ecazCollection: 'Ecaz stronghold collection',
+                    ecazOccupy: 'Ecaz combined-army Occupy',
                     moritaniPlacement:
                       'Moritani Terror placement or relocation',
                     choamRevival: 'CHOAM force revival',
@@ -2193,6 +2206,7 @@ export function GameTable({
                   }[g.response.kind]
                 }
               </h2>
+              <EcazOccupyBattleSummary game={g} />
               {g.paymentIncome?.low && (
                 <p className="notice">
                   Of the {g.paymentIncome.gross} spice payment,{' '}
@@ -2432,7 +2446,9 @@ export function GameTable({
             <>
               <span className="eyebrow">Player decision</span>
               <h2>
-                {g.decision.kind === 'ixRicheseTechnology'
+                {g.decision.kind === 'ecazBattleLead'
+                  ? 'Ecaz · choose the combined-army lead'
+                  : g.decision.kind === 'ixRicheseTechnology'
                   ? 'Ixian Technology · Richese lot'
                   : g.decision.kind === 'caladanReinforcement'
                   ? 'Caladan victory reinforcement'
@@ -2857,6 +2873,8 @@ export function GameTable({
               ) : g.decision.kind === 'choamAudit' ||
                 g.decision.kind === 'choamAuditPayment' ? (
                 <AuditorDecision game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'ecazBattleLead' ? (
+                <EcazOccupyLeadChoice game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'strongholdCopy' ? (
                 <StrongholdCopyChoice
                   event={g.decision.event}
@@ -4722,6 +4740,7 @@ export function GameTable({
                     {' '}Tied battle: {g.players.find(p => p.id === g.battle!.tieWinner)?.name}
                     {g.battle.tieWinner !== g.battle.aggressor ? ' (Habbanya Stronghold advantage)' : ''}.
                   </p>
+                  <EcazOccupyBattleSummary game={g} />
                   {!g.battle.revealed && g.battle.leaderless.length > 0 && (
                     <p className="notice block" role="status">
                       {g.battle.leaderless.map(id => g.players.find(p => p.id === id)?.name).join(', ')}
@@ -4857,13 +4876,15 @@ export function GameTable({
                         {!g.battle.submitted.includes(me.id) ? (
                           <>
                             <label htmlFor="forces-dialed">
-                              Forces dialed <HelpTip topic="dial" />
+                              {occupyProfile ? 'Total forces dialed' : 'Forces dialed'} <HelpTip topic="dial" />
                               {me.faction === 'ixians' && (
                                 <HelpTip topic="ixForces" />
                               )}
                             </label>
                             <BattleWheel
                               id="forces-dialed"
+                              min={battleDialMinimum}
+                              sliderLabel={occupyProfile ? 'Total forces dialed slider' : 'Forces dialed slider'}
                               max={battleDialMaximum}
                               step={battleDialStep}
                               value={
@@ -4874,11 +4895,16 @@ export function GameTable({
                               disabled={busy || !!committed.dial}
                               onChange={setDial}
                             />
+                            <EcazOccupyDialExplanation game={g}
+                              dial={committed.dial ? Number(committed.dial.value) : battleDial}
+                              support={battleFreeSupport ? 0 : battleSupport} />
                             <p className="fine">
                               {ownNoField &&
                               g.battle.noFieldPlayers.includes(me.id)
                                 ? `Your concealed No-Field can reveal ${battleForces} physical forces from your current reserves. This estimate is private.`
-                                : `You have ${battleForces} fighting forces here.`}
+                                : occupyProfile
+                                  ? `${battleForceOwnerName} supplies ${battleForces} physical fighters for the variable dial.`
+                                  : `You have ${battleForces} fighting forces here.`}
                             </p>
                             {!!ownBattleForces?.temporaryElite && (
                               <p className="notice">
@@ -4887,20 +4913,18 @@ export function GameTable({
                             )}
                             {ownBattleForces?.normalFreeSupport && (
                               <p className="notice">
-                                Your Suboids fight at full strength without spice support this turn. Spice support here applies only to Cyborgs.
+                                The variable army’s Suboids fight at full strength without spice support this turn. Spice support here applies only to Cyborgs.
                               </p>
                             )}
                             {ownBattleForces?.eliteFreeSupport && (
                               <p className="notice">
-                                Salusa Secundus is at high population. Your
+                                Salusa Secundus is at high population. The variable army’s
                                 Sardaukar fight at their full current strength
                                 without spice support; normal forces still
                                 require support.
                               </p>
                             )}
-                            {g.advanced &&
-                              (me.faction !== 'fremen' ||
-                                g.battle.fremenSupportBlocked) && (
+                            {g.advanced && !battleFreeSupport && (
                                 <label htmlFor="battle-spice">
                                   Spice support
                                   {strongholdBankSupport > 0 && (
@@ -5121,8 +5145,7 @@ export function GameTable({
                                   ? { allyPayment: Number(allyPayment) }
                                   : {}),
                                 support:
-                                  me.faction === 'fremen' &&
-                                  !g.battle.fremenSupportBlocked
+                                  battleFreeSupport
                                     ? 0
                                     : battleSupport,
                                 kwisatz: selectedBattleKwisatz,
@@ -5131,7 +5154,7 @@ export function GameTable({
                                 weapon,
                                 defense,
                               }),
-                              !!stonePlanReason || !!harassControl.blocked || !!smugglerPlanReason || !!reinforcementsPlanReason || !battlePairValid,
+                              !!occupyControl?.blocked || !!stonePlanReason || !!harassControl.blocked || !!smugglerPlanReason || !!reinforcementsPlanReason || !battlePairValid,
                             )}
                           </>
                         ) : (

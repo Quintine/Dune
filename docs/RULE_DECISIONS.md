@@ -1,6 +1,6 @@
 # Rule decision index
 
-Updated 1 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+Updated 2 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
 ## Authorized source amendment — 1 October 2026
 
@@ -84,6 +84,32 @@ and publication; that does not update the last observed live revision.
 Public, faction, optional-module and full-mode readiness gates are unchanged.
 Secrecy (physical page 16), Duke Vidal's ghola exception (30), Kull and other
 independent decisions are not reconciled by this cutover.
+
+## Advanced Ecaz Occupy cutover — 2 October 2026
+
+The authorized supplied revision resolves the Advanced combined army:
+**Occupy B, physical PDF page 32** selects Ecaz or its current ally as lead.
+The lead uses its own leaders, cards and spice. The total dial includes
+`ceil(Ecaz fighters / 2)` mandatory, full-strength, free Ecaz contribution
+plus the chosen allied army strength. An ordinary win leaves
+`floor(Ecaz fighters / 2)` Ecaz survivors and separately settles the variable
+allied army's native dial losses.
+
+The **Ecaz Karama row, physical PDF page 19** preserves that selected lead
+but substitutes the lead's own army; the other ally contributes zero.
+This supersedes the historical Advanced rounding/cancellation source gap,
+not Basic and not a newly located GF9/designer erratum. The specific user
+decision that **only Ecaz revives Duke Vidal, including by Ghola**, remains
+above the supplied sheet's contrary exception.
+
+The fresh, bounded `ecaz-occupy` rule/control implementation is **Partial /
+Development Verified**. Whole participating armies must be clear and connected
+under physical pages6/11; canonical co-side membership preserves voluntary BG
+advisor conversion. Basic is unchanged. Optional/exotic compositions and full
+Ecaz acceptance remain open. See the
+[source comparison and exact cutover](ECAZ_OCCUPY_RULES.md#authorized-advanced-cutover--2-october-2026).
+Comprehensive recovery/privacy/custody review follows all rules rather than
+becoming another prototype assurance wave.
 
 ## Recorded contracts and implementation boundaries
 

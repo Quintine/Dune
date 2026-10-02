@@ -9,6 +9,7 @@ import {
   initializeNexusGameForAudit,
   initializeMoritaniAssassinateGameForAudit,
   initializeEcazTreacheryGameForAudit,
+  initializeEcazOccupyGameForAudit,
   initializeSemutaGameForAudit,
   initializeKullGameForAudit,
   initializeRicheseBetrayalGameForAudit,
@@ -32,6 +33,7 @@ export const PROTOTYPE_PROFILES = [
   'nexus',
   'moritani-assassinate',
   'ecaz-treachery',
+  'ecaz-occupy',
   'semuta',
   'kull',
   'richese-betrayal',
@@ -86,6 +88,8 @@ export function startPrototypeRoom(
         ? initializeStrongholdFactionsGameForAudit(initial)
       : profile === 'ecaz-treachery'
         ? initializeEcazTreacheryGameForAudit(initial)
+      : profile === 'ecaz-occupy'
+        ? initializeEcazOccupyGameForAudit(initial)
       : profile === 'moritani-assassinate'
         ? initializeMoritaniAssassinateGameForAudit(initial)
       : profile === 'semuta'

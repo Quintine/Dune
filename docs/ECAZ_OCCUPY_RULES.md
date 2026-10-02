@@ -1,6 +1,81 @@
-# Ecaz Occupy: source conflict and implementation contract
+# Ecaz Occupy: Advanced source and historical conflict
 
-Primary-source audit, 2026-09-07, corrected after independent verification. **The casualty-rounding conflict remains unresolved by an authoritative correction.** An earlier version of this document incorrectly attributed a community member's proposed numerical correction to designer Jack Reda. That attribution and the resulting claim of resolution are withdrawn. The allied-entry and battle-role clarification below is a separate, verified designer statement.
+Historical primary-source audit, 2026-09-07, corrected after independent verification. The old publisher/designer casualty-rounding conflict remains unresolved as a publisher correction and for Basic. Its earlier false attribution to Jack Reda is still withdrawn. The later user-authorized Advanced source below selects explicit Advanced arithmetic; it does not retroactively certify that attribution.
+
+## Authorized Advanced cutover — 2 October 2026
+
+The user authorized the root `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`
+as Advanced source of truth on1 October, including its identified unofficial
+rulings. Exact revision/SHA and metadata2.3/editorial2.2 are bound by
+[the source amendment](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
+Its **physical p32 / logical p30 Occupy B** explicitly supplies:
+
+```text
+Advanced mandatory Ecaz dial contribution = ceil(E / 2), fully supported
+Advanced ordinary-win Ecaz survivors = floor(E / 2)
+Advanced ordinary-win Ecaz losses = ceil(E / 2), separately from ally dial losses
+```
+
+Ecaz chooses the lead faction; that faction supplies its actual leader/cards/
+plan and spice, while the active variable dial always uses **Ecaz's ally's**
+force pool plus the fixed Ecaz contribution, regardless of lead.
+**Physical p19 / logical p17 Ecaz Karama row** explicitly
+changes a prevented Occupy to the SELECTED LEAD'S OWN force pool, with its
+other ally contributing zero. Keep the selected lead and recompute legality
+before plans; do not silently inherit the ally's pool when Ecaz leads.
+
+Storm Obstruction (**physical p6**) and Battle Determination (**physical p11**)
+forbid battle if any participating forces are in storm or separated by it.
+Advanced eligibility therefore checks the whole participating territory armies,
+including both coexisting allies; it does not invent component-only battle
+plans or casualties. The canonical board quote retains actual co-side membership
+when one seat represents the coalition, so an unlocked BG advisor may still
+voluntarily become a fighter through its native pre-movement opportunity.
+
+This is an authorized Advanced software/source cutover, **not** a new GF9/
+designer erratum or a Basic ruling. Basic's earlier conflict stays separate.
+The specific user Ecaz-only Duke revival/Ghola decision remains higher-priority
+than the contrary revival exception printed on that sheet.
+
+Advanced combined-army implementation is **Partial / Development Verified**:
+native selection, owner-labelled force/support/loss settlement, printed/BG
+prevention, human controls and all four minimal legal policies. Ordinary
+canceled-win non-dialed ally
+retention and canceled-defeat whole-side destruction compose the base same-side
+outcome, not a newly located special casualty FAQ. Exotic/optional combinations
+remain explicit. Source/controls/rule runtime are developed now; comprehensive
+save/privacy/custody assurance follows all rules under the2 October priority.
+
+### Bounded native rule and control proof
+
+The fresh local `ecaz-occupy` profile admits Ecaz/classic/optional Moritani,
+2..6-seat Advanced, ordinary33 Treachery Cards and the E3 faction setup alone.
+It does not select the independent three-card variant, other overlays, public
+expansion starts or an existing-game retrofit.
+
+Seven actual native-program cases exercise E1/E5 free fixed contribution,
+both plan/payer leads, native Fremen/Fedaykin and Emperor/Sardaukar, and both
+canceled lead-own branches through original Collection continuation. Exact
+odd/even, storm-relative order, traitor, mutual-traitor, explosion, printed/
+BG Karama and next-turn cases have meaningful rule regressions. A reproduced
+storm-isolated joint battle now has no offer; clear whole armies retain one
+offer and their actual co-side membership. The existing voluntary BG advisor
+offer is preserved, not re-pinned to absence. Final scoped reviews find no defect.
+
+Original CLI/human390px **Q5Z2WH8X v22** chose Ecaz lead and total9:
+mandatory Ecaz3 plus free Fremen/Fedaykin6. Native resolution left Ecaz2,
+Fremen0, Ecaz spice unchanged5 and original Collection. **LZHMY454 v14**
+used real printed Karama after Ecaz lead, recomputed minimum0/own pool3,
+sealed dial1/support1, and resolved with Ecaz2/Guild4, one actual Ecaz
+support debit and original Collection. All four policies actually seal native
+legal plans for either lead, active or canceled.
+
+The coherent affected rule/guide batch passes **173/173**. Current-source
+five unstaged2..6 games complete with2,123 accepted actions, no rejections
+and54JSON continuations, `sourceUnchanged:true`. No game sample triggers
+a combined lead choice: profile continuation is observed there, while the
+native cases and human rooms establish the actual combined rule path.
+
 
 ## Provenance and attribution correction
 
@@ -23,7 +98,7 @@ Ecaz losses on ordinary allied win = ceil(E / 2)
 Ecaz survivors on ordinary allied win = floor(E / 2)
 ```
 
-The partial revision supports the upward contribution, but for E=5 the example's two losses/three survivors conflicts with p.8's three losses/two survivors. The [earlier Ambassador audit](ECAZ_AMBASSADORS_RULES.md#material-adjacent-source-discrepancy-occupy) and [remaining-effects readiness](ECAZ_REMAINING_EFFECTS_READINESS.md) therefore remain correct to identify a source gap. A primary correction or explicit supported interpretation is still needed before claiming that combat implementation fully resolves it. Ecaz's fixed contribution is not a selectable dial, and its independent losses must not also be charged against the ally's chosen dial; those structural requirements do not depend on which rounding sentence wins.
+The historical publisher/mirror example still conflicts for E=5, and the earlier audits correctly record that publisher gap. Basic still needs a supported interpretation. Advanced now uses the separately user-authorized source cutover above: its explicit ceil contribution and floor survivors select the arithmetic without claiming a designer correction. Fixed Ecaz losses stay independent of the ally's variable dial losses.
 
 ## Occupation, controller and battle order
 
@@ -70,10 +145,10 @@ An Advanced BG Worthless conversion uses the same substantive timing and result 
 
 The p.16 row explicitly states zero combat contribution for the non-battling ally but does not itself give a full casualty sentence for that canceled case. Ordinary-winning-side retention and losing-side destruction are a plausible composition; do not advertise an independently retrieved designer ruling on that consequence. This is a separate source check from native rounding.
 
-## Recommended bounded next slice
+## Historical bounded recommendation
 
 Implement a pure, owner-labelled Occupy battle profile shared by validation, AI, public preview and actual scoring: current Ecaz/ally side; selected combatant; battle-order actor; dialed force owner; exact Ecaz contribution; ordinary winner casualty split; and canceled profile. Keep the rounding policy explicit until resolved; retain storm-separated and advisor exclusions, and never read the non-selected ally's hand. Integrate a durable public combatant-selection stage and the pre-plan Karama opportunity before admitting plans. The p.8 arithmetic can be represented as a labelled candidate in an isolated pure helper, but an execution path must not silently treat it as a designer-corrected rule. The independently supported allied-entry and battle-side identity work is the safer immediate production slice.
 
 Acceptance examples should include Ecaz counts 1–5, either selected faction, all three relative storm positions, both win/loss outcomes, Basic/Advanced supported dials, Fremen free strength, advisor-only BG exclusion, printed and BG-converted cancellation, and JSON recovery after selection. Separate targeted follow-ups should cover the source-scoped special battle effects above, agreed/default desert allocation, Advanced Collection, and actual three-co-occupied victory. Keep the optional Homeworld/Nexus/Discovery modifiers explicitly outside the initial profile until their own faces and outcomes are wired; no ordinary Occupy rule may be used to bypass them.
 
-No runtime, tests, mode gates, or prior source documents were changed in this audit. The prior false designer-erratum attribution is explicitly corrected above. Native rounding, advanced interactions and canceled-loss semantics remain separate evidence boundaries.
+The September audit changed no runtime and corrected the false designer attribution. The October Advanced cutover above is separate; Basic, optional/exotic interactions and independently unanswered cancellation details retain their historical boundaries.

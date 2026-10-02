@@ -1252,6 +1252,29 @@ export const RULE_TOPICS: RuleTopic[] = [
     }),
   ),
   {
+    id: 'ecaz-occupy',
+    title: 'Advanced Ecaz Occupy: combined-army battles',
+    category: 'Advanced & expansions',
+    coverage: 'Partial',
+    developmentStage: 'Verified',
+    summary: 'Ecaz chooses who leads its combined army. The authorized Advanced revision supplies mandatory Ecaz strength and lead-own forces after Karama; the bounded fresh local rule and human controls are Development Verified.',
+    steps: [
+      'When reciprocal Ecaz allies coexist with fighting forces, Ecaz chooses Ecaz or its ally to lead. Every participating whole-territory army must be clear of storm and connected; no component-only battle or casualties are created. The selected lead uses its own leaders, Treachery cards and spice; the original battle-order chooser is not replaced. Advisors are not fighters but retain their native voluntary fighter-conversion opportunity.',
+      'With Occupy active, the total dial includes the ceiling of half the Ecaz fighters as mandatory full-strength contribution without spice cost, plus the chosen allied army strength. The variable army retains its native Fremen/Fedaykin or Emperor/Sardaukar properties even when Ecaz forms the plan.',
+      'An ordinary victory leaves the floor of half the Ecaz fighters alive and separately applies the variable army’s dial losses. A sole successful Traitor-call winner preserves both armies; an ordinary defeat, mutual Traitor result or resolved explosion removes the actual combined side. Ecaz and its ally share the printed same-faction Traitor/Face Dancer relation.',
+      'Eligible Karama can prevent Occupy after the lead choice and before powers/plans. The chosen lead remains lead and dials its own army; the other ally contributes zero. The plan editor then uses the new force pool and no fixed Ecaz strength.',
+      'These numbers come from the user-authorized revised Advanced PDF, physical pages 32 and 19, not a newly located publisher erratum. Basic is unchanged. The specific Ecaz-only Duke revival/Ghola decision remains. Fresh local ecaz-occupy uses Ecaz/classic/optional Moritani two-to-six-seat Advanced, base33 ordinary cards and no other overlays; full Ecaz and public starts remain gated.',
+    ],
+    checklist: [
+      { area: 'Implementation', status: 'Partial', detail: 'Combined-side enumeration, explicit lead choice, native Occupy response and owner-labelled physical dial/outcome integration are implemented. Optional/exotic compositions remain open.', evidence: ['game/ecaz-occupy-battle.ts', 'game/board-resolution-quote.ts', 'game/battle-resolution-quote.ts', 'game/engine.ts'] },
+      { area: 'Player controls', status: 'Partial', detail: 'Human390px original CLI rooms exercised Ecaz lead, free Fremen/Fedaykin total9 with minimum3, real printed Karama prevention, and canceled lead-own dial1/support1 with minimum0. Both battles reached native Collection with the expected physical survivors.', evidence: ['components/ecaz-occupy.tsx', 'components/game-table.tsx', 'game/ecaz-occupy-options.ts'] },
+      { area: 'AI', status: 'Partial', detail: 'All four native policies actually seal legal total plans for either lead, active or canceled, using native leaders/cards and physical support. Strategy remains deferred.', evidence: ['game/ecaz-occupy-options.ts', 'game/bots.ts', 'tests/ecaz-occupy-options.test.ts'] },
+      { area: 'Documentation', status: 'Implemented', detail: 'Authorized Advanced arithmetic/cancellation, unchanged Basic and specific Duke override are separated from historical source gaps and optional-module gates.', evidence: ['docs/ECAZ_OCCUPY_RULES.md', 'docs/RULE_DECISIONS.md', 'game/reference.ts'] },
+      { area: 'Verification', status: 'Partial', detail: 'Development Verified for the bounded source: actual seven-case native program, before/after whole-army storm proof, typed/odd/even/traitor/outcome and all-policy cases, and two human390px native battles. Five unstaged2..6 games complete with2123 accepted actions/no rejection; those samples contain no combined lead choice, so they prove profile continuation, not that rare rule path. Full Ecaz and optional compositions remain open; comprehensive assurance follows all rules.', evidence: ['tests/ecaz-occupy-battle.test.ts', 'tests/ecaz-occupy-options.test.ts', 'tests/ecaz-occupy-runtime.test.ts', 'tests/board-resolution-quote.test.ts', 'tools/faction-games.ts', 'docs/ECAZ_OCCUPY_RULES.md'] },
+    ],
+    related: ['faction-ecaz', 'advanced-ecaz', 'ecaz-ambassadors', 'battle', 'victory', 'implementation-checklist'],
+  },
+  {
     id: 'ecaz-loyalty',
     title: 'Ecaz Loyalty: public Traitor Card',
     category: 'Advanced & expansions',
@@ -1298,7 +1321,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'The Guild Ambassador grants an immediate free shipment of zero through four physical reserve forces for Ecaz or its ally, including typed elites. Choose a clear territory and sector; this does not spend ordinary shipment or movement, ally aid or a retained rate card. Fremen may use destinations outside their ordinary reinforcement radius, but their southern reserves stay on-planet and this effect never permits storm entry. Only Ixians may ship directly into their placed mobile stronghold.',
       'During Shipment and Movement, Guild can use its special Karama to stop another eligible off-planet Ambassador shipment before forces arrive; it does not stop this grant during a phase-one worm sequence. A successful off-planet shipment may invite Bene Gesserit accompaniment and accrues applicable phase-five Heighliner income once. BG can accompany Ixians into the mobile stronghold. Projected accompaniment choices show blocked sectors and keep Polar Sink and decline available when legal. Intrusion, separate Terror and accompanying fighter-triggered Ambassadors finish before the original entrant or worm rider resumes.',
       'No-Field substitution into the free four-force grant remains unavailable. In bounded classic plus Ecaz/Moritani games, a shared Ambassador/Terror entry gives both owners saved optional prompts in current storm order without repeating the committed entry; this is a provisional table order, not a printed publisher priority. Competing Intrusion and Ambassador-created Fremen/Guild child arrivals remain gated. Atomics Aftermath, Homeworlds, Nexus and Discovery combinations do not gain coverage from this first overlap path.',
-      'All eleven effect guides are readable. Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen and Guild entry effects are integrated, together with Bene Gesserit copies of those eight effects and direct Duke acquisition or consensual alliance through the reusable Ecaz token. The remaining effects, combined Occupy combat, exceptional Duke custody and complete Ecaz rules remain unfinished. Mobile stronghold placement is gated. Full Ecaz starts remain disabled.',
+      'All eleven effect guides are readable. Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen and Guild entry effects are integrated, together with Bene Gesserit copies of those eight effects and direct Duke acquisition or consensual alliance through the reusable Ecaz token. Advanced combined Occupy has a separate bounded Development Verified guide; Basic Occupy, remaining effects, exceptional Duke custody and complete Ecaz rules remain unfinished. Mobile stronghold placement is gated. Full Ecaz starts remain disabled.',
     ],
     checklist: [
       {

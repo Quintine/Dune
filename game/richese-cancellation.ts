@@ -4,6 +4,7 @@ import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
 // Exhaustive typed discriminants for the existing engine control unions. These
 // are envelope checks, not a duplicate implementation of each future choice.
 const DECISIONS = {
+  ecazBattleLead: true,
   leaderSkillVisibility: true,
   leaderSkillRevival: true,
   moritaniAssassinate: true,
@@ -89,6 +90,7 @@ const RESPONSES = {
   moritaniPlacement: true,
   ecazPlacement: true,
   ecazCollection: true,
+  ecazOccupy: true,
   moritaniAlliance: true,
   moritaniDuke: true,
   moritaniRetention: true,

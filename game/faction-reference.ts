@@ -169,12 +169,14 @@ export const FACTION_RULES: Record<
       'Your Ecaz Ambassador can acquire an available Duke Vidal or offer an alliance when both participants are unallied. Duke availability, loans and custody use his separate rules.',
       'You and your ally may share territories. Divide shared desert spice by agreement; without agreement, divide as equally as possible and give the odd spice to your ally. Both factions occupying each of three qualifying strongholds provides an allied victory route.',
       'When you are allied with Fremen, sharing Sietch Tabr does not itself prevent the Fremen special victory. Its other conditions still apply.',
-      'Combined Occupy combat, Tleilaxu Ambassador revival, Duke loans and revival, and competing arrival reactions remain unfinished. The connected Sietch Tabr exception does not establish every special-victory combination.',
+      'Basic combined Occupy combat, Tleilaxu Ambassador revival, Duke loans and exceptional custody, and remaining competing arrival reactions are unfinished. The connected Sietch Tabr exception does not establish every special-victory combination.',
     ],
     advanced: [
       'At Spice Collection, both allies receive the normal bank income from a jointly occupied Arrakeen, Carthag or Tuek’s Sietch. Canceling Ecaz’s Collection benefit leaves the ally’s income intact.',
       'Loyalty: before initial Traitor dealing, randomly set aside one of your five native Traitor Cards face up for everyone. It stays outside the deck for the whole game, including later Traitor and Face Dancer draws. Karama cannot prevent this automatic power; the corresponding leader disc is unchanged.',
-      'Loyalty and Collection have connected development implementations. Remaining Advanced powers and combined interactions are still being completed; this sheet is not a complete faction certification.',
+      'In the bounded Advanced Occupy preview, choose Ecaz or your ally as lead. The lead uses its own leaders, cards and spice; total dial includes the ceiling of half your fighters at free full strength plus chosen allied army strength. An ordinary win leaves the floor of half your fighters and settles allied dial losses separately. Every participating whole army must be storm-clear and connected.',
+      'Karama prevention keeps the selected lead but switches to that lead’s own forces; the other ally contributes zero. These numbers use the authorized revised Advanced sheet, not a Basic ruling; only Ecaz may revive Duke, including by Ghola.',
+      'Loyalty, Collection and bounded Advanced Occupy have connected development implementations. Remaining powers and combined interactions are still being completed; this sheet is not a complete faction certification.',
     ],
   },
   moritani: {

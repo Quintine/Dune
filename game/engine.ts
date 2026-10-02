@@ -159,6 +159,7 @@ import {
 } from './homeworld-native-reserves';
 import { validAmbassadorResume } from './ambassador-resume';
 import { ecazOccupancyRelation } from './ecaz-occupy';
+import { quoteEcazOccupyBattle, quoteEcazOccupyDial, type EcazOccupyBattleProfile } from './ecaz-occupy-battle';
 import { territoryEntryBlock, strongholdPathBlocked } from './occupancy';
 import {
   validateGuildAmbassadorArrivalContext,
@@ -664,6 +665,7 @@ export type HarassAllocationReceipt = {
   stage: 'offered' | 'selected'; selection: HarassWithdrawSelection | null; signature: string;
 };
 export type Battle = {
+  ecazOccupy?: { event: string; ecaz: string; ally: string; lead: string | null; canceled: boolean };
   /** New battles bind automatic collection to the original public plan reveal. */
   smugglerCollectionVersion?: 1;
   smugglerCollection?: SmugglerBattleReceipt | null;
@@ -757,6 +759,7 @@ export type Auction = {
   allyPayment?: number;
 };
 export type Decision =
+  | { kind: 'ecazBattleLead'; player: string; event: string; choices: string[] }
   | { kind: 'harassWithdraw'; player: string; event: string }
   | { kind: 'diplomatDefense'; player: string; event: string; cards: string[]; source: string }
   | { kind: 'diplomatRetreat'; player: string; event: string; destinations: DiplomatRetreatDestination[] }
@@ -868,6 +871,7 @@ export type Decision =
       player: string;
       territory: string;
       options: Casualties[];
+      forceOwner?: string;
       cards: string[];
     }
   | { kind: 'homeworldDefense'; player: string; event: string }
@@ -969,6 +973,7 @@ export type ResponseWindow = {
     | 'moritaniPlacement'
     | 'ecazPlacement'
     | 'ecazCollection'
+    | 'ecazOccupy'
     | 'moritaniAlliance'
     | 'moritaniDuke'
     | 'moritaniRetention'
@@ -1119,6 +1124,7 @@ type RicheseAllyOffer = {
   payer: string;
 };
 export type Game = {
+  ecazOccupyPreview?: boolean;
   /** Fresh native Guild/Nexus payment-replacement profile, never inferred from a save. */
   guildBetrayalPreview?: boolean;
   guildBetrayal?: GuildBetrayalCursor;
@@ -1417,6 +1423,7 @@ export type Game = {
           winner: string | null;
           cards: string[];
           casualties?: {
+            owner?: string;
             forces: CombatForces;
             dial: number;
             support: number;
@@ -3015,6 +3022,7 @@ function nexusTraitorParentSignature(g: Game, event: string) {
 function traitorDeclarationContext(g: Game): TraitorDeclarationContext {
   const b = g.battle!;
   return { event: b.event!, attacker: b.attacker, defender: b.defender, plans: b.plans,
+    ...(b.ecazOccupy ? { ecazOccupy: ecazBattleProfile(g)! } : {}),
     players: g.players.map(({id,faction,ally,traitors}) => ({id,faction,ally,traitors})),
     heroLeaderIds: physicalTreacheryCards(g).filter(c => c.kind === 'hero').map(c => c.id),
   };
@@ -7280,6 +7288,31 @@ function combatForces(
       (p.faction === 'fremen' && !g.battle?.fremenSupportBlocked),
   };
 }
+function ecazBattleProfile(g: Game): EcazOccupyBattleProfile | null {
+  const b = g.battle, occupy = b?.ecazOccupy;
+  if (!b || !occupy?.lead) return null;
+  const lead = occupy.lead;
+  const ecaz = getPlayer(g, occupy.ecaz), ally = getPlayer(g, occupy.ally);
+  requireRule(g.advanced && occupy.event === b.event && ecaz.faction === 'ecaz' &&
+    ecaz.ally === ally.id && ally.ally === ecaz.id && [b.attacker, b.defender].includes(occupy.lead) &&
+    !isAdvisor(ecaz, b.territory) && !isAdvisor(ally, b.territory) &&
+    Object.entries(ecaz.forces).some(([x, n]) => n > 0 && splitLocation(x).territory === b.territory &&
+      Object.entries(ally.forces).some(([y, m]) => m > 0 && splitLocation(y).territory === b.territory &&
+        gameDistance(g, x, y, key => splitLocation(key).sector === g.storm) === 0)),
+    'Occupy needs the original battle and physically connected allied fighters.');
+  const opponent = getPlayer(g, b.attacker === occupy.lead ? b.defender : b.attacker);
+  return nexusRule(() => quoteEcazOccupyBattle({
+    battleOrderActor: b.chooser ?? b.attacker,
+    ecaz: { id: ecaz.id, faction: 'ecaz', ally: ecaz.ally, forces: combatForces(g, ecaz, b.territory, opponent) },
+    ally: { id: ally.id, faction: ally.faction, ally: ally.ally, forces: combatForces(g, ally, b.territory, opponent) },
+    lead, canceled: occupy.canceled,
+  }));
+}
+function planCombatForces(g: Game, p: Player, opponent: Player): CombatForces {
+  const profile = ecazBattleProfile(g);
+  return profile?.lead === p.id ? profile.forces :
+    combatForces(g, p, g.battle!.territory, profile?.lead === opponent.id ? getPlayer(g, profile.forceOwner) : opponent);
+}
 function takeBattleLosses(g: Game, p: Player, t: string, losses: Casualties) {
   if (t.startsWith('homeworld:')) {
     commitHomeworldLoss(g, p.id, t, { normal: losses.normal, elite: losses.elite });
@@ -9079,6 +9112,18 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
     'The faction prototype excludes optional modules, including Leader Skills and Discoveries.');
   requireFreshFactionInventory(state);
   return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
+}
+/** Fresh native Advanced Occupy profile; public starts and Basic are unchanged. */
+export function initializeEcazOccupyGameForAudit(state: Game): Game {
+  requireRule(state.advanced === true && state.expansions.length === 1 && state.expansions[0] === 'ecaz' &&
+    state.players.length >= 2 && state.players.length <= 6 && state.players.some(p => p.faction === 'ecaz') &&
+    state.players.every(p => faction(p.faction).expansion === 'base' || p.faction === 'ecaz' || p.faction === 'moritani') &&
+    !state.ecazTreachery,
+    'Advanced Occupy requires fresh Ecaz and classic opponents, optional native Moritani, the Ecaz faction expansion and base Treachery.');
+  requireFreshBaseRuntime(state);
+  const g = initializeFactionExpansionsGameForAudit(state);
+  g.ecazOccupyPreview = true;
+  return g;
 }
 /** Fresh Advanced E1/E2 faction composition; normal starts and other modules stay gated. */
 export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
@@ -11891,7 +11936,7 @@ function currentReinforcementsCost(g: Game, p: Player) {
     const other = getPlayer(g, g.battle.attacker === p.id ? g.battle.defender : g.battle.attacker);
     requireRule(!ecazAllyAtBattle(g, p, g.battle.territory) &&
       !ecazAllyAtBattle(g, other, g.battle.territory),
-      'Reinforcements with co-present Ecaz allies awaits combined-army battle integration.');
+      'Reinforcements with combined Occupy armies needs its additional-card source ruling.');
   }
   try {
     return quoteReinforcements(p.reserves - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
@@ -11913,7 +11958,7 @@ function reinforcementsPreview(g: Game, p: Player) {
     blocked = 'Choose Reinforcements before sealing your Battle Plan.';
   else if (ecazAllyAtBattle(g, p, battle.territory) ||
     ecazAllyAtBattle(g, getPlayer(g, battle.attacker === p.id ? battle.defender : battle.attacker), battle.territory))
-    blocked = 'Reinforcements with co-present Ecaz allies awaits combined-army battle integration.';
+    blocked = 'Reinforcements with combined Occupy armies needs its additional-card source ruling.';
   else if (normal + elite < 3)
     blocked = 'Reinforcements needs three physical forces in your reserves.';
   return { blocked, normal, elite };
@@ -18034,7 +18079,7 @@ function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
   else if (g.players.some(player => player.faction === 'richese') || g.richeseCache !== undefined || g.richeseRemoved !== undefined)
     blocked = 'Harass & Withdraw with the Richese card family awaits the Stone Burner timing ruling.';
   else if (ecazAllyAtBattle(g, p, b.territory) || ecazAllyAtBattle(g, other, b.territory))
-    blocked = 'Harass & Withdraw with co-present Ecaz allies awaits combined-army battle integration.';
+    blocked = 'Harass & Withdraw with combined Occupy armies needs its additional-card source ruling.';
   else if (p.noField?.deployed?.location.territory === b.territory)
     blocked = 'Reveal your No-Field before using Harass & Withdraw.';
   const locations = Object.fromEntries(Object.entries(p.forces)
@@ -18410,7 +18455,9 @@ function validatePlan(
 ): Plan {
   const b = g.battle!;
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
-  const forces = combatForces(g, p, b.territory, opponent);
+  const forces = planCombatForces(g, p, opponent);
+  const profile = ecazBattleProfile(g);
+  const occupy = profile?.lead === p.id ? profile : null;
   const typedForces = g.advanced || p.faction === 'ixians';
   const bankerSpice = input.bankerSpice === undefined ? 0 : input.bankerSpice;
   requireRule(typeof bankerSpice === 'number' && Number.isSafeInteger(bankerSpice) && bankerSpice >= 0 && bankerSpice <= 3,
@@ -18424,7 +18471,7 @@ function validatePlan(
   requireRule(
     !typedForces ||
       (typeof input.dial === 'number' &&
-        casualtyOptions(forces, dial, support).length > 0),
+        (occupy ? nexusRule(() => quoteEcazOccupyDial(occupy, dial, support)).options : casualtyOptions(forces, dial, support)).length > 0),
     'Dial and spice must match a legal force commitment.',
   );
   const allyPayment = integer(
@@ -18582,6 +18629,7 @@ function currentCombatResponseQuote(
         status: g.status,
         phase: g.phase,
         advanced: g.advanced,
+        ...(g.battle?.ecazOccupy ? { ecazOccupy: ecazBattleProfile(g)! } : {}),
         territoryIds: combatLocations(g).map((t) => t.id),
         players: g.players.map((p) => ({
           id: p.id,
@@ -18623,10 +18671,14 @@ function nextCombatResponse(g: Game) {
 function combatResponses(g: Game) {
   const b = g.battle!;
   b.powerChecks = [];
+  const profile = ecazBattleProfile(g);
   for (const id of [b.attacker, b.defender]) {
-    const p = getPlayer(g, id),
-      other = getPlayer(g, id === b.attacker ? b.defender : b.attacker);
-    if (g.advanced && p.faction === 'atreides')
+    const planOwner = getPlayer(g, id);
+    const forceOwner = profile?.lead === id ? profile.forceOwner : id;
+    const p = getPlayer(g, forceOwner);
+    const opponentId = id === b.attacker ? b.defender : b.attacker;
+    const other = getPlayer(g, profile?.lead === opponentId ? profile.forceOwner : opponentId);
+    if (g.advanced && planOwner.faction === 'atreides')
       b.powerChecks.push({ kind: 'kwisatz', owner: id });
     if (
       ((g.advanced && ['emperor', 'fremen'].includes(p.faction)) ||
@@ -18634,9 +18686,9 @@ function combatResponses(g: Game) {
       !(p.faction === 'emperor' && other.faction === 'fremen') &&
       combatForces(g, p, b.territory, other).elite > 0
     )
-      b.powerChecks.push({ kind: 'eliteStrength', owner: id });
+      b.powerChecks.push({ kind: 'eliteStrength', owner: forceOwner });
     if (g.advanced && p.faction === 'fremen')
-      b.powerChecks.push({ kind: 'fremenSupport', owner: id });
+      b.powerChecks.push({ kind: 'fremenSupport', owner: forceOwner });
   }
   const choam = byFaction(g, 'choam');
   if (
@@ -18957,11 +19009,13 @@ function findLegalBattlePlan(
     return accepts(sealed) ? sealed : null;
   }
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
-  const forces = combatForces(g, p, b.territory, opponent);
+  const forces = planCombatForces(g, p, opponent);
+  const profile = ecazBattleProfile(g);
+  const fixedDial = profile?.lead === p.id ? profile.fixedEcazDial : 0;
   const typed = g.advanced || p.faction === 'ixians';
-  const maxDial = typed ? maxCombatDial(forces) : forces.normal + forces.elite;
+  const maxDial = fixedDial + (typed ? maxCombatDial(forces) : forces.normal + forces.elite);
   const numerical: { dial: number; support: number }[] = [];
-  for (let dial = 0; dial <= maxDial; dial += typed ? 0.5 : 1)
+  for (let dial = fixedDial; dial <= maxDial; dial += typed ? 0.5 : 1)
     for (
       let support = 0;
       support <=
@@ -18973,7 +19027,7 @@ function findLegalBattlePlan(
       const n = { dial, support };
       if (
         accepts(n) &&
-        (!typed || casualtyOptions(forces, dial, support).length)
+        (!typed || casualtyOptions(forces, dial - fixedDial, support).length)
       )
         numerical.push(n);
     }
@@ -19552,6 +19606,8 @@ function feasiblePrescience(
   // Validate the revealed element without committing any other plan components.
   // A legal completion must exist, including compliance with the preceding Voice.
   const b = g.battle!;
+  const profile = ecazBattleProfile(g);
+  const forces = planCombatForces(g, p, getPlayer(g, b.attacker === p.id ? b.defender : b.attacker));
   const leaderIds: (string | null)[] = [
     null,
     ...controlledLeaders(g, p)
@@ -19577,7 +19633,7 @@ function feasiblePrescience(
       for (const defense of field === 'defense' ? defenses.filter(candidate => inspectedPlanMatches(p, field, value, candidate)) : defenses) {
         const maxSupport =
           g.advanced && field === 'dial'
-            ? Math.min(battleSupportBudget(g, p), (combatArmy(g, p.id, b.territory).normal + combatArmy(g, p.id, b.territory).elite))
+            ? Math.min(battleSupportBudget(g, p), maxCombatSupport(forces))
             : 0;
         for (let support = 0; support <= maxSupport; support++) {
           try {
@@ -19586,7 +19642,7 @@ function feasiblePrescience(
               weapon,
               defense,
               support,
-              dial: field === 'dial' ? value : 0,
+              dial: field === 'dial' ? value : profile?.lead === p.id ? profile.fixedEcazDial : 0,
             });
             if (inspectedPlanMatches(p, field, value, plan[field])) return true;
           } catch (error) {
@@ -20001,6 +20057,9 @@ function traitorVoters(g: Game, b: Battle) {
   const home = homeworldBattleLocation(g, b.territory);
   if (home) return [b.attacker, b.defender].filter((id) => id === home.native);
   const voters = [b.attacker, b.defender];
+  if (b.ecazOccupy?.lead)
+    for (const owner of [b.ecazOccupy.ecaz, b.ecazOccupy.ally])
+      if (!voters.includes(owner)) voters.push(owner);
   const harkonnen = byFaction(g, 'harkonnen');
   if (
     harkonnen?.ally &&
@@ -20011,6 +20070,7 @@ function traitorVoters(g: Game, b: Battle) {
   return voters;
 }
 function traitorBeneficiary(g: Game, b: Battle, id: string) {
+  if (b.ecazOccupy?.lead && [b.ecazOccupy.ecaz, b.ecazOccupy.ally].includes(id)) return b.ecazOccupy.lead;
   return [b.attacker, b.defender].includes(id) ? id : getPlayer(g, id).ally;
 }
 function pendingSmugglerBattle(g: Game): SmugglerBattleReceipt | null {
@@ -20064,7 +20124,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       leader: controlledLeaders(g, p).find((l) => l.id === plan.leader),
       leaderSkills: battleLeaderSkills(g, p),
       occupiedStrongholds: leaderSkillStrongholdCount(g, p),
-      forces: combatForces(g, p, b.territory, opponent),
+      forces: planCombatForces(g, p, opponent),
       ...([cardOf(p, plan.weapon), cardOf(p, plan.defense)].some(isReinforcements)
         ? { reinforcementsReserves: {
           normal: p.reserves - (p.elites?.reserves ?? 0), elite: p.elites?.reserves ?? 0,
@@ -20086,6 +20146,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
   try {
     const quote = quoteBattleResolution({
       advanced: g.advanced,
+      ...(b.ecazOccupy ? { ecazOccupy: ecazBattleProfile(g)! } : {}),
       aggressor: battleAggressor(g),
       typedCasualties: !!g.homeworlds,
       ...(homeworldBattleLocation(g, b.territory) ? { homeworld: currentHomeworldBattleRules(g, b.territory)! } : {}),
@@ -20142,11 +20203,13 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       for (const losses of quote.casualties!.options) quoteHomeworldLoss(g, quote.winner, b.territory, { normal: losses.normal, elite: losses.elite });
     else if (quote.winner && quote.result === 'normal')
       validateBattleForceLoss(
-        getPlayer(g, quote.winner),
+        getPlayer(g, quote.casualties?.owner ?? quote.winner),
         b.territory,
         quote.basicWinnerLosses ??
           Math.max(...quote.casualties!.options.map((c) => c.normal + c.elite)),
       );
+    for (const loss of quote.fixedLosses ?? [])
+      validateBattleForceLoss(getPlayer(g, loss.owner), b.territory, loss.normal + loss.elite);
     if (quote.homeworldExplosion)
       for (const losses of quote.homeworldExplosion.options) quoteHomeworldLoss(g, quote.homeworldExplosion.player, b.territory, losses);
     return { ...quote, smuggler };
@@ -20370,16 +20433,14 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   if (ac && dc) {
     dead(al);
     dead(dl);
-    killTerritory(g, a, b.territory, Infinity, true);
-    killTerritory(g, d, b.territory, Infinity, true);
+    for (const owner of quote.destroyedArmies) killTerritory(g, getPlayer(g, owner), b.territory, Infinity, true);
     observeOccupation(g);
     log(g, 'Both leaders were traitors. Both armies were destroyed.');
   } else if (ac || dc) {
-    const loser = ac ? d : a;
     const l = ac ? dl : al;
     dead(l);
     winner!.spice += quote.bounty!.amount;
-    killTerritory(g, loser, b.territory, Infinity, true);
+    for (const owner of quote.destroyedArmies) killTerritory(g, getPlayer(g, owner), b.territory, Infinity, true);
     observeOccupation(g);
     log(
       g,
@@ -20452,7 +20513,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
         { faction: loser.faction, name: 'Diplomat retreat' });
       observeOccupation(g);
     }
-    killTerritory(g, loser, b.territory, Infinity, true);
+    for (const owner of quote.destroyedArmies) killTerritory(g, getPlayer(g, owner), b.territory, Infinity, true);
     observeOccupation(g);
     if (quote.basicWinnerLosses !== null)
       killTerritory(g, winner!, b.territory, quote.basicWinnerLosses, true);
@@ -20466,6 +20527,12 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
         ? { faction: (isStoneBurner(aw) ? a : d).faction, name: 'Stone Burner' }
         : { faction: winner!.faction, name: 'Battle' },
     );
+    for (const loss of quote.fixedLosses ?? []) {
+      const owner = getPlayer(g, loss.owner);
+      takeBattleLosses(g, owner, b.territory, { normal: loss.normal, elite: loss.elite, paidNormal: 0, paidElite: 0 });
+      log(g, `${owner.name} sent ${loss.normal + loss.elite} mandatory Occupy forces to the Tanks.`, { faction: 'ecaz', name: 'Occupy casualties' });
+    }
+    if (quote.fixedLosses?.length) observeOccupation(g);
   }
   if (g.spiceBankerIncomePreview) for (const payment of quote.payments) {
     const player = getPlayer(g, payment.player);
@@ -20734,13 +20801,14 @@ function continueResolvedBattle(
     return;
   }
   if (winner && losses?.length === 1) {
-    settleWinnerCasualties(g, winner, to, cards, losses[0], true);
+    settleWinnerCasualties(g, winner, to, cards, losses[0], true, continuation.casualties?.owner);
   } else if (winner && losses)
     g.decision = {
       kind: 'battleLosses',
       player: winner.id,
       territory: to,
       options: losses,
+      ...(continuation.casualties?.owner ? { forceOwner: continuation.casualties.owner } : {}),
       cards,
     };
   else if (winner) finishWinner(g, winner, to, cards);
@@ -20753,6 +20821,7 @@ function settleWinnerCasualties(
   cards: string[],
   choice: Casualties,
   automatic = false,
+  forceOwner?: string,
 ) {
   if (g.pendingSukRescue) {
     const pending = g.pendingSukRescue;
@@ -20773,7 +20842,8 @@ function settleWinnerCasualties(
   if (sardaukar?.casualties) requireRule(sardaukar.casualties.outcome === 'pending' &&
     sardaukar.casualties.options.some(option => JSON.stringify(option) === JSON.stringify(choice)),
     'Choose an original Nexus Sardaukar casualty allocation.');
-  const losses = takeBattleLosses(g, p, to, choice);
+  const physicalOwner = forceOwner ? getPlayer(g, forceOwner) : p;
+  const losses = takeBattleLosses(g, physicalOwner, to, choice);
   if (sardaukar?.casualties) {
     sardaukar.casualties.outcome = 'complete';
     sardaukar.signature = nexusSardaukarSignature(sardaukar);
@@ -20782,7 +20852,7 @@ function settleWinnerCasualties(
   if (to.startsWith('homeworld:')) g.homeworldBattleLoss = null;
   log(
     g,
-    `${p.name} sent ${choice.normal} normal and ${choice.elite} elite forces from ${combatLocationName(g, to)} to the Tanks. ${automatic ? 'This was the only legal casualty allocation for the revealed battle plan, so it was applied automatically.' : 'This applies the selected casualty allocation for the revealed battle plan.'}`,
+    `${physicalOwner.name} sent ${choice.normal} normal and ${choice.elite} elite forces from ${combatLocationName(g, to)} to the Tanks. ${automatic ? 'This was the only legal casualty allocation for the revealed battle plan, so it was applied automatically.' : 'This applies the selected casualty allocation for the revealed battle plan.'}`,
     automatic ? { faction: p.faction, name: 'Battle casualties' } : undefined,
   );
   stageIxSubstitution(g, p, to, cards, losses);
@@ -22235,6 +22305,17 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     : null;
   if (!canceled && bureaucratDiversion === undefined && offerBureaucratPayment(g,response.bureaucratPayment,{kind:'response'})) return;
   g.response = null;
+  if (response.kind === 'ecazOccupy') {
+    const b = g.battle, occupy = b?.ecazOccupy;
+    requireRule(b && occupy?.lead && occupy.ecaz === response.owner && !b.revealed &&
+      !Object.keys(b.plans).length, 'Resolve Occupy before native powers and plans.');
+    occupy.canceled = canceled;
+    ecazBattleProfile(g);
+    createMentatQuestion(g);
+    beginStrongholdBattle(g);
+    log(g, canceled ? 'Karama canceled the combined dial: the selected lead now dials only their own forces; the other allied army contributes zero.' : 'Ecaz Occupy proceeds with its mandatory free contribution and the ally’s physical force pool.', { faction: 'ecaz', name: 'Occupy' });
+    return;
+  }
   if (response.kind === 'guildRate') {
     if (g.pendingGuildTransport) finishGuildTransportRateResponse(g, response, canceled);
     else finishGuildRateResponse(g, response, canceled);
@@ -26802,6 +26883,25 @@ function applyActionInner(
     }
     return g;
   }
+  if (g.decision?.kind === 'ecazBattleLead') {
+    const decision = g.decision, b = g.battle!, occupy = b.ecazOccupy!;
+    requireRule(t === 'decision' && id === decision.player && action.event === decision.event &&
+      typeof action.lead === 'string' && decision.choices.includes(action.lead) &&
+      Object.keys(action).every(key => ['type', 'event', 'lead'].includes(key)),
+      'Choose Ecaz or its current ally to lead this combined battle.');
+    const previous = b.attacker === occupy.ecaz || b.attacker === occupy.ally ? b.attacker : b.defender;
+    if (b.attacker === previous) b.attacker = action.lead;
+    else b.defender = action.lead;
+    occupy.lead = action.lead;
+    // The selected lead supplies normal aggressor priority, not the scheduling ally.
+    if (g.order.indexOf(b.attacker) > g.order.indexOf(b.defender))
+      [b.attacker, b.defender] = [b.defender, b.attacker];
+    ecazBattleProfile(g);
+    g.decision = null;
+    g.response = { kind: 'ecazOccupy', owner: occupy.ecaz, passed: [] };
+    log(g, `${getPlayer(g, action.lead).name} leads the combined Ecaz battle, using their own leaders, cards and spice.`, { faction: 'ecaz', name: 'Occupy' });
+    return g;
+  }
   if (
     t === 'offerRicheseNoField' &&
     g.decision?.kind === 'richeseAllyOpportunity' &&
@@ -27834,7 +27934,7 @@ function applyActionInner(
             'Casualty choice',
           )
         ];
-      settleWinnerCasualties(g, p, decision.territory, decision.cards, choice);
+      settleWinnerCasualties(g, p, decision.territory, decision.cards, choice, false, decision.forceOwner);
     } else if (decision.kind === 'auctionPayment') {
       normalKaramaAuction(g, p, true, action.karama === true);
       requireRule(
@@ -29834,8 +29934,24 @@ function applyActionInner(
       revealed: false,
       traitorCalls: {},
     };
-    createMentatQuestion(g);
-    beginStrongholdBattle(g);
+    const ecaz = byFaction(g, 'ecaz');
+    const ally = ecaz?.ally ? getPlayer(g, ecaz.ally) : null;
+    const connected = ecaz && ally && Object.entries(ecaz.forces).some(([x, n]) =>
+      n > 0 && splitLocation(x).territory === choice.territory && Object.entries(ally.forces).some(([y, m]) =>
+        m > 0 && splitLocation(y).territory === choice.territory &&
+        gameDistance(g, x, y, key => splitLocation(key).sector === g.storm) === 0));
+    if (g.advanced && ecaz && ally?.ally === ecaz.id && connected &&
+      !isAdvisor(ally, choice.territory) && [choice.attacker, choice.defender].some(seat => seat === ecaz.id || seat === ally.id)) {
+      requireRule(!g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.strongholdCards &&
+        !g.techTokens && !g.discoveryEnabled && !g.ecazTreachery &&
+        g.players.every(player => faction(player.faction).expansion === 'base' || ['ecaz', 'moritani'].includes(player.faction)),
+        'Advanced combined Occupy battles support native Ecaz/classic/Moritani with base cards; optional modules and exotic faction battle composition require their source ruling.');
+      g.battle.ecazOccupy = { event: battleEvent, ecaz: ecaz.id, ally: ally.id, lead: null, canceled: false };
+      g.decision = { kind: 'ecazBattleLead', player: ecaz.id, event: battleEvent, choices: [ecaz.id, ally.id] };
+    } else {
+      createMentatQuestion(g);
+      beginStrongholdBattle(g);
+    }
     log(
       g,
       `${p.name} chose the battle between ${getPlayer(g, choice.attacker).name} and ${getPlayer(g, choice.defender).name} in ${combatLocationName(g, choice.territory)}. ${getPlayer(g, choice.attacker).name} remains the aggressor.`,
@@ -30026,7 +30142,7 @@ function applyActionInner(
       'Traitor decision is not available.',
     );
     requireRule(typeof action.call === 'boolean', 'Choose reveal or decline.');
-    if (g.nexusCards?.cards) ensureTraitorDeclarations(g);
+    if (g.nexusCards?.cards || b.ecazOccupy) ensureTraitorDeclarations(g);
     if (action.call) {
       const other =
         b.attacker === traitorBeneficiary(g, b, id) ? b.defender : b.attacker;
@@ -30054,7 +30170,8 @@ function applyActionInner(
     if (
       action.call &&
       p.faction === 'harkonnen' &&
-      ![b.attacker, b.defender].includes(id)
+      ![b.attacker, b.defender].includes(id) &&
+      !(b.ecazOccupy && [b.ecazOccupy.ecaz, b.ecazOccupy.ally].includes(id))
     ) {
       g.response = { kind: 'harkonnenTraitor', owner: id, passed: [] };
       return g;
@@ -30597,6 +30714,7 @@ export function viewGame(state: Game, id: string) {
       : null,
     techTokens: g.techTokens ?? null,
     ecazLoyalty: g.ecazLoyalty?.card ? { player: g.ecazLoyalty.player, card: g.ecazLoyalty.card } : null,
+    ecazOccupyPreview: !!g.ecazOccupyPreview,
     strongholdCards: g.strongholdCards ?? null,
     discoveries: discoveryChoices(g,id,g.phase === 7 && grummanCollectionAutomatic(g)),
     ecologicalStorm: g.decision?.kind === 'ecologicalStorm' && g.decision.player === id && g.ecologicalStorm?.stage === 'choose'
@@ -31252,11 +31370,12 @@ export function viewGame(state: Game, id: string) {
     battle: b
       ? {
           locationName: combatLocationName(g, b.territory),
+          ecazOccupy: b.ecazOccupy ? { ...b.ecazOccupy, profile: ecazBattleProfile(g) } : null,
           native: homeworldBattleLocation(g, b.territory)?.native ?? null,
           nativeBattleStrength: homeworldBattleLocation(g, b.territory)?.nativeBattleStrength ?? 0,
           opponentForces: [b.attacker, b.defender].includes(id) &&
             !getPlayer(g, b.attacker === id ? b.defender : b.attacker).noField?.deployed
-            ? combatForces(g, getPlayer(g, b.attacker === id ? b.defender : b.attacker), b.territory, me)
+            ? planCombatForces(g, getPlayer(g, b.attacker === id ? b.defender : b.attacker), me)
             : null,
           strongholdCopy: b.strongholdCopy ?? null,
           strongholdEffects: Object.fromEntries(
@@ -31268,12 +31387,7 @@ export function viewGame(state: Game, id: string) {
           tieWinner: battleTieWinner(g),
           noFieldPlayers: b.noFieldPlayers ?? [],
           ownForces: [b.attacker, b.defender].includes(id)
-            ? combatForces(
-                g,
-                me,
-                b.territory,
-                getPlayer(g, b.attacker === id ? b.defender : b.attacker),
-              )
+            ? planCombatForces(g, me, getPlayer(g, b.attacker === id ? b.defender : b.attacker))
             : null,
           truthPromises: b.truthPromises ?? [],
           compliantPlan:

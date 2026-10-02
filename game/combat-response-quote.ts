@@ -1,5 +1,6 @@
 import { FACTIONS, type FactionId } from './catalog';
 import { VOICE_KINDS } from './battle-cards';
+import { quoteEcazOccupyBattle, type EcazOccupyBattleProfile } from './ecaz-occupy-battle';
 
 export type CombatCheckKind =
   | 'kwisatz'
@@ -9,6 +10,7 @@ export type CombatCheckKind =
 export type CombatResponseKind = CombatCheckKind | 'voice' | 'prescience';
 export type CombatCheck = { kind: CombatCheckKind; owner: string };
 export type CombatResponseInput = {
+  ecazOccupy?: EcazOccupyBattleProfile;
   status: string;
   phase: number;
   advanced: boolean;
@@ -132,6 +134,20 @@ function calculate(
       input.territoryIds.includes(b.territory),
     'Combat responses need two distinct seated combatants and their territory.',
   );
+  const occupy = input.ecazOccupy;
+  if (occupy) {
+    const ecaz = input.players.find(player => player.id === occupy.ecaz);
+    const ally = input.players.find(player => player.id === occupy.ally);
+    requireCombat(input.advanced && ecaz?.faction === 'ecaz' && ally && combatants.includes(occupy.lead),
+      'Occupy force powers need the actual Ecaz coalition and selected lead.');
+    const profile = quoteEcazOccupyBattle({
+      battleOrderActor: occupy.battleOrderActor,
+      ecaz: { id: ecaz.id, faction: 'ecaz', ally: ecaz.ally, forces: occupy.ecazForces },
+      ally: { id: ally.id, faction: ally.faction, ally: ally.ally, forces: occupy.allyForces },
+      lead: occupy.lead, canceled: occupy.canceled,
+    });
+    requireCombat(profile.forceOwner === occupy.forceOwner, 'Occupy lost its actual physical force owner.');
+  }
   requireCombat(
     record(b.plans) &&
       Object.keys(b.plans).every(
@@ -154,27 +170,28 @@ function calculate(
   requireCombat(
     b.eliteBlocked === undefined ||
       (ids(b.eliteBlocked) &&
-        b.eliteBlocked.every((id) => combatants.includes(id))),
+        b.eliteBlocked.every((id) => combatants.some(seat => (seat === occupy?.lead ? occupy.forceOwner : seat) === id))),
     'Blocked elite owners are malformed.',
   );
   // This is only the possible ordering of already declared checks. Current
   // elite counts or KH availability are deliberately not benefit prerequisites.
   const possible: CombatCheck[] = [];
   for (const id of combatants) {
-    const p = input.players.find((p) => p.id === id)!,
-      other = input.players.find(
-        (p) => p.id === combatants.find((x) => x !== id),
-      )!;
+    const p = input.players.find(player => player.id === id)!;
+    const opponent = combatants.find(seat => seat !== id)!;
+    const other = input.players.find(player => player.id === (opponent === occupy?.lead ? occupy.forceOwner : opponent))!;
     if (input.advanced && p.faction === 'atreides')
       possible.push({ kind: 'kwisatz', owner: id });
+    const forceOwner = id === occupy?.lead ? occupy.forceOwner : id;
+    const forcePlayer = input.players.find(player => player.id === forceOwner)!;
     if (
-      ((input.advanced && ['emperor', 'fremen'].includes(p.faction)) ||
-        (!input.advanced && p.faction === 'ixians')) &&
-      !(p.faction === 'emperor' && other.faction === 'fremen')
+      ((input.advanced && ['emperor', 'fremen'].includes(forcePlayer.faction)) ||
+        (!input.advanced && forcePlayer.faction === 'ixians')) &&
+      !(forcePlayer.faction === 'emperor' && other.faction === 'fremen')
     )
-      possible.push({ kind: 'eliteStrength', owner: id });
-    if (input.advanced && p.faction === 'fremen')
-      possible.push({ kind: 'fremenSupport', owner: id });
+      possible.push({ kind: 'eliteStrength', owner: forceOwner });
+    if (input.advanced && forcePlayer.faction === 'fremen')
+      possible.push({ kind: 'fremenSupport', owner: forceOwner });
   }
   const choam = input.players.find((p) => p.faction === 'choam');
   if (

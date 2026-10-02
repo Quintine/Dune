@@ -36,6 +36,7 @@ type SourceSelector = (g: Game, response: ResponseWindow) => unknown;
  * this with all pending records: independent interruptions may create those. */
 const cancellationSources = {
   ecazCollection: (g) => ({ pending: g.ecazCollection ?? null }),
+  ecazOccupy: (g) => ({ battle: battleSource(g), occupy: g.battle?.ecazOccupy ?? null }),
   moritaniPlacement: (g) => ({
     pending: g.pendingMoritaniPlacement ?? null,
     terror: g.moritaniTerror ?? null,

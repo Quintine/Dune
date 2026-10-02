@@ -1,4 +1,6 @@
 import { discoveryBotActions } from './discovery-options';
+import { ecazOccupyDialChoices, ecazOccupyOwnProfile, ecazOccupyPolicyActions } from './ecaz-occupy-options';
+import { quoteEcazOccupyDial } from './ecaz-occupy-battle';
 import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
 import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, usesSurvivingSkilledLeader } from './leader-skill-combat';
@@ -616,10 +618,12 @@ function plans(g: GameView): Action[] {
       !g.advanced || (me.faction === 'fremen' && !b.fremenSupportBlocked),
   };
   const own = forces.normal + forces.elite;
+  const occupyProfile = ecazOccupyOwnProfile(g);
+  const occupyDials = ecazOccupyDialChoices(g);
   const typedForces = g.advanced || me.faction === 'ixians';
-  const ownStrength = typedForces
+  const ownStrength = occupyProfile?.maxDial ?? (typedForces
     ? maxCombatDial(forces)
-    : own;
+    : own);
   const supportCache = new Map<
     number,
     { support: number; cost: number } | null
@@ -639,7 +643,10 @@ function plans(g: GameView): Action[] {
             : 0) + 1,
       },
       (_, support) =>
-        casualtyOptions(forces, dial, support).map((loss) => ({
+        (occupyProfile
+          ? occupyDials.some((option) => option.dial === dial && option.support === support)
+            ? quoteEcazOccupyDial(occupyProfile, dial, support).options : []
+          : casualtyOptions(forces, dial, support)).map((loss) => ({
           support,
           cost:
             Math.max(
@@ -889,6 +896,7 @@ function plans(g: GameView): Action[] {
           ideal,
           ...bankSupportedDials,
           ...freeEliteDials,
+          ...occupyDials.map((option) => option.dial),
           ...[1, 2, 3].map((bonus) => Math.max(0, ideal - bonus)),
           0,
           ...(typedForces ? [0.5] : []),
@@ -1065,7 +1073,7 @@ function plans(g: GameView): Action[] {
   if (b.compliantPlan && commitments.every(
     (element) => fixed(element.field, b.compliantPlan![element.field]),
   )) ranked.push({ type: 'battlePlan', ...b.compliantPlan });
-  return ranked;
+  return ecazOccupyPolicyActions(g, ranked);
 }
 
 // This policy receives a personalized view, never the authoritative decks or rival hands.
@@ -1459,6 +1467,7 @@ function policyActions(g: GameView): Action[] {
         (g.response.kind === 'nexusPrescience' &&
           g.battle!.nexusInspection?.target === me.id) ||
         g.response.kind === 'harkonnenTraitor' ||
+        g.response.kind === 'ecazOccupy' ||
         g.response.kind === 'eliteStrength' ||
         g.response.kind === 'fremenSupport' ||
         g.response.kind === 'nexusSardaukar' ||
@@ -1545,6 +1554,7 @@ function policyActions(g: GameView): Action[] {
         { type: 'decision', event: d.event, pay, ...(pay ? { count } : {}) },
       ];
     }
+    if (d.kind === 'ecazBattleLead') return ecazOccupyPolicyActions(g);
     if (d.kind === 'strongholdCopy') {
       const score = (id: string) =>
         id === 'arrakeen'

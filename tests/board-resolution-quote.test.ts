@@ -6,6 +6,7 @@ import {
   quoteBattleBoardContinuation,
   quoteBattlePhaseAdvance,
   BoardResolutionError,
+  type BoardContext,
 } from '../game/board-resolution-quote';
 import {
   createGame,
@@ -92,6 +93,34 @@ void test('battle order excludes allies, polar sink and storm-separated forces, 
   g.players[0].ally = 'e';
   g.players[1].ally = 'a';
   assert.deepEqual(quoteBattleBoard(g).battles, []);
+});
+void test('Advanced whole Ecaz armies cannot recruit storm-isolated allies or split into component battles; Basic is unchanged', () => {
+  const ecaz = newPlayer('ec', 'Ecaz', 'ecaz');
+  const ally = newPlayer('al', 'Guild', 'guild');
+  const enemy = newPlayer('en', 'Emperor', 'emperor');
+  ecaz.ally = ally.id;
+  ally.ally = ecaz.id;
+  ecaz.forces = { 'imperial_basin:9': 1, 'imperial_basin:11': 1 };
+  ally.forces = { 'imperial_basin:11': 2 };
+  const context: BoardContext = {
+    advanced: true, storm: 10, order: ['ec', 'al', 'en'], players: [ecaz, ally, enemy],
+  };
+  for (const sector of [9, 11]) {
+    enemy.forces = { [`imperial_basin:${sector}`]: 2 };
+    assert.deepEqual(quoteBattleBoard(context).battles, [],
+      'All coexisting fighters must be clear and connected before the joint battle is offered.');
+  }
+  enemy.forces = { 'imperial_basin:9': 2 };
+  assert.deepEqual(quoteBattleBoard({ ...context, advanced: false }).battles,
+    [{ territory: 'imperial_basin', attacker: 'ec', defender: 'en' }]);
+  ecaz.forces = { 'imperial_basin:9': 2 };
+  ally.forces = { 'imperial_basin:9': 2 };
+  const clear = quoteBattleBoard(context).battles;
+  assert.equal(clear.length, 1, 'A clear joint army is one battle, not two faction battles.');
+  assert.ok(clear[0].coalition?.includes(ecaz.id) && clear[0].coalition.includes(ally.id),
+    'A represented co-side must retain membership for voluntary advisor conversion.');
+  assert.deepEqual(quoteBattleBoard({ ...context, storm: 9 }).battles, [],
+    'A stronghold-safe army in storm still cannot battle.');
 });
 void test('the moving stronghold uses its pointer sector for storm obstruction and the declared player order', () => {
   const g = fixture();

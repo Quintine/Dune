@@ -52,6 +52,7 @@ import {
   type BattleLeaderSkill,
   type LeaderSkillBattleBonus,
 } from './leader-skill-combat';
+import { quoteEcazOccupyOutcome, type EcazOccupyBattleProfile } from './ecaz-occupy-battle';
 
 export class BattleResolutionQuoteError extends Error {
   constructor(message: string) {
@@ -101,6 +102,7 @@ export type ResolutionCombatant = ResolutionParticipant & {
   aid?: { donor: string; amount: number };
 };
 export type BattleResolutionInput = {
+  ecazOccupy?: EcazOccupyBattleProfile;
   /** Stable physical slots remain unchanged when Sapho changes aggressor. */
   aggressor?: string;
   advanced: boolean;
@@ -137,6 +139,7 @@ export type BattleSupportPayment = {
   freeByTraitor: boolean;
 };
 export type BattleResolutionQuote = {
+  fixedLosses?: { owner: string; normal: number; elite: number }[];
   /** Reserve-to-Tanks costs apply to every revealed outcome, including traitors and explosions. */
   reinforcements?: { player: string; card: typeof REINFORCEMENTS_CARD; normal: number; elite: number }[];
   harassWithdraw?: (HarassWithdrawQuote & { player: string; card: typeof HARASS_WITHDRAW_CARD })[];
@@ -172,6 +175,7 @@ export type BattleResolutionQuote = {
   rihani?: RihaniSkill;
   sandmaster?: string;
   casualties: {
+    owner?: string;
     forces: CombatForces;
     dial: number;
     support: number;
@@ -672,7 +676,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
           (deaths.defender ? strengths.defender : 0),
       };
   }
-  const destroyedArmies =
+  let destroyedArmies =
     result === 'explosion'
       ? input.participants.filter((p) => p.id !== homeworld?.native).map((p) => p.id)
       : winner
@@ -694,7 +698,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     !(winner === a ? deaths.attacker : deaths.defender)) : null;
   const sandmaster = winner && usesSurvivingSkilledLeader(winner.leaderSkills ?? [], 'sandmaster', winner.leader?.id,
     !(winner === a ? deaths.attacker : deaths.defender)) ? winner.leader!.id : null;
-  if (winner && result === 'normal') {
+  if (winner && result === 'normal' && winner.id !== input.ecazOccupy?.lead) {
     if (
       input.advanced ||
       input.typedCasualties ||
@@ -730,6 +734,19 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       );
       basicWinnerLosses = winner.plan.dial;
     }
+  }
+  const occupyOutcome = input.ecazOccupy ? quoteEcazOccupyOutcome(input.ecazOccupy, {
+    result, won: winner?.id === input.ecazOccupy.lead,
+    dial: (a.id === input.ecazOccupy.lead ? a : d).plan.dial,
+    support: (a.id === input.ecazOccupy.lead ? a : d).plan.support,
+  }) : null;
+  if (occupyOutcome) {
+    const profile = input.ecazOccupy!;
+    destroyedArmies = [...new Set([
+      ...destroyedArmies.filter(owner => owner !== profile.ecaz && owner !== profile.ally),
+      ...occupyOutcome.destroyedArmies,
+    ])];
+    if (winner?.id === profile.lead) casualties = occupyOutcome.casualties;
   }
   const strongholdIncome =
     result === 'mutualTraitors'
@@ -872,6 +889,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   return {
     ...(harassWithdraw.length ? { harassWithdraw } : {}),
     ...(reinforcements.length ? { reinforcements } : {}),
+    ...(occupyOutcome ? { fixedLosses: occupyOutcome.fixedLosses } : {}),
     result,
     winner: winner?.id ?? null,
     attackerTraitor: ac,

@@ -1,7 +1,9 @@
 import { FACTIONS, type FactionId } from './catalog';
 import { CHEAP_HERO_TRAITOR } from './traitors';
+import { quoteEcazOccupyBattle, type EcazOccupyBattleProfile } from './ecaz-occupy-battle';
 
 export type TraitorDeclarationContext = {
+  ecazOccupy?: EcazOccupyBattleProfile;
   event: string;
   attacker: string;
   defender: string;
@@ -73,17 +75,32 @@ function validateContext(context: TraitorDeclarationContext): void {
       'A traitor declaration requires both sealed battle plans.',
     );
   }
+  if (context.ecazOccupy) {
+    const occupy = context.ecazOccupy;
+    const ecaz = context.players.find(player => player.id === occupy.ecaz);
+    const ally = context.players.find(player => player.id === occupy.ally);
+    requireDeclaration(ecaz?.faction === 'ecaz' && ally && [context.attacker, context.defender].includes(occupy.lead),
+      'Traitor co-side voters need the actual Ecaz coalition and selected combatant.');
+    quoteEcazOccupyBattle({
+      battleOrderActor: occupy.battleOrderActor,
+      ecaz: { id: ecaz.id, faction: 'ecaz', ally: ecaz.ally, forces: occupy.ecazForces },
+      ally: { id: ally.id, faction: ally.faction, ally: ally.ally, forces: occupy.allyForces },
+      lead: occupy.lead, canceled: occupy.canceled,
+    });
+  }
 }
 
 function declaredElements(context: TraitorDeclarationContext, voter: string) {
   const owner = context.players.find((player) => player.id === voter);
   requireDeclaration(owner, 'The traitor declaration voter is not seated.');
   const combatants = [context.attacker, context.defender];
-  const beneficiary = combatants.includes(voter) ? voter : owner.ally;
+  const occupy = context.ecazOccupy;
+  const coSide = !!occupy && [occupy.ecaz, occupy.ally].includes(voter);
+  const beneficiary = coSide ? occupy.lead : combatants.includes(voter) ? voter : owner.ally;
   requireDeclaration(
     beneficiary &&
       combatants.includes(beneficiary) &&
-      (beneficiary === voter || owner.faction === 'harkonnen'),
+      (beneficiary === voter || owner.faction === 'harkonnen' || coSide),
     'Only a combatant or its Harkonnen ally can declare this traitor.',
   );
   const target =
