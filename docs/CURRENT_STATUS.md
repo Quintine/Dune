@@ -41,6 +41,12 @@ native Ixian setup. Human390px **8HTTTZMA v9** asks for Weirding Way, answers
 privately, inspects the observation and conceals the native Mentat. Fresh
 **6ZR8HPWD v6** verifies Reinforcements' own inspector/topic and battle-slot
 hand explanation without changing its provisional outcome cost.
+Code **589e1b9df245cff4577f9c1d0094eca3f6db4b29** is pushed.
+[Exact CI36990728282](https://github.com/Quintine/Dune/actions/runs/36990728282),
+job110786065439, completed/success. Existing isolated storage/HTTP verification
+and verified-image publication both pass; image
+`ghcr.io/quintine/dune:sha-589e1b9df245cff4577f9c1d0094eca3f6db4b29`.
+No deployment or new assurance campaign; live **ab5c782** remains last observed.
 
 
 **Authorized Advanced Moritani forfeiture:** the supplied PDF physical35 resolves

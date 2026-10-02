@@ -43,6 +43,14 @@ Owned smoke/staging drivers are removed; all managed tabs and both isolated
 workers are closed. Private QA inputs and the original CLI backup remain outside
 the checkout; the supplied PDF is preserved and untracked.
 
+Code **589e1b9df245cff4577f9c1d0094eca3f6db4b29** is pushed.
+[Exact CI36990728282](https://github.com/Quintine/Dune/actions/runs/36990728282)
+and job110786065439 completed/success. The original isolated storage/HTTP
+verification and subsequent verified-image publication steps both succeed;
+image `ghcr.io/quintine/dune:sha-589e1b9df245cff4577f9c1d0094eca3f6db4b29`.
+This is existing-pipeline evidence, not a new assurance campaign or deployment.
+Live **ab5c782** remains the last observed marker.
+
 ## 2 October 2026 — authorized Advanced Moritani normal-reveal forfeiture
 
 The user-authorized supplied revision, physical p35 Assassinate Leaders D,
