@@ -35,6 +35,13 @@ The final guide is readable at390px; the original human v22 state remains at
 Collection after the required isolated worker reload. A stale prior-build guide
 chunk required a cache-free local navigation; deployed cache-upgrade acceptance
 is not claimed.
+Code **113667da55647117082c0a502eded30d8d9bdb2e** is pushed.
+[Exact CI37074437398](https://github.com/Quintine/Dune/actions/runs/37074437398),
+job111061051259, completed/success: original isolated storage/HTTP verification
+and subsequent image publication both pass:
+`ghcr.io/quintine/dune:sha-113667da55647117082c0a502eded30d8d9bdb2e`.
+No deployed claim; live **ab5c782** remains last observed.
+
 
 
 **Mixed current-fact/shipment Truthtrance — bounded Development Verified:**

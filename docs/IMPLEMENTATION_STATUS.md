@@ -53,6 +53,14 @@ survived a real12-spice bribe, four-force/four-spice Arrakeen shipment and nativ
 end-movement with wallet4. The promise is fulfilled and exact grouped Yes history
 survives refresh. This is a second human journey, not another program case.
 
+Code **113667da55647117082c0a502eded30d8d9bdb2e** is pushed.
+[Exact CI37074437398](https://github.com/Quintine/Dune/actions/runs/37074437398),
+container job111061051259, completed/success. Its original isolated storage/
+HTTP verifier and subsequent verified-image publication pass:
+`ghcr.io/quintine/dune:sha-113667da55647117082c0a502eded30d8d9bdb2e`.
+Publication is not deployment; live **ab5c782** remains last observed.
+
+
 
 ## 3 October 2026 — mixed current-fact/shipment Truthtrance
 
