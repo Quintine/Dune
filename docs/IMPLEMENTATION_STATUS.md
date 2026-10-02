@@ -53,6 +53,14 @@ custody/seat/getter/wholeDB/HTTP/full6,500-suite assurance campaign; direct
 current playability blockers were fixed. Full rules/factions/combined modes,
 later comprehensive review/assurance and deployment remain unfinished.
 
+Code **cd532222a5dd098dc7a4a1d3ec6383f5bdde62b2** is pushed.
+[Mandatory CI36980970342](https://github.com/Quintine/Dune/actions/runs/36980970342)
+and job110755165940 completed/success for the exact source SHA. Existing
+isolated storage/HTTP verification preceded publication of
+`ghcr.io/quintine/dune:sha-cd532222a5dd098dc7a4a1d3ec6383f5bdde62b2`.
+No deployment or new local assurance campaign; live **ab5c782** remains
+the last observed marker.
+
 ## 2 October 2026 — native Ixian, Tleilaxu and CHOAM Ecaz Occupy integration
 
 The existing Advanced `ecaz-occupy` profile now admits source-selected native

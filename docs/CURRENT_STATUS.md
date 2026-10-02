@@ -42,6 +42,13 @@ See [combined-card source and proof](ECAZ_OCCUPY_RULES.md#independent-cards-with
 Final types/lint, canonical guide10/10, build,390px bounded guide and actual
 explicit-variant CLI help pass; ten changed-region local links/anchors are valid.
 Owned drivers/tabs/workers are removed/closed without resetting games.
+Code **cd532222a5dd098dc7a4a1d3ec6383f5bdde62b2** is pushed.
+[Exact mandatory CI36980970342](https://github.com/Quintine/Dune/actions/runs/36980970342),
+job110755165940, completed/success: existing isolated storage/HTTP verification
+passed before publication of
+`ghcr.io/quintine/dune:sha-cd532222a5dd098dc7a4a1d3ec6383f5bdde62b2`.
+This is existing-pipeline evidence, not a new assurance campaign or deployment;
+live **ab5c782** remains the last observed marker.
 
 **Native E1/E2 Ecaz Occupy — bounded Development Verified:** existing profile
 now composes Ixians/Tleilaxu/CHOAM with Ecaz/classic/optional Moritani2..6 and
