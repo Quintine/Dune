@@ -57,6 +57,13 @@ kill/Habbanya outcome and partial Face Dance replacement. A stale report
 descriptor was fixed and exercised on all three two-seat families.
 Mixed No-Field/full-plan, Stone/Poison Tooth and Ecaz questions remain guarded;
 new save/privacy/custody/seat/full-suite assurance stays deferred.
+Code **288870c84289bb1172bd8e21dac046fbab3b5704** is pushed.
+[Exact mandatory CI36949291343](https://github.com/Quintine/Dune/actions/runs/36949291343),
+job110658387235, completed/success: the existing isolated storage/HTTP verifier
+passed before image publication. Immutable image:
+`ghcr.io/quintine/dune:sha-288870c84289bb1172bd8e21dac046fbab3b5704`.
+This is observed existing-pipeline evidence, not a new assurance campaign or
+deployment claim; the last observed live revision remains **ab5c782**.
 
 **Stronghold rule integration — bounded Development Verified:** fresh
 `stronghold-factions` connects Advanced native Ixians/CHOAM plus classic2..6,

@@ -32,6 +32,13 @@ Final coherent rule/guide26/26, types/lint (`check:quick`), build and expanded
 390px guide pass. Changed canonical document links205/205 are valid; owned
 temporary rule drivers and managed tab/service are removed/closed.
 
+Code **288870c84289bb1172bd8e21dac046fbab3b5704** was pushed.
+[Mandatory CI36949291343](https://github.com/Quintine/Dune/actions/runs/36949291343)
+and job110658387235 completed/success for that exact SHA. Existing isolated
+storage/HTTP verification passed before publication of
+`ghcr.io/quintine/dune:sha-288870c84289bb1172bd8e21dac046fbab3b5704`.
+No deployment was performed; live **ab5c782** remains the last observed marker.
+
 ## 2 October 2026 — rules-first development throughput and compact context
 
 The user prioritizes full rules implementation, with comprehensive review,
