@@ -85,15 +85,28 @@ void test('stale, other-seat, same-leader, dishonest mixed and duplicate assassi
   assassinationRejects(mentat,'m',{type:'decision',event,card:'guild-1'});
 });
 
-void test('a normal Moritani traitor call records an explicit unresolved guard and cannot create an assassination opportunity',()=>{
+void test('a normal Moritani traitor reveal forfeits assassination and cannot create an opportunity',()=>{
   const staged=stageAssassinationBattle(assassinationGame(),'guild-0');
   const done=resolveAssassinationBattle(staged,{normalCall:true});
   assert.equal(done.moritaniAssassinate!.normalTraitorCall,true);
   assert.equal(done.moritaniAssassinateCallEvents!.length,1);
   assert.equal(done.moritaniAssassinate!.opportunities.length,0);
-  assert.match(viewGame(done,'m').moritaniAssassinate!.blocked!,/clarification/);
   const corrupt=structuredClone(done);corrupt.moritaniAssassinate!.normalTraitorCall=false;
   assert.throws(()=>viewGame(corrupt,'m'),/original event/);
+});
+
+void test('a sourced normal-reveal forfeiture persists across turns and denies a later genuine loss',()=>{
+  const first=assassinationToMentat(resolveAssassinationBattle(stageAssassinationBattle(assassinationGame(['m','g','e']),'guild-0'),{normalCall:true}));
+  assert.equal(first.moritaniAssassinate!.normalTraitorCall,true);assert.equal(first.moritaniAssassinate!.opportunities.length,0);
+  assert.match(viewGame(first,'m').moritaniAssassinate!.blocked!,/rest of this game/);
+  first.turn++;
+  first.players=[first.players[0],first.players[2],first.players[1]];
+  const second=resolveAssassinationBattle(stageAssassinationBattle(first));
+  assert.equal(second.lastBattleContext!.result,'normal');assert.notEqual(second.lastBattleContext!.winner,'m');
+  assert.equal(second.moritaniAssassinate!.normalTraitorCall,true);
+  assert.equal(second.moritaniAssassinate!.opportunities.length,0);
+  assert.notEqual(second.decision?.kind,'moritaniAssassinate');
+  assert.match(viewGame(second,'m').moritaniAssassinate!.blocked!,/rest of this game/);
 });
 
 void test('saved assassination receipts and cleanup obligations fail closed after corruption',()=>{

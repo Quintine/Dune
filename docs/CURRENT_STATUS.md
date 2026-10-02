@@ -25,6 +25,19 @@ authorization and deployment/publication safeguards remain intact. Use the
 [bounded context index](DEVELOPMENT.md#context-index) and
 [feedback/proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule).
 
+**Authorized Advanced Moritani forfeiture:** the supplied PDF physical35 resolves
+the old duration question: a normal own-Traitor-Card reveal forfeits Assassinate
+Leaders for the rest of the game, across turns and opponents. The persisted
+normal-call flag already enforced that scope; guidance, public history and the
+log now name the sourced forfeiture. Basic, exceptional leader custody and the
+private-step UX preview gates are unchanged. A permanent engine regression
+exercises a genuine turn advance plus a real later loss with no opportunity and
+the owner-facing forfeiture reason. See
+[the cutover](MORITANI_ASSASSINATE_LEADERS.md#authority-and-advanced-duration-cutover)
+and [authorized source](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
+Final types/lint, coherent assassination/guide38/38, build and390px Prototyped
+guide pass; four changed-region local links/anchors are valid.
+
 **Independent cards + Advanced Occupy — bounded Development Verified:** fresh
 explicit CLI `--ecaz-treachery` adds all three physical cards36/50/38/50.
 Own Ecaz Harass returns only its floor count while original mandatory ceil

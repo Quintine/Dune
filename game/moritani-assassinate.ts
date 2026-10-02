@@ -18,6 +18,7 @@ export type MoritaniAssassinateReceipt = {
 export type MoritaniAssassinateState = {
   version: 1;
   owner: string;
+  /** Authorized Advanced source: normal reveal forfeits this ability for the game. */
   normalTraitorCall: boolean;
   opportunities: MoritaniAssassinateReceipt[];
 };
@@ -291,7 +292,7 @@ export function moritaniAssassinateChoices(
     return stopped('This Assassinate opportunity has already ended.');
   if (state.normalTraitorCall)
     return stopped(
-      'Assassinate after an ordinary Moritani traitor call awaits its duration ruling.',
+      'Moritani forfeited Assassinate Leaders for the rest of this game after revealing its Traitor Card normally.',
     );
   if (
     state.opportunities.some(

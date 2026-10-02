@@ -7581,7 +7581,7 @@ function projectedMoritaniAssassinate(g: Game, viewer: string) {
   const own = viewer === state.owner;
   const choices = pending && own ? nexusRule(() => moritaniAssassinateChoices(moritaniAssassinateContext(g,pending))) : null;
   return {owner:state.owner,blocked:own && state.normalTraitorCall
-    ? 'Assassinate Leaders after a normal traitor call awaits clarification of the printed loss-of-advantage rule.' : null,
+    ? 'Moritani forfeited Assassinate Leaders for the rest of this game after revealing its Traitor Card normally.' : null,
     pending:pending ? {event:pending.event,opponent:pending.opponent,territory:pending.territory,
       cards:choices?.cards ?? [],blocked:choices?.blocked ?? null} : null,
     history:state.opportunities.filter(r => r.stage === 'revealed' || r.stage === 'replaced').map(r => ({
@@ -20400,7 +20400,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
             ?.name ?? identity);
     log(g, `${holder.name} revealed ${name} as a traitor.`);
     if (holder.id === g.moritaniAssassinate?.owner)
-      log(g, `${holder.name} called a traitor normally. Further Assassinate Leaders use awaits clarification of the printed loss-of-advantage rule.`, {faction:'moritani',name:'Assassinate Leaders boundary'});
+      log(g, `${holder.name} revealed a Traitor Card normally and forfeited Assassinate Leaders for the rest of this game.`, {faction:'moritani',name:'Assassinate Leaders forfeited'});
   }
   const dead = (l: Leader | undefined) => {
     if (l) {

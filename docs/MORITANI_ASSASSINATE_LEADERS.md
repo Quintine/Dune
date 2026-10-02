@@ -4,12 +4,13 @@
 preview. Normal game-start and publication gates remain closed. This is the
 battle-loss ability, separate from the random Assassination Terror token.
 
-## Authority and unresolved interpretation
+## Authority and Advanced duration cutover
 
 The [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf),
 pp. 6, 14 and 16, supplies the ability, captured-own-leader answer and Karama table.
-Independent source review found no official clarification of the disputed duration
-below. The runtime uses the following undisputed sequence:
+The historical publisher review found no official duration clarification.
+The user-authorized revised Advanced PDF now supplies an explicit game-long
+condition, recorded below. The runtime retains the following sequence:
 
 1. Native Advanced Moritani loses a normal battle against a surviving opposing
    leader disc, with no traitor called.
@@ -23,12 +24,19 @@ below. The runtime uses the following undisputed sequence:
    private physical replacement. Use the advantage once per opposing faction.
    Karama has no effect on this ability.
 
-The printed statement that a normal traitor reveal loses this advantage does not
-specify a battle, faction or game duration. The prototype records the normal call
-and explicitly guards further use; it does not label that guard as a settled
-permanent forfeiture. The user has been asked whether to keep that interaction
-gated or choose a duration. Previously normally revealed cards and exceptional
-leader custody also remain outside this first runtime contract.
+**Authorized Advanced cutover — 2 October 2026:** the supplied
+`UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`, physical p35 / logical p33,
+Assassinate Leaders D condition(d), says Moritani must **“not yet [have]
+revealed your Traitor Card normally this game.”** A normal own-card reveal
+therefore forfeits the advantage for the rest of this game, across later turns
+and all opposing factions. The existing persisted normal-call flag already
+enforced this scope; owner guidance and public reveal history now describe
+the sourced forfeiture rather than an unresolved-duration guard.
+
+This resolves the old duration question under the authorized Advanced source,
+not as a newly located GF9 erratum. Basic, exceptional leader interactions and
+the independent private-step UX/public-preview gates remain unchanged. See
+[source identity and precedence](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
 
 The captured-own-leader answer preserves original faction identity: a Moritani
 leader used by Harkonnen does not become a Harkonnen-faction assassination card.

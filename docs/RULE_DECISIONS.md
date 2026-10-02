@@ -121,6 +121,21 @@ See [combined-card boundaries](ECAZ_OCCUPY_RULES.md#independent-cards-with-combi
 Comprehensive recovery/privacy/custody review follows all rules rather than
 becoming another prototype assurance wave.
 
+## Advanced Moritani normal-reveal duration cutover — 2 October 2026
+
+The authorized supplied revision resolves the previously open duration:
+**Assassinate Leaders D, physical PDF page 35**, requires that Moritani has
+**not yet revealed its Traitor Card normally this game**. A normal own-card
+reveal therefore forfeits Assassinate Leaders for the rest of the game, across
+later turns and every opposing faction, whether that battle was won or lost.
+
+This supersedes the historical “normal call, unresolved duration” guard as
+source resolution, not a newly located GF9 erratum or a Basic ruling. The
+persisted normal-call flag already enforced game scope; owner guidance, public
+reveal history and the log now name the sourced forfeiture. Exceptional leader
+custody and the independent private-step UX/public-preview gates are unchanged.
+See [the cutover and Advanced sequence](MORITANI_ASSASSINATE_LEADERS.md#authority-and-advanced-duration-cutover).
+
 ## Recorded contracts and implementation boundaries
 
 | Topic | Decision to preserve | Detailed authority and evidence |

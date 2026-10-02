@@ -187,16 +187,16 @@ void test('already-dead targets remain revealable for no death or spice, while p
   assert.deepEqual(context, before);
 });
 
-void test('ordinary traitor-call ambiguity and already normally revealed cards stay explicit private guards', () => {
+void test('the sourced normal-reveal forfeiture and already normally revealed cards stay explicit private guards', () => {
   const context = fixture();
   context.state.normalTraitorCall = true;
   assert.match(
     moritaniAssassinateChoices(context).blocked!,
-    /ordinary.*duration ruling/,
+    /forfeited Assassinate Leaders for the rest of this game/,
   );
   assert.throws(
     () => quoteMoritaniAssassinate(context, 'atreides-1'),
-    /duration ruling/,
+    /forfeited Assassinate Leaders for the rest of this game/,
   );
   context.state.normalTraitorCall = false;
   context.normallyRevealed = ['atreides-1'];

@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 2 October 2026 — authorized Advanced Moritani normal-reveal forfeiture
+
+The user-authorized supplied revision, physical p35 Assassinate Leaders D,
+resolves the previously open duration: Moritani must not have revealed its
+Traitor Card normally **this game**. A normal own-card reveal therefore
+forfeits the ability for the rest of the game, across later turns and all
+opposing factions, regardless of that battle's result.
+
+The persisted `normalTraitorCall` flag already enforced exactly that scope, so
+no state-machine change was needed. Owner-facing blocked text, the public
+reveal log and internal guidance now name the sourced forfeiture instead of an
+unresolved-duration guard. The change is source alignment, not a newly located
+GF9 erratum or a Basic ruling; exceptional leader custody and the independent
+private-step UX/public-preview gates are unchanged.
+
+An exact normal-reveal case passes. A new permanent engine regression advances a
+genuine turn, swaps to a still-living opposing faction and stages a real later
+loss: the flag persists, no assassination opportunity or decision appears and
+the owner sees the game-long forfeiture reason. Throwaway native smoke confirmed
+the same real-reveal and turn-2 persistence. No database reset, new assurance
+campaign or preview-gate change.
+
+Final `check:quick` types/lint, coherent assassination/guide38/38, build and
+390px Partial / Development: Prototyped guide pass; four changed-region local
+links/anchors are valid. The throwaway driver is removed and the verifier
+worker is closed.
+
 ## 2 October 2026 — independent Treachery cards with Advanced Occupy
 
 Existing `ecaz-occupy` now accepts explicit fresh CLI `--ecaz-treachery`,
