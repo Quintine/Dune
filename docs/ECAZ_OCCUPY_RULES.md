@@ -153,6 +153,56 @@ returned Ecaz2 reserves, sent original fixed3 to Tanks and left Guild2.
 real equal-leader comparison, paid three Ecaz reserves, left Ecaz2/Guild2 and
 sent six total Ecaz counters to Tanks. Both reach original Collection.
 
+### Native Richese, No-Field and Stone composition — 3 October 2026
+
+Advanced native tables now admit Richese alongside the already supported
+families. The actual six-native failure was Ecaz+Ixians versus CHOAM at
+Carthag with Richese elsewhere, not a Richese opponent or an illegal bot offer.
+The roster-wide guard and fresh-label-only runtime restriction prevented a
+mandatory source-clear battle. Native composition now selects the real lead
+and original force owners; it does not suppress that battle or fall back to
+an ordinary one-army plan. Optional overlays remain guarded.
+
+The supplied Advanced PDF **physical p36, Richese No-Field B** says a concealed
+0/3/5 marker counts as one force for all effects until reveal, materializes
+only available reserves, and reveals with Battle Plans. A marker-only Richese
+ally therefore remains original battle presence even with a zero prospective
+pool. The selected plan actor receives its private variable pool; rivals do
+not receive that pool or an Occupy profile containing the secret denomination.
+The physical Richese owner reveals once after both seals. Dial prescience and
+whole-plan restrictions follow the actual variable-force owner rather than the
+original chooser. Preventing Occupy with Ecaz lead makes only Ecaz's own pool
+inspectable; the unrelated marker stays concealed until original reveal timing.
+Richese's own ordinary-plus-marker dialing and broader disclosure rulings remain.
+
+Stone Burner compares **floor(E/2) + native ally physical undialed tokens** for
+active Occupy, or the **selected lead's own pool only** after prevention.
+Its total dial offset is removed before native typed casualty enumeration.
+Mirror copies use the same comparison and original physical-card retention.
+Public opposing No-Field preflight enumerates possible native pools, never the
+actual secret denomination. Ix Stone/Poison Tooth timing, Harass/Stone and
+genuinely winner-changing typed allocations retain their existing guards.
+Native Ecaz/Moritani Mirror admission is Advanced only; Basic is unchanged.
+
+The affected rule batch passes **363/363**, with types/lint and build passing.
+**26 actual native programs** cover ten ordinary/marker owner cases, eight
+Stone/Mirror active/prevented lead cases and eight four-policy concealed-pool
+cases, with original Collection and JSON continuation. These are genuine
+setup followed by explicitly conserved board/card/bank staging, not unstaged
+games. All four policies remain minimal legal participants; strategy is deferred.
+The formerly stalled genuine Advanced combined seed20260932 now completes
+**2,424 accepted actions, no rejection and65 JSON continuations**, at turn9.
+
+Original CLI **GQ4FEWNW v8** and human **T78EFNZK v8** admitted fresh native
+setups with real authenticated seats. Human390px **T78EFNZK v22** selected
+Ecaz lead and sealed total5/support2 with Sanya Ecaz. Both seals revealed the
+original No-Field5 into only two available Richese reserves; settlement left
+Ecaz2, Ecaz Tanks3 and Richese Tanks2. Native CHOAM received its original
+one-spice support income, and original Collection returned Ecaz's wallet to30.
+Refreshing retained the actual continuation. No reset, re-deal, public start,
+deployment or new comprehensive assurance campaign.
+
+
 ### Encounter evidence correction — 2 October 2026
 
 Earlier “no combined lead choice” statements were incorrect: the compact

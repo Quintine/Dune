@@ -182,6 +182,11 @@ const ECAZ_OCCUPY_SCENARIOS: readonly Scenario[] = [
   ...ECAZ_OCCUPY_BASE_SCENARIOS.map((scenario, index): Scenario => ({
     ...scenario, ordinal: 192 + index, ecazTreachery: true,
   })),
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 215 + players - 2, profile: 'ecaz-occupy', rules: 'advanced',
+    expansions: ['ecaz', 'choam'],
+    roster: (['ecaz', 'richese', 'guild', 'fremen', 'emperor', 'beneGesserit'] as FactionId[]).slice(0, players),
+  })),
 ];
 const PAIRED_NEXUS_SCENARIOS: readonly Scenario[] = EXPANSION_ROSTER_SCENARIOS
   .map(scenario => ({
@@ -321,7 +326,7 @@ function usage() {
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
     'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; combined-nexus and combined-homeworld-nexus add five/six-seat Basic/Advanced all-expansion samples. Base, Homeworld, Nexus, Homeworld-Nexus, expansion roster, paired expansion Nexus, Ecaz card variant, Advanced Moritani assassination and skill profiles select their documented rosters. Stronghold-factions is Advanced only: Ixians + CHOAM, native Ixians + Tleilaxu, or native CHOAM + Richese with classic opponents, two through six seats; mixed four-native rosters also run at four through six seats. Selected Ix/CHOAM decks determine the canonical 47/35 Treachery Cards; Richese has a separate ten-card cache and all samples have six separate Stronghold Cards without other modules. Scenario names identify their native roster. --players requires a supported profile. Output must be a new private directory outside the checkout.' +
-    '\nEcaz-occupy is Advanced only: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. Explicit independent three-card samples additionally use36/50/38. No Richese mixed planning or other optional overlays.'
+    '\nEcaz-occupy is Advanced only: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM/Richese paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. Explicit independent three-card samples additionally use36/50/38. Richese marker-only or ordinary pools retain original reveal timing; own mixed No-Field dialing, whole-plan inspection and optional overlays remain guarded.'
   );
 }
 
@@ -358,7 +363,7 @@ function scenarioName(scenario: Scenario) {
     return `${scenario.profile}-${native.join('-')}-${scenario.roster.length}-${scenario.rules}`;
   }
   if (scenario.profile === 'ecaz-occupy') {
-    const native = scenario.roster.filter(faction => ['ixians', 'tleilaxu', 'choam'].includes(faction));
+    const native = scenario.roster.filter(faction => ['ixians', 'tleilaxu', 'choam', 'richese'].includes(faction));
     if (native.length || scenario.ecazTreachery)
       return `${scenario.profile}${scenario.ecazTreachery ? '-treachery' : ''}${native.length ? '-' + native.join('-') : ''}-${scenario.roster.length}-${scenario.rules}`;
   }

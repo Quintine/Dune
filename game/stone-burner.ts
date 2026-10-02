@@ -12,6 +12,16 @@ export type StoneBurnerComparison = {
   attacker: number[];
   defender: number[];
 };
+/** Public fixed contributions only; callers retain their own native force pools. */
+export type StoneBurnerOccupyContext = {
+  fixedEcazDial: number;
+  ecazUndialed: number;
+};
+/** Context belongs to physical battle slots, not the card holder or aggressor. */
+export type StoneBurnerContext = {
+  attacker?: StoneBurnerOccupyContext;
+  defender?: StoneBurnerOccupyContext;
+};
 
 const opposingChoices = new Map<string, readonly (readonly number[])[]>();
 const MAX_CACHED_POOLS = 128;
@@ -22,7 +32,14 @@ function validSide(side: StoneBurnerSide): boolean {
 function sorted(values: Iterable<number>): number[] {
   return [...new Set(values)].sort((a, b) => a - b);
 }
-function totals(forces: CombatForces, dial: number, support: number): number[] {
+function totals(
+  forces: CombatForces,
+  dial: number,
+  support: number,
+  occupy?: StoneBurnerOccupyContext,
+): number[] {
+  dial -= occupy?.fixedEcazDial ?? 0;
+  const fixedUndialed = occupy?.ecazUndialed ?? 0;
   if (
     !validCombatForces(forces) ||
     !Number.isFinite(dial) ||
@@ -35,7 +52,7 @@ function totals(forces: CombatForces, dial: number, support: number): number[] {
     return [];
   return sorted(
     casualtyOptions(forces, dial, support).map(
-      (loss) => forces.normal + forces.elite - loss.normal - loss.elite,
+      (loss) => fixedUndialed + forces.normal + forces.elite - loss.normal - loss.elite,
     ),
   );
 }
@@ -68,9 +85,10 @@ export function stoneBurnerComparison(
   dDial: number,
   dSupport: number,
   aggressor: StoneBurnerSide = 'attacker',
+  context?: StoneBurnerContext,
 ): StoneBurnerComparison {
-  const attacker = totals(a, aDial, aSupport),
-    defender = totals(d, dDial, dSupport);
+  const attacker = totals(a, aDial, aSupport, context?.attacker),
+    defender = totals(d, dDial, dSupport, context?.defender);
   return {
     winner: invariantWinner(attacker, defender, aggressor),
     attacker,
@@ -85,7 +103,9 @@ export function stoneBurnerComparison(
  */
 function allOpposingTotals(
   forces: CombatForces,
+  occupy?: StoneBurnerOccupyContext,
 ): readonly (readonly number[])[] {
+  const fixedUndialed = occupy?.ecazUndialed ?? 0;
   const key = [
     forces.normal,
     forces.elite,
@@ -95,6 +115,7 @@ function allOpposingTotals(
     !!forces.normalFreeSupport,
     forces.freeSupport,
     !!forces.eliteFreeSupport,
+    fixedUndialed,
   ].join(':');
   const cached = opposingChoices.get(key);
   if (cached) return cached;
@@ -106,7 +127,12 @@ function allOpposingTotals(
   for (let halfDial = 0; halfDial <= maximumHalfDial; halfDial++)
     for (let support = 0; support <= maximumSupport; support++) {
       const choices = totals(forces, halfDial / 2, support);
-      if (choices.length) result.push(choices);
+      if (choices.length) {
+        if (fixedUndialed)
+          for (let index = 0; index < choices.length; index++)
+            choices[index] += fixedUndialed;
+        result.push(choices);
+      }
     }
   if (opposingChoices.size >= MAX_CACHED_POOLS)
     opposingChoices.delete(opposingChoices.keys().next().value!);
@@ -125,15 +151,18 @@ export function stoneBurnerPlanBlock(
   opponent: CombatForces,
   side: StoneBurnerSide,
   aggressor: StoneBurnerSide = 'attacker',
+  context?: StoneBurnerContext,
 ): string | null {
   if (!validSide(side) || !validSide(aggressor))
     return 'Choose valid Stone Burner combatant roles.';
+  const ownOccupy = context?.[side];
+  const opponentOccupy = context?.[side === 'attacker' ? 'defender' : 'attacker'];
   if (!validCombatForces(own) || !validCombatForces(opponent))
     return 'Stone Burner needs valid supported physical force pools of at most 20 tokens.';
-  const ownTotals = totals(own, dial, support);
+  const ownTotals = totals(own, dial, support, ownOccupy);
   if (!ownTotals.length)
     return 'Your dial and support do not permit a legal Stone Burner force allocation.';
-  for (const otherTotals of allOpposingTotals(opponent)) {
+  for (const otherTotals of allOpposingTotals(opponent, opponentOccupy)) {
     const winner =
       side === 'attacker'
         ? invariantWinner(ownTotals, otherTotals, aggressor)
@@ -150,16 +179,19 @@ export function stoneBurnerCompulsionBlock(
   opponent: CombatForces,
   side: StoneBurnerSide,
   aggressor: StoneBurnerSide = 'attacker',
+  context?: StoneBurnerContext,
 ): string | null {
   if (!validSide(side) || !validSide(aggressor))
     return 'Choose valid Stone Burner combatant roles.';
+  const ownOccupy = context?.[side];
   if (!validCombatForces(own) || !validCombatForces(opponent))
     return 'Stone Burner needs valid supported physical force pools of at most 20 tokens.';
-  const maximumStrength = maxCombatDial(own);
-  for (let halfDial = 0; halfDial <= maximumStrength * 2; halfDial++) {
-    if (!totals(own, halfDial / 2, 0).length) continue;
+  const fixedDial = ownOccupy?.fixedEcazDial ?? 0;
+  const maximumStrength = fixedDial + maxCombatDial(own);
+  for (let halfDial = fixedDial * 2; halfDial <= maximumStrength * 2; halfDial++) {
+    if (!totals(own, halfDial / 2, 0, ownOccupy).length) continue;
     if (
-      stoneBurnerPlanBlock(own, halfDial / 2, 0, opponent, side, aggressor) ===
+      stoneBurnerPlanBlock(own, halfDial / 2, 0, opponent, side, aggressor, context) ===
       null
     )
       return null;

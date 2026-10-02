@@ -22,6 +22,9 @@ export type EcazOccupyBattleSeat = Readonly<{
   faction: FactionId;
   ally?: string | null;
   forces: CombatForces;
+  /** Original concealed Richese marker: one battle presence even when the
+   * reserve-limited prospective pool is zero. Never ordinary zero fighters. */
+  noFieldPresence?: true;
 }>;
 export type EcazOccupyBattleInput = Readonly<{
   /** Original battle chooser, before Ecaz selects the coalition's plan actor. */
@@ -42,6 +45,7 @@ export type EcazOccupyBattleProfile = Readonly<{
   canceled: boolean;
   ecazForces: CombatForces;
   allyForces: CombatForces;
+  allyNoFieldPresence?: true;
   /** Only the variable dial's physical counters, never a merged army. */
   forces: CombatForces;
   fixedEcazDial: number;
@@ -104,9 +108,15 @@ export function quoteEcazOccupyBattle(
     'An Occupy battle needs valid native physical fighter pools.',
   );
   requireBattle(
+    ecaz.noFieldPresence === undefined &&
+      (ally.noFieldPresence === undefined ||
+        ally.noFieldPresence === true && ally.faction === 'richese'),
+    'Only an original concealed Richese ally may supply No-Field battle presence.',
+  );
+  requireBattle(
     ecaz.forces.elite === 0 && !ecaz.forces.temporaryElite &&
       !ecaz.forces.normalFixedHalf && ecaz.forces.normal > 0 &&
-      ally.forces.normal + ally.forces.elite > 0,
+      (ally.forces.normal + ally.forces.elite > 0 || ally.noFieldPresence === true),
     'Both Occupy members need storm-connected fighters; Ecaz uses ordinary counters, not advisors or an elite pool.',
   );
   requireBattle(
@@ -135,6 +145,7 @@ export function quoteEcazOccupyBattle(
     canceled,
     ecazForces: ecaz.forces,
     allyForces: ally.forces,
+    ...(ally.noFieldPresence ? { allyNoFieldPresence: true as const } : {}),
     forces,
     fixedEcazDial,
     maxDial: fixedEcazDial + maxCombatDial(forces),

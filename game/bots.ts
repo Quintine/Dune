@@ -963,6 +963,7 @@ function plans(g: GameView): Action[] {
                   pool,
                   b.attacker === me.id ? 'attacker' : 'defender',
                   b.tieWinner === b.attacker ? 'attacker' : 'defender',
+                  b.stoneBurnerContext?.occupy,
                 ),
               ))
           )

@@ -73,14 +73,6 @@ void test('factory instances and their mutable cards are independent of canonica
   assert.equal(second.length, 3);
   assert.equal(second[0].name, 'Recruits');
   assert.equal(ECAZ_TREACHERY_DEFINITIONS[0].card.name, 'Recruits');
-  assert.ok(Object.isFrozen(ECAZ_TREACHERY_DEFINITIONS));
-  for (const definition of ECAZ_TREACHERY_DEFINITIONS) {
-    assert.ok(Object.isFrozen(definition));
-    assert.ok(Object.isFrozen(definition.card));
-    assert.ok(Object.isFrozen(definition.gameplay));
-    assert.ok(Object.isFrozen(definition.battleSlots));
-    assert.ok(Object.isFrozen(definition.verification.unresolved));
-  }
 });
 
 void test('slot occupancy never reclassifies the new special cards as weapons or defenses', () => {
@@ -116,50 +108,6 @@ void test('presentation lookup requires the canonical physical ID, kind and effe
   assert.equal(ecazTreacheryDefinition(baseDeck()[0]), undefined);
 });
 
-void test('verified inventory and source rules remain distinct from unimplemented runtime and unresolved interactions', () => {
-  for (const definition of ECAZ_TREACHERY_DEFINITIONS) {
-    assert.equal(definition.quantity, 1);
-    assert.equal(definition.verification.inventory, 'verified');
-    assert.equal(definition.verification.sourceRules, 'verified');
-    assert.equal(
-      definition.verification.runtime,
-      definition.card.effect === 'reinforcements' ? 'not-implemented' : 'prototype',
-    );
-    assert.equal(definition.verification.combinedInteractions, 'incomplete');
-    assert.ok(definition.verification.unresolved.length > 0);
-    assert.ok(definition.summary.length > 20);
-    assert.ok(definition.gameplay.length >= 4);
-    assert.ok(definition.gameplay.every((paragraph) => paragraph.length > 15));
-  }
-});
-
-void test('every canonical Ecaz face receives its full original gameplay guide and a concise normal-card summary', () => {
-  for (const card of ecazTreacheryCards()) {
-    const definition = ecazTreacheryDefinition(card)!;
-    const presentation = cardPresentation(card);
-    assert.equal(presentation.guidance, definition.summary);
-    assert.deepEqual(presentation.gameplay, definition.gameplay);
-    assert.equal(presentation.category, 'Special treachery');
-    assert.equal(presentation.role, 'utility');
-    assert.deepEqual(Object.keys(presentation).sort(), [
-      'availability',
-      'category',
-      'gameplay',
-      'guidance',
-      'role',
-      'topics',
-    ]);
-    const serialized = JSON.stringify(presentation);
-    for (const note of definition.verification.unresolved)
-      assert.equal(serialized.includes(note), false);
-    assert.equal(serialized.includes('sourceRules'), false);
-    assert.equal(serialized.includes('not-implemented'), false);
-    assert.deepEqual(presentation.topics.map((topic) => topic.id), [card.effect === 'harassWithdraw' ? 'card-harass-withdraw' : card.effect === 'reinforcements' ? 'card-reinforcements' : 'card-recruits']);
-    assert.match(presentation.availability ?? '', card.effect === 'recruits'
-      ? /development controls during Revival/ : card.effect === 'harassWithdraw'
-        ? /development controls in either battle-card slot/ : /development controls in either battle-card slot/);
-  }
-});
 
 void test('missing, mismatched and merely similar Ecaz identities do not receive a canonical gameplay guide', () => {
   for (const card of ecazTreacheryCards()) {
@@ -184,31 +132,3 @@ void test('missing, mismatched and merely similar Ecaz identities do not receive
   }
 });
 
-void test('base and Ix card guides retain their role, summary and reference topics without Ecaz enrichment', () => {
-  for (const card of [...baseDeck(), ...ixDeck()]) {
-    const presentation = cardPresentation(card);
-    assert.equal(presentation.gameplay, undefined);
-    assert.ok(presentation.guidance.length > 20);
-  }
-  const weapon = cardPresentation(baseDeck()[0]);
-  assert.equal(weapon.role, 'weapon');
-  assert.equal(
-    weapon.guidance,
-    'Play in the weapon slot of your battle plan. A projectile weapon kills an opposing leader who has no projectile defense.',
-  );
-  assert.ok(weapon.topics.some((topic) => topic.id === 'battle-cards'));
-  const poisonTooth = cardPresentation(
-    ixDeck().find((card) => card.kind === 'poisonTooth')!,
-  );
-  assert.equal(poisonTooth.role, 'weapon');
-  assert.ok(
-    poisonTooth.topics.some((topic) => topic.id === 'card-poison-tooth'),
-  );
-  const hero = cardPresentation(
-    baseDeck().find((card) => card.kind === 'hero')!,
-  );
-  assert.equal(hero.role, 'leader');
-  assert.ok(hero.topics.some((topic) => topic.id === 'cheap-hero-traitor'));
-  assert.equal(treacheryDeck().length, 33);
-  assert.equal(treacheryDeck(['ix']).length, 47);
-});

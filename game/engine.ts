@@ -357,7 +357,7 @@ import {
   auditCount,
   sampleAuditCards,
 } from './choam-auditor';
-import { stoneBurnerPlanBlock } from './stone-burner';
+import { stoneBurnerPlanBlock, type StoneBurnerContext } from './stone-burner';
 import {
   STRONGHOLD_CARDS,
   createStrongholdCards,
@@ -3598,7 +3598,7 @@ function nexusAtreidesOffer(g: Game, id: string) {
   const target = b && (b.attacker === id ? b.defender : b.attacker);
   const fields = mode === 'betrayal' ? [] : (['leader', 'weapon', 'defense', 'dial'] as PlanField[])
     .filter(field => !(mode === 'cunning' && (field === b?.prescience?.field ||
-      (field === 'dial' && target && b?.noFieldPlayers?.includes(target)))));
+      (field === 'dial' && target && battleNoFieldPlan(g, target)))));
   return { event: b?.event ?? '', mode, fields, blocked };
 }
 function finishInspectionAnswers(g: Game) {
@@ -7307,6 +7307,29 @@ function combatForces(
       (p.faction === 'fremen' && !g.battle?.fremenSupportBlocked),
   };
 }
+function occupyArmiesConnected(g: Game, ecaz: Player, ally: Player, t: string): boolean {
+  const marker = ally.noField?.deployed;
+  for (const x in ecaz.forces) {
+    if (ecaz.forces[x] <= 0 || splitLocation(x).territory !== t) continue;
+    for (const y in ally.forces)
+      if (ally.forces[y] > 0 && splitLocation(y).territory === t &&
+        gameDistance(g, x, y, key => splitLocation(key).sector === g.storm) === 0) return true;
+    if (marker?.location.territory === t &&
+      gameDistance(g, x, location(t, marker.location.sector), key => splitLocation(key).sector === g.storm) === 0) return true;
+  }
+  return false;
+}
+/** Inspection follows the selected plan actor; reveal still belongs to the physical marker owner. */
+function battleNoFieldPlan(g: Game, id: string): boolean {
+  const b = g.battle, occupy = b?.ecazOccupy;
+  const owner = occupy?.lead === id ? occupy.canceled ? id : occupy.ally : id;
+  return !!b?.noFieldPlayers?.includes(owner);
+}
+function battleConcealedForces(g: Game, id: string): boolean {
+  const b = g.battle, occupy = b?.ecazOccupy;
+  const owner = occupy?.lead === id ? occupy.canceled ? id : occupy.ally : id;
+  return !!b && getPlayer(g, owner).noField?.deployed?.location.territory === b.territory;
+}
 function ecazBattleProfile(g: Game): EcazOccupyBattleProfile | null {
   const b = g.battle, occupy = b?.ecazOccupy;
   if (!b || !occupy?.lead) return null;
@@ -7315,15 +7338,17 @@ function ecazBattleProfile(g: Game): EcazOccupyBattleProfile | null {
   requireRule(g.advanced && occupy.event === b.event && ecaz.faction === 'ecaz' &&
     ecaz.ally === ally.id && ally.ally === ecaz.id && [b.attacker, b.defender].includes(occupy.lead) &&
     !isAdvisor(ecaz, b.territory) && !isAdvisor(ally, b.territory) &&
-    Object.entries(ecaz.forces).some(([x, n]) => n > 0 && splitLocation(x).territory === b.territory &&
-      Object.entries(ally.forces).some(([y, m]) => m > 0 && splitLocation(y).territory === b.territory &&
-        gameDistance(g, x, y, key => splitLocation(key).sector === g.storm) === 0)),
+    (occupyArmiesConnected(g, ecaz, ally, b.territory) ||
+      (b.revealed && b.noFieldPlayers?.includes(ally.id) && fighterCount(ecaz, b.territory) > 0 &&
+        fighterCount(ally, b.territory) === 0)),
     'Occupy needs the original battle and physically connected allied fighters.');
   const opponent = getPlayer(g, b.attacker === occupy.lead ? b.defender : b.attacker);
   return nexusRule(() => quoteEcazOccupyBattle({
     battleOrderActor: b.chooser ?? b.attacker,
     ecaz: { id: ecaz.id, faction: 'ecaz', ally: ecaz.ally, forces: combatForces(g, ecaz, b.territory, opponent) },
-    ally: { id: ally.id, faction: ally.faction, ally: ally.ally, forces: combatForces(g, ally, b.territory, opponent) },
+    ally: { id: ally.id, faction: ally.faction, ally: ally.ally,
+      ...(b.noFieldPlayers?.includes(ally.id) ? { noFieldPresence: true as const } : {}),
+      forces: combatForces(g, occupy.canceled && lead === ecaz.id ? { ...ally, noField: undefined } : ally, b.territory, opponent) },
     lead, canceled: occupy.canceled,
   }));
 }
@@ -9158,7 +9183,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
     g.players.length >= 2 && g.players.length <= 6 &&
     g.players.some(p => p.faction === 'ecaz') &&
     g.players.every(p => faction(p.faction).expansion === 'base' ||
-      (['ecaz', 'moritani', 'ixians', 'tleilaxu', 'choam'].includes(p.faction) &&
+      (['ecaz', 'moritani', 'ixians', 'tleilaxu', 'choam', 'richese'].includes(p.faction) &&
         g.expansions.includes(faction(p.faction).expansion))) &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.strongholdCards &&
     !g.techTokens && !g.discoveryEnabled && !g.discoveries &&
@@ -9168,7 +9193,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
 /** Fresh native Advanced Occupy profile; public starts and Basic are unchanged. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
   requireRule(ecazOccupyCompositionSupported(state),
-    'Advanced Occupy requires native Ecaz, classic/Moritani/Ixian/Tleilaxu/CHOAM factions and their distinct selected family decks, without Richese or optional overlays.');
+    'Advanced Occupy requires native Ecaz, classic/Moritani/Ixian/Tleilaxu/CHOAM/Richese factions and their distinct selected family decks, without optional overlays.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
   const g = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, state.ecazTreachery === true);
@@ -18432,14 +18457,11 @@ function stonePublicPools(
   p: Player,
   opponent: Player,
 ): CombatForces[] {
-  const t = g.battle!.territory;
-  const hiddenMarker = p.noField?.deployed?.location.territory === t;
-  const pool = combatForces(
-    g,
-    hiddenMarker ? { ...p, noField: undefined } : p,
-    t,
-    opponent,
-  );
+  const b = g.battle!, t = b.territory, occupy = b.ecazOccupy;
+  const owner = occupy?.lead === p.id && !occupy.canceled ? getPlayer(g, occupy.ally) : p;
+  const enemy = occupy?.lead === opponent.id && !occupy.canceled ? getPlayer(g, occupy.ally) : opponent;
+  const hiddenMarker = owner.noField?.deployed?.location.territory === t;
+  const pool = combatForces(g, hiddenMarker ? { ...owner, noField: undefined } : owner, t, enemy);
   return hiddenMarker
     ? Array.from({ length: 6 }, (_, n) => ({
         ...pool,
@@ -18452,6 +18474,12 @@ function stoneTimingBlock(g: Game): string | null {
     ? 'Stone Burner with the Ix expansion is awaiting a ruling on its simultaneous revealed choice with Poison Tooth. This implementation boundary applies before either hidden plan is submitted.'
     : null;
 }
+function stoneOccupyContext(g: Game): StoneBurnerContext | undefined {
+  const b = g.battle!, profile = ecazBattleProfile(g);
+  if (!profile || profile.canceled) return undefined;
+  const side = { fixedEcazDial: profile.fixedEcazDial, ecazUndialed: Math.floor(profile.ecazForces.normal / 2) };
+  return profile.lead === b.attacker ? { attacker: side } : { defender: side };
+}
 function stonePlanBlock(
   g: Game,
   p: Player,
@@ -18460,17 +18488,19 @@ function stonePlanBlock(
 ): string | null {
   const b = g.battle!;
   const opponent = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
+  const context = stoneOccupyContext(g);
   return (
     stoneTimingBlock(g) ??
     stonePublicPools(g, opponent, p)
       .map((pool) =>
         stoneBurnerPlanBlock(
-          combatForces(g, p, b.territory, opponent),
+          planCombatForces(g, p, opponent),
           dial,
           support,
           pool,
           b.attacker === p.id ? 'attacker' : 'defender',
           battleTieWinner(g) === b.attacker ? 'attacker' : 'defender',
+          context,
         ),
       )
       .find(Boolean) ??
@@ -18486,13 +18516,15 @@ function stoneCompulsionBlock(g: Game, target: Player): string | null {
   const timing = stoneTimingBlock(g);
   if (timing) return timing;
   const opponents = stonePublicPools(g, other, target);
+  const context = stoneOccupyContext(g);
+  const fixedDial = (b.attacker === target.id ? context?.attacker : context?.defender)?.fixedEcazDial ?? 0;
   for (const own of stonePublicPools(g, target, other)) {
     const supported = Array.from(
       { length: maxCombatDial(own) * 2 + 1 },
-      (_, n) => n / 2,
+      (_, n) => fixedDial + n / 2,
     ).some(
       (dial) =>
-        casualtyOptions(own, dial, 0).length &&
+        casualtyOptions(own, dial - fixedDial, 0).length &&
         opponents.every(
           (opponent) =>
             !stoneBurnerPlanBlock(
@@ -18502,6 +18534,7 @@ function stoneCompulsionBlock(g: Game, target: Player): string | null {
               opponent,
               b.attacker === target.id ? 'attacker' : 'defender',
               battleTieWinner(g) === b.attacker ? 'attacker' : 'defender',
+              context,
             ),
         ),
     );
@@ -25570,7 +25603,7 @@ export function prepareSpecialKaramaIntent(
       'Choose a player in this battle.',
     );
     requireRule(
-      !b.noFieldPlayers?.includes(target),
+      !battleNoFieldPlan(g, target),
       'Whole-plan special prescience against a No-Field awaits its disclosure ruling. Ordinary permitted elements remain available.',
     );
     return {
@@ -29984,11 +30017,14 @@ function applyActionInner(
     requireRule(choice, 'Choose one of your unresolved battles.');
     g.auditorInsight = null;
     retireNexusChoamInsight(g);
-    const noFieldPlayers = [choice.attacker, choice.defender].filter(
-      (playerId) =>
-        getPlayer(g, playerId).noField?.deployed?.location.territory ===
-        choice.territory,
-    );
+    const ecaz = byFaction(g, 'ecaz');
+    const ally = ecaz?.ally ? getPlayer(g, ecaz.ally) : null;
+    const connected = ecaz && ally && occupyArmiesConnected(g, ecaz, ally, choice.territory);
+    const noFieldPlayers = g.players.filter(player =>
+      player.noField?.deployed?.location.territory === choice.territory &&
+      (player.id === choice.attacker || player.id === choice.defender ||
+        (g.advanced && connected && ecaz && ally?.ally === ecaz.id && player.id === ally.id &&
+          (choice.attacker === ecaz.id || choice.defender === ecaz.id)))).map(player => player.id);
     for (const playerId of noFieldPlayers)
       requireRule(
         Object.entries(getPlayer(g, playerId).forces).every(
@@ -30015,18 +30051,10 @@ function applyActionInner(
       revealed: false,
       traitorCalls: {},
     };
-    const ecaz = byFaction(g, 'ecaz');
-    const ally = ecaz?.ally ? getPlayer(g, ecaz.ally) : null;
-    const connected = ecaz && ally && Object.entries(ecaz.forces).some(([x, n]) =>
-      n > 0 && splitLocation(x).territory === choice.territory && Object.entries(ally.forces).some(([y, m]) =>
-        m > 0 && splitLocation(y).territory === choice.territory &&
-        gameDistance(g, x, y, key => splitLocation(key).sector === g.storm) === 0));
     if (g.advanced && ecaz && ally?.ally === ecaz.id && connected &&
       !isAdvisor(ally, choice.territory) && [choice.attacker, choice.defender].some(seat => seat === ecaz.id || seat === ally.id)) {
-      requireRule(ecazOccupyCompositionSupported(g) &&
-        (g.ecazOccupyPreview === true || g.players.every(player =>
-          faction(player.faction).expansion === 'base' || ['ecaz', 'moritani'].includes(player.faction))),
-        'Advanced combined Occupy supports source-selected native factions only in the fresh Occupy profile; Richese/No-Field and optional overlays remain gated.');
+      requireRule(ecazOccupyCompositionSupported(g),
+        'Advanced combined Occupy requires source-selected native factions; optional overlays remain gated.');
       g.battle.ecazOccupy = { event: battleEvent, ecaz: ecaz.id, ally: ally.id, lead: null, canceled: false };
       g.decision = { kind: 'ecazBattleLead', player: ecaz.id, event: battleEvent, choices: [ecaz.id, ally.id] };
     } else {
@@ -30067,7 +30095,7 @@ function applyActionInner(
     const beneficiary = b.preparation.beneficiary;
     const target = beneficiary === b.attacker ? b.defender : b.attacker;
     requireRule(
-      action.field !== 'dial' || !b.noFieldPlayers?.includes(target),
+      action.field !== 'dial' || !battleNoFieldPlan(g, target),
       'Atreides may not inspect the number dialed in a No-Field battle.',
     );
     b.prescience = { player: beneficiary, field: action.field as PlanField };
@@ -30085,7 +30113,7 @@ function applyActionInner(
       b.preparation.owner === id && record?.stage === 'answer' && record.target === id &&
       action.event === record.event && Object.keys(action).sort().join(',') === 'event,type,value',
     'This Nexus answer does not match your current inspection.');
-    requireRule(record.mode !== 'cunning' || record.field !== 'dial' || !b.noFieldPlayers?.includes(id),
+    requireRule(record.mode !== 'cunning' || record.field !== 'dial' || !battleNoFieldPlan(g, id),
       'Atreides may not inspect the number dialed in a No-Field battle.');
     const value = record.field === 'dial'
       ? typeof action.value === 'number' ? action.value : NaN
@@ -30107,7 +30135,7 @@ function applyActionInner(
     );
     const field = b.prescience.field;
     requireRule(
-      field !== 'dial' || !b.noFieldPlayers?.includes(id),
+      field !== 'dial' || !battleNoFieldPlan(g, id),
       'Atreides may not inspect the number dialed in a No-Field battle.',
     );
     const value =
@@ -31453,11 +31481,13 @@ export function viewGame(state: Game, id: string) {
     battle: b
       ? {
           locationName: combatLocationName(g, b.territory),
-          ecazOccupy: b.ecazOccupy ? { ...b.ecazOccupy, profile: ecazBattleProfile(g) } : null,
+          ecazOccupy: b.ecazOccupy ? { ...b.ecazOccupy,
+            profile: !b.revealed && b.ecazOccupy.lead && battleConcealedForces(g, b.ecazOccupy.lead) &&
+              id !== b.ecazOccupy.lead ? null : ecazBattleProfile(g) } : null,
           native: homeworldBattleLocation(g, b.territory)?.native ?? null,
           nativeBattleStrength: homeworldBattleLocation(g, b.territory)?.nativeBattleStrength ?? 0,
           opponentForces: [b.attacker, b.defender].includes(id) &&
-            !getPlayer(g, b.attacker === id ? b.defender : b.attacker).noField?.deployed
+            !battleConcealedForces(g, b.attacker === id ? b.defender : b.attacker)
             ? planCombatForces(g, getPlayer(g, b.attacker === id ? b.defender : b.attacker), me)
             : null,
           strongholdCopy: b.strongholdCopy ?? null,
@@ -31468,7 +31498,7 @@ export function viewGame(state: Game, id: string) {
             ]),
           ) as Record<string, StrongholdId | null>,
           tieWinner: battleTieWinner(g),
-          noFieldPlayers: b.noFieldPlayers ?? [],
+          noFieldPlayers: [b.attacker, b.defender].filter(player => battleNoFieldPlan(g, player)),
           ownForces: [b.attacker, b.defender].includes(id)
             ? planCombatForces(g, me, getPlayer(g, b.attacker === id ? b.defender : b.attacker))
             : null,
@@ -31489,6 +31519,7 @@ export function viewGame(state: Game, id: string) {
           stoneBurnerContext: [b.attacker, b.defender].includes(id)
             ? {
                 blocked: stoneTimingBlock(g),
+                occupy: stoneOccupyContext(g),
                 opponentPools: stonePublicPools(
                   g,
                   getPlayer(g, b.attacker === id ? b.defender : b.attacker),

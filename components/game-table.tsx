@@ -578,6 +578,7 @@ export function GameTable({
                 g.battle!.tieWinner === g.battle!.attacker
                   ? 'attacker'
                   : 'defender',
+                stoneContext.occupy,
               ),
             )
             .find((reason) => reason !== null) ?? null)));

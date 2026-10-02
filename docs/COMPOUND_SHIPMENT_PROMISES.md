@@ -45,13 +45,24 @@ support this composition; it is not a new expansion or timing ruling. Earlier
 phases, other future actions, expansion shipment modes and arbitrary prose
 enforcement remain outside the bounded implementation.
 
-Twelve actual programs cover mixed truth/skip/shipment/changed-spice, all four
-legal policies and a second joint pure+mixed promise. The affected
-truth/ship/discard rule batch passes88/88; mixed/reference23/23, types/lint and
+Eight actual programs cover the four mixed truth/skip/shipment/changed-spice
+paths and all four legal policies. Nested and joint promises have rule
+regressions. The affected truth/ship/discard rule batch passes88/88;
+mixed/reference23/23, types/lint and
 build pass. Human390px **4PVKRRWB v10** authored and answered the actual OR
 claim, then spent all20 spice as a bribe, skipped shipment and fulfilled the
 promise while the public answer stayed Yes. This is bounded local evidence, not
 complete Truthtrance, module or deployed acceptance.
+
+The later390px **FCGZTEGV v11** control check authored an outer OR around
+`(current spice >=10 AND ship4 to Arrakeen)`, with an alternative shipment6
+to Carthag. The respondent answered Yes at20 spice, paid a real12-spice bribe,
+then shipped4 to Arrakeen at a four-spice cost. The frozen nested branch
+fulfilled the whole answer with only4 current spice; native end-movement
+continued the original turn and the exact grouped question/Yes survived refresh.
+This is additional human control evidence, not another program case or an
+expanded timing/module claim.
+
 
 
 ## Meaning and authority

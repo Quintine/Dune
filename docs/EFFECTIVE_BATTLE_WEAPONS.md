@@ -10,7 +10,7 @@ Tooth and Stone copies each receive their own choice, with the copy before its s
 
 `game/battle-cards.ts` consumes the descriptors for ordinary attacks, self-attacks, Artillery suppression/no-bounty behavior and a shared Lasgun explosion predicate. The authoritative engine and AI's fully known battle calculations use that predicate. Single-card knowledge remains single-card knowledge; no new hidden-hand access was added to AI evaluation. Actual Shield and Shield Snooper trigger explosions; defensive Weirding Way and Portable Snooper do not.
 
-Physical plan IDs, Atreides inspection, Truthtrance commitments, custody, winning card retention and Moritani retention remain physical. The engine admits canonical Mirror only for CHOAM/Richese-deck classic/CHOAM/Richese rosters without combined optional modules; it rejects unsupported setups before commitment. It validates the original and copied Stone casualty possibilities using public force pools and checks reserved physical Mirror custody across saved zones.
+Physical plan IDs, Atreides inspection, Truthtrance commitments, custody, winning card retention and Moritani retention remain physical. Canonical Mirror supports CHOAM/Richese-deck classic/CHOAM/Richese Basic/Advanced rosters and source-clear Advanced native Ecaz/Moritani composition without optional overlays. It rejects unsupported setups before commitment. Original and copied Stone compare native physical undialed counters, including the separate fixed Ecaz remainder; public hypothetical No-Field pools never become the actual secret denomination. Ix Stone/Tooth timing and genuinely winner-changing typed allocations remain guarded.
 
 ## Evidence and boundaries
 

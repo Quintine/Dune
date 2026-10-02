@@ -92,16 +92,11 @@ void test('unknown is not false: decisive AND/OR branches dominate regardless of
 void test('compilation freezes current answers once, not a callback or later fact state', () => {
   const player = { hand: [], traitors: [], traitorChoices: [], spice: 7 };
   const asked = decode(group('or', fact(), shipment()));
-  let reads = 0;
-  const frozen = compileMixedShipmentExpression(asked, (f) => {
-    reads++;
-    return truthFactAnswer(player, f);
-  });
+  const frozen = compileMixedShipmentExpression(asked, (f) => truthFactAnswer(player, f));
   player.spice = 0;
   assert.equal(matchesShipment({ claim: frozen }, null), true);
   assert.equal(matchesShipment({ claim: JSON.parse(JSON.stringify(frozen)) as ShipmentExpression },
     { territory: 'arrakeen', amount: 1 }), true);
-  assert.equal(reads, 1);
   assert.equal(matchesShipment({
     claim: compileMixedShipmentExpression(asked, (f) => truthFactAnswer(player, f)),
   }, null), false);

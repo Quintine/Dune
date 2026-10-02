@@ -1,5 +1,59 @@
 # Dune implementation status
 
+## 3 October 2026 — native Richese, No-Field and Stone Occupy composition
+
+Two bounded owners implemented physical Stone normalization and native Richese
+fixtures/zero-marker metadata. One integration owner composed admission,
+selected-plan inspection, original physical revelation, private legal pools,
+controls, four-policy filtering and internal guidance.
+
+The pre-existing combined sample failure was a mandatory Ecaz+Ixians versus
+CHOAM Carthag battle rejected because Richese was elsewhere at the table.
+Native composition replaces that blanket guard, not the battle itself. Original
+Richese reveal ownership persists even when Ecaz supplies the plan; zero markers
+remain original presence through response/Traitor validation and public reveal.
+Stone preflight/resolution subtract the fixed dial offset and count the separate
+physical Ecaz remainder; public hypothetical pools remain authoritative.
+Advanced native Mirror uses the same comparison and original physical cleanup.
+Basic and existing unresolved timing/disclosure/optional-module guards remain.
+
+Affected363/363 and types/lint/build pass. Twenty-six actual native programs
+cover ten owner/marker cases, eight Stone/Mirror lead/cancellation cases and eight
+four-policy private-pool cases, reaching original Collection after JSON reload.
+Fixtures are explicitly controlled conserved board/card/bank positions after
+genuine setup. The actual combined seed20260932 completes2424 accepted actions,
+zero rejection and65 JSON continuations at turn9, versus the prior2353-action
+stall. No new whole-suite/HTTP/storage assurance wave was run.
+
+Original CLI **GQ4FEWNW v8** admits a fresh ready four-seat Advanced
+Ecaz/Richese/Guild/CHOAM setup. Human390px **T78EFNZK v22** uses the same original seat identities and
+fresh admitted setup before a conserved Carthag position. Actual Ecaz lead/
+Sanya Ecaz/total5/support2 controls seal against Guild Representative. Both
+plans reveal the original No-Field5 into only two Richese reserves. Native
+Traitor decline, CHOAM one-spice support income and closing-market continuation
+leave Ecaz2/Tanks3, Richese Tanks2 and original Collection/Ecaz wallet30 after
+refresh. The physical field, variable losses and payer remain distinct.
+
+Corrected the previous mixed Truthtrance log: eight actual programs, not twelve;
+nested/joint cases are regressions, and its phase/positions were explicitly
+staged after genuine setup. Deleted obsolete presentation/wording/wiring pins
+instead of re-pinning changed labels. No reset, public start or deployed claim.
+
+Final native/reference76/76 passes. The new fixture now explicitly declines
+an unrelated optional Face Dance rather than depending on randomized native
+identity draws. Final guide paragraphs are readable at390px after the required
+isolated worker reload; original **T78EFNZK v22** remains at Collection with
+the same relevant owner losses. The old guide chunk was cached in the managed
+browser, so final guide navigation disabled that prior-build cache; production
+cache-upgrade acceptance remains open.
+
+Additional mixed controls **FCGZTEGV v11** actually authored outer OR with an
+inner current-spice>=10/Arrakeen4 AND and alternative Carthag6. Yes at20 spice
+survived a real12-spice bribe, four-force/four-spice Arrakeen shipment and native
+end-movement with wallet4. The promise is fulfilled and exact grouped Yes history
+survives refresh. This is a second human journey, not another program case.
+
+
 ## 3 October 2026 — mixed current-fact/shipment Truthtrance
 
 Two bounded owners supplied the public mixed tree/compiler/matcher (including
@@ -23,11 +77,12 @@ mixed promise as if it must ship; and two workspace type errors
 shipment-only promises retain their original behavior.
 
 Types/lint, the affected truth/ship/discard batch88/88, mixed/reference23/23 and
-build pass. Twelve actual programs cover OR-true-skip, AND-false-ship,
-AND-true-required, OR-false-ship, a nested branch after spending, all four legal
-policies and a second joint pure+mixed promise. Fixtures use genuine base setup
-and conserved rule-unit movement positions; no staged phase or promise was
-fabricated.
+build pass. Eight actual programs cover OR-true-skip, AND-false-ship,
+AND-true-required, OR-false-ship and all four legal policies. Nested branches
+after spending and a second joint pure+mixed promise have rule regressions.
+Fixtures use genuine base setup followed by explicitly staged turn-two
+Shipment and Movement, conserved positions and wallets; accepted native
+Truthtrance actions create the promises.
 
 Human390px **4PVKRRWB v10** authored the actual "hold at least10 spice OR ship4
 to Arrakeen" question, answered Yes, spent all20 spice as a public bribe,
@@ -36,12 +91,13 @@ refresh retained it. Earlier phases, Advanced Guild/other modules, expansion
 shipment modes, other future actions and arbitrary prose enforcement remain
 unfinished. No new assurance campaign, public start or old-game retrofit.
 
-The full offline suite still reports one pre-existing failure unrelated to this
-wave: the `combined` Advanced CLI sample stalls at phase6 when a bot offers an
-Advanced combined-Occupy battle against a Richese/No-Field seat that the engine
-correctly rejects. The same 2353-action failure reproduces at the prior pushed
-checkpoint 0ceb28b, so this wave neither introduced nor hid it. It remains an
-open sample/bot-offer defect for a later combined-Occupy slice.
+The prior full offline run exposed a pre-existing failure unrelated to this
+wave: the `combined` Advanced CLI sample stalled at phase6 because the engine's
+roster guard rejected Ecaz+Ixians versus CHOAM at Carthag merely with Richese
+elsewhere at the table. The same2353-action failure reproduced at0ceb28b.
+This was missing native Occupy composition, not an illegal bot offer, a
+Richese opponent or a new ruling question. The later Richese checkpoint
+repairs it without suppressing the mandatory battle.
 
 Code **cd985c7c34a05057ed98b34838effdbcddb7697d** is pushed.
 [Exact CI37065338944](https://github.com/Quintine/Dune/actions/runs/37065338944)

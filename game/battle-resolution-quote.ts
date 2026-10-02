@@ -444,6 +444,10 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
   const tie = battleTieOwner(a.id, d.id, input.aggressor ?? a.id,
     [a, d].filter(side => side.stronghold === 'habbanya_ridge_sietch').map(side => side.id)) === a.id
     ? 'attacker' : 'defender';
+  const stoneOccupy = hasStone && input.ecazOccupy ? {
+    fixedEcazDial: input.ecazOccupy.fixedEcazDial,
+    ecazUndialed: input.ecazOccupy.canceled ? 0 : Math.floor(input.ecazOccupy.ecazForces.normal / 2),
+  } : undefined;
   const stone = hasStone
     ? stoneBurnerComparison(
         a.forces,
@@ -453,6 +457,10 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         d.plan.dial,
         d.plan.support,
         tie,
+        input.ecazOccupy ? {
+          attacker: input.ecazOccupy.lead === a.id ? stoneOccupy : undefined,
+          defender: input.ecazOccupy.lead === d.id ? stoneOccupy : undefined,
+        } : undefined,
       )
     : null;
   if (stone) {

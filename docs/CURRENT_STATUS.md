@@ -16,6 +16,27 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Native Richese Occupy — bounded Development Verified:**
+Richese-present Advanced tables now resolve their mandatory Ecaz coalitions
+instead of rejecting unrelated native factions. Ordinary or marker-only Richese
+pools retain the selected plan owner, original force owners and concealed
+0/3/5 reveal timing. Stone/Mirror compare actual undialed physical counters,
+including the fixed Ecaz remainder; cancellation uses only the selected own pool.
+The original same-owner mixed No-Field, whole-plan disclosure, Ix Stone/Tooth,
+Harass/Stone and optional-module guards remain. Basic/public starts are unchanged.
+Affected363/363, types/lint, build and26 actual native programs pass.
+The previously failed genuine six-native Advanced sample finishes2424 accepted
+actions/no rejection/65 JSON continuations. Fresh CLI **GQ4FEWNW v8** and
+human390px **T78EFNZK v22** exercise original setup, private combined total5/
+support2, No-Field5 materializing only two reserves, actual owner losses and
+native CHOAM income/Collection. See
+[native Richese composition](ECAZ_OCCUPY_RULES.md#native-richese-no-field-and-stone-composition--3-october-2026).
+The final guide is readable at390px; the original human v22 state remains at
+Collection after the required isolated worker reload. A stale prior-build guide
+chunk required a cache-free local navigation; deployed cache-upgrade acceptance
+is not claimed.
+
+
 **Mixed current-fact/shipment Truthtrance — bounded Development Verified:**
 structured questions now combine supported current facts with this-turn reserve
 shipments in bounded nested AND/OR trees. Current facts freeze privately at a
@@ -26,10 +47,10 @@ only the respondent receives the compiled fixed answers.
 Two bounded owners supplied the pure expression logic and nested authoring
 controls; one integration owner wired the question, private projection,
 promise receipt, public redaction, policies and existing continuation.
-Types/lint, affected88/88, mixed/reference23/23 and build pass. Twelve actual
-program cases cover truth/skip/shipment/changed-spice, all four policies and a
-second joint promise. Human390px **4PVKRRWB v10** authored and answered the
-actual OR question, then spent all20 spice as a bribe, skipped shipment and
+Types/lint, affected88/88, mixed/reference23/23 and build pass. Eight actual
+program cases cover the four truth/skip/shipment/changed-spice paths and all four
+policies; nested and joint promises have rule regressions. Human390px **4PVKRRWB v10**
+authored and answered the actual OR question, then spent all20 spice as a bribe, skipped shipment and
 fulfilled the promise while its public answer stayed Yes. Earlier phases, other
 future actions and existing module gates remain unfinished. See
 [mixed compounds](COMPOUND_SHIPMENT_PROMISES.md#mixed-current-facts-and-future-shipment--3-october-2026).
@@ -38,8 +59,8 @@ Code **cd985c7c34a05057ed98b34838effdbcddb7697d** is pushed.
 job111031663449, completed/success. Existing isolated storage/HTTP verification
 and verified-image publication pass:
 `ghcr.io/quintine/dune:sha-cd985c7c34a05057ed98b34838effdbcddb7697d`.
-The full offline suite also keeps one pre-existing combined-Occupy sample
-failure (reproduced at 0ceb28b), documented as an open bot-offer defect.
+The prior full offline run exposed a pre-existing native combined-Occupy
+integration failure, not an illegal bot offer; native Richese composition now repairs it.
 No deployment or new assurance campaign; live **ab5c782** remains last observed.
 
 **Requested priority — 2 October 2026:** throughput improvements are verified
@@ -978,8 +999,9 @@ guarded; no complete Ecaz start is certified.
 
 The bounded [Mirror Weapon battle path](MIRROR_WEAPON_ENGINE_AUDIT.md#user-selected-cleanup-interpretation-28-september-2026)
 admits the canonical physical card in CHOAM/Richese-deck Basic/Advanced
-classic/CHOAM/Richese battles without combined optional modules. Effective
-copied attacks, copy-first Tooth/Stone choices, public Stone feasibility,
+classic/CHOAM/Richese battles and source-clear Advanced Ecaz/Moritani
+composition without optional overlays. Effective copied attacks, copy-first
+Tooth/Stone choices, public Stone feasibility,
 saved custody, human controls and legal AI are connected. A victorious
 physical Mirror can be kept even after a copied activated Tooth or Artillery
 attack under the user's interpretation, not a GF9 clarification. Combined

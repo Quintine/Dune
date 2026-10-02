@@ -143,7 +143,8 @@ function calculate(
     const profile = quoteEcazOccupyBattle({
       battleOrderActor: occupy.battleOrderActor,
       ecaz: { id: ecaz.id, faction: 'ecaz', ally: ecaz.ally, forces: occupy.ecazForces },
-      ally: { id: ally.id, faction: ally.faction, ally: ally.ally, forces: occupy.allyForces },
+      ally: { id: ally.id, faction: ally.faction, ally: ally.ally, forces: occupy.allyForces,
+        ...(occupy.allyNoFieldPresence ? { noFieldPresence: true as const } : {}) },
       lead: occupy.lead, canceled: occupy.canceled,
     });
     requireCombat(profile.forceOwner === occupy.forceOwner, 'Occupy lost its actual physical force owner.');
