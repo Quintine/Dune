@@ -1128,8 +1128,9 @@ export function GameTable({
       )}
       {g.nexusIxianReplacementPreview && (
         <p className="notice" role="status">
-          Ixian Nexus purchased-card replacement development preview · classic Basic/Advanced,
-          base Treachery and Nexus only. Normal paid and printed Karama purchases are supported;
+          Ixian Nexus purchased-card replacement development preview · classic Basic/Advanced
+          with base Treachery, or Basic Tleilaxu/classic with Ixian Treachery; Nexus alone.
+          Ixians are absent. Normal paid and printed Karama purchases are supported;
           Harkonnen buyers and special auctions are guarded. Not complete Ixian or certified Nexus rules.{' '}
           <a href="/rules?topic=nexus-ixian-replacement#nexus-ixian-replacement">Preview rules and limits</a>
         </p>

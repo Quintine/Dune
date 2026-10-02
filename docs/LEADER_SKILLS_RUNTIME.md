@@ -94,8 +94,8 @@ response step awaits the user's UX decision; ordinary activation remains disable
 auction, shipment, Richese sale and paid-bribe families within its recorded
 boundary. Other Bureaucrat payments and split funding remain incomplete.
 [Banker normal income](SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026)
-is connected only in its separate fresh classic `banker-income` profile;
-ordinary/default and combined skill starts gain no new activation.
+is connected only in its separate fresh classic or supported Basic native
+`banker-income` profile; ordinary/default and combined starts gain no activation.
 [Banker battle spending](SPICE_BANKER_RUNTIME.md) retains its separate
 sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).

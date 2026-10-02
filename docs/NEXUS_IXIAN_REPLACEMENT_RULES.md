@@ -54,7 +54,7 @@ November's Karama table expressly permits stopping the native Ixian ally from di
 
 ## Bounded local runtime contract
 
-The fresh `ixian-replacement` profile is a working development integration of the independently printed Secret Ally grant. It admits two through six unique classic factions in Basic or Advanced with the base Treachery deck and Nexus alone. Native Ixians, expansion factions/decks, Leader Skills, Homeworlds, Semuta, Discoveries, Ecaz variants and other module overlays are excluded. It does not retrofit an in-play game, enable a public start, reset a saved room or change existing native Ixian allied replacement.
+The original classic branch of the fresh `ixian-replacement` profile admits two through six unique classic factions in Basic or Advanced with base Treachery and Nexus alone. The native section below adds Basic Tleilaxu/classic Ix47. Native Ixians, other expansion families, Leader Skills, Homeworlds, Semuta, Discoveries, Ecaz variants and other overlays remain excluded. Neither branch retrofits an in-play game, enables a public start, resets a saved room or changes existing native Ixian allied replacement.
 
 There is no starting Nexus deal. Native draws require a qualifying closing
 Nexus with a settled alliance, so a two-seat profile can continue its base
@@ -81,6 +81,64 @@ and never add seats to an admitted game or fabricate Nexus hands.
 - `game/nexus-ixian-replacement.ts` owns canonical physical/source/custody/history validation through `createIxianReplacementSource`, `validateIxianReplacementSource`, `closeIxianReplacementSource` and `validateIxianReplacementHistory`, with `initialIxianReplacementCursor` and `ixianReplacementEvent` for bounded progress. The source snapshots the exact purchased descriptor, not a whole-Game undo or payment replay. Canonical descriptor, original parent, owned exact target, legal hand cap and single physical custody are validated before Nexus cost or randomness. The closed receipt chain and independent cursor do not require an old discard to remain in its historical location. The engine alone owns purchase authorization, original payment and native discard/draw/sale continuation. Existing native Ixian ally response remains a distinct cancelable ability, not an alias or fallback for the absent-faction Nexus grant.
 - `components/nexus-ixian-replacement.tsx` and `components/game-table.tsx` own the private inspector and neutral controls; `game/bots.ts` consumes each bot's own legal projection. Easy, Medium, Hard and Brutal have minimal legal Use/Pass policies, not calibrated Nexus strategy.
 - The local CLI entry is `node --import tsx tools/start-prototype.ts --profile ixian-replacement --db PATH --room CODE --version NUMBER --out /private/new-directory`. It requires the exact current room version, a fresh supported setup and a private new backup/kit directory; it preserves room/seat/setup identity and existing saves rather than replacing or resetting a game. `tools/prototype-room.ts` owns admission and the private backup transaction.
+
+## Native Basic Tleilaxu integration — 2 October 2026
+
+The additional fresh admission is **Basic Tleilaxu plus unique classic
+opponents, exactly the original Ix47 Treachery Deck, and Nexus alone**.
+Ixians are absent. This adds to the classic base33 Basic/Advanced profile
+above; it does not admit Advanced Tleilaxu, native CHOAM/Richese, mixed
+expansions or other overlays. Its fresh setup omits the optional physical
+Sandtrout Spice Card, following the existing bounded Ixian Betrayal setup
+convention; existing games and their cards are not changed.
+
+`game/nexus-ixian-replacement.ts` uses the original
+`treacheryDeck(['ix'])` catalogue for exact descriptors. Original base33
+identities remain valid alongside the fourteen original Ix cards; a matching
+ID or generic `special` kind cannot authorize a different name, kind, effect
+or extra field, and unrelated Richese faces do not enter this catalogue.
+The existing source, event, cursor and history APIs remain the only receipt
+path. In particular, buying an Ix special does not replay its payment or
+turn the replacement draw into another purchase.
+
+`tests/fixture-native-ixian-replacement.ts` exports
+`createNativeIxianReplacementFixture` and
+`assertNativeIxianReplacementInventory`. The fixture accepts a fresh native
+lobby or its undealt admitted setup, completes native setup and turn one,
+forms an actual nonrecipient alliance during the next qualifying Nexus,
+and draws the Ixian Nexus through the native lifecycle. It then buys an
+original physical card in a normal auction for two spice. Its default
+purchase is Thumper and its ordered remaining-deck top is Amal; options
+also allow an actual Tleilaxu buyer and the final native auction lot.
+Only conserved undealt cards are reordered; no held Nexus, acquired
+Treachery face, paid-source receipt or continuation is manufactured.
+
+`tests/native-ixian-replacement.test.ts` covers the native special-card
+Use and Pass outcomes, exact discard/top draw, preserved original payment
+and income, native next-lot/final-lot continuation, single Nexus/Treachery
+custody, replay rejection, and forged/unrelated descriptor rejection.
+Existing base-profile full-hand and genuinely depleted-deck regressions
+already exercise the same discard-first/replenishment path and are retained
+rather than duplicated with an artificially emptied native deck.
+
+This is ordinary composition of the printed replacement and existing native
+setup/auction lifecycle, not a new Nexus ruling or a completed family claim.
+Harkonnen buyers, special sale origins, private opportunity timing,
+Richese cache scope and Harkonnen bonus ordering keep their bounds above.
+No pending timing/cancellation, cache, bonus or combined-module question is
+settled by this added deck/faction admission. Verification of this integration
+is reported with the frozen native payment wave, separately from the earlier
+base-profile evidence below.
+
+Bounded native verification passes four meaningful regressions in the shared
+110-case affected batch; final native/guide26/26, types/lint and build pass.
+Twelve actual native programs cover four original Ix purchase/draw pairs,
+Atreides/Tleilaxu buyers, next/final lots and all four legal policies.
+Genuine CLI **XLFRHKPF v6** reaches original native setup. Human390px
+**NMFTVV6N v8** inspects Thumper, spends the original Ixian Nexus, draws Amal,
+keeps the buyer's already-paid wallet3, and permits Emperor's original
+income10→12 once before the next phase's ordinary Amal window. Full-family
+games, other modules, pending rulings and deployment remain open.
 
 ## Verification and retained release gates
 

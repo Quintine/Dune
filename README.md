@@ -185,8 +185,10 @@ Existing games and public start gates remain unchanged.
 
 For local **Ixian Nexus purchased-card replacement**, use
 `node --import tsx tools/start-prototype.ts --profile ixian-replacement`
-on a fresh ready classic Basic/Advanced lobby with base Treachery and Nexus
-alone. Exact-version/private-backup safeguards apply; existing games and
+on a fresh ready classic Basic/Advanced lobby with base Treachery, or Basic
+Tleilaxu plus classic opponents with the Ix deck and no Ixians; Nexus alone.
+The fresh native variant omits optional Sandtrout. Exact-version/private-backup
+safeguards apply; existing games and
 public starts are unchanged. A real alliance-qualified Nexus must first
 give an unallied buyer its card, so effect scenarios need at least three
 seats. **Keep purchased card** retains both cards; eligible **Use Ixian Nexus**
@@ -224,13 +226,17 @@ See the [source contract and excluded modes](docs/NEXUS_HARKONNEN_RULES.md#bound
 
 For local **normal Spice Banker income**, use
 `node --import tsx tools/start-prototype.ts --profile banker-income`
-on a fresh ready Basic/Advanced classic lobby with base Treachery and all
-fourteen Leader Skills alone. Existing exact-version/private-backup safeguards
+on a fresh ready classic Basic/Advanced base-deck lobby, or an already-supported
+Basic Ixian/Tleilaxu/CHOAM/Moritani skill roster with its single required deck.
+All fourteen Leader Skills remain. Exact-version/private-backup safeguards
 apply; public starts and existing games are unchanged. Another payer's one
 actual bank payment of at least four gains one mandatory front-shield spice
 once per phase; it stays unspendable until automatic native Mentat collection.
-Original payment, recipient and separate payer legs stay intact. Earned
-original-faction retention after death/capture/reassignment is provisional
+Original payment, recipient and separate payer legs stay intact.
+Tleilaxu's own paid revival is a bank payment; another faction's payment to
+Tleilaxu is not, unless its income is canceled. The separate free-revival
+bank reward never adds to the original payer's qualifying amount.
+Earned original-faction retention after death/capture/reassignment is provisional
 in this profile; bounded verification is Partial/Development Verified and the existing question stays open.
 See the [normal-band source and scope](docs/SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026).
 

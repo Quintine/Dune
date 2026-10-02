@@ -14,8 +14,9 @@ additional bank grant, not skimming the original payer or recipient; no new
 action, Karama response or confirmation is invented. Ordinary costs and
 their original counters/recipient/physical suffix finish once before the grant.
 
-The private-backed-up profile admits unique2..6 classic factions,
-Basic or Advanced, base33 Treachery and all14 Leader Skills alone. Actual
+The original private-backed-up branch admits unique2..6 classic factions,
+Basic or Advanced, base33 Treachery and all14 Leader Skills alone; the native
+section below adds supported Basic native skill profiles. Actual
 paid normal auctions, funded shipments, paid force/leader/KH/Emperor-extra
 revivals and resolved bank support use original final-bank receipts. Player
 income, free/waived/stopped/invalid sources and self-payment do not qualify.
@@ -85,6 +86,67 @@ and container job110576362446 completed/success with mandatory isolated
 storage/HTTP verification before verified-image publication. Image:
 `ghcr.io/quintine/dune:sha-6785e622a7bc8b850aa5e3d338c63be5a33a9403`.
 Deployment and complete skill/module acceptance remain open.
+
+
+## Basic native Banker integration — 2 October 2026
+
+This additive local integration connects the four already-supported Basic native
+Leader Skill families: Ixians (alone or with Tleilaxu), Tleilaxu alone, CHOAM alone,
+and Moritani alone, otherwise classic opponents. Each uses its single required
+Ix, CHOAM, or Ecaz Treachery deck and all fourteen original Leader Skills.
+Advanced native factions, other overlays, mixed expansion families, public
+starts and old-game retrofit remain outside this boundary. The classic
+Basic/Advanced base33 contract above is retained.
+
+`tests/fixture-native-banker-income.ts` creates ready fresh native lobbies and
+calls `initializeSpiceBankerIncomeGameForAudit`, never setting the income flag on
+a played game. Only the original skill shuffle is controlled to obtain a real
+Banker offer; native Treachery, Traitor/Face Dancer and Terror shuffles retain
+their original entropy. Original Ix starting-card selection, skill assignment,
+Traitor/Face Dancer setup, Moritani placement and CHOAM setup continue through
+the engine. Revival examples label their staging: conserved normal/cyborg
+forces move from reserves to Tanks after genuine setup; cancellation cases
+move an original Karama from the remaining deck only if the owner lacks one.
+No sale, payment receipt, pending continuation or deferred grant is fabricated.
+
+The reusable `createNativeBankerIncomeFixture({ family: 'ixians',
+withTleilaxu: true })` case stops before the original final auction payment:
+another payer, the Emperor, buys its native lot for four paid to the Bank.
+`payNativeBankerIncomeFixture` executes that action and its original response
+suffix; `advanceNativeBankerIncomeToPhase(game, 7)` and the existing
+`advanceSpiceBankerIncomeToMentat` continue the real Collection-to-Mentat path.
+The focused regressions cover each native family, actual card delivery and
+debit, unchanged pre-Mentat Banker wallet, deferred collection, Emperor player
+income, and free/paid Tleilaxu-recipient revival. A Tleilaxu own-revival case
+distinguishes its actual four-spice bank debit from the separate printed
+free-revival bank reward; the reward is not another player's payment.
+Canceled Tleilaxu income cases distinguish the actual payer's zero/three/four
+bank debit from the separate free-revival reward included in the native income
+response. In particular, an original three-spice cyborg debit plus one free
+reward must not be mistaken for another player's four-spice bank payment.
+
+Authority remains the photographed Banker card, the existing Leader Skill
+rules and original native payment/recipient rules. This composition does not
+resolve the previously open earned-spice death/capture question. Original
+gaining-faction custody and separate-payer threshold interpretation remain the
+explicitly provisional local policies above; no broader ruling is inferred.
+
+**Bounded runtime evidence:** twelve actual native Banker scenarios pass,
+including all five native compositions through real Mentat, native
+player-recipient exclusions, self-bank revival and canceled income at actual
+cost0/3/4. Three initially failing collection cases stopped at phase8 while the
+existing Ix Amal opening was still pending; the helper now finishes that
+native opening before observing automatic collection. Engine phase ordering
+is unchanged. Final parent checks and human controls are recorded with the
+native payment checkpoint; this is not whole-faction/module certification.
+
+The affected payment rule batch110/110, final native/guide26/26, types/lint
+and build pass. Four additional native post-income policy continuations are
+legal. Genuine CLI **7B55PLA5 v8** reaches original native setup.
+Human390px **86WQMSZV v18** closes the actual Emperor self-auction4, observes
+Ix available10 and deferred1, then finishes original Collection and the
+existing Amal opening before automatic Mentat collection to11. This does not
+approve the pending universal earned-custody policy or enable public starts.
 
 
 The historical13 September checkpoint below is **Prototyped**, with **Partial**

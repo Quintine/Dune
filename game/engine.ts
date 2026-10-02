@@ -7747,8 +7747,9 @@ function bankerIncomeContext(g: Game): BankerIncomeContext {
 function bankerIncomeProfile(g: Game): boolean {
   return g.players.length >= 2 && g.players.length <= 6 &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
-    g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base')) &&
-    g.expansions.length === 0 && !g.nexusCards && !g.homeworlds && !g.techTokens &&
+    ((!g.expansions.length && g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base'))) ||
+      basicExpansionLeaderSkillsProfile(g)) &&
+    !g.nexusCards && !g.homeworlds && !g.techTokens &&
     !g.strongholdCards && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery && !g.semutaPreview && !g.mentatQuestionPreview &&
     !g.moritaniAssassinatePreview && !g.moritaniAssassinate && !g.advancedPreview &&
@@ -7765,7 +7766,7 @@ function spiceBankerIncomeIntegrity(g: Game): void {
     return;
   }
   requireRule(g.spiceBankerIncomePreview === true && bankerIncomeProfile(g) && !!g.leaderSkills && !!g.spiceBankerIncome,
-    'The saved Spice Banker income profile lost its classic physical setup.');
+    'The saved Spice Banker income profile lost its supported physical setup.');
   bankerIncomeRule(() => validateBankerIncomeState(g.spiceBankerIncome!, bankerIncomeContext(g)));
   const continuation = g.pendingTreacheryDiscard?.continuation;
   const responses = [g, g.pendingExchange, g.pendingNullentropy?.resume, g.pendingRicheseGift?.resume,
@@ -7776,7 +7777,9 @@ function spiceBankerIncomeIntegrity(g: Game): void {
   for (const carrier of [g.currentAuctionSale, ...responses]) {
     const payment = carrier?.spiceBankerIncomePayment;
     if (!payment) {
-      requireRule(!carrier || ('winner' in carrier ? carrier.free || carrier.origin !== 'normal' : carrier.kind !== 'guildIncome'),
+      requireRule(!carrier || ('winner' in carrier ? carrier.free || carrier.origin !== 'normal' :
+        carrier.kind !== 'guildIncome' &&
+          !(carrier.kind === 'revivalIncome' && carrier.recipient !== carrier.owner && (carrier.amount ?? 0) > 1)),
         'The original paid transaction lost its native bank invoice.');
       continue;
     }
@@ -7791,10 +7794,20 @@ function spiceBankerIncomeIntegrity(g: Game): void {
         payment.legs.reduce((sum, leg) => sum + leg.amount, 0) === carrier.amount &&
         payment.legs.every(leg => leg.payer === carrier.winner || leg.payer === getPlayer(g, carrier.winner).ally),
       'The deferred bank invoice no longer matches its original normal auction.');
-    else if (carrier)
-      requireRule(carrier.kind === 'guildIncome' && payment.kind === 'shipment' &&
+    else if (carrier?.kind === 'guildIncome')
+      requireRule(payment.kind === 'shipment' &&
         payment.legs.filter(leg => leg.recipient === 'player').reduce((sum, leg) => sum + leg.amount, 0) === carrier.amount,
       'The deferred bank invoice no longer matches its original Guild income.');
+    else if (carrier) {
+      const paid = payment.legs[0];
+      requireRule(carrier.kind === 'revivalIncome' && payment.phase === 4 &&
+        (payment.kind === 'force-revival' || payment.kind === 'leader-revival' ||
+          payment.kind === 'kh-revival' || payment.kind === 'emperor-extra-revival') &&
+        getPlayer(g, carrier.owner).faction === 'tleilaxu' && carrier.recipient !== carrier.owner &&
+        payment.legs.length === 1 && paid.payer === carrier.recipient && paid.recipient === 'player' &&
+        (carrier.amount === paid.amount || carrier.amount === paid.amount + 1),
+      'The deferred bank invoice no longer matches its original paid revival.');
+    }
   }
 }
 function bankerIncomePayment(g: Game, kind: BankerIncomeAuthority['kind'],
@@ -8694,13 +8707,15 @@ function decideIxianNexusBetrayal(g: Game,id: string,action: Action): void {
   if (use) log(g,`${getPlayer(g,id).name} spent Ixian Nexus Betrayal to prevent the original native ${frame.source.kind} attempt.`);
   finishIxianNativeAttempt(g,frame.continuation,use);
 }
-/** Fresh local classic profile only; no public start or existing-game retrofit. */
+/** Fresh classic or Basic native Tleilaxu profile; no public start or retrofit. */
 export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
   requireRule(!state.nexusIxianReplacementPreview && !state.pendingNexusIxianReplacement &&
     state.nexusIxianReplacementHistory === undefined && state.nexusIxianReplacementCursor === undefined &&
     ixianNexusReplacementModeSupported(state),
-  'Ixian Nexus replacement needs a fresh classic lobby with only base Treachery and Nexus cards.');
+  'Ixian Nexus replacement needs a fresh classic/base or Basic Tleilaxu/Ix lobby with Nexus alone.');
   const g = initializeNexusGameForAudit(state);
+  // Ix supplies Treachery here, not the optional Sandtrout Spice card.
+  if (g.expansions.length) g.spiceDeck = shuffle(spiceDeck());
   g.nexusIxianReplacementPreview = true;
   g.pendingNexusIxianReplacement = null;
   g.nexusIxianReplacementHistory = [];
@@ -8708,9 +8723,12 @@ export function initializeIxianNexusReplacementGameForAudit(state: Game): Game {
   return g;
 }
 function ixianNexusReplacementModeSupported(g: Game): boolean {
-  return !!g.nexusCards && g.expansions.length === 0 && g.players.length >= 2 && g.players.length <= 6 &&
+  return !!g.nexusCards && g.players.length >= 2 && g.players.length <= 6 &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
-    g.players.every(p => CLASSIC_FACTIONS[p.faction] === true) &&
+    ((!g.expansions.length && g.players.every(p => CLASSIC_FACTIONS[p.faction] === true)) ||
+      (!g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ix' &&
+        g.players.some(p => p.faction === 'tleilaxu') &&
+        g.players.every(p => p.faction === 'tleilaxu' || CLASSIC_FACTIONS[p.faction] === true))) &&
     !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled && !g.discoveries &&
     !g.techTokens && !g.strongholdCards && !g.ecazTreachery && !g.mobileStronghold && !g.sandtrout &&
     !g.kullPreview && !g.nexusKullPreview && !g.semutaPreview && !g.richeseBetrayalPreview &&
@@ -9256,17 +9274,18 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   return initializeSetupGameForAudit(g, false, false, false, false, true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', basicExpansionLeaderSkillsProfile(g));
 }
-/** Fresh private all-fourteen-card classic setup; no public action enables income. */
+/** Fresh all-fourteen-card classic or Basic native skills; no public income toggle. */
 export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
   requireRule(bankerIncomeProfile(state) && !state.leaderSkills &&
     !state.spiceBankerIncomePreview && state.spiceBankerIncome === undefined,
-    'Spice Banker income requires a fresh classic lobby, base Treachery and Leader Skills alone.');
-  requireFreshSetup(state);
+    'Spice Banker income requires a fresh classic or supported Basic native lobby with Leader Skills alone.');
+  requireFreshSetup(state, state.expansions.length > 0);
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
   g.spiceBankerIncomePreview = true;
   g.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(g)));
-  return initializeSetupGameForAudit(g, false, false, false, false, true);
+  return initializeSetupGameForAudit(g, false, false, false, false, true,
+    g.expansions.length === 1 && g.expansions[0] === 'choam', g.expansions.length > 0);
 }
 /** Gated development setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
@@ -21997,11 +22016,13 @@ function finishRevival(
         amount: revival.amount!, elite: revival.elite ?? 0, free: revival.free,
       })
     : null;
-  payer.spice -= revival.cost;
-  if (g.spiceBankerIncomePreview && !byFaction(g, 'tleilaxu')) awardBankerIncome(g, bankerIncomePayment(g,
+  const incomePayment = g.spiceBankerIncomePreview && revival.cost > 0 ? bankerIncomePayment(g,
     revival.emperorExtra ? 'emperor-extra-revival' : revival.kind === 'forces' ? 'force-revival' :
       revival.kind === 'kwisatz' ? 'kh-revival' : 'leader-revival',
-    [{payer: payer.id, amount: revival.cost, recipient: 'bank'}]));
+    [{payer: payer.id, amount: revival.cost,
+      recipient: quote.nextResponse?.kind === 'revivalIncome' && quote.nextResponse.owner !== payer.id ? 'player' : 'bank'}]) : undefined;
+  payer.spice -= revival.cost;
+  if (incomePayment?.legs[0]?.recipient === 'bank') awardBankerIncome(g, incomePayment);
   if (revival.kind === 'forces') {
     const n = revival.amount!,
       elite = revival.elite ?? 0;
@@ -22074,8 +22095,11 @@ function finishRevival(
   }
   if (quote.nextResponse) {
     g.response = quote.nextResponse;
-    if (quote.nextResponse.kind === 'revivalIncome')
+    if (quote.nextResponse.kind === 'revivalIncome') {
       Object.assign(g.response, stampBureaucratPayment(g,'revival',payer.id,quote.nextResponse.owner,revival.cost));
+      // The bank-paid free-revival award is not part of this payer's invoice.
+      if (incomePayment?.legs[0]?.recipient === 'player') g.response.spiceBankerIncomePayment = incomePayment;
+    }
   }
 }
 function beginRevival(g: Game, revival: PendingRevival) {
@@ -22961,6 +22985,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     if (g.pendingRevival) finishRevival(g);
   } else if (response.kind === 'revivalIncome') {
     if (!canceled) getPlayer(g, response.owner).spice += response.amount! - (bureaucratDiversion ?? 0);
+    awardBankerIncome(g, response.spiceBankerIncomePayment, canceled);
     if (g.pendingChoamMarketGhola && g.pendingChoamMarketGhola.event === response.intent)
       g.pendingChoamMarketGhola.stage = 'complete';
   } else if (response.kind === 'faceDancerReplacement') {

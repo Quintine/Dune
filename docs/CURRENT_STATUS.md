@@ -25,6 +25,31 @@ authorization and deployment/publication safeguards remain intact. Use the
 [bounded context index](DEVELOPMENT.md#context-index) and
 [feedback/proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule).
 
+**Native payment rules — bounded Development Verified:** `banker-income` now
+admits supported Basic Ixian/Tleilaxu/CHOAM/Moritani skill rosters with all14
+skills and their original single-family decks. Tleilaxu self-revival and canceled
+revival income preserve actual payer debit, not the separate free-revival award.
+`ixian-replacement` adds Basic Tleilaxu/classic Ix47 with Ixians absent and Nexus
+alone; only this fresh variant omits optional Sandtrout. Original payment,
+actual purchased-card discard/top draw and native auction suffix stay unchanged.
+Two bounded owners supplied source/fixtures; one integration owner repaired
+the two real revival bank-hook gaps and the premature Ix Mentat smoke endpoint.
+Types/lint, affected110/110, final native/guide26/26 and build pass.
+Twenty-eight actual programs cover12 Banker cases,12 replacement cases and4
+post-income policy continuations. Human390px **86WQMSZV v18** proves actual
+four-spice self-auction, deferred1 with Ix wallet10, then real Mentat11;
+**NMFTVV6N v8** proves Thumper→Amal, spent Ixian Nexus, unchanged buyer3
+and original Emperor10→12 before phase4 opening. Genuine CLI **7B55PLA5 v8**
+and **XLFRHKPF v6** preserve original native setup. No new assurance campaign,
+public start, pending ruling answer or old-game retrofit. See
+[native Banker](SPICE_BANKER_RUNTIME.md#basic-native-banker-integration--2-october-2026)
+and [native replacement](NEXUS_IXIAN_REPLACEMENT_RULES.md#native-basic-tleilaxu-integration--2-october-2026).
+Final reference10/10 and build pass; both390px Partial/Development Verified
+guides show the native boundary, and eleven changed-region local links/anchors
+are valid. All owned tabs/workers are closed and five smoke drivers removed;
+private inputs/CLI backups remain outside the checkout.
+
+
 **Native Mentat preview — bounded integration:** explicit fresh
 `--profile leader-skills --mentat-question` connects the existing private
 question to supported Basic Ixian/Tleilaxu/CHOAM/Moritani skill starts.

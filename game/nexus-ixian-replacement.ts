@@ -1,4 +1,4 @@
-import { baseDeck, type Card } from './cards';
+import { treacheryDeck, type Card } from './cards';
 
 export class IxianReplacementError extends Error {}
 
@@ -52,7 +52,7 @@ export type IxianReplacementReceipt = {
 };
 
 const canonical: Readonly<Record<string, Card>> =
-  Object.fromEntries(baseDeck().map(card => [card.id, card]));
+  Object.fromEntries(treacheryDeck(['ix']).map(card => [card.id, card]));
 const genesis = 'ixian-replacement:0';
 const plain = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value) &&

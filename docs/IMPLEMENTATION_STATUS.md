@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 2 October 2026 — native Banker income and Ixian Nexus replacement
+
+Two independent bounded owners supplied native original setup/payment fixtures
+and exact Ix47 descriptor support; one integration owner owns shared runtime,
+controls, CLI, reference and this checkpoint. Existing initializer/action/view/
+source APIs remain. No public start, old-game retrofit, broader timing ruling,
+strategic AI or new save/privacy/custody assurance wave.
+
+`banker-income` adds already-supported Basic Ixian/Tleilaxu/CHOAM/Moritani skill
+families and their original selected decks/all14 skills. The exact native
+self-revival and canceled-income cases first failed after profile admission:
+Tleilaxu's own cost was skipped, and a canceled native payout had no original
+bank invoice. The repair uses one actual positive-cost payer leg, binding
+native payer/kind/recipient/cost to the original response. The separate free
+reward never increases that payer's threshold amount. Paid3 plus free1
+does not grant; paid4 does. Native player-recipient/free/self/trainer policies
+and provisional original-earned-faction retention stay distinct and unchanged.
+
+Three native collection cases initially stopped at phase8 before the existing
+Ix Amal opening initialized Mentat. The helper now completes that real opening;
+engine phase order is not moved to force a passing wallet check.
+
+`ixian-replacement` adds Basic native Tleilaxu/classic with Ix47 and Nexus alone,
+Ixians absent. The existing generic Nexus initializer retains genuine setup
+and alliance-qualified acquisition; the fresh native variant omits optional
+Sandtrout by the existing bounded-profile convention. Exact purchased
+Thumper/Tooth/Blade/Hunter and actual remaining-deck draws preserve once-only
+original payment/income and next-lot/final-lot native continuation. Existing
+base full-hand/depleted source cases remain rather than artificial duplicates.
+Harkonnen buyers, special origins and pending Nexus questions remain gated.
+
+Types/lint, coherent affected110/110, final native/guide26/26 and build pass.
+Twenty-eight actual program cases pass:12 native Banker source-to-Mentat/
+recipient/cost cases,12 replacement/card/policy cases and4 legal post-income
+policy continuations. Fixtures use real original native deals and phase/source
+actions; revival examples explicitly stage only conserved casualty positions.
+No full-game, calibration or deployed acceptance claim.
+
+Genuine flagged CLI setups **7B55PLA5 v8** and **XLFRHKPF v6** retain native
+original setup. Human390px **86WQMSZV v18** closes the actual Emperor self-bid4,
+keeps Ix available10 with deferred1, continues original phases and collects
+automatically at initialized Mentat to11. **NMFTVV6N v8** inspects the
+purchased Thumper, spends its actual Ixian Nexus, draws Amal, retains buyer3,
+and allows original Emperor income10→12 once before the phase4 Amal opening.
+
+Final reference10/10, build and both390px bounded guides pass; eleven
+changed-region local links/anchors are valid. All owned tabs and both isolated
+workers are closed; five smoke/staging/continuation drivers are removed.
+Private QA/CLI backups remain outside the checkout. No game reset or supplied
+PDF publication; deployment and full module/faction acceptance remain open.
+
 ## 2 October 2026 — native Mentat question integration
 
 The existing private preview composes with already-supported Basic

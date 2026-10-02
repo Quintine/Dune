@@ -56,7 +56,7 @@ function step(game:Game):Game {
 }
 export function advanceSpiceBankerIncomeToMentat(state:Game):Game {
   let game=state;const turn=game.turn;
-  for(let i=0;game.phase!==8&&game.turn===turn&&game.status==='playing'&&i<1000;i++) game=step(game);
+  for(let i=0;(game.phase!==8||game.phaseOpening)&&game.turn===turn&&game.status==='playing'&&i<1000;i++) game=step(game);
   assert.equal(game.turn,turn);assert.equal(game.phase,8);
   return game;
 }
