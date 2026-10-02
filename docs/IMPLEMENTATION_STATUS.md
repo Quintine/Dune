@@ -51,6 +51,14 @@ workers are closed; five smoke/staging/continuation drivers are removed.
 Private QA/CLI backups remain outside the checkout. No game reset or supplied
 PDF publication; deployment and full module/faction acceptance remain open.
 
+Code **b83d75d9d313d2ff1926e11f2155ea0c78ed1757** is pushed.
+[Exact CI36999767861](https://github.com/Quintine/Dune/actions/runs/36999767861)
+and job110814548718 completed/success. The original isolated storage/HTTP
+verification and subsequent verified-image publication both pass; image
+`ghcr.io/quintine/dune:sha-b83d75d9d313d2ff1926e11f2155ea0c78ed1757`.
+This is existing-pipeline evidence, not a new assurance campaign or deployment.
+Live **ab5c782** remains the last observed marker.
+
 ## 2 October 2026 — native Mentat question integration
 
 The existing private preview composes with already-supported Basic

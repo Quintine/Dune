@@ -48,6 +48,12 @@ Final reference10/10 and build pass; both390px Partial/Development Verified
 guides show the native boundary, and eleven changed-region local links/anchors
 are valid. All owned tabs/workers are closed and five smoke drivers removed;
 private inputs/CLI backups remain outside the checkout.
+Code **b83d75d9d313d2ff1926e11f2155ea0c78ed1757** is pushed.
+[Exact CI36999767861](https://github.com/Quintine/Dune/actions/runs/36999767861),
+job110814548718, completed/success. Existing isolated storage/HTTP verification
+and subsequent verified-image publication pass:
+`ghcr.io/quintine/dune:sha-b83d75d9d313d2ff1926e11f2155ea0c78ed1757`.
+No deployment or new assurance campaign; live **ab5c782** remains last observed.
 
 
 **Native Mentat preview — bounded integration:** explicit fresh
