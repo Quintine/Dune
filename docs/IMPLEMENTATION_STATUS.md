@@ -46,6 +46,14 @@ No new recovery/privacy/custody/seat/getter/HTTP-suite/full6,500-suite assurance
 campaign. Full rules, combined modes, later comprehensive assurance,
 administration and deployment remain unfinished.
 
+Code **1057eb271938a92a651feebeeef13738659ec8c0** is pushed.
+[Mandatory CI36966120859](https://github.com/Quintine/Dune/actions/runs/36966120859)
+and job110710144783 completed/success for the exact source SHA. Existing
+isolated storage/HTTP verification preceded publication of
+`ghcr.io/quintine/dune:sha-1057eb271938a92a651feebeeef13738659ec8c0`.
+This is existing-pipeline evidence, not deployed acceptance or a new local
+assurance campaign. Live **ab5c782** remains the last observed marker.
+
 ## 2 October 2026 — authorized Advanced Ecaz Occupy combined-army rules
 
 The user-authorized supplied revision, physical32/19, resolves the Advanced

@@ -41,6 +41,12 @@ See [native force-owner integration](ECAZ_OCCUPY_RULES.md#native-e1e2-force-owne
 Final types/lint, canonical guide10/10, build and390px expanded guide pass;
 six changed-region local links/anchors are valid. Owned drivers/tabs/workers
 are removed/closed without a saved-game reset.
+Code **1057eb271938a92a651feebeeef13738659ec8c0** is pushed.
+[Exact mandatory CI36966120859](https://github.com/Quintine/Dune/actions/runs/36966120859),
+job110710144783, completed/success: existing isolated storage/HTTP verification
+passed before publication of
+`ghcr.io/quintine/dune:sha-1057eb271938a92a651feebeeef13738659ec8c0`.
+No new assurance campaign or deployment; live **ab5c782** remains last observed.
 
 **Advanced Ecaz Occupy — bounded Development Verified:** the authorized
 supplied PDF physical32/19 resolves ceiling-half free Ecaz contribution,
