@@ -47,6 +47,17 @@ new per-feature assurance campaign or deployment claim. Immutable image:
 `ghcr.io/quintine/dune:sha-e9830b6ced80c95253cfa112bb8ed2eb6e50b74c`.
 
 
+**Expanded Stronghold rules — bounded Development Verified:** selected E1/E2
+native pairs/mixed Ixians/Tleilaxu/CHOAM/Richese plus classic2..6 Advanced,
+ordinary decks35/47 and separate Richese cache10. Types/lint, targeted16/16
+and11 actual rule-program cases pass. Eighteen unstaged games complete with
+11,066 accepted actions, no rejections and290JSON restores. Human390px
+original CLI rooms **G7VDY6KB v12** and **736HJUD3 v8** exercise real Stone
+kill/Habbanya outcome and partial Face Dance replacement. A stale report
+descriptor was fixed and exercised on all three two-seat families.
+Mixed No-Field/full-plan, Stone/Poison Tooth and Ecaz questions remain guarded;
+new save/privacy/custody/seat/full-suite assurance stays deferred.
+
 **Stronghold rule integration — bounded Development Verified:** fresh
 `stronghold-factions` connects Advanced native Ixians/CHOAM plus classic2..6,
 canonical combined47 Treachery Cards and six Stronghold Cards alone.

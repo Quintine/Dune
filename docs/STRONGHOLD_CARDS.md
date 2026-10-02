@@ -2,6 +2,34 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Expanded E1/E2 faction rules
+
+The same fresh `stronghold-factions` profile now admits selected Ix/Tleilaxu
+and CHOAM/Richese native families with classic opponents, Advanced only,
+two through six seats and Stronghold Cards alone. At least one native
+expansion faction and its selected distinct `ix`/`choam` decks are required.
+CHOAM-only ordinary deck35; Ix or both47; native Richese cache10 stays separate.
+Ecaz/Moritani and other overlays remain excluded. The new-family rule paths
+are **Partial / Development Verified**, not complete faction/module acceptance.
+
+Native No-Field0/3/5 control/reveal and real cache-acquired Stone outcomes,
+plus native Face Dancer zero/partial/army replacement and next-turn card
+control are integrated. Targeted16/16 rule cases, types/lint and11 actual
+rule-program cases pass. Eighteen unstaged2..6-seat paired/mixed games
+complete:11,066 accepted actions, zero rejections,290JSON restores. An old
+Ixian/CHOAM-only report header was corrected to list per-family decks/cache;
+an actual three-family report smoke completes with the corrected descriptor.
+
+Human390px controls used original CLI setups: **G7VDY6KB v12** chose Stone
+kill mode and completed the Habbanya-winning battle with real Stone retained;
+**736HJUD3 v8** selected two reserves for Face Dance and replaced the original
+winner while its Stronghold card remained with Ixians until the turn boundary.
+No new save/privacy/custody audit lane, full-suite or historical-seat campaign.
+Mixed No-Field/full-plan and unresolved Stone/Poison Tooth cases stay guarded.
+Final coherent rule/guide26/26, `check:quick`, build and actual expanded390px
+guide pass;205 changed document links are valid. Owned temporary drivers and
+the test tab/service are removed/closed.
+
 ## Native Ixian and CHOAM integration — 2 October 2026
 
 Fresh local `stronghold-factions` integration has **Partial / Development Verified** rule-path coverage:

@@ -9080,14 +9080,15 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   requireFreshFactionInventory(state);
   return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
 }
-/** Fresh Advanced Ixian/CHOAM composition; normal starts and other modules stay gated. */
+/** Fresh Advanced E1/E2 faction composition; normal starts and other modules stay gated. */
 export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
-  requireRule(state.advanced === true && state.expansions.length === 2 &&
-    state.expansions.includes('ix') && state.expansions.includes('choam') &&
-    state.players.some(p => p.faction === 'ixians') &&
-    state.players.some(p => p.faction === 'choam') &&
-    state.players.every(p => p.faction === 'ixians' || p.faction === 'choam' || faction(p.faction).expansion === 'base'),
-    'Stronghold factions require Advanced native Ixians and CHOAM, classic opponents, and exactly the Ix and CHOAM decks.');
+  requireRule(state.advanced === true && Array.isArray(state.expansions) &&
+    state.expansions.length >= 1 && state.expansions.length <= 2 &&
+    state.expansions.every(id => id === 'ix' || id === 'choam') &&
+    new Set(state.expansions).size === state.expansions.length &&
+    state.players.some(p => faction(p.faction).expansion !== 'base') &&
+    state.players.every(p => faction(p.faction).expansion === 'base' || state.expansions.includes(faction(p.faction).expansion)),
+    'Stronghold factions require Advanced Ixian/Tleilaxu or CHOAM/Richese factions, classic opponents and their selected distinct decks.');
   requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
     !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
     !state.techTokens && !state.ecazTreachery &&

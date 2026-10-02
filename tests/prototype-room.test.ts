@@ -22,6 +22,8 @@ import { NEXUS_FACTIONS } from '../game/nexus-cards';
 import { createLeaderSkills } from '../game/leader-skills';
 import { createStrongholdCards } from '../game/stronghold-cards';
 import { treacheryDeck } from '../game/cards';
+import type { FactionId } from '../game/catalog';
+import { richeseCards } from '../game/richese-cards';
 
 function fixture(t: test.TestContext) {
   const db = new DatabaseSync(':memory:');
@@ -955,19 +957,33 @@ void test('Banker income CLI requires a fresh exact-version private backup and p
   assert.deepEqual(current.prepare('SELECT * FROM seats ORDER BY player_id').all(), credentials);
 });
 
-function strongholdFactionsLobby(count = 3) {
-  const game = createGame('PROTOTYP', newPlayer('i', 'Native Ixians', 'ixians'), true, ['ix', 'choam']);
-  const factions = ['choam', 'atreides', 'harkonnen', 'emperor', 'guild'] as const;
+function strongholdFactionsLobby(
+  count = 3,
+  roster: readonly FactionId[] = ['ixians', 'choam', 'atreides', 'harkonnen', 'emperor', 'guild'],
+  expansions = ['ix', 'choam'],
+) {
+  const game = createGame('PROTOTYP', newPlayer('i', roster[0], roster[0]), true, expansions);
   for (let index = 1; index < count; index++)
-    joinGame(game, newPlayer('seat-' + index, factions[index - 1], factions[index - 1]));
+    joinGame(game, newPlayer('seat-' + index, roster[index], roster[index]));
   game.players.forEach(player => { player.ready = true; });
   return game;
 }
 
 void test('Stronghold factions admits only fresh exact-version native Advanced lobbies without changing seats or other rooms', t => {
   const { db } = fixture(t);
-  for (const count of [2, 3, 4, 5, 6]) {
-    const lobby = strongholdFactionsLobby(count);
+  const families: { roster: FactionId[]; expansions: string[]; minimum?: number }[] = [
+    { roster: ['ixians', 'choam', 'atreides', 'harkonnen', 'emperor', 'guild'], expansions: ['ix', 'choam'] },
+    { roster: ['ixians', 'tleilaxu', 'atreides', 'harkonnen', 'emperor', 'guild'], expansions: ['ix'] },
+    { roster: ['choam', 'richese', 'atreides', 'harkonnen', 'emperor', 'guild'], expansions: ['choam'] },
+    { roster: ['ixians', 'tleilaxu', 'choam', 'richese', 'emperor', 'guild'], expansions: ['ix', 'choam'], minimum: 4 },
+    ...(['ixians', 'tleilaxu', 'choam', 'richese'] as const).map(faction => ({
+      roster: [faction, 'guild', 'atreides', 'harkonnen', 'emperor', 'fremen'] as FactionId[],
+      expansions: [faction === 'ixians' || faction === 'tleilaxu' ? 'ix' : 'choam'],
+    })),
+  ];
+  for (const { family, count } of families.flatMap(family =>
+    [2, 3, 4, 5, 6].filter(count => count >= (family.minimum ?? 2)).map(count => ({ family, count })))) {
+    const lobby = strongholdFactionsLobby(count, family.roster, family.expansions);
     const original = structuredClone(lobby);
     db.prepare('UPDATE rooms SET state=?,version=7 WHERE code=?').run(JSON.stringify(lobby), lobby.code);
     const seats = db.prepare('SELECT * FROM seats').all();
@@ -982,19 +998,21 @@ void test('Stronghold factions admits only fresh exact-version native Advanced l
     assert.equal(row.version, 8);
     assert.equal(saved.status, 'setup');
     assert.equal(saved.advanced, true);
-    assert.deepEqual(saved.expansions, ['ix', 'choam']);
+    assert.deepEqual(saved.expansions, family.expansions);
     assert.deepEqual(saved.players.map(p => [p.id, p.name, p.faction]),
       original.players.map(p => [p.id, p.name, p.faction]));
     assert.deepEqual(saved.playerPositions, original.playerPositions);
     const cards = [...saved.deck, ...saved.discard, ...(saved.ixSetupCards ?? []), ...saved.players.flatMap(p => p.hand)];
-    assert.deepEqual(cards.map(card => card.id).sort(), treacheryDeck(['ix', 'choam']).map(card => card.id).sort());
-    assert.equal(new Set(cards.map(card => card.id)).size, 47);
+    assert.deepEqual(cards.map(card => card.id).sort(), treacheryDeck(family.expansions).map(card => card.id).sort());
+    assert.equal(new Set(cards.map(card => card.id)).size, family.expansions.includes('ix') ? 47 : 35);
+    const cache = family.roster.includes('richese') ? richeseCards().map(card => card.id).sort() : [];
+    assert.deepEqual((saved.richeseCache ?? []).map(card => card.id).sort(), cache);
     assert.deepEqual(saved.strongholdCards, createStrongholdCards());
-    const ix = saved.players.find(p => p.faction === 'ixians')!;
-    assert.equal((ix.elites?.reserves ?? 0) + (ix.elites?.tanks ?? 0) +
+    const ix = saved.players.find(p => p.faction === 'ixians');
+    if (ix) assert.equal((ix.elites?.reserves ?? 0) + (ix.elites?.tanks ?? 0) +
       Object.values(ix.elites?.forces ?? {}).reduce((sum, amount) => sum + amount, 0), 7);
-    const choam = saved.players.find(p => p.faction === 'choam')!;
-    assert.equal(choam.leaders.filter(leader => leader.id === 'choam-auditor').length, 1);
+    const choam = saved.players.find(p => p.faction === 'choam');
+    if (choam) assert.equal(choam.leaders.filter(leader => leader.id === 'choam-auditor').length, 1);
     for (const p of saved.players) {
       const view = viewGame(saved, p.id);
       assert.deepEqual(view.strongholdCards, saved.strongholdCards);
@@ -1017,8 +1035,11 @@ void test('Stronghold faction admission rejects incompatible modules, history, o
     game => { game.advanced = false; },
     game => { game.expansions = ['ix']; },
     game => { game.expansions = ['ix', 'choam', 'ecaz']; },
-    game => { game.players[1] = newPlayer(game.players[1].id, 'Classic', 'guild'); game.players[1].ready = true; },
-    game => { game.players[2] = newPlayer(game.players[2].id, 'Tleilaxu', 'tleilaxu'); game.players[2].ready = true; },
+    game => { game.expansions = ['choam']; },
+    game => { game.expansions = ['ix', 'choam', 'ix']; },
+    game => { game.expansions = []; },
+    game => { game.players[2].faction = 'ecaz'; },
+    game => { game.players[0].faction = 'guild'; game.players[1].faction = 'fremen'; },
     game => { game.players[0].ready = false; },
     game => { game.turn = 2; },
     game => { game.players[0].battleLosses = 1; },

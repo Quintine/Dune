@@ -15,6 +15,7 @@ import { join } from 'node:path';
 
 import type { Game } from '../game/engine';
 import { isAuditorLeader, treacheryDeck } from '../game/cards';
+import { richeseCards } from '../game/richese-cards';
 import { STRONGHOLD_CARDS } from '../game/stronghold-cards';
 import { sampleInventory, verifySampleCustody } from '../tools/sample-custody';
 import { createTechTokens } from '../game/tech-tokens';
@@ -105,41 +106,58 @@ void test('native Stronghold samples admit every two-to-six-seat roster and pres
   assert.equal(run(out, '--profile', 'stronghold-factions',
     '--players', 'all', '--seed', '1000', '--max-actions', '1').status, 1);
   const results = json<{ results: CliResult[] }>(join(out, 'results.json')).results;
-  assert.deepEqual(results.map(result => result.name),
-    [2, 3, 4, 5, 6].map(seats => `stronghold-factions-${seats}-advanced`));
-  const roster = ['ixians', 'choam', 'emperor', 'fremen', 'harkonnen', 'beneGesserit'];
-  const canonical = treacheryDeck(['ix', 'choam']).map(card => card.id).sort();
-  assert.equal(canonical.length, 47);
-  assert.equal(new Set(canonical).size, 47);
+  const families = [
+    { native: 'ixians-choam', expansions: ['ix', 'choam'],
+      roster: ['ixians', 'choam', 'emperor', 'fremen', 'harkonnen', 'beneGesserit'], counts: [2, 3, 4, 5, 6], ordinal: 151 },
+    { native: 'ixians-tleilaxu', expansions: ['ix'],
+      roster: ['ixians', 'tleilaxu', 'emperor', 'fremen', 'harkonnen', 'beneGesserit'], counts: [2, 3, 4, 5, 6], ordinal: 156 },
+    { native: 'choam-richese', expansions: ['choam'],
+      roster: ['choam', 'richese', 'emperor', 'fremen', 'harkonnen', 'beneGesserit'], counts: [2, 3, 4, 5, 6], ordinal: 161 },
+    { native: 'ixians-tleilaxu-choam-richese', expansions: ['ix', 'choam'],
+      roster: ['ixians', 'tleilaxu', 'choam', 'richese', 'emperor', 'fremen'], counts: [4, 5, 6], ordinal: 166 },
+  ];
+  const scenarios = families.flatMap(family => family.counts.map((count, index) => ({
+    ...family, count, seed: 1000 + family.ordinal + index,
+    name: `stronghold-factions-${family.native}-${count}-advanced`,
+  })));
+  assert.deepEqual(results.map(result => result.name), scenarios.map(scenario => scenario.name));
   for (const [index, result] of results.entries()) {
+    const scenario = scenarios[index];
+    assert.equal(result.seed, scenario.seed);
     assert.equal(result.error, 'Error: Action limit');
     assert.equal(result.actions, 1);
     const game = json<Game>(join(out, `failed-${result.name}.json`));
     assert.equal(game.advanced, true);
-    assert.deepEqual(game.expansions, ['ix', 'choam']);
-    assert.deepEqual(game.players.map(player => player.faction), roster.slice(0, index + 2));
+    assert.deepEqual(game.expansions, scenario.expansions);
+    assert.deepEqual(game.players.map(player => player.faction), scenario.roster.slice(0, scenario.count));
     assert.deepEqual(game.players.map(player => player.bot),
-      ['Easy', 'Medium', 'Hard', 'Brutal', 'Easy', 'Medium'].slice(0, index + 2));
+      ['Easy', 'Medium', 'Hard', 'Brutal', 'Easy', 'Medium'].slice(0, scenario.count));
+    const deck = treacheryDeck(scenario.expansions).map(card => card.id).sort();
+    assert.equal(deck.length, scenario.expansions.includes('ix') ? 47 : 35);
+    const cache = scenario.roster.includes('richese') ? richeseCards().map(card => card.id).sort() : [];
     const inventory = sampleInventory(game);
-    assert.deepEqual(inventory.cards, canonical);
+    assert.deepEqual(inventory.cards, [...deck, ...cache].sort());
+    assert.deepEqual((game.richeseCache ?? []).map(card => card.id).sort(), cache);
     verifySampleCustody(game, inventory);
     assert.deepEqual(Object.keys(game.strongholdCards!.owners).sort(),
       STRONGHOLD_CARDS.map(card => card.id).sort());
     assert.ok(Object.values(game.strongholdCards!.owners).every(owner => owner === null));
     assert.equal(game.strongholdCards!.claimedTurn, 0);
-    assert.equal(game.players.find(player => player.faction === 'choam')!.leaders
-      .filter(isAuditorLeader).length, 1);
+    const choam = game.players.find(player => player.faction === 'choam');
+    if (choam) assert.equal(choam.leaders.filter(isAuditorLeader).length, 1);
   }
-  const snapshot = join(out, 'failed-stronghold-factions-6-advanced.json');
-  const original = readFileSync(snapshot, 'utf8');
-  const continued = join(area, 'continued');
-  assert.equal(run(continued, '--resume', snapshot, '--seed', '1000',
-    '--max-actions', '1').status, 1);
-  const report = assertFailedEvidence(continued, 'stronghold-factions-6-advanced', 1155, true);
-  assert.equal(report.options.resume?.path, snapshot);
-  verifySampleCustody(json<Game>(join(continued, 'failed-stronghold-factions-6-advanced.json')),
-    sampleInventory(json<Game>(snapshot)), json<Game>(snapshot));
-  assert.equal(readFileSync(snapshot, 'utf8'), original);
+  for (const scenario of scenarios.filter(candidate => candidate.count === 6)) {
+    const snapshot = join(out, `failed-${scenario.name}.json`);
+    const original = readFileSync(snapshot, 'utf8');
+    const continued = join(area, `continued-${scenario.native}`);
+    assert.equal(run(continued, '--resume', snapshot, '--seed', '1000',
+      '--max-actions', '1').status, 1);
+    const report = assertFailedEvidence(continued, scenario.name, scenario.seed, true);
+    assert.equal(report.options.resume?.path, snapshot);
+    verifySampleCustody(json<Game>(join(continued, `failed-${scenario.name}.json`)),
+      sampleInventory(json<Game>(snapshot)), json<Game>(snapshot));
+    assert.equal(readFileSync(snapshot, 'utf8'), original);
+  }
 });
 
 void test('native Stronghold admission and resume reject foreign profiles and corrupted custody before gameplay', (t) => {
@@ -150,11 +168,11 @@ void test('native Stronghold admission and resume reject foreign profiles and co
   const out = join(area, 'native');
   assert.equal(run(out, '--profile', 'stronghold-factions', '--players', '2',
     '--max-actions', '1').status, 1);
-  const source = json<Game>(join(out, 'failed-stronghold-factions-2-advanced.json'));
+  const source = json<Game>(join(out, 'failed-stronghold-factions-ixians-choam-2-advanced.json'));
   const corruptions: [string, (game: Game) => void][] = [
     ['basic', game => { game.advanced = false; }],
     ['wrong-deck', game => { game.expansions = ['ix']; }],
-    ['foreign-faction', game => { game.players[1].faction = 'richese'; }],
+    ['foreign-faction', game => { game.players[1].faction = 'ecaz'; }],
     ['missing-module', game => { delete game.strongholdCards; }],
     ['nexus', game => { game.nexusCards = { cards: null, phase: null }; }],
     ['tech', game => { game.techTokens = createTechTokens(); }],

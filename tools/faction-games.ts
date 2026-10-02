@@ -5,6 +5,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { botActions } from '../game/bots';
+import { treacheryDeck } from '../game/cards';
+import { richeseCards } from '../game/richese-cards';
 import type { FactionId } from '../game/catalog';
 import {
   applyAction,
@@ -220,13 +222,36 @@ const CHOAM_SKILLS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(players 
 const STRONGHOLD_FACTIONS_ROSTER: readonly FactionId[] = [
   'ixians', 'choam', 'emperor', 'fremen', 'harkonnen', 'beneGesserit',
 ];
-const STRONGHOLD_FACTIONS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(players => ({
-  ordinal: 151 + players - 2,
-  profile: 'stronghold-factions',
-  rules: 'advanced',
-  expansions: ['ix', 'choam'],
-  roster: STRONGHOLD_FACTIONS_ROSTER.slice(0, players),
-}));
+const STRONGHOLD_FACTIONS_SCENARIOS: readonly Scenario[] = [
+  ...[2, 3, 4, 5, 6].map(players => ({
+    ordinal: 151 + players - 2,
+    profile: 'stronghold-factions' as const,
+    rules: 'advanced' as const,
+    expansions: ['ix', 'choam'],
+    roster: STRONGHOLD_FACTIONS_ROSTER.slice(0, players),
+  })),
+  ...[2, 3, 4, 5, 6].map(players => ({
+    ordinal: 156 + players - 2,
+    profile: 'stronghold-factions' as const,
+    rules: 'advanced' as const,
+    expansions: ['ix'],
+    roster: (['ixians', 'tleilaxu', 'emperor', 'fremen', 'harkonnen', 'beneGesserit'] as FactionId[]).slice(0, players),
+  })),
+  ...[2, 3, 4, 5, 6].map(players => ({
+    ordinal: 161 + players - 2,
+    profile: 'stronghold-factions' as const,
+    rules: 'advanced' as const,
+    expansions: ['choam'],
+    roster: (['choam', 'richese', 'emperor', 'fremen', 'harkonnen', 'beneGesserit'] as FactionId[]).slice(0, players),
+  })),
+  ...[4, 5, 6].map(players => ({
+    ordinal: 166 + players - 4,
+    profile: 'stronghold-factions' as const,
+    rules: 'advanced' as const,
+    expansions: ['ix', 'choam'],
+    roster: (['ixians', 'tleilaxu', 'choam', 'richese', 'emperor', 'fremen'] as FactionId[]).slice(0, players),
+  })),
+];
 const skillProfile = (profile: string) => profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills' || profile === 'choam-skills';
 
 type TraceEntry = {
@@ -268,7 +293,7 @@ function usage() {
     '[--seed UINT32] [--profile all|base|choam|ecaz|ecaz-treachery|moritani-assassinate|stronghold-factions|combined|combined-nexus|combined-homeworld-nexus|homeworld|nexus|homeworld-nexus|choam-roster|ecaz-roster|ix-roster|choam-nexus|ecaz-nexus|ix-nexus|moritani-skills|tleilaxu-skills|ix-skills|choam-skills] ' +
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
-    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; combined-nexus and combined-homeworld-nexus add five/six-seat Basic/Advanced all-expansion samples. Base, Homeworld, Nexus, Homeworld-Nexus, expansion roster, paired expansion Nexus, Ecaz card variant, Advanced Moritani assassination and skill profiles select their documented rosters. Stronghold-factions is Advanced only: native Ixians + CHOAM with classic opponents, two through six seats, the canonical 47-card Ix+CHOAM deck and six separate Stronghold Cards, without other modules. --players requires a supported profile. Output must be a new private directory outside the checkout.'
+    'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; combined-nexus and combined-homeworld-nexus add five/six-seat Basic/Advanced all-expansion samples. Base, Homeworld, Nexus, Homeworld-Nexus, expansion roster, paired expansion Nexus, Ecaz card variant, Advanced Moritani assassination and skill profiles select their documented rosters. Stronghold-factions is Advanced only: Ixians + CHOAM, native Ixians + Tleilaxu, or native CHOAM + Richese with classic opponents, two through six seats; mixed four-native rosters also run at four through six seats. Selected Ix/CHOAM decks determine the canonical 47/35 Treachery Cards; Richese has a separate ten-card cache and all samples have six separate Stronghold Cards without other modules. Scenario names identify their native roster. --players requires a supported profile. Output must be a new private directory outside the checkout.'
   );
 }
 
@@ -299,8 +324,13 @@ function positive(value: string | undefined) {
 }
 
 function scenarioName(scenario: Scenario) {
+  if (scenario.profile === 'stronghold-factions') {
+    const native = scenario.roster.filter(faction =>
+      ['ixians', 'tleilaxu', 'choam', 'richese'].includes(faction));
+    return `${scenario.profile}-${native.join('-')}-${scenario.roster.length}-${scenario.rules}`;
+  }
   return scenario.profile === 'base' || scenario.profile === 'homeworld' || scenario.profile === 'nexus' || scenario.profile === 'homeworld-nexus' || scenario.profile === 'combined-nexus' || scenario.profile === 'combined-homeworld-nexus' ||
-    scenario.profile === 'choam-roster' || scenario.profile === 'ecaz-roster' || scenario.profile === 'ecaz-treachery' || scenario.profile === 'moritani-assassinate' || scenario.profile === 'stronghold-factions' || scenario.profile === 'ix-roster' || scenario.profile === 'choam-nexus' || scenario.profile === 'ecaz-nexus' || scenario.profile === 'ix-nexus' || skillProfile(scenario.profile)
+    scenario.profile === 'choam-roster' || scenario.profile === 'ecaz-roster' || scenario.profile === 'ecaz-treachery' || scenario.profile === 'moritani-assassinate' || scenario.profile === 'ix-roster' || scenario.profile === 'choam-nexus' || scenario.profile === 'ecaz-nexus' || scenario.profile === 'ix-nexus' || skillProfile(scenario.profile)
     ? `${scenario.profile}-${scenario.roster.length}-${scenario.rules}`
     : `${scenario.profile}-${scenario.rules}`;
 }
@@ -454,8 +484,12 @@ function simulate(
   let game = initial;
   const expected = sampleInventory(game);
   if (scenario.profile === 'stronghold-factions') {
-    assert.equal(expected.cards.length, 47, 'canonical Ix+CHOAM Treachery census');
-    assert.equal(new Set(expected.cards).size, 47, 'unique Ix+CHOAM Treachery identities');
+    const canonical = [
+      ...treacheryDeck(scenario.expansions),
+      ...(scenario.roster.includes('richese') ? richeseCards() : []),
+    ].map(card => card.id).sort();
+    assert.deepEqual(expected.cards, canonical, 'selected native Treachery deck and separate Richese cache census');
+    assert.equal(new Set(expected.cards).size, canonical.length, 'unique native Treachery identities');
     assert.equal(expected.strongholds?.length, 6, 'six physical Stronghold Cards');
   }
   const trace: TraceEntry[] = [];
@@ -748,11 +782,15 @@ async function main() {
       : 'Each scenario starts its random stream at seed plus scenario ordinal.',
     ...(selected.some(scenario => scenario.profile === 'stronghold-factions') ? {
       strongholdFactions: {
-        expansions: ['ix', 'choam'],
-        treacheryCards: 47,
+        families: selected.filter(scenario => scenario.profile === 'stronghold-factions').map(scenario => ({
+          roster: scenario.roster,
+          expansions: scenario.expansions,
+          treacheryCards: scenario.expansions.includes('ix') ? 47 : 35,
+          richeseCache: scenario.roster.includes('richese') ? 10 : 0,
+        })),
         strongholdCards: 6,
         custody: 'Six separate physical cards checked after every accepted action and JSON restore; end-Mentat holders persist during the next turn, independently of current board control.',
-        scope: 'Advanced native Ixians and CHOAM with classic opponents; Stronghold Cards alone. This sample does not certify every Treachery effect, optional-module combination or deployed readiness.',
+        scope: 'Advanced selected Ixian/Tleilaxu and CHOAM/Richese native families with classic opponents; Stronghold Cards alone. Per-family ordinary decks and separate Richese caches remain explicit. This sample does not certify every Treachery effect, optional-module combination or deployed readiness.',
       },
     } : {}),
     options: {

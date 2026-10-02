@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 2 October 2026 — expanded Stronghold No-Field, Stone and Face Dancer rules
+
+The existing `stronghold-factions` profile now composes selected E1/E2 native
+families with classic2..6-seat Advanced and Stronghold Cards alone. Ordinary
+decks35/47, Richese cache10, native first setup/END Mentat and existing
+No-Field/Stone/FaceDance handlers are reused. No public-start change, other
+overlay or pending mixed No-Field/Stone/Poison Tooth/Ecaz ruling is inferred.
+
+Three rule-only owners supplied native Richese and Tleilaxu paths plus paired/
+mixed study/entry. Targeted16/16, types/lint and11 actual rule-program cases
+pass. Eighteen unstaged games complete:11,066 accepted actions/no rejection/
+290JSON restores. A stale report descriptor was corrected; actual two-seat
+Ixian/CHOAM, Ixian/Tleilaxu and CHOAM/Richese reports now bind47/47/35 ordinary
+cards and0/0/10 separate cache respectively. Different-source reports remain
+immutable; no historical evidence is rewritten.
+
+Original CLI/human390px **G7VDY6KB v12** chose real Stone kill mode,
+completed the Habbanya-winning battle and retained Stone. **736HJUD3 v8**
+chose two reserve forces for actual Face Dance while the original Ixian
+kept its winner rewards and retained Stronghold card until the end boundary.
+Native-program cases cover zero/partial replacement, reserve-limited0/3/5
+No-Field reveal and both Stone modes. Narrow feedback repaired Once Around
+null-pass semantics, actual regenerated auction events and RNG typing;
+whole-Game nonce equality and keep-action echoes were removed, not re-pinned.
+
+The new rules-first schedule used no new save/privacy/custody/seat/HTTP or
+full6,500-suite assurance campaign. Final rules/valid-combination/recovery/
+privacy/custody/administration/deployed acceptance remains required later.
+Final coherent rule/guide26/26, types/lint (`check:quick`), build and expanded
+390px guide pass. Changed canonical document links205/205 are valid; owned
+temporary rule drivers and managed tab/service are removed/closed.
+
 ## 2 October 2026 — rules-first development throughput and compact context
 
 The user prioritizes full rules implementation, with comprehensive review,

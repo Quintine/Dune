@@ -227,16 +227,17 @@ original-faction retention after death/capture/reassignment is provisional
 in this profile; bounded verification is Partial/Development Verified and the existing question stays open.
 See the [normal-band source and scope](docs/SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026).
 
-For local **Ixians + CHOAM + Stronghold Cards** integration, use
+For local **expansion factions + Stronghold Cards**, use
 `node --import tsx tools/start-prototype.ts --profile stronghold-factions`
-on a fresh ready Advanced native-Ixian/native-CHOAM lobby with unique classic
-opponents and exactly `ix,choam` decks. Canonical combined Treachery count is47,
-not49; the six separate cards start unowned and use native end-Mentat custody.
-The same exact-version/private-backup contract applies. Other rosters/modules,
-public expansion starts and existing games are unchanged. Bounded native
-rules, legal AI, complete-game and human phone controls are Development Verified;
-save/privacy/custody assurance follows all rules under the2 October priority. See the
-[bounded integration](docs/STRONGHOLD_CARDS.md#native-ixian-and-choam-integration--2-october-2026).
+on a fresh ready Advanced lobby with selected Ixian/Tleilaxu and/or
+CHOAM/Richese native factions and classic opponents. At least one expansion
+faction and its distinct `ix`/`choam` decks are required. CHOAM-only deck35;
+Ix or both47; Richese cache10 stays separate. Stronghold Cards alone start
+unowned and use native end-Mentat control. Other overlays/Ecaz/Moritani,
+public expansion starts and existing games are unchanged. Paired/mixed E1/E2
+rules, legal AI and human phone controls are bounded Development Verified;
+save/privacy/custody assurance follows all rules. See the
+[bounded integration](docs/STRONGHOLD_CARDS.md#expanded-e1e2-faction-rules).
 
 Above the board, **Treachery draw pile** and **Spice draw pile** show live card
 counts separately from hands, auction cards and discards. See
