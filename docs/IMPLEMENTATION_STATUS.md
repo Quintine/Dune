@@ -47,6 +47,13 @@ No new recovery/privacy/custody/seat/HTTP-suite or full6,500-suite assurance
 campaign was added. Full rules and later comprehensive review/assurance,
 administration and deployed acceptance remain unfinished.
 
+Code **e112df858a5a3d27992d22478c5c0d4f3dfac642** is pushed.
+[Mandatory CI36958647494](https://github.com/Quintine/Dune/actions/runs/36958647494)
+and job110687174806 completed/success for that exact SHA. Existing isolated
+storage/HTTP verification passed before publication of
+`ghcr.io/quintine/dune:sha-e112df858a5a3d27992d22478c5c0d4f3dfac642`.
+No deployment was performed; live **ab5c782** remains the last observed marker.
+
 ## 2 October 2026 — expanded Stronghold No-Field, Stone and Face Dancer rules
 
 The existing `stronghold-factions` profile now composes selected E1/E2 native

@@ -45,6 +45,13 @@ continuations, `sourceUnchanged:true`. They contain no combined lead choice;
 the seven native cases and human rooms prove that path, not these game samples.
 Final types/lint, corrected guide10/10, build and390px Partial/Development
 Verified guide pass; six changed-region local links/anchors are valid.
+Code **e112df858a5a3d27992d22478c5c0d4f3dfac642** is pushed.
+[Exact mandatory CI36958647494](https://github.com/Quintine/Dune/actions/runs/36958647494),
+job110687174806, completed/success: the existing isolated storage/HTTP verifier
+passed before image publication. Immutable image:
+`ghcr.io/quintine/dune:sha-e112df858a5a3d27992d22478c5c0d4f3dfac642`.
+This is observed existing-pipeline evidence, not a new assurance campaign or
+deployment. Live **ab5c782** remains the last observed marker.
 
 **Development-throughput improvements implemented and verified:** default
 test output preserves failures/details/stdout/stderr/counts while omitting
