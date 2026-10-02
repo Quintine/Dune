@@ -33,6 +33,14 @@ actual OR question, then spent all20 spice as a bribe, skipped shipment and
 fulfilled the promise while its public answer stayed Yes. Earlier phases, other
 future actions and existing module gates remain unfinished. See
 [mixed compounds](COMPOUND_SHIPMENT_PROMISES.md#mixed-current-facts-and-future-shipment--3-october-2026).
+Code **cd985c7c34a05057ed98b34838effdbcddb7697d** is pushed.
+[Exact CI37065338944](https://github.com/Quintine/Dune/actions/runs/37065338944),
+job111031663449, completed/success. Existing isolated storage/HTTP verification
+and verified-image publication pass:
+`ghcr.io/quintine/dune:sha-cd985c7c34a05057ed98b34838effdbcddb7697d`.
+The full offline suite also keeps one pre-existing combined-Occupy sample
+failure (reproduced at 0ceb28b), documented as an open bot-offer defect.
+No deployment or new assurance campaign; live **ab5c782** remains last observed.
 
 **Requested priority — 2 October 2026:** throughput improvements are verified
 and rule content has resumed. Implement all remaining rules first; comprehensive

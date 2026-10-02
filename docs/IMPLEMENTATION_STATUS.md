@@ -43,6 +43,14 @@ correctly rejects. The same 2353-action failure reproduces at the prior pushed
 checkpoint 0ceb28b, so this wave neither introduced nor hid it. It remains an
 open sample/bot-offer defect for a later combined-Occupy slice.
 
+Code **cd985c7c34a05057ed98b34838effdbcddb7697d** is pushed.
+[Exact CI37065338944](https://github.com/Quintine/Dune/actions/runs/37065338944)
+and job111031663449 completed/success: original isolated storage/HTTP
+verification and subsequent verified-image publication both pass, image
+`ghcr.io/quintine/dune:sha-cd985c7c34a05057ed98b34838effdbcddb7697d`.
+This is existing-pipeline evidence, not a new assurance campaign or deployment.
+Live **ab5c782** remains the last observed marker.
+
 ## 2 October 2026 — native Banker income and Ixian Nexus replacement
 
 Two independent bounded owners supplied native original setup/payment fixtures
