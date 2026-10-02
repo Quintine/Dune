@@ -76,8 +76,11 @@ This is a legal strategy path, not strength calibration.
   winner. A user question has been sent; no answer is assumed. The guard uses
   public configuration, never Stone Burner's hidden custody. CHOAM without
   Richese remains eligible. This is a development boundary, not a printed ban.
-- Co-present reciprocal Ecaz allied armies on either side reject before
-  sealing; other faction integration gates remain in force. This prototype does not settle Ecaz's undialed allied support allocation.
+- Co-present armies remain guarded in Basic or without the supported Advanced
+  Occupy profile. The [combined-army follow-up](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026)
+  returns only actual card-user forces: original fixed Ecaz commitment or the
+  selected ally's native variable commitment. It never returns the other ally
+  or recomputes mandatory fixed losses from the diminished board.
 - [Bounded Reinforcements](REINFORCEMENTS_RUNTIME.md) can appear in the
   opposing Battle Plan in classic-faction Basic/Advanced games. The two cards
   cannot share one player's plan; their relative same-plan timing remains

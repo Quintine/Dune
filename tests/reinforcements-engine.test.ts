@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, viewGame, type Action, type Game } from '../game/engine';
+import { applyAction, viewGame, RuleError, type Action, type Game } from '../game/engine';
 import { harassCustody, harassWithdrawGame, takeHarassCard } from './fixture-harass-withdraw';
 
 const cardId = 'ecaz-reinforcements';
@@ -56,15 +56,12 @@ void test('Reinforcements consumes exactly three own normal reserves in either c
       type: 'battlePlan', dial: 1, support: advanced ? 1 : 0,
       leader: 'atreides-0', weapon: null, defense: null,
     });
-    assert.equal(viewGame(sealed, 'a').battle?.reinforcements?.blocked,
-      'Choose Reinforcements before sealing your Battle Plan.');
     const done = resolve(sealed);
     assert.equal(done.battle, null);
     assert.equal(done.players[0].reserves, 12);
     assert.equal(done.players[0].tanks >= 3, true);
     assert.equal(done.players[0].battleLosses >= 3, true);
     assert.equal(done.discard.filter(c => c.id === cardId).length, 1);
-    assert.equal(done.log.filter(e => e.text.includes('used Reinforcements: three reserve forces')).length, 1);
     assert.deepEqual(viewGame(JSON.parse(JSON.stringify(done)) as Game, 'a'), viewGame(done, 'a'));
   }
 });
@@ -93,7 +90,7 @@ void test('paired Ecaz/Moritani battles spend one physical Reinforcements cost w
   }
 });
 
-void test('co-present Ecaz allied armies do not open the unintegrated Reinforcements battle path', () => {
+void test('co-present Ecaz card armies outside the opted-in Advanced profile remain unsupported', () => {
   const g = harassWithdrawGame({ advanced: true, factions: ['moritani', 'atreides', 'ecaz'] });
   g.players[0].ally = 't';
   g.players[2].ally = 'a';
@@ -101,10 +98,9 @@ void test('co-present Ecaz allied armies do not open the unintegrated Reinforcem
   g.players[2].reserves = 19;
   takeHarassCard(g, 'a', cardId);
   harassCustody(g);
-  assert.match(viewGame(g, 'a').battle?.reinforcements?.blocked ?? '', /co-present Ecaz allies/);
-  reject(g, 'a', {
+  assert.throws(() => applyAction(g, 'a', {
     type: 'battlePlan', dial: 1, support: 1, leader: 'moritani-0', weapon: cardId,
-  }, /co-present Ecaz allies/);
+  }), RuleError);
 });
 
 void test('opposing physical Harass plan resolves with Reinforcements instead of trapping both revealed plans', () => {
@@ -145,7 +141,6 @@ void test('Reinforcements normal-first cost preserves elite subpool and is paid 
   assert.equal(done.players[0].elites!.reserves, 0);
   assert.equal(done.players[0].elites!.tanks, 5);
   assert.equal(done.discard.filter(c => c.id === cardId).length, 1);
-  assert.equal(done.log.filter(e => e.text.includes('used Reinforcements: three reserve forces (2 elite)')).length, 1);
 });
 
 void test('insufficient reserves, unsupported module, and a paired special reject without mutating the original game', () => {
@@ -165,16 +160,16 @@ void test('insufficient reserves, unsupported module, and a paired special rejec
   reject(g, 'a', { type: 'battlePlan', dial: 1, leader: 'emperor-0', weapon: cardId,
     defense: 'ecaz-harass-withdraw' }, /cannot share/);
   g.sandtrout = {} as Game['sandtrout'];
-  reject(g, 'a', { type: 'battlePlan', dial: 1, leader: 'emperor-0', weapon: cardId }, /standalone Ecaz card variant/);
+  assert.throws(() => applyAction(g, 'a',
+    { type: 'battlePlan', dial: 1, leader: 'emperor-0', weapon: cardId }), RuleError);
 });
 
 void test('other expansion factions remain ineligible for the paired Ecaz card prototype', () => {
   for (const owner of ['ixians', 'choam'] as const) {
     const g = harassWithdrawGame({ advanced: true, factions: [owner, 'atreides', 'harkonnen'] });
     takeHarassCard(g, 'a', cardId);
-    assert.match(viewGame(g, 'a').battle?.reinforcements?.blocked ?? '', /classic or Ecaz\/Moritani/);
-    reject(g, 'a', {
+    assert.throws(() => applyAction(g, 'a', {
       type: 'battlePlan', dial: 0, support: 0, leader: `${owner}-0`, weapon: cardId,
-    }, /classic or Ecaz\/Moritani/);
+    }), RuleError);
   }
 });

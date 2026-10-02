@@ -1425,6 +1425,8 @@ export type Game = {
           cards: string[];
           casualties?: {
             owner?: string;
+            /** Harass has already returned the complement of this physical pool. */
+            fullyCommitted?: true;
             forces: CombatForces;
             dial: number;
             support: number;
@@ -6451,13 +6453,18 @@ function treacheryDiscardIntegrity(g: Game) {
         'The mandatory battle discard cause is inconsistent.',
       );
       if (c.casualties) {
-        const { forces, dial, support, options } = c.casualties;
+        const { forces, dial, support, options, fullyCommitted } = c.casualties;
         const winner = g.players.find((p) => p.id === c.winner);
-        const pool = winner ? combatArmy(g, winner.id, c.territory) : { normal: 0, elite: 0 };
+        const forceOwner = g.players.find((p) => p.id === (c.casualties!.owner ?? c.winner));
+        const pool = forceOwner ? combatArmy(g, forceOwner.id, c.territory) : { normal: 0, elite: 0 };
         const total = pool.normal + pool.elite;
         const elites = pool.elite;
         requireRule(
-          winner &&
+          winner && forceOwner &&
+            (forceOwner.id === winner.id || (forceOwner.ally === winner.id &&
+              winner.ally === forceOwner.id &&
+              (winner.faction === 'ecaz' || forceOwner.faction === 'ecaz'))) &&
+            (fullyCommitted === undefined || fullyCommitted === true) &&
             forces &&
             validCombatForces(forces) &&
             Number.isSafeInteger(forces.normal) &&
@@ -6475,7 +6482,10 @@ function treacheryDiscardIntegrity(g: Game) {
             Array.isArray(options) &&
             options.length > 0 &&
             JSON.stringify(options) ===
-              JSON.stringify(casualtyOptions(forces, dial, support)),
+              JSON.stringify(fullyCommitted
+                ? casualtyOptions(forces, dial, support).filter(option =>
+                  option.normal === forces.normal && option.elite === forces.elite)
+                : casualtyOptions(forces, dial, support)),
           'The saved battle casualties do not match the committed dial, support and effective forces.',
         );
       }
@@ -9129,14 +9139,16 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
         g.expansions.includes(faction(p.faction).expansion))) &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.strongholdCards &&
     !g.techTokens && !g.discoveryEnabled && !g.discoveries &&
-    !g.discoveryStash && !g.greatMaker && !g.ecazTreachery;
+    !g.discoveryStash && !g.greatMaker &&
+    (g.ecazTreachery === undefined || g.ecazTreachery === true);
 }
 /** Fresh native Advanced Occupy profile; public starts and Basic are unchanged. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
   requireRule(ecazOccupyCompositionSupported(state),
-    'Advanced Occupy requires native Ecaz, classic/Moritani/Ixian/Tleilaxu/CHOAM factions and their distinct selected family decks, without Richese, optional modules or the independent Ecaz Treachery variant.');
+    'Advanced Occupy requires native Ecaz, classic/Moritani/Ixian/Tleilaxu/CHOAM factions and their distinct selected family decks, without Richese or optional overlays.');
   requireFreshBaseRuntime(state);
-  const g = initializeFactionExpansionsGameForAudit(state);
+  requireFreshFactionInventory(state);
+  const g = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, state.ecazTreachery === true);
   g.ecazOccupyPreview = true;
   return g;
 }
@@ -11929,30 +11941,33 @@ function recruitsModeSupported(g: Game) {
     !g.discoveryEnabled
   );
 }
-function ecazAllyAtBattle(g: Game, side: Player, territoryId: string) {
-  const ally = g.players.find(player => player.id === side.ally && player.ally === side.id);
-  return !!ally && (side.faction === 'ecaz' || ally.faction === 'ecaz') &&
-    Object.entries(ally.forces).some(([key, amount]) => amount > 0 && splitLocation(key).territory === territoryId);
-}
 
+function combinedCardBattleBlock(g: Game): string | null {
+  const battle = g.battle;
+  if (!battle || battle.ecazOccupy) return null;
+  const ecaz = byFaction(g, 'ecaz');
+  const ally = ecaz && g.players.find(player => player.id === ecaz.ally && player.ally === ecaz.id);
+  if (ecaz && ally &&
+    (battle.attacker === ecaz.id || battle.defender === ecaz.id ||
+      battle.attacker === ally.id || battle.defender === ally.id) &&
+    fighterCount(ecaz, battle.territory) > 0 && fighterCount(ally, battle.territory) > 0)
+    return 'Combined card armies require the supported Advanced Occupy battle profile.';
+  return null;
+}
 function reinforcementsModeSupported(g: Game) {
   const pairedEcaz = g.expansions.length === 1 && g.expansions[0] === 'ecaz';
   return !!g.ecazTreachery && recruitsModeSupported(g) && !g.sandtrout &&
-    (g.expansions.length === 0 || pairedEcaz) &&
-    g.players.every(player => {
-      const expansion = faction(player.faction).expansion;
-      return expansion === 'base' || (pairedEcaz && expansion === 'ecaz');
-    });
+    ((g.ecazOccupyPreview === true && ecazOccupyCompositionSupported(g)) ||
+      ((g.expansions.length === 0 || pairedEcaz) && g.players.every(player => {
+        const expansion = faction(player.faction).expansion;
+        return expansion === 'base' || (pairedEcaz && expansion === 'ecaz');
+      })));
 }
 function currentReinforcementsCost(g: Game, p: Player) {
   requireRule(reinforcementsModeSupported(g),
-    'Reinforcements requires the standalone Ecaz card variant with classic or Ecaz/Moritani factions.');
-  if (g.battle) {
-    const other = getPlayer(g, g.battle.attacker === p.id ? g.battle.defender : g.battle.attacker);
-    requireRule(!ecazAllyAtBattle(g, p, g.battle.territory) &&
-      !ecazAllyAtBattle(g, other, g.battle.territory),
-      'Reinforcements with combined Occupy armies needs its additional-card source ruling.');
-  }
+    'Reinforcements requires the independent Ecaz card variant in a supported native faction composition.');
+  const combinedBlock = combinedCardBattleBlock(g);
+  requireRule(!combinedBlock, combinedBlock ?? 'This combined card battle is unavailable.');
   try {
     return quoteReinforcements(p.reserves - (p.elites?.reserves ?? 0), p.elites?.reserves ?? 0);
   } catch (error) {
@@ -11966,14 +11981,14 @@ function reinforcementsPreview(g: Game, p: Player) {
     !p.hand.some(isReinforcements)) return null;
   const normal = Math.min(3, Math.max(0, p.reserves - (p.elites?.reserves ?? 0)));
   const elite = Math.min(3 - normal, Math.max(0, p.elites?.reserves ?? 0));
+  const combinedBlock = combinedCardBattleBlock(g);
   let blocked: string | null = null;
   if (!reinforcementsModeSupported(g))
-    blocked = 'Reinforcements requires the standalone Ecaz card variant with classic or Ecaz/Moritani factions.';
+    blocked = 'Reinforcements requires the independent Ecaz card variant in a supported native faction composition.';
   else if (g.status !== 'playing' || g.phase !== 6 || battle.revealed || battle.plans[p.id])
     blocked = 'Choose Reinforcements before sealing your Battle Plan.';
-  else if (ecazAllyAtBattle(g, p, battle.territory) ||
-    ecazAllyAtBattle(g, getPlayer(g, battle.attacker === p.id ? battle.defender : battle.attacker), battle.territory))
-    blocked = 'Reinforcements with combined Occupy armies needs its additional-card source ruling.';
+  else if (combinedBlock)
+    blocked = combinedBlock;
   else if (normal + elite < 3)
     blocked = 'Reinforcements needs three physical forces in your reserves.';
   return { blocked, normal, elite };
@@ -18085,6 +18100,7 @@ function inspectedPlanMatches(p: Player, field: PlanField, fixed: unknown, candi
 function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
   const b = g.battle!;
   const other = getPlayer(g, b.attacker === p.id ? b.defender : b.attacker);
+  const combinedBlock = combinedCardBattleBlock(g);
   let blocked: string | null = null;
   if (!g.ecazTreachery) blocked = 'Enable the independent Ecaz Treachery Cards variant before using Harass & Withdraw.';
   else if (g.status !== 'playing' || g.phase !== 6 || ![b.attacker, b.defender].includes(p.id))
@@ -18093,14 +18109,22 @@ function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
     blocked = 'Harass & Withdraw with other optional modules, including Homeworlds, is still being implemented.';
   else if (g.players.some(player => player.faction === 'richese') || g.richeseCache !== undefined || g.richeseRemoved !== undefined)
     blocked = 'Harass & Withdraw with the Richese card family awaits the Stone Burner timing ruling.';
-  else if (ecazAllyAtBattle(g, p, b.territory) || ecazAllyAtBattle(g, other, b.territory))
-    blocked = 'Harass & Withdraw with combined Occupy armies needs its additional-card source ruling.';
+  else if (combinedBlock)
+    blocked = combinedBlock;
   else if (p.noField?.deployed?.location.territory === b.territory)
     blocked = 'Reveal your No-Field before using Harass & Withdraw.';
   const locations = Object.fromEntries(Object.entries(p.forces)
     .filter(([key, amount]) => amount > 0 && splitLocation(key).territory === b.territory)
     .map(([key, amount]) => [key, { normal: amount - (p.elites?.forces[key] ?? 0), elite: p.elites?.forces[key] ?? 0 }]));
-  return { blocked, forces: combatForces(g, p, b.territory, other), locations };
+  const profile = ecazBattleProfile(g);
+  const forces = profile?.lead === p.id
+    ? p.id === profile.ecaz ? profile.ecazForces : profile.allyForces
+    : combatForces(g, p, b.territory, profile?.lead === other.id ? getPlayer(g, profile.forceOwner) : other);
+  return { blocked, forces, locations,
+    ...(profile?.lead === p.id ? { occupy: {
+      cardUser: p.id, ecaz: profile.ecaz, ally: profile.ally, canceled: profile.canceled,
+      fixedEcazDial: profile.fixedEcazDial, variableForces: profile.forces,
+    } } : {}) };
 }
 function currentHarassWithdrawQuote(g: Game, p: Player, plan: Pick<Plan, 'dial' | 'support'>) {
   try {
@@ -20320,6 +20344,8 @@ function advanceBattleOutcome(g: Game) {
 function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   const b = g.battle!;
   requireRule(!!b.diplomatRetreat === !!retreat, 'Resolve the pending Diplomat retreat before battle losses.');
+  // Quote before any withdrawal: fixedLosses retains the original ceil(E/2)
+  // physical commitment, never one recalculated from Ecaz's diminished board.
   const quote = currentBattleResolutionQuote(g);
   const a = getPlayer(g, b.attacker),
     d = getPlayer(g, b.defender),

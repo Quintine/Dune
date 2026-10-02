@@ -11,10 +11,22 @@ export type HarassWithdrawForces = Readonly<{ normal: number; elite: number }>;
 export type HarassWithdrawSelection = Readonly<
   Record<string, HarassWithdrawForces>
 >;
+/** Owner-labelled facts from the selected Occupy plan, not a merged army.
+ * fixedEcazDial is the original mandatory commitment, captured before return. */
+export type HarassWithdrawOccupyContext = Readonly<{
+  cardUser: string;
+  ecaz: string;
+  ally: string;
+  canceled: boolean;
+  fixedEcazDial: number;
+  variableForces: CombatForces;
+}>;
 export type HarassWithdrawContext = Readonly<{
   blocked: string | null;
   forces: CombatForces;
   locations: Readonly<Record<string, HarassWithdrawForces>>;
+  /** Absent for ordinary battles and for the Occupy opponent. */
+  occupy?: HarassWithdrawOccupyContext;
 }>;
 export type HarassWithdrawPreview = HarassWithdrawContext &
   Readonly<{
@@ -90,6 +102,88 @@ function validateContext(context: HarassWithdrawContext) {
   );
   return locations;
 }
+function sameForcePool(a: CombatForces, b: CombatForces): boolean {
+  return (
+    a.normal === b.normal &&
+    a.elite === b.elite &&
+    a.eliteStrength === b.eliteStrength &&
+    a.freeSupport === b.freeSupport &&
+    !!a.normalFixedHalf === !!b.normalFixedHalf &&
+    !!a.normalFreeSupport === !!b.normalFreeSupport &&
+    !!a.eliteFreeSupport === !!b.eliteFreeSupport &&
+    (a.temporaryElite ?? 0) === (b.temporaryElite ?? 0)
+  );
+}
+function ownCommitments(
+  context: HarassWithdrawContext,
+  dial: number,
+  support: number,
+): HarassWithdrawForces[] {
+  const occupy = context.occupy;
+  if (occupy === undefined) return casualtyOptions(context.forces, dial, support);
+  requireHarass(
+    record(occupy) &&
+      [occupy.cardUser, occupy.ecaz, occupy.ally].every(
+        (id) => typeof id === 'string' && id.trim().length > 0,
+      ) &&
+      occupy.ecaz !== occupy.ally &&
+      [occupy.ecaz, occupy.ally].includes(occupy.cardUser) &&
+      typeof occupy.canceled === 'boolean' &&
+      Number.isSafeInteger(occupy.fixedEcazDial) &&
+      validCombatForces(occupy.variableForces),
+    'Harass & Withdraw needs the selected Occupy card user and native force owners.',
+  );
+  if (occupy.canceled) {
+    requireHarass(
+      occupy.fixedEcazDial === 0 &&
+        sameForcePool(context.forces, occupy.variableForces),
+      'Canceled Occupy uses only the card user’s normal battle pool, with no fixed contribution.',
+    );
+    return casualtyOptions(context.forces, dial, support);
+  }
+  requireHarass(
+    occupy.fixedEcazDial > 0 && occupy.fixedEcazDial <= 10,
+    'Active Occupy needs its original mandatory Ecaz commitment.',
+  );
+  const variable = casualtyOptions(
+    occupy.variableForces,
+    dial - occupy.fixedEcazDial,
+    support,
+  );
+  requireHarass(
+    variable.length > 0,
+    'The total Occupy dial and spice must match the ally’s native variable commitment.',
+  );
+  if (occupy.cardUser === occupy.ally) {
+    requireHarass(
+      sameForcePool(context.forces, occupy.variableForces),
+      'Harass & Withdraw returns only the ally card user’s own variable army.',
+    );
+    return variable;
+  }
+  requireHarass(
+    context.forces.elite === 0 &&
+      !context.forces.normalFixedHalf &&
+      context.forces.normal >= occupy.fixedEcazDial,
+    'Harass & Withdraw needs the Ecaz card user’s own ordinary mandatory fighters.',
+  );
+  // The selected lead's spice supports the ally, never these fully supported
+  // free Ecaz counters. Do not recompute ceil(E/2) after a physical return.
+  return [{ normal: occupy.fixedEcazDial, elite: 0 }];
+}
+function committedForces(
+  context: HarassWithdrawContext,
+  committed: HarassWithdrawForces,
+): CombatForces {
+  const occupy = context.occupy;
+  return {
+    ...context.forces,
+    ...committed,
+    ...(occupy && !occupy.canceled && occupy.cardUser === occupy.ecaz
+      ? { freeSupport: true }
+      : {}),
+  };
+}
 /** Distinct physical dial commitments; equivalent support allocations are not extra choices. */
 export function harassWithdrawCommitments(
   context: HarassWithdrawContext,
@@ -97,7 +191,7 @@ export function harassWithdrawCommitments(
   support: number,
 ): { normal: number; elite: number }[] {
   validateContext(context);
-  const choices = casualtyOptions(context.forces, dial, support);
+  const choices = ownCommitments(context, dial, support);
   requireHarass(
     choices.length > 0,
     'Dial and spice must match a legal physical force commitment.',
@@ -217,7 +311,7 @@ export function quoteHarassWithdraw(
     );
     return {
       returned,
-      remaining: { ...forces, ...committed },
+      remaining: committedForces(context, committed),
       locations: Object.fromEntries(
         entries
           .filter(([, group]) => group.normal || group.elite)
@@ -263,7 +357,7 @@ export function quoteHarassWithdraw(
   }
   return {
     returned,
-    remaining: { ...forces, normal: committed.normal, elite: committed.elite },
+    remaining: committedForces(context, committed),
     locations: Object.fromEntries(allocation),
   };
 }

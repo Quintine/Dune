@@ -111,6 +111,13 @@ donor income and whole Ecaz co-side FaceDance return with original lead rewards.
 Exact selected E3/E1/E2 decks retain33/47/35 cards; Richese mixed planning,
 other overlays and full Ecaz acceptance remain open. See the
 [source comparison and exact cutover](ECAZ_OCCUPY_RULES.md#authorized-advanced-cutover--2-october-2026).
+Explicit `--ecaz-treachery` selects the independent three-card variant before
+the original setup, adding3 to each family deck. The printed own-only Harass
+FAQ composes with original fixed Ecaz commitment or selected ally variable
+forces; returned reserves are outside later loss/FaceDance. Reinforcements
+keeps its existing provisional own-reserve cost/+2-score policy rather than
+claiming a new outcome ruling. Basic/unprofiled co-side card use remains guarded.
+See [combined-card boundaries](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026).
 Comprehensive recovery/privacy/custody review follows all rules rather than
 becoming another prototype assurance wave.
 

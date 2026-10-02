@@ -25,6 +25,24 @@ authorization and deployment/publication safeguards remain intact. Use the
 [bounded context index](DEVELOPMENT.md#context-index) and
 [feedback/proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule).
 
+**Independent cards + Advanced Occupy — bounded Development Verified:** fresh
+explicit CLI `--ecaz-treachery` adds all three physical cards36/50/38/50.
+Own Ecaz Harass returns only its floor count while original mandatory ceil
+stays fixed/free; allied/opposing/canceled typed pools stay owner-labelled.
+Reinforcements retains provisional own3-reserve/+2-score accounting.
+Native/pure67, affected284/284 and27 actual programs/four policy seals pass.
+Current46 complete games:26,619 accepted/no rejects/696JSON continuations,
+source unchanged and9 combined lead choices. Full counters correct earlier
+compact-summary misreading: prior five/23-game batches had1/3 choices.
+Original CLI/human390px **T8T3ZYWH v12** and **WW54BZGM v12** prove own
+withdrawal/fixed loss and decisive +2/own reserve cost through actual Collection.
+Current mandatory-discard owner/selected-commitment blockers are fixed; Basic/
+unprofiled co-side guard stays. Final scoped reviews find no defect.
+See [combined-card source and proof](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026).
+Final types/lint, canonical guide10/10, build,390px bounded guide and actual
+explicit-variant CLI help pass; ten changed-region local links/anchors are valid.
+Owned drivers/tabs/workers are removed/closed without resetting games.
+
 **Native E1/E2 Ecaz Occupy — bounded Development Verified:** existing profile
 now composes Ixians/Tleilaxu/CHOAM with Ecaz/classic/optional Moritani2..6 and
 distinct selected E3/E1/E2 ordinary33/47/35 decks. Physical Ix owns native
@@ -33,8 +51,8 @@ support shares exclude free fixed Ecaz strength. External FaceDance returns
 both winning armies with combined maximum; own-winning Tleilaxu is excluded.
 Native34, affected191/191, types/lint and19 actual program cases pass;23
 unstaged games complete13,004 accepted/no rejects/339JSON continuations,
-source unchanged. They contain no combined lead choice; native cases and
-human390px **5B4FW8D3 v12** and **UVGT4DLN v10** prove that rule path.
+source unchanged. Full `results.json` records three combined lead choices;
+human390px **5B4FW8D3 v12** and **UVGT4DLN v10** exercise explicit rule edges.
 Two scoped rule reviews find no defect. Richese mixed planning, optional
 overlays, full factions/public starts remain gated; assurance follows all rules.
 See [native force-owner integration](ECAZ_OCCUPY_RULES.md#native-e1e2-force-owner-integration--2-october-2026).
@@ -64,8 +82,8 @@ Moritani2..6 Advanced, base33/no overlays; full Ecaz and public starts remain ga
 See [the cutover and proof](ECAZ_OCCUPY_RULES.md#authorized-advanced-cutover--2-october-2026).
 Final coherent affected rule/guide **173/173** passes. Current-source five
 unstaged2..6 games complete:2,123 accepted actions, zero rejections and54JSON
-continuations, `sourceUnchanged:true`. They contain no combined lead choice;
-the seven native cases and human rooms prove that path, not these game samples.
+continuations, `sourceUnchanged:true`. Full `results.json` records one
+combined lead choice; the seven native cases and human rooms cover exact branches.
 Final types/lint, corrected guide10/10, build and390px Partial/Development
 Verified guide pass; six changed-region local links/anchors are valid.
 Code **e112df858a5a3d27992d22478c5c0d4f3dfac642** is pushed.

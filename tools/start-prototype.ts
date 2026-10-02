@@ -15,16 +15,19 @@ async function main() {
       room: { type: 'string' },
       version: { type: 'string' },
       out: { type: 'string' },
+      'ecaz-treachery': { type: 'boolean' },
       help: { type: 'boolean' },
     },
   });
   if (values.help) {
     console.log(
       'Usage: node --import tsx tools/start-prototype.ts --profile ix|discovery|leader-skills|banker-income|factions|stronghold-factions|nexus|moritani-assassinate|ecaz-treachery|ecaz-occupy|semuta|kull|richese-betrayal|nexus-kull|guild-betrayal|ixian-replacement|ixian-betrayal|harkonnen-betrayal --db PATH --room CODE --version NUMBER --out /private/new-directory\nStarts only a fresh ready lobby for the selected development prototype. Stronghold-factions opts a fresh ready 2–6-seat Advanced roster with at least one selected native Ixians, Tleilaxu, CHOAM or Richese faction and otherwise classic opponents into Stronghold Cards alone. Select one or both distinct Ix/CHOAM decks; each native faction requires its family deck. The selected decks supply 47 Ix or combined, or 35 CHOAM canonical physical Treachery Cards, with a separate ten-card Richese cache when Richese plays. Native setup choices, HMS placement, Face Dancers, Richese cache and CHOAM Auditor remain genuine; custody starts unowned and is claimed by actual END Mentat. It does not redeal, reset or retrofit a saved game. Banker-income opts a fresh 2–6-seat classic Basic/Advanced roster with base 33-card Treachery and all fourteen Leader Skills alone into automatic deferred normal-band income and native Mentat collection; already-earned spice stays with its original faction under this explicit local policy. Nexus enables the existing private Nexus setup. Moritani-assassinate explicitly opts into the bounded Advanced assassination preview. Semuta opts a fresh Richese roster into bounded clean-discard reactions; an included Ix deck supplies physical Thumper without opening public starts. Kull opts a fresh eligible CHOAM roster into the user-selected Karama interception preview. Richese-betrayal opts a fresh paired CHOAM/Richese Nexus roster into cache-purchase veto and sale-bank diversion. Nexus-kull opts a fresh CHOAM-plus-classic roster with CHOAM/Ix decks and Nexus into source-aware printed or any-Treachery-fueled Cunning Kull. Guild-betrayal opts a fresh classic roster with native Guild into full funded shipment-payment replacement; it preserves an explicitly enabled Homeworld module for Junction routes. Ixian-replacement opts a fresh classic Basic/Advanced roster with base Treachery and Nexus only into the optional exact normal-auction purchased-card replacement; native Ixians, Harkonnen buyers and special purchase sources remain unsupported. Ixian-betrayal opts a fresh 2–6-seat Basic/Advanced native Ixian plus classic/Tleilaxu roster with Ix 47-card Treachery and Nexus only into prevention of one actual native Bidding draw or Advanced Technology exchange, after native Karama counters. Harkonnen-betrayal opts a fresh 2–6-seat classic Basic/Advanced roster with native Harkonnen, base 33-card Treachery and Nexus alone into cancellation of an actual declared personal or allied Harkonnen Traitor Card after native counters, physical retirement and shuffle, and one private actual Mentat replacement. Modules, overlays, public starts and old-game retrofits remain excluded. Nexus is not dealt initially: a qualifying alliance requires at least three seats; two unallied receivers require four. Backs up all rooms first, preserves sessions and existing games, and rejects stale versions. Normal game-start and publication gates remain closed.',
-      '\nEcaz-occupy (--profile ecaz-occupy) opts only a fresh ready 2–6-seat Advanced lobby with native Ecaz and classic/Ixian/Tleilaxu/CHOAM opponents (optional native Moritani). Distinct selected decks include ecaz and each native ix/choam family; ordinary33/47/35 cards retain real original E3/E1/E2 offers/HMS/Auditor/Face Dancers. No Richese mixed planning, independent Ecaz three-card variant, modules or overlays.',
+      '\nEcaz-occupy (--profile ecaz-occupy) opts only a fresh ready 2–6-seat Advanced lobby with native Ecaz and classic/Ixian/Tleilaxu/CHOAM opponents (optional native Moritani). Distinct selected decks include ecaz and each native ix/choam family; ordinary33/47/35 cards retain real original E3/E1/E2 offers/HMS/Auditor/Face Dancers. Explicit --ecaz-treachery independently adds the three physical variant cards, making36/50/38. No Richese mixed planning, modules or overlays.',
     );
     return;
   }
+  if (values['ecaz-treachery'] && values.profile !== 'ecaz-occupy')
+    throw new Error('--ecaz-treachery requires --profile ecaz-occupy.');
   if (
     !isPrototypeProfile(values.profile) ||
     !values.db ||
@@ -47,7 +50,8 @@ async function main() {
     throw new Error('The requested lobby version is absent from the backup.');
   const db = new DatabaseSync(values.db);
   try {
-    const result = startPrototypeRoom(db, values.room, version, values.profile);
+    const result = startPrototypeRoom(db, values.room, version, values.profile,
+      { ecazTreachery: values['ecaz-treachery'] });
     writeFileSync(
       resolve(values.out, 'prototype.json'),
       JSON.stringify(
@@ -55,6 +59,7 @@ async function main() {
           format: 1,
           startedAt: new Date().toISOString(),
           profile: values.profile,
+          ecazTreachery: !!values['ecaz-treachery'],
           source,
           beforeVersion: version,
           ...result,

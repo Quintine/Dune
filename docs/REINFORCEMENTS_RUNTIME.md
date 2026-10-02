@@ -3,12 +3,18 @@
 The separate Ecaz Treachery Cards variant shuffles one physical Reinforcements
 card independently of choosing the Ecaz faction. Its bounded handler supports
 Basic or Advanced classic-faction tables and clean Ecaz/Moritani expansion
-tables without other optional modules or co-present Ecaz allied armies. The
+tables without other optional modules. The fresh opted-in Advanced Occupy
+profile additionally composes co-present armies and native Ixian/Tleilaxu/CHOAM
+families; Basic/unprofiled co-side use stays guarded. The
 holder may commit it in either Battle Plan card slot. It is neither a weapon
 nor a defense: Prescience of a category receives **None**, while the physical
 slot stays occupied and hidden until reveal. A named-card inspection still
 fixes the exact card. Harass & Withdraw and Stone Burner cannot share this
 plan; Homeworld and other optional-module combinations remain gated.
+
+The [combined-army follow-up](ECAZ_OCCUPY_RULES.md#independent-cards-with-combined-armies--2-october-2026)
+retains own-holder reserve cost and selected lead card/payment ownership.
+It does not revise the provisional outcome accounting below.
 
 The holder must have three own reserve counters when sealing the plan. The owner-only battle offer displays availability and the exact provisional cost. The current prototype deterministically takes ordinary reserves first, then elite reserves if needed, transferring precisely three physical counters to the corresponding Tanks subpools when the battle settles. There is no spice payment or on-board arrival. The +2 changes the calculated normal-outcome battle score, **not** the committed physical dial, support payment, casualty count or leader survival. The card is discarded after any revealed result, including an own, opposing or mutual Traitor call and Lasgun/Shield explosion. The cost is likewise paid on each of those outcomes. A successful Traitor call still supersedes the normal score; the modifier never overrides it. Public history records the transfer; the sealed card and owner reserve mix stay private until the reveal. JSON-restored decisions and transactional room updates cannot charge the same cost twice.
 

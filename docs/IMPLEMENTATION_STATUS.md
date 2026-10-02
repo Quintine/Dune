@@ -1,5 +1,58 @@
 # Dune implementation status
 
+## 2 October 2026 — independent Treachery cards with Advanced Occupy
+
+Existing `ecaz-occupy` now accepts explicit fresh CLI `--ecaz-treachery`,
+independently including all three original cards:36 Ecaz-only,50 Ix,38 CHOAM,
+50 both. Native original setup/owned cards are retained; no public/default start
+or started-game retrofit. Basic/unprofiled co-side card battles stay guarded.
+
+Three bounded owners shared owner-labelled Harass total-dial normalization,
+actual native reveal/outcome integration and original-source cases. Own Ecaz
+Harass returns its floor count while original mandatory ceil remains fixed/free;
+selected ally uses typed total-minus-fixed commitment. Opponent/canceled
+ordinary pools stay separate. Returned reserves remain outside later losses/
+explosion/FaceDance. Reinforcements preserves its existing provisional own
+three-reserve normal-first cost and +2 score-only policy on every revealed
+outcome, not a new publisher interpretation or ally reserve charge.
+
+Exact first own-Ecaz Harass/Reinforcements cases and types/lint passed.
+Full-case/native natural play then exposed the mandatory-discard callback's
+logical-winner/physical-owner mismatch. Explicit fullyCommitted Harass facts
+also preserve exact selected physical losses instead of unconstrained
+re-enumeration. Both captured original games now complete after the fix.
+Independent review additionally restored the outside-profile co-side guard;
+native before/after reproduction proved Basic accepted before and rejects now.
+Current regression checks exercise both blockers; old wording/log/default pins
+were removed instead of re-pinned. Native counter precedence in the advisor
+fixture was corrected without forcing a reaction or suppressing its window.
+
+Pure/native67, coherent affected284/284, types/lint and27 actual native
+program cases pass, including all four real card policy seals. Current46
+ordinary/variant2..6 games complete26,619 accepted/no rejects/696JSON
+continuations, source unchanged, with nine actual combined lead choices.
+Earlier “no combined lead choice” statements were projection-reading errors:
+compact `report.json` omits counters; immutable full `results.json` records
+one in the five-game and three in the23-game checkpoint. Those reports remain
+unchanged; current guidance corrects the claims.
+
+Original CLI/human390px **T8T3ZYWH v12** used Ecaz Harass total5/support2:
+Ecaz2 returned to reserves, original fixed3 went to Tanks, Guild2 remained.
+**WW54BZGM v12** used equal real leaders and total5/support2 Reinforcements;
+its +2 won, three own reserves were spent, Ecaz2/Guild2 remained and six total
+Ecaz counters entered Tanks. Both reached original Collection.
+
+Final `check:quick` types/lint, canonical guide10/10, build and390px
+Partial / Development: Verified guide pass. Ten changed-region local links/
+anchors and actual variant CLI help are valid. Both fresh36-card CLI starts
+were exercised. Owned three native/diagnostic drivers are removed; three
+managed human/guide tabs and both isolated workers are closed.
+
+Final source/native scoped reviews find no defect. No new recovery/privacy/
+custody/seat/getter/wholeDB/HTTP/full6,500-suite assurance campaign; direct
+current playability blockers were fixed. Full rules/factions/combined modes,
+later comprehensive review/assurance and deployment remain unfinished.
+
 ## 2 October 2026 — native Ixian, Tleilaxu and CHOAM Ecaz Occupy integration
 
 The existing Advanced `ecaz-occupy` profile now admits source-selected native
@@ -25,9 +78,9 @@ traitor CHOAM payments, and zero/full whole-co-side replacement.
 
 Twenty-three unstaged classic/paired/mixed2..6 games complete with13,004
 accepted actions/no rejection and339JSON continuations, `sourceUnchanged:true`.
-Exact family metadata33/47/35 matches selected decks. No sample reaches a
-combined lead choice; native programs/meaningful cases and human rooms establish
-that rare rule path, while game samples prove profile continuation.
+Exact family metadata33/47/35 matches selected decks. Full `results.json`
+records three actual combined lead choices; native programs/meaningful cases
+and human rooms additionally establish the exact typed/replacement boundaries.
 
 Original CLI/human390px **5B4FW8D3 v12** let actual Ixians exchange two
 surviving Suboids for two lost Cyborgs after Ecaz formed the plan. Ecaz retained
@@ -86,9 +139,9 @@ with exactly1 Ecaz support debit. Both resumed original Collection.
 
 Final coherent affected rule/guide **173/173** passes. The current-rule five
 unstaged2..6 games complete with2,123 accepted actions/no rejections and54JSON
-continuations, `sourceUnchanged:true`, ordinary33/E3 report metadata. No sample
-uses a combined lead choice; those games prove profile continuation, while
-named actual native cases and human rooms prove the rare combined battle path.
+continuations, `sourceUnchanged:true`, ordinary33/E3 report metadata. Full
+`results.json` records one actual combined lead choice; named native cases
+and human rooms additionally establish the exact arithmetic and counter paths.
 The earlier pre-storm-fix report is preserved as different-source evidence.
 
 Final `check:quick` types/lint, corrected canonical guide10/10 and build pass.

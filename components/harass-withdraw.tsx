@@ -51,6 +51,14 @@ export function HarassWithdrawGuide({
       className="notice space-y-2"
     >
       <h4>Harass &amp; Withdraw</h4>
+      {preview.occupy && <p>
+        Occupy returns only the card user’s own undialed fighters, not their
+        ally’s army. {preview.occupy.cardUser === preview.occupy.ecaz && !preview.occupy.canceled
+          ? `The original ${preview.occupy.fixedEcazDial} fixed Ecaz fighters remain committed at free full strength; allied variable support is separate.`
+          : !preview.occupy.canceled
+            ? `Your physical commitment uses the variable dial after subtracting ${preview.occupy.fixedEcazDial} fixed Ecaz strength.`
+            : 'With Occupy canceled, use only your selected lead’s own native army.'}
+      </p>}
       {preview.blocked || state.blocked ? (
         <output className="block">{preview.blocked ?? state.blocked}</output>
       ) : state.returned ? (

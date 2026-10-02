@@ -176,6 +176,8 @@ export type BattleResolutionQuote = {
   sandmaster?: string;
   casualties: {
     owner?: string;
+    /** The returned Harass complement fixes all remaining physical fighters. */
+    fullyCommitted?: true;
     forces: CombatForces;
     dial: number;
     support: number;
@@ -419,8 +421,23 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         'The Harass & Withdraw plan has an invalid weapon and defense pair.');
       requireQuote(side.harassWithdraw && !input.homeworld && !hasStone,
         'Harass & Withdraw needs its supported physical context; Homeworld and Stone Burner combinations remain unfinished.');
-      requireQuote(JSON.stringify(side.harassWithdraw.forces) === JSON.stringify(side.forces),
+      const profile = input.ecazOccupy?.lead === side.id ? input.ecazOccupy : undefined;
+      const normalization = side.harassWithdraw.occupy;
+      if (profile) {
+        const ownForces = side.id === profile.ecaz ? profile.ecazForces : profile.allyForces;
+        requireQuote(normalization &&
+          normalization.cardUser === side.id && normalization.ecaz === profile.ecaz &&
+          normalization.ally === profile.ally && normalization.canceled === profile.canceled &&
+          normalization.fixedEcazDial === profile.fixedEcazDial &&
+          JSON.stringify(normalization.variableForces) === JSON.stringify(profile.forces) &&
+          JSON.stringify(side.forces) === JSON.stringify(profile.forces) &&
+          JSON.stringify(side.harassWithdraw.forces) === JSON.stringify(ownForces),
+        'The Occupy withdrawal context must identify the card user’s own counters and the original mandatory Ecaz commitment.');
+      } else {
+        requireQuote(!normalization &&
+          JSON.stringify(side.harassWithdraw.forces) === JSON.stringify(side.forces),
         'The withdrawal context must match the current battle force roles.');
+      }
       withdrawals.set(side.id, quoteHarassWithdraw(side.harassWithdraw, side.plan.dial, side.plan.support, side.harassSelection));
     }
   }
@@ -724,6 +741,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
         dial: winner.plan.dial,
         support: winner.plan.support,
         options,
+        ...(withdrawal ? { fullyCommitted: true as const } : {}),
       };
     } else {
       requireQuote(
@@ -746,7 +764,18 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
       ...destroyedArmies.filter(owner => owner !== profile.ecaz && owner !== profile.ally),
       ...occupyOutcome.destroyedArmies,
     ])];
-    if (winner?.id === profile.lead) casualties = occupyOutcome.casualties;
+    if (winner?.id === profile.lead) {
+      casualties = occupyOutcome.casualties;
+      // The outcome already holds the original fixed Ecaz commitment. Only a
+      // withdrawal by the variable army's owner can constrain its typed losses.
+      const withdrawal = harassWithdraw.find(entry => entry.player === casualties?.owner);
+      if (casualties && withdrawal) {
+        const options = casualties.options.filter(option =>
+          option.normal === withdrawal.remaining.normal && option.elite === withdrawal.remaining.elite);
+        requireQuote(options.length > 0, 'The Occupy winner lost its selected physical Harass commitment.');
+        casualties = { ...casualties, forces: withdrawal.remaining, options, fullyCommitted: true };
+      }
+    }
   }
   const strongholdIncome =
     result === 'mutualTraitors'

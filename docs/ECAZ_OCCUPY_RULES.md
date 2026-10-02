@@ -72,9 +72,9 @@ legal plans for either lead, active or canceled.
 
 The coherent affected rule/guide batch passes **173/173**. Current-source
 five unstaged2..6 games complete with2,123 accepted actions, no rejections
-and54JSON continuations, `sourceUnchanged:true`. No game sample triggers
-a combined lead choice: profile continuation is observed there, while the
-native cases and human rooms establish the actual combined rule path.
+and54JSON continuations, `sourceUnchanged:true`. Full `results.json` records
+one actual combined lead choice. Native cases and human rooms provide the
+explicit arithmetic, casualty and counter-path evidence.
 
 
 ### Native E1/E2 force-owner integration — 2 October 2026
@@ -100,9 +100,9 @@ Native34 rule cases, coherent affected191/191, types/lint and19 actual program
 cases pass, including Ix substitution decline/prevention and zero/full whole
 co-side replacement. Twenty-three unstaged classic/paired/mixed2..6 games
 complete with13,004 accepted actions/no rejection and339JSON continuations,
-`sourceUnchanged:true`. They contain no combined lead choice; those samples
-prove profile continuation, not the rare rule transitions covered by native
-cases and human controls. Two scoped rule reviews find no defect.
+`sourceUnchanged:true`. Full `results.json` records three actual combined
+lead choices. Native cases and human controls additionally exercise the typed/
+replacement boundaries. Two scoped rule reviews find no defect.
 
 Original CLI/human390px **5B4FW8D3 v12** let physical Ixians sacrifice two
 Suboids to recover two Cyborgs after an Ecaz-led plan; Ecaz retained its Shield
@@ -111,6 +111,55 @@ and the real Collection opened with Ecaz2/Ix4 including two Cyborgs.
 returned Ecaz1/Guild2 to their own reserves, placed three Tleilaxu forces and
 retained the original Ecaz Slip Tip and bounty. Both continue the original
 phase rather than manufacturing another battle or card owner.
+
+### Independent cards with combined armies — 2 October 2026
+
+The existing fresh `ecaz-occupy` CLI accepts explicit `--ecaz-treachery`,
+independently selecting all three physical cards before the original setup:
+36 Ecaz-only,50 Ix,38 CHOAM,50 both. No default/public start or saved retrofit.
+
+The printed E3p16 Harass FAQ returns only the card user's own undialed
+forces. An active Ecaz card user returns `floor(original E/2)` and retains
+the original `ceil(E/2)` free/full physical commitment; no ally support is
+charged to those fixed fighters. A selected ally uses its typed variable
+commitment after subtracting fixed strength. Canceled Occupy uses the lead's
+ordinary own pool. Opposing successful Traitor cancels returns; withdrawn
+reserves are outside later loss, explosion and FaceDance replacement.
+This is a composition of the own-only FAQ and authorized Advanced arithmetic,
+not a newly retrieved detailed Ecaz casualty FAQ.
+
+Reinforcements uses the card user's own three normal-first reserve counters
+and existing +2 score-only modifier, not ally reserves, extra physical dial
+losses or support. Existing provisional all-revealed-outcome cost/disposal
+is unchanged and remains explicitly not a publisher ruling. Both slots and
+opposing holders work; own same-plan Harass/Reinforcements and Stone/optional
+module guards stay. Basic/unprofiled co-side card battles remain rejected.
+
+Native/pure67 cases, relevant284-case batch and27 actual native-program
+cases pass, including all four legal policies. Two natural captured games
+exposed an existing mandatory-discard callback comparing casualties to the
+logical winner rather than physical owner. Correct owner and explicit fully
+committed Harass pool constraints now preserve the selected loss allocation.
+Both original captures continued to completion; no database reset or new
+recovery-audit campaign. Obsolete wording/log/default pins were deleted.
+Final scoped source/native reviews find no defect.
+
+Current-source46 ordinary/variant2..6 games complete26,619 accepted actions/
+no rejection/696JSON continuations, source unchanged. Full `results.json`
+records9 actual combined lead choices; compact `report.json` lacks counters.
+Original CLI/human390px **T8T3ZYWH v12** sealed Ecaz Harass total5/support2,
+returned Ecaz2 reserves, sent original fixed3 to Tanks and left Guild2.
+**WW54BZGM v12** sealed total5/support2 with Reinforcements; its +2 won the
+real equal-leader comparison, paid three Ecaz reserves, left Ecaz2/Guild2 and
+sent six total Ecaz counters to Tanks. Both reach original Collection.
+
+### Encounter evidence correction — 2 October 2026
+
+Earlier “no combined lead choice” statements were incorrect: the compact
+`report.json` deliberately omits `used` counters. The immutable full
+`results.json` records1 choice in the five-game checkpoint and3 in the
+23-game checkpoint. Neither historical report is rewritten. The current
+46-game original/variant batch records9 actual combined lead choices.
 
 ## Provenance and attribution correction
 

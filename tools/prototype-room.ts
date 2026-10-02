@@ -44,6 +44,10 @@ export const PROTOTYPE_PROFILES = [
   'harkonnen-betrayal',
 ] as const;
 export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
+export type PrototypeOptions = {
+  /** Explicit independent card variant for the fresh combined-army profile. */
+  ecazTreachery?: boolean;
+};
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
   return PROTOTYPE_PROFILES.some((profile) => profile === value);
 }
@@ -62,6 +66,7 @@ export function startPrototypeRoom(
   code: string,
   expectedVersion: number,
   profile: PrototypeProfile,
+  options: PrototypeOptions = {},
 ) {
   if (
     !/^[A-Z0-9]{8}$/.test(code) ||
@@ -81,6 +86,9 @@ export function startPrototypeRoom(
     throw new Error('The room identity is inconsistent.');
   if (!isPrototypeProfile(profile))
     throw new Error('Unknown prototype profile.');
+  if (options.ecazTreachery && profile !== 'ecaz-occupy')
+    throw new Error('--ecaz-treachery requires the ecaz-occupy profile.');
+  if (options.ecazTreachery) initial.ecazTreachery = true;
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)

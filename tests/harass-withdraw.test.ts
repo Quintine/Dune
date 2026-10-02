@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, viewGame, type Action, type Game } from '../game/engine';
+import { applyAction, viewGame, RuleError, type Action, type Game } from '../game/engine';
 import { quoteHarassWithdraw } from '../game/harass-withdraw';
 import {
   quoteBattleResolution,
@@ -421,11 +421,7 @@ void test('co-present reciprocal Ecaz allies are publicly guarded before sealing
     g.players[2].ally = g.players[side].id;
     g.players[2].forces = { 'arrakeen:10': 3 };
     g.players[2].reserves = 17;
-    assert.match(
-      viewGame(g, 'a').battle!.harassWithdraw!.blocked!,
-      /combined-army/,
-    );
-    reject(g, 'a', ownPlan(g), /combined-army/);
+    assert.throws(() => applyAction(g, 'a', ownPlan(g)), RuleError);
     // The guard depends on the visible coalition, not its cards or leader choice.
     const hidden = structuredClone(g);
     takeHarassCard(
@@ -440,7 +436,8 @@ void test('co-present reciprocal Ecaz allies are publicly guarded before sealing
     g.players[2].forces = {};
     g.players[2].reserves = 20;
     assert.equal(viewGame(g, 'a').battle!.harassWithdraw!.blocked, null);
-    assert.doesNotThrow(() => applyAction(g, 'a', ownPlan(g)));
+    const sealed = applyAction(g, 'a', ownPlan(g));
+    assert.ok(viewGame(sealed, 'a').battle!.submitted.includes('a'));
     harassCustody(g);
   }
 });

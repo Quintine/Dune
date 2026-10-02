@@ -245,8 +245,12 @@ with the existing `--db`, `--room`, `--version` and private `--out` arguments
 on a fresh ready2..6-seat Advanced lobby: native Ecaz with classic, Ixian,
 Tleilaxu and CHOAM opponents, optional native Moritani. Select distinct `ecaz`
 and each native `ix`/`choam` family: ordinary33/47/35 cards retain original
-offers/HMS/Auditor/Face Dancers. Richese mixed planning, three-card variant
-and other overlays remain unfinished. The selected lead owns leaders/cards/
+offers/HMS/Auditor/Face Dancers. Explicit `--ecaz-treachery` independently adds
+all three physical cards before setup, making36/50/38. Harass returns only
+card-user undialed forces while preserving original fixed commitment;
+Reinforcements costs three own reserves under its documented provisional policy.
+Richese mixed planning and other overlays remain unfinished.
+The selected lead owns leaders/cards/
 payment; total dial includes mandatory free `ceil(E/2)` plus native allied
 strength. Karama switches to the selected lead's own army, other ally zero.
 Whole participating armies must be clear and connected; BG's voluntary fighter

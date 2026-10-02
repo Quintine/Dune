@@ -6,12 +6,15 @@ import { TERRITORIES, location as locationKey, splitLocation } from '../game/boa
 import { finishToMovement, advanceToNextStorm } from './fixture-advanced-source';
 import type { FactionId } from '../game/catalog';
 import { treacheryDeck } from '../game/cards';
+import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { traitorDeck } from '../game/traitors';
 import { withoutEcazLoyalty } from '../game/ecaz-loyalty';
 
 export type EcazOccupyFixtureFaction = Exclude<FactionId, 'richese'>;
 export type EcazOccupyFixtureOptions = {
   initial?: Game;
+  /** Independent physical three-card variant, chosen before the original deal. */
+  ecazTreachery?: boolean;
   ecazForces?: number;
   allyFaction?: EcazOccupyFixtureFaction;
   order?: 'ecaz-first' | 'ally-first' | 'opponent-first';
@@ -105,7 +108,7 @@ export function finishEcazOccupySetup(state: Game, faceDancerFaction?: EcazOccup
 export function settleEcazOccupyArrival(state: Game, accompany = false): Game {
   let game = state;
   for (let attempt = 0; attempt < 50 && (game.response || game.decision); attempt++) {
-    if (accompany && game.decision?.kind === 'advisor')
+    if (accompany && !game.response && game.decision?.kind === 'advisor')
       game = applyAction(game, game.decision.player,
         { type: 'decision', accept: true, accompany: true, amount: 1 });
     else game = step(game);
@@ -178,14 +181,17 @@ export function createEcazOccupySetup(options: EcazOccupyFixtureOptions = {}): G
     if (options.expansions) assert.deepEqual(setup.expansions, options.expansions);
     assert.ok(setup.expansions.includes('ecaz') && new Set(setup.expansions).size === setup.expansions.length);
     assert.equal(setup.turn, 1, 'Captured Occupy input is never a started-game retrofit.');
-    assert.ok(!setup.ecazTreachery && !setup.homeworlds && !setup.nexusCards &&
+    if (options.ecazTreachery !== undefined)
+      assert.equal(setup.ecazTreachery === true, options.ecazTreachery);
+    assert.ok(!setup.homeworlds && !setup.nexusCards &&
       !setup.leaderSkills && !setup.strongholdCards && !setup.techTokens &&
       !setup.discoveryEnabled && !setup.discoveries && !setup.discoveryStash &&
       !setup.greatMaker && !setup.moritaniAssassinatePreview,
-    'Captured Occupy inputs admit the explicit ordinary Advanced profile only.');
+    'Captured Occupy inputs admit only the selected original Advanced family and independent card variant.');
     assert.deepEqual([...setup.deck, ...setup.discard, ...(setup.ixSetupCards ?? []),
       ...setup.players.flatMap(p => p.hand)].map(card => card.id).sort(),
-    treacheryDeck(setup.expansions).map(card => card.id).sort(),
+    [...treacheryDeck(setup.expansions), ...(setup.ecazTreachery ? ecazTreacheryCards() : [])]
+      .map(card => card.id).sort(),
     'The original captured deal must retain every selected physical card exactly once.');
   } else {
     const roster: EcazOccupyFixtureFaction[] = options.roster ?? ['ecaz', allyFaction, opponentFaction];
@@ -206,6 +212,9 @@ export function createEcazOccupySetup(options: EcazOccupyFixtureOptions = {}): G
       if (viewGame(setup, desired[i]).playerPositions[desired[i]] !== i + firstCircle)
         setup = applyAction(setup, desired[i], { type: 'seatPosition', position: i + firstCircle });
     for (const player of setup.players) setup = applyAction(setup, player.id, { type: 'ready' });
+    // Label the independent variant in this fresh audit configuration only,
+    // immediately before its one original setup/deal; never retrofit a capture.
+    if (options.ecazTreachery) setup.ecazTreachery = true;
     setup = initializeEcazOccupyGameForAudit(setup);
   }
   assert.ok(setup.players.some(p => p.faction === 'ecaz') &&

@@ -45,6 +45,7 @@ type Scenario = {
   rules: Rules;
   expansions: string[];
   roster: FactionId[];
+  ecazTreachery?: boolean;
 };
 
 const SCENARIOS: readonly Scenario[] = [
@@ -157,8 +158,8 @@ const ECAZ_TREACHERY_SCENARIOS: readonly Scenario[] = EXPANSION_ROSTER_SCENARIOS
   .map(scenario => ({
     ...scenario, profile: 'ecaz-treachery', ordinal: scenario.ordinal + 58,
   }));
-/** Ordinary Advanced Ecaz Occupy, without the independent three-card variant. */
-const ECAZ_OCCUPY_SCENARIOS: readonly Scenario[] = [
+/** Advanced Occupy samples retain explicit independent card-variant selection. */
+const ECAZ_OCCUPY_BASE_SCENARIOS: readonly Scenario[] = [
   ...[2, 3, 4, 5, 6].map((players): Scenario => ({
     ordinal: 169 + players - 2, profile: 'ecaz-occupy', rules: 'advanced',
     expansions: ['ecaz'],
@@ -174,6 +175,12 @@ const ECAZ_OCCUPY_SCENARIOS: readonly Scenario[] = [
     ordinal: 189 + players - 4, profile: 'ecaz-occupy', rules: 'advanced',
     expansions: ['ecaz', 'ix', 'choam'],
     roster: (['ecaz', 'ixians', 'tleilaxu', 'choam', 'guild', 'fremen'] as FactionId[]).slice(0, players),
+  })),
+];
+const ECAZ_OCCUPY_SCENARIOS: readonly Scenario[] = [
+  ...ECAZ_OCCUPY_BASE_SCENARIOS,
+  ...ECAZ_OCCUPY_BASE_SCENARIOS.map((scenario, index): Scenario => ({
+    ...scenario, ordinal: 192 + index, ecazTreachery: true,
   })),
 ];
 const PAIRED_NEXUS_SCENARIOS: readonly Scenario[] = EXPANSION_ROSTER_SCENARIOS
@@ -314,7 +321,7 @@ function usage() {
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
     'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; combined-nexus and combined-homeworld-nexus add five/six-seat Basic/Advanced all-expansion samples. Base, Homeworld, Nexus, Homeworld-Nexus, expansion roster, paired expansion Nexus, Ecaz card variant, Advanced Moritani assassination and skill profiles select their documented rosters. Stronghold-factions is Advanced only: Ixians + CHOAM, native Ixians + Tleilaxu, or native CHOAM + Richese with classic opponents, two through six seats; mixed four-native rosters also run at four through six seats. Selected Ix/CHOAM decks determine the canonical 47/35 Treachery Cards; Richese has a separate ten-card cache and all samples have six separate Stronghold Cards without other modules. Scenario names identify their native roster. --players requires a supported profile. Output must be a new private directory outside the checkout.' +
-    '\nEcaz-occupy is Advanced only: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. No Richese mixed planning, independent three-card variant or optional overlays.'
+    '\nEcaz-occupy is Advanced only: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. Explicit independent three-card samples additionally use36/50/38. No Richese mixed planning or other optional overlays.'
   );
 }
 
@@ -352,7 +359,8 @@ function scenarioName(scenario: Scenario) {
   }
   if (scenario.profile === 'ecaz-occupy') {
     const native = scenario.roster.filter(faction => ['ixians', 'tleilaxu', 'choam'].includes(faction));
-    if (native.length) return `${scenario.profile}-${native.join('-')}-${scenario.roster.length}-${scenario.rules}`;
+    if (native.length || scenario.ecazTreachery)
+      return `${scenario.profile}${scenario.ecazTreachery ? '-treachery' : ''}${native.length ? '-' + native.join('-') : ''}-${scenario.roster.length}-${scenario.rules}`;
   }
   return scenario.profile === 'base' || scenario.profile === 'homeworld' || scenario.profile === 'nexus' || scenario.profile === 'homeworld-nexus' || scenario.profile === 'combined-nexus' || scenario.profile === 'combined-homeworld-nexus' ||
     scenario.profile === 'choam-roster' || scenario.profile === 'ecaz-roster' || scenario.profile === 'ecaz-treachery' || scenario.profile === 'ecaz-occupy' || scenario.profile === 'moritani-assassinate' || scenario.profile === 'ix-roster' || scenario.profile === 'choam-nexus' || scenario.profile === 'ecaz-nexus' || scenario.profile === 'ix-nexus' || skillProfile(scenario.profile)
@@ -407,6 +415,7 @@ function freshGame(scenario: Scenario) {
     player.bot = DIFFICULTIES[index % DIFFICULTIES.length];
     player.ready = true;
   }
+  if (scenario.ecazTreachery) game.ecazTreachery = true;
   if (scenario.profile === 'homeworld' || scenario.profile === 'homeworld-nexus' || scenario.profile === 'combined-homeworld-nexus')
     game.homeworlds = { custody: null };
   if (scenario.profile === 'nexus' || scenario.profile === 'homeworld-nexus' || scenario.profile === 'choam-nexus' || scenario.profile === 'ecaz-nexus' || scenario.profile === 'ix-nexus' || scenario.profile === 'combined-nexus' || scenario.profile === 'combined-homeworld-nexus')
@@ -481,7 +490,7 @@ function resumedGame(path: string) {
       (candidate.profile === 'nexus' || candidate.profile === 'homeworld-nexus' || candidate.profile === 'choam-nexus' || candidate.profile === 'ecaz-nexus' || candidate.profile === 'ix-nexus' || candidate.profile === 'combined-nexus' || candidate.profile === 'combined-homeworld-nexus') === !!game.nexusCards &&
       skillProfile(candidate.profile) === !!game.leaderSkills &&
       (candidate.profile === 'stronghold-factions') === !!game.strongholdCards &&
-      (candidate.profile === 'ecaz-treachery') === !!game.ecazTreachery &&
+      (candidate.profile === 'ecaz-treachery' || candidate.ecazTreachery === true) === !!game.ecazTreachery &&
       (candidate.profile === 'moritani-assassinate') === !!game.moritaniAssassinatePreview &&
       (candidate.profile === 'ecaz-occupy') === !!game.ecazOccupyPreview &&
       (candidate.profile === 'moritani-assassinate') === !!game.moritaniAssassinate &&
@@ -829,9 +838,11 @@ async function main() {
         families: selected.filter(scenario => scenario.profile === 'ecaz-occupy').map(scenario => ({
           roster: scenario.roster,
           expansions: scenario.expansions,
-          treacheryCards: scenario.expansions.includes('ix') ? 47 : scenario.expansions.includes('choam') ? 35 : 33,
+          treacheryCards: (scenario.expansions.includes('ix') ? 47 : scenario.expansions.includes('choam') ? 35 : 33) +
+            (scenario.ecazTreachery ? 3 : 0),
+          ecazTreachery: !!scenario.ecazTreachery,
         })),
-        scope: 'Advanced native Ecaz/classic/Ixian/Tleilaxu/CHOAM paired or mixed families, two through six seats. Selected E3/E1/E2 ordinary decks only; no Richese mixed planning, independent Ecaz three-card variant or optional overlays. Authorized revised Advanced ceil contribution/floor survivors; not a designer erratum or Basic ruling.',
+        scope: 'Advanced native Ecaz/classic/Ixian/Tleilaxu/CHOAM paired or mixed families, two through six seats. Selected E3/E1/E2 decks and explicit independent three-card variant samples; no Richese mixed planning or other optional overlays. Authorized revised Advanced ceil contribution/floor survivors; not a designer erratum or Basic ruling.',
       },
     } : {}),
     options: {
