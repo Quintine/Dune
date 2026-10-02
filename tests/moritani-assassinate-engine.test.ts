@@ -4,6 +4,7 @@ import {applyAction,viewGame,initializeMoritaniAssassinateGameForAudit,createGam
 import {DIFFICULTIES} from '../game/bot-profiles';
 import {moritaniAssassinateSignature} from '../game/moritani-assassinate';
 import {assassinationGame,stageAssassinationBattle,prepareAssassinationBattle,resolveAssassinationBattle,assassinationChoice,assassinationToMentat,assassinationPhysical,assassinationRejects,assassinationActions} from './moritani-assassinate-fixture';
+import {advanceToNextStorm,finishToMovement} from './fixture-advanced-source';
 
 void test('a real lost battle reveals one different opposing traitor, kills its native disc once and replaces the physical card at Mentat',()=>{
   const staged=stageAssassinationBattle(assassinationGame()),inventory=assassinationPhysical(staged);
@@ -96,17 +97,15 @@ void test('a normal Moritani traitor reveal forfeits assassination and cannot cr
 });
 
 void test('a sourced normal-reveal forfeiture persists across turns and denies a later genuine loss',()=>{
-  const first=assassinationToMentat(resolveAssassinationBattle(stageAssassinationBattle(assassinationGame(['m','g','e']),'guild-0'),{normalCall:true}));
+  const first=finishToMovement(advanceToNextStorm(assassinationToMentat(resolveAssassinationBattle(stageAssassinationBattle(assassinationGame(['m','g','e']),'guild-0'),{normalCall:true}))));
   assert.equal(first.moritaniAssassinate!.normalTraitorCall,true);assert.equal(first.moritaniAssassinate!.opportunities.length,0);
-  assert.match(viewGame(first,'m').moritaniAssassinate!.blocked!,/rest of this game/);
-  first.turn++;
+  assert.equal(first.turn,2);
   first.players=[first.players[0],first.players[2],first.players[1]];
   const second=resolveAssassinationBattle(stageAssassinationBattle(first));
   assert.equal(second.lastBattleContext!.result,'normal');assert.notEqual(second.lastBattleContext!.winner,'m');
   assert.equal(second.moritaniAssassinate!.normalTraitorCall,true);
   assert.equal(second.moritaniAssassinate!.opportunities.length,0);
   assert.notEqual(second.decision?.kind,'moritaniAssassinate');
-  assert.match(viewGame(second,'m').moritaniAssassinate!.blocked!,/rest of this game/);
 });
 
 void test('saved assassination receipts and cleanup obligations fail closed after corruption',()=>{

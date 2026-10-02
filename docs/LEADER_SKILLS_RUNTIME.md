@@ -19,6 +19,16 @@ and two preserved six-seat CLI/human-phone rooms pass; local HTTP remains
 49/55 with six upstream503 failures. Full-module/deployed acceptance stays open; see the
 [existing Banker normal-band contract](SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026).
 
+**2 October native Mentat checkpoint:** explicit fresh
+`--profile leader-skills --mentat-question` connects the existing private
+normal-band question to supported Basic Ixian/Tleilaxu/CHOAM/Moritani starts.
+Canonical exact/default weapon roles, target-owned fallback, posture and native
+battle continuation use the existing controls and legal policies. Ordinary
+activation still awaits the uniform-response UX decision; empty hands and
+Advanced native/combined-module skills remain guarded. See
+[native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
+
+
 
 ## Connected boundary
 

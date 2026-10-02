@@ -25,6 +25,24 @@ authorization and deployment/publication safeguards remain intact. Use the
 [bounded context index](DEVELOPMENT.md#context-index) and
 [feedback/proof schedule](DEVELOPMENT.md#feedback-and-proof-schedule).
 
+**Native Mentat preview — bounded integration:** explicit fresh
+`--profile leader-skills --mentat-question` connects the existing private
+question to supported Basic Ixian/Tleilaxu/CHOAM/Moritani skill starts.
+Exact/default weapon roles, compulsory held-card or fallback disclosure,
+posture and native battle continuation reuse the existing controls and policies.
+Five new behavior cases and twelve actual runtime scenarios pass; the affected
+inquiry/lifetime rule batch passes45/45. Uniform-response UX, empty hands,
+Advanced native skills and other modules remain pending; public/default starts
+are unchanged. See
+[native scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
+Final types/lint, build and guide/inspector12/12 pass; eighteen changed-region
+local links/anchors are valid. Genuine flagged CLI room **BGK6YQCK v6** reaches
+native Ixian setup. Human390px **8HTTTZMA v9** asks for Weirding Way, answers
+privately, inspects the observation and conceals the native Mentat. Fresh
+**6ZR8HPWD v6** verifies Reinforcements' own inspector/topic and battle-slot
+hand explanation without changing its provisional outcome cost.
+
+
 **Authorized Advanced Moritani forfeiture:** the supplied PDF physical35 resolves
 the old duration question: a normal own-Traitor-Card reveal forfeits Assassinate
 Leaders for the rest of the game, across turns and opponents. The persisted

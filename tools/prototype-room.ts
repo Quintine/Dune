@@ -47,6 +47,8 @@ export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
 export type PrototypeOptions = {
   /** Explicit independent card variant for the fresh combined-army profile. */
   ecazTreachery?: boolean;
+  /** Private uniform-question preview; ordinary skill starts stay unchanged. */
+  mentatQuestion?: boolean;
 };
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
   return PROTOTYPE_PROFILES.some((profile) => profile === value);
@@ -88,7 +90,10 @@ export function startPrototypeRoom(
     throw new Error('Unknown prototype profile.');
   if (options.ecazTreachery && profile !== 'ecaz-occupy')
     throw new Error('--ecaz-treachery requires the ecaz-occupy profile.');
+  if (options.mentatQuestion && profile !== 'leader-skills')
+    throw new Error('--mentat-question requires the leader-skills profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
+  if (options.mentatQuestion) initial.mentatQuestionPreview = true;
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)

@@ -190,14 +190,8 @@ void test('already-dead targets remain revealable for no death or spice, while p
 void test('the sourced normal-reveal forfeiture and already normally revealed cards stay explicit private guards', () => {
   const context = fixture();
   context.state.normalTraitorCall = true;
-  assert.match(
-    moritaniAssassinateChoices(context).blocked!,
-    /forfeited Assassinate Leaders for the rest of this game/,
-  );
-  assert.throws(
-    () => quoteMoritaniAssassinate(context, 'atreides-1'),
-    /forfeited Assassinate Leaders for the rest of this game/,
-  );
+  assert.deepEqual(moritaniAssassinateChoices(context).cards, []);
+  assert.throws(() => quoteMoritaniAssassinate(context, 'atreides-1'));
   context.state.normalTraitorCall = false;
   context.normallyRevealed = ['atreides-1'];
   const choices = moritaniAssassinateChoices(context);
@@ -205,16 +199,9 @@ void test('the sourced normal-reveal forfeiture and already normally revealed ca
     choices.cards.map((c) => c.card),
     ['atreides-2'],
   );
-  assert.match(choices.unavailable[0].reason, /normally revealed/);
-  assert.throws(
-    () => quoteMoritaniAssassinate(context, 'atreides-1'),
-    /eligible/,
-  );
+  assert.throws(() => quoteMoritaniAssassinate(context, 'atreides-1'));
   context.normallyRevealed = ['atreides-1', 'atreides-2'];
-  assert.match(
-    moritaniAssassinateChoices(context).blocked!,
-    /normally revealed/,
-  );
+  assert.deepEqual(moritaniAssassinateChoices(context).cards, []);
 });
 
 void test('missing, duplicated, altered or exceptional target custody cannot select another physical leader or invent bounty', () => {

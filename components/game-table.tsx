@@ -5300,7 +5300,7 @@ export function GameTable({
                       ? g.recruitsPreview?.play?.blocked ?? 'Use the Recruits panel during Revival to play this card.'
                       : ecaz.card.effect === 'harassWithdraw'
                         ? g.battle?.harassWithdraw?.blocked ?? 'Use either battle-card slot to play Harass & Withdraw.'
-                        : 'This card’s battle effect is still being implemented.'
+                        : g.battle?.reinforcements?.blocked ?? 'Use either battle-card slot to play Reinforcements.'
                     : null) ??
                   (richese?.card.effect === 'distrans'
                     ? 'Use the Distrans transfer panel above to choose a recipient and another card.'

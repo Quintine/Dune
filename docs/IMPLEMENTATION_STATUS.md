@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 2 October 2026 — native Mentat question integration
+
+The existing private preview composes with already-supported Basic
+Ixian/Tleilaxu/CHOAM/Moritani Leader Skill profiles. Fresh exact-version CLI
+`--profile leader-skills --mentat-question` preserves actual original native
+setup and all fourteen skills; no normal/public start or old-game retrofit.
+Exact/default weapon names use the existing canonical quote. Weirding Way is
+a weapon, Chemistry is not; an absent name requires the target's actual held
+fallback card. Inquiry and disclosure precede posture and faction powers;
+the shown card remains held rather than committed to a Battle Plan.
+
+Before the change, the Ixian regression failed because the engine skipped
+straight to posture. Five new behavioral regressions now pass, plus the
+affected inquiry/lifetime batch45/45. Twelve actual program scenarios pass:
+eight native exact/fallback battles reach Collection, and all four legal
+policies finish Ixian naming/disclosure. Fixtures use genuine native setup,
+assignment and Storm, followed by labelled conserved battle positions; these
+are not complete naturally occurring games or AI calibration.
+
+The existing uniform-response UX and empty-hand questions remain open.
+Advanced native skills, extra modules and complete module acceptance stay
+gated. No new save/privacy/custody assurance campaign.
+
+Related corrections: the Moritani lifetime regression now advances actual
+native Mentat/Storm/phase actions rather than incrementing its turn field;
+wording pins are removed in favor of exclusion/rejection behavior. The earlier
+test's manual turn change was not genuine turn-advance evidence; its separate
+throwaway native transition was. Reinforcements inspection now identifies its
+working controls and own-reserve provisional cost and links its own rules topic
+instead of Recruits. These corrections do not change printed card effects.
+
+Final types/lint, build and guide/inspector12/12 pass; eighteen changed-region
+local links/anchors are valid. The actual new-option CLI starts **BGK6YQCK v6**
+into native Ixian setup. Human390px **8HTTTZMA v9** asks Weirding Way, finishes
+the target's private show step, reads and inspects its observation, then conceals
+the native Mentat and resumes the opponent's posture. Fresh **6ZR8HPWD v6**
+shows readable Reinforcements availability, its own rules topic and the
+correct instruction to use a battle-card slot, not “still being implemented.”
+No existing game is reset or retrofitted.
+Owned smoke/staging drivers are removed; all managed tabs and both isolated
+workers are closed. Private QA inputs and the original CLI backup remain outside
+the checkout; the supplied PDF is preserved and untracked.
+
 ## 2 October 2026 — authorized Advanced Moritani normal-reveal forfeiture
 
 The user-authorized supplied revision, physical p35 Assassinate Leaders D,

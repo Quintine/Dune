@@ -7,6 +7,40 @@ Ordinary Leader Skills starts do not activate it. Leader Skills and public mode
 acceptance remain partial. [Common skill rules](LEADER_SKILLS_RULES.md) govern assignment,
 capture, death and the right to conceal a skilled leader.
 
+## Native skill integration — 2 October 2026
+
+The existing private preview now composes with the already-supported **Basic
+Ixians, Tleilaxu, CHOAM and Moritani** skill profiles. It retains genuine native
+starting-card choices, Face Dancers, HMS placement, native rosters and all
+fourteen skills. Existing classic/CHOAM Basic/Advanced preview coverage remains;
+this does not admit Advanced Ixian/Tleilaxu/Moritani skills or extra modules.
+
+For a fresh ready local lobby, use the existing exact-version/private-backup
+entry with `--profile leader-skills --mentat-question`. Without the explicit
+option, ordinary skill starts still do not activate the question. The option
+cannot be applied through a player action or to a started game.
+
+The same canonical question and target-owned answer controls handle exact Ix
+weapon names, including **Weirding Way**, with its default weapon role.
+Chemistry remains a defense, not a nameable weapon. An absent weapon offers
+the target's actual held fallback cards. The question precedes posture and
+faction powers; the shown card stays held and is not committed to a plan.
+Both answers continue through native battle resolution and Collection.
+
+Five new behavioral regressions cover all four native families and all four
+legal policies. A separate runtime driver exercises eight native exact/fallback
+battles through Collection plus four policy inquiries: twelve cases pass.
+The earlier Ixian regression failed at the missing question before admission.
+The uniform-response UX and empty-hand questions below remain pending; no
+public module gate or old-game retrofit is enabled.
+
+Final local390px **8HTTTZMA v9** names Weirding Way, shows it privately,
+inspects the learned physical card and conceals the native Mentat. Genuine
+flagged CLI **BGK6YQCK v6** reaches original Ixian setup. The affected rule
+batch45/45, guide/inspector12/12, types/lint and build pass. These are bounded
+local evidence, not deployed acceptance or approval of the pending UX.
+
+
 ## Source contract
 
 The physical card permits asking the battle opponent about one **specific named
