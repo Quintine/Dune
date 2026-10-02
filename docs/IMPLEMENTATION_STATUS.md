@@ -27,6 +27,14 @@ Final `check:quick` types/lint, coherent assassination/guide38/38, build and
 links/anchors are valid. The throwaway driver is removed and the verifier
 worker is closed.
 
+Code **934b2ee4d7c5d41905bb339a62b64fb8824d2034** is pushed.
+[Mandatory CI36986837326](https://github.com/Quintine/Dune/actions/runs/36986837326)
+and job110773684551 completed/success for the exact source SHA. Existing
+isolated storage/HTTP verification preceded publication of
+`ghcr.io/quintine/dune:sha-934b2ee4d7c5d41905bb339a62b64fb8824d2034`.
+No deployment or new local assurance campaign; live **ab5c782** remains
+the last observed marker.
+
 ## 2 October 2026 — independent Treachery cards with Advanced Occupy
 
 Existing `ecaz-occupy` now accepts explicit fresh CLI `--ecaz-treachery`,

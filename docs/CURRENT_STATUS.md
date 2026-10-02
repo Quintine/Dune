@@ -37,6 +37,12 @@ the owner-facing forfeiture reason. See
 and [authorized source](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026).
 Final types/lint, coherent assassination/guide38/38, build and390px Prototyped
 guide pass; four changed-region local links/anchors are valid.
+Code **934b2ee4d7c5d41905bb339a62b64fb8824d2034** is pushed.
+[Exact mandatory CI36986837326](https://github.com/Quintine/Dune/actions/runs/36986837326),
+job110773684551, completed/success: existing isolated storage/HTTP verification
+passed before publication of
+`ghcr.io/quintine/dune:sha-934b2ee4d7c5d41905bb339a62b64fb8824d2034`.
+No new assurance campaign or deployment; live **ab5c782** remains last observed.
 
 **Independent cards + Advanced Occupy — bounded Development Verified:** fresh
 explicit CLI `--ecaz-treachery` adds all three physical cards36/50/38/50.
