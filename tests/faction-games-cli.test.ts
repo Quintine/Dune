@@ -264,6 +264,9 @@ void test('Moritani Skills samples preserve full Basic and Advanced native decks
   const cards = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
   assert.equal(new Set(cards).size, 14);
   assert.equal(cards.length, 14);
+  const advancedResumed = join(area, 'advanced-resumed');
+  assert.equal(run(advancedResumed, '--resume', join(advanced, 'failed-moritani-skills-2-advanced.json'), '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(advancedResumed, 'moritani-skills-2-advanced', 1249, true);
 });
 
 void test('Tleilaxu Skills samples preserve full Basic and Advanced native decks through saved continuation', (t) => {
@@ -289,6 +292,9 @@ void test('Tleilaxu Skills samples preserve full Basic and Advanced native decks
     const cards = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
     assert.equal(new Set(cards).size, 14);
     assert.equal(cards.length, 14);
+    const continued = join(area, `advanced-resumed-${name}`);
+    assert.equal(run(continued, '--resume', join(advanced, `failed-${name}.json`), '--seed', '1000', '--max-actions', '1').status, 1);
+    assertFailedEvidence(continued, name, seed, true);
   }
 });
 
@@ -315,6 +321,9 @@ void test('Ixian Skills samples preserve full Basic and Advanced native decks th
     const cards = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
     assert.equal(new Set(cards).size, 14);
     assert.equal(cards.length, 14);
+    const continued = join(area, `advanced-resumed-${name}`);
+    assert.equal(run(continued, '--resume', join(advanced, `failed-${name}.json`), '--seed', '1000', '--max-actions', '1').status, 1);
+    assertFailedEvidence(continued, name, seed, true);
   }
 });
 
@@ -340,6 +349,32 @@ void test('CHOAM Skills samples preserve full Basic and Advanced native decks th
   const cards = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
   assert.equal(new Set(cards).size, 14);
   assert.equal(cards.length, 14);
+  const advancedResumed = join(area, 'advanced-resumed');
+  assert.equal(run(advancedResumed, '--resume', join(advanced, 'failed-choam-skills-2-advanced.json'), '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(advancedResumed, 'choam-skills-2-advanced', 1225, true);
+});
+
+void test('native Richese skill captures retain all fourteen skills, ten cache cards and original Basic or Advanced CLI continuation', (t) => {
+  const area = temporary(t);
+  for (const rules of ['basic', 'advanced'] as const) {
+    const out = join(area, rules);
+    assert.equal(run(out, '--profile', 'richese-skills', '--rules', rules, '--players', '2', '--seed', '1000', '--max-actions', '1').status, 1);
+    const samples = rules === 'basic'
+      ? [['richese-skills-2-basic', 1254], ['richese-skills-richese-choam-2-basic', 1264]] as const
+      : [['richese-skills-2-advanced', 1259], ['richese-skills-richese-choam-2-advanced', 1269], ['richese-skills-ix-deck-2-advanced', 1278]] as const;
+    for (const [name, seed] of samples) {
+      assertFailedEvidence(out, name, seed, false, samples.length);
+      const snapshot = join(out, `failed-${name}.json`);
+      const state = json<{richeseCache:{id:string}[];leaderSkills:{deck:string[];offers:Record<string,{cards:string[]}>;assignments:{skill:string}[]}}>(snapshot);
+      const skills = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
+      assert.equal(new Set(skills).size, 14);
+      assert.equal(skills.length, 14);
+      assert.equal(new Set(state.richeseCache.map(c => c.id)).size, 10);
+      const continued = join(area, `resumed-${name}`);
+      assert.equal(run(continued, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
+      assertFailedEvidence(continued, name, seed, true);
+    }
+  }
 });
 void test('Homeworld and Nexus sample snapshots resume only their matching module and roster', (t) => {
   const area = temporary(t);

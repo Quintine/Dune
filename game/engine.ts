@@ -234,6 +234,7 @@ import {
 } from './choam-storm-quote';
 import {
   quoteAuctionContinuation,
+  auctionEmperorIncomeAmount,
   AuctionContinuationError,
   type AuctionContinuationOperation,
   type AuctionContinuationQuote,
@@ -1549,6 +1550,8 @@ export type Game = {
     seller: string | null;
     /** Original seller remains the source owner when the invoice is sent to bank. */
     recipient?: 'bank';
+    /** Actual Richese donor share of another buyer's lot; paid to Emperor or bank. */
+    richeseContribution?: number;
   } | null;
   pendingAmbassador?: {
     revivalEvent?: string;
@@ -7852,7 +7855,8 @@ function spiceBankerIncomeIntegrity(g: Game): void {
   for (const carrier of [g.currentAuctionSale, ...responses]) {
     const payment = carrier?.spiceBankerIncomePayment;
     if (!payment) {
-      requireRule(!carrier || ('winner' in carrier ? carrier.free || carrier.origin !== 'normal' :
+      requireRule(!carrier || ('winner' in carrier ? carrier.free ||
+        (carrier.recipient !== 'bank' && auctionEmperorIncomeAmount(carrier) === 0) :
         carrier.kind !== 'guildIncome' &&
           !(carrier.kind === 'revivalIncome' && carrier.recipient !== carrier.owner && (carrier.amount ?? 0) > 1)),
         'The original paid transaction lost its native bank invoice.');
@@ -7864,12 +7868,17 @@ function spiceBankerIncomeIntegrity(g: Game): void {
         Number.isSafeInteger(leg.amount) && leg.amount > 0 && ['bank', 'player'].includes(leg.recipient)) &&
       new Set(payment.legs.map(leg => leg.payer)).size === payment.legs.length,
     'The original paid bank transaction changed its event or contribution legs.');
-    if (carrier && 'winner' in carrier)
-      requireRule(payment.kind === 'auction' && !carrier.free && carrier.origin === 'normal' &&
-        payment.legs.reduce((sum, leg) => sum + leg.amount, 0) === carrier.amount &&
-        payment.legs.every(leg => leg.payer === carrier.winner || leg.payer === getPlayer(g, carrier.winner).ally),
-      'The deferred bank invoice no longer matches its original normal auction.');
-    else if (carrier?.kind === 'guildIncome')
+    if (carrier && 'winner' in carrier) {
+      const amount = carrier.recipient === 'bank' ? carrier.amount : auctionEmperorIncomeAmount(carrier);
+      const contributionOnly = carrier.origin !== 'normal' && carrier.seller !== carrier.winner && carrier.recipient !== 'bank';
+      requireRule(payment.kind === 'auction' && !carrier.free &&
+        payment.legs.reduce((sum, leg) => sum + leg.amount, 0) === amount &&
+        (contributionOnly
+          ? g.advanced && !!carrier.richeseContribution && payment.legs.length === 1 &&
+            payment.legs[0].payer === carrier.seller && payment.legs[0].amount === carrier.richeseContribution
+          : payment.legs.every(leg => leg.payer === carrier.winner || leg.payer === getPlayer(g, carrier.winner).ally)),
+      'The deferred bank invoice no longer matches its original auction payer legs.');
+    } else if (carrier?.kind === 'guildIncome')
       requireRule(payment.kind === 'shipment' &&
         payment.legs.filter(leg => leg.recipient === 'player').reduce((sum, leg) => sum + leg.amount, 0) === carrier.amount,
       'The deferred bank invoice no longer matches its original Guild income.');
@@ -10783,6 +10792,15 @@ function settleRicheseLot(g: Game) {
 function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{kind:'sold'}>, bank: boolean) {
   const lot = g.richeseAuction!, owner = getPlayer(g,lot.owner);
   const winner = getPlayer(g, quote.winner), card = quote.card;
+  const richeseContribution = g.advanced && winner.id !== owner.id && winner.ally === owner.id
+    ? quote.allyPayment : 0;
+  const bankAmount = bank || winner.id === owner.id ? quote.amount : richeseContribution;
+  const emperor = byFaction(g, 'emperor');
+  const incomePayment = g.spiceBankerIncomePreview && bankAmount > 0 ? bankerIncomePayment(g, 'auction',
+    bank || winner.id === owner.id
+      ? [{payer:winner.id,amount:quote.ownPayment,recipient:bank || !emperor ? 'bank' : 'player'},
+        ...(quote.allyPayment ? [{payer:winner.ally!,amount:quote.allyPayment,recipient:bank || !emperor ? 'bank' as const : 'player' as const}] : [])]
+      : [{payer:owner.id,amount:richeseContribution,recipient:emperor ? 'player' : 'bank'}]) : undefined;
   payWithAlly(g, winner, quote.amount, quote.allyPayment);
   g.richeseFunding = {};
   if (lot.source === 'cache')
@@ -10790,6 +10808,8 @@ function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{ki
   else owner.hand = owner.hand.filter((c) => c.id !== card.id);
   winner.hand.push(card);
   g.currentAuctionSale = {
+    ...(richeseContribution ? {richeseContribution} : {}),
+    ...(incomePayment ? {spiceBankerIncomePayment:incomePayment} : {}),
     winner: winner.id,
     amount: quote.amount,
     free: false,
@@ -10798,6 +10818,7 @@ function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{ki
     ...(bank ? {recipient:'bank' as const} : {}),
     ...stampAuctionBureaucrat(g,winner,quote.amount,quote.allyPayment,owner.id),
   };
+  if (bank || !emperor) awardBankerIncome(g, incomePayment);
   log(
     g,
     `${winner.name} bought ${lot.source === 'cache' ? card.name : 'the concealed Black Market card'} for ${quote.amount} spice. The funded bid was paid automatically.`,
@@ -15557,7 +15578,8 @@ function currentFactionPayment(g: Game) {
       'This Richese purchase income is no longer current.');
   }
   const gross = response.kind === 'emperorIncome'
-    ? response.source === 'ambassador' ? response.amount! : g.currentAuctionSale?.amount ?? g.auction?.bid
+    ? response.source === 'ambassador' ? response.amount! :
+      g.currentAuctionSale ? auctionEmperorIncomeAmount(g.currentAuctionSale) : g.auction?.bid
     : response.amount;
   requireRule(gross !== undefined, 'The faction payment is missing its original amount.');
   if (kind === 'shipment' &&
@@ -23460,7 +23482,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
   } else if (response.kind === 'emperorIncome') {
     if (!canceled) {
       const owner = getPlayer(g, response.owner);
-      const amount = g.currentAuctionSale?.amount ?? g.auction!.bid;
+      const amount = g.currentAuctionSale ? auctionEmperorIncomeAmount(g.currentAuctionSale) : g.auction!.bid;
       const payment = creditFactionPayment(g, owner.id, 'treachery', amount-(bureaucratDiversion ?? 0));
       log(
         g,
@@ -23862,6 +23884,20 @@ function leaderSkillNoFieldIntegrity(g: Game): boolean {
   const responses = savedNoFieldResponses(g);
   const decisions = homeworldSavedDecisions(g);
   const shipment = g.pendingShipment;
+  if (g.leaderSkills && shipment?.alliedNoField) {
+    requireRule(ordinaryLeaderSkillModeSupported(g) && !shipment.noField &&
+      shipment.smuggler === undefined && shipment.smugglerCompanion === undefined &&
+      shipment.noFieldSkillProof === undefined,
+      'Allied No-Field skill composition retains its original ordinary shipment only.');
+    const initial = responses.filter(r => r.kind === 'richeseNoField');
+    const guild = decisions.filter(d => d.kind === 'guildShipment');
+    requireRule(initial.length + guild.length === 1,
+      'The allied No-Field must retain its original cancellation or Guild continuation.');
+    for (const response of initial) requireRule(noFieldCancellationQuote(g, response)?.kind === 'allied',
+      'The allied No-Field lost its original owner, recipient or token declaration.');
+    for (const decision of guild) validateGuildShipmentDecision(g, decision);
+    return true;
+  }
   if (!(shipment?.smugglerCompanion !== undefined || shipment?.noFieldSkillProof !== undefined ||
     (g.leaderSkills && shipment?.noField) || responses.some(r => r.noFieldSkillProof !== undefined) ||
     decisions.some(d => 'noFieldSkillProof' in d))) return false;

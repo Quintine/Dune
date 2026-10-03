@@ -16,6 +16,36 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Native Richese Skills and contribution recipients — bounded Development Verified:**
+Basic/Advanced fresh native Richese retains its required CHOAM deck, separate
+ten-card cache, original setup and all fourteen skills. Canonical green
+Richese Specials can supply Planetologist strength without their native effect;
+marker-only force loss feeds actual capped Suk rescue. Ordinary allied
+declarations and own Smuggler companions retain their separate physical rules.
+Advanced Richese ally contributions now go to Emperor/bank, separately from
+buyer-to-Richese credit; Basic keeps its publisher receipt. Normal Banker
+uses only final bank legs and cannot spend deferred spice before native Mentat.
+Final affected rule/CLI union151/151, types/lint/build and eleven controlled programs pass.
+The genuine29-game batch is **not green**:28 finish11,788 accepted actions,
+303 JSON continuations and130 battles; six-seat Advanced seed20261267 stops
+after1,523 actions at the retained exhausted-cache count ruling guard.
+The captured state/report remain intact; selected two/three-seat follow-ups
+finish without rejection after native marker eligibility integration.
+Original CLI **FXK6Z8BW v6** retains setup. Human390px **358WLPYA v16**
+uses original admitted identities followed by a conserved zero-marker battle:
+Ein5/Residual Poison/+2 wins7–7, without its native leader-kill effect or any
+physical marker casualty. Original cleanup/refresh reaches Collection with
+reserves20/Tanks0. Human **E2K2U5ZW v26** uses real funded cache controls:
+buyer4/Richese4 buys one Ornithopter for8, Richese earns buyer4 and donor4 goes
+to bank. Guild Banker earns one unspendable front-shield spice, retains it
+through original Revival/movement/Collection, and collects once at Mentat
+(wallet6→7); refresh keeps the empty pile. The detailed guide is readable at
+390px (351px topic). See [native scope and evidence](LEADER_SKILLS_RUNTIME.md#native-richese-composition--4-october-2026)
+and [Advanced recipient authority](RICHESE_AUCTION_RULES.md#authorized-advanced-contribution-recipients--4-october-2026).
+Mixed own No-Field, exhausted-cache arithmetic, special-lot Technology,
+positive Black Market self-bidding and other existing rulings remain gated.
+No full assurance, calibration, public activation or deployed evidence.
+
 **Advanced Moritani Skills — bounded Development Verified:**
 all fourteen skills now compose with the original native/classic non-Harkonnen
 assassination preview, exact `ecaz` deck and five native assignment discs.

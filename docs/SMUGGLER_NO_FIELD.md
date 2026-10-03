@@ -4,6 +4,15 @@
 one owned Richese No-Field shipment with Leader Skills in the CHOAM & Richese
 development setup. Public expansion/module starts and publication remain gated.
 
+**4 October native continuation:** the
+[current Richese skill contract](LEADER_SKILLS_RUNTIME.md#native-richese-composition--4-october-2026)
+extends original own-marker eligibility to the supported Basic or Advanced
+native profiles with their distinct required CHOAM/Ix decks. A selected extra
+deck no longer rejects an otherwise legal own marker; force/price/reveal and
+companion arithmetic below are unchanged. Ordinary allied No-Field shipments
+retain their native owner/recipient/token cancellation and Guild stages, but
+do not receive an invented allied free companion. Optional overlays remain guarded.
+
 ## Source and physical contract
 
 The [publisher CHOAM & Richese rulebook](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf),
@@ -72,8 +81,8 @@ real force; refresh restored nineteen reserves. Voluntary reveal produced six
 real forces and fourteen reserves. Four spice, Crysknife and the Soo-Soo Sook
 traitor remained unchanged through the final refresh.
 
-Allied No-Field Smuggler composition, Homeworlds, Nexus, Discoveries, Stronghold
+Allied free-companion composition, Homeworlds, Nexus, Discoveries, Stronghold
 Cards, Tech Tokens and other combined modes remain outside this prototype.
-Smuggler battle collection still needs its recorded reveal/survival settlement.
-The existing [Leader Skills material questions](LEADER_SKILLS_RULES.md#material-boundaries-not-settled-by-the-sources)
+Unmodified Smuggler battle collection now has its separate native reveal/
+survival contract; the existing [Leader Skills material questions](LEADER_SKILLS_RULES.md#material-boundaries-not-settled-by-the-sources)
 remain pending.

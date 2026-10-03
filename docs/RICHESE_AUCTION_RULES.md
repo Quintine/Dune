@@ -12,6 +12,31 @@ Audit: 2026-09-06. This document covers the complete core bidding pipeline: the 
 
 Targeted searches did not yield a newer applicable publisher/designer ruling resolving the edge cases below. This is not a claim that none exists. Tournament rewrites and community compilations are not authority for these cases. Search-result dates do not date a printing.
 
+## Authorized Advanced contribution recipients — 4 October 2026
+
+The [authorized supplied Advanced source](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026),
+Richese Bidding, explicitly sends Richese's contribution to an ally's payment
+to Emperor or the Spice Bank. The private layout extraction records this at
+lines1463–1476. The publisher-authored R2 p5 instead says Richese collects other
+buyers' payment and pays Emperor/bank when buying itself, without the extra
+contributor clause. **This recipient cutover is Advanced only; Basic is unchanged.**
+
+An Advanced buyer paying4 and receiving4 funded Richese aid buys the original
+eight-spice cache/Black Market lot once. Richese receives only the buyer's4;
+Richese's own4 goes to Emperor, even when Emperor is the buyer, or to the Bank
+when Emperor is absent. The original scalar contribution binds the paid lot;
+later income settlement does not reconstruct current alliances or charge
+already-debited donor escrow again. Emperor cancellation sends only its4 to
+the Bank, not the unrelated buyer-to-Richese share, and does not replay credit
+or physical card transfer. The existing whole-bank recipient override remains.
+
+The separate native `banker-income` opt-in counts only actual bank-routed
+original payer legs. It never treats allowed Emperor income or ordinary seller
+credit as a bank payment, aggregates separate payers to four, or spends its
+new front-shield grant before actual Mentat. Original Bureaucrat split-funding,
+positive Black Market self-bidding, exhausted-cache counts and special-lot
+Ixian Technology remain their recorded boundaries.
+
 ## Printed rules, by checkpoint
 
 The source anchor is R2 pp.4–6,10–12: ten cache cards stay outside the hand; one revealed cache lot replaces a normal lot and is declared first or last before Ixian preparation. It uses Once Around or Silent. Other buyers pay Richese; Richese pays Emperor/bank. Discards enter normal discard. Ordinary Karama acquisition is barred. Once Around gives each other faction one ascending bid/pass in a chosen direction, then Richese's final opportunity. Silent reveals eligible bidders' simultaneous offers, including zero, with storm-order ties. A zero result permits cache keep/remove. Advanced Black Market offers one concealed hand card before Declaration, permits all three methods, allows Atreides inspection and unverified sales claims, pays Richese, and shrinks the normal pool only after a sale; no bid means retain. Direct-cache purchases cannot use Ixian allied replacement; Black Market purchases can, even for Richese-family cards. Harkonnen bonus applies to both. Juice of Sapho works in Once Around. Cancellation prevents cache auction at round start or Black Market sale. The special power buys a privately chosen cache card for three spice. [R2](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf)

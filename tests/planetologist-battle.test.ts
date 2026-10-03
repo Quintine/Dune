@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
-import { baseDeck, ixBattleCards, leaders, type Card } from '../game/cards';
+import { baseDeck, leaders, type Card } from '../game/cards';
+import { richeseCards } from '../game/richese-cards';
 import {
-  PLANETOLOGIST_BASE_SPECIALS,
   canUsePlanetologistBattleSpecial,
-  isPlanetologistBattleSpecialCard,
   type BattleLeaderSkill,
 } from '../game/leader-skill-combat';
 import {
@@ -44,40 +43,23 @@ const assignment = (
   captured,
 });
 
-void test('the alternate battle role is bound to the nine exact base green Specials', () => {
-  const eligible = baseDeck().filter(isPlanetologistBattleSpecialCard);
-  assert.deepEqual(
-    eligible.map((card) => card.id),
-    PLANETOLOGIST_BASE_SPECIALS.map((card) => card.id),
-  );
-  assert.deepEqual(
-    eligible.map((card) => card.name),
-    [
-      'Family Atomics',
-      'Weather Control',
-      'Hajr',
-      'Tleilaxu Ghola',
-      'Harvester',
-      'Karama',
-      'Karama',
-      'Truthtrance',
-      'Truthtrance',
-    ],
-  );
-  assert.equal(
-    baseDeck()
-      .filter((card) => card.kind === 'hero')
-      .some(isPlanetologistBattleSpecialCard),
-    false,
-  );
-  assert.equal(ixBattleCards().some(isPlanetologistBattleSpecialCard), false);
-  assert.equal(
-    isPlanetologistBattleSpecialCard({
-      ...special(),
-      id: 'forged-green-special',
-    }),
-    false,
-  );
+void test('Richese green identities cannot be forged or borrowed by weapon-special and defense components', () => {
+  const green = richeseCards().find(card => card.effect === 'ornithopter')!;
+  const eligible = (card: Card) => canUsePlanetologistBattleSpecial({
+    assignments: [assignment('leader')],
+    selectedLeader: 'leader',
+    card,
+  });
+  assert.equal(eligible(green), true);
+  for (const forged of [
+    { ...green, id: 'forged-green-special' },
+    { ...green, name: 'Stone Burner' },
+    { ...green, kind: 'projectile' as const },
+    { ...green, effect: 'stoneBurner' },
+  ]) assert.equal(eligible(forged), false);
+  for (const effect of ['stoneBurner', 'mirrorWeapon', 'portableSnooper'])
+    assert.equal(eligible(richeseCards().find(card => card.effect === effect)!), false);
+  assert.equal(eligible(baseDeck().find(card => card.kind === 'hero')!), false);
 });
 
 void test('only the actual concealed or captured assigned leader may use the physical substitute', () => {
@@ -195,7 +177,8 @@ void test('a surviving skilled disc gains two without activating the Special and
 
 void test('leader death suppresses the two-point band but never releases the revealed Special', () => {
   const input = battle();
-  const card = playPlanetologist(input, special('weather'));
+  const card = playPlanetologist(input, richeseCards().find(card => card.effect === 'residualPoison')!);
+  input.physicalCards = [...input.physicalCards, card];
   const poison = baseDeck().find((candidate) => candidate.kind === 'poison')!;
   input.defender.hand = [poison];
   input.defender.plan.weapon = poison.id;

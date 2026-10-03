@@ -1,20 +1,13 @@
 import type { Game, GameView } from './engine';
 import { quoteSmugglerShipment } from './smuggler-shipment';
+import { nativeExpansionLeaderSkillsProfile } from './leader-skill-profile';
 
 /** The No-Field remains the priced marker; this is one separate physical force. */
 export type SmugglerNoFieldCompanion = { leader: string; amount: 1 };
 
 export function smugglerNoFieldModeSupported(g: Game | GameView): boolean {
-  return (
-    g.expansions.length === 1 &&
-    g.expansions[0] === 'choam' &&
-    !g.homeworlds &&
-    !g.nexusCards &&
-    !g.discoveries &&
-    !('discoveryEnabled' in g && g.discoveryEnabled) &&
-    !g.strongholdCards &&
-    !g.techTokens
-  );
+  return nativeExpansionLeaderSkillsProfile(g) &&
+    g.players.some(player => player.faction === 'richese');
 }
 
 /** Public custody only: the hidden token value never affects this free companion. */

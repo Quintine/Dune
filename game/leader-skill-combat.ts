@@ -6,6 +6,7 @@ import {
   weaponTypes,
 } from './battle-cards';
 import type { LeaderSkillId } from './leader-skill-cards';
+import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
 
 export type DirectLeaderSkillId =
   | 'warmaster'
@@ -66,19 +67,26 @@ export const PLANETOLOGIST_IX_SPECIALS = [
   { id: 'ix-amal', name: 'Amal', effect: 'amal' },
 ] as const;
 
-const planetologistBaseSpecialById = new Map<
-  string,
-  (typeof PLANETOLOGIST_BASE_SPECIALS)[number] | (typeof PLANETOLOGIST_IX_SPECIALS)[number]
->(
-  [...PLANETOLOGIST_BASE_SPECIALS, ...PLANETOLOGIST_IX_SPECIALS].map((card) => [card.id, card]),
-);
+// Build once from physical faces. Richese's cache also transports its red/blue
+// components as `special`, so only printed green types join the role lookup.
+const planetologistSpecialById: Partial<Record<string, Pick<Card, 'name' | 'effect'>>> =
+  Object.create(null);
+for (const card of [...PLANETOLOGIST_BASE_SPECIALS, ...PLANETOLOGIST_IX_SPECIALS])
+  planetologistSpecialById[card.id] = card;
+for (const definition of RICHESE_CARD_DEFINITIONS) {
+  if (
+    definition.printedType === 'Special' ||
+    definition.printedType === 'Special - Movement'
+  )
+    planetologistSpecialById[definition.card.id] = definition.card;
+}
 
 /** Shared engine/UI/bot eligibility: exact printed green component, no native use. */
 export function isPlanetologistBattleSpecialCard(
   card: Pick<Card, 'id' | 'name' | 'kind' | 'effect'> | undefined,
 ): boolean {
   if (!card || card.kind !== 'special') return false;
-  const canonical = planetologistBaseSpecialById.get(card.id);
+  const canonical = planetologistSpecialById[card.id];
   return (
     canonical?.name === card.name &&
     canonical.effect === card.effect

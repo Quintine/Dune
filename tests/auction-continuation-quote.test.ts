@@ -19,6 +19,7 @@ import {
 } from '../game/engine';
 import {
   quoteAuctionContinuation,
+  auctionEmperorIncomeAmount,
   AuctionContinuationError,
   type AuctionContinuationInput,
   type AuctionContinuationOperation,
@@ -364,6 +365,67 @@ void test('sold Richese lots credit their seller exactly once before bonus, reta
       .after,
     'phase',
   );
+});
+
+void test('paid Richese donor receipts route only their bound share, including Emperor buyer and full donor funding', () => {
+  for (const contribution of [1, 4]) {
+    const g = richese('cache', 'e');
+    g.sale!.richeseContribution = contribution;
+    // Payment is already committed: no live alliance/funds reconstruction.
+    g.players.find(p => p.id === 'r')!.spice = 0;
+    const q = quoteAuctionContinuation(g, { kind: 'sale', free: false });
+    assert.deepEqual(q.steps, [
+      { kind: 'sellerCredit', player: 'r', amount: 4 - contribution, balance: 4 - contribution },
+    ]);
+    assert.equal(auctionEmperorIncomeAmount(q.sale), contribution);
+    assert.ok(q.next.kind === 'response' && q.next.response.kind === 'emperorIncome');
+    const canceled = quoteAuctionContinuation(g, cancel('emperorIncome', 'e'));
+    assert.deepEqual(canceled.steps, []);
+    assert.ok(canceled.next.kind === 'richeseEnd' && canceled.next.after === 'normalPool');
+    g.sale!.recipient = 'bank';
+    assert.equal(auctionEmperorIncomeAmount(g.sale!), 0);
+    assert.deepEqual(quoteAuctionContinuation(g, { kind: 'sale', free: false }).steps, []);
+    assert.throws(() => quoteAuctionContinuation(g, cancel('emperorIncome', 'e')), /not payable/);
+  }
+});
+
+void test('Richese donor scalars reject impossible source, rule band and amount without changing the receipt', () => {
+  const invalid: ((g: AuctionContinuationInput) => void)[] = [
+    g => { g.sale!.richeseContribution = 0; },
+    g => { g.sale!.richeseContribution = -1; },
+    g => { g.sale!.richeseContribution = 1.5; },
+    g => { g.sale!.richeseContribution = 5; },
+    g => { g.advanced = false; },
+  ];
+  for (const mutate of invalid) {
+    const g = richese('cache');
+    g.sale!.richeseContribution = 2;
+    mutate(g);
+    const before = structuredClone(g);
+    assert.throws(() => quoteAuctionContinuation(g, { kind: 'sale', free: false }), /contribution/);
+    assert.deepEqual(g, before);
+  }
+  for (const g of [fixture(), richese('cache', 'r')]) {
+    g.sale!.richeseContribution = 2;
+    const before = structuredClone(g);
+    assert.throws(() => quoteAuctionContinuation(g, { kind: 'next' }), /contribution/);
+    assert.deepEqual(g, before);
+  }
+});
+
+void test('canceling a partial Richese-paid Emperor invoice advances to native Harkonnen bonus without replaying seller income', () => {
+  const g = richese('blackMarket');
+  g.sale!.richeseContribution = 2;
+  const paid = quoteAuctionContinuation(g, { kind: 'sale', free: false });
+  assert.deepEqual(paid.steps, [
+    { kind: 'sellerCredit', player: 'r', amount: 2, balance: 22 },
+  ]);
+  assert.ok(paid.next.kind === 'response' && paid.next.response.kind === 'emperorIncome');
+  const before = structuredClone(g);
+  const canceled = quoteAuctionContinuation(g, cancel('emperorIncome', 'e'));
+  assert.deepEqual(canceled.steps, []);
+  assert.ok(canceled.next.kind === 'response' && canceled.next.response.kind === 'harkonnenBonus');
+  assert.deepEqual(g, before);
 });
 void test('Black Market cache exhaustion is checked only when reaching that declaration boundary; seller balance overflow rejects before credit', () => {
   const g = richese();

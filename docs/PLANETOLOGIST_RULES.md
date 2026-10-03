@@ -179,13 +179,15 @@ a combined advisor-flip/cancellation continuation and remain explicitly guarded;
 this is an implementation gap, not a rule that forbids every mixed move. No source
 was found granting a chosen group order that makes fighters arrive as advisors.
 
-The current runtime supports only the six base factions and the nine base green
-Special copies above. Expansion rosters, other optional modules, No-Field and
-Discovery/Richese flight combinations remain gated. Before enabling Ix, calculate
-range for each selected origin's own cyborgs and extend its cancellation trigger
-for Planetologist's added range. Aggregate elite counts must not lend one group's
-cyborg speed to a separate suboid-only origin. The expansion green-Special inventory
-must also be audited before admitting those physical cards.
+The runtime now follows the [shared native skill profiles](LEADER_SKILLS_RUNTIME.md),
+including per-origin Ixian cyborg range and its independent cancellation window.
+Canonical Base and Ix green components remain exact physical matches. The
+[bounded native Richese continuation](LEADER_SKILLS_RUNTIME.md#native-richese-composition--4-october-2026)
+adds printed Richese `Special`/`Special - Movement` components, not the broadly
+encoded Stone/Mirror weapons or Portable Snooper defense. Actual Box and Residual
+Poison substitution proves native effect/fee suppression and single disposal,
+including a zero-marker battle. Other optional modules, mixed No-Field movement/
+battle combinations and Discovery/flight interactions retain their own boundaries.
 
 The movement control builds ordinary authoritative actions with an explicit range
 or gather choice. Bots use the same range helper and submit physical source/elite

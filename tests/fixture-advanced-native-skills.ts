@@ -10,11 +10,13 @@ import { newRevivalRules } from '../game/revival';
 import { nextSpiceBankerIncomeNativeStep } from './fixture-spice-banker-income';
 
 export type AdvancedNativeSkillsOptions = {
-  family: 'ixians' | 'choam' | 'tleilaxu' | 'moritani';
+  family: 'ixians' | 'choam' | 'tleilaxu' | 'moritani' | 'richese';
   requestedSkill?: LeaderSkillId;
   skillOwner?: FactionId;
   opponents?: readonly FactionId[];
   bankerIncome?: boolean;
+  /** Richese also exercises its already-admitted Basic native rule band. */
+  rules?: 'basic' | 'advanced';
   /** Continue this actual authenticated lobby/setup without replacing its seats. */
   initial?: Game;
 };
@@ -53,16 +55,17 @@ function withSkillShuffle<T>(skill: LeaderSkillId, ownerIndex: number, initializ
  * physical skill offers. No played save is converted and no deck is cherry-picked. */
 export function initializeAdvancedNativeSkillsSetup(options: AdvancedNativeSkillsOptions): Game {
   const ownerFaction = options.skillOwner ?? options.family;
-  const expansion = options.family === 'moritani' ? 'ecaz' : options.family === 'choam' ? 'choam' : 'ix';
+  const expansion = options.family === 'moritani' ? 'ecaz' :
+    options.family === 'choam' || options.family === 'richese' ? 'choam' : 'ix';
   let game: Game;
   if (options.initial) game = structuredClone(options.initial);
   else {
     const factions = [ownerFaction, options.family, ...(options.opponents ?? ['atreides', 'emperor'] as FactionId[])]
       .filter((faction, index, all) => all.indexOf(faction) === index);
-    game = createGame('ADVNATIVE', newPlayer(factions[0], factions[0], factions[0]), true, [expansion]);
+    game = createGame('ADVNATIVE', newPlayer(factions[0], factions[0], factions[0]), options.rules !== 'basic', [expansion]);
     for (const faction of factions.slice(1)) joinGame(game, newPlayer(faction, faction, faction));
   }
-  assert.equal(game.advanced, true);
+  assert.equal(game.advanced, options.rules !== 'basic');
   assert.ok(game.expansions.includes(expansion));
   const owner = advancedNativePlayer(game, ownerFaction);
   if (game.status === 'setup') {
@@ -112,6 +115,13 @@ export function advancedNativeStep(game: Game): Game {
     return applyAction(game, game.decision.player, { type: 'decision', decline: true });
   if (game.decision?.kind === 'moritaniTerror' && ['select', 'offer'].includes(game.pendingTerrorEntry!.stage))
     return applyAction(game, game.decision.player, { type: 'decision', decline: true });
+  const lot = game.richeseAuction;
+  if (lot && !lot.outcome && !game.response && !game.decision && !game.phaseOpening) {
+    const actor = lot.method === 'silent'
+      ? lot.order.find(id => lot.eligible.includes(id) && !Object.hasOwn(lot.sealed, id)) : lot.active;
+    assert.ok(actor, 'Original native lot must retain its next bidder.');
+    return applyAction(game, actor, { type: 'richeseBid', event: lot.event, amount: lot.method === 'silent' ? 0 : null });
+  }
   const next = nextSpiceBankerIncomeNativeStep(game);
   assert.ok(next);
   return applyAction(game, next.actor, next.action);
@@ -216,9 +226,14 @@ export function stageAdvancedTleilaxuForeignRevival(state: Game): {
 
 export function openAdvancedNativeSkillBattle(state: Game, actor: string, target: string, hideSkills = true): Game {
   let game = applyAction(state, actor, { type: 'chooseBattle', territory: 'wind_pass', target });
-  for (let i = 0; (game.response || game.decision || game.battle?.preparation) && i < 100; i++) {
+  for (let i = 0; (game.response || game.decision || game.battle?.preparation || game.battle?.preLeader?.closed === false) && i < 100; i++) {
     if (game.decision?.kind === 'leaderSkillVisibility') {
       game = applyAction(game, game.decision.player, { type: 'leaderSkillVisibility', event: game.decision.event, hide: hideSkills });
+    } else if (!game.response && !game.decision && game.battle?.preLeader?.closed === false) {
+      const stage = game.battle.preLeader;
+      const next = stage.ready.includes(game.battle.attacker) ? game.battle.defender : game.battle.attacker;
+      assert.ok(!stage.ready.includes(next), 'Original pre-leader preparation must close after both acknowledgments.');
+      game = applyAction(game, next, { type: 'battlePreparationReady', event: stage.event });
     } else game = advancedNativeStep(game);
   }
   assert.equal(game.decision, null);

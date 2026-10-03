@@ -90,9 +90,34 @@ export function basicChoamLeaderSkillsProfile(game: LeaderSkillProfile): boolean
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
 }
 
+/** Native Basic Richese/CHOAM setup, without unrelated optional overlays. */
+export function basicRicheseLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  const players = game.players;
+  if (game.advanced !== false || game.expansions.length !== 1 ||
+    game.expansions[0] !== 'choam' || !players || players.length < 2 || players.length > 6 ||
+    !noOtherLeaderSkillModules(game) || game.semutaPreview || game.moritaniAssassinatePreview ||
+    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  let native = false;
+  for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+    for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
+    if (player.faction === 'richese') native = true;
+    else if (player.faction !== 'choam') {
+      let classic = false;
+      for (const faction of FACTIONS)
+        if (faction.id === player.faction && faction.expansion === 'base') { classic = true; break; }
+      if (!classic) return false;
+    }
+  }
+  return native;
+}
+
 export function basicExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return basicMoritaniLeaderSkillsProfile(game) || basicTleilaxuLeaderSkillsProfile(game) ||
-    basicIxLeaderSkillsProfile(game) || basicChoamLeaderSkillsProfile(game);
+    basicIxLeaderSkillsProfile(game) || basicChoamLeaderSkillsProfile(game) || basicRicheseLeaderSkillsProfile(game);
 }
 
 /** Source-clear Advanced native factions; optional decks never imply a seated faction. */
@@ -114,8 +139,9 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
     const player = players[i];
     // Six seats at most: check prior seats without allocating per-rule quote sets.
     for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
-    if (player.faction === 'ixians' || player.faction === 'tleilaxu' || player.faction === 'choam') {
-      if (!game.expansions.includes(player.faction === 'choam' ? 'choam' : 'ix')) return false;
+    if (player.faction === 'ixians' || player.faction === 'tleilaxu' ||
+      player.faction === 'choam' || player.faction === 'richese') {
+      if (!game.expansions.includes(player.faction === 'choam' || player.faction === 'richese' ? 'choam' : 'ix')) return false;
       native = true;
     } else {
       let classic = false;

@@ -89,6 +89,16 @@ const ids = (v: unknown): v is string[] =>
 const object = (v: unknown): v is Record<string, unknown> =>
   !!v && typeof v === 'object' && !Array.isArray(v);
 
+/** The original Emperor/bank-routed invoice, not the buyer-to-Richese leg. */
+export function auctionEmperorIncomeAmount(
+  sale: NonNullable<Game['currentAuctionSale']>,
+): number {
+  if (sale.free || sale.recipient === 'bank') return 0;
+  return sale.origin === 'normal' || sale.seller === sale.winner
+    ? sale.amount
+    : sale.richeseContribution ?? 0;
+}
+
 /** Deterministic paid-sale continuation only. A returned response, Richese
  * transition or normal phase-end is a boundary, not a simulated future action.
  * Never publish this internal quote: returned lot cards remain private. */
@@ -270,6 +280,16 @@ function calculate(
     count(sale.amount) && typeof sale.free === 'boolean',
     'The paid auction amount or free flag is invalid.',
   );
+  requireAuction(
+    sale.richeseContribution === undefined ||
+      (input.advanced &&
+        sale.origin !== 'normal' &&
+        sale.seller !== sale.winner &&
+        count(sale.richeseContribution) &&
+        sale.richeseContribution > 0 &&
+        sale.richeseContribution <= sale.amount),
+    'A Richese contribution requires a positive bounded Advanced other-buyer sale.',
+  );
   if (operation.kind === 'sale')
     requireAuction(
       typeof operation.free === 'boolean' && operation.free === sale.free,
@@ -310,9 +330,8 @@ function calculate(
     } else if (r.kind === 'emperorIncome') {
       requireAuction(
         seated(r.owner)?.faction === 'emperor' &&
-          r.owner !== winner.id &&
-          !sale.free &&
-          (sale.origin === 'normal' || sale.seller === winner.id),
+          auctionEmperorIncomeAmount(sale) > 0 &&
+          (r.owner !== winner.id || sale.richeseContribution !== undefined),
         'The canceled Emperor income is not payable by this sale.',
       );
       stage = 'bonus';
@@ -347,25 +366,29 @@ function calculate(
     if (sale.origin !== 'normal' && sale.seller !== winner.id) {
       if (sale.recipient !== 'bank') {
         const seller = seated(sale.seller!)!;
+        const amount = sale.amount - (sale.richeseContribution ?? 0);
         requireAuction(
-          count(seller.spice) && count(seller.spice + sale.amount),
+          count(seller.spice) && count(seller.spice + amount),
           'The seller credit would overflow its current balance.',
         );
         steps.push({
           kind: 'sellerCredit',
           player: seller.id,
-          amount: sale.amount,
-          balance: seller.spice + sale.amount,
+          amount,
+          balance: seller.spice + amount,
         });
       }
-    } else {
-      const emperor = input.players.find((p) => p.faction === 'emperor');
-      if (!sale.free && emperor && emperor.id !== winner.id)
-        return result({
-          kind: 'response',
-          response: { kind: 'emperorIncome', owner: emperor.id, passed: [] },
-        });
     }
+    const emperor = input.players.find((p) => p.faction === 'emperor');
+    if (
+      emperor &&
+      auctionEmperorIncomeAmount(sale) > 0 &&
+      (emperor.id !== winner.id || sale.richeseContribution !== undefined)
+    )
+      return result({
+        kind: 'response',
+        response: { kind: 'emperorIncome', owner: emperor.id, passed: [] },
+      });
     stage = 'bonus';
   }
   if (

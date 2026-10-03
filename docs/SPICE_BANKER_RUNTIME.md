@@ -18,6 +18,16 @@ assignment; original paid bank legs and own native trainer eligibility remain.
 The [bounded Advanced Moritani composition](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026)
 also shares this separate opt-in with its original assassination preview.
 Native Terror placement remains free, not an invented qualifying bank payment.
+The [native Richese composition](LEADER_SKILLS_RUNTIME.md#native-richese-composition--4-october-2026)
+adds Basic/Advanced Richese and its required CHOAM deck. Advanced Richese's
+funded ally contribution follows the authorized Emperor/bank recipient rule;
+the buyer-to-Richese share does not count as a bank payment. Basic retains its
+publisher receipt. Actual human **E2K2U5ZW v26** paid the original eight-spice
+Ornithopter invoice as buyer4/Richese4, earned one unavailable Guild Banker
+spice, and collected it once at native Mentat after ordinary Collection.
+The front-shield pile stayed separate through Revival and movement; refresh
+retains Mentat/wallet7/empty pile. No public-mode or deployed acceptance.
+
 
 ## Normal income local contract — 2 October 2026
 

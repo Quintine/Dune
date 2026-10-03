@@ -28,6 +28,58 @@ activation still awaits the uniform-response UX decision; empty hands and
 Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
+## Native Richese composition — 4 October 2026
+
+Fresh local `leader-skills` now composes original native Richese setup and all
+fourteen skills in Basic or Advanced with the required `choam` family, its
+separate ten-card cache, classic opponents and optional native CHOAM. Advanced
+Ix/Tleilaxu/CHOAM/Richese families keep distinct required decks and their current
+rule boundaries. Extra decks do not manufacture factions; native Ixian Technology
+on Richese lots remains guarded. Ordinary forces and marker-only0/3/5 battles
+retain original private pools, both-plan reveal and physically capped casualties.
+Suk rescues only those actual casualties. Original own mixed No-Field and
+whole-plan disclosure guards remain; voluntary reveal must precede Battle.
+
+Canonical printed Richese `Special` and `Special - Movement` cards can substitute
+for a selected Planetologist's weapon. Exact physical id/name/kind/effect remain
+required; Stone/Mirror weapons and Portable Snooper defense do not qualify.
+The surviving trainer gains2; the green card is disposed once without its native
+effect, fee or search. Original preleader acknowledgments stay separate controls.
+Normal Smuggler's own companion remains one physical force beside the priced
+marker; ordinary allied shipments retain their separate native cancellation
+and Guild continuations without inventing an allied free companion.
+
+[Advanced contribution recipients](RICHESE_AUCTION_RULES.md#authorized-advanced-contribution-recipients--4-october-2026)
+now preserve original buyer-to-Richese versus Richese-to-Emperor/bank payer
+shares. Basic keeps the publisher's earlier receipt. Separate normal Banker
+counts only actual bank legs and collects at real Mentat; allowed Emperor
+income is not bank income. Fourteen-card custody, private entitlements and
+pending Bureaucrat split, earned-custody and ordinary Mentat questions remain.
+
+Final affected rule/CLI union151/151 and types/lint/build pass.
+Eleven actual controlled cases cover inert Basic Box/Advanced Residual Poison
+substitution, five capped-marker manual/policy rescues and four original
+bank/Emperor/cancellation/buyer paths. The original29-table batch completes28
+with11,788 accepted actions,303 JSON continuations and130 battles, but is
+**not green**: six-seat Advanced seed20261267 is captured after1,523 accepted
+actions at the existing exhausted-cache ruling guard. Native selected-deck
+marker eligibility now shares the profile; separate two/three-seat follow-ups
+finish without rejection. The captured game is not rerun or bypassed.
+
+Human390px **358WLPYA v16** retains original admitted seats followed by a
+conserved controlled zero-marker battle. Ein Calimar5/Residual Poison/+2
+Planetologist/dial0 wins7–7 on the original aggressor tie. The green card is
+discarded through normal cleanup without killing an opposing leader or
+creating a physical force; reserves20/Tanks0 remain at Collection after refresh.
+Human **E2K2U5ZW v26** uses actual allied funding controls: original buyer4 plus
+Richese4 buys one Ornithopter for8, Richese receives only buyer4, and absent
+Emperor routes donor4 to bank. Guild Banker earns one unavailable front-shield
+spice; real native Revival, movement and Collection retain that pile. Native
+Mentat collects it once (wallet6→7), and refresh retains an empty pile.
+The detailed green/recipient guide is visually readable at390px (351px topic).
+Original CLI **FXK6Z8BW v6** retains native setup. No full assurance,
+strategic calibration, public activation or deployed evidence.
+
 ## Advanced Moritani assassination composition — 4 October 2026
 
 The [bounded native Moritani contract](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026)

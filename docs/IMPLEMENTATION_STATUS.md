@@ -1,5 +1,67 @@
 # Dune implementation status
 
+## 4 October 2026 — native Richese skills and Advanced contribution recipients
+
+Two bounded owners supplied canonical Richese green role substitution and
+original auction-recipient quotes/tests; one integration owner composed native
+profiles, engine receipts, force paths, shared fixtures, CLI and current guidance.
+Basic/Advanced Richese retains original CHOAM-family cards, ten-cache custody,
+setup and fourteen skills. Native selected decks keep their explicit limits.
+
+Canonical printed green Richese Specials add Planetologist strength without
+executing their native fee/search/leader-kill effect; weapon-special Stone/Mirror
+and Snooper defense remain excluded. Marker-only0/3/5 casualties use the actual
+reserve-capped pool, then original Suk rescue. Normal Smuggler's own companion
+is one separate physical force, not concealed value. Actual selected-deck games
+exposed the old single-deck marker admission; the path now shares the native
+profile. Ordinary allied declaration cancellation retains its original frame,
+without granting an allied free companion. Original preleader acknowledgments
+are preserved rather than letting fixture AI consume Residual Poison early.
+
+Authorized Advanced Richese Bidding routes its funded ally contribution to
+Emperor/bank, even when Emperor buys. The original scalar paid receipt keeps
+buyer-to-Richese credit separate; cancellation redirects only Emperor's share,
+never donor escrow twice or physical delivery twice. Basic retains the R2
+publisher receipt. Native Banker eligibility uses actual final bank payer legs,
+not seller/allowed Emperor income or aggregated small payers. Deferred currency
+remains unavailable until the original Mentat opening.
+
+Final affected rule/CLI union151/151, types/lint/build and eleven actual controlled programs
+pass: Basic Nullentropy/Advanced Residual Poison substitution, manual/four-policy
+capped Suk rescue, and original bank/Emperor/cancellation/Emperor-buyer paths.
+Stable new CLI scenario ordinals254–287 preserve earlier sample assignments.
+The genuine29-table batch is **not green**:28 complete11,788 accepted actions,
+303 JSON continuations and130 battles; Advanced six-seat seed20261267 is
+captured after1,523 accepted actions at phase3/richeseBlackMarket. Its exhausted
+cache reaches the retained ordinary-count ruling guard. Report/state/trace
+remain outside the checkout; no rerun, artificial card, reset or forced payout.
+Separate two/three-seat selected-deck follow-ups finish without rejection.
+
+Original CLI **FXK6Z8BW v6** retains native setup. Human390px **358WLPYA v16**
+keeps admitted seats before a conserved controlled zero-marker battle. Actual
+preleader readiness, skill concealment and sealed plans use Ein Calimar5,
+Residual Poison as green and dial0; +2 wins the original aggressor tie7–7.
+Normal cleanup discards the card without its native leader kill. Collection
+after refresh retains reserves20/Tanks0 and no phantom marker forces.
+
+Human **E2K2U5ZW v26** uses actual cache funding controls and the real silent
+lot: buyer pays4 and Richese supplies4 for one eight-spice Ornithopter. The
+buyer wallet goes5→1 and acquires exactly that card; seller Richese is5 after
+its own4 debit plus only buyer4 credit. Absent Emperor, donor4 goes to bank,
+earning Guild Banker one deferred spice while available wallet stays5.
+Original normal lots pass, native Revival completes, Guild timing is allowed
+through actual responses, original shipment turns finish, and the ally declines
+the separate No-Field opportunity. Collection wallet6 still has front-shield1;
+actual final readiness opens Mentat, collects once6→7, and refresh retains
+v26/Mentat/wallet7/empty pile. Fresh accessibility and screenshots show the
+unavailable-income notice and real controls. The detailed current guide is
+readable at390px (351px topic), with exact green disposal and recipient limits.
+
+Own mixed No-Field, exhausted-cache count, special-lot Technology, positive
+Black Market self-bidding, Bureaucrat split funding and other pending rulings
+remain intact. No full-mode, assurance, calibration or deployed claim; live
+**ab5c782** remains last observed.
+
 ## 4 October 2026 — Advanced Moritani skills and winner-skill-first assassination
 
 Two bounded test/fixture owners extended genuine native setup/Terror/physical
