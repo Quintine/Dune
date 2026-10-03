@@ -16,6 +16,29 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Native E1/E2 Leader Skills / Tech Tokens — bounded Development Verified:**
+fresh supported Ixian/Tleilaxu/CHOAM/Richese Basic/Advanced3..6-seat entries
+preserve canonical unused tokens, original family decks/all14 skills, Richese
+cache and native setup/first-Storm owners. Other overlays/E3, public starts,
+save conversion and unrelated rulings remain excluded. Existing Richese
+Banker invoice validation admits native marker/event fields; payment, typed
+casualties, Suk/card cleanup and original winner Tech before Face Dance remain.
+Native52/52, shared261 passing plus the corrected exact obsolete-rejection case,
+types/lint/build and nine actual rule programs pass. Seventeen genuine3-seat
+games (fifteen native) complete5,733 actions/no rejection and149 JSON
+continuations on unchanged source. Original CLI **VQ3AVFTC/M7HPHNTN/PQ6U2X4S**
+retain native setup atv7. Human390px **7RPHJN87 v15** rescues actual mixed
+Suboid/cyborg losses before retaining Shield and taking sole Axlotl;
+**F244P8DT v8** replaces actual board/reserve sources after original Guild
+Tech reward, preserving win/cards/bounty; **YWVH5XQF v8** ships concealed5
+plus one free physical companion for1 while original Tech and unavailable
+Banker currencies remain separate. Refresh preserves those versions/outcomes.
+See [scope, source pages and evidence](LEADER_SKILLS_RUNTIME.md#native-e1e2-tech-tokens-composition--4-october-2026).
+Full combinations/assurance/AI/public/deployed gates remain open.
+Final guide10/10, types/lint/build and rebuilt390px native reference pass
+(351px topic, no page overflow). Original human versions remain after the
+final isolated QA reload; owned temporary drivers/tabs are removed.
+
 **Classic Leader Skills / Tech Tokens — bounded Development Verified:**
 fresh classic3..6 Basic/Advanced `leader-skills` and separate `banker-income`
 preserve unused selected Tech Tokens with base33/all14 and original setup/

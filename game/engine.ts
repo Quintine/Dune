@@ -1,4 +1,4 @@
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7845,7 +7845,7 @@ function bankerIncomeProfile(g: Game): boolean {
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base'))) ||
       nativeExpansionLeaderSkillsProfile(g)) &&
-    !g.nexusCards && !g.homeworlds && (!g.techTokens || classicTechLeaderSkillsProfile(g)) &&
+    !g.nexusCards && !g.homeworlds && (!g.techTokens || classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g)) &&
     !g.strongholdCards && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery && !g.semutaPreview && !g.mentatQuestionPreview &&
     ((!g.moritaniAssassinatePreview && !g.moritaniAssassinate) || advancedMoritaniLeaderSkillsProfile(g)) && !g.advancedPreview &&
@@ -9420,10 +9420,10 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   homeworldShipmentIntegrity(state);
   const g = structuredClone(state);
   requireFreshSetup(g, homeworlds || nexus || ix || factions);
-  const skillTech = leaderSkills && classicTechLeaderSkillsProfile(g);
+  const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g));
   requireRule(!g.techTokens || (skillTech &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
-  'Leader Skills with Tech Tokens requires a fresh classic three-through-six-seat lobby with unused tokens.');
+  'Leader Skills with Tech Tokens requires a fresh supported classic/native three-through-six-seat lobby with unused tokens.');
   requireRule(
     (homeworlds || nexus || ix || choam || factions || g.expansions.length === 0) &&
       (choam || factions || !g.expansions.includes('choam')) &&
@@ -26233,8 +26233,10 @@ export function applyAction(state: Game, id: string, action: Action): Game {
       emperorRevival: ['type','amount','elite'], passResponse: ['type'],
       traitorCall: ['type','call','leader'],
     };
-    const allowed = action.type === 'decision' && state.decision?.kind === 'auctionPayment'
-      ? ['type','karama','card'] : keysBySource[action.type];
+    const allowed = action.type === 'ship' && action.noField !== undefined && getPlayer(state, id).faction === 'richese'
+      ? ['type','territory','sector','amount','elite','allyPayment','smuggler','noField','event']
+      : action.type === 'decision' && state.decision?.kind === 'auctionPayment'
+        ? ['type','karama','card'] : keysBySource[action.type];
     requireRule(!allowed || Object.keys(action).every(key => allowed.includes(key)),
       'Use only the original native payment fields; Spice Banker income is automatic.');
     requireRule(!Object.keys(action).some(key => ['actor','bankerIncome','paymentSource','spiceBankerIncome','bankLegs','trainer'].includes(key)),

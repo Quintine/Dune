@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 4 October 2026 — native E1/E2 Leader Skills with original Tech Tokens
+
+Three bounded owners supplied independent Ixian/CHOAM, Tleilaxu and Richese
+rule cases; the integration owner extended existing native eligibility,
+initializer, original Banker/Mentat opt-ins, CLI and canonical guidance.
+Fresh supported3..6-seat Basic/Advanced retains original deck/roster limits,
+all14 skills, cache, native wallets and printed Tech assignment. Public starts,
+E3/other modules, played-game conversion and unrelated ruling guards remain.
+The supplied Advanced source physical21/38 expressly supports the combination
+and original winner Tech before Face Dance.
+
+Actual native Richese marker invoices exposed an existing Banker action-key
+whitelist omission: legal `noField`/`event` was rejected. Admit those original
+fields only for native Richese marker shipping; original validators still
+enforce source, custody, event and funding. Shared fixture continuation handles
+actual phase-opening readiness before response passes. Controlled cases use
+real cyborgs/legal typed commitment and physical winner-card cleanup rather
+than fabricated dial counts or incidental null/undefined receipt assertions.
+
+Native52/52,261 affected shared cases and the corrected exact obsolete
+prototype-rejection case, types/lint/build and nine actual programs pass.
+Seventeen genuine3-seat games (fifteen native) complete5,733 accepted actions,
+no rejection and149 JSON continuations on unchanged source tree
+`14be0172b28a45fcabbf0240da12d6718e4fdc871d9a2b639466e6e90d8a1aca`.
+Original CLI VQ3AVFTC/M7HPHNTN/PQ6U2X4S retains native setup atv7.
+Human390px7RPHJN87v15 typed Suk/card cleanup/sole Axlotl,
+F244P8DTv8 original Tech-before-FaceDance with mixed real sources, and
+YWVH5XQFv8 marker5/free companion/price1 retain original outcomes on refresh.
+The earlier compiled worker rejected native Richese Banker admission; the
+rebuilt isolated idle QA reload preserves the rooms and exercises the new path.
+Detailed current mechanics/evidence remain in
+[the existing skill runtime](LEADER_SKILLS_RUNTIME.md#native-e1e2-tech-tokens-composition--4-october-2026).
+No full-module, strategic-AI, assurance, public or deployed acceptance claim.
+
 ## 4 October 2026 — classic Leader Skills with original Tech Tokens
 
 Two bounded owners supplied normal payment/free-companion and battle rescue/

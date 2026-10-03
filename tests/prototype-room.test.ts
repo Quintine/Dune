@@ -880,7 +880,7 @@ void test('Banker income rejects incompatible profiles and public activation wit
     game => { game.players.splice(1); },
     game => { game.players.push(...Array.from({ length: 4 }, (_, index) => newPlayer(`extra${index}`, `Extra ${index}`, 'guild'))); },
   ];
-  const modules = ['homeworlds', 'techTokens', 'strongholdCards'].map(type => {
+  const modules = ['homeworlds', 'strongholdCards'].map(type => {
     const game = applyAction(native, native.host, { type, enabled: true });
     for (const player of game.players) player.ready = true;
     return game;

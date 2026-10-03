@@ -19,8 +19,8 @@ export type SpiceBankerIncomeFixture = {game:Game;beforePayment:Game;actor:strin
 export function nextSpiceBankerIncomeNativeStep(game:Game):SpiceBankerIncomeNativeStep|null {
   if(game.status==='finished') return null;
   if(game.pendingTreacheryDiscard) return {actor:game.host,action:{type:'advanceBots'}};
-  if(game.response) return {actor:game.players.find(p=>!game.response!.passed.includes(p.id))!.id,action:{type:'passResponse'}};
   if(game.phaseOpening) return {actor:game.players.find(p=>!game.phaseOpening!.passed.includes(p.id))!.id,action:{type:'ready'}};
+  if(game.response) return {actor:game.players.find(p=>!game.response!.passed.includes(p.id))!.id,action:{type:'passResponse'}};
   if(game.decision?.kind==='bureaucratPayment') return {actor:game.decision.player,action:{type:'decision',event:game.decision.event,redirect:false}};
   if(game.decision?.kind==='auctionPayment') return {actor:game.decision.player,action:{type:'decision',karama:false}};
   if(game.decision?.kind==='guildShipment') return {actor:game.decision.player,action:{type:'decision',allow:true}};

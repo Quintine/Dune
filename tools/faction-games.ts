@@ -30,7 +30,7 @@ import {
   type Game,
 } from '../game/engine';
 import { sampleInventory, verifySampleCustody } from './sample-custody';
-import { classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile } from '../game/leader-skill-profile';
+import { classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { createTechTokens } from '../game/tech-tokens';
 import { privateOutputDirectory, sourceSnapshot } from './verification';
 
@@ -352,11 +352,15 @@ const STRONGHOLD_FACTIONS_SCENARIOS: readonly Scenario[] = [
     roster: (['ixians', 'tleilaxu', 'choam', 'richese', 'emperor', 'fremen'] as FactionId[]).slice(0, players),
   })),
 ];
-const SKILLS_TECH_SCENARIOS: readonly Scenario[] =
-  [3, 4, 5, 6].flatMap(players => (['basic', 'advanced'] as const).map((rules, band) => ({
+const SKILLS_TECH_SCENARIOS: readonly Scenario[] = [
+  ...[3, 4, 5, 6].flatMap(players => (['basic', 'advanced'] as const).map((rules, band) => ({
     ordinal: 308 + (players - 3) * 2 + band, profile: 'skills-tech' as const,
     rules, expansions: [], roster: BASE_ROSTER.slice(0, players),
-  })));
+  }))),
+  ...[...IX_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS, ...RICHESE_SKILLS_SCENARIOS]
+    .filter(scenario => scenario.roster.length >= 3)
+    .map((scenario, index): Scenario => ({ ...scenario, ordinal: 316 + index, profile: 'skills-tech' })),
+];
 const skillProfile = (profile: string) => profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills' || profile === 'choam-skills' || profile === 'richese-skills' || profile === 'ecaz-skills' || profile === 'skills-tech';
 
 type TraceEntry = {
@@ -403,7 +407,7 @@ function usage() {
     '\nThe four earlier native skill profiles retain their Basic samples. Advanced Ix-skills/choam-skills/tleilaxu-skills use documented native plus classic families; Advanced moritani-skills composes its original non-Harkonnen classic assassination roster. Richese-skills adds Basic/Advanced Richese or paired CHOAM tables, Advanced Richese/Tleilaxu/CHOAM and optional Ix-deck tables without native Ixians. All retain fourteen skills and original cache/native inventories. Native Ixian Technology on Richese lots, own mixed No-Field, other roster/modules and public starts retain their separate guards.'
     + '\nEcaz-skills uses native five-disc Ecaz with classic opponents, the ecaz deck and all fourteen skills in Basic/Advanced; Advanced Harkonnen is excluded by the existing shared-Duke capture boundary. Ambassador and ordinary skill paths retain native custody. Shared-Duke assignment and combined Occupy skills remain separate boundaries; no public starts or save retrofit.'
     + '\nStandalone E3 Stronghold samples additionally use native Ecaz OR Moritani with classic opponents and the exact ecaz deck, six Stronghold Cards only. Ecaz holder-only coalition effects and original Moritani assassination remain; Moritani excludes Harkonnen. E3 pairs, E1/E2 mixtures and other overlays remain guarded.'
-    + '\nSkills-tech uses three-through-six unique classic seats in Basic/Advanced, base33, all fourteen Leader Skills and three original Tech Tokens. Original setup, phase-end Tech income, skill aftermath and mandatory winner token transfer remain. Other modules, native factions, public starts and old-game conversion stay separate.'
+    + '\nSkills-tech uses three-through-six unique seats in Basic/Advanced: classic/base33 or the already-supported native Ixian/Tleilaxu/CHOAM/Richese skill rosters with original selected ix/choam decks and separate Richese cache. All fourteen Skills and three original Tech Tokens retain original setup/native owners, phase-end income, aftermath and mandatory original-winner token transfer before Face Dance. Other modules/E3, public starts and played-game conversion stay separate.'
   );
 }
 
@@ -434,6 +438,11 @@ function positive(value: string | undefined) {
 }
 
 function scenarioName(scenario: Scenario) {
+  if (scenario.profile === 'skills-tech' && scenario.expansions.length) {
+    const native = scenario.roster.filter(faction => ['ixians', 'tleilaxu', 'choam', 'richese'].includes(faction));
+    const extraIx = scenario.expansions.includes('ix') && !native.some(faction => faction === 'ixians' || faction === 'tleilaxu');
+    return `${scenario.profile}-${native.join('-')}${extraIx ? '-ix-deck' : ''}-${scenario.roster.length}-${scenario.rules}`;
+  }
   if (scenario.profile === 'stronghold-factions') {
     const native = scenario.roster.filter(faction =>
       ['ixians', 'tleilaxu', 'choam', 'richese', 'ecaz', 'moritani'].includes(faction));
@@ -566,7 +575,7 @@ function resumedGame(path: string) {
     throw new Error(
       '--resume is not an incomplete faction-games snapshot with saved AI profiles.',
     );
-  const techSkills = classicTechLeaderSkillsProfile(game) && !game.spiceBankerIncomePreview;
+  const techSkills = (classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game)) && !game.spiceBankerIncomePreview;
   if (
     (game.leaderSkills && !nativeExpansionLeaderSkillsProfile(game) && !techSkills) ||
     game.discoveryEnabled ||

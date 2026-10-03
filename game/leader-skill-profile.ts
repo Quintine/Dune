@@ -29,6 +29,25 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
+/** E1/E2 native skills may add Tech alone; each native predicate retains its original roster/decks. */
+function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+  if (noOtherLeaderSkillModules(game)) return true;
+  const players = game.players;
+  if (!game.techTokens || !players || players.length < 3 || players.length > 6 ||
+    game.expansions.length < 1 || game.expansions.length > 2 ||
+    game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
+    game.strongholdCards || game.ecazTreachery || game.semutaPreview ||
+    game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
+    game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  for (const expansion of game.expansions)
+    if (expansion !== 'ix' && expansion !== 'choam') return false;
+  for (let i = 0; i < players.length; i++)
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+  return true;
+}
+
 /** Classic three-to-six-seat Skills/Tech composition; native and other modules stay separate. */
 export function classicTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   const players = game.players;
@@ -113,7 +132,7 @@ export function nativeEcazLeaderSkillsProfile(game: LeaderSkillProfile): boolean
 /** Native Basic Tleilaxu, including Face Dancers; foreign gholas are Advanced. */
 export function basicTleilaxuLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return game.advanced === false && game.expansions.length === 1 &&
-    game.expansions[0] === 'ix' && noOtherLeaderSkillModules(game) &&
+    game.expansions[0] === 'ix' && nativeLeaderSkillModulesSupported(game) &&
     !!game.players?.some(player => player.faction === 'tleilaxu') &&
     game.players.every(player => player.faction === 'tleilaxu' ||
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
@@ -122,7 +141,7 @@ export function basicTleilaxuLeaderSkillsProfile(game: LeaderSkillProfile): bool
 /** Basic Ixians, optionally with native Tleilaxu, keep the ordinary Ix inventories. */
 export function basicIxLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return game.advanced === false && game.expansions.length === 1 &&
-    game.expansions[0] === 'ix' && noOtherLeaderSkillModules(game) &&
+    game.expansions[0] === 'ix' && nativeLeaderSkillModulesSupported(game) &&
     !!game.players?.some(player => player.faction === 'ixians') &&
     game.players.every(player => ['ixians', 'tleilaxu'].includes(player.faction) ||
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
@@ -131,7 +150,7 @@ export function basicIxLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
 /** Basic CHOAM's ordinary leaders and economy; Auditor belongs to Advanced. */
 export function basicChoamLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return game.advanced === false && game.expansions.length === 1 &&
-    game.expansions[0] === 'choam' && noOtherLeaderSkillModules(game) &&
+    game.expansions[0] === 'choam' && nativeLeaderSkillModulesSupported(game) &&
     !!game.players?.some(player => player.faction === 'choam') &&
     game.players.every(player => player.faction === 'choam' ||
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
@@ -142,7 +161,7 @@ export function basicRicheseLeaderSkillsProfile(game: LeaderSkillProfile): boole
   const players = game.players;
   if (game.advanced !== false || game.expansions.length !== 1 ||
     game.expansions[0] !== 'choam' || !players || players.length < 2 || players.length > 6 ||
-    !noOtherLeaderSkillModules(game) || game.semutaPreview || game.moritaniAssassinatePreview ||
+    !nativeLeaderSkillModulesSupported(game) || game.semutaPreview || game.moritaniAssassinatePreview ||
     game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
@@ -173,7 +192,7 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
   if (game.advanced !== true || !players || players.length < 2 || players.length > 6 ||
     game.expansions.length < 1 || game.expansions.length > 2 ||
     (game.expansions.length === 2 && game.expansions[0] === game.expansions[1]) ||
-    !noOtherLeaderSkillModules(game) ||
+    !nativeLeaderSkillModulesSupported(game) ||
     game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
@@ -205,9 +224,14 @@ export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): bo
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
 }
 
+/** Only the original eligible E1/E2 native families gain the Tech combination. */
+export function nativeTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  return !!game.techTokens && nativeExpansionLeaderSkillsProfile(game);
+}
+
 /** Shared by rule quotes, controls and minimal legal bot participation. */
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
   return (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
-    classicTechLeaderSkillsProfile(game);
+    classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game);
 }

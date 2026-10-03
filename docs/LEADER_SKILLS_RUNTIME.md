@@ -29,13 +29,82 @@ Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
 
+## Native E1/E2 Tech Tokens composition — 4 October 2026
+
+Fresh three-through-six-seat Basic/Advanced `leader-skills` and separate
+`banker-income` entries now preserve canonical unused Tech Tokens for the
+already-supported native Ixian, Tleilaxu, CHOAM and Richese skill rosters.
+Original family/deck restrictions remain: Basic uses its single supported
+family; Advanced admits distinct selected E1/E2 decks and their eligible native
+seats. All fourteen skills, ordinary33/35/47 cards, Richese's original ten-card
+cache, native setup, wallets and printed Tech owners remain genuine.
+An extra selected Ix deck never implies a native Ixian seat.
+E3, other overlays, public starts and played-game conversion remain excluded.
+Existing Banker and private Mentat opt-ins do not become ordinary activation.
+
+The authorized supplied Advanced PDF, physical page21 (printed19), permits
+variants together irrespective of factions and gives native Tech assignment,
+phase-end income and losing-owner token reward. Physical page38 (printed36),
+Tleilaxu A.1–3, explicitly retains the original winner's cards, bounty and
+appropriate Tech Token before replacement. This composition reuses that
+original order; Face Dance neither revokes nor creates another reward.
+Tleilaxu-only free revival still excludes Axlotl; CHOAM native initial income
+is not poverty Charity and triggers neither Production nor Axlotl.
+Actual eligible Charity triggers Production alone.
+
+Ixian paid/free Suboids and cyborgs retain typed payment and loss allocation.
+Suk rescue and optional native substitution finish before card cleanup and
+mandatory Tech award. Richese's marker-only revelation remains capped by real
+reserves. Its optional Smuggler companion is one physical counter, not the
+marker value or an extra priced force. Banker action validation now admits
+the existing Richese `noField`/`event` invoice fields without bypassing native
+marker, funding or ownership checks. Existing mixed No-Field, special-lot
+Technology, empty-cache auction and other interpretation guards are unchanged.
+
+New native52/52 and affected shared261/262 initially passed; the sole obsolete
+prototype assertion still rejected classic Tech, now admitted by the preceding
+checkpoint. Removing that obsolete rejection passes the exact remaining case.
+Types/lint/build pass. Nine actual programs cover Basic/Advanced Ixian
+invoice/Banker/Heighliners, Advanced Guild/Ix winner Tech before Face Dance,
+Basic/Advanced Richese marker companions, CHOAM Charity and both Stone modes.
+Seventeen genuine three-seat games (fifteen native, two classic) complete5,733
+accepted actions/no rejection and149 JSON continuations on unchanged tree
+`14be0172b28a45fcabbf0240da12d6718e4fdc871d9a2b639466e6e90d8a1aca`.
+The CLI registry retains existing classic names/ordinals and adds sixty native
+samples, sixty-eight total. Natural samples and controlled cases are distinct.
+
+Original fresh CLI **VQ3AVFTC**, **M7HPHNTN** and **PQ6U2X4S v7/setup**
+preserve native Ixian/Tleilaxu/Richese setup through the existing entries.
+Human390px **7RPHJN87 v15/Collection** seals C’tair5/dial5/support1/Shield,
+chooses actual4 Suboids+2 cyborg casualties and saves2 ordinary+1 elite,
+keeping the cyborg and returning2 ordinary. Original substitution is declined,
+Shield retained, then sole opposing Axlotl auto-transfers. Native wallet10→9,
+Wind Pass3 (one cyborg), reserves14/Tanks3 (one cyborg); Emperor8 Tanks.
+Human390px **F244P8DT v8/Collection** replaces the original Guild's five
+survivors using one actual reserve and two Habbanya Erg counters. Guild keeps
+Axlotl/Heighliners, wallet2, held weapon and the original win; its trainer dies
+without another bounty and returns Suk once. Guild reserves19/Tanks1, Tleilaxu
+reserves8/Tanks8 with original-source1/replacement3.
+Human390px **YWVH5XQF v8/movement** ships concealed5 plus one free companion
+at original price1: wallet6→5, reserves20→19, real board1. Atreides retains
+its actual prior Revival Banker-front1 and accrues independent Heighliners1;
+neither funds this shipment. The native marker/cost and typed rescue/source
+controls are readable. Refresh retains the original versions and outcomes.
+Full combinations, assurance, strategic AI, public and deployed acceptance
+remain open; this is bounded Development Verified, not full-module completion.
+Final reference10/10, types/lint/build and the rebuilt390px native guide pass:
+topic351px, page390px, no horizontal overflow. The final isolated QA reload
+retains original human v15/Collection, v8/Collection and v8/movement.
+Owned temporary drivers and managed tabs are removed; rooms/store, private
+metadata and original game captures remain.
+
 ## Classic Tech Tokens composition — 4 October 2026
 
 Fresh `leader-skills` and separate `banker-income` preserve canonical unused
 Tech Tokens selected in a three-through-six-seat classic Basic/Advanced lobby.
 Original base33/all14 setup, first-Storm token assignment and native wallets
 remain; no token owner, income, phase or battle receipt is fabricated.
-Native expansion rosters and other overlays remain separate. The existing
+Native E1/E2 rosters now compose Tech in the section above; other overlays remain separate. The existing
 private Mentat opt-in retains its UX/empty-hand boundary; normal Banker retains
 its original earned-custody and separate-payer policies.
 

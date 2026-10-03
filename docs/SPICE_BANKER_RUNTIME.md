@@ -6,6 +6,15 @@ positive bank payments to automatic current Mentat collection.
 Bounded coverage is **Partial / Development Verified**. No public start,
 old-game retrofit or other module is enabled; this is not deployed acceptance.
 
+**4 October native Tech composition:** the same separate opt-in preserves
+unused original Tech in fresh3..6-seat supported Ixian/Tleilaxu/CHOAM/Richese
+Basic/Advanced lobbies. Native deck/roster limits and payment recipients remain.
+Richese marker invoices retain native `noField`/`event` validation. Human
+**YWVH5XQF v8** pays1 for a concealed5 plus one free companion, wallet6→5;
+the earlier actual four-spice Emperor revival leaves Atreides Banker-front1
+unavailable while its Heighliners separately accrues1. A Tech credit is not
+another bank-payment producer. See the [native contract and evidence](LEADER_SKILLS_RUNTIME.md#native-e1e2-tech-tokens-composition--4-october-2026).
+
 **4 October classic Tech composition:** a fresh classic3..6 Basic/Advanced
 `banker-income` lobby may retain canonical unused Tech Tokens. Original
 phase-end Tech income is independent of the front-shield grant; neither credit
