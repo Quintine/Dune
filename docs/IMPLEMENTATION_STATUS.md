@@ -1,5 +1,65 @@
 # Dune implementation status
 
+## 4 October 2026 — native Ecaz ordinary-disc skills and temporary Duke composition
+
+Two bounded owners supplied native setup/ordinary rescue/revival/Ambassador
+cases and temporary Duke acquisition/battle/death/revival cases. One integration
+owner added the exact Ecaz/classic Basic/Advanced native profile, shared family
+fixture, stable CLI samples, source guidance and real human continuation.
+Five native discs receive original skills; the separately controlled Duke is
+not inserted into native rosters or traitor/assignment inventory. Basic Harkonnen
+remains; Advanced Harkonnen retains its original Duke/capture boundary.
+
+Existing handlers compose without an alternate rule engine: original
+starting-card/public-skill/Loyalty/traitor/six-force setup, normal versus selected
+role strength, physically capped native Suk rescue, trained-disc death and
+optional paid or physical Ghola own-normal-disc skill replacement. Original
+Ambassador payment/entry/bank grant retains training and the entrant's suffix.
+Temporary Duke6 with another living face-up native Warmaster gets normal1 only;
+surviving release or poison death leaves the native trainer/card untouched.
+Actual bounty remains6; eligible Ecaz paid5 revival keeps the same living
+set-aside Duke under the earlier user decision. Existing-skilled revival does
+not establish shared-Duke assignment.
+
+First focused run passes6/9. Two new tests mistakenly pinned dead Duke's
+incidental `usedAt` metadata; those assertions are removed, not re-pinned.
+The Ambassador case omitted the original event; it now submits the actual
+pending receipt. Final new cases9/9; affected67/67, types/lint/build pass.
+Twenty actual controlled programs cover Basic/Advanced Duke normal/hidden/
+stronger-opponent/death, manual/four-policy native Suk and actual deferred
+Banker payment. Ten genuine two-through-six-seat Basic/Advanced CLI games
+finish4,264 accepted actions/no rejection,110 JSON continuations,59 battles,
+50 Ambassador decisions and one Suk rescue. New stable ordinals283–292 retain
+all earlier samples. No strategic calibration or assurance matrix.
+
+Original CLI **24HGMJCD v4** preserves native setup and seats. Human390px
+**LQWE8TZM v18** starts at a conserved pre-Ambassador board after original
+native setup. Real placement pays1, Emperor's original reserve arrival pays1,
+and the owner-only Acquire Duke control receives the original living disc.
+The subsequent conserved Wind Pass/Baliset position retains that actual
+acquisition, wallets, seat IDs and physical inventory. Real normal face-up
+Sanya Ecaz/Warmaster, Duke6, Baliset and dial0 face Captain Aramsham5 with two
+fully paid forces: actual7–7 aggressor tie. An initially over-supported
+one-force UI attempt is rejected at unchanged v14; correcting the native wheel
+to2/support2 seals normally. Both actual no-traitor choices, normal winning
+cleanup and refresh reach Collection/v18/wallet11/eight Wind Pass counters/
+Tanks0 and living set-aside Duke. Native trainer/card remain face up; the
+opponent's owned wallet is7. Enlarged canonical Duke inspection is readable.
+Its stale unfinished-revival notice is updated to the actual bounded scope.
+
+Shared-Duke assignment, combined Occupy skills, optional modules and other
+existing rule questions remain explicit. No natural-history assertion for
+controlled positions, reset, public activation, complete modes or deployment;
+live **ab5c782** remains last observed.
+
+Final native/guide19/19, types/lint/build and visible390px topic (351px width)
+pass after the affected Duke inspector notice and canonical source updates.
+The actual reloaded inspector describes paid/Ghola set-aside revival and
+native ordinary-disc skills without claiming shared assignment or loans.
+Original human v18/Collection/wallet11/eight counters/living set-aside Duke
+remains after the final isolated worker reload; CLI v4/setup is retained.
+Owned temporary entry/rule/staging drivers and managed tabs are removed.
+
 ## 4 October 2026 — native Richese skills and Advanced contribution recipients
 
 Two bounded owners supplied canonical Richese green role substitution and

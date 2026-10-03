@@ -10,12 +10,12 @@ import { newRevivalRules } from '../game/revival';
 import { nextSpiceBankerIncomeNativeStep } from './fixture-spice-banker-income';
 
 export type AdvancedNativeSkillsOptions = {
-  family: 'ixians' | 'choam' | 'tleilaxu' | 'moritani' | 'richese';
+  family: 'ixians' | 'choam' | 'tleilaxu' | 'moritani' | 'richese' | 'ecaz';
   requestedSkill?: LeaderSkillId;
   skillOwner?: FactionId;
   opponents?: readonly FactionId[];
   bankerIncome?: boolean;
-  /** Richese also exercises its already-admitted Basic native rule band. */
+  /** Richese and Ecaz also exercise their Basic native rule bands. */
   rules?: 'basic' | 'advanced';
   /** Continue this actual authenticated lobby/setup without replacing its seats. */
   initial?: Game;
@@ -55,7 +55,7 @@ function withSkillShuffle<T>(skill: LeaderSkillId, ownerIndex: number, initializ
  * physical skill offers. No played save is converted and no deck is cherry-picked. */
 export function initializeAdvancedNativeSkillsSetup(options: AdvancedNativeSkillsOptions): Game {
   const ownerFaction = options.skillOwner ?? options.family;
-  const expansion = options.family === 'moritani' ? 'ecaz' :
+  const expansion = options.family === 'moritani' || options.family === 'ecaz' ? 'ecaz' :
     options.family === 'choam' || options.family === 'richese' ? 'choam' : 'ix';
   let game: Game;
   if (options.initial) game = structuredClone(options.initial);

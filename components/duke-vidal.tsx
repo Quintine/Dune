@@ -221,13 +221,15 @@ export function DukeVidal({ game }: { game: GameView }) {
                     ))}
                     <p className="m-0 rounded-lg border border-[#675071] bg-[#2c2232] p-4 text-sm leading-6 text-[#e5d3df]">
                       Current support covers Moritani acquisition, direct Ecaz
-                      Ambassador acquisition for Ecaz, battle use and death.
+                      Ambassador acquisition or consensual alliance, battle use
+                      and death, and Ecaz-only paid or Ghola revival to living
+                      set-aside custody. Native ordinary-disc skills may coexist
+                      with the separate Duke without assigning him a skill.
                       Unused Ecaz custody survives the turn; unused Moritani
-                      custody expires. Ecaz alliance and loan alternatives,
-                      reacquisition while already controlled, revival, and
-                      captured or ghola custody remain unfinished. Full Ecaz and
-                      Moritani games are unavailable. Inspection does not select
-                      a battle leader.
+                      custody expires. Duke loans, reacquisition while already
+                      controlled, shared skill assignment and exceptional capture
+                      remain unfinished. Full Ecaz and Moritani games are
+                      unavailable. Inspection does not select a battle leader.
                     </p>
                   </div>
                 </div>

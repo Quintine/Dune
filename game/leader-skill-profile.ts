@@ -63,6 +63,32 @@ export function advancedMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): b
   return native;
 }
 
+/** Ecaz's five native discs; the separate temporarily controlled Duke is not an assignment disc. */
+export function nativeEcazLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  const players = game.players;
+  if (typeof game.advanced !== 'boolean' || game.expansions.length !== 1 ||
+    game.expansions[0] !== 'ecaz' || !players || players.length < 2 || players.length > 6 ||
+    !noOtherLeaderSkillModules(game) || game.semutaPreview || game.moritaniAssassinatePreview ||
+    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  let native = false;
+  for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+    for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
+    if (player.faction === 'ecaz') native = true;
+    else {
+      if (game.advanced && player.faction === 'harkonnen') return false;
+      let classic = false;
+      for (const faction of FACTIONS)
+        if (faction.id === player.faction && faction.expansion === 'base') { classic = true; break; }
+      if (!classic) return false;
+    }
+  }
+  return native;
+}
+
 /** Native Basic Tleilaxu, including Face Dancers; foreign gholas are Advanced. */
 export function basicTleilaxuLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return game.advanced === false && game.expansions.length === 1 &&
@@ -155,7 +181,7 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
 
 export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game) ||
-    advancedMoritaniLeaderSkillsProfile(game);
+    advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
 }
 
 /** Shared by rule quotes, controls and minimal legal bot participation. */

@@ -27,6 +27,12 @@ Ornithopter invoice as buyer4/Richese4, earned one unavailable Guild Banker
 spice, and collected it once at native Mentat after ordinary Collection.
 The front-shield pile stayed separate through Revival and movement; refresh
 retains Mentat/wallet7/empty pile. No public-mode or deployed acceptance.
+The [native Ecaz ordinary-disc profile](LEADER_SKILLS_RUNTIME.md#native-ecaz-ordinary-disc-composition--4-october-2026)
+also admits this separate Basic/Advanced opt-in with its original five-disc
+training and Ambassador custody. Actual Emperor ordinary shipment pays4 for
+two counters and grants native Ecaz Banker one deferred spice without changing
+its available wallet in both bands. An Ambassador bank grant is not a payer
+payment. Shared-Duke assignment and combined Occupy skills remain separate.
 
 
 ## Normal income local contract — 2 October 2026

@@ -16,6 +16,37 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Native Ecaz ordinary-disc Skills — bounded Development Verified:**
+fresh Basic/Advanced Ecaz with classic opponents retains the exact `ecaz` deck,
+all fourteen skills, five native assignment discs and original Loyalty/setup.
+Ordinary role scores, physical Suk rescue, trainer death/own revival and
+Ambassador handlers compose. Separately acquired Duke6 gets only normal
+Warmaster1, not trained-disc3; release/death preserves the actual native trainer.
+Existing-skilled Ecaz paid5 Duke revival retains the earlier living set-aside
+result. Shared-Duke assignment, combined Occupy skills, Advanced Harkonnen and
+other roster/module boundaries remain explicit.
+Affected67/67, types/lint/build and twenty controlled programs pass. Ten genuine
+Basic/Advanced two-through-six-seat games complete4,264 accepted actions/no
+rejection,110 JSON continuations and59 battles, including50 Ambassador choices
+and one Suk rescue. Original CLI **24HGMJCD v4** retains native setup.
+Human390px **LQWE8TZM v18** keeps admitted seats, then uses a conserved
+pre-placement board. Actual Ecaz token costs1, Emperor reserve arrival costs1,
+and the original owner acquires Duke. A second conserved board/card position
+retains that actual acquisition. Real face-up Sanya Ecaz/Warmaster, Duke6,
+Baliset and dial0 beat Captain Aramsham5/dial2/support2 by the original7–7
+aggressor tie. Native cleanup keeps Baliset and releases living Duke; refresh
+retains Collection/wallet11/eight real Wind Pass counters/Tanks0 and unchanged
+training. Opponent's owned view retains wallet7 after the actual two-spice
+support. The enlarged Duke component is readable at390px.
+See [native scope](LEADER_SKILLS_RUNTIME.md#native-ecaz-ordinary-disc-composition--4-october-2026).
+No natural-history claim for controlled positions, full assurance, calibration,
+public activation or deployed acceptance.
+Final native/guide19/19, types/lint/build and hydrated390px guide pass
+(351px topic). The updated Duke inspector now states the implemented
+revival/native-skill scope; actual visible proof and QA worker reload retain
+human v18/Collection/wallet11/eight counters/living set-aside disc.
+Owned temporary drivers/tabs are removed; original games and store remain.
+
 **Native Richese Skills and contribution recipients — bounded Development Verified:**
 Basic/Advanced fresh native Richese retains its required CHOAM deck, separate
 ten-card cache, original setup and all fourteen skills. Canonical green

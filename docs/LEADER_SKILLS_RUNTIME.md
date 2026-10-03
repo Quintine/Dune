@@ -28,6 +28,46 @@ activation still awaits the uniform-response UX decision; empty hands and
 Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
+## Native Ecaz ordinary-disc composition — 4 October 2026
+
+Fresh local `leader-skills` now admits Basic/Advanced native Ecaz with classic
+opponents, the exact `ecaz` family and all fourteen physical skills. Basic
+Harkonnen remains permitted; Advanced Harkonnen keeps the original shared-Duke
+capture boundary. Public starts, other factions/modules and combined Occupy
+skill battles are not opened. Skill assignment uses the five native discs,
+never the separately controlled Duke. Source-ordered starting cards, public
+skills, Loyalty/Traitors and original six-force placement remain genuine.
+
+Ordinary native role scores, physical Suk rescue and trained-disc death compose
+with original handlers. Eligible own normal-disc revival through paid first
+cohort or a physical Ghola retains optional decline/draw/assignment. Native
+Ambassador placement, bank grants and original entrant continuation preserve
+training. Explicit Mentat and separate Banker opt-ins retain current questions;
+an Ambassador bank grant is not another player's bank payment.
+
+Real Ecaz Ambassador acquisition gives one temporary Duke6. A separate living
+face-up native Warmaster adds only its normal1 with a physical Worthless card,
+never trained-disc3. Surviving release and actual poison death preserve native
+trainer/card; bounty is printed6. Ecaz's original paid5 revival returns the
+same living set-aside disc under the user's earlier ruling. These cases retain
+an existing native skill and do not settle shared-Duke skill assignment.
+
+Focused9/9 and twenty actual controlled programs pass: Basic/Advanced Duke
+normal/hidden/stronger-opponent/death, manual/four-policy native Suk, and separate
+actual native Banker payment. Ten genuine Basic/Advanced two-through-six-seat
+games complete4,264 accepted actions/no rejection,110 JSON continuations and
+59 battles, including50 Ambassador decisions and one Suk rescue. Natural and
+explicitly controlled evidence are distinct; full combinations/assurance,
+strategic AI, public activation and deployment remain unfinished.
+
+Affected67/67, types/lint/build pass. Original CLI **24HGMJCD v4** retains setup.
+Human390px **LQWE8TZM v18** uses original token placement/paid entrant/acquisition,
+then a conserved controlled Wind Pass/Baliset position retaining the acquired
+disc. Actual Sanya Ecaz/Warmaster normal1 plus Duke6/dial0 ties Captain5/dial2/
+support2 at7–7 and wins as aggressor. Normal cleanup/refresh retains native
+training, Collection/wallet11/eight counters/Tanks0 and living set-aside Duke;
+opponent's owned wallet is7. Original enlarged Duke inspection is readable.
+
 ## Native Richese composition — 4 October 2026
 
 Fresh local `leader-skills` now composes original native Richese setup and all
@@ -90,7 +130,7 @@ Winner Suk rescue and Rihani choice finish before post-loss assassination.
 A saved unspent receipt advances only after those skills, preserving the actual
 winner, original excluded battle disc, printed bounty, card return and one
 private native Mentat replacement without repeating casualties.
-Explicit Mentat/Banker opt-ins remain separate; Ecaz/Duke assignment, further
+Explicit Mentat/Banker opt-ins remain separate; shared-Duke assignment, further
 native rosters, public activation and unrelated optional modules stay guarded.
 
 ## Advanced Tleilaxu foreign-ghola composition — 4 October 2026
