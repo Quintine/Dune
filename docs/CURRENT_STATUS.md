@@ -40,6 +40,12 @@ optional-module/ruling gates remain. No full assurance or deployed claim.
 Final native15/15, all nine runtime cases and types/lint/build pass after
 per-action public-profile validation is computed only once when foreign discs
 exist. The final isolated build retains human v33/Collection and CLI v6/setup.
+Code **d86d2088e6acc020e44bda0dfbba5093ec98df8f** is pushed.
+[Exact CI37095454758](https://github.com/Quintine/Dune/actions/runs/37095454758),
+job111124330662, completed/success: isolated storage/HTTP verification and
+subsequent image publication both pass:
+`ghcr.io/quintine/dune:sha-d86d2088e6acc020e44bda0dfbba5093ec98df8f`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Advanced native Ixian/CHOAM Leader Skills — bounded Development Verified:**
 fresh two-to-six-seat native Ixian and/or CHOAM plus classic tables retain

@@ -45,6 +45,13 @@ final canonical scope anchors resolve. Final isolated-build GETs retain human
 v33/Collection/wallet0/two counters/living Bashar and original CLI v6/setup.
 Own throwaway drivers and browser tabs are removed/released; QA games remain.
 
+Code **d86d2088e6acc020e44bda0dfbba5093ec98df8f** is pushed.
+[Exact CI37095454758](https://github.com/Quintine/Dune/actions/runs/37095454758),
+job111124330662, completed/success: original isolated storage/HTTP verification
+and subsequent image publication pass. Immutable image:
+`ghcr.io/quintine/dune:sha-d86d2088e6acc020e44bda0dfbba5093ec98df8f`.
+No deployed claim; live **ab5c782** remains last observed.
+
 ## 4 October 2026 — Advanced native Ixian and CHOAM Leader Skills
 
 Two independent owners extended the bounded native profile/helper contracts and
