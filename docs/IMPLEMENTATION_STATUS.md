@@ -41,6 +41,13 @@ wallet9, and fresh visual guide evidence fits390px (351px topic width).
 Five new canonical scope links resolve. Throwaway drivers and the owned tab
 are removed/released; QA rooms and the original isolated store remain.
 
+Code **7ee064df14b79a06d41317f9f8eb193e078d2219** is pushed.
+[Exact CI37092109758](https://github.com/Quintine/Dune/actions/runs/37092109758),
+job111114441767, completed/success: original isolated storage/HTTP verification
+and subsequent verified image publication pass. Immutable image:
+`ghcr.io/quintine/dune:sha-7ee064df14b79a06d41317f9f8eb193e078d2219`.
+Publication is not deployment; live **ab5c782** remains last observed.
+
 ## 3 October 2026 — native Richese, No-Field and Stone Occupy composition
 
 Two bounded owners implemented physical Stone normalization and native Richese

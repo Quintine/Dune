@@ -36,6 +36,12 @@ Full assurance/deployment remains open; live **ab5c782** remains last observed.
 Final CLI2/2 and native/guide18/18 pass after the contract update. The latest
 isolated build preserves human v20/Collection/wallet9; its native-scope guide
 is visually readable at390px (351px topic width).
+Code **7ee064df14b79a06d41317f9f8eb193e078d2219** is pushed.
+[Exact CI37092109758](https://github.com/Quintine/Dune/actions/runs/37092109758),
+job111114441767, completed/success: isolated storage/HTTP verification and
+subsequent image publication both pass:
+`ghcr.io/quintine/dune:sha-7ee064df14b79a06d41317f9f8eb193e078d2219`.
+No deployed claim.
 
 **Native Richese Occupy — bounded Development Verified:**
 Richese-present Advanced tables now resolve their mandatory Ecaz coalitions
