@@ -1,4 +1,4 @@
-import { advancedNativeLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7510,7 +7510,7 @@ function moritaniAssassinateModeSupported(g: Game) {
   return g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
     g.players.some(p => p.faction === 'moritani') &&
     g.players.every(p => ['moritani','atreides','beneGesserit','guild','emperor','fremen'].includes(p.faction)) &&
-    !g.nexusCards && !g.leaderSkills && !g.strongholdCards && !g.homeworlds &&
+    !g.nexusCards && (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) && !g.strongholdCards && !g.homeworlds &&
     !g.discoveryEnabled && !g.discoveries && !g.techTokens;
 }
 function moritaniAssassinateContext(g: Game, receipt: MoritaniAssassinateReceipt) {
@@ -7541,7 +7541,7 @@ function moritaniAssassinateIntegrity(g: Game) {
       receipt.owner === state.owner && TERRITORIES.some(t => t.id === receipt.territory),
       'The assassination history no longer matches its original battle participants.');
   }
-  const pending = state.opportunities.filter(r => r.stage === 'choice');
+  const pending = state.opportunities.filter(r => r.stage === 'skills' || r.stage === 'choice');
   requireRule(pending.length <= 1, 'Finish the current assassination opportunity first.');
   const obligation = g.lastBattleContext?.moritaniAssassinate;
   if (obligation) {
@@ -7555,15 +7555,25 @@ function moritaniAssassinateIntegrity(g: Game) {
       g.lastBattleContext?.event === r.event && g.lastBattleContext.winner === r.opponent &&
       g.lastBattleContext.result === 'normal' && g.lastBattleContext.territory === r.territory &&
       obligation?.event === r.event, 'The assassination choice lost its resolved battle.');
-    requireRule(resume && resume.event === r.event && resume.continuation.event === r.event &&
-      resume.continuation.winner === r.opponent && resume.continuation.territory === r.territory &&
-      resume.continuation.result === 'normal' && JSON.stringify(resume.continuation.combatants) === JSON.stringify(g.lastBattleContext.combatants) &&
-      resume.signature === JSON.stringify(resume.continuation) && resume.signature === obligation.continuation,
-      'The assassination choice lost or changed its saved cleanup.');
-    const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'moritaniAssassinate');
-    requireRule(decisions.length === 1 && decisions[0].player === r.owner &&
-      (decisions[0] as Extract<Decision,{kind:'moritaniAssassinate'}>).event === r.event,
-      'The assassination choice lost its owning decision.');
+    if (r.stage === 'skills') {
+      const discard = g.pendingTreacheryDiscard?.continuation;
+      const decision = g.decision;
+      requireRule(g.leaderSkills && !resume &&
+        ((discard?.kind === 'battleResolved' && discard.event === r.event) ||
+          (decision?.player === r.opponent &&
+            (decision.kind === 'battleLosses' || decision.kind === 'sukRescue' || decision.kind === 'rihani'))),
+        'Assassination must retain the winner’s original skill and casualty continuation.');
+    } else {
+      requireRule(resume && resume.event === r.event && resume.continuation.event === r.event &&
+        resume.continuation.winner === r.opponent && resume.continuation.territory === r.territory &&
+        resume.continuation.result === 'normal' && JSON.stringify(resume.continuation.combatants) === JSON.stringify(g.lastBattleContext.combatants) &&
+        resume.signature === JSON.stringify(resume.continuation) && resume.signature === obligation.continuation,
+        'The assassination choice lost or changed its saved cleanup.');
+      const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'moritaniAssassinate');
+      requireRule(decisions.length === 1 && decisions[0].player === r.owner &&
+        (decisions[0] as Extract<Decision,{kind:'moritaniAssassinate'}>).event === r.event,
+        'The assassination choice lost its owning decision.');
+    }
   } else requireRule(!resume && g.decision?.kind !== 'moritaniAssassinate', 'A settled assassination cannot retain its decision.');
   if (g.status === 'playing' || g.status === 'finished') {
     const retired = state.opportunities.filter(r => r.stage === 'replaced').map(r => r.card!);
@@ -7601,6 +7611,7 @@ function recordMoritaniAssassinateOpportunity(g: Game, b: Battle, winner: Player
     traitorCalled:Object.values(b.traitorCalls).some(Boolean)};
   if (!moritaniAssassinateTrigger(trigger)) return;
   const receipt = createMoritaniAssassinateOpportunity(trigger);
+  if (g.leaderSkills) receipt.stage = 'skills';
   state.opportunities.push(receipt);
   syncMoritaniAssassinateReceipt(g,receipt);
 }
@@ -7816,7 +7827,7 @@ function bankerIncomeProfile(g: Game): boolean {
     !g.nexusCards && !g.homeworlds && !g.techTokens &&
     !g.strongholdCards && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery && !g.semutaPreview && !g.mentatQuestionPreview &&
-    !g.moritaniAssassinatePreview && !g.moritaniAssassinate && !g.advancedPreview &&
+    ((!g.moritaniAssassinatePreview && !g.moritaniAssassinate) || advancedMoritaniLeaderSkillsProfile(g)) && !g.advancedPreview &&
     !g.kullPreview && !g.nexusKullPreview && !g.guildBetrayalPreview && !g.richeseBetrayalPreview &&
     !g.nexusIxianReplacementPreview && !g.nexusIxianBetrayalPreview && !g.nexusHarkonnenBetrayalPreview;
 }
@@ -9268,15 +9279,18 @@ function requireFreshFactionInventory(state: Game) {
         });
     }), 'The faction initializer cannot overwrite existing inventories, leader custody or revival history.');
 }
+function initializeMoritaniAssassinateState(g: Game): void {
+  g.moritaniAssassinatePreview = true;
+  g.moritaniAssassinate = {version:1,owner:byFaction(g,'moritani')!.id,normalTraitorCall:false,opportunities:[]};
+  g.moritaniAssassinateCallEvents = [];
+}
 /** Genuine, explicitly opted-in preview; no player action enables this profile. */
 export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   requireRule(!state.moritaniAssassinatePreview && !state.moritaniAssassinate && !state.moritaniAssassinateResume && !state.moritaniAssassinateCallEvents,
     'The assassination preview starts only from a fresh lobby.');
   requireRule(moritaniAssassinateModeSupported(state), 'The assassination preview needs Advanced Moritani with ordinary base opponents except Harkonnen, the Ecaz expansion and no optional modules.');
   const g = initializeFactionExpansionsGameForAudit(state);
-  g.moritaniAssassinatePreview = true;
-  g.moritaniAssassinate = {version:1,owner:byFaction(g,'moritani')!.id,normalTraitorCall:false,opportunities:[]};
-  g.moritaniAssassinateCallEvents = [];
+  initializeMoritaniAssassinateState(g);
   return g;
 }
 /** Development-only Semuta reaction in fresh Richese games, optionally with
@@ -9335,8 +9349,10 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  return initializeSetupGameForAudit(g, false, false, false, false, true,
+  const initialized = initializeSetupGameForAudit(g, false, false, false, false, true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
+  if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
+  return initialized;
 }
 /** Fresh all-fourteen-card classic or supported native skills; no public income toggle. */
 export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
@@ -9348,8 +9364,10 @@ export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
   g.leaderSkills = createLeaderSkills(random);
   g.spiceBankerIncomePreview = true;
   g.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(g)));
-  return initializeSetupGameForAudit(g, false, false, false, false, true,
+  const initialized = initializeSetupGameForAudit(g, false, false, false, false, true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', g.expansions.length > 0);
+  if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
+  return initialized;
 }
 /** Gated development setup for the independent three-card Ecaz variant. */
 export function initializeEcazTreacheryGameForAudit(state: Game): Game {
@@ -21291,6 +21309,22 @@ function projectedRihani(g: Game, owner: string) {
 }
 function finishWinner(g: Game, winner: Player, t: string, cards: string[]) {
   if (startRihaniVictory(g, winner, t, cards)) return;
+  const assassination = g.moritaniAssassinate?.opportunities.find(r => r.stage === 'skills');
+  if (assassination) {
+    const context = g.lastBattleContext!;
+    requireRule(assassination.event === context.event && assassination.opponent === winner.id &&
+      assassination.territory === t && context.result === 'normal',
+      'Finish the original winner’s skills before its assassination response.');
+    assassination.stage = 'choice';
+    syncMoritaniAssassinateReceipt(g, assassination);
+    const continuation = {
+      kind: 'battleResolved' as const, event: context.event, result: 'normal' as const,
+      combatants: context.combatants, territory: t, winner: winner.id, cards,
+    };
+    context.moritaniAssassinate!.continuation = JSON.stringify(continuation);
+    continueResolvedBattle(g, continuation);
+    return;
+  }
   if (g.pendingIxSubstitution) {
     const pending = g.pendingIxSubstitution;
     requireRule((pending.winner ?? pending.player) === winner.id && pending.territory === t &&

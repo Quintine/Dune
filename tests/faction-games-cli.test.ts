@@ -242,10 +242,10 @@ void test('Advanced Moritani assassination samples retain their preview and phys
   assert.equal(existsSync(unsupported), false);
 });
 
-void test('Moritani Skills samples preserve their full module on saved continuation and reject Advanced before running', (t) => {
+void test('Moritani Skills samples preserve full Basic and Advanced native decks through saved continuation', (t) => {
   const area = temporary(t);
   const out = join(area, 'skills');
-  const result = run(out, '--profile', 'moritani-skills', '--players', '2', '--seed', '1000', '--max-actions', '1');
+  const result = run(out, '--profile', 'moritani-skills', '--rules', 'basic', '--players', '2', '--seed', '1000', '--max-actions', '1');
   assert.equal(result.status, 1);
   assertFailedEvidence(out, 'moritani-skills-2-basic', 1016, false);
   const snapshot = join(out, 'failed-moritani-skills-2-basic.json');
@@ -256,10 +256,14 @@ void test('Moritani Skills samples preserve their full module on saved continuat
   const resumed = join(area, 'skills-resumed');
   assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
   assertFailedEvidence(resumed, 'moritani-skills-2-basic', 1016, true);
-  const unsupported = join(area, 'unsupported');
-  const bad = run(unsupported, '--profile', 'moritani-skills', '--rules', 'advanced');
-  assert.equal(bad.status, 1);
-  assert.equal(existsSync(unsupported), false);
+  const advanced = join(area, 'advanced');
+  assert.equal(run(advanced, '--profile', 'moritani-skills', '--rules', 'advanced', '--players', '2', '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(advanced, 'moritani-skills-2-advanced', 1249, false);
+  const state = json<typeof game>(join(advanced, 'failed-moritani-skills-2-advanced.json'));
+  assert.equal(state.advanced, true);
+  const cards = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
+  assert.equal(new Set(cards).size, 14);
+  assert.equal(cards.length, 14);
 });
 
 void test('Tleilaxu Skills samples preserve full Basic and Advanced native decks through saved continuation', (t) => {

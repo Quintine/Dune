@@ -10,7 +10,7 @@ import { newRevivalRules } from '../game/revival';
 import { nextSpiceBankerIncomeNativeStep } from './fixture-spice-banker-income';
 
 export type AdvancedNativeSkillsOptions = {
-  family: 'ixians' | 'choam' | 'tleilaxu';
+  family: 'ixians' | 'choam' | 'tleilaxu' | 'moritani';
   requestedSkill?: LeaderSkillId;
   skillOwner?: FactionId;
   opponents?: readonly FactionId[];
@@ -53,7 +53,7 @@ function withSkillShuffle<T>(skill: LeaderSkillId, ownerIndex: number, initializ
  * physical skill offers. No played save is converted and no deck is cherry-picked. */
 export function initializeAdvancedNativeSkillsSetup(options: AdvancedNativeSkillsOptions): Game {
   const ownerFaction = options.skillOwner ?? options.family;
-  const expansion = options.family === 'choam' ? 'choam' : 'ix';
+  const expansion = options.family === 'moritani' ? 'ecaz' : options.family === 'choam' ? 'choam' : 'ix';
   let game: Game;
   if (options.initial) game = structuredClone(options.initial);
   else {
@@ -106,6 +106,12 @@ export function completedAdvancedNativeSkillsGame(options: AdvancedNativeSkillsO
 }
 
 export function advancedNativeStep(game: Game): Game {
+  // Original native Moritani choices stay real actions; decline optional Terror
+  // placement/use rather than letting a policy invent fixture phase history.
+  if (game.decision?.kind === 'moritaniPlacement')
+    return applyAction(game, game.decision.player, { type: 'decision', decline: true });
+  if (game.decision?.kind === 'moritaniTerror' && ['select', 'offer'].includes(game.pendingTerrorEntry!.stage))
+    return applyAction(game, game.decision.player, { type: 'decision', decline: true });
   const next = nextSpiceBankerIncomeNativeStep(game);
   assert.ok(next);
   return applyAction(game, next.actor, next.action);
@@ -225,6 +231,10 @@ export function finishAdvancedNativeSkillAftermath(state: Game): Game {
   let game = state;
   for (let i = 0; (game.response || game.decision || game.battle || game.pendingTreacheryDiscard) && i < 100; i++) {
     if (game.decision?.kind === 'sukRescue') break;
+    if (game.decision?.kind === 'moritaniAssassinate') {
+      game = applyAction(game, game.decision.player, { type: 'decision', event: game.decision.event, decline: true });
+      continue;
+    }
     if (game.decision?.kind === 'ixSubstitution') {
       game = applyAction(game, game.decision.player, { type: 'decision', decline: true });
     } else if (game.decision?.kind === 'battleCards') {

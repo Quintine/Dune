@@ -48,9 +48,15 @@ The preview supports native Moritani with Atreides, Bene Gesserit, Emperor,
 Fremen and Guild opponents, Advanced rules and the Ecaz faction expansion, without
 optional modules. Harkonnen presence is excluded uniformly from public configuration
 so candidate availability cannot reveal secret captures. Other expansion factions,
-Nexus, Leader Skills, Stronghold Cards, Homeworlds and Discoveries require further
-custody, ordering and integration work. A first-version scope is not a printed
-restriction on those combinations.
+Nexus, Stronghold Cards, Homeworlds, Discoveries and other faction combinations
+retain their separate integration boundaries. The
+[bounded all14 native skill composition](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026)
+now extends this same non-Harkonnen roster without opening public starts.
+Winner Suk rescue and Rihani choice finish first; the unspent assassination
+receipt waits, then opens its original private choice. Already completed
+casualties cannot replay after reveal/decline. A different eligible trained
+disc returns its physical skill once; printed bounty and original Mentat
+replacement remain. This scope is not a printed restriction on other combinations.
 
 Every publicly qualifying loss gets the same private reveal-or-continue opportunity,
 regardless of the hidden eligible card. Only Moritani sees its candidate identities

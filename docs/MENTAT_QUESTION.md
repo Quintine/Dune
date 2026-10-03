@@ -16,6 +16,8 @@ Ordinary activation, empty hands and other pending rulings remain unchanged.
 The bounded [Advanced Tleilaxu composition](TLEILAXU_LEADER_SKILLS.md#advanced-native-composition--4-october-2026)
 now uses the same explicit preview; original foreign revival does not assign a
 new Mentat or any other skill.
+The [bounded Advanced Moritani composition](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026)
+also uses this explicit private preview before posture and faction powers.
 
 ## Native skill integration — 2 October 2026
 

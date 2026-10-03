@@ -1,5 +1,53 @@
 # Dune implementation status
 
+## 4 October 2026 — Advanced Moritani skills and winner-skill-first assassination
+
+Two bounded test/fixture owners extended genuine native setup/Terror/physical
+skill cases and original post-loss assassination cases. One integration owner
+composed the fresh all14/non-Harkonnen classic profile, original assassination
+state after setup, separate Banker opt-in, CLI and current guidance.
+Basic including Harkonnen remains unchanged; no inferred Ecaz/Duke assignment
+or wider native/module admission.
+
+The first integrated normal-role case exposed actual pending Suk casualties
+being replaced by the original assassination decision. The unspent receipt now
+waits at winner skills; Suk rescue and Rihani choice finish first, then the
+original assassination opens with a no-casualty continuation. Reveal/decline
+cannot replay those costs. Source-specific regressions and actual programs
+exercise both decisions. Winning-disc exclusion, printed bounty, public retirement,
+one private Mentat replacement and whole-game normal-traitor forfeiture remain.
+Fixture corrections preserve real Storm-source completion at later-turn staging,
+normal opponent Suk rescue, optional winning Worthless retention and winner-only
+killed-disc bounty. Removed obsolete guard-forwarding and bare-not-throw checks.
+
+Affected64/64, CLI2/2, final native/guide25/25 and types/lint/build pass.
+Nine actual controlled cases cover two skill-first decisions, manual/four-policy
+trained-disc assassination/native replacement and explicit Mentat/Banker opt-ins.
+Five genuine Advanced CLI games finish1,425 accepted actions/no rejection,
+37 JSON continuations and24 battles, but contain no assassination opportunity:
+that evidence comes from controlled programs and the human path. Stable new
+scenario ordinals249–253 retain all old Basic samples. Fifteen local canonical
+anchors resolve; no comprehensive assurance campaign or strategic calibration.
+
+Original CLI **7JGUWMAP v6** preserves native setup. Human390px **TQH86DL4 v20**
+keeps the exact admitted seat IDs, followed by a conserved Wind Pass/physical
+traitor/Worthless/disc position. Real Captain Aramsham5/Trip to Gamont/normal
+Warmaster1 defeats Vando1 by6–1. Moritani's original owner-only control reveals
+the different Hasimir Fenring6, pays exactly6 and returns Warmaster once; own
+Bureaucrat remains. The real winner discards Trip to Gamont, original Collection
+readiness advances to Mentat, and one private physical replacement appears.
+Passing free native Terror placement leaves wallet18/Tanks8 and one held Traitor
+with Hasimir retired. Owned enlargement and refresh confirm usable continuation.
+The detailed guide is visually readable at390px (351px topic width).
+
+No natural-history claim for controlled positions, reset, public activation,
+full-mode certification or deployed evidence.
+
+Final targeted GETs preserve human v20/Mentat/wallet18/Tanks8/one held Traitor/
+retired Hasimir and original CLI v6/setup. Sixteen final canonical scope anchors
+resolve. Owned throwaway drivers and browser tabs are removed/released; QA games
+and the original isolated store remain.
+
 ## 4 October 2026 — native Advanced Tleilaxu skills and foreign-ghola lifecycle
 
 Two bounded owners composed original foreign-disc ownership/skill validation

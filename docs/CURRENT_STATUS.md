@@ -16,6 +16,27 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Advanced Moritani Skills — bounded Development Verified:**
+all fourteen skills now compose with the original native/classic non-Harkonnen
+assassination preview, exact `ecaz` deck and five native assignment discs.
+Winner Suk rescue and Rihani choice precede assassination; completed casualties
+do not replay. Actual trained-disc death returns its card once with only printed
+bounty; normal traitor revelation still forfeits assassination for the game.
+Affected64/64, CLI2/2, final native/guide25/25, types/lint/build and nine
+controlled runtime cases pass. Five genuine games finish1,425 accepted actions/
+no rejection,37 JSON continuations and24 battles; none opens assassination.
+Fresh original CLI **7JGUWMAP v6** retains setup. Human390px **TQH86DL4 v20**
+uses original admitted identities followed by a conserved battle/traitor/hand/
+disc position. Actual Captain Aramsham5 plus normal Warmaster1 beats Vando1,
+then native Moritani reveals the different Hasimir Fenring6, gains6 and returns
+Warmaster once. Actual winner Trip to Gamont disposal and native Mentat produce
+one private replacement; owned enlarged inspection and refresh keep wallet18/
+Tanks8 with the retired card absent from the hand. The detailed current guide
+is visually readable at390px (351px topic).
+See [native Moritani composition](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026).
+Basic/Harkonnen entries, Ecaz/Duke assignment, ordinary/private-step UX and
+other roster/module gates remain. No full assurance, AI calibration or deployment.
+
 **Advanced Tleilaxu Skills and foreign gholas — bounded Development Verified:**
 native Tleilaxu, optional Ixians/CHOAM and classic seats now compose all fourteen
 skills with original half-price foreign revival and no foreign skill draw.

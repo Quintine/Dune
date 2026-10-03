@@ -15,6 +15,9 @@ Ordinary/default activation and provisional earned custody are unchanged.
 The bounded [Advanced Tleilaxu composition](TLEILAXU_LEADER_SKILLS.md#advanced-native-composition--4-october-2026)
 also shares this separate opt-in. Its foreign revival never creates a Banker
 assignment; original paid bank legs and own native trainer eligibility remain.
+The [bounded Advanced Moritani composition](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026)
+also shares this separate opt-in with its original assassination preview.
+Native Terror placement remains free, not an invented qualifying bank payment.
 
 ## Normal income local contract — 2 October 2026
 

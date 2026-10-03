@@ -28,6 +28,19 @@ activation still awaits the uniform-response UX decision; empty hands and
 Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
+## Advanced Moritani assassination composition — 4 October 2026
+
+The [bounded native Moritani contract](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026)
+composes all fourteen skills with the original classic/non-Harkonnen Advanced
+assassination roster and exact `ecaz` deck. Five native assignment discs and
+original setup remain; Basic/Harkonnen starts are unchanged.
+Winner Suk rescue and Rihani choice finish before post-loss assassination.
+A saved unspent receipt advances only after those skills, preserving the actual
+winner, original excluded battle disc, printed bounty, card return and one
+private native Mentat replacement without repeating casualties.
+Explicit Mentat/Banker opt-ins remain separate; Ecaz/Duke assignment, further
+native rosters, public activation and unrelated optional modules stay guarded.
+
 ## Advanced Tleilaxu foreign-ghola composition — 4 October 2026
 
 The [native Tleilaxu contract](TLEILAXU_LEADER_SKILLS.md#advanced-native-composition--4-october-2026)

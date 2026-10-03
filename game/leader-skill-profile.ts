@@ -38,6 +38,31 @@ export function basicMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): bool
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
 }
 
+/** Existing bounded Advanced assassination roster, composed with native skills. */
+export function advancedMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  const players = game.players;
+  if (game.advanced !== true || game.expansions.length !== 1 ||
+    game.expansions[0] !== 'ecaz' || !players || players.length < 2 || players.length > 6 ||
+    !noOtherLeaderSkillModules(game) || game.semutaPreview || game.advancedPreview ||
+    game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
+    game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
+    game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
+  let native = false;
+  for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+    for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
+    if (player.faction === 'moritani') native = true;
+    else {
+      if (player.faction === 'harkonnen') return false;
+      let classic = false;
+      for (const faction of FACTIONS)
+        if (faction.id === player.faction && faction.expansion === 'base') { classic = true; break; }
+      if (!classic) return false;
+    }
+  }
+  return native;
+}
+
 /** Native Basic Tleilaxu, including Face Dancers; foreign gholas are Advanced. */
 export function basicTleilaxuLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return game.advanced === false && game.expansions.length === 1 &&
@@ -103,7 +128,8 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
 }
 
 export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game);
+  return basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game) ||
+    advancedMoritaniLeaderSkillsProfile(game);
 }
 
 /** Shared by rule quotes, controls and minimal legal bot participation. */

@@ -9,7 +9,7 @@ export type MoritaniAssassinateReceipt = {
   opponent: string;
   faction: FactionId;
   opposingLeader: string;
-  stage: 'choice' | 'declined' | 'revealed' | 'replaced';
+  stage: 'skills' | 'choice' | 'declined' | 'revealed' | 'replaced';
   card: string | null;
   bounty: number;
   replacement: string | null;
@@ -211,17 +211,17 @@ export function validateMoritaniAssassinate(
         (index === 0 || r.turn >= state.opportunities[index - 1].turn) &&
         identifier(r.opposingLeader) &&
         !!printed(r.faction, r.opposingLeader) &&
-        ['choice', 'declined', 'revealed', 'replaced'].includes(r.stage) &&
+        ['skills', 'choice', 'declined', 'revealed', 'replaced'].includes(r.stage) &&
         r.signature === moritaniAssassinateSignature(r),
       'Assassinate has a changed, duplicated or malformed battle opportunity.',
     );
     events.add(r.event);
-    if (r.stage === 'choice' || r.stage === 'declined') {
+    if (r.stage === 'skills' || r.stage === 'choice' || r.stage === 'declined') {
       requireAssassinate(
         r.card === null &&
           r.bounty === 0 &&
           r.replacement === null &&
-          (r.stage !== 'choice' ||
+          ((r.stage !== 'skills' && r.stage !== 'choice') ||
             (index === state.opportunities.length - 1 &&
               (!custody || r.turn === custody.turn))),
         'An unspent Assassinate choice cannot contain a reveal, bounty or replacement.',

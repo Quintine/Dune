@@ -1,9 +1,52 @@
-# Basic Moritani with Leader Skills
+# Moritani with Leader Skills
 
 Connected development prototype, 21 September 2026. Basic rules, Moritani and
 two through six total seats with base-faction opponents now use the full
 fourteen-card Leader Skills deck. Public starts and publication remain gated;
 this integrates existing effects, not complete Leader Skills compliance.
+
+## Advanced assassination composition — 4 October 2026
+
+Fresh local Advanced `leader-skills` tables now compose all fourteen physical
+skills with the existing Moritani assassination preview: native Moritani and
+classic opponents except Harkonnen, two through six unique seats, exactly the
+`ecaz` family deck and no unrelated modules. Original five native assignment
+discs, starting cards, private offers, traitors and six-force placement remain.
+Existing Basic Moritani/Harkonnen entries are unchanged. Ecaz/Duke skill
+assignment and further native/module combinations are not opened by this scope.
+
+Winner skills precede faction powers. A pending original Suk rescue or Rihani
+choice finishes before the loser receives Assassinate Leaders. The saved
+unspent receipt waits without exposing premature private choices; its later
+continuation cannot replay already completed casualties. The winning battle
+disc stays excluded under the original assassination contract. A different
+eligible native trained disc may die: its exact skill returns once and Moritani
+receives only its printed bounty. Original public set-aside and one private
+Mentat replacement remain; normal traitor revelation still forfeits assassination
+for the whole game, not just this turn.
+
+Existing Terror death, eligible own revival/private replacement, normal+1 versus
+trained+3, native Suk rescue, Enemy of My Enemy and mandatory ally retention use
+original handlers. Ordinary winning Worthless cards may be retained; only the
+existing compulsory uses must be discarded. Only the battle winner receives
+killed-disc bounties. Explicit private Mentat and separate normal Banker opt-ins
+also compose with this native preview; no new Terror placement fee exists.
+
+Bounded evidence: affected64/64 and CLI2/2 pass. Five genuine games finish1,425
+accepted actions/no rejection,37 JSON continuations and24 battles; none opens
+assassination, so assassination evidence comes from controlled cases, not those
+natural histories. Nine controlled runtime cases exercise Suk/Rihani-before-
+assassination, manual/four-policy trained-disc death and one actual Mentat
+replacement, plus original private Mentat and normal Banker support income.
+Controlled positions are declared, not represented as natural phase histories.
+
+Final native/guide25/25, types/lint/build and original CLI **7JGUWMAP v6** pass.
+Human390px **TQH86DL4 v20** uses original admitted IDs and the declared
+controlled battle position, then actual normal-role plans and Hasimir6 reveal,
+physical Warmaster return, winner card disposal and one private native Mentat
+replacement. Wallet18/Tanks8/one new held Traitor remain after refresh; the
+owned enlarged face and detailed guide are readable at390px.
+
 
 ## Public configuration and setup
 
@@ -47,15 +90,16 @@ exceptional assassination pools and competing-arrival questions remain explicit.
 
 ## Remaining work
 
-The [Leader Skills runtime](LEADER_SKILLS_RUNTIME.md) retains unfinished normal
-Banker income, ordinary Mentat-question activation, modified Smuggler collection,
+The [Leader Skills runtime](LEADER_SKILLS_RUNTIME.md) retains guarded default
+Banker activation, ordinary Mentat questioning, modified Smuggler collection,
 captured replacement entitlement and other source gaps. Its bounded Diplomat
 retreat is connected for supported battles, not modified or simultaneous effects.
-The private Mentat question preview has not been enabled for this roster.
-Basic Moritani admission does not settle those effects or certify every valid
-expansion/module combination. Advanced Moritani, Ecaz and Ixians need their own integration. The later
-[Basic Tleilaxu checkpoint](TLEILAXU_LEADER_SKILLS.md) connects its own revival
-response chains and Face Dancer interactions.
+Private Mentat and normal Banker income are available only under their separate
+explicit opt-ins; ordinary Mentat activation and recorded custody questions remain
+pending. Basic Moritani admission does not certify every valid module combination.
+The bounded Advanced composition above supersedes its earlier admission barrier;
+Ecaz and further roster/module work remain. Native Tleilaxu has its separate
+[Advanced foreign-ghola contract](TLEILAXU_LEADER_SKILLS.md).
 Full AI strategy and difficulty calibration still wait for feature completion.
 
 ## Reproducible entry and verification

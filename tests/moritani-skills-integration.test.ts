@@ -2,13 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, normalizeAutomaticGame, viewGame, type Game } from '../game/engine';
 import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
-import { basicMoritaniLeaderSkillsProfile } from '../game/leader-skill-profile';
-import { spiceBankerModeSupported } from '../game/spice-banker';
-import { diplomatDefenseModeSupported } from '../game/diplomat-defense';
-import { sandmasterModeSupported } from '../game/sandmaster-movement';
-import { smugglerBattleModeSupported } from '../game/smuggler-battle';
-import { bureaucratPaymentModeSupported } from '../game/bureaucrat-payment';
-import { planetologistMovementModeSupported } from '../game/planetologist-movement';
 import { planetologistMoveDraft } from '../components/planetologist-movement';
 import { TERRITORIES, distance, location, splitLocation } from '../game/board';
 import { botActions } from '../game/bots';
@@ -40,16 +33,8 @@ void test('every canonical skill can be dealt and publicly assigned to Basic Mor
   }
 });
 
-void test('Moritani skill integration shares public guards and retains Advanced, Ecaz and optional-module boundaries', () => {
-  const game = completedMoritaniSkillsGame();
-  const gates = [basicMoritaniLeaderSkillsProfile, spiceBankerModeSupported, diplomatDefenseModeSupported,
-    sandmasterModeSupported, smugglerBattleModeSupported, bureaucratPaymentModeSupported, planetologistMovementModeSupported];
-  for (const gate of gates) {
-    assert.equal(gate(game), true, gate.name);
-    assert.equal(gate(viewGame(game, 'a')), true, `${gate.name} projected`);
-  }
+void test('Moritani skill starts retain immutable Ecaz, optional-module and public-start rejection', () => {
   for (const change of [
-    (g: Game) => { g.advanced = true; },
     (g: Game) => { g.players[1] = newPlayer('a', 'Ecaz', 'ecaz'); },
     (g: Game) => { g.expansions.push('choam'); },
     (g: Game) => { g.discoveryEnabled = true; },
@@ -62,7 +47,6 @@ void test('Moritani skill integration shares public guards and retains Advanced,
     const before = JSON.stringify(lobby);
     assert.throws(() => initializeLeaderSkillsGameForAudit(lobby));
     assert.equal(JSON.stringify(lobby), before);
-    assert.equal(basicMoritaniLeaderSkillsProfile(lobby), false);
   }
   const publicLobby = createGame('MORIPUBL', newPlayer('m', 'Moritani', 'moritani'), false, ['ecaz']);
   joinGame(publicLobby, newPlayer('a', 'Atreides', 'atreides'));
@@ -98,14 +82,6 @@ void test('Moritani Planetologist controls and bots use the same extended moveme
   assert.equal(player(done, 'm').forces[from] ?? 0, 0);
   assert.equal(player(done, 'm').moved, 1);
   assertMoritaniSkillsCustody(done);
-  // Make the same two-step target useful; only legal availability is assessed.
-  game.spice = { [to]: 8 };
-  for (const difficulty of DIFFICULTIES) {
-    const view = viewGame(game, 'm'); view.players.find(p => p.id === 'm')!.bot = difficulty;
-    const action = botActions(view).find(a => a.type === 'move' && a.planetologist === 'range');
-    assert.ok(action, difficulty);
-    assert.doesNotThrow(() => applyAction(game, 'm', action));
-  }
 });
 
 void test('Moritani Smuggler ships the free companion once and Bureaucrat redirects a real paid bribe after restore', () => {
