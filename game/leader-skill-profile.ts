@@ -12,6 +12,16 @@ export type LeaderSkillProfile = {
   strongholdCards?: unknown;
   techTokens?: unknown;
   ecazTreachery?: unknown;
+  semutaPreview?: unknown;
+  moritaniAssassinatePreview?: unknown;
+  advancedPreview?: unknown;
+  kullPreview?: unknown;
+  nexusKullPreview?: unknown;
+  guildBetrayalPreview?: unknown;
+  richeseBetrayalPreview?: unknown;
+  nexusIxianReplacementPreview?: unknown;
+  nexusIxianBetrayalPreview?: unknown;
+  nexusHarkonnenBetrayalPreview?: unknown;
 };
 
 export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
@@ -60,8 +70,44 @@ export function basicExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boo
     basicIxLeaderSkillsProfile(game) || basicChoamLeaderSkillsProfile(game);
 }
 
+/** Source-clear Advanced native factions; optional decks never imply a seated faction. */
+export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  const players = game.players;
+  if (game.advanced !== true || !players || players.length < 2 || players.length > 6 ||
+    game.expansions.length < 1 || game.expansions.length > 2 ||
+    (game.expansions.length === 2 && game.expansions[0] === game.expansions[1]) ||
+    !noOtherLeaderSkillModules(game) ||
+    game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview ||
+    game.kullPreview || game.nexusKullPreview ||
+    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  for (const expansion of game.expansions)
+    if (expansion !== 'ix' && expansion !== 'choam') return false;
+  let native = false;
+  for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+    // Six seats at most: check prior seats without allocating per-rule quote sets.
+    for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
+    if (player.faction === 'ixians' || player.faction === 'choam') {
+      if (!game.expansions.includes(player.faction === 'ixians' ? 'ix' : 'choam')) return false;
+      native = true;
+    } else {
+      let classic = false;
+      for (const faction of FACTIONS)
+        if (faction.id === player.faction && faction.expansion === 'base') { classic = true; break; }
+      if (!classic) return false;
+    }
+  }
+  return native;
+}
+
+export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  return basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game);
+}
+
 /** Shared by rule quotes, controls and minimal legal bot participation. */
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
   return noOtherLeaderSkillModules(game) &&
-    (!game.expansions.length || basicExpansionLeaderSkillsProfile(game));
+    (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game));
 }

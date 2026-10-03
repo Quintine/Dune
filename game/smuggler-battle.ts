@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { basicExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, type LeaderSkillProfile } from './leader-skill-profile';
+import { nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, type LeaderSkillProfile } from './leader-skill-profile';
 import type { Card, Leader } from './cards';
 import { splitLocation, validGameLocation } from './board';
 import { leaderSkillBattleBonus, usesSurvivingSkilledLeader, type BattleLeaderSkill } from './leader-skill-combat';
@@ -11,7 +11,7 @@ export type SmugglerBattleReceipt = {
 };
 export function smugglerBattleModeSupported(g: LeaderSkillProfile & { players: readonly { faction: string }[] }) {
   return ordinaryLeaderSkillModeSupported(g) &&
-    (basicExpansionLeaderSkillsProfile(g) || g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base')));
+    (nativeExpansionLeaderSkillsProfile(g) || g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base')));
 }
 export type SmugglerBattlePlan = {
   assignments: readonly BattleLeaderSkill[];

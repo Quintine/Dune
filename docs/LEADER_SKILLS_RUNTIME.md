@@ -28,6 +28,42 @@ activation still awaits the uniform-response UX decision; empty hands and
 Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
+## Advanced native Ixian and CHOAM composition — 4 October 2026
+
+The fresh local `leader-skills` profile now admits two through six unique
+Advanced seats with native Ixians and/or CHOAM and otherwise classic factions.
+Select distinct `ix` and/or `choam` decks, including each native faction's
+required family. All fourteen physical skills and original native setup choices
+remain: Ixian starting-card selection and HMS, genuine traitor offers, CHOAM's
+unskilled Auditor, posture before faction powers and optional own revival.
+Basic entries and public activation are unchanged. Foreign gholas, captured
+replacement, Advanced Atreides Suk/Kwisatz Haderach, Richese mixed planning and
+unrelated optional overlays retain their explicit guards.
+
+Advanced cyborg support and casualties feed the existing skilled Suk rescue,
+then native Suboid substitution without paying twice or creating counters.
+CHOAM keeps its original support payer/income distinction and unmodified
+Smuggler collection before ordinary Collection. Existing Planetologist,
+Sandmaster, Mentat, Bureaucrat and Banker helpers share this admitted native
+profile rather than independently accepting a different roster.
+Explicit `--mentat-question` remains a private timing preview; ordinary
+activation and empty-hand rulings are not resolved. The separate `banker-income`
+profile also admits this native Advanced subset; normal front-shield income
+remains unavailable until actual Mentat and keeps its provisional earned custody.
+
+Bounded Development Verified: affected122/122, types/lint/build, ten actual
+controlled native programs (five Ixian rescue/policy cases, one CHOAM collection,
+two private Mentat and two original-payment-to-Mentat Banker cases), and three
+genuine unstaged CLI games pass. Those games accept511 actions without rejection
+and twelve JSON continuations, but contain no battle: battle evidence comes
+from the controlled programs and human controls, not those natural histories.
+Fresh CLI **KFW75TCB v6** preserves original setup. Human390px **ARRHUS7Z v20**
+uses original admitted seats and an explicitly staged conserved Wind Pass
+position, then real plans, typed losses, mixed Suk rescue, native substitution
+and phase opening. Actual Collection after refresh retains wallet9, three board
+forces including one cyborg, four Tanks counters and zero cyborg Tanks.
+No full assurance campaign, public release or deployed claim.
+
 
 
 ## Connected boundary
@@ -94,8 +130,8 @@ response step awaits the user's UX decision; ordinary activation remains disable
 auction, shipment, Richese sale and paid-bribe families within its recorded
 boundary. Other Bureaucrat payments and split funding remain incomplete.
 [Banker normal income](SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026)
-is connected only in its separate fresh classic or supported Basic native
-`banker-income` profile; ordinary/default and combined starts gain no activation.
+is connected only in its separate fresh classic, supported Basic native or
+the bounded Advanced Ixian/CHOAM `banker-income` profile; ordinary/default starts gain no activation.
 [Banker battle spending](SPICE_BANKER_RUNTIME.md) retains its separate
 sealed funds and survivor strength. [Smuggler shipping](SMUGGLER_SHIPMENT.md)
 connects its optional normal reserve bonus and the [owned No-Field companion](SMUGGLER_NO_FIELD.md).

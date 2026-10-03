@@ -7,6 +7,13 @@ Ordinary Leader Skills starts do not activate it. Leader Skills and public mode
 acceptance remain partial. [Common skill rules](LEADER_SKILLS_RULES.md) govern assignment,
 capture, death and the right to conceal a skilled leader.
 
+**4 October composition:** the explicit preview also admits the bounded
+Advanced native Ixian and/or CHOAM plus classic profile with distinct required
+family decks. Actual private naming/disclosure returns to native posture and
+keeps the shown card held; unrelated players receive no learned card.
+See the [current native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
+Ordinary activation, empty hands and other pending rulings remain unchanged.
+
 ## Native skill integration — 2 October 2026
 
 The existing private preview now composes with the already-supported **Basic

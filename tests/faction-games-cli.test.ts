@@ -73,6 +73,7 @@ function assertFailedEvidence(
   name: string,
   expectedSeed: number,
   resumed: boolean,
+  expectedCount = 1,
 ) {
   const report = json<CliReport>(join(out, 'report.json'));
   const results = json<{ results: CliResult[] }>(join(out, 'results.json'));
@@ -82,9 +83,10 @@ function assertFailedEvidence(
   assert.equal(report.before.tree, report.after.tree);
   assert.match(report.before.commit, /\S/);
   assert.match(report.before.tree, /^[a-f\d]{64}$/);
-  assert.equal(report.results.length, 1);
-  assert.equal(results.results.length, 1);
-  for (const result of [report.results[0], results.results[0]]) {
+  assert.equal(report.results.length, expectedCount);
+  assert.equal(results.results.length, expectedCount);
+  for (const result of [report.results.find(row => row.name === name), results.results.find(row => row.name === name)]) {
+    assert.ok(result);
     assert.equal(result.name, name);
     assert.equal(result.seed, expectedSeed);
     assert.equal(result.resumed, resumed);
@@ -280,10 +282,10 @@ void test('Tleilaxu Skills samples preserve their full module on saved continuat
   assert.equal(existsSync(unsupported), false);
 });
 
-void test('Ixian Skills samples preserve their full module on saved continuation and reject Advanced before running', (t) => {
+void test('Ixian Skills samples preserve full Basic and Advanced native decks through saved continuation', (t) => {
   const area = temporary(t);
   const out = join(area, 'skills');
-  const result = run(out, '--profile', 'ix-skills', '--players', '2', '--seed', '1000', '--max-actions', '1');
+  const result = run(out, '--profile', 'ix-skills', '--rules', 'basic', '--players', '2', '--seed', '1000', '--max-actions', '1');
   assert.equal(result.status, 1);
   assertFailedEvidence(out, 'ix-skills-2-basic', 1026, false);
   const snapshot = join(out, 'failed-ix-skills-2-basic.json');
@@ -294,16 +296,22 @@ void test('Ixian Skills samples preserve their full module on saved continuation
   const resumed = join(area, 'skills-resumed');
   assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
   assertFailedEvidence(resumed, 'ix-skills-2-basic', 1026, true);
-  const unsupported = join(area, 'unsupported');
-  const bad = run(unsupported, '--profile', 'ix-skills', '--rules', 'advanced');
-  assert.equal(bad.status, 1);
-  assert.equal(existsSync(unsupported), false);
+  const advanced = join(area, 'advanced');
+  assert.equal(run(advanced, '--profile', 'ix-skills', '--rules', 'advanced', '--players', '2', '--seed', '1000', '--max-actions', '1').status, 1);
+  for (const [name, seed] of [['ix-skills-2-advanced', 1220], ['ix-skills-ixians-choam-2-advanced', 1230]] as const) {
+    assertFailedEvidence(advanced, name, seed, false, 2);
+    const state = json<typeof game>(join(advanced, `failed-${name}.json`));
+    assert.equal(state.advanced, true);
+    const cards = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
+    assert.equal(new Set(cards).size, 14);
+    assert.equal(cards.length, 14);
+  }
 });
 
-void test('CHOAM Skills samples preserve their full module on saved continuation and reject Advanced before running', (t) => {
+void test('CHOAM Skills samples preserve full Basic and Advanced native decks through saved continuation', (t) => {
   const area = temporary(t);
   const out = join(area, 'skills');
-  const result = run(out, '--profile', 'choam-skills', '--players', '2', '--seed', '1000', '--max-actions', '1');
+  const result = run(out, '--profile', 'choam-skills', '--rules', 'basic', '--players', '2', '--seed', '1000', '--max-actions', '1');
   assert.equal(result.status, 1);
   assertFailedEvidence(out, 'choam-skills-2-basic', 1031, false);
   const snapshot = join(out, 'failed-choam-skills-2-basic.json');
@@ -314,10 +322,14 @@ void test('CHOAM Skills samples preserve their full module on saved continuation
   const resumed = join(area, 'skills-resumed');
   assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
   assertFailedEvidence(resumed, 'choam-skills-2-basic', 1031, true);
-  const unsupported = join(area, 'unsupported');
-  const bad = run(unsupported, '--profile', 'choam-skills', '--rules', 'advanced');
-  assert.equal(bad.status, 1);
-  assert.equal(existsSync(unsupported), false);
+  const advanced = join(area, 'advanced');
+  assert.equal(run(advanced, '--profile', 'choam-skills', '--rules', 'advanced', '--players', '2', '--seed', '1000', '--max-actions', '1').status, 1);
+  assertFailedEvidence(advanced, 'choam-skills-2-advanced', 1225, false);
+  const state = json<typeof game>(join(advanced, 'failed-choam-skills-2-advanced.json'));
+  assert.equal(state.advanced, true);
+  const cards = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
+  assert.equal(new Set(cards).size, 14);
+  assert.equal(cards.length, 14);
 });
 void test('Homeworld and Nexus sample snapshots resume only their matching module and roster', (t) => {
   const area = temporary(t);

@@ -6,6 +6,13 @@ positive bank payments to automatic current Mentat collection.
 Bounded coverage is **Partial / Development Verified**. No public start,
 old-game retrofit or other module is enabled; this is not deployed acceptance.
 
+**4 October composition:** the separate `banker-income` entry additionally
+admits bounded Advanced native Ixians and/or CHOAM plus classic seats and their
+distinct required family decks. Actual native support payment grants one
+unavailable front-shield spice and original Mentat collects it once.
+See the [current native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
+Ordinary/default activation and provisional earned custody are unchanged.
+
 ## Normal income local contract — 2 October 2026
 
 The original photographed card says gain one spice when another player makes

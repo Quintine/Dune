@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 3 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 4 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -15,6 +15,27 @@ open mode gates.
 
 
 ## Current checkpoint and work
+
+**Advanced native Ixian/CHOAM Leader Skills — bounded Development Verified:**
+fresh two-to-six-seat native Ixian and/or CHOAM plus classic tables retain
+all fourteen skills, distinct required family decks and genuine native setup.
+Typed support, mixed Suk rescue and native Suboid substitution compose; CHOAM
+keeps Auditor exclusion, original support payer/income and Smuggler Collection
+order. Explicit private Mentat and separate normal Banker opt-ins also retain
+their original boundaries. Basic/public starts and unresolved rulings are unchanged.
+Affected122/122, types/lint/build, ten controlled actual native programs and
+three genuine CLI games pass:511 accepted actions/no rejection/twelve JSON
+continuations. The natural games contain no battles, so they do not certify
+battle effects. Fresh CLI **KFW75TCB v6** and human390px **ARRHUS7Z v20**
+preserve original seats; actual typed-loss/rescue/substitution controls reach
+Collection after refresh with wallet9, three board counters including one
+cyborg and four Tanks counters. Controlled battle positions are staged after
+genuine setup, not represented as natural histories. See the
+[Advanced native skill contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
+Full assurance/deployment remains open; live **ab5c782** remains last observed.
+Final CLI2/2 and native/guide18/18 pass after the contract update. The latest
+isolated build preserves human v20/Collection/wallet9; its native-scope guide
+is visually readable at390px (351px topic width).
 
 **Native Richese Occupy — bounded Development Verified:**
 Richese-present Advanced tables now resolve their mandatory Ecaz coalitions

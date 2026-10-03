@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import { basicExpansionLeaderSkillsProfile } from './leader-skill-profile';
+import { nativeExpansionLeaderSkillsProfile } from './leader-skill-profile';
 import type { Game, GameView } from './engine';
 import { splitLocation } from './board';
 
@@ -66,8 +66,8 @@ export function groundMovementRange(
   return planetologistRange(base + (options.choamBonus ?? 0), mode);
 }
 
-/** Keep the existing base-roster boundary and add the connected Basic Moritani profile. */
+/** Keep the existing classic-roster boundary and add supported native factions. */
 export function planetologistMovementModeSupported(game: Game | GameView): boolean {
   return game.players.every(player => FACTIONS.some(f => f.id === player.faction && f.expansion === 'base')) ||
-    basicExpansionLeaderSkillsProfile(game);
+    nativeExpansionLeaderSkillsProfile(game);
 }

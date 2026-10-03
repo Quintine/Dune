@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 4 October 2026 — Advanced native Ixian and CHOAM Leader Skills
+
+Two independent owners extended the bounded native profile/helper contracts and
+genuine full-deck rule fixtures. One integration owner migrated engine admission,
+native aftermath and Banker eligibility, preserved existing Basic/legacy entries,
+and exercised original human controls. The new Advanced subset requires unique
+two-to-six native Ixian/CHOAM plus classic seats, distinct required family decks
+and no unrelated overlays. Foreign-ghola, captured replacement and Advanced
+Atreides Suk/Kwisatz Haderach rulings remain guarded.
+
+Affected122/122, types/lint/build and ten actual controlled programs pass:
+five Ixian mixed-rescue/manual/four-policy continuations, one CHOAM Smuggler
+collection, two private Mentat disclosures and two real bank-payment-to-Mentat
+Banker grants. Three genuine new CLI games accept511 actions with no rejection
+and twelve JSON continuations; none has a battle, so no battle-effect claim is
+attributed to those histories. Natural scenario ordinals remain stable; new
+Advanced Ixian/CHOAM/mixed samples use220–234.
+
+Fresh original CLI **KFW75TCB v6** preserves genuine skill setup. Human390px
+**ARRHUS7Z v20** begins with real admitted Ixian/Atreides/Emperor seats, then an
+explicitly staged conserved Wind Pass position. Actual Dominic Vernius dial5/
+support1, ordinary opposing leader/dial0, native Traitor declines and4suboid/
+2cyborg loss controls open skilled Suk. Actual rescue saves one ordinary and one
+cyborg, keeping the ordinary counter; actual native substitution sacrifices one
+ordinary survivor for the remaining lost cyborg. Original phase opening finishes
+through real ready actions; refreshed Collection has wallet9, three board forces
+including one cyborg, four Tanks and zero cyborg Tanks. This is not a played
+phase history, exhaustive persistence audit or deployed evidence.
+
+Canonical runtime/guide/native follow-ups record current scope. Ordinary Mentat
+activation, empty hands, normal Banker earned custody and other pending questions
+are not settled by this composition. No game reset, public activation, AI tuning
+or comprehensive assurance campaign.
+
+Final CLI2/2 and native/guide18/18 pass; the obsolete Advanced CLI rejection
+contracts now exercise original full-deck saved artifacts instead. Types/lint
+and build pass. The rebuilt isolated worker retains human v20/Collection/
+wallet9, and fresh visual guide evidence fits390px (351px topic width).
+Five new canonical scope links resolve. Throwaway drivers and the owned tab
+are removed/released; QA rooms and the original isolated store remain.
+
 ## 3 October 2026 — native Richese, No-Field and Stone Occupy composition
 
 Two bounded owners implemented physical Stone normalization and native Richese

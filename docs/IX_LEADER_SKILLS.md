@@ -5,6 +5,13 @@ now supports the full fourteen-card Leader Skills deck, optionally alongside
 Tleilaxu and base factions. Public starts and completion/publication gates remain
 closed. Existing missing skill bands are not certified by this admission.
 
+**4 October Advanced continuation:** native Ixians and/or CHOAM with classic
+opponents, distinct required family decks and all fourteen skills now compose
+under the [bounded native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
+Advanced Ixian support, skilled Suk rescue and subsequent native substitution
+use original physical counters. Basic Tleilaxu admission below is unchanged;
+this Advanced subset does not admit foreign gholas or optional overlays.
+
 ## Setup and configuration
 
 Use Basic rules, exactly Ixians & Tleilaxu, two through six players including
@@ -77,8 +84,8 @@ starting-card choice, subsequent private setup and unchanged seats. Final
 source-bound check/build, samples, browser and preservation reports remain private.
 These are playability checks, not AI strength studies.
 
-Advanced Ixians, additional faction/module combinations, unresolved Sandmaster
-eligibility during native HMS relocation and other missing Leader Skill effects remain
+Additional faction/module combinations, unresolved Sandmaster eligibility during
+native HMS relocation and other missing Leader Skill effects remain
 separate work. Existing Banker, Mentat, Diplomat and modified-Smuggler questions
 remain in the [decision register](RULE_DECISIONS.md). Full AI implementation and
 difficulty tuning wait until all non-AI game features are complete.

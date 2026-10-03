@@ -1,7 +1,7 @@
 import { treacheryDeck, type Card } from './cards';
 import { richeseCards } from './richese-cards';
 import { quoteTupileIntelligenceAnswer } from './tupile-intelligence-answer';
-import {basicExpansionLeaderSkillsProfile,noOtherLeaderSkillModules,type LeaderSkillProfile} from './leader-skill-profile';
+import {nativeExpansionLeaderSkillsProfile,noOtherLeaderSkillModules,type LeaderSkillProfile} from './leader-skill-profile';
 
 export class MentatQuestionError extends Error {}
 export const MENTAT_EMPTY_HAND =
@@ -43,7 +43,7 @@ export function mentatQuestionModeSupported(game: LeaderSkillProfile): boolean {
   return noOtherLeaderSkillModules(game) &&
     (!game.expansions.length ||
       (game.expansions.length === 1 && game.expansions[0] === 'choam') ||
-      basicExpansionLeaderSkillsProfile(game));
+      nativeExpansionLeaderSkillsProfile(game));
 }
 function inventory(expansions: readonly string[]): Card[] {
   return [

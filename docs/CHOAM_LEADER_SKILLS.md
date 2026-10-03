@@ -5,6 +5,13 @@ existed. This follow-up connects the ordinary skill action paths for Basic CHOAM
 with base opponents and checks native card sales and revival interruptions.
 It does not certify the full expansion or open public starts/publication.
 
+**4 October Advanced continuation:** native CHOAM and/or Ixians with classic
+opponents now compose under the
+[bounded native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
+The Auditor remains ineligible at setup and paid revival. Native support income,
+bank-held ally funding and Smuggler collection retain their original order.
+Other Richese/module compositions below retain their separate guards.
+
 ## Configuration and components
 
 The shared ordinary-skill profile requires Basic rules, exactly CHOAM & Richese,
@@ -93,9 +100,8 @@ remains open.
 Normal Banker income, ordinary Mentat questioning, modified Smuggler collection,
 captured replacement entitlement and other recorded skill questions remain
 unfinished. The [bounded Diplomat retreat](LEADER_SKILLS_RUNTIME.md) is connected
-for supported battles, not a ruling for modified or simultaneous effects. Advanced
-Auditor rules and mixed Richese/other faction or module combinations remain
-separate work. See the
+for supported battles, not a ruling for modified or simultaneous effects. Mixed
+Richese/other faction or optional-module combinations remain separate work. See the
 [runtime boundaries](LEADER_SKILLS_RUNTIME.md) and [decision register](RULE_DECISIONS.md).
 Full AI implementation and difficulty calibration wait until every non-AI
 feature is complete.

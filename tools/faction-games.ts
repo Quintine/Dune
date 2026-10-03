@@ -237,20 +237,30 @@ const TLEILAXU_SKILLS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(playe
   expansions: ['ix'],
   roster: (['tleilaxu', 'emperor', 'guild', 'harkonnen', 'fremen', 'beneGesserit'] as FactionId[]).slice(0, players),
 }));
-const IX_SKILLS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(players => ({
-  ordinal: 26 + players - 2,
-  profile: 'ix-skills',
-  rules: 'basic',
-  expansions: ['ix'],
-  roster: (['ixians', 'tleilaxu', 'emperor', 'guild', 'harkonnen', 'fremen'] as FactionId[]).slice(0, players),
-}));
-const CHOAM_SKILLS_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].map(players => ({
-  ordinal: 31 + players - 2,
-  profile: 'choam-skills',
-  rules: 'basic',
-  expansions: ['choam'],
-  roster: (['choam', 'emperor', 'guild', 'harkonnen', 'fremen', 'beneGesserit'] as FactionId[]).slice(0, players),
-}));
+const IX_SKILLS_SCENARIOS: readonly Scenario[] = [
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 26 + players - 2, profile: 'ix-skills', rules: 'basic', expansions: ['ix'],
+    roster: (['ixians', 'tleilaxu', 'emperor', 'guild', 'harkonnen', 'fremen'] as FactionId[]).slice(0, players),
+  })),
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 220 + players - 2, profile: 'ix-skills', rules: 'advanced', expansions: ['ix'],
+    roster: (['ixians', 'emperor', 'guild', 'harkonnen', 'fremen', 'beneGesserit'] as FactionId[]).slice(0, players),
+  })),
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 230 + players - 2, profile: 'ix-skills', rules: 'advanced', expansions: ['ix', 'choam'],
+    roster: (['ixians', 'choam', 'emperor', 'guild', 'harkonnen', 'fremen'] as FactionId[]).slice(0, players),
+  })),
+];
+const CHOAM_SKILLS_SCENARIOS: readonly Scenario[] = [
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 31 + players - 2, profile: 'choam-skills', rules: 'basic', expansions: ['choam'],
+    roster: (['choam', 'emperor', 'guild', 'harkonnen', 'fremen', 'beneGesserit'] as FactionId[]).slice(0, players),
+  })),
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 225 + players - 2, profile: 'choam-skills', rules: 'advanced', expansions: ['choam'],
+    roster: (['choam', 'emperor', 'guild', 'harkonnen', 'fremen', 'beneGesserit'] as FactionId[]).slice(0, players),
+  })),
+];
 const STRONGHOLD_FACTIONS_ROSTER: readonly FactionId[] = [
   'ixians', 'choam', 'emperor', 'fremen', 'harkonnen', 'beneGesserit',
 ];
@@ -326,7 +336,8 @@ function usage() {
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
     'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; combined-nexus and combined-homeworld-nexus add five/six-seat Basic/Advanced all-expansion samples. Base, Homeworld, Nexus, Homeworld-Nexus, expansion roster, paired expansion Nexus, Ecaz card variant, Advanced Moritani assassination and skill profiles select their documented rosters. Stronghold-factions is Advanced only: Ixians + CHOAM, native Ixians + Tleilaxu, or native CHOAM + Richese with classic opponents, two through six seats; mixed four-native rosters also run at four through six seats. Selected Ix/CHOAM decks determine the canonical 47/35 Treachery Cards; Richese has a separate ten-card cache and all samples have six separate Stronghold Cards without other modules. Scenario names identify their native roster. --players requires a supported profile. Output must be a new private directory outside the checkout.' +
-    '\nEcaz-occupy is Advanced only: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM/Richese paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. Explicit independent three-card samples additionally use36/50/38. Richese marker-only or ordinary pools retain original reveal timing; own mixed No-Field dialing, whole-plan inspection and optional overlays remain guarded.'
+    '\nEcaz-occupy is Advanced only: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM/Richese paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. Explicit independent three-card samples additionally use36/50/38. Richese marker-only or ordinary pools retain original reveal timing; own mixed No-Field dialing, whole-plan inspection and optional overlays remain guarded.' +
+    '\nIx-skills and choam-skills retain their Basic samples and add Advanced native Ixian/CHOAM plus classic rosters, two through six seats; ix-skills also selects the Advanced mixed Ixian+CHOAM roster. All fourteen skills and distinct required family decks remain. Tleilaxu-skills and moritani-skills remain Basic only.'
   );
 }
 
@@ -367,6 +378,8 @@ function scenarioName(scenario: Scenario) {
     if (native.length || scenario.ecazTreachery)
       return `${scenario.profile}${scenario.ecazTreachery ? '-treachery' : ''}${native.length ? '-' + native.join('-') : ''}-${scenario.roster.length}-${scenario.rules}`;
   }
+  if (scenario.profile === 'ix-skills' && scenario.rules === 'advanced' && scenario.roster.includes('choam'))
+    return `${scenario.profile}-ixians-choam-${scenario.roster.length}-${scenario.rules}`;
   return scenario.profile === 'base' || scenario.profile === 'homeworld' || scenario.profile === 'nexus' || scenario.profile === 'homeworld-nexus' || scenario.profile === 'combined-nexus' || scenario.profile === 'combined-homeworld-nexus' ||
     scenario.profile === 'choam-roster' || scenario.profile === 'ecaz-roster' || scenario.profile === 'ecaz-treachery' || scenario.profile === 'ecaz-occupy' || scenario.profile === 'moritani-assassinate' || scenario.profile === 'ix-roster' || scenario.profile === 'choam-nexus' || scenario.profile === 'ecaz-nexus' || scenario.profile === 'ix-nexus' || skillProfile(scenario.profile)
     ? `${scenario.profile}-${scenario.roster.length}-${scenario.rules}`
@@ -708,8 +721,8 @@ async function main() {
     throw new Error('--players requires a roster or optional-module profile.');
   if ((profile === 'combined-nexus' || profile === 'combined-homeworld-nexus') && players !== 'all' && ![5, 6].includes(players))
     throw new Error(`--profile ${profile} supports only five or six players.`);
-  if (skillProfile(profile) && rules === 'advanced')
-    throw new Error('Expansion Leader Skills profiles currently support only Basic samples.');
+  if ((profile === 'moritani-skills' || profile === 'tleilaxu-skills') && rules === 'advanced')
+    throw new Error('Moritani and Tleilaxu Leader Skills profiles currently support only Basic samples.');
   if (profile === 'moritani-assassinate' && rules === 'basic')
     throw new Error('Moritani assassination samples require Advanced rules.');
   if (profile === 'stronghold-factions' && rules === 'basic')

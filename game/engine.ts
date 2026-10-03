@@ -1,4 +1,4 @@
-import { basicExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
+import { nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7778,7 +7778,7 @@ function bankerIncomeProfile(g: Game): boolean {
   return g.players.length >= 2 && g.players.length <= 6 &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base'))) ||
-      basicExpansionLeaderSkillsProfile(g)) &&
+      nativeExpansionLeaderSkillsProfile(g)) &&
     !g.nexusCards && !g.homeworlds && !g.techTokens &&
     !g.strongholdCards && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery && !g.semutaPreview && !g.mentatQuestionPreview &&
@@ -9302,13 +9302,13 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
   return initializeSetupGameForAudit(g, false, false, false, false, true,
-    g.expansions.length === 1 && g.expansions[0] === 'choam', basicExpansionLeaderSkillsProfile(g));
+    g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
 }
-/** Fresh all-fourteen-card classic or Basic native skills; no public income toggle. */
+/** Fresh all-fourteen-card classic or supported native skills; no public income toggle. */
 export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
   requireRule(bankerIncomeProfile(state) && !state.leaderSkills &&
     !state.spiceBankerIncomePreview && state.spiceBankerIncome === undefined,
-    'Spice Banker income requires a fresh classic or supported Basic native lobby with Leader Skills alone.');
+    'Spice Banker income requires a fresh classic or supported native lobby with Leader Skills alone.');
   requireFreshSetup(state, state.expansions.length > 0);
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
@@ -20277,11 +20277,11 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       'Suk Graduate rescue for Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.');
     if (quote.sukGraduate) requireRule(
       ordinaryLeaderSkillModeSupported(g) &&
-      (basicExpansionLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
+      (nativeExpansionLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
       'Suk Graduate rescue with expansion factions or other optional modules is still being implemented.');
     if (quote.rihani || quote.sandmaster) requireRule(
       ordinaryLeaderSkillModeSupported(g) &&
-      (basicExpansionLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
+      (nativeExpansionLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
       'These Leader Skill victory effects with expansion factions or other optional modules are still being integrated.');
     const smuggler = b.smugglerCollection ? nexusRule(() => settleSmugglerBattle(b.smugglerCollection!,
       !(b.smugglerCollection!.player === b.attacker ? quote.leaderDeaths.attacker : quote.leaderDeaths.defender), g.spice)) : null;
