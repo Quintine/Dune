@@ -70,6 +70,13 @@ Final guide10/10, types/lint/build and the final rebuilt390px reference pass
 (351px topic, no page overflow). The final isolated QA reload retains both
 original human versions and phases. No extra broad assurance suite is rerun.
 
+Code **b71f953635e013dab3fd184baf01523681883fdc** is pushed.
+[Exact CI37146422525](https://github.com/Quintine/Dune/actions/runs/37146422525),
+container job111271205483, completed/success: isolated storage/HTTP verification
+and subsequent verified-image publication pass. Immutable image:
+`ghcr.io/quintine/dune:sha-b71f953635e013dab3fd184baf01523681883fdc`.
+Publication is not deployment.
+
 ## 4 October 2026 — standalone Ecaz and Moritani Stronghold composition
 
 Two bounded owners supplied native Ecaz holder-plan and Moritani loss/assassination

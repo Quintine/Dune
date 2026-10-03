@@ -41,6 +41,12 @@ tabs are removed, rooms/store remain; full assurance/AI/public/deployed gates st
 See [native scope and evidence](LEADER_SKILLS_RUNTIME.md#classic-tech-tokens-composition--4-october-2026).
 Final guide10/10, types/lint/build and the final rebuilt390px reference pass;
 the final isolated QA reload retains human v13/Mentat and v18/Collection.
+Code **b71f953635e013dab3fd184baf01523681883fdc** is pushed.
+[Exact CI37146422525](https://github.com/Quintine/Dune/actions/runs/37146422525),
+container job111271205483, completed/success: isolated storage/HTTP step7
+and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-b71f953635e013dab3fd184baf01523681883fdc`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Standalone E3 Stronghold composition — bounded Development Verified:**
 fresh Advanced `stronghold-factions` admits native Ecaz OR Moritani with classic
