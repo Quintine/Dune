@@ -178,6 +178,11 @@ const ECAZ_OCCUPY_BASE_SCENARIOS: readonly Scenario[] = [
   })),
 ];
 const ECAZ_OCCUPY_SCENARIOS: readonly Scenario[] = [
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 293 + players - 2, profile: 'ecaz-occupy', rules: 'basic',
+    expansions: ['ecaz'],
+    roster: (['ecaz', 'fremen', 'emperor', 'beneGesserit', 'harkonnen', 'guild'] as FactionId[]).slice(0, players),
+  })),
   ...ECAZ_OCCUPY_BASE_SCENARIOS,
   ...ECAZ_OCCUPY_BASE_SCENARIOS.map((scenario, index): Scenario => ({
     ...scenario, ordinal: 192 + index, ecazTreachery: true,
@@ -378,7 +383,7 @@ function usage() {
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
     'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; combined-nexus and combined-homeworld-nexus add five/six-seat Basic/Advanced all-expansion samples. Base, Homeworld, Nexus, Homeworld-Nexus, expansion roster, paired expansion Nexus, Ecaz card variant, Advanced Moritani assassination and skill profiles select their documented rosters. Stronghold-factions is Advanced only: Ixians + CHOAM, native Ixians + Tleilaxu, or native CHOAM + Richese with classic opponents, two through six seats; mixed four-native rosters also run at four through six seats. Selected Ix/CHOAM decks determine the canonical 47/35 Treachery Cards; Richese has a separate ten-card cache and all samples have six separate Stronghold Cards without other modules. Scenario names identify their native roster. --players requires a supported profile. Output must be a new private directory outside the checkout.' +
-    '\nEcaz-occupy is Advanced only: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM/Richese paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. Explicit independent three-card samples additionally use36/50/38. Richese marker-only or ordinary pools retain original reveal timing; own mixed No-Field dialing, whole-plan inspection and optional overlays remain guarded.' +
+    '\nEcaz-occupy supports Basic even-force and Advanced: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM/Richese paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. Basic uses Ecaz/classic/optional Moritani and the exact ecaz deck, with E/2 mandatory contribution and losses. An uncanceled odd Basic count remains blocked by the preserved publisher casualty-rounding conflict. Explicit independent three-card samples additionally use36/50/38. Richese marker-only or ordinary pools retain original reveal timing; own mixed No-Field dialing, whole-plan inspection and optional overlays remain guarded.' +
     '\nThe four earlier native skill profiles retain their Basic samples. Advanced Ix-skills/choam-skills/tleilaxu-skills use documented native plus classic families; Advanced moritani-skills composes its original non-Harkonnen classic assassination roster. Richese-skills adds Basic/Advanced Richese or paired CHOAM tables, Advanced Richese/Tleilaxu/CHOAM and optional Ix-deck tables without native Ixians. All retain fourteen skills and original cache/native inventories. Native Ixian Technology on Richese lots, own mixed No-Field, other roster/modules and public starts retain their separate guards.'
     + '\nEcaz-skills uses native five-disc Ecaz with classic opponents, the ecaz deck and all fourteen skills in Basic/Advanced; Advanced Harkonnen is excluded by the existing shared-Duke capture boundary. Ambassador and ordinary skill paths retain native custody. Shared-Duke assignment and combined Occupy skills remain separate boundaries; no public starts or save retrofit.'
   );
@@ -775,8 +780,6 @@ async function main() {
     throw new Error('Moritani assassination samples require Advanced rules.');
   if (profile === 'stronghold-factions' && rules === 'basic')
     throw new Error('Stronghold factions samples require Advanced rules.');
-  if (profile === 'ecaz-occupy' && rules === 'basic')
-    throw new Error('Ecaz Occupy samples require Advanced rules.');
   const resume = values.resume ? resumedGame(values.resume) : null;
   const requestedSamples = profile === 'homeworld' || profile === 'nexus' || profile === 'homeworld-nexus'
     ? MODULE_SCENARIOS

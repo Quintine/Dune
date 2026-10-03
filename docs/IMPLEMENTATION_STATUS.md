@@ -1,5 +1,65 @@
 # Dune implementation status
 
+## 4 October 2026 — Basic even-force Ecaz Occupy composition
+
+Two bounded owners supplied the source-band coalition quote and native Basic
+runtime cases. One integration owner admitted Basic, migrated production
+re-quotes, corrected a genuine total-dial validation gap and connected the CLI
+help, canonical guide and source records.
+
+The coalition quote now requires an explicit `advanced` boolean with no default
+or alias. Active Basic requires an even Ecaz count and uses E/2 for the mandatory
+contribution and ordinary-win Ecaz losses; Advanced keeps its ceiling arithmetic.
+Canceled Basic permits the preserved odd count through the original own-pool
+cancellation frame with zero fixed strength. The publisher page-8 paragraph and
+page-15 example still contradict each other for odd counts, so an uncanceled odd
+Basic battle is rejected at the original choice before a lead frame exists. It is
+not rounded, canceled or replaced. Basic has no Emperor/Fremen elite inventory
+(elites require Advanced or Homeworlds), and the engine normalizes a supplied
+Basic support amount to zero rather than inventing paid Basic support; the shared
+editor blocks nonzero support.
+
+A genuine defect surfaced during integration: Basic `validatePlan` bounded the
+dial by the ordinary own pool before the coalition quote ran, so a legal total
+such as six was rejected. The quoted-force branch now includes the actual Occupy
+profile, and the Basic Prescience numeric dial branch includes the coalition
+lead; native feasibility still validates the exact total. The board projection
+gains an optional public Basic-coalition flag so only fresh Basic tables collapse
+the pair into one battle side; older played Basic games are not retrofitted.
+
+The Basic fixture originally borrowed a wallet so the rival could afford its
+eight-force sand shipment. Removing that artificial wallet exposed the real
+unaffordable shipment; the fixture now transfers eight original rival reserves
+to the battlefield after the genuine Nexus instead, keeping native wallets,
+phases, alliance, plans and receipts. The genuine Basic fixture does not accept
+an authenticated lobby yet; the authenticated staging path is separate.
+
+Affected Basic/helper cases47/47 and the affected Advanced/CLI union352/352 on a
+stable tree pass with types/lint. Five genuine Basic two-through-six-seat games
+were run: four complete with 2,090 accepted actions, no rejections and 54 JSON
+continuations; four-seat seed **20261299** is captured at the preserved
+odd-count conflict after 321 accepted actions. The captured game, report, state
+and trace remain outside the checkout and are not rerun or bypassed. The four
+completed natural games contain no coalition lead choice, so the coalition
+arithmetic evidence comes from the controlled programs and the human path, not
+from those games.
+
+Authenticated human390px **FEJ6SBFB v14** kept the admitted Ecaz/Guild/Emperor
+seats and native wallets, then staged a conserved even-force board after the
+genuine Nexus alliance. The table showed the correct Basic labels: a total-dial
+slider bounded 2..6 (2 fixed Ecaz strength for four Ecaz forces plus Guild's
+four-force variable pool) with no spice-support control. Real sealed plans —
+Ecaz Sanya Ecaz 4 with total dial 4 against Emperor Hasimir Fenring 6 — produced
+an 8–6 Ecaz win. The log and saved state record Ecaz's two mandatory Occupy
+casualties, Guild's two variable casualties, and the Emperor's eight territory
+forces to the Tanks; every seat remains at 20 physical forces after refresh.
+The Basic Karama window, lead choice, plan editor and Collection continuation all
+use the existing shared controls.
+
+No natural-history claim for controlled positions, reset, public activation,
+full-mode certification or deployed evidence; live **ab5c782** remains last
+observed.
+
 ## 4 October 2026 — native Ecaz ordinary-disc skills and temporary Duke composition
 
 Two bounded owners supplied native setup/ordinary rescue/revival/Ambassador

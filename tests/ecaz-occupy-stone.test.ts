@@ -16,6 +16,7 @@ const ix: CombatForces = {
 };
 function profile(ecazNormal = 5, lead = 'ecaz-user', canceled = false, allyForces = ix): EcazOccupyBattleProfile {
   return quoteEcazOccupyBattle({
+    advanced: true,
     battleOrderActor: 'ecaz-user',
     ecaz: { id: 'ecaz-user', faction: 'ecaz', ally: 'ally-user', forces: ordinary(ecazNormal) },
     ally: { id: 'ally-user', faction: 'ixians', ally: 'ecaz-user', forces: allyForces },

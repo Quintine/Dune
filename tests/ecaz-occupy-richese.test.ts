@@ -132,7 +132,7 @@ for (const role of ['ally', 'opponent'] as const) for (const marker of [0, 3, 5]
 
 void test('Original concealed Richese presence permits a zero prospective pool, never an ordinary empty ally', () => {
   const forces = { normal: 0, elite: 0, eliteStrength: 2 as const, freeSupport: false };
-  const input: EcazOccupyBattleInput = { battleOrderActor: 'ecaz', lead: 'ecaz', canceled: false,
+  const input: EcazOccupyBattleInput = { advanced: true, battleOrderActor: 'ecaz', lead: 'ecaz', canceled: false,
     ecaz: { id: 'ecaz', faction: 'ecaz', ally: 'richese', forces: { ...forces, normal: 5 } },
     ally: { id: 'richese', faction: 'richese', ally: 'ecaz', forces } };
   const saved = structuredClone(input);

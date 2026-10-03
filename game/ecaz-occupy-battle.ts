@@ -27,6 +27,7 @@ export type EcazOccupyBattleSeat = Readonly<{
   noFieldPresence?: true;
 }>;
 export type EcazOccupyBattleInput = Readonly<{
+  advanced: boolean;
   /** Original battle chooser, before Ecaz selects the coalition's plan actor. */
   battleOrderActor: string;
   ecaz: EcazOccupyBattleSeat;
@@ -35,6 +36,7 @@ export type EcazOccupyBattleInput = Readonly<{
   canceled: boolean;
 }>;
 export type EcazOccupyBattleProfile = Readonly<{
+  advanced: boolean;
   battleOrderActor: string;
   ecaz: string;
   ally: string;
@@ -90,13 +92,17 @@ function requireBattle(condition: unknown, message: string): asserts condition {
 const text = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0;
 
-/** Authorized Advanced source: ceil(E/2) contributes at full strength and
- * costs no support. The selected lead supplies the plan and pays for the
- * actual ally's dial; selecting Ecaz does not transfer the ally's counters. */
+/** Advanced retains ceil(E/2); source-clear Basic admits only even E and uses
+ * E/2. The increment is free. The selected lead supplies the plan and pays for
+ * the actual ally's dial; selecting Ecaz does not transfer the ally's counters. */
 export function quoteEcazOccupyBattle(
   input: EcazOccupyBattleInput,
 ): EcazOccupyBattleProfile {
-  const { ecaz, ally, lead, canceled, battleOrderActor } = input;
+  const { advanced, ecaz, ally, lead, canceled, battleOrderActor } = input;
+  requireBattle(
+    typeof advanced === 'boolean',
+    'The Occupy profile needs an explicit Basic or Advanced rules band.',
+  );
   requireBattle(
     ecaz && ally && text(ecaz.id) && text(ally.id) && ecaz.id !== ally.id &&
       ecaz.faction === 'ecaz' && ally.faction !== 'ecaz' &&
@@ -131,10 +137,16 @@ export function quoteEcazOccupyBattle(
     typeof canceled === 'boolean',
     'The Occupy profile needs its pre-plan cancellation state.',
   );
+  requireBattle(
+    advanced || canceled || ecaz.forces.normal % 2 === 0,
+    'Uncanceled Basic Occupy needs an even Ecaz force count; odd-force publisher casualty wording remains unresolved.',
+  );
   const forceOwner = canceled ? lead : ally.id;
   const forces = forceOwner === ecaz.id ? ecaz.forces : ally.forces;
-  const fixedEcazDial = canceled ? 0 : Math.ceil(ecaz.forces.normal / 2);
+  const fixedEcazDial = canceled ? 0 :
+    advanced ? Math.ceil(ecaz.forces.normal / 2) : ecaz.forces.normal / 2;
   return {
+    advanced,
     battleOrderActor,
     ecaz: ecaz.id,
     ally: ally.id,

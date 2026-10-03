@@ -28,6 +28,7 @@ function profile(
   allyForces = native(4),
 ): EcazOccupyBattleProfile {
   return quoteEcazOccupyBattle({
+    advanced: true,
     battleOrderActor: 'ecaz-user',
     ecaz: {
       id: 'ecaz-user', faction: 'ecaz', ally: 'ally-user',

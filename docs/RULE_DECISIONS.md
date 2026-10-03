@@ -85,7 +85,22 @@ Public, faction, optional-module and full-mode readiness gates are unchanged.
 Secrecy (physical page 16), Duke Vidal's ghola exception (30), Kull and other
 independent decisions are not reconciled by this cutover.
 
-## Advanced Ecaz Occupy cutover — 2 October 2026
+## Basic Ecaz Occupy even-force boundary — 4 October 2026
+
+Fresh bounded `ecaz-occupy` now admits Basic with the exact `ecaz` deck and
+classic or optional Moritani opponents, no optional modules. For an even Ecaz
+force count the publisher page-8 paragraph and the page-15 example agree:
+contribution and ordinary-win Ecaz losses are E/2. Their odd-count examples
+still contradict each other, so an uncanceled odd Basic count is rejected at
+the original battle choice before any lead frame is saved; it is not rounded,
+canceled or replaced. Advanced keeps its separately authorized ceiling
+arithmetic. Basic has no Emperor/Fremen elite inventory and a supplied Basic
+support amount normalizes to zero, so the shared editor blocks nonzero support
+rather than creating a Basic payment rule. This is a source-bound composition,
+not a publisher correction. See the
+[Basic even-force contract](ECAZ_OCCUPY_RULES.md#basic-even-force-composition--4-october-2026).
+
+## Authorized Advanced Ecaz Occupy cutover — 2 October 2026
 
 The authorized supplied revision resolves the Advanced combined army:
 **Occupy B, physical PDF page 32** selects Ecaz or its current ally as lead.

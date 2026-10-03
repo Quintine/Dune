@@ -16,6 +16,40 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Basic Ecaz Occupy even-force — bounded Development Verified:**
+fresh Basic `ecaz-occupy` now admits native Ecaz with classic or optional
+Moritani opponents and the exact `ecaz` deck, no optional modules. Genuine
+setup, original Nexus/worm alliance, shipments, Karama and Collection remain
+native; older played Basic tables are not retrofitted. For an even Ecaz force
+count the publisher page-8 paragraph and the page-15 example agree, so the
+contribution and ordinary-win Ecaz losses are E/2. Their odd-count examples
+still contradict each other, so an uncanceled odd Basic count is rejected at
+the original battle choice before any lead frame is saved — not rounded,
+canceled or replaced. Advanced keeps its separately authorized ceiling
+arithmetic. Basic has no Emperor/Fremen elite inventory and its supplied
+support normalizes to zero, so the shared editor blocks nonzero support rather
+than inventing a Basic payment rule.
+The pure coalition quote now requires an explicit `advanced` band with no
+default or alias; every production re-quote caller passes the actual band.
+Affected Basic/helper cases47/47, the affected Advanced/CLI union352/352 on a
+stable tree, types and lint pass. Five genuine Basic two-through-six-seat games
+were run: four complete with 2,090 accepted actions, no rejections and 54 JSON
+continuations; four-seat seed **20261299** is captured at the preserved
+odd-count conflict after 321 accepted actions. It is not rerun or bypassed.
+Those four completed natural games contain no coalition lead choice, so the
+actual coalition arithmetic evidence comes from the controlled programs and the
+human path. Authenticated human390px **FEJ6SBFB v14** kept the admitted
+Ecaz/Guild/Emperor seats and native wallets, then used a conserved even-force
+board after a genuine Nexus alliance. The table showed the correct Basic labels:
+a total-dial slider bounded2..6 (2 fixed Ecaz strength for four Ecaz forces,
+variable pool Guild's four) with no spice-support control. Real sealed plans
+(Ecaz Sanya4 plus total dial4 against Emperor Hasimir6) produced an8–6 Ecaz win;
+the log and state record Ecaz's two mandatory Occupy casualties, Guild's two
+variable casualties, and the Emperor's eight territory forces to the Tanks. Every
+seat remains at20 physical forces after refresh. See
+[Basic even-force source](ECAZ_OCCUPY_RULES.md#basic-even-force-composition--4-october-2026).
+Full combinations/assurance/public/deployed acceptance remain open.
+
 **Native Ecaz ordinary-disc Skills — bounded Development Verified:**
 fresh Basic/Advanced Ecaz with classic opponents retains the exact `ecaz` deck,
 all fourteen skills, five native assignment discs and original Loyalty/setup.

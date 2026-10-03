@@ -25,6 +25,8 @@ export type BoardSeat = Pick<Player, 'id' | 'faction' | 'ally' | 'advisors'> &
   ForcePresence;
 export type BoardContext = MobileBoard & {
   advanced: boolean;
+  /** Fresh Basic coalition protocol; existing played Basic tables are not retrofitted. */
+  ecazOccupyPreview?: boolean;
   storm: number;
   order: readonly string[];
   players: readonly BoardSeat[];
@@ -121,7 +123,7 @@ export function quoteBattleBoard(g: BoardContext) {
   };
   const members = (seat: BoardSeat, site: string) => {
     const ally = players.find(other => other.id === seat.ally && other.ally === seat.id);
-    return g.advanced && ally && (seat.faction === 'ecaz' || ally.faction === 'ecaz') &&
+    return (g.advanced || g.ecazOccupyPreview === true) && ally && (seat.faction === 'ecaz' || ally.faction === 'ecaz') &&
       fighterCount(ally, site) > 0 ? [seat, ally] : [seat];
   };
   const emitted = new Set<string>();

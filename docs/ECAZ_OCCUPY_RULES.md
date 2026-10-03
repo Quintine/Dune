@@ -1,6 +1,49 @@
-# Ecaz Occupy: Advanced source and historical conflict
+# Ecaz Occupy: Basic and Advanced source, and historical conflict
 
-Historical primary-source audit, 2026-09-07, corrected after independent verification. The old publisher/designer casualty-rounding conflict remains unresolved as a publisher correction and for Basic. Its earlier false attribution to Jack Reda is still withdrawn. The later user-authorized Advanced source below selects explicit Advanced arithmetic; it does not retroactively certify that attribution.
+Historical primary-source audit, 2026-09-07, corrected after independent verification. The old publisher/designer casualty-rounding conflict remains unresolved as a publisher correction and for odd Basic counts. Its earlier false attribution to Jack Reda is still withdrawn. The later user-authorized Advanced source below selects explicit Advanced arithmetic, and the Basic even-force composition selects E/2 for even counts; neither retroactively certifies that attribution.
+
+## Basic even-force composition — 4 October 2026
+
+Fresh local `ecaz-occupy` now admits Basic as well as Advanced. Basic uses the
+exact `ecaz` Treachery deck with classic or optional Moritani opponents and no
+optional cards or modules. Genuine setup, original Nexus/worm alliance,
+shipments, Karama and Collection remain native; older played Basic tables are
+not retrofitted.
+
+For an even Ecaz force count the publisher page-8 general paragraph and the
+page-15 example agree: contribution and ordinary-win Ecaz losses are E/2, and
+E/2 survive. The two pages still contradict each other for odd counts, so an
+uncanceled odd Basic count is rejected at the original battle choice before a
+lead frame is saved. It is not silently rounded, canceled or replaced with
+another fight. Advanced keeps its separately authorized ceiling arithmetic.
+
+Basic has no Emperor/Fremen elite inventory (elites require Advanced or
+Homeworlds), and the engine normalizes a supplied Basic support amount to zero
+rather than inventing paid Basic support. The shared editor therefore blocks
+nonzero support; no additional Basic payment rule is created. Native Karama
+after the lead choice, selected-lead own-pool cancellation, original winner
+cards, traitor/mutual/explosion outcomes, joint three-stronghold coexistence and
+original Mentat victory all use the existing handlers.
+
+Focused source-band cases plus native runtime cases cover E2/E4 under both
+leads, free full-strength ordinary commitments, typed Basic Fedaykin/Sardaukar
+strength-one casualties, cancellation under both leads, and the four legal
+policies. Five genuine Basic two-through-six-seat games were run: four complete
+with 2,090 accepted actions, no rejections and 54 JSON continuations; the
+four-seat game is captured at the preserved odd-count conflict and is not rerun
+or bypassed. Four completed natural games contain no coalition lead choice, so
+the actual coalition arithmetic evidence comes from the controlled programs and
+the human path rather than those games.
+
+Authenticated human390px **FEJ6SBFB v14** kept the admitted Ecaz/Guild/Emperor
+seats and native wallets, then staged a conserved even-force board after the
+genuine Nexus alliance. The table showed the correct Basic labels: a total-dial
+slider bounded 2..6 (2 fixed Ecaz strength for four Ecaz forces plus Guild's
+four-force variable pool) with no spice-support control. Real sealed plans —
+Ecaz Sanya Ecaz 4 with total dial 4 against Emperor Hasimir Fenring 6 — produced
+an 8–6 Ecaz win. The log and saved state record Ecaz's two mandatory Occupy
+casualties, Guild's two variable casualties, and the Emperor's eight territory
+forces to the Tanks; every seat remains at 20 physical forces after refresh.
 
 ## Authorized Advanced cutover — 2 October 2026
 
@@ -232,7 +275,7 @@ Ecaz losses on ordinary allied win = ceil(E / 2)
 Ecaz survivors on ordinary allied win = floor(E / 2)
 ```
 
-The historical publisher/mirror example still conflicts for E=5, and the earlier audits correctly record that publisher gap. Basic still needs a supported interpretation. Advanced now uses the separately user-authorized source cutover above: its explicit ceil contribution and floor survivors select the arithmetic without claiming a designer correction. Fixed Ecaz losses stay independent of the ally's variable dial losses.
+The historical publisher/mirror example still conflicts for E=5, and the earlier audits correctly record that publisher gap. Basic now has the bounded even-force composition above: E/2 is source-clear for even counts, and the still-contradictory odd counts are rejected rather than rounded. Advanced uses the separately user-authorized source cutover above: its explicit ceil contribution and floor survivors select the arithmetic without claiming a designer correction. Fixed Ecaz losses stay independent of the ally's variable dial losses.
 
 ## Occupation, controller and battle order
 
@@ -285,4 +328,4 @@ Implement a pure, owner-labelled Occupy battle profile shared by validation, AI,
 
 Acceptance examples should include Ecaz counts 1–5, either selected faction, all three relative storm positions, both win/loss outcomes, Basic/Advanced supported dials, Fremen free strength, advisor-only BG exclusion, printed and BG-converted cancellation, and JSON recovery after selection. Separate targeted follow-ups should cover the source-scoped special battle effects above, agreed/default desert allocation, Advanced Collection, and actual three-co-occupied victory. Keep the optional Homeworld/Nexus/Discovery modifiers explicitly outside the initial profile until their own faces and outcomes are wired; no ordinary Occupy rule may be used to bypass them.
 
-The September audit changed no runtime and corrected the false designer attribution. The October Advanced cutover above is separate; Basic, optional/exotic interactions and independently unanswered cancellation details retain their historical boundaries.
+The September audit changed no runtime and corrected the false designer attribution. The October Advanced cutover and the October Basic even-force composition above are separate; optional/exotic interactions and independently unanswered cancellation details retain their historical boundaries.

@@ -7338,7 +7338,7 @@ function ecazBattleProfile(g: Game): EcazOccupyBattleProfile | null {
   if (!b || !occupy?.lead) return null;
   const lead = occupy.lead;
   const ecaz = getPlayer(g, occupy.ecaz), ally = getPlayer(g, occupy.ally);
-  requireRule(g.advanced && occupy.event === b.event && ecaz.faction === 'ecaz' &&
+  requireRule(occupy.event === b.event && ecaz.faction === 'ecaz' &&
     ecaz.ally === ally.id && ally.ally === ecaz.id && [b.attacker, b.defender].includes(occupy.lead) &&
     !isAdvisor(ecaz, b.territory) && !isAdvisor(ally, b.territory) &&
     (occupyArmiesConnected(g, ecaz, ally, b.territory) ||
@@ -7347,6 +7347,7 @@ function ecazBattleProfile(g: Game): EcazOccupyBattleProfile | null {
     'Occupy needs the original battle and physically connected allied fighters.');
   const opponent = getPlayer(g, b.attacker === occupy.lead ? b.defender : b.attacker);
   return nexusRule(() => quoteEcazOccupyBattle({
+    advanced: g.advanced,
     battleOrderActor: b.chooser ?? b.attacker,
     ecaz: { id: ecaz.id, faction: 'ecaz', ally: ecaz.ally, forces: combatForces(g, ecaz, b.territory, opponent) },
     ally: { id: ally.id, faction: ally.faction, ally: ally.ally,
@@ -9230,10 +9231,13 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
-  return g.advanced === true && Array.isArray(g.expansions) &&
+  return typeof g.advanced === 'boolean' && Array.isArray(g.expansions) &&
     g.expansions.includes('ecaz') &&
     g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
     new Set(g.expansions).size === g.expansions.length &&
+    (g.advanced || (g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
+      !g.ecazTreachery && g.players.every(p => p.faction === 'ecaz' ||
+        p.faction === 'moritani' || CLASSIC_FACTIONS[p.faction]))) &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.players.some(p => p.faction === 'ecaz') &&
     g.players.every(p => faction(p.faction).expansion === 'base' ||
@@ -9244,10 +9248,10 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
     !g.discoveryStash && !g.greatMaker &&
     (g.ecazTreachery === undefined || g.ecazTreachery === true);
 }
-/** Fresh native Advanced Occupy profile; public starts and Basic are unchanged. */
+/** Fresh native Occupy profile; Basic's disputed odd-force arithmetic stays guarded. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
   requireRule(ecazOccupyCompositionSupported(state),
-    'Advanced Occupy requires native Ecaz, classic/Moritani/Ixian/Tleilaxu/CHOAM/Richese factions and their distinct selected family decks, without optional overlays.');
+    'Occupy requires supported native factions and their distinct selected decks; Basic uses Ecaz/classic/optional Moritani without optional modules.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
   const g = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, state.ecazTreachery === true);
@@ -18628,7 +18632,7 @@ function validatePlan(
   const forces = planCombatForces(g, p, opponent);
   const profile = ecazBattleProfile(g);
   const occupy = profile?.lead === p.id ? profile : null;
-  const typedForces = g.advanced || p.faction === 'ixians';
+  const typedForces = g.advanced || p.faction === 'ixians' || !!occupy;
   const bankerSpice = input.bankerSpice === undefined ? 0 : input.bankerSpice;
   requireRule(typeof bankerSpice === 'number' && Number.isSafeInteger(bankerSpice) && bankerSpice >= 0 && bankerSpice <= 3,
     'Choose zero to decline, or one through three spice for Spice Banker.');
@@ -30124,6 +30128,9 @@ function applyActionInner(
     const ecaz = byFaction(g, 'ecaz');
     const ally = ecaz?.ally ? getPlayer(g, ecaz.ally) : null;
     const connected = ecaz && ally && occupyArmiesConnected(g, ecaz, ally, choice.territory);
+    const combined = (g.advanced || g.ecazOccupyPreview === true) && ecaz &&
+      ally?.ally === ecaz.id && connected && !isAdvisor(ally, choice.territory) &&
+      [choice.attacker, choice.defender].some(seat => seat === ecaz.id || seat === ally.id);
     const noFieldPlayers = g.players.filter(player =>
       player.noField?.deployed?.location.territory === choice.territory &&
       (player.id === choice.attacker || player.id === choice.defender ||
@@ -30136,6 +30143,12 @@ function applyActionInner(
         ),
         'Mixed ordinary-force and No-Field battle dialing awaits a ruling. Reveal voluntarily before Battle while that option is available.',
       );
+    if (combined) {
+      requireRule(ecazOccupyCompositionSupported(g),
+        'Combined Occupy requires source-selected native factions; optional overlays remain gated.');
+      requireRule(g.advanced || fighterCount(ecaz!, choice.territory) % 2 === 0,
+        'Odd-force Basic Occupy awaits the preserved publisher casualty-rounding ruling.');
+    }
     const battleEvent = crypto.randomUUID();
     g.battle = {
       ...choice,
@@ -30155,12 +30168,9 @@ function applyActionInner(
       revealed: false,
       traitorCalls: {},
     };
-    if (g.advanced && ecaz && ally?.ally === ecaz.id && connected &&
-      !isAdvisor(ally, choice.territory) && [choice.attacker, choice.defender].some(seat => seat === ecaz.id || seat === ally.id)) {
-      requireRule(ecazOccupyCompositionSupported(g),
-        'Advanced combined Occupy requires source-selected native factions; optional overlays remain gated.');
-      g.battle.ecazOccupy = { event: battleEvent, ecaz: ecaz.id, ally: ally.id, lead: null, canceled: false };
-      g.decision = { kind: 'ecazBattleLead', player: ecaz.id, event: battleEvent, choices: [ecaz.id, ally.id] };
+    if (combined) {
+      g.battle.ecazOccupy = { event: battleEvent, ecaz: ecaz!.id, ally: ally!.id, lead: null, canceled: false };
+      g.decision = { kind: 'ecazBattleLead', player: ecaz!.id, event: battleEvent, choices: [ecaz!.id, ally!.id] };
     } else {
       createMentatQuestion(g);
       beginStrongholdBattle(g);
@@ -30244,7 +30254,7 @@ function applyActionInner(
     );
     const value =
       field === 'dial'
-        ? g.advanced || p.faction === 'ixians'
+        ? g.advanced || p.faction === 'ixians' || b.ecazOccupy?.lead === p.id
           ? typeof action.value === 'number'
             ? action.value
             : NaN

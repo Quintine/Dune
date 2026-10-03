@@ -138,9 +138,10 @@ function calculate(
   if (occupy) {
     const ecaz = input.players.find(player => player.id === occupy.ecaz);
     const ally = input.players.find(player => player.id === occupy.ally);
-    requireCombat(input.advanced && ecaz?.faction === 'ecaz' && ally && combatants.includes(occupy.lead),
+    requireCombat(input.advanced === occupy.advanced && ecaz?.faction === 'ecaz' && ally && combatants.includes(occupy.lead),
       'Occupy force powers need the actual Ecaz coalition and selected lead.');
     const profile = quoteEcazOccupyBattle({
+      advanced: input.advanced,
       battleOrderActor: occupy.battleOrderActor,
       ecaz: { id: ecaz.id, faction: 'ecaz', ally: ecaz.ally, forces: occupy.ecazForces },
       ally: { id: ally.id, faction: ally.faction, ally: ally.ally, forces: occupy.allyForces,
