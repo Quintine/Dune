@@ -83,14 +83,10 @@ export function nextStrongholdFactionsNativeStep(game: Game): StrongholdFactions
     return { actor, action: { type: 'ready' } };
   }
   if (game.response) {
-    // Use projected legal responses: an absent Karama does not create a pause.
-    for (const player of game.players) {
-      const view = viewGame(game, player.id);
-      view.players.find(p => p.id === player.id)!.bot = 'Easy';
-      const action = botActions(view).find(a => a.type === 'passResponse');
-      if (action) return { actor: player.id, action };
-    }
-    throw Error(`No actual eligible counter at ${game.response.kind}`);
+    // The persisted pass queue defines legality; a policy recommendation is not a legal-action menu.
+    const actor = game.players.find(player => !game.response!.passed.includes(player.id))?.id;
+    assert.ok(actor, `No remaining original response at ${game.response.kind}`);
+    return { actor, action: { type: 'passResponse' } };
   }
   const decision = game.decision;
   if (decision) {

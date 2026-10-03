@@ -29,14 +29,16 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
-/** E1/E2 native skills may add Tech alone; each native predicate retains its original roster/decks. */
+/** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
 function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (noOtherLeaderSkillModules(game)) return true;
   const players = game.players;
-  if (!game.techTokens || !players || players.length < 3 || players.length > 6 ||
+  if ((!game.techTokens && !game.strongholdCards) || !players ||
+    players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
+    (game.strongholdCards && game.advanced !== true) ||
     game.expansions.length < 1 || game.expansions.length > 2 ||
     game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
-    game.strongholdCards || game.ecazTreachery || game.semutaPreview ||
+    game.ecazTreachery || game.semutaPreview ||
     game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
@@ -57,6 +59,28 @@ export function classicTechLeaderSkillsProfile(game: LeaderSkillProfile): boolea
     game.strongholdCards || game.ecazTreachery || game.semutaPreview ||
     game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let classic = false;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction && faction.expansion === 'base') { classic = true; break; }
+    if (!classic) return false;
+  }
+  return true;
+}
+
+/** Original Advanced Strongholds, with optional Tech, for classic or supported E1/E2 skills. */
+export function strongholdLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (!game.strongholdCards || game.advanced !== true) return false;
+  if (game.expansions.length) return advancedNativeLeaderSkillsProfile(game);
+  const players = game.players;
+  if (!players || players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
+    game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
+    game.ecazTreachery || game.semutaPreview || game.moritaniAssassinatePreview ||
+    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
     game.nexusHarkonnenBetrayalPreview) return false;
   for (let i = 0; i < players.length; i++) {
@@ -233,5 +257,5 @@ export function nativeTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
   return (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
-    classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game);
+    classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) || strongholdLeaderSkillsProfile(game);
 }

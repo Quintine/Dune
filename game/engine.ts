@@ -1,4 +1,4 @@
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7845,8 +7845,8 @@ function bankerIncomeProfile(g: Game): boolean {
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base'))) ||
       nativeExpansionLeaderSkillsProfile(g)) &&
-    !g.nexusCards && !g.homeworlds && (!g.techTokens || classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g)) &&
-    !g.strongholdCards && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
+    !g.nexusCards && !g.homeworlds && (!g.techTokens || classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || strongholdLeaderSkillsProfile(g)) &&
+    (!g.strongholdCards || strongholdLeaderSkillsProfile(g)) && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery && !g.semutaPreview && !g.mentatQuestionPreview &&
     ((!g.moritaniAssassinatePreview && !g.moritaniAssassinate) || advancedMoritaniLeaderSkillsProfile(g)) && !g.advancedPreview &&
     !g.kullPreview && !g.nexusKullPreview && !g.guildBetrayalPreview && !g.richeseBetrayalPreview &&
@@ -9393,7 +9393,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
 export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
   requireRule(bankerIncomeProfile(state) && !state.leaderSkills &&
     !state.spiceBankerIncomePreview && state.spiceBankerIncome === undefined,
-    'Spice Banker income requires a fresh classic or supported native lobby with Leader Skills alone.');
+    'Spice Banker income requires a fresh classic or supported native skill lobby without unsupported optional modules.');
   requireFreshSetup(state, state.expansions.length > 0);
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
@@ -9420,10 +9420,14 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   homeworldShipmentIntegrity(state);
   const g = structuredClone(state);
   requireFreshSetup(g, homeworlds || nexus || ix || factions);
-  const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g));
+  const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
+  const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
   requireRule(!g.techTokens || (skillTech &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Leader Skills with Tech Tokens requires a fresh supported classic/native three-through-six-seat lobby with unused tokens.');
+  requireRule(!g.strongholdCards || strongholdFactions || (skillStronghold &&
+    JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards())),
+  'Leader Skills with Stronghold Cards requires a fresh supported Advanced lobby with unused cards.');
   requireRule(
     (homeworlds || nexus || ix || choam || factions || g.expansions.length === 0) &&
       (choam || factions || !g.expansions.includes('choam')) &&
@@ -9433,7 +9437,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
       (!g.techTokens || skillTech) &&
-      (strongholdFactions || !g.strongholdCards) &&
+      (strongholdFactions || skillStronghold || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(

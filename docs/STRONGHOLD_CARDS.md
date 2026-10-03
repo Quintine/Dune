@@ -2,6 +2,35 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Advanced Leader Skills composition — 4 October 2026
+
+Fresh local `leader-skills` and separate `banker-income` preserve unused six
+Stronghold Cards with all14 skills in Advanced classic or supported E1/E2
+native2..6-seat rosters. Optional original Tech requires3..6; native wallets,
+decks/cache, setup and actual end-Mentat claims remain. The supplied authorized
+Advanced source physical21/printed19 permits variants together. Basic
+Strongholds, E3/other modules, public starts and save conversion stay excluded.
+
+Original support subsidy changes actual payer debit, not rescue losses or
+the normal Banker threshold. Native CHOAM still earns on bank-funded support.
+Physical Carthag/normal discipline, holder-only Habbanya tie, Tabr dial income,
+Tuek played-Worthless income and HMS pre-plan copy compose source-clear skills.
+Suk and original native cleanup finish before optional Tech and Face Dance;
+the original winner retains earnings/cards, and killed training returns once.
+Copied Diplomat/modified defense and active skill/Stone interpretations remain
+guarded. No card custody is assigned to create a case.
+
+New21, affected277 and final shared fixture-consumer72 cases, types/lint/build,
+twelve actual programs and twenty-two genuine paired/triple games pass
+(6,672 accepted actions/no rejection,171 JSON continuations).
+Human390px **HERCFX3B v20/Mentat** pays actual support4 after bank2, rescues3,
+keeps Shield and original two Tech while separate Banker fronts1 then collects
+12→13 at actual Mentat. **PG2GR3RC v26/Collection** declares real HMS copy,
+bank-funded1/own0, typed4 Suboid+2 cyborg loss/rescue before sole Axlotl reward.
+All original responses, market finish and phase-opening readiness remain.
+Read the [combined scope and exact outcomes](LEADER_SKILLS_RUNTIME.md#advanced-stronghold-composition--4-october-2026).
+This is bounded Development Verified, not complete-module/public/deployed proof.
+
 ## Standalone E3 Stronghold composition — 4 October 2026
 
 Fresh `stronghold-factions` additionally admits Advanced native Ecaz OR native

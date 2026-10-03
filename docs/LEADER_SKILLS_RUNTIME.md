@@ -29,6 +29,75 @@ Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
 
+## Advanced Stronghold composition — 4 October 2026
+
+Fresh Advanced `leader-skills` and separate `banker-income` entries preserve
+canonical unused Stronghold Cards with all fourteen skills in classic or
+already-supported E1/E2 native two-through-six-seat lobbies. Optional original
+Tech Tokens requires three-through-six seats. Original deck/roster restrictions,
+Richese cache, wallets, offers and native setup remain; cards acquire owners
+only at actual end Mentat. The authorized supplied source physical21
+(printed19) permits these variants together. Basic Strongholds, E3/other
+overlays, public starts, save conversion and unrelated rulings stay excluded.
+
+Arrakeen reduces the actual force-support invoice by at most two bank spice;
+only the remaining payer debit can qualify normal Banker income. Rescue never
+refunds committed support. CHOAM's original income includes bank-funded support.
+Physical Carthag defenses retain their roles and matching normal discipline;
+modified/copied Diplomat defenses keep their existing guard. Habbanya holder
+priority, Tabr opposing-dial income and Tuek played-Worthless income compose
+original skill scores without replacing printed values or traitor outcomes.
+Suk/native substitution, card cleanup and mandatory Tech precede Face Dance;
+replacement retains the original winner's earnings and returns a killed skill
+once. Hidden-skill/untrained Stone cases do not settle active skill/Stone timing.
+
+New21 cases and affected277/277 pass. Final shared fixture-consumer72/72,
+types/lint and build pass. Actual original setup probes cover26 valid
+two/three/six-seat module/Banker entries and two below-three Tech rejections.
+Twelve actual rule programs cover four support thresholds, HMS typed rescue,
+CHOAM support/Auditor exclusion, capped Richese marker, Tabr/Tuek Face Dance
+and both cache-acquired Stone modes. Twenty-two genuine Advanced three-seat
+paired/triple-module games complete6,672 accepted actions/no rejection and171
+JSON continuations on captured unchanged tree
+`171ecf79ccdef187ca662ddd00c0e5d3c5bce5231d386ee16566ac062ba5dc21`.
+The two sample profiles are `skills-stronghold` and `skills-stronghold-tech`.
+
+Fixture corrections preserve actual rules, not new interpretations: ensure a
+physical nonmandatory winner card when stopping before Collection; fund a real
+bribe before testing an unaffordable plan; explicitly select original cyborg
+loss allocation; mutual traitors still pay original support and earn no spice.
+The common no-spend fixture now follows the persisted response pass queue
+directly. A bot recommendation is not a complete legal-action menu; an
+uncontrolled initial card deal exposed that distinction at Atreides inspection.
+No production response policy or legal rule is bypassed.
+
+Original CLI **J5AAWGEQ v8/setup** retains six unowned cards/three unowned Tech;
+**NY6Y4J4K v10/setup** retains six unowned cards, printed Ixian Heighliners and
+Fremen Production, with Axlotl awaiting original first-Storm assignment.
+Human390px **HERCFX3B v20/Mentat** selects trained Staban5/dial6/support6/Shield.
+Actual bank2/own4 takes native available6→2; Suk saves3, keeps1 and returns2,
+leaving Arrakeen3/reserves14/Tanks3 and retained Shield. Emperor8 go to Tanks.
+Only original opposing Production transfers; Guild keeps Axlotl and Atreides
+keeps Heighliners. Separate Collection2 makes Guild4. Banker Atreides remains
+12 with front1 through Collection; human readiness reaches Mentat13/front0.
+Human390px **PG2GR3RC v26/Collection** publicly chooses Arrakeen from two real
+HMS copy options, then trained C’tair5/dial5/support1/Shield. Bank covers1,
+own payment0; actual4 Suboid+2 cyborg losses precede rescue2 ordinary+1 elite,
+keeping ordinary and returning one of each. Original substitution is declined.
+HMS3 plus Arrakeen1/Tabr1, reserves12/Tanks3; cyborg reserves6/Tanks1/board0.
+Both held defenses remain; sole opposing Axlotl transfers, Fremen Production
+stays. Wallet10 remains through battle; original Collection2 makes12 after the
+native CHOAM market finish and original phase-opening readiness.
+Ix first Mentat controls only HMS/Arrakeen; the second copy's Tabr control is
+labeled later Movement staging. No later Ix Mentat victory is suppressed.
+Phone cost/copy/rescue/counter controls are readable; refresh preserves both
+versions and outcomes. Full combinations, assurance, strategic AI, public and
+deployed acceptance remain open.
+Final reference10/10, types/lint/build and rebuilt390px combined guide pass
+(351px topic,390px page, no overflow). The final isolated reload retains human
+v20/Mentat andv26/Collection. Owned temporary drivers and managed tabs are
+removed; rooms/store, private metadata and original captures remain.
+
 ## Native E1/E2 Tech Tokens composition — 4 October 2026
 
 Fresh three-through-six-seat Basic/Advanced `leader-skills` and separate

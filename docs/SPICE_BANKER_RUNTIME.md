@@ -6,6 +6,15 @@ positive bank payments to automatic current Mentat collection.
 Bounded coverage is **Partial / Development Verified**. No public start,
 old-game retrofit or other module is enabled; this is not deployed acceptance.
 
+**4 October Advanced Stronghold composition:** the same separate local entry
+preserves unused Stronghold Cards in Advanced classic or supported E1/E2
+native2..6-seat skills; optional Tech still needs3..6. Arrakeen bank support
+is not payer spending: declared0/2/5/6 means actual own0/0/3/4, and only4
+qualifies a grant. Human **HERCFX3B v20/Mentat** pays4 after bank2 while Suk
+rescues3 without refunding support. Atreides retains wallet12/front1 until
+actual Mentat, then13/front0. See the [combined source and evidence](LEADER_SKILLS_RUNTIME.md#advanced-stronghold-composition--4-october-2026).
+Original earned-custody/separate-payer policies remain; no public activation.
+
 **4 October native Tech composition:** the same separate opt-in preserves
 unused original Tech in fresh3..6-seat supported Ixian/Tleilaxu/CHOAM/Richese
 Basic/Advanced lobbies. Native deck/roster limits and payment recipients remain.

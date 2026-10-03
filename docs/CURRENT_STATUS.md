@@ -16,17 +16,28 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**In progress — Advanced Skills / Stronghold Cards, with optional Tech:**
-parent owns shared eligibility, original initializer/opt-ins, sample CLI and
-guide. Two bounded case owners own classic support/defense/income/rescue and
-native HMS/typed losses/FaceDance/marker outcomes in separate new
-`fixture-*-skills-stronghold.ts` / `*-skills-stronghold-runtime.test.ts`.
-Contract: original classic or supported E1/E2 native2..6 Advanced rosters/decks,
-all14 skills/six cards; optional Tech requires3..6. Canonical unused lobby
-components, original setup, real end-Mentat Stronghold ownership and printed/
-first-Storm Tech owners only. Basic Strongholds, E3/other overlays, public
-starts, played-game conversion and unrelated rulings stay excluded.
-Current programs are not yet exercised; full goal remains unfinished.
+**Advanced Skills / Stronghold Cards — bounded Development Verified:**
+fresh classic or supported E1/E2 native2..6 Advanced preserves original
+all14 skills/six unused cards; optional Tech requires3..6. Original setup,
+decks/cache/wallets, real end-Mentat card control and printed/first-Storm Tech
+remain. No Basic Strongholds, E3/other overlays, public starts, save conversion
+or unrelated rulings. New21/affected277/final fixture-consumer72 cases,
+types/lint/build and twelve actual rule programs pass. Twenty-two genuine
+paired/triple-module3-seat games complete6,672 actions/no rejection and171
+JSON continuations on captured unchanged source. Original CLI **J5AAWGEQ v8**
+and **NY6Y4J4K v10** retain real setup and unused Strongholds/native Tech.
+Human390px **HERCFX3B v20/Mentat** pays4 after Arrakeen bank2, rescues3,
+retains Shield and original winner Tech, then collects separate Banker12→13.
+**PG2GR3RC v26/Collection** declares real HMS copy and uses bank1/own0,
+typed4 Suboid+2 cyborg losses and real rescue before original Axlotl reward.
+Market/phase openings remain native; refresh retains both versions/outcomes.
+Controlled positions are labeled, not claimed natural histories. Original
+copied-Diplomat/skill-Stone and other guards remain. See
+[combined scope and source evidence](LEADER_SKILLS_RUNTIME.md#advanced-stronghold-composition--4-october-2026).
+Full combinations, assurance, AI, public and deployed acceptance remain open.
+Final guide10/10, types/lint/build and rebuilt390px reference pass (351px topic,
+no overflow); original human v20/Mentat andv26/Collection remain after the
+final isolated QA reload. Owned drivers/tabs are removed; rooms/store remain.
 
 **Native E1/E2 Leader Skills / Tech Tokens — bounded Development Verified:**
 fresh supported Ixian/Tleilaxu/CHOAM/Richese Basic/Advanced3..6-seat entries

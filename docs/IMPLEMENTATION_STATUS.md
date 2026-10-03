@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 4 October 2026 — Advanced Skills and Strongholds, with optional Tech
+
+Two bounded owners supplied classic subsidy/defense/income/rescue and native
+HMS/typed losses/FaceDance/marker programs; parent integrated public-config
+eligibility, canonical unused-component admission, original Banker/Mentat
+opt-ins and sample CLI. Advanced classic or supported E1/E2 native2..6 retains
+all14 skills/six cards; Tech requires3..6. Deck/cache, wallets and actual setup,
+end-Mentat claims and printed/first-Storm Tech remain. E3/other overlays,
+Basic Strongholds, public starts, save conversion and unrelated guards remain.
+
+New21/affected277 and final fixture-consumer72 cases, types/lint/build pass.
+Original setup probes cover26 valid entries/two below-three Tech rejections.
+Twelve actual programs and twenty-two genuine paired/triple3-seat games pass:
+6,672 accepted actions/no rejection,171 JSON continuations, captured unchanged
+tree `171ecf79ccdef187ca662ddd00c0e5d3c5bce5231d386ee16566ac062ba5dc21`.
+Fixtures use real nonmandatory winner cards before Collection, a funded bribe
+before cash-boundary rejection, explicit typed casualty choice and original
+mutual-traitor support payment. The no-spend fixture follows the original
+response pass queue rather than treating bot recommendations as a legal menu.
+Two explicit type annotations and exact per-token owner comparison fix fixture
+inference/lint findings without weakening the custody comparison.
+
+Original CLI J5AAWGEQv8/NY6Y4J4Kv10 and human390px HERCFX3Bv20/Mentat,
+PG2GR3RCv26/Collection retain original IDs, legal payments, cards/forces and
+Tech. Actual classic own4 after bank2 qualifies one unavailable Banker grant;
+trained rescue retains support, and native readiness collects12→13 once.
+Native copy bank1/own0 preserves wallet10 before original Collection2;
+typed rescue keeps original subtype custody before winner cleanup/Axlotl.
+Detailed current scope, source pages and human outcomes remain in
+[the existing skill runtime](LEADER_SKILLS_RUNTIME.md#advanced-stronghold-composition--4-october-2026).
+No full-module, assurance, strategic-AI, public or deployed acceptance claim.
+
 ## 4 October 2026 — native E1/E2 Leader Skills with original Tech Tokens
 
 Three bounded owners supplied independent Ixian/CHOAM, Tleilaxu and Richese
