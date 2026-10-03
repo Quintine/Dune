@@ -29,7 +29,7 @@ remains unavailable until the original Mentat opening.
 Final affected rule/CLI union151/151, types/lint/build and eleven actual controlled programs
 pass: Basic Nullentropy/Advanced Residual Poison substitution, manual/four-policy
 capped Suk rescue, and original bank/Emperor/cancellation/Emperor-buyer paths.
-Stable new CLI scenario ordinals254–287 preserve earlier sample assignments.
+Stable new CLI scenario ordinals254–282 preserve earlier sample assignments.
 The genuine29-table batch is **not green**:28 complete11,788 accepted actions,
 303 JSON continuations and130 battles; Advanced six-seat seed20261267 is
 captured after1,523 accepted actions at phase3/richeseBlackMarket. Its exhausted
@@ -61,6 +61,18 @@ Own mixed No-Field, exhausted-cache count, special-lot Technology, positive
 Black Market self-bidding, Bureaucrat split funding and other pending rulings
 remain intact. No full-mode, assurance, calibration or deployed claim; live
 **ab5c782** remains last observed.
+
+Final guide10/10/build and hydrated390px topic (351px width) pass. Necessary
+isolated QA worker reload retains payment human v26/Mentat/wallet7/empty pile,
+without replaying the grant or collection. Owned throwaway drivers and browser
+tabs are removed; original QA records and the guarded captured game remain.
+
+Code **032b41aa8721fd869a1b25d0fd29213c22b9ba69** is pushed.
+[Exact CI37107445770](https://github.com/Quintine/Dune/actions/runs/37107445770),
+container job111158645504, completed/success: isolated storage/HTTP verification
+and subsequent verified-image publication pass. Immutable image:
+`ghcr.io/quintine/dune:sha-032b41aa8721fd869a1b25d0fd29213c22b9ba69`.
+Publication is not deployment.
 
 ## 4 October 2026 — Advanced Moritani skills and winner-skill-first assassination
 

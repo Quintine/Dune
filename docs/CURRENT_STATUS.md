@@ -45,6 +45,15 @@ and [Advanced recipient authority](RICHESE_AUCTION_RULES.md#authorized-advanced-
 Mixed own No-Field, exhausted-cache arithmetic, special-lot Technology,
 positive Black Market self-bidding and other existing rulings remain gated.
 No full assurance, calibration, public activation or deployed evidence.
+Code **032b41aa8721fd869a1b25d0fd29213c22b9ba69** is pushed.
+[Exact CI37107445770](https://github.com/Quintine/Dune/actions/runs/37107445770),
+container job111158645504, completed/success: isolated storage/HTTP verification
+and subsequent verified image publication both pass:
+`ghcr.io/quintine/dune:sha-032b41aa8721fd869a1b25d0fd29213c22b9ba69`.
+Final guide10/10/build and fresh390px visible guidance pass; the reloaded
+isolated QA worker retains human payment v26/Mentat/wallet7/empty deferred pile.
+Owned throwaway drivers/tabs are removed; captured games and store remain.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Advanced Moritani Skills — bounded Development Verified:**
 all fourteen skills now compose with the original native/classic non-Harkonnen
