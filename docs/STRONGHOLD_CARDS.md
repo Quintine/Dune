@@ -2,6 +2,67 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Standalone E3 Stronghold composition — 4 October 2026
+
+Fresh `stronghold-factions` additionally admits Advanced native Ecaz OR native
+Moritani with classic opponents and the exact `ecaz` Treachery deck, all six
+Stronghold Cards and no other overlays. Moritani excludes Harkonnen under its
+original assassination/Duke boundary. A native Ecaz/Moritani pair and E1/E2
+mixtures remain separate; no Basic Stronghold start, public expansion start or
+played-game conversion is added. Original faction setup and first actual
+end-Mentat ownership remain.
+
+Ecaz's reciprocal co-occupation selects Ecaz as card holder. The chosen battle
+lead gets only its own held advantage: Ecaz-led Arrakeen can contribute up to2
+bank spice to actual ally-variable support, while fixed Ecaz strength is free.
+An ally-led plan cannot borrow Ecaz's card. Original Habbanya tie priority and
+Tabr opposing-dial income also belong only to the selected holder; physical
+fixed/variable casualties and later shared-city Collection remain separate.
+
+Moritani's losing Tuek holder receives its printed Worthless income without
+winning. Original post-loss assassination follows real support/card income,
+retains printed disc bounty, retires one physical Traitor and draws one private
+replacement at actual Mentat. Winner cleanup and dial losses still finish
+once; a normal Traitor revelation forfeits assassination for the game.
+Original Terror placement remains free. Carthag Shield-as-Snooper follows its
+actual holder, not the winning faction or another participant.
+
+Focused20/20 and types/lint pass. Parent actual controlled programs observe
+Ecaz's native wallet1 paying1 of support3 with bank2, selected Guild's native
+wallet5 paying all3 with bank0, followed by separate Collection2. Both keep
+Ecaz2/Guild1 physical survivors. Native Moritani wallet12 pays support1, earns
+Tuek4 and printed assassination3, reaching18 at actual Mentat with one
+replacement and no repeated payment. These controlled cases follow real
+setup, alliances and card claims, not claimed natural battle histories.
+
+The affected native/CLI union passes179/179. Final Richese cases8/8, types,
+lint and build pass after choosing legal first Storm dials that keep the
+controlled Richese battlefield outside the next original random Storm band.
+Obsolete source-inventory and incidental starting-wallet/placement pins were
+removed, not updated to new incidental values.
+
+Four genuine E3 two/three-seat games complete642 accepted actions, no
+rejections,15 JSON continuations and3 battles. These samples contain no
+natural assassination; the assassination evidence is the controlled original
+program and the human continuation.
+Original CLI **XK8X548M** (Ecaz) and **HALWWQ6V** (Moritani), both v6, remain
+at genuine Traitor setup with all six Stronghold Cards unowned.
+Human390px **N5SQHZE4** chooses Ecaz lead and seals total6/support3/Sanya4/Shield.
+The editor shows fixed Ecaz3 plus Guild-variable3, bank2/personal1. Original
+resolution records native wallet1→0 at winner cleanup, Ecaz3/Guild3 casualties,
+then separate city Collection2 each; refresh reaches v18/Mentat with Ecaz2/
+Guild1 survivors, Ecaz wallet2 and Guild wallet7. Shield remains physically held.
+Human390px **ANUJE8L5** starts at the original post-loss opportunity with wallet15
+after support1/Tuek4. Actual Master Bewt reveal earns printed3, wallet18;
+Guild winner cleanup applies its three dial casualties once. Original Collection
+and actual Mentat reach v11 with one private Burseg replacement and the declared
+Master Bewt card face up. Both enlarged components are readable at390px.
+Conserved staging is explicit; no natural-history, full-combination, public-start
+or deployed acceptance claim is made.
+Final guide10/10, types/lint/build and the rebuilt390px guide pass (351px topic,
+no page overflow). The final isolated worker reload retains human v18/v11
+at actual Mentat; owned temporary drivers and managed tabs are removed.
+
 ## Expanded E1/E2 faction rules
 
 The same fresh `stronghold-factions` profile now admits selected Ix/Tleilaxu
@@ -9,7 +70,8 @@ and CHOAM/Richese native families with classic opponents, Advanced only,
 two through six seats and Stronghold Cards alone. At least one native
 expansion faction and its selected distinct `ix`/`choam` decks are required.
 CHOAM-only ordinary deck35; Ix or both47; native Richese cache10 stays separate.
-Ecaz/Moritani and other overlays remain excluded. The new-family rule paths
+Standalone E3 composition follows the separate section above; E1/E2/E3 mixtures
+and other overlays remain excluded. These rule paths
 are **Partial / Development Verified**, not complete faction/module acceptance.
 
 Native No-Field0/3/5 control/reveal and real cache-acquired Stone outcomes,
@@ -111,7 +173,7 @@ These are recorded textual interpretations, not claims of dedicated publisher FA
 - **Habbanya and Stone Burner:** the general battle-tie advantage also decides a tied undialed-token comparison. It does not override a traitor victory or create a winner after mutual destruction. Sapho remains an unfinished card effect; this implementation does not certify its future ordering.
 - **Tabr:** use the opposing declared dial, not leader strength, support cost or token count. A single traitor caller wins and qualifies. Explosion and double traitor have no winner and do not qualify.
 - **Tuek:** ordinary defeat and single-traitor outcomes do not erase played Worthless cards. An explosion can still qualify. For double traitor, the base rule that neither player receives spice takes precedence, so neither receives this payout. CHOAM’s out-of-plan Worthless discard powers and BG Karama conversions are different uses and do not qualify.
-- **Ecaz ally battle:** card custody belongs to Ecaz. No general transfer or automatic sharing of a held card’s benefit was inferred. Complete combined-force Ecaz combat and its dial representation remain outside this checkpoint.
+- **Ecaz ally battle:** card custody belongs to Ecaz. No general transfer or automatic sharing of a held card’s benefit is inferred. The standalone E3 follow-up composes the original Advanced total/fixed/variable dial: only a selected Ecaz holder receives its advantage; selecting the ally does not lend Ecaz’s card.
 
 ## Player experience and AI
 

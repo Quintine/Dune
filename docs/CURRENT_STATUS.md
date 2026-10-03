@@ -16,6 +16,30 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Standalone E3 Stronghold composition — bounded Development Verified:**
+fresh Advanced `stronghold-factions` admits native Ecaz OR Moritani with classic
+opponents, the exact ecaz33 deck and six Stronghold Cards alone; Moritani excludes
+Harkonnen. Original setup/end-Mentat control, Ecaz selected-holder-only effects
+and Moritani native loss/assassination compose without public or played-game
+changes. E3 pairs, mixed families and unrelated overlays remain separate.
+Affected native/CLI179/179, final Richese8/8, types/lint/build and original
+controlled rule programs pass. Four genuine E3 two/three-seat games complete642
+accepted actions/no rejection,15 JSON continuations and3 battles, with no natural
+assassination claim. Original CLI **XK8X548M/HALWWQ6V v6** retain Traitor setup
+and six unowned cards. Human390px **N5SQHZE4 v18/Mentat** uses actual Ecaz lead,
+total6/support3/Sanya4/Shield: fixed Ecaz3 is free, actual bank2/personal1 takes
+native wallet1→0 before separate Collection2 each. Ecaz2/Guild1 survive; Shield
+remains held, Ecaz wallet2/Guild7 after refresh. Human390px **ANUJE8L5 v11/Mentat**
+reveals Master Bewt printed3 after actual losing Tuek income4/support1:
+wallet15→18, original Guild three-dial casualties once, one private Burseg
+replacement and public retired card. Actual enlarged faces are readable at390px.
+The controlled boards/cards are labeled, not claimed natural history.
+See [scope and source effects](STRONGHOLD_CARDS.md#standalone-e3-stronghold-composition--4-october-2026).
+Full combinations/assurance/public/deployed acceptance remain open.
+Final guide10/10, types/lint/build and the rebuilt390px guide pass (351px topic).
+The final QA worker reload preserves both original Mentat versions; owned
+temporary drivers and managed tabs are removed.
+
 **Basic Ecaz Occupy even-force — bounded Development Verified:**
 fresh Basic `ecaz-occupy` now admits native Ecaz with classic or optional
 Moritani opponents and the exact `ecaz` deck, no optional modules. Genuine

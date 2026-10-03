@@ -78,13 +78,13 @@ function step(game: Game): Game {
   assert.ok(next, 'A native Richese continuation requires an unsealed human plan');
   return applyAction(game, next.actor, next.action);
 }
-function advance(game: Game, predicate: (game: Game) => boolean): Game {
+function advance(game: Game, predicate: (game: Game) => boolean, firstStormDial = 4): Game {
   for (let count = 0; count < 1600; count++) {
     if (predicate(game)) return game;
     assert.equal(game.status, 'playing');
     const next = nextRicheseStrongholdsNativeStep(game); assert.ok(next);
-    // Select legal original dials so the next storm band cannot cross Habbanya.
-    if (game.turn === 1 && next.action.type === 'stormDial') next.action.amount = 4;
+    // Use legal original dials that leave the intended controlled battle outside the next Storm band.
+    if (game.turn === 1 && next.action.type === 'stormDial') next.action.amount = firstStormDial;
     game = applyAction(game, next.actor, next.action);
   }
   throw Error('Native Richese continuation did not reach its requested boundary');
@@ -180,7 +180,9 @@ export function createRicheseStrongholdsFixture(options: RicheseStrongholdsOptio
   const choam = game.players.find(p => p.faction === 'choam')!.id;
   const opponent = game.players.find(p => p.faction === 'guild')!.id;
   // Stone comes from the actual unbid-cache acquisition producer, never a hand injection.
-  game = advance(game, g => g.decision?.kind === 'richeseCache');
+  const firstStormDial = Math.min(4, Math.floor((territory(kind).sectors[0] - 7) / 2));
+  assert.ok(firstStormDial >= 0);
+  game = advance(game, g => g.decision?.kind === 'richeseCache', firstStormDial);
   const acquisitionBefore = structuredClone(game), acquisitionSteps: StrongholdFactionsNativeStep[] = [];
   for (let count = 0; !richeseStrongholdsPlayer(game, richese).hand.some(c => c.id === 'richese-stone-burner') && count < 100; count++) {
     const next = nextRicheseStrongholdsNativeStep(game); assert.ok(next);

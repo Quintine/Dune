@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 4 October 2026 — standalone Ecaz and Moritani Stronghold composition
+
+Two bounded owners supplied native Ecaz holder-plan and Moritani loss/assassination
+programs; one owner integrated Advanced profile admission, original setup,
+canonical ecaz33 deck, CLI samples and guidance. Ecaz OR Moritani with classic
+opponents and Stronghold Cards alone is admitted; Moritani excludes Harkonnen.
+E3 pairs, mixed families, Basic and other overlays remain outside this profile.
+There is no public-start or played-game conversion.
+
+Original end-Mentat ownership and every printed face remain. Ecaz co-control
+holds the card at Ecaz, but the selected lead receives only its own held effect.
+Arrakeen pays actual support, never personal cash or fixed free Ecaz strength;
+Habbanya tie/Tabr income similarly follow the holder-plan. Moritani losing Tuek
+income precedes original eligible post-loss assassination. Printed bounty,
+winner cleanup/casualties and one actual private Mentat replacement finish once;
+normal Traitor revelation forfeits assassination for the game.
+
+Affected native/CLI179/179 pass. Final Richese8/8, types/lint/build pass after
+repairing a genuine fixture hazard: first Storm dials could let the next random
+Storm land on the controlled Arrakeen battle, advancing into turn3 and losing
+card ownership. Legal first-turn dials now keep the target outside that band;
+no Storm/phase/owner assignment or production rule change is used. Ten actual
+diagnostic programs retain turn2 and the original Arrakeen effect. Obsolete CLI
+source-inventory and incidental wallet/placement assertions were deleted rather
+than re-pinned. Native E3 wallets are never enlarged for the cases.
+
+Four genuine E3 two/three-seat games complete642 actions,15 JSON continuations
+and3 battles with no rejection. No natural assassination occurs in those samples.
+Original CLI **XK8X548M/HALWWQ6V v6** retain real Traitor setup and six unowned
+cards. Conserved human boards/cards are staged after original authenticated
+setup, real alliance and actual card claims, with original identities intact.
+
+Human390px **N5SQHZE4** selects Ecaz lead and seals total6/support3/Sanya4/Shield.
+The wheel shows fixed free Ecaz3 plus Guild-variable3 and bank2/personal1.
+Native wallet1 reaches0 at winner-card cleanup; real Shield is kept. Original
+Collection then pays each ally2. Refresh retains v18/Mentat, Ecaz2/Guild1
+survivors, Ecaz3/Guild3 Tanks, Emperor8 Tanks, Ecaz wallet2 and Guild wallet7.
+Human390px **ANUJE8L5** starts at original loss with support1/Tuek4 already
+committed and wallet15. Actual Master Bewt reveal earns printed3, wallet18;
+original winner cleanup applies Guild's three dial casualties once. Real
+Collection/Mentat reaches v11 with public Master Bewt retirement and one private
+Burseg replacement. The traitor and held Arrakeen inspectors are readable.
+
+The isolated QA worker was reloaded only after build, preserving its database
+and original room states. Full assurance, calibration, public activation and
+deployed acceptance remain open; live ab5c782 remains last observed.
+Final guide10/10, types/lint/build and the rebuilt390px guide pass (351px topic
+without page overflow). The final isolated worker reload retains human v18/v11
+at actual Mentat. Owned temporary drivers and managed tabs are removed;
+the original game records and QA store remain.
+
 ## 4 October 2026 — Basic even-force Ecaz Occupy composition
 
 Two bounded owners supplied the source-band coalition quote and native Basic

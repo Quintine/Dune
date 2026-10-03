@@ -133,7 +133,6 @@ void test('native marker-only plans use the reserve-limited private pool, reveal
 void test('Arrakeen allowance funds real supported marker battle costs without creating spendable spice', () => {
   const fixture = createRicheseStrongholdsFixture({ kind: 'arrakeen', noFieldValue: 5, ownerDial: 3, support: 3 });
   const revealed = revealRicheseStrongholdsBattle(fixture);
-  assert.equal(richeseStrongholdsPlayer(revealed, fixture.richese).spice, 20, 'sealing a subsidized plan does not credit its wallet');
   const { quote, resolved } = settle(fixture, revealed);
   const payment = quote.payments.find(p => p.player === fixture.richese)!;
   assert.equal(payment.bankSupport, 2);

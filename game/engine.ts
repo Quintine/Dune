@@ -7510,11 +7510,28 @@ function leaderSkillAssignmentUnavailable(
     ? ADVANCED_ATREIDES_SUK_ASSIGNMENT_BLOCK
     : null;
 }
+/** Public standalone E3 roster; the existing held-card owner remains the plan actor. */
+function e3StrongholdFactionProfile(g: Game): boolean {
+  if (!g.advanced || g.expansions.length !== 1 || g.expansions[0] !== 'ecaz' ||
+      g.players.length < 2 || g.players.length > 6 ||
+      g.homeworlds || g.nexusCards || g.leaderSkills || g.techTokens ||
+      g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker ||
+      g.ecazTreachery) return false;
+  let native: 'ecaz' | 'moritani' | null = null;
+  for (const player of g.players) {
+    if (player.faction === 'ecaz' || player.faction === 'moritani') {
+      if (native !== null) return false;
+      native = player.faction;
+    } else if (!CLASSIC_FACTIONS[player.faction]) return false;
+  }
+  return native !== null && (native !== 'moritani' || !byFaction(g, 'harkonnen'));
+}
 function moritaniAssassinateModeSupported(g: Game) {
   return g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
     g.players.some(p => p.faction === 'moritani') &&
     g.players.every(p => ['moritani','atreides','beneGesserit','guild','emperor','fremen'].includes(p.faction)) &&
-    !g.nexusCards && (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) && !g.strongholdCards && !g.homeworlds &&
+    !g.nexusCards && (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
+    (!g.strongholdCards || e3StrongholdFactionProfile(g)) && !g.homeworlds &&
     !g.discoveryEnabled && !g.discoveries && !g.techTokens;
 }
 function moritaniAssassinateContext(g: Game, receipt: MoritaniAssassinateReceipt) {
@@ -9243,7 +9260,8 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
     g.players.every(p => faction(p.faction).expansion === 'base' ||
       (['ecaz', 'moritani', 'ixians', 'tleilaxu', 'choam', 'richese'].includes(p.faction) &&
         g.expansions.includes(faction(p.faction).expansion))) &&
-    !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.strongholdCards &&
+    !g.homeworlds && !g.nexusCards && !g.leaderSkills &&
+    (!g.strongholdCards || e3StrongholdFactionProfile(g)) &&
     !g.techTokens && !g.discoveryEnabled && !g.discoveries &&
     !g.discoveryStash && !g.greatMaker &&
     (g.ecazTreachery === undefined || g.ecazTreachery === true);
@@ -9258,15 +9276,16 @@ export function initializeEcazOccupyGameForAudit(state: Game): Game {
   g.ecazOccupyPreview = true;
   return g;
 }
-/** Fresh Advanced E1/E2 faction composition; normal starts and other modules stay gated. */
+/** Fresh native Stronghold composition; other overlays and public starts stay gated. */
 export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
-  requireRule(state.advanced === true && Array.isArray(state.expansions) &&
-    state.expansions.length >= 1 && state.expansions.length <= 2 &&
-    state.expansions.every(id => id === 'ix' || id === 'choam') &&
-    new Set(state.expansions).size === state.expansions.length &&
-    state.players.some(p => faction(p.faction).expansion !== 'base') &&
-    state.players.every(p => faction(p.faction).expansion === 'base' || state.expansions.includes(faction(p.faction).expansion)),
-    'Stronghold factions require Advanced Ixian/Tleilaxu or CHOAM/Richese factions, classic opponents and their selected distinct decks.');
+  requireRule(e3StrongholdFactionProfile(state) ||
+    (state.advanced === true && Array.isArray(state.expansions) &&
+      state.expansions.length >= 1 && state.expansions.length <= 2 &&
+      state.expansions.every(id => id === 'ix' || id === 'choam') &&
+      new Set(state.expansions).size === state.expansions.length &&
+      state.players.some(p => faction(p.faction).expansion !== 'base') &&
+      state.players.every(p => faction(p.faction).expansion === 'base' || state.expansions.includes(faction(p.faction).expansion))),
+    'Stronghold factions require supported Advanced native factions, classic opponents and their selected distinct decks.');
   requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
     !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
     !state.techTokens && !state.ecazTreachery &&
@@ -9274,7 +9293,10 @@ export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
     'Stronghold factions admit only unused Stronghold Cards, without other optional modules.');
   requireFreshFactionInventory(state);
   requireFreshBaseRuntime(state);
-  return initializeSetupGameForAudit(state, false, false, false, false, false, false, true, false, true);
+  const initialized = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, false, true);
+  if (e3StrongholdFactionProfile(initialized) && byFaction(initialized, 'moritani'))
+    initializeMoritaniAssassinateState(initialized);
+  return initialized;
 }
 function requireFreshFactionInventory(state: Game) {
   requireRule(state.richeseCache === undefined && state.richeseRemoved === undefined &&
@@ -9415,7 +9437,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
         ),
       ),
     strongholdFactions
-      ? 'The Stronghold faction audit needs a fresh Advanced Ixian/CHOAM lobby without other optional modules.'
+      ? 'The Stronghold faction audit needs a fresh supported Advanced native lobby without other optional modules.'
       : factions && nexus
       ? 'The paired expansion Nexus audit needs a fresh lobby without other optional modules.'
       : factions

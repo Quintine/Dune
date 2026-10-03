@@ -312,6 +312,16 @@ const STRONGHOLD_FACTIONS_ROSTER: readonly FactionId[] = [
   'ixians', 'choam', 'emperor', 'fremen', 'harkonnen', 'beneGesserit',
 ];
 const STRONGHOLD_FACTIONS_SCENARIOS: readonly Scenario[] = [
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 298 + players - 2, profile: 'stronghold-factions', rules: 'advanced',
+    expansions: ['ecaz'],
+    roster: (['ecaz', 'guild', 'emperor', 'fremen', 'beneGesserit', 'harkonnen'] as FactionId[]).slice(0, players),
+  })),
+  ...[2, 3, 4, 5, 6].map((players): Scenario => ({
+    ordinal: 303 + players - 2, profile: 'stronghold-factions', rules: 'advanced',
+    expansions: ['ecaz'],
+    roster: (['moritani', 'guild', 'emperor', 'fremen', 'beneGesserit', 'atreides'] as FactionId[]).slice(0, players),
+  })),
   ...[2, 3, 4, 5, 6].map(players => ({
     ordinal: 151 + players - 2,
     profile: 'stronghold-factions' as const,
@@ -386,6 +396,7 @@ function usage() {
     '\nEcaz-occupy supports Basic even-force and Advanced: native Ecaz plus classic/Ixian/Tleilaxu/CHOAM/Richese paired or mixed rosters, two through six seats; selected E3/E1/E2 sources determine ordinary33/47/35 cards. Basic uses Ecaz/classic/optional Moritani and the exact ecaz deck, with E/2 mandatory contribution and losses. An uncanceled odd Basic count remains blocked by the preserved publisher casualty-rounding conflict. Explicit independent three-card samples additionally use36/50/38. Richese marker-only or ordinary pools retain original reveal timing; own mixed No-Field dialing, whole-plan inspection and optional overlays remain guarded.' +
     '\nThe four earlier native skill profiles retain their Basic samples. Advanced Ix-skills/choam-skills/tleilaxu-skills use documented native plus classic families; Advanced moritani-skills composes its original non-Harkonnen classic assassination roster. Richese-skills adds Basic/Advanced Richese or paired CHOAM tables, Advanced Richese/Tleilaxu/CHOAM and optional Ix-deck tables without native Ixians. All retain fourteen skills and original cache/native inventories. Native Ixian Technology on Richese lots, own mixed No-Field, other roster/modules and public starts retain their separate guards.'
     + '\nEcaz-skills uses native five-disc Ecaz with classic opponents, the ecaz deck and all fourteen skills in Basic/Advanced; Advanced Harkonnen is excluded by the existing shared-Duke capture boundary. Ambassador and ordinary skill paths retain native custody. Shared-Duke assignment and combined Occupy skills remain separate boundaries; no public starts or save retrofit.'
+    + '\nStandalone E3 Stronghold samples additionally use native Ecaz OR Moritani with classic opponents and the exact ecaz deck, six Stronghold Cards only. Ecaz holder-only coalition effects and original Moritani assassination remain; Moritani excludes Harkonnen. E3 pairs, E1/E2 mixtures and other overlays remain guarded.'
   );
 }
 
@@ -418,7 +429,7 @@ function positive(value: string | undefined) {
 function scenarioName(scenario: Scenario) {
   if (scenario.profile === 'stronghold-factions') {
     const native = scenario.roster.filter(faction =>
-      ['ixians', 'tleilaxu', 'choam', 'richese'].includes(faction));
+      ['ixians', 'tleilaxu', 'choam', 'richese', 'ecaz', 'moritani'].includes(faction));
     return `${scenario.profile}-${native.join('-')}-${scenario.roster.length}-${scenario.rules}`;
   }
   if (scenario.profile === 'ecaz-occupy') {
@@ -564,9 +575,11 @@ function resumedGame(path: string) {
       skillProfile(candidate.profile) === !!game.leaderSkills &&
       (candidate.profile === 'stronghold-factions') === !!game.strongholdCards &&
       (candidate.profile === 'ecaz-treachery' || candidate.ecazTreachery === true) === !!game.ecazTreachery &&
-      (candidate.profile === 'moritani-assassinate' || (candidate.profile === 'moritani-skills' && candidate.rules === 'advanced')) === !!game.moritaniAssassinatePreview &&
+      (candidate.profile === 'moritani-assassinate' || (candidate.profile === 'moritani-skills' && candidate.rules === 'advanced') ||
+        (candidate.profile === 'stronghold-factions' && candidate.roster.includes('moritani'))) === !!game.moritaniAssassinatePreview &&
       (candidate.profile === 'ecaz-occupy') === !!game.ecazOccupyPreview &&
-      (candidate.profile === 'moritani-assassinate' || (candidate.profile === 'moritani-skills' && candidate.rules === 'advanced')) === !!game.moritaniAssassinate &&
+      (candidate.profile === 'moritani-assassinate' || (candidate.profile === 'moritani-skills' && candidate.rules === 'advanced') ||
+        (candidate.profile === 'stronghold-factions' && candidate.roster.includes('moritani'))) === !!game.moritaniAssassinate &&
       candidate.rules === (game.advanced ? 'advanced' : 'basic') &&
       JSON.stringify(candidate.expansions) ===
         JSON.stringify(game.expansions) &&
