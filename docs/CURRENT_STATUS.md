@@ -36,6 +36,12 @@ is visually readable at390px (351px topic).
 See [native Moritani composition](MORITANI_LEADER_SKILLS.md#advanced-assassination-composition--4-october-2026).
 Basic/Harkonnen entries, Ecaz/Duke assignment, ordinary/private-step UX and
 other roster/module gates remain. No full assurance, AI calibration or deployment.
+Code **d41a7e03a94bcc785e1417d26a882c5f6dc2ac4e** is pushed.
+[Exact CI37100245846](https://github.com/Quintine/Dune/actions/runs/37100245846),
+job111138195904, completed/success: isolated storage/HTTP verification and
+subsequent verified image publication pass:
+`ghcr.io/quintine/dune:sha-d41a7e03a94bcc785e1417d26a882c5f6dc2ac4e`.
+No deployed claim; live **ab5c782** remains last observed.
 
 **Advanced Tleilaxu Skills and foreign gholas — bounded Development Verified:**
 native Tleilaxu, optional Ixians/CHOAM and classic seats now compose all fourteen

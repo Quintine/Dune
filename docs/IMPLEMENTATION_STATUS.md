@@ -48,6 +48,13 @@ retired Hasimir and original CLI v6/setup. Sixteen final canonical scope anchors
 resolve. Owned throwaway drivers and browser tabs are removed/released; QA games
 and the original isolated store remain.
 
+Code **d41a7e03a94bcc785e1417d26a882c5f6dc2ac4e** is pushed.
+[Exact CI37100245846](https://github.com/Quintine/Dune/actions/runs/37100245846),
+job111138195904, completed/success: original isolated storage/HTTP verification
+and subsequent image publication pass. Immutable image:
+`ghcr.io/quintine/dune:sha-d41a7e03a94bcc785e1417d26a882c5f6dc2ac4e`.
+Publication is not deployment; live **ab5c782** remains last observed.
+
 ## 4 October 2026 — native Advanced Tleilaxu skills and foreign-ghola lifecycle
 
 Two bounded owners composed original foreign-disc ownership/skill validation
