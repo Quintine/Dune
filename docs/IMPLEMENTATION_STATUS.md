@@ -31,6 +31,12 @@ typed rescue keeps original subtype custody before winner cleanup/Axlotl.
 Detailed current scope, source pages and human outcomes remain in
 [the existing skill runtime](LEADER_SKILLS_RUNTIME.md#advanced-stronghold-composition--4-october-2026).
 No full-module, assurance, strategic-AI, public or deployed acceptance claim.
+Code **f259488a9a6a507d450c5134f6f627ea2151256b** is pushed.
+[Exact CI37159813365](https://github.com/Quintine/Dune/actions/runs/37159813365),
+container job111310738376, completed/success: isolated storage/HTTP step7
+and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-f259488a9a6a507d450c5134f6f627ea2151256b`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 ## 4 October 2026 — native E1/E2 Leader Skills with original Tech Tokens
 

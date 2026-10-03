@@ -38,6 +38,12 @@ Full combinations, assurance, AI, public and deployed acceptance remain open.
 Final guide10/10, types/lint/build and rebuilt390px reference pass (351px topic,
 no overflow); original human v20/Mentat andv26/Collection remain after the
 final isolated QA reload. Owned drivers/tabs are removed; rooms/store remain.
+Code **f259488a9a6a507d450c5134f6f627ea2151256b** is pushed.
+[Exact CI37159813365](https://github.com/Quintine/Dune/actions/runs/37159813365),
+container job111310738376, completed/success: isolated storage/HTTP step7
+and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-f259488a9a6a507d450c5134f6f627ea2151256b`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Native E1/E2 Leader Skills / Tech Tokens — bounded Development Verified:**
 fresh supported Ixian/Tleilaxu/CHOAM/Richese Basic/Advanced3..6-seat entries
