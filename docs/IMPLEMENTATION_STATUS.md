@@ -60,6 +60,13 @@ No natural-history claim for controlled positions, reset, public activation,
 full-mode certification or deployed evidence; live **ab5c782** remains last
 observed.
 
+Code **5f082696a60ac8b75e3eb4bcaa042826526fbdac** is pushed.
+[Exact CI37116854539](https://github.com/Quintine/Dune/actions/runs/37116854539),
+container job111185228169, completed/success: isolated storage/HTTP verification
+and subsequent verified-image publication pass. Immutable image:
+`ghcr.io/quintine/dune:sha-5f082696a60ac8b75e3eb4bcaa042826526fbdac`.
+Publication is not deployment.
+
 ## 4 October 2026 — native Ecaz ordinary-disc skills and temporary Duke composition
 
 Two bounded owners supplied native setup/ordinary rescue/revival/Ambassador

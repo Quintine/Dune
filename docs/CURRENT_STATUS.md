@@ -49,6 +49,12 @@ variable casualties, and the Emperor's eight territory forces to the Tanks. Ever
 seat remains at20 physical forces after refresh. See
 [Basic even-force source](ECAZ_OCCUPY_RULES.md#basic-even-force-composition--4-october-2026).
 Full combinations/assurance/public/deployed acceptance remain open.
+Code **5f082696a60ac8b75e3eb4bcaa042826526fbdac** is pushed.
+[Exact CI37116854539](https://github.com/Quintine/Dune/actions/runs/37116854539),
+container job111185228169, completed/success: isolated storage/HTTP verification
+and subsequent verified image publication both pass:
+`ghcr.io/quintine/dune:sha-5f082696a60ac8b75e3eb4bcaa042826526fbdac`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Native Ecaz ordinary-disc Skills — bounded Development Verified:**
 fresh Basic/Advanced Ecaz with classic opponents retains the exact `ecaz` deck,
