@@ -51,6 +51,13 @@ without page overflow). The final isolated worker reload retains human v18/v11
 at actual Mentat. Owned temporary drivers and managed tabs are removed;
 the original game records and QA store remain.
 
+Code **39e2954ab468aa252d91a33e2e0b52f99a2fe135** is pushed.
+[Exact CI37133540369](https://github.com/Quintine/Dune/actions/runs/37133540369),
+container job111233294920, completed/success: isolated storage/HTTP step7 and
+subsequent verified-image publication step9 both pass. Immutable image:
+`ghcr.io/quintine/dune:sha-39e2954ab468aa252d91a33e2e0b52f99a2fe135`.
+Publication is not deployment.
+
 ## 4 October 2026 — Basic even-force Ecaz Occupy composition
 
 Two bounded owners supplied the source-band coalition quote and native Basic

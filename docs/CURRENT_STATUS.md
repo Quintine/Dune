@@ -39,6 +39,12 @@ Full combinations/assurance/public/deployed acceptance remain open.
 Final guide10/10, types/lint/build and the rebuilt390px guide pass (351px topic).
 The final QA worker reload preserves both original Mentat versions; owned
 temporary drivers and managed tabs are removed.
+Code **39e2954ab468aa252d91a33e2e0b52f99a2fe135** is pushed.
+[Exact CI37133540369](https://github.com/Quintine/Dune/actions/runs/37133540369),
+container job111233294920, completed/success: isolated storage/HTTP verification
+and subsequent verified-image publication both pass:
+`ghcr.io/quintine/dune:sha-39e2954ab468aa252d91a33e2e0b52f99a2fe135`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Basic Ecaz Occupy even-force — bounded Development Verified:**
 fresh Basic `ecaz-occupy` now admits native Ecaz with classic or optional
