@@ -33,6 +33,12 @@ rebuilt isolated idle QA reload preserves the rooms and exercises the new path.
 Detailed current mechanics/evidence remain in
 [the existing skill runtime](LEADER_SKILLS_RUNTIME.md#native-e1e2-tech-tokens-composition--4-october-2026).
 No full-module, strategic-AI, assurance, public or deployed acceptance claim.
+Code **219489ae04896ab838735a25091b76a3e4e5bd24** is pushed.
+[Exact CI37156345578](https://github.com/Quintine/Dune/actions/runs/37156345578),
+container job111300388598, completed/success: isolated storage/HTTP step7
+and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-219489ae04896ab838735a25091b76a3e4e5bd24`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 ## 4 October 2026 — classic Leader Skills with original Tech Tokens
 

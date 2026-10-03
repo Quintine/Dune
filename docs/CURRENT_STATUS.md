@@ -16,6 +16,18 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**In progress — Advanced Skills / Stronghold Cards, with optional Tech:**
+parent owns shared eligibility, original initializer/opt-ins, sample CLI and
+guide. Two bounded case owners own classic support/defense/income/rescue and
+native HMS/typed losses/FaceDance/marker outcomes in separate new
+`fixture-*-skills-stronghold.ts` / `*-skills-stronghold-runtime.test.ts`.
+Contract: original classic or supported E1/E2 native2..6 Advanced rosters/decks,
+all14 skills/six cards; optional Tech requires3..6. Canonical unused lobby
+components, original setup, real end-Mentat Stronghold ownership and printed/
+first-Storm Tech owners only. Basic Strongholds, E3/other overlays, public
+starts, played-game conversion and unrelated rulings stay excluded.
+Current programs are not yet exercised; full goal remains unfinished.
+
 **Native E1/E2 Leader Skills / Tech Tokens — bounded Development Verified:**
 fresh supported Ixian/Tleilaxu/CHOAM/Richese Basic/Advanced3..6-seat entries
 preserve canonical unused tokens, original family decks/all14 skills, Richese
@@ -38,6 +50,12 @@ Full combinations/assurance/AI/public/deployed gates remain open.
 Final guide10/10, types/lint/build and rebuilt390px native reference pass
 (351px topic, no page overflow). Original human versions remain after the
 final isolated QA reload; owned temporary drivers/tabs are removed.
+Code **219489ae04896ab838735a25091b76a3e4e5bd24** is pushed.
+[Exact CI37156345578](https://github.com/Quintine/Dune/actions/runs/37156345578),
+container job111300388598, completed/success: isolated storage/HTTP step7
+and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-219489ae04896ab838735a25091b76a3e4e5bd24`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Classic Leader Skills / Tech Tokens — bounded Development Verified:**
 fresh classic3..6 Basic/Advanced `leader-skills` and separate `banker-income`
