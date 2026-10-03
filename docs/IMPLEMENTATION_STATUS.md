@@ -60,6 +60,13 @@ Original human v18/Collection/wallet11/eight counters/living set-aside Duke
 remains after the final isolated worker reload; CLI v4/setup is retained.
 Owned temporary entry/rule/staging drivers and managed tabs are removed.
 
+Code **f17f4e703eb09d0870abb3233974da2f31f24bea** is pushed.
+[Exact CI37110175538](https://github.com/Quintine/Dune/actions/runs/37110175538),
+container job111166376104, completed/success: isolated storage/HTTP verification
+and subsequent verified-image publication pass. Immutable image:
+`ghcr.io/quintine/dune:sha-f17f4e703eb09d0870abb3233974da2f31f24bea`.
+Publication is not deployment.
+
 ## 4 October 2026 — native Richese skills and Advanced contribution recipients
 
 Two bounded owners supplied canonical Richese green role substitution and

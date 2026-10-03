@@ -46,6 +46,12 @@ Final native/guide19/19, types/lint/build and hydrated390px guide pass
 revival/native-skill scope; actual visible proof and QA worker reload retain
 human v18/Collection/wallet11/eight counters/living set-aside disc.
 Owned temporary drivers/tabs are removed; original games and store remain.
+Code **f17f4e703eb09d0870abb3233974da2f31f24bea** is pushed.
+[Exact CI37110175538](https://github.com/Quintine/Dune/actions/runs/37110175538),
+container job111166376104, completed/success: isolated storage/HTTP verification
+and subsequent image publication pass:
+`ghcr.io/quintine/dune:sha-f17f4e703eb09d0870abb3233974da2f31f24bea`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Native Richese Skills and contribution recipients — bounded Development Verified:**
 Basic/Advanced fresh native Richese retains its required CHOAM deck, separate
