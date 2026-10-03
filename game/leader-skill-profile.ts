@@ -29,6 +29,27 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
+/** Classic three-to-six-seat Skills/Tech composition; native and other modules stay separate. */
+export function classicTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  const players = game.players;
+  if (!game.techTokens || typeof game.advanced !== 'boolean' || game.expansions.length ||
+    !players || players.length < 3 || players.length > 6 ||
+    game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
+    game.strongholdCards || game.ecazTreachery || game.semutaPreview ||
+    game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
+    game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let classic = false;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction && faction.expansion === 'base') { classic = true; break; }
+    if (!classic) return false;
+  }
+  return true;
+}
+
 /** Bounded integration of the ordinary Moritani roster, not Advanced assassination. */
 export function basicMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return game.advanced === false && game.expansions.length === 1 &&
@@ -186,6 +207,7 @@ export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): bo
 
 /** Shared by rule quotes, controls and minimal legal bot participation. */
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
-  return noOtherLeaderSkillModules(game) &&
-    (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game));
+  return (noOtherLeaderSkillModules(game) &&
+    (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
+    classicTechLeaderSkillsProfile(game);
 }

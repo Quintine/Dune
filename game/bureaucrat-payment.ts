@@ -1,4 +1,4 @@
-import { nativeExpansionLeaderSkillsProfile, noOtherLeaderSkillModules, type LeaderSkillProfile } from './leader-skill-profile';
+import { classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, noOtherLeaderSkillModules, type LeaderSkillProfile } from './leader-skill-profile';
 export type BureaucratPaymentKind = 'auction' | 'shipment' | 'bribe' | 'revival';
 export type BureaucratPaymentSource = {
   event: string;
@@ -35,10 +35,10 @@ export function bureaucratPaymentSignature(value: object): string {
   return JSON.stringify({ ...value, signature: undefined });
 }
 export function bureaucratPaymentModeSupported(game: LeaderSkillProfile): boolean {
-  return noOtherLeaderSkillModules(game) &&
+  return (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length ||
       (game.expansions.length === 1 && game.expansions[0] === 'choam') ||
-      nativeExpansionLeaderSkillsProfile(game));
+      nativeExpansionLeaderSkillsProfile(game))) || classicTechLeaderSkillsProfile(game);
 }
 export function bureaucratUsed(
   used: readonly BureaucratPaymentUse[],

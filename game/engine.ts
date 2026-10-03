@@ -1,4 +1,4 @@
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7845,7 +7845,7 @@ function bankerIncomeProfile(g: Game): boolean {
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base'))) ||
       nativeExpansionLeaderSkillsProfile(g)) &&
-    !g.nexusCards && !g.homeworlds && !g.techTokens &&
+    !g.nexusCards && !g.homeworlds && (!g.techTokens || classicTechLeaderSkillsProfile(g)) &&
     !g.strongholdCards && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery && !g.semutaPreview && !g.mentatQuestionPreview &&
     ((!g.moritaniAssassinatePreview && !g.moritaniAssassinate) || advancedMoritaniLeaderSkillsProfile(g)) && !g.advancedPreview &&
@@ -9420,6 +9420,10 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   homeworldShipmentIntegrity(state);
   const g = structuredClone(state);
   requireFreshSetup(g, homeworlds || nexus || ix || factions);
+  const skillTech = leaderSkills && classicTechLeaderSkillsProfile(g);
+  requireRule(!g.techTokens || (skillTech &&
+    JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
+  'Leader Skills with Tech Tokens requires a fresh classic three-through-six-seat lobby with unused tokens.');
   requireRule(
     (homeworlds || nexus || ix || choam || factions || g.expansions.length === 0) &&
       (choam || factions || !g.expansions.includes('choam')) &&
@@ -9428,7 +9432,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
-      !g.techTokens &&
+      (!g.techTokens || skillTech) &&
       (strongholdFactions || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>

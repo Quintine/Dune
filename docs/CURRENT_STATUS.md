@@ -16,6 +16,32 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Classic Leader Skills / Tech Tokens — bounded Development Verified:**
+fresh classic3..6 Basic/Advanced `leader-skills` and separate `banker-income`
+preserve unused selected Tech Tokens with base33/all14 and original setup/
+first-Storm ownership. Native rosters and other overlays remain separate;
+no public start, played-game conversion or pending-ruling change is added.
+New25 and affected shared/CLI146/146, types/lint/build and seven native programs
+pass. Eight genuine Basic/Advanced3..6 games complete2,712 accepted actions,
+no rejection and69 JSON continuations on a stable source tree. Original
+**WHTKGXEJ/5YMNGCCT v7** retain native skill/prediction setup and unowned tokens.
+Human390px **63LV57W2 v13/Mentat** ships physical5 at actual Smuggler cost4:
+native wallet10→6, separate Emperor Heighliners1 and Atreides Banker-front1.
+At phase end Emperor10→11; ordinary city income takes Banker10→12 while its
+front1 stays unavailable. Original readiness collects it once to13; refresh
+keeps the empty pile. **HC35JG8P v18/Collection** retains a genuinely earned
+two-token opponent. Skilled Staban5/dial4/support4/Crysknife/Shield wins9–0;
+Suk keeps one and returns two, leaving original Guild Hagga5/reserves12/Tanks3
+(including two earlier casualties). Actual card cleanup keeps both; human takes
+only Axlotl, Emperor keeps production. Wallet3 before separate board Collection6
+becomes9 after refresh. Original optional Diplomat decline, rescue and mandatory
+token choice use existing controls. The guide is351px within390px.
+Controlled positions are labeled, not claimed natural histories. Owned drivers/
+tabs are removed, rooms/store remain; full assurance/AI/public/deployed gates stay.
+See [native scope and evidence](LEADER_SKILLS_RUNTIME.md#classic-tech-tokens-composition--4-october-2026).
+Final guide10/10, types/lint/build and the final rebuilt390px reference pass;
+the final isolated QA reload retains human v13/Mentat and v18/Collection.
+
 **Standalone E3 Stronghold composition — bounded Development Verified:**
 fresh Advanced `stronghold-factions` admits native Ecaz OR Moritani with classic
 opponents, the exact ecaz33 deck and six Stronghold Cards alone; Moritani excludes

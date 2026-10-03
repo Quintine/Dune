@@ -6,6 +6,15 @@ positive bank payments to automatic current Mentat collection.
 Bounded coverage is **Partial / Development Verified**. No public start,
 old-game retrofit or other module is enabled; this is not deployed acceptance.
 
+**4 October classic Tech composition:** a fresh classic3..6 Basic/Advanced
+`banker-income` lobby may retain canonical unused Tech Tokens. Original
+phase-end Tech income is independent of the front-shield grant; neither credit
+is another player's bank payment. Human **63LV57W2 v13** paid actual Smuggler4
+for physical5, accrued one unavailable grant and one original Heighliners spice,
+then collected Tech at phase end and Banker at actual Mentat. Ordinary city
+Collection stays separately quoted. Native/other overlays and pending earned
+custody/split questions are unchanged; see the [combined contract and evidence](LEADER_SKILLS_RUNTIME.md#classic-tech-tokens-composition--4-october-2026).
+
 **4 October composition:** the separate `banker-income` entry additionally
 admits bounded Advanced native Ixians and/or CHOAM plus classic seats and their
 distinct required family decks. Actual native support payment grants one

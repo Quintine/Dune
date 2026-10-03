@@ -28,6 +28,68 @@ activation still awaits the uniform-response UX decision; empty hands and
 Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
+
+## Classic Tech Tokens composition — 4 October 2026
+
+Fresh `leader-skills` and separate `banker-income` preserve canonical unused
+Tech Tokens selected in a three-through-six-seat classic Basic/Advanced lobby.
+Original base33/all14 setup, first-Storm token assignment and native wallets
+remain; no token owner, income, phase or battle receipt is fabricated.
+Native expansion rosters and other overlays remain separate. The existing
+private Mentat opt-in retains its UX/empty-hand boundary; normal Banker retains
+its original earned-custody and separate-payer policies.
+
+Tech piles collect at their original phase end; Banker front-shield grants wait
+for actual Mentat. A Tech credit is not another player's bank-payment producer.
+Smuggler's free companion changes the original priced count and therefore the
+actual Banker threshold; Guild player income and Guild's own Heighliners
+exclusion remain distinct. Winning Suk rescue and Sandmaster board spice finish
+before original played-card cleanup and mandatory Tech reward. A sole token
+auto-transfers, several require the original winner selection, none auto-skips.
+No optional reward decline is added.
+
+New25 rule cases and affected shared/CLI146/146, types/lint/build pass.
+Seven actual native programs cover both-band paid Smuggler/Banker/Tech through
+Mentat, both-band Suk before two-token selection, Advanced Sandmaster board
+spice, the private opted-in Mentat fallback, and a normal single-payer
+Bureaucrat bribe fork. The last reads the original QA state without writing it:
+actual paid5 leaves recipient bribe3 unavailable, redirects2 to Bank, stamps
+one use and leaves all Tech Tokens unchanged.
+The payment helper was corrected for the native phase5→7 empty-Battle skip:
+the same transition can collect the ordinary board. Its expected currency
+uses the separate original Collection quote, not new incidental wallet pins.
+Eight genuine Basic/Advanced3..6-seat games complete2,712 accepted actions,
+no rejection and69 JSON continuations on an unchanged source tree. Natural
+samples and controlled programs are distinct, not full-module acceptance.
+
+Original CLI **WHTKGXEJ v7** retains real Banker skill setup; **5YMNGCCT v7**
+retains original Bene Gesserit prediction before Skills. Three tokens remain
+unowned until the original first Storm in both rooms.
+Human390px **63LV57W2** uses native Harkonnen Smuggler: physical5 cost4,
+wallet10→6, reserves10→5 and actual5 at empty Habbanya17. Original Heighliners
+accrues1 for Emperor and Banker fronts1 for Atreides; both owned wallets stay10.
+Native movement auto-skips empty Battle into Collection (v10): Emperor collects
+Tech1 to11, Atreides collects ordinary city2 to12 while Banker1 stays unavailable.
+Original human readiness reaches **v13/Mentat**, Banker13/front pile0. Refresh
+retains those original amounts.
+Human390px **HC35JG8P** follows a real preliminary token capture, then chooses
+the remaining Hagga battle and hides skilled Staban5. Actual dial4/support4/
+Crysknife/Shield wins9–0 after the opponent declines its original optional
+Diplomat copy. Wallet5−support4+printed Bashar2 bounty=3 before Collection.
+Original Suk choice saves3: one stays, two return, one current casualty goes
+to Tanks. The preserved earlier two casualties make total Tanks3/reserves12/
+Hagga5. Winner keeps both cards, then chooses Axlotl from two genuinely held
+opposing tokens; production stays Emperor. Refresh retains **v18/Collection**,
+Guild wallet9 after separately collecting6 board spice, one token transfer,
+physical20 and both cards. The phone rescue explanation and token choice are
+readable. The hydrated guide is351px within390px with no page overflow.
+Owned temporary drivers and managed tabs are removed; original rooms/store,
+private metadata and game captures remain. Full combinations, source questions,
+assurance, strategic AI, public activation and deployed acceptance stay open.
+Final guide10/10, types/lint/build and the final rebuilt390px reference pass
+(351px topic, no page overflow). The final isolated QA reload retains the
+original human v13/Mentat and v18/Collection.
+
 ## Native Ecaz ordinary-disc composition — 4 October 2026
 
 Fresh local `leader-skills` now admits Basic/Advanced native Ecaz with classic

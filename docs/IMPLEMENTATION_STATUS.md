@@ -1,5 +1,75 @@
 # Dune implementation status
 
+## 4 October 2026 — classic Leader Skills with original Tech Tokens
+
+Two bounded owners supplied normal payment/free-companion and battle rescue/
+reward programs; one owner integrated the existing skill profile, original
+initializer, separate Banker/Mentat opt-ins, source guidance and sample CLI.
+Fresh classic3..6 Basic/Advanced keeps base33/all14/three original Tech Tokens.
+All ownership begins through original setup/first Storm; native factions,
+Stronghold Cards and other overlays remain separate. No public start or
+played-game conversion is introduced.
+
+`noOtherLeaderSkillModules` remains strict. A public-config-only classic Tech
+predicate admits the exact combination without hidden-card/deal eligibility;
+ordinary skills, Bureaucrat and existing opted-in Mentat share it. The original
+audit requires canonical unused tokens before dealing. Separate normal Banker
+retains earned-faction/separate-payer policy; a phase-end Tech credit is not a
+new bank-payment producer. Original Smuggler changes priced counters, original
+Suk/Sandmaster finish before cleanup and mandatory token reward, and no decline
+is invented for the printed mandatory award.
+
+New25/25 and affected shared/CLI146/146, types/lint/build pass. The CLI case list
+initially contained a nonexistent Mentat runtime filename; the runner rejected
+it before executing checks. It was corrected to the exact existing native cases.
+Two actual fixture defects were repaired: empty Battle automatically advances
+phase5→7, and that same native transition can collect the ordinary board.
+The helper now stops at the first clean same-turn native boundary at/after its
+target; wallet expectations use the independent original Collection quote,
+not incidental new wallet values or a fabricated battle/phase.
+
+Seven actual native programs cover both-band Smuggler/Banker/Tech through
+Mentat, both-band skilled Suk then two-token selection, Advanced Sandmaster,
+private opted-in Mentat fallback and normal single-payer Bureaucrat bribe.
+The Bureaucrat program reads the original QA v18 without writing it: paid5,
+recipient unavailable bribe3, Bank2, one phase use and unchanged Tech custody.
+The Mentat program names Crysknife, observes the target's actual selected
+Worthless fallback privately, preserves its held card and resumes posture.
+These are explicitly controlled native programs, not natural-history claims.
+
+Eight genuine Basic/Advanced3..6 games complete2,712 accepted actions, zero
+rejections and69 JSON continuations on identical before/after source snapshot
+`0d242f253ae391bccfd8fa3bc0dadbc0421b10b90c9c5475ac1c61582a4922a8`.
+Original CLI **WHTKGXEJ v7** retains Banker skill setup; **5YMNGCCT v7**
+retains original Bene Gesserit prediction before Skills. Both retain three
+unowned canonical tokens until the real first Storm.
+
+Human390px **63LV57W2** ships Harkonnen physical5 to empty Habbanya17 with
+the original free-companion checkbox: native wallet10→6, reserves10→5.
+Heighliners accrues1 for Emperor and Banker fronts1 for Atreides while both
+owned wallets remain10. Real movement enters v10/Collection: Tech owner11,
+Banker12 from ordinary city2 with front1 still unavailable. Original human
+readiness reaches **v13/Mentat**, Banker13/front0; refresh preserves those facts.
+
+Human390px **HC35JG8P** follows a real preliminary token capture and chooses
+the remaining Hagga battle. Hidden skilled Staban5/dial4/support4/Crysknife/
+Shield wins9–0 after original optional opposing Diplomat decline. Wallet5−4+2
+printed Bashar bounty=3. Actual Suk choice saves3: one kept, two reserve returns,
+one current Tank casualty; earlier two casualties make total Tanks3/reserves12/
+Hagga5. Winner retains both physical cards, then selects only Axlotl from the
+two real opposing tokens; production stays Emperor. Refresh preserves
+**v18/Collection**, wallet9 after separately collecting6 board spice, one token
+transfer and20 forces. Phone rescue explanation/token controls and the
+hydrated351px guide within390px are readable without page overflow.
+
+Owned temporary drivers and managed tabs are removed; original game rows,
+private metadata, captures and QA store remain. No broad assurance/calibration,
+public activation, completed-modules or deployed claim; live ab5c782 remains
+last observed.
+Final guide10/10, types/lint/build and the final rebuilt390px reference pass
+(351px topic, no page overflow). The final isolated QA reload retains both
+original human versions and phases. No extra broad assurance suite is rerun.
+
 ## 4 October 2026 — standalone Ecaz and Moritani Stronghold composition
 
 Two bounded owners supplied native Ecaz holder-plan and Moritani loss/assassination
