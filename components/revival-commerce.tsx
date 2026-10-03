@@ -37,6 +37,12 @@ export function RevivalCommerce({
               Fill your active leader pool up to five. A ghola keeps its traitor
               identity and can be sold back only after it dies.
             </p>
+            {g.leaderSkills && (
+              <p className="fine">
+                Reviving a foreign ghola does not draw or assign a Leader Skill.
+                Your native skilled leader keeps its own assignment.
+              </p>
+            )}
             {g.players
               .filter((p) => p.id !== me.id)
               .flatMap((p) => p.leaders)

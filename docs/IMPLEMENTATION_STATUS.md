@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 4 October 2026 — native Advanced Tleilaxu skills and foreign-ghola lifecycle
+
+Two bounded owners composed original foreign-disc ownership/skill validation
+and genuine native fixtures/rule cases. One integration owner extended the
+shared Advanced profile, stable CLI samples, human guidance and actual runtime.
+Native Tleilaxu plus optional Ixians/CHOAM/classic seats keep all fourteen cards,
+original family decks, starting offers and Face Dancers. Foreign revival never
+draws a new skill; eligible own revival retains its optional offer.
+
+Actual original capture remains legal. The first new validator incorrectly
+required a concealed snapshot after the native second plan publicly revealed
+the captive. The failing real-engine case now passes through the existing
+revelation, execution and surviving-use return handlers without duplicating
+death, capture or payment. Original disc/ghola/captor controllers stay distinct.
+Fixture corrections use genuine trained-disc posture, the real own-revival
+action and the actual native Auditor inventory. Deleted obsolete Advanced
+denial and bare-not-throw policy assertions rather than re-pinning them.
+
+Affected56/56, CLI3/3 and types/lint/build pass. Nine actual controlled cases
+cover manual/four-policy funded foreign revival, capture execution/use-return
+and explicit native Mentat/Banker opt-ins. Fourteen genuine CLI games complete
+6,620 accepted actions/no rejection,171 JSON continuations,62 battles, two
+foreign and five own leader revivals. Stable new ordinals235–248 preserve old
+Basic samples. Ten canonical local anchors resolve.
+
+Fresh original CLI **H485PLF5 v6** preserves native setup. Human390px
+**VNQ5PF54 v33** uses original admitted seats, followed by an explicitly
+conserved Revival disc/Worthless/storm position. Actual Bashar foreign revival
+pays1 from wallet5, with no new offer. Actual two-force Wind Pass shipment pays4.
+Normal face-up Zoal/Warmaster contributes exactly+1 to Bashar2 using actual
+Trip to Gamont against Caid3/dial0; the native aggressor wins3–3. Original
+Traitor declines, card retention and phase opening reach Collection after
+refresh with wallet0, two board counters and the living foreign disc still
+controlled by Tleilaxu. The detailed guide is visually readable at390px.
+
+No natural-history claim for controlled fixtures, game reset, public activation,
+strategic tuning, comprehensive assurance campaign or deployment.
+
+Final native15/15, all nine controlled runtime cases and types/lint/build pass
+after the foreign public-profile quote is cached only within its current
+validation call. No allocation or retained-state cache is introduced. Eleven
+final canonical scope anchors resolve. Final isolated-build GETs retain human
+v33/Collection/wallet0/two counters/living Bashar and original CLI v6/setup.
+Own throwaway drivers and browser tabs are removed/released; QA games remain.
+
 ## 4 October 2026 — Advanced native Ixian and CHOAM Leader Skills
 
 Two independent owners extended the bounded native profile/helper contracts and

@@ -1,9 +1,53 @@
-# Basic Tleilaxu with Leader Skills
+# Tleilaxu with Leader Skills
 
 Connected development prototype, 21 September 2026. Basic Tleilaxu with base
 opponents now uses all fourteen physical skills through genuine setup. Public
 starts, complete-mode acceptance and publication remain gated. Existing missing
 skill effects are still explicit; this is not complete expansion certification.
+
+## Advanced native composition — 4 October 2026
+
+Fresh local Advanced `leader-skills` tables now admit native Tleilaxu, optionally
+Ixians and/or CHOAM, with classic opponents and distinct required `ix`/`choam`
+decks. Two through six unique seats retain all fourteen physical skills,
+starting-card choices, real Face Dancers and native setup. Existing Basic
+entries below remain unchanged; public starts and unrelated overlays stay gated.
+
+Actual half-price foreign revival fills the controlled living pool only up to
+five. The original faction retains the sole physical disc; `gholaBy` records
+Tleilaxu control. It creates no skill offer or assignment, even when Tleilaxu has
+lost its native trainer. This composes the
+[explicit foreign-ghola FAQ](LEADER_SKILLS_RULES.md#capture-and-official-clarifications)
+with original native revival, not a new entitlement. Own-leader revival still
+offers its optional private draw when eligible. Auditor and the user-specific
+Ecaz-only Duke revival/Ghola exclusions remain.
+
+A face-up native trainer can supply its normal printed role bonus to a selected
+controlled foreign disc; that does not grant the trained disc's lower bonus.
+Native death and negotiated original-owner buyback preserve the native trainer
+and clear ghola control only on the actual return. Harkonnen can capture a foreign
+ghola through its original handler: capture overrides Tleilaxu control, actual
+plan revelation removes its concealed snapshot, and surviving use returns it to
+Tleilaxu. Execution retains the original dead-ghola and private snapshot for the
+existing return path. No skill attaches to the foreign disc. Native Face Dance
+and Rihani still use their original handlers and physical skill/card returns.
+Captured replacement and Advanced Atreides Suk/KH remain separate pending cases.
+
+New Advanced `tleilaxu-skills` samples use stable ordinals235–248: five ordinary,
+five paired Ixian and four three-native rosters. Fourteen genuine unstaged games
+finish6,620 accepted actions/no rejection,171 JSON continuations,62 battles,
+two foreign and five own leader revivals. Five separate actual manual/four-policy
+revival cases and native captured-plan/execution/use-return smoke cover the
+changed paths; controlled positions are explicit, not natural phase histories.
+
+Final affected56/56, CLI3/3 and types/lint/build pass. Nine controlled runtime
+cases include explicit native Mentat and Banker opt-ins. Original CLI
+**H485PLF5 v6** preserves setup; human390px **VNQ5PF54 v33** performs real
+foreign revival/ship/plans after the declared controlled starting position.
+Warmaster's normal+1 makes Bashar2 tie Caid3 and win as aggressor, without a
+trained lower bonus or a new skill. Actual Collection retains wallet0 and two
+board counters after refresh; the detailed guide is visually readable at390px.
+
 
 ## Configuration and physical setup
 
@@ -13,8 +57,8 @@ and no other optional modules. It keeps the real Ix Treachery/Spice decks and
 the Cheap Hero Traitor identity. Starting Treachery precedes simultaneous
 private two-card skill offers; public assignments and ordinary Traitor choices
 precede the native three Face Dancers. No hidden card controls profile admission.
-Ixians now have a separate [Basic integration](IX_LEADER_SKILLS.md); Advanced
-Tleilaxu and combined modules require further work.
+Ixians have a separate [integration](IX_LEADER_SKILLS.md); the Advanced native
+composition above supersedes the earlier admission boundary, not other modules.
 
 ## Connected interactions
 
@@ -24,8 +68,8 @@ offer; income responses finish before the player's choice. The undrawn offer
 reveals neither card, can be declined, and binds a drawn choice to that revived
 leader. Canceled or unaffordable revivals create no offer. Existing observation
 of Ghola and other native revivals remains idempotent. Captured replacement
-entitlement stays guarded. Foreign gholas remain Advanced-only and excluded
-from this profile; the FAQ says acquiring one does not draw a new skill.
+entitlement stays guarded. Foreign gholas remain Advanced-only and are excluded
+from this Basic profile; acquiring one does not draw a new skill.
 
 Rihani uses the [recorded FAQ](LEADER_SKILLS_RULES.md):
 Tleilaxu's drawn cards become unrevealed Face Dancers, and only an unrevealed old
@@ -71,7 +115,7 @@ The sample profile runs two through six players with Emperor, Guild, Harkonnen,
 Fremen and Bene Gesserit added in order; focused tests also include Atreides.
 It counts all Treachery, skill, Traitor/Face Dancer and force custody, checks
 rejected-action immutability and JSON/private-view restoration. Saved sample
-continuation preserves the full module; Advanced selection fails before running.
+continuation preserves the full module; Advanced samples now follow the bounded composition above.
 These are legal-play checks, not difficulty calibration. The tests use genuine
 setup followed by explicitly conserved focused positions, not invented full
 phase histories. Authenticated in-memory SQLite checks cover concurrent setup

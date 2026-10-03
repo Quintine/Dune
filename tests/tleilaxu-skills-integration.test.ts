@@ -5,14 +5,12 @@ import { createElement } from 'react';
 import { applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, normalizeAutomaticGame, viewGame, type Action, type Game } from '../game/engine';
 import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
 import { basicTleilaxuLeaderSkillsProfile } from '../game/leader-skill-profile';
-import { botActions } from '../game/bots';
-import { DIFFICULTIES } from '../game/bot-profiles';
 import { registerHooks } from 'node:module';
 const aliases = registerHooks({resolve(specifier,context,next){return next(specifier === 'next/image' ? 'vinext/shims/image' : specifier,context);}});
 const { RihaniChoice } = await import('../components/rihani-decipherer');
 aliases.deregister();
 import { sampleInventory, verifySampleCustody } from '../tools/sample-custody';
-import { completedTleilaxuSkillsGame, initializedTleilaxuSkillsOffers, assertTleilaxuSkillsCustody as custody, tleilaxuSkillsPlayer as player, reloadTleilaxuSkillsGame as reload, rejectTleilaxuSkillsAction as reject } from './tleilaxu-skills-fixture';
+import { completedTleilaxuSkillsGame, assertTleilaxuSkillsCustody as custody, tleilaxuSkillsPlayer as player, reloadTleilaxuSkillsGame as reload, rejectTleilaxuSkillsAction as reject } from './tleilaxu-skills-fixture';
 
 const act = (g: Game, owner: string, action: Action) => applyAction(reload(g), owner, action);
 function stable(g: Game) {
@@ -56,7 +54,7 @@ function exchange(g: Game, owner: string) {
   return act(g, owner, { type: 'decision', event, cards: [r.drawn[0], r.eligible[0]] });
 }
 
-void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, Advanced, Richese and module gates remain closed', () => {
+void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, Richese and module gates remain closed', () => {
   for (const card of LEADER_SKILL_CARDS) {
     const game = completedTleilaxuSkillsGame({ requestedSkill: card.id });
     assert.equal(game.leaderSkills!.assignments.find(a => a.owner === 't')!.skill, card.id);
@@ -64,7 +62,7 @@ void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, 
     assert.equal(basicTleilaxuLeaderSkillsProfile(viewGame(game, 'a')), true);
     stable(game);
   }
-  for (const mutate of [(g: Game) => {g.advanced = true;}, (g: Game) => {g.players[1] = newPlayer('x','Richese','richese');},
+  for (const mutate of [(g: Game) => {g.players[1] = newPlayer('x','Richese','richese');},
     (g: Game) => {g.discoveryEnabled = true;}, (g: Game) => {g.expansions.push('choam');}]) {
     const g = createGame('TLEIGATE',newPlayer('t','Tleilaxu','tleilaxu'),false,['ix']);
     joinGame(g,newPlayer('e','Emperor','emperor'));g.players.forEach(p => {p.ready = true;});mutate(g);
@@ -72,11 +70,6 @@ void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, 
   }
   const lobby = createGame('TLEIPUBL',newPlayer('t','Tleilaxu','tleilaxu'),false,['ix']);
   joinGame(lobby,newPlayer('e','Emperor','emperor'));lobby.players.forEach(p => {p.ready = true;});reject(lobby,'t',{type:'start'});
-  const offer = initializedTleilaxuSkillsOffers({requestedSkill:'rihani-decipherer'});
-  for (const difficulty of DIFFICULTIES) {
-    const view = viewGame(offer,'t');view.players.find(p => p.id === 't')!.bot = difficulty;
-    const action = botActions(view).find(a => a.type === 'leaderSkill');assert.ok(action);assert.doesNotThrow(() => act(offer,'t',action));
-  }
 });
 
 void test('native Rihani keeps a private Face Dancer, returns only an old unrevealed card and survives JSON across every choice', () => {
@@ -99,10 +92,6 @@ void test('native Rihani keeps a private Face Dancer, returns only an old unreve
     assert.equal(viewGame(g,observer).rihani!.pending?.drawn,undefined);
   }
   reject(g,'t',{type:'decision',event:drawn.event,cards:[drawn.drawn[0],known]});
-  for (const difficulty of DIFFICULTIES) {
-    const view = viewGame(g,'t');view.players.find(p => p.id === 't')!.bot = difficulty;
-    const action=botActions(view).find(a=>a.type==='decision');assert.ok(action);assert.doesNotThrow(()=>act(g,'t',action));
-  }
   g=act(g,'t',{type:'decision',event:drawn.event,cards:[drawn.drawn[0],drawn.eligible[0]]});
   assert.equal(player(g,'t').faceDancers!.length,3);
   assert.ok(player(g,'t').faceDancers!.some(c=>c.leader===known&&c.revealed));

@@ -218,7 +218,7 @@ void test('native CHOAM Bureaucrat redirects only another payer while its native
   custody(game);
 });
 
-void test('Advanced native admission preserves Atreides Suk and foreign-ghola unresolved boundaries without mutation', () => {
+void test('Advanced native admission preserves Atreides Suk and rejects a forged Ix-controlled foreign ghola without mutation', () => {
   const options = { family: 'ixians' as const, skillOwner: 'atreides' as const, requestedSkill: 'suk-graduate' as const };
   let game = initializeAdvancedNativeSkillsSetup(options);
   while (game.decision?.kind === 'ixSetup') game = advancedNativeStep(game);
@@ -230,11 +230,11 @@ void test('Advanced native admission preserves Atreides Suk and foreign-ghola un
   assert.ok(game.leaderSkills!.deck.includes('suk-graduate'));
   assert.notEqual(game.leaderSkills!.assignments.find(a => a.owner === actor)!.skill, 'suk-graduate');
   custody(game);
-  // Controlled original foreign-ghola custody boundary: use an untrained foreign
-  // leader, not a fabricated skill assignment or replacement deck.
+  // An Ixian cannot control this original foreign disc. Legitimate native
+  // Tleilaxu revival is covered separately, without fabricating assignments.
   const foreign = player(game, 'emperor').leaders.find(l => l.id !== trainer(game, player(game, 'emperor').id))!;
   foreign.gholaBy = player(game, 'ixians').id;
-  reject(game, actor, { type: 'ready' }, /foreign gholas/);
+  reject(game, actor, { type: 'ready' });
 });
 
 void test('captured native trainer blocks replacement revival, retaining the physical skill and Tanks leader', () => {

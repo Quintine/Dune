@@ -91,9 +91,14 @@ export function validateLeaderSkills(
   const originalOwners = new Set<string>();
   for (const assignment of state.assignments) {
     const owner = roster.find((p) => p.id === assignment.owner);
+    const leader = owner?.leaders.find((disc) => disc.id === assignment.leader);
     ensure(
-      owner?.leaders.some((leader) => leader.id === assignment.leader),
+      leader,
       'A skill must remain attached to its original leader.',
+    );
+    ensure(
+      leader.gholaBy === undefined,
+      'A foreign ghola cannot carry a Leader Skill.',
     );
     ensure(
       !assignedLeaders.has(assignment.leader),
@@ -126,7 +131,7 @@ export function validateLeaderSkills(
       offer.leader === null ||
         roster
           .find((p) => p.id === owner)
-          ?.leaders.some((l) => l.id === offer.leader),
+          ?.leaders.some((l) => l.id === offer.leader && l.gholaBy === undefined),
       'Invalid revival skill leader.',
     );
     cards.push(...offer.cards);

@@ -1,4 +1,4 @@
-import { nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
+import { advancedNativeLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7694,10 +7694,44 @@ function leaderSkillsIntegrity(g: Game) {
     g.players.find((p) => p.id === assignment.owner)?.leaders.some((leader) => leader.id === assignment.leader && !leader.dead)),
     'A saved Leader Skill cannot remain assigned to a dead or missing leader.');
   skillRule(() => validateLeaderSkills(g.leaderSkills!, g.players));
-  requireRule(
-    !g.players.some((p) => p.leaders.some((l) => l.gholaBy)),
-    'Leader Skills with foreign gholas await their custody integration.',
-  );
+  let foreignProfileAllowed: boolean | undefined;
+  for (const owner of g.players)
+    for (const leader of owner.leaders) {
+      if (leader.gholaBy === undefined) continue;
+      const controller = g.players.find((p) => p.id === leader.gholaBy);
+      requireRule(
+        (foreignProfileAllowed ??= advancedNativeLeaderSkillsProfile(g)) &&
+          controller?.faction === 'tleilaxu' &&
+          controller.id !== owner.id &&
+          leader.faction === owner.faction &&
+          (leader.controller === undefined || leader.controller === owner.id) &&
+          !isAuditorLeader(leader) && leader.id !== DUKE_VIDAL_ID,
+        'Leader Skills foreign gholas require original native Advanced Tleilaxu custody.',
+      );
+      const concealed = leader.concealed;
+      if (leader.capturedBy !== undefined || concealed) {
+        const captor = g.players.find((p) => p.id === (leader.capturedBy ?? concealed?.captor));
+        // Native capture overrides, but does not erase, the Tleilaxu loan.
+        // Revealing its actual plan removes secrecy; execution keeps the snapshot.
+        requireRule(
+          captor?.faction === 'harkonnen' &&
+            (leader.capturedBy === captor.id
+              ? !leader.dead
+              : leader.capturedBy === undefined && leader.dead) &&
+            ((concealed?.captor === captor.id &&
+              concealed.controller === controller.id && concealed.dead === false) ||
+              (leader.capturedBy === captor.id && g.battle?.revealed === true &&
+                g.battle.plans[captor.id]?.leader === leader.id)),
+          'A foreign ghola capture must retain its native Harkonnen captor and Tleilaxu return custody.',
+        );
+      }
+      let copies = 0;
+      for (const seat of g.players)
+        for (const disc of seat.leaders)
+          if (disc.id === leader.id) copies++;
+      requireRule(copies === 1,
+        'A foreign ghola must remain one physical disc in its original leader roster.');
+    }
   if (g.battle?.leaderSkillHidden)
     requireRule(
       Object.entries(g.battle.leaderSkillHidden).every(

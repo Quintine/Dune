@@ -16,6 +16,31 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Advanced Tleilaxu Skills and foreign gholas — bounded Development Verified:**
+native Tleilaxu, optional Ixians/CHOAM and classic seats now compose all fourteen
+skills with original half-price foreign revival and no foreign skill draw.
+Native trainer normal bonuses, own revival, dead-ghola negotiated return,
+Harkonnen capture/revelation/use-return/execution and Face Dance retain their
+original handlers. Actual captured-plan revelation exposed a new integrity
+overconstraint; it now permits the original public disclosure transition.
+Affected56/56, native CLI3/3, types/lint/build and nine controlled runtime cases
+pass. Fourteen genuine games finish6,620 accepted actions/no rejection,
+171 JSON continuations,62 battles, two foreign and five own leader revivals.
+Original CLI **H485PLF5 v6** retains native setup. Human390px **VNQ5PF54 v33**
+begins at an explicitly conserved Revival/Worthless/storm position after
+genuine setup, then uses actual foreign revival, funded shipment and battle:
+Bashar costs1, no skill offer; two real Wind Pass counters cost4; face-up Zoal's
+Warmaster gives the foreign Bashar2 exactly+1 with Trip to Gamont, defeating
+Caid3 on the aggressor tie3–3. Actual cleanup/opening reaches Collection with
+two board counters, wallet0 and the living controlled foreign disc after refresh.
+The detailed current guide is visually readable at390px. See the
+[native Tleilaxu contract](TLEILAXU_LEADER_SKILLS.md#advanced-native-composition--4-october-2026).
+Basic/public starts, captured replacement, Advanced Atreides Suk/KH and other
+optional-module/ruling gates remain. No full assurance or deployed claim.
+Final native15/15, all nine runtime cases and types/lint/build pass after
+per-action public-profile validation is computed only once when foreign discs
+exist. The final isolated build retains human v33/Collection and CLI v6/setup.
+
 **Advanced native Ixian/CHOAM Leader Skills — bounded Development Verified:**
 fresh two-to-six-seat native Ixian and/or CHOAM plus classic tables retain
 all fourteen skills, distinct required family decks and genuine native setup.

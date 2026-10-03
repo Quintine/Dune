@@ -12,6 +12,9 @@ distinct required family decks. Actual native support payment grants one
 unavailable front-shield spice and original Mentat collects it once.
 See the [current native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
 Ordinary/default activation and provisional earned custody are unchanged.
+The bounded [Advanced Tleilaxu composition](TLEILAXU_LEADER_SKILLS.md#advanced-native-composition--4-october-2026)
+also shares this separate opt-in. Its foreign revival never creates a Banker
+assignment; original paid bank legs and own native trainer eligibility remain.
 
 ## Normal income local contract — 2 October 2026
 

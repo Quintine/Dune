@@ -6,10 +6,11 @@ import {
 import type { FactionId } from '../game/catalog';
 import { LEADER_SKILL_CARDS, type LeaderSkillId } from '../game/leader-skill-cards';
 import { validateLeaderSkills } from '../game/leader-skills';
+import { newRevivalRules } from '../game/revival';
 import { nextSpiceBankerIncomeNativeStep } from './fixture-spice-banker-income';
 
 export type AdvancedNativeSkillsOptions = {
-  family: 'ixians' | 'choam';
+  family: 'ixians' | 'choam' | 'tleilaxu';
   requestedSkill?: LeaderSkillId;
   skillOwner?: FactionId;
   opponents?: readonly FactionId[];
@@ -52,7 +53,7 @@ function withSkillShuffle<T>(skill: LeaderSkillId, ownerIndex: number, initializ
  * physical skill offers. No played save is converted and no deck is cherry-picked. */
 export function initializeAdvancedNativeSkillsSetup(options: AdvancedNativeSkillsOptions): Game {
   const ownerFaction = options.skillOwner ?? options.family;
-  const expansion = options.family === 'ixians' ? 'ix' : 'choam';
+  const expansion = options.family === 'choam' ? 'choam' : 'ix';
   let game: Game;
   if (options.initial) game = structuredClone(options.initial);
   else {
@@ -144,8 +145,17 @@ export function assertAdvancedNativeCustody(game: Game): void {
  * This is not claimed to be a played turn history. */
 export function createAdvancedNativeSkillBattle(options: AdvancedNativeSkillsOptions): Game {
   const game = completedAdvancedNativeSkillsGame(options);
-  const owner = advancedNativePlayer(game, options.skillOwner ?? options.family);
-  const enemy = advancedNativePlayer(game, 'emperor');
+  return stageAdvancedNativeSkillBattle(game,
+    advancedNativePlayer(game, options.skillOwner ?? options.family).id,
+    advancedNativePlayer(game, 'emperor').id);
+}
+
+/** Reuse original authenticated seats and conserved inventories after revival. */
+export function stageAdvancedNativeSkillBattle(state: Game, actor: string, target: string): Game {
+  const game = structuredClone(state);
+  const owner = game.players.find(p => p.id === actor)!;
+  const enemy = game.players.find(p => p.id === target)!;
+  assert.ok(owner && enemy && owner !== enemy);
   for (const p of game.players) {
     game.deck.push(...p.hand);
     p.hand = [];
@@ -171,11 +181,38 @@ export function createAdvancedNativeSkillBattle(options: AdvancedNativeSkillsOpt
   return game;
 }
 
-export function openAdvancedNativeSkillBattle(state: Game, actor: string, target: string): Game {
+/** Explicit conserved Revival position after genuine Advanced Tleilaxu setup.
+ * Only untrained original discs are staged dead; no assigned card is removed.
+ * Wallets and all original card/force inventories remain untouched. */
+export function stageAdvancedTleilaxuForeignRevival(state: Game): {
+  game: Game; actor: string; originalOwner: string; leader: string; ownDead: string;
+} {
+  const game = structuredClone(state);
+  assert.equal(game.status, 'playing');
+  assert.equal(game.advanced, true);
+  const owner = advancedNativePlayer(game, 'tleilaxu');
+  const foreignOwner = advancedNativePlayer(game, 'emperor');
+  const trained = new Set(game.leaderSkills!.assignments.map(a => a.leader));
+  const own = owner.leaders.find(l => !trained.has(l.id) && !l.gholaBy && !l.capturedBy)!;
+  const foreign = foreignOwner.leaders.filter(l => !trained.has(l.id) && !l.capturedBy)
+    .sort((a, b) => a.strength - b.strength)[0];
+  assert.ok(own && foreign);
+  for (const leader of [own, foreign]) {
+    leader.dead = true;
+    leader.deaths = Math.max(1, leader.deaths ?? 0);
+  }
+  Object.assign(game, { phase: 4, active: null, ready: [], decision: null, response: null,
+    phaseOpening: null, revivalRules: newRevivalRules() });
+  for (const p of game.players) p.leaderRevived = false;
+  assertAdvancedNativeCustody(game);
+  return { game, actor: owner.id, originalOwner: foreignOwner.id, leader: foreign.id, ownDead: own.id };
+}
+
+export function openAdvancedNativeSkillBattle(state: Game, actor: string, target: string, hideSkills = true): Game {
   let game = applyAction(state, actor, { type: 'chooseBattle', territory: 'wind_pass', target });
   for (let i = 0; (game.response || game.decision || game.battle?.preparation) && i < 100; i++) {
     if (game.decision?.kind === 'leaderSkillVisibility') {
-      game = applyAction(game, game.decision.player, { type: 'leaderSkillVisibility', event: game.decision.event, hide: true });
+      game = applyAction(game, game.decision.player, { type: 'leaderSkillVisibility', event: game.decision.event, hide: hideSkills });
     } else game = advancedNativeStep(game);
   }
   assert.equal(game.decision, null);

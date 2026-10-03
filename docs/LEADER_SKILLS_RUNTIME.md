@@ -28,6 +28,18 @@ activation still awaits the uniform-response UX decision; empty hands and
 Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
+## Advanced Tleilaxu foreign-ghola composition — 4 October 2026
+
+The [native Tleilaxu contract](TLEILAXU_LEADER_SKILLS.md#advanced-native-composition--4-october-2026)
+extends the Advanced native subset to Tleilaxu, optionally with Ixians and/or
+CHOAM and classic opponents, preserving distinct required decks and all fourteen
+skills. Actual foreign revival gives control of the original physical disc but
+never a new skill. Own revival, native trainer normal roles, foreign death and
+negotiated return, Harkonnen capture/revelation/use-return/execution and native
+Face Dance compose through their original handlers. Explicit Mentat/Banker
+opt-ins retain their boundaries; captured replacement, Advanced Atreides Suk/KH,
+unrelated overlays and public starts remain guarded.
+
 ## Advanced native Ixian and CHOAM composition — 4 October 2026
 
 The fresh local `leader-skills` profile now admits two through six unique
@@ -150,10 +162,10 @@ Captured-card replacement entitlement remains unresolved. The prototype rejects
 own-leader revival while its original skill is captured, before beginning a
 paid revival or consuming the Ghola/special-Karama action. This is an explicit
 unsupported boundary, not a ruling that the physical game forbids that revival.
-Foreign gholas, other expansion rosters and combined optional modules remain gated.
-The Basic Tleilaxu follow-up now tests response-driven automatic own revival
-continuation; this does not certify Advanced foreign-ghola custody. The other source-contract timing questions also remain
-open. Planetologist now has bounded movement and battle controls as described below.
+Other expansion rosters and combined optional modules remain gated. Native
+Advanced foreign gholas now follow the bounded Tleilaxu contract above; the
+recorded source-contract timing questions remain open. Planetologist has bounded
+movement and battle controls as described below.
 Remaining normal-band payments, ordinary Mentat activation, modified Smuggler collection,
 and the other guarded skill combinations still need connected effects. Diplomat
 retreat is a bounded prototype, not a complete simultaneous-effect ruling.

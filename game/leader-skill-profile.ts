@@ -89,8 +89,8 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
     const player = players[i];
     // Six seats at most: check prior seats without allocating per-rule quote sets.
     for (let j = 0; j < i; j++) if (players[j].faction === player.faction) return false;
-    if (player.faction === 'ixians' || player.faction === 'choam') {
-      if (!game.expansions.includes(player.faction === 'ixians' ? 'ix' : 'choam')) return false;
+    if (player.faction === 'ixians' || player.faction === 'tleilaxu' || player.faction === 'choam') {
+      if (!game.expansions.includes(player.faction === 'choam' ? 'choam' : 'ix')) return false;
       native = true;
     } else {
       let classic = false;

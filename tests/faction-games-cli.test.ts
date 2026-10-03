@@ -262,10 +262,10 @@ void test('Moritani Skills samples preserve their full module on saved continuat
   assert.equal(existsSync(unsupported), false);
 });
 
-void test('Tleilaxu Skills samples preserve their full module on saved continuation and reject Advanced before running', (t) => {
+void test('Tleilaxu Skills samples preserve full Basic and Advanced native decks through saved continuation', (t) => {
   const area = temporary(t);
   const out = join(area, 'skills');
-  const result = run(out, '--profile', 'tleilaxu-skills', '--players', '2', '--seed', '1000', '--max-actions', '1');
+  const result = run(out, '--profile', 'tleilaxu-skills', '--rules', 'basic', '--players', '2', '--seed', '1000', '--max-actions', '1');
   assert.equal(result.status, 1);
   assertFailedEvidence(out, 'tleilaxu-skills-2-basic', 1021, false);
   const snapshot = join(out, 'failed-tleilaxu-skills-2-basic.json');
@@ -276,10 +276,16 @@ void test('Tleilaxu Skills samples preserve their full module on saved continuat
   const resumed = join(area, 'skills-resumed');
   assert.equal(run(resumed, '--resume', snapshot, '--seed', '1000', '--max-actions', '1').status, 1);
   assertFailedEvidence(resumed, 'tleilaxu-skills-2-basic', 1021, true);
-  const unsupported = join(area, 'unsupported');
-  const bad = run(unsupported, '--profile', 'tleilaxu-skills', '--rules', 'advanced');
-  assert.equal(bad.status, 1);
-  assert.equal(existsSync(unsupported), false);
+  const advanced = join(area, 'advanced');
+  assert.equal(run(advanced, '--profile', 'tleilaxu-skills', '--rules', 'advanced', '--players', '2', '--seed', '1000', '--max-actions', '1').status, 1);
+  for (const [name, seed] of [['tleilaxu-skills-2-advanced', 1235], ['tleilaxu-skills-tleilaxu-ixians-2-advanced', 1240]] as const) {
+    assertFailedEvidence(advanced, name, seed, false, 2);
+    const state = json<typeof game>(join(advanced, `failed-${name}.json`));
+    assert.equal(state.advanced, true);
+    const cards = [...state.leaderSkills.deck, ...Object.values(state.leaderSkills.offers).flatMap(o => o.cards), ...state.leaderSkills.assignments.map(a => a.skill)];
+    assert.equal(new Set(cards).size, 14);
+    assert.equal(cards.length, 14);
+  }
 });
 
 void test('Ixian Skills samples preserve full Basic and Advanced native decks through saved continuation', (t) => {

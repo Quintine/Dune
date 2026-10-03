@@ -13,6 +13,9 @@ family decks. Actual private naming/disclosure returns to native posture and
 keeps the shown card held; unrelated players receive no learned card.
 See the [current native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
 Ordinary activation, empty hands and other pending rulings remain unchanged.
+The bounded [Advanced Tleilaxu composition](TLEILAXU_LEADER_SKILLS.md#advanced-native-composition--4-october-2026)
+now uses the same explicit preview; original foreign revival does not assign a
+new Mentat or any other skill.
 
 ## Native skill integration — 2 October 2026
 
