@@ -36,6 +36,13 @@ end, wallet19→20. Original held cards, private controls/inspector/refresh and
 no root390px overflow remain. Controlled positions are labeled and only QA
 rooms change. [Scope, commands and bounded evidence](NEXUS_CARD_RULES.md#paired-e1e2-tech-and-stronghold-composition--4-october-2026)
 preserve mixed-family/E3/Skills/HW/public/deployment and pending-ruling gates.
+Code **9f254a6912e7b9e9f24234ffceae010eb5c08796** is pushed. Final28
+module/guide cases, types/lint and exact-revision build pass; rebuilt QA marker
+**9f254a6** displays both preserved outcomes and the updated390px guide.
+Exact [CI37188948092](https://github.com/Quintine/Dune/actions/runs/37188948092) /
+container job111396870925 completes successfully: isolated storage/HTTP
+verification step7 precedes verified image publication step9. Publication is
+not deployment; live **ab5c782** remains last observed.
 
 **Classic Nexus / Tech / Strongholds — bounded Development Verified:**
 fresh classic/base33/all12 Nexus composes Tech3..6 Basic/Advanced and/or

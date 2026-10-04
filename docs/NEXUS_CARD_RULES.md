@@ -56,6 +56,12 @@ before a qualifying Nexus; none claims natural Cunning use. Report roots:
 All capture unchanged tree
 `3baa637122c51fbc8928c9931700914e9dc2ed8d2e8d1ec4a81d7bab49829e5c`;
 later fixture lint and reference changes do not modify the engine.
+Final28 module/guide cases, types/lint and the exact pushed build pass.
+Rebuilt QA displays **9f254a6**, preserved physical outcomes and the updated
+390px guide. Code **9f254a6912e7b9e9f24234ffceae010eb5c08796** is pushed;
+exact [CI37188948092](https://github.com/Quintine/Dune/actions/runs/37188948092) /
+container111396870925 completes successfully, with isolated storage/HTTP
+step7 before verified image publication step9. This is not deployed evidence.
 
 Original backed-up CLI **7N2FKGKW / EFQGWA8F v10/setup** preserves exact
 authenticated actors and the first deal. Controlled390px **7N2FKGKW v30/
