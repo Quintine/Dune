@@ -1,3 +1,4 @@
+import { nativeFactionTechProfile } from './faction-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
@@ -7514,9 +7515,9 @@ function leaderSkillAssignmentUnavailable(
 function e3StrongholdFactionProfile(g: Game): boolean {
   if (!g.advanced || g.expansions.length !== 1 || g.expansions[0] !== 'ecaz' ||
       g.players.length < 2 || g.players.length > 6 ||
-      g.homeworlds || g.nexusCards || g.leaderSkills || g.techTokens ||
+      g.homeworlds || g.nexusCards || g.leaderSkills ||
       g.discoveryEnabled || g.discoveries || g.discoveryStash || g.greatMaker ||
-      g.ecazTreachery) return false;
+      g.ecazTreachery || (g.techTokens && !nativeFactionTechProfile(g))) return false;
   let native: 'ecaz' | 'moritani' | null = null;
   for (const player of g.players) {
     if (player.faction === 'ecaz' || player.faction === 'moritani') {
@@ -7534,7 +7535,7 @@ function moritaniAssassinateModeSupported(g: Game) {
     (!g.strongholdCards || e3StrongholdFactionProfile(g) ||
       (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) && !g.homeworlds &&
     !g.discoveryEnabled && !g.discoveries &&
-    (!g.techTokens || (!!g.leaderSkills && nativeTechLeaderSkillsProfile(g)));
+    (!g.techTokens || nativeFactionTechProfile(g) || (!!g.leaderSkills && nativeTechLeaderSkillsProfile(g)));
 }
 function moritaniAssassinateContext(g: Game, receipt: MoritaniAssassinateReceipt) {
   const p = getPlayer(g,receipt.owner), opponent = getPlayer(g,receipt.opponent);
@@ -9244,10 +9245,13 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
     'The faction prototype needs a nonempty selection of distinct known expansions.');
   requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
     !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
-    !state.techTokens && !state.strongholdCards,
-    'The faction prototype excludes optional modules, including Leader Skills and Discoveries.');
+    (!state.techTokens || nativeFactionTechProfile(state)) && !state.strongholdCards,
+    'The faction prototype excludes other optional modules; Tech Tokens require a supported native three-through-six-seat lobby.');
   requireFreshFactionInventory(state);
-  return initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
+  const initialized = initializeSetupGameForAudit(state, false, false, false, false, false, false, true);
+  if (initialized.advanced && nativeFactionTechProfile(initialized) && byFaction(initialized, 'moritani'))
+    initializeMoritaniAssassinateState(initialized);
+  return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
   return typeof g.advanced === 'boolean' && Array.isArray(g.expansions) &&
@@ -9264,7 +9268,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
         g.expansions.includes(faction(p.faction).expansion))) &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills &&
     (!g.strongholdCards || e3StrongholdFactionProfile(g)) &&
-    !g.techTokens && !g.discoveryEnabled && !g.discoveries &&
+    (!g.techTokens || nativeFactionTechProfile(g)) && !g.discoveryEnabled && !g.discoveries &&
     !g.discoveryStash && !g.greatMaker &&
     (g.ecazTreachery === undefined || g.ecazTreachery === true);
 }
@@ -9290,9 +9294,9 @@ export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
     'Stronghold factions require supported Advanced native factions, classic opponents and their selected distinct decks.');
   requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
     !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
-    !state.techTokens && !state.ecazTreachery &&
+    (!state.techTokens || nativeFactionTechProfile(state)) && !state.ecazTreachery &&
     (!state.strongholdCards || JSON.stringify(state.strongholdCards) === JSON.stringify(createStrongholdCards())),
-    'Stronghold factions admit only unused Stronghold Cards, without other optional modules.');
+    'Stronghold factions admit unused Stronghold Cards and supported native Tech Tokens, without other optional modules.');
   requireFreshFactionInventory(state);
   requireFreshBaseRuntime(state);
   const initialized = initializeSetupGameForAudit(state, false, false, false, false, false, false, true, false, true);
@@ -9424,9 +9428,10 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   requireFreshSetup(g, homeworlds || nexus || ix || factions);
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
-  requireRule(!g.techTokens || (skillTech &&
+  const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
+  requireRule(!g.techTokens || ((skillTech || nativeTech) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
-  'Leader Skills with Tech Tokens requires a fresh supported classic/native three-through-six-seat lobby with unused tokens.');
+  'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
   requireRule(!g.strongholdCards || strongholdFactions || (skillStronghold &&
     JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards())),
   'Leader Skills with Stronghold Cards requires a fresh supported Advanced lobby with unused cards.');
@@ -9438,7 +9443,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
-      (!g.techTokens || skillTech) &&
+      (!g.techTokens || skillTech || nativeTech) &&
       (strongholdFactions || skillStronghold || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
@@ -9461,6 +9466,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       : 'The audit initializer supports base factions without expansions or optional modules.',
   );
   initializeSetup(g, strongholdFactions || !!g.strongholdCards);
+  if (nativeTech && byFaction(g, 'ecaz')) g.ecazOccupyPreview = true;
   return normalizeAutomaticGame(g);
 }
 function ecazStartingForcesComplete(p: Player): boolean {

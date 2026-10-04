@@ -16,6 +16,25 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Native Tech / Strongholds without Skills — bounded Development Verified:**
+fresh selected E1/E2 native or standalone Ecaz OR Moritani entry preserves
+original Tech3..6 Basic/Advanced and optional Advanced Strongholds, without
+Skills or public-start changes. New32 cases are included in affected187/187;
+final types/lint, rebuilt surface and two final entropy consumers pass.
+Thirty original admission probes, both below-three rejections, twelve actual
+native programs and all four legal Face Dance policies pass. Fifteen genuine
+three-seat games complete4,902 accepted actions/no rejection/125 JSON continuations.
+Human390px **BZVLA22D v21/Mentat** chooses native Ecaz lead, real dial5/
+support1/Sanya4 versus dial2/Bashar2:9–4, fixed Ecaz3/Guild3 casualties,
+held Tabr2 income, native2+1 survivors and original Axlotl+Heighliners.
+**YENG8B6U v15/Mentat** keeps losing Tuek4/support1, Master3 bounty/death,
+wallet18, Guild winner Tech and one actual private Bashar replacement.
+Original CLI v8 setup, refresh, public owner labels and updated reference pass;
+root390px has no overflow. Controlled positions are labeled; no natural
+assassination claim. Read [scope and evidence](EXPANSION_FACTIONS_PROTOTYPE.md#native-tech-composition--4-october-2026).
+Other overlays, pending rulings, public starts and full/deployed acceptance
+remain open. Existing games and the user PDF are preserved.
+
 **Standalone E3 Skills / Tech / Strongholds — bounded Development Verified:**
 fresh original Ecaz OR Moritani ecaz33/all14 profiles preserve Tech3..6
 Basic/Advanced and Strongholds2..6 Advanced, optionally both. Original

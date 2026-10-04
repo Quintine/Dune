@@ -55,10 +55,9 @@ variant and are absent from this profile.
 or Advanced lobby, two through six distinct ready players, and any roster whose
 faction sets are among the selected nonempty expansion list. It uses the shared
 prediction, traitor, force-placement, starting-card, and first-Storm pipeline.
-It rejects an already dealt or modified lobby and does not add optional modules.
-The ordinary browser lobby still creates Basic games only; Advanced profile
-setup is currently an offline development/test path rather than a visible mode
-selection.
+It rejects an already dealt or modified lobby. Without optional modules, the
+original selected-family scope remains unchanged. Unfinished public expansion
+starts remain gated; the visible Advanced preview is still classic-only.
 
 Faction-specific setup uses the existing physical inventories and decisions:
 
@@ -114,6 +113,79 @@ write the selected lobby. It preserves sessions, recovery records, other rooms,
 and the public start gate. Refresh the existing invitation to continue through
 the ordinary private setup controls. Reusing the command on the started game is
 rejected.
+
+## Native Tech composition — 4 October 2026
+
+Enable original Tech Tokens in a fresh ready lobby before using the existing
+`factions` entry. This bounded composition needs three through six unique seats,
+at least one native selected E1/E2 faction with distinct required `ix`/`choam`
+decks, or standalone Ecaz OR Moritani with classic opponents and exact `ecaz`.
+Basic and Advanced retain original decks, cache, leaders, force placement and
+printed/first-Storm token assignment. It adds no Leader Skills.
+
+The existing Advanced `stronghold-factions` entry additionally preserves these
+unused Tech Tokens with its six original Stronghold Cards. Enable both in the
+lobby; actual end-Mentat ownership remains separate from first-Storm Tech setup.
+Tech at two seats, Basic Strongholds, paired/mixed E3 rosters, Homeworlds, Nexus,
+Discoveries, independent E3 cards and unrelated preview overlays stay excluded.
+Advanced Moritani excludes Harkonnen under its existing assassination boundary.
+
+Ecaz uses original selected-lead battle rewards; an ally cannot share a token
+or turn split Tech holdings into a joint occupied territory. Basic combined
+Occupy remains even-force only. Original Moritani normal-call forfeiture,
+printed assassination bounty and one real Mentat replacement remain.
+Native payments, typed losses and original winner Tech before Face Dance reuse
+the existing handlers; this entry does not certify every interaction.
+
+The authorized Advanced source permits variants together or separately
+(supplied2.3 PDF physical21/printed19). That page assigns native/first-Storm
+Tech owners, phase-end income and one-player complete-set victory. Physical38/
+printed36 preserves original winner cards, spice and Tech before Face Dance.
+Printed faction/Stronghold effects supplement those passages; no pending
+Basic odd-force or Richese cache/No-Field ruling is decided here.
+
+Genuine offline samples use the existing driver:
+
+```sh
+node --import tsx tools/faction-games.ts --profile factions-tech \
+  --players 3 --rules both --out /private/new-native-tech-games
+node --import tsx tools/faction-games.ts --profile stronghold-factions-tech \
+  --players 3 --rules advanced --out /private/new-native-stronghold-tech-games
+```
+
+These are development profiles, not public activation or saved-game conversion.
+
+
+### Bounded development evidence
+
+Thirty actual fresh3/6-seat admission probes and both below-three rejections
+pass. New32 consumer-facing cases are included in affected187/187 across
+native Tech, existing token/Stronghold/E3, prototype/CLI and guide contracts.
+Types/lint/build pass; the final scoped entropy dispatch additionally passes
+both original Face Dance/bot consumers. Twelve actual native programs and
+four legal Face Dance policies preserve original winner Tech and typed forces.
+
+Ten Tech-only and five Stronghold+Tech genuine3-seat games complete4,902
+accepted actions, no rejection and125 JSON continuations. Original reports:
+`/tmp/dune-native-tech-games-20261004/report.json` and
+`/tmp/dune-native-stronghold-tech-games-20261004/report.json`.
+These captured unchanged source before a fixture-only generic dispatch repair;
+the game engine did not change afterward. This is not all-roster certification.
+
+Original human rooms start at v8/setup through the exact existing CLI.
+At390px **BZVLA22D v21/Mentat** selects native Ecaz/Sanya4, dial5/support1,
+against Bashar2/dial2:9–4. Original fixed Ecaz3/Guild3 losses retain2+1
+physical survivors; held Tabr pays2 and original Axlotl+Heighliners go to
+the actual lead. Ordinary Collection adds no city income at this Tabr-only
+position. **YENG8B6U v15/Mentat** keeps losing Tuek4, original support1,
+actual Master3 bounty/death, wallet18, Guild winner Tech and one private
+Bashar replacement. Guild's separate Tuek Collection1 yields wallet4.
+Native public token labels, leader inspector, original decisions, refresh and
+updated guide are observed; root390px has no overflow. These conserved
+controlled positions are not natural battle histories. Dedicated QA store:
+`/tmp/dune-native-tech-qa-20261004`; existing user games are untouched.
+Full rules, combinations, assurance, AI calibration and deployed acceptance
+remain open.
 
 ## Known incomplete play
 

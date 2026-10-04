@@ -28,7 +28,7 @@ export const PROTOTYPE_PROFILES = [
   'leader-skills',
   'banker-income',
   'factions',
-  // Advanced native E1/E2 factions plus classic opponents; selected family decks only.
+  // Advanced selected native families or standalone E3; optional Tech requires 3+ seats.
   'stronghold-factions',
   'nexus',
   'moritani-assassinate',

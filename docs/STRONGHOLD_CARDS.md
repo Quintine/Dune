@@ -2,6 +2,30 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Native Tech composition without Skills — 4 October 2026
+
+Fresh Advanced `stronghold-factions` may preserve original unused Tech Tokens
+at3..6 seats, without Leader Skills, in selected E1/E2 native families or
+standalone Ecaz OR Moritani plus classic opponents. Original selected decks,
+cache, native first-Storm Tech owners and actual end-Mentat Stronghold claims
+remain. Tech-only Basic/Advanced uses existing `factions` entry; read
+[the native composition contract](EXPANSION_FACTIONS_PROTOTYPE.md#native-tech-composition--4-october-2026).
+
+The actual selected Ecaz lead receives its own held-card effect and original
+winner Tech; neither card advantages nor split token holdings are shared.
+Original typed casualties/payments, losing Tuek income, Moritani post-loss
+assassination and original winner rewards before Face Dance remain distinct.
+Two-player Tech, Basic Strongholds, mixed E3, other overlays and public starts
+stay gated; existing unresolved rulings are unchanged.
+
+New32/affected187 cases, types/lint/build, twelve actual native programs and
+all four legal Face Dance policies pass. Fifteen genuine3-seat module games
+complete4,902 actions/no rejection/125 JSON continuations. Original human
+**BZVLA22D v21/Mentat** retains actual selected-lead Tabr income and two
+original Tech Tokens; **YENG8B6U v15/Mentat** retains losing Tuek income,
+printed Master3 assassination, original winner Tech and one private replacement.
+Read [source-bound evidence](EXPANSION_FACTIONS_PROTOTYPE.md#bounded-development-evidence).
+
 ## Standalone E3 skills and optional Tech — 4 October 2026
 
 Fresh original native Ecaz OR Moritani ecaz33/all14 skill profiles additionally

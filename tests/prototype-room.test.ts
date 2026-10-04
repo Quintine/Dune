@@ -1047,6 +1047,7 @@ void test('Stronghold faction admission rejects incompatible modules, history, o
     game => { game.strongholdCards = createStrongholdCards(); game.strongholdCards.claimedTurn = 1; },
     game => { game.nexusCards = { cards: null, phase: null }; },
     game => { game.leaderSkills = createLeaderSkills(() => 0); },
+    game => { game.homeworlds = { custody: null }; },
   ];
   for (const mutate of variants) {
     const game = structuredClone(native);
@@ -1057,14 +1058,6 @@ void test('Stronghold faction admission rejects incompatible modules, history, o
     assert.throws(() => startPrototypeRoom(db, native.code, 7, 'stronghold-factions'));
     assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
     assert.deepEqual(db.prepare('SELECT * FROM seats').all(), seats);
-  }
-  for (const type of ['homeworlds', 'techTokens']) {
-    const game = applyAction(native, native.host, { type, enabled: true });
-    game.players.forEach(player => { player.ready = true; });
-    db.prepare('UPDATE rooms SET state=?,version=7 WHERE code=?').run(JSON.stringify(game), native.code);
-    const before = db.prepare('SELECT * FROM rooms ORDER BY code').all();
-    assert.throws(() => startPrototypeRoom(db, native.code, 7, 'stronghold-factions'));
-    assert.deepEqual(db.prepare('SELECT * FROM rooms ORDER BY code').all(), before);
   }
   const original = structuredClone(native);
   for (const action of [{ type: 'start', profile: 'stronghold-factions' },

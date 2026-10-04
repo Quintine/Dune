@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 4 October 2026 — native Tech and Advanced Strongholds without Skills
+
+Two bounded owners supplied independent E1/E2 and standalone E3 cases.
+Parent integrated fresh native profile admission into existing faction and
+Stronghold entries, original Ecaz coalition/Moritani contexts, genuine sample
+and resume profiles, canonical guidance and original human controls.
+Tech3..6 Basic/Advanced preserves selected E1/E2 or standalone Ecaz OR
+Moritani decks/inventories; Advanced may compose six Stronghold Cards.
+Public starts, old games, unrelated modules and existing rulings are unchanged.
+
+New32 meaningful cases are included in affected187/187. Types/lint/build,
+thirty actual admission probes/two below-three rejections, twelve actual native
+programs and four legal original Face Dance policies pass. Final fixture-only
+generic entropy dispatch passes both original consumers and types/lint.
+Obsolete Tech rejection, incidental wallet/placement/response pins and error
+wording were removed, not repinned. Actual printed CHOAM half-income uses
+two opponent spice→one income, excluding own bank-funded support.
+Ecaz uses actual affordable support, not a fixture wallet grant.
+
+Ten Tech-only and five Stronghold+Tech genuine3-seat games complete4,902
+accepted actions/no rejection/125 JSON. Reports capture unchanged tree
+`61521366bc68245741ec510546084e7bb7e2395b737474a78eda018f95a92676`;
+final generic repair affects only the fixture, not the game engine.
+Natural Moritani samples do not claim assassination. Original report roots:
+`/tmp/dune-native-tech-games-20261004`,
+`/tmp/dune-native-stronghold-tech-games-20261004`.
+
+Original CLI BZVLA22D/YENG8B6Uv8/setup retains unused selected modules and
+all original seats. Controlled human390px **BZVLA22D v21/Mentat** selects
+Ecaz/Sanya4, dial5/support1 against Bashar2/dial2:9–4. Fixed Ecaz3/Guild3
+casualties leave2+1 fighters, held Tabr2 income and original Axlotl+Heighliners.
+No city Collection income is applicable to this Tabr-only position.
+**YENG8B6U v15/Mentat** preserves support1/losing Tuek4, printed Master3
+death/bounty, wallet18, Guild winner Tech and one private Bashar replacement.
+Guild independently collects Tuek1 to wallet4. Inspector, decisions, public
+token labels, refresh and updated guide are observed; root390px has no overflow.
+The new dedicated QA store preserves these rooms and never touches user saves.
+Source/rule/faction/module/assurance/calibration/public/deployed gates stay open.
+
 ## 4 October 2026 — standalone E3 skills with Tech and Advanced Strongholds
 
 Two bounded owners supplied Ecaz ordinary-disc/Duke and Moritani
