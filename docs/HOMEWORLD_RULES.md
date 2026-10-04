@@ -2,6 +2,17 @@
 
 Source audit, 9 September 2026. No runtime activation. The primary module source is the [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), especially printed pp.4, 9–10 and the Homeworld FAQ on pp.15–16. The local publisher-text transcription is `/tmp/dune-rules/ecaz-audit.txt`; fresh official indexed pp.9, 10 and 15 were checked against it. Direct PDF retrieval currently returns HTTP 403. Physical card faces are separately audited in [Homeworld component audit](HOMEWORLD_COMPONENT_AUDIT.md); a rulebook statement and a card-face statement are not interchangeable evidence.
 
+### Stable occupation runtime follow-up — 5 October 2026
+
+Original fresh `homeworld-occupation` setup now connects continuously proved,
+uncontested bank Collection/immediate ally sharing and the printed Wallach/
+Tleilax/Grumman/Salusa occupied protections. The immutable qualification history
+remains distinct from present armies; departure, replacement, contested or
+repopulated histories retain their pending guards. Percentage receipts and
+other occupied powers remain separate. This does not open normal starts,
+convert old saves or certify Homeworlds. See the
+[exact supported source/runtime subset](HOMEWORLD_OCCUPATION_RULES.md#stable-continuous-occupation-prototype--5-october-2026).
+
 ## Module scope and component inventory
 
 There are **13 double-sided Homeworld cards and 13 corresponding planet discs for twelve factions**, not twelve of each. Emperor uses Kaitain and, in Advanced, Salusa Secundus. Only the seated factions' components enter the game. E3 permits the module independently of the selected factions and independently of Nexus cards, Discovery tokens and new Treachery cards. It does not require either Ecaz or Moritani to be seated, or all expansion factions to be present. [E3 pp.4, 9–10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=9)

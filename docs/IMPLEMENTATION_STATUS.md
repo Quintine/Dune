@@ -1,5 +1,49 @@
 # Dune implementation status
 
+## 5 October 2026 — stable occupied Homeworld bank income and protections
+
+Fresh original `homeworld-occupation` enters Basic/Advanced2..6 and selected
+faction decks with Homeworlds alone. One original continuously present qualifier,
+no other foreign army/departure/competing qualifier/restored-high history,
+supports the unambiguous printed bank/defensive effects. Original qualification,
+physical native population and current garrisons stay separate. No expiry/
+replacement policy or old-save conversion is introduced.
+
+Two bounded owners supplied bank queue/component and printed defensive cases;
+parent integrated original setup/CLI/samples, source history, typed combat/
+Voice/FaceDance/Terror, Collection/actual Giedi sources, controls and legal bots.
+Original captured decision survives the generic dispatcher. Salusa's zero bank
+icons no longer block unrelated income; its unresolved combat penalty still
+does. New21/affected262, types/lint/build,24 original setups and real source
+programs/four legal keep-all policies pass; final clean-Movement regression1/1.
+
+Fifty genuine classic/paired E1/E2/standalone E3 samples ran on unchanged
+`09f8b0dcdc54bf284f234c6e0f27936689cce1bb1a7b6381548ee13a149d2dae`.
+37 complete11,762 accepted/300 JSON continuations, with153 rejected candidates.
+All50 total19,080 accepted/19,283 attempts/491 JSON continuations; not a
+zero-rejection certificate. Two exact zero-award captures finish7/14 more
+accepted actions/no rejection at original scenario seeds on correction tree
+`eed8f319ece875181b9412ded145189691db3a8ca56fa6ff00e11f5ca11965ee`.
+Resume restarts the same seed, not the lost original stream.39/50 finish;
+nine occupation/Salusa-combat and two low-Tupile CHOAM ruling captures remain
+preserved, not replayed to hide them or forced into invented outcomes.
+
+Original backed-up CLI CPBXKFGD v14 retains actual setup/cards/actors. A real
+second-turn worm/Nexus earns Guild/Harkonnen alliance before labelled conserved
+positions. Human390px v21/Mentat settles Caladan2 as1/1, then Wallach1 to ally,
+with Giedi2 once: Guild3→4/Harkonnen8→12. Source cards, warning, refresh and
+force inspector show18 Guild reserves/0 Tanks/one visitor on each world with
+no root overflow. Original readiness reaches Mentat. Native runtime programs
+exercise protected Voice, two strength-one real starred counters/no Karama
+restore, an original matching Face Dancer conserved from the unused deck and
+actual first-Mentat Robbery then paid three-force protected second-Movement entry.
+
+Only dedicated QA changes; no reset/credential disclosure/assurance campaign.
+Owned throwaway scripts removed; reports/private receipts remain outside Git.
+Percentage receipts, other occupied powers, unresolved rulings, public/save
+conversion, complete-mode and deployed acceptance remain open.
+[Canonical source and exact evidence](HOMEWORLD_OCCUPATION_RULES.md#stable-continuous-occupation-prototype--5-october-2026).
+
 ## 5 October 2026 — standalone E3 Nexus, Skills and original components
 
 Original `leader-skills --nexus-cards` now admits Ecaz OR Moritani/classic

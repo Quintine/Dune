@@ -92,7 +92,9 @@ import { quoteHomeworldBattleRules } from './homeworld-battle-rules';
 import type { HomeworldForces } from './homeworld-custody';
 import { nativeReserveSources } from './homeworld-options';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
-import { lowGrummanRevealBlock } from './homeworld-collection';
+import { lowGrummanRevealBlock, type HomeworldCollectionSource } from './homeworld-collection';
+import { quoteOccupiedHomeworldVoice, quoteOccupiedHomeworldFaceDancer, quoteOccupiedHomeworldTerror, occupiedHomeworldSardaukarStatus } from './homeworld-occupied-defenses';
+import { beginHomeworldOccupiedIncome, quoteHomeworldOccupiedIncomeChoice, homeworldOccupiedIncomeOffer, validateHomeworldOccupiedIncomeState, type HomeworldOccupiedIncomeState } from './homeworld-occupied-income';
 import { quoteGrummanCollection, quoteGrummanCollectionAction } from './grumman-collection';
 import { grummanCollectionSignature, validateGrummanCollection, type GrummanCollection } from './grumman-collection-return';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
@@ -744,6 +746,7 @@ export type Battle = {
     kind: 'voice' | 'prescience' | 'prescienceAnswer' | 'nexusPrescienceAnswer';
     owner: string;
     beneficiary: string;
+    blocked?: string;
   };
   prescience?: {
     player: string;
@@ -772,6 +775,7 @@ export type Decision =
   | { kind: 'leaderSkillRevival'; player: string; event: string }
   | { kind: 'homeworldRevivalDeployment'; player: string; event: string }
   | { kind: 'grummanCollection'; player: string; event: string }
+  | { kind: 'homeworldOccupiedIncome'; player: string; event: string; world: string }
   | { kind: 'caladanReinforcement'; player: string; event: string }
   | { kind: 'choamAudit'; player: string; event: string }
   | { kind: 'nexusChoamInspection'; player: string; event: string }
@@ -1869,6 +1873,10 @@ export type Game = {
   /** Null/absent disables the module; custody is installed at force placement. */
   homeworlds?: { custody: HomeworldCustody | null; historyVersion?: 1 } | null;
   homeworldOccupationHistory?: HomeworldOccupationHistory;
+  /** Fresh development occupation entry only; never inferred for an older Homeworld save. */
+  homeworldOccupationPreview?: true;
+  pendingHomeworldOccupiedIncome?: HomeworldOccupiedIncomeState | null;
+  homeworldOccupiedIncomeHistory?: HomeworldOccupiedIncomeState[];
   tupileIntelligence?: TupileIntelligenceState;
   pendingTech?: { player: string; loser: string; choices: TechId[] } | null;
   summonedBeforeBlow?: boolean;
@@ -7135,6 +7143,14 @@ function homeworldDefenseIntegrity(g: Game) {
   }
 }
 function faceDanceReturnBlock(g: Game, winner: string): string | null {
+  const protectedWinner = homeworldRule(() => quoteOccupiedHomeworldFaceDancer(g, winner));
+  if (protectedWinner.blocked) return protectedWinner.blocked;
+  const coside = g.pendingFaceDance?.winner === winner ? g.pendingFaceDance.winners : undefined;
+  if (coside) for (const target of coside) {
+    if (target === winner) continue;
+    const quote = homeworldRule(() => quoteOccupiedHomeworldFaceDancer(g, target));
+    if (quote.blocked) return quote.blocked;
+  }
   return g.advanced && g.homeworlds && getPlayer(g, winner).faction === 'emperor'
     ? 'Face Dance returning the Emperor’s army awaits the Kaitain/Salusa reserve-placement ruling.' : null;
 }
@@ -7299,10 +7315,13 @@ function combatForces(
   const army = combatArmy(g, p.id, t);
   const physical = army.normal + army.elite;
   const elite = army.elite;
+  const occupation = g.homeworldOccupationPreview && p.faction === 'emperor'
+    ? homeworldRule(() => occupiedHomeworldSardaukarStatus(g)) : undefined;
+  requireRule(!occupation?.blocked, occupation?.blocked ?? 'Occupied Salusa combat is unresolved.');
   return {
     normal: physical + prospective - elite,
     ...(nexusSardaukarEffective(g,p.id,t) ? {temporaryElite:nexusSardaukarEffective(g,p.id,t)} : {}),
-    ...(homeworldSardaukarFreeSupport(g, p.id)
+    ...(!occupation?.suppressed && homeworldSardaukarFreeSupport(g, p.id)
       ? { eliteFreeSupport: true }
       : {}),
     normalFixedHalf: p.faction === 'ixians' && !nexusSuboidsActive(g, g.nexusSuboidHistory, p.id),
@@ -7312,6 +7331,7 @@ function combatForces(
       (!g.advanced && p.faction !== 'ixians') ||
       (g.battle?.eliteBlocked?.includes(p.id) &&
         !(g.advanced && p.faction === 'ixians')) ||
+      occupation?.suppressed ||
       (p.faction === 'emperor' && opponent.faction === 'fremen')
         ? 1
         : 2,
@@ -8454,6 +8474,26 @@ export function initializeHomeworldGameForAudit(state: Game): Game {
     'Enable the Homeworld module in the audit lobby first.',
   );
   return initializeSetupGameForAudit(state, true);
+}
+/** Fresh occupation prototype; ambiguity remains source-gated rather than assigned a controller. */
+export function initializeHomeworldOccupationGameForAudit(state: Game): Game {
+  requireRule(state.homeworlds?.custody === null && !state.homeworldOccupationPreview &&
+    !state.homeworldOccupationHistory && !state.nexusCards && !state.leaderSkills &&
+    !state.techTokens && !state.strongholdCards && !state.discoveryEnabled &&
+    !state.discoveries && !state.discoveryStash && !state.greatMaker && !state.ecazTreachery &&
+    typeof state.advanced === 'boolean' && state.expansions.length <= 3 &&
+    state.expansions.every((id, index) => (id === 'ix' || id === 'choam' || id === 'ecaz') &&
+      state.expansions.indexOf(id) === index) &&
+    state.players.every(p => FACTIONS.some(f => f.id === p.faction &&
+      (f.expansion === 'base' || state.expansions.includes(f.expansion)))),
+  'Occupation requires a fresh Homeworld lobby with original selected faction decks and no other modules.');
+  requireFreshBaseRuntime(state);
+  requireFreshFactionInventory(state);
+  const g = initializeSetupGameForAudit(state, true, false, false, false, false, false, true);
+  g.homeworldOccupationPreview = true;
+  g.pendingHomeworldOccupiedIncome = null;
+  g.homeworldOccupiedIncomeHistory = [];
+  return g;
 }
 /** Offline-only seam for the independent Nexus module; public starts remain gated. */
 export function initializeNexusGameForAudit(state: Game): Game {
@@ -14057,7 +14097,7 @@ function quoteMovementArrival(
       players: g.players,
       order: move,
       ambassadors: g.ecazAmbassadors?.tokens ?? [],
-      terror: homeworldTerrorEntryBlock(g, move.total)
+      terror: homeworldTerrorEntryBlock(g, move.player, move.total, 'trigger')
         ? [] : (g.moritaniTerror?.tokens ?? []),
       flight: g.ornithopter,
       controls: {
@@ -14130,7 +14170,7 @@ function quoteShipmentArrival(
       wantsFighters: false,
     },
     ambassadors: g.ecazAmbassadors?.tokens ?? [],
-    terror: homeworldTerrorEntryBlock(g, amount)
+    terror: homeworldTerrorEntryBlock(g, p.id, amount, 'trigger')
       ? []
       : (g.moritaniTerror?.tokens ?? []),
     controls: {
@@ -14583,7 +14623,7 @@ function openTerritoryEntry(
   const terrorTokens = moritani &&
     entrant.id !== moritani.id &&
     entrant.id !== moritani.ally &&
-    !homeworldTerrorEntryBlock(g, amount)
+    !homeworldTerrorEntryBlock(g, entrant.id, amount, 'trigger')
       ? g.moritaniTerror?.tokens.filter(t => t.status === 'placed' && t.location === to) ?? []
       : [];
   requireRule(!g.response && !g.decision && !g.pendingTerrorEntry && !g.pendingAmbassador,
@@ -15212,7 +15252,7 @@ function validateGuildAdvisorEntry(
     moritani &&
     moritani.id !== bg.id &&
     moritani.ally !== bg.id &&
-    !homeworldTerrorEntryBlock(g, quote.amount) &&
+    !homeworldTerrorEntryBlock(g, bg.id, quote.amount, 'trigger') &&
     g.moritaniTerror?.tokens.some(
       (t) => t.status === 'placed' && t.location === quote.territory,
     );
@@ -15420,7 +15460,7 @@ function ambassadorRelocationArrivalBlock(
     moritani &&
     mover.id !== moritani.id &&
     mover.id !== moritani.ally &&
-    !homeworldTerrorEntryBlock(g, entering) &&
+    !homeworldTerrorEntryBlock(g, mover.id, entering, 'trigger') &&
     g.moritaniTerror?.tokens.some(
       (token) => token.status === 'placed' && token.location === to,
     );
@@ -16157,12 +16197,14 @@ function terrorEntryIntegrity(g: Game) {
     }
   }
 }
-/** Public original batch size; concealed No-Field markers count as one. */
-function homeworldTerrorEntryBlock(g: Game, entering: number): string | null {
+/** Unknown occupation retains an owned Reveal/Decline window; it never authorizes revelation. */
+function homeworldTerrorEntryBlock(g: Game, entrant: string, entering: number, mode: 'trigger' | 'reveal'): string | null {
   const owner = byFaction(g, 'moritani');
-  return owner
-    ? homeworldRule(() => lowGrummanRevealBlock(g, owner.id, entering))
-    : null;
+  if (!owner) return null;
+  const occupation = homeworldRule(() => quoteOccupiedHomeworldTerror(g, entrant));
+  if (occupation.status === 'prohibited' || mode === 'reveal' && occupation.blocked)
+    return occupation.blocked;
+  return homeworldRule(() => lowGrummanRevealBlock(g, owner.id, entering));
 }
 /** Entry is already paid and committed; a reaction must never replay its original action. */
 function openTerrorEntry(
@@ -16189,7 +16231,7 @@ function openTerrorEntry(
   const token = tokens[0];
   if (!moritani || !token || entrant.id === moritani.id ||
     (entrant.id === moritani.ally && !originallyTriggered) ||
-    homeworldTerrorEntryBlock(g, amount))
+    homeworldTerrorEntryBlock(g, entrant.id, amount, 'trigger'))
     return false;
   requireRule(!g.pendingTerrorEntry, 'Resolve the pending Terror entry first.');
   requireRule(
@@ -16287,7 +16329,7 @@ function terrorRevealBlocked(
   entry: NonNullable<Game['pendingTerrorEntry']>,
   kind: TerrorKind,
 ): string | null {
-  const homeworldBlock = homeworldTerrorEntryBlock(g, entry.amount);
+  const homeworldBlock = homeworldTerrorEntryBlock(g, entry.entrant, entry.amount, 'reveal');
   if (homeworldBlock) return homeworldBlock;
   if (kind === 'atomics') {
     try { currentAtomicsQuote(g, entry); return null; }
@@ -17920,10 +17962,10 @@ function currentEcazCollectionQuote(
   );
   return quote;
 }
-function creditGiediCollection(g: Game, player: string, desert: number) {
+function creditGiediCollection(g: Game, player: string, source: HomeworldCollectionSource) {
   if (!g.homeworlds?.custody || getPlayer(g, player).faction !== 'harkonnen') return;
   const quote = homeworldRule(() => quoteGiediCollectionReceipt(
-    g, g.turn, player, [{ kind: 'desert', amount: desert }], g.giediCollection,
+    g, g.turn, player, [source], g.giediCollection,
   ));
   const p = getPlayer(g, player);
   requireRule(Number.isSafeInteger(p.spice + quote.amount),
@@ -17931,7 +17973,7 @@ function creditGiediCollection(g: Game, player: string, desert: number) {
   p.spice += quote.amount;
   g.giediCollection = quote.receipt;
   if (quote.amount)
-    log(g, 'Harkonnen received 2 spice from the bank: high-population Giedi Prime rewards positive desert collection once this phase.',
+    log(g, 'Harkonnen received 2 spice from the bank: high-population Giedi Prime rewards positive desert or Homeworld Collection once this phase.',
       { faction: 'harkonnen', name: 'Giedi Prime collection' });
 }
 /** Qualification history records facts only; disputed expiry and benefits remain separate. */
@@ -17953,6 +17995,94 @@ function homeworldHistoryIntegrity(g: Game) {
     requireRule(!!choam === (g.tupileIntelligence !== undefined), 'The original Tupile intelligence ledger is missing.');
     if (g.tupileIntelligence) homeworldRule(() => validateTupileIntelligenceState(g.tupileIntelligence!, g.players, g.turn));
   } else requireRule(g.tupileIntelligence === undefined, 'Tupile intelligence requires its original Homeworld history.');
+  homeworldOccupiedIncomeIntegrity(g);
+}
+function homeworldOccupiedIncomeIntegrity(g: Game) {
+  const pending = g.pendingHomeworldOccupiedIncome, history = g.homeworldOccupiedIncomeHistory;
+  if (!g.homeworldOccupationPreview) {
+    requireRule(pending === undefined && history === undefined,
+      'Occupied income requires its original fresh occupation profile.');
+    return;
+  }
+  requireRule(g.homeworldOccupationPreview === true && g.homeworlds && !g.nexusCards &&
+    !g.leaderSkills && !g.techTokens && !g.strongholdCards && !g.discoveryEnabled &&
+    Array.isArray(history) && pending !== undefined,
+  'The fresh occupation profile lost its original Homeworld module or income ledger.');
+  const turns = new Set<number>();
+  for (const receipt of history) {
+    requireRule(receipt.turn <= g.turn && !turns.has(receipt.turn) &&
+      receipt.cursor === receipt.queue.length, 'Occupied Collection was incomplete or repeated.');
+    homeworldRule(() => validateHomeworldOccupiedIncomeState(receipt, g, receipt.turn));
+    turns.add(receipt.turn);
+  }
+  const decision = g.decision?.kind === 'homeworldOccupiedIncome' ? g.decision : null;
+  if (!pending) {
+    requireRule(!decision, 'The occupied bank choice lost its original Collection receipt.');
+    return;
+  }
+  requireRule(g.status === 'playing' && g.phase === 7 && pending.turn === g.turn &&
+    !turns.has(pending.turn), 'Occupied bank income belongs to one original Collection phase.');
+  homeworldRule(() => validateHomeworldOccupiedIncomeState(pending, g, g.turn));
+  if (decision) {
+    const row = pending.queue[pending.cursor];
+    requireRule(row && decision.event === pending.event && decision.world === row.world &&
+      decision.player === row.occupier, 'The bank choice lost its original world or beneficiary.');
+  }
+}
+function homeworldOccupiedIncomeAutomatic(g: Game): boolean {
+  return !!(g.homeworldOccupationPreview && g.pendingHomeworldOccupiedIncome &&
+    g.status === 'playing' && g.phase === 7 && !g.phaseOpening && !g.decision &&
+    !g.response && !g.truthtrance && !g.pendingTreacheryDiscard && !g.pendingNullentropy &&
+    !g.pendingExchange && !g.pendingRicheseGift && !g.pendingKarama &&
+    (!g.ecazCollection || g.ecazCollection.stage === 'complete'));
+}
+function commitHomeworldOccupiedIncome(g: Game, actor: string, event: string, world: string, own: number) {
+  const pending = g.pendingHomeworldOccupiedIncome!;
+  const result = homeworldRule(() => quoteHomeworldOccupiedIncomeChoice(pending, g, actor, event, world, own));
+  for (const credit of result.credits)
+    requireRule(Number.isSafeInteger(getPlayer(g, credit.player).spice + credit.amount),
+      'Occupied bank Collection would overflow a spice balance.');
+  g.pendingHomeworldOccupiedIncome = result.state;
+  for (const credit of result.credits) {
+    getPlayer(g, credit.player).spice += credit.amount;
+    creditGiediCollection(g, credit.player, { kind: 'homeworld', amount: credit.amount });
+    log(g, `${getPlayer(g, credit.player).name} received ${credit.amount} spice from ${world}'s occupied bank award.`,
+      { faction: getPlayer(g, credit.player).faction, name: 'Occupied Homeworld Collection' });
+  }
+}
+function resumeHomeworldOccupiedIncome(g: Game) {
+  if (!homeworldOccupiedIncomeAutomatic(g)) return;
+  homeworldOccupiedIncomeIntegrity(g);
+  while (g.pendingHomeworldOccupiedIncome) {
+    const pending = g.pendingHomeworldOccupiedIncome;
+    const row = pending.queue[pending.cursor];
+    if (!row) {
+      g.homeworldOccupiedIncomeHistory!.push(pending);
+      g.pendingHomeworldOccupiedIncome = null;
+      return;
+    }
+    if (row.ally && row.spice > 0) {
+      g.decision = { kind: 'homeworldOccupiedIncome', player: row.occupier,
+        event: pending.event, world: row.world };
+      return;
+    }
+    commitHomeworldOccupiedIncome(g, row.occupier, pending.event, row.world, row.spice);
+  }
+}
+function decideHomeworldOccupiedIncome(g: Game, p: Player,
+  decision: Extract<Decision, { kind: 'homeworldOccupiedIncome' }>, action: Action) {
+  homeworldOccupiedIncomeIntegrity(g);
+  requireRule(decision.player === p.id &&
+    action.type === 'decision' && action.event === decision.event && action.world === decision.world &&
+    Object.keys(action).sort().join(',') === 'event,ownAmount,type,world',
+  'Choose only the original occupied bank event, world and own allocation.');
+  commitHomeworldOccupiedIncome(g, p.id, decision.event, decision.world, action.ownAmount as number);
+  g.decision = null;
+  resumeHomeworldOccupiedIncome(g);
+}
+function projectedHomeworldOccupiedIncome(g: Game, player: string) {
+  if (g.decision?.kind !== 'homeworldOccupiedIncome' || !g.pendingHomeworldOccupiedIncome) return null;
+  return homeworldRule(() => homeworldOccupiedIncomeOffer(g.pendingHomeworldOccupiedIncome!, g, player));
 }
 function tupileIntelligenceBlock(g: Game): string | null {
   if (!g.homeworlds?.custody || !g.tupileIntelligence || !g.homeworldOccupationHistory)
@@ -18016,7 +18146,7 @@ function stageGrummanCollection(g: Game) {
 function grummanCollectionAutomatic(g: Game): boolean {
   const frame = g.grummanCollection;
   return !!(frame?.stage === 'waiting' && frame.turn === g.turn && g.phase === 7 &&
-    !g.phaseOpening && !g.decision && !g.response && !g.truthtrance && !g.pendingTreacheryDiscard &&
+    !g.phaseOpening && !g.pendingHomeworldOccupiedIncome && !g.decision && !g.response && !g.truthtrance && !g.pendingTreacheryDiscard &&
     !g.pendingNullentropy && !g.pendingExchange && !g.pendingRicheseGift && !g.pendingKarama &&
     (!g.ecazCollection || g.ecazCollection.stage === 'complete') &&
     homeworldRule(() => quoteGrummanCollection(g, frame.player)).high);
@@ -18146,10 +18276,13 @@ function commitCollection(
     );
   }
   for (const receipt of discovery.receipts)
-    creditGiediCollection(g, receipt.player, receipt.desert);
+    creditGiediCollection(g, receipt.player, { kind: 'desert', amount: receipt.desert });
   stageGrummanCollection(g);
 }
 function collect(g: Game) {
+  if (g.homeworldOccupationPreview && !g.pendingHomeworldOccupiedIncome &&
+      !g.homeworldOccupiedIncomeHistory!.some(receipt => receipt.turn === g.turn))
+    g.pendingHomeworldOccupiedIncome = homeworldRule(() => beginHomeworldOccupiedIncome(g, crypto.randomUUID()));
   if (g.grummanCollection?.turn === g.turn) {
     grummanCollectionIntegrity(g);
     return;
@@ -18218,8 +18351,8 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
     pending.settled.push(receipt);
     getPlayer(g, receipt.ecaz).spice += receipt.ecazAmount;
     getPlayer(g, receipt.ally).spice += receipt.allyAmount;
-    creditGiediCollection(g, receipt.ecaz, receipt.ecazAmount);
-    creditGiediCollection(g, receipt.ally, receipt.allyAmount);
+    creditGiediCollection(g, receipt.ecaz, { kind: 'desert', amount: receipt.ecazAmount });
+    creditGiediCollection(g, receipt.ally, { kind: 'desert', amount: receipt.allyAmount });
     log(
       g,
       `${territory(receipt.territory).name} shared collection: Ecaz received ${receipt.ecazAmount} spice and ${faction(getPlayer(g, receipt.ally).faction).name} received ${receipt.allyAmount}, ${receipt.method === 'agreement' ? 'by agreement' : 'using the equal split with any odd spice going to the ally'}.`,
@@ -18913,10 +19046,12 @@ function combatResponses(g: Game) {
     if (
       ((g.advanced && ['emperor', 'fremen'].includes(p.faction)) ||
         (!g.advanced && p.faction === 'ixians')) &&
-      !(p.faction === 'emperor' && other.faction === 'fremen') &&
-      combatForces(g, p, b.territory, other).elite > 0
-    )
-      b.powerChecks.push({ kind: 'eliteStrength', owner: forceOwner });
+      !(p.faction === 'emperor' && other.faction === 'fremen')
+    ) {
+      const forces = combatForces(g, p, b.territory, other);
+      if (forces.elite > 0 && forces.eliteStrength > 1)
+        b.powerChecks.push({ kind: 'eliteStrength', owner: forceOwner });
+    }
     if (g.advanced && p.faction === 'fremen')
       b.powerChecks.push({ kind: 'fremenSupport', owner: forceOwner });
   }
@@ -18947,9 +19082,17 @@ function battlePreparation(g: Game, kind: 'voice' | 'prescience') {
       : owner.ally && combatants.includes(owner.ally)
         ? owner.ally
         : null);
-  if (owner && beneficiary)
-    b.preparation = { kind, owner: owner.id, beneficiary };
-  else if (kind === 'voice') battlePreparation(g, 'prescience');
+  if (owner && beneficiary) {
+    const target = b.attacker === beneficiary ? b.defender : b.attacker;
+    const occupation = kind === 'voice'
+      ? homeworldRule(() => quoteOccupiedHomeworldVoice(g, target)) : null;
+    if (occupation?.status === 'prohibited') {
+      battlePreparation(g, 'prescience');
+      return;
+    }
+    b.preparation = { kind, owner: owner.id, beneficiary,
+      ...(occupation?.blocked ? { blocked: occupation.blocked } : {}) };
+  } else if (kind === 'voice') battlePreparation(g, 'prescience');
   else finishBattlePreparation(g);
 }
 function normalizeBattle(g: Game) {
@@ -26567,6 +26710,7 @@ function finishActionContinuations(g: Game) {
   resumeHomeworldRevivalReturn(g);
   resumeHomeworldVictoryReturn(g);
   resumeMarketGhola(g);
+  resumeHomeworldOccupiedIncome(g);
   resumeGrummanCollection(g);
   if (!g.truthtrance && !g.decision && !g.response) advanceSetup(g);
   if (g.status === 'playing' && g.leaderSkills && !g.decision && !g.response && !g.truthtrance && !g.phaseOpening) {
@@ -27422,6 +27566,10 @@ function applyActionInner(
     }
     if (decision.kind === 'grummanCollection') {
       decideGrummanCollection(g, p, action);
+      return g;
+    }
+    if (decision.kind === 'homeworldOccupiedIncome') {
+      decideHomeworldOccupiedIncome(g, p, decision, action);
       return g;
     }
     if (decision.kind === 'moritaniTerror') {
@@ -30385,6 +30533,9 @@ function applyActionInner(
       b?.preparation?.kind === 'voice' && b.preparation.owner === id,
       'Voice must be chosen by Bene Gesserit before prescience and battle plans.',
     );
+    const target = b.attacker === b.preparation.beneficiary ? b.defender : b.attacker;
+    const occupation = homeworldRule(() => quoteOccupiedHomeworldVoice(g, target));
+    requireRule(occupation.status === 'allowed', occupation.blocked ?? 'This target cannot receive the Voice.');
     requireRule(
       VOICE_KINDS.includes(String(action.kind)),
       'Choose a card type.',
@@ -30798,7 +30949,7 @@ export function viewGame(state: Game, id: string) {
     schema: g.schema,
     botsPending: g.botsPending ?? false,
     semutaReaction: projectedSemutaReaction(g, me),
-    automaticContinuationPending: (!!g.pendingTreacheryDiscard && !g.pendingTreacheryDiscard.reaction) || homeworldRevealPending(g) || homeworldShipmentAutomatic(g) || grummanCollectionAutomatic(g),
+    automaticContinuationPending: (!!g.pendingTreacheryDiscard && !g.pendingTreacheryDiscard.reaction) || homeworldRevealPending(g) || homeworldShipmentAutomatic(g) || homeworldOccupiedIncomeAutomatic(g) || grummanCollectionAutomatic(g),
     botNextActionAt: g.botNextActionAt ?? null,
     code: g.code,
     version: g.version,
@@ -30809,6 +30960,7 @@ export function viewGame(state: Game, id: string) {
     leaderSkills: projectedLeaderSkills(g, id),
     bureaucrat: projectedBureaucrat(g, id),
     spiceBankerIncomePreview: g.spiceBankerIncomePreview === true,
+    homeworldOccupationPreview: g.homeworldOccupationPreview === true,
     spiceBankerIncome: g.spiceBankerIncomePreview
       ? bankerIncomeRule(() => projectBankerIncome(g.spiceBankerIncome!, bankerIncomeContext(g))) : null,
     bribeOptions: projectedBribes(g, me),
@@ -30853,6 +31005,7 @@ export function viewGame(state: Game, id: string) {
     moritaniPendingPlacement:
       me.faction === 'moritani' ? (g.pendingMoritaniPlacement ?? null) : null,
     grummanCollection: projectedGrummanCollection(g, id),
+    homeworldOccupiedIncome: projectedHomeworldOccupiedIncome(g, id),
     tupileIntelligence: projectedTupileIntelligence(g, id),
     terrorEntry: g.pendingTerrorEntry
       ? (() => {
@@ -31818,7 +31971,10 @@ export function viewGame(state: Game, id: string) {
               : {},
           traitorSubmitted: Object.keys(b.traitorCalls),
           traitorVoters: traitorVoters(g, b),
-          preparation: b.preparation ?? null,
+          preparation: b.preparation && g.homeworldOccupationPreview && b.preparation.kind === 'voice'
+            ? { ...b.preparation, blocked: homeworldRule(() => quoteOccupiedHomeworldVoice(g,
+              b.attacker === b.preparation!.beneficiary ? b.defender : b.attacker)).blocked ?? undefined }
+            : b.preparation ?? null,
           nexusInspection: b.nexusInspection ? {
             event: b.nexusInspection.event, mode: b.nexusInspection.mode,
             owner: b.nexusInspection.owner, target: b.nexusInspection.target,

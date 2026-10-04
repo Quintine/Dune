@@ -150,6 +150,7 @@ export function BattlePreparation({
           before Atreides chooses prescience and the combatants seal their
           plans.
         </p>
+        {preparation.blocked && <p className="notice">{preparation.blocked}</p>}
         <label htmlFor="voice-kind">
           Card type
           <select
@@ -174,7 +175,7 @@ export function BattlePreparation({
         </label>
         <Button
           className="game-action"
-          disabled={busy}
+          disabled={busy || !!preparation.blocked}
           onClick={() => act({ type: 'voice', kind, must })}
         >
           Use the Voice

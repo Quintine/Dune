@@ -2685,6 +2685,11 @@ function policyActions(g: GameView): Action[] {
       return caladanReinforcementActions(g);
     if (d.kind === 'grummanCollection')
       return grummanCollectionActions(g);
+    if (d.kind === 'homeworldOccupiedIncome') {
+      const offer = g.homeworldOccupiedIncome;
+      return offer && !offer.blocked ? [{ type: 'decision', event: offer.event,
+        world: offer.world, ownAmount: offer.amount }] : [];
+    }
     if (d.kind === 'battleCards')
       return [
         {
@@ -3625,7 +3630,7 @@ function policyActions(g: GameView): Action[] {
     if (b.preparation) {
       if (b.preparation.owner !== me.id) return [];
       if (b.preparation.kind === 'voice')
-        return level === 0
+        return level === 0 || b.preparation.blocked
           ? [{ type: 'declineBattlePower' }]
           : [
               {

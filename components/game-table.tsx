@@ -24,6 +24,7 @@ import { HomeworldShipment } from './homeworld-shipment';
 import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
 import { CaladanReinforcement } from './caladan-reinforcement';
 import { GrummanCollection } from './grumman-collection';
+import { HomeworldOccupiedIncome } from './homeworld-occupied-income';
 import { TupileIntelligence } from './tupile-intelligence';
 import { NexusCards } from './nexus-cards';
 import { NexusTraitors } from './nexus-traitors';
@@ -1095,6 +1096,16 @@ export function GameTable({
         </span>
       </div>
       {g.advanced && g.status !== 'lobby' && <AdvancedPreviewNotice compact />}
+      {g.homeworldOccupationPreview && (
+        <output className="notice block">
+          Homeworld occupation development preview · continuous, uncontested
+          qualification only. Printed bank Collection, immediate ally sharing
+          and occupied native defenses are connected. Departure, replacement,
+          contested/repopulated histories, percentage income and other unfinished
+          occupied powers remain guarded. Not complete or certified Homeworld rules.{' '}
+          <a href="/rules?topic=homeworlds#homeworlds">Preview rules and limits</a>
+        </output>
+      )}
       {g.nexusKullPreview ? (
         <p className="notice" role="status">
           CHOAM Nexus Cunning · Kull Wahad development preview. Any eligible
@@ -2456,6 +2467,8 @@ export function GameTable({
                   ? 'Caladan victory reinforcement'
                   : g.decision.kind === 'grummanCollection'
                   ? 'Grumman Collection'
+                  : g.decision.kind === 'homeworldOccupiedIncome'
+                  ? 'Occupied Homeworld bank income'
                   : g.decision.kind === 'leaderSkillVisibility'
                     ? 'Position your skilled leader'
                   : g.decision.kind === 'mentatQuestion'
@@ -2781,6 +2794,8 @@ export function GameTable({
                 <CaladanReinforcement game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'grummanCollection' ? (
                 <GrummanCollection game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'homeworldOccupiedIncome' ? (
+                <HomeworldOccupiedIncome offer={g.homeworldOccupiedIncome} act={act} busy={busy} />
               ) : g.decision.kind === 'ecazSpice' ? (
                 g.ecazSpice?.allocation ? (
                   <EcazSpice

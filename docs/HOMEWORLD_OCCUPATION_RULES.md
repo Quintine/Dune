@@ -2,6 +2,84 @@
 
 Runtime follow-up, 10 September 2026: [Tupile intelligence and qualification history](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupation-observation-boundaries) implement confirmed observations while retaining the unresolved entitlement and expiry questions below. The source audit remains historical evidence.
 
+## Stable continuous occupation prototype — 5 October 2026
+
+The fresh local `homeworld-occupation` entry uses original two-through-six-seat
+Basic/Advanced setup, selected faction decks, thirteen physical card facts and
+the original qualification history. It never converts a played Homeworld save
+or infers entitlement from a current garrison. One original qualifier must
+remain continuously present since qualification, without another foreign army,
+another qualifier, departure or restored native high threshold. All unresolved
+histories retain the existing source guards; this is a supported unambiguous
+subset, not an expiry/replacement ruling.
+
+Printed occupied **bank icons** now enter one Collection queue before ordinary
+Collection mutates balances. After original board/shared allocations and phase
+opening, each occupier may keep the award or immediately allocate a portion to
+its current reciprocal ally. Zero-icon/no-ally rows settle their only legal
+allocation automatically. Actual bank credits and the cursor/receipt commit
+together; reading a view or replaying an old command cannot mint spice.
+The bank queue does not implement Kaitain/Junction/Richese percentage receipts.
+The original Giedi hook counts actual allocated Homeworld credits once, rather
+than printed capacity; applying that hook to an immediately shared bank portion
+is explicit source composition, not a newly retrieved worked FAQ.
+
+The same proved entitlement supplies Wallach IX Voice immunity, Tleilax
+Face Dancer exclusions, Grumman reveal immunity and occupied Salusa suppression.
+Both occupier and current reciprocal ally receive the three targeted protections.
+Sardaukar keep their original starred identity/custody but fight at strength one;
+no Karama opportunity can restore the printed occupied penalty.
+Known Voice immunity skips that declaration; ambiguous Voice permits only a
+source-blocked choice/decline. Ambiguous Terror keeps an owned blocked Reveal/
+Decline window, rather than silently authorizing revelation or guessing an owner.
+
+Twenty-four original three-seat setup programs,21 new/262 affected cases,
+types/lint and build pass. Actual original-phase runtime proves partial bank
+allocation (owner1/ally1 plus one high-Giedi2), immutable replay rejection and
+four legal keep-all policies. The original captured decision is retained through
+the generic dispatcher; the reproduced clearing error is fixed. Native programs
+exercise real protected battles, two actual strength-one starred counters,
+an original matching Face Dancer with labelled conserved unused-deck exchange,
+and real first-Mentat Robbery placement followed by paid second-Movement
+three-force occupier entry without token revelation.
+
+Fifty genuine classic/paired E1/E2/standalone E3 games were attempted on
+unchanged tree `09f8b0dcdc54bf284f234c6e0f27936689cce1bb1a7b6381548ee13a149d2dae`.
+Thirty-seven complete11,762 accepted actions/300 JSON continuations; those
+complete samples include153 rejected candidates, so this is not a zero-rejection
+or complete-mode certificate. All50 contain19,080 accepted/19,283 attempted
+actions and491 JSON continuations. Thirteen captures retain the actual blockers.
+Two were a source-clear bug: zero-icon Salusa needlessly blocked unrelated bank
+Collection. Quantity-zero ambiguity now grants nothing without choosing a
+recipient, while its mandatory combat-strength guard remains. A meaningful
+regression preserves a real Kaitain2 grant and the unresolved Salusa penalty.
+The two original snapshots finish7/14 more accepted actions without rejection
+at original scenario seeds20263435/20263443 on unchanged correction tree
+`eed8f319ece875181b9412ded145189691db3a8ca56fa6ff00e11f5ca11965ee`.
+Resume restarts that seed, not the lost pre-capture random stream.
+Thirty-nine of the original50 now finish; nine occupation/departure/competition/
+repopulation or Salusa-combat captures and two low-Tupile CHOAM captures remain
+at their existing pending rulings. No duplicate question, favorable new seed,
+forced outcome or guard bypass.
+
+Original backed-up CLI **CPBXKFGD v14/setup** preserves actual prediction/
+Traitor/card/actor custody. A real second-turn worm/Nexus earns Guild/Harkonnen
+alliance before labelled conserved positions. Human390px **v21/Mentat** settles
+Caladan2 as Guild1/Harkonnen1, then Wallach1 wholly to Harkonnen, with one Giedi2:
+Guild3→4, Harkonnen8→12. Queue/world/event continue once; original phase-ready
+actions reach Mentat. Refreshed source cards/notice/force inspector show Guild18
+native reserves/0 Tanks/one visitor on each world, with no root390px overflow.
+Only this QA room changed. An early driver staging error was corrected by
+settling the original foresight response first; no Caladan rule was changed.
+Private receipts/reports stay outside Git; owned throwaway scripts were removed.
+
+See [runtime bank regression](../tests/homeworld-occupation-runtime.test.ts),
+[income cases](../tests/homeworld-occupied-income.test.ts) and
+[native defense cases](../tests/homeworld-occupied-defenses.test.ts).
+The historical pending questions below, percentage/borrowed occupied powers,
+full-module assurance, public starts and deployed acceptance remain open.
+
+
 Source audit, 9 September 2026. This supplements [Homeworld rules](HOMEWORLD_RULES.md#occupier-lifecycle-and-benefits) and the [invasion audit](HOMEWORLD_INVASION_RULES.md#occupation-evidence-and-unresolved-lifecycle). It defines the evidence that can safely be recorded; it does **not** settle every occupied benefit or authorize a complete occupation release. The [integration audit](HOMEWORLD_OCCUPATION_LIFECYCLE_AUDIT.md) maps the physical mutation and recovery boundaries.
 
 ## Confirmed publisher contract

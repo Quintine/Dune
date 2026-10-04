@@ -16,6 +16,37 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Stable Homeworld occupation — bounded Development Verified:**
+fresh original2..6 Basic/Advanced setup/selected decks and Homeworlds alone;
+no played-game conversion or inferred current controller. Continuously present
+sole qualification, without competing/departed/contested/restored-high history,
+supports actual bank Collection/immediate ally allocation and printed Wallach/
+Tleilax/Grumman/Salusa protections without physical star conversion.
+Original board/shared allocation/phase order and once-only credit receipts
+remain; actual Homeworld portions feed Giedi once. Original dispatcher capture
+and zero-icon income admission defects are repaired, not their source guards.
+Twenty-four original setups,21 new/262 affected cases, types/lint/build and
+original-phase bank/native programs/four legal keep-all policies pass.
+
+Fifty genuine2..6 samples attempted on unchanged09f8b0d tree:37 complete with
+11,762 accepted actions/300 JSON continuations, including153 rejected candidates
+(not a zero-rejection certificate). All50 total19,080 accepted/19,283 attempts/
+491 JSON continuations. Two preserved zero-award captures finish7/14 more actions
+at their original seeds on correction treeeed8f319. **39/50 finish**; nine
+occupation/Salusa-combat and two low-Tupile CHOAM source-ruling captures remain
+preserved, with no rerun to hide failures, forced outcome or guard bypass.
+
+Original CLI **CPBXKFGD v14/setup** retains actual offers/cards/actors. Real
+turn-two Nexus earns Guild/Harkonnen alliance. Human390px **v21/Mentat** shares
+Caladan2 as1/1, gives Wallach1 to Harkonnen and awards Giedi2 once: Guild3→4,
+Harkonnen8→12; original readiness reaches Mentat. Refreshed original source
+cards/notice and force inspector show18 Guild reserves/0 Tanks/two separate
+foreign visitors, no root390px overflow. Controlled positions are labelled;
+only dedicated QA changes, no reset. Owned temporary scripts are removed.
+Percentage receipts, other occupied powers, unresolved occupation/CHOAM
+rulings, public starts, save conversion and full/deployed assurance remain.
+[Exact source and evidence](HOMEWORLD_OCCUPATION_RULES.md#stable-continuous-occupation-prototype--5-october-2026).
+
 **Standalone E3 Nexus / Skills / selected Tech/Strongholds — bounded Development Verified:**
 native Ecaz OR Moritani plus classics, exact ecaz33/all14/all12,
 Basic/Advanced2..6; original Tech3+ and/or Advanced Strongholds2+, both3+.

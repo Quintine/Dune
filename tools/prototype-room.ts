@@ -3,6 +3,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import {
   initializeIxGameForAudit,
   initializeDiscoveryGameForAudit,
+  initializeHomeworldOccupationGameForAudit,
   initializeLeaderSkillsGameForAudit,
   initializeSpiceBankerIncomeGameForAudit,
   initializeFactionExpansionsGameForAudit,
@@ -27,6 +28,7 @@ import {
 export const PROTOTYPE_PROFILES = [
   'ix',
   'discovery',
+  'homeworld-occupation',
   'leader-skills',
   'banker-income',
   'factions',
@@ -105,6 +107,11 @@ export function startPrototypeRoom(
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)
+      : profile === 'homeworld-occupation'
+        ? initializeHomeworldOccupationGameForAudit({
+            ...initial,
+            homeworlds: initial.homeworlds ?? { custody: null },
+          })
       : profile === 'stronghold-factions'
         ? initializeStrongholdFactionsGameForAudit(initial)
       : profile === 'ecaz-treachery'

@@ -31,6 +31,7 @@ const decisions = {
   leaderSkillRevival: true,
   homeworldRevivalDeployment: true,
   grummanCollection: true,
+  homeworldOccupiedIncome: true,
   caladanReinforcement: true,
   choamAudit: true,
   nexusChoamInspection: true,
