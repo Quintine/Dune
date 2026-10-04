@@ -16,6 +16,42 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Paired E1/E2 Nexus / Skills / Tech / Strongholds — bounded Development Verified:**
+both Ixians+Tleilaxu OR CHOAM+Richese plus classics, one original family47/
+35+cache deck/all14/all12, selected unused Tech3..6 Basic/Advanced and/or
+Strongholds2..6 Advanced; both3..6 Advanced. Original setup/offers/hands/IDs,
+real closing draws, typed rescue/equal substitution, signed pair/one invoice,
+phase-end industry and original winner reward-before-FaceDance remain.
+New50/affected175, types/lint/build,34 original setups/26 retained prerequisite
+rejects and four legal policies pass. Thirty-four genuine2..6 games complete
+16,094 accepted actions/no rejection,420 JSON continuations and22 actual
+closing choices on unchanged tree
+`472b5705ca5376fb95f8e6ff6f40192d9f1745d7d08c41efdef2b3e53783139a`.
+An older native marker fixture's unseeded scalar actions are now controlled;
+all nine native cases and the frozen175-case union pass afterward.
+Original backed-up CLI **PPL5CNEB / TZRU5GYP v10/setup** retains actual
+offers/hands/IDs after a scoped original14 shuffle. Human390px **PPL5CNEB
+v28/Collection** copies held Arrakeen into HMS, uses full Suboids and trained
+C’tair5/dial4/support1 (bank1/own0), commits3 actual Cyborg losses, keeps1
+through Suk and exchanges only the actual2 Tank losses for2 Suboids.
+HMS ends1 Suboid/3 Cyborgs,12 reserves/2 ordinary Tanks,4 Cyborg reserves/
+zero Cyborg Tanks. Guild Production transfers to original Ix winner;
+held Arrakeen/HMS remain Ix. Support leaves wallet10, separate city2 pays12.
+Actual original Face Dancer stock has no matching trainer and remains unchanged;
+matching trainer death/skill return and partial Cunning are separately exercised
+native source programs, not claimed as human or natural shuffle results.
+**TZRU5GYP v21/Battle** declares actual immediate5/concealed3 at Habbanya17,
+passes real Karama and separate Guild allowance, pays Richese4→3/Guild6→7,
+reveals3 into real ordinary counters (12 reserves/8 board/last-used3).
+CHOAM then spends actual Hajr as Kulon fuel, passes the native response and
+moves one ordinary force WindPass14→Bight14 via legal Planetologist range3.
+Hajr/Nexus are spent once; original market completion pays Heighliners1,
+CHOAM19→20, not at declaration or fuel/movement. Original skill custody stays.
+Controls/inspectors/refresh/source guide have no root390px overflow; only QA
+rooms changed. Mixed families/E3/HW/previews, borrowed companions, native
+Nexus free-return accounting, pending rulings and public/deployed gates remain.
+[Canonical source and evidence](NEXUS_CARD_RULES.md#paired-nexus-skills-and-original-techstrongholds--5-october-2026).
+
 **Classic Nexus / Skills / Tech / Strongholds — bounded Development Verified:**
 original fresh skill/Nexus setup retains selected unused Tech3..6 Basic/Advanced
 and/or Strongholds2..6 Advanced; both require3..6. Original base33/all14/all12,
@@ -44,6 +80,14 @@ force inspectors, refresh and source guide have no root390px overflow.
 Only dedicated QA rooms changed. Native overlays, HW, Banker/Mentat previews,
 borrowed Smuggler arithmetic, pending rulings, public/save conversion and full
 module/deployed acceptance stay separate. [Canonical scope and evidence](NEXUS_CARD_RULES.md#classic-nexus-skills-and-original-techstrongholds--4-october-2026).
+
+Exact code **449e27b4151bf63355c2e5a270a0dd63c565f175** is pushed.
+Final48 cases/types/lint and pushed build pass; rebuilt QA displays449e27b
+and both unchanged original outcomes at390px.
+[CI37204049860](https://github.com/Quintine/Dune/actions/runs/37204049860) /
+container111441442571 completes successfully, isolated storage/HTTP step7
+before verified image publication step9. No deployed claim; last live
+observation remains **ab5c782**, with NAS prerequisites unchanged.
 
 **Paired E1/E2 Nexus / Leader Skills — bounded Development Verified:** both
 Ixians+Tleilaxu OR CHOAM+Richese plus classics, one family deck/all14/all12,

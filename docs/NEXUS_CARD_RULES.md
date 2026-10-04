@@ -2,6 +2,86 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Paired Nexus, Skills and original Tech/Strongholds — 5 October 2026
+
+The original fresh `leader-skills --nexus-cards` entry now preserves selected
+unused original Tech3..6 Basic/Advanced and/or Strongholds2..6 Advanced with
+**both Ixians+Tleilaxu OR both CHOAM+Richese**, classic opponents and one
+original family47/35+separatecache10 deck/all14 Skills/all12 Nexus. Both
+requires3..6 Advanced. This extends the earlier paired Skills-only checkpoint,
+not mixed families, E3, Homeworlds, independent decks/previews, public starts,
+played-game conversion or pending native free-return accounting.
+
+Original setup/hands/offers/actor IDs and genuine closing Nexus draws remain.
+First-Storm printed/real Tech allocation and actual end-Mentat held-card
+assignment are required; admission grants neither. Independent physical rules
+compose in original order: full unsupported Suboid Cunning, typed skill rescue,
+equal substitution of only actual Cyborg Tank losses, card cleanup and original
+winner Tech before Face Dance. Original held support changes payer debit, not
+the commitment used by casualties or Suk. A matching winning trainer dies and
+returns its skill once without another bounty; reward and held custody remain
+with the original winner. Partial Tleilaxu refresh preserves unrevealed stock
+and ordinary Mentat replacement rights.
+
+Richese's original signed two-marker/one-invoice/native response/Guild
+continuation remains authoritative, without single-marker skill proof,
+new frame keys or relaxed signatures. Actual off-planet shipment triggers
+Heighliners once at phase end; voluntary original reveal leads to ordinary
+skill battles. CHOAM physical Special fuel precedes its separate ordinary
+Planetologist movement; native paid support income retains bank-funded support.
+Companions, own mixed plans and unrelated unresolved reactions stay guarded.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile leader-skills \
+  --nexus-cards --db /private/local.sqlite --room ROOMCODE --version 9 \
+  --out /private/new-paired-nexus-skills-modules-entry
+node --import tsx tools/faction-games.ts --profile paired-nexus-skills-tech \
+  --players all --rules both --out /private/new-paired-nexus-skills-tech-games
+```
+
+`paired-nexus-skills-stronghold` is Advanced2..6;
+`paired-nexus-skills-stronghold-tech` is Advanced3..6. Original module
+selection precedes fresh setup. Thirty-four original setup programs and26
+retained prerequisite rejections are development evidence, not complete
+rules/public/deployed certification.
+
+### Bounded paired combined evidence
+
+New50/affected175, types/lint/build,34 original setup programs/26 retained
+prerequisite rejects and four legal policies pass. Thirty-four genuine2..6
+games complete16,094 accepted actions/no rejection,420 JSON continuations and
+22 actual closing choices. Natural Cunning combinations are not claimed.
+Reports under `/tmp/dune-paired-nexus-skills-{tech,stronghold,both}-games-20261005`
+capture unchanged tree `472b5705ca5376fb95f8e6ff6f40192d9f1745d7d08c41efdef2b3e53783139a`.
+An older native marker fixture's scalar action entropy is controlled after an
+intermittent missing-marker assertion; its nine cases and final175 union pass.
+No production marker behavior or unresolved ruling is changed for that fixture.
+
+Original backed-up CLI **PPL5CNEB / TZRU5GYP v10/setup** preserves first
+offers/hands/IDs after only the original14 pre-deal shuffle. Controlled390px
+**PPL5CNEB v28/Collection** copies held Arrakeen into HMS, spends actual Suboid
+Cunning and seals trained C’tair5/dial4/support1: bank1/own0. Three actual
+Cyborg losses save1 kept; only2 go to Tanks and are recovered for2 Suboids.
+HMS ends1 Suboid/3 Cyborgs;12 reserves/2 ordinary Tanks,4 Cyborg reserves/
+zero Cyborg Tanks. Original winner receives Guild Production and retains
+held Arrakeen/HMS. Wallet10 remains through bank-funded support, then city2
+pays12. Actual unmatched Face Dancer stock is not manufactured or exchanged;
+the human decline is separate from a labeled matching-stock native program
+that proves trainer death/one skill return, retained reward/custody and partial
+Cunning preserving the two unrevealed originals.
+
+**TZRU5GYP v21/Battle** selects immediate5/concealed3, Habbanya17, actual
+Karama allowance and distinct native Guild allowance. One invoice debits
+Richese4→3/credits Guild6→7; voluntary3 reveal leaves12 reserve/8 ordinary
+board/last-used3. Original Suk/Planetologist assignments stay unchanged.
+CHOAM uses physical Hajr as Kulon Cunning fuel, passes the native response,
+then moves one ordinary force WindPass14→Bight14 via the original legal
+Planetologist range3. Hajr is discarded once without activating its extra move.
+Original CHOAM market completion settles Heighliners1,19→20, only at movement
+end. Original controls/inspectors/refresh/guide have no root390px overflow.
+Only dedicated QA rooms change; all controlled physical relocation/order is
+labeled rather than claimed as natural history.
+
 ## Classic Nexus, Skills and original Tech/Strongholds — 4 October 2026
 
 The original fresh `leader-skills --nexus-cards` entry now preserves selected
@@ -71,6 +151,15 @@ allowance3/elite1. Axlotl1 accrues without wallet income, then original Revival
 end pays12→13 exactly once. Actual controls/inspectors/refresh/updated source
 guide have no root390px overflow. Only dedicated QA rooms changed; controlled
 physical relocation/order is labeled, not claimed as natural history.
+
+Exact code **449e27b4151bf63355c2e5a270a0dd63c565f175** is pushed.
+Final48 cases/types/lint and exact pushed build pass; rebuilt QA displays
+**449e27b** and both original outcomes at390px after reload.
+[CI37204049860](https://github.com/Quintine/Dune/actions/runs/37204049860) /
+container111441442571 completes successfully, isolated storage/HTTP step7
+before verified image publication step9. Publication is not deployment;
+last live observation remains **ab5c782** and required NAS prerequisites
+are unchanged. Full-module/public/deployed gates remain open.
 
 ## Paired E1/E2 Nexus and Leader Skills composition — 4 October 2026
 

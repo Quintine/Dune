@@ -33,13 +33,13 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
-function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, tokenCards = false): boolean {
+function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   return !!game.nexusCards && typeof game.advanced === 'boolean' &&
     !!game.players && game.players.length >= 2 && game.players.length <= 6 &&
     !game.homeworlds && !game.discoveries && !game.discoveryEnabled &&
     !game.discoveryStash && !game.greatMaker &&
-    (!game.techTokens || (tokenCards && game.players.length >= 3)) &&
-    (!game.strongholdCards || (tokenCards && game.advanced === true)) &&
+    (!game.techTokens || game.players.length >= 3) &&
+    (!game.strongholdCards || game.advanced === true) &&
     !game.ecazTreachery && !game.semutaPreview && !game.moritaniAssassinatePreview &&
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
@@ -50,7 +50,7 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, tokenCards =
 
 /** Fresh classic Nexus/Skills, with original Tech and Advanced Strongholds; native overlays stay separate. */
 export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game, true)) return false;
+  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game)) return false;
   const players = game.players!;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
@@ -62,7 +62,7 @@ export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boole
   return true;
 }
 
-/** Both original natives in one E1/E2 family; independent decks and other overlays stay separate. */
+/** Both original natives in one E1/E2 family, with original Tech/Advanced Strongholds; other overlays stay separate. */
 export function pairedNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (game.expansions.length !== 1 || !nexusLeaderSkillModulesSupported(game)) return false;
   const expansion = game.expansions[0];

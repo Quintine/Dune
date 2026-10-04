@@ -29,6 +29,30 @@ Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
 
+## Paired Nexus with original Tech/Strongholds — 5 October 2026
+
+Fresh original paired Ixians+Tleilaxu OR CHOAM+Richese skill/Nexus entries
+preserve selected unused original Tech3..6 Basic/Advanced and/or Strongholds2..6
+Advanced, both3..6 Advanced. One original family deck/all14/all12 and saved
+hands/offers/IDs remain. This extends paired Skills-only evidence below,
+without admitting mixed families/E3/HW/previews/public starts or pending rulings.
+
+Original Cunning/typed rescue/equal substitution and reward-before-FaceDance,
+signed physical marker pair/one invoice/native industry and held effects
+retain their independent handlers. Bank subsidy changes debit, not committed
+support or rescue entitlement. Captured-training revival remains guarded;
+no foreign replacement, borrowed companion or native free-return ruling is added.
+New50/affected175, types/lint/build,34 original setups/26 prerequisite rejects,
+four legal policies and34 genuine2..6 games pass:16,094 actions/no rejection,
+420 JSON continuations/22 closing choices. Human390px PPL5CNEB keeps original
+bank-funded commitment through real Cyborg rescue/equal substitution and
+winner reward; unmatched Face Dancer stock remains unchanged. Matching trainer
+replacement/partial Cunning is a separate native source program. TZRU5GYP
+preserves signed one-invoice marker settlement and physical reveal, then spends
+actual Hajr once as CHOAM fuel before original Planetologist range3 movement
+and phase-end Heighliners collection. Refreshed outcomes and guide remain.
+See [canonical paired combined scope](NEXUS_CARD_RULES.md#paired-nexus-skills-and-original-techstrongholds--5-october-2026).
+
 ## Classic Nexus with original Tech/Strongholds — 4 October 2026
 
 Fresh classic `leader-skills --nexus-cards` now preserves selected unused

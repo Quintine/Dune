@@ -9443,7 +9443,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
   const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
-    (leaderSkills && classicNexusLeaderSkillsProfile(g)));
+    (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g))));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
