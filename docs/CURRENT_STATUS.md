@@ -47,6 +47,16 @@ Percentage receipts, other occupied powers, unresolved occupation/CHOAM
 rulings, public starts, save conversion and full/deployed assurance remain.
 [Exact source and evidence](HOMEWORLD_OCCUPATION_RULES.md#stable-continuous-occupation-prototype--5-october-2026).
 
+Exact code **5e902e384d67b38b3dae5bc3da04b40b7766c397** is pushed.
+[CI37239145022](https://github.com/Quintine/Dune/actions/runs/37239145022) /
+container111544136910 succeeds: isolated storage/HTTP7 precedes verified-image
+publication9. Final11 clean-boundary/reference cases, types/lint and exact
+pushed build pass. CPBXKFGD remainsv21/Mentat with actual Guild4/Harkonnen12
+and conserved18+1+1 Guild counters, displaying **5e902e3** at390px.
+Managed tabs are released. Publication is not deployment; last observed
+liveab5c782 and protected NAS snapshot/safe-point/signed-in/approval gates remain.
+
+
 **Standalone E3 Nexus / Skills / selected Tech/Strongholds — bounded Development Verified:**
 native Ecaz OR Moritani plus classics, exact ecaz33/all14/all12,
 Basic/Advanced2..6; original Tech3+ and/or Advanced Strongholds2+, both3+.

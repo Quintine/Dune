@@ -44,6 +44,15 @@ Percentage receipts, other occupied powers, unresolved rulings, public/save
 conversion, complete-mode and deployed acceptance remain open.
 [Canonical source and exact evidence](HOMEWORLD_OCCUPATION_RULES.md#stable-continuous-occupation-prototype--5-october-2026).
 
+Exact code **5e902e384d67b38b3dae5bc3da04b40b7766c397** is pushed.
+[CI37239145022](https://github.com/Quintine/Dune/actions/runs/37239145022) /
+container111544136910 succeeds isolated storage/HTTP7 before verified-image9.
+Final11 clean-Movement/reference cases, types/lint and exact pushed build pass.
+Rebuilt CPBXKFGD displays5e902e3 at390px and remainsv21/Mentat with actual
+Guild4/Harkonnen12 and18+1+1 Guild counters. Managed tabs released; no deployed
+claim. Last observed liveab5c782 and NAS prerequisites remain unchanged.
+
+
 ## 5 October 2026 — standalone E3 Nexus, Skills and original components
 
 Original `leader-skills --nexus-cards` now admits Ecaz OR Moritani/classic
