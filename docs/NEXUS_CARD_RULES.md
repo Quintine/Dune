@@ -82,6 +82,24 @@ end. Original controls/inspectors/refresh/guide have no root390px overflow.
 Only dedicated QA rooms change; all controlled physical relocation/order is
 labeled rather than claimed as natural history.
 
+Exact verified code **8b6bf385601dd878e81ca11d47076aa93e7cb806** is pushed.
+Final59 module/native cases, types/lint and exact pushed build pass; rebuilt
+QA displays **8b6bf38** and both original physical outcomes at390px.
+[CI37211854749](https://github.com/Quintine/Dune/actions/runs/37211854749) /
+container111464477749 succeeds, isolated storage/HTTP step7 before verified
+image publication step9. Publication is not deployment.
+
+Earlier2d24f43 isolated verification failed and correctly prevented publication.
+Its specific cause could not be established from public exit1 metadata; logs
+required unavailable authenticated access. No production HTTP fix is claimed.
+Actual official Node v22.23.3 adapter/test subprocesses pass25 administrator
+and55 HTTP checks in a new private store; the earlier npm-selected “Node22”
+commands actually used26.10.0. Original witnesses/HTTPS checks under that
+earlier runtime are Node26, not Docker, evidence. Verifier failures now expose
+redacted stage/admin request/test-name annotations while preserving all original
+checks/nonzero failures. The succeeding exact Docker workflow supplies the
+required container proof; full-module/public/deployed gates stay open.
+
 ## Classic Nexus, Skills and original Tech/Strongholds — 4 October 2026
 
 The original fresh `leader-skills --nexus-cards` entry now preserves selected

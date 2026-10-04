@@ -16,24 +16,28 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**Paired checkpoint publication blocked:** code
-**2d24f4372196515b4b4b07555e5af518a209e18b** is pushed.
-[CI37208188809](https://github.com/Quintine/Dune/actions/runs/37208188809) /
-container111453717886 failed isolated storage/HTTP step7; publication step9
-was correctly skipped. Public job/annotations show only exit1; detailed logs
-require unavailable authenticated access. Investigation uses the original
-proxy-free `deploy/serve.mjs` with Node22 and a new private QA store, never an
-existing game database or unsafe POST retry. Original owner/operator login,
-foreign-origin rejection,25 administrator HTTP checks and the exact55/55 HTTP
-integration cases pass there. Original room/seat/admin witnesses survive
-process replacement; HTTPS external-origin login/Secure cookies, creation,
-join/discussion and four foreign-mutation rejections also pass. This is
-proxy-free Node22 evidence, not a passing Docker/CI claim. The failed job's
-specific boundary is still unknown. `tools/verify-container.mjs` now reports
-redacted failing stages and up to three failing integration names as public
-CI annotations while retaining nonzero failure and the publication gate.
-Local fail-closed diagnostic smoke emits the missing-Docker stage and exit1.
-No successful publication or deployed claim is made for this checkpoint.
+**Paired checkpoint verified and published:** exact code
+**8b6bf385601dd878e81ca11d47076aa93e7cb806** is pushed.
+[CI37211854749](https://github.com/Quintine/Dune/actions/runs/37211854749) /
+container111464477749 completes successfully: isolated storage/HTTP step7
+before verified image publication step9. Final59 module/native cases,
+types/lint and exact pushed build pass; rebuilt QA displays **8b6bf38** with
+both original outcomes unchanged at390px. Publication is not deployment;
+last live observation remains **ab5c782** and NAS prerequisites are unchanged.
+
+Earlier **2d24f43** / [CI37208188809](https://github.com/Quintine/Dune/actions/runs/37208188809)
+failed isolated step7 and correctly skipped publication. Public metadata
+revealed only exit1; authenticated logs were unavailable. Its exact cause was
+not established and no production HTTP defect is claimed repaired.
+The original proxy-free adapter passes25 admin and55 HTTP cases with a
+checksum-verified official **Node v22.23.3** binary and same-executable test
+subprocesses. Earlier npm-selected “Node22” commands actually used v26.10.0;
+their successful replacement/HTTPS witnesses are Node26 evidence, not Docker.
+The passing exact Docker CI now supplies the required full container proof.
+Only new private QA stores changed; no existing games or unsafe POST retries.
+Verifier diagnostics now expose redacted failing stages, admin request/status
+and up to three failing integration names without weakening nonzero failure
+or publication gates. Local missing-Docker diagnostic smoke still exits1.
 
 **Paired E1/E2 Nexus / Skills / Tech / Strongholds — bounded Development Verified:**
 both Ixians+Tleilaxu OR CHOAM+Richese plus classics, one original family47/
