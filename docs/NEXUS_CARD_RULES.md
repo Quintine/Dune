@@ -54,6 +54,12 @@ no rejection,195 JSON continuations and four actual closing Nexus choices.
 Natural Cunning combinations are not claimed; controlled programs prove them.
 `/tmp/dune-paired-nexus-skills-games-20261004/report.json` captures unchanged
 tree `d763afdc75d52f5649cd0180b510d7d88a910568861efb15d8ee0c20e05b1458`.
+Final37 module/guide cases, types/lint and exact pushed build pass. Rebuilt QA
+displays **fba673d**, both preserved physical outcomes and the updated390px guide.
+Code **fba673d215ad0decbec675c0241e34b5ced7e422** is pushed; exact
+[CI37198972228](https://github.com/Quintine/Dune/actions/runs/37198972228) /
+container111426544242 completes successfully, with isolated storage/HTTP
+step7 before verified image publication step9. No deployed claim is made.
 
 Original backed-up CLI **FZ2END3W / GZFAT6AE v8/setup** uses only a scoped
 original14 shuffle before native deals; original starting offers/hands and IDs

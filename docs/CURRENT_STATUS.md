@@ -37,6 +37,13 @@ Actual phone controls/inspectors/refresh pass without root390px overflow;
 controlled positions are labeled and only QA rooms change.
 [Scope and evidence](NEXUS_CARD_RULES.md#paired-e1e2-nexus-and-leader-skills-composition--4-october-2026)
 preserve foreign replacement, companion/mixed-plan, native revival and all gates.
+Code **fba673d215ad0decbec675c0241e34b5ced7e422** is pushed. Final37
+module/guide cases, types/lint and exact-revision build pass; rebuilt QA marker
+**fba673d** preserves both physical outcomes and displays the updated390px guide.
+Exact [CI37198972228](https://github.com/Quintine/Dune/actions/runs/37198972228) /
+container111426544242 completes successfully: isolated storage/HTTP step7
+precedes verified image publication step9. Publication is not deployment;
+live **ab5c782** remains last observed.
 
 **Classic Nexus / Leader Skills — bounded Development Verified:** fresh
 classic/base33/all14 Skills/all12 Nexus, Basic/Advanced2..6, explicit original
