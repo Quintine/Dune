@@ -39,6 +39,15 @@ HMS/Grumman, E3 pairs/mixed families/Advanced Harkonnen/HW/previews,
 public/save conversion and full/deployed acceptance remain guarded.
 [Canonical source and exact evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
 
+Exact code **83f825513a79d51bdd4a3a096d65e103e654251c** is pushed.
+[CI37227846375](https://github.com/Quintine/Dune/actions/runs/37227846375) /
+container111511103168 succeeds: isolated storage/HTTP7 precedes verified
+image publication9. Final13 coalition/reference cases, types/lint and exact
+pushed build pass; all three preserved human rooms display83f8255 and retain
+their actual outcomes at390px. Managed tabs are released. This is publication,
+not deployment; last observed liveab5c782 and NAS prerequisites are unchanged.
+
+
 ## 4 October 2026 — classic Nexus with Tech and Advanced Strongholds
 
 Two bounded owners supplied original shipment/revival/purchase and coupled

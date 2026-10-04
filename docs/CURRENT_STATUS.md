@@ -51,6 +51,16 @@ shared Duke training, enhanced Terror relocation/HMS/Grumman, pending rulings,
 public starts, save conversion and full/deployed acceptance stay guarded.
 [Canonical scope and evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
 
+Exact code **83f825513a79d51bdd4a3a096d65e103e654251c** is pushed.
+[CI37227846375](https://github.com/Quintine/Dune/actions/runs/37227846375) /
+container111511103168 completes successfully: isolated storage/HTTP step7
+before verified image publication step9. Final13 coalition/guide cases,
+types/lint and exact pushed build pass. Rebuilt QA displays **83f8255** in all
+three original human rooms with unchanged outcomes at390px; managed tabs are
+released. Publication is not deployment; live **ab5c782** remains last observed
+and protected NAS snapshot/safe-point/signed-in/approval prerequisites remain.
+
+
 **Paired checkpoint verified and published:** exact code
 **8b6bf385601dd878e81ca11d47076aa93e7cb806** is pushed.
 [CI37211854749](https://github.com/Quintine/Dune/actions/runs/37211854749) /
