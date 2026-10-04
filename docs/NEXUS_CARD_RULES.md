@@ -2,6 +2,87 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic Nexus and Leader Skills composition — 4 October 2026
+
+The existing fresh local `leader-skills --nexus-cards` entry explicitly
+composes classic/base33/all14 Skills/all12 Nexus in Basic/Advanced2..6.
+Original prediction, starting Treachery, actual two-card skill offers/
+assignment and Traitor order remain. Starting hands may already be dealt
+in the initializer's saved setup; continuing it never redeals those hands
+or substitutes its saved offers. Nexus still has no initial deal: a genuine
+qualifying alliance Nexus must close before an unallied player can draw.
+
+This combines the independent Nexus lifecycle below and the original
+[fourteen-card skill source](LEADER_SKILLS_RULES.md). No Tech, Strongholds,
+Homeworlds, native factions/decks, Banker/Mentat preview, independent cards,
+unrelated overlays, public start or played-game conversion is admitted.
+Other card-specific module guards remain, including borrowed Smuggler
+shipment arithmetic, Advanced Atreides Suk/KH, modified Smuggler collection,
+borrowed Voice, worm protection and Tleilaxu revival accounting.
+
+Original Emperor extra-three and Fremen ordinary/free-three returns retain
+their distinct ledgers, actual counters, wallet and Advanced elite cap.
+Neither changes physical skill assignment. The normal bank-auction purchase
+retains the actual buyer price and delivers the actual lot once; it creates
+no bank payment or normal Banker award. Harkonnen Cunning draws/returns
+the actual Traitor Deck card without changing trained-disc custody or
+undoing a committed true/false traitor call after identity custody changes.
+
+Emperor Cunning still turns exactly five existing ordinary counters into
+temporary effective Sardaukar for one battle, never physical starred pieces.
+Actual normal/skilled disciplines affect strength, not printed-disc bounty;
+original support is paid once. A living normal Suk saves one casualty to
+reserves, while a surviving selected trained Suk may save up to three,
+keeping one in its original sector and returning the rest to reserves.
+
+The combined path reproduced two real lifecycle failures: normal automatic
+rescue left Cunning expecting its pre-loss army, and selected trained rescue
+left it expecting the earlier casualty chooser. The fix keeps the Cunning
+receipt pending against the identical original Suk casualty commitment while
+rescue is selected. It completes only after actual physical rescue settlement,
+with original actor/event/turn/territory/choice/signature checks retained.
+No provisional marking complete, extra payment, elite conversion or second
+loss is added.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile leader-skills \
+  --nexus-cards --db /private/local.sqlite --room ROOMCODE --version 7 \
+  --out /private/new-classic-nexus-skills-entry
+node --import tsx tools/faction-games.ts --profile nexus-skills \
+  --players all --rules both --out /private/new-classic-nexus-skills-games
+```
+
+### Bounded classic skill development evidence
+
+New40/affected151 cases, types/lint/build, ten genuine2..6-seat setup programs,
+twelve actual native rule programs and all four legal Suk/free-return policies
+pass. Ten genuine2..6-seat Basic/Advanced games complete4,446 accepted actions,
+no rejection,117 JSON continuations and eight actual closing Nexus choices.
+They do not claim natural Cunning/Suk use (zero Cunning actions).
+`/tmp/dune-classic-nexus-skills-games-20261004/report.json` captures unchanged
+tree `86d2c73debec01f5d4bb5c06a8a475274562d3ea9f68cb92b6e67c0dab67e4a2`.
+
+Original backed-up CLI **HKCLYXPK / APXBER55 v8/setup** uses a scoped original
+all14 shuffle before native deals; other randomness is unchanged. Saved first
+starting hands/offers and authenticated actors survive fixture continuation.
+Controlled390px **HKCLYXPK v20 / APXBER55 v24, Collection** chooses actual
+face-up/behind-shield posture and Cunning, then seals Caid3 or Fenring6,
+dial6/support3/Shield versus Master Bewt3/dial0. Original support3 pays
+wallet10→7 once; separate Arrakeen Collection2 makes9.
+
+Normal four ordinary losses save one to reserves:14 reserves/3 Tanks/3 board.
+Trained five ordinary losses keep the original seven-force army pending while
+three-rescue is selected, then keep one, return two and settle:
+15 reserves/2 Tanks/3 board. Both preserve all5 actual Sardaukar in reserves,
+zero starred Tanks and the original retained Shield/Suk assignment.
+Cunning and Suk receipts are complete only after physical settlement.
+Original phone posture, Cunning, typed losses, rescue selector, card cleanup,
+skill/force inspectors and refreshed outcomes are observed without root390px
+overflow. Only dedicated QA rooms change; controlled relocation is labeled.
+
+This is bounded development proof, not full Nexus/Skills, assurance,
+calibration, public-start or deployed acceptance.
+
 ## Paired E1/E2 Tech and Stronghold composition — 4 October 2026
 
 The existing fresh local `nexus` entry additionally preserves unused original

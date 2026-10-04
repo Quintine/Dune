@@ -29,6 +29,36 @@ Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
 
+## Classic Nexus composition — 4 October 2026
+
+Fresh `leader-skills --nexus-cards` composes classic/base33/all14 Skills/all12
+Nexus, Basic/Advanced2..6, without native factions, Tech, Strongholds, Homeworlds,
+Banker/Mentat previews or other overlays. Original starting hands may already
+be dealt before skill selection; supplied saved offers/hands and authenticated
+actors are continued, not replaced. Actual closing Nexus deals remain required.
+
+Original free-three ledgers, bank purchase and Traitor Deck draw/return preserve
+physical skill custody. Temporary Emperor Sardaukar remain ordinary counters
+through actual discipline bonuses, paid support, casualties and Suk rescue.
+The reproduced normal/selected trained rescue failures now retain the identical
+original Cunning casualty commitment until actual physical settlement, then
+complete its receipt once. Rescue never repeats support or converts actual
+normal counters into starred inventory.
+
+New40/affected151, types/lint/build, ten genuine setup programs, twelve actual
+rule programs, four legal rescue/free-return policies and ten genuine2..6-seat
+games (4,446 actions/no rejection,117 JSON continuations/eight actual closing
+choices) pass. Human390px **HKCLYXPK v20 / APXBER55 v24, Collection** seals
+Caid3 or trained Fenring6/dial6/support3/Shield. Normal loss4 saves1 to reserves
+(14 reserve/3 Tanks/3 board); trained loss5 saves3 with1 kept/2 returned
+(15 reserve/2 Tanks/3 board). All5 native Sardaukar stay reserved and Shield/
+Suk remain; actual support10→7 precedes separate city2→9. Pending trained
+rescue retains all7 original physical counters until selection resolves.
+Original posture/Cunning/casualty/rescue/cleanup/inspectors and refreshed phone
+outcomes pass. Controlled original shuffle/order/relocations are labeled.
+[Canonical scope, source and evidence](NEXUS_CARD_RULES.md#classic-nexus-and-leader-skills-composition--4-october-2026)
+preserves the other explicit skill/Nexus rulings, source guards and all gates.
+
 ## Standalone E3 module composition — 4 October 2026
 
 Fresh original Ecaz OR Moritani skill profiles preserve unused Tech Tokens in

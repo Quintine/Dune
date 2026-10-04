@@ -89,6 +89,18 @@ See [scope and authority](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-compos
 this does not admit native Tleilaxu income, Homeworlds, Skills or seller-paid
 and forced-Emperor producers, and leaves their pending questions unchanged.
 
+The separate fresh classic `leader-skills --nexus-cards` composition additionally
+admits the original extra-three return and normal bank purchase with all14
+Skills but no Tech/Strongholds or other overlays. Exact-three/elite caps,
+independent ordinary ledger and physical skill custody remain. Bank purchase
+creates no actual bank payment or Banker award. Actual Cunning with normal or
+selected trained Suk retains the original typed casualty receipt while rescue
+is pending, completing only after physical settlement; its temporary Sardaukar
+stay ordinary counters and original support is paid once. [Bounded scope and
+evidence](NEXUS_CARD_RULES.md#classic-nexus-and-leader-skills-composition--4-october-2026)
+does not answer the separate native income, seller-paid or forced-payer rulings.
+
+
 ## Betrayal and remaining decisions
 
 Normal Emperor-funded auction help goes to the ally and is paid back to Emperor, according to November's FAQ. Therefore forcing its contribution cannot automatically be implemented as transferring its spice to the bank. Bind the actual allied purchase and its original price/contributions. [November FAQ, p.2](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2)

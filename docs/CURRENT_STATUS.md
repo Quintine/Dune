@@ -16,6 +16,26 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Classic Nexus / Leader Skills — bounded Development Verified:** fresh
+classic/base33/all14 Skills/all12 Nexus, Basic/Advanced2..6, explicit original
+`leader-skills --nexus-cards`, without other overlays/public starts/new rulings.
+New40/affected151, types/lint/build, ten actual setup and twelve native rule
+programs, four legal Suk/free-return policies and ten genuine2..6-seat games
+pass (4,446 actions/no rejection,117 JSON continuations/eight closing choices).
+Natural Cunning/Suk is not claimed. Actual normal and trained Suk revealed
+two pending-Cunning lifecycle failures; matching original casualty commitment
+now stays pending through rescue and completes only at physical settlement.
+Original backed-up CLI **HKCLYXPK / APXBER55 v8/setup** preserves exact
+starting hands/offers/actors after a scoped original14 shuffle.
+Human390px **HKCLYXPK v20 / APXBER55 v24, Collection** chooses posture,
+Cunning, Caid3 or Fenring6/dial6/support3/Shield. Normal loss4 saves1 to reserves
+(14 reserve/3 Tanks/3 board); trained loss5 keeps the original7 pending until
+rescue3 (1 kept/2 returned), then15 reserve/2 Tanks/3 board. Both preserve all5
+starred reserves, zero starred Tanks, Shield/Suk, support10→7 once and separate
+city2→9. Actual phone controls/inspectors/refresh and no root390px overflow
+pass; only dedicated QA rooms change. [Scope and bounded evidence](NEXUS_CARD_RULES.md#classic-nexus-and-leader-skills-composition--4-october-2026)
+preserve borrowed Smuggler, Atreides Suk/KH, pending Nexus and all release gates.
+
 **Paired E1/E2 Nexus / Tech / Strongholds — bounded Development Verified:**
 fresh both Ixians+Tleilaxu OR CHOAM+Richese plus classics/one family deck
 preserves Tech3..6 Basic/Advanced and Strongholds2..6 Advanced without Skills.

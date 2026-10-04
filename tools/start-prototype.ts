@@ -17,6 +17,7 @@ async function main() {
       out: { type: 'string' },
       'ecaz-treachery': { type: 'boolean' },
       'mentat-question': { type: 'boolean' },
+      'nexus-cards': { type: 'boolean' },
       help: { type: 'boolean' },
     },
   });
@@ -32,6 +33,7 @@ async function main() {
       '\nWithout Skills, factions preserves unused original Tech Tokens in fresh 3–6-seat Basic/Advanced selected E1/E2 native or standalone Ecaz OR Moritani lobbies with classic opponents; stronghold-factions composes them with Advanced Stronghold Cards. Original physical inventories, first-Storm owners, selected Ecaz lead rewards, even-force Basic Occupy and non-Harkonnen Advanced Moritani assassination remain. Skills, unrelated overlays, paired/mixed E3 rosters and public starts remain separate.',
       '\nNexus preserves selected unused original Tech Tokens in classic/base33/all12 three-through-six-seat Basic/Advanced lobbies, and/or unused Stronghold Cards in Advanced two-through-six-seat lobbies; both requires3+. Genuine first-Storm/end-Mentat custody and closing Nexus deals remain. Borrowed tariff/force identity, original free-return ledgers, phase-end industry, held support and retention/winner rewards reuse existing handlers. Skills, Homeworlds in this composition, expansions, unrelated previews, unresolved effects and public starts remain separate.',
       '\nNexus additionally routes a supported paired native E1 (Ixians+Tleilaxu) OR E2 (CHOAM+Richese) lobby with classics and one required deck through original paired setup when Tech and/or Advanced Strongholds is selected. Tech requires3–6 Basic/Advanced, Strongholds2–6 Advanced, both3–6 Advanced. All12 Nexus, original47/35 decks/cache, native setup and actual module custody remain. Mixed families, E3, Skills, other overlays, public starts and pending rulings stay separate.',
+      '\nLeader-skills --nexus-cards explicitly adds all12 Nexus to a fresh classic/base33/all14 two-through-six-seat Basic/Advanced setup. Original skill/Traitor order and genuine closing Nexus deals remain. Native expansions, Tech, Strongholds, Homeworlds, Banker/Mentat previews, other overlays, public starts and unresolved interactions stay separate.',
     );
     return;
   }
@@ -39,6 +41,8 @@ async function main() {
     throw new Error('--ecaz-treachery requires --profile ecaz-occupy.');
   if (values['mentat-question'] && values.profile !== 'leader-skills')
     throw new Error('--mentat-question requires --profile leader-skills.');
+  if (values['nexus-cards'] && values.profile !== 'leader-skills')
+    throw new Error('--nexus-cards requires --profile leader-skills.');
   if (
     !isPrototypeProfile(values.profile) ||
     !values.db ||
@@ -62,7 +66,7 @@ async function main() {
   const db = new DatabaseSync(values.db);
   try {
     const result = startPrototypeRoom(db, values.room, version, values.profile,
-      { ecazTreachery: values['ecaz-treachery'], mentatQuestion: values['mentat-question'] });
+      { ecazTreachery: values['ecaz-treachery'], mentatQuestion: values['mentat-question'], nexusCards: values['nexus-cards'] });
     writeFileSync(
       resolve(values.out, 'prototype.json'),
       JSON.stringify(
@@ -72,6 +76,7 @@ async function main() {
           profile: values.profile,
           ecazTreachery: !!values['ecaz-treachery'],
           mentatQuestion: !!values['mentat-question'],
+          nexusCards: !!values['nexus-cards'],
           source,
           beforeVersion: version,
           ...result,

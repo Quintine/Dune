@@ -9,6 +9,8 @@ export type LeaderSkillProfile = {
   nexusCards?: unknown;
   discoveries?: unknown;
   discoveryEnabled?: unknown;
+  discoveryStash?: unknown;
+  greatMaker?: unknown;
   strongholdCards?: unknown;
   techTokens?: unknown;
   ecazTreachery?: unknown;
@@ -22,11 +24,36 @@ export type LeaderSkillProfile = {
   nexusIxianReplacementPreview?: unknown;
   nexusIxianBetrayalPreview?: unknown;
   nexusHarkonnenBetrayalPreview?: unknown;
+  mentatQuestionPreview?: unknown;
+  spiceBankerIncomePreview?: unknown;
 };
 
 export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
   return !game.homeworlds && !game.nexusCards && !game.discoveries &&
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
+}
+
+/** Fresh classic Nexus/Skills only; other module and native compositions stay separate. */
+export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  const players = game.players;
+  if (!game.nexusCards || typeof game.advanced !== 'boolean' || game.expansions.length ||
+    !players || players.length < 2 || players.length > 6 ||
+    game.homeworlds || game.discoveries || game.discoveryEnabled ||
+    game.discoveryStash || game.greatMaker || game.strongholdCards || game.techTokens ||
+    game.ecazTreachery || game.semutaPreview || game.moritaniAssassinatePreview ||
+    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview || game.mentatQuestionPreview ||
+    game.spiceBankerIncomePreview) return false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let classic = false;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction) { classic = faction.expansion === 'base'; break; }
+    if (!classic) return false;
+  }
+  return true;
 }
 
 /** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
@@ -275,5 +302,6 @@ export function nativeTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
   return (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
-    classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) || strongholdLeaderSkillsProfile(game);
+    classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
+    strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game);
 }

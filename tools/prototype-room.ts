@@ -51,6 +51,8 @@ export type PrototypeOptions = {
   ecazTreachery?: boolean;
   /** Private uniform-question preview; ordinary skill starts stay unchanged. */
   mentatQuestion?: boolean;
+  /** Independent classic Nexus/Skills composition, not a public activation. */
+  nexusCards?: boolean;
 };
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
   return PROTOTYPE_PROFILES.some((profile) => profile === value);
@@ -94,9 +96,12 @@ export function startPrototypeRoom(
     throw new Error('--ecaz-treachery requires the ecaz-occupy profile.');
   if (options.mentatQuestion && profile !== 'leader-skills')
     throw new Error('--mentat-question requires the leader-skills profile.');
+  if (options.nexusCards && profile !== 'leader-skills')
+    throw new Error('--nexus-cards requires the leader-skills profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if (options.mentatQuestion) initial.mentatQuestionPreview = true;
-  if (profile === 'nexus' && !initial.nexusCards) initial.nexusCards = { cards: null, phase: null };
+  if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)
+    initial.nexusCards = { cards: null, phase: null };
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)

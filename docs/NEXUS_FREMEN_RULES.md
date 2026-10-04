@@ -103,6 +103,15 @@ The current first path is a deliberate subset of that proposed contract: with Fr
 
 The bounded classic Tech/Advanced Stronghold composition now calls the existing Axlotl activity hook after this actual free batch; spice stays on the token until native phase-end settlement, without changing these ordinary ledgers. See [the composition contract](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026). Tleilaxu income and Homeworld arrivals remain excluded: those broader continuations require the native pending-revival pipeline, not this quiet transfer. Fewer-than-three Tanks, previous force returns and higher free rates/modifiers still remain unavailable rather than guessing a ruling. Protection remains unimplemented; Cunning's bounded path is separate.
 
+The separate fresh classic `leader-skills --nexus-cards` composition preserves
+the same ordinary/free-three ledgers, zero wallet cost, actual counters and
+Advanced one-elite cap with all14 original skills, without Tech/Strongholds
+or other overlays. It does not change physical training, grant leader revival,
+reset prior returns or settle worm-protection reactions. [Scope and bounded
+proof](NEXUS_CARD_RULES.md#classic-nexus-and-leader-skills-composition--4-october-2026)
+remains separate from complete Fremen/Nexus certification.
+
+
 `game/revival.ts` already computes free rate/remaining from `p.revived`, typed prices and ordinary limits. Engine `beginRevival`/`finishRevival` retains pending requests and Tleilaxu prevention/income continuations. The future combined-mode adapter should be an explicit source-labelled, phase-bound free-rate entitlement consumed by an actual normal revival request, retaining previous returns and exact free/paid normal/starred allocation. Never refund earlier paid revivals or reset `revived`/elite counters on card play or reload.
 
 Keep these questions visible: how the three-total interacts with a higher native free rate, prior paid/free returns, low-Homeworld bonus and Recruits; whether a partial group below three is permitted when Tanks cannot supply three; and whether the benefit survives La La La or Tleilaxu prevention. The [existing revival audit](FREMEN_REVIVAL_AUDIT.md) and [Homeworld benefit audit](HOMEWORLD_BENEFITS_RULES.md) do not by themselves answer differently worded Nexus composition.

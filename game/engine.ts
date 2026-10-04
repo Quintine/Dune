@@ -1,6 +1,6 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -3439,7 +3439,13 @@ function nexusSardaukarIntegrity(g: Game) {
           'The pending Sardaukar casualties have lost their exact physical army.');
         const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'battleLosses' && d.player === record.receipt.owner);
         const committed = continuation?.kind === 'battleResolved' && continuation.event === record.receipt.battle ? continuation.casualties : null;
-        requireRule(decisions.length > 0 || committed, 'The Nexus Sardaukar battle has lost its casualty choice.');
+        const rescue = g.pendingSukRescue?.event === record.receipt.battle ? g.pendingSukRescue : null;
+        requireRule(decisions.length > 0 || committed || rescue?.losses, 'The Nexus Sardaukar battle has lost its casualty choice.');
+        if (rescue) requireRule(rescue.player === record.receipt.owner &&
+          rescue.turn === record.receipt.turn && rescue.territory === record.receipt.territory &&
+          JSON.stringify(rescue.commitment) === JSON.stringify({forces:losses.forces,dial:losses.dial,support:losses.support,options:losses.options}) &&
+          (!rescue.losses || losses.options.some(option => JSON.stringify(option) === JSON.stringify(rescue.losses))),
+          'The Suk rescue differs from the committed Nexus Sardaukar casualties.');
         for (const decision of decisions) requireRule(decision.kind === 'battleLosses' &&
           decision.territory === record.receipt.territory && JSON.stringify(decision.options) === JSON.stringify(losses.options),
           'The casualty choices differ from the committed Nexus Sardaukar plan.');
@@ -9394,7 +9400,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  const initialized = initializeSetupGameForAudit(g, false, false, false, false, true,
+  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g), false, false, true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -21204,6 +21210,13 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
   const player = getPlayer(g, pending.player);
   requireRule(pending.losses && pending.physical === sukPhysicalSignature(player),
     'The Suk Graduate rescue no longer has its committed physical counters.');
+  const sardaukar = g.nexusSardaukarHistory?.find(record =>
+    record.receipt.battle === pending.event && record.receipt.owner === pending.player);
+  if (sardaukar?.casualties) requireRule(sardaukar.casualties.outcome === 'pending' &&
+    JSON.stringify(pending.commitment) === JSON.stringify({forces:sardaukar.casualties.forces,
+      dial:sardaukar.casualties.dial,support:sardaukar.casualties.support,options:sardaukar.casualties.options}) &&
+    sardaukar.casualties.options.some(choice => JSON.stringify(choice) === JSON.stringify(pending.losses)),
+    'The Suk rescue lost its original Nexus Sardaukar casualty allocation.');
   const quote = quoteSukRescue(pending.skill, pending.pool, pending.losses, option, pending.eliteOrigins);
   for (const group of quote.removed) {
     player.forces[group.key] -= group.normal + group.elite;
@@ -21219,6 +21232,10 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
   if (player.elites) {
     player.elites.reserves += quote.reserves.elite;
     player.elites.tanks += quote.tanks.elite;
+  }
+  if (sardaukar?.casualties) {
+    sardaukar.casualties.outcome = 'complete';
+    sardaukar.signature = nexusSardaukarSignature(sardaukar);
   }
   g.pendingSukRescue = null;
   g.lastBattleContext!.sukRescue!.completed = true;
