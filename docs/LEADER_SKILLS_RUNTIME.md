@@ -29,6 +29,36 @@ Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
 
+## Paired E1/E2 Nexus composition — 4 October 2026
+
+Fresh original `leader-skills --nexus-cards` additionally composes both
+Ixians+Tleilaxu OR CHOAM+Richese plus classics, one family47/35+cache deck,
+all14 Skills/all12 Nexus, Basic/Advanced2..6, without other overlays.
+Actual offers/hands/IDs, native setup and real closing deals remain.
+
+Full unsupported Suboids compose original skill posture/bonuses and typed
+Suk rescue before equal subsequent substitution. Only actual Cyborg Tank
+losses can be recovered; support and losses do not repeat. Face Dance follows
+winner rescue/cards/rewards, kills a matching trainer and returns its skill
+once, with no second bounty. Tleilaxu Cunning preserves unrevealed stock and
+ordinary Mentat allowance. Original Richese pair uses its signed two-token
+frame, not an ordinary single-marker skill proof; one invoice/response/Guild
+continuation and capped physical reveal remain. CHOAM Cunning's actual
+Special fuel is discarded before a separate ordinary Planetologist move.
+
+New27/affected136, types/lint/build, twenty actual setup programs, fourteen
+native programs, four legal pair policies and twenty genuine2..6-seat games
+(7,458 actions/no rejection,195 JSON continuations/four closing choices) pass.
+Human390px **FZ2END3W v24/Collection** saves one of three lost Cyborgs,
+then exchanges only two Suboids for two actual Cyborg Tank losses, leaving
+one Suboid/two Cyborgs on board and zero Cyborg Tanks. Actual support10→9
+precedes separate city2→11. **GZFAT6AE v15/movement** pays original one-marker
+fee for immediate5/concealed3, then reveals real3, leaving12 reserves/8 ordinary
+board/last-used3 and unchanged all14 training. Original controllers/inspectors/
+refresh pass; only QA rooms change. [Canonical scope and evidence](NEXUS_CARD_RULES.md#paired-e1e2-nexus-and-leader-skills-composition--4-october-2026)
+retains foreign replacement, companion/mixed-plan, native revival and other
+pending guards, without certifying full modules or deployed acceptance.
+
 ## Classic Nexus composition — 4 October 2026
 
 Fresh `leader-skills --nexus-cards` composes classic/base33/all14 Skills/all12

@@ -85,6 +85,20 @@ entering mixed No-Field dialing. [Scope and bounded evidence](NEXUS_CARD_RULES.m
 does not settle the separate cache, high-Richese, allied-marker, faceup-display
 or public/full-module boundaries.
 
+### Paired Leader Skills composition — 4 October 2026
+
+The fresh original `leader-skills --nexus-cards` entry also composes paired
+CHOAM/Richese/classics with the original35+cache/all14/all12, Basic/Advanced2..6,
+without Tech/Strongholds/Homeworlds or other overlays. Ordinary skill-marker
+proofs apply to single-marker declarations; the two-component Nexus operation
+retains its separate original signed pair frame, native response/Guild checks,
+one tariff and capped physical groups. A reproduced proof-routing conflict is
+fixed without relaxing signatures or accepting a companion. Voluntary reveal
+can precede ordinary normal/trained Suk battle/rescue and actual CHOAM support
+income, not mixed No-Field dialing. [Scope and bounded proof](NEXUS_CARD_RULES.md#paired-e1e2-nexus-and-leader-skills-composition--4-october-2026)
+does not settle high-Richese extras, faceup-display or other pending boundaries.
+
+
 
 ## Existing integration points and verification
 

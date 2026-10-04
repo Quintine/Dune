@@ -2,6 +2,83 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Paired E1/E2 Nexus and Leader Skills composition — 4 October 2026
+
+The original fresh `leader-skills --nexus-cards` entry additionally admits
+**both Ixians + Tleilaxu OR both CHOAM + Richese**, classic opponents,
+one required family deck/all14 Skills/all12 Nexus, Basic/Advanced2..6.
+Original47 or35+separate10 cache, native setup/offers, skill-before-Traitor
+order and actual closing Nexus draws remain. Supplied starting hands/offers/
+actor IDs are authoritative. No Tech, Strongholds, Homeworlds, mixed families,
+E3, Banker/Mentat previews, independent cards, public start or save conversion.
+
+This combines the original independent printed sources below and the
+[skill source](LEADER_SKILLS_RULES.md), not a new timing or accounting ruling.
+Ixian Cunning grants full unsupported Suboid strength through the actual turn,
+while skill posture/discipline and Cyborg support remain original. Physical
+Suk rescue finishes before equal Suboid substitution; only Cyborgs actually
+sent to Tanks can be recovered. Neither operation repeats support/losses.
+Actual skill rescue/card cleanup/winner rewards precede Face Dance. Its
+matching winning trainer dies once and returns its original skill once,
+without another bounty. Partial-stock Tleilaxu Cunning draws before retiring
+revealed originals, preserves unrevealed stock and the ordinary Mentat allowance.
+Supplied infeasible matching stock is not fabricated or replaced.
+
+Richese's two-component Cunning retains one original tariff, capped immediate
+ordinary group, concealed physical marker and real previous-token restriction.
+Both Basic/Advanced reproduced a routing defect: ordinary single-marker skill
+proof was inserted into the native signed pair frame. Pair declarations now
+use their original signed two-token validator and native response/Guild
+continuation checks. Single-marker skill proofs remain unchanged; no forged
+proof, relaxed signature, extra frame key, companion or repeated invoice is added.
+After voluntary reveal, ordinary native skill battles/rescue and original CHOAM
+support income remain distinct. Own mixed No-Field dialing stays guarded.
+CHOAM Cunning consumes one actual printed Special as Worthless fuel through
+the original response/discard; Planetologist's subsequent physical move does
+not replay that card or create a Special-card combat bonus.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile leader-skills \
+  --nexus-cards --db /private/local.sqlite --room ROOMCODE --version 7 \
+  --out /private/new-paired-nexus-skills-entry
+node --import tsx tools/faction-games.ts --profile paired-nexus-skills \
+  --players all --rules both --out /private/new-paired-nexus-skills-games
+```
+
+### Bounded paired skill development evidence
+
+New27/affected136, types/lint/build, twenty actual paired2..6-seat setup
+programs, fourteen native rule programs and all four legal pair policies pass.
+Twenty genuine2..6-seat Basic/Advanced games complete7,458 accepted actions,
+no rejection,195 JSON continuations and four actual closing Nexus choices.
+Natural Cunning combinations are not claimed; controlled programs prove them.
+`/tmp/dune-paired-nexus-skills-games-20261004/report.json` captures unchanged
+tree `d763afdc75d52f5649cd0180b510d7d88a910568861efb15d8ee0c20e05b1458`.
+
+Original backed-up CLI **FZ2END3W / GZFAT6AE v8/setup** uses only a scoped
+original14 shuffle before native deals; original starting offers/hands and IDs
+survive continuation. Controlled390px **FZ2END3W v24/Collection** keeps
+C’tair's normal Suk face up, activates Suboid Cunning and seals Tessia5/
+dial4/support1 versus Guild Bashar2/dial0. Real support1 debits10→9.
+Three committed Cyborg losses save1 to reserves; only2 go to Tanks. Actual
+two-Suboid/two-Cyborg exchange leaves one Suboid/two Cyborgs at Arrakeen,
+15 reserves/2 ordinary Tanks, five Cyborg reserves/zero Cyborg Tanks.
+Separate original city2 pays11. Suk/substitution receipts complete once.
+
+**GZFAT6AE v15/movement** selects immediate5/concealed3 at Habbanya17,
+passes the real native response and Guild interception, pays original Guild1
+(Richese4→3/Guild6→7), then voluntarily reveals the remaining3 into real
+ordinary counters:12 reserves/8 board, no deployed marker, unchanged last-used3.
+Original all14 Suk/Planetologist assignments remain. Human posture/Cunning,
+typed losses/equal substitution, physical token choices, response/allow/reveal,
+inspectors and refreshed outcomes have no root390px overflow.
+Only dedicated QA rooms change; controlled shuffle/order/relocation is labeled.
+
+Borrowed Smuggler/pair companions, high-Richese extras, mixed plans, foreign
+skill replacement, native free-revival accounting and pending Nexus reactions
+remain guarded. Full rules, assurance, calibration, public and deployed gates
+remain open.
+
 ## Classic Nexus and Leader Skills composition — 4 October 2026
 
 The existing fresh local `leader-skills --nexus-cards` entry explicitly

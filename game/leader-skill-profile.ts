@@ -33,19 +33,23 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
+function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+  return !!game.nexusCards && typeof game.advanced === 'boolean' &&
+    !!game.players && game.players.length >= 2 && game.players.length <= 6 &&
+    !game.homeworlds && !game.discoveries && !game.discoveryEnabled &&
+    !game.discoveryStash && !game.greatMaker && !game.strongholdCards && !game.techTokens &&
+    !game.ecazTreachery && !game.semutaPreview && !game.moritaniAssassinatePreview &&
+    !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
+    !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
+    !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
+    !game.nexusHarkonnenBetrayalPreview && !game.mentatQuestionPreview &&
+    !game.spiceBankerIncomePreview;
+}
+
 /** Fresh classic Nexus/Skills only; other module and native compositions stay separate. */
 export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  const players = game.players;
-  if (!game.nexusCards || typeof game.advanced !== 'boolean' || game.expansions.length ||
-    !players || players.length < 2 || players.length > 6 ||
-    game.homeworlds || game.discoveries || game.discoveryEnabled ||
-    game.discoveryStash || game.greatMaker || game.strongholdCards || game.techTokens ||
-    game.ecazTreachery || game.semutaPreview || game.moritaniAssassinatePreview ||
-    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
-    game.guildBetrayalPreview || game.richeseBetrayalPreview ||
-    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
-    game.nexusHarkonnenBetrayalPreview || game.mentatQuestionPreview ||
-    game.spiceBankerIncomePreview) return false;
+  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game)) return false;
+  const players = game.players!;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
     let classic = false;
@@ -56,9 +60,30 @@ export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boole
   return true;
 }
 
+/** Both original natives in one E1/E2 family; independent decks and other overlays stay separate. */
+export function pairedNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.expansions.length !== 1 || !nexusLeaderSkillModulesSupported(game)) return false;
+  const expansion = game.expansions[0];
+  if (expansion !== 'ix' && expansion !== 'choam') return false;
+  const primary = expansion === 'ix' ? 'ixians' : 'choam';
+  const secondary = expansion === 'ix' ? 'tleilaxu' : 'richese';
+  const players = game.players!;
+  let hasPrimary = false, hasSecondary = false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let family: string | undefined;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction) { family = faction.expansion; break; }
+    if (family !== 'base' && family !== expansion) return false;
+    if (players[i].faction === primary) hasPrimary = true;
+    if (players[i].faction === secondary) hasSecondary = true;
+  }
+  return hasPrimary && hasSecondary;
+}
+
 /** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
 function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
-  if (noOtherLeaderSkillModules(game)) return true;
+  if (noOtherLeaderSkillModules(game) || pairedNexusLeaderSkillsProfile(game)) return true;
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
     players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
@@ -303,5 +328,6 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
   return (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
-    strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game);
+    strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
+    pairedNexusLeaderSkillsProfile(game);
 }

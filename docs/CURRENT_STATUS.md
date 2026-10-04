@@ -16,6 +16,28 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Paired E1/E2 Nexus / Leader Skills — bounded Development Verified:** both
+Ixians+Tleilaxu OR CHOAM+Richese plus classics, one family deck/all14/all12,
+Basic/Advanced2..6 through original `leader-skills --nexus-cards`, no overlays.
+New27/affected136, types/lint/build, twenty real setup programs, fourteen native
+programs/four legal pair policies and twenty genuine2..6-seat games pass:
+7,458 actions/no rejection,195 JSON continuations/four actual closing choices.
+Natural Cunning combinations are not claimed. Real Basic/Advanced pair proof
+conflict now routes the native signed two-token frame through original
+validation/response/Guild continuation, keeping single-marker skill proofs
+and companion exclusions intact. Original CLI **FZ2END3W/GZFAT6AE v8/setup**
+preserves first offers/hands/IDs after a scoped original14 shuffle.
+Human390px **FZ2END3W v24/Collection** uses normal Suk with full Suboids:
+three Cyborg losses save1, then only two actual Tank losses exchange for two
+Suboids. One Suboid/two Cyborgs remain;15 reserves/2 ordinary Tanks,5 Cyborg
+reserves/zero Cyborg Tanks. Support10→9 once precedes city2→11.
+**GZFAT6AE v15/movement** pays Guild1 for immediate5/concealed3, then reveals
+actual3:12 reserves/8 board/last-used3; original training remains.
+Actual phone controls/inspectors/refresh pass without root390px overflow;
+controlled positions are labeled and only QA rooms change.
+[Scope and evidence](NEXUS_CARD_RULES.md#paired-e1e2-nexus-and-leader-skills-composition--4-october-2026)
+preserve foreign replacement, companion/mixed-plan, native revival and all gates.
+
 **Classic Nexus / Leader Skills — bounded Development Verified:** fresh
 classic/base33/all14 Skills/all12 Nexus, Basic/Advanced2..6, explicit original
 `leader-skills --nexus-cards`, without other overlays/public starts/new rulings.

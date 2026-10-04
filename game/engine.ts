@@ -1,6 +1,6 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -9400,7 +9400,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g), false, false, true,
+  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g), false, false, true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -10635,7 +10635,7 @@ function richeseBetrayalModeSupported(g: Game): boolean {
   return g.expansions.length === 1 && g.expansions[0] === 'choam' &&
     g.players.length >= 2 && g.players.length <= 6 &&
     g.players.some(p => p.faction === 'richese') && g.players.some(p => p.faction === 'choam') &&
-    g.players.every(p => RICHESE_CUNNING_ROSTER.has(p.faction)) &&
+    g.players.every(p => RICHESE_CUNNING_ROSTER[p.faction] === true) &&
     !!g.nexusCards && !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled &&
     !g.ecazTreachery && !g.sandtrout && !g.techTokens && !g.strongholdCards &&
     !g.semutaPreview && !g.kullPreview;
@@ -23962,11 +23962,13 @@ function leaderSkillNoFieldIntegrity(g: Game): boolean {
     for (const decision of guild) validateGuildShipmentDecision(g, decision);
     return true;
   }
-  if (!(shipment?.smugglerCompanion !== undefined || shipment?.noFieldSkillProof !== undefined ||
+  const pair = !!g.leaderSkills && !!shipment?.richesePair;
+  if (!(pair || shipment?.smugglerCompanion !== undefined || shipment?.noFieldSkillProof !== undefined ||
     (g.leaderSkills && shipment?.noField) || responses.some(r => r.noFieldSkillProof !== undefined) ||
     decisions.some(d => 'noFieldSkillProof' in d))) return false;
   requireRule(shipment, 'The saved No-Field response lost its original shipment.');
-  validateLeaderSkillNoFieldShipment(g, shipment);
+  if (pair) currentRichesePairShipment(g, shipment);
+  else validateLeaderSkillNoFieldShipment(g, shipment);
   const initial = responses.filter(r => r.kind === 'richeseNoField');
   const guild = decisions.filter(d => d.kind === 'guildShipment');
   requireRule(initial.length + guild.length === 1 &&
@@ -23982,8 +23984,9 @@ function leaderSkillNoFieldIntegrity(g: Game): boolean {
 function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
   requireRule(!atomicsShipmentBlocked(g.moritaniAtomics, shipment.territory),
     'Atomics Aftermath permanently blocks shipments into this territory.');
-  if (shipment.smugglerCompanion !== undefined || shipment.noFieldSkillProof !== undefined ||
-    (g.leaderSkills && shipment.noField)) validateLeaderSkillNoFieldShipment(g, shipment);
+  // The pair has its original signed two-token validator below; skill proofs bind single markers.
+  if (!shipment.richesePair && (shipment.smugglerCompanion !== undefined || shipment.noFieldSkillProof !== undefined ||
+    (g.leaderSkills && shipment.noField))) validateLeaderSkillNoFieldShipment(g, shipment);
   if (shipment.smuggler) requireRule(
     !shipment.source && !shipment.noField && !shipment.alliedNoField &&
     !shipment.guildSecretEvent && !shipment.guildNexusEvent && !shipment.nexusEvent &&
@@ -24920,13 +24923,14 @@ function nexusRicheseOffer(g: Game, owner: string) {
   else if (p.reserves < 1) blocked = 'You need physical forces in reserves.';
   return {event:JSON.stringify(['nexusRichese',g.turn,owner]),blocked,maxForces:Math.min(5,p.reserves)};
 }
-const RICHESE_CUNNING_ROSTER = new Set<FactionId>([
-  'atreides', 'harkonnen', 'emperor', 'fremen', 'beneGesserit', 'guild', 'richese', 'choam',
-]);
+const RICHESE_CUNNING_ROSTER: Partial<Record<FactionId, true>> = {
+  atreides: true, harkonnen: true, emperor: true, fremen: true,
+  beneGesserit: true, guild: true, richese: true, choam: true,
+};
 function richeseCunningModeSupported(g: Game) {
-  return !g.homeworlds && !g.leaderSkills && !g.discoveryEnabled &&
+  return !g.homeworlds && (!g.leaderSkills || pairedNexusLeaderSkillsProfile(g)) && !g.discoveryEnabled &&
     !g.ecazTreachery && !g.sandtrout &&
-    g.players.every(player => RICHESE_CUNNING_ROSTER.has(player.faction));
+    g.players.every(player => RICHESE_CUNNING_ROSTER[player.faction] === true);
 }
 function nexusRicheseCunningOffer(g: Game, owner: string) {
   const p = g.players.find(player => player.id === owner);
@@ -29780,8 +29784,10 @@ function applyActionInner(
           }),
       ...(noField ? { noField } : {}),
     };
-    if (noField && g.leaderSkills) shipment.noFieldSkillProof = noFieldSkillProof(shipment);
-    if (noField && g.leaderSkills) validatePhysicalShipment(g, shipment);
+    if (noField && g.leaderSkills && !richesePair) {
+      shipment.noFieldSkillProof = noFieldSkillProof(shipment);
+      validatePhysicalShipment(g, shipment);
+    }
     if (nexusEvent) recordNexusRicheseShipment(g,shipment);
     bindGuildCunningShipment(g,p,'reserve',shipment);
     if (shipment.noField) {
