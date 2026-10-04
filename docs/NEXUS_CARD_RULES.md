@@ -2,6 +2,81 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Standalone E3 Nexus, Skills and original components — 5 October 2026
+
+The original fresh `leader-skills --nexus-cards` entry admits **Ecaz OR
+Moritani**, classic opponents and exact ecaz33/all14 Skills/all12 Nexus,
+Basic/Advanced2..6. Original unused Tech requires3+; Strongholds requires
+Advanced; both3+ Advanced. This is a separate standalone profile, not an
+Ecaz+Moritani pair, mixed family, Homeworld, independent-card/preview,
+public start or played-game conversion.
+
+Native starting hands/offers/actor IDs, five ordinary training discs,
+skill-before-Traitor order and genuine closing Nexus draws remain.
+Ecaz's original living/unclaimed Duke takeover uses the existing quiet Battle
+window, native physical leader and normal discipline; the separate Duke cannot
+receive an assignment. Used/released/turn-end custody and original aftermath
+remain. Dead/captured/Ghola recovery and shared-Duke training stay pending.
+Advanced Harkonnen remains excluded.
+
+Moritani preserves original Advanced skill-first assassination, normal-Traitor
+forfeiture for the rest of the game, original post-loss printed bounty and one
+actual private Mentat replacement. Basic does not gain that Advanced power.
+Cunning remains an earned Mentat supply placement into a static Arrakis
+territory/stack, not enhanced relocation/HMS/Grumman; the earlier material
+question remains unanswered. Native cancellation and later ordinary relocation
+retain their original timing and physical custody.
+
+Ordinary skill support/rescue, bank-held subsidy/defenses/income, card cleanup
+and mandatory original-winner Tech reuse existing handlers. Mandatory Advanced
+Ecaz Occupy now uses the chosen faction's actual skill, leaders/cards/payment
+and separately labelled armies. Ecaz-led Suk rescues its own fixed casualties
+after the ally's variable losses; Diplomat derives the chosen faction's own
+undialed pool, not the combined dial. This owner-pool composition is an explicit
+implementation inference, not a newly retrieved combined-skill FAQ. Foreign
+replacement, modified collection and other pending combinations remain guarded.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile leader-skills \
+  --nexus-cards --db /private/local.sqlite --room ROOMCODE --version 9 \
+  --out /private/new-standalone-e3-nexus-skills-entry
+node --import tsx tools/faction-games.ts --profile e3-nexus-skills \
+  --players all --rules both --out /private/new-standalone-e3-nexus-skills-games
+```
+
+The separate `e3-nexus-skills-tech`, `e3-nexus-skills-stronghold` and
+`e3-nexus-skills-stronghold-tech` samples preserve those selected original
+components. Fifty-four original setup programs/four legal policies and26
+retained prerequisite rejects pass. New24/affected224 cases, types/lint/build
+pass. Fifty-four genuine2..6 games complete24,845 accepted actions/no rejection,
+648 JSON continuations,28 closing choices and five original coalition leads on
+unchanged tree `ceebd866c4de7dfd122c0ddb9754a730b7bbdd93340afddffbd26ec157561816`.
+Three original mandatory Occupy captures also finish:918/752/21 additional
+accepted actions without rejection, retaining scenario seeds20263035/20263132/
+20263228. Resume restarts the stream at that original seed; it does not recreate
+the pre-capture random stream. No battle or saved position was replaced.
+
+Original backed-up CLI **YZLNTNEZ/R2S5UX5U v10** retains offers/hands/IDs.
+Human390px **YZLNTNEZ v23/Collection** spends living-Duke Cunning, wins7–5
+with Duke6/normal Warmaster/Worthless/held Carthag Shield against actual poison,
+releases Duke before cleanup, receives original Emperor Production and city2
+(wallet12→14). **R2S5UX5U v27/Mentat** keeps original normal Guild Suk rescue
+(15 reserves/2 Tanks/3 Tuek forces), then reveals unused Master Bewt3 after
+losing: one death/skill return and bounty11→14, original Guild winner cleanup/
+Production reward, one actual private Mentat replacement and supply Robbery
+Cunning at Red Chasm. There was no eligible native Karama counter in that human
+placement; actual cancellation/stack paths are separate source programs.
+
+Original three-seat **L7C8HTQT v8/setup** continues a real alternate Nexus
+alliance before conserved staging. Human390px **v23/Collection** chooses Ecaz
+lead, trained Sanya4/dial5 (fixed3/variable2)/support2 with bank2/own0, wins9–6,
+settles ally2 losses first and rescues only Ecaz3:17 reserves/0 Tanks/3 board;
+Atreides16 reserves/2 Tanks/2 board. Original Emperor Axlotl transfers after
+card cleanup; allied Production remains Atreides. Held Arrakeen remains Ecaz;
+separate city2 pays12→14. Actual controls, inspectors and refresh retain these
+outcomes without root390px overflow. Controlled positions are labelled;
+no natural Cunning/rescue, full-module, public or deployed acceptance is claimed.
+
 ## Paired Nexus, Skills and original Tech/Strongholds — 5 October 2026
 
 The original fresh `leader-skills --nexus-cards` entry now preserves selected

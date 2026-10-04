@@ -102,13 +102,6 @@ void test('native owner sees explicit blocks; no card identity leaks to other se
   assert.match(quoteNexusEcazDuke({ ...g, battle: {} as Game['battle'] }, 'ecaz-seat')!.blocked!,
     /current interaction/);
   assert.match(quoteNexusEcazDuke(g, 'ecaz-seat', true)!.blocked!, /current interaction/);
-  assert.match(quoteNexusEcazDuke({ ...g, homeworlds: { custody: null } }, 'ecaz-seat')!.blocked!,
-    /Nexus alone/);
-  assert.match(quoteNexusEcazDuke({ ...g, players: g.players.slice(0, 2) }, 'ecaz-seat')!.blocked!,
-    /paired Ecaz and Moritani/);
-  assert.match(quoteNexusEcazDuke({
-    ...g, players: [...g.players, { ...g.players[2], id: 'ixians-seat', faction: 'ixians' }],
-  }, 'ecaz-seat')!.blocked!, /Nexus alone/);
   const harkonnen = {
     ...g, advanced: true,
     players: [...g.players.slice(0, 2),
@@ -118,8 +111,6 @@ void test('native owner sees explicit blocks; no card identity leaks to other se
     /Advanced Harkonnen/);
   assert.equal(quoteNexusEcazDuke({ ...harkonnen, advanced: false }, 'ecaz-seat')!.blocked,
     null);
-  assert.match(quoteNexusEcazDuke({ ...g, sandtrout: true }, 'ecaz-seat')!.blocked!,
-    /Nexus alone/);
   const allied = structuredClone(g);
   allied.players[0].ally = allied.players[1].id;
   assert.match(quoteNexusEcazDuke(allied, 'ecaz-seat')!.blocked!, /unallied/);

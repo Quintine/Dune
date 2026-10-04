@@ -3,6 +3,7 @@ import type { Game } from './engine';
 import { acquireDuke, DUKE_VIDAL_ID, type DukeSource } from './duke-vidal';
 import { nexusCardMode } from './nexus-cards';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
+import { standaloneE3NexusLeaderSkillsProfile } from './leader-skill-profile';
 
 const SUPPORTED_FACTIONS: Partial<Record<FactionId, true>> = {
   ecaz: true, moritani: true, atreides: true, harkonnen: true,
@@ -64,7 +65,7 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
   if (g.advanced && g.players.some(player => player.faction === 'harkonnen'))
     blocked = 'Duke Vidal battle use is unavailable with Advanced Harkonnen.';
   else if (!nexusEcazDukeModeSupported(g) || nexusCardMode('ecaz', holder.faction, roster) !== 'cunning')
-    blocked = 'Ecaz Nexus Cunning currently requires paired Ecaz and Moritani with Nexus alone.';
+    blocked = 'Ecaz Nexus Cunning requires the paired Nexus-only roster or fresh standalone Ecaz Skills/Nexus profile.';
   else if (holder.ally) blocked = 'Use Ecaz Nexus Cunning while unallied.';
   else if (g.status !== 'playing' || g.phase !== 6)
     blocked = 'Use Ecaz Nexus Cunning at the Battle phase boundary.';
@@ -86,6 +87,9 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
 }
 
 export function nexusEcazDukeModeSupported(g: Game): boolean {
+  if (g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g) &&
+    g.players.some(player => player.faction === 'ecaz') && !g.sandtrout)
+    return !!g.nexusCards?.cards && g.players.length >= 3;
   return !!g.nexusCards?.cards && g.players.length >= 3 && g.players.length <= 6 &&
     g.players.some(player => player.faction === 'ecaz') &&
     g.players.some(player => player.faction === 'moritani') &&

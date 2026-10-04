@@ -1,6 +1,6 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7539,8 +7539,9 @@ function e3StrongholdFactionProfile(g: Game): boolean {
 function moritaniAssassinateModeSupported(g: Game) {
   return g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
     g.players.some(p => p.faction === 'moritani') &&
-    g.players.every(p => ['moritani','atreides','beneGesserit','guild','emperor','fremen'].includes(p.faction)) &&
-    !g.nexusCards && (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
+    g.players.every(p => p.faction === 'moritani' || (p.faction !== 'harkonnen' && CLASSIC_FACTIONS[p.faction] === true)) &&
+    (!g.nexusCards || (!!g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g))) &&
+    (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
     (!g.strongholdCards || e3StrongholdFactionProfile(g) ||
       (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) && !g.homeworlds &&
     !g.discoveryEnabled && !g.discoveries &&
@@ -9267,6 +9268,8 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
+  if (g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g) &&
+      g.players.some(p => p.faction === 'ecaz')) return true;
   return typeof g.advanced === 'boolean' && Array.isArray(g.expansions) &&
     g.expansions.includes('ecaz') &&
     g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
@@ -9403,7 +9406,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g), false, false, true,
+  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, false, true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -9443,7 +9446,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
   const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
-    (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g))));
+    (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
@@ -20470,6 +20473,13 @@ function diplomatRetreatOffer(g: Game, quote: BattleResolutionQuote) {
         (!skill.faceUp || skill.captured)) || p.noField?.deployed?.location.territory === b.territory) return null;
   const opponent = getPlayer(g, quote.winner);
   const forces = combatForces(g, p, b.territory, opponent);
+  const occupy = ecazBattleProfile(g);
+  const combined = occupy?.lead === player && !occupy.canceled;
+  const dial = combined
+    ? player === occupy.ecaz ? occupy.fixedEcazDial : plan.dial - occupy.fixedEcazDial
+    : plan.dial;
+  const support = combined && player === occupy.ecaz
+    ? g.advanced ? dial : 0 : plan.support;
   const strength = battleLeaderStrength(leader,
     controlledLeaders(g, opponent).find(candidate => candidate.id === b.plans[opponent.id].leader));
   const origins = Object.entries(p.forces).filter(([key, count]) =>
@@ -20486,7 +20496,7 @@ function diplomatRetreatOffer(g: Game, quote: BattleResolutionQuote) {
         const elite = p.elites?.forces[origin] ?? 0;
         return { normal: sum.normal + count - elite, elite: sum.elite + elite };
       }, { normal: 0, elite: 0 });
-      return { location: key, choices: diplomatRetreatChoices(forces, plan.dial, plan.support, strength, available) };
+      return { location: key, choices: diplomatRetreatChoices(forces, dial, support, strength, available) };
     })
     .filter(option => option.choices.length);
   return destinations.length ? { player, destinations } : null;
@@ -20602,6 +20612,8 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   };
   const winner = quote.winner ? getPlayer(g, quote.winner) : undefined;
   const casualtyCommitment = quote.casualties ?? undefined;
+  const fixedSukLoss = winner && quote.sukGraduate
+    ? quote.fixedLosses?.find(loss => loss.owner === winner.id) : undefined;
   const sardaukar = currentNexusSardaukar(g);
   if (sardaukar?.stage === 'active' && casualtyCommitment && winner?.id === sardaukar.receipt.owner) {
     sardaukar.casualties = {...structuredClone(casualtyCommitment),outcome:'pending'};
@@ -20760,6 +20772,7 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
         : { faction: winner!.faction, name: 'Battle' },
     );
     for (const loss of quote.fixedLosses ?? []) {
+      if (loss === fixedSukLoss) continue;
       const owner = getPlayer(g, loss.owner);
       takeBattleLosses(g, owner, b.territory, { normal: loss.normal, elite: loss.elite, paidNormal: 0, paidElite: 0 });
       log(g, `${owner.name} sent ${loss.normal + loss.elite} mandatory Occupy forces to the Tanks.`, { faction: 'ecaz', name: 'Occupy casualties' });
@@ -20934,12 +20947,19 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   }
   if (winner && quote.sukGraduate && casualtyCommitment) {
     requireRule(!g.pendingSukRescue, 'Finish the preceding Suk Graduate rescue.');
+    let commitment: SukRescueReceipt['commitment'];
+    if (fixedSukLoss) {
+      const forces = combatForces(g, winner, b.territory, losingPlayer!);
+      const dial = fixedSukLoss.normal + fixedSukLoss.elite, support = g.advanced ? dial : 0;
+      commitment = { forces, dial, support, options: casualtyOptions(forces, dial, support) };
+    } else commitment = structuredClone(casualtyCommitment);
     g.pendingSukRescue = {
       event: g.lastBattleContext.event, turn: g.turn, player: winner.id,
       territory: b.territory, skill: quote.sukGraduate,
-      commitment: structuredClone(casualtyCommitment), pool: sukForcePool(winner, b.territory),
+      commitment, pool: sukForcePool(winner, b.territory),
       cards: [...quote.winnerCards], physical: sukPhysicalSignature(winner), losses: null, signature: '',
       ...(winner.faction === 'ixians' ? { eliteOrigins: true as const } : {}),
+      ...(fixedSukLoss ? { occupyCasualties: { ...structuredClone(casualtyCommitment), owner: casualtyCommitment.owner! } } : {}),
     };
     updateSukReceipt(g);
   }
@@ -21060,6 +21080,18 @@ function settleWinnerCasualties(
 ) {
   if (g.pendingSukRescue) {
     const pending = g.pendingSukRescue;
+    if (pending.occupyCasualties) {
+      const allied = pending.occupyCasualties;
+      requireRule(forceOwner === allied.owner && forceOwner !== p.id &&
+        allied.options.some(option => JSON.stringify(option) === JSON.stringify(choice)),
+      'Choose the original allied Occupy casualties before rescuing your own forces.');
+      takeBattleLosses(g, getPlayer(g, forceOwner), to, choice);
+      delete pending.occupyCasualties;
+      updateSukReceipt(g);
+      observeOccupation(g);
+      settleWinnerCasualties(g, p, to, cards, pending.commitment.options[0], automatic);
+      return;
+    }
     requireRule(pending.player === p.id && pending.territory === to &&
       JSON.stringify(cards) === JSON.stringify(pending.cards) && !pending.losses &&
       pending.commitment.options.some((o) => JSON.stringify(o) === JSON.stringify(choice)),
@@ -21202,11 +21234,13 @@ function sukRescueIntegrity(g: Game) {
   } else {
     const lossDecision = homeworldSavedDecisions(g).find((d) => d.kind === 'battleLosses' && d.player === pending.player);
     const discard = g.pendingTreacheryDiscard?.continuation;
+    const commitment = pending.occupyCasualties ?? pending.commitment;
     requireRule(!decisions.length && (lossDecision ? lossDecision.kind === 'battleLosses' &&
-      lossDecision.territory === pending.territory && JSON.stringify(lossDecision.options) === JSON.stringify(pending.commitment.options) &&
+      lossDecision.territory === pending.territory && JSON.stringify(lossDecision.options) === JSON.stringify(commitment.options) &&
+      (!pending.occupyCasualties || lossDecision.forceOwner === pending.occupyCasualties.owner) &&
       JSON.stringify(lossDecision.cards) === JSON.stringify(pending.cards) :
       discard?.kind === 'battleResolved' && discard.event === pending.event &&
-      JSON.stringify(discard.casualties) === JSON.stringify(pending.commitment)),
+      JSON.stringify(discard.casualties) === JSON.stringify(commitment)),
       'The Suk Graduate rescue lost its casualty continuation.');
   }
 }

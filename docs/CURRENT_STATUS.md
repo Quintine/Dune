@@ -16,6 +16,41 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Standalone E3 Nexus / Skills / selected Tech/Strongholds — bounded Development Verified:**
+native Ecaz OR Moritani plus classics, exact ecaz33/all14/all12,
+Basic/Advanced2..6; original Tech3+ and/or Advanced Strongholds2+, both3+.
+Fifty-four original setup programs/four legal policies and26 immutable
+prerequisite rejects pass; new24/affected224 cases, types/lint/build pass.
+All54 genuine games finish24,845 accepted actions/no rejection,648 JSON
+continuations/28 closing choices/five coalition leads on unchanged tree
+`ceebd866c4de7dfd122c0ddb9754a730b7bbdd93340afddffbd26ec157561816`.
+Three preserved Advanced Occupy captures finish918/752/21 more actions at
+their original scenario seeds; resume restarts, not reconstructs, the stream.
+The mandatory coalition guard is connected; no skipped fight or replaced
+saved position. Meaningful regressions exposed and repaired wrong-army Suk rescue and
+combined-dial Diplomat retreat. Selected-plan skills retain separate physical
+armies; Ecaz rescues its own fixed casualties, never the ally's variable losses.
+
+Original backed-up CLI hands/offers/IDs remain authoritative. Human390px
+**YZLNTNEZ v23/Collection** spends living-Duke Cunning, wins7–5 with normal
+Warmaster/held Shield against poison, releases Duke, retains five assignments,
+receives original Emperor Production and city2 (12→14).
+**R2S5UX5U v27/Mentat** preserves normal Guild Suk, publicly kills unused
+Master Bewt3/returns its skill/pays bounty11→14 after loss, retains original
+cleanup/Tech order and one private replacement, then places supply Robbery
+with Cunning at Red Chasm. No eligible human Karama counter; source programs
+separately exercise cancellation/stacking.
+**L7C8HTQT v23/Collection** uses real Ecaz/Atreides alliance, held Arrakeen
+bank2/own0, trained Sanya4/dial5/support2 and independent fixed3 rescue:
+Ecaz17 reserve/0 Tanks/3 board; ally16 reserve/2 Tanks/2 board. Emperor Axlotl
+transfers to Ecaz after cleanup; allied Production stays Atreides; city2 pays
+12→14. Refreshed controls/force/Terror inspectors show no root390px overflow.
+Only dedicated QA rooms change; conserved positions are labelled.
+Advanced Harkonnen, E3 pairs/mixed families/HW/independent cards/previews,
+shared Duke training, enhanced Terror relocation/HMS/Grumman, pending rulings,
+public starts, save conversion and full/deployed acceptance stay guarded.
+[Canonical scope and evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
+
 **Paired checkpoint verified and published:** exact code
 **8b6bf385601dd878e81ca11d47076aa93e7cb806** is pushed.
 [CI37211854749](https://github.com/Quintine/Dune/actions/runs/37211854749) /

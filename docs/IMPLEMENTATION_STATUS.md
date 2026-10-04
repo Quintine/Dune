@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 5 October 2026 — standalone E3 Nexus, Skills and original components
+
+Original `leader-skills --nexus-cards` now admits Ecaz OR Moritani/classic
+ecaz33/all14/all12, Basic/Advanced2..6, preserving original Tech3+ and/or
+Advanced Strongholds2+ (both3+). Two bounded owners supplied connected native
+rule fixtures; parent integrated admission, engine, original entry/samples,
+reference/guidance, mandatory Advanced Occupy and human proof.
+
+Fifty-four original setups/four legal policies and26 immutable prerequisite
+rejects pass. New24/affected224 cases, types/lint/build pass. Fifty-four genuine
+2..6 games complete24,845 accepted/no rejection,648 JSON continuations,28
+closing choices/five original coalition leads on unchanged tree
+`ceebd866c4de7dfd122c0ddb9754a730b7bbdd93340afddffbd26ec157561816`.
+Three preserved captures finish918/752/21 more actions at their original
+scenario seeds; continuation restarts that seed, not the pre-capture stream.
+No skipped fight, reassigned outcome, replaced position or guard suppression.
+Meaningful coalition cases reproduced wrong-army Suk rescue and missing
+Diplomat retreat, then verify separate physical commitments and JSON choices.
+Chosen-plan/own-force skill composition is explicitly inferred, not a new FAQ.
+
+Original backed-up CLI offers/hands/IDs stay authoritative. Human390px
+YZLNTNEZ v23 uses living-Duke Cunning/normal Warmaster/held poison protection,
+wins7–5 and releases Duke before original Tech/city income. R2S5UX5U v27
+keeps normal Guild Suk, kills unused Master Bewt3 after loss, returns its skill,
+pays bounty11→14, preserves winner cleanup/Tech and one private replacement,
+then places supply Robbery Cunning at Red Chasm. L7C8HTQT v23 uses an actual
+Nexus alliance, trained Sanya4/dial5/support2 with bank2/own0, separate ally2
+losses and fixed Ecaz3 rescue:17 reserve/0 Tanks/3 board versus ally16/2/2.
+Original Emperor Axlotl transfers after cleanup, allied Production stays with
+Atreides, held Arrakeen stays Ecaz and city2 pays12→14. Actual controls,
+refreshed force/Terror inspectors and no root390px overflow are observed.
+
+Only dedicated QA rooms changed; conserved positions are labelled. Owned
+throwaway scripts were removed; source reports/private receipts remain outside
+Git. Shared-Duke training/exceptional custody, enhanced Terror relocation/
+HMS/Grumman, E3 pairs/mixed families/Advanced Harkonnen/HW/previews,
+public/save conversion and full/deployed acceptance remain guarded.
+[Canonical source and exact evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
+
 ## 4 October 2026 — classic Nexus with Tech and Advanced Strongholds
 
 Two bounded owners supplied original shipment/revival/purchase and coupled

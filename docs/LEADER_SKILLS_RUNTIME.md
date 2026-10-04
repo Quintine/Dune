@@ -29,6 +29,37 @@ Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
 
+## Standalone E3 Nexus and original components — 5 October 2026
+
+Fresh standalone Ecaz OR Moritani plus classics uses ecaz33/all14/all12
+through the original explicit skill/Nexus entry, Basic/Advanced2..6, with
+optional original Tech3+ and/or Advanced Strongholds2+; both3+ Advanced.
+Native hands/offers/IDs, skill-first setup and actual closing deals remain.
+Ecaz keeps five assignment discs and the separate living/unclaimed Duke's
+existing quiet Cunning window; normal discipline never assigns that Duke.
+Moritani preserves Advanced assassination/normal-Traitor forfeiture, original
+post-loss printed bounty and one real private Mentat replacement.
+Supply-only Cunning remains separate from ordinary later relocation.
+
+Mandatory Advanced Ecaz Occupy composes the selected faction's battle skill
+without transferring the ally's training. Owner-labelled Suk preserves the
+ally's variable losses and rescues Ecaz's own fixed commitment; Diplomat uses
+the selected faction's own undialed pool. Both initially failed meaningful
+coalition regressions and now pass, including trained rescue/retreat JSON choices.
+
+Fifty-four original setups/26 prerequisite rejects, new24/affected224 cases,
+types/lint/build and all54 genuine games pass:24,845 accepted/no rejection,
+648 JSON continuations/28 closing choices/five coalition leads. Three original
+captures finish918/752/21 more actions at their original scenario seeds, without
+rejected or skipped battles; resume does not reconstruct the pre-capture stream.
+Three original-setup human390px rooms exercise living-Duke normal discipline,
+unused-trainer assassination/skill return/private replacement/supply Cunning,
+and independent fixed-Ecaz rescue before original winner Tech and Collection.
+Advanced Harkonnen, paired/mixed E3/HW/
+independent cards/previews, shared/exceptional Duke custody, enhanced Terror
+relocation/HMS/Grumman and pending rulings remain guarded.
+See [canonical standalone scope](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
+
 ## Paired Nexus with original Tech/Strongholds — 5 October 2026
 
 Fresh original paired Ixians+Tleilaxu OR CHOAM+Richese skill/Nexus entries

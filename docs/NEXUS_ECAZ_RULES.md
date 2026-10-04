@@ -109,9 +109,22 @@ are enabled. The face does not print a Battle-only timing restriction; the
 quiet phase-six window is a product implementation boundary, **not** a GF9
 ruling. Advanced Harkonnen tables are also excluded: the existing shared
 leader battle path cannot select Duke there, so the card must not be spent
-for an unusable disc. Other expansion factions, Homeworlds, Discoveries,
-Leader Skills and combined optional modules remain gated. This is not full
-Ecaz, Moritani or Nexus module acceptance.
+for an unusable disc. At that initial checkpoint other expansion factions,
+Homeworlds, Discoveries, Leader Skills and combined optional modules remained
+gated. This was not full Ecaz, Moritani or Nexus module acceptance.
+
+### Standalone skill/Nexus follow-up — 5 October 2026
+
+The fresh standalone Ecaz/classic ecaz33/all14/all12 entry now composes the
+same quiet living/unclaimed Duke Cunning with ordinary native disciplines
+and selected original Tech/Advanced Strongholds. Moritani need not be seated.
+Five ordinary training discs remain; the shared Duke receives no assignment.
+Human YZLNTNEZ uses Duke6 with face-up normal Warmaster/Worthless and a held
+Shield against actual poison, wins7–5, releases Duke before cleanup and keeps
+the original winner reward/city income. Advanced Harkonnen, dead/captured/
+Ghola recovery, shared-Duke training and unrelated overlays remain guarded.
+See [the exact standalone profile and evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
+
 
 [The focused Duke tests](../tests/nexus-ecaz-duke-engine.test.ts) exercise
 genuine Ecaz/Moritani setup, physical draw/spend, Basic and Advanced transfer,

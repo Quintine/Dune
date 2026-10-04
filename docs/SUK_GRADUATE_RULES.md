@@ -51,10 +51,30 @@ and any eligible sector choice remain visible to the player.
 
 Suk settles before winner card choices and faction aftermath, including capture
 and Face Dance. Mandatory loser-card cleanup uses its existing continuation.
-The exact ordering against future combined optional card interruptions still
-needs integrated acceptance. Homeworld custody, Nexus and expansion-faction
-combinations are explicitly rejected before resources or traitor votes commit;
-the genuine Leader Skills initializer currently admits base factions only.
+The exact ordering against additional optional interruptions still needs
+integrated acceptance. Later bounded native/module profiles and their exact
+evidence are recorded in [the runtime scope](LEADER_SKILLS_RUNTIME.md); they
+do not certify full Skills or remove the pending rulings.
+
+## Ecaz-led Occupy own-force rescue — 5 October 2026
+
+Standalone Ecaz Nexus/Skills composes mandatory Advanced Occupy with separate
+physical armies. When Ecaz leads and has the eligible Suk band, retain its
+original fixed Ecaz commitment for rescue instead of feeding the ally's
+variable commitment into Ecaz's force pool. Settle the ally's losses first,
+then normal or trained Suk on Ecaz's actual counters, then original winner
+cards/Tech and subsequent Collection. A receipt retains the pending allied
+commitment until that separate settlement; JSON choices preserve the own pool.
+An ally lead uses its own ordinary variable casualties. No training is lent
+between allies. This owner-labelled composition is an explicit implementation
+inference from the card and Occupy selected-plan rule, not a new GF9 FAQ.
+
+Four selected module bands cover normal Ecaz3 losses→2 Tanks/1 reserve;
+trained rescue keeps1/returns2 and leaves the ally's2 losses unchanged.
+Human L7C8HTQT confirms17 Ecaz reserves/0 Tanks/3 board, ally16 reserves/
+2 Tanks/2 board and held Arrakeen bank2/own0 before cleanup and city income.
+See [standalone source and evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
+
 
 ## Atreides loss-count question
 

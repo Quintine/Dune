@@ -33,14 +33,15 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
-function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassination = false): boolean {
   return !!game.nexusCards && typeof game.advanced === 'boolean' &&
     !!game.players && game.players.length >= 2 && game.players.length <= 6 &&
     !game.homeworlds && !game.discoveries && !game.discoveryEnabled &&
     !game.discoveryStash && !game.greatMaker &&
     (!game.techTokens || game.players.length >= 3) &&
     (!game.strongholdCards || game.advanced === true) &&
-    !game.ecazTreachery && !game.semutaPreview && !game.moritaniAssassinatePreview &&
+    !game.ecazTreachery && !game.semutaPreview &&
+    (!game.moritaniAssassinatePreview || assassination) &&
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
     !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
@@ -83,6 +84,30 @@ export function pairedNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolea
   return hasPrimary && hasSecondary;
 }
 
+/** One original E3 native with classics; no shared-Duke assignment or mixed family. */
+export function standaloneE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
+    !nexusLeaderSkillModulesSupported(game, game.advanced === true)) return false;
+  const players = game.players!;
+  let native: 'ecaz' | 'moritani' | null = null, harkonnen = false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    const player = players[i];
+    if (player.faction === 'ecaz' || player.faction === 'moritani') {
+      if (native !== null) return false;
+      native = player.faction;
+    } else {
+      let classic = false;
+      for (const faction of FACTIONS)
+        if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }
+      if (!classic) return false;
+      if (player.faction === 'harkonnen') harkonnen = true;
+    }
+  }
+  return native !== null && !(game.advanced && harkonnen) &&
+    (native === 'moritani' || !game.moritaniAssassinatePreview);
+}
+
 /** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
 function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (noOtherLeaderSkillModules(game) || pairedNexusLeaderSkillsProfile(game)) return true;
@@ -106,7 +131,7 @@ function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
 
 /** Standalone E3 native predicates retain their own roster, Duke and assassination limits. */
 function e3LeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
-  if (noOtherLeaderSkillModules(game)) return true;
+  if (noOtherLeaderSkillModules(game) || standaloneE3NexusLeaderSkillsProfile(game)) return true;
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
     players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
@@ -331,5 +356,5 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
-    pairedNexusLeaderSkillsProfile(game);
+    pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game);
 }

@@ -202,6 +202,16 @@ This is an explicit conservative implementation interpretation, not a quoted
 FAQ answer. Legacy battles, other optional modules and modified-skill
 interactions retain their existing gates.
 
+The 5 October standalone Ecaz Nexus/Skills coalition preserves that own-force
+contract: an uncanceled Ecaz lead's committed own dial is the fixed Ecaz
+contribution, while its ally lead's own dial is the variable remainder.
+Do not subtract the total combined dial from either selected faction's own
+force pool. The other allied army cannot use this leader's retreat.
+Cancellation uses the selected lead's ordinary own dial. A meaningful original
+Nexus-alliance regression now retreats Ecaz's2 undialed counters, rejects3,
+and sends only its3 committed counters plus the ally's4 counters to the Tanks.
+This is explicit owner-pool composition, not a new combined-skill FAQ.
+
 ## 20 September Smuggler follow-up
 
 A bounded renewed check of the GF9 CHOAM & Richese rules/Q&A, the

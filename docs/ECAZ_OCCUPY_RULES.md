@@ -2,6 +2,35 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The old publisher/designer casualty-rounding conflict remains unresolved as a publisher correction and for odd Basic counts. Its earlier false attribution to Jack Reda is still withdrawn. The later user-authorized Advanced source below selects explicit Advanced arithmetic, and the Basic even-force composition selects E/2 for even counts; neither retroactively certifies that attribution.
 
+## Standalone Nexus / Skills coalition — 5 October 2026
+
+The fresh standalone Ecaz/classic skill-Nexus profile now connects mandatory
+Advanced coalition battles, including selected original Tech/Strongholds.
+The chosen faction supplies the plan and its skill; the ally's training is
+not lent to that plan. The existing selected-lead and owner-labelled army
+contract remains. Ecaz-led Suk redirects its own fixed casualties after the
+ally's original variable casualties. Diplomat retreats only the selected
+faction's undialed own counters: Ecaz uses the fixed Ecaz commitment, while an
+ally lead uses the variable dial. Cancellation restores the selected lead's
+ordinary own-pool calculation. These owner-pool compositions are explicit
+implementation inferences from the card and selected-plan contract, not a
+publisher combined-Skills ruling. Shared-Duke training and other unresolved
+effects are not enabled.
+
+Three genuine Advanced captures stopped at the original module guard; each
+now finishes without rejected actions or skipped battles (918/752/21 more,
+original scenario seeds; resume does not reconstruct the earlier stream).
+Meaningful regressions reproduced wrong-army Suk rescue and missing Diplomat
+retreat before repair, then preserve raw support, separate losses and JSON choices.
+The [coalition regressions](../tests/ecaz-nexus-skills-occupy-runtime.test.ts)
+retain the separate native source pools and actual rescue/retreat decisions.
+Human390px L7C8HTQT uses an actual Nexus alliance: Ecaz5/ally4,
+total dial5/fixed3/variable2, held Arrakeen bank2/own0, trained Sanya4. It wins
+9–6, loses ally2, rescues Ecaz3 into one kept/two reserves, then receives
+original Emperor Axlotl after card cleanup and separate city2 income.
+[Exact standalone source/program evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
+Basic's separate even-force profile and odd-count ruling below are unchanged.
+
 ## Basic even-force composition — 4 October 2026
 
 Fresh local `ecaz-occupy` now admits Basic as well as Advanced. Basic uses the
