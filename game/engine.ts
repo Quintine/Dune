@@ -7531,8 +7531,10 @@ function moritaniAssassinateModeSupported(g: Game) {
     g.players.some(p => p.faction === 'moritani') &&
     g.players.every(p => ['moritani','atreides','beneGesserit','guild','emperor','fremen'].includes(p.faction)) &&
     !g.nexusCards && (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
-    (!g.strongholdCards || e3StrongholdFactionProfile(g)) && !g.homeworlds &&
-    !g.discoveryEnabled && !g.discoveries && !g.techTokens;
+    (!g.strongholdCards || e3StrongholdFactionProfile(g) ||
+      (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) && !g.homeworlds &&
+    !g.discoveryEnabled && !g.discoveries &&
+    (!g.techTokens || (!!g.leaderSkills && nativeTechLeaderSkillsProfile(g)));
 }
 function moritaniAssassinateContext(g: Game, receipt: MoritaniAssassinateReceipt) {
   const p = getPlayer(g,receipt.owner), opponent = getPlayer(g,receipt.opponent);

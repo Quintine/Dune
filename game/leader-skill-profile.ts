@@ -50,6 +50,23 @@ function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   return true;
 }
 
+/** Standalone E3 native predicates retain their own roster, Duke and assassination limits. */
+function e3LeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+  if (noOtherLeaderSkillModules(game)) return true;
+  const players = game.players;
+  if ((!game.techTokens && !game.strongholdCards) || !players ||
+    players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
+    (game.strongholdCards && game.advanced !== true) ||
+    game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
+    game.ecazTreachery || game.semutaPreview || game.advancedPreview ||
+    game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
+    game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
+    game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
+  for (let i = 0; i < players.length; i++)
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+  return true;
+}
+
 /** Classic three-to-six-seat Skills/Tech composition; native and other modules stay separate. */
 export function classicTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   const players = game.players;
@@ -71,10 +88,11 @@ export function classicTechLeaderSkillsProfile(game: LeaderSkillProfile): boolea
   return true;
 }
 
-/** Original Advanced Strongholds, with optional Tech, for classic or supported E1/E2 skills. */
+/** Original Advanced Strongholds, with optional Tech, for classic or supported native skills. */
 export function strongholdLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (!game.strongholdCards || game.advanced !== true) return false;
-  if (game.expansions.length) return advancedNativeLeaderSkillsProfile(game);
+  if (game.expansions.length) return advancedNativeLeaderSkillsProfile(game) ||
+    advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
   const players = game.players;
   if (!players || players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
     game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
@@ -96,7 +114,7 @@ export function strongholdLeaderSkillsProfile(game: LeaderSkillProfile): boolean
 /** Bounded integration of the ordinary Moritani roster, not Advanced assassination. */
 export function basicMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return game.advanced === false && game.expansions.length === 1 &&
-    game.expansions[0] === 'ecaz' && noOtherLeaderSkillModules(game) &&
+    game.expansions[0] === 'ecaz' && e3LeaderSkillModulesSupported(game) &&
     !!game.players?.some(player => player.faction === 'moritani') &&
     game.players.every(player => player.faction === 'moritani' ||
       FACTIONS.some(faction => faction.id === player.faction && faction.expansion === 'base'));
@@ -107,7 +125,7 @@ export function advancedMoritaniLeaderSkillsProfile(game: LeaderSkillProfile): b
   const players = game.players;
   if (game.advanced !== true || game.expansions.length !== 1 ||
     game.expansions[0] !== 'ecaz' || !players || players.length < 2 || players.length > 6 ||
-    !noOtherLeaderSkillModules(game) || game.semutaPreview || game.advancedPreview ||
+    !e3LeaderSkillModulesSupported(game) || game.semutaPreview || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
@@ -132,7 +150,7 @@ export function nativeEcazLeaderSkillsProfile(game: LeaderSkillProfile): boolean
   const players = game.players;
   if (typeof game.advanced !== 'boolean' || game.expansions.length !== 1 ||
     game.expansions[0] !== 'ecaz' || !players || players.length < 2 || players.length > 6 ||
-    !noOtherLeaderSkillModules(game) || game.semutaPreview || game.moritaniAssassinatePreview ||
+    !e3LeaderSkillModulesSupported(game) || game.semutaPreview || game.moritaniAssassinatePreview ||
     game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
@@ -248,7 +266,7 @@ export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): bo
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
 }
 
-/** Only the original eligible E1/E2 native families gain the Tech combination. */
+/** Only the original eligible native skill families gain the Tech combination. */
 export function nativeTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return !!game.techTokens && nativeExpansionLeaderSkillsProfile(game);
 }

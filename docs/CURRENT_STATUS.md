@@ -16,6 +16,28 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Standalone E3 Skills / Tech / Strongholds — bounded Development Verified:**
+fresh original Ecaz OR Moritani ecaz33/all14 profiles preserve Tech3..6
+Basic/Advanced and Strongholds2..6 Advanced, optionally both. Original
+Ecaz ordinary-five/Duke assignment and Advanced-Hark exclusions, skill-first
+Moritani assassination/normal-call forfeiture and unrelated guards remain.
+New15/affected152, types/lint/build and nine actual programs pass. Eight genuine
+E3 games complete1,531 actions/no rejection/38 JSON continuations; broader47
+games complete13,936 actions/no rejection/358 continuations on unchanged source.
+Original CLI **X4YSWBLR/BJH3UVQF v8** keeps genuine setup and unused modules.
+Human390px **334W75B6 v13/Collection** uses normal Warmaster1/Duke6/Carthag
+Shield for a real7–6 poison-surviving win, living release and sole Axlotl.
+**AL6WCG8B v13/Mentat** retains normal Guild Suk rescue, actual losing
+Tuek income/support, printed Master3 bounty/skill return, winner Tech and one
+private Caid replacement. Collection stays separate; refresh/no overflow pass.
+Controlled positions are labeled. E3 pairs/mixtures, allied Occupy skills,
+other overlays, public starts, save conversion and new rulings remain excluded.
+See [scope and source-bound evidence](LEADER_SKILLS_RUNTIME.md#standalone-e3-module-composition--4-october-2026).
+Full rules, assurance, AI, public and deployed acceptance remain open.
+Final guide10/10, types/lint/build and rebuilt390px E3 reference pass
+(351px topic, no overflow). Final isolated reload retains original human
+v13/Collection andv13/Mentat; owned drivers/tabs are removed, rooms/store remain.
+
 **Advanced Skills / Stronghold Cards — bounded Development Verified:**
 fresh classic or supported E1/E2 native2..6 Advanced preserves original
 all14 skills/six unused cards; optional Tech requires3..6. Original setup,

@@ -29,6 +29,71 @@ Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
 
+## Standalone E3 module composition — 4 October 2026
+
+Fresh original Ecaz OR Moritani skill profiles preserve unused Tech Tokens in
+Basic/Advanced3..6 and Stronghold Cards in Advanced2..6, optionally both.
+Exact ecaz33/all14, native setup/wallets and actual first-Storm/end-Mentat
+ownership remain. Ecaz trains its five ordinary discs, not Duke; Advanced
+Harkonnen exclusion remains. Advanced Moritani keeps non-Harkonnen skill-first
+assassination and normal-call forfeiture. Basic has no Advanced assassination.
+E3 pairs, mixed families, allied Occupy skills, other overlays, public starts
+and save conversion remain excluded.
+
+Ecaz ordinary Suk preserves support and original card/Tech order. Actual
+paid Ambassador placement, entrant shipment and acquisition supply temporary
+Duke6. Living face-up Warmaster adds normal1 with Worthless, never trained3.
+Carthag adds poison protection to physical Shield. Living release or real
+printed6 death preserves native training; original paid5 revival returns the
+same living set-aside Duke under the earlier ruling. Separate Banker counts
+actual opposing paid4, not subsidy or paid1, and waits for actual Mentat.
+
+Normal Guild Suk saves one before original after-loss assassination. The used
+battle disc stays ineligible; unused Master Bewt3 can die, returns Suk once and
+pays printed3, without replaying casualties or winner income. Original winner
+cards/Tech and retained Strongholds remain. Actual Mentat gives one private
+replacement. A single death does not bypass ordinary all-five-disc revival.
+
+New15 meaningful cases, affected152/152, types/lint/build and nine actual
+programs pass. Original probes cover22 valid two/three/six-seat entries and
+ten retained Basic-Stronghold/Advanced-Hark rejections.
+Eight genuine E3 games complete1,531 actions/no rejection/38 JSON continuations;
+broader47 games complete13,936 actions/no rejection/358 continuations.
+Captured unchanged tree:
+`d9c5e4d1a611f8ab7cf18e4c816161604d18f8aa8c94b25962fc38595fcc71a3`.
+Natural Moritani samples do not claim assassination; controlled programs prove
+it separately. Existing sample names/ordinals remain; new E3 rows append and
+resume matches original assassination markers.
+
+Fixture corrections preserve original chronology: later Basic dials use1..3,
+BG prediction precedes skill offers and Moritani's start includes no other
+fighters/advisors. Wallet/location pins were removed, not repinned. Actual
+Guild allowance finishes before shipment/accrual; the spice-free desert
+shipment does not occupy the conserved diverted deposit. Advanced Tuek
+Collection1 is separately quoted, not confused with assassination bounty.
+
+Original CLI **X4YSWBLR/BJH3UVQF v8/setup** retains six unowned cards/three
+unowned tokens and genuine Ecaz/Moritani skill setup.
+Human390px **334W75B6 v13/Collection** uses acquired Duke6/La La La/Shield at
+held Carthag, normal Warmaster1, against dial1/support1/Captain Aramsham5/
+Chaumurky. Real7–6 poison-surviving victory releases Duke living, preserves
+native Warmaster and both cards. Ecaz8 survive, Emperor8 Tanks; sole opposing
+Axlotl transfers, Atreides retains Production. Wallet12 plus separate Carthag2
+becomes14.
+Human390px **AL6WCG8B v13/Mentat** follows normal Guild Suk rescue1, then
+selects unused Master Bewt3. Moritani retains losing Tuek Worthless4/support1;
+actual wallet14→17 printed bounty. Guild3/Tanks2/reserves15, Moritani6 Tanks/
+one shipped Wind Pass counter remain without repeated losses. Disc death
+returns Suk once; Guild discards its original card and takes only Heighliners,
+retaining Production while Emperor keeps Axlotl. Separate Guild Tuek income1
+remains. Real readiness draws one private Caid; retired Master stays public.
+Refresh retains both versions/outcomes/no overflow.
+Full combinations, assurance, strategic AI, public and deployed gates remain.
+Final reference10/10, types/lint/build and rebuilt390px E3 guide pass:
+351px topic,390px page, no overflow. The final isolated reload retains both
+original human v13/Collection andv13/Mentat. Owned temporary drivers/tabs
+are removed; rooms/store, private metadata and original captures remain.
+
 ## Advanced Stronghold composition — 4 October 2026
 
 Fresh Advanced `leader-skills` and separate `banker-income` entries preserve

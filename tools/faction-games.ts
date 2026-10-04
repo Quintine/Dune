@@ -361,6 +361,9 @@ const SKILLS_TECH_SCENARIOS: readonly Scenario[] = [
   ...[...IX_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS, ...RICHESE_SKILLS_SCENARIOS]
     .filter(scenario => scenario.roster.length >= 3)
     .map((scenario, index): Scenario => ({ ...scenario, ordinal: 316 + index, profile: 'skills-tech' })),
+  ...[...MORITANI_SKILLS_SCENARIOS, ...ECAZ_SKILLS_SCENARIOS]
+    .filter(scenario => scenario.roster.length >= 3)
+    .map((scenario, index): Scenario => ({ ...scenario, ordinal: 600 + index, profile: 'skills-tech' })),
 ];
 const SKILLS_STRONGHOLD_SCENARIOS: readonly Scenario[] =
   (['skills-stronghold', 'skills-stronghold-tech'] as const).flatMap((profile, band) => [
@@ -369,10 +372,15 @@ const SKILLS_STRONGHOLD_SCENARIOS: readonly Scenario[] =
     })),
     ...[...IX_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS, ...RICHESE_SKILLS_SCENARIOS]
       .filter(scenario => scenario.rules === 'advanced'),
+    ...[...MORITANI_SKILLS_SCENARIOS, ...ECAZ_SKILLS_SCENARIOS]
+      .filter(scenario => scenario.rules === 'advanced'),
   ].filter(scenario => profile !== 'skills-stronghold-tech' || scenario.roster.length >= 3)
     .map((scenario, index): Scenario => ({ ...scenario, ordinal: 376 + band * 100 + index, profile })));
 const strongholdSkillProfile = (profile: string) => profile === 'skills-stronghold' || profile === 'skills-stronghold-tech';
 const skillProfile = (profile: string) => profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills' || profile === 'choam-skills' || profile === 'richese-skills' || profile === 'ecaz-skills' || profile === 'skills-tech' || strongholdSkillProfile(profile);
+const assassinationScenario = (scenario: Scenario) => scenario.rules === 'advanced' &&
+  scenario.roster.includes('moritani') &&
+  (scenario.profile === 'moritani-assassinate' || scenario.profile === 'stronghold-factions' || skillProfile(scenario.profile));
 
 type TraceEntry = {
   attempt: number;
@@ -418,8 +426,9 @@ function usage() {
     '\nThe four earlier native skill profiles retain their Basic samples. Advanced Ix-skills/choam-skills/tleilaxu-skills use documented native plus classic families; Advanced moritani-skills composes its original non-Harkonnen classic assassination roster. Richese-skills adds Basic/Advanced Richese or paired CHOAM tables, Advanced Richese/Tleilaxu/CHOAM and optional Ix-deck tables without native Ixians. All retain fourteen skills and original cache/native inventories. Native Ixian Technology on Richese lots, own mixed No-Field, other roster/modules and public starts retain their separate guards.'
     + '\nEcaz-skills uses native five-disc Ecaz with classic opponents, the ecaz deck and all fourteen skills in Basic/Advanced; Advanced Harkonnen is excluded by the existing shared-Duke capture boundary. Ambassador and ordinary skill paths retain native custody. Shared-Duke assignment and combined Occupy skills remain separate boundaries; no public starts or save retrofit.'
     + '\nStandalone E3 Stronghold samples additionally use native Ecaz OR Moritani with classic opponents and the exact ecaz deck, six Stronghold Cards only. Ecaz holder-only coalition effects and original Moritani assassination remain; Moritani excludes Harkonnen. E3 pairs, E1/E2 mixtures and other overlays remain guarded.'
-    + '\nSkills-tech uses three-through-six unique seats in Basic/Advanced: classic/base33 or the already-supported native Ixian/Tleilaxu/CHOAM/Richese skill rosters with original selected ix/choam decks and separate Richese cache. All fourteen Skills and three original Tech Tokens retain original setup/native owners, phase-end income, aftermath and mandatory original-winner token transfer before Face Dance. Other modules/E3, public starts and played-game conversion stay separate.'
-    + '\nSkills-stronghold uses fresh Advanced classic or supported E1/E2 native two-through-six-seat skill rosters with all14 skills and six original Stronghold Cards. Skills-stronghold-tech adds three original Tech Tokens and requires three-through-six seats. Original native decks/cache, real end-Mentat Stronghold ownership and printed/first-Storm Tech assignment remain; E3, other modules, public starts and played-game conversion stay separate.'
+    + '\nSkills-tech uses three-through-six unique seats in Basic/Advanced: classic/base33, supported E1/E2 native skill rosters with original ix/choam decks/cache, or standalone Ecaz/Moritani ecaz33 rosters. All fourteen Skills and three original Tech Tokens retain original setup/native owners, phase-end income, aftermath and mandatory original-winner token transfer before Face Dance. Other modules, mixed E3 families, public starts and played-game conversion stay separate.'
+    + '\nSkills-stronghold uses fresh Advanced classic or supported native two-through-six-seat skill rosters with all14 skills and six original Stronghold Cards. Skills-stronghold-tech adds three original Tech Tokens and requires three-through-six seats. Original native decks/cache, real end-Mentat Stronghold ownership and printed/first-Storm Tech assignment remain; other modules, mixed E3 families, public starts and played-game conversion stay separate.'
+    + '\nAll three combined skill/module profiles additionally admit standalone native Ecaz OR Moritani with classic opponents and the exact ecaz33 deck. Original five-disc Ecaz/Duke assignment and Advanced Harkonnen exclusion remain; Advanced Moritani retains its original non-Harkonnen skill-first assassination and normal-traitor forfeiture. E3 pairs, mixed-family rosters, allied Occupy skills and other overlays stay guarded.'
   );
 }
 
@@ -451,7 +460,7 @@ function positive(value: string | undefined) {
 
 function scenarioName(scenario: Scenario) {
   if ((scenario.profile === 'skills-tech' || strongholdSkillProfile(scenario.profile)) && scenario.expansions.length) {
-    const native = scenario.roster.filter(faction => ['ixians', 'tleilaxu', 'choam', 'richese'].includes(faction));
+    const native = scenario.roster.filter(faction => ['ixians', 'tleilaxu', 'choam', 'richese', 'ecaz', 'moritani'].includes(faction));
     const extraIx = scenario.expansions.includes('ix') && !native.some(faction => faction === 'ixians' || faction === 'tleilaxu');
     return `${scenario.profile}-${native.join('-')}${extraIx ? '-ix-deck' : ''}-${scenario.roster.length}-${scenario.rules}`;
   }
@@ -607,11 +616,9 @@ function resumedGame(path: string) {
       (candidate.profile === 'skills-tech' || candidate.profile === 'skills-stronghold-tech') === !!game.techTokens &&
       (candidate.profile === 'stronghold-factions' || strongholdSkillProfile(candidate.profile)) === !!game.strongholdCards &&
       (candidate.profile === 'ecaz-treachery' || candidate.ecazTreachery === true) === !!game.ecazTreachery &&
-      (candidate.profile === 'moritani-assassinate' || (candidate.profile === 'moritani-skills' && candidate.rules === 'advanced') ||
-        (candidate.profile === 'stronghold-factions' && candidate.roster.includes('moritani'))) === !!game.moritaniAssassinatePreview &&
+      assassinationScenario(candidate) === !!game.moritaniAssassinatePreview &&
       (candidate.profile === 'ecaz-occupy') === !!game.ecazOccupyPreview &&
-      (candidate.profile === 'moritani-assassinate' || (candidate.profile === 'moritani-skills' && candidate.rules === 'advanced') ||
-        (candidate.profile === 'stronghold-factions' && candidate.roster.includes('moritani'))) === !!game.moritaniAssassinate &&
+      assassinationScenario(candidate) === !!game.moritaniAssassinate &&
       candidate.rules === (game.advanced ? 'advanced' : 'basic') &&
       JSON.stringify(candidate.expansions) ===
         JSON.stringify(game.expansions) &&

@@ -5,6 +5,21 @@ two through six total seats with base-faction opponents now use the full
 fourteen-card Leader Skills deck. Public starts and publication remain gated;
 this integrates existing effects, not complete Leader Skills compliance.
 
+## Standalone module composition — 4 October 2026
+
+The same original standalone profile now retains canonical unused Tech Tokens
+in Basic/Advanced3..6 and Stronghold Cards in Advanced2..6, optionally both.
+Exact ecaz33/all14 and original native five-disc/setup remain; Advanced still
+excludes Harkonnen and preserves original assassination/normal-call forfeiture.
+Normal unused Guild Suk saves one before eligible Master Bewt3 assassination;
+the exact skill returns once, printed3 pays and original winner rewards remain.
+Losing Moritani retains actually played Tuek Worthless income/support. Actual
+Mentat replaces the revealed physical card once; Collection remains separate.
+No E3 pair, mixture, allied Occupy skill, public start or played-save conversion.
+Human390px **AL6WCG8B v13/Mentat** verifies printed14→17 bounty, one private
+Caid replacement and original physical/Tech outcomes. Read
+[the combined contract and evidence](LEADER_SKILLS_RUNTIME.md#standalone-e3-module-composition--4-october-2026).
+
 ## Advanced assassination composition — 4 October 2026
 
 Fresh local Advanced `leader-skills` tables now compose all fourteen physical

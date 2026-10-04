@@ -120,7 +120,7 @@ export function nextStrongholdFactionsNativeStep(game: Game): StrongholdFactions
   if (game.status === 'playing' && !game.decision) {
     if (game.phase === 0 && game.stormPending === null) {
       const actor = game.stormDialers.find(id => game.stormDials[id] === undefined);
-      if (actor) return { actor, action: { type: 'stormDial', amount: 0 } };
+      if (actor) return { actor, action: { type: 'stormDial', amount: game.turn === 1 ? 0 : 1 } };
     }
     if (game.phase === 3 && game.auction) return { actor: game.auction.active, action: { type: 'passBid' } };
     if (game.phase === 5) return { actor: game.active!, action: { type: 'endMovement' } };

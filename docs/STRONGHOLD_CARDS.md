@@ -2,6 +2,23 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Standalone E3 skills and optional Tech — 4 October 2026
+
+Fresh original native Ecaz OR Moritani ecaz33/all14 skill profiles additionally
+retain unused Stronghold Cards in Advanced2..6, with original Tech3..6.
+Actual end-Mentat/local held-card effects and native setup/wallets remain.
+Ecaz five-disc/temporary Duke and Advanced-Hark exclusion, plus original
+Moritani skill-first assassination/normal-call forfeiture/replacement remain.
+E3 pairs, mixtures, allied Occupy skills and other overlays stay excluded.
+Human390px **334W75B6 v13/Collection** combines Carthag Shield/normal
+Warmaster1/acquired Duke6: real7–6 poison survival, living release, native
+training/cards and original Tech. **AL6WCG8B v13/Mentat** retains Guild Suk
+before unused-disc death, losing Tuek4/support1, printed3 and one replacement.
+New15/affected152, types/lint/build, nine programs and eight E3 natural games
+pass (1,531 actions/no rejection,38 JSON continuations). Read
+[the existing combined contract](LEADER_SKILLS_RUNTIME.md#standalone-e3-module-composition--4-october-2026).
+Full-module/public/deployed acceptance remains open.
+
 ## Advanced Leader Skills composition — 4 October 2026
 
 Fresh local `leader-skills` and separate `banker-income` preserve unused six

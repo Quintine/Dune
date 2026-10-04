@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 4 October 2026 — standalone E3 skills with Tech and Advanced Strongholds
+
+Two bounded owners supplied Ecaz ordinary-disc/Duke and Moritani
+rescue/assassination/replacement programs. Parent integrated existing skill
+admission, original assassination context, appended sample/resume rows and
+guidance. Standalone Ecaz OR Moritani ecaz33/all14 admits Tech Basic/Advanced
+3..6 and Stronghold Advanced2..6, optionally both. Original setup/first-Storm/
+end-Mentat and exclusions remain; no public start, save conversion or ruling.
+
+New15/affected152, types/lint/build and nine actual programs pass.
+Original probes:22 valid entries/ten retained rule-bound rejections.
+Eight E3 games:1,531 actions/no rejection/38 JSON; expanded47-game batch:
+13,936 actions/no rejection/358 JSON. Captured unchanged tree
+`d9c5e4d1a611f8ab7cf18e4c816161604d18f8aa8c94b25962fc38595fcc71a3`.
+Natural Moritani samples do not claim assassination; controlled/human paths
+prove it. Legal later Basic dials, prior BG prediction, unoccupied Moritani
+setup, real Guild allowance/accrual and separate Tuek Collection correct fixture
+assumptions. Startup wallet/location pins were removed, not repinned.
+
+Original CLI X4YSWBLR/BJH3UVQFv8 and human390px334W75B6v13/Collection,
+AL6WCG8Bv13/Mentat retain original IDs/pieces. Real normal Warmaster1/Duke6/
+Carthag Shield wins7–6 against poison and releases the living Duke. Normal
+Guild Suk precedes unused Master3 death/skill return/printed bounty, losing
+Tuek income and one private Caid replacement. Cards/Tech/physical casualties
+and separately quoted Collection remain; refresh/no overflow pass.
+Detailed mechanics/evidence:
+[existing runtime](LEADER_SKILLS_RUNTIME.md#standalone-e3-module-composition--4-october-2026).
+No full rules, assurance, strategic-AI, public or deployed claim.
+
 ## 4 October 2026 — Advanced Skills and Strongholds, with optional Tech
 
 Two bounded owners supplied classic subsidy/defense/income/rescue and native

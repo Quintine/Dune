@@ -6,6 +6,13 @@ positive bank payments to automatic current Mentat collection.
 Bounded coverage is **Partial / Development Verified**. No public start,
 old-game retrofit or other module is enabled; this is not deployed acceptance.
 
+**4 October standalone E3 modules:** original Ecaz/Moritani skills preserve
+Tech Basic/Advanced3..6 and Strongholds Advanced2..6, optionally both.
+Banker stays a separate opt-in: actual opposing paid4 qualifies, not bank2
+subsidy or paid1. Original Mentat collects once. Duke assignment and Moritani
+assassination/normal-call limits remain; see
+[combined source and cases](LEADER_SKILLS_RUNTIME.md#standalone-e3-module-composition--4-october-2026).
+
 **4 October Advanced Stronghold composition:** the same separate local entry
 preserves unused Stronghold Cards in Advanced classic or supported E1/E2
 native2..6-seat skills; optional Tech still needs3..6. Arrakeen bank support
