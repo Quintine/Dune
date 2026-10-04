@@ -38,6 +38,14 @@ played Crysknife before original winner Heighliners; CHOAM reveals only unused
 Trip to Gamont. Separate city2 yields wallet8. Inspector, controls, refresh
 and guide are observed, root390px no overflow; controlled positions are labeled.
 Wider rules/combination/assurance/calibration/public/deployed gates remain open.
+Code **8ceee7afd097d36e2ae7471b744d127062e39c29** is pushed.
+[CI37181553391](https://github.com/Quintine/Dune/actions/runs/37181553391)
+container job111374984514 completed/success; isolated storage/HTTP step7
+preceded verified-image step9:
+`ghcr.io/quintine/dune:sha-8ceee7afd097d36e2ae7471b744d127062e39c29`.
+Final rebuilt worker shows8ceee7a and retains original human v18/Collection,
+v13/movement andv14/Mentat outcomes. Owned script/tabs removed; store/proof
+remain. Publication is not deployment; live **ab5c782** remains last observed.
 
 ## 4 October 2026 — native Tech and Advanced Strongholds without Skills
 

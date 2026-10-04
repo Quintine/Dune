@@ -37,6 +37,14 @@ overflow. Controlled positions are labeled; no natural free-return/inspection
 claim. [Scope and evidence](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026)
 retain native Fremen on-planet and native-Guild-only industry exclusions.
 Other modules, unresolved effects, full/public/deployed acceptance remain open.
+Code **8ceee7afd097d36e2ae7471b744d127062e39c29** is pushed.
+[Exact CI37181553391](https://github.com/Quintine/Dune/actions/runs/37181553391),
+container job111374984514 completed/success: mandatory isolated storage/HTTP
+step7 and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-8ceee7afd097d36e2ae7471b744d127062e39c29`.
+Final rebuilt QA marker shows8ceee7a and retains original human v18/Collection,
+v13/movement andv14/Mentat. Owned script/tabs are removed; store/proof remain.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Native Tech / Strongholds without Skills — bounded Development Verified:**
 fresh selected E1/E2 native or standalone Ecaz OR Moritani entry preserves
