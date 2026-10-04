@@ -1,5 +1,6 @@
 import type { Game, Player } from './engine';
 import { eliteRevivalRemaining } from './revival';
+import { classicNexusModulesProfile } from './nexus-module-profile';
 
 export const EMPEROR_NEXUS_REVIVALS = 3;
 export type EmperorNexusPools = {
@@ -69,8 +70,7 @@ export function emperorNexusModeSupported(g: Game): boolean {
     !g.discoveries &&
     !g.discoveryStash &&
     !g.greatMaker &&
-    !g.techTokens &&
-    !g.strongholdCards
+    ((!g.techTokens && !g.strongholdCards) || classicNexusModulesProfile(g))
   );
 }
 /** A fixed three-counter grant preserves the separate Advanced elite cap. */

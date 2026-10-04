@@ -16,6 +16,28 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Classic Nexus / Tech / Strongholds — bounded Development Verified:**
+fresh classic/base33/all12 Nexus composes Tech3..6 Basic/Advanced and/or
+Advanced Strongholds2..6, without Skills, public starts or new rulings.
+New24/affected188, final34 guide/module cases, types/lint/build, fourteen
+actual programs and all four legal free-return policies pass. Eight genuine
+four/five-seat games complete4,440 accepted actions/no rejection/116 JSON
+continuations; five-seat samples include five real closing Nexus choices.
+Original CLI **DPA6UGWK v10 / HXEMRA32,FQNN62UG v8** keeps undealt setup.
+Human390px **HXEMRA32 v13/movement** returns2 normal+1 actual Sardaukar,
+ordinary/free3 and elite1; real Axlotl1 stays pending at wallet12 then collects13.
+**FQNN62UG v14/Mentat** ships5 for original Guild3 (wallet12→9),
+Heighliners1 stays unavailable until real phase end and pays Harkonnen10→11.
+**DPA6UGWK v18/Collection** pays bank2/own4 for support6, keeps Shield,
+loses6 ordinary/no starred counters and retains1 Arrakeen survivor. Guild
+spends Moritani to retain played Crysknife before original Heighliners transfer;
+Emperor spends CHOAM to inspect only unused Trip to Gamont. Separate city2
+yields wallet8. Actual controls, inspector, refresh and guide have no root390px
+overflow. Controlled positions are labeled; no natural free-return/inspection
+claim. [Scope and evidence](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026)
+retain native Fremen on-planet and native-Guild-only industry exclusions.
+Other modules, unresolved effects, full/public/deployed acceptance remain open.
+
 **Native Tech / Strongholds without Skills — bounded Development Verified:**
 fresh selected E1/E2 native or standalone Ecaz OR Moritani entry preserves
 original Tech3..6 Basic/Advanced and optional Advanced Strongholds, without

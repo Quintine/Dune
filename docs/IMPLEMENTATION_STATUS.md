@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 4 October 2026 — classic Nexus with Tech and Advanced Strongholds
+
+Two bounded owners supplied original shipment/revival/purchase and coupled
+battle programs. Parent integrated fresh classic/base33/all12 admission into
+the existing Nexus seam, original Axlotl hooks, source identity exclusions,
+sample/resume/entry guidance and human controls. Tech3..6 Basic/Advanced,
+Strongholds2..6 Advanced, both3..6; Skills, HW, native expansions, other
+previews, public starts and existing saves remain outside this composition.
+
+New24/affected188, final34 module/guide, types/lint/build and fourteen actual
+rule programs pass. Four legal free-return policies retain exact3 ledgers,
+real elite cap and deferred Axlotl. Parent rejected a proposed paid-Fremen
+Heighliners trigger: authorized physical32 expressly keeps reserves on-planet,
+and a borrowed tariff is not a new physical origin. Original exclusion remains.
+Both real free batches activate Axlotl; Emperor extra versus Fremen ordinary
+allowance stays distinct. Existing bank purchase keeps real wallet/card and
+does not create industry income. No unresolved ruling was decided.
+
+Eight genuine4/5-seat module games complete4,440 accepted actions, no
+rejection and116 JSON continuations. Five-seat samples execute five closing
+Nexus choices; four-seat samples can ally everyone and deal none. Reports
+capture production unchanged on trees
+`13367864d40cd778e5b50b5610e97b5819c25f74f37c655d962a884e3314cb28` and
+`ea4f523a732c7c958c4df88fa01f8c335d7c896975348e5403306eda956df012`.
+Later fixture-only undealt-CLI continuation/guide edits do not change engine.
+No natural free-return or private-inspection claim is made.
+
+Original CLI DPA6UGWKv10/HXEMRA32,FQNN62UGv8 keeps genuine unused setup
+and exact seats. Human390px HXEMRA32v13/movement returns2normal+1Sardaukar,
+ordinary/free3/elite1, pending Axlotl1 at wallet12 then13 at real phase end.
+FQNN62UGv14/Mentat pays Guild3 for5 actual counters, wallet12→9;
+Heighliners1 pays Harkonnen10→11 only after original movement finishes.
+DPA6UGWKv18/Collection pays bank2/own4 for support6, retains Shield and1
+normal Arrakeen survivor after6 normal/no starred loss. Moritani loser retains
+played Crysknife before original winner Heighliners; CHOAM reveals only unused
+Trip to Gamont. Separate city2 yields wallet8. Inspector, controls, refresh
+and guide are observed, root390px no overflow; controlled positions are labeled.
+Wider rules/combination/assurance/calibration/public/deployed gates remain open.
+
 ## 4 October 2026 — native Tech and Advanced Strongholds without Skills
 
 Two bounded owners supplied independent E1/E2 and standalone E3 cases.

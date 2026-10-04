@@ -1,3 +1,4 @@
+import { classicNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -2541,7 +2542,7 @@ function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
     let purchaseBlock:string|null = null;
     if (p.ally) purchaseBlock = 'Emperor Nexus Secret Ally requires an unallied buyer.';
     else if (!emperorNexusModeSupported(g) || g.ecazTreachery || g.sandtrout)
-      purchaseBlock = 'Emperor Nexus purchase currently requires classic factions and Nexus alone.';
+      purchaseBlock = 'Emperor Nexus purchase requires a supported classic Nexus profile; unrelated modules remain unavailable.';
     else if (g.response || g.truthtrance || g.phaseOpening || g.pendingKarama ||
       g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange ||
       g.pendingRicheseGift || g.pendingRichesePurchaseIncome || g.pendingAmbassador ||
@@ -2558,7 +2559,7 @@ function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
   }
   let blocked:string|null = null;
   if (p.ally) blocked = 'Emperor Nexus Secret Ally requires an unallied holder.';
-  else if (!emperorNexusModeSupported(g)) blocked = 'Emperor Nexus Secret Ally currently requires base factions and Nexus alone; expansion and other module combinations remain pending.';
+  else if (!emperorNexusModeSupported(g)) blocked = 'Emperor Nexus Secret Ally requires a supported classic Nexus profile; expansions and unrelated modules remain pending.';
   else if (g.status !== 'playing' || g.phase !== 4) blocked = 'Use the three-force Emperor Nexus return during Revival.';
   else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingRevival || g.pendingKarama ||
     g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange || g.pendingRicheseGift ||
@@ -2615,6 +2616,7 @@ function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
   addRevivedReserves(g,p,EMPEROR_NEXUS_REVIVALS,elite); p.tanks -= EMPEROR_NEXUS_REVIVALS;
   if (p.elites) {p.elites.tanks -= elite;p.elites.revived += elite;}
+  techIncome(g, 'axlotl', p);
   const record:NexusEmperorRevival = {kind:'revival',event:offer.event,owner:p.id,turn:g.turn,phase:4,
     faction:p.faction,advanced:g.advanced,
     sequence:g.nexusEmperorSecretHistory?.length ?? 0,elite,before,after:emperorNexusPools(p),signature:''};
@@ -2792,6 +2794,7 @@ function playNexusFremenRevive(g: Game, p: Player, action: Action) {
   p.revived += FREMEN_NEXUS_FREE_FORCES;
   p.freeForcesRevived = (p.freeForcesRevived ?? 0) + FREMEN_NEXUS_FREE_FORCES;
   if (p.elites) { p.elites.tanks -= elite; p.elites.revived += elite; }
+  techIncome(g, 'axlotl', p);
   const record: FremenNexusRevival = { event: offer.event, owner: p.id, turn: g.turn,
     phase: 4, faction: p.faction, advanced: g.advanced, elite, before,
     after: fremenNexusRevivalPools(p), signature: '' };
@@ -9429,12 +9432,13 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
-  requireRule(!g.techTokens || ((skillTech || nativeTech) &&
+  const nexusModules = nexus && classicNexusModulesProfile(g);
+  requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
-  requireRule(!g.strongholdCards || strongholdFactions || (skillStronghold &&
+  requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || nexusModules) &&
     JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards())),
-  'Leader Skills with Stronghold Cards requires a fresh supported Advanced lobby with unused cards.');
+  'Stronghold Cards require a fresh supported Advanced lobby with unused cards.');
   requireRule(
     (homeworlds || nexus || ix || choam || factions || g.expansions.length === 0) &&
       (choam || factions || !g.expansions.includes('choam')) &&
@@ -9443,8 +9447,8 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
-      (!g.techTokens || skillTech || nativeTech) &&
-      (strongholdFactions || skillStronghold || !g.strongholdCards) &&
+      (!g.techTokens || skillTech || nativeTech || nexusModules) &&
+      (strongholdFactions || skillStronghold || nexusModules || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(

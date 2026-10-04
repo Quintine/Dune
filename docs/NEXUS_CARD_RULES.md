@@ -2,6 +2,103 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic Tech and Stronghold composition — 4 October 2026
+
+The existing fresh local `nexus` entry preserves unused original Tech Tokens
+with classic/base33/all12 Nexus3..6 Basic/Advanced, and unused Stronghold Cards
+with classic Nexus2..6 Advanced; selecting both requires3..6 Advanced.
+Original all12 setup, qualifying closing Nexus draws, native first-Storm Tech
+assignment and actual end-Mentat Stronghold claims remain. No Skills,
+Homeworlds, native expansion decks/factions, independent cards, unrelated
+previews, public starts or saved-game conversion are admitted by this bound.
+
+This composes original printed sources: the supplied authorized Advanced
+PDF physical21/printed19 permits Tech and Stronghold variants together or
+separately, and physical23/printed21 gives the independent Nexus lifecycle.
+The original photographed Nexus faces supply the borrowed effects.
+
+Original Guild/Richese borrowed shipments change tariff, not faction or reserve
+origin. Non-Fremen/non-Guild off-planet arrivals activate Heighliners once;
+native Guild-only arrivals retain its printed exception. A paid borrowed Guild
+route does not move native Fremen's southern reserves off-planet: physical32/
+printed30 expressly keeps that source on Dune, so it does not trigger Heighliners.
+Stopped shipments never reach payment/arrival or industry activity.
+
+Both actual three-force Nexus free returns now use the existing Axlotl hook
+after physical transfer. Fremen consumes the ordinary force/free ledger;
+Emperor remains additional beyond those ledgers. Both retain the Advanced
+one-elite cap and private current-event legality. Tech spice remains on its
+token until the original Revival phase ends; a second qualifying return does
+not accrue again. Stronghold Cards add no revival bonus. Emperor's existing
+normal bank-auction purchase preserves the actual buyer wallet/card delivery
+and does not activate any industry.
+
+Original held Arrakeen subsidizes actual battle support, never personal income.
+Emperor Cunning's temporary Sardaukar remain physically ordinary counters.
+Defeated Moritani Secret Ally retention finishes before original winner Tech;
+CHOAM winner inspection then excludes all actually played opposing cards,
+including a retained one. Card spend, casualties, income and cleanup remain
+single original events. Ordinary city Collection is separate from battle costs.
+
+Borrowed Voice, Fremen worm-protection reaction policy, Tleilaxu revival
+accounting and other unresolved interpretations remain guarded. This is
+bounded composition, not complete Nexus/faction/module or release acceptance.
+
+Genuine offline samples:
+
+```sh
+node --import tsx tools/faction-games.ts --profile nexus-tech \
+  --players 5 --rules both --out /private/new-nexus-tech-games
+node --import tsx tools/faction-games.ts --profile nexus-stronghold \
+  --players 5 --rules advanced --out /private/new-nexus-stronghold-games
+node --import tsx tools/faction-games.ts --profile nexus-stronghold-tech \
+  --players 5 --rules advanced --out /private/new-nexus-three-module-games
+```
+
+Three actors suffice for one unallied receiver after a real alliance; four or
+more allow two separate receivers for coupled postbattle effects. Controlled
+positions conserve original cards/counters after genuine setup and actual
+closing draws; they do not manufacture wallets, phases or module ownership.
+
+### Bounded development evidence
+
+New24 consumer-visible cases are included in affected188/188. Final34
+module/guide cases, types/lint/build, fourteen actual native rule programs
+and all four legal free-return policies pass. Original cases cover both free
+ledgers, elite cap, typed tariff/arrival, stopped/native source exclusions,
+bank purchase, held subsidy, temporary ordinary-as-starred losses and coupled
+loser retention/original-winner token/private-unused-card inspection.
+
+Eight genuine4/5-seat games complete4,440 accepted actions, no rejection
+and116 JSON continuations. The four five-seat samples include five actual
+closing Nexus choices; four-seat samples may pair every seat and draw none.
+These do not claim natural free-return/inspection usage. Report roots:
+`/tmp/dune-classic-nexus-tech-games-20261004`,
+`/tmp/dune-classic-nexus-stronghold-games-20261004`,
+`/tmp/dune-classic-nexus-stronghold-tech-games-20261004`
+and their `-five-games-20261004` counterparts.
+Reports capture unchanged production source; later fixture continuation and
+guide changes do not modify the game engine.
+
+Original CLI **DPA6UGWK v10/setup**, **HXEMRA32/FQNN62UG v8/setup**
+preserves unused selected modules and exact authenticated actors.
+Controlled390px **HXEMRA32 v13/movement** returns2 normal/1 actual Sardaukar,
+consuming ordinary/free3 and elite1; Axlotl1 stays pending while wallet12,
+then original phase end collects13. **FQNN62UG v14/Mentat** sends5 physical
+Atreides counters for Guild3 (wallet12→9); Harkonnen Heighliners1 is unavailable
+until native movement ends, then wallet10→11 once.
+
+**DPA6UGWK v18/Collection** seals Fenring6/dial6/support6/Shield in held
+Arrakeen. Bank2/own4 is a subsidy, not income. Six ordinary losses leave1,
+with all5 starred reserves untouched. Guild loses6, uses Moritani to keep
+played Crysknife, then original Heighliners transfers to Emperor before
+CHOAM inspection. Emperor sees only unused Trip to Gamont, not the retained
+used weapon; both remain in Guild hand. Separate Arrakeen Collection2 makes
+wallet8. Human selection, inspector, readiness, public pending/owner data,
+refresh and updated guide are observed; root390px has no overflow.
+Dedicated QA storage preserves every original room; no user saves are touched.
+Full combinations/rules/assurance/calibration/public/deployed gates remain open.
+
 ## Authority and acquisition
 
 - [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf), printed pp.4, 9, 11 and 16: component count, independent variants, common lifecycle, Atreides example and two Nexus FAQ answers. Official-domain indexed text was inspected, but direct retrieval returned 403 during this audit. The coordinator successfully fetched the [publisher-authored PDF mirror](https://gamers-hq.de/media/pdf/0f/7a/86/Dune_EcazMoritani_Rulebook_EN.pdf) to `/tmp/dune-e3-nexus-rules.pdf` and `.txt`. This is a mirror of the publisher's rules, not a separate rules authority.

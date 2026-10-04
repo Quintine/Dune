@@ -77,6 +77,18 @@ The FAQ retains the one-per-turn Sardaukar/Fedaykin revival cap even through Gho
 
 E1 pays Tleilaxu for factions using free revival or Ghola; E2's La La La prevents Free Revival during Revival. Their texts do not expressly distinguish this new Nexus return from the ordinary free-revival event. Preserve the already-pending [income accounting boundary](TLEILAXU_AMBASSADOR_RULES.md) rather than minting another payment or assuming immunity. No source gives this card a special exception to Tleilaxu's revival prohibition. [E1, p.7](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=7), [E2, p.7](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=7)
 
+Fresh supported classic Nexus may additionally preserve original Tech and/or
+Advanced Stronghold Cards. This actual free batch invokes the original Axlotl
+hook, independently of its extra-versus-ordinary allowance distinction, and
+collects only at the native Revival phase end. Subsequent ordinary free return
+does not accrue twice. Strongholds add no revival bonus. The same supported
+profile preserves the existing bank-auction purchase and its original buyer
+wallet/card delivery; that purchase is not an industry trigger. Native Emperor
+absence, exact-three/elite caps and quiet source restrictions remain.
+See [scope and authority](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026);
+this does not admit native Tleilaxu income, Homeworlds, Skills or seller-paid
+and forced-Emperor producers, and leaves their pending questions unchanged.
+
 ## Betrayal and remaining decisions
 
 Normal Emperor-funded auction help goes to the ally and is paid back to Emperor, according to November's FAQ. Therefore forcing its contribution cannot automatically be implemented as transferring its spice to the bank. Bind the actual allied purchase and its original price/contributions. [November FAQ, p.2](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2)

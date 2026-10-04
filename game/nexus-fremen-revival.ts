@@ -1,5 +1,6 @@
 import type { Game, Player } from './engine';
 import { eliteRevivalRemaining, forceRevivalLimit, freeRevivalRate } from './revival';
+import { classicNexusModulesProfile } from './nexus-module-profile';
 
 export const FREMEN_NEXUS_FREE_FORCES = 3;
 type RevivalPools = { reserves: number; tanks: number; eliteReserves: number; eliteTanks: number;
@@ -38,10 +39,10 @@ export function fremenNexusRevivalOffer(g: Game, owner: string) {
   let blocked: string | null = null;
   if (p.ally) blocked = 'An allied player cannot use a Nexus card.';
   else if (g.status !== 'playing' || g.phase !== 4) blocked = 'Use Fremen Secret Ally during Revival.';
-  else if (g.expansions.length || g.homeworlds || g.leaderSkills || g.discoveryEnabled ||
+  else if (!classicNexusModulesProfile(g) && (g.expansions.length || g.homeworlds || g.leaderSkills || g.discoveryEnabled ||
     g.discoveries || g.discoveryStash || g.greatMaker || g.ecazTreachery ||
     g.techTokens || g.strongholdCards ||
-    g.players.some(seat => !['atreides', 'harkonnen', 'emperor', 'guild', 'beneGesserit'].includes(seat.faction)))
+    g.players.some(seat => !['atreides', 'harkonnen', 'emperor', 'guild', 'beneGesserit'].includes(seat.faction))))
     blocked = 'Combined expansion and module revival interactions remain unavailable.';
   else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingRevival ||
     g.pendingKarama || g.pendingTreacheryDiscard || g.pendingNullentropy ||
