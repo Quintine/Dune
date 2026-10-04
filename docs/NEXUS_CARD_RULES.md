@@ -61,6 +61,12 @@ no rejection,117 JSON continuations and eight actual closing Nexus choices.
 They do not claim natural Cunning/Suk use (zero Cunning actions).
 `/tmp/dune-classic-nexus-skills-games-20261004/report.json` captures unchanged
 tree `86d2c73debec01f5d4bb5c06a8a475274562d3ea9f68cb92b6e67c0dab67e4a2`.
+Final50 module/guide cases, types/lint and exact pushed build pass. Rebuilt QA
+displays **3ae5e1f**, both preserved physical outcomes and the updated390px guide.
+Code **3ae5e1f99455ee22e6243b9331b32adc0fab22ff** is pushed; exact
+[CI37192972625](https://github.com/Quintine/Dune/actions/runs/37192972625) /
+container111408871482 completes successfully, with isolated storage/HTTP
+step7 before verified image publication step9. No deployed claim is made.
 
 Original backed-up CLI **HKCLYXPK / APXBER55 v8/setup** uses a scoped original
 all14 shuffle before native deals; other randomness is unchanged. Saved first

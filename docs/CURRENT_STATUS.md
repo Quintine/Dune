@@ -35,6 +35,13 @@ starred reserves, zero starred Tanks, Shield/Suk, support10→7 once and separat
 city2→9. Actual phone controls/inspectors/refresh and no root390px overflow
 pass; only dedicated QA rooms change. [Scope and bounded evidence](NEXUS_CARD_RULES.md#classic-nexus-and-leader-skills-composition--4-october-2026)
 preserve borrowed Smuggler, Atreides Suk/KH, pending Nexus and all release gates.
+Code **3ae5e1f99455ee22e6243b9331b32adc0fab22ff** is pushed. Final50
+module/guide cases, types/lint and exact-revision build pass; rebuilt QA marker
+**3ae5e1f** preserves both physical outcomes and displays the updated390px guide.
+Exact [CI37192972625](https://github.com/Quintine/Dune/actions/runs/37192972625) /
+container111408871482 completes successfully: isolated storage/HTTP step7
+precedes verified image publication step9. Publication is not deployment;
+live **ab5c782** remains last observed.
 
 **Paired E1/E2 Nexus / Tech / Strongholds — bounded Development Verified:**
 fresh both Ixians+Tleilaxu OR CHOAM+Richese plus classics/one family deck
