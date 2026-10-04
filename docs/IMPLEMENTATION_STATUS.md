@@ -38,6 +38,14 @@ Guild independently collects Tuek1 to wallet4. Inspector, decisions, public
 token labels, refresh and updated guide are observed; root390px has no overflow.
 The new dedicated QA store preserves these rooms and never touches user saves.
 Source/rule/faction/module/assurance/calibration/public/deployed gates stay open.
+Code **2da3c9273b02efd06c283999c225f56e62214dd1** is pushed.
+[CI37175645562](https://github.com/Quintine/Dune/actions/runs/37175645562)
+container job111357583598 completed/success; isolated storage/HTTP step7
+preceded successful verified-image step9:
+`ghcr.io/quintine/dune:sha-2da3c9273b02efd06c283999c225f56e62214dd1`.
+Final rebuilt/isolated worker shows2da3c92 and retains original human
+v21/v15 Mentat states. Owned scripts/tabs are removed; room store and proof
+remain. Publication is not deployment; live **ab5c782** remains last observed.
 
 ## 4 October 2026 — standalone E3 skills with Tech and Advanced Strongholds
 

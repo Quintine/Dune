@@ -34,6 +34,14 @@ root390px has no overflow. Controlled positions are labeled; no natural
 assassination claim. Read [scope and evidence](EXPANSION_FACTIONS_PROTOTYPE.md#native-tech-composition--4-october-2026).
 Other overlays, pending rulings, public starts and full/deployed acceptance
 remain open. Existing games and the user PDF are preserved.
+Code **2da3c9273b02efd06c283999c225f56e62214dd1** is pushed.
+[Exact CI37175645562](https://github.com/Quintine/Dune/actions/runs/37175645562),
+container job111357583598, completed/success: mandatory isolated storage/HTTP
+step7 and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-2da3c9273b02efd06c283999c225f56e62214dd1`.
+Final rebuilt QA marker shows2da3c92; original human v21/v15 Mentat outcomes
+remain. Owned drivers/tabs are removed; rooms/store persist. Publication is not
+deployment; live **ab5c782** remains last observed.
 
 **Standalone E3 Skills / Tech / Strongholds — bounded Development Verified:**
 fresh original Ecaz OR Moritani ecaz33/all14 profiles preserve Tech3..6
