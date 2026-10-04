@@ -71,7 +71,8 @@ export function emperorNexusModeSupported(g: Game): boolean {
     !g.discoveries &&
     !g.discoveryStash &&
     !g.greatMaker &&
-    ((!g.techTokens && !g.strongholdCards) || classicNexusModulesProfile(g))
+    ((!g.techTokens && !g.strongholdCards) || classicNexusModulesProfile(g) ||
+      (!!g.leaderSkills && classicNexusLeaderSkillsProfile(g)))
   );
 }
 /** A fixed three-counter grant preserves the separate Advanced elite cap. */

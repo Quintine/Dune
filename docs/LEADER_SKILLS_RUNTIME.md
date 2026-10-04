@@ -29,6 +29,24 @@ Advanced native/combined-module skills remain guarded. See
 [native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
 
 
+## Classic Nexus with original Tech/Strongholds — 4 October 2026
+
+Fresh classic `leader-skills --nexus-cards` now preserves selected unused
+Tech in Basic/Advanced3..6 and/or Strongholds in Advanced2..6; both require3+.
+This extends the Skills-only checkpoint below. Original base33/all14/all12,
+saved hands/offers, native setup order and real closing draws remain.
+First-Storm token allocation and end-Mentat held custody are not granted
+by a fixture or by setup. Free returns accrue Axlotl until Revival end;
+ordinary off-planet native shipment accrues Heighliners until movement end.
+
+Held Arrakeen subsidizes the payer, not the paid-support commitment used by
+casualty/Suk rules. Cunning temporary roles remain ordinary physical counters,
+rescue finishes once before cleanup and original mandatory winner token choice.
+Held physical Shield and original loser retention retain their native windows.
+Paired native Skills/Nexus still excludes Tech/Strongholds. Other unresolved
+overlays/rulings and public/deployed gates remain guarded.
+See [canonical combined scope](NEXUS_CARD_RULES.md#classic-nexus-skills-and-original-techstrongholds--4-october-2026).
+
 ## Paired E1/E2 Nexus composition — 4 October 2026
 
 Fresh original `leader-skills --nexus-cards` additionally composes both

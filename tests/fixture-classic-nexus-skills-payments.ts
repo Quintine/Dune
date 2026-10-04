@@ -153,7 +153,7 @@ export function initializeClassicNexusSkillsPaymentsSetup(options: ClassicNexusS
   assert.ok(game.players.some(p => p.faction === faction));
   if (game.status === 'setup') {
     assert.ok(classicNexusLeaderSkillsProfile(game));
-    assert.equal(game.setupStage, 'leaderSkills');
+    assert.ok(game.setupStage === 'prediction' || game.setupStage === 'leaderSkills');
     assert.equal(game.turn, 1); assert.equal(game.phase, 0);
     assert.ok(game.players.every(p => !p.traitors.length && !p.traitorChoices.length));
     assert.equal(game.leaderSkills!.assignments.length, 0);

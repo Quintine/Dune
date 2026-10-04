@@ -13,6 +13,7 @@ import {
 } from '../game/engine';
 import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
 import { placeFixtureHand } from './fixture-hand';
+import { botActions } from '../game/bots';
 
 const SEATS = [
   ['e', 'Emperor seat', 'emperor'],
@@ -480,4 +481,30 @@ void test('capturing an unskilled leader preserves the existing private identity
   );
   assert.ok(g.log.every((entry) => !entry.text.includes('Captain Aramsham')));
   assertSkillCustody(g);
+});
+
+void test('captured training excludes blocked Ghola and ordinary leader revivals while preserving a legal Collection pass', () => {
+  const kept = applyAction(acceptCapture(captureOffer()), 'h', { type: 'decision', mode: 'keep' });
+  kept.phase = 7;
+  kept.decision = null;
+  kept.response = null;
+  kept.phaseOpening = null;
+  kept.ready = kept.players.filter(player => player.id !== 'e').map(player => player.id);
+  const emperor = kept.players.find(player => player.id === 'e')!;
+  const ghola = baseDeck().find(card => card.effect === 'ghola')!;
+  placeFixtureHand(kept, kept.players.indexOf(emperor), [ghola]);
+  emperor.bot = 'Medium';
+  const before = structuredClone(kept);
+  const view = viewGame(kept, 'e');
+  assert.deepEqual(view.ghola.leaders, []);
+  assert.deepEqual(view.revival.leaders, []);
+  assert.equal(view.ghola.available, true);
+  assert.equal(view.ghola.maxForces, 5, 'Captured training does not prohibit physical force Ghola');
+  const action = botActions(view).find(action => action.type === 'ready');
+  assert.ok(action);
+  const done = applyAction(kept, 'e', action);
+  assert.equal(done.phase, 8);
+  assert.equal(done.players.find(player => player.id === 'e')!.hand.some(card => card.id === ghola.id), true);
+  assert.deepEqual(kept, before);
+  assertSkillCustody(done);
 });

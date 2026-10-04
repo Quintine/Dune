@@ -42,7 +42,8 @@ const DEFAULT_MAX_ACTIONS = 3_500;
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard', 'Brutal'] as const;
 type Profile = 'base' | 'choam' | 'ecaz' | 'ecaz-treachery' | 'ecaz-occupy' | 'moritani-assassinate' | 'stronghold-factions' | 'combined' | 'combined-nexus' | 'combined-homeworld-nexus' | 'homeworld' | 'nexus' | 'homeworld-nexus' | 'choam-roster' | 'ecaz-roster' | 'ix-roster' | 'choam-nexus' | 'ecaz-nexus' | 'ix-nexus' | 'moritani-skills' | 'tleilaxu-skills' | 'ix-skills' | 'choam-skills' | 'richese-skills' | 'ecaz-skills' | 'skills-tech' | 'skills-stronghold' | 'skills-stronghold-tech'
   | 'factions-tech' | 'stronghold-factions-tech' | 'nexus-tech' | 'nexus-stronghold' | 'nexus-stronghold-tech'
-  | 'paired-nexus-tech' | 'paired-nexus-stronghold' | 'paired-nexus-stronghold-tech' | 'nexus-skills' | 'paired-nexus-skills';
+  | 'paired-nexus-tech' | 'paired-nexus-stronghold' | 'paired-nexus-stronghold-tech' | 'nexus-skills' | 'paired-nexus-skills'
+  | 'nexus-skills-tech' | 'nexus-skills-stronghold' | 'nexus-skills-stronghold-tech';
 type Rules = 'basic' | 'advanced';
 
 type Scenario = {
@@ -120,6 +121,14 @@ const BASE_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].flatMap((players) =>
 const NEXUS_SKILLS_SCENARIOS: readonly Scenario[] = BASE_SCENARIOS.map((scenario, index) => ({
   ...scenario, profile: 'nexus-skills', ordinal: 1410 + index,
 }));
+const NEXUS_SKILLS_MODULE_SCENARIOS: readonly Scenario[] =
+  (['nexus-skills-tech', 'nexus-skills-stronghold', 'nexus-skills-stronghold-tech'] as const)
+    .flatMap((profile, band) => NEXUS_SKILLS_SCENARIOS
+      .filter(scenario => (profile === 'nexus-skills-tech' || scenario.rules === 'advanced') &&
+        (profile === 'nexus-skills-stronghold' || scenario.roster.length >= 3))
+      .map((scenario, index): Scenario => ({ ...scenario, profile, ordinal: 1510 + band * 50 + index })));
+const nexusSkillsModuleProfile = (profile: string) => profile === 'nexus-skills-tech' ||
+  profile === 'nexus-skills-stronghold' || profile === 'nexus-skills-stronghold-tech';
 const MODULE_SCENARIOS: readonly Scenario[] = [
   ...[2, 3, 4, 5, 6].flatMap((players) =>
     (['basic', 'advanced'] as const).map((rules, index) => ({
@@ -157,11 +166,14 @@ const CLASSIC_NEXUS_MODULE_SCENARIOS: readonly Scenario[] =
         (profile === 'nexus-stronghold' || scenario.roster.length >= 3))
       .map((scenario, index): Scenario => ({ ...scenario, profile, ordinal: 800 + band * 100 + index })));
 const nexusModuleProfile = (profile: string) =>
-  profile === 'nexus-tech' || profile === 'nexus-stronghold' || profile === 'nexus-stronghold-tech' || pairedNexusModuleProfile(profile);
+  profile === 'nexus-tech' || profile === 'nexus-stronghold' || profile === 'nexus-stronghold-tech' ||
+  pairedNexusModuleProfile(profile) || nexusSkillsModuleProfile(profile);
 const nexusTechProfile = (profile: string) => profile === 'nexus-tech' || profile === 'nexus-stronghold-tech' ||
-  profile === 'paired-nexus-tech' || profile === 'paired-nexus-stronghold-tech';
+  profile === 'paired-nexus-tech' || profile === 'paired-nexus-stronghold-tech' ||
+  profile === 'nexus-skills-tech' || profile === 'nexus-skills-stronghold-tech';
 const nexusStrongholdProfile = (profile: string) => profile === 'nexus-stronghold' || profile === 'nexus-stronghold-tech' ||
-  profile === 'paired-nexus-stronghold' || profile === 'paired-nexus-stronghold-tech';
+  profile === 'paired-nexus-stronghold' || profile === 'paired-nexus-stronghold-tech' ||
+  profile === 'nexus-skills-stronghold' || profile === 'nexus-skills-stronghold-tech';
 const pairedNexusModuleProfile = (profile: string) => profile === 'paired-nexus-tech' ||
   profile === 'paired-nexus-stronghold' || profile === 'paired-nexus-stronghold-tech';
 const EXPANSION_ROSTER_SCENARIOS: readonly Scenario[] = [
@@ -418,7 +430,7 @@ const SKILLS_STRONGHOLD_SCENARIOS: readonly Scenario[] =
   ].filter(scenario => profile !== 'skills-stronghold-tech' || scenario.roster.length >= 3)
     .map((scenario, index): Scenario => ({ ...scenario, ordinal: 376 + band * 100 + index, profile })));
 const strongholdSkillProfile = (profile: string) => profile === 'skills-stronghold' || profile === 'skills-stronghold-tech';
-const skillProfile = (profile: string) => profile === 'nexus-skills' || profile === 'paired-nexus-skills' || profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills' || profile === 'choam-skills' || profile === 'richese-skills' || profile === 'ecaz-skills' || profile === 'skills-tech' || strongholdSkillProfile(profile);
+const skillProfile = (profile: string) => nexusSkillsModuleProfile(profile) || profile === 'nexus-skills' || profile === 'paired-nexus-skills' || profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills' || profile === 'choam-skills' || profile === 'richese-skills' || profile === 'ecaz-skills' || profile === 'skills-tech' || strongholdSkillProfile(profile);
 const assassinationScenario = (scenario: Scenario) => scenario.rules === 'advanced' &&
   scenario.roster.includes('moritani') &&
   (scenario.profile === 'moritani-assassinate' || nativeStrongholdProfile(scenario.profile) || nativeTechProfile(scenario.profile) || skillProfile(scenario.profile));
@@ -459,7 +471,7 @@ type Result = {
 function usage() {
   return (
     'Usage: node --import tsx tools/faction-games.ts --out NEW_PRIVATE_DIR ' +
-    '[--seed UINT32] [--profile all|base|choam|ecaz|ecaz-treachery|ecaz-occupy|moritani-assassinate|stronghold-factions|factions-tech|stronghold-factions-tech|combined|combined-nexus|combined-homeworld-nexus|homeworld|nexus|nexus-skills|paired-nexus-skills|nexus-tech|nexus-stronghold|nexus-stronghold-tech|paired-nexus-tech|paired-nexus-stronghold|paired-nexus-stronghold-tech|homeworld-nexus|choam-roster|ecaz-roster|ix-roster|choam-nexus|ecaz-nexus|ix-nexus|moritani-skills|tleilaxu-skills|ix-skills|choam-skills|richese-skills|ecaz-skills|skills-tech|skills-stronghold|skills-stronghold-tech] ' +
+    '[--seed UINT32] [--profile all|base|choam|ecaz|ecaz-treachery|ecaz-occupy|moritani-assassinate|stronghold-factions|factions-tech|stronghold-factions-tech|combined|combined-nexus|combined-homeworld-nexus|homeworld|nexus|nexus-skills|paired-nexus-skills|nexus-skills-tech|nexus-skills-stronghold|nexus-skills-stronghold-tech|nexus-tech|nexus-stronghold|nexus-stronghold-tech|paired-nexus-tech|paired-nexus-stronghold|paired-nexus-stronghold-tech|homeworld-nexus|choam-roster|ecaz-roster|ix-roster|choam-nexus|ecaz-nexus|ix-nexus|moritani-skills|tleilaxu-skills|ix-skills|choam-skills|richese-skills|ecaz-skills|skills-tech|skills-stronghold|skills-stronghold-tech] ' +
     '[--rules both|basic|advanced] [--players all|2|3|4|5|6] [--max-actions POSITIVE] ' +
     '[--resume FAILED_GAME.json]\n' +
     'Runs genuine setup and gameplay offline. Default/all keeps the six expansion samples; combined-nexus and combined-homeworld-nexus add five/six-seat Basic/Advanced all-expansion samples. Base, Homeworld, Nexus, Homeworld-Nexus, expansion roster, paired expansion Nexus, Ecaz card variant, Advanced Moritani assassination and skill profiles select their documented rosters. Stronghold-factions is Advanced only: Ixians + CHOAM, native Ixians + Tleilaxu, or native CHOAM + Richese with classic opponents, two through six seats; mixed four-native rosters also run at four through six seats. Selected Ix/CHOAM decks determine the canonical 47/35 Treachery Cards; Richese has a separate ten-card cache and all samples have six separate Stronghold Cards without other modules. Scenario names identify their native roster. --players requires a supported profile. Output must be a new private directory outside the checkout.' +
@@ -475,6 +487,7 @@ function usage() {
     + '\nPaired-nexus-tech adds original Tech to both Ixians+Tleilaxu OR CHOAM+Richese and classic opponents, one selected deck, three-through-six seats, Basic/Advanced. Paired-nexus-stronghold is Advanced2..6; paired-nexus-stronghold-tech is Advanced3..6. Native Cunning, real closing deals, typed forces/physical Face Dancers/No-Fields, original industry/rewards and held effects remain. No mixed families, E3, Skills, other overlays, new rulings, public starts or save conversion.'
     + '\nNexus-skills uses classic/base33/all14 Skills/all12 Nexus, Basic/Advanced two through six seats, with original setup/posture, actual closing draws and physical effects. Native factions, Tech/Strongholds/HW, Banker/Mentat previews, borrowed Smuggler shipment arithmetic and unresolved effects remain guarded; no public start or played-game conversion.'
     + '\nPaired-nexus-skills adds all14 Skills to both original Ixians+Tleilaxu OR CHOAM+Richese, classic opponents and one family deck/all12 Nexus, Basic/Advanced2..6. Native setup, actual closing draws, typed skills/Cunning, Face Dancers and one-invoice physical marker pairs reuse original rules. Tech/Strongholds/HW, mixed families, E3, Banker/Mentat previews, borrowed Smuggler/pair companions, public starts and pending rulings remain excluded.'
+    + '\nNexus-skills-tech preserves original Tech3..6 Basic/Advanced with classic/base33/all14/all12; nexus-skills-stronghold preserves original Advanced Strongholds2..6; selecting both requires3..6 Advanced. Real first-Storm/end-Mentat ownership, phase-end industry, held subsidy, typed rescue and mandatory original-winner token transfer remain. Native rosters, HW, Banker/Mentat previews, other overlays, public starts and pending rulings stay separate.'
   );
 }
 
@@ -658,7 +671,7 @@ function resumedGame(path: string) {
     game.mentatQuestionPreview
   )
     throw new Error('--resume sample scenarios exclude unsupported optional modules.');
-  const scenario = [...SCENARIOS, ...COMBINED_NEXUS_SCENARIOS, ...COMBINED_HOMEWORLD_NEXUS_SCENARIOS, ...BASE_SCENARIOS, ...MODULE_SCENARIOS, ...EXPANSION_ROSTER_SCENARIOS, ...ECAZ_TREACHERY_SCENARIOS, ...ECAZ_OCCUPY_SCENARIOS, ...PAIRED_NEXUS_SCENARIOS, ...MORITANI_ASSASSINATE_SCENARIOS, ...STRONGHOLD_FACTIONS_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...IX_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS, ...RICHESE_SKILLS_SCENARIOS, ...ECAZ_SKILLS_SCENARIOS, ...SKILLS_TECH_SCENARIOS, ...SKILLS_STRONGHOLD_SCENARIOS, ...NATIVE_TECH_SCENARIOS, ...CLASSIC_NEXUS_MODULE_SCENARIOS, ...PAIRED_NEXUS_MODULE_SCENARIOS, ...NEXUS_SKILLS_SCENARIOS, ...PAIRED_NEXUS_SKILLS_SCENARIOS].find(
+  const scenario = [...SCENARIOS, ...COMBINED_NEXUS_SCENARIOS, ...COMBINED_HOMEWORLD_NEXUS_SCENARIOS, ...BASE_SCENARIOS, ...MODULE_SCENARIOS, ...EXPANSION_ROSTER_SCENARIOS, ...ECAZ_TREACHERY_SCENARIOS, ...ECAZ_OCCUPY_SCENARIOS, ...PAIRED_NEXUS_SCENARIOS, ...MORITANI_ASSASSINATE_SCENARIOS, ...STRONGHOLD_FACTIONS_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...IX_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS, ...RICHESE_SKILLS_SCENARIOS, ...ECAZ_SKILLS_SCENARIOS, ...SKILLS_TECH_SCENARIOS, ...SKILLS_STRONGHOLD_SCENARIOS, ...NATIVE_TECH_SCENARIOS, ...CLASSIC_NEXUS_MODULE_SCENARIOS, ...PAIRED_NEXUS_MODULE_SCENARIOS, ...NEXUS_SKILLS_SCENARIOS, ...PAIRED_NEXUS_SKILLS_SCENARIOS, ...NEXUS_SKILLS_MODULE_SCENARIOS].find(
     (candidate) =>
       (candidate.profile === 'homeworld' || candidate.profile === 'homeworld-nexus' || candidate.profile === 'combined-homeworld-nexus') === !!game.homeworlds &&
       (candidate.profile === 'paired-nexus-skills' || candidate.profile === 'nexus-skills' || candidate.profile === 'nexus' || nexusModuleProfile(candidate.profile) || candidate.profile === 'homeworld-nexus' || candidate.profile === 'choam-nexus' || candidate.profile === 'ecaz-nexus' || candidate.profile === 'ix-nexus' || candidate.profile === 'combined-nexus' || candidate.profile === 'combined-homeworld-nexus') === !!game.nexusCards &&
@@ -890,6 +903,7 @@ async function main() {
     : pairedNexusModuleProfile(profile) ? PAIRED_NEXUS_MODULE_SCENARIOS
     : profile === 'nexus-skills' ? NEXUS_SKILLS_SCENARIOS
     : profile === 'paired-nexus-skills' ? PAIRED_NEXUS_SKILLS_SCENARIOS
+    : nexusSkillsModuleProfile(profile) ? NEXUS_SKILLS_MODULE_SCENARIOS
     : nexusModuleProfile(profile) ? CLASSIC_NEXUS_MODULE_SCENARIOS
     : profile === 'choam-roster' || profile === 'ecaz-roster' || profile === 'ix-roster' ? EXPANSION_ROSTER_SCENARIOS
     : profile === 'ecaz-treachery' ? ECAZ_TREACHERY_SCENARIOS

@@ -33,11 +33,13 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
-function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, tokenCards = false): boolean {
   return !!game.nexusCards && typeof game.advanced === 'boolean' &&
     !!game.players && game.players.length >= 2 && game.players.length <= 6 &&
     !game.homeworlds && !game.discoveries && !game.discoveryEnabled &&
-    !game.discoveryStash && !game.greatMaker && !game.strongholdCards && !game.techTokens &&
+    !game.discoveryStash && !game.greatMaker &&
+    (!game.techTokens || (tokenCards && game.players.length >= 3)) &&
+    (!game.strongholdCards || (tokenCards && game.advanced === true)) &&
     !game.ecazTreachery && !game.semutaPreview && !game.moritaniAssassinatePreview &&
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
@@ -46,9 +48,9 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
     !game.spiceBankerIncomePreview;
 }
 
-/** Fresh classic Nexus/Skills only; other module and native compositions stay separate. */
+/** Fresh classic Nexus/Skills, with original Tech and Advanced Strongholds; native overlays stay separate. */
 export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game)) return false;
+  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game, true)) return false;
   const players = game.players!;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;

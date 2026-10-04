@@ -8118,11 +8118,14 @@ function actBureaucratPayment(g: Game,action:Action) {
   else if (pending.continuation.kind === 'auction') commitAuctionContinuation(g,pending.continuation.quote,redirected);
   else getPlayer(g,pending.source.payee).bribes += pending.source.amount-redirected;
 }
+function leaderSkillRevivalBlocked(g: Game, owner: string): boolean {
+  return !!g.leaderSkills?.assignments.some(
+    (a) => a.owner === owner && leaderSkillController(g, a) !== owner,
+  );
+}
 function requireLeaderSkillRevival(g: Game, owner: string) {
   requireRule(
-    !g.leaderSkills?.assignments.some(
-      (a) => a.owner === owner && leaderSkillController(g, a) !== owner,
-    ),
+    !leaderSkillRevivalBlocked(g, owner),
     'Reviving another leader while your Leader Skill is captured awaits the replacement-skill ruling.',
   );
 }
@@ -9439,7 +9442,8 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
-  const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g));
+  const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
+    (leaderSkills && classicNexusLeaderSkillsProfile(g)));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
@@ -18965,6 +18969,7 @@ function normalizeBattle(g: Game) {
 /** Ghola follows current control for ordinary leaders, but Duke's printed
  * revival right belongs exclusively to Ecaz, regardless of temporary custody. */
 function gholaLeaders(g: Game, p: Player) {
+  if (leaderSkillRevivalBlocked(g, p.id)) return [];
   const native = controlledLeaders(g, p).filter(
     (l) => l.id !== DUKE_VIDAL_ID && l.dead && !l.capturedBy,
   );
@@ -31385,7 +31390,7 @@ export function viewGame(state: Game, id: string) {
         g.decision?.kind === 'revivalStop'
           ? homeworldRevivalKaramaBlock(g, g.decision.recipient)
           : null,
-      leaders: leaderRevivals.leaders,
+      leaders: leaderSkillRevivalBlocked(g, id) ? [] : leaderRevivals.leaders,
       kwisatz: leaderRevivals.kwisatz,
       cycleBlock: leaderRevivals.cycleBlock,
       dukeBlocked: leaderRevivals.dukeBlocked,

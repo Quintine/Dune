@@ -16,6 +16,35 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Classic Nexus / Skills / Tech / Strongholds — bounded Development Verified:**
+original fresh skill/Nexus setup retains selected unused Tech3..6 Basic/Advanced
+and/or Strongholds2..6 Advanced; both require3..6. Original base33/all14/all12,
+saved offers/hands/IDs and owner/deal timing remain. Seventeen setup programs
+and four retained prerequisite rejections pass;192 affected cases, types/lint/
+build, original physical rescue/payment programs and four legal policies pass.
+Seventeen genuine2..6 games finish11,526 accepted actions/no rejection,
+303 JSON continuations and12 actual closing choices on unchanged source tree
+`480664928339c7e7026564687099bb5ddda9a7391fdfea9dc054bc1d088ebd88`.
+The original stranded6-seat Collection state also finishes807 accepted actions/
+no rejection after the fix. Original Bureaucrat invoices are no longer guarded
+in this composition; Ghola/ordinary leader guidance obeys existing captured
+training prohibition without removing force Ghola or deciding replacement skills.
+Controlled original backed-up CLI **P4D8MY3V v10 / UVHFYQB8 v8 setup**
+preserves real offers/hands/IDs after a scoped original14 shuffle.
+Human390px **P4D8MY3V v22/Collection** selects trained Fenring6/dial10/
+support6/Shield with bank2/own4, saves three actual ordinary casualties
+(one kept/two returned):15 reserve/3 Tanks/2 board, all five actual Sardaukar
+reserved. Cleanup transfers original Guild Heighliners before inspection;
+actual wallet10→6 then city2→8. **UVHFYQB8 v13/movement** spends actual
+Fremen Nexus on three ordinary free returns including one actual starred piece:
+17 reserves/3 Tanks, starred4 reserve/1 Tank, ordinary allowance3/elite1.
+Axlotl1 accrues without wallet income, then original Revival end pays12→13 once.
+Original posture/Cunning/support/rescue/cleanup/free-return/phase-end controls,
+force inspectors, refresh and source guide have no root390px overflow.
+Only dedicated QA rooms changed. Native overlays, HW, Banker/Mentat previews,
+borrowed Smuggler arithmetic, pending rulings, public/save conversion and full
+module/deployed acceptance stay separate. [Canonical scope and evidence](NEXUS_CARD_RULES.md#classic-nexus-skills-and-original-techstrongholds--4-october-2026).
+
 **Paired E1/E2 Nexus / Leader Skills — bounded Development Verified:** both
 Ixians+Tleilaxu OR CHOAM+Richese plus classics, one family deck/all14/all12,
 Basic/Advanced2..6 through original `leader-skills --nexus-cards`, no overlays.

@@ -2,6 +2,76 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic Nexus, Skills and original Tech/Strongholds — 4 October 2026
+
+The original fresh `leader-skills --nexus-cards` entry now preserves selected
+unused original Tech Tokens in Basic/Advanced3..6 and/or Stronghold Cards
+in Advanced2..6; both require at least three seats. Classic base33/all14/all12,
+prediction, starting hands/offers, skill-before-Traitor order, real closing
+draws, first-Storm Tech and actual end-Mentat held custody remain unchanged.
+This extends the earlier classic Skills-only checkpoint below, not paired
+native compositions. No public start, save conversion, Homeworlds, native
+overlays, Banker/Mentat preview, companion or new pending ruling is opened.
+
+Independent printed effects retain their original settlement: Emperor extra
+and Fremen ordinary free returns produce phase-end Axlotl, not immediate
+wallet income. Native off-planet paid shipments produce Heighliners; Fremen
+on-planet southern reinforcement does not become off-planet by paying a
+borrowed tariff. Held Arrakeen reduces the actual payer debit, not the original
+support commitment or Suk eligibility. Cunning roles remain physical ordinary
+counters; normal/trained Suk rescue settles before cleanup and mandatory
+winner Tech choice. Original Shield poison protection and Nexus Moritani
+loser retention keep their independent original windows.
+
+Genuine games exposed two integration defects: the existing Bureaucrat payment
+guard rejected ordinary invoices in this composition, and Ghola guidance
+offered leader revivals forbidden by captured training, stranding a legal
+Collection pass. Original once-per-phase Bureaucrat settlement is admitted;
+Ghola and ordinary revival projections reuse the exact existing captured
+training restriction. Force Ghola and Kwisatz alternatives are not removed,
+and no replacement-skill ruling is inferred.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile leader-skills \
+  --nexus-cards --db /private/local.sqlite --room ROOMCODE --version 9 \
+  --out /private/new-classic-nexus-skills-modules-entry
+node --import tsx tools/faction-games.ts --profile nexus-skills-stronghold-tech \
+  --players all --rules advanced --out /private/new-classic-combined-games
+```
+
+`nexus-skills-tech` also covers Basic/Advanced3..6; `nexus-skills-stronghold`
+covers Advanced2..6. Module selection must precede original fresh setup.
+Focused runtime evidence is in `tests/nexus-skills-modules-payments-runtime.test.ts`
+and `tests/nexus-skills-modules-battles-runtime.test.ts`; their conserved
+source-controlled fixtures label physical relocation/order rather than claim
+natural shuffle history. Full-module/public/deployed gates remain open.
+
+### Bounded combined classic evidence
+
+New48/affected192, types/lint/build, seventeen original setup programs/four
+retained prerequisite rejections, physical payment/rescue programs and four
+legal policies pass. Seventeen genuine2..6 games complete11,526 accepted actions,
+no rejection,303 JSON continuations and12 actual closing choices; natural
+Cunning combinations are not claimed. Three final-profile reports under
+`/tmp/dune-nexus-skills-{tech,stronghold,both}-final-games-20261004/report.json`
+capture unchanged tree `480664928339c7e7026564687099bb5ddda9a7391fdfea9dc054bc1d088ebd88`.
+The preserved stranded6-seat state completes807 further accepted actions/
+no rejection at `/tmp/dune-nexus-skills-both-resume-20261004/report.json`.
+
+Original backed-up CLI **P4D8MY3V v10 / UVHFYQB8 v8 setup** continues actual
+offers/hands/actor IDs after only a scoped original14 pre-deal shuffle.
+Controlled human390px **P4D8MY3V v22/Collection** uses trained Fenring6,
+dial10/support6/Shield: bank2/own4, six physical ordinary casualties save3
+(one kept/two returned),15 reserves/3 Tanks/2 board, actual starred5 reserve/
+zero Tanks. Original winner cleanup transfers Guild's Heighliners before
+inspection; wallet10→6 support precedes separate city2→8.
+**UVHFYQB8 v13/movement** uses actual Fremen Nexus for three free returns
+including one starred:17 reserves/3 Tanks, starred4 reserve/1 Tank, normal
+allowance3/elite1. Axlotl1 accrues without wallet income, then original Revival
+end pays12→13 exactly once. Actual controls/inspectors/refresh/updated source
+guide have no root390px overflow. Only dedicated QA rooms changed; controlled
+physical relocation/order is labeled, not claimed as natural history.
+
 ## Paired E1/E2 Nexus and Leader Skills composition — 4 October 2026
 
 The original fresh `leader-skills --nexus-cards` entry additionally admits
