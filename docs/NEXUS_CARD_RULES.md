@@ -2,6 +2,86 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Paired E1/E2 Tech and Stronghold composition — 4 October 2026
+
+The existing fresh local `nexus` entry additionally preserves unused original
+Tech and/or Stronghold components with **both Ixians + Tleilaxu OR both
+CHOAM + Richese**, classic opponents and exactly one corresponding family
+deck. Tech requires3..6 Basic/Advanced; Strongholds requires2..6 Advanced;
+both requires3..6 Advanced. Original47/35 Treachery, separate Richese cache,
+all12 Nexus, native setup, first-Storm Tech and actual end-Mentat Stronghold
+claims remain. No Skills, mixed families, E3, Homeworlds, independent cards,
+unrelated previews, public starts or played-game conversion are admitted.
+
+This composes the same independent printed variants cited below, not a new
+Nexus ruling. Original Ixian Cunning grants full unsupported Suboid strength
+through the actual turn, while Cyborg support/casualties remain typed.
+Arrakeen funds actual support only, including a legal HMS copy; it grants
+no wallet income. Original equal Suboid sacrifice recovers lost Cyborgs.
+Actual original winner Tech/cards/spice precede native Face Dance. Replacement
+changes physical occupation, not prior rewards or held Stronghold ownership;
+the next real end-Mentat claim follows the new controller. Tleilaxu Cunning
+draws replacements before retiring revealed originals and preserves unrevealed
+stock and the separate ordinary Mentat replacement allowance.
+
+Richese Cunning retains its existing two-physical-token/nonrepeat convention:
+one reserve-capped immediate group, one concealed marker, one original tariff.
+An allowed off-planet pair activates Heighliners once; stopped declarations
+create no invoice, placement or activity. Industry is unavailable until the
+original phase end. Voluntary revelation does not manufacture counters or
+reset previous-marker history. Advanced held Habbanya can decide an ordinary
+tied battle after revelation; this does not open mixed No-Field dialing.
+CHOAM Cunning consumes one original Treachery fuel card through its existing
+Worthless effect/response, without creating another physical card.
+
+```sh
+node --import tsx tools/faction-games.ts --profile paired-nexus-tech \
+  --players 5 --rules both --out /private/new-paired-nexus-tech
+node --import tsx tools/faction-games.ts --profile paired-nexus-stronghold \
+  --players 5 --rules advanced --out /private/new-paired-nexus-stronghold
+node --import tsx tools/faction-games.ts --profile paired-nexus-stronghold-tech \
+  --players 5 --rules advanced --out /private/new-paired-nexus-three-module
+```
+
+### Bounded paired development evidence
+
+New18/affected139 cases pass, plus final types/lint/build, eight actual native
+rule programs and all four legal paired-shipment/Face-Dance policies.
+Eight genuine five-seat games complete3,926 accepted actions, no rejection,
+102 JSON continuations and six actual closing Nexus choices. Some finish
+before a qualifying Nexus; none claims natural Cunning use. Report roots:
+`/tmp/dune-paired-nexus-tech-games-20261004`,
+`/tmp/dune-paired-nexus-stronghold-games-20261004` and
+`/tmp/dune-paired-nexus-stronghold-tech-games-20261004`.
+All capture unchanged tree
+`3baa637122c51fbc8928c9931700914e9dc2ed8d2e8d1ec4a81d7bab49829e5c`;
+later fixture lint and reference changes do not modify the engine.
+
+Original backed-up CLI **7N2FKGKW / EFQGWA8F v10/setup** preserves exact
+authenticated actors and the first deal. Controlled390px **7N2FKGKW v30/
+Collection** activates native Cunning, seals C’tair5/dial4/support1 and
+Dominic4/dial3/support1 in successive Arrakeen/HMS battles. Both actual
+support units come from held/copied Arrakeen, with zero personal debit.
+The first loses three Cyborgs then sacrifices three Suboids to recover them.
+The second reveals the original Dominic Face Dancer, returns two remaining
+winner counters, places two Tleilaxu reserves inside HMS, kills Dominic and
+leaves original winner Heighliners/Production at Ix. Tleilaxu Cunning then
+replaces only that revealed physical card with the actual next Traitor;
+Burseg/Soo-Soo stay unchanged. The prior HMS card stays at Ix until end Mentat.
+
+**EFQGWA8F v15/Battle** sends immediate5 plus concealed3 to Habbanya17
+for original Guild1, Richese4→3 and Guild6→7. Real CHOAM Heighliners1
+stays pending until movement ends, then wallet19→20 with its token cleared.
+Original Habbanya/Arrakeen cards remain retained. Human Cunning, token,
+typed-casualty, equal-substitution and Face-Dance/replacement controls,
+refresh and public ownership are observed without root390px overflow.
+All controlled relocation is labeled; no wallet, phase, module-owner,
+revealed-stock or hidden-hand grants are used. Only dedicated QA rooms change.
+
+Borrowed Voice, worm-protection reaction policy, Tleilaxu revival accounting,
+Richese cache/mixed-plan rulings and general reactive Betrayal policy remain
+guarded. Full rules, assurance, calibration, public and deployed gates stay open.
+
 ## Classic Tech and Stronghold composition — 4 October 2026
 
 The existing fresh local `nexus` entry preserves unused original Tech Tokens

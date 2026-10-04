@@ -16,6 +16,27 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Paired E1/E2 Nexus / Tech / Strongholds — bounded Development Verified:**
+fresh both Ixians+Tleilaxu OR CHOAM+Richese plus classics/one family deck
+preserves Tech3..6 Basic/Advanced and Strongholds2..6 Advanced without Skills.
+New18/affected139, types/lint/build, eight actual native programs and all four
+legal paired-shipment/Face-Dance policies pass. Eight genuine five-seat games
+complete3,926 accepted actions/no rejection/102 JSON continuations and six
+real closing Nexus choices; natural Cunning use is not claimed.
+Original backed-up CLI **7N2FKGKW / EFQGWA8F v10/setup** preserves actors
+and first deals. Human390px **7N2FKGKW v30/Collection** activates full-turn
+Suboids; actual Arrakeen and HMS-copy support each pays bank1/own0.
+Three lost Cyborgs return by equal three-Suboid sacrifice; a subsequent original
+Dominic Face Dancer returns two remaining winners and places two Tleilaxu
+reserves inside HMS. Original Heighliners/Production remain at Ix; Tleilaxu
+Cunning replaces only the revealed physical card and keeps Burseg/Soo-Soo.
+**EFQGWA8F v15/Battle** sends immediate5/concealed3 to Habbanya17 for
+Guild1 (Richese4→3/Guild6→7); real CHOAM Heighliners1 pays only at movement
+end, wallet19→20. Original held cards, private controls/inspector/refresh and
+no root390px overflow remain. Controlled positions are labeled and only QA
+rooms change. [Scope, commands and bounded evidence](NEXUS_CARD_RULES.md#paired-e1e2-tech-and-stronghold-composition--4-october-2026)
+preserve mixed-family/E3/Skills/HW/public/deployment and pending-ruling gates.
+
 **Classic Nexus / Tech / Strongholds — bounded Development Verified:**
 fresh classic/base33/all12 Nexus composes Tech3..6 Basic/Advanced and/or
 Advanced Strongholds2..6, without Skills, public starts or new rulings.

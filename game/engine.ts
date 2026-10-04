@@ -1,4 +1,4 @@
-import { classicNexusModulesProfile } from './nexus-module-profile';
+import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
@@ -9198,8 +9198,9 @@ export function initializePairedNexusGameForAudit(state: Game): Game {
       state.players.some(player => player.faction === 'tleilaxu'))),
     'The paired Nexus sample requires both selected expansion factions and their deck.');
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null &&
-    !state.homeworlds && !state.leaderSkills && !state.discoveryEnabled && !state.ecazTreachery,
-    'Enable only Nexus Cards in a fresh paired expansion lobby.');
+    !state.homeworlds && !state.leaderSkills && !state.discoveryEnabled && !state.ecazTreachery &&
+    ((!state.techTokens && !state.strongholdCards) || pairedNexusModulesProfile(state)),
+    'Enable Nexus Cards with only supported unused paired E1/E2 Tech or Advanced Stronghold components.');
   return initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
 }
 
@@ -9432,7 +9433,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
-  const nexusModules = nexus && classicNexusModulesProfile(g);
+  const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');

@@ -1,3 +1,4 @@
+import { pairedNexusModulesProfile } from '../game/nexus-module-profile';
 import type { DatabaseSync } from 'node:sqlite';
 import {
   initializeIxGameForAudit,
@@ -7,6 +8,7 @@ import {
   initializeFactionExpansionsGameForAudit,
   initializeStrongholdFactionsGameForAudit,
   initializeNexusGameForAudit,
+  initializePairedNexusGameForAudit,
   initializeMoritaniAssassinateGameForAudit,
   initializeEcazTreacheryGameForAudit,
   initializeEcazOccupyGameForAudit,
@@ -94,6 +96,7 @@ export function startPrototypeRoom(
     throw new Error('--mentat-question requires the leader-skills profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if (options.mentatQuestion) initial.mentatQuestionPreview = true;
+  if (profile === 'nexus' && !initial.nexusCards) initial.nexusCards = { cards: null, phase: null };
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)
@@ -142,10 +145,9 @@ export function startPrototypeRoom(
       : profile === 'factions'
         ? initializeFactionExpansionsGameForAudit(initial)
         : profile === 'nexus'
-          ? initializeNexusGameForAudit({
-              ...initial,
-              nexusCards: initial.nexusCards ?? { cards: null, phase: null },
-            })
+          ? pairedNexusModulesProfile(initial)
+            ? initializePairedNexusGameForAudit(initial)
+            : initializeNexusGameForAudit(initial)
           : profile === 'leader-skills'
             ? initializeLeaderSkillsGameForAudit(initial)
           : profile === 'banker-income'

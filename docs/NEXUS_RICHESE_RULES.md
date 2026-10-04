@@ -70,6 +70,22 @@ The card is discarded at declaration. The native No-Field Karama cancellation pr
 
 An owner-only control distinguishes ordinary No-Field, Smuggler and Nexus pair choices. All four bot profiles have a minimal legal pair candidate. The pending frame binds both physical identities, owner, token event, destination and one-marker price through JSON and in-memory SQLite CAS recovery. Public logs disclose the immediate faceup value/actual force count after settlement; the rival projection contains no concealed token identity or owner-only offer. Signatures detect partial saved-frame corruption, not arbitrary save forgery. Combined modules, allied No-Fields, high-Richese additional-force effects, later faceup display mechanics and full Nexus acceptance remain open. Betrayal now has its separate bounded auction contract below; the Cunning evidence does not verify that path.
 
+### Paired Tech/Stronghold composition — 4 October 2026
+
+The fresh local paired CHOAM/Richese Nexus entry additionally preserves original
+Tech Tokens at3..6 Basic/Advanced and/or Stronghold Cards at2..6 Advanced,
+without Skills or other overlays. It retains the exact native pair, classic
+opponents, CHOAM deck/cache and genuine closing deals. The existing pair
+convention above is unchanged. Accepted off-planet placement activates actual
+Heighliners once, collected at native phase end; a stopped pair activates none.
+Immediate/later revelation, reserve cap, previous-token restriction and original
+Guild invoice remain. After voluntary revelation, ordinary Advanced battle
+plans compose retained Habbanya and original CHOAM income/Tech reward without
+entering mixed No-Field dialing. [Scope and bounded evidence](NEXUS_CARD_RULES.md#paired-e1e2-tech-and-stronghold-composition--4-october-2026)
+does not settle the separate cache, high-Richese, allied-marker, faceup-display
+or public/full-module boundaries.
+
+
 ## Existing integration points and verification
 
 `game/shipment-price.ts` already separates ordinary reserve prices, Guild cross-shipment prices and contributor-filtered Guild income. The ordinary engine chain is `validatePhysicalShipment` → `offerShipment` → `commitShipment`; its checks use native reserve withdrawal, typed counters, arrival stance, actual geography and shipment promises. Introduce a validated charged-count basis without replacing the physical amount. Keep current low-Junction income and occupied-payment routing after the reduced gross is computed.
