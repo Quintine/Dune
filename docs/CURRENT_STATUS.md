@@ -37,6 +37,12 @@ Full rules, assurance, AI, public and deployed acceptance remain open.
 Final guide10/10, types/lint/build and rebuilt390px E3 reference pass
 (351px topic, no overflow). Final isolated reload retains original human
 v13/Collection andv13/Mentat; owned drivers/tabs are removed, rooms/store remain.
+Code **2b7202161170a7e0c108389c273b0cc1591603ac** is pushed.
+[Exact CI37165705653](https://github.com/Quintine/Dune/actions/runs/37165705653),
+container job111328037714, completed/success: isolated storage/HTTP step7
+and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-2b7202161170a7e0c108389c273b0cc1591603ac`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 **Advanced Skills / Stronghold Cards — bounded Development Verified:**
 fresh classic or supported E1/E2 native2..6 Advanced preserves original

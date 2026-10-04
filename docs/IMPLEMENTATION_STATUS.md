@@ -28,6 +28,12 @@ and separately quoted Collection remain; refresh/no overflow pass.
 Detailed mechanics/evidence:
 [existing runtime](LEADER_SKILLS_RUNTIME.md#standalone-e3-module-composition--4-october-2026).
 No full rules, assurance, strategic-AI, public or deployed claim.
+Code **2b7202161170a7e0c108389c273b0cc1591603ac** is pushed.
+[Exact CI37165705653](https://github.com/Quintine/Dune/actions/runs/37165705653),
+container job111328037714, completed/success: isolated storage/HTTP step7
+and subsequent verified-image publication step9 both pass:
+`ghcr.io/quintine/dune:sha-2b7202161170a7e0c108389c273b0cc1591603ac`.
+Publication is not deployment; live **ab5c782** remains last observed.
 
 ## 4 October 2026 — Advanced Skills and Strongholds, with optional Tech
 
