@@ -53,9 +53,9 @@ games complete16,094 accepted actions/no rejection,420 JSON continuations and
 22 actual closing choices. Natural Cunning combinations are not claimed.
 Reports under `/tmp/dune-paired-nexus-skills-{tech,stronghold,both}-games-20261005`
 capture unchanged tree `472b5705ca5376fb95f8e6ff6f40192d9f1745d7d08c41efdef2b3e53783139a`.
-An older native marker fixture's scalar action entropy is controlled after an
-intermittent missing-marker assertion; its nine cases and final175 union pass.
-No production marker behavior or unresolved ruling is changed for that fixture.
+An older native fixture's initializer remainder and scalar actions are now
+controlled after intermittent marker/held-owner assertions; final59 module/
+native cases, types/lint/build pass. No production behavior or ruling changes.
 
 Original backed-up CLI **PPL5CNEB / TZRU5GYP v10/setup** preserves first
 offers/hands/IDs after only the original14 pre-deal shuffle. Controlled390px

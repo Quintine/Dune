@@ -1,6 +1,6 @@
 // Runs only against a disposable container and volume created by this command.
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
@@ -15,6 +15,13 @@ const docker = (...args) => execFileSync('docker', args, { encoding: 'utf8' }).t
 let base;
 const adminFiles = mkdtempSync(joinPath(tmpdir(), 'dune-admin-container-'));
 let adminCookie;
+let stage = 'isolated volume and cold start';
+function annotateFailure(message) {
+  if (process.env.GITHUB_ACTIONS !== 'true') return;
+  const safe = String(message).replaceAll(/dune-admin\.[0-9a-f-]{36}\.[0-9a-f]{64}/g, '[REDACTED ADMIN KEY]')
+    .replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+  console.error(`::error title=Container verification - ${stage}::${safe}`);
+}
 async function ready() {
   for (let attempt = 0; attempt < 90; attempt++) {
     try {
@@ -42,12 +49,14 @@ try {
   docker('volume', 'create', volume);
   start();
   await ready();
+  stage = 'first owner bootstrap and login';
   const bootstrapKey = checkBootstrap(1);
   const ownerLogin = await fetch(`${base}/api/admin/session`, {
     method: 'POST', headers: { 'content-type': 'application/json', origin: base },
     body: JSON.stringify({ action: 'login', key: bootstrapKey }),
   });
   assert.equal(ownerLogin.status, 200, 'Bootstrapped owner must be able to sign in');
+  stage = 'operator provisioning and login';
   execFileSync('node', ['tools/admin-access.mjs', '--name', 'Container QA', '--role', 'operator', '--out', joinPath(adminFiles, 'key')]);
   execFileSync('docker', ['exec', '-i', name, 'node', '-e', "require('node:fs').writeFileSync('/tmp/dune-admin-provision.sql', require('node:fs').readFileSync(0), {mode:0o600})"], {
     input: readFileSync(joinPath(adminFiles, 'key/provision.sql')), // Container USER owns this private file.
@@ -61,6 +70,7 @@ try {
   assert.equal(adminLogin.status, 200);
   adminCookie = adminLogin.headers.get('set-cookie')?.split(';')[0];
   assert.ok(adminCookie);
+  stage = 'mapped origin and room creation';
   const headers = { 'content-type': 'application/json', origin: base };
   const body = JSON.stringify({ name: 'Container verification', faction: 'atreides', advanced: false, expansions: [] });
   const create = await fetch(`${base}/api/rooms`, { method: 'POST', headers, body });
@@ -81,23 +91,44 @@ try {
       assert.equal(admin.status, 200, 'Administrator session must survive replacement');
     }
   }
+  stage = 'container restart and saved witnesses';
   docker('restart', '--time', '60', name);
   // Docker may assign a different ephemeral host port after a restart.
   base = `http://${docker('port', name, '3000/tcp')}`;
   await ready();
   assert.equal(checkBootstrap(1), bootstrapKey, 'Restart must not replace the owner key');
   await restored();
+  stage = 'container replacement and bootstrap custody';
   docker('stop', '--time', '60', name);
   docker('rm', name);
   start();
   await ready();
   await restored();
   checkBootstrap(0);
+  stage = 'administrator HTTP acceptance';
   execFileSync('node', ['tools/verify-admin.mjs', '--url', base, '--key-file', joinPath(adminFiles, 'key/access-key.txt'), '--qa-account', adminKey.split('.')[1], '--out', joinPath(adminFiles, 'http')], { stdio: 'inherit' });
   adminCookie = undefined; // The acceptance test intentionally signs out all sessions.
-  execFileSync('npm', ['run', 'test:integration'], {
-    stdio: 'inherit', env: { ...process.env, DUNE_TEST_URL: base },
+  stage = 'HTTP integration';
+  const integration = spawnSync('npm', ['run', 'test:integration'], {
+    encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
+    env: { ...process.env, DUNE_TEST_URL: base },
   });
+  if (integration.stdout) process.stdout.write(integration.stdout);
+  if (integration.stderr) process.stderr.write(integration.stderr);
+  if (integration.error) throw integration.error;
+  if (integration.status !== 0) {
+    const details = `${integration.stdout ?? ''}\n${integration.stderr ?? ''}`;
+    const failures = details.match(/^\s*\u2716 [^\r\n]+/gm) ?? [];
+    const reported = new Set();
+    for (const failure of failures) {
+      const name = failure.trim();
+      if (name.includes('failing tests:') || reported.has(name)) continue;
+      reported.add(name); annotateFailure(name);
+      if (reported.size === 3) break;
+    }
+    throw new Error(`HTTP integration exited with ${integration.signal ?? integration.status}`);
+  }
+  stage = 'HTTPS proxy replacement and original witnesses';
   docker('stop', '--time', '60', name);
   docker('rm', name);
   const publicOrigin = 'https://dune.example.test';
@@ -105,12 +136,14 @@ try {
   await ready();
   await restored();
   checkBootstrap(0);
+  stage = 'HTTPS external-origin login and cookies';
   const proxyAdmin = await fetch(`${base}/api/admin/session`, {
     method: 'POST', headers: { 'content-type': 'application/json', origin: publicOrigin },
     body: JSON.stringify({ action: 'login', key: adminKey }),
   });
   assert.equal(proxyAdmin.status, 200);
   assert.ok(proxyAdmin.headers.get('set-cookie')?.includes('; Secure'));
+  stage = 'HTTPS external-origin room, join and discussion';
   const proxyCreate = await fetch(`${base}/api/rooms`, {
     method: 'POST', headers: { ...headers, origin: publicOrigin }, body,
   });
@@ -129,6 +162,7 @@ try {
     body: JSON.stringify({ id: randomUUID(), recipientId: null, text: 'Proxy verification' }),
   });
   assert.equal(message.status, 200, 'Table discussion must work through HTTPS proxy');
+  stage = 'foreign-origin mutation rejection';
   for (const path of ['/api/rooms', `/api/rooms/${proxyRoom.code}`, `/api/rooms/${proxyRoom.code}/control`, `/api/rooms/${proxyRoom.code}/messages`]) {
     const rejected = await fetch(base + path, {
       method: 'POST', headers: { ...headers, origin: 'https://foreign.invalid' }, body,
@@ -137,6 +171,14 @@ try {
   }
   console.log('Container origin, restart, replacement, saved seat and HTTP integration checks passed.');
 } catch (error) {
+  annotateFailure(String(error?.message ?? error).split('\n')[0]);
+  if (stage === 'administrator HTTP acceptance') {
+    try {
+      const report = JSON.parse(readFileSync(joinPath(adminFiles, 'http/report.json'), 'utf8'));
+      const request = report.failureRequest ?? report.lastRequest;
+      if (request) annotateFailure(`${request.path} returned ${request.status}; ${report.failureLocation ?? 'see the failed acceptance check'}`);
+    } catch { /* Early failures may not create the private report; the original error remains fatal. */ }
+  }
   try { console.error(docker('logs', name).replaceAll(/dune-admin\.[0-9a-f-]{36}\.[0-9a-f]{64}/g, '[REDACTED ADMIN KEY]')); } catch { /* May not exist yet. */ }
   throw error;
 } finally {

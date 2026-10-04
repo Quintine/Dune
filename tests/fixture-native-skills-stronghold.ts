@@ -100,8 +100,8 @@ export function nextNativeSkillsStrongholdStep(game: Game): StrongholdFactionsNa
   return game.players.some(p => p.faction === 'richese')
     ? nextRicheseStrongholdsNativeStep(game) : nextStrongholdFactionsNativeStep(game);
 }
-function act(game: Game, next: StrongholdFactionsNativeStep, actions?: StrongholdFactionsNativeStep[]): Game {
-  actions?.push(structuredClone(next));
+/** Scope the original initializer remainder and later native shuffles alike. */
+function nativeScalarEntropy<T>(run: () => T): T {
   const descriptor = Object.getOwnPropertyDescriptor(crypto, 'getRandomValues');
   const native = crypto.getRandomValues.bind(crypto);
   crypto.getRandomValues = <V extends ArrayBufferView | null>(array: V): V => {
@@ -109,11 +109,15 @@ function act(game: Game, next: StrongholdFactionsNativeStep, actions?: Stronghol
     else Reflect.apply(native, crypto, [array]);
     return array;
   };
-  try { return applyAction(game, next.actor, next.action); }
+  try { return run(); }
   finally {
     if (descriptor) Object.defineProperty(crypto, 'getRandomValues', descriptor);
     else Reflect.deleteProperty(crypto, 'getRandomValues');
   }
+}
+function act(game: Game, next: StrongholdFactionsNativeStep, actions?: StrongholdFactionsNativeStep[]): Game {
+  actions?.push(structuredClone(next));
+  return nativeScalarEntropy(() => applyAction(game, next.actor, next.action));
 }
 export function advanceNativeSkillsStronghold(state: Game, until: (g: Game) => boolean,
   actions?: StrongholdFactionsNativeStep[], firstDial = 0): Game {
@@ -209,9 +213,9 @@ export function createNativeSkillsStrongholdFixture(options: NativeSkillsStrongh
   if (options.optionalTech && !game.techTokens) game = applyAction(game, game.host, { type: 'techTokens', enabled: true });
   if (game.techTokens) assert.ok(game.players.length >= 3);
   const initial = structuredClone(game), actions: StrongholdFactionsNativeStep[] = [],
-    staging: string[] = ['Scoped original scalar action entropy keeps native source programs reproducible; UUID byte arrays remain native.'];
+    staging: string[] = ['Scoped original initializer and scalar action entropy keeps native source programs reproducible; UUID byte arrays remain native.'];
   const native: AdvancedNativeSkillsOptions = { family, skillOwner: ownerFaction, requestedSkill: 'suk-graduate', initial: game };
-  game = initializeAdvancedNativeSkillsSetup(native);
+  game = nativeScalarEntropy(() => initializeAdvancedNativeSkillsSetup(native));
   const offered = structuredClone(game);
   for (let i = 0; game.status === 'setup' && i < 200; i++) {
     if (game.setupStage === 'leaderSkills') {

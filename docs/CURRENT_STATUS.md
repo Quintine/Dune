@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 4 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 5 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -16,6 +16,25 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Paired checkpoint publication blocked:** code
+**2d24f4372196515b4b4b07555e5af518a209e18b** is pushed.
+[CI37208188809](https://github.com/Quintine/Dune/actions/runs/37208188809) /
+container111453717886 failed isolated storage/HTTP step7; publication step9
+was correctly skipped. Public job/annotations show only exit1; detailed logs
+require unavailable authenticated access. Investigation uses the original
+proxy-free `deploy/serve.mjs` with Node22 and a new private QA store, never an
+existing game database or unsafe POST retry. Original owner/operator login,
+foreign-origin rejection,25 administrator HTTP checks and the exact55/55 HTTP
+integration cases pass there. Original room/seat/admin witnesses survive
+process replacement; HTTPS external-origin login/Secure cookies, creation,
+join/discussion and four foreign-mutation rejections also pass. This is
+proxy-free Node22 evidence, not a passing Docker/CI claim. The failed job's
+specific boundary is still unknown. `tools/verify-container.mjs` now reports
+redacted failing stages and up to three failing integration names as public
+CI annotations while retaining nonzero failure and the publication gate.
+Local fail-closed diagnostic smoke emits the missing-Docker stage and exit1.
+No successful publication or deployed claim is made for this checkpoint.
+
 **Paired E1/E2 Nexus / Skills / Tech / Strongholds — bounded Development Verified:**
 both Ixians+Tleilaxu OR CHOAM+Richese plus classics, one original family47/
 35+cache deck/all14/all12, selected unused Tech3..6 Basic/Advanced and/or
@@ -27,8 +46,8 @@ rejects and four legal policies pass. Thirty-four genuine2..6 games complete
 16,094 accepted actions/no rejection,420 JSON continuations and22 actual
 closing choices on unchanged tree
 `472b5705ca5376fb95f8e6ff6f40192d9f1745d7d08c41efdef2b3e53783139a`.
-An older native marker fixture's unseeded scalar actions are now controlled;
-all nine native cases and the frozen175-case union pass afterward.
+The older native fixture now controls the original initializer remainder and
+later scalar actions; final59 module/native cases, types/lint/build pass.
 Original backed-up CLI **PPL5CNEB / TZRU5GYP v10/setup** retains actual
 offers/hands/IDs after a scoped original14 shuffle. Human390px **PPL5CNEB
 v28/Collection** copies held Arrakeen into HMS, uses full Suboids and trained
