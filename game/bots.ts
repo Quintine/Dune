@@ -1132,11 +1132,37 @@ function saphoAction(g: GameView): Action | null {
     options.find((candidate) => candidate.mode === preferred) ?? options[0];
   return { type: 'card', card: card.id, ...option };
 }
+function tupileCleanupActions(g: GameView): Action[] {
+  const me = g.players.find((player) => player.id === g.me);
+  const offer = g.homeworldTupileCleanup;
+  if (!me || !(me.bot ?? me.autopilot) || g.status !== 'playing' ||
+      g.roomControl?.paused || g.roomControl?.closed || g.automaticContinuationPending ||
+      g.response || g.truthtrance || !offer || offer.blocked ||
+      offer.player !== g.me || g.decision?.kind !== 'homeworldTupileCleanup' ||
+      g.decision.player !== g.me || g.decision.event !== offer.event ||
+      !Number.isSafeInteger(offer.excess) || offer.excess <= 0)
+    return [];
+  const eligible = new Set(offer.eligibleCards);
+  const seen = new Set<string>();
+  const cards = (me.hand ?? []).filter((card) => {
+    if (!eligible.has(card.id) || seen.has(card.id)) return false;
+    seen.add(card.id);
+    return true;
+  }).sort((a, b) => technologyCardValue(g, a) - technologyCardValue(g, b) ||
+    a.id.localeCompare(b.id));
+  if (cards.length < offer.excess) return [];
+  return [{ type: 'decision', event: offer.event,
+    cards: cards.slice(0, offer.excess).map((card) => card.id) }];
+}
+
 function policyActions(g: GameView): Action[] {
   const me = g.players.find((p) => p.id === g.me)!;
   const level = rank(g);
   if (!(me.bot ?? me.autopilot) || g.status === 'finished') return [];
   if (g.status === 'lobby') return me.ready ? [] : [{ type: 'ready' }];
+  if (g.homeworldTupileBlocked) return [];
+  if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)
+    return tupileCleanupActions(g);
   if (!g.decision && !g.response && g.richeseBidding?.stage === 'cacheOffer' && g.richeseBidding.offerBlocked)
     return [];
   // Resolve these original source choices before unrelated optional card plays.
@@ -3886,6 +3912,9 @@ function standaloneGholaAction(g: GameView, ordinary: Action[]): Action | null {
 
 /** Obligations apply across policy branches, including choosing to move first. */
 export function botActions(g: GameView): Action[] {
+  if (g.homeworldTupileBlocked) return [];
+  if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)
+    return tupileCleanupActions(g);
   if (g.nexusHarkonnenBetrayalReaction) {
     if (g.status !== 'playing' || g.roomControl?.paused || g.roomControl?.closed ||
         g.automaticContinuationPending) return [];

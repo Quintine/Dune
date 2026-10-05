@@ -8,6 +8,7 @@ const DECISIONS = {
   homeworldOccupiedIncome: true,
   homeworldOccupiedPercentage: true,
   homeworldOccupiedBonus: true,
+  homeworldTupileCleanup: true,
   leaderSkillVisibility: true,
   leaderSkillRevival: true,
   moritaniAssassinate: true,

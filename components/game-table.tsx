@@ -27,6 +27,7 @@ import { GrummanCollection } from './grumman-collection';
 import { HomeworldOccupiedIncome } from './homeworld-occupied-income';
 import { HomeworldOccupiedPercentage } from './homeworld-occupied-percentage';
 import { HomeworldOccupiedBonus } from './homeworld-occupied-bonus';
+import { HomeworldTupileCleanup } from './homeworld-tupile-cleanup';
 import { TupileIntelligence } from './tupile-intelligence';
 import { NexusCards } from './nexus-cards';
 import { NexusTraitors } from './nexus-traitors';
@@ -1107,6 +1108,25 @@ export function GameTable({
           unresolved competing-owner cases remain guarded. Not complete or certified Homeworld rules.{' '}
           <a href="/rules?topic=homeworlds#homeworlds">Preview rules and limits</a>
         </output>
+      )}
+      {g.homeworldTupilePreview && (
+        <output className="notice block">
+          Occupied Tupile development preview · the occupier and reciprocal ally
+          each gain one server-derived hand slot; losing it requires the original
+          owner to discard eligible held cards to the normal limit. Advanced rulebook
+          page 22 retains occupation benefits until the occupier’s last own force
+          leaves, not on contests, native high population or turn changes; a new sole
+          occupier after departure starts a new epoch. Basic unresolved expiry and
+          competing-owner cases remain guarded. No extra card or spice is granted.
+          Not complete or certified Homeworld rules.{' '}
+          <a href="/rules?topic=homeworlds#homeworlds">Preview rules and limits</a>
+        </output>
+      )}
+      {g.homeworldTupileBlocked && (
+        <output className="notice block">{g.homeworldTupileBlocked}</output>
+      )}
+      {g.homeworldTupileCleanup?.blocked && (g.decision?.kind !== 'homeworldTupileCleanup' || g.decision.player !== g.me || g.decision.event !== g.homeworldTupileCleanup.event) && (
+        <HomeworldTupileCleanup game={g} act={act} busy={true} />
       )}
       {g.homeworldOccupiedPercentage?.blocked && (g.decision?.kind !== 'homeworldOccupiedPercentage' || g.decision.player !== g.me) && (
         <HomeworldOccupiedPercentage game={g} act={act} busy={true} />
@@ -2486,6 +2506,8 @@ export function GameTable({
                   ? 'Occupied Homeworld percentage income'
                   : g.decision.kind === 'homeworldOccupiedBonus'
                   ? 'Occupied Giedi Prime bonus card'
+                  : g.decision.kind === 'homeworldTupileCleanup'
+                  ? 'Occupied Tupile · return to the normal hand limit'
                   : g.decision.kind === 'leaderSkillVisibility'
                     ? 'Position your skilled leader'
                   : g.decision.kind === 'mentatQuestion'
@@ -2819,6 +2841,8 @@ export function GameTable({
                 <HomeworldOccupiedPercentage game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'homeworldOccupiedBonus' ? (
                 <HomeworldOccupiedBonus game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'homeworldTupileCleanup' ? (
+                <HomeworldTupileCleanup game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'ecazSpice' ? (
                 g.ecazSpice?.allocation ? (
                   <EcazSpice

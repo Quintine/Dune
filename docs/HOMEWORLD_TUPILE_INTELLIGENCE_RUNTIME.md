@@ -2,7 +2,85 @@
 
 Runtime checkpoint, 10 September 2026. Native CHOAM can now request and retain a private Tupile intelligence observation in a game with proven setup history. This implements the bounded disclosure described in the [source contract](HOMEWORLD_TUPILE_INTELLIGENCE_RULES.md); occupation entitlement, expiry and occupied income remain unresolved. Advanced and unfinished expansion starts, publication and complete-rules release retain the gates in [README](../README.md).
 
-## Request and historical answer
+## Occupied Tupile slots and original cleanup — 5 October 2026
+
+The fresh original `homeworld-occupation` entry now separately enables Tupile
+capacity when native CHOAM is seated. `homeworldTupilePreview` and the original
+lease ledger are initialized at that unused entry only. Older occupation profiles
+are not converted and no current garrison supplies a missing source.
+
+The proved occupier and current reciprocal ally each receive **one** hand slot:
+regular4→5 or Harkonnen8→9. The same server-derived flag feeds every existing
+hand-capacity consumer, including auctions, gifts, searches, exchanges and actual
+bonus receivers; clients and bots never add a second slot. Original Atomics
+reduction composes with the native limit, not with a fabricated faction identity.
+The native CHOAM cannot ally with its own occupier to receive this benefit.
+
+Advanced uses the authorized supplied physical p22 retention rule. Losing the
+last force closes the original source epoch; ally removal/replacement closes the
+former ally’s grant. Original pending/completed cleanup events identify the lost
+lease and holder. A later lease cannot lend new space before its older cleanup
+settles. Basic unknown expiry/competition/native restoration preserves its last
+proved ledger/flags and blocks source-dependent controls; it never guesses a new
+holder or forces an unsupported discard. A genuinely observed continuous Basic
+turn qualification retains its one lease rather than stacking another slot.
+
+Each overfull old holder selects exactly its actual excess held IDs to reach the
+normal limit. No random discard, duplicate item, new draw or second payment is
+introduced. Protected/committed cards stay unavailable. Queued cleanup begins at
+a settled original control boundary after active battle/arrival/card obligations;
+the original phase opening is preserved, and remaining movement is not consumed.
+This scheduling/old-holder ordering is explicit application composition, not a
+new retrieved publisher priority FAQ. Normal discard effects remain separate.
+Reading a view or replaying an old event cannot dispose of another card.
+
+The fresh marker also makes low-intelligence availability use this authority.
+Known occupation suppresses new questions; proved Advanced departure restores
+the low opportunity when actual contact/population permit it. Past private
+answers and lifetime faction usage remain intact. Unmarked profiles retain the
+historical source guard below.
+
+Original programs prove two actual owed cleanups, all4 legal policies, private
+choices/JSON/replay rejection, restored native low inquiry and once-per-faction
+use. An actual native Harkonnen auction buys its ninth card but draws no tenth.
+Another original paid return moves the last typed visitor from Tupile to Junction
+for1 spice; both normal-limit cleanups preserve the unused original movement,
+force inventory, physical cards and one price.
+
+Human original CLI **D54MY8JJ v18/setup** preserves the selected deck, actors and
+starting choices. Real second-turn Nexus earns Guild/Harkonnen alliance before a
+labelled conserved post-Charity position. At390px, Harkonnen8/9 bids5 and reaches
+**v26 hand9/9**, spice12→7, with no extra card. Actual Guild return from Tupile
+to Junction costs1 (6→5), then its private Cheap Hero discard5→4 atv29 precedes
+Harkonnen’s own Jubba Cloak discard9→8 atv30. The real counter returns once;
+Guild remains active with its shipment used and movement unused. Refresh shows
+4/4 and original movement controls without root390px overflow. Only this QA
+record changes; no reset, credential disclosure or played-game conversion.
+
+Source cases19/related143 including guidance, types/lint/build and original
+runtime smoke pass. After the real Guild turn ends atv31, a separate labelled
+conserved contact restores one native force and places one unqualified Fremen
+beside it; no new occupier is created. Human **v33** records its private3 spice/
+0 weapons once, while a rival receives no panel. Refresh retains the historical
+observation and already-used-faction reason; no request is repeated.
+
+Ten genuine original samples run on unchanged tree
+`52ccb9305255ecf7234be7a98aea43f7cf44630215639042c50bb0474e93e892`.
+Allfive six-seat Advanced samples finish4,339 accepted/4,358 attempts/114 JSON.
+Four of five five-seat Basic samples finish2,430/2,449/64; allfive total
+2,527/2,547/66. The exact Atreides5Basic seed20263432 capture retains its existing
+contested Southern occupation guard. No source weakening or favorable replacement
+seed. These games exercise continuation but contain **zero owed Tupile cleanup
+choices**; the native programs and human actual return, not those counts, prove
+the changed cleanup path. Full-mode/zero-rejection claims remain excluded.
+
+See [lease source](../game/homeworld-occupied-tupile.ts),
+[real consumers](../tests/homeworld-occupied-tupile-runtime.test.ts) and
+[private cleanup controls](../components/homeworld-tupile-cleanup.tsx).
+Full Homeworld/module combinations, pending Basic/CHOAM rulings, normal starts,
+assurance and deployed acceptance remain separate.
+
+## Historical request and answer checkpoint
 
 The engine accepts `{ type: 'tupileIntelligence', target, category }`, where `target` identifies a seated opposing faction and `category` is `weapons` or `defenses`. The server validates current eligibility before reading the answer or consuming use:
 

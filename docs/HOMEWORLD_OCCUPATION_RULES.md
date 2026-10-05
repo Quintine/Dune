@@ -42,8 +42,9 @@ occupied card selection is not authority to invent a sale after cancellation.
 Actual Collection percentage credits feed the original once-per-phase Giedi
 spice hook. Private producer proofs and suspended invoices stay server-private.
 Original receipt-free occupation captures may admit a new source lazily; no past
-percentage is back-awarded. Public starts, played-game conversion, other modules,
-occupied Tupile capacity/cleanup and exceptional Duke custody remain separate.
+percentage is back-awarded. A separate fresh marker now connects
+[occupied Tupile slots/cleanup and low-query restoration](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupied-tupile-slots-and-original-cleanup--5-october-2026).
+Public starts, played-game conversion, other modules and exceptional Duke custody remain separate.
 See [percentage receipts](../game/homeworld-occupied-percentage.ts),
 [Bidding authority](../game/homeworld-occupied-bidding.ts) and
 [original consumer programs](../tests/homeworld-occupied-producers-engine.test.ts).
@@ -215,6 +216,8 @@ The following is an implementation design derived from those timing requirements
 6. Use a separate once-only Collection receipt for any awarded bank income and its immediate ally allocation. Qualification, refresh, view projection and JSON normalization must not themselves mint spice. A later qualification is not an instruction to replay an earlier Collection.
 
 A public qualification record needs no hand, Traitor, Face Dancer or sealed-plan data. Malformed initialized evidence must fail validation; a legacy save lacking history cannot be claimed to prove that no earlier qualifier existed. Resolving entitlement by scanning current armies alone would discard the distinction the publisher created.
+
+<a id="questions-the-retrieved-sources-do-not-settle"></a>
 
 ## Basic source questions and historical publisher gaps
 

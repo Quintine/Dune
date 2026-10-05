@@ -17,6 +17,39 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Occupied Tupile slots / normal-limit cleanup — bounded Development Verified:**
+fresh native CHOAM/Homeworld entries alone initialize the source marker/ledger;
+older occupation profiles remain unchanged. One validated slot per occupier/
+reciprocal ally feeds every existing capacity consumer. Advanced last departure
+and ally removal queue original holder-selected excess discards; Basic unknown
+expiry freezes its proved ledger/flags and blocks rather than guesses cleanup.
+Known occupation suppresses new low queries; proved expiry restores eligible
+contact without clearing historical private answers or lifetime usage.
+
+Source19/affected143 including guide cases, types/lint/build, all4 legal policies
+and actual native programs pass. Original Harkonnen buys its ninth card without
+a tenth bonus; real Tupile→Junction return1 queues both old-holder debts and
+preserves remaining movement, cards, typed forces and one price. Completed
+automatic invoices are accepted by the program helper; Basic genuinely observed
+continuous qualification retains one lease, unlike an unobserved turn boundary.
+
+Ten genuine samples on unchanged52ccb930 tree: allfive six-seat Advanced finish
+4,339/4,358/114 accepted/attempts/JSON; four of five five-seat Basic finish
+2,430/2,449/64, allfive total2,527/2,547/66. Atreides5Basic retains original
+seed20263432 contested Southern guard. Natural samples containzero owed cleanup
+choices, so changed-path proof is the original native program/human return.
+
+Original backed-up **D54MY8JJ v18/setup**, real turn-two Guild/Harkonnen Nexus
+alliance and labelled conserved post-Charity positions retain actors/deck/clock.
+Human390px Harkonnen8/9 buys5 atv26 (12→7) and holds9/9. Actual Guild last visitor
+returns1 to Junction for1 (6→5), then original Cheap Hero5→4 and ally Jubba9→8
+settle atv30 without another move/price. v31 ends only Guild’s original turn.
+A separate conserved native1/Fremen1 contact permits **v33** private3 spice/
+0 weapons; refresh keeps lifetime use and reveals no rival panel. No root390px
+overflow, reset, public activation or played-game upgrade. [Exact contract/evidence](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupied-tupile-slots-and-original-cleanup--5-october-2026).
+Full Homeworlds/overlays, Basic/CHOAM rulings, exceptional Duke, assurance and
+deployed acceptance remain open.
+
 **Occupied Homeworld economics / Bidding — bounded Development Verified:**
 original fresh2..6 Basic/Advanced setup and selected decks; Advanced uses the
 authorized supplied p22 sole qualification retained until its last force leaves,

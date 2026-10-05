@@ -32,16 +32,19 @@ export function advanceOriginal(game: Game, stop: (game: Game) => boolean, limit
 
 export function buyOriginalNormalLot(game: Game, buyer: string, amount: number): Game {
   assert.ok(game.auction && !game.phaseOpening && !game.response && !game.decision);
+  const card = game.auction.cards[game.auction.index].id;
   for (let step = 0; game.auction!.active !== buyer && step < game.players.length; step++)
     game = applyAction(game, game.auction!.active, { type: 'passBid' });
   assert.equal(game.auction!.active, buyer);
   game = applyAction(game, buyer, { type: 'bid', amount, allyPayment: 0 });
-  for (let step = 0; !game.currentAuctionSale && step < game.players.length + 2; step++) {
+  for (let step = 0; !game.currentAuctionSale && !game.players.find(player => player.id === buyer)!.hand.some(held => held.id === card) &&
+      step < game.players.length + 2; step++) {
     if (game.decision?.kind === 'auctionPayment')
       game = applyAction(game, buyer, { type: 'decision', karama: false });
     else game = applyAction(game, game.auction!.active, { type: 'passBid' });
   }
-  assert.ok(game.currentAuctionSale, 'the original purchase producer must own its paid invoice');
+  assert.ok(game.players.find(player => player.id === buyer)!.hand.some(held => held.id === card),
+    'the original purchase producer must deliver its actual physical card');
   return game;
 }
 

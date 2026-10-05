@@ -34,6 +34,7 @@ const decisions = {
   homeworldOccupiedIncome: true,
   homeworldOccupiedPercentage: true,
   homeworldOccupiedBonus: true,
+  homeworldTupileCleanup: true,
   caladanReinforcement: true,
   choamAudit: true,
   nexusChoamInspection: true,

@@ -98,6 +98,7 @@ import { beginHomeworldOccupiedIncome, quoteHomeworldOccupiedIncomeChoice, homew
 import { createOccupiedPercentageState, quoteOccupiedPercentageSource, allocateOccupiedPercentageReceipt, validateOccupiedPercentageState, type OccupiedPercentageState, type OccupiedPercentageSource } from './homeworld-occupied-percentage';
 import { quoteOccupiedBiddingAuthority, requireOccupiedBiddingController, requireOccupiedBiddingBonusRecipient } from './homeworld-occupied-bidding';
 import { quoteStableHomeworldOccupation } from './homeworld-stable-occupation';
+import { createOccupiedTupileState, syncOccupiedTupileLease, quoteOccupiedTupileAuthority, quoteOccupiedTupileCleanup, completeOccupiedTupileCleanup, validateOccupiedTupileState, type OccupiedTupileState } from './homeworld-occupied-tupile';
 import { quoteGrummanCollection, quoteGrummanCollectionAction } from './grumman-collection';
 import { grummanCollectionSignature, validateGrummanCollection, type GrummanCollection } from './grumman-collection-return';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
@@ -615,6 +616,8 @@ export type Player = {
   fremenNexusWormBlockedTurn?: number;
   /** Permanent printed one-card reduction after Atomics; bound to its Aftermath receipt. */
   atomicsHandLimitPenalty?: boolean;
+  /** Derived occupied Tupile slot, backed by the original fresh lease ledger. */
+  tupileHandSlot?: true;
   elites?: {
     reserves: number;
     tanks: number;
@@ -782,6 +785,7 @@ export type Decision =
   | { kind: 'homeworldOccupiedIncome'; player: string; event: string; world: string }
   | { kind: 'homeworldOccupiedPercentage'; player: string; event: string }
   | { kind: 'homeworldOccupiedBonus'; player: string; event: string }
+  | { kind: 'homeworldTupileCleanup'; player: string; event: string }
   | { kind: 'caladanReinforcement'; player: string; event: string }
   | { kind: 'choamAudit'; player: string; event: string }
   | { kind: 'nexusChoamInspection'; player: string; event: string }
@@ -1889,6 +1893,16 @@ export type Game = {
   homeworldOccupationHistory?: HomeworldOccupationHistory;
   /** Fresh development occupation entry only; never inferred for an older Homeworld save. */
   homeworldOccupationPreview?: true;
+  /** Fresh Tupile capacity entry only; older occupation games are not converted. */
+  homeworldTupilePreview?: true;
+  homeworldTupileState?: OccupiedTupileState;
+  pendingHomeworldTupileCleanup?: {
+    event: string;
+    player: string;
+    hand: string[];
+    opening: Game['phaseOpening'];
+    signature: string;
+  } | null;
   homeworldAuctionInspection?: { lot: string; audience: string[]; native: string | null; occupation: string; occupiedKnown: boolean };
   pendingHomeworldOccupiedIncome?: HomeworldOccupiedIncomeState | null;
   homeworldOccupiedIncomeHistory?: HomeworldOccupiedIncomeState[];
@@ -4565,11 +4579,14 @@ function richeseGiftView(g: Game, viewer: Player) {
       : null,
   };
 }
-export const handLimit = (
+export const nativeHandLimit = (
   p: Pick<Player, 'faction'> & Partial<Pick<Player, 'atomicsHandLimitPenalty'>>,
 ) =>
   (p.faction === 'harkonnen' ? 8 : p.faction === 'choam' ? 5 : 4) -
   Number(p.atomicsHandLimitPenalty === true);
+export const handLimit = (
+  p: Pick<Player, 'faction'> & Partial<Pick<Player, 'atomicsHandLimitPenalty' | 'tupileHandSlot'>>,
+) => nativeHandLimit(p) + Number(p.tupileHandSlot === true);
 
 function atomicsRule<T>(run: () => T): T {
   try { return run(); }
@@ -7494,7 +7511,7 @@ function requireFreshSetup(g: Game, allowIxElites = false) {
       p.advisors === undefined && p.gholaBlocked === undefined && p.ixMovementBlocked === undefined &&
       p.fremenMovementBlocked === undefined && p.fremenNexusMovementBlockedTurn === undefined &&
       p.fremenNexusWormBlockedTurn === undefined &&
-      p.atomicsHandLimitPenalty === undefined && p.faceDancers === undefined &&
+      p.atomicsHandLimitPenalty === undefined && p.tupileHandSlot === undefined && p.faceDancers === undefined &&
       p.faceDancerReplacedTurn === undefined && p.revealedTraitors === undefined;
   }), 'Starting setup requires unused native leaders and no prior alliance, revival or battle history.');
   requireRule(Object.keys(g.playerPositions ?? {}).every(id => g.players.some(p => p.id === id)),
@@ -8526,6 +8543,11 @@ export function initializeHomeworldOccupationGameForAudit(state: Game): Game {
   g.homeworldOccupiedPercentageLedger = createOccupiedPercentageState();
   g.pendingHomeworldOccupiedPercentage = null;
   g.pendingHomeworldOccupiedBonus = null;
+  if (byFaction(g, 'choam')) {
+    g.homeworldTupilePreview = true;
+    g.homeworldTupileState = createOccupiedTupileState();
+    g.pendingHomeworldTupileCleanup = null;
+  }
   return g;
 }
 /** Offline-only seam for the independent Nexus module; public starts remain gated. */
@@ -18317,6 +18339,7 @@ function observeOccupation(g: Game, cause: 'change' | 'turnStart' | 'turnEnd' = 
     cause === 'change'
       ? `homeworld-change-${g.homeworldOccupationHistory!.sources[0].event}-${g.homeworldOccupationHistory!.sources.length}`
       : `homeworld-turn-${g.turn}-${cause}`));
+  syncTupileSlots(g);
 }
 function homeworldHistoryIntegrity(g: Game) {
   const initialized = g.homeworlds?.historyVersion === 1;
@@ -18330,6 +18353,7 @@ function homeworldHistoryIntegrity(g: Game) {
   } else requireRule(g.tupileIntelligence === undefined, 'Tupile intelligence requires its original Homeworld history.');
   homeworldOccupiedIncomeIntegrity(g);
   occupiedPercentageIntegrity(g);
+  tupileSlotsIntegrity(g);
 }
 function homeworldOccupiedIncomeIntegrity(g: Game) {
   const pending = g.pendingHomeworldOccupiedIncome, history = g.homeworldOccupiedIncomeHistory;
@@ -18419,6 +18443,134 @@ function projectedHomeworldOccupiedIncome(g: Game, player: string) {
   if (g.decision?.kind !== 'homeworldOccupiedIncome' || !g.pendingHomeworldOccupiedIncome) return null;
   return homeworldRule(() => homeworldOccupiedIncomeOffer(g.pendingHomeworldOccupiedIncome!, g, player));
 }
+function tupileSlotsIntegrity(g: Game, dispatch?: Extract<Decision, { kind: 'homeworldTupileCleanup' }>) {
+  const state = g.homeworldTupileState, pending = g.pendingHomeworldTupileCleanup;
+  if (!g.homeworldTupilePreview) {
+    requireRule(state === undefined && pending === undefined &&
+      g.players.every(player => player.tupileHandSlot === undefined),
+    'Occupied Tupile slots require their original fresh profile.');
+    return;
+  }
+  requireRule(g.homeworldOccupationPreview && state, 'The original Tupile lease ledger is missing.');
+  homeworldRule(() => validateOccupiedTupileState(state, g));
+  const lease = state.current === null ? null : state.leases[state.current];
+  for (const player of g.players) {
+    const backed = !!lease?.holders.includes(player.id) &&
+      !state.cleanups.some(row => row.player === player.id && row.status === 'pending');
+    requireRule(player.tupileHandSlot === (backed ? true : undefined),
+      'The hand slot lost its original occupied Tupile grant.');
+  }
+  if (pending) {
+    const row = state.cleanups.find(row => row.event === pending.event);
+    const decision = g.decision ?? dispatch;
+    requireRule(row?.status === 'pending' && row.player === pending.player &&
+      pending.signature === JSON.stringify([pending.event, pending.player, pending.hand, pending.opening, g.turn, g.phase]) &&
+      JSON.stringify(pending.hand) === JSON.stringify(getPlayer(g, pending.player).hand.map(card => card.id)) &&
+      decision?.kind === 'homeworldTupileCleanup' && decision.player === pending.player &&
+      decision.event === pending.event && !g.response && !g.phaseOpening,
+    'The original Tupile hand cleanup or suspended opening changed.');
+  } else requireRule(g.decision?.kind !== 'homeworldTupileCleanup', 'The Tupile cleanup lost its original source.');
+}
+function syncTupileSlots(g: Game) {
+  if (!g.homeworldTupilePreview || g.status !== 'playing' || !g.homeworlds?.custody) return;
+  const result = homeworldRule(() => syncOccupiedTupileLease(g, g.homeworldTupileState!));
+  if (result.authority.status === 'unknown') return;
+  g.homeworldTupileState = result.state;
+  for (const player of g.players) {
+    if (result.slotHolders.includes(player.id)) player.tupileHandSlot = true;
+    else delete player.tupileHandSlot;
+  }
+}
+function tupileSourceBlock(g: Game): string | null {
+  return g.homeworldTupilePreview && g.status === 'playing' && g.homeworlds?.custody
+    ? homeworldRule(() => quoteOccupiedTupileAuthority(g)).blocked : null;
+}
+function tupileCleanupBoundary(g: Game): boolean {
+  return g.status === 'playing' && !g.decision && !g.response && !g.truthtrance &&
+    !g.pendingKarama && !g.pendingTreacheryDiscard && !g.pendingNullentropy &&
+    !g.pendingExchange && !g.pendingRicheseGift && !g.pendingRichesePurchaseIncome && !g.battle;
+}
+function pendingTupileCleanup(g: Game) {
+  const rows = g.homeworldTupileState?.cleanups;
+  if (!rows) return null;
+  for (const player of g.order) {
+    const row = rows.find(row => row.player === player && row.status === 'pending');
+    if (row) return row;
+  }
+  return null;
+}
+function prepareTupileCleanup(g: Game) {
+  if (!g.homeworldTupilePreview || g.pendingHomeworldTupileCleanup ||
+      !tupileCleanupBoundary(g) || tupileSourceBlock(g)) return;
+  for (;;) {
+    const row = pendingTupileCleanup(g);
+    if (!row) return;
+    const quote = homeworldRule(() => quoteOccupiedTupileCleanup(g, g.homeworldTupileState!, row.event));
+    if (quote.blocked) return;
+    if (!quote.excess) {
+      g.homeworldTupileState = homeworldRule(() => completeOccupiedTupileCleanup(g, g.homeworldTupileState!, row.event, row.player));
+      syncTupileSlots(g);
+      continue;
+    }
+    const hand = getPlayer(g, row.player).hand.map(card => card.id), opening = g.phaseOpening ?? null;
+    g.pendingHomeworldTupileCleanup = { event: row.event, player: row.player, hand, opening,
+      signature: JSON.stringify([row.event, row.player, hand, opening, g.turn, g.phase]) };
+    g.phaseOpening = null;
+    g.decision = { kind: 'homeworldTupileCleanup', player: row.player, event: row.event };
+    return;
+  }
+}
+function tupileCleanupCards(g: Game, player: Player): string[] {
+  return player.hand.filter(card => !transferCardBlock(g, player, card) &&
+    !giftReserved(g, player.id, card.id) && !retentionReservesCard(g, player.id, card.id))
+    .map(card => card.id);
+}
+function projectedTupileCleanup(g: Game, viewer: string) {
+  const pending = g.pendingHomeworldTupileCleanup;
+  if (!pending || pending.player !== viewer) return null;
+  tupileSlotsIntegrity(g);
+  const quote = homeworldRule(() => quoteOccupiedTupileCleanup(g, g.homeworldTupileState!, pending.event));
+  const player = getPlayer(g, pending.player), eligibleCards = tupileCleanupCards(g, player);
+  return { event: pending.event, player: player.id, playerName: player.name,
+    limit: quote.limit, excess: quote.excess, eligibleCards,
+    blocked: quote.blocked ?? (eligibleCards.length < quote.excess
+      ? 'The original committed cards must settle before this hand cleanup can complete.' : null) };
+}
+function decideTupileCleanup(g: Game, player: Player,
+  decision: Extract<Decision, { kind: 'homeworldTupileCleanup' }>, action: Action) {
+  tupileSlotsIntegrity(g, decision);
+  const pending = g.pendingHomeworldTupileCleanup!;
+  requireRule(pending && player.id === pending.player && action.event === pending.event &&
+    Object.keys(action).sort().join(',') === 'cards,event,type' && Array.isArray(action.cards) &&
+    action.cards.every(id => typeof id === 'string') && new Set(action.cards).size === action.cards.length,
+  'Choose the distinct original held cards for this Tupile cleanup.');
+  const quote = homeworldRule(() => quoteOccupiedTupileCleanup(g, g.homeworldTupileState!, pending.event));
+  const selected = action.cards as string[], eligible = tupileCleanupCards(g, player), physical = physicalTreacheryCards(g);
+  requireRule(!quote.blocked && selected.length === quote.excess &&
+    selected.every(id => eligible.includes(id) && physical.filter(card => card.id === id).length === 1),
+  'Discard exactly the normal-limit excess without consuming a reserved card.');
+  for (const id of selected) discard(g, player, id);
+  g.homeworldTupileState = homeworldRule(() => completeOccupiedTupileCleanup(g, g.homeworldTupileState!, pending.event, player.id));
+  g.pendingHomeworldTupileCleanup = null;
+  g.decision = null;
+  g.phaseOpening = pending.opening;
+  log(g, `${player.name} discarded ${selected.length} Treachery Card${selected.length === 1 ? '' : 's'} to the normal hand limit after losing the original occupied Tupile slot.`,
+    { faction: player.faction, name: 'Tupile hand cleanup' });
+  syncTupileSlots(g);
+  prepareTupileCleanup(g);
+}
+function tupileAutomatic(g: Game): boolean {
+  if (!g.homeworldTupilePreview || g.pendingHomeworldTupileCleanup ||
+      g.status !== 'playing' || !g.homeworlds?.custody || tupileSourceBlock(g)) return false;
+  const result = homeworldRule(() => syncOccupiedTupileLease(g, g.homeworldTupileState!));
+  return result.state.signature !== g.homeworldTupileState!.signature ||
+    !!(result.pending.length && tupileCleanupBoundary(g));
+}
+function currentTupileOccupation(g: Game) {
+  return g.homeworldTupilePreview
+    ? homeworldRule(() => quoteOccupiedTupileAuthority(g)).status
+    : tupileOccupationStatus(g.homeworldOccupationHistory, homeworldContext(g));
+}
 function tupileIntelligenceBlock(g: Game): string | null {
   if (!g.homeworlds?.custody || !g.tupileIntelligence || !g.homeworldOccupationHistory)
     return 'This saved game lacks the original occupation and intelligence history required for Tupile.';
@@ -18435,7 +18587,7 @@ function projectedTupileIntelligence(g: Game, id: string) {
   const state = g.tupileIntelligence;
   const targets = homeworldRule(() => tupileIntelligenceTargets(homeworldContext(g), g.homeworlds!.custody!, id,
     state?.receipts.map((receipt) => receipt.faction) ?? [],
-    tupileOccupationStatus(g.homeworldOccupationHistory, homeworldContext(g))));
+    currentTupileOccupation(g)));
   return {owner: id, blocked: tupileIntelligenceBlock(g), targets,
     receipts: (state?.receipts ?? []).map(({event, target, faction, category, spice, count, turn, phase}) =>
       ({event, target, faction, category, spice, count, turn, phase}))};
@@ -18449,7 +18601,7 @@ function requestTupileIntelligence(g: Game, p: Player, action: Action) {
     'Choose one opposing faction and either weapons or defenses.');
   const request = homeworldRule(() => quoteTupileIntelligenceRequest(homeworldContext(g), g.homeworlds!.custody!, p.id,
     g.tupileIntelligence!.receipts.map((receipt) => receipt.faction),
-    tupileOccupationStatus(g.homeworldOccupationHistory, homeworldContext(g)), action.target as string,
+    currentTupileOccupation(g), action.target as string,
     action.category as TupileIntelligenceCategory));
   const target = getPlayer(g, request.target);
   const answer = homeworldRule(() => quoteTupileIntelligenceAnswer(target.hand, target.spice, request.category));
@@ -27141,6 +27293,9 @@ function settleAutomaticContinuations(g: Game) {
     if (g.pendingGuildBetrayal) return;
     if (g.pendingNexusIxianReplacement) return;
     if (g.pendingRicheseBetrayal) return;
+    syncTupileSlots(g);
+    prepareTupileCleanup(g);
+    if (g.pendingHomeworldTupileCleanup || tupileSourceBlock(g)) return;
     if (g.truthtrance || g.phaseOpening || g.status === 'finished') return;
     const response = g.response;
     const before = JSON.stringify(g);
@@ -27240,6 +27395,9 @@ export function normalizeAutomaticGame(state: Game): Game {
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
   const g = structuredClone(state);
+  syncTupileSlots(g);
+  prepareTupileCleanup(g);
+  if (g.pendingHomeworldTupileCleanup || tupileSourceBlock(g)) return g;
   if (g.pendingNexusHarkonnenBetrayal) return g;
   if (g.pendingNexusIxianBetrayal) return g;
   if (g.pendingNexusIxianReplacement) return g;
@@ -27255,6 +27413,8 @@ export function normalizeAutomaticGame(state: Game): Game {
   normalizeCardNames(g);
   normalizeBattle(g);
   finishActionContinuations(g);
+  prepareTupileCleanup(g);
+  if (g.pendingHomeworldTupileCleanup || tupileSourceBlock(g)) return g;
   if (g.pendingTreacheryDiscard?.reaction) {
     treacheryDiscardIntegrity(g);
     return g;
@@ -27274,6 +27434,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   richesePairIntegrity(g);
   richeseBetrayalIntegrity(g);
   marketGholaIntegrity(g);
+  prepareTupileCleanup(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
   homeworldSubstitutionIntegrity(g);
@@ -27294,6 +27455,18 @@ function applyActionInner(
   action: Action,
   execution: 'live' | 'shipmentPreparation' = 'live',
 ): Game {
+  tupileSlotsIntegrity(state);
+  const tupileBlock = tupileSourceBlock(state);
+  requireRule(!tupileBlock, tupileBlock ?? 'The occupied Tupile source is unresolved.');
+  if (state.homeworldTupilePreview && state.status === 'playing' && action?.type !== 'advanceBots') {
+    const current = homeworldRule(() => syncOccupiedTupileLease(state, state.homeworldTupileState!));
+    requireRule(current.state.signature === state.homeworldTupileState!.signature,
+      'Resume the original occupied Tupile source before another action.');
+  }
+  requireRule(!state.pendingHomeworldTupileCleanup ||
+    action?.type === 'advanceBots' || action?.type === 'decision' &&
+      id === state.pendingHomeworldTupileCleanup.player && action.event === state.pendingHomeworldTupileCleanup.event,
+  'Finish the original occupied Tupile hand cleanup before another action.');
   ecazTreacheryIntegrity(state);
   const g = structuredClone(state);
   if (g.pendingNexusHarkonnenBetrayal) {
@@ -27974,6 +28147,10 @@ function applyActionInner(
     }
     if (decision.kind === 'homeworldOccupiedIncome') {
       decideHomeworldOccupiedIncome(g, p, decision, action);
+      return g;
+    }
+    if (decision.kind === 'homeworldTupileCleanup') {
+      decideTupileCleanup(g, p, decision, action);
       return g;
     }
     if (decision.kind === 'moritaniTerror') {
@@ -31366,7 +31543,7 @@ export function viewGame(state: Game, id: string) {
     schema: g.schema,
     botsPending: g.botsPending ?? false,
     semutaReaction: projectedSemutaReaction(g, me),
-    automaticContinuationPending: (!!g.pendingTreacheryDiscard && !g.pendingTreacheryDiscard.reaction) || homeworldRevealPending(g) || homeworldShipmentAutomatic(g) || homeworldOccupiedIncomeAutomatic(g) || grummanCollectionAutomatic(g),
+    automaticContinuationPending: (!!g.pendingTreacheryDiscard && !g.pendingTreacheryDiscard.reaction) || homeworldRevealPending(g) || homeworldShipmentAutomatic(g) || homeworldOccupiedIncomeAutomatic(g) || grummanCollectionAutomatic(g) || tupileAutomatic(g),
     botNextActionAt: g.botNextActionAt ?? null,
     code: g.code,
     version: g.version,
@@ -31378,6 +31555,7 @@ export function viewGame(state: Game, id: string) {
     bureaucrat: projectedBureaucrat(g, id),
     spiceBankerIncomePreview: g.spiceBankerIncomePreview === true,
     homeworldOccupationPreview: g.homeworldOccupationPreview === true,
+    homeworldTupilePreview: g.homeworldTupilePreview === true,
     spiceBankerIncome: g.spiceBankerIncomePreview
       ? bankerIncomeRule(() => projectBankerIncome(g.spiceBankerIncome!, bankerIncomeContext(g))) : null,
     bribeOptions: projectedBribes(g, me),
@@ -31425,6 +31603,8 @@ export function viewGame(state: Game, id: string) {
     homeworldOccupiedIncome: projectedHomeworldOccupiedIncome(g, id),
     homeworldOccupiedPercentage: projectedOccupiedPercentage(g),
     homeworldOccupiedBonus: projectedOccupiedBonus(g),
+    homeworldTupileCleanup: projectedTupileCleanup(g, id),
+    homeworldTupileBlocked: tupileSourceBlock(g),
     tupileIntelligence: projectedTupileIntelligence(g, id),
     terrorEntry: g.pendingTerrorEntry
       ? (() => {

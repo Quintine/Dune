@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 5 October 2026 — occupied Tupile capacity, original cleanup and low authority
+
+Fresh native CHOAM/Homeworld audit setup alone marks Tupile slots and the original
+lease ledger. A server-derived backed flag extends all existing real hand-limit
+consumers once; old profiles gain nothing. Original Advanced source/reciprocal
+holder loss retires the lease and queues owner-selected normal-limit excess.
+Pending old debt cannot borrow a new lease; Basic unknown source preserves its
+proved state and blocks rather than invents cleanup. Native low intelligence
+uses known current authority only in this marker, without clearing old answers/use.
+
+Source19/affected143 including guides, types/lint/build, all4 legal policies and
+original programs pass. Actual ordinary auction admits Harkonnen card9/no card10;
+one real paid foreign return queues both normal-limit cleanups and retains its
+remaining movement/counter/price. Fixtures now distinguish a genuinely observed
+Basic boundary from unobserved expiry, and accept a completed original invoice
+without manufacturing a pending sale. No wording/error-text pins or fake card.
+
+Ten genuine samples on unchanged
+`52ccb9305255ecf7234be7a98aea43f7cf44630215639042c50bb0474e93e892`:
+five six-seat Advanced complete4,339 accepted/4,358 attempts/114 JSON;
+four of five five-seat Basic complete2,430/2,449/64, allfive2,527/2,547/66.
+Original Atreides5Basic20263432 remains captured at its contested Southern guard.
+Natural samples containzero owed cleanup choices; native programs/human actual
+departure supply changed-path proof. No favorable seed or complete-mode claim.
+
+Original backed-up CLI D54MY8JJ v18 preserves deck/actors/clock; a real second-turn
+Nexus earns Guild/Harkonnen alliance before labelled conserved positions.
+390px human Harkonnen8/9 bids5 and holds9/9 atv26, wallet12→7/no tenth bonus.
+Real last Guild visitor returns to Junction for1 (6→5); Cheap Hero5→4 then allied
+Jubba9→8 settle atv30 with the original movement still available. v31 finishes
+only that turn. A separately labelled native1/Fremen1 contact permits private
+v33 inquiry3 spice/0 weapons; refresh preserves used-faction/history and no rival
+panel. No overflow/reset/public start/save conversion; private artifacts outside Git.
+[Canonical lease/consumer/evidence](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupied-tupile-slots-and-original-cleanup--5-october-2026).
+Full combinations, pending Basic/CHOAM and exceptional Duke, final assurance and
+deployed acceptance remain open.
+
 ## 5 October 2026 — occupied Homeworld economics, Bidding and Advanced retention
 
 The authorized supplied p22 resolves Advanced qualification/retention: sole

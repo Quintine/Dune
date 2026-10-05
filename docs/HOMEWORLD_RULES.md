@@ -10,8 +10,9 @@ Collection, original Caladan/Ix/Richese/Giedi Bidding ownership and printed
 Wallach/Tleilax/Grumman/Salusa protections. Advanced follows the authorized supplied
 rulebook p22: qualify alone, retain until the last occupying force leaves.
 Basic still guards its publisher-source lifecycle questions. Original history,
-native population, invoices and private audiences remain separate. Tupile capacity,
-exceptional Duke, other modules, normal starts and full acceptance stay open.
+native population, invoices and private audiences remain separate.
+[Fresh occupied Tupile capacity/cleanup](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupied-tupile-slots-and-original-cleanup--5-october-2026)
+uses its own source lease; exceptional Duke, other modules, normal starts and full acceptance stay open.
 See the [source cutover and original consumers](HOMEWORLD_OCCUPATION_RULES.md#occupied-economics-bidding-and-advanced-source-cutover--5-october-2026).
 
 ## Module scope and component inventory
