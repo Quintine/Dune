@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 5 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 6 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -16,6 +16,37 @@ open mode gates.
 
 
 ## Current checkpoint and work
+
+**Native Leader Skills / Discovery — bounded Development Verified:**
+fresh supported native Basic/Advanced family predicates retain original
+decks, starting hands/offers/all14, Discovery7/8, optional Tech3+ and Advanced
+Strongholds2+. Typed entry/range/rescue/Cyborg/Face Dance, native stash/
+invoice/green marker and trained Moritani death/assassination/own revival use
+original handlers. Native Ecaz mandatory owner-labelled coalition remains.
+Other overlays/previews, pending rulings, public starts and conversion stay gated.
+
+Affected107 pass. Actual programmes observe rescue3/three Tanks/one Cyborg
+substitution, six-counter invoice5→receiver3/bank2, and five real native
+leader deaths followed by turn4 Revival/printed5 debit/optional replacement.
+Three genuine hidden-Smuggler stalls had legal human plans; the policy now
+uses authoritative projected capability, not full-state rules on player views.
+Failing-before/passing-after trainer regression covers all four policies.
+
+All31 genuine six-seat samples complete after three unchanged capture resumes:
+30,874 accepted/30,874 attempts/815 JSON across f2ec1d69 and corrected14d66863
+trees. Resumes add989/387/783 no-rejection actions; they do not reconstruct the
+prior random stream. Earlier duplicate-name runs remain incomplete/un-counted;
+new names include full roster/expansions while old profiles/seeds stay unchanged.
+
+Human 6NNTCFM2v12 moves one ordinary/one Cyborg into Shrine free, preserving
+natural Bureaucrat and HMS6. 5NLWDL68v14 keeps native Killer Medic: actual
+Stash5→6→5 through new Karama disposal without payment. MYPGMSW6 human
+Master Bewt revealv10 kills its naturally trained Guild Bureaucrat, returns
+that skill and pays10→13; winner cleanupv11 and ten original actions reach
+v12/Mentat with retired cost and one private replacement. All390px refresh,
+original starting hands/offers preserved, explicit staging and tabs released.
+[Canonical native evidence](DISCOVERY_PROTOTYPE.md#native-leader-skills-composition--6-october-2026).
+No full-faction, natural-every-effect, assurance or deployed acceptance claim.
 
 **Discovery / original Strongholds — bounded Development Verified:**
 fresh original Discovery and separate classic Skills/Discovery preserve

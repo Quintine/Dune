@@ -4,6 +4,19 @@
 the base-faction Leader Skills preview connect the lower Smuggler effect in Basic
 and Advanced games. Public module, mode and publication gates remain closed.
 
+## Native Discovery legal participation — 6 October 2026
+
+Three genuine native Skills/Discovery/Tech captures had legal hidden-trainer
+plans but no bot candidate: the policy recomputed full-state module admission
+against a player view that intentionally lacks private/internal configuration.
+The engine now projects `smugglerCollectionSupported` beside the existing
+saved battle format flag; bots use that authoritative rule result rather than
+reconstructing the module profile. Modified-strength and multiple-positive-pile
+guards still apply to each actual plan. No public mode or strategy tuning is
+added. A real trainer-plan regression fails before and passes after repair;
+all three original captures finish without rejection. Source trees/counts and
+limits are in the [native Discovery evidence](DISCOVERY_PROTOTYPE.md#native-skill-runtime-evidence).
+
 ## Rule and timing contract
 
 The [source follow-up](LEADER_SKILLS_RULES.md#20-september-smuggler-follow-up)

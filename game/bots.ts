@@ -4,7 +4,7 @@ import { quoteEcazOccupyDial } from './ecaz-occupy-battle';
 import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
 import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, usesSurvivingSkilledLeader } from './leader-skill-combat';
-import { smugglerBattleModeSupported, smugglerBattlePlanBlock } from './smuggler-battle';
+import { smugglerBattlePlanBlock } from './smuggler-battle';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, type BattlePlanInspectionField } from './battle-card-slots';
 import { mirrorWeaponModeBlock } from './mirror-weapon-mode';
 import { defaultHarassWithdrawAllocation, quoteHarassWithdraw } from './harass-withdraw';
@@ -809,7 +809,7 @@ function plans(g: GameView): Action[] {
         const w = me.hand?.find((c) => c.id === weapon);
         const d = me.hand?.find((c) => c.id === defense);
         if (b.smugglerCollectionEnabled && smugglerBattlePlanBlock({ assignments: battleSkills,
-          leader: myLeader, weapon: w, defense: d, kwisatz }, smugglerBattleModeSupported(g),
+          leader: myLeader, weapon: w, defense: d, kwisatz }, b.smugglerCollectionSupported,
           { territory: b.territory, spice: g.spice })) continue;
         if (!battleCardSlotEligible('weapon', w, {planetologistWeapon: specialForLeader(w, leader)})) continue;
         const stoneBattle =

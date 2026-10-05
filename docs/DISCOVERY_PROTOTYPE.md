@@ -35,6 +35,84 @@ node --import tsx tools/start-prototype.ts --profile discovery --db PATH --room 
 It preserves all seats and other rooms, requires the current version and refuses
 to redeal a started game. The default `ix` profile remains available.
 
+## Native Leader Skills composition — 6 October 2026
+
+Fresh explicit `leader-skills --discoveries` now preserves original native
+family decks, all14 training, Discovery7/8 and each existing native Basic/
+Advanced roster predicate. Original Tech needs3+; Strongholds requires Advanced.
+Standalone Ecaz OR Moritani retains its Duke/assassination/Harkonnen exclusions.
+No Nexus/Homeworlds/independent variants, Banker/Mentat or unrelated preview,
+public start or played-save conversion is admitted.
+
+The original native module predicates validate one Discovery envelope, not
+copies of game/configuration objects. Ordinary skill quotes, Planetologist,
+Suk/Rihani/Sandmaster, native invoices and Bureaucrat consume those predicates.
+Original native starting hands and already offered training are authoritative;
+some original E2/E3 constructors have dealt their one starting card before
+training. Human programmes preserve that original unassigned setup rather
+than redealing or demanding empty hands. No assigned/played setup is accepted.
+
+Actual typed entry, paid nested routes, green components, rescue before real
+Cyborg Tank substitution, cleanup/Tech before matching Face Dance, CHOAM5→6→5
+Stash, native invoice5→receiver3/bank2, physical marker0/3/5 caps and mandatory
+green cleanup compose existing handlers. Moritani nested assassination kills
+the actual unused trained disc, returns its exact skill once, pays printed3
+and receives one private actual Mentat replacement. Five original battles
+kill all five native Moritani discs; original next Revival pays printed5
+and opens optional replacement. No death, clock, wallet or earned receipt is
+assigned to reach it.
+
+### Native skill runtime evidence
+
+The affected native/Smuggler union passes **107 cases**. Original rule programmes
+observe three rescue survivors/three Tanks/one genuine Cyborg loss eligible
+for substitution, the six-counter5-spice invoice with receiver3/bank2, and
+five actual native disc deaths followed by turn4 Revival, printed5 debit,
+four remaining dead discs and the private replacement decision.
+
+Three genuine games stalled with a hidden Smuggler trainer after the opposing
+plan. Actual human zero-support plans were legal, but bots incorrectly ran
+full-state module predicates on partial player views. The authoritative battle
+projection now supplies `smugglerCollectionSupported`; all four policies use
+that quote while keeping the existing modified-strength/multiple-pile guards.
+A real trainer-plan regression fails before repair and passes afterward.
+The original captures resume at seeds20265473/20265497/20265501 and complete
+989/387/783 more accepted actions without rejection and26/10/21 JSON.
+
+All31 original six-seat samples now complete: nineteen Basic/Advanced native
+Skills/Discovery/Tech and twelve Advanced four-module games. Combined original
+and repaired continuations total30,874 accepted/30,874 attempts/815 JSON.
+Initial reports bind unchanged
+`f2ec1d696e1a5572abcb43a9e529b07cdf8e56dc7694f4c3c9f34cad3acd3958`;
+the three corrected resumes bind unchanged
+`14d6686355ebff299369e8c62f5b498e2194574b7a4eb69fc1ce5d9ff42668ea`.
+This spans two trees; resume does not reconstruct the earlier stream.
+Early duplicate scenario-name runs remain incomplete and are not counted:
+native names now include the full original roster/selected expansion list,
+without changing earlier profiles/defaults or new4400–4700 ordinal bands.
+
+Actual **6NNTCFM2** original CLIv10 keeps natural Ixian Bureaucrat training.
+Conserved original Shrine/counter positions and original first-Mentat claim
+reachv11 entry. Human one-ordinary/one-Cyborg entry **v12** leaves Shrine2/
+one Cyborg, one parent counter, unchanged spice/reserves and actual HMS6.
+Actual **5NLWDL68** original CLIv10 keeps starting hands and natural CHOAM
+Killer Medic. Explicit conserved native five-card capacity precedes Collection;
+human inspectv12/revealv13 draws six, then human actual new Karama discard
+**v14** restores five without price or training loss.
+Actual **MYPGMSW6** original CLIv8 keeps native training and produced Cistern
+after-loss opportunityv9. Human Master Bewt reveal **v10** spends the actual
+Traitor, kills the Guild's naturally trained Bureaucrat, returns that skill
+and pays10→13. Human winner cleanupv11 retains original Tech; ten original
+actions finish the separate conflict/Collection and actual **v12/Mentat**
+retires the cost and produces one private replacement. Native assassination
+profile admission was repaired after its independent Discovery-first branch
+rejected the real original setup. All three refresh at390px; tabs released.
+
+Conserved positions, original token/card lotteries and original offers remain
+explicit. Controlled deterministic programmes are not natural card histories;
+passing samples do not prove natural use of every effect, complete factions,
+full combination assurance, privacy/recovery certification or deployment.
+
 ## Classic Nexus composition — 5 October 2026
 
 Fresh local `nexus --discoveries` composes classic/base33/all12 Nexus with the

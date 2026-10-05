@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 6 October 2026 — Original native Leader Skills and Discovery
+
+One exact Discovery envelope feeds existing native family/roster predicates
+and original all14 setup/starting hands, optional Tech3+/Advanced Strongholds2+.
+No game/config copies in rule quotes; no public gate or save conversion.
+Typed entry/range/rescue before Cyborg substitution, original cleanup/Tech
+before Face Dance, CHOAM stash/invoice/Bureaucrat/green marker, and trained
+Moritani nested death/assassination/private replacement/own revival compose
+existing sources. Actual native E2/E3 printed starting hands are preserved.
+
+Affected107 pass. Actual programmes observe rescue3/three Tanks/one real
+Cyborg loss, six-counter5 fee/receiver3/bank2, and five original battle deaths
+then turn4 native printed5 revival/optional replacement. Original chronology,
+support-unit and separate-conflict fixture corrections remove copied math,
+nonce/default assumptions rather than pinning implementation artifacts.
+
+Three genuine hidden-Smuggler captures had legal human zero-support plans
+but no bot candidate. Engine projects canonical support; bots stop recomputing
+full-state module predicates on partial views. The real trainer-plan regression
+fails before/passes after and keeps modified-strength/multi-pile guards.
+Original seeds20265473/20265497/20265501 resume unchanged, adding989/387/783
+accepted/no rejected actions and26/10/21 JSON on14d66863 tree.
+All31 six-seat samples finish30,874/30,874/815 JSON including those resumes;
+initial f2ec1d69 tree evidence is separate, not one frozen-tree/every-effect
+claim. Earlier filename collisions are retained but un-counted; full original
+rosters/expansions now distinguish new samples, without changing old names/seeds.
+
+Actual 6NNTCFM2 original CLIv10, natural Bureaucrat/free typed Shrinev12;
+5NLWDL68 original CLIv10, natural Killer Medic/Stash inspect12/reveal13/
+new-card disposal14 restores5 with no payment; MYPGMSW6 original CLIv8,
+real nested after-loss target9/human Master Bewt10 returns Guild Bureaucrat,
+printed10→13, winner cleanup11 and original Mentat12 retires one actual cost/
+draws one private replacement. Original hands/offers remain authoritative,
+conserved positions explicit,390px refresh/tabs closed.
+[Canonical native contract](DISCOVERY_PROTOTYPE.md#native-leader-skills-composition--6-october-2026).
+Full modes, assurance, strategic AI and protected live deployment remain open.
+
 ## 5 October 2026 — Original Discovery Strongholds and mandatory Ecaz repair
 
 Fresh original Discovery classic/E1/E2/standalone E3 and separate classic

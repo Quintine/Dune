@@ -1,4 +1,4 @@
-import { classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, noOtherLeaderSkillModules, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile, type LeaderSkillProfile } from './leader-skill-profile';
+import { classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, noOtherLeaderSkillModules, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile, type LeaderSkillProfile } from './leader-skill-profile';
 import { classicDiscoveryLeaderSkillsProfile } from './discovery-module-profile';
 export type BureaucratPaymentKind = 'auction' | 'shipment' | 'bribe' | 'revival';
 export type BureaucratPaymentSource = {
@@ -39,7 +39,7 @@ export function bureaucratPaymentModeSupported(game: LeaderSkillProfile): boolea
   return (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length ||
       (game.expansions.length === 1 && game.expansions[0] === 'choam') ||
-      nativeExpansionLeaderSkillsProfile(game))) || classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) || strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) || classicDiscoveryLeaderSkillsProfile(game);
+      nativeExpansionLeaderSkillsProfile(game))) || classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) || strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) || classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game);
 }
 export function bureaucratUsed(
   used: readonly BureaucratPaymentUse[],

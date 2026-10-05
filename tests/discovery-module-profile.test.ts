@@ -52,9 +52,9 @@ void test('Discovery cannot redeal started components or silently remove another
   for (const game of overlays) assert.throws(() => initializeDiscoveryGameForAudit(game), RuleError);
 });
 
-void test('classic Discovery Skills does not silently drop native families or unrelated modules and previews', () => {
-  const native = lobby(['ixians', 'guild', 'fremen'], ['ix']);
-  assert.throws(() => initializeLeaderSkillsGameForAudit(native), RuleError);
+void test('Discovery Skills cannot silently drop unsupported native families or unrelated modules and previews', () => {
+  const unsupported = lobby(['ixians', 'ecaz', 'guild'], ['ix', 'ecaz']);
+  assert.throws(() => initializeLeaderSkillsGameForAudit(unsupported), RuleError);
   const overlays = Array.from({ length: 5 }, () => lobby(['guild', 'emperor', 'harkonnen'], []));
   overlays[0].homeworlds = { custody: null };
   overlays[1].nexusCards = { cards: null, phase: null };

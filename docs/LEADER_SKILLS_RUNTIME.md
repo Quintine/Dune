@@ -5,6 +5,27 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Original native Discovery composition — 6 October 2026
+
+Fresh native `leader-skills --discoveries` composes each already-supported
+Basic/Advanced native family predicate, original decks/hands/offers/all14 and
+Discovery7/8, optional original Tech3+ and Advanced Strongholds2+.
+E1 typed entry/range/rescue/Cyborg/Face Dance, E2 stash/invoice/green marker
+and E3 trained death/assassination/own revival use original consumers.
+Actual offered training and printed starting hands are not replaced.
+The same supported live Ecaz profile keeps mandatory owner-labelled coalition
+battles; shared Duke assignments and Basic odd-force rounding remain guarded.
+Nexus/HW/variants/Banker/Mentat previews/public starts/save conversion stay
+separate. This does not certify all fourteen effects or complete native factions.
+
+[The Discovery contract](DISCOVERY_PROTOTYPE.md#native-leader-skills-composition--6-october-2026)
+records affected107, actual producer programmes and three original human
+390px paths. Thirty-one genuine six-seat samples complete after three actual
+hidden-Smuggler policy captures are repaired/resumed:30,874 accepted/no
+rejection/815 JSON across two frozen trees, not one unstaged every-effect proof.
+Original Native starting-hand order, source-local held effects and physical
+reward/skill-return ordering remain; comprehensive assurance stays deferred.
+
 **2 October normal Banker checkpoint:** the separate fresh local `banker-income`
 profile connects actual final-bank payment legs, one physical Banker phase
 grant and automatic current Mentat collection. The full deck14

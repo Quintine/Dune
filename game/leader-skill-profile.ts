@@ -109,9 +109,27 @@ export function standaloneE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): 
     (native === 'moritani' || !game.moritaniAssassinatePreview);
 }
 
+/** Discovery keeps original native roster predicates; only this module envelope
+ * differs. Live token/entry/Great Maker frames are original consumers. */
+function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+  const players = game.players;
+  return typeof game.advanced === 'boolean' && game.discoveryEnabled === true &&
+    !!players && players.length >= 2 && players.length <= 6 &&
+    (!game.techTokens || players.length >= 3) &&
+    (!game.strongholdCards || game.advanced) &&
+    game.expansions.length >= 1 && game.expansions.length <= 2 &&
+    !game.homeworlds && !game.nexusCards && !game.ecazTreachery && !game.semutaPreview &&
+    !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
+    !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
+    !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
+    !game.nexusHarkonnenBetrayalPreview && !game.mentatQuestionPreview &&
+    !game.spiceBankerIncomePreview;
+}
+
 /** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
 function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (noOtherLeaderSkillModules(game) || pairedNexusLeaderSkillsProfile(game)) return true;
+  if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
     players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
@@ -133,6 +151,7 @@ function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
 /** Standalone E3 native predicates retain their own roster, Duke and assassination limits. */
 function e3LeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (noOtherLeaderSkillModules(game) || standaloneE3NexusLeaderSkillsProfile(game)) return true;
+  if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
     players.length < (game.techTokens ? 3 : 2) || players.length > 6 ||
@@ -346,6 +365,11 @@ export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): bo
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
 }
 
+/** Fresh/live original native all14/Discovery; existing family limits stay authoritative. */
+export function nativeDiscoveryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  return game.discoveryEnabled === true && nativeExpansionLeaderSkillsProfile(game);
+}
+
 /** Only the original eligible native skill families gain the Tech combination. */
 export function nativeTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   return !!game.techTokens && nativeExpansionLeaderSkillsProfile(game);
@@ -358,5 +382,5 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
     pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
-    classicDiscoveryLeaderSkillsProfile(game);
+    classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game);
 }

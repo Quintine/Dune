@@ -1,7 +1,7 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, discoveryModeSupported, discoveryModuleProfile } from './discovery-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7613,7 +7613,8 @@ function e3StrongholdFactionProfile(g: Game): boolean {
 }
 function moritaniAssassinateModeSupported(g: Game) {
   if (g.discoveryEnabled || g.discoveries)
-    return g.advanced && !!g.discoveries && discoveryModeSupported(g) &&
+    return g.advanced && !!g.discoveries &&
+      (discoveryModeSupported(g) || nativeDiscoveryLeaderSkillsProfile(g)) &&
       g.players.some(player => player.faction === 'moritani');
   return g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
     g.players.some(p => p.faction === 'moritani') &&
@@ -9385,6 +9386,8 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
       g.players.some(p => p.faction === 'ecaz')) return true;
   if (g.ecazOccupyPreview === true && g.discoveries && discoveryModeSupported(g) &&
       g.players.some(p => p.faction === 'ecaz')) return true;
+  if (g.discoveries && nativeDiscoveryLeaderSkillsProfile(g) &&
+      g.players.some(p => p.faction === 'ecaz')) return true;
   return typeof g.advanced === 'boolean' && Array.isArray(g.expansions) &&
     g.expansions.includes('ecaz') &&
     g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
@@ -9524,15 +9527,16 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   if (state.discoveryEnabled) {
-    requireRule(classicDiscoveryLeaderSkillsProfile(state), 'Discovery Leader Skills require a fresh classic lobby with optional original Tech or Advanced Strongholds and no unrelated overlays.');
+    requireRule(classicDiscoveryLeaderSkillsProfile(state) || nativeDiscoveryLeaderSkillsProfile(state), 'Discovery Leader Skills require a fresh supported classic or native lobby with optional original Tech or Advanced Strongholds and no unrelated overlays.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, classicDiscoveryLeaderSkillsProfile(g), true,
+  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
+  if (nativeDiscoveryLeaderSkillsProfile(initialized) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   return initialized;
 }
 /** Fresh all-fourteen-card classic or supported native skills; no public income toggle. */
@@ -9570,7 +9574,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold || classicDiscoveryLeaderSkillsProfile(g));
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
   const discoveryComposition = discovery && (discoveryModuleProfile(g) ||
-    classicDiscoveryNexusProfile(g) || (leaderSkills && classicDiscoveryLeaderSkillsProfile(g)));
+    classicDiscoveryNexusProfile(g) || (leaderSkills && (classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g))));
   const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
     (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
@@ -32564,6 +32568,7 @@ export function viewGame(state: Game, id: string) {
             : null,
           lateDefense: b.revealed ? (b.lateDefense ?? {}) : {},
           smugglerCollectionEnabled: b.smugglerCollectionVersion === 1,
+          smugglerCollectionSupported: smugglerBattleModeSupported(g),
           smugglerCollection: b.revealed && b.smugglerCollection
             ? { player: b.smugglerCollection.player, leader: b.smugglerCollection.leader,
                 amount: b.smugglerCollection.amount, before: b.smugglerCollection.before }
