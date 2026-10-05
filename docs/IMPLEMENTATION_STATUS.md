@@ -37,6 +37,14 @@ conserved positions explicit,390px refresh/tabs closed.
 [Canonical native contract](DISCOVERY_PROTOTYPE.md#native-leader-skills-composition--6-october-2026).
 Full modes, assurance, strategic AI and protected live deployment remain open.
 
+Exact pushed code555afe4070d33e0dd9e6ad7c931920878e51d2e7:
+[CI37320041332/job111796483681](https://github.com/Quintine/Dune/actions/runs/37320041332/job/111796483681)
+completed/success with mandatory isolated storage/HTTP7 before image9.
+Final native original-hand/reference36, types/lint/exact build pass.
+Preserved 6NNTCFM2v12/Storm,5NLWDL68v14/Collection,MYPGMSW6v12/Mentat
+show local555afe4 at390px after own QA reload. Tabs released; no protected
+NAS deployment or live acceptance is asserted.
+
 ## 5 October 2026 — Original Discovery Strongholds and mandatory Ecaz repair
 
 Fresh original Discovery classic/E1/E2/standalone E3 and separate classic

@@ -113,6 +113,15 @@ explicit. Controlled deterministic programmes are not natural card histories;
 passing samples do not prove natural use of every effect, complete factions,
 full combination assurance, privacy/recovery certification or deployment.
 
+Verified code **555afe4070d33e0dd9e6ad7c931920878e51d2e7** is pushed.
+[Exact CI37320041332/container111796483681](https://github.com/Quintine/Dune/actions/runs/37320041332/job/111796483681)
+completed/success: mandatory isolated storage/HTTP7 before verified-image9.
+Final original-hand/reference union36, types/lint and exact pushed build pass.
+Own isolated reload preserves 6NNTCFM2v12/Storm,5NLWDL68v14/Collection and
+MYPGMSW6v12/Mentat; all show **555afe4** at390px with original training/
+counter/stash/private-replacement outcomes. Tabs released. Publication is not
+protected NAS deployment or live acceptance.
+
 ## Classic Nexus composition — 5 October 2026
 
 Fresh local `nexus --discoveries` composes classic/base33/all12 Nexus with the

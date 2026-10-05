@@ -48,6 +48,13 @@ original starting hands/offers preserved, explicit staging and tabs released.
 [Canonical native evidence](DISCOVERY_PROTOTYPE.md#native-leader-skills-composition--6-october-2026).
 No full-faction, natural-every-effect, assurance or deployed acceptance claim.
 
+Verified code **555afe4070d33e0dd9e6ad7c931920878e51d2e7** pushed.
+[Exact CI37320041332/container111796483681](https://github.com/Quintine/Dune/actions/runs/37320041332/job/111796483681)
+completed/success, isolated storage/HTTP7 before image9. Final original-hand/
+guide36, types/lint and exact build pass. Original three QA outcomes retain
+v12/v14/v12 and display555afe4 at390px after isolated reload; tabs closed.
+No protected live deployment/access/snapshot/provider approval is claimed.
+
 **Discovery / original Strongholds — bounded Development Verified:**
 fresh original Discovery and separate classic Skills/Discovery preserve
 Advanced Strongholds2–6, optional Tech3–6, original setup/held claims,
