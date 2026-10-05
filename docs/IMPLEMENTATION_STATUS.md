@@ -45,6 +45,15 @@ Private proofs remain outside Git. Tupile capacity/cleanup, exceptional Duke,
 pending Basic/CHOAM rulings, overlays and complete/deployed acceptance remain.
 [Canonical source, original consumers and evidence](HOMEWORLD_OCCUPATION_RULES.md#original-runtime-and-human-evidence).
 
+Exact code **0774ae6f83e2795330823a0d8b2e8e2c49880105** is pushed.
+[CI37252859564](https://github.com/Quintine/Dune/actions/runs/37252859564) /
+container111583875100 succeeds mandatory isolated storage/HTTP7 before
+verified-image9. Final247 consumer/10 guide cases, types/lint and exact pushed
+build pass. Preserved QA rooms v72/v29/v25 show **0774ae6** at390px with Guild
+spice17/6/6 and their actual original continuations. Tabs released; no deployed
+claim, reset or NAS privilege/safe-point bypass.
+
+
 ## 5 October 2026 — stable occupied Homeworld bank income and protections
 
 Fresh original `homeworld-occupation` enters Basic/Advanced2..6 and selected

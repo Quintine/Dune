@@ -57,6 +57,15 @@ public/save conversion and full/deployed assurance remain open. No reset or
 current-garrison shortcut. Publication is not deployment; NAS prerequisites
 and last observed liveab5c782 remain unchanged.
 
+Exact code **0774ae6f83e2795330823a0d8b2e8e2c49880105** is pushed.
+[CI37252859564](https://github.com/Quintine/Dune/actions/runs/37252859564) /
+container111583875100 succeeds isolated storage/HTTP7 before verified-image9.
+Final247 consumer cases,10 guide cases, types/lint and exact pushed build pass.
+The three preserved390px QA rooms display **0774ae6** at v72/v29/v25,
+with Guild spice17/6/6 and their original Mentat/native-lot/Technology states.
+Managed tabs are released. Publication is not deployment; no NAS gate bypass.
+
+
 **Prior checkpoint5e902e3: stable Homeworld occupation — bounded Development Verified:**
 fresh original2..6 Basic/Advanced setup/selected decks and Homeworlds alone;
 no played-game conversion or inferred current controller. Continuously present
