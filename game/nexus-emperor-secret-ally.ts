@@ -2,6 +2,7 @@ import type { Game, Player } from './engine';
 import { eliteRevivalRemaining } from './revival';
 import { classicNexusModulesProfile } from './nexus-module-profile';
 import { classicNexusLeaderSkillsProfile } from './leader-skill-profile';
+import { classicDiscoveryNexusProfile } from './discovery-module-profile';
 
 export const EMPEROR_NEXUS_REVIVALS = 3;
 export type EmperorNexusPools = {
@@ -65,14 +66,15 @@ export function emperorNexusModeSupported(g: Game): boolean {
         p.faction,
       ),
     ) &&
-    !g.homeworlds &&
-    (!g.leaderSkills || classicNexusLeaderSkillsProfile(g)) &&
-    !g.discoveryEnabled &&
-    !g.discoveries &&
-    !g.discoveryStash &&
-    !g.greatMaker &&
-    ((!g.techTokens && !g.strongholdCards) || classicNexusModulesProfile(g) ||
-      (!!g.leaderSkills && classicNexusLeaderSkillsProfile(g)))
+    (classicDiscoveryNexusProfile(g) ||
+      (!g.homeworlds &&
+        (!g.leaderSkills || classicNexusLeaderSkillsProfile(g)) &&
+        !g.discoveryEnabled &&
+        !g.discoveries &&
+        !g.discoveryStash &&
+        !g.greatMaker &&
+        ((!g.techTokens && !g.strongholdCards) || classicNexusModulesProfile(g) ||
+          (!!g.leaderSkills && classicNexusLeaderSkillsProfile(g)))))
   );
 }
 /** A fixed three-counter grant preserves the separate Advanced elite cap. */

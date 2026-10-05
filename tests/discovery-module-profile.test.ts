@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createGame, initializeDiscoveryGameForAudit, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, RuleError, type Game } from '../game/engine';
+import { createGame, initializeDiscoveryGameForAudit, initializeLeaderSkillsGameForAudit, initializeNexusGameForAudit, joinGame, newPlayer, RuleError, type Game } from '../game/engine';
 import type { FactionId } from '../game/catalog';
 import { createTechTokens } from '../game/tech-tokens';
 import { createStrongholdCards } from '../game/stronghold-cards';
@@ -69,4 +69,23 @@ void test('classic Discovery Skills does not silently drop native families or un
 void test('Discovery Skills cannot replace already initialized Discovery components', () => {
   const started = initializeDiscoveryGameForAudit(lobby(['guild', 'emperor', 'harkonnen'], []));
   assert.throws(() => initializeLeaderSkillsGameForAudit(started), RuleError);
+});
+
+void test('Discovery Nexus rejects native families, used components and incompatible prerequisites before redealing', () => {
+  const native = lobby(['ixians', 'guild', 'fremen'], ['ix']);
+  native.nexusCards = { cards: null, phase: null };
+  assert.throws(() => initializeNexusGameForAudit(native), RuleError);
+  const two = lobby(['guild', 'emperor'], []);
+  two.nexusCards = { cards: null, phase: null }; two.techTokens = createTechTokens();
+  assert.throws(() => initializeNexusGameForAudit(two), RuleError);
+  const basic = lobby(['guild', 'emperor', 'fremen'], [], false);
+  basic.nexusCards = { cards: null, phase: null }; basic.strongholdCards = createStrongholdCards();
+  assert.throws(() => initializeNexusGameForAudit(basic), RuleError);
+  const used = lobby(['guild', 'emperor', 'fremen'], []);
+  used.nexusCards = { cards: null, phase: null }; used.techTokens = createTechTokens();
+  used.techTokens.production.owner = used.host;
+  assert.throws(() => initializeNexusGameForAudit(used), RuleError);
+  const started = initializeDiscoveryGameForAudit(lobby(['guild', 'emperor', 'fremen'], []));
+  started.nexusCards = { cards: null, phase: null };
+  assert.throws(() => initializeNexusGameForAudit(started), RuleError);
 });

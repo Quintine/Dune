@@ -35,6 +35,55 @@ node --import tsx tools/start-prototype.ts --profile discovery --db PATH --room 
 It preserves all seats and other rooms, requires the current version and refuses
 to redeal a started game. The default `ix` profile remains available.
 
+## Classic Nexus composition — 5 October 2026
+
+Fresh local `nexus --discoveries` composes classic/base33/all12 Nexus with the
+original Discovery seven Spice Cards/eight tokens, Basic/Advanced two through
+six seats. Original unused Tech requires three seats; Strongholds requires
+Advanced. No Skills, native families, Homeworlds, independent card variants,
+unrelated previews, public start or played-game conversion is admitted.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile nexus --discoveries --db PATH --room CODE --version NUMBER --out /private/new-directory
+node --import tsx tools/faction-games.ts --profile discovery-nexus-stronghold-tech --rules advanced --players 6 --out /private/new-directory
+```
+
+The game runner also offers `discovery-nexus`, `discovery-nexus-tech` and
+`discovery-nexus-stronghold`, without changing earlier defaults or seeds.
+Original setup and inventories remain authoritative. End-Mentat settles held
+Strongholds; next-turn free entry precedes Storm. Great Maker finishes ordinary
+worm losses, then its storm-order vote and physical reserve ride, including
+typed Fremen and revealed nested destinations. It does not itself deal cards.
+The original closing Nexus choice occurs only at the end of the entire Spice
+Blow phase, after both Advanced piles, when a Nexus occurred and an alliance
+exists. Joining an alliance forfeits a held card; unallied players retain the
+original keep/draw/replacement and own-faction redraw choices.
+
+Source-clear Emperor extra-three and absent-Fremen ordinary-three revival
+retain distinct quota/free ledgers and actual Axlotl activity. Absent-Guild
+borrowed tariffs preserve native identity, physical nested shipment and one
+card cost; original nested battle retains winner cards and mandatory Tech
+reward. Existing unresolved mixed-module Fremen Betrayal and other effects
+remain gated; no universal Great Maker interruption priority is invented.
+
+Affected64, types/lint/build and original runtime programmes pass. Two genuine
+six-seat Basic Tech / Advanced Tech+Stronghold games finish1,150 accepted
+actions/1,150 attempts/31 JSON continuations on unchanged tree
+`761f5ca592af1bd3be766dd0e5654ed18528809855f6139436552428389f5b00`.
+These totals do not claim natural use of every effect.
+
+Actual isolated QA room **3D7SAG45** preserves authenticated seats and original
+CLI setupv8. Explicit unplayed Spice order/token lottery and43 original actions
+reach next-turn entryv9. Human Guild enters one Cistern counterv10 without
+money/reserve/movement cost. Six original actions open Great Makerv11 after
+actual Emperor losses. Human votesv12–14 create a Nexus; Fremen's actual typed
+two-counter ridev15 includes one Fedaykin, costs no spice and leaves Guild's
+protected nested counter intact. Human Advanced blow/alliance controlsv16–26
+form Emperor/Fremen's alliance and open Guild's real closing draw.
+Human drawv27 delivers Richese, decrements the original twelve-card deck to
+eleven and releases Charity. Refresh fits390px. This is controlled source
+exercise, not unstaged card history or production verification.
+
 ## Native setup and original consumers — 5 October 2026
 
 Original Ixian setup keeps the six-counter HMS garrison and seven physical

@@ -1,5 +1,26 @@
 # Dune implementation status
 
+## 5 October 2026 — Classic Nexus and original Discovery composition
+
+Fresh explicit `nexus --discoveries` admits classic/base33/all12/Discovery7/8
+Basic/Advanced2–6 and optional original Tech3+/Advanced Strongholds2+.
+Original setup/first-Storm Tech/end-Mentat custody/next-turn entry, Great
+Maker worm/vote/typed ride and end-Spice closing Nexus draws remain.
+Source-clear revival ledgers, native-preserving Guild nested tariffs and
+actual winner/card/Tech continuation compose existing consumers. Skills,
+native/HW/variants/previews and unresolved effects remain separate.
+
+Affected64, types/lint/build and actual programmes pass. Two genuine six-seat
+games finish1,150/1,150/31 JSON on unchanged
+`761f5ca592af1bd3be766dd0e5654ed18528809855f6139436552428389f5b00`.
+Original CLI room3D7SAG45v8 and explicit undealt order/lottery lead to human
+one-counter free entryv10, real Great Maker votesv12–14, typed two-counter/
+one-Fedaykin reserve ridev15, Advanced blow and actual alliance settlement,
+then human Guild closing drawv27/Charity: physical Richese/deck12→11,
+390px refresh. Source staging is explicit, no natural-every-effect claim.
+[Canonical contract](DISCOVERY_PROTOTYPE.md#classic-nexus-composition--5-october-2026).
+No production deployment or complete-mode acceptance is claimed.
+
 ## 5 October 2026 — Advanced Orgiz and classic Discovery Skills
 
 Authorized supplied Advanced p24 territory-Collection wording now groups actual

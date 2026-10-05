@@ -43,6 +43,7 @@ async function main() {
       '\nWhen native Ecaz is seated, this original fresh entry separately marks its printed high Homeworld alliance victory: current native seven-plus, one actual joint stronghold, two distinct other native factions with proved current occupied holdings. It adds no ordinary stronghold/Tech points, pays no reward and changes no Duke authority. Public progress remains prospective until original Mentat; qualifying members join original winners before BG prediction/final fallback. Unmarked played/public profiles remain unchanged.',
       '\nDiscovery opts fresh classic, selected E1/E2 native families or standalone Ecaz OR Moritani with classics into original Discovery setup in Basic/Advanced2–6, optionally retaining unused original Tech3–6. Original decks/cache, HMS/Face Dancers, typed entry, revealed-only nested No-Fields, stash limits and native outcomes remain. Advanced Moritani excludes Harkonnen. Skills/HW/Nexus/Strongholds, paired/mixed E3, contested/shared-payer rulings, public starts and played-game conversion stay separate.',
       '\nLeader-skills --discoveries explicitly composes fresh classic/base33/all14 Skills with original Discovery7/8 at2–6 seats Basic/Advanced. Unused original Tech requires3–6. Original setup, typed free entry, paid nested routes, carried fixed-three movement, stash limits, trained battles and Bureaucrat invoices use existing controls. Native families, Nexus/Strongholds/HW, Banker/Mentat previews, pending rulings, public starts and save conversion are not opened.',
+      '\nNexus --discoveries explicitly composes fresh classic/base33/all12 Nexus with original Discovery7/8 at2–6 seats Basic/Advanced. Unused Tech requires3+; optional Strongholds require Advanced; both3+. Actual Great Maker/worm/vote/reserve ride, original settled-alliance end-Spice closing card deal and end-Mentat card ownership/next entry remain. Source-clear revival/tariff/battle effects reuse original handlers. Skills/HW/native families, mixed-module Fremen Betrayal, pending rulings, public activation and save conversion stay guarded.',
     );
     return;
   }
@@ -52,8 +53,8 @@ async function main() {
     throw new Error('--mentat-question requires --profile leader-skills.');
   if (values['nexus-cards'] && values.profile !== 'leader-skills')
     throw new Error('--nexus-cards requires --profile leader-skills.');
-  if (values.discoveries && values.profile !== 'leader-skills')
-    throw new Error('--discoveries requires --profile leader-skills.');
+  if (values.discoveries && values.profile !== 'leader-skills' && values.profile !== 'nexus')
+    throw new Error('--discoveries requires --profile leader-skills or nexus.');
   if (
     !isPrototypeProfile(values.profile) ||
     !values.db ||

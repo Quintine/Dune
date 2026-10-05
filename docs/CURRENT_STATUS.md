@@ -17,6 +17,24 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Classic Nexus / Discovery — bounded Development Verified:** fresh explicit
+`nexus --discoveries` composes classic/base33/all12/Discovery7/8,
+Basic/Advanced2–6, original Tech3+ and/or Advanced Strongholds2+.
+Original setup, end-Mentat ownership, next-turn physical free entry, Great
+Maker's actual worm/vote/typed ride and end-Spice closing draw remain.
+Source-clear Emperor/Fremen revival ledgers and Guild paid nested shipment/
+battle/Tech use existing consumers. Skills/native/HW/variants/previews and
+unresolved mixed-module Fremen Betrayal stay separate; no public activation.
+
+Affected64, types/lint/build and actual programmes pass. Two genuine six-seat
+Basic Tech / Advanced four-module games finish1,150/1,150/31 JSON on unchanged
+761f5ca5 tree. Actual3D7SAG45 original CLIv8, human free-entryv10,
+Great Maker votesv12–14/typed ridev15 and original Advanced blow/alliance
+settlementv16–26 culminate in Guild's physical closing drawv27/Charity.
+Richese delivered, original deck12→11,390px refresh. Controlled unplayed
+Spice order/token lottery is explicit; no natural-every-effect or production
+claim. [Contract and evidence](DISCOVERY_PROTOTYPE.md#classic-nexus-composition--5-october-2026).
+
 **Advanced Orgiz / classic Discovery Skills — bounded Development Verified:**
 the supplied Advanced rulebook p24 uses a territory-Collection trigger.
 Advanced transfers one collected spice per territory with a unique rival payer;

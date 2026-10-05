@@ -102,8 +102,8 @@ export function startPrototypeRoom(
     throw new Error('--mentat-question requires the leader-skills profile.');
   if (options.nexusCards && profile !== 'leader-skills')
     throw new Error('--nexus-cards requires the leader-skills profile.');
-  if (options.discoveries && profile !== 'leader-skills')
-    throw new Error('--discoveries requires the leader-skills profile.');
+  if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus')
+    throw new Error('--discoveries requires the leader-skills or nexus profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if (options.mentatQuestion) initial.mentatQuestionPreview = true;
   if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)

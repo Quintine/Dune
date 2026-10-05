@@ -2,6 +2,30 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic Discovery / original Tech and Strongholds — 5 October 2026
+
+Fresh local `nexus --discoveries` now admits classic/base33/all12 Nexus and
+Discovery7/8, Basic/Advanced2–6, optional unused original Tech3+ and Advanced
+Strongholds2+. Skills/native families/Homeworlds/variants/previews, public
+starts and save conversion remain separate. Original inventories and setup,
+first-Storm Tech, end-Mentat held custody and next-turn physical entry remain.
+
+Great Maker's vote/typed reserve ride feeds the original phase-one Nexus.
+It does not grant an immediate draw or a Mentat draw: finish both Advanced
+Spice piles, actual alliance settlement and the original closing unallied
+choice. No settled alliance means no cards. Source-clear absent-Emperor
+extra-three versus absent-Fremen ordinary-three returns retain distinct
+ledgers/Axlotl activity; borrowed Guild tariffs preserve native pieces, one
+physical card cost and actual nested battle/reward continuation. Unresolved
+mixed-module Fremen Betrayal remains gated.
+
+The [Discovery contract](DISCOVERY_PROTOTYPE.md#classic-nexus-composition--5-october-2026)
+records affected64, types/lint/build, original lifecycle/effect programmes,
+two genuine six-seat games (1,150 accepted/no rejection/31 JSON on one unchanged
+tree), and actual room3D7SAG45 human free entry, typed ride, alliance and closing
+drawv27/Charity at390px. These are bounded development proofs, not complete
+module, natural-every-effect or deployed acceptance.
+
 ## Standalone E3 Nexus, Skills and original components — 5 October 2026
 
 The original fresh `leader-skills --nexus-cards` entry admits **Ecaz OR

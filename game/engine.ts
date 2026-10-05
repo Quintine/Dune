@@ -1,6 +1,6 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { classicDiscoveryLeaderSkillsProfile, discoveryModeSupported, discoveryModuleProfile } from './discovery-module-profile';
+import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, discoveryModeSupported, discoveryModuleProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
@@ -8567,7 +8567,12 @@ export function initializeHomeworldOccupationGameForAudit(state: Game): Game {
 export function initializeNexusGameForAudit(state: Game): Game {
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null,
     'Enable Nexus cards in a fresh audit lobby first.');
-  return initializeSetupGameForAudit(state, !!state.homeworlds, true);
+  if (state.discoveryEnabled) {
+    requireRule(classicDiscoveryNexusProfile(state), 'Discovery Nexus requires a fresh classic lobby with optional original Tech and Advanced Strongholds.');
+    requireFreshBaseRuntime(state);
+    requireFreshFactionInventory(state);
+  }
+  return initializeSetupGameForAudit(state, !!state.homeworlds, true, false, classicDiscoveryNexusProfile(state));
 }
 /** Fresh audit admission only; ordinary games and public starts never opt in. */
 export function initializeHarkonnenNexusBetrayalGameForAudit(state: Game): Game {
@@ -9563,7 +9568,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold || classicDiscoveryLeaderSkillsProfile(g));
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
   const discoveryComposition = discovery && (discoveryModuleProfile(g) ||
-    (leaderSkills && classicDiscoveryLeaderSkillsProfile(g)));
+    classicDiscoveryNexusProfile(g) || (leaderSkills && classicDiscoveryLeaderSkillsProfile(g)));
   const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
     (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
