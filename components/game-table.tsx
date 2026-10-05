@@ -946,7 +946,9 @@ export function GameTable({
               {s === 0
                 ? selected === MOBILE_STRONGHOLD
                   ? 'Inside stronghold'
-                  : 'Polar sink'
+                  : selected === 'polar_sink'
+                    ? 'Polar sink'
+                    : 'Inside location · sector 0'
                 : s}
               {s === g.storm ? ' · Storm' : ''}
             </option>

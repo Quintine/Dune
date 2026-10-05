@@ -17,6 +17,39 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Native Discovery / optional original Tech — bounded Development Verified:**
+fresh classic, selected E1/E2 or standalone Ecaz OR Moritani Basic/Advanced
+profiles retain original setup, decks/cache, seven Discovery Spice Cards and
+eight tokens. Tech requires three through six seats. Native Cyborg/starred entry,
+paid nested No-Fields, CHOAM stash capacity and Face Dance rewards reuse original
+controls and minimal legal policies. Moritani's live profile and assassination
+history now retain actual revealed nested sites. Public starts, other overlays,
+paired/mixed E3 and contested/shared/mixed rulings remain separate.
+
+The frozen affected union passes **71 cases**, types/lint and build. Real
+programs prove Ixian three-counter/one-Cyborg free entry, one-spice Richese marker
+and reserve materialization, and original Ecaz/Moritani setup. A reproduced
+nested Moritani battle now reaches its actual different-Leader Traitor choice
+and printed three-spice bounty.
+
+Four original six-seat Advanced Tech games finish; the preserved Moritani
+setup then finishes after the profile correction at original seed20263765.
+Combined completed paths: **1,940 accepted / 1,940 attempts / 49 JSON**.
+The initial and corrected trees differ; this is not a five-game frozen-tree
+certification or evidence that every new effect triggered naturally.
+
+Actual **Q3AWYZWC** phone Collection inspection/reveal reaches v8/v9. Original
+continuation reaches turn-two Richese movement v10. Human Cistern marker5
+declaration and Guild Allow shipment reach v12: spice5→4, reserves20, effective1.
+Human reveal reaches **v13**, reserves15/five actual Cistern counters and no
+second price; refresh retains v13 and fits390px. The isolated QA worker was
+reloaded after an old-validator rejection; nested sector zero now says inside
+the location, not Polar Sink. Tab released; other games were not written.
+[Source, programs and limits](DISCOVERY_PROTOTYPE.md#native-setup-and-original-consumers--5-october-2026).
+No reset, public activation, save conversion or deployed claim. Complete
+Discovery combinations, assurance and protected NAS deployment remain open.
+
+
 **Printed high Ecaz Homeworld alliance victory — bounded Development Verified:**
 fresh native Ecaz/Homeworld entry only. Current native7+, reciprocal alliance
 jointly holds one actual uncontested stronghold and proved physically held worlds

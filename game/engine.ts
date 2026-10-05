@@ -1,5 +1,6 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
+import { discoveryModeSupported, discoveryModuleProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
@@ -3827,6 +3828,8 @@ function revealPlayerNoField(g: Game, p: Player, cause: NoFieldRevealCause) {
     p.faction === 'richese' && p.noField?.deployed,
     'No concealed No-Field is deployed.',
   );
+  requireRule(validGameLocation(g, p.noField!.deployed!.location.territory, p.noField!.deployed!.location.sector),
+    'A No-Field can reveal only in a current board location.');
   const result = noFieldRule(() =>
     revealRicheseNoField(p.noField!, {
       tokenId: p.noField!.deployed!.tokenId,
@@ -7607,6 +7610,9 @@ function e3StrongholdFactionProfile(g: Game): boolean {
   return native !== null && (native !== 'moritani' || !byFaction(g, 'harkonnen'));
 }
 function moritaniAssassinateModeSupported(g: Game) {
+  if (g.discoveryEnabled || g.discoveries)
+    return g.advanced && !!g.discoveries && discoveryModeSupported(g) &&
+      g.players.some(player => player.faction === 'moritani');
   return g.advanced && g.expansions.length === 1 && g.expansions[0] === 'ecaz' &&
     g.players.some(p => p.faction === 'moritani') &&
     g.players.every(p => p.faction === 'moritani' || (p.faction !== 'harkonnen' && CLASSIC_FACTIONS[p.faction] === true)) &&
@@ -7642,7 +7648,8 @@ function moritaniAssassinateIntegrity(g: Game) {
   for (const receipt of state.opportunities) {
     const opponent = getPlayer(g,receipt.opponent);
     requireRule(receipt.turn <= g.turn && opponent.faction === receipt.faction &&
-      receipt.owner === state.owner && TERRITORIES.some(t => t.id === receipt.territory),
+      receipt.owner === state.owner && (TERRITORIES.some(t => t.id === receipt.territory) ||
+        validGameLocation(g, receipt.territory, 0)),
       'The assassination history no longer matches its original battle participants.');
   }
   const pending = state.opportunities.filter(r => r.stage === 'skills' || r.stage === 'choice');
@@ -9496,9 +9503,13 @@ export function initializeNexusKullGameForAudit(state: Game): Game {
 }
 /** Prototype-only Discovery setup. Public starts stay gated while remaining effects are connected. */
 export function initializeDiscoveryGameForAudit(state: Game): Game {
-  requireRule(state.discoveryEnabled === true && !state.discoveries && !state.discoveryStash && !state.greatMaker,
-    'Enable Discoveries in a fresh audit lobby first.');
-  return initializeSetupGameForAudit(state, false, false, false, true);
+  requireRule(discoveryModuleProfile(state), 'Discovery requires a fresh supported classic, E1/E2 or standalone E3 lobby without unrelated overlays.');
+  requireFreshBaseRuntime(state);
+  requireFreshFactionInventory(state);
+  const g = initializeSetupGameForAudit(state, false, false, false, true, false, false, state.expansions.length > 0);
+  if (byFaction(g, 'ecaz')) g.ecazOccupyPreview = true;
+  if (g.advanced && byFaction(g, 'moritani')) initializeMoritaniAssassinateState(g);
+  return g;
 }
 /** Gated development setup; never dispatched by a player action or room route. */
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
@@ -9544,9 +9555,10 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
+  const discoveryComposition = discovery && discoveryModuleProfile(g);
   const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
     (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
-  requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules) &&
+  requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
   requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || nexusModules) &&
@@ -9560,7 +9572,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (discovery || !g.discoveryEnabled) &&
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
-      (!g.techTokens || skillTech || nativeTech || nexusModules) &&
+      (!g.techTokens || skillTech || nativeTech || nexusModules || discoveryComposition) &&
       (strongholdFactions || skillStronghold || nexusModules || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
@@ -9580,6 +9592,8 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       ? 'The Ix prototype supports base, Ixian and Tleilaxu factions without optional modules.'
       : homeworlds
       ? 'The Homeworld setup audit supports implemented deck sets without Tech Tokens or Stronghold Cards.'
+      : discoveryComposition
+      ? 'Discovery supports fresh classic, selected E1/E2 or standalone E3 factions with optional original Tech and no other overlays.'
       : 'The audit initializer supports base factions without expansions or optional modules.',
   );
   initializeSetup(g, strongholdFactions || !!g.strongholdCards);
@@ -24719,8 +24733,13 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
     validateAmbassadorShipmentOrder(g, shipment);
     return;
   }
-  // Concealed and allied No-Fields retain their separate custody/quote contracts.
-  if (shipment.noField || shipment.alliedNoField) return;
+  // A marker's effective one-force declaration is not a reserve withdrawal.
+  // Its separate custody contract still requires a currently revealed destination.
+  if (shipment.noField || shipment.alliedNoField) {
+    requireRule(validGameLocation(g, shipment.territory, shipment.sector),
+      'A No-Field shipment requires a current board destination.');
+    return;
+  }
   const p = getPlayer(g, shipment.player);
   requireRule(
     g.status === 'playing' &&

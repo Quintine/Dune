@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 5 October 2026 — native Discovery with original Tech
+
+Fresh classic, selected E1/E2 and standalone Ecaz OR Moritani Discovery entry
+preserves original decks/native setup and optional untouched Tech at3–6 seats.
+Typed next-turn entry, paid nested marker shipment/movement/reveal, CHOAM stash
+5→6→5 and native Face Dance rewards remain original consumers. Pure No-Field
+custody recognizes the five known nested IDs at0; live commitment/reveal rejects
+unknown or unrevealed destinations. No effective-marker reserve allocation.
+
+Actual runtime exposed two Moritani integration defects: the live assassination
+profile rejected Discovery, and its history accepted only static territories.
+Both are repaired without disabling the printed different-opposing-Leader
+restriction or normal-call forfeiture. The nested-source regression pays the
+actual three-spice Guild Traitor bounty.
+
+Frozen source/consumer union **71/71**, TypeScript/lint and build pass. Original
+programs prove three actual Ixian counters/one Cyborg with no entry fee, one-spice
+Richese nested marker and one physical reveal, and both original E3 setups with
+four minimal legal policies.
+
+Four genuine six-seat Advanced Tech games complete on initial tree
+`6d6c1849d6da9b1e5c2af04e07303f9bec49ec9dac2d8089ae58c77795f48e57`;
+preserved Moritani setup completes at seed20263765 on corrected tree
+`fe22922e7acdea8aea64b75af8ba29247e37b63a63f461efa930f1a8cd2c049c`.
+Completed totals **1,940 accepted / 1,940 attempts / 49 JSON**; no single-tree
+five-game or natural-every-effect claim.
+
+Actual Q3AWYZWC v6 lobby keeps authenticated actors/decks. Original45 controls
+plus labelled unplayed Spice ordering/placement reach Collection. Human Guild
+inspection/reveal v8/v9 and original44-action continuation reach Richese v10.
+Human marker5 + original Guild Allow shipment settle v12 for1spice, reserves20
+and effective1; human reveal v13 produces five Cistern counters/reserves15 with
+no second price. Refresh fits390px. Reload only isolated QA after observed old
+No-Field validator rejection; actual selector now labels nested sector0 inside
+the location instead of Polar Sink. Managed tab released; no unrelated room write.
+
+[Canonical source/runtime evidence](DISCOVERY_PROTOTYPE.md#native-setup-and-original-consumers--5-october-2026).
+Contested/shared/mixed rulings, unrelated overlays, normal public starts, complete
+module strategy, assurance and deployed acceptance remain open. No reset or
+played-game conversion.
+
 ## 5 October 2026 — printed high Ecaz Homeworld alliance victory
 
 Fresh native Ecaz/Homeworld audit entry marks the actual card conjunction:

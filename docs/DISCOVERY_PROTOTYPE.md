@@ -13,14 +13,20 @@ scan used for all six placements. Its verified inventory is seven Spice Cards
 (six Discovery territory cards and Great Maker) and eight tokens. This prototype
 uses those identities and effects; it does not treat test outcomes as rulings.
 
-`initializeDiscoveryGameForAudit` enters the real staged setup with two through
-six ready base factions, in Basic or Advanced, with Discoveries enabled before
-components are dealt. It adds the seven cards to the ordinary Spice Deck and
-creates one of each token behind shuffled, opaque physical identities. It rejects
-redealing a started or nonempty game. Other expansion decks and optional modules
-are outside this initializer. No ordinary player action or room endpoint can
-bypass the normal start gate through it. The existing backed-up local starter
-accepts `--profile discovery` for a fresh ready base-faction lobby:
+`initializeDiscoveryGameForAudit` enters real staged setup with two through six
+ready seats in Basic or Advanced. Fresh classic, selected E1/E2 native families,
+and standalone Ecaz **or** Moritani with classic opponents use their original
+decks and native setup. Canonical unused Tech Tokens may be preserved at three
+through six seats. Advanced Moritani retains its non-Harkonnen assassination
+profile; paired/mixed E3, Skills, Strongholds, Homeworlds, Nexus and unrelated
+previews stay outside this entry.
+
+Discoveries are enabled before components are dealt. The initializer adds the
+seven cards to the selected original Spice Deck, retaining Ix Sandtrout, and
+creates each token behind shuffled opaque physical identities. Started games,
+nonempty native inventories and already-used Tech Tokens cannot be redealt.
+No ordinary player action or room endpoint bypasses the normal start gate.
+The existing local starter accepts `--profile discovery` for these fresh lobbies:
 
 ```sh
 node --import tsx tools/start-prototype.ts --profile discovery --db PATH --room CODE --version NUMBER --out /private/new-directory
@@ -28,6 +34,89 @@ node --import tsx tools/start-prototype.ts --profile discovery --db PATH --room 
 
 It preserves all seats and other rooms, requires the current version and refuses
 to redeal a started game. The default `ix` profile remains available.
+
+## Native setup and original consumers — 5 October 2026
+
+Original Ixian setup keeps the six-counter HMS garrison and seven physical
+Cyborgs; Tleilaxu keeps its actual private Face Dancers. Next-turn free entry
+quotes physical normal/elite groups, including Cyborgs and starred Fremen,
+separately from the HMS and concealed marker presence. Paid shipment, movement,
+stash and Face Dance retain original force, payment and winner-reward handlers.
+CHOAM's real five-card hand may draw a sixth from Card Stash before its owned
+choice discards any held card back to five.
+
+No-Field custody now recognizes the five known nested Discovery IDs at sector
+zero. This does not open an unrevealed location: declaration/commitment and
+materialization require the current revealed board. A concealed token is still
+one effective presence, not physical reserves or a source for free entry.
+Its original value-zero/three/five reveal materializes only current reserve
+forces, once. The shipment controls label nested sector zero as inside the
+location rather than Polar Sink.
+
+Standalone Advanced Moritani retains its original assassination state in the
+Discovery profile. An actual nested-site battle retains that revealed location
+in the original opportunity/history, with the same different-opposing-leader
+restriction, physical Traitor cost and printed bounty. Basic is not converted
+to the Advanced ability. Ecaz retains its existing Occupy preview and Basic
+odd-force boundary.
+
+The existing genuine game runner now selects `--profile discovery` or
+`--profile discovery-tech`, with `--rules both|basic|advanced` and
+`--players all|2|3|4|5|6`; Tech requires at least three seats. These profiles use
+classic, paired E1/E2 and standalone E3 original sample rosters with new
+2700/2800 ordinal bands. Earlier profiles, defaults and seeds are unchanged.
+
+```sh
+node --import tsx tools/faction-games.ts --profile discovery-tech --rules advanced --players 6 --out /private/new-directory
+```
+
+Focused native cases are in `tests/discovery-module-profile.test.ts`,
+`tests/discovery-native-typed-runtime.test.ts`,
+`tests/discovery-native-marker-runtime.test.ts` and
+`tests/discovery-native-e3-runtime.test.ts`. Fixtures explicitly label controlled
+unplayed Spice order, placement lottery and conserved counter/card/identity
+positions; clocks, choices and outcomes use original producers. This does not
+resolve contested Cistern/Testing Station/Orgiz, shared-payer theft, mixed-dial
+Jacurutu, complete module strategy or public-start/deployed acceptance.
+
+### Bounded runtime evidence
+
+The frozen affected rule union passes **71 tests**; final reference checks add
+**10 passing cases**. TypeScript/lint and the actual rule build pass. Original
+programs prove Ixian free entry of three physical
+counters, including one Cyborg, without a wallet/reserve debit; Richese pays one
+spice for a Cistern marker and later materializes three actual reserves. Fresh
+Ecaz and Moritani original setup both complete with eight tokens and all four
+minimal legal policies. The actual nested Moritani battle exposed and repaired
+the static-territory history rejection; its different Guild Traitor pays the
+printed three-spice bounty.
+
+Four genuine six-seat Advanced Tech samples finish on initial tree
+`6d6c1849d6da9b1e5c2af04e07303f9bec49ec9dac2d8089ae58c77795f48e57`.
+The original Moritani setup capture then finishes at effective seed **20263765**
+on corrected tree
+`fe22922e7acdea8aea64b75af8ba29247e37b63a63f461efa930f1a8cd2c049c`.
+Across those completed paths: **1,940 accepted / 1,940 attempted actions and 49
+JSON continuations**. This is a repaired/resumed study, not five games on one
+unchanged tree or natural activation of every new effect.
+
+Dedicated actual QA room **Q3AWYZWC** retains its original ready lobby, actor
+identities and private setup. Original 45-action program stops at Collection;
+only four unplayed Spice Card ordering and the token lottery are controlled.
+Guild's phone inspection/reveal reaches **v8/v9**. Original 44-action
+continuation reaches turn-two Richese movement at **v10**. Its real human
+five-value marker declaration reaches **v11**; original Guild **Allow shipment**
+settles **v12**, spice **5→4**, reserves **20** and one concealed Cistern presence.
+Human reveal reaches **v13**, reserves **20→15**, five Cistern counters and no
+second price. Refresh retains v13 and the phone fits **390px**.
+
+The first UI attempt reached the old running QA worker's static No-Field
+validator and rejected without mutation. Reloading only that isolated worker
+loaded the corrected build. The fresh sector selector now says **Inside location
+· sector 0**, not Polar Sink. The managed tab was released. Other games were
+not written; no reset, public activation, save conversion or deployed claim.
+
+
 
 ## Connected behavior
 

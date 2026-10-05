@@ -1,4 +1,5 @@
 import { MOBILE_STRONGHOLD } from './board';
+import { isDiscoveryLocationId } from './discoveries';
 
 export type NoFieldValue = 0 | 3 | 5;
 export type NoFieldLocation = { territory: string; sector: number };
@@ -61,7 +62,8 @@ function validateLocation(location: NoFieldLocation) {
       (location.sector >= 1 ||
         (location.sector === 0 &&
           (location.territory === 'polar_sink' ||
-            location.territory === MOBILE_STRONGHOLD))) &&
+            location.territory === MOBILE_STRONGHOLD ||
+            isDiscoveryLocationId(location.territory)))) &&
       location.sector <= 18,
     'Choose a valid planet territory and sector for the No-Field.',
   );
