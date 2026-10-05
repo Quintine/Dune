@@ -1109,6 +1109,15 @@ export function GameTable({
           <a href="/rules?topic=homeworlds#homeworlds">Preview rules and limits</a>
         </output>
       )}
+      {g.homeworldEcazVictoryPreview && (
+        <output className="notice block">
+          Partial · Ecaz High Homeworld victory development preview, enabled only
+          for this fresh preview game. Public progress is separate from ordinary
+          stronghold and Ecaz three-joint-stronghold victory; it is evaluated only
+          at the Mentat victory check. Unresolved source cases remain guarded.
+          Not complete or certified Homeworld rules.
+        </output>
+      )}
       {g.homeworldTupilePreview && (
         <output className="notice block">
           Occupied Tupile development preview · the occupier and reciprocal ally
@@ -6002,7 +6011,12 @@ export function GameTable({
           </div>
         )}
       </section>
-      <VictoryProgress progress={g.victoryProgress} players={g.players} fremen={g.fremenVictory} />
+      <VictoryProgress
+        progress={g.victoryProgress}
+        players={g.players}
+        fremen={g.fremenVictory}
+        ecazHomeworld={g.ecazHomeworldVictory}
+      />
       {g.strongholdCards && (
         <details className="m-4 rounded-xl border border-[#a88b60] p-4">
           <summary className="cursor-pointer text-lg">

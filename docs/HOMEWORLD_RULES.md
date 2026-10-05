@@ -113,6 +113,59 @@ Only the native faction may call Traitors or Face Dancers in a Homeworld battle.
 
 Ecaz's verified high face supplies a separate actual win predicate: its alliance jointly occupies at least one stronghold and occupies Homeworlds belonging to two **other factions**. Two Emperor Homeworlds do not supply two different native factions. Implement this as a Homeworld-card condition while Ecaz's high advantage applies; do not add all foreign Homeworlds to ordinary stronghold progress. The sentence's alliance subject supports combining the two members' qualifying foreign occupations, while its explicit co-occupation requirement applies to the stronghold. Exact interaction with a transient turn-bound Occupier receipt must use the finalized occupation semantics rather than silently replacing actual occupation with an income entitlement.
 
+### Printed high Ecaz alliance victory — 5 October 2026
+
+The unused `homeworld-occupation` entry with native Ecaz now separately marks
+`homeworldEcazVictoryPreview`. The original card’s condition is a conjunction:
+current native Ecaz population7+, a reciprocal alliance jointly holding at least
+one actual uncontested stronghold, and proved current alliance holdings of worlds
+belonging to two other native factions. Original `strongholdProgress` owns joint
+site legality; public advisors/No-Field/HMS and storm semantics are not duplicated.
+Kaitain plus Salusa still counts only Emperor; own/ally-native worlds are excluded.
+
+The focused [public quote](../game/ecaz-homeworld-victory.ts) uses actual typed
+reserve/custody/history and the shared supported occupation authority, with
+current physical holder presence. It never turns an income entitlement or a
+departed garrison into ordinary points. Basic unresolved potential holdings remain
+source-blocked. Unmarked board-only quotes read no new reserve or Homeworld data.
+The native high condition is current population; occupation does not invent a
+global suppression of that high advantage.
+
+This qualifying alliance joins the original ordinary winner union before a
+correct BG prediction; final-turn Fremen/Guild fallback still occurs only when
+no earlier source wins. The returned qualifying source prevents an Ecaz/Fremen
+alliance win from being described as a Fremen fallback. No special win button,
+card/spice award, altered Tech/Stronghold ownership or Duke permission is added.
+The explicit only-Ecaz Duke revival ruling and exceptional custody guards remain.
+
+Source34/related119 cases including guidance, types/lint/build and original native programs pass.
+The actual Movement→Collection→Mentat program wins with population7, onlyone
+joint site and two other native factions; ordinary1/4 and Ecaz1/3 remainfalse.
+All4 policies can finish original legal Collection readiness; BG prediction and
+simultaneous ordinary-winner union retain precedence. A separate original clock
+program reaches turn10 through734 legal actions before a labelled conserved
+Ecaz/Fremen endgame quote proves printed-source precedence over fallback.
+
+Original CLI **S8N26ADW v18/setup** preserves deck/actors/starting choices.
+Real turn-two Nexus earns Ecaz/Guild alliance before a labelled surviving-counter
+position; original storm7 remains unchanged. Phone390px prospective progress shows
+native7/7, joint Habbanya Sietch1/1 and distinct Emperor/BG2/2, with Ecaz holding
+Kaitain and Guild Wallach. Original ready actions then reach **v25/Mentat/finished**
+with both alliance members as winners, despite unchanged ordinary1/4/Ecaz1/3.
+Refresh preserves this win with no root overflow. One rejected driver closing
+action was repaired using canonical eligibility; no rule guard was weakened.
+Private proof stays outside Git. Full Homeworlds, overlays, pending Basic/CHOAM/
+Duke and deployed acceptance remain open.
+
+Five genuine six-seat Advanced continuations all finish4,339 accepted/
+4,358 attempts/114 JSON on unchanged tree
+`b0ebb815c973197ca3e3148c4ad447ddc11dba1489f72911de2cd341cafd2f08`.
+The19 rejected candidates remain recorded. Winner faction alone does not identify
+the new source; specific new-route proof is the original native program/human
+Mentat win above, not a claim that every natural sample triggered this condition.
+
+
+
 ## Karama and other optional systems
 
 Karama cannot cancel Homeworld advantages **or** penalties. This includes a BG Worthless card converted into Karama. Do not generate response windows for threshold flips, Homeworld strength or occupied-face awards. However, this immunity is not a blanket ban on playing Karama during a Homeworld shipment/battle: an independently cancelable ordinary faction advantage still has its own source and timing. Distinguish printed Homeworld transport permission from a faction ability and from the generic paid card effect. [E3 p.10](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=10)

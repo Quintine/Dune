@@ -17,6 +17,34 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Printed high Ecaz Homeworld alliance victory — bounded Development Verified:**
+fresh native Ecaz/Homeworld entry only. Current native7+, reciprocal alliance
+jointly holds one actual uncontested stronghold and proved physically held worlds
+of two other native factions. Emperor’s two worlds countone; own/ally worlds,
+Tech sets, advisors and ordinary points cannot manufacture this conjunction.
+Qualifying members join original winners before BG prediction/final fallback.
+The source result prevents Ecaz/Fremen’s printed win from being mislabeled as
+Fremen fallback; Duke’s explicit Ecaz-only revival and exceptional custody stay
+separate. Old/public profiles gain no new victory source.
+
+Source34/affected119 including guide cases, types/lint/build and real original
+Movement→Collection→Mentat pass; all4 legal policies finish readiness.
+High6/nonjoint/one-native/same-Emperor cases donotwin; prediction/simultaneous
+ordinary union and public-only inputs retain original semantics. A separate
+original734-action clock reaches turn10 before a conserved Ecaz/Fremen snapshot
+proves printed-source precedence.
+
+Five genuine six-seat Advanced games allfinish4,339/4,358/114 on unchanged
+b0ebb815 tree;19 rejected candidates remain recorded. Counts establishcontinuation,
+not natural triggering ofeverynewroute. Specific source proof is native/human.
+Original **S8N26ADW v18/setup** retainsdeck/actors/choices; real turn-two Nexus
+earnsEcaz/Guild before labelledsurvivingpositions. Storm7 unchanged, native7/7,
+jointHabbanyaSietch1/1, Emperor/BG2/2, EcazKaitain/GuildWallach. HumanlastReady
+reaches **v25/Mentat/finished Ecaz+Guild** whileordinary1/4/Ecaz1/3 stayfalse.
+Refresh fits390px. No reset/secret/public/save-conversion or Duke permission.
+[Exact source/runtime evidence](HOMEWORLD_RULES.md#printed-high-ecaz-alliance-victory--5-october-2026).
+Full Homeworlds/overlays, pending Basic/CHOAM/Duke, assurance and deployment remain.
+
 **Occupied Tupile slots / normal-limit cleanup — bounded Development Verified:**
 fresh native CHOAM/Homeworld entries alone initialize the source marker/ledger;
 older occupation profiles remain unchanged. One validated slot per occupier/

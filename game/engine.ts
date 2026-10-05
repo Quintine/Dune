@@ -99,6 +99,7 @@ import { createOccupiedPercentageState, quoteOccupiedPercentageSource, allocateO
 import { quoteOccupiedBiddingAuthority, requireOccupiedBiddingController, requireOccupiedBiddingBonusRecipient } from './homeworld-occupied-bidding';
 import { quoteStableHomeworldOccupation } from './homeworld-stable-occupation';
 import { createOccupiedTupileState, syncOccupiedTupileLease, quoteOccupiedTupileAuthority, quoteOccupiedTupileCleanup, completeOccupiedTupileCleanup, validateOccupiedTupileState, type OccupiedTupileState } from './homeworld-occupied-tupile';
+import { ecazHomeworldVictoryProgress, type EcazHomeworldVictoryProgress } from './ecaz-homeworld-victory';
 import { quoteGrummanCollection, quoteGrummanCollectionAction } from './grumman-collection';
 import { grummanCollectionSignature, validateGrummanCollection, type GrummanCollection } from './grumman-collection-return';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
@@ -1893,6 +1894,8 @@ export type Game = {
   homeworldOccupationHistory?: HomeworldOccupationHistory;
   /** Fresh development occupation entry only; never inferred for an older Homeworld save. */
   homeworldOccupationPreview?: true;
+  /** Fresh printed Ecaz high-card victory, separate from ordinary stronghold points. */
+  homeworldEcazVictoryPreview?: true;
   /** Fresh Tupile capacity entry only; older occupation games are not converted. */
   homeworldTupilePreview?: true;
   homeworldTupileState?: OccupiedTupileState;
@@ -8548,6 +8551,7 @@ export function initializeHomeworldOccupationGameForAudit(state: Game): Game {
     g.homeworldTupileState = createOccupiedTupileState();
     g.pendingHomeworldTupileCleanup = null;
   }
+  if (byFaction(g, 'ecaz')) g.homeworldEcazVictoryPreview = true;
   return g;
 }
 /** Offline-only seam for the independent Nexus module; public starts remain gated. */
@@ -18354,6 +18358,9 @@ function homeworldHistoryIntegrity(g: Game) {
   homeworldOccupiedIncomeIntegrity(g);
   occupiedPercentageIntegrity(g);
   tupileSlotsIntegrity(g);
+  requireRule(!g.homeworldEcazVictoryPreview ||
+    g.homeworldOccupationPreview === true && !!g.homeworlds && !!byFaction(g, 'ecaz'),
+  'The printed Ecaz Homeworld victory requires its original fresh native entry.');
 }
 function homeworldOccupiedIncomeIntegrity(g: Game) {
   const pending = g.pendingHomeworldOccupiedIncome, history = g.homeworldOccupiedIncomeHistory;
@@ -18880,7 +18887,10 @@ function victory(g: Game, quote: VictoryQuote = currentVictoryQuote(g)) {
         row.members.length === g.winner.length &&
         row.members.every((id) => g.winner.includes(id)),
     );
-    const fremen = g.turn === 10 && !progress.some((row) => row.qualifies)
+    const homeworld = quote.ecazHomeworld &&
+      quote.ecazHomeworld.members.length === g.winner.length &&
+      quote.ecazHomeworld.members.every(id => g.winner.includes(id)) ? quote.ecazHomeworld : null;
+    const fremen = !quote.ecazHomeworld && g.turn === 10 && !progress.some((row) => row.qualifies)
       ? fremenSpecialVictory(g) : null;
     const fremenWon = fremen?.qualifies && fremen.members.length === g.winner.length &&
       fremen.members.every((id) => g.winner.includes(id));
@@ -18889,7 +18899,7 @@ function victory(g: Game, quote: VictoryQuote = currentVictoryQuote(g)) {
       : '';
     log(
       g,
-      `${g.winner.map((id) => faction(getPlayer(g, id).faction).name).join(' and ')} won the game.${occupy ? ` Ecaz Occupy: both allies occupy ${occupy.jointlyOccupied.map((id) => territory(id).name).join(', ')} without opposing fighters, meeting the three-stronghold alliance target.` : ''}${specialReason}`,
+      `${g.winner.map((id) => faction(getPlayer(g, id).faction).name).join(' and ')} won the game.${occupy ? ` Ecaz Occupy: both allies occupy ${occupy.jointlyOccupied.map((id) => territory(id).name).join(', ')} without opposing fighters, meeting the three-stronghold alliance target.` : ''}${homeworld ? ' High Ecaz Homeworld victory: the alliance jointly holds a stronghold and occupies Homeworlds of two other native factions.' : ''}${specialReason}`,
     );
   } else if (g.status === 'finished')
     log(g, 'The tenth turn ended without a winner.');
@@ -23092,7 +23102,7 @@ function currentRicheseCancellationQuote(g: Game, response: ResponseWindow) {
 }
 function currentVictoryQuote(g: Game) {
   try {
-    return quoteVictory(g);
+    return quoteVictory(g, g.homeworldEcazVictoryPreview ? g : undefined);
   } catch (error) {
     if (error instanceof VictoryQuoteError) throw new RuleError(error.message);
     throw error;
@@ -31456,10 +31466,12 @@ export function viewGame(state: Game, id: string) {
   const me = getPlayer(g, id);
   let victoryProgress: StrongholdProgress[] = [];
   let fremenVictory: FremenVictoryProgress | null = null;
+  let ecazHomeworldVictory: EcazHomeworldVictoryProgress | null = null;
   if (g.status === 'playing' || g.status === 'finished') {
     try {
       victoryProgress = strongholdProgress(state).progress;
       fremenVictory = fremenSpecialVictory(state);
+      if (g.homeworldEcazVictoryPreview) ecazHomeworldVictory = ecazHomeworldVictoryProgress(state);
     } catch (error) {
       // A malformed restored board has no reliable preview. Authoritative
       // victory still rejects it through its strict quote.
@@ -31556,6 +31568,7 @@ export function viewGame(state: Game, id: string) {
     spiceBankerIncomePreview: g.spiceBankerIncomePreview === true,
     homeworldOccupationPreview: g.homeworldOccupationPreview === true,
     homeworldTupilePreview: g.homeworldTupilePreview === true,
+    homeworldEcazVictoryPreview: g.homeworldEcazVictoryPreview === true,
     spiceBankerIncome: g.spiceBankerIncomePreview
       ? bankerIncomeRule(() => projectBankerIncome(g.spiceBankerIncome!, bankerIncomeContext(g))) : null,
     bribeOptions: projectedBribes(g, me),
@@ -31933,6 +31946,7 @@ export function viewGame(state: Game, id: string) {
     winner: g.winner,
     victoryProgress,
     fremenVictory,
+    ecazHomeworldVictory,
     shieldWallDestroyed: g.shieldWallDestroyed,
     stormDialers: g.stormDialers,
     stormSubmitted: Object.keys(g.stormDials),

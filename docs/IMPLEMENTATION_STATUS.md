@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 5 October 2026 — printed high Ecaz Homeworld alliance victory
+
+Fresh native Ecaz/Homeworld audit entry marks the actual card conjunction:
+nativehigh7+, reciprocalalliance oneactualjointstronghold and provedphysically
+held worlds of twoOTHERnativefactions. Sharedboard andoccupationquotes own
+legality; duplicateEmperorworlds countone and noTech/advisor/ordinarypoint shortcut.
+Originalqualifyingwinnerunion precedes BGprediction/finalfallback. Returnedsource
+disambiguates anEcaz/Fremen printedwin fromFremenfallback. Duke permission unchanged.
+
+Source34/affected119 including guide, types/lint/build and originalprograms pass.
+Real Movement→Collection→Mentat winneeds onlyonejointsite; all4policies havelegal
+readiness. High6 and deficientconjunctions do notwin. Original734-action clock
+reaches turn10 before separatelylabelledconserved Ecaz/Fremen sourceprecedence.
+Controlledpositions preserve storm, actualTanks/starredfloors andphysicaldecks;
+there is no syntheticphase/deck/receipt or favorableseed.
+
+Five genuine six-seat Advanced samples finish4,339 accepted/4,358attempts/114JSON
+on unchanged `b0ebb815c973197ca3e3148c4ad447ddc11dba1489f72911de2cd341cafd2f08`.
+19 rejectedcandidates recorded. Specificnewsource triggering isproved bynative/
+humanprograms, not inferredfromwinnerfactions or thesecontinuationcounts.
+OriginalCLI S8N26ADW v18 setup, realturn-two Ecaz/GuildNexus and labelledsurviving
+pose preserveactors/deck/clock. Storm7, native7, actualjointHabbanya1, separate
+Emperor/BGworlds2 appearat390px withoutchangingordinary1/4/Ecaz1/3. ActuallastReady
+reachesv25/Mentat/finished Ecaz+Guild; refreshfits390px. Drivereligibility andtyped
+subset issues correctedwithoutweakeninggameguards. Privateproof outsideGit.
+[Canonical source and actual winning evidence](HOMEWORLD_RULES.md#printed-high-ecaz-alliance-victory--5-october-2026).
+No reset/public/saveconversion/Dukecutover; fullmodes, pendingrulings anddeployment
+remainopen.
+
 ## 5 October 2026 — occupied Tupile capacity, original cleanup and low authority
 
 Fresh native CHOAM/Homeworld audit setup alone marks Tupile slots and the original

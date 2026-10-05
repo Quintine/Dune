@@ -21,6 +21,7 @@ import {
   strongholdControllers,
   type StrongholdState,
 } from './stronghold-cards';
+import { ecazHomeworldVictoryProgress, type EcazHomeworldVictoryContext, type EcazHomeworldVictoryProgress } from './ecaz-homeworld-victory';
 
 export class VictoryQuoteError extends Error {}
 function requireVictory(
@@ -46,12 +47,14 @@ export type VictoryQuote = {
   status: 'playing' | 'finished';
   /** Exact final ownership when settlement is due; null means no settlement. */
   strongholds: StrongholdState | null;
+  /** Qualifying printed source before any private BG prediction replacement. */
+  ecazHomeworld: EcazHomeworldVictoryProgress | null;
 };
 
 /** Internal server quote. Prediction is private input, never a returned field.
  * This preserves the existing victory order, including the distinct final-turn
  * Fremen/Guild fallbacks. It does not advance a turn or settle other phase work. */
-export function quoteVictory(g: VictoryContext): VictoryQuote {
+export function quoteVictory(g: VictoryContext, ecazContext?: EcazHomeworldVictoryContext): VictoryQuote {
   requireVictory(
     (g.status === 'playing' || g.status === 'finished') &&
       whole(g.turn) &&
@@ -154,12 +157,31 @@ export function quoteVictory(g: VictoryContext): VictoryQuote {
         ids.some((id) => fighterCount(player(id), t.id) > 0) &&
         players.every((p) => ids.includes(p.id) || fighterCount(p, t.id) === 0),
     ).length;
+  let ecazHomeworld: EcazHomeworldVictoryProgress | null = null;
+  if (ecazContext) {
+    const context = ecazContext;
+    requireVictory(context.homeworldEcazVictoryPreview === true && context.turn === g.turn &&
+      context.advanced === g.advanced && context.storm === g.storm && context.players === g.players &&
+      context.order === g.order && context.mobileStronghold === g.mobileStronghold &&
+      context.discoveries === g.discoveries,
+    'The Ecaz Homeworld source must belong to this original victory board.');
+    try {
+      const row = ecazHomeworldVictoryProgress(context);
+      requireVictory(!row?.blocked || !row.high || !row.jointStrongholds.length,
+        row?.blocked ?? 'The Ecaz Homeworld victory source is unresolved.');
+      if (row?.qualifies) ecazHomeworld = row;
+    } catch (error) {
+      if (error instanceof VictoryProgressError) throw new VictoryQuoteError(error.message);
+      throw error;
+    }
+  }
   let winner = [...g.winner];
   const predicted = () =>
     bg?.prediction?.turn === g.turn &&
     winner.some((id) => player(id).faction === bg.prediction!.faction);
   for (const row of progress)
     if (row.qualifies) winner = [...new Set([...winner, ...row.members])];
+  if (ecazHomeworld) winner = [...new Set([...winner, ...ecazHomeworld.members])];
   if (predicted()) winner = [bg!.id];
   let status = g.status;
   if (!winner.length && g.turn === 10) {
@@ -209,5 +231,5 @@ export function quoteVictory(g: VictoryContext): VictoryQuote {
       throw new VictoryQuoteError((error as Error).message);
     }
   }
-  return { released, winner, status, strongholds };
+  return { released, winner, status, strongholds, ecazHomeworld };
 }
