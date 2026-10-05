@@ -53,6 +53,15 @@ Tabs released; no unrelated record was written.
 Full combinations, pending rulings, assurance and deployed acceptance remain.
 
 
+Exact code **c12b463439521134f5ca3ee9c00bf0fbd33fbd3b** is pushed.
+[CI37273231864](https://github.com/Quintine/Dune/actions/runs/37273231864) /
+container111644528093 succeeds isolated storage/HTTP7 before verified-image9.
+Final reference10, types/lint and exact pushed build pass. Preserved PCDX5J8M
+**v16/movement** shows **c12b463**, Warmaster/four Cistern counters/spice2/reserves11,
+at390px. FCVCEA3R **v8/Collection** retains owner13/payer-own8/two notices.
+Tab released; publication is not deployment or protected NAS approval.
+
+
 **Native Discovery / optional original Tech — bounded Development Verified:**
 fresh classic, selected E1/E2 or standalone Ecaz OR Moritani Basic/Advanced
 profiles retain original setup, decks/cache, seven Discovery Spice Cards and

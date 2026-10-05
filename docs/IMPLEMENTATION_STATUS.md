@@ -37,6 +37,14 @@ phase path, not a new confirmation. Tabs released; no unrelated game write.
 Complete combinations, pending contested/shared/mixed rulings, assurance and
 deployed acceptance remain open.
 
+Exact source **c12b463439521134f5ca3ee9c00bf0fbd33fbd3b** is pushed.
+[CI37273231864](https://github.com/Quintine/Dune/actions/runs/37273231864) /
+container111644528093 succeeds isolated storage/HTTP7 before verified-image9.
+Final reference10/types/lint/exact pushed build pass. Preserved PCDX5J8M v16
+showsc12b463 at390px, Warmaster/four Cistern counters/reserves11/spice2;
+FCVCEA3R v8 retains owner13/payer-own8/two Orgiz notices. Tab released.
+Publication is not deployment or a protected NAS-prerequisite bypass.
+
 ## 5 October 2026 — native Discovery with original Tech
 
 Fresh classic, selected E1/E2 and standalone Ecaz OR Moritani Discovery entry
