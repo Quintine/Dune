@@ -22,11 +22,10 @@ export type StableHomeworldOccupationQuote = {
 };
 type SourceWorld = [string, [string, number, number][]];
 
-/** Printed qualification is not a current-controller shortcut. This fresh
- * profile admits only one continuously present qualifier, with no competing
- * foreign garrison or restored native high threshold since qualification.
- * Departure/turnover/contested/repopulation questions remain unanswered.
- * Sources: HOMEWORLD_OCCUPATION_RULES7–33,35–56; original occupied card faces. */
+/** Original source history supplies entitlement, never a current-controller
+ * shortcut. Advanced uses the authorized supplied rulebook p.22: qualification
+ * requires sole foreign presence and survives until that occupier leaves.
+ * Basic retains the publisher-only pending lifecycle guards below. */
 export function quoteStableHomeworldOccupation(
   game: StableHomeworldOccupationContext,
   cardId: HomeworldId,
@@ -45,6 +44,31 @@ export function quoteStableHomeworldOccupation(
   const world = homeworldForceGroups(context, custody).find(home => home.native === native.id &&
     home.secondary === (cardId === 'salusa_secundus'));
   if (!world) throw new HomeworldCustodyError('The occupied card lost its original native Homeworld.');
+  if (game.advanced) {
+    let retained: { player: string; event: string } | null = null;
+    for (const source of history.sources) {
+      const snapshot = JSON.parse(history.snapshots[source.snapshot]) as SourceWorld[];
+      const groups = snapshot.find(row => row[0] === world.id)![1]
+        .filter(([, normal, elite]) => normal + elite > 0);
+      if (retained && !groups.some(([id]) => id === retained!.player)) retained = null;
+      if (!retained && source.cause !== 'setup' && groups.length === 1 && groups[0][0] !== native.id)
+        retained = { player: groups[0][0], event: source.event };
+    }
+    const present = Object.entries(world.forces).filter(([, forces]) => forces.normal + forces.elite > 0);
+    if (retained && !present.some(([id]) => id === retained!.player)) retained = null;
+    if (!retained) {
+      // A producer may query between a physical write and its semantic
+      // observation; do not invent a new qualifying event from that write.
+      return present.length === 1 && present[0][0] !== native.id
+        ? { entitlement: null, blocked: 'The original Advanced sole-occupation change must be observed before its benefit settles.' }
+        : none;
+    }
+    const occupier = game.players.find(player => player.id === retained!.player)!;
+    const ally = occupier.ally && game.players.some(player => player.id === occupier.ally && player.ally === occupier.id)
+      ? occupier.ally : null;
+    return { entitlement: { world: world.id, card: cardId, native: native.id, occupier: occupier.id,
+      ally, qualification: retained.event, turn: game.turn, spice: card.occupied.spiceIcons }, blocked: null };
+  }
   const first = history.qualifications.find(f => f.world === world.id);
   if (!first) return none;
   const blocked = (detail: string): StableHomeworldOccupationQuote => ({ entitlement: null,

@@ -1137,6 +1137,52 @@ function policyActions(g: GameView): Action[] {
   const level = rank(g);
   if (!(me.bot ?? me.autopilot) || g.status === 'finished') return [];
   if (g.status === 'lobby') return me.ready ? [] : [{ type: 'ready' }];
+  if (!g.decision && !g.response && g.richeseBidding?.stage === 'cacheOffer' && g.richeseBidding.offerBlocked)
+    return [];
+  // Resolve these original source choices before unrelated optional card plays.
+  // Private faces and eligible recipients come only from the personalized view.
+  if (g.decision?.kind === 'homeworldOccupiedPercentage') {
+    const offer = g.homeworldOccupiedPercentage;
+    return g.decision.player === me.id && offer && offer.owner === me.id &&
+      offer.event === g.decision.event && !offer.blocked
+      ? [{ type: 'decision', event: offer.event, ownAmount: offer.maxOwnAmount }]
+      : [];
+  }
+  if (g.decision?.kind === 'homeworldOccupiedBonus') {
+    const offer = g.homeworldOccupiedBonus;
+    const recipient = offer?.recipients.find((player) => player.player === me.id) ?? offer?.recipients[0];
+    return g.decision.player === me.id && offer && offer.owner === me.id &&
+      offer.event === g.decision.event && !offer.blocked && recipient
+      ? [{ type: 'decision', event: offer.event, recipient: recipient.player }]
+      : [];
+  }
+  if (g.decision?.kind === 'ixAuction') {
+    if (g.decision.player !== me.id || g.ixTechnology?.blocked) return [];
+    const cards = [...(g.ixTechnology?.pool ?? [])].sort(
+      (a, b) => technologyCardValue(g, a) - technologyCardValue(g, b),
+    );
+    return cards[0] ? [{ type: 'decision', card: cards[0].id, position: 'bottom' }] : [];
+  }
+  if (g.decision?.kind === 'richeseCacheTerms') {
+    const bidding = g.richeseBidding;
+    return g.decision.player === me.id && bidding?.owner === me.id && !bidding.offerBlocked
+      ? [{ type: 'decision', event: bidding.event, method: 'onceAround', direction: 'clockwise' }]
+      : [];
+  }
+  if (g.decision?.kind === 'richeseCache') {
+    const bidding = g.richeseBidding;
+    if (bidding && bidding.owner !== me.id && !bidding.cacheTerms) return [];
+    if (g.decision.player !== me.id || !bidding || bidding.offerBlocked) return [];
+    const cards = [...(bidding.cache ?? [])].sort(
+      (a, b) => technologyCardValue(g, a) - technologyCardValue(g, b),
+    );
+    return cards[0] ? [{
+      type: 'decision', event: bidding.event, card: cards[0].id,
+      ...(bidding.owner === me.id
+        ? { method: level === 0 ? 'silent' as const : 'onceAround' as const, direction: 'clockwise' }
+        : {}),
+    }] : [];
+  }
   if (g.decision?.kind === 'nullentropy') {
     if (g.decision.player !== me.id) return [];
     const search = g.nullentropy?.search;
@@ -1811,22 +1857,6 @@ function policyActions(g: GameView): Action[] {
           position: level >= 2 ? 'last' : 'first',
         },
       ];
-    if (d.kind === 'richeseCache') {
-      const cards = [...(g.richeseBidding?.cache ?? [])].sort(
-        (a, b) => technologyCardValue(g, a) - technologyCardValue(g, b),
-      );
-      return cards.length
-        ? [
-            {
-              type: 'decision',
-              event: g.richeseBidding!.event,
-              card: cards[0].id,
-              method: level === 0 ? 'silent' : 'onceAround',
-              direction: 'clockwise',
-            },
-          ]
-        : [];
-    }
     if (d.kind === 'richeseUnbid')
       return [
         {
@@ -2054,9 +2084,8 @@ function policyActions(g: GameView): Action[] {
         ? [{ type: 'decision', accept: true }]
         : [{ type: 'decision', decline: true }];
     }
-    if (d.kind === 'ixSetup' || d.kind === 'ixAuction') {
-      const cards =
-        d.kind === 'ixSetup' ? g.ixTechnology?.setup : g.ixTechnology?.pool;
+    if (d.kind === 'ixSetup') {
+      const cards = g.ixTechnology?.setup;
       const sorted = [...(cards ?? [])].sort(
         (a, b) => technologyCardValue(g, b) - technologyCardValue(g, a),
       );
@@ -2064,8 +2093,7 @@ function policyActions(g: GameView): Action[] {
       return [
         {
           type: 'decision',
-          card: (d.kind === 'ixSetup' ? sorted[0] : sorted.at(-1)!).id,
-          position: 'bottom',
+          card: sorted[0].id,
         },
       ];
     }

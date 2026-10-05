@@ -6,6 +6,8 @@ import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
 const DECISIONS = {
   ecazBattleLead: true,
   homeworldOccupiedIncome: true,
+  homeworldOccupiedPercentage: true,
+  homeworldOccupiedBonus: true,
   leaderSkillVisibility: true,
   leaderSkillRevival: true,
   moritaniAssassinate: true,
@@ -23,6 +25,7 @@ const DECISIONS = {
   richeseBlackMarket: true,
   richeseDeclaration: true,
   richeseCache: true,
+  richeseCacheTerms: true,
   richeseUnbid: true,
   richeseAllyShipment: true,
   richeseAllyOpportunity: true,

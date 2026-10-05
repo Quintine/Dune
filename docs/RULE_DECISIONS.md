@@ -151,11 +151,33 @@ reveal history and the log now name the sourced forfeiture. Exceptional leader
 custody and the independent private-step UX/public-preview gates are unchanged.
 See [the cutover and Advanced sequence](MORITANI_ASSASSINATE_LEADERS.md#authority-and-advanced-duration-cutover).
 
+## Advanced Homeworld occupation source cutover — 5 October 2026
+
+The authorized supplied revision, physical **page22**, qualifies an occupier
+when its foreign forces are **alone** on the world and retains those benefits
+until **none of its forces remain**. Original semantic snapshots therefore
+retain Advanced ownership through later contests, native repopulation and turn
+changes, then clear it on departure; a subsequent sole arrival creates a new
+original epoch. Its sole-only qualification does not inherit the publisher’s
+foreign-presence-at-boundary clause. This supersedes the historical Advanced
+lifecycle guard, not Basic, a GF9 erratum or a current-garrison shortcut.
+The supplied page omits the individual reverse effects; audited components and
+GF9 immunity/payment authority continue to supply those details.
+
+Kaitain/Junction native cancellation remains separate from printed occupied
+percentages. Caladan native inspection denial hides native’s face while the
+separately admitted occupier share survives. Ix transfers the actual Bidding
+pool, not setup/Technology; Richese transfers only cache-card selection, not
+seller terms, invoice or authority to bypass a canceled-auction-count ruling.
+One real Giedi bonus uses the recipient’s hand space; Southern rounds the
+completed actual Collection total once. These source compositions are not
+dedicated retrieved worked FAQs. [Contract and remaining limits](HOMEWORLD_OCCUPATION_RULES.md#occupied-economics-bidding-and-advanced-source-cutover--5-october-2026).
+
 ## Recorded contracts and implementation boundaries
 
 | Topic | Decision to preserve | Detailed authority and evidence |
 | --- | --- | --- |
-| Stable Homeworld occupation | Fresh original Homeworlds alone, original setup and qualification history. Admit only one continuously present qualifier without another foreign army, departure, competing qualification or restored native high threshold. Actual bank icons/immediate reciprocal-ally allocation and Wallach/Tleilax/Grumman/Salusa protections compose source-clear cases; no current-controller shortcut or expiry/replacement ruling. Zero-icon ambiguity cannot block unrelated currency awards or select combat strength. Paid percentages, remaining borrowed powers, pending rulings and public/save conversion stay separate. | [Source and bounded runtime evidence](HOMEWORLD_OCCUPATION_RULES.md#stable-continuous-occupation-prototype--5-october-2026) |
+| Stable Homeworld occupation | Fresh original Homeworlds alone and source history. Advanced uses authorized p22 sole qualification retained until last-force departure; Basic keeps historical lifecycle guards. Actual bank/percentage income, immediate sharing, Caladan/Ix/Richese/Giedi original ownership and Wallach/Tleilax/Grumman/Salusa defenses are connected. No inferred current controller, past-income back-award, invented canceled-auction count, public/save conversion or unrelated overlay. Tupile capacity and exceptional Duke remain separate. | [Source cutover and original consumers](HOMEWORLD_OCCUPATION_RULES.md#occupied-economics-bidding-and-advanced-source-cutover--5-october-2026) |
 | Standalone E3 Nexus / Skills / original components | Fresh Ecaz OR Moritani/classic ecaz33/all14/all12, Basic/Advanced2..6, original Tech3+/Advanced Strongholds2+. Original Duke/assassination/Terror, chosen-plan Advanced Occupy and separate physical armies remain. Ecaz-led Suk rescues only its own fixed casualties; Diplomat uses the selected faction's own undialed commitment. Owner-pool skill composition is an explicit implementation inference, not a combined-skill FAQ. E3 pairs/Harkonnen Advanced/HW/previews/shared-Duke training/enhanced relocation and pending rulings remain guarded. | [Source and verified scope](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026), [coalition contract](ECAZ_OCCUPY_RULES.md#standalone-nexus--skills-coalition--5-october-2026) |
 | Harkonnen special-Karama forced return | Return automatically only when the combined hand equals the count owed. Keep actual drawn-card observations owner-private after settlement; legacy forced saves describe held-card history without inventing draw provenance. Existing provisional auction-payment recovery and mode gates remain. | [Contract and limits](HARKONNEN_EXCHANGE.md) |
 | Basic Moritani / Leader Skills | Ordinary Terror death returns the assigned skill once; own revival offers the existing private optional replacement. Sabotage does not take skills, alliances do not transfer assignments, and mandatory Planetologist/Diplomat disposal excludes those cards from ally retention. This is composition of existing contracts, not a new ruling or resolution of unfinished skill effects. Advanced and other roster/module combinations remain gated. | [Integration contract](MORITANI_LEADER_SKILLS.md) |

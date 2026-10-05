@@ -202,7 +202,7 @@ void test('restoring the native high threshold after qualification blocks the pe
   assert.deepEqual({ game, state }, before);
 });
 
-void test('zero-icon contested Salusa cannot block a real Kaitain bank award or choose a Sardaukar strength', () => {
+void test('Advanced contested zero-icon Salusa retains its original strength penalty without blocking Kaitain income', () => {
   const { game } = occupiedIncomeFixture('kaitain', true, false);
   const secondary = 'homeworld:emperor:salusa';
   const owner = game.players.find(p => p.id === 'owner')!;
@@ -212,13 +212,52 @@ void test('zero-icon contested Salusa cannot block a real Kaitain bank award or 
   game.players.find(p => p.id === 'competitor')!.reserves--;
   game.homeworlds!.custody!.visitors[secondary].competitor = { normal: 1, elite: 0 };
   observeControlledIncomePosition(game, 'controlled-secondary-contested');
-  assert.notEqual(occupiedHomeworldSardaukarStatus(game).blocked, null);
+  assert.deepEqual(occupiedHomeworldSardaukarStatus(game), { suppressed: true, blocked: null });
   const before = owner.spice;
   const pending = beginHomeworldOccupiedIncome(game, 'collection-positive-primary-zero-secondary');
   const result = settle(game, pending, 2);
   assert.equal(owner.spice - before, 2);
-  assert.equal(result.state.cursor, result.state.queue.length);
-  assert.equal(occupiedHomeworldSardaukarStatus(game).suppressed, false);
-  assert.notEqual(occupiedHomeworldSardaukarStatus(game).blocked, null,
-    'Collection does not guess the still-unresolved mandatory combat penalty.');
+  const zero = settle(game, result.state, 0);
+  assert.equal(zero.state.cursor, zero.state.queue.length);
+  assert.equal(owner.spice - before, 2);
+  assert.deepEqual(occupiedHomeworldSardaukarStatus(game), { suppressed: true, blocked: null });
+});
+
+void test('Advanced bank owner survives native return, foreign contest and turn change but expires at its last departure', () => {
+  const { game, world } = occupiedIncomeFixture('caladan', true, false);
+  const owner = game.players.find(player => player.id === 'owner')!;
+  const native = game.players.find(player => player.id === 'native')!;
+  const competitor = game.players.find(player => player.id === 'competitor')!;
+  const initial = beginHomeworldOccupiedIncome(game, 'advanced-original-collection');
+  const qualification = initial.queue[0].qualification;
+  native.tanks -= 6;
+  native.reserves += 6;
+  game.homeworlds!.custody!.visitors[world].competitor = { normal: 1, elite: 0 };
+  competitor.reserves--;
+  observeControlledIncomePosition(game, 'advanced-native-high-and-foreign-contest');
+  assert.equal(homeworldOccupiedIncomeOffer(initial, game, owner.id)!.blocked, null);
+  const before = owner.spice;
+  settle(game, initial, 2);
+  assert.equal(owner.spice - before, 2);
+  game.turn++;
+  observeControlledIncomePosition(game, 'advanced-next-turn-original-owner-remains');
+  const retained = beginHomeworldOccupiedIncome(game, 'advanced-next-collection');
+  assert.equal(retained.queue[0].occupier, owner.id);
+  assert.equal(retained.queue[0].qualification, qualification);
+  delete game.homeworlds!.custody!.visitors[world].owner;
+  owner.reserves++;
+  observeControlledIncomePosition(game, 'advanced-last-original-force-left');
+  assert.equal(beginHomeworldOccupiedIncome(game, 'advanced-no-sole-successor').queue.length, 0);
+  assert.throws(() => quoteHomeworldOccupiedIncomeChoice(retained, game, owner.id, retained.event, world, 2), HomeworldCustodyError);
+  native.tanks += native.reserves;
+  native.reserves = 0;
+  observeControlledIncomePosition(game, 'advanced-successor-alone');
+  const replacement = beginHomeworldOccupiedIncome(game, 'advanced-successor-collection');
+  assert.equal(replacement.queue[0].occupier, competitor.id);
+  assert.notEqual(replacement.queue[0].qualification, qualification);
+  const successorBalance = competitor.spice;
+  settle(game, replacement, 2);
+  assert.equal(competitor.spice - successorBalance, 2);
+  assert.equal(owner.spice - before, 2);
+  homeworldGameIntegrity(game);
 });

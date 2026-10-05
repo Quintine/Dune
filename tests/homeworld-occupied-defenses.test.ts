@@ -146,7 +146,7 @@ const ambiguityRules: Record<string, {
 };
 
 for (const [effect, rule] of Object.entries(ambiguityRules)) {
-  void test(`${effect}: departed, contested, competing, restored-high and expired evidence propagate the shared blocker without guessing`, () => {
+  void test(`${effect}: Advanced retains the original occupier until departure and admits a newly sole replacement`, () => {
     const qualified = freshDefenseGame(rule.native);
     qualifyDefensePosition(qualified, rule.world);
     for (const mode of ['departed', 'contested', 'competing', 'restored-high', 'expired'] as const) {
@@ -184,12 +184,13 @@ for (const [effect, rule] of Object.entries(ambiguityRules)) {
       }
       const before = structuredClone(game);
       const actual = rule.quote(game);
-      assert.notEqual(actual.blocked, null, 'an ambiguous beneficiary cannot authorize the native effect');
-      if (effect !== 'sardaukar') assert.equal(actual.status, 'unresolved');
-      if (effect === 'sardaukar') assert.equal(actual.suppressed, false, 'blocked is not selected strength');
+      if (effect !== 'sardaukar' && mode === 'competing') assert.notEqual(actual.blocked, null);
+      else assert.equal(actual.blocked, null);
+      if (effect !== 'sardaukar') assert.equal(actual.status, mode === 'competing' ? 'prohibited' : 'allowed');
+      if (effect === 'sardaukar') assert.equal(actual.suppressed, true);
       assert.deepEqual(game, before);
       const saved: Game = JSON.parse(JSON.stringify(game));
-      assert.deepEqual(rule.quote(saved), actual, 'original JSON history retains ambiguity');
+      assert.deepEqual(rule.quote(saved), actual, 'original JSON history retains the Advanced beneficiary');
       assertDefenseInventory(saved);
       delete saved.homeworldOccupationPreview;
       assert.deepEqual(rule.quote(saved), effect === 'sardaukar'

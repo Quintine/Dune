@@ -4,14 +4,15 @@ Source audit, 9 September 2026. No runtime activation. The primary module source
 
 ### Stable occupation runtime follow-up — 5 October 2026
 
-Original fresh `homeworld-occupation` setup now connects continuously proved,
-uncontested bank Collection/immediate ally sharing and the printed Wallach/
-Tleilax/Grumman/Salusa occupied protections. The immutable qualification history
-remains distinct from present armies; departure, replacement, contested or
-repopulated histories retain their pending guards. Percentage receipts and
-other occupied powers remain separate. This does not open normal starts,
-convert old saves or certify Homeworlds. See the
-[exact supported source/runtime subset](HOMEWORLD_OCCUPATION_RULES.md#stable-continuous-occupation-prototype--5-october-2026).
+Original fresh `homeworld-occupation` connects bank Collection/immediate sharing,
+Kaitain/Junction/Richese percentage receipts, the completed total Southern
+Collection, original Caladan/Ix/Richese/Giedi Bidding ownership and printed
+Wallach/Tleilax/Grumman/Salusa protections. Advanced follows the authorized supplied
+rulebook p22: qualify alone, retain until the last occupying force leaves.
+Basic still guards its publisher-source lifecycle questions. Original history,
+native population, invoices and private audiences remain separate. Tupile capacity,
+exceptional Duke, other modules, normal starts and full acceptance stay open.
+See the [source cutover and original consumers](HOMEWORLD_OCCUPATION_RULES.md#occupied-economics-bidding-and-advanced-source-cutover--5-october-2026).
 
 ## Module scope and component inventory
 

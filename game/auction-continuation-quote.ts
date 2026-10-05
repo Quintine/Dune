@@ -27,6 +27,8 @@ export type AuctionContinuationInput = {
   richeseAuction?: Game['richeseAuction'];
   richeseBidding?: Game['richeseBidding'];
   richeseCacheCount?: number;
+  /** Printed occupied bonus uses actual receiver capacity, not native buyer space. */
+  occupiedBonusAvailable?: boolean;
 };
 export type AuctionContinuationOperation =
   | { kind: 'sale'; free: boolean }
@@ -394,7 +396,7 @@ function calculate(
   if (
     stage === 'bonus' &&
     winner.faction === 'harkonnen' &&
-    handCount(winner) < 8
+    (input.occupiedBonusAvailable || handCount(winner) < 8)
   )
     return result({
       kind: 'response',

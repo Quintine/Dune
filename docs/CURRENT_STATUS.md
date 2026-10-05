@@ -8,15 +8,56 @@ The user-supplied `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf` is now
 an [authorized Advanced source of truth](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026),
 including its identified unofficial rulings. The 44-page file has 2.3
 metadata but a visibly retained 2.2 editorial heading; the index records its
-SHA-256 and physical-page citations. Current Guild payment/source passages
-were compared with the wave. Wider Advanced reconciliation remains open.
+SHA-256 and physical-page citations. Guild payment/source passages and Advanced
+Homeworld sole/last-departure occupation now have explicit source cutovers.
+Wider Advanced reconciliation remains open.
 Adoption does not reset games, convert Basic, republish the local PDF or
 open mode gates.
 
 
 ## Current checkpoint and work
 
-**Stable Homeworld occupation — bounded Development Verified:**
+**Occupied Homeworld economics / Bidding — bounded Development Verified:**
+original fresh2..6 Basic/Advanced setup and selected decks; Advanced uses the
+authorized supplied p22 sole qualification retained until its last force leaves,
+while Basic keeps its historical lifecycle guards. Actual Kaitain/Junction/
+Richese percentages and completed total Southern Collection retain original
+invoices, one payer debit, immediate sharing and signed once-only continuations.
+Caladan shares the admitted private face, Ix transfers its actual pool, Richese
+keeps native terms/seller/invoice while the occupier chooses only the card, and
+Giedi awards one original purchase bonus using actual receiving capacity.
+Native cancellation remains distinct from printed occupied effects.
+
+Final247 affected cases/24 files, types/lint/build and all4 legal policies pass.
+Human shipping exposed lost concurrent BG accompaniment; the signed suffix
+now preserves it through allocation/JSON and actual subsequent advisor placement.
+Wrong bonus recipients use normal RuleError; actual HTTP409 leaves version42.
+Nondeterministic original-deal capacity/stock fixtures are conserved, not rerolled.
+
+Pre-advisor-repair50 genuine games on unchanged09cfdd19 tree:44 finish18,977
+accepted/19,149 attempts/491 JSON continuations; all50 total22,383/22,580/580.
+Six remaining captures are four Basic occupation and two CHOAM source guards.
+Five original Advanced captures finish3,135/3,136/83 at their original seeds;
+resume restarts rather than reconstructs the random stream. After repair,
+five fresh six-seat Advanced games finish4,339/4,358/114 on unchanged2ada8996
+tree, including19 recorded rejected candidates. No zero-rejection/full-mode claim.
+
+Original CLI HH7VHT2U v21/4H5CZDMA v18/6K5JFNPH v18 preserve actors and stock.
+Real turn-two alliances precede labelled conserved positions. Human390px verifies
+Kaitain1/1, one allied bonus despite full Harkonnen8, actual three-force shipping6
+and Junction1/2 with restored BG accompaniment. Completed Fremen Collection9
+retains5 and shares4 as1/3; HH7VHT2U **v72/Mentat** wallets are Emperor5/Guild17/
+Harkonnen11/Fremen10/Atreides13/BG9. Richese native counterclockwise terms,
+original Ornithopter5 invoice and3/2 net split reach **v29**; sole Ix pool6→5
+reaches **v25**, with native Ix-known0 and Technology still native.
+Refresh has no root390px overflow. [Exact source/program evidence](HOMEWORLD_OCCUPATION_RULES.md#original-runtime-and-human-evidence).
+
+Tupile capacity/cleanup, exceptional Duke, Basic/CHOAM rulings, other overlays,
+public/save conversion and full/deployed assurance remain open. No reset or
+current-garrison shortcut. Publication is not deployment; NAS prerequisites
+and last observed liveab5c782 remain unchanged.
+
+**Prior checkpoint5e902e3: stable Homeworld occupation — bounded Development Verified:**
 fresh original2..6 Basic/Advanced setup/selected decks and Homeworlds alone;
 no played-game conversion or inferred current controller. Continuously present
 sole qualification, without competing/departed/contested/restored-high history,

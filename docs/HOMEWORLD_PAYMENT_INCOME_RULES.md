@@ -2,6 +2,11 @@
 
 Source-composition contract, 9 September 2026. This covers population-based reductions to existing Emperor and Guild payment receipts. It does not implement occupied income, decide competing Occupiers or certify a complete Homeworld module. [Occupation source boundary](HOMEWORLD_OCCUPATION_RULES.md).
 
+Runtime follow-up, 5 October 2026: the fresh occupation profile now has a
+[separate original percentage ledger](HOMEWORLD_OCCUPATION_RULES.md#occupied-economics-bidding-and-advanced-source-cutover--5-october-2026).
+The unoccupied contract below remains historical authority for ordinary native
+receipt reduction, not for canceling a printed occupied share.
+
 ## Printed effects and source precedence
 
 The verified low faces say that native Emperor receives the rounded-up half of Treachery Card payments and native Guild receives the rounded-up half of shipping payments. Both are low at zero through four native forces. Kaitain population is its own physical native pool, excluding forces allocated to Salusa Secundus. Component provenance is recorded in the [Homeworld component audit](HOMEWORLD_COMPONENT_AUDIT.md); this pass did not re-download its historical reverse-image cache.
@@ -55,9 +60,20 @@ Do not reduce unrelated Emperor/Guild bank awards, charity, revival income, ordi
 
 ## Occupied branch remains separate
 
-The unoccupied calculation leaves the missing half in the bank. An occupied face can assign that portion to a qualifying occupier and may independently award printed bank spice during Collection. Do not convert the bank remainder into an occupier award until the lifecycle and actual recipient are resolved. Likewise, high native population alone cannot prove that a retained occupation penalty has expired. Any runtime scope guard must acknowledge this limitation rather than describing the population-only quote as complete occupation support.
+The unoccupied calculation leaves the missing half in the Bank. The fresh
+occupation profile instead assigns that rounded-down portion to its proved
+occupier, independently of the printed Collection bank icons. Advanced uses the
+authorized supplied p22 sole/last-departure lifecycle; Basic retains guarded
+historical cases. Native repopulation does not expire a retained Advanced source.
 
-Future integration must preserve the original eligible receipt, present force state and qualification history separately. Ordinary income cancellation, retained low effects, occupied percentage income and immediate ally sharing must compose from their own rules; the current unoccupied branch is not authority for a future occupied Karama outcome.
+The original eligible paid receipt, present force state and original qualification
+history remain distinct. Native income Karama sends only its native portion to
+the Bank; the printed occupied portion survives under Homeworld immunity and may
+be immediately shared with the reciprocal ally. This is explicit source
+composition, not a dedicated retrieved worked cancellation FAQ. The payer’s
+completed debit and delivery never repeat. Existing two-odd contributor ambiguity,
+independent-Karama bank routing and Guild Nexus full-fee overrides remain separate.
+No past receipt is back-awarded and no overlay combination is admitted here.
 
 ### Guild Nexus Betrayal is a full-fee exception
 

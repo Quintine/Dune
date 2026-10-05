@@ -25,6 +25,8 @@ import { HomeworldRevivalDeployment } from './homeworld-revival-deployment';
 import { CaladanReinforcement } from './caladan-reinforcement';
 import { GrummanCollection } from './grumman-collection';
 import { HomeworldOccupiedIncome } from './homeworld-occupied-income';
+import { HomeworldOccupiedPercentage } from './homeworld-occupied-percentage';
+import { HomeworldOccupiedBonus } from './homeworld-occupied-bonus';
 import { TupileIntelligence } from './tupile-intelligence';
 import { NexusCards } from './nexus-cards';
 import { NexusTraitors } from './nexus-traitors';
@@ -1098,12 +1100,23 @@ export function GameTable({
       {g.advanced && g.status !== 'lobby' && <AdvancedPreviewNotice compact />}
       {g.homeworldOccupationPreview && (
         <output className="notice block">
-          Homeworld occupation development preview · continuous, uncontested
-          qualification only. Printed bank Collection, immediate ally sharing
-          and occupied native defenses are connected. Departure, replacement,
-          contested/repopulated histories, percentage income and other unfinished
-          occupied powers remain guarded. Not complete or certified Homeworld rules.{' '}
+          Homeworld occupation development preview · printed bank Collection,
+          percentage income, original Bidding effects, immediate ally sharing
+          and occupied native defenses are connected. Advanced occupation benefits
+          are retained until the occupier’s last force leaves; Basic lifecycle and
+          unresolved competing-owner cases remain guarded. Not complete or certified Homeworld rules.{' '}
           <a href="/rules?topic=homeworlds#homeworlds">Preview rules and limits</a>
+        </output>
+      )}
+      {g.homeworldOccupiedPercentage?.blocked && (g.decision?.kind !== 'homeworldOccupiedPercentage' || g.decision.player !== g.me) && (
+        <HomeworldOccupiedPercentage game={g} act={act} busy={true} />
+      )}
+      {g.homeworldOccupiedBonus?.blocked && (g.decision?.kind !== 'homeworldOccupiedBonus' || g.decision.player !== g.me) && (
+        <HomeworldOccupiedBonus game={g} act={act} busy={true} />
+      )}
+      {g.richeseBidding?.stage === 'cacheOffer' && g.richeseBidding.offerBlocked && !g.decision && (
+        <output className="notice block" aria-label="Blocked Richese cache choice">
+          {g.richeseBidding.offerBlocked}
         </output>
       )}
       {g.nexusKullPreview ? (
@@ -2469,6 +2482,10 @@ export function GameTable({
                   ? 'Grumman Collection'
                   : g.decision.kind === 'homeworldOccupiedIncome'
                   ? 'Occupied Homeworld bank income'
+                  : g.decision.kind === 'homeworldOccupiedPercentage'
+                  ? 'Occupied Homeworld percentage income'
+                  : g.decision.kind === 'homeworldOccupiedBonus'
+                  ? 'Occupied Giedi Prime bonus card'
                   : g.decision.kind === 'leaderSkillVisibility'
                     ? 'Position your skilled leader'
                   : g.decision.kind === 'mentatQuestion'
@@ -2503,6 +2520,7 @@ export function GameTable({
                                 'richeseBlackMarket',
                                 'richeseDeclaration',
                                 'richeseCache',
+                                'richeseCacheTerms',
                                 'richeseUnbid',
                               ].includes(g.decision.kind)
                             ? 'Richese auction decision'
@@ -2737,6 +2755,7 @@ export function GameTable({
               ) : g.decision.kind === 'richeseBlackMarket' ||
                 g.decision.kind === 'richeseDeclaration' ||
                 g.decision.kind === 'richeseCache' ||
+                g.decision.kind === 'richeseCacheTerms' ||
                 g.decision.kind === 'richeseUnbid' ? (
                 <RicheseAuctionDecision
                   key={`${g.richeseBidding?.event}-${g.decision.kind}-${g.me}`}
@@ -2796,6 +2815,10 @@ export function GameTable({
                 <GrummanCollection game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'homeworldOccupiedIncome' ? (
                 <HomeworldOccupiedIncome offer={g.homeworldOccupiedIncome} act={act} busy={busy} />
+              ) : g.decision.kind === 'homeworldOccupiedPercentage' ? (
+                <HomeworldOccupiedPercentage game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'homeworldOccupiedBonus' ? (
+                <HomeworldOccupiedBonus game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'ecazSpice' ? (
                 g.ecazSpice?.allocation ? (
                   <EcazSpice
@@ -3872,6 +3895,9 @@ export function GameTable({
                     </span>
                     <h3>{g.auction.card?.name ?? 'Unknown treachery'}</h3>
                     {g.auction.card && <CardInspector card={g.auction.card} />}
+                    {g.auction.inspectionBlocked && (
+                      <output className="notice block">{g.auction.inspectionBlocked}</output>
+                    )}
                     {!!g.ixTechnology?.known.length && (
                       <details>
                         <summary>Your inspected pool · order unknown</summary>

@@ -32,11 +32,12 @@ export function RicheseAuctionDecision({ game, act, busy }: Props) {
     !bidding ||
     !me ||
     decision?.player !== game.me ||
-    bidding.owner !== game.me ||
+    (decision.kind !== 'richeseCache' && bidding.owner !== game.me) ||
     ![
       'richeseBlackMarket',
       'richeseDeclaration',
       'richeseCache',
+      'richeseCacheTerms',
       'richeseUnbid',
     ].includes(decision.kind)
   )
@@ -44,6 +45,40 @@ export function RicheseAuctionDecision({ game, act, busy }: Props) {
   const send = (fields: Omit<Action, 'type'>) => {
     if (!busy) act({ type: 'decision', event: bidding.event, ...fields });
   };
+  if (decision.kind === 'richeseCacheTerms') {
+    const cacheMethod = method === 'normal' ? 'onceAround' : method;
+    return (
+      <section className="flex min-w-0 flex-col gap-4" aria-label="Richese native cache auction terms">
+        <p>
+          You remain the Richese seller. Choose the auction method and direction;
+          the occupied Homeworld controller then chooses only the physical cache card.
+        </p>
+        {bidding.offerBlocked && <p className="notice">{bidding.offerBlocked}</p>}
+        <label htmlFor={`${id}-method`}>Auction method</label>
+        <select id={`${id}-method`} value={cacheMethod} disabled={busy || !!bidding.offerBlocked}
+          className="min-h-11 max-w-full"
+          onChange={(event) => setMethod(event.target.value as RicheseAuctionMethod)}>
+          <option value="onceAround">Once Around</option>
+          <option value="silent">Silent auction</option>
+        </select>
+        {cacheMethod === 'onceAround' && (
+          <>
+            <label htmlFor={`${id}-direction`}>Bidding direction</label>
+            <select id={`${id}-direction`} value={direction} disabled={busy || !!bidding.offerBlocked}
+              className="min-h-11"
+              onChange={(event) => setDirection(event.target.value as typeof direction)}>
+              <option value="clockwise">Clockwise</option>
+              <option value="counterclockwise">Counterclockwise</option>
+            </select>
+          </>
+        )}
+        <Button className={buttonClass} disabled={busy || !!bidding.offerBlocked}
+          onClick={() => send({ method: cacheMethod, direction })}>
+          Set native cache auction terms
+        </Button>
+      </section>
+    );
+  }
   if (decision.kind === 'richeseDeclaration')
     return (
       <section
@@ -111,10 +146,14 @@ export function RicheseAuctionDecision({ game, act, busy }: Props) {
     );
   }
   const blackMarket = decision.kind === 'richeseBlackMarket';
+  const cardOnly = decision.kind === 'richeseCache' && bidding.owner !== game.me;
+  if (cardOnly && !bidding.cacheTerms)
+    return <output className="notice block">{bidding.offerBlocked ?? 'Waiting for the native Richese seller to set cache auction terms.'}</output>;
   const cards = blackMarket ? (me.hand ?? []) : (bidding.cache ?? []);
   const selected = cards.find((card) => card.id === cardId) ?? cards[0];
   const chosenMethod =
-    !blackMarket && method === 'normal' ? 'onceAround' : method;
+    cardOnly ? bidding.cacheTerms!.method :
+      !blackMarket && method === 'normal' ? 'onceAround' : method;
   return (
     <section
       className="flex min-w-0 flex-col gap-4"
@@ -123,8 +162,15 @@ export function RicheseAuctionDecision({ game, act, busy }: Props) {
       <p className="m-0 text-sm leading-6">
         {blackMarket
           ? 'Offer a card from your hand without showing its face. Atreides may inspect it. An optional public claim may be truthful or a bluff. If no one pays spice, you keep the card.'
-          : 'Choose one card from your separate cache. Its face is revealed to everyone when offered. Cache cards do not count toward your hand limit.'}
+          : 'Choose one card from the original Richese cache. Its face is revealed to everyone when offered. Cache cards do not count toward a hand limit; Richese remains the seller.'}
       </p>
+      {cardOnly && bidding.cacheTerms && (
+        <p className="fine">
+          Native Richese terms: {methodName[bidding.cacheTerms.method]}
+          {bidding.cacheTerms.method === 'onceAround' ? ` · ${bidding.cacheTerms.direction}` : ''}.
+          You choose the cache card only; the seller’s terms do not transfer.
+        </p>
+      )}
       {bidding.offerBlocked && (
         <p id={`${id}-offer-blocked`} className="notice">
           {bidding.offerBlocked}
@@ -152,6 +198,8 @@ export function RicheseAuctionDecision({ game, act, busy }: Props) {
               <CardInspector card={selected} />
             </>
           )}
+          {!cardOnly && (
+            <>
           <label htmlFor={`${id}-method`}>Auction method</label>
           <select
             id={`${id}-method`}
@@ -181,6 +229,8 @@ export function RicheseAuctionDecision({ game, act, busy }: Props) {
                 <option value="clockwise">Clockwise</option>
                 <option value="counterclockwise">Counterclockwise</option>
               </select>
+            </>
+          )}
             </>
           )}
           {blackMarket && (
@@ -213,8 +263,7 @@ export function RicheseAuctionDecision({ game, act, busy }: Props) {
             onClick={() =>
               send({
                 card: selected!.id,
-                method: chosenMethod,
-                direction,
+                ...(!cardOnly ? { method: chosenMethod, direction } : {}),
                 ...(blackMarket && claim.trim() ? { claim } : {}),
               })
             }
@@ -311,6 +360,9 @@ export function RicheseAuctionLot({ game, act, busy }: Props) {
         </>
       ) : (
         <p>The Black Market card remains face down.</p>
+      )}
+      {auction.inspectionBlocked && (
+        <output className="notice block">{auction.inspectionBlocked}</output>
       )}
       <p className="fine">
         {name(auction.owner)} is selling. Karama cannot acquire this card.

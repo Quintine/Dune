@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 5 October 2026 — occupied Homeworld economics, Bidding and Advanced retention
+
+The authorized supplied p22 resolves Advanced qualification/retention: sole
+foreign presence, continuing until its last force leaves. Original snapshots
+retain that epoch through contests/native revival/turn changes and replace it
+only after departure plus a new sole source. Basic historical guards remain.
+
+Fresh Homeworlds alone connects actual Kaitain/Junction/Richese percentage
+receipts, one completed Southern Collection total, immediate ally allocation,
+Caladan shared private inspection, sole Ix pool control, Richese card-only choice
+with native seller terms, and one Giedi bonus using real receiver space/stock.
+Original paid invoices, hidden custody and source suffixes remain authoritative.
+Native income/inspection cancellation does not silently cancel printed shares.
+
+Final247 affected cases/24files, types/lint/build and original programs/four legal
+policies pass. Real wrong-recipient rejection needed the RuleError adapter;
+actual HTTP409 leaves v42. Human Guild income exposed overwritten BG accompaniment:
+the signed suffix now restores its original choice through JSON and subsequent
+actual advisor placement. Conserved random-deal stock/capacity fixtures now stage
+the exact tested boundary; no favorable seed, invented card or guard weakening.
+
+Pre-advisor-repair50 genuine games on unchanged
+`09cfdd1957d9ae4c807bce3c7c43edd66fe72b5c239c29cbadf3acca4253de9a`:
+44 complete18,977 accepted/19,149 attempts/491 JSON; all50 total22,383/22,580/580.
+Four Basic occupation/two CHOAM captures retain existing rulings.
+Five exact original Advanced captures finish3,135/3,136/83 at original scenario
+seeds20263433/453/455/465/475; resume restarts the seed, not its lost stream.
+After repair, allfive fresh six-seat Advanced games finish4,339/4,358/114 on
+unchanged `2ada89969c683b3ed263f39b9467f623205d83b765cb3639832ee10adf918aae`;
+19 rejected candidates remain recorded, not a zero-rejection certificate.
+
+Original backed-up CLI HH7VHT2U v21/4H5CZDMA v18/6K5JFNPH v18 preserve real
+decks, choices and actors. Actual turn-two alliances precede labelled positions.
+390px human controls exercise all four percentages, native Richese terms/card-only
+selection, full-Harkonnen allied real bonus and sole Ix pool6→5/native-known0.
+HH7VHT2U actual shipping6 shares Junction3 as1/2 without repeating forces or
+losing BG; Collection9 retains5/shares4 as1/3 and reachesv72/Mentat with wallets
+5/17/11/10/13/9. Richese v29 retains its actual Ornithopter5 invoice/3+2 net split;
+Ix v25 leaves unrelated Technology native. Allthree refreshed roots fit390px.
+
+Only dedicated QA changes, no reset/public activation/credential disclosure.
+Private proofs remain outside Git. Tupile capacity/cleanup, exceptional Duke,
+pending Basic/CHOAM rulings, overlays and complete/deployed acceptance remain.
+[Canonical source, original consumers and evidence](HOMEWORLD_OCCUPATION_RULES.md#original-runtime-and-human-evidence).
+
 ## 5 October 2026 — stable occupied Homeworld bank income and protections
 
 Fresh original `homeworld-occupation` enters Basic/Advanced2..6 and selected

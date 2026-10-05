@@ -3846,9 +3846,10 @@ export const RULE_TOPICS: RuleTopic[] = [
       'When several Terror tokens share a stronghold, Moritani privately selects one for an eligible entry, then chooses whether to reveal it or offer an alliance. The other tokens remain hidden. The board shows the public stack count; refresh preserves the selected token and original arrival.',
       'While Junction has high population, Guild may offer another faction transport at half or full price during that faction’s shipment. The recipient can choose exact forces from one territory or Homeworld, including a return to their own world. An allied Homeworld remains forbidden. Half-price totals round up; five forces to a Homeworld cost three spice. The Junction route and offered rate resist Karama.',
       'Homeworld shipment, battle and occupation have special rules. Occupiers receive the printed Collection income and card effects. An alliance can gain a special Homeworld victory through high-population Ecaz; this is separate from ordinary stronghold victory.',
-      'The fresh local homeworld-occupation profile now connects continuously proved, unambiguous occupation with original selected decks and no other modules. Qualification history must prove one still-present occupier without departure, competing foreigners or restored native high population; a current garrison alone grants nothing. Ambiguous histories retain the source guards, not a new expiry or replacement policy.',
-      'In that profile, printed occupied bank income is collected once and may immediately be allocated to a reciprocal ally through the original Collection choice. Actual credit receipts survive refresh; views and replay cannot pay again. Actual shared Homeworld credits feed the existing once-per-phase Giedi bonus. Percentage receipts remain a separate unfinished source.',
+      'The fresh local homeworld-occupation profile uses original selected decks and no other modules. Advanced occupation begins with sole foreign presence and its benefits remain until the occupier’s last force leaves, including across contests, native population recovery and later turns. A later sole arrival after departure creates a new source epoch. Basic still guards unresolved lifecycle cases; original history, not a current garrison shortcut, proves entitlement.',
+      'Printed occupied bank income is collected once and can be immediately allocated to a reciprocal ally. Separate Kaitain and Junction paid-receipt shares and Richese’s actual net sale income use frozen original invoices without charging the payer again. Southern Hemisphere rounds one completed actual native Collection total, including settled shared and occupied-bank credits; it redistributes rather than collecting twice. Ordinary native income cancellation remains distinct from printed occupied effects.',
       'Proved Wallach IX occupation protects the occupier and ally from native Voice; Tleilax prevents native Face Dancers against them; Grumman prevents revealing Terror on their entry. Occupied Salusa removes Sardaukar advantage without changing starred physical identity. These printed effects cannot be restored or canceled with Karama. Other occupied powers and full Homeworld acceptance remain open.',
+      'Caladan shares the admitted original Bidding inspection with the occupier, not its ally; native inspection can still be prevented independently. Ix gives the occupier the actual private drawn pool and selection, not unrelated setup or Technology. Richese sets its own method/direction before the occupier chooses only the physical cache card; seller, payment and other decisions stay native. Giedi gives one original purchase bonus to the occupier or its reciprocal ally with real receiver capacity, even when Harkonnen’s purchased card fills its hand.',
       'The card collection below is available for reference. Starting a Homeworld game remains disabled while shipment, battles, occupation, economy and faction interactions are being completed.',
     ],
     example:
@@ -3866,7 +3867,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'All 13 cards, saved typed custody, supported-deck setup, Emperor movement, native Arrakis shipment sources, revival destinations, low charity/free-revival benefits, Tleilax’s phase-start income penalty and high-Salusa free Sardaukar support are connected. World-to-world invasion, Guild transport from Arrakis and Guild native returns use exact source pools, funding and interception. Homeworld battles connect native bonuses, limited explosion casualties, native-only Traitors and Face Dancers, and Ixian substitution. Junction offers connect sponsored board and Homeworld routes, including own returns, foreign departures and their distinct payments. Caladan foresight, Wallach advisor counts, Ix stronghold movement and Richese token movement now respect native population. High Tupile blocks Worthless sales and Ambassador payouts, including after an interrupted Ghola revival. Kaitain paid discards share the closing Bidding opportunity with CHOAM; Ecaz poison income uses actual physical disposal and current native population. Mandatory winning-card disposal follows winner casualties. Supported low Kaitain and Junction payment receipts preserve the payer’s cost and use current native population; divergent allied rounding remains guarded. Giedi grants its once-per-phase bonus on actual positive desert receipts, including settled Ecaz shares. Low Grumman uses original public entry counts across Terror and competing-reaction checks. Southern and Tleilax preserve the exact eligible revival group through one optional placement, with held income and explicit unresolved destination rules. Fresh stable occupation additionally connects printed bank Collection/immediate ally allocation, actual Giedi Homeworld sources and Wallach/Tleilax/Grumman/Salusa protections. Departure/replacement/contested/repopulation, percentage receipts, other occupied powers and concealed transport remain unfinished; public starts stay disabled.',
+          'All 13 cards, saved typed custody, supported-deck setup, Emperor movement, native Arrakis shipment sources, revival destinations, low charity/free-revival benefits, Tleilax’s phase-start income penalty and high-Salusa free Sardaukar support are connected. World-to-world invasion, Guild transport from Arrakis and Guild native returns use exact source pools, funding and interception. Homeworld battles connect native bonuses, limited explosion casualties, native-only Traitors and Face Dancers, and Ixian substitution. Junction offers connect sponsored board and Homeworld routes, including own returns, foreign departures and their distinct payments. Caladan foresight, Wallach advisor counts, Ix stronghold movement and Richese token movement now respect native population. High Tupile blocks Worthless sales and Ambassador payouts, including after an interrupted Ghola revival. Kaitain paid discards share the closing Bidding opportunity with CHOAM; Ecaz poison income uses actual physical disposal and current native population. Mandatory winning-card disposal follows winner casualties. Supported low Kaitain and Junction payment receipts preserve the payer’s cost and use current native population; divergent allied rounding remains guarded. Giedi grants its once-per-phase bonus on actual positive desert receipts, including settled Ecaz shares. Low Grumman uses original public entry counts across Terror and competing-reaction checks. Southern and Tleilax preserve the exact eligible revival group through one optional placement, with held income and explicit unresolved destination rules. Fresh occupation additionally connects bank and percentage receipts, completed Southern Collection, immediate sharing, Caladan inspection, displaced Ix pool, Richese card-only choice with native terms, real Giedi receiver choice and native protections. Advanced retains sole-qualified ownership until last departure; Basic lifecycle, Tupile capacity, exceptional Duke, concealed transport and full/public acceptance remain unfinished.',
         evidence: [
           'game/homeworld-cards.ts',
           'game/homeworld-game.ts',
@@ -3893,6 +3894,11 @@ export const RULE_TOPICS: RuleTopic[] = [
           'game/homeworld-payment-income.ts',
           'game/homeworld-collection.ts',
           'game/homeworld-occupation-history.ts',
+          'game/homeworld-stable-occupation.ts',
+          'game/homeworld-occupied-income.ts',
+          'game/homeworld-occupied-percentage.ts',
+          'game/homeworld-occupied-bidding.ts',
+          'game/homeworld-occupied-defenses.ts',
           'game/tupile-intelligence.ts',
           'game/tupile-intelligence-answer.ts',
           'game/tupile-intelligence-state.ts',
@@ -3909,7 +3915,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Player controls',
         status: 'Partial',
         detail:
-          'Card inspection is available in the reference. Development tables display native reserves, explicit Imperial shipment sources, world-to-world shipment and Guild transport from Arrakis with costs and pledged funding, Guild interception, optional Junction half/full offers and typed sponsored transport, transfers between Kaitain and Salusa, charity payment sources, current revival allowances, population-based movement restrictions and one/two-advisor choices, native battle bonuses, Homeworld casualties, replacement controls, Tupile sale explanations, shared end-of-Bidding actions, Ecaz’s private poison-income record, current low-population payment splits, automatic Giedi collection history, count-dependent Ambassador destinations and the optional revived-group placement; starting this module remains unavailable.',
+          'Card inspection is available in the reference. Development tables display native reserves, explicit Imperial shipment sources, world-to-world shipment and Guild transport from Arrakis with costs and pledged funding, Guild interception, optional Junction half/full offers and typed sponsored transport, transfers between Kaitain and Salusa, charity payment sources, current revival allowances, population-based movement restrictions and one/two-advisor choices, native battle bonuses, Homeworld casualties, replacement controls, Tupile sale explanations, shared end-of-Bidding actions, Ecaz’s private poison-income record, current low-population payment splits, automatic Giedi collection history, count-dependent Ambassador destinations and the optional revived-group placement. Fresh occupation adds bounded actual percentage allocation, real bonus receiver choice, source-authorized Ix pool/cache controls and separate native Richese terms. Normal starts remain unavailable.',
         evidence: [
           'components/homeworld-cards.tsx',
           'components/homeworld-table.tsx',
@@ -3920,20 +3926,25 @@ export const RULE_TOPICS: RuleTopic[] = [
           'components/junction-transport.tsx',
           'components/bidding-end.tsx',
           'components/ecaz-poison-income.tsx',
+          'components/homeworld-occupied-income.tsx',
+          'components/homeworld-occupied-percentage.tsx',
+          'components/homeworld-occupied-bonus.tsx',
+          'components/ix-technology.tsx',
+          'components/richese-auctions.tsx',
         ],
       },
       {
         area: 'AI',
         status: 'Partial',
         detail:
-          'Shared public choices supply native shipment counters, Imperial transfers and current low revival allowances. All four profiles use Salusa’s per-type support legality and respect unresolved special-Karama and mid-battle Ghola timing boundaries. All four profiles handle world-to-world shipment, Guild transport from Arrakis, native returns and interception, Homeworld battle choices, typed losses, late defense and supported replacement actions. All four profiles can offer and use Junction transport through public quotes, respect population-based movement restrictions and choose legal Spiritual Advisor quantities. Market choices exclude high-Tupile Worthless sales. All four profiles use eligible unused low-Tupile requests without reading opponents’ private hands or balances. All four profiles use the shared closing opportunity for CHOAM actions, affordable Kaitain discards and readiness. Ecaz income needs no separate claim. Concealed transport, occupation and remaining card-effect strategies are unfinished.',
+          'Shared public choices supply native shipment counters, Imperial transfers and current low revival allowances. All four profiles use Salusa’s per-type support legality and respect unresolved special-Karama and mid-battle Ghola timing boundaries. All four profiles handle world-to-world shipment, Guild transport from Arrakis, native returns and interception, Homeworld battle choices, typed losses, late defense and supported replacement actions. All four profiles can offer and use Junction transport through public quotes, respect population-based movement restrictions and choose legal Spiritual Advisor quantities. Market choices exclude high-Tupile Worthless sales. All four profiles use eligible unused low-Tupile requests without reading opponents’ private hands or balances. All four profiles use the shared closing opportunity for CHOAM actions, affordable Kaitain discards and readiness. Ecaz income needs no separate claim. Fresh occupied decisions supply legal bank/percentage allocation, one eligible real bonus receiver, displaced Ix/cache selection and native Richese terms. Concealed transport, remaining card-effect strategy and difficulty calibration are unfinished.',
         evidence: ['game/homeworld-options.ts', 'game/homeworld-shipment-options.ts', 'game/guild-homeworld-shipment-options.ts', 'game/junction-transport-options.ts'],
       },
       {
         area: 'Documentation',
         status: 'Partial',
         detail:
-          'All 26 faces, global rules and source discrepancies are documented. Imperial shipment and movement controls explain sources, costs and unavailable actions. Card-economy notes explain shared closing actions, private poison income, winner-discard ordering and low-population payment splits. Divergent allied rounding and occupation entitlement remain unresolved; full interaction guidance remains in progress.',
+          'All 26 faces, global rules and source discrepancies are documented. Imperial shipment and movement controls explain sources, costs and unavailable actions. Card-economy notes explain shared closing actions, private poison income, winner-discard ordering and low-population payment splits. The authorized Advanced sole/last-departure cutover and original occupied economic/Bidding ownership are explicit. Divergent allied rounding, Basic occupation lifecycle and remaining effects stay separate; full interaction guidance remains in progress.',
         evidence: [
           'docs/HOMEWORLD_COMPONENT_AUDIT.md',
           'docs/HOMEWORLD_RULES.md',
@@ -3964,7 +3975,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Tests cover genuine setup with implemented decks, Basic special-counter identity, actual transfer/shipment/revival, saved-state rejection and competing database submissions. Complete Homeworld games and module combinations are not yet verified.',
+          'Original setup, typed transfers, native payments, occupied percentages/Bidding/private-lot binding and preserved BG accompaniment have consumer regressions and actual390px controls. The bounded profile completes44/50 genuine samples; four Basic occupation/two CHOAM ruling captures remain. Five original Advanced captures resume at their original seeds, and five fresh six-seat Advanced games finish after the advisor repair. Full Homeworld rules, all combinations, final assurance and deployed acceptance remain unverified.',
         evidence: [
           'tests/homeworld-custody.test.ts',
           'tests/homeworld-cards.test.ts',
@@ -4030,6 +4041,13 @@ export const RULE_TOPICS: RuleTopic[] = [
           'tests/tupile-intelligence-engine.test.ts',
           'tests/tupile-intelligence-recovery.test.ts',
           'tests/homeworld-occupation-history.test.ts',
+          'tests/homeworld-occupied-income.test.ts',
+          'tests/homeworld-occupied-percentage.test.ts',
+          'tests/homeworld-occupied-bidding.test.ts',
+          'tests/homeworld-occupied-defenses.test.ts',
+          'tests/homeworld-occupation-runtime.test.ts',
+          'tests/homeworld-occupied-producers-engine.test.ts',
+          'tests/homeworld-occupied-private-lots.test.ts',
           'tests/grumman-collection.test.ts',
           'tests/grumman-collection-engine.test.ts',
           'tests/grumman-collection-controls.test.ts',

@@ -95,6 +95,9 @@ import { HOMEWORLD_CARDS } from './homeworld-cards';
 import { lowGrummanRevealBlock, type HomeworldCollectionSource } from './homeworld-collection';
 import { quoteOccupiedHomeworldVoice, quoteOccupiedHomeworldFaceDancer, quoteOccupiedHomeworldTerror, occupiedHomeworldSardaukarStatus } from './homeworld-occupied-defenses';
 import { beginHomeworldOccupiedIncome, quoteHomeworldOccupiedIncomeChoice, homeworldOccupiedIncomeOffer, validateHomeworldOccupiedIncomeState, type HomeworldOccupiedIncomeState } from './homeworld-occupied-income';
+import { createOccupiedPercentageState, quoteOccupiedPercentageSource, allocateOccupiedPercentageReceipt, validateOccupiedPercentageState, type OccupiedPercentageState, type OccupiedPercentageSource } from './homeworld-occupied-percentage';
+import { quoteOccupiedBiddingAuthority, requireOccupiedBiddingController, requireOccupiedBiddingBonusRecipient } from './homeworld-occupied-bidding';
+import { quoteStableHomeworldOccupation } from './homeworld-stable-occupation';
 import { quoteGrummanCollection, quoteGrummanCollectionAction } from './grumman-collection';
 import { grummanCollectionSignature, validateGrummanCollection, type GrummanCollection } from './grumman-collection-return';
 import { ambassadorPhaseAllowed } from './ambassador-phase';
@@ -757,6 +760,7 @@ export type Battle = {
 };
 export type Auction = {
   peekKnown?: boolean;
+  occupiedEvent?: string;
   cards: Card[];
   index: number;
   bid: number;
@@ -776,6 +780,8 @@ export type Decision =
   | { kind: 'homeworldRevivalDeployment'; player: string; event: string }
   | { kind: 'grummanCollection'; player: string; event: string }
   | { kind: 'homeworldOccupiedIncome'; player: string; event: string; world: string }
+  | { kind: 'homeworldOccupiedPercentage'; player: string; event: string }
+  | { kind: 'homeworldOccupiedBonus'; player: string; event: string }
   | { kind: 'caladanReinforcement'; player: string; event: string }
   | { kind: 'choamAudit'; player: string; event: string }
   | { kind: 'nexusChoamInspection'; player: string; event: string }
@@ -789,6 +795,7 @@ export type Decision =
   | { kind: 'richeseBlackMarket'; player: string }
   | { kind: 'richeseDeclaration'; player: string }
   | { kind: 'richeseCache'; player: string }
+  | { kind: 'richeseCacheTerms'; player: string }
   | { kind: 'richeseUnbid'; player: string }
   | { kind: 'richeseAllyShipment'; player: string; owner: string }
   | { kind: 'richeseAllyOpportunity'; player: string; recipient: string }
@@ -961,6 +968,7 @@ export type ResponseWindow = {
   /** Original eligible contributor amounts; private routing evidence, not a new payment. */
   guildContributions?: number[];
   guildPaymentProof?: string;
+  occupiedPayment?: { event: string; contributions: { payer: string; amount: number }[] };
   /** Bank-paid portion of a frozen Homeworld charity claim. */
   charityHomeworld?: number;
   source?: 'ambassador';
@@ -1522,6 +1530,10 @@ export type Game = {
     normalCount: number | null;
     blackMarketSold: boolean;
     cacheCanceled: boolean;
+    cacheAuthority?: string;
+    cacheTerms?: { method: 'onceAround' | 'silent'; direction: 'clockwise' | 'counterclockwise' };
+    cacheTermsEvent?: string;
+    cacheTermsProof?: string;
     opener?: number;
   } | null;
   richeseAuction?: RicheseAuction | null;
@@ -1546,6 +1558,8 @@ export type Game = {
   };
   ixRicheseTechnologyEvent?: string;
   currentAuctionSale?: {
+    occupiedEvent?: string;
+    occupiedContributions?: { payer: string; amount: number }[];
     spiceBankerIncomePayment?: SpiceBankerIncomePayment;
     bureaucratPayment?: BureaucratPaymentSource;
     bureaucratPaymentEvent?: string;
@@ -1775,8 +1789,8 @@ export type Game = {
   truthHistory?: TruthRecord[];
   shipmentPromises?: ShipmentPromise[];
   ixSetupCards?: Card[] | null;
-  ixAuction?: { count: number; cards: Card[] } | null;
-  ixAuctionKnown?: { turn: number; cards: Card[] } | null;
+  ixAuction?: { count: number; cards: Card[]; authority?: string } | null;
+  ixAuctionKnown?: { turn: number; cards: Card[]; controller?: string } | null;
   ixTechnologyTurn?: number;
   pendingIxTechnology?: { card: string } | null;
   pendingIxAlly?: { player: string; card: string; free: boolean } | null;
@@ -1875,8 +1889,22 @@ export type Game = {
   homeworldOccupationHistory?: HomeworldOccupationHistory;
   /** Fresh development occupation entry only; never inferred for an older Homeworld save. */
   homeworldOccupationPreview?: true;
+  homeworldAuctionInspection?: { lot: string; audience: string[]; native: string | null; occupation: string; occupiedKnown: boolean };
   pendingHomeworldOccupiedIncome?: HomeworldOccupiedIncomeState | null;
   homeworldOccupiedIncomeHistory?: HomeworldOccupiedIncomeState[];
+  homeworldOccupiedPercentageLedger?: OccupiedPercentageState;
+  pendingHomeworldOccupiedPercentage?: {
+    source: OccupiedPercentageSource;
+    proof: string;
+    suffix: OccupiedPercentageSuffix;
+    suffixSignature: string;
+  } | null;
+  pendingHomeworldOccupiedBonus?: {
+    event: string;
+    proof: string;
+    response: ResponseWindow;
+  } | null;
+  fremenCollectionCredits?: { turn: number; event: string; collected: { id: string; amount: number }[]; complete: boolean };
   tupileIntelligence?: TupileIntelligenceState;
   pendingTech?: { player: string; loser: string; choices: TechId[] } | null;
   summonedBeforeBlow?: boolean;
@@ -1920,6 +1948,8 @@ export type Game = {
   };
   /** Purchase is already committed; only the Emperor's receipt remains pending. */
   pendingRichesePurchaseIncome?: {
+    event?: string;
+    buyer?: string;
     owner: string;
     turn: number;
     phase: number;
@@ -8493,6 +8523,9 @@ export function initializeHomeworldOccupationGameForAudit(state: Game): Game {
   g.homeworldOccupationPreview = true;
   g.pendingHomeworldOccupiedIncome = null;
   g.homeworldOccupiedIncomeHistory = [];
+  g.homeworldOccupiedPercentageLedger = createOccupiedPercentageState();
+  g.pendingHomeworldOccupiedPercentage = null;
+  g.pendingHomeworldOccupiedBonus = null;
   return g;
 }
 /** Offline-only seam for the independent Nexus module; public starts remain gated. */
@@ -10551,12 +10584,22 @@ function richeseDecision(
     | 'richeseBlackMarket'
     | 'richeseDeclaration'
     | 'richeseCache'
+    | 'richeseCacheTerms'
     | 'richeseUnbid',
 ) {
   const round = g.richeseBidding!;
   round.event = crypto.randomUUID();
-  g.decision = { kind, player: round.owner };
-  g.active = round.owner;
+  const authority = (kind === 'richeseCache' || kind === 'richeseCacheTerms') && g.homeworldOccupationPreview
+    ? quoteOccupiedBiddingAuthority(g, 'richeseCache') : null;
+  const player = kind === 'richeseCache' ? authority?.controller ?? round.owner : round.owner;
+  if (authority) round.cacheAuthority = JSON.stringify(quoteStableHomeworldOccupation(g, 'richese'));
+  if (authority?.blocked) {
+    g.decision = null;
+    g.active = null;
+    return;
+  }
+  g.decision = { kind, player };
+  g.active = player;
 }
 function beginRicheseBidding(g: Game) {
   const owner = byFaction(g, 'richese')!;
@@ -10597,7 +10640,8 @@ function prepareRicheseNormal(g: Game) {
 }
 function offerRicheseCache(g: Game) {
   g.richeseBidding!.stage = 'cacheOffer';
-  richeseDecision(g, 'richeseCache');
+  const occupied = g.homeworldOccupationPreview && quoteOccupiedBiddingAuthority(g, 'richeseCache').occupied;
+  richeseDecision(g, occupied ? 'richeseCacheTerms' : 'richeseCache');
 }
 function finishNormalBidding(g: Game) {
   const round = g.richeseBidding;
@@ -10666,6 +10710,7 @@ function finishRicheseLot(g: Game) {
     }
   }
   g.richeseAuction = null;
+  if (g.homeworldOccupationPreview) g.homeworldAuctionInspection = undefined;
   g.richeseFunding = {};
   g.richesePeekKnown = false;
   g.richeseClaim = null;
@@ -10908,6 +10953,9 @@ function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{ki
   else owner.hand = owner.hand.filter((c) => c.id !== card.id);
   winner.hand.push(card);
   g.currentAuctionSale = {
+    ...(g.homeworldOccupationPreview ? { occupiedEvent: lot.event,
+      occupiedContributions: [{ payer: winner.id, amount: quote.ownPayment },
+        ...(quote.allyPayment ? [{ payer: winner.ally!, amount: quote.allyPayment }] : [])] } : {}),
     ...(richeseContribution ? {richeseContribution} : {}),
     ...(incomePayment ? {spiceBankerIncomePayment:incomePayment} : {}),
     winner: winner.id,
@@ -11065,10 +11113,14 @@ function decideRichese(g: Game, p: Player, decision: Decision, action: Action) {
   requireRule(
     g.phase === 3 &&
       round &&
-      round.owner === p.id &&
+      (decision.kind === 'richeseCache' && g.homeworldOccupationPreview
+        ? homeworldRule(() => requireOccupiedBiddingController(g, 'richeseCache', p.id)).provider === round.owner : round.owner === p.id) &&
       action.event === round.event,
     'This Richese bidding decision has expired.',
   );
+  if ((decision.kind === 'richeseCache' || decision.kind === 'richeseCacheTerms') && round.cacheAuthority)
+    requireRule(round.cacheAuthority === JSON.stringify(quoteStableHomeworldOccupation(g, 'richese')),
+      'The original cache choice authority changed.');
   if (decision.kind === 'richeseBlackMarket') {
     requireRule(
       round.stage === 'blackMarketOffer' && g.advanced,
@@ -11089,12 +11141,28 @@ function decideRichese(g: Game, p: Player, decision: Decision, action: Action) {
       `${p.name} announced the Richese cache auction ${round.position}, before normal pool preparation. ${round.normalCount} normal lots are scheduled after the cache reduction${round.blackMarketSold ? ' and completed Black Market sale' : ''}.`,
     );
     g.response = { kind: 'richeseAuction', owner: p.id, passed: [] };
+  } else if (decision.kind === 'richeseCacheTerms') {
+    requireRule(round.stage === 'cacheOffer' && ['onceAround', 'silent'].includes(action.method as string) &&
+      ['clockwise', 'counterclockwise'].includes(action.direction as string) &&
+      Object.keys(action).sort().join(',') === 'direction,event,method,type',
+    'The original seller must choose the cache auction terms.');
+    round.cacheTerms = { method: action.method as 'onceAround' | 'silent',
+      direction: action.direction as 'clockwise' | 'counterclockwise' };
+    round.cacheTermsEvent = round.event;
+    round.cacheTermsProof = JSON.stringify([round.cacheTermsEvent, round.turn, round.owner, round.cacheTerms, round.cacheAuthority]);
+    richeseDecision(g, 'richeseCache');
   } else if (decision.kind === 'richeseCache') {
     requireRule(
       round.stage === 'cacheOffer',
       'The cache offer is not available now.',
     );
-    beginRicheseLot(g, 'cache', action);
+    if (p.id !== round.owner) {
+      requireRule(round.cacheTerms && Object.keys(action).sort().join(',') === 'card,event,type',
+        'The occupier chooses only the original physical cache card, not the seller terms.');
+      requireRule(round.cacheTermsProof === JSON.stringify([round.cacheTermsEvent, round.turn, round.owner,
+        round.cacheTerms, round.cacheAuthority]), 'The original seller terms changed before the physical cache choice.');
+      beginRicheseLot(g, 'cache', { ...action, ...round.cacheTerms });
+    } else beginRicheseLot(g, 'cache', action);
   } else if (decision.kind === 'richeseUnbid') {
     requireRule(
       g.richeseAuction?.source === 'cache' &&
@@ -11144,9 +11212,15 @@ function setAuction(g: Game, cards?: Card[]) {
   if (!cards && ixians && eligible.length && count) {
     g.auction = null;
     g.active = null;
-    g.ixAuction = { count, cards: [] };
+    g.ixAuction = { count, cards: [],
+      ...(g.homeworldOccupationPreview ? { authority: JSON.stringify(quoteStableHomeworldOccupation(g, 'ix')) } : {}) };
     g.ixAuctionKnown = null;
     g.response = { kind: 'ixAuction', owner: ixians.id, passed: [] };
+    if (g.homeworldOccupationPreview && quoteOccupiedBiddingAuthority(g, 'ixAuction').occupied) {
+      const original = g.response;
+      g.response = null;
+      finishIxianNativeAttempt(g, original, false);
+    }
     return;
   }
   if (!cards) {
@@ -11166,6 +11240,7 @@ function setAuction(g: Game, cards?: Card[]) {
     (id) => eligible.includes(id),
   )!;
   g.auction = {
+    ...(g.homeworldOccupationPreview ? { occupiedEvent: crypto.randomUUID() } : {}),
     cards,
     index: 0,
     bid: 0,
@@ -11179,6 +11254,7 @@ function setAuction(g: Game, cards?: Card[]) {
 }
 function offerAuctionTechnology(g: Game) {
   g.auction!.peekKnown = false;
+  if (g.homeworldOccupationPreview) g.homeworldAuctionInspection = undefined;
   const ixians = byFaction(g, 'ixians');
   if (
     g.advanced &&
@@ -11198,10 +11274,23 @@ function auctionTechnologyQuote<T>(run: () => T): T {
     throw error;
   }
 }
+/** Card identity alone is not a lot: Technology can return a previously sold card. */
+function originalAuctionInspectionLot(g: Game) {
+  return g.richeseAuction?.event ?? JSON.stringify([g.auction!.occupiedEvent ?? g.turn,
+    g.auction!.index, g.auction!.cards[g.auction!.index].id]);
+}
+function openOccupiedAuctionInspection(g: Game) {
+  if (!g.homeworldOccupationPreview) return;
+  const authority = quoteOccupiedBiddingAuthority(g, 'atreidesInspection');
+  const lot = originalAuctionInspectionLot(g);
+  g.homeworldAuctionInspection = { lot, audience: authority.blocked ? [] : [...authority.inspectionAudience],
+    native: authority.provider, occupation: JSON.stringify(quoteStableHomeworldOccupation(g, 'caladan')), occupiedKnown: false };
+}
 function offerAuctionPeek(g: Game) {
   const quote = auctionTechnologyQuote(() => quoteNormalAuctionPeek(g));
   g.auction!.peekKnown = quote.peekKnown;
   g.response = quote.response;
+  openOccupiedAuctionInspection(g);
 }
 function aidFor(g: Game, p: Player) {
   return p.ally && g.aid[p.ally]?.recipient === p.id
@@ -11733,6 +11822,9 @@ function settleAuction(g: Game, free = false, automatic = false, emperorNexus = 
       recipient: paysEmperor ? 'player' as const : 'bank' as const}] : []),
   ]) : undefined;
   g.currentAuctionSale = {
+    ...(g.homeworldOccupationPreview ? { occupiedEvent: crypto.randomUUID(),
+      occupiedContributions: [{ payer: winner.id, amount: free ? 0 : a.bid - (a.allyPayment ?? 0) },
+        ...(!free && a.allyPayment ? [{ payer: winner.ally!, amount: a.allyPayment }] : [])] } : {}),
     ...(incomePayment ? {spiceBankerIncomePayment: incomePayment} : {}),
     winner: winner.id,
     amount: a.bid,
@@ -11781,6 +11873,9 @@ function currentAuctionContinuationQuote(
         physicalCards: physicalTreacheryCards(g),
         pendingIxAlly: g.pendingIxAlly,
         ixTechnologyTurn: g.ixTechnologyTurn,
+        ...(g.homeworldOccupationPreview ? { occupiedBonusAvailable:
+          (() => { const authority = quoteOccupiedBiddingAuthority(g, 'harkonnenBonus');
+            return !!authority.blocked || authority.occupied && authority.bonusRecipients.length > 0; })() } : {}),
         richeseAuction: g.richeseAuction,
         richeseBidding: g.richeseBidding,
         richeseCacheCount: g.richeseCache?.length,
@@ -11824,11 +11919,22 @@ function commitAuctionContinuation(g: Game, quote: AuctionContinuationQuote,bure
         `${seller.name} collected ${step.amount-(bureaucratDiversion ?? 0)} spice from the ${quote.sale.origin === 'cache' ? 'Richese cache' : 'Black Market'} sale.`,
         { faction: 'richese', name: 'Auction income' },
       );
+      if (g.homeworldOccupationPreview && g.currentAuctionSale?.occupiedEvent) {
+        const sale = g.currentAuctionSale!, received = step.amount - (bureaucratDiversion ?? 0);
+        const source: OccupiedPercentageSource = { kind: 'richese-income', event: crypto.randomUUID(),
+          native: seller.id, amount: received, payment: { id: sale.occupiedEvent!,
+            binding: occupiedProducerProof(g, 'richese-income'), paid: sale.amount,
+            contributions: sale.occupiedContributions!, recipient: seller.id, received } };
+        if (admitOccupiedPercentage(g, source, received, { kind: 'auction', quote: { ...quote, steps: [] } })) return;
+      }
     }
   }
   const next = quote.next;
-  if (next.kind === 'response') g.response = {...next.response,...(next.response.kind === 'emperorIncome' && g.currentAuctionSale?.bureaucratPayment ?
-    {bureaucratPayment:g.currentAuctionSale.bureaucratPayment,bureaucratPaymentEvent:g.currentAuctionSale.bureaucratPaymentEvent} : {})};
+  if (next.kind === 'response') {
+    g.response = {...next.response,...(next.response.kind === 'emperorIncome' && g.currentAuctionSale?.bureaucratPayment ?
+      {bureaucratPayment:g.currentAuctionSale.bureaucratPayment,bureaucratPaymentEvent:g.currentAuctionSale.bureaucratPaymentEvent} : {})};
+    offerOccupiedBonus(g, g.response);
+  }
   else if (next.kind === 'richeseEnd') finishRicheseLot(g);
   else {
     g.currentAuctionSale = null;
@@ -11840,7 +11946,7 @@ function commitAuctionContinuation(g: Game, quote: AuctionContinuationQuote,bure
       g.auction = next.auction;
       g.active = next.active;
       if (next.offer?.kind === 'ixTechnology') g.decision = next.offer;
-      else if (next.offer) g.response = next.offer;
+      else if (next.offer) offerAuctionPeek(g);
     }
   }
 }
@@ -12382,16 +12488,21 @@ function currentIxAuctionDrawQuote(
  * It consumes the accepted attempt directly; no declaration is replayed. */
 function finishIxianNativeAttempt(g: Game, response: ResponseWindow, canceled: boolean): void {
   if (response.kind === 'ixAuction') {
-    const request = currentIxAuctionDrawQuote(g, response, canceled)!;
+    const authority = g.homeworldOccupationPreview ? quoteOccupiedBiddingAuthority(g, 'ixAuction') : null;
+    requireRule(!authority?.blocked, authority?.blocked ?? 'The original Ixian pool is blocked.');
+    const request = currentIxAuctionDrawQuote(g, response, canceled && !authority?.occupied)!;
     const pending = g.ixAuction!;
+    if (pending.authority) requireRule(pending.authority === JSON.stringify(quoteStableHomeworldOccupation(g, 'ix')),
+      'The original undrawn Ixian source authority changed.');
     const cards: Card[] = [];
     for (let i = 0; i < request.drawCount; i++) {
       const card = draw(g);
       if (card) cards.push(card);
     }
-    if (!canceled && cards.length > 1) {
+    if ((!canceled || authority?.occupied) && cards.length > 1) {
       pending.cards = cards;
-      g.decision = { kind: 'ixAuction', player: response.owner };
+      if (authority) pending.authority = JSON.stringify(quoteStableHomeworldOccupation(g, 'ix'));
+      g.decision = { kind: 'ixAuction', player: authority?.controller ?? response.owner };
     } else {
       g.ixAuction = null;
       setAuction(g, cards);
@@ -12404,6 +12515,7 @@ function finishIxianNativeAttempt(g: Game, response: ResponseWindow, canceled: b
     g.pendingIxTechnology = cancellation.pendingIxTechnology;
     g.auction!.peekKnown = cancellation.peek.peekKnown;
     g.response = cancellation.peek.response;
+    openOccupiedAuctionInspection(g);
     log(g, 'Ixian auction substitution did not occur.');
     return;
   }
@@ -15644,7 +15756,9 @@ function ambassadorPurchaseBonus(g: Game) {
   const entry = g.pendingAmbassador!;
   const receipt = entry.purchaseReceipt!;
   const buyer = getPlayer(g, receipt.buyer);
-  if (buyer.faction === 'harkonnen' && buyer.hand.length < handLimit(buyer)) {
+  const authority = g.homeworldOccupationPreview ? quoteOccupiedBiddingAuthority(g, 'harkonnenBonus') : null;
+  if (buyer.faction === 'harkonnen' && (authority?.blocked || authority?.occupied
+    ? !!authority?.blocked || !!authority?.bonusRecipients.length : buyer.hand.length < handLimit(buyer))) {
     entry.stage = receipt.stage = 'bonus';
     g.response = {
       kind: 'harkonnenBonus',
@@ -15653,7 +15767,218 @@ function ambassadorPurchaseBonus(g: Game) {
       owner: buyer.id,
       passed: [],
     };
+    offerOccupiedBonus(g, g.response);
   } else finishAmbassador(g);
+}
+/** A printed bonus consumes the original paid purchase's suffix, never a new buy. */
+function offerOccupiedBonus(g: Game, response: ResponseWindow): boolean {
+  if (!g.homeworldOccupationPreview || response.kind !== 'harkonnenBonus') return false;
+  const authority = quoteOccupiedBiddingAuthority(g, 'harkonnenBonus');
+  if (response.source !== 'ambassador' && !g.currentAuctionSale?.occupiedEvent) return false;
+  if (!authority.occupied && !authority.blocked) return false;
+  if (response.source === 'ambassador') validateAmbassadorPurchaseResponse(g, response);
+  else currentAuctionContinuationQuote(g, { kind: 'cancel', response });
+  requireRule(!g.pendingHomeworldOccupiedBonus, 'The original bonus is already awaiting its receiver.');
+  const event = crypto.randomUUID();
+  const proof = JSON.stringify({ producer: occupiedProducerProof(g, 'bonus', response),
+    occupation: JSON.stringify(quoteStableHomeworldOccupation(g, 'giedi_prime')),
+    controller: authority.controller, recipients: authority.bonusRecipients });
+  g.homeworldOccupiedPercentageLedger ??= createOccupiedPercentageState();
+  g.pendingHomeworldOccupiedBonus = { event, proof, response: structuredClone(response) };
+  g.response = null;
+  g.decision = authority.controller && authority.bonusRecipients.length
+    ? { kind: 'homeworldOccupiedBonus', player: authority.controller, event } : null;
+  if (!authority.blocked && !authority.bonusRecipients.length) {
+    g.pendingHomeworldOccupiedBonus = null;
+    if (response.source === 'ambassador') finishAmbassador(g); else nextAuction(g);
+  }
+  return true;
+}
+function decideOccupiedBonus(g: Game, p: Player, action: Action) {
+  const pending = g.pendingHomeworldOccupiedBonus;
+  requireRule(pending && action.event === pending.event && Object.keys(action).sort().join(',') === 'event,recipient,type',
+    'Choose the original occupied purchase bonus recipient.');
+  const authority = homeworldRule(() => requireOccupiedBiddingController(g, 'harkonnenBonus', p.id));
+  homeworldRule(() => requireOccupiedBiddingBonusRecipient(g, action.recipient as string));
+  const saved = JSON.parse(pending.proof) as { producer: string; controller: string; recipients: string[]; occupation: string };
+  requireRule(saved.controller === authority.controller &&
+    saved.occupation === JSON.stringify(quoteStableHomeworldOccupation(g, 'giedi_prime')) &&
+    saved.producer === occupiedProducerProof(g, 'bonus', pending.response) && saved.recipients.includes(action.recipient as string),
+    'The original purchase or reciprocal bonus recipient changed.');
+  if (pending.response.source === 'ambassador') validateAmbassadorPurchaseResponse(g, pending.response);
+  else currentAuctionContinuationQuote(g, { kind: 'cancel', response: pending.response });
+  const stock = [...g.deck, ...g.discard], physical = physicalTreacheryCards(g);
+  requireRule(stock.every(card => physical.filter(other => other.id === card.id).length === 1),
+    'The original bonus draw stock has conflicting physical custody.');
+  const card = draw(g);
+  requireRule(card, 'The original bonus requires one physical drawable card.');
+  getPlayer(g, action.recipient as string).hand.push(card);
+  g.pendingHomeworldOccupiedBonus = null; g.decision = null;
+  log(g, `${getPlayer(g, action.recipient as string).name} received the one private occupied Giedi Prime purchase bonus.`,
+    { faction: 'harkonnen', name: 'Occupied purchase bonus' });
+  if (pending.response.source === 'ambassador') finishAmbassador(g); else nextAuction(g);
+}
+function projectedOccupiedBonus(g: Game) {
+  const pending = g.pendingHomeworldOccupiedBonus;
+  if (!pending) return null;
+  const authority = quoteOccupiedBiddingAuthority(g, 'harkonnenBonus');
+  const saved = JSON.parse(pending.proof) as { controller: string | null; recipients: string[]; occupation: string };
+  const owner = saved.controller ? getPlayer(g, saved.controller) : null;
+  const blocked = authority.blocked ?? (saved.occupation !== JSON.stringify(quoteStableHomeworldOccupation(g, 'giedi_prime'))
+    ? 'The original occupied purchase bonus authority changed.' : null);
+  return { event: pending.event, owner: owner?.id ?? '', ownerName: owner?.name ?? '',
+    recipients: (blocked ? [] : authority.bonusRecipients.filter(id => saved.recipients.includes(id)))
+      .map(id => { const p = getPlayer(g, id); return { player: id, name: p.name, faction: p.faction }; }),
+    blocked };
+}
+type OccupiedPercentageSuffix =
+  | { kind: 'none'; decision: Decision | null }
+  | { kind: 'auction'; quote: AuctionContinuationQuote }
+  | { kind: 'auctionBonus' }
+  | { kind: 'ambassadorBonus' }
+  | { kind: 'richesePurchase'; resume: NonNullable<Game['pendingRichesePurchaseIncome']>['resume'] };
+function occupiedProducerProof(g: Game, kind: OccupiedPercentageSource['kind'] | 'bonus', response?: ResponseWindow) {
+  if (kind === 'fremen-collection') return JSON.stringify(g.fremenCollectionCredits);
+  if (response?.source === 'ambassador') return JSON.stringify({ turn: g.turn, phase: g.phase, entry: g.pendingAmbassador });
+  if (response?.kind === 'richesePurchaseIncome') return JSON.stringify({ turn: g.turn, phase: g.phase, purchase: g.pendingRichesePurchaseIncome });
+  if (kind === 'guild-shipping') return JSON.stringify({ turn: g.turn, phase: g.phase, response,
+    movement: g.players.map(p => ({ id: p.id, shipped: p.shipped, forces: p.forces, elites: p.elites, noField: p.noField })),
+    homeworlds: g.homeworlds?.custody });
+  return JSON.stringify({ turn: g.turn, phase: g.phase, sale: g.currentAuctionSale,
+    auction: g.auction, lot: g.richeseAuction, round: g.richeseBidding });
+}
+function runOccupiedPercentageSuffix(g: Game, suffix: OccupiedPercentageSuffix) {
+  if (suffix.kind === 'auction') commitAuctionContinuation(g, suffix.quote, 0);
+  else if (suffix.kind === 'auctionBonus') auctionBonus(g);
+  else if (suffix.kind === 'ambassadorBonus') ambassadorPurchaseBonus(g);
+  else if (suffix.kind === 'richesePurchase') {
+    g.pendingRichesePurchaseIncome = null;
+    g.response = suffix.resume.response; g.decision = suffix.resume.decision; g.pendingKarama = suffix.resume.pendingKarama;
+  } else if (suffix.kind === 'none') {
+    g.decision = suffix.decision;
+  }
+}
+function occupiedPercentageIntegrity(g: Game) {
+  if (!g.homeworldOccupationPreview) {
+    requireRule(g.homeworldOccupiedPercentageLedger === undefined && g.pendingHomeworldOccupiedPercentage === undefined &&
+      g.pendingHomeworldOccupiedBonus === undefined, 'Occupied source receipts require their original fresh profile.');
+    return;
+  }
+  requireRule(!g.spiceBankerIncomePreview, 'Occupied percentage and deferred Banker routing require a separate source-composition profile.');
+  if (!g.homeworldOccupiedPercentageLedger) {
+    requireRule(!g.pendingHomeworldOccupiedPercentage && !g.pendingHomeworldOccupiedBonus,
+      'The original occupied percentage ledger is missing.');
+    return;
+  }
+  homeworldRule(() => validateOccupiedPercentageState(g.homeworldOccupiedPercentageLedger!, g));
+  const pending = g.pendingHomeworldOccupiedPercentage;
+  const unsettled = g.homeworldOccupiedPercentageLedger.receipts.filter(row => row.status !== 'settled');
+  requireRule(unsettled.length === Number(!!pending) && (!pending || unsettled[0].source.event === pending.source.event &&
+    JSON.stringify(unsettled[0].source) === JSON.stringify(pending.source)), 'The occupied source lost its exact unresolved receipt.');
+  if (pending) requireRule(pending.suffixSignature === JSON.stringify(pending.suffix),
+    'The exact occupied percentage suffix changed.');
+}
+/** The original payer has already paid; reconcile native cash only once. */
+function admitOccupiedPercentage(g: Game, source: OccupiedPercentageSource, alreadyCredited: number,
+  suffix: OccupiedPercentageSuffix): boolean {
+  if (!g.homeworldOccupationPreview) return false;
+  occupiedPercentageIntegrity(g);
+  g.homeworldOccupiedPercentageLedger ??= createOccupiedPercentageState();
+  requireRule(!g.pendingHomeworldOccupiedPercentage, 'Settle the original percentage allocation first.');
+  const result = homeworldRule(() => quoteOccupiedPercentageSource(g, source, g.homeworldOccupiedPercentageLedger!));
+  const native = getPlayer(g, source.native), balance = native.spice - alreadyCredited + result.receipt.nativeRetained;
+  requireRule(Number.isSafeInteger(balance) && balance >= 0, 'The original percentage cash cannot be reconciled.');
+  native.spice = balance; g.homeworldOccupiedPercentageLedger = result.state;
+  log(g, `${native.name}'s original ${source.kind === 'fremen-collection' ? 'total Collection' : 'paid income'} retained ${result.receipt.nativeRetained} spice; ${result.receipt.occupiedAmount} spice belongs to the separate occupied portion and ${result.receipt.bankRetained} spice remains in the bank.${result.receipt.blocked ? ' The printed allocation is blocked by its unresolved original occupation source.' : ''}`,
+    { faction: native.faction, name: 'Original Homeworld income' });
+  if (result.receipt.status === 'settled') return false;
+  g.pendingHomeworldOccupiedPercentage = { source: result.receipt.source,
+    proof: source.kind === 'fremen-collection' ? source.collection.binding : source.payment.binding,
+    suffix, suffixSignature: JSON.stringify(suffix) };
+  const owner = result.receipt.entitlement?.occupier;
+  g.decision = owner ? { kind: 'homeworldOccupiedPercentage', player: owner, event: source.event } : null;
+  return true;
+}
+function occupiedPaymentSource(g: Game, response: ResponseWindow, gross: number, canceled: boolean): OccupiedPercentageSource {
+  const kind = response.kind === 'guildIncome' ? 'guild-shipping' : 'emperor-treachery', sale = g.currentAuctionSale;
+  const buyer = response.source === 'ambassador' ? g.pendingAmbassador!.purchaseReceipt!.buyer :
+    response.kind === 'richesePurchaseIncome' ? g.pendingRichesePurchaseIncome!.buyer : sale?.winner;
+  let contributions = response.occupiedPayment?.contributions ?? [{ payer: buyer!, amount: gross }];
+  if (response.kind === 'emperorIncome' && response.source !== 'ambassador' && sale) {
+    contributions = sale.richeseContribution !== undefined ? [{ payer: sale.seller!, amount: gross }] :
+      sale.occupiedContributions!;
+  }
+  const paid = contributions.reduce((sum, leg) => sum + leg.amount, 0);
+  if (paid !== gross) {
+    requireRule(contributions.length === 1 && paid >= gross, 'The routed payment lost its eligible paid contributions.');
+    contributions = [{ ...contributions[0], amount: gross }];
+  }
+  const id = response.occupiedPayment?.event ?? (response.source === 'ambassador' ? g.pendingAmbassador!.event :
+    response.kind === 'richesePurchaseIncome' ? g.pendingRichesePurchaseIncome!.event! : sale!.occupiedEvent!);
+  return { kind, event: crypto.randomUUID(), native: response.owner, amount: gross,
+    payment: { id, binding: occupiedProducerProof(g, kind, response), paid: gross, contributions, recipient: response.owner },
+    nativeIncome: canceled ? 'karama-canceled' : 'received' };
+}
+function settleOccupiedPayment(g: Game, response: ResponseWindow, gross: number, canceled: boolean,
+  suffix: OccupiedPercentageSuffix): boolean {
+  return !!g.homeworldOccupationPreview && admitOccupiedPercentage(g, occupiedPaymentSource(g, response, gross, canceled), 0, suffix);
+}
+function decideOccupiedPercentage(g: Game, p: Player, action: Action) {
+  occupiedPercentageIntegrity(g);
+  const pending = g.pendingHomeworldOccupiedPercentage!;
+  requireRule(pending && action.event === pending.source.event && Object.keys(action).sort().join(',') === 'event,ownAmount,type',
+    'Choose the original occupied percentage event and allocation.');
+  const response = pending.source.kind === 'fremen-collection' ? undefined :
+    JSON.parse(pending.source.payment.binding).response as ResponseWindow | undefined;
+  const originalResponse = response ?? (pending.suffix.kind === 'ambassadorBonus' ? { source: 'ambassador' } as ResponseWindow :
+    pending.suffix.kind === 'richesePurchase' ? { kind: 'richesePurchaseIncome' } as ResponseWindow : undefined);
+  requireRule(occupiedProducerProof(g, pending.source.kind, originalResponse) === pending.proof,
+    'The original occupied percentage producer changed.');
+  const result = homeworldRule(() => allocateOccupiedPercentageReceipt(g.homeworldOccupiedPercentageLedger!, g,
+    p.id, action.event as string, action.ownAmount as number, pending.source));
+  for (const credit of result.credits) requireRule(Number.isSafeInteger(getPlayer(g, credit.player).spice + credit.amount), 'Occupied allocation exceeds a wallet.');
+  g.homeworldOccupiedPercentageLedger = result.state; g.pendingHomeworldOccupiedPercentage = null; g.decision = null;
+  for (const credit of result.credits) {
+    getPlayer(g, credit.player).spice += credit.amount;
+    if (pending.source.kind === 'fremen-collection') creditGiediCollection(g, credit.player, { kind: 'homeworld', amount: credit.amount });
+    log(g, `${getPlayer(g, credit.player).name} received ${credit.amount} spice from the original occupied percentage allocation.`,
+      { faction: getPlayer(g, credit.player).faction, name: 'Occupied percentage income' });
+  }
+  runOccupiedPercentageSuffix(g, pending.suffix);
+}
+function projectedOccupiedPercentage(g: Game) {
+  const pending = g.pendingHomeworldOccupiedPercentage;
+  if (!pending) return null;
+  const row = g.homeworldOccupiedPercentageLedger!.receipts.find(row => row.source.event === pending.source.event)!;
+  const card = HOMEWORLD_CARDS.find(card => card.id === (row.entitlement?.card ??
+    ({ 'emperor-treachery': 'kaitain', 'guild-shipping': 'junction', 'richese-income': 'richese', 'fremen-collection': 'southern_hemisphere' } as const)[row.source.kind]))!;
+  const owner = row.entitlement ? getPlayer(g, row.entitlement.occupier) : null;
+  const ally = row.entitlement?.ally ? getPlayer(g, row.entitlement.ally) : null;
+  const current = quoteStableHomeworldOccupation(g, card.id);
+  const blocked = row.blocked ?? current.blocked ??
+    (JSON.stringify(current.entitlement) !== JSON.stringify(row.entitlement) ? 'The original occupied percentage authority changed.' : null);
+  return { event: row.source.event, world: `homeworld:${card.faction}`, name: card.name, owner: owner?.id ?? '', ownerName: owner?.name ?? '',
+    ally: ally?.id ?? null, allyName: ally?.name ?? null, amount: row.occupiedAmount, minOwnAmount: ally ? 0 : row.occupiedAmount,
+    maxOwnAmount: row.occupiedAmount, blocked };
+}
+function recordFremenCollection(g: Game, player: string, id: string, amount: number) {
+  if (!g.homeworldOccupationPreview || getPlayer(g, player).faction !== 'fremen' || amount === 0) return;
+  const receipt = g.fremenCollectionCredits;
+  if (!receipt) return;
+  requireRule(receipt?.turn === g.turn && !receipt.complete && Number.isSafeInteger(amount) && amount > 0 &&
+    !receipt.collected.some(leg => leg.id === id), 'The original total Fremen Collection credit changed.');
+  receipt.collected.push({ id, amount });
+}
+function completeOccupiedFremenCollection(g: Game) {
+  const receipt = g.fremenCollectionCredits, native = byFaction(g, 'fremen');
+  if (!native || !receipt || receipt.complete || g.phase !== 7 || g.phaseOpening || g.decision || g.response ||
+    g.truthtrance || g.pendingHomeworldOccupiedIncome || g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingKarama ||
+    g.grummanCollection && g.grummanCollection.stage !== 'complete' || g.ecazCollection && g.ecazCollection.stage !== 'complete') return;
+  receipt.complete = true;
+  const amount = receipt.collected.reduce((sum, leg) => sum + leg.amount, 0);
+  admitOccupiedPercentage(g, { kind: 'fremen-collection', native: native.id, event: crypto.randomUUID(), amount,
+    collection: { id: receipt.event, binding: occupiedProducerProof(g, 'fremen-collection'), complete: true, collected: receipt.collected } },
+  amount, { kind: 'none', decision: null });
 }
 /** The payer has already paid. Only credit the eligible faction share once. */
 function creditFactionPayment(g: Game, ownerId: string, kind: 'shipment' | 'treachery', gross: number) {
@@ -15689,14 +16014,19 @@ function currentFactionPayment(g: Game) {
       'The saved Guild payment no longer matches its original contributor receipt.');
     validateGuildPaymentRounding(g, response.owner, gross, response.guildContributions);
   }
-  return { owner: response.owner, kind,
-    ...homeworldRule(() => quoteHomeworldPaymentIncome(g, response.owner, kind, gross)) };
+  const payment = homeworldRule(() => quoteHomeworldPaymentIncome(g, response.owner, kind, gross));
+  const stable = g.homeworldOccupationPreview
+    ? homeworldRule(() => quoteStableHomeworldOccupation(g, kind === 'shipment' ? 'junction' : 'kaitain')) : null;
+  return { owner: response.owner, kind, ...payment,
+    ...(stable?.entitlement || stable?.blocked ? { income: Math.ceil(gross / 2), bank: 0 } : {}) };
 }
 function validateGuildPaymentRounding(g: Game, owner: string, gross: number, contributions: number[]) {
   if (!g.homeworlds?.custody) return;
   const rounding = homeworldRule(() => quoteGuildPaymentRounding(gross, contributions));
   const payment = homeworldRule(() => quoteHomeworldPaymentIncome(g, owner, 'shipment', gross));
-  requireRule(!payment.low || rounding.unambiguous,
+  const junction = g.homeworldOccupationPreview
+    ? homeworldRule(() => quoteStableHomeworldOccupation(g, 'junction')) : null;
+  requireRule((!payment.low && !junction?.entitlement && !junction?.blocked) || rounding.unambiguous,
     'Low Junction rounding for two odd allied contributions awaits a ruling. Choose a different payment split.');
 }
 function shipmentIncomeContributions(g: Game, p: Player, cost: number, allyPayment: number) {
@@ -15713,11 +16043,14 @@ function checkShipmentIncomeRounding(g: Game, p: Player, cost: number, allyPayme
     ...(allyPayment ? [{payer:p.ally!,amount:p.ally === guild.id ? 0 : allyPayment}] : [])],allyPayment > 0);
   validateGuildPaymentRounding(g, guild.id, amounts.reduce((sum, amount) => sum + amount, 0), amounts);
 }
-function guildPaymentResponse(g: Game, owner: string, amounts: number[],payer?:string): ResponseWindow {
+function guildPaymentResponse(g: Game, owner: string, amounts: number[],payer?:string,
+  named?: { payer: string; amount: number }[]): ResponseWindow {
   const contributions = amounts.filter(amount => amount > 0);
   const amount = contributions.reduce((sum, value) => sum + value, 0);
   validateGuildPaymentRounding(g, owner, amount, contributions);
   return { kind: 'guildIncome', owner, amount, passed: [],
+    ...(g.homeworldOccupationPreview ? { occupiedPayment: { event: crypto.randomUUID(),
+      contributions: named ?? [{ payer: payer!, amount }] } } : {}),
     ...(contributions.length === 1 && payer ? stampBureaucratPayment(g,'shipment',payer,owner,amount) : {}),
     ...(g.homeworlds?.custody ? { guildContributions: contributions,
       guildPaymentProof: guildPaymentSignature(g, owner, amount, contributions) } : {}) };
@@ -17996,6 +18329,7 @@ function homeworldHistoryIntegrity(g: Game) {
     if (g.tupileIntelligence) homeworldRule(() => validateTupileIntelligenceState(g.tupileIntelligence!, g.players, g.turn));
   } else requireRule(g.tupileIntelligence === undefined, 'Tupile intelligence requires its original Homeworld history.');
   homeworldOccupiedIncomeIntegrity(g);
+  occupiedPercentageIntegrity(g);
 }
 function homeworldOccupiedIncomeIntegrity(g: Game) {
   const pending = g.pendingHomeworldOccupiedIncome, history = g.homeworldOccupiedIncomeHistory;
@@ -18045,6 +18379,7 @@ function commitHomeworldOccupiedIncome(g: Game, actor: string, event: string, wo
   g.pendingHomeworldOccupiedIncome = result.state;
   for (const credit of result.credits) {
     getPlayer(g, credit.player).spice += credit.amount;
+    recordFremenCollection(g, credit.player, `${event}:${world}:${credit.player}`, credit.amount);
     creditGiediCollection(g, credit.player, { kind: 'homeworld', amount: credit.amount });
     log(g, `${getPlayer(g, credit.player).name} received ${credit.amount} spice from ${world}'s occupied bank award.`,
       { faction: getPlayer(g, credit.player).faction, name: 'Occupied Homeworld Collection' });
@@ -18213,6 +18548,7 @@ function commitCollection(
   for (const receipt of discovery.receipts) {
     const p = getPlayer(g, receipt.player);
     p.spice = receipt.balance;
+    recordFremenCollection(g, p.id, `ordinary:${p.id}`, receipt.strongholds + receipt.collected);
     if (receipt.strongholds)
       log(
         g,
@@ -18227,6 +18563,7 @@ function commitCollection(
   }
   for (const effect of discovery.effects) {
     const p = getPlayer(g, effect.player);
+    recordFremenCollection(g, p.id, `${effect.kind}:${effect.kind === 'orgiz' ? effect.location : 'bank'}:${p.id}`, effect.amount);
     if (effect.kind === 'cistern')
       log(
         g,
@@ -18280,6 +18617,8 @@ function commitCollection(
   stageGrummanCollection(g);
 }
 function collect(g: Game) {
+  if (g.homeworldOccupationPreview && byFaction(g, 'fremen') && g.fremenCollectionCredits?.turn !== g.turn)
+    g.fremenCollectionCredits = { turn: g.turn, event: crypto.randomUUID(), collected: [], complete: false };
   if (g.homeworldOccupationPreview && !g.pendingHomeworldOccupiedIncome &&
       !g.homeworldOccupiedIncomeHistory!.some(receipt => receipt.turn === g.turn))
     g.pendingHomeworldOccupiedIncome = homeworldRule(() => beginHomeworldOccupiedIncome(g, crypto.randomUUID()));
@@ -18351,6 +18690,8 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
     pending.settled.push(receipt);
     getPlayer(g, receipt.ecaz).spice += receipt.ecazAmount;
     getPlayer(g, receipt.ally).spice += receipt.allyAmount;
+    recordFremenCollection(g, receipt.ecaz, `shared:${receipt.territory}:${receipt.ecaz}`, receipt.ecazAmount);
+    recordFremenCollection(g, receipt.ally, `shared:${receipt.territory}:${receipt.ally}`, receipt.allyAmount);
     creditGiediCollection(g, receipt.ecaz, { kind: 'desert', amount: receipt.ecazAmount });
     creditGiediCollection(g, receipt.ally, { kind: 'desert', amount: receipt.allyAmount });
     log(
@@ -22751,6 +23092,22 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     : null;
   if (!canceled && bureaucratDiversion === undefined && offerBureaucratPayment(g,response.bureaucratPayment,{kind:'response'})) return;
   g.response = null;
+  if (g.homeworldOccupationPreview &&
+    (response.occupiedPayment || response.source === 'ambassador' || response.kind === 'richesePurchaseIncome' && g.pendingRichesePurchaseIncome?.event ||
+      response.kind === 'emperorIncome' && g.currentAuctionSale?.occupiedEvent) &&
+    ['emperorIncome', 'guildIncome', 'richesePurchaseIncome'].includes(response.kind)) {
+    const gross = (response.kind === 'emperorIncome' ? response.source === 'ambassador' ? response.amount! :
+      auctionEmperorIncomeAmount(g.currentAuctionSale!) : response.amount!) - (bureaucratDiversion ?? 0);
+    const suffix: OccupiedPercentageSuffix = response.source === 'ambassador' ? { kind: 'ambassadorBonus' } :
+      response.kind === 'emperorIncome' ? { kind: 'auctionBonus' } : response.kind === 'richesePurchaseIncome'
+        ? { kind: 'richesePurchase', resume: g.pendingRichesePurchaseIncome!.resume } : { kind: 'none', decision: g.decision };
+    if (response.kind === 'emperorIncome') awardBankerIncome(g, g.currentAuctionSale?.spiceBankerIncomePayment, canceled);
+    if (response.kind === 'guildIncome') awardBankerIncome(g, response.spiceBankerIncomePayment, canceled);
+    const pending = settleOccupiedPayment(g, response, gross, canceled, suffix);
+    if (!pending) runOccupiedPercentageSuffix(g, suffix);
+    return;
+  }
+  if (offerOccupiedBonus(g, response)) return;
   if (response.kind === 'ecazOccupy') {
     const b = g.battle, occupy = b?.ecazOccupy;
     requireRule(b && occupy?.lead && occupy.ecaz === response.owner && !b.revealed &&
@@ -23204,6 +23561,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
           owner: atreides.id,
           passed: [],
         };
+      if (g.response?.kind === 'atreidesAuction') openOccupiedAuctionInspection(g);
       else settleRicheseLot(g);
     }
   } else if (response.kind === 'ixAuction' || response.kind === 'ixTechnology') {
@@ -23588,12 +23946,17 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
       chooseGuildTiming(g, response.take!);
     }
   } else if (response.kind === 'atreidesAuction') {
+    if (g.homeworldOccupationPreview) {
+      if (!g.homeworldAuctionInspection) openOccupiedAuctionInspection(g);
+      const saved = g.homeworldAuctionInspection!, occupation = quoteStableHomeworldOccupation(g, 'caladan');
+      requireRule(saved.lot === originalAuctionInspectionLot(g) &&
+        saved.occupation === JSON.stringify(occupation), 'The original Caladan inspection source changed.');
+      saved.occupiedKnown = !!occupation.entitlement && !occupation.blocked;
+    }
     if (g.richeseAuction) {
       g.richesePeekKnown = !canceled;
       settleRicheseLot(g);
-    } else
-      g.auction!.peekKnown =
-        terminal?.kind === 'atreidesAuction' ? terminal.known : !canceled;
+    } else g.auction!.peekKnown = terminal?.kind === 'atreidesAuction' ? terminal.known : !canceled;
   } else if (response.kind === 'atreidesSpice') {
     const blocked = homeworldRule(() => homeworldMovementForesightBlock(g, response.owner));
     requireRule(!blocked, blocked ?? 'Caladan prevents this foresight.');
@@ -23936,7 +24299,9 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
   const income = (ordinaryIncome ? quote.cost - allyPayment : 0) +
     (p.ally === option.owner ? 0 : allyPayment);
   if (!settlement?.recipient && income > 0) g.response = guildPaymentResponse(g, option.owner,
-    [ordinaryIncome ? quote.cost - allyPayment : 0, p.ally === option.owner ? 0 : allyPayment]);
+    [ordinaryIncome ? quote.cost - allyPayment : 0, p.ally === option.owner ? 0 : allyPayment], undefined,
+    [...(ordinaryIncome ? [{ payer: p.id, amount: quote.cost - allyPayment }] : []),
+      ...(p.ally !== option.owner && allyPayment ? [{ payer: p.ally!, amount: allyPayment }] : [])]);
   const sourceName = quote.originKind === 'arrakis' ? territory(quote.origin).name :
     quote.sources.map((s) => combatLocationName(g, s.key)).join(' and ');
   log(g, `${p.name} accepted ${getPlayer(g, option.owner).name}’s Junction ${rate}-price offer and transported ${quote.amount} physical forces (${quote.elite} special) from ${sourceName} to ${arrival ? `${territory(arrival.territory).name}, sector ${arrival.sector}` : combatLocationName(g, destination)} for ${quote.cost} spice (${quote.cost - allyPayment} own, ${allyPayment} pledged). The shipment is used; movement remains available.`,
@@ -24052,7 +24417,7 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
   const guild = byFaction(g, 'guild');
   const income = guild && p.ally !== guild.id ? shipment.allyPayment : 0;
   if (!settlement?.recipient && guild && income > 0)
-    g.response = guildPaymentResponse(g, guild.id, [income]);
+    g.response = guildPaymentResponse(g, guild.id, [income], p.ally!);
   finishShipmentPromises(g, p, null);
   log(g, `${p.name} shipped ${quote.amount} physical forces (${quote.elite} special) from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.${shipment.guildSecretEvent ? ' Guild Secret Ally is spent for this half-price shipment; the payment goes to the bank.' : ''}`,
     {faction: shipment.guildSecretEvent ? 'guild' : p.faction, name: shipment.guildSecretEvent ? 'Secret Ally Homeworld shipment' : 'Homeworld shipment'});
@@ -24546,9 +24911,9 @@ function commitGuildTransport(
     bankOnly: g.karamaShipping?.player === p.id,
   });
   if (!settlement?.recipient && guild && guildPayment > 0)
-    g.response = guildPaymentResponse(g, guild.id,
-      shipmentIncomeContributions(g, p, cost, allyPayment),
-      allyPayment ? undefined : p.id);
+    g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),
+      allyPayment ? undefined : p.id, [{ payer: p.id, amount: p.id === guild.id ? 0 : cost - allyPayment },
+        ...(allyPayment && p.ally !== guild.id ? [{ payer: p.ally!, amount: allyPayment }] : [])]);
   settleBankerShipmentIncome(g, p, cost, allyPayment);
   if (fromReserves) {
     p.reserves -= amount;
@@ -24770,7 +25135,9 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
     bankOnly: g.karamaShipping?.player === p.id,
   });
   if (!settlement?.recipient && guild && guildPayment > 0)
-    g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),allyPayment ? undefined : p.id);
+    g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),
+      allyPayment ? undefined : p.id, [{ payer: p.id, amount: p.id === guild.id ? 0 : cost - allyPayment },
+        ...(allyPayment && p.ally !== guild.id ? [{ payer: p.ally!, amount: allyPayment }] : [])]);
   settleBankerShipmentIncome(g, p, cost, allyPayment);
   g.karamaShipping = null;
   log(
@@ -26163,6 +26530,7 @@ export function executeSpecialKaramaIntent(
     const emperor = byFaction(g, 'emperor');
     if (emperor) {
       g.pendingRichesePurchaseIncome = {
+        ...(g.homeworldOccupationPreview ? { event: crypto.randomUUID(), buyer: p.id } : {}),
         owner: emperor.id,
         turn: g.turn,
         phase: g.phase,
@@ -26712,6 +27080,7 @@ function finishActionContinuations(g: Game) {
   resumeMarketGhola(g);
   resumeHomeworldOccupiedIncome(g);
   resumeGrummanCollection(g);
+  completeOccupiedFremenCollection(g);
   if (!g.truthtrance && !g.decision && !g.response) advanceSetup(g);
   if (g.status === 'playing' && g.leaderSkills && !g.decision && !g.response && !g.truthtrance && !g.phaseOpening) {
     const owner = g.order.find((id) => g.leaderSkills!.offers[id]);
@@ -26775,6 +27144,26 @@ function settleAutomaticContinuations(g: Game) {
     if (g.truthtrance || g.phaseOpening || g.status === 'finished') return;
     const response = g.response;
     const before = JSON.stringify(g);
+    const bonus = g.pendingHomeworldOccupiedBonus;
+    if (bonus && g.decision?.kind === 'homeworldOccupiedBonus') {
+      const authority = quoteOccupiedBiddingAuthority(g, 'harkonnenBonus');
+      const saved = JSON.parse(bonus.proof) as { occupation: string; producer: string };
+      if (!authority.blocked && !authority.bonusRecipients.length &&
+        saved.occupation === JSON.stringify(quoteStableHomeworldOccupation(g, 'giedi_prime')) &&
+        saved.producer === occupiedProducerProof(g, 'bonus', bonus.response)) {
+        if (bonus.response.source === 'ambassador') validateAmbassadorPurchaseResponse(g, bonus.response);
+        else currentAuctionContinuationQuote(g, { kind: 'cancel', response: bonus.response });
+        g.pendingHomeworldOccupiedBonus = null;
+        g.decision = null;
+        log(g, 'The original purchase produced no occupied bonus card: its actual recipients have no hand space or no drawable stock remains.',
+          { faction: 'harkonnen', name: 'Occupied purchase bonus' });
+        if (bonus.response.source === 'ambassador') finishAmbassador(g); else nextAuction(g);
+        continue;
+      }
+    }
+    if (g.pendingHomeworldOccupiedPercentage || g.pendingHomeworldOccupiedBonus && !g.decision) return;
+    if (response?.kind === 'ixAuction' && g.homeworldOccupationPreview &&
+      quoteOccupiedBiddingAuthority(g, 'ixAuction').blocked) return;
     if (response) {
       if (
         !(
@@ -26993,6 +27382,12 @@ function applyActionInner(
   g.guildTimingLocked ??= false;
   normalizeBattle(g);
   const p = getPlayer(g, id);
+  requireRule(!g.pendingHomeworldOccupiedPercentage || g.decision?.kind === 'homeworldOccupiedPercentage',
+    'The original displaced percentage source is blocked.');
+  requireRule(!g.pendingHomeworldOccupiedBonus || g.decision?.kind === 'homeworldOccupiedBonus',
+    'The original displaced bonus source is blocked.');
+  requireRule(!(g.homeworldOccupationPreview && g.richeseBidding?.stage === 'cacheOffer' && !g.decision &&
+    quoteOccupiedBiddingAuthority(g, 'richeseCache').blocked), 'The original displaced cache-card source is blocked.');
   requireRule(
     action && typeof action.type === 'string',
     'Action type is required.',
@@ -27481,6 +27876,7 @@ function applyActionInner(
       decision.kind === 'richeseBlackMarket' ||
       decision.kind === 'richeseDeclaration' ||
       decision.kind === 'richeseCache' ||
+      decision.kind === 'richeseCacheTerms' ||
       decision.kind === 'richeseUnbid'
     ) {
       decideRichese(g, p, decision, action);
@@ -27566,6 +27962,14 @@ function applyActionInner(
     }
     if (decision.kind === 'grummanCollection') {
       decideGrummanCollection(g, p, action);
+      return g;
+    }
+    if (decision.kind === 'homeworldOccupiedPercentage') {
+      decideOccupiedPercentage(g, p, action);
+      return g;
+    }
+    if (decision.kind === 'homeworldOccupiedBonus') {
+      decideOccupiedBonus(g, p, action);
       return g;
     }
     if (decision.kind === 'homeworldOccupiedIncome') {
@@ -27898,9 +28302,12 @@ function applyActionInner(
       );
     } else if (decision.kind === 'ixAuction') {
       requireRule(
-        g.ixAuction && p.faction === 'ixians',
+        g.ixAuction && (g.homeworldOccupationPreview
+          ? homeworldRule(() => requireOccupiedBiddingController(g, 'ixAuction', p.id)).provider === byFaction(g, 'ixians')!.id : p.faction === 'ixians'),
         'The auction pool is not available.',
       );
+      if (g.ixAuction.authority) requireRule(g.ixAuction.authority === JSON.stringify(quoteStableHomeworldOccupation(g, 'ix')),
+        'The original Ixian pool authority changed before selection.');
       const card = g.ixAuction.cards.find((c) => c.id === action.card);
       requireRule(card, 'Choose a card from the auction pool.');
       requireRule(
@@ -27910,7 +28317,8 @@ function applyActionInner(
       if (action.position === 'top') g.deck.unshift(card);
       else g.deck.push(card);
       const rest = g.ixAuction.cards.filter((c) => c.id !== card.id);
-      g.ixAuctionKnown = { turn: g.turn, cards: [...rest] };
+      g.ixAuctionKnown = { turn: g.turn, cards: [...rest],
+        ...(g.homeworldOccupationPreview ? { controller: p.id } : {}) };
       g.ixAuction = null;
       setAuction(g, shuffle(rest));
       log(
@@ -30891,6 +31299,15 @@ export function viewGame(state: Game, id: string) {
   const leaderRevivals = leaderRevivalOptions(visibleRevivalGame,
     { ...me, leaders: me.leaders.map((leader) => projectLeader(g, leader, id)) });
   const b = g.battle;
+  const ixAuthority = g.homeworldOccupationPreview ? quoteOccupiedBiddingAuthority(g, 'ixAuction') : null;
+  const ixPoolStale = !!(g.homeworldOccupationPreview && g.ixAuction?.authority &&
+    g.ixAuction.authority !== JSON.stringify(quoteStableHomeworldOccupation(g, 'ix')));
+  const ixPoolAuthorized = !g.homeworldOccupationPreview || !ixPoolStale && !ixAuthority?.blocked &&
+    ixAuthority?.controller === id && g.decision?.kind === 'ixAuction' && g.decision.player === id;
+  const cacheAuthority = g.homeworldOccupationPreview && g.richeseBidding?.stage === 'cacheOffer'
+    ? quoteOccupiedBiddingAuthority(g, 'richeseCache') : null;
+  const cacheStale = !!(cacheAuthority && g.richeseBidding?.cacheAuthority &&
+    g.richeseBidding.cacheAuthority !== JSON.stringify(quoteStableHomeworldOccupation(g, 'richese')));
   const completion =
     !g.pendingTreacheryDiscard &&
     b &&
@@ -31006,6 +31423,8 @@ export function viewGame(state: Game, id: string) {
       me.faction === 'moritani' ? (g.pendingMoritaniPlacement ?? null) : null,
     grummanCollection: projectedGrummanCollection(g, id),
     homeworldOccupiedIncome: projectedHomeworldOccupiedIncome(g, id),
+    homeworldOccupiedPercentage: projectedOccupiedPercentage(g),
+    homeworldOccupiedBonus: projectedOccupiedBonus(g),
     tupileIntelligence: projectedTupileIntelligence(g, id),
     terrorEntry: g.pendingTerrorEntry
       ? (() => {
@@ -31048,14 +31467,17 @@ export function viewGame(state: Game, id: string) {
         })()
       : null,
     ixTechnology:
-      me.faction === 'ixians'
+      me.faction === 'ixians' || g.ixAuctionKnown?.controller === id ||
+        g.decision?.kind === 'ixAuction' && g.decision.player === id
         ? {
-            setup: g.ixSetupCards ?? null,
-            pool: g.ixAuction?.cards.length
+            blocked: ixAuthority?.blocked ?? (ixPoolStale ? 'The original Ixian pool authority changed.' : null),
+            setup: me.faction === 'ixians' ? g.ixSetupCards ?? null : null,
+            pool: ixPoolAuthorized && g.ixAuction?.cards.length
               ? [...g.ixAuction.cards].sort((a, b) => a.id.localeCompare(b.id))
               : null,
             known:
-              g.ixAuctionKnown?.turn === g.turn
+              g.ixAuctionKnown?.turn === g.turn &&
+                (!g.homeworldOccupationPreview || g.ixAuctionKnown.controller === id)
                 ? [...g.ixAuctionKnown.cards].sort((a, b) =>
                     a.id.localeCompare(b.id),
                   )
@@ -31531,6 +31953,7 @@ export function viewGame(state: Game, id: string) {
           ...(g.response.bureaucratPayment ? {bureaucratPayment:undefined,bureaucratPaymentEvent:undefined} : {}),
           ...(g.response.guildContributions ? { guildContributions: undefined } : {}),
           ...(g.response.guildPaymentProof ? { guildPaymentProof: undefined } : {}),
+          ...(g.response.occupiedPayment ? { occupiedPayment: undefined } : {}),
           ...(g.response.sandmasterProof ? { sandmasterProof: undefined } : {}),
           ...(g.response.noFieldSkillProof ? { noFieldSkillProof: undefined } : {}),
           passed: g.response.passed.includes(id) ? [id] : [],
@@ -31814,9 +32237,11 @@ export function viewGame(state: Game, id: string) {
             stage: g.richeseBidding.stage,
             position: g.richeseBidding.position,
             normalCount: g.richeseBidding.normalCount,
-            offerBlocked: null,
-            cache:
-              g.richeseBidding.owner === id ? (g.richeseCache ?? []) : null,
+            cacheTerms: g.richeseBidding.cacheTerms ?? null,
+            offerBlocked: cacheAuthority?.blocked ?? (cacheStale ? 'The original cache choice authority changed.' : null),
+            cache: g.richeseBidding.owner === id || cacheAuthority && !cacheStale && !cacheAuthority.blocked &&
+              g.decision?.kind === 'richeseCache' && g.decision.player === id && cacheAuthority.controller === id
+              ? g.richeseCache ?? [] : null,
           }
         : null,
     richeseAuction: g.richeseAuction
@@ -31825,7 +32250,10 @@ export function viewGame(state: Game, id: string) {
           card:
             g.richeseAuction.source === 'cache' ||
             g.richeseAuction.owner === id ||
-            (me.faction === 'atreides' && g.richesePeekKnown)
+            (me.faction === 'atreides' && g.richesePeekKnown) ||
+            (g.homeworldOccupationPreview && g.homeworldAuctionInspection?.lot === originalAuctionInspectionLot(g) &&
+              g.homeworldAuctionInspection.occupiedKnown && id !== g.homeworldAuctionInspection.native &&
+              g.homeworldAuctionInspection.audience.includes(id))
               ? (g.richeseOfferedCard ?? richeseLotCard(g) ?? null)
               : null,
           claim: g.richeseClaim ?? null,
@@ -31835,6 +32263,7 @@ export function viewGame(state: Game, id: string) {
             richeseOwnCommitment(g.richeseAuction, g.richeseFunding ?? {}, id),
           allyAvailable: aidFor(g, me)?.amount ?? 0,
           peekKnown: !!g.richesePeekKnown,
+          inspectionBlocked: g.homeworldOccupationPreview ? quoteOccupiedBiddingAuthority(g, 'atreidesInspection').blocked : null,
         }
       : null,
     auction: g.auction
@@ -31846,8 +32275,12 @@ export function viewGame(state: Game, id: string) {
             ? { allyPayment: g.auction.allyPayment ?? 0 }
             : {}),
           remaining: g.auction.cards.length - g.auction.index,
+          inspectionBlocked: g.homeworldOccupationPreview ? quoteOccupiedBiddingAuthority(g, 'atreidesInspection').blocked : null,
           card:
-            me.faction === 'atreides' && g.auction.peekKnown
+            (me.faction === 'atreides' && g.auction.peekKnown) ||
+            (g.homeworldOccupationPreview && g.homeworldAuctionInspection?.lot === originalAuctionInspectionLot(g) &&
+              g.homeworldAuctionInspection.occupiedKnown && id !== g.homeworldAuctionInspection.native &&
+              g.homeworldAuctionInspection.audience.includes(id))
               ? g.auction.cards[g.auction.index]
               : null,
         }

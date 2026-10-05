@@ -246,6 +246,7 @@ void test('pending responses, decisions and Truthtrance precede all optional No-
       position: null,
       cache: [],
       normalCount: null,
+      cacheTerms: null,
       offerBlocked: null,
     };
     assert.equal(botActions(v)[0].type, 'decision');

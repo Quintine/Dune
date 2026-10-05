@@ -16,6 +16,12 @@ export function IxTechnology({
   const kind = g.decision?.kind;
   const me = g.players.find((p) => p.id === g.me)!;
   const [position, setPosition] = useState('bottom');
+  if (
+    g.decision?.player !== g.me ||
+    !['ixSetup', 'ixAuction', 'ixTechnology', 'ixAllyCard'].includes(kind ?? '')
+  ) return null;
+  if (kind === 'ixAuction' && g.ixTechnology?.blocked)
+    return <output className="notice block">{g.ixTechnology.blocked}</output>;
   const cards =
     kind === 'ixSetup'
       ? g.ixTechnology?.setup
@@ -57,7 +63,7 @@ export function IxTechnology({
         {kind === 'ixSetup'
           ? 'Choose your starting card. The remaining cards are shuffled and dealt privately, one to each other faction; Harkonnen then draws its extra card.'
           : kind === 'ixAuction'
-            ? 'Privately choose one card to return to the deck. The remaining pool will be shuffled for auction.'
+            ? 'Privately choose one card from the original Ixian pool to return to the deck. The remaining pool will be shuffled for auction. This choice does not transfer unrelated Ixian Technology.'
             : 'Exchange one card from your hand for the upcoming card, before Atreides looks. You commit your offered card before learning what you receive. This advantage can be attempted once this round.'}{' '}
         <HelpTip topic="ixTechnology" />
       </p>

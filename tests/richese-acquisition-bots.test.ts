@@ -174,6 +174,7 @@ void test('response, decision and Truthtrance controls retain priority over opti
       position: null,
       cache: [],
       normalCount: null,
+      cacheTerms: null,
       offerBlocked: null,
     };
     assert.equal(botActions(v)[0].type, 'decision');
