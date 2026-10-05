@@ -50,6 +50,15 @@ overflow, reset, public activation or played-game upgrade. [Exact contract/evide
 Full Homeworlds/overlays, Basic/CHOAM rulings, exceptional Duke, assurance and
 deployed acceptance remain open.
 
+Exact code **3e79021a6e32d0f0570f0b60a0f12c64c6ec66e1** is pushed.
+[CI37257844991](https://github.com/Quintine/Dune/actions/runs/37257844991) /
+container111598626752 succeeds isolated storage/HTTP7 before verified-image9.
+Final143 source/consumer/guide cases, types/lint and exact pushed build pass.
+Preserved D54MY8JJ **v33** displays **3e79021** at390px and retains its one
+private observation/lifetime use. Managed tab released. Publication is not
+deployment; protected NAS snapshot/safe-point/sign-in/approval gates remain.
+
+
 **Occupied Homeworld economics / Bidding — bounded Development Verified:**
 original fresh2..6 Basic/Advanced setup and selected decks; Advanced uses the
 authorized supplied p22 sole qualification retained until its last force leaves,

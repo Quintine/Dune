@@ -37,6 +37,15 @@ panel. No overflow/reset/public start/save conversion; private artifacts outside
 Full combinations, pending Basic/CHOAM and exceptional Duke, final assurance and
 deployed acceptance remain open.
 
+Exact code **3e79021a6e32d0f0570f0b60a0f12c64c6ec66e1** is pushed.
+[CI37257844991](https://github.com/Quintine/Dune/actions/runs/37257844991) /
+container111598626752 succeeds mandatory isolated storage/HTTP7 before
+verified-image9. Final143 source/consumer/guide cases, types/lint and exact pushed
+build pass. D54MY8JJ v33 shows **3e79021** at390px, with original private
+observation/use retained and no reset. Tab released; publication is not deployed
+evidence and protected NAS prerequisites are unchanged.
+
+
 ## 5 October 2026 — occupied Homeworld economics, Bidding and Advanced retention
 
 The authorized supplied p22 resolves Advanced qualification/retention: sole
