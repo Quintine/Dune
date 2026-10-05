@@ -2,6 +2,37 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Native trained Skills/Nexus/Discovery — 6 October 2026
+
+The original fresh `leader-skills --nexus-cards --discoveries` entry now
+composes Discovery7/8 with each already-supported native skill/Nexus family:
+both Ixians+Tleilaxu/Ix47, both CHOAM+Richese/CHOAM35+cache, or standalone
+Ecaz **or** Moritani with classics. Basic/Advanced2–6, optional unused Tech3+
+and Advanced Strongholds2+; original actors, first hands, offers, native setup
+and printed components remain authoritative. Only the existing
+`pairedNexusLeaderSkillsProfile`/`standaloneE3NexusLeaderSkillsProfile`
+envelopes gained the private Discovery flag, so no new setup path or duplicated
+legality was added. `richeseCunningModeSupported` admits selected Discovery
+only through that exact paired-skill profile.
+
+The programme reaches actual next-turn free entry after the first END Mentat,
+then real Maker losses/votes/typed rides, both Advanced piles, settled alliance
+and the end-Spice closing choice. Physical consumers remain: E1 six-counter
+Suboid Cunning resolves source-clear Suk rescue before one equal Cyborg Tank
+substitution, then original cleanup and mandatory winner Tech precede a
+matching Face Dance; E2 keeps the signed two-marker frame, one printed invoice
+and private reserve caps; Ecaz keeps quiet living/unclaimed Duke separate from
+training and a real owner-labelled mandatory Occupy; Moritani keeps skill-first
+assassination, printed bounty and one private Mentat replacement.
+
+[Combined canonical contract/proof](DISCOVERY_PROTOTYPE.md#native-trained-skillsnexusdiscovery--6-october-2026)
+records the205/14 affected union, types/lint/build, **23 of24** completed
+original six-seat samples (25,751accepted/685JSON) and the preserved Richese
+exhausted-cache capture. Mixed/E3 pairs, Homeworlds, variants/previews,
+shared-Duke training, borrowed Smuggler/pair companions, native free-return,
+captured/foreign training, Basic odd Ecaz, Advanced Harkonnen and unresolved
+rulings remain gated; this is not complete-mode or deployed acceptance.
+
 ## Original Discovery, classic Skills and paired natives — 6 October 2026
 
 The existing original fresh classic skill/Nexus entry additionally accepts

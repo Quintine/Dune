@@ -35,6 +35,60 @@ node --import tsx tools/start-prototype.ts --profile discovery --db PATH --room 
 It preserves all seats and other rooms, requires the current version and refuses
 to redeal a started game. The default `ix` profile remains available.
 
+## Native trained Skills/Nexus/Discovery — 6 October 2026
+
+Fresh original `leader-skills --nexus-cards --discoveries` now composes
+Discovery7/8 with each already-supported native skill/Nexus family:
+both Ixians+Tleilaxu/Ix47, both CHOAM+Richese/CHOAM35+cache, or standalone
+Ecaz **or** Moritani with classics. Basic/Advanced2–6, optional unused Tech3+
+and Advanced Strongholds2+; original actors, first hands, offers, native setup
+and printed components stay authoritative. Mixed/E3 pairs, Homeworlds,
+variants/previews, shared-Duke training, borrowed Smuggler/pair-companion
+arithmetic, native free-return, captured/foreign training, Basic odd Ecaz,
+Advanced Harkonnen, the exhausted-cache count ruling, public starts and
+played-save conversion remain guarded.
+
+Only the existing `pairedNexusLeaderSkillsProfile` and
+`standaloneE3NexusLeaderSkillsProfile` envelopes gained the existing private
+Discovery flag; `nativeExpansionLeaderSkillsProfile`/`nativeDiscoveryLeaderSkillsProfile`
+and the original `initializeLeaderSkillsGameForAudit` already route them, so
+no new setup path or duplicated legality was added. `richeseCunningModeSupported`
+admits selected Discovery only through the exact supported paired-skill profile.
+The original Ecaz mandatory coalition and Moritani assassination/own-revival
+consumers are inherited unchanged.
+
+The programme reaches the actual next-turn free entry after the first END
+Mentat, then real Great Maker losses/votes/typed Fremen reserve ride, both
+Advanced piles, settled alliance and the end-Spice closing choice. Trained
+consumers remain physical: E1 six-counter Suboid Cunning resolves source-clear
+Suk rescue before one equal Cyborg Tank substitution, then original cleanup and
+mandatory winner Tech precede a matching Face Dance that kills the trainer and
+returns its skill once. E2 keeps the signed two-marker frame, one printed
+invoice, private reserve caps and native response/Guild continuation. Standalone
+Ecaz keeps the quiet living/unclaimed Duke separate from training and a real
+owner-labelled mandatory Occupy; Moritani keeps skill-first assassination,
+printed bounty and one private Mentat replacement.
+
+Affected union **205/205** across14 files; types/lint and build pass. All14 real
+six-seat profiles were exercised. **23 of24** original samples completed with
+**25,751 accepted/25,751 attempts/685 JSON round trips**, unchanged working tree
+`b1177766e25ad2b8818238fb04bc425d6f1b690d0e82b948d7db608718a9d23a`. The one
+unfinished sample (Richese seed20273010) is preserved at turn-10 Bidding with an
+empty cache under the existing `richese-settlement` exhausted-cache count guard
+(1,726accepted/1,727attempts/46JSON); no bypass or re-run was applied. New
+5600–6300 sample bands use full roster/expansion names, so earlier profiles,
+defaults and seeds are unchanged.
+
+Four new isolated human rooms preserve their original CLI setups.
+BWHS4DU6 (Ixians) retains offered Rihani Decipherer/Prana Bindu Adept/Suk
+Graduate/Smuggler; human free Shrine2ordinary+1Cyborg and the Hidden Mobile
+Stronghold control remain. GRM4XMUH (Richese) retains Master of Assassins/
+Suk Graduate/Mentat/Warmaster with actual auction acquisitions. 5JS3SUYY (Ecaz)
+retains Killer Medic/Smuggler/Bureaucrat, Duke Prad Vidal and Cistern3.
+VFQCEVFB (Moritani) retains Sandmaster/Killer Medic/Master of Assassins with
+Duke Prad Vidal and the live Atomics/assassination state. These are local
+working-tree controls, not protected live acceptance.
+
 ## Classic Skills/Nexus and paired native Nexus Discovery — 6 October 2026
 
 Fresh classic `leader-skills --nexus-cards --discoveries` composes base33,

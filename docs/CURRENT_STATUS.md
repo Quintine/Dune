@@ -17,6 +17,32 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Native trained Skills/Nexus/Discovery — bounded Development Verified:**
+original paired E1 Ixians+Tleilaxu/Ix47, paired E2 CHOAM+Richese/CHOAM35+cache
+and standalone Ecaz **or** Moritani with classics now compose all14 original
+offered training, all12 Nexus and Discovery7/8 in Basic/Advanced2–6, with
+optional unused Tech3+ and Advanced Strongholds2+. Only the existing
+paired/E3 skill-family predicates gained the Discovery envelope; original
+setup, first hands, offers, actors and native components remain authoritative.
+Mixed/E3 pairs, shared-Duke training, borrowed Smuggler/pair-companion
+arithmetic, native free-return, captured/foreign training, Basic odd Ecaz,
+Advanced Harkonnen and the exhausted-cache count ruling stay guarded.
+
+Affected205/14files, types/lint and build pass. All14 real six-seat profiles
+were exercised: **23 of24** original samples completed with **25,751 accepted/
+25,751 attempts/685 JSON**, including actual typed Cunning rescue before equal
+Cyborg substitution, physical winner cleanup/Tech before matching Face Dance,
+one-invoice signed E2 nested pairs, mandatory owner-labelled Ecaz Occupy and
+original Moritani assassination/own revival. The single unfinished sample
+(Richese seed20273010) is preserved at turn-10 Bidding with an empty cache and
+the existing `richese-settlement` exhausted-cache count guard:1,726accepted/
+1,727attempts/46JSON, no bypass. Original human rooms BWHS4DU6/GRM4XMUH/
+5JS3SUYY/VFQCEVFB retain actual offered training (Rihani/Prana/Suk/Smuggler,
+Master of Assassins, Killer Medic/Sandmaster) and free entry, with Duke Vidal
+and the Moritani Atomics/assassination state live. Local working-tree proof,
+not deployed acceptance.
+[Canonical combined evidence](DISCOVERY_PROTOTYPE.md#native-trained-skillsnexusdiscovery--6-october-2026).
+
 **Classic Skills/Nexus/Discovery and paired native Nexus/Discovery — bounded
 Development Verified:** original fresh classic base33/all14/all12 training
 and separate paired E1/E2 no-Skills47/35/cache setup retain Discovery7/8,

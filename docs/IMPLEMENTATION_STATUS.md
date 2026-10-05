@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 6 October 2026 — Native trained Skills/Nexus/Discovery
+
+Only the existing paired E1/E2 and standalone E3 skill/Nexus family predicates
+gained the private Discovery envelope; `nativeExpansion`/`nativeDiscovery`
+and the original `initializeLeaderSkillsGameForAudit` already route them, so
+no duplicated setup/legality was added. `richeseCunningModeSupported` admits
+selected Discovery only through the exact supported paired-skill profile.
+Original actors/hands/offers/native components and the mandatory Ecaz coalition
+plus Moritani assassination/own-revival consumers are inherited unchanged.
+
+Affected205/14files, types/lint and build pass. All14 real six-seat profiles
+were exercised:23 of24 original samples complete25,751accepted/25,751attempts/
+685JSON on unchangedb1177766 working tree. Trained consumers are physical:
+E1 Suk rescue before one equal Cyborg Tank substitution then cleanup/Tech/
+matching Face Dance; E2 signed one-invoice nested pair with private caps;
+Ecaz quiet living/unclaimed Duke then owner-labelled mandatory Occupy;
+Moritani skill-first assassination/printed bounty/one private replacement.
+One Richese sample (seed20273010) is preserved at turn-10 Bidding with an
+empty cache under the existing `richese-settlement` exhausted-cache count
+guard (1,726accepted/1,727attempts/46JSON); no bypass.
+
+Four new isolated human rooms preserve original CLI setups and offered training
+(BWHS4DU6 Rihani/Prana/Suk/Smuggler; GRM4XMUH Master of Assassins/Suk/Mentat/
+Warmaster; 5JS3SUYY Killer Medic/Smuggler/Bureaucrat+Duke Vidal; VFQCEVFB
+Sandmaster/Killer Medic/Master of Assassins+Duke Vidal+Atomics). New5600–6300
+sample bands use full roster/expansion names, leaving earlier profiles/defaults/
+seeds unchanged. Fixture repairs preserve real progression: actual auction
+purchases, forced-loss-to-Suk ordering, valid native setup flags, coalition
+targets and trained-leader posture. No protected deployment or complete-mode
+acceptance is claimed.
+
 ## 6 October 2026 — Classic Skills/Nexus and paired native Nexus Discovery
 
 Fresh original classic base33/all14/all12 and separate paired E1/E2 no-Skills

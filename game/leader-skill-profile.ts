@@ -65,9 +65,9 @@ export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boole
   return true;
 }
 
-/** Both original natives in one E1/E2 family, with original Tech/Advanced Strongholds; other overlays stay separate. */
+/** Both original natives in one E1/E2 family, with original Discovery/Tech/Advanced Strongholds. */
 export function pairedNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.expansions.length !== 1 || !nexusLeaderSkillModulesSupported(game)) return false;
+  if (game.expansions.length !== 1 || !nexusLeaderSkillModulesSupported(game, false, true)) return false;
   const expansion = game.expansions[0];
   if (expansion !== 'ix' && expansion !== 'choam') return false;
   const primary = expansion === 'ix' ? 'ixians' : 'choam';
@@ -86,10 +86,10 @@ export function pairedNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolea
   return hasPrimary && hasSecondary;
 }
 
-/** One original E3 native with classics; no shared-Duke assignment or mixed family. */
+/** One original E3 native with classics and original Discovery; no shared-Duke assignment or mixed family. */
 export function standaloneE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
-    !nexusLeaderSkillModulesSupported(game, game.advanced === true)) return false;
+    !nexusLeaderSkillModulesSupported(game, game.advanced === true, true)) return false;
   const players = game.players!;
   let native: 'ecaz' | 'moritani' | null = null, harkonnen = false;
   for (let i = 0; i < players.length; i++) {

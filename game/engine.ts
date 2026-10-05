@@ -25685,8 +25685,9 @@ const RICHESE_CUNNING_ROSTER: Partial<Record<FactionId, true>> = {
   beneGesserit: true, guild: true, richese: true, choam: true,
 };
 function richeseCunningModeSupported(g: Game) {
+  const skills = !!g.leaderSkills && pairedNexusLeaderSkillsProfile(g);
   return pairedDiscoveryNexusProfile(g) ||
-    (!g.homeworlds && (!g.leaderSkills || pairedNexusLeaderSkillsProfile(g)) && !g.discoveryEnabled &&
+    (!g.homeworlds && (!g.leaderSkills || skills) && (!g.discoveryEnabled || skills) &&
       !g.ecazTreachery && !g.sandtrout &&
       g.players.every(player => RICHESE_CUNNING_ROSTER[player.faction] === true));
 }

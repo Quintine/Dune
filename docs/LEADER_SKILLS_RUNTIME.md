@@ -5,6 +5,33 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Native trained Skills/Nexus/Discovery — 6 October 2026
+
+Fresh original `leader-skills --nexus-cards --discoveries` now extends the
+existing paired E1/E2 and standalone Ecaz-or-Moritani skill/Nexus families to
+the original Discovery envelope: all14 offered training, all12 Nexus and
+Discovery7/8, Basic/Advanced2–6, optional unused Tech3+ and Advanced
+Strongholds2+. Only those two existing profile predicates gained the Discovery
+flag; `nativeExpansion`/`nativeDiscoveryLeaderSkillsProfile` and the original
+initializer already route them, so setup, first hands, offers, actors and
+native components stay authoritative. Mixed/E3 pairs, Homeworlds, variants/
+previews, shared-Duke training, borrowed Smuggler/pair companions, native
+free-return, captured/foreign training, Basic odd Ecaz, Advanced Harkonnen,
+the exhausted-cache count ruling, public starts and save conversion stay
+separate.
+
+Actual Maker losses/votes/typed rides, both Advanced piles and settled alliance
+precede the end-Spice closing draw. Physical trained consumers remain: E1 Suk
+rescue before equal Cyborg substitution then cleanup/Tech/Face Dance, E2 signed
+one-invoice nested pair, Ecaz quiet Duke then owner-labelled mandatory Occupy,
+and Moritani skill-first assassination/own revival.
+
+[Canonical combined evidence](DISCOVERY_PROTOTYPE.md#native-trained-skillsnexusdiscovery--6-october-2026)
+records the205/14 affected union,23 of24 completed original six-seat samples
+(25,751accepted/685JSON) and the preserved Richese exhausted-cache capture.
+This bounded composition does not certify complete factions or all fourteen
+effects, and is not protected deployment acceptance.
+
 ## Classic Nexus/Discovery composition — 6 October 2026
 
 The fresh original classic `leader-skills --nexus-cards --discoveries` entry
