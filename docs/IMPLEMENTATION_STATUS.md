@@ -41,6 +41,13 @@ Contested/shared/mixed rulings, unrelated overlays, normal public starts, comple
 module strategy, assurance and deployed acceptance remain open. No reset or
 played-game conversion.
 
+Exact source **67ce690064e7cd943e61043d41818ddbd8bdd023** is pushed.
+[CI37263699075](https://github.com/Quintine/Dune/actions/runs/37263699075) /
+container111615980358 succeeds isolated storage/HTTP7 before verified-image9.
+Final reference10, TypeScript/lint and exact pushed build pass. Preserved
+Q3AWYZWC v13 shows67ce690 at390px, five real Cistern forces/reserves15/spice4.
+Tab released; publication is not deployment or a NAS-prerequisite bypass.
+
 ## 5 October 2026 — printed high Ecaz Homeworld alliance victory
 
 Fresh native Ecaz/Homeworld audit entry marks the actual card conjunction:
