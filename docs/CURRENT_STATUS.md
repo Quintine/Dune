@@ -43,6 +43,13 @@ Original staging and source trees are explicit; tabs released.
 [Canonical rule/evidence contract](DISCOVERY_PROTOTYPE.md#original-advanced-stronghold-composition--5-october-2026).
 No production deployment or complete-mode acceptance is claimed.
 
+Verified code **b0267827b5b16755ff3e091cb78f1543383b7f96** pushed.
+[Exact CI37301604738/container111735386439](https://github.com/Quintine/Dune/actions/runs/37301604738/job/111735386439)
+completed/success, isolated storage/HTTP7 before image9. Final guide10,
+types/lint/exact build pass; UWEH7WNBv14 and4LBU44PTv21 retain their recorded
+outcomes and show b026782 at390px after isolated QA reload. Tabs closed.
+No protected NAS deployment/access/approval or live acceptance is claimed.
+
 **Classic Nexus / Discovery — bounded Development Verified:** fresh explicit
 `nexus --discoveries` composes classic/base33/all12/Discovery7/8,
 Basic/Advanced2–6, original Tech3+ and/or Advanced Strongholds2+.

@@ -168,6 +168,16 @@ Guild-held Production transferred to Ixians. Another real conflict keeps
 Battle open; no unrelated Collection contaminates the invoice. Refresh fits
 390px. Tabs released; no production acceptance is claimed.
 
+Verified code **b0267827b5b16755ff3e091cb78f1543383b7f96** pushed.
+[Exact CI37301604738/container111735386439](https://github.com/Quintine/Dune/actions/runs/37301604738/job/111735386439)
+completed/success: isolated storage/HTTP7 before verified-image9.
+Final guide10/types/lint and exact pushed build pass. Own isolated worker
+reload preserves UWEH7WNBv14/movement and4LBU44PTv21/Battle; both show
+**b026782** at390px with the recorded training, nested forces, support debit,
+typed casualties and original rewards. Tabs released. Publication is not
+protected NAS deployment; operator access/snapshot/safe-point/provider
+approval prerequisites remain unmet.
+
 
 ## Native setup and original consumers — 5 October 2026
 

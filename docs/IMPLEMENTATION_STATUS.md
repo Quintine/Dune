@@ -37,6 +37,13 @@ transfer. Both390px refresh; explicit conserved staging/private evidence,
 tabs closed. [Canonical evidence](DISCOVERY_PROTOTYPE.md#bounded-held-card-and-mandatory-coalition-evidence).
 No production or full-module acceptance is claimed.
 
+Exact pushed codeb0267827b5b16755ff3e091cb78f1543383b7f96:
+[CI37301604738/job111735386439](https://github.com/Quintine/Dune/actions/runs/37301604738/job/111735386439)
+completed/success with mandatory isolated storage/HTTP7 before image9.
+Final guide10/types/lint/exact build pass; preserved UWEH7WNBv14/movement
+and4LBU44PTv21/Battle display local b026782 at390px with original outcomes
+after own QA reload. Tabs released; publication is not protected NAS deployment.
+
 ## 5 October 2026 — Classic Nexus and original Discovery composition
 
 Fresh explicit `nexus --discoveries` admits classic/base33/all12/Discovery7/8
