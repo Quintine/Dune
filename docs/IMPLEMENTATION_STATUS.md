@@ -31,6 +31,13 @@ purchases, forced-loss-to-Suk ordering, valid native setup flags, coalition
 targets and trained-leader posture. No protected deployment or complete-mode
 acceptance is claimed.
 
+Verified **2270c07f9722660f3dfe1d90626f7ecc81537a73** pushed.
+[CI37387218604/container112023319943](https://github.com/Quintine/Dune/actions/runs/37387218604/job/112023319943)
+job completes successfully: isolated storage/HTTP7 before verified-image9.
+Exact build/own worker reload and fresh390px screenshots retain the four native
+rooms and full 2270c07 marker at document width390 without overflow; owned tabs
+closed. No protected NAS/operator/provider approval or live acceptance.
+
 ## 6 October 2026 — Classic Skills/Nexus and paired native Nexus Discovery
 
 Fresh original classic base33/all14/all12 and separate paired E1/E2 no-Skills

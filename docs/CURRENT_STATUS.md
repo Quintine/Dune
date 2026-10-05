@@ -42,6 +42,12 @@ Master of Assassins, Killer Medic/Sandmaster) and free entry, with Duke Vidal
 and the Moritani Atomics/assassination state live. Local working-tree proof,
 not deployed acceptance.
 [Canonical combined evidence](DISCOVERY_PROTOTYPE.md#native-trained-skillsnexusdiscovery--6-october-2026).
+Verified code **2270c07f9722660f3dfe1d90626f7ecc81537a73** pushed;
+[exact CI37387218604/container112023319943](https://github.com/Quintine/Dune/actions/runs/37387218604/job/112023319943)
+job completed/success, isolated storage/HTTP7 before image9. Exact pushed build
+and own worker reload retain the four native rooms and full 2270c07 marker at
+390px (document width390, no overflow); owned tabs closed. No protected live
+deployment/access/snapshot/provider approval is claimed.
 
 **Classic Skills/Nexus/Discovery and paired native Nexus/Discovery — bounded
 Development Verified:** original fresh classic base33/all14/all12 training

@@ -89,6 +89,16 @@ VFQCEVFB (Moritani) retains Sandmaster/Killer Medic/Master of Assassins with
 Duke Prad Vidal and the live Atomics/assassination state. These are local
 working-tree controls, not protected live acceptance.
 
+Verified code **2270c07f9722660f3dfe1d90626f7ecc81537a73** is pushed.
+[Exact CI37387218604/container112023319943](https://github.com/Quintine/Dune/actions/runs/37387218604/job/112023319943)
+job completed/success: mandatory isolated storage/HTTP7 finishes before
+verified-image publication9. The exact pushed build passes. Own isolated
+worker reload retains BWHS4DU6/GRM4XMUH/5JS3SUYY/VFQCEVFB with their original
+offered training, physical counters and live native states. Fresh390px
+accessibility/screenshots show full 2270c07 revision, document width390 and no
+horizontal overflow. Owned tabs are closed. This is not protected NAS
+deployment or live acceptance.
+
 ## Classic Skills/Nexus and paired native Nexus Discovery — 6 October 2026
 
 Fresh classic `leader-skills --nexus-cards --discoveries` composes base33,
