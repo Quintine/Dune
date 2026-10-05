@@ -84,6 +84,14 @@ Human drawv27 delivers Richese, decrements the original twelve-card deck to
 eleven and releases Charity. Refresh fits390px. This is controlled source
 exercise, not unstaged card history or production verification.
 
+Code checkpoint **a2a92bb40881e6b517e618a5ffd6b3389c960a3d** is pushed.
+[Exact container job](https://github.com/Quintine/Dune/actions/runs/37296234655/job/111717999496)
+completed/success: isolated storage/HTTP step7 succeeded before verified-image
+publication step9. Final reference10 and types/lint pass; exact pushed build
+passes. Preserved3D7SAG45v27/Charity retains physical Richese/deck11 and shows
+the **a2a92bb** local marker at390px after the isolated QA worker reload.
+Tab released. Publication is not protected NAS deployment or live acceptance.
+
 ## Native setup and original consumers — 5 October 2026
 
 Original Ixian setup keeps the six-counter HMS garrison and seven physical

@@ -35,6 +35,13 @@ Richese delivered, original deck12→11,390px refresh. Controlled unplayed
 Spice order/token lottery is explicit; no natural-every-effect or production
 claim. [Contract and evidence](DISCOVERY_PROTOTYPE.md#classic-nexus-composition--5-october-2026).
 
+Verified code **a2a92bb40881e6b517e618a5ffd6b3389c960a3d** pushed.
+[Exact CI37296234655/container111717999496](https://github.com/Quintine/Dune/actions/runs/37296234655/job/111717999496)
+is completed/success, isolated storage/HTTP7 before verified image9.
+Final guide10/types/lint/exact build pass. Preserved3D7SAG45v27/Charity
+shows a2a92bb at390px with Richese/deck11 after isolated QA reload; tab closed.
+No production deployment or protected NAS approval is claimed.
+
 **Advanced Orgiz / classic Discovery Skills — bounded Development Verified:**
 the supplied Advanced rulebook p24 uses a territory-Collection trigger.
 Advanced transfers one collected spice per territory with a unique rival payer;

@@ -21,6 +21,13 @@ then human Guild closing drawv27/Charity: physical Richese/deck12→11,
 [Canonical contract](DISCOVERY_PROTOTYPE.md#classic-nexus-composition--5-october-2026).
 No production deployment or complete-mode acceptance is claimed.
 
+Exact pushed codea2a92bb40881e6b517e618a5ffd6b3389c960a3d:
+[CI37296234655/job111717999496](https://github.com/Quintine/Dune/actions/runs/37296234655/job/111717999496)
+completed/success with isolated storage/HTTP7 before image9. Final guide10,
+types/lint and exact build pass. Preserved3D7SAG45v27/Charity retains real
+Richese/deck11 and local a2a92bb at390px after own QA reload. Tab released;
+publication does not satisfy protected live deployment prerequisites.
+
 ## 5 October 2026 — Advanced Orgiz and classic Discovery Skills
 
 Authorized supplied Advanced p24 territory-Collection wording now groups actual
