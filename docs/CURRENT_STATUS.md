@@ -41,6 +41,12 @@ are explicit, not natural-history/every-effect or deployed acceptance.
 Final cached-constructor/live-guide union50, TypeScript/lint and final build
 pass; three final original programme re-runs complete1,659/1,659/44 JSON,
 not added to the18 unique profile/seed samples.
+Verified code **c8a6d0bb3caa3a4e651a8153b085b6db4bde1fe6** pushed;
+[exact CI37345919728/container111884319700](https://github.com/Quintine/Dune/actions/runs/37345919728/job/111884319700)
+job completed/success, isolated storage/HTTP7 before image9.
+Exact pushed build/isolated reload preserves the three outcomes and full
+c8a6d0b marker at390px, document width390; owned tabs closed.
+No protected live deployment/access/snapshot/provider approval is claimed.
 
 **Native Leader Skills / Discovery — bounded Development Verified:**
 fresh supported native Basic/Advanced family predicates retain original

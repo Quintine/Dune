@@ -112,6 +112,16 @@ They are duplicate profile/seed re-runs, not additional unique samples in18.
 The original starter help runs, and the new paired Discovery/Tech two-seat
 request rejects with its existing three-through-six-seat prerequisite.
 
+Verified code **c8a6d0bb3caa3a4e651a8153b085b6db4bde1fe6** is pushed.
+[Exact CI37345919728/container111884319700](https://github.com/Quintine/Dune/actions/runs/37345919728/job/111884319700)
+job completed/success: mandatory isolated storage/HTTP7 finishes before
+verified-image publication9. The exact pushed build passes. Own isolated
+worker reload retains BT4SBSLB16/Charity, BZNXHKMU19/Charity and
+RJF6D6ML24/Movement with their original training/counters/marker/price outcomes.
+Fresh390px accessibility/screenshots show full c8a6d0b revision, document
+width390, and saved physical outcomes. All three owned tabs are closed.
+This is not protected NAS deployment or live acceptance.
+
 ## Native Leader Skills composition — 6 October 2026
 
 Fresh explicit `leader-skills --discoveries` now preserves original native

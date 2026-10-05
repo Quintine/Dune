@@ -27,6 +27,12 @@ unused-import lint and final build pass. Three original final programme
 re-runs finish1,659/1,659/44 JSON; these duplicate profile/seeds are not
 added to18 original samples. CLI help and actual Tech two-seat rejection run.
 Protected deployment/full acceptance/comprehensive assurance remain due.
+Verified **c8a6d0bb3caa3a4e651a8153b085b6db4bde1fe6** pushed.
+[CI37345919728/container111884319700](https://github.com/Quintine/Dune/actions/runs/37345919728/job/111884319700)
+job completes successfully: isolated storage/HTTP7 before verified-image9.
+Exact build/own worker reload and fresh390px screenshots retain all three
+original QA outcomes/full c8a6d0b marker without document overflow; tabs closed.
+No protected NAS/operator/provider approval or live acceptance is claimed.
 
 ## 6 October 2026 — Original native Leader Skills and Discovery
 
