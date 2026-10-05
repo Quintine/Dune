@@ -34,11 +34,12 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
-function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassination = false): boolean {
+function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassination = false, discovery = false): boolean {
   return !!game.nexusCards && typeof game.advanced === 'boolean' &&
     !!game.players && game.players.length >= 2 && game.players.length <= 6 &&
-    !game.homeworlds && !game.discoveries && !game.discoveryEnabled &&
-    !game.discoveryStash && !game.greatMaker &&
+    !game.homeworlds &&
+    ((discovery && game.discoveryEnabled === true) ||
+      (!game.discoveries && !game.discoveryEnabled && !game.discoveryStash && !game.greatMaker)) &&
     (!game.techTokens || game.players.length >= 3) &&
     (!game.strongholdCards || game.advanced === true) &&
     !game.ecazTreachery && !game.semutaPreview &&
@@ -52,7 +53,7 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassinatio
 
 /** Fresh classic Nexus/Skills, with original Tech and Advanced Strongholds; native overlays stay separate. */
 export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game)) return false;
+  if (game.expansions.length || !nexusLeaderSkillModulesSupported(game, false, true)) return false;
   const players = game.players!;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;

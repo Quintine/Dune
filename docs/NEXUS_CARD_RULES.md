@@ -2,6 +2,34 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Original Discovery, classic Skills and paired natives — 6 October 2026
+
+The existing original fresh classic skill/Nexus entry additionally accepts
+`--discoveries`: base33/all14 actual offered training/all12/Discovery7/8,
+Basic/Advanced2–6, optional unused Tech3+ and Advanced Strongholds2+.
+The separate original `nexus --discoveries` entry admits both native
+Ixians+Tleilaxu/Ix47 OR CHOAM+Richese/CHOAM35/cache with classics, without
+Skills and with the same optional component prerequisites. Actual original
+actors, first hands, offers, native setup and phase handlers remain.
+Native combined Skills/Nexus/Discovery, E3/mixed families, HW/variants/previews,
+public starts and played-save conversion are not opened.
+
+This composes existing sourced effects; it adds no universal priority or
+new ruling. Original Maker losses/votes/typed reserve ride, both Advanced
+piles and settled alliance precede the actual **end-Spice** closing choice.
+Extra Emperor versus ordinary Fremen returns retain distinct quotas and
+original Axlotl activity. Training stays on physical discs through nested
+battle and cleanup/Tech. Native E1 typed losses and matching Face Dance
+retain original ordering. E2 signed two-marker Cunning keeps one printed
+tariff, original private caps/reserves and a currently revealed destination;
+no held card supplies another site's benefit or a free companion.
+
+[Combined canonical contract/proof](DISCOVERY_PROTOTYPE.md#classic-skillsnexus-and-paired-native-nexus-discovery--6-october-2026)
+records169 affected tests, types/lint/build, eighteen genuine original
+six-seat completions and three connected actual human programmes.
+These are bounded local implementation proofs, not complete modes,
+natural-every-effect, strategic AI, recovery or protected deployment acceptance.
+
 ## Classic Discovery / original Tech and Strongholds — 5 October 2026
 
 Fresh local `nexus --discoveries` now admits classic/base33/all12 Nexus and

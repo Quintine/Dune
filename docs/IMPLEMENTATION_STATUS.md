@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 6 October 2026 — Classic Skills/Nexus and paired native Nexus Discovery
+
+Fresh original classic base33/all14/all12 and separate paired E1/E2 no-Skills
+47/35/cache setups compose Discovery7/8, Basic/Advanced2–6, optional unused
+Tech3+/Advanced Strongholds2+. Exact existing family predicates, original
+constructors, actors/offers/starting hands and native setup remain.
+Source-clear revival quotas, training, typed aftermath and held effects stay
+shared. Richese Cunning keeps its signed one-tariff pair and current revealed
+destination. Native combined Skills/Nexus/Discovery, other overlays, public
+starts, conversion and unresolved rulings remain gated.
+
+Affected169/14files, types/lint and build pass. Genuine original eighteen
+six-seat samples finish13,576/13,576/359 JSON on unchanged7c65011d tree.
+New4800–5500 sample bands/full roster names leave old profiles/seeds/defaults
+unchanged. Original human BT4SBSLB16/Charity, BZNXHKMU19/Charity and
+RJF6D6ML24/Movement use connected CLI setups and actual controls: training,
+free entry, Maker6/2/2 casualties, storm-order votes, two-ordinary/one-Fedaykin
+free rides, both Advanced piles, reciprocal alliance and end-Spice closing
+deals. Native unplayed singleton ordering is explicitly controlled, not a
+natural-history claim. E2 human signed5/3 nested pair settles one fee
+Richese5→4/Guild3→4, original reserves19→14→11 and Shrine8, no second fee.
+[Canonical scope/proof](DISCOVERY_PROTOTYPE.md#classic-skillsnexus-and-paired-native-nexus-discovery--6-october-2026).
+Final constructor predicate reuse/live-guide union50, TypeScript, repaired
+unused-import lint and final build pass. Three original final programme
+re-runs finish1,659/1,659/44 JSON; these duplicate profile/seeds are not
+added to18 original samples. CLI help and actual Tech two-seat rejection run.
+Protected deployment/full acceptance/comprehensive assurance remain due.
+
 ## 6 October 2026 — Original native Leader Skills and Discovery
 
 One exact Discovery envelope feeds existing native family/roster predicates

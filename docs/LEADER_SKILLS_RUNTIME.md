@@ -5,6 +5,27 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Classic Nexus/Discovery composition — 6 October 2026
+
+The fresh original classic `leader-skills --nexus-cards --discoveries` entry
+retains base33/all14 offered training/all12 Nexus/Discovery7/8,
+Basic/Advanced2–6, optional unused Tech3+ and Advanced Strongholds2+.
+Original actors, hands, training and physical phase handlers remain.
+Actual Great Maker losses/votes/typed reserve rides, both Advanced piles and
+settled alliance precede the original end-Spice closing choice, not Mentat.
+Source-clear Emperor/Fremen free-return ledgers, original Axlotl settlement,
+skilled nested battle and mandatory original-winner Tech reuse existing rules.
+Native Skills/Nexus/Discovery, HW/variants/previews/public starts/conversion
+and unresolved effects remain guarded.
+
+[Canonical combined evidence](DISCOVERY_PROTOTYPE.md#classic-skillsnexus-and-paired-native-nexus-discovery--6-october-2026)
+records the169 affected union, eighteen genuine six-seat completions and three
+connected original human programmes. BT4SBSLB retains naturally offered
+Prana-Bindu Adept/Suk Graduate/Sandmaster, actual Cistern entry and six Guild
+Maker casualties through the human closing draw. The separate paired native
+Discovery/Nexus entries do not enable Skills. No complete all14/faction or
+protected deployment claim follows from this bounded composition.
+
 ## Original native Discovery composition — 6 October 2026
 
 Fresh native `leader-skills --discoveries` composes each already-supported

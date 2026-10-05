@@ -57,6 +57,7 @@ void test('Discovery Skills cannot silently drop unsupported native families or 
   assert.throws(() => initializeLeaderSkillsGameForAudit(unsupported), RuleError);
   const overlays = Array.from({ length: 5 }, () => lobby(['guild', 'emperor', 'harkonnen'], []));
   overlays[0].homeworlds = { custody: null };
+  overlays[1] = lobby(['ixians', 'tleilaxu', 'guild'], ['ix']);
   overlays[1].nexusCards = { cards: null, phase: null };
   overlays[2].advanced = false; overlays[2].strongholdCards = createStrongholdCards();
   overlays[3].mentatQuestionPreview = true;

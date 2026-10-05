@@ -17,6 +17,31 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Classic Skills/Nexus/Discovery and paired native Nexus/Discovery — bounded
+Development Verified:** original fresh classic base33/all14/all12 training
+and separate paired E1/E2 no-Skills47/35/cache setup retain Discovery7/8,
+Basic/Advanced2–6, optional Tech3+ and Advanced Strongholds2+.
+Actual Maker losses/votes/typed rides, both piles, settled alliances and
+end-Spice closing deals use original controls. Signed native nested markers
+retain their one-invoice/current-revealed-site/physical-reserve contract.
+Other overlays, native Skills/Nexus/Discovery, pending rulings, public starts
+and played-save conversion stay gated.
+
+Affected169, types/lint and build pass. All18 original six-seat samples complete:
+13,576 accepted/13,576 attempts/359 JSON on unchanged7c65011d working tree.
+Original human BT4SBSLB16/Charity retains natural training/Cistern3, six real
+Guild Maker losses and its original Fremen closing draw. BZNXHKMU19/Charity
+retains typed Shrine3/1Cyborg, two real Tleilaxu losses and native closing cards.
+RJF6D6ML24/Movement retains original setup, two CHOAM losses, native closing
+cards and actual signed No-Field5/3 Shrine8 settlement: Richese5→4/Guild3→4,
+reserves19→14→11, no second fee. All three actual rides use two ordinary/one
+Fedaykin free. Native undealt singleton ordering and controlled positions
+are explicit, not natural-history/every-effect or deployed acceptance.
+[Canonical combined evidence](DISCOVERY_PROTOTYPE.md#classic-skillsnexus-and-paired-native-nexus-discovery--6-october-2026).
+Final cached-constructor/live-guide union50, TypeScript/lint and final build
+pass; three final original programme re-runs complete1,659/1,659/44 JSON,
+not added to the18 unique profile/seed samples.
+
 **Native Leader Skills / Discovery — bounded Development Verified:**
 fresh supported native Basic/Advanced family predicates retain original
 decks, starting hands/offers/all14, Discovery7/8, optional Tech3+ and Advanced

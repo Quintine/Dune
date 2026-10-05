@@ -35,6 +35,83 @@ node --import tsx tools/start-prototype.ts --profile discovery --db PATH --room 
 It preserves all seats and other rooms, requires the current version and refuses
 to redeal a started game. The default `ix` profile remains available.
 
+## Classic Skills/Nexus and paired native Nexus Discovery — 6 October 2026
+
+Fresh classic `leader-skills --nexus-cards --discoveries` composes base33,
+all14 original offered training, all12 Nexus and Discovery7/8. The separate
+original `nexus --discoveries` entry additionally admits both Ixians+Tleilaxu
+with Ix47, or both CHOAM+Richese with CHOAM35/cache, plus classic opponents,
+without Skills. Both entries support Basic/Advanced2–6, optional unused
+Tech3+ and Advanced Strongholds2+. Original actors, starting hands, offers,
+native setup and printed component ownership are retained. Native combined
+Skills/Nexus/Discovery, E3/mixed Nexus families, Homeworlds, variants/previews,
+public starts, played-game conversion and pending rulings remain separate.
+
+`classicNexusLeaderSkillsProfile`, `pairedDiscoveryNexusProfile` and the
+existing original initializers own these exact envelopes. Ordinary skill
+quotes and source-clear Emperor/Fremen ledgers remain shared. Richese Cunning
+retains its original signed two-marker frame and one printed tariff; its
+current destination must still be a revealed room location. Neither a held
+Stronghold Card nor a selected marker grants a different nested site's benefit.
+
+Actual end-Mentat claims and next-turn free entry precede Storm. Actual Great
+Maker losses, storm-order votes and typed Fremen reserve rides precede settled
+alliances and the closing Nexus choice at the end of the **entire Spice Blow**,
+including both Advanced piles. No card is dealt at Maker reveal or Mentat.
+The classic programme also exercises actual offered training, distinct free
+revival quotas/Axlotl settlement, skilled nested battle cleanup and original
+winner Tech. Paired E1 retains typed losses and Tech before Face Dance; E2
+retains native declaration, private caps, CHOAM invoice and physical Cunning fuel.
+
+Semantic evidence: `discovery-classic-nexus-skills-runtime.test.ts`,
+`discovery-paired-nexus-runtime.test.ts` and their original fixture programmes.
+Affected union **169/169** across14 files and types/lint pass; build passes.
+The failed Advanced fixture had tried to reuse its already-discarded first-turn
+Rock Outcroppings. It now conserves an actually unplayed second printed land,
+without rewriting discard history. The native policy response uses the actual
+eligible Karama holder, not the generic fixture's unrelated first actor.
+Owning `LeaderSkillsView` supplies visibility; no concrete `ReturnType` contract.
+
+Eight distinct new sample profiles use new4800–5500 bands and full roster/
+expansion names, preserving old profiles/defaults/seeds:
+`discovery-nexus-skills`, `discovery-nexus-skills-tech`,
+`discovery-nexus-skills-stronghold`, `discovery-nexus-skills-stronghold-tech`,
+`paired-discovery-nexus`, `paired-discovery-nexus-tech`,
+`paired-discovery-nexus-stronghold`, `paired-discovery-nexus-stronghold-tech`.
+All **18** original six-seat samples complete: **13,576 accepted/13,576 attempts/
+359 JSON round trips**, unchanged working tree
+`7c65011da5664444d85e873d85a4a1fd06bb5f880db7038a678fe7b90289ef8a`.
+This is genuine original setup/continuation, not a natural-every-effect,
+complete-faction, strategic-AI or recovery certificate.
+
+Three new isolated human rooms preserve their original CLI setups:
+BT4SBSLB8→9 entry programme retains natural Prana-Bindu Adept, Suk Graduate
+and Sandmaster; human Cistern3 entry10, real Guild Maker losses6/vote11,
+human vote12/typed Fremen ride14, settled-alliance closing15 and human
+original Fremen draw16/Charity, deck12→11. BZNXHKMU10→11 retains original
+native setup: human Shrine2ordinary/1Cyborg entry12, actual Tleilaxu losses2,
+human vote14/typed ride16, closing17/actual native choices18–19/Charity.
+RJF6D6ML10→11 retains its original native starting hands: human Guild
+Shrine3 entry12, actual CHOAM losses2, vote14/typed ride16 and native closing
+choices18–19. Both native closing programmes explicitly reorder only their
+two **unplayed physical** singletons before actual draws; no held card is
+injected and this is not natural draw history.
+
+The E2 original continuation20 reaches real Richese timing. Human signed
+No-Field5/3 shipment into revealed Shrine21, Guild allowance22 and the actual
+Karama holder's allowance23 settle one invoice: Richese5→4, Guild3→4,
+five real reserves materialize. Native reveal24 materializes the other three,
+reserves19→14→11, Shrine8 and no second fee. All three human typed rides move
+two ordinary/one Fedaykin to Polar Sink free, reserves20→17.
+These are local working-tree controls, not protected live acceptance.
+
+Final constructor predicate reuse and live-guide union **50/50**, TypeScript,
+repaired unused-import lint and final build pass. The three original Advanced
+four-component samples re-run unchanged after that cutover:1,659/1,659/44 JSON.
+They are duplicate profile/seed re-runs, not additional unique samples in18.
+The original starter help runs, and the new paired Discovery/Tech two-seat
+request rejects with its existing three-through-six-seat prerequisite.
+
 ## Native Leader Skills composition — 6 October 2026
 
 Fresh explicit `leader-skills --discoveries` now preserves original native

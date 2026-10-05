@@ -1,6 +1,6 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, discoveryModeSupported, discoveryModuleProfile } from './discovery-module-profile';
+import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, discoveryModeSupported, discoveryModuleProfile, pairedDiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
@@ -9321,11 +9321,17 @@ export function initializePairedNexusGameForAudit(state: Game): Game {
       state.players.some(player => player.faction === 'ixians') &&
       state.players.some(player => player.faction === 'tleilaxu'))),
     'The paired Nexus sample requires both selected expansion factions and their deck.');
+  const discovery = state.discoveryEnabled === true && pairedDiscoveryNexusProfile(state);
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null &&
-    !state.homeworlds && !state.leaderSkills && !state.discoveryEnabled && !state.ecazTreachery &&
-    ((!state.techTokens && !state.strongholdCards) || pairedNexusModulesProfile(state)),
-    'Enable Nexus Cards with only supported unused paired E1/E2 Tech or Advanced Stronghold components.');
-  return initializeSetupGameForAudit(state, false, true, false, false, false, false, true);
+    !state.homeworlds && !state.leaderSkills && !state.ecazTreachery &&
+    (!state.discoveryEnabled || discovery) &&
+    ((!state.techTokens && !state.strongholdCards) || discovery || pairedNexusModulesProfile(state)),
+    'Enable Nexus Cards with only supported unused paired E1/E2 Discovery, Tech or Advanced Stronghold components.');
+  if (state.discoveryEnabled) {
+    requireFreshBaseRuntime(state);
+    requireFreshFactionInventory(state);
+  }
+  return initializeSetupGameForAudit(state, false, true, false, discovery, false, false, true);
 }
 
 /** Genuine opt-in auction source interruption; ordinary/public starts stay gated. */
@@ -9527,13 +9533,14 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   if (state.discoveryEnabled) {
-    requireRule(classicDiscoveryLeaderSkillsProfile(state) || nativeDiscoveryLeaderSkillsProfile(state), 'Discovery Leader Skills require a fresh supported classic or native lobby with optional original Tech or Advanced Strongholds and no unrelated overlays.');
+    requireRule(classicDiscoveryLeaderSkillsProfile(state) || nativeDiscoveryLeaderSkillsProfile(state) || classicNexusLeaderSkillsProfile(state), 'Discovery Leader Skills require a fresh supported classic or native lobby with optional original Nexus, Tech or Advanced Strongholds and no unrelated overlays.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g), true,
+  const classicNexus = classicNexusLeaderSkillsProfile(g);
+  const initialized = initializeSetupGameForAudit(g, false, classicNexus || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   if (nativeDiscoveryLeaderSkillsProfile(initialized) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
@@ -9574,7 +9581,8 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold || classicDiscoveryLeaderSkillsProfile(g));
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
   const discoveryComposition = discovery && (discoveryModuleProfile(g) ||
-    classicDiscoveryNexusProfile(g) || (leaderSkills && (classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g))));
+    classicDiscoveryNexusProfile(g) || pairedDiscoveryNexusProfile(g) ||
+    (leaderSkills && (classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || classicNexusLeaderSkillsProfile(g))));
   const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
     (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
@@ -25677,9 +25685,10 @@ const RICHESE_CUNNING_ROSTER: Partial<Record<FactionId, true>> = {
   beneGesserit: true, guild: true, richese: true, choam: true,
 };
 function richeseCunningModeSupported(g: Game) {
-  return !g.homeworlds && (!g.leaderSkills || pairedNexusLeaderSkillsProfile(g)) && !g.discoveryEnabled &&
-    !g.ecazTreachery && !g.sandtrout &&
-    g.players.every(player => RICHESE_CUNNING_ROSTER[player.faction] === true);
+  return pairedDiscoveryNexusProfile(g) ||
+    (!g.homeworlds && (!g.leaderSkills || pairedNexusLeaderSkillsProfile(g)) && !g.discoveryEnabled &&
+      !g.ecazTreachery && !g.sandtrout &&
+      g.players.every(player => RICHESE_CUNNING_ROSTER[player.faction] === true));
 }
 function nexusRicheseCunningOffer(g: Game, owner: string) {
   const p = g.players.find(player => player.id === owner);
@@ -25726,8 +25735,8 @@ function currentRichesePairShipment(g: Game, shipment: PendingShipment) {
   const cost = reserveShipmentCost({ faction: p.faction, halfRate: false },
     territory(shipment.territory).type, 1);
   requireRule(shipment.cost === cost && Number.isSafeInteger(shipment.sector) &&
-    territory(shipment.territory).sectors.includes(shipment.sector),
-    'Richese Cunning lost its original one-marker price or destination.');
+    validGameLocation(g, shipment.territory, shipment.sector),
+    'Richese Cunning lost its original one-marker price or currently revealed destination.');
   noFieldRule(() => validateRicheseNoFieldPair(p.noField!, {
     tokenId: shipment.noField!.tokenId,
     controller: p.id,

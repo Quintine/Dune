@@ -1,6 +1,6 @@
 import { FACTIONS } from './catalog';
 import type { FactionModuleProfile } from './faction-module-profile';
-import { classicDiscoveryNexusProfile } from './discovery-module-profile';
+import { classicDiscoveryNexusProfile, pairedDiscoveryNexusProfile } from './discovery-module-profile';
 
 /** Public classic configuration only; the initializer checks undealt physical components. */
 export function classicNexusModulesProfile(game: FactionModuleProfile): boolean {
@@ -28,6 +28,7 @@ export function classicNexusModulesProfile(game: FactionModuleProfile): boolean 
 
 /** Both original natives in one E1 or E2 family; mixed decks/families stay separate. */
 export function pairedNexusModulesProfile(game: FactionModuleProfile): boolean {
+  if (game.discoveryEnabled || game.discoveries) return pairedDiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || !game.nexusCards ||
     (!game.techTokens && !game.strongholdCards) || game.expansions.length !== 1 ||
     game.players.length < 2 || game.players.length > 6 ||

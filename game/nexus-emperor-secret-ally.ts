@@ -66,7 +66,7 @@ export function emperorNexusModeSupported(g: Game): boolean {
         p.faction,
       ),
     ) &&
-    (classicDiscoveryNexusProfile(g) ||
+    (classicDiscoveryNexusProfile(g) || (!!g.leaderSkills && classicNexusLeaderSkillsProfile(g)) ||
       (!g.homeworlds &&
         (!g.leaderSkills || classicNexusLeaderSkillsProfile(g)) &&
         !g.discoveryEnabled &&
