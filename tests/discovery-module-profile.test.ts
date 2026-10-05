@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createGame, initializeDiscoveryGameForAudit, joinGame, newPlayer, RuleError, type Game } from '../game/engine';
+import { createGame, initializeDiscoveryGameForAudit, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, RuleError, type Game } from '../game/engine';
 import type { FactionId } from '../game/catalog';
 import { createTechTokens } from '../game/tech-tokens';
 import { createStrongholdCards } from '../game/stronghold-cards';
@@ -50,4 +50,23 @@ void test('Discovery cannot redeal started components or silently remove another
   overlays[1].nexusCards = { cards: null, phase: null };
   overlays[2].strongholdCards = createStrongholdCards();
   for (const game of overlays) assert.throws(() => initializeDiscoveryGameForAudit(game), RuleError);
+});
+
+void test('classic Discovery Skills does not silently drop native families or unrelated modules and previews', () => {
+  const native = lobby(['ixians', 'guild', 'fremen'], ['ix']);
+  assert.throws(() => initializeLeaderSkillsGameForAudit(native), RuleError);
+  const overlays = Array.from({ length: 5 }, () => lobby(['guild', 'emperor', 'harkonnen'], []));
+  overlays[0].homeworlds = { custody: null };
+  overlays[1].nexusCards = { cards: null, phase: null };
+  overlays[2].strongholdCards = createStrongholdCards();
+  overlays[3].mentatQuestionPreview = true;
+  overlays[4].spiceBankerIncomePreview = true;
+  for (const game of overlays) assert.throws(() => initializeLeaderSkillsGameForAudit(game), RuleError);
+  const two = lobby(['guild', 'emperor'], []); two.techTokens = createTechTokens();
+  assert.throws(() => initializeLeaderSkillsGameForAudit(two), RuleError);
+});
+
+void test('Discovery Skills cannot replace already initialized Discovery components', () => {
+  const started = initializeDiscoveryGameForAudit(lobby(['guild', 'emperor', 'harkonnen'], []));
+  assert.throws(() => initializeLeaderSkillsGameForAudit(started), RuleError);
 });

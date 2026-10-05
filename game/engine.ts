@@ -1,6 +1,6 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { discoveryModeSupported, discoveryModuleProfile } from './discovery-module-profile';
+import { classicDiscoveryLeaderSkillsProfile, discoveryModeSupported, discoveryModuleProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
@@ -299,10 +299,12 @@ import {
   quoteBattlePhaseAdvance,
   BoardResolutionError,
   type AdvisorRelease,
+  type CollectionQuote,
 } from './board-resolution-quote';
 import {
   quoteDiscoveryCollection,
   DiscoveryCollectionError,
+  type DiscoveryCollectionQuote,
 } from './discovery-collection';
 import {
   quoteMovementCancellation,
@@ -9514,9 +9516,14 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
 /** Gated development setup; never dispatched by a player action or room route. */
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
+  if (state.discoveryEnabled) {
+    requireRule(classicDiscoveryLeaderSkillsProfile(state), 'Discovery Leader Skills require a fresh classic lobby with optional original Tech and no unrelated overlays.');
+    requireFreshBaseRuntime(state);
+    requireFreshFactionInventory(state);
+  }
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
-  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, false, true,
+  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, classicDiscoveryLeaderSkillsProfile(g), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;
@@ -9553,9 +9560,10 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const g = structuredClone(state);
   requireFreshSetup(g, homeworlds || nexus || ix || factions);
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
-  const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold);
+  const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold || classicDiscoveryLeaderSkillsProfile(g));
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
-  const discoveryComposition = discovery && discoveryModuleProfile(g);
+  const discoveryComposition = discovery && (discoveryModuleProfile(g) ||
+    (leaderSkills && classicDiscoveryLeaderSkillsProfile(g)));
   const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
     (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
@@ -18704,10 +18712,10 @@ function projectedGrummanCollection(g: Game, player: string) {
 }
 function commitCollection(
   g: Game,
-  quote: ReturnType<typeof quoteSpiceCollection>,
+  quote: CollectionQuote,
   canceled = false,
 ) {
-  let discovery: ReturnType<typeof quoteDiscoveryCollection>;
+  let discovery: DiscoveryCollectionQuote;
   try {
     discovery = quoteDiscoveryCollection(g, quote);
   } catch (error) {
@@ -18746,7 +18754,7 @@ function commitCollection(
     else
       log(
         g,
-        `${faction(p.faction).name} took ${effect.amount} spice from ${faction(getPlayer(g, effect.from).faction).name} through Orgiz Processing Station.`,
+        `${faction(p.faction).name} took ${effect.amount} spice from ${faction(getPlayer(g, effect.from).faction).name} through Orgiz Processing Station${g.advanced ? ' for collection in ' : ''}${g.advanced ? territory(splitLocation(effect.location).territory).name : ''}.`,
         { faction: p.faction, name: 'Orgiz Processing Station' },
       );
   }

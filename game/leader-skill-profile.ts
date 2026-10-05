@@ -1,4 +1,5 @@
 import { FACTIONS } from './catalog';
+import { classicDiscoveryLeaderSkillsProfile } from './discovery-module-profile';
 
 /** Public configuration only; never gate a skill on a hidden card or random deal. */
 export type LeaderSkillProfile = {
@@ -356,5 +357,6 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
-    pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game);
+    pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
+    classicDiscoveryLeaderSkillsProfile(game);
 }

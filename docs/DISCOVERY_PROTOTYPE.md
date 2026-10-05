@@ -118,6 +118,108 @@ not written; no reset, public activation, save conversion or deployed claim.
 
 
 
+## Classic Leader Skills and Advanced Orgiz — 5 October 2026
+
+An explicit fresh `leader-skills --discoveries` entry composes classic factions,
+the original base 33-card deck, all fourteen physical Leader Skills, seven
+Discovery Spice Cards and eight tokens. Basic/Advanced supports two through six
+seats; optional unused original Tech requires at least three. The existing
+skill-first choices, trained-disc posture and original faction setup remain.
+Native families, Nexus, Strongholds, Homeworlds and separate Banker/Mentat
+previews are not admitted by this particular entry. It does not redeal a
+previously initialized Discovery or upgrade a played game.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile leader-skills --discoveries --db PATH --room CODE --version NUMBER --out /private/new-directory
+node --import tsx tools/faction-games.ts --profile discovery-skills-tech --rules both --players 6 --out /private/new-directory
+```
+
+Physical next-turn entry spends neither the ordinary movement allowance nor
+spice and does not change the trained disc. Paid nested shipment retains its
+original invoice. Planetologist movement and the carried Discovery Ornithopter
+are separate alternatives: the latter replaces one movement with fixed range
+three rather than adding a skill modifier or action. Original Harkonnen
+eight-card capacity, owner-selected stash discard, normal/skilled Suk rescue
+and subsequent original Tech reward use existing producers. A distinct
+Bureaucrat holder may divert the printed two spice from an eligible five-spice
+single-payer shipment without changing the payer's invoice or physical arrival.
+Existing modified-defense, Atreides Suk/KH and private split-source guards remain.
+
+### Authorized Advanced Collection wording
+
+The supplied `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`, **physical page 24**,
+says Orgiz steals one collected spice **each time collection occurs in a
+territory containing spice**, rather than the publisher's older per-blow text.
+For Advanced, the quote maps an original territory's positive Collection to
+one transfer, even when multiple collected source keys identify the same
+unique rival payer. A different, missing, contested or shared payer withholds
+that territory's transfer; other territories and ordinary Collection proceed.
+An owner's own Collection is not theft. This is the explicit application of
+the authorized Advanced trigger, not a newly discovered publisher ruling on
+contested ownership or shared allocation.
+
+Basic retains its recorded provisional one-transfer-per-positive-deposit
+interpretation. The context requires its existing public `advanced` boolean:
+missing mode is not silently treated as either source. Effect `location`
+remains one actual deterministic collected key; Advanced notices name the
+territory. Original collected/desert facts, remaining map spice, bank-income
+prefix and already-paid phase continuations are not rewritten or replayed.
+
+Original programs with explicitly controlled, conserved counter/spice positions
+show one rival collecting five spice across three deposits in two territories:
+**Advanced transfers two; Basic transfers three**. These are controlled board
+positions, not naturally produced card history. The trained programme moves
+three actual Guild counters into Cistern free, then ships one additional
+reserve there for one spice, reaching four physical counters.
+
+Two genuine six-seat Basic/Advanced Skills+Discovery+Tech games finish
+**1,578 accepted / 1,578 attempted / 42 JSON continuations** on unchanged tree
+`946335ef77745f086cd9bd07bfa405c46c06785a3aae7a684a8e244ce2da4ee5`.
+That proves original continuation, not natural activation of every new effect,
+complete Skills/Discovery combinations or strategic calibration. Focused
+consumers live in `tests/discovery-orgiz-advanced-runtime.test.ts` and
+`tests/discovery-classic-skills-runtime.test.ts`; source cases remain in
+`tests/discovery-collection.test.ts`.
+
+### Actual human controls and targeted checks
+
+The frozen affected rule/control/reference union passes **75 cases**, with
+TypeScript/lint and the actual build. Named owner-defined quote/driver contracts
+replace newly encountered concrete-function return-type coupling.
+
+Actual fresh **PCDX5J8M v6** starts through the existing backed-up
+`leader-skills --discoveries` CLI at **v7/setup**. Guild's natural physical
+offers are Warmaster and Prana Bindu Adept; human assignment chooses Warmaster
+on Staban Tuek at **v8**. The subsequent original programme retains those
+already-dealt choices, controlling only four unplayed Spice Cards and the
+actual token lottery. Human Cistern inspection/reveal reaches **v10/v11** while
+the location remains empty.
+
+Six original phase actions expose turn-two entry at **v12**, before the storm.
+Human **Move 3 forces inside** reaches **v13**, preserves spice3/reserves12,
+movement0 and the existing shipment flag, and keeps Warmaster. Twenty-two
+original controls reach movement at **v14**: the three Cistern counters survive
+the storm and ordinary shipment is available. Human reserve shipment plus
+original Guild **Allow shipment** reach **v16**, spice **3→2**, reserves
+**12→11**, four Cistern counters and unchanged training. Refresh fits **390px**.
+
+Actual **FCVCEA3R v6** retains its authenticated Atreides/Guild/Fremen identities.
+Original setup/inspection/reveal and phase controls plus explicitly conserved
+counter/spice positions stop before the final movement ending at **v7**.
+Human **Finish shipment & movement** opens automatic Collection at **v8**:
+Guild's ordinary five collected spice remain factual; Atreides receives
+**11→13** and Guild's own view shows **10→8**, with two territory-labelled Orgiz
+notices. Ordinary Fremen stronghold income is still logged. Rival budgets remain
+masked in other seats; each balance was read from its own controlled QA seat.
+The expanded rule panel and footer show Advanced territory counting and pending
+mixed/contested limits. Refresh retains v8 at390px. Managed tabs released.
+
+Only these dedicated QA records were written. The failed throwaway attempt to
+wait in an empty Battle phase was corrected to stop before the original final
+movement ending: ordinary automation skips empty battles rather than adding a
+new confirmation. No clock, wallet, paid quote, public gate or existing-game
+conversion was fabricated.
+
 ## Connected behavior
 
 - **Great Maker:** ordinary worm consequences resolve first. Every faction then
@@ -221,12 +323,13 @@ the contested bonus. The publisher's [Ecaz & Moritani rulebook, page 13](https:/
 says an Orgiz occupant steals one spice of each collected blow. Its bundled
 Q&A does not define a stacked pile as one or several blows; searches of the
 publisher/designer and community rules pages found no explicit clarification.
-The bounded implementation treats each positive board deposit collected as one
-observable blow, transfers one spice from its unique collector, and does not
-take spice from the occupant itself. This is an inference, not an official
-ruling. Two fighters occupying Orgiz withhold all theft. An Ecaz shared lot
-with no assigned collector withholds theft from its entire territory; independent
-deposits elsewhere and ordinary collection proceed.
+Basic's bounded implementation treats each positive board deposit as one
+observable blow, transfers one spice from its unique collector and does not
+take spice from the occupant itself. That remains an inference, not an official
+ruling. Advanced now follows the supplied rulebook's territory-Collection
+trigger described above. Two fighters occupying Orgiz still withhold theft.
+An Ecaz shared lot or inconsistent collected payers withholds that territory's
+transfer; independent territories and ordinary Collection proceed.
 
 The Testing Station's two-occupant case leaves ordering and cumulative adjustment
 unresolved. The prototype opens only the sole-occupant path and continues an
@@ -316,8 +419,8 @@ The 187 opening saved rooms remain preserved; no server restart was needed.
 
 1. Resolve contested Cistern/Orgiz/Testing Station benefits, Ecaz shared-lot
    Orgiz allocation and Jacurutu's mixed physical dial allocation; complete
-   remaining controls and effects when settled. The per-collected-deposit
-   Orgiz interpretation remains provisional.
+   remaining controls and effects when settled. Basic's per-collected-deposit
+   Orgiz interpretation remains provisional; the Advanced count is source-cut over.
 2. Integrate combined modules and complete games, then refine interaction,
    strategy and presentation coverage before opening normal start gates.
 3. Use the existing prototype starter and saved-room verification for further

@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 5 October 2026 — Advanced Orgiz and classic Discovery Skills
+
+Authorized supplied Advanced p24 territory-Collection wording now groups actual
+positive source keys into one transfer per territory and unique foreign payer.
+Basic keeps the existing provisional deposit mapping. Mixed/shared/contested
+sources leave only their transfer unpaid; ordinary facts, bank prefix and
+already-paid continuation remain unchanged. No new publisher ruling is claimed.
+
+Explicit fresh classic `leader-skills --discoveries` preserves base33/all14
+Skills/Discovery7/8 and optional untouched Tech3–6, Basic/Advanced2–6.
+Original trained entry, nested tariff, independent Planetologist/fixed-three
+routes, Harkonnen stash capacity, Suk/Tech ordering and Bureaucrat5→bank2
+diversion reuse original consumers. Other overlays/native skill profiles and
+Banker/Mentat previews remain separate. No public activation or save conversion.
+
+Targeted rule/control/reference75, TypeScript/lint/build and actual programmes
+pass. Basic3 versus Advanced2 transfers preserve ordinary five-spice collection
+in controlled conserved positions. Two genuine six-seat games finish
+1,578/1,578/42 JSON on unchanged tree
+`946335ef77745f086cd9bd07bfa405c46c06785a3aae7a684a8e244ce2da4ee5`;
+no natural-every-effect claim. Newly encountered concrete-function return-type
+coupling uses named owner-defined CollectionQuote/DiscoveryCollectionQuote/
+SkillsTechBattleStep contracts.
+
+Actual PCDX5J8M CLIv7, natural human Warmaster/Stabanv8, Cistern inspect/reveal
+v10/v11 and three-counter free entryv13 preserve training/resources. Original
+protected turn-two continuationv14 permits a one-force paid shipment; human
+Guild allowancev16 gives spice3→2/reserves12→11/four Cistern counters. Refresh390px.
+Actual FCVCEA3R final movement endingv8 automatically collects five and transfers
+two: owner11→13/payer-own-view10→8, two territorial notices and bank prefix intact.
+The failed throwaway empty-Battle wait was corrected to the original automatic
+phase path, not a new confirmation. Tabs released; no unrelated game write.
+
+[Canonical source/control evidence](DISCOVERY_PROTOTYPE.md#classic-leader-skills-and-advanced-orgiz--5-october-2026).
+Complete combinations, pending contested/shared/mixed rulings, assurance and
+deployed acceptance remain open.
+
 ## 5 October 2026 — native Discovery with original Tech
 
 Fresh classic, selected E1/E2 and standalone Ecaz OR Moritani Discovery entry

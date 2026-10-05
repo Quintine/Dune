@@ -18,6 +18,7 @@ type DiscoveryCollectionSeat = Pick<Player, 'id' | 'faction' | 'advisors'> &
   ForcePresence;
 
 export type DiscoveryCollectionContext = MobileBoard & {
+  advanced: boolean;
   order: readonly string[];
   players: readonly DiscoveryCollectionSeat[];
   /** Deposits before ordinary collection. */
@@ -101,15 +102,58 @@ function occupants(
   );
 }
 
+/** Public effective presence only; an ambiguous source cannot identify a payer. */
+function collectorAt(
+  context: DiscoveryCollectionContext,
+  key: string,
+  released: readonly AdvisorRelease[],
+): DiscoveryCollectionSeat | undefined {
+  const { territory, sector } = splitLocation(key);
+  let collector: DiscoveryCollectionSeat | undefined;
+  for (const player of context.players) {
+    if (!isCollectingFighter(player, territory, released)) continue;
+    const marker = player.noField?.deployed?.location;
+    if (
+      (player.forces[key] ?? 0) <= 0 &&
+      !(marker?.territory === territory && marker.sector === sector)
+    ) continue;
+    if (collector) return undefined;
+    collector = player;
+  }
+  return collector;
+}
+
+function transferOrgiz(
+  key: string,
+  collector: DiscoveryCollectionSeat | undefined,
+  ownerReceipt: DiscoveryBaseCollectionReceipt,
+  receipts: DiscoveryBaseCollectionReceipt[],
+  effects: DiscoveryCollectionQuote['effects'],
+) {
+  if (!collector || collector.id === ownerReceipt.player) return;
+  const collectorReceipt = receipts.find(entry => entry.player === collector.id)!;
+  requireCollection(
+    collectorReceipt.balance >= 1 &&
+      Number.isSafeInteger(ownerReceipt.balance + 1),
+    'Orgiz theft would invalidate a player spice balance.',
+  );
+  collectorReceipt.balance -= 1;
+  ownerReceipt.balance += 1;
+  effects.push({
+    kind: 'orgiz', player: ownerReceipt.player, from: collector.id,
+    location: key, amount: 1, source: 'player',
+  });
+}
+
 /**
  * Compose sole-occupant Cistern income and a bounded Orgiz transfer over the
  * canonical ordinary collection quote. The ordinary `collected` and `desert`
  * fields remain factual: Cistern is bank income; Orgiz transfers player spice.
  *
- * The publisher does not specify whether a stacked physical pile is one or
- * several blows. One positive collected board deposit is treated as one
- * observable blow. Contested location benefits and unresolved shared lots
- * withhold only their uncertain effect; they never block ordinary collection.
+ * Advanced uses the authorized revised rulebook's territory Collection event;
+ * Basic retains the provisional one-positive-deposit interpretation. Contested
+ * sources, different territory payers and shared lots withhold only their
+ * uncertain effect; they never block ordinary collection.
  */
 export function quoteDiscoveryCollection(
   context: DiscoveryCollectionContext,
@@ -117,6 +161,7 @@ export function quoteDiscoveryCollection(
 ): DiscoveryCollectionQuote {
   requireCollection(
     record(context) &&
+      typeof context.advanced === 'boolean' &&
       Array.isArray(context.players) &&
       context.players.length > 0 &&
       Array.isArray(context.order) &&
@@ -225,49 +270,30 @@ export function quoteDiscoveryCollection(
   if (orgiz.length === 1) {
     const owner = orgiz[0];
     const ownerReceipt = receipts.find((entry) => entry.player === owner.id)!;
+    const transfers = context.advanced
+      ? new Map<string, { location: string; collector: DiscoveryCollectionSeat | undefined }>()
+      : undefined;
     for (const key of sourceKeys) {
       if (context.spice[key] <= collection.spice[key]) continue;
-      const { territory, sector } = splitLocation(key);
+      const { territory } = splitLocation(key);
       if (
         collection.shared.some(
           (lot) => lot.amount > 0 && lot.territory === territory,
         )
       ) continue;
-      let collector: DiscoveryCollectionSeat | undefined;
-      let contested = false;
-      for (const player of context.players) {
-        if (!isCollectingFighter(player, territory, collection.released)) continue;
-        const marker = player.noField?.deployed?.location;
-        if (
-          (player.forces[key] ?? 0) <= 0 &&
-          !(marker?.territory === territory && marker.sector === sector)
-        ) continue;
-        if (collector) {
-          contested = true;
-          break;
-        }
-        collector = player;
+      const collector = collectorAt(context, key, collection.released);
+      if (!transfers) {
+        transferOrgiz(key, collector, ownerReceipt, receipts, effects);
+        continue;
       }
-      if (contested || !collector || collector.id === owner.id) continue;
-      const collectorReceipt = receipts.find(
-        (entry) => entry.player === collector.id,
-      )!;
-      requireCollection(
-        collectorReceipt.balance >= 1 &&
-          Number.isSafeInteger(ownerReceipt.balance + 1),
-        'Orgiz theft would invalidate a player spice balance.',
-      );
-      collectorReceipt.balance -= 1;
-      ownerReceipt.balance += 1;
-      effects.push({
-        kind: 'orgiz',
-        player: owner.id,
-        from: collector.id,
-        location: key,
-        amount: 1,
-        source: 'player',
-      });
+      const pending = transfers.get(territory);
+      if (!pending) transfers.set(territory, { location: key, collector });
+      else if (pending.collector?.id !== collector?.id)
+        pending.collector = undefined;
     }
+    if (transfers)
+      for (const pending of transfers.values())
+        transferOrgiz(pending.location, pending.collector, ownerReceipt, receipts, effects);
   }
 
   return { receipts, effects };

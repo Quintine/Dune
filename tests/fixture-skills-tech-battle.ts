@@ -9,6 +9,8 @@ import { TERRITORIES } from '../game/board';
 import type { Card } from '../game/cards';
 import { nextSpiceBankerIncomeNativeStep } from './fixture-spice-banker-income';
 
+export type SkillsTechBattleStep = { actor: string; action: Action };
+
 export type SkillsTechBattleOptions = {
   /** A fresh authenticated, undealt classic lobby; its seat IDs are retained. */
   initial?: Game;
@@ -63,7 +65,7 @@ function withSkillOffer<T>(skill: SkillsTechBattleFixture['skill'], slot: number
 }
 
 /** Native policy, with deliberate no-call/no-spend decisions at original windows. */
-export function nextSkillsTechBattleStep(game: Game): { actor: string; action: Action } {
+export function nextSkillsTechBattleStep(game: Game): SkillsTechBattleStep {
   if (game.decision?.kind === 'battleCards')
     return { actor: game.decision.player, action: { type: 'decision', discard: [] } };
   if (game.decision?.kind === 'techToken')

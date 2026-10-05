@@ -55,6 +55,8 @@ export type PrototypeOptions = {
   mentatQuestion?: boolean;
   /** Independent classic Nexus/Skills composition, not a public activation. */
   nexusCards?: boolean;
+  /** Explicit classic Discovery/Skills composition, not a public activation. */
+  discoveries?: boolean;
 };
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
   return PROTOTYPE_PROFILES.some((profile) => profile === value);
@@ -100,10 +102,13 @@ export function startPrototypeRoom(
     throw new Error('--mentat-question requires the leader-skills profile.');
   if (options.nexusCards && profile !== 'leader-skills')
     throw new Error('--nexus-cards requires the leader-skills profile.');
+  if (options.discoveries && profile !== 'leader-skills')
+    throw new Error('--discoveries requires the leader-skills profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if (options.mentatQuestion) initial.mentatQuestionPreview = true;
   if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)
     initial.nexusCards = { cards: null, phase: null };
+  if (options.discoveries) initial.discoveryEnabled = true;
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)

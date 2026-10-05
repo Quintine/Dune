@@ -22,7 +22,7 @@ const tokenRules: Record<DiscoveryTokenFace, string> = {
   ornithopter: 'Take this token. On a later turn, you may spend it to move up to three territories instead of your usual allowance for one movement action. Remove the token after that action.',
 };
 
-function DiscoveryRules({ face }: { face: DiscoveryTokenFace }) {
+function DiscoveryRules({ face, advanced }: { face: DiscoveryTokenFace; advanced: boolean }) {
   const definition = DISCOVERY_TOKEN_BY_ID[face];
   return (
     <details className="rounded-lg border border-[#a88b60]/40 bg-[#171d18]">
@@ -30,7 +30,9 @@ function DiscoveryRules({ face }: { face: DiscoveryTokenFace }) {
         Read {definition.name} rules
       </summary>
       <div className="space-y-3 border-t border-[#a88b60]/40 px-3 py-4 text-base leading-7 text-[#eee5d2]">
-        <p>{tokenRules[face]}</p>
+        <p>{face === 'orgiz-processing-station' && advanced
+          ? 'During Spice Collection, an occupant takes one of the collected spice each time collection occurs in a territory containing spice.'
+          : tokenRules[face]}</p>
         {definition.kind === 'location' && (
           <>
             <p>This location is a separate territory inside the surrounding territory. Revealing it leaves it empty. Normal ground movement enters the surrounding territory before entering the location; shipment uses stronghold prices.</p>
@@ -79,7 +81,7 @@ export function DiscoveryPanel({ game, act, busy }: Props) {
                 </div>
               </div>
               {token.territory && <p>In {territory(token.territory).name} · sector {token.sector}</p>}
-              {token.face && <DiscoveryRules face={token.face} />}
+              {token.face && <DiscoveryRules face={token.face} advanced={game.advanced} />}
               {(inspect || reveal) && (
                 <div className="flex flex-wrap gap-2">
                   {inspect && <Button className="game-action min-h-11 whitespace-normal" disabled={disabled}
@@ -92,7 +94,9 @@ export function DiscoveryPanel({ game, act, busy }: Props) {
           );
         })}
       </div>
-      <p className="fine">Inspection and reveal are optional. Next-turn free entry, sole-occupant Cistern income and later-turn Ornithopter movement are available in the development prototype. Jacurutu income, Testing Station storm choices and Shrine card conversion are prototyped. A sole Orgiz occupant takes one spice per board deposit collected by a rival. Contested Orgiz, unresolved Ecaz shared lots, mixed-force Jacurutu rewards and contested Cistern/Testing Station benefits remain pending.</p>
+      <p className="fine">Inspection and reveal are optional. Next-turn free entry, sole-occupant Cistern income and later-turn Ornithopter movement are available in the development prototype. Jacurutu income, Testing Station storm choices and Shrine card conversion are prototyped. {game.advanced
+        ? 'A sole Orgiz occupant takes one spice for each territory where one rival collected board spice.'
+        : 'Basic keeps the provisional one-spice transfer per positive board deposit collected by one rival.'} Contested Orgiz, different or shared collectors, mixed-force Jacurutu rewards and contested Cistern/Testing Station benefits remain pending; uncertain transfers do not block ordinary Collection.</p>
     </section>
   );
 }

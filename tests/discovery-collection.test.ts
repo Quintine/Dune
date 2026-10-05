@@ -11,7 +11,10 @@ import {
 import {
   CISTERN,
   ORGIZ_PROCESSING_STATION,
+  DiscoveryCollectionError,
   quoteDiscoveryCollection,
+  type DiscoveryCollectionContext,
+  type DiscoveryCollectionQuote,
 } from '../game/discovery-collection';
 import {
   applyAction,
@@ -75,7 +78,7 @@ function composed(game: Game) {
 }
 
 function balance(
-  quote: ReturnType<typeof quoteDiscoveryCollection>,
+  quote: DiscoveryCollectionQuote,
   player: string,
 ) {
   return quote.receipts.find((receipt) => receipt.player === player)!.balance;
@@ -151,7 +154,7 @@ void test('Cistern follows Collection advisor releases and excludes remaining ad
   ]);
 });
 
-void test('the bounded Orgiz quote transfers one spice from each uniquely collected observable board deposit', () => {
+void test('Basic Orgiz retains one spice from each uniquely collected observable board deposit', () => {
   const game = fixture();
   reveal(game, ORGIZ_PROCESSING_STATION);
   game.players[0].forces = {
@@ -205,7 +208,7 @@ void test('the bounded Orgiz quote transfers one spice from each uniquely collec
   assert.deepEqual(quoteSpiceCollection(game), ordinary);
 });
 
-void test('one rival pays once per collected pile, not once per player or stacked spice amount', () => {
+void test('Basic charges one rival per collected pile, not per player or stacked spice amount', () => {
   const game = fixture();
   reveal(game, ORGIZ_PROCESSING_STATION);
   game.players[0].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
@@ -409,7 +412,7 @@ void test('the real collection phase credits Cistern once and preserves the rece
   );
 });
 
-void test('a revealed sole Orgiz occupant steals one from each rival collected deposit in Basic and Advanced', () => {
+void test('a revealed sole Orgiz occupant steals once from each rival territory with one deposit in either mode', () => {
   for (const advanced of [false, true]) {
     const game = fixture(advanced);
     game.discoveryEnabled = true;
@@ -532,4 +535,122 @@ void test('a saved Ecaz response commits Cistern once only after the collection 
     collected.log.filter((entry) => entry.automatic?.name === 'Cistern').length,
     1,
   );
+});
+
+void test('Advanced counts each territory once across positive partial sector collections; Basic retains both deposits', () => {
+  for (const advanced of [false, true]) {
+    const game = fixture(advanced);
+    reveal(game, ORGIZ_PROCESSING_STATION);
+    game.players[0].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1, 'red_chasm:7': 1 };
+    game.players[1].forces = { 'hagga_basin:12': 1, 'hagga_basin:13': 1, 'cielago_south:3': 1 };
+    game.spice = {
+      'hagga_basin:12': 8, 'hagga_basin:13': 1, 'cielago_south:3': 3,
+      'red_chasm:7': 2, 'cielago_south:2': 4, 'funeral_plain:15': 0,
+    };
+    const before = structuredClone(game);
+    const { ordinary, discovery } = composed(game);
+    assert.deepEqual(ordinary.spice, {
+      'hagga_basin:12': 6, 'hagga_basin:13': 0, 'cielago_south:3': 1,
+      'red_chasm:7': 0, 'cielago_south:2': 4, 'funeral_plain:15': 0,
+      [`${ORGIZ_PROCESSING_STATION}:0`]: 0,
+    });
+    assert.deepEqual(discovery.effects.map(effect =>
+      effect.kind === 'orgiz' ? [effect.from, effect.location] : effect.kind),
+    advanced
+      ? [['h', 'cielago_south:3'], ['h', 'hagga_basin:12']]
+      : [['h', 'cielago_south:3'], ['h', 'hagga_basin:12'], ['h', 'hagga_basin:13']]);
+    const count = advanced ? 2 : 3;
+    assert.equal(balance(discovery, 'a'), ordinary.receipts[0].balance + count);
+    assert.equal(balance(discovery, 'h'), ordinary.receipts[1].balance - count);
+    assert.deepEqual(discovery.receipts.map(({ balance: _, ...facts }) => facts),
+      ordinary.receipts.map(({ balance: _, ...facts }) => facts));
+    assert.equal(discovery.receipts.reduce((sum, receipt) => sum + receipt.balance, 0),
+      ordinary.receipts.reduce((sum, receipt) => sum + receipt.balance, 0));
+    assert.deepEqual(game, before);
+  }
+});
+
+void test('Advanced withholds a territory with distinct collected payers, including an own collection, but not independent theft', () => {
+  for (const second of ['a', 'g']) {
+    const game = fixture(true);
+    reveal(game, ORGIZ_PROCESSING_STATION);
+    game.players[0].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
+    game.players[1].forces = { 'hagga_basin:12': 1, 'red_chasm:7': 1 };
+    game.players.find(player => player.id === second)!.forces['hagga_basin:13'] = 1;
+    game.spice = { 'hagga_basin:12': 3, 'hagga_basin:13': 2, 'red_chasm:7': 2 };
+    const { ordinary, discovery } = composed(game);
+    assert.deepEqual(discovery.effects, [{
+      kind: 'orgiz', player: 'a', from: 'h', location: 'red_chasm:7',
+      amount: 1, source: 'player',
+    }]);
+    assert.equal(balance(discovery, 'a'), ordinary.receipts[0].balance + 1);
+    assert.equal(balance(discovery, 'h'), ordinary.receipts[1].balance - 1);
+    assert.equal(balance(discovery, 'g'), ordinary.receipts[2].balance);
+    assert.equal(ordinary.spice['hagga_basin:13'], 0);
+  }
+});
+
+void test('Advanced does not select a payer from an uncontested sector when another collected sector is contested', () => {
+  const game = fixture(true);
+  reveal(game, ORGIZ_PROCESSING_STATION);
+  game.players[0].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
+  game.players[1].forces = { 'hagga_basin:12': 1, 'hagga_basin:13': 1, 'red_chasm:7': 1 };
+  game.players[2].forces = { 'hagga_basin:13': 1 };
+  game.spice = { 'hagga_basin:12': 4, 'hagga_basin:13': 4, 'red_chasm:7': 2 };
+  const { ordinary, discovery } = composed(game);
+  assert.equal(ordinary.spice['hagga_basin:12'], 2);
+  assert.equal(ordinary.spice['hagga_basin:13'], 0);
+  assert.deepEqual(discovery.effects, [{
+    kind: 'orgiz', player: 'a', from: 'h', location: 'red_chasm:7',
+    amount: 1, source: 'player',
+  }]);
+  assert.equal(balance(discovery, 'g'), ordinary.receipts[2].balance);
+});
+
+void test('Advanced shared territories remain unpaid across all their source keys while independent Collection proceeds', () => {
+  const game = fixture(true, [['e', 'ecaz'], ['a', 'atreides'], ['g', 'guild']]);
+  reveal(game, ORGIZ_PROCESSING_STATION);
+  game.players[0].ally = 'a';
+  game.players[1].ally = 'e';
+  game.players[0].forces = { 'hagga_basin:12': 1, 'red_chasm:7': 1 };
+  game.players[1].forces = { 'hagga_basin:13': 1 };
+  game.players[2].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
+  game.spice = { 'hagga_basin:12': 4, 'hagga_basin:13': 4, 'red_chasm:7': 2 };
+  const { ordinary, discovery } = composed(game);
+  assert.deepEqual(ordinary.shared, [{ territory: 'hagga_basin', ecaz: 'e', ally: 'a', amount: 4 }]);
+  assert.deepEqual(discovery.effects, [{
+    kind: 'orgiz', player: 'g', from: 'e', location: 'red_chasm:7',
+    amount: 1, source: 'player',
+  }]);
+  assert.equal(balance(discovery, 'e'), 1);
+  assert.equal(balance(discovery, 'g'), 1);
+});
+
+void test('Advanced retains public effective No-Field presence for the Orgiz occupant and collected source', () => {
+  const game = fixture(true, [['r', 'richese'], ['h', 'harkonnen']]);
+  reveal(game, ORGIZ_PROCESSING_STATION);
+  game.players[0].noField = {
+    deployed: { location: { territory: ORGIZ_PROCESSING_STATION, sector: 0 } },
+  } as NonNullable<Game['players'][number]['noField']>;
+  game.players[1].forces = { 'hagga_basin:12': 1 };
+  game.spice = { 'hagga_basin:12': 2 };
+  assert.equal(composed(game).discovery.effects.length, 1);
+  game.players[0].noField!.deployed!.location = { territory: 'hagga_basin', sector: 13 };
+  game.players[1].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
+  game.spice = { 'hagga_basin:12': 2, 'hagga_basin:13': 4 };
+  const { ordinary, discovery } = composed(game);
+  assert.equal(ordinary.spice['hagga_basin:13'], 2);
+  assert.deepEqual(discovery.effects, [{
+    kind: 'orgiz', player: 'h', from: 'r', location: 'hagga_basin:13',
+    amount: 1, source: 'player',
+  }]);
+});
+
+void test('Discovery Collection requires an explicit mode rather than treating missing Advanced as authoritative', () => {
+  const game = fixture(true);
+  const ordinary = quoteSpiceCollection(game);
+  const { advanced: _, ...missingMode } = game;
+  assert.throws(() => quoteDiscoveryCollection(
+    missingMode as unknown as DiscoveryCollectionContext, ordinary,
+  ), DiscoveryCollectionError);
 });

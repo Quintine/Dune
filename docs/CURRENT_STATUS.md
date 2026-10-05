@@ -17,6 +17,42 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Advanced Orgiz / classic Discovery Skills — bounded Development Verified:**
+the supplied Advanced rulebook p24 uses a territory-Collection trigger.
+Advanced transfers one collected spice per territory with a unique rival payer;
+Basic keeps the provisional per-positive-deposit interpretation. Shared,
+contested or inconsistent payers withhold only uncertain transfers. Original
+bank income, collected/desert facts and paid continuations remain.
+
+Fresh explicit `leader-skills --discoveries` composes classic/base33/all14
+Skills with Discovery7/8, optional original Tech3–6, Basic/Advanced2–6.
+Trained physical entry, original nested invoices, separate Planetologist/fixed3
+movement, Harkonnen8-card stash, Suk rescue/Tech reward and distinct-party
+Bureaucrat diversion use original controls and four minimal legal policies.
+Native skill families, Nexus/Strongholds/HW and Banker/Mentat previews stay
+outside this entry; no public start or played-game conversion.
+
+Affected rule/control/reference **75 cases**, types/lint/build and actual
+programmes pass. Two genuine six-seat Basic/Advanced Tech games finish
+**1,578 accepted / 1,578 attempts / 42 JSON** on unchanged946335ef tree.
+Counts prove continuation, not natural activation of every new effect.
+
+Actual **PCDX5J8M** CLI starts v7; human natural Warmaster/Staban assignment v8.
+Human Cistern inspect/reveal v10/v11 keeps it empty; original turn-two entry v12,
+human three-counter entry **v13** costs no spice/reserves/movement. Atv14 the
+protected counters survive and ordinary shipment is available. Original human
+one-force shipment/Guild allowance reach **v16**, spice3→2/reserves12→11,
+four Cistern counters and unchanged Warmaster; refresh fits390px.
+
+Actual **FCVCEA3R** final movement ending opens **v8/Collection** automatically.
+Controlled conserved positions collect5 across three deposits/two territories:
+owner11→13/payer's own view10→8; two named-territory notices preserve bank
+income and ordinary facts. Expanded Advanced guidance/refresh fit390px.
+Tabs released; no unrelated record was written.
+[Source, prototype bounds and evidence](DISCOVERY_PROTOTYPE.md#classic-leader-skills-and-advanced-orgiz--5-october-2026).
+Full combinations, pending rulings, assurance and deployed acceptance remain.
+
+
 **Native Discovery / optional original Tech — bounded Development Verified:**
 fresh classic, selected E1/E2 or standalone Ecaz OR Moritani Basic/Advanced
 profiles retain original setup, decks/cache, seven Discovery Spice Cards and
