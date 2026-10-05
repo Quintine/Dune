@@ -45,6 +45,15 @@ Refresh fits390px. No reset/secret/public/save-conversion or Duke permission.
 [Exact source/runtime evidence](HOMEWORLD_RULES.md#printed-high-ecaz-alliance-victory--5-october-2026).
 Full Homeworlds/overlays, pending Basic/CHOAM/Duke, assurance and deployment remain.
 
+Exact code **17bc4537c3de7f40a0c7802c6530e7ed3a45ba02** is pushed.
+[CI37260419689](https://github.com/Quintine/Dune/actions/runs/37260419689) /
+container111606286541 succeeds isolated storage/HTTP7 before verified-image9.
+Final119 source/consumer/guide cases, types/lint and exact pushed build pass.
+Preserved S8N26ADW **v25/Mentat/finished** shows **17bc453** at390px, actual
+Ecaz+Guild winners, ordinaryqualifiesfalse/sourcequalifiestrue. Tab released.
+Publication is not deployment; protected NAS prerequisites remain unchanged.
+
+
 **Occupied Tupile slots / normal-limit cleanup — bounded Development Verified:**
 fresh native CHOAM/Homeworld entries alone initialize the source marker/ledger;
 older occupation profiles remain unchanged. One validated slot per occupier/

@@ -29,6 +29,15 @@ subset issues correctedwithoutweakeninggameguards. Privateproof outsideGit.
 No reset/public/saveconversion/Dukecutover; fullmodes, pendingrulings anddeployment
 remainopen.
 
+Exact code **17bc4537c3de7f40a0c7802c6530e7ed3a45ba02** is pushed.
+[CI37260419689](https://github.com/Quintine/Dune/actions/runs/37260419689) /
+container111606286541 succeeds mandatory isolated storage/HTTP7 before
+verified-image9. Final119 source/consumer/guide cases, types/lint/exact pushed
+build pass. S8N26ADW v25/Mentat/finished shows **17bc453** at390px with actual
+Ecaz+Guild and separate ordinaryfalse/sourceTrue. Tab released; no deployed/
+reset/privilege or NAS safe-point bypass claim.
+
+
 ## 5 October 2026 — occupied Tupile capacity, original cleanup and low authority
 
 Fresh native CHOAM/Homeworld audit setup alone marks Tupile slots and the original
