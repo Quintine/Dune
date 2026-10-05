@@ -2,6 +2,39 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Original Discovery composition — 5 October 2026
+
+Fresh original `discovery` entry preserves selected unused Strongholds6 in
+Advanced2–6 classic/supported E1/E2/standalone E3, with optional Tech3–6.
+The separate classic `leader-skills --discoveries` entry preserves
+base33/all14/Discovery7/8 and the same original Advanced Strongholds/Tech.
+The supplied authorized source physical21 permits variants together; this
+bounded entry does not open every unresolved interaction or public mode.
+
+Original first end-Mentat ownership is required. Benefits stay in the held
+card's named territory or the actual HMS copy; Cistern/Shrine and other
+revealed nested sites do not inherit another site's defense or support.
+Jacurutu adds a stronghold victory location, not a seventh physical card.
+Free entry, paid nested forces/markers, native typed casualties, trained
+rescue and original cleanup/Tech/Face Dance retain their existing source
+identities. No held receipt or paid result is injected to grant an advantage.
+
+Basic Strongholds, native Discovery skill families, Homeworlds, independent
+variants/previews, pending rules, public starts and save conversion remain
+separate. Existing Nexus/Discovery/Strongholds is unchanged. The
+[Discovery contract](DISCOVERY_PROTOTYPE.md#original-advanced-stronghold-composition--5-october-2026)
+records the original CLI and genuine-runner entries and bounded evidence.
+
+Affected77 and post-repair coalition39, types/lint/build and actual programmes
+pass. Phone UWEH7WNBv14 retains natural Smuggler/held Arrakeen/four paid/free
+Cistern counters. Native4LBU44PTv21 records human HMS copy/support3/bank2/
+own1, actual CHOAM income1, three physical Cyborg losses, protected Shrine4/
+two Cyborgs and original Production winner transfer. The five completed
+genuine six-seat samples include one actual mandatory Ecaz repair/resume;
+the sixth Richese sample remains at the existing exhausted-cache ruling.
+Counts, source trees, conserved staging and390px refresh are recorded in the
+linked contract; these proofs do not certify complete modules or deployment.
+
 ## Native Tech composition without Skills — 4 October 2026
 
 Fresh Advanced `stronghold-factions` may preserve original unused Tech Tokens

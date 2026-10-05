@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 5 October 2026 — Original Discovery Strongholds and mandatory Ecaz repair
+
+Fresh original Discovery classic/E1/E2/standalone E3 and separate classic
+Skills/Discovery entries retain canonical unused Advanced Strongholds2–6,
+optional Tech3–6 and actual end-Mentat claims. Source-local benefits compose
+original entry/tariffs, trained rescue, typed Cyborg/CHOAM invoice and nested
+No-Field materialization/poison defeat. No nested defense/subsidy inheritance
+or seventh physical Jacurutu card is created. Other profiles/rulings/public
+starts and save conversion stay separate.
+
+Affected77 pass. The genuine Ecaz sample's mandatory combined battle exposed
+the old module guard: two meaningful original cases fail before repair and
+pass after. Related39, final types/lint/build and actual rule programmes pass.
+Original Ecaz5/Guild4 loses3 per owner; Ecaz's bank2/own1 is not lent to a
+Guild-led own3 plan. The existing room-local board primitive already admits
+nested structural keys; an inferred extra validator repair was withdrawn.
+Named SukRescueOption fixes a TypeScript recursive-inference boundary without
+concrete ReturnType coupling. Removed incidental action-trace/default pins.
+
+Four initial genuine six-seat samples complete on b2d64215 tree. Original
+Ecaz seed20265041 after616 accepted is preserved and resumes557/no rejection/
+15 JSON on9ded0847. Five completed samples total3,096/3,097/81 JSON across
+two trees; resume does not reconstruct the prior stream. Sixth Richese sample
+seed20265033 remains captured atturn10/richeseBlackMarket after1,639 accepted/
+1,640 attempts/44 JSON on existing exhausted-cache normal-count ruling.
+No fake source remedy or rerun to confirm.
+
+Actual UWEH7WNB original CLIv8, natural Smuggler, human held claimv10,
+free-entryv11 and paid shipment/Guild allowancev13/v14 retain Arrakeen,
+Cistern4/spice2/reserves15. Native4LBU44PT CLIv8, typed free-entryv10,
+paid shipment/income allowancev12–14, original HMS copyv16/plansv17–18,
+Traitor declinesv19–20 and casualty keepv21 leave HMS3/no Cyborg,
+Shrine4/two Cyborgs/spice3, CHOAM income1 and original Production winner
+transfer. Both390px refresh; explicit conserved staging/private evidence,
+tabs closed. [Canonical evidence](DISCOVERY_PROTOTYPE.md#bounded-held-card-and-mandatory-coalition-evidence).
+No production or full-module acceptance is claimed.
+
 ## 5 October 2026 — Classic Nexus and original Discovery composition
 
 Fresh explicit `nexus --discoveries` admits classic/base33/all12/Discovery7/8

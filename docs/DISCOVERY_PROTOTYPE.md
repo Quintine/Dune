@@ -17,14 +17,14 @@ uses those identities and effects; it does not treat test outcomes as rulings.
 ready seats in Basic or Advanced. Fresh classic, selected E1/E2 native families,
 and standalone Ecaz **or** Moritani with classic opponents use their original
 decks and native setup. Canonical unused Tech Tokens may be preserved at three
-through six seats. Advanced Moritani retains its non-Harkonnen assassination
-profile; paired/mixed E3, Skills, Strongholds, Homeworlds, Nexus and unrelated
-previews stay outside this entry.
+through six seats; original Stronghold Cards require Advanced. Advanced Moritani
+retains its non-Harkonnen assassination profile; paired/mixed E3, Skills,
+Homeworlds, Nexus and unrelated previews stay outside this entry.
 
 Discoveries are enabled before components are dealt. The initializer adds the
 seven cards to the selected original Spice Deck, retaining Ix Sandtrout, and
 creates each token behind shuffled opaque physical identities. Started games,
-nonempty native inventories and already-used Tech Tokens cannot be redealt.
+nonempty native inventories and already-used Tech or Stronghold components cannot be redealt.
 No ordinary player action or room endpoint bypasses the normal start gate.
 The existing local starter accepts `--profile discovery` for these fresh lobbies:
 
@@ -91,6 +91,83 @@ publication step9. Final reference10 and types/lint pass; exact pushed build
 passes. Preserved3D7SAG45v27/Charity retains physical Richese/deck11 and shows
 the **a2a92bb** local marker at390px after the isolated QA worker reload.
 Tab released. Publication is not protected NAS deployment or live acceptance.
+
+## Original Advanced Stronghold composition — 5 October 2026
+
+The original fresh Discovery entry admits unused original Stronghold Cards in
+Advanced2–6 with classic, supported selected E1/E2 or standalone Ecaz OR
+Moritani rosters. The separate fresh classic `leader-skills --discoveries`
+entry likewise preserves all14/base33/Discovery7/8/Strongholds6. Either may
+retain original Tech at3–6. Basic Strongholds, native Discovery skill families,
+Nexus/HW/independent variants/other previews and save conversion stay separate.
+The existing Nexus/Discovery composition above is unchanged.
+
+No new Stronghold Card is created for Jacurutu. Original actual end-Mentat
+custody supplies held benefits in their named territory or a declared HMS
+copy, never an inherited defense or subsidy inside a different nested site.
+Original free entry and ordinary nested invoices retain physical/trained
+groups; named support reductions change actual debit, not pledged rescue
+eligibility. Typed losses, winner cleanup and Tech/Face Dance retain their
+existing order. Contested Discovery and other pending sources are not decided.
+
+The actual CLI entries remain `--profile discovery` or
+`--profile leader-skills --discoveries` with selected original Advanced
+Strongholds in the fresh lobby. The genuine runner additionally offers
+`discovery-stronghold`, `discovery-stronghold-tech`,
+`discovery-skills-stronghold`, `discovery-skills-stronghold-tech`;
+new4000–4300 ordinal bands preserve earlier defaults and scenario seeds.
+
+### Bounded held-card and mandatory-coalition evidence
+
+Affected77 cases pass; after the reproduced mandatory Ecaz coalition repair,
+the related39 cases, final types/lint and build pass. Original rule programmes
+produce free Cistern3 then paid4, Arrakeen bank2/own1 followed by physical
+Suk rescue and original winner Tech. Native HMS copying pays bank2/own1,
+actual CHOAM income1 and three physical Cyborg losses. Real nested Richese
+marker5 costs1 then materializes five reserves without a second fee; retained
+Carthag does not protect its Shield from poison in Shrine. Original second
+end-Mentat accepts the nested counters; no new location-validation shim is needed.
+
+Genuine six-seat classic Skills and classic/Ixian-Tleilaxu/standalone Moritani
+Stronghold+Tech samples complete on initial tree
+`b2d642151709534ecc54eb8b7538d764b1da28ac0fe185e9ba6a26a09c1c6698`.
+The original Ecaz sample seed20265041 stops after616 accepted actions on its
+mandatory allied battle, not an optional AI action. The supported live
+Discovery composition now feeds the original Occupy lead/owner-labelled
+calculation. Its original captured state resumes unchanged and completes
+557 additional actions/no rejection/15 JSON on corrected tree
+`9ded08476837f230184f6a606209cd88c50444cd934de9975242e8dc1ee81157`.
+The five completed samples total3,096 accepted/3,097 attempts/81 JSON across
+those two trees. Resume does not reconstruct the earlier random stream.
+The sixth CHOAM/Richese sample seed20265033 remains captured atturn10 Bidding,
+1,639 accepted/1,640 attempts/44 JSON: declining Black Market reaches the
+existing exhausted-cache normal-count ruling. No count, card or outcome is
+invented. Original reports and captures remain outside Git.
+
+Actual **UWEH7WNB** CLIv8 preserves its natural Smuggler offer. Forty-one
+original controls plus explicit conserved source/claim positions reachv9
+before actual first end-Mentat. Human readyv10 claims Arrakeen; human free
+entryv11 moves three trained counters without price/reserve/movement cost.
+Twenty-three original continuations, including conserved physical Weather
+Control played for zero movement, reachv12. Human paid Cistern shipment and
+Guild allowancev13/v14 debit3→2 spice/16→15 reserves, leave four nested
+counters and retain the original training/card. Refresh fits390px.
+
+Actual **4LBU44PT** CLIv8 preserves native setup/actors. Printed Hagga blow,
+real Shrine reveal, conserved claimant and original end-Mentat producev9
+entry. Human one-ordinary/one-Cyborg entryv10 costs nothing and keeps one
+ordinary parent counter. Fifty-one original controls reachv11; human typed
+shipment/Guild allowance/CHOAM income passv12–14 debit5→3 spice/8→6 reserves,
+leave Shrine4/two Cyborgs and unchanged HMS6/three Cyborgs, with deferred
+Heighliners1. Six original actions after explicit conserved opposing/current
+control positions reachv15 HMS copy; actual phase-end Tech raises own3→4.
+Human Arrakeen copyv16 and real sealed plansv17/v18 show support3/bank2/own1.
+Human no-Traitor callsv19/v20 and Keep these casualtiesv21 leave HMS3/no
+Cyborg, Shrine4/two Cyborgs, own spice3, CHOAM income1 and original
+Guild-held Production transferred to Ixians. Another real conflict keeps
+Battle open; no unrelated Collection contaminates the invoice. Refresh fits
+390px. Tabs released; no production acceptance is claimed.
+
 
 ## Native setup and original consumers — 5 October 2026
 

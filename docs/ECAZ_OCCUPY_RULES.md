@@ -2,6 +2,26 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The old publisher/designer casualty-rounding conflict remains unresolved as a publisher correction and for odd Basic counts. Its earlier false attribution to Jack Reda is still withdrawn. The later user-authorized Advanced source below selects explicit Advanced arithmetic, and the Basic even-force composition selects E/2 for even counts; neither retroactively certifies that attribution.
 
+## Original live Discovery coalition — 5 October 2026
+
+The original standalone Ecaz Discovery profile marks its native Occupy path,
+but its former combined-battle gate still rejected the mandatory encounter.
+The live supported Discovery configuration now feeds original lead selection,
+owner-labelled fixed/variable armies, counters, payments and aftermath,
+including optional original Tech/Advanced Strongholds. No battle is skipped,
+no alliance/plan is synthesized and no extra coalition source is inferred.
+Unsupported rosters, Skills/Nexus/HW/variants/previews and Basic odd-force
+rounding remain separate. A fresh Occupy initializer does not gain a Discovery
+conversion path merely from this live composition.
+
+Meaningful original coalition cases fail before the fix and pass afterward:
+Ecaz-led support3 pays bank2/own1; allied Guild lead pays its own3 and does not
+borrow Ecaz's held card. Actual Ecaz5/Guild4 loses3 per owner and leaves2/1.
+The original genuine six-seat seed20265041 capture after616 accepted actions
+resumes without changing its saved position, completes557 more/no rejection/
+15 JSON and retains genuine Discovery decisions. Related39, types/lint/build
+pass. [Discovery evidence and limits](DISCOVERY_PROTOTYPE.md#bounded-held-card-and-mandatory-coalition-evidence).
+
 ## Standalone Nexus / Skills coalition — 5 October 2026
 
 The fresh standalone Ecaz/classic skill-Nexus profile now connects mandatory

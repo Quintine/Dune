@@ -17,6 +17,32 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Discovery / original Strongholds — bounded Development Verified:**
+fresh original Discovery and separate classic Skills/Discovery preserve
+Advanced Strongholds2–6, optional Tech3–6, original setup/held claims,
+physical entry, paid nested routes and source-local battle effects.
+Source-clear native HMS/CHOAM invoices, Richese nested marker/defense,
+trained support/rescue and mandatory Ecaz coalition retain original outcomes.
+Skills-native/Nexus/HW/variants/previews, pending rulings and public starts
+are not opened.
+
+Affected77 plus post-repair coalition39, final types/lint/build and actual
+programmes pass. Five genuine six-seat samples finish3,096 accepted/
+3,097 attempts/81 JSON across original and repaired trees. Original Ecaz
+seed20265041's mandatory battle was reproduced, repaired and resumed unchanged
+for557 more/no rejection/15 JSON. Richese seed20265033 remains captured after
+1,639 accepted atturn10 Bidding on its existing exhausted-cache count ruling.
+No skipped battle, invented count, reset or natural-every-effect claim.
+
+Actual UWEH7WNBv14 retains natural Smuggler, earned Arrakeen, free Cistern3
+then paid4, spice3→2/reserves16→15. Native4LBU44PTv21 records human typed
+Shrine free/paid entry, earned HMS copy and real support3/bank2/own1,
+CHOAM income1, three physical Cyborg losses, protected Shrine4/two Cyborgs
+and original Production transferred Guild→Ixians. Both refresh at390px.
+Original staging and source trees are explicit; tabs released.
+[Canonical rule/evidence contract](DISCOVERY_PROTOTYPE.md#original-advanced-stronghold-composition--5-october-2026).
+No production deployment or complete-mode acceptance is claimed.
+
 **Classic Nexus / Discovery — bounded Development Verified:** fresh explicit
 `nexus --discoveries` composes classic/base33/all12/Discovery7/8,
 Basic/Advanced2–6, original Tech3+ and/or Advanced Strongholds2+.

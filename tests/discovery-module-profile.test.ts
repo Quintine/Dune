@@ -48,7 +48,7 @@ void test('Discovery cannot redeal started components or silently remove another
   const overlays: Game[] = [structuredClone(initial), structuredClone(initial), structuredClone(initial)];
   overlays[0].homeworlds = { custody: null };
   overlays[1].nexusCards = { cards: null, phase: null };
-  overlays[2].strongholdCards = createStrongholdCards();
+  overlays[2].advanced = false; overlays[2].strongholdCards = createStrongholdCards();
   for (const game of overlays) assert.throws(() => initializeDiscoveryGameForAudit(game), RuleError);
 });
 
@@ -58,7 +58,7 @@ void test('classic Discovery Skills does not silently drop native families or un
   const overlays = Array.from({ length: 5 }, () => lobby(['guild', 'emperor', 'harkonnen'], []));
   overlays[0].homeworlds = { custody: null };
   overlays[1].nexusCards = { cards: null, phase: null };
-  overlays[2].strongholdCards = createStrongholdCards();
+  overlays[2].advanced = false; overlays[2].strongholdCards = createStrongholdCards();
   overlays[3].mentatQuestionPreview = true;
   overlays[4].spiceBankerIncomePreview = true;
   for (const game of overlays) assert.throws(() => initializeLeaderSkillsGameForAudit(game), RuleError);
@@ -88,4 +88,19 @@ void test('Discovery Nexus rejects native families, used components and incompat
   const started = initializeDiscoveryGameForAudit(lobby(['guild', 'emperor', 'fremen'], []));
   started.nexusCards = { cards: null, phase: null };
   assert.throws(() => initializeNexusGameForAudit(started), RuleError);
+});
+
+void test('Discovery original Stronghold composition rejects already claimed cards instead of granting or redealing them', () => {
+  for (const initialize of [initializeDiscoveryGameForAudit, initializeLeaderSkillsGameForAudit]) {
+    const owner = lobby(['guild', 'emperor', 'fremen'], []);
+    owner.strongholdCards = createStrongholdCards();
+    owner.strongholdCards.owners.arrakeen = 'guild';
+    const before = JSON.stringify(owner);
+    assert.throws(() => initialize(owner), RuleError);
+    assert.equal(JSON.stringify(owner), before);
+    const settled = lobby(['guild', 'emperor', 'fremen'], []);
+    settled.strongholdCards = createStrongholdCards();
+    settled.strongholdCards.claimedTurn = 1;
+    assert.throws(() => initialize(settled), RuleError);
+  }
 });

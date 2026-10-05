@@ -212,3 +212,20 @@ void test('Actual Stronghold initializer excludes Basic, E1/E2 mixtures, native 
   for (const player of pair.players) pair = applyAction(pair, player.id, { type: 'ready' });
   assert.throws(() => initializeStrongholdFactionsGameForAudit(pair));
 });
+
+for (const lead of ['ecaz', 'ally'] as const)
+  void test(`live original Discovery coalition preserves ${lead} lead support, physical allied losses and held-card custody`, () => {
+    const fixture = ecazStrongholdFixture({ discoveries: true, tech: true });
+    const { game, afterBattle, before, actor, quote } = reveal(fixture, lead, { variable: 3 });
+    const payment = quote.payments.find(receipt => receipt.player === actor)!;
+    assert.equal(payment.bankSupport, lead === 'ecaz' ? 2 : 0);
+    assert.equal(payment.ownPayment, lead === 'ecaz' ? 1 : 3);
+    assert.equal(seat(before, actor).spice - seat(afterBattle, actor).spice, payment.ownPayment);
+    assert.equal(seat(game, fixture.ecaz).forces[fixture.location], 2);
+    assert.equal(seat(game, fixture.ecaz).tanks - seat(before, fixture.ecaz).tanks, 3);
+    assert.equal(seat(game, fixture.ally).forces[fixture.location], 1);
+    assert.equal(seat(game, fixture.ally).tanks - seat(before, fixture.ally).tanks, 3);
+    assert.equal(game.lastBattleContext!.winner, actor);
+    assert.equal(game.strongholdCards!.owners.arrakeen, fixture.ecaz);
+    assert.deepEqual(game.discoveries, before.discoveries);
+  });

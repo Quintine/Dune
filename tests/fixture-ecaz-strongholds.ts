@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
-import { applyAction, createGame, initializeStrongholdFactionsGameForAudit, joinGame, newPlayer,
+import { applyAction, createGame, initializeDiscoveryGameForAudit, initializeStrongholdFactionsGameForAudit, joinGame, newPlayer,
   viewGame, type Game } from '../game/engine';
 import { territory } from '../game/board';
-import { STRONGHOLD_CARDS, type StrongholdId } from '../game/stronghold-cards';
+import { createStrongholdCards, STRONGHOLD_CARDS, type StrongholdId } from '../game/stronghold-cards';
 import { finishEcazOccupySetup, stageEcazOccupyCard } from './fixture-ecaz-occupy';
 import { nextStrongholdFactionsNativeStep, type StrongholdFactionsNativeStep } from './fixture-stronghold-factions';
+import { createTechTokens } from '../game/tech-tokens';
 
 export type EcazStrongholdOptions = {
   /** Ready authenticated lobby, or its original fresh native setup. Seats are never replaced. */
@@ -13,6 +14,8 @@ export type EcazStrongholdOptions = {
   ecazForces?: number;
   allyForces?: number;
   opponentForces?: number;
+  discoveries?: boolean;
+  tech?: boolean;
 };
 export type EcazStrongholdFixture = {
   initial: Game; afterSetup: Game; beforeMentat: Game; mentatStep: StrongholdFactionsNativeStep;
@@ -64,14 +67,21 @@ function orderBlow(game: Game, worm: boolean, position: number): void {
   game.spiceDeck.splice(position, 0, game.spiceDeck.splice(at, 1)[0]);
 }
 /** Determinism is limited to the original native shuffle, never a saved deal. */
-function initialize(game: Game): Game {
+function initialize(game: Game, discoveries: boolean): Game {
   const descriptor = Object.getOwnPropertyDescriptor(crypto, 'getRandomValues');
   crypto.getRandomValues = <T extends ArrayBufferView | null>(array: T): T => {
     assert.ok(array);
     new Uint8Array(array.buffer, array.byteOffset, array.byteLength).fill(255);
     return array;
   };
-  try { return initializeStrongholdFactionsGameForAudit(game); }
+  try {
+    if (discoveries) {
+      game.discoveryEnabled = true;
+      game.strongholdCards ??= createStrongholdCards();
+      return initializeDiscoveryGameForAudit(game);
+    }
+    return initializeStrongholdFactionsGameForAudit(game);
+  }
   finally {
     if (descriptor) Object.defineProperty(crypto, 'getRandomValues', descriptor);
     else Reflect.deleteProperty(crypto, 'getRandomValues');
@@ -108,7 +118,8 @@ export function ecazStrongholdFixture(options: EcazStrongholdOptions = {}): Ecaz
     'The original native seats must be Ecaz, Guild and Emperor.');
   if (game.status === 'lobby') {
     for (const player of game.players) if (!player.ready) game = applyAction(game, player.id, { type: 'ready' });
-    game = initialize(game);
+    if (options.tech && !game.techTokens) game.techTokens = createTechTokens();
+    game = initialize(game, options.discoveries === true);
   }
   const initial = structuredClone(game);
   assert.equal(game.strongholdCards!.claimedTurn, 0);

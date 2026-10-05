@@ -14,7 +14,7 @@ export function discoveryModeSupported(game: FactionModuleProfile): boolean {
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) || game.expansions.length > 2 ||
-    game.strongholdCards || game.leaderSkills || game.homeworlds || game.nexusCards ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills || game.homeworlds || game.nexusCards ||
     game.ecazTreachery ||
     game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
@@ -45,13 +45,13 @@ export function discoveryModeSupported(game: FactionModuleProfile): boolean {
   return (!e3 || native === 1) && !(game.advanced && moritani && harkonnen);
 }
 
-/** Fresh or live classic all-fourteen Skills/Discovery, optionally original Tech.
+/** Fresh or live classic all-fourteen Skills/Discovery, optionally Tech/Advanced Strongholds.
  * Physical undealt components and existing inventories belong to the initializer. */
 export function classicDiscoveryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   const players = game.players;
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.expansions.length || !players || players.length < 2 || players.length > 6 ||
-    (game.techTokens && players.length < 3) || game.strongholdCards ||
+    (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
     game.homeworlds || game.nexusCards || game.ecazTreachery || game.semutaPreview ||
     game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||

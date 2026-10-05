@@ -8,6 +8,7 @@ import { LEADER_SKILL_CARDS, type LeaderSkillId } from '../game/leader-skill-car
 import { DISCOVERY_CARD_PLACEMENTS, DISCOVERY_TOKEN_BY_ID, type DiscoveryTokenFace } from '../game/discoveries';
 import { discoveryEntryMoveAction } from '../game/discovery-entry-options';
 import { nextSpiceBankerIncomeNativeStep } from './fixture-spice-banker-income';
+import { createStrongholdCards } from '../game/stronghold-cards';
 
 export type ClassicDiscoverySkillsStep = { actor: string; action: Action };
 export type ClassicDiscoverySkillsOptions = {
@@ -15,6 +16,8 @@ export type ClassicDiscoverySkillsOptions = {
   initial?: Game;
   advanced?: boolean;
   tech?: boolean;
+  /** Preserve the selected, still-unused original Advanced module at setup. */
+  strongholdCards?: boolean;
   seats?: 2 | 3 | 4 | 5 | 6;
   collector?: 'guild' | 'harkonnen';
   skill?: LeaderSkillId;
@@ -118,7 +121,15 @@ export function createClassicDiscoverySkillsFixture(options: ClassicDiscoverySki
   assert.ok(game.status === 'lobby' || (game.status === 'setup' && game.turn === 1 && game.phase === 0));
   const controlledOffers = game.status === 'lobby';
   assert.deepEqual(game.expansions, []);
-  assert.ok(!game.homeworlds && !game.nexusCards && !game.strongholdCards && !game.spiceBankerIncomePreview);
+  assert.ok(!game.homeworlds && !game.nexusCards && !game.spiceBankerIncomePreview);
+  if (options.strongholdCards || game.strongholdCards) {
+    assert.equal(game.advanced, true);
+    if (!game.strongholdCards) {
+      assert.equal(game.status, 'lobby', 'Strongholds must be selected before the original deal.');
+      game = applyAction(game, game.host, { type: 'strongholdCards', enabled: true });
+    }
+    assert.deepEqual(game.strongholdCards, createStrongholdCards(), 'Never accept an earned or injected held-card receipt.');
+  }
   const collector = game.players.find(player => player.faction === collectorFaction)!.id;
   const opponent = game.players.find(player => player.faction === 'emperor')!.id;
   const skillOwner = game.players.find(player => player.faction === (options.skillOwner ?? collectorFaction))!.id;
@@ -181,11 +192,14 @@ export function createClassicDiscoverySkillsFixture(options: ClassicDiscoverySki
   return { initial, setup, game, actions, staging, collector, opponent, leader,
     token: token.id, face, parent: placement.territory, parentSector: placement.sector };
 }
-export function revealClassicDiscoverySkills(fixture: ClassicDiscoverySkillsFixture): Game {
+export function revealClassicDiscoverySkills(fixture: ClassicDiscoverySkillsFixture, actions?: ClassicDiscoverySkillsStep[]): Game {
   let game = fixture.game;
-  if (viewGame(game, fixture.collector).discoveries!.canInspect.some(token => token === fixture.token))
-    game = applyAction(game, fixture.collector, { type: 'discovery', token: fixture.token, reveal: false });
-  return applyAction(game, fixture.collector, { type: 'discovery', token: fixture.token, reveal: true });
+  if (viewGame(game, fixture.collector).discoveries!.canInspect.some(token => token === fixture.token)) {
+    const inspect: ClassicDiscoverySkillsStep = { actor: fixture.collector, action: { type: 'discovery', token: fixture.token, reveal: false } };
+    actions?.push(inspect); game = applyAction(game, inspect.actor, inspect.action);
+  }
+  const reveal: ClassicDiscoverySkillsStep = { actor: fixture.collector, action: { type: 'discovery', token: fixture.token, reveal: true } };
+  actions?.push(reveal); return applyAction(game, reveal.actor, reveal.action);
 }
 export function classicDiscoverySkillsEntryWindow(fixture: ClassicDiscoverySkillsFixture): Game {
   return advanceClassicDiscoverySkills(revealClassicDiscoverySkills(fixture), game =>

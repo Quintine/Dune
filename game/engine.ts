@@ -9383,6 +9383,8 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
 function ecazOccupyCompositionSupported(g: Game): boolean {
   if (g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g) &&
       g.players.some(p => p.faction === 'ecaz')) return true;
+  if (g.ecazOccupyPreview === true && g.discoveries && discoveryModeSupported(g) &&
+      g.players.some(p => p.faction === 'ecaz')) return true;
   return typeof g.advanced === 'boolean' && Array.isArray(g.expansions) &&
     g.expansions.includes('ecaz') &&
     g.expansions.every(id => ['ecaz', 'ix', 'choam'].includes(id)) &&
@@ -9522,7 +9524,7 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
   if (state.discoveryEnabled) {
-    requireRule(classicDiscoveryLeaderSkillsProfile(state), 'Discovery Leader Skills require a fresh classic lobby with optional original Tech and no unrelated overlays.');
+    requireRule(classicDiscoveryLeaderSkillsProfile(state), 'Discovery Leader Skills require a fresh classic lobby with optional original Tech or Advanced Strongholds and no unrelated overlays.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -9574,7 +9576,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
-  requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || nexusModules) &&
+  requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || nexusModules || discoveryComposition) &&
     JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards())),
   'Stronghold Cards require a fresh supported Advanced lobby with unused cards.');
   requireRule(
@@ -9586,7 +9588,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
       (!g.techTokens || skillTech || nativeTech || nexusModules || discoveryComposition) &&
-      (strongholdFactions || skillStronghold || nexusModules || !g.strongholdCards) &&
+      (strongholdFactions || skillStronghold || nexusModules || discoveryComposition || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(
@@ -9606,7 +9608,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       : homeworlds
       ? 'The Homeworld setup audit supports implemented deck sets without Tech Tokens or Stronghold Cards.'
       : discoveryComposition
-      ? 'Discovery supports fresh classic, selected E1/E2 or standalone E3 factions with optional original Tech and no other overlays.'
+      ? 'Discovery supports fresh classic, selected E1/E2 or standalone E3 factions with optional original Tech or Advanced Strongholds and no other overlays.'
       : 'The audit initializer supports base factions without expansions or optional modules.',
   );
   initializeSetup(g, strongholdFactions || !!g.strongholdCards);
