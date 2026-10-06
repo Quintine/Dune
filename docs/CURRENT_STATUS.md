@@ -17,7 +17,7 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**Native Homeworld Nexus — bounded changed-path proof.** Existing paired
+**Native Homeworld Nexus — bounded Development Verified.** Existing paired
 E1/E2 Skills/no-Skills module/Discovery and standalone Ecaz OR Moritani
 Skills entries retain original Homeworld/Nexus with optional Discovery/
 Tech/Advanced Strongholds.24 original admissions reject before and pass
@@ -36,8 +36,14 @@ Wallach visitor1, then spends Ecaz for the living Duke with unchanged
 purse12 and original training. Both inspectors show original20 counters;
 fresh choice/result screenshots and document390 are observed.
 [Canonical source/programme receipts](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-homeworld-nexus-composition--6-october-2026).
-Final types/lint/build and compiled390px guide pass. All managed tabs close
-and temporary scripts are removed; checkpoint/exact-revision receipt follows.
+Final types/lint/build and compiled390px guide pass. Pushed gameplay
+`2efa10a9d6d1f60e3725404f5d0a4b36de596732` receives an exact rebuild and
+owned QA cutover: both originalv145/v88 tables show its full revision with
+retained counters/Duke/training, and the updated native guide stays390.
+All tabs close; temporary scripts are removed. Final container
+[run37537171148/job112521014337](https://github.com/Quintine/Dune/actions/runs/37537171148/job/112521014337)
+completes successfully, isolated verification7 before publication9.
+The terminal job record is read; no protected server is deployed.
 Other native families, pending rulings, full-mode acceptance and protected
 deployment stay open.
 

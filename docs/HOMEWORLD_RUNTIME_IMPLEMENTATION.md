@@ -106,6 +106,17 @@ training. All three managed tabs close; both temporary TypeScript helpers
 are removed. Private source reports, captures and credential-free human
 action/result receipts remain outside Git.
 
+Gameplay checkpoint `2efa10a9d6d1f60e3725404f5d0a4b36de596732` is pushed,
+rebuilt exactly and loaded into the owned isolated QA worker. Both original
+v145/v88 tables show that full Git revision at390px with retained counters,
+living Duke and original training. The updated native Homeworld guide and
+307-check evidence render at document390. All three exact-checkpoint tabs close.
+Final container
+[run37537171148/job112521014337](https://github.com/Quintine/Dune/actions/runs/37537171148/job/112521014337)
+completes successfully: isolated verification7 finishes before publication9
+in the workflow. The final job record is read; this is verified image
+publication, **not protected-server deployment**.
+
 ## Classic Homeworld Nexus composition — 6 October 2026
 
 Fresh classic Basic/Advanced2–6 now composes original Homeworlds/all12 Nexus
