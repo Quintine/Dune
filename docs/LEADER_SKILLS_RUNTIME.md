@@ -5,6 +5,27 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Native Homeworld Nexus composition — 6 October 2026
+
+Original paired Ixians+Tleilaxu OR CHOAM+Richese and standalone Ecaz OR
+Moritani/classic skill-Nexus entries now retain Homeworlds, optional
+Discovery7/8, Tech3+ and Advanced Strongholds2+. Original all14 offers,
+decks/cache, native placement, ordinary-disc training and Duke/assassination
+restrictions remain. Existing physical Suk/substitution/cleanup/Tech order
+and source-local native returns remain; foreign-Homeworld Face Dance stays
+suppressed. Quiet Duke Cunning does not train the shared disc or create
+Homeworld Occupy/Intrusion.
+
+Fifteen meaningful original cases,307/307 affected tests and59 of68
+original six-seat games across23 families retain source-qualified evidence.
+Actual390px Ecaz chooses its randomly offered Warmaster on Sanya, draws
+Ecaz after real alliance settlement, pays for one native Wallach visitor,
+then spends the singleton for the living Duke without changing its purse
+or original trained disc.
+[Canonical programmes, source receipts and retained ruling captures](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-homeworld-nexus-composition--6-october-2026).
+Other native families, pending effects, public starts, comprehensive
+assurance, calibration and complete-mode acceptance remain open.
+
 ## Classic Homeworld Nexus composition — 6 October 2026
 
 Fresh classic all14 Skills/all12 Nexus now retains original Homeworlds,

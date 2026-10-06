@@ -2,6 +2,26 @@
 
 Updated 2 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Native Homeworld Nexus composition — 6 October 2026
+
+Authorized revision physical PDF21–23 permits optional variants together
+or separately regardless of factions; this admits existing paired E1/E2
+and standalone Ecaz OR Moritani skill/Nexus Homeworld envelopes rather than
+establishing a general incompatibility. Original profile/printed-face
+restrictions remain.
+[Source-qualified runtime evidence](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-homeworld-nexus-composition--6-october-2026)
+keeps native Suk returns at the same home, residual Cyborg Tanks from that
+same physical quote and native Homeworld strength separate from paid dialed
+support. CHOAM income settles after rescue/cleanup and excludes its own support.
+Actual Richese nested materialization and quiet living-Duke custody add no
+free companion, shared-disc training, Homeworld Occupy or Intrusion.
+
+Nine original captures retain existing low-CHOAM opening-income, Basic
+odd-force Ecaz and high-threshold revival timing guards. No cancellation,
+payout, force-count rewrite or new ruling bypasses them. Other recorded
+Face Dance allocation, Atreides Suk/KH, Diplomat retreat and native return
+questions stay separate. Passing software checks does not settle sources.
+
 ## Classic Homeworld Skills/Discovery composition — 6 October 2026
 
 Authorized revision physical PDF21–23 permits these variants together or

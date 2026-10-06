@@ -95,14 +95,14 @@ export function classicDiscoveryNexusProfile(game: FactionModuleProfile): boolea
   return true;
 }
 
-/** Both original natives in one E1/E2 Nexus/Discovery family, without Skills.
+/** Both original natives in one E1/E2 Nexus/Discovery family, optionally Homeworlds, without Skills.
  * Original setup owns undealt inventories; live Discovery frames are expected. */
 export function pairedDiscoveryNexusProfile(game: FactionModuleProfile): boolean {
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     !game.nexusCards || game.expansions.length !== 1 ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) ||
-    (game.strongholdCards && !game.advanced) || game.leaderSkills || game.homeworlds ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills ||
     game.ecazTreachery || game.semutaPreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||

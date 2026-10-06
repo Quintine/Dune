@@ -6,6 +6,106 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
+## Native Homeworld Nexus composition — 6 October 2026
+
+Fresh original paired Ixians+Tleilaxu OR CHOAM+Richese entries now retain
+Homeworlds/all12 Nexus with Skills, Discovery or both and optional original
+Tech3+/Advanced Strongholds2+. The no-Skills/no-Discovery paired module entry
+retains Tech and/or Advanced Strongholds. Standalone Ecaz OR Moritani with
+classic opponents retains Homeworld/Nexus with all14 Skills, optionally
+Discovery7/8 and those industry/card modules. Basic/Advanced2–6 follows
+each existing roster predicate; Advanced Harkonnen and Duke/assassination
+exclusions remain. Native singles/mixed-deck Nexus and no-Skills E3 module
+families remain separate, not outside the complete goal.
+
+The existing private skill/Nexus, paired Nexus module and paired Discovery/
+Nexus envelopes are amended; original setup/initializers remain. Actual
+Ixian pre-training offers precede native placement. Richese Cunning now
+uses these existing Homeworld paired envelopes, not an Arrakis-only
+fallback. No new revival/deposit adapter, public start or played-save
+conversion is added. Revision physical PDF21–23 permits optional variants
+together/separately regardless of seated factions; printed Nexus faces
+retain their separate effect authority and pending interpretations.
+
+Fifteen meaningful cases in two original programme pairs and the affected
+25-file union307/307 pass. Typed native/visitor Suk, residual Cyborg Tank
+substitution, nested single-invoice marker materialization, held support,
+original cleanup/Tech, Moritani assassination/death/own revival and quiet
+living-Duke Cunning retain original physical sources. Foreign-Homeworld
+Face Dance suppression remains; Ecaz Arrakis Occupy does not become
+Homeworld Occupy or Intrusion. All four minimal legal policies consume real
+owned windows. Free native strength is not free dialed-force support;
+CHOAM support income settles after Suk/cleanup and excludes its own plan.
+
+Fixture corrections use actual leader-death rewards, typed rescue returns,
+affordable declarations, real turn-six Charity and available untrained
+later-battle leaders after posture closes. No wallets, forces, deaths or
+outcomes are injected. An older copied-hand/staged-army test with
+“authenticated” player names but no HTTP authentication is deleted, not
+re-pinned; actual original HTTP/private-CLI human evidence follows below.
+
+Twenty-three new runner profiles retain stable bands10300–12500, leaving
+older names/seeds unchanged. Families are `paired-homeworld-nexus-skills`,
+`paired-homeworld-nexus-discovery`, `paired-homeworld-nexus-discovery-skills`,
+`e3-homeworld-nexus-skills` and `e3-homeworld-nexus-discovery-skills`, each
+optionally `-tech`, `-stronghold` or `-stronghold-tech`; no-Skills/no-Discovery
+paired profiles are `paired-homeworld-nexus-tech`, `-stronghold` and
+`-stronghold-tech`. Original prerequisite guards and exact resume dispatch
+remain authoritative.
+
+Across all23 families,59 of68 original six-seat Basic/Advanced samples
+complete71,137 accepted/71,484 attempted actions with1,894 JSON continuations
+on unchanged source tree
+`d5083acd4842b98e6ccdb753354c36b50f840726248d6d952db8c8835478509e`
+(HEAD `71bc325`). Every report's before/after receipt is read. Nine original
+captures retain existing guards: seven low-CHOAM opening-income cases,
+one Basic odd-**force** Ecaz Occupy and one Imperial revival crossing a
+Homeworld high threshold. Their actual rejected trace reasons are read;
+none is bypassed or rerun to confirm. This is not68 uninterrupted completions
+or a later documentation-tree certificate. Reports and captures remain at
+`/tmp/dune-native-{profile}-six-seat-20261006`, seed20268006.
+
+Human390px `AB7UKV8K` uses its original four-human Richese/CHOAM/Guild/Fremen
+HTTP lobby and original `nexus --discoveries` CLI, with Homeworld/Tech/Strongholds
+selected beforehand. Original Traitors and legal Fremen placement complete.
+Only conserved original unplayed Spice/Nexus order is selected; the actual
+supply lottery yields Cistern, not a staged token. Guild's native3 paid
+shipment, actual peek/reveal and next-turn free parent entry precede real
+Maker majority, both Advanced piles, Guild/Fremen alliance and closing draw.
+The human draws the actual Richese singleton, then uses the Cunning surface
+to reveal5 and conceal3 inside Cistern. Original Guild approval commits
+one-spice invoice: wallet5→4, native reserves20→15 and Cistern5 plus the
+concealed marker. Actual human revelation materializes the other3: atv145,
+native reserves12/Cistern8, Tanks0, no concealed marker, wallet4 unchanged.
+The fresh public inspector shows20 physical counters, not marker strength.
+
+Human390px `8Q2WZQMA` uses its original Ecaz/Guild/Bene Gesserit lobby and
+`leader-skills --nexus-cards` CLI with Homeworld/Tech/Strongholds. Actual
+Prediction precedes its random Diplomat/Warmaster offer; the human chooses
+Warmaster on the original eligible Sanya Ecaz disc without redealing.
+Both other actual trainings and native placement complete. Real first turn,
+both second-turn piles, Guild/BG alliance and closing draw precede the
+human Ecaz singleton draw. The human ships1 actual native counter to
+Wallach IX for1; reserves14→13, separate visitor1, BG native19 unchanged.
+At the actual quiet Battle window the human spends Ecaz Nexus for the
+living unclaimed Duke. Atv88, Duke control is Ecaz, the card is gone, original
+Sanya/Warmaster remains alive and uncaptured, and the v87/v88 purse stays12.
+Ordinary phase-opening income is separate from the shipment/Cunning.
+The fresh inspector shows13 native reserves, Imperial Basin6 and Wallach1.
+
+Fresh choice/result accessibility and screenshots observe both original
+390px surfaces with document width390. These bounded programmes do not
+certify complete modes, all combinations, comprehensive assurance,
+calibration, pending rulings or protected deployment.
+
+Final types/lint/build pass. The first guide load after rebuilding beneath
+the owned QA worker fails its old lazy-chunk request; an owned-only worker
+restart loads the new native composition and307-check evidence at390px.
+The originalv145/v88 changed-path states retain their counters, Duke and
+training. All three managed tabs close; both temporary TypeScript helpers
+are removed. Private source reports, captures and credential-free human
+action/result receipts remain outside Git.
+
 ## Classic Homeworld Nexus composition — 6 October 2026
 
 Fresh classic Basic/Advanced2–6 now composes original Homeworlds/all12 Nexus

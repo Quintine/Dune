@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 6 October 2026 — Native Homeworld Nexus optional modules
+
+Original paired E1/E2 skill/Nexus and no-Skills Nexus module/Discovery
+envelopes, plus standalone Ecaz OR Moritani skill/Nexus, now retain
+Homeworlds with optional Discovery/Tech/Advanced Strongholds. Original
+setup/private offers/native custody remain. Richese Cunning uses those
+existing Homeworld paired profiles; no second initializer or revival
+adapter, public start, played-save conversion or new ruling is added.
+Twenty-three native runner profiles preserve older names/seeds and
+prerequisite/resume dispatch.
+
+New15 meaningful cases; affected307/307 across25 files. Fixture corrections
+use actual pending CHOAM income, physical rescue returns, leader-death
+rewards, legal funded declarations/Charity and available untrained leaders
+after posture closes. A fake-auth-name/copied-hand/staged-army test is
+deleted, not re-pinned. Across all23 families,59 of68 original six-seat
+games finish71,137 accepted/71,484 attempted actions with1,894 JSON on one
+unchanged source tree. Nine preserved captures reach existing rulings:
+seven CHOAM low-opening income, Basic Ecaz odd-force rounding and an
+Imperial revival crossing a Homeworld high threshold.
+
+Actual390px original `AB7UKV8K`v145 draws native Richese after real Maker/
+both-pile/alliance settlement; native5+3 Cistern Cunning pays one spice once:
+reserves12/Cistern8/Tanks0, wallet4, no concealed marker. Original
+`8Q2WZQMA`v88 chooses its random Warmaster/Sanya offer, pays for one native
+Wallach visitor, then spends Ecaz Nexus for the living Duke with original
+training intact and unchanged Cunning purse12. Choice/result screenshots,
+fresh state and document390 prove these bounded human paths.
+Final types/lint/build and compiled390px guide pass. An observed old lazy
+chunk after rebuilding under the owned QA worker clears after its restart;
+originalv145/v88 states retain their changed-path custody. All tabs close
+and our temporary TypeScript helpers are removed; private receipts remain.
+[Exact programme/source receipts and retained boundaries](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-homeworld-nexus-composition--6-october-2026).
+No complete-mode, comprehensive assurance, calibration or protected-deployment claim.
+
 ## 6 October 2026 — Classic Homeworld Nexus optional modules
 
 Original classic Homeworld/Nexus now composes all14 Skills, Discovery7/8 or

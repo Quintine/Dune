@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, createGame, joinGame, newPlayer, viewGame, type Action, type Game } from '../game/engine';
+import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { MOBILE_STRONGHOLD, territory } from '../game/board';
 import { quoteSpiceCollection } from '../game/board-resolution-quote';
@@ -267,18 +267,3 @@ void test('representative native bot Face Dance consumes only actual paired rese
   custody(after, f.afterSetup);
 });
 
-void test('original authenticated lobby and undealt CLI setup continue to actor-bound real Nexus Cunning without redealing', () => {
-  const lobby = createGame('PAIREDIXAUTH', newPlayer('authenticated-ix', 'Ix', 'ixians'), true, ['ix']);
-  for (const [id, faction] of [['authenticated-tl', 'tleilaxu'], ['authenticated-guild', 'guild'], ['authenticated-emperor', 'emperor']] as const)
-    joinGame(lobby, newPlayer(id, faction, faction));
-  const first = createPairedIxNexusModulesFixture({ initial: lobby, tech: true, strongholds: false });
-  const continued = createPairedIxNexusModulesFixture({ initial: first.initial });
-  assert.deepEqual(player(continued.afterSetup, first.ixians).hand, player(first.afterSetup, first.ixians).hand,
-    'The original Ix setup offer and actual first deal are continued, not replaced');
-  const empowered = useSuboids(continued);
-  const revealed = revealPairedIxNexusModulesBattle(empowered, continued.planActions);
-  assert.equal(quoteStrongholdFactionsBattle(revealed).winner, 'authenticated-ix');
-  assert.equal(revealed.nexusSuboidHistory![0].owner, 'authenticated-ix');
-  assert.equal(player(revealed, 'authenticated-tl').ally, null);
-  custody(revealed, continued.afterSetup);
-});

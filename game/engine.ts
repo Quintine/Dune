@@ -9325,15 +9325,16 @@ export function initializePairedNexusGameForAudit(state: Game): Game {
     'The paired Nexus sample requires both selected expansion factions and their deck.');
   const discovery = state.discoveryEnabled === true && pairedDiscoveryNexusProfile(state);
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null &&
-    !state.homeworlds && !state.leaderSkills && !state.ecazTreachery &&
+    (!state.homeworlds || expansion === 'ix' || expansion === 'choam') &&
+    !state.leaderSkills && !state.ecazTreachery &&
     (!state.discoveryEnabled || discovery) &&
     ((!state.techTokens && !state.strongholdCards) || discovery || pairedNexusModulesProfile(state)),
-    'Enable Nexus Cards with only supported unused paired E1/E2 Discovery, Tech or Advanced Stronghold components.');
+    'Enable Nexus Cards with supported original paired E1/E2 Homeworlds, Discovery, Tech or Advanced Stronghold components.');
   if (state.discoveryEnabled) {
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
-  return initializeSetupGameForAudit(state, false, true, false, discovery, false, false, true);
+  return initializeSetupGameForAudit(state, !!state.homeworlds, true, false, discovery, false, false, true);
 }
 
 /** Genuine opt-in auction source interruption; ordinary/public starts stay gated. */
@@ -9540,7 +9541,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   if (state.homeworlds) {
     requireRule(homeworlds && state.homeworlds.custody === null,
-      'Homeworld Leader Skills require a fresh supported classic or native lobby with original optional modules; Nexus composition requires classic factions.');
+      'Homeworld Leader Skills require a fresh supported classic, paired E1/E2 or standalone E3 lobby with original optional modules and undealt native custody.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -25743,6 +25744,7 @@ const RICHESE_CUNNING_ROSTER: Partial<Record<FactionId, true>> = {
 function richeseCunningModeSupported(g: Game) {
   const skills = !!g.leaderSkills && pairedNexusLeaderSkillsProfile(g);
   return pairedDiscoveryNexusProfile(g) ||
+    (!!g.homeworlds && (skills || pairedNexusModulesProfile(g))) ||
     (!g.homeworlds && (!g.leaderSkills || skills) && (!g.discoveryEnabled || skills) &&
       !g.ecazTreachery && !g.sandtrout &&
       g.players.every(player => RICHESE_CUNNING_ROSTER[player.faction] === true));

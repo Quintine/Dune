@@ -2,6 +2,26 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Native Homeworld Nexus composition — 6 October 2026
+
+Existing paired Ixians+Tleilaxu OR CHOAM+Richese entries retain original
+Homeworlds with Skills, Discovery or both, optional Tech3+/Advanced
+Strongholds2+, and no-Skills/no-Discovery module entries retain the
+industry/card modules. Standalone Ecaz OR Moritani/classic Homeworld/Nexus
+retains Skills with optional Discovery/Tech/Strongholds. Original family
+decks, first offers/hands, native placement and printed effect boundaries
+remain. Existing profiles/initializers are amended, not duplicated.
+
+Actual native effects keep their sources: same-quote Suk/residual Cyborg
+substitution, signed Richese pair/one invoice, delayed CHOAM support income,
+quiet living-Duke custody and skill-first Moritani assassination/own revival.
+Foreign-Homeworld Face Dance remains suppressed; free native battle strength
+does not waive dialed-force support. No public start, save conversion,
+pending ruling or unsupported roster family is opened.
+[Canonical15-case/307-check,23-family original-game and two human receipts](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-homeworld-nexus-composition--6-october-2026)
+records59 of68 completions and nine preserved source-ruling captures, not
+complete Nexus/Homeworld compliance or deployed acceptance.
+
 ## Native trained Skills/Nexus/Discovery — 6 October 2026
 
 The original fresh `leader-skills --nexus-cards --discoveries` entry now

@@ -5,6 +5,26 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Native Homeworld Nexus composition — 6 October 2026
+
+Original paired Ixians+Tleilaxu OR CHOAM+Richese Nexus/Discovery entries,
+with or without Skills, now retain Homeworlds and optional Tech3+/Advanced
+Strongholds2+. Standalone Ecaz OR Moritani/classic Homeworld/Nexus composes
+Discovery with Skills. Existing original envelopes, private offers,
+parent/free entry, Maker losses/votes/rides, both Advanced piles and
+settled-alliance closing draws remain authoritative.
+
+Actual human supply yields Cistern in the original no-Skills Richese room.
+Guild's paid native3 parent army freely enters after the real first Mentat.
+The human draws the actual Richese singleton at the qualifying close, then
+commits its native5+3 Cunning pair inside that revealed site for one spice:
+native reserves12, Cistern8, wallet4, no repeated payment/materialization.
+Typed Suk, residual Cyborg substitution, CHOAM support income and original
+cleanup/winner Tech retain separate timing and source-local benefits.
+[Fifteen new cases,307 affected checks,23-family game receipts and human proof](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-homeworld-nexus-composition--6-october-2026).
+Other native families, pending effects, public starts and full-mode
+acceptance remain separate.
+
 ## Classic Homeworld Nexus composition — 6 October 2026
 
 The original classic Nexus/Discovery entry now retains Homeworlds with

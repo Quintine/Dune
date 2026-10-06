@@ -37,7 +37,6 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
 function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassination = false, discovery = false): boolean {
   return !!game.nexusCards && typeof game.advanced === 'boolean' &&
     !!game.players && game.players.length >= 2 && game.players.length <= 6 &&
-    (!game.homeworlds || game.expansions.length === 0) &&
     ((discovery && game.discoveryEnabled === true) ||
       (!game.discoveries && !game.discoveryEnabled && !game.discoveryStash && !game.greatMaker)) &&
     (!game.techTokens || game.players.length >= 3) &&
@@ -65,7 +64,7 @@ export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boole
   return true;
 }
 
-/** Both original natives in one E1/E2 family, with original Discovery/Tech/Advanced Strongholds. */
+/** Both original natives in one E1/E2 family, optionally Homeworlds/Discovery/Tech/Strongholds. */
 export function pairedNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (game.expansions.length !== 1 || !nexusLeaderSkillModulesSupported(game, false, true)) return false;
   const expansion = game.expansions[0];
@@ -86,7 +85,7 @@ export function pairedNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolea
   return hasPrimary && hasSecondary;
 }
 
-/** One original E3 native with classics and original Discovery; no shared-Duke assignment or mixed family. */
+/** One original E3 native with classics and optional Homeworlds/Discovery; no shared Duke or mixed family. */
 export function standaloneE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
     !nexusLeaderSkillModulesSupported(game, game.advanced === true, true)) return false;
@@ -385,7 +384,8 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
   const players = game.players;
   if (!game.homeworlds || typeof game.advanced !== 'boolean' ||
     !players || players.length < 2 || players.length > 6 ||
-    (game.nexusCards && !classicNexusLeaderSkillsProfile(game)) ||
+    (game.nexusCards && !classicNexusLeaderSkillsProfile(game) &&
+      !pairedNexusLeaderSkillsProfile(game) && !standaloneE3NexusLeaderSkillsProfile(game)) ||
     (game.discoveryEnabled !== true && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||
     (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
     game.ecazTreachery ||
@@ -399,7 +399,7 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
   return true;
 }
 
-/** Original Homeworld/Skills; only classic rosters additionally compose Nexus. */
+/** Original Homeworld/Skills under the existing classic or native Nexus roster contracts. */
 export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (!game.homeworlds) return false;
   if (game.expansions.length) return nativeExpansionLeaderSkillsProfile(game);

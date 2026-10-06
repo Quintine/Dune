@@ -17,6 +17,30 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Native Homeworld Nexus — bounded changed-path proof.** Existing paired
+E1/E2 Skills/no-Skills module/Discovery and standalone Ecaz OR Moritani
+Skills entries retain original Homeworld/Nexus with optional Discovery/
+Tech/Advanced Strongholds.24 original admissions reject before and pass
+after; actual setup/private offers/native custody and ruling gates remain.
+New15 meaningful cases and the affected25-file union307/307 pass.
+Across23 families,59 of68 original six-seat games finish71,137 accepted/
+71,484 attempted actions with1,894 JSON on one unchanged source tree;
+nine captures retain seven low-CHOAM opening-income, Basic odd-force Ecaz
+and high-threshold revival timing guards. No guard bypass or68-green claim.
+
+Actual390px original no-Skills `AB7UKV8K`v145 randomly reveals Cistern,
+finishes Maker/both piles/alliance before native Richese draw, then commits
+5+3 Cunning for one-spice invoice: reserves12/Cistern8/Tanks0, wallet4.
+Original `8Q2WZQMA`v88 chooses real offered Warmaster/Sanya, pays for native
+Wallach visitor1, then spends Ecaz for the living Duke with unchanged
+purse12 and original training. Both inspectors show original20 counters;
+fresh choice/result screenshots and document390 are observed.
+[Canonical source/programme receipts](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-homeworld-nexus-composition--6-october-2026).
+Final types/lint/build and compiled390px guide pass. All managed tabs close
+and temporary scripts are removed; checkpoint/exact-revision receipt follows.
+Other native families, pending rulings, full-mode acceptance and protected
+deployment stay open.
+
 **Classic Homeworld Nexus — bounded Development Verified.** Fresh original
 classic Basic/Advanced2–6 now composes Homeworlds/all12 with all14 Skills,
 Discovery7/8 or both, optional Tech3+/Advanced Strongholds2+. No-Skills/
