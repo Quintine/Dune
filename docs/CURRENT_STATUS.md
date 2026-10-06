@@ -17,6 +17,28 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Classic Homeworld + Skills or Discovery — bounded Development Verified.**
+Fresh Basic/Advanced two–six unique base factions retain original Homeworld
+setup with either all fourteen Skills or Discovery seven cards/eight tokens.
+The authorized revision permits these variants together or separately
+(physical PDF21–23). Other overlays and native expansion rosters remain
+separate in this checkpoint; the complete project scope is unchanged.
+Typed Suk casualties conserve native/visitor custody. Native rescue stays in
+its original home; external Emperor returns use an explicit split-home
+allocation, a documented implementation interpretation, not a revival ruling.
+Original Maker, entry and nested shipment mechanics retain physical sources.
+Affected tests94/94 across12 files, types/lint and build pass. Four original
+six-seat games finish2330/2330 actions with61 JSON continuations, on two
+unchanged source trees, not one final-tree certificate.
+Human mobile QA: `3NM6MS4T`v11 submits trained Suk allocation and retains
+three ordinary visitors in Junction, Kaitain11+1 elite and Salusa1+4 elite;
+`CLQYLURH`v11 submits Cistern entry for two ordinary/one Sardaukar while
+retaining native reserves and the earlier real internal transfer. Both
+surfaces are390px without overflow. See
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026)
+for exact scope, source provenance and limitations. Public starts, full-mode
+certification and protected deployment remain gated.
+
 **Native trained Skills/Nexus/Discovery — bounded Development Verified:**
 original paired E1 Ixians+Tleilaxu/Ix47, paired E2 CHOAM+Richese/CHOAM35+cache
 and standalone Ecaz **or** Moritani with classics now compose all14 original

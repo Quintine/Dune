@@ -2,6 +2,19 @@
 
 Updated 2 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Classic Homeworld Skills/Discovery composition — 6 October 2026
+
+Authorized revision physical PDF21–23 permits these variants together or
+separately. Fresh bounded classic profiles compose either original Skills
+or Discovery with Homeworlds; no source claim that the modules are generally
+incompatible remains. [Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026)
+records implementation and verification. Native Suk rescue stays at its
+original home; external Emperor returns explicitly choose exact ordinary/
+elite allocations between actual native homes. That allocation is a
+prototype implementation interpretation, **not** the PDF22 revival rule or
+a direct user/publisher ruling. Separate Face Dance allocation, Atreides
+Suk/KH and Diplomat retreat questions are unchanged.
+
 ## Authorized source amendment — 1 October 2026
 
 The user added `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf` at the

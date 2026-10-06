@@ -5,6 +5,20 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Classic Homeworld composition — 6 October 2026
+
+Fresh private Discovery setup may retain Homeworlds alone in Basic/Advanced
+with two–six unique base factions, original seven cards/eight tokens and
+native placement. Authorized PDF21–23 permits this composition. Existing
+Maker consequences and typed reserve rides, reveal/Collection, next-turn
+entry and nested shipment consume their real physical sources; no alternate
+Discovery mechanic was added. Real turn-one Emperor internal movement and
+turn-two split-home nested shipment retain actual custody. See
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026)
+for focused tests, original games, exact source batches and actual human
+Cistern submission. Native rosters and other overlays remain separate in
+this bounded profile, not excluded from the complete project goal.
+
 ## Source and setup boundary
 
 The [component acquisition record](DISCOVERY_COMPONENTS.md) identifies the

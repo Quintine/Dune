@@ -4,6 +4,26 @@
 bands to real battle resolution, player choices, AI and saved continuation.
 Complete module, faction and publication gates remain closed.
 
+## Classic Homeworld composition — 6 October 2026
+
+The fresh classic Homeworld/Skills prototype preserves the printed rescue
+quantities while quoting actual native, visiting or Arrakis physical pools.
+Native saved counters remain at their original home, with no free internal
+redeployment. External returns use actual native reserve destinations.
+For Advanced Emperor, the owned panel chooses exact ordinary/elite counts
+between Kaitain and Salusa; bots choose the primary home. **This split is an
+implementation interpretation**, not the ordinary-revival placement rule
+on authorized PDF22 or a direct user/publisher ruling. The whole quote
+validates before mutation and preserves native custody, visitors, reserves
+and Tanks without repeating support, deaths or card disposal.
+
+Actual human trained mixed rescue, native normal/trained rescue, visitor and
+Arrakis cases, rejection boundaries and genuine game evidence are recorded
+in [Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026).
+Advanced Atreides/KH, Diplomat retreat and the separate Emperor Face Dance
+allocation question remain unchanged. Other overlays/native rosters are
+not covered by this bounded composition.
+
 ## Source contract
 
 Use the physical card and the [Leader Skills source archive](LEADER_SKILLS_RULES.md).

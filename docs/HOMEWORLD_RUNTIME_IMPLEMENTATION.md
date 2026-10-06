@@ -6,6 +6,63 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
+## Classic Skills and Discovery — 6 October 2026
+
+Fresh private prototypes now support Homeworlds with **either** Leader Skills
+or Discovery: Basic/Advanced, two–six unique base factions, no other overlays.
+Use existing `start-prototype.ts --profile leader-skills` or `--profile discovery`
+on a fresh ready lobby with Homeworlds enabled. Genuine game runner profiles
+are `homeworld-skills` and `homeworld-discovery`. Original fourteen skill
+offers, seven Discovery cards/eight tokens, first hands and native placement
+remain authoritative; no existing save is converted.
+
+The authorized root revision, physical PDF21–23, permits variants together
+or separately, keeps Homeworlds outside Arrakis and preserves their normal
+battle rules except printed modifications. This is permission to compose
+these prototypes, not a ruling for every interaction or a complete mode.
+Nullable custody now remains legal through actual skill assignment before
+the original force-placement stage.
+
+Suk quotes use physical normal/elite casualties and real native or visiting
+Homeworld pools. A native save remains at that same home; it cannot redeploy
+freely. An external save returns to actual native reserve homes. When Emperor
+has both homes, human controls require an exact ordinary/elite allocation;
+minimal bots allocate the return to the primary home. **Allowing both types
+at either native home is a prototype implementation interpretation**, not
+the PDF22 ordinary-revival placement rule and not a new user/publisher ruling.
+The quote validates before mutation and conserves physical custody, Tanks
+and reserves. Battle costs, leader death and card cleanup do not repeat.
+Bureaucrat's existing invoice redirection now accepts this bounded profile.
+Discovery's original Maker, next-turn entry and nested shipment paths need
+no alternate mechanics.
+
+Verification:17/17 new behavioral cases;94/94 affected tests across12 files;
+types/lint and build pass. Four original six-seat Basic/Advanced games using
+all four legal AI policies finish2330 accepted/2330 attempts,61 JSON
+continuations. Skills1125/1125/29 ran on unchanged source tree
+`4d3f1c5f99bf6a18cac6553a1ecb0bfbe4da35709e91f1384050506fbd98fc00`;
+Discovery1205/1205/32 on
+`64c0b8ae5286bfdab9019222bb652bf99a7b1f1478eb5b16024844503c930412`.
+Reports are `/tmp/dune-homeworld-classic-{skills,discovery}-games-20261006/report.json`.
+These are two source batches, not one final-tree certificate.
+
+Human QA uses isolated existing QA persistence on local port3089, not the
+protected server. Original fresh human rooms, original CLI setup and explicit
+unplayed lotteries feed genuine engine action programmes; no held components
+are injected. At390px, `3NM6MS4T`v11 actually submits trained Suk rescue:
+Junction retains three ordinary visitors; Kaitain has11 ordinary/1 Sardaukar,
+Salusa1 ordinary/4 Sardaukar, reserves17/5 and Tanks0. `CLQYLURH`v11 actually
+submits next-turn Cistern entry for two ordinary/one Sardaukar: reserves17/4,
+Kaitain12/0, Salusa1/4, preserving the earlier actual turn-one internal move.
+Both rendered surfaces have document width390; fresh state and accessibility
+were observed after submission. Nested shipment has engine/runtime coverage,
+not an additional human submission claim.
+
+Native expansion combinations, other overlays, Advanced Atreides Suk/KH,
+captured replacement, Diplomat Homeworld retreat and the separate Emperor
+Face Dance allocation question remain guarded. No public start, deployment,
+complete rules, recovery/privacy assurance or AI calibration is certified.
+
 ## Implemented behavior
 
 `Game.homeworlds` is optional for existing saves. An enabled fresh lobby stores

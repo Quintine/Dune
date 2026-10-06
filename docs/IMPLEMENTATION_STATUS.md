@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 6 October 2026 — Classic Homeworld Skills and Discovery
+
+Private fresh Basic/Advanced two–six unique base-faction profiles now compose
+Homeworlds with either original all14 Skills or Discovery7/8. Original setup
+and force placement remain; Skills custody stays nullable until placement.
+Typed Suk native/visitor/Arrakis rescue, explicit human split-home Emperor
+returns, minimal legal bot choices and Bureaucrat invoice support are
+connected. External return placement is an implementation interpretation,
+not the ordinary-revival ruling. Existing Discovery mechanics are reused.
+
+New cases17/17; affected union94/94 across12 files; types/lint/build pass.
+Four genuine six-seat games complete2330/2330 actions with61 JSON
+continuations on two unchanged source trees. Original human rooms
+`3NM6MS4T`v11 and `CLQYLURH`v11 actually submit Suk allocation and Cistern
+entry, respectively; physical native/visitor counters and390px surfaces
+observed afterward. Exact source hashes, programmes and boundaries are in
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026).
+Other overlays/native rosters, specific pending rulings, public starts,
+protected deployment and comprehensive certification remain separate.
+
 ## 6 October 2026 — Native trained Skills/Nexus/Discovery
 
 Only the existing paired E1/E2 and standalone E3 skill/Nexus family predicates

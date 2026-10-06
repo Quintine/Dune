@@ -37,7 +37,7 @@ export function nextSpiceBankerIncomeNativeStep(game:Game):SpiceBankerIncomeNati
       const voter=viewGame(game,game.host).battle!.traitorVoters.find(id=>game.battle!.traitorCalls[id]===undefined);
       if(voter) return {actor:voter,action:{type:'traitorCall',call:false}};
     }
-    if(game.phase!==6||!game.active) {
+    if([1,2,4,7,8].includes(game.phase)||(game.phase===0&&game.stormPending!==null)) {
       const seat=game.players.find(p=>!game.ready.includes(p.id));
       if(seat) return {actor:seat.id,action:{type:'ready'}};
     }

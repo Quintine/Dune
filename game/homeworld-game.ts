@@ -38,7 +38,7 @@ export function homeworldGameIntegrity(g: Game): void {
   const beforeForces =
     g.status === 'lobby' ||
     (g.status === 'setup' &&
-      (g.setupStage === 'prediction' || g.setupStage === 'traitors'));
+      (g.setupStage === 'prediction' || (g.setupStage === 'leaderSkills' && !!g.leaderSkills) || g.setupStage === 'traitors'));
   if (beforeForces) {
     if (state.custody !== null)
       throw new HomeworldCustodyError(

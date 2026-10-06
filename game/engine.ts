@@ -1,7 +1,7 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, discoveryModeSupported, discoveryModuleProfile, pairedDiscoveryNexusProfile } from './discovery-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, classicHomeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, pairedDiscoveryNexusProfile } from './discovery-module-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicHomeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -13,7 +13,7 @@ import {
   canUsePlanetologistBattleSpecial,
   type BattleLeaderSkill,
 } from './leader-skill-combat';
-import { quoteSukRescue, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
+import { quoteSukPhysicalRescue, quoteSukRescue, SukPhysicalRescueError, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukPhysicalRescueQuote, type SukPhysicalRescueReceipt, type SukReserveDestinations, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
 import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, selectedOriginElites, groundMovementRange, type PlanetologistMovement } from './planetologist-movement';
@@ -76,7 +76,7 @@ import { createHomeworldOccupationHistory, observeHomeworldOccupation, validateH
 import { tupileIntelligenceTargets, quoteTupileIntelligenceRequest, type TupileIntelligenceCategory } from './tupile-intelligence';
 import { quoteTupileIntelligenceAnswer } from './tupile-intelligence-answer';
 import { createTupileIntelligenceState, appendTupileIntelligenceObservation, validateTupileIntelligenceState, type TupileIntelligenceState } from './tupile-intelligence-state';
-import { quoteHomeworldCustody } from './homeworld-custody';
+import { homeworldForceGroups, quoteHomeworldCustody } from './homeworld-custody';
 import { quoteHomeworldShipment, type HomeworldShipmentIntent } from './homeworld-shipment';
 import { quoteGuildHomeworldShipment } from './guild-homeworld-shipment';
 import { quoteJunctionTransport } from './junction-transport';
@@ -871,7 +871,7 @@ export type Decision =
   | { kind: 'techToken'; player: string; loser: string; choices: TechId[] }
   | { kind: 'poisonTooth'; player: string; event?: string; physicalId?: string; copiedFrom?: string | null }
   | { kind: 'stoneBurner'; player: string; event: string; physicalId?: string; copiedFrom?: string | null }
-  | { kind: 'sukRescue'; player: string; event: string; territory: string; mode: 'normal' | 'skilled'; options: SukRescueOption[] }
+  | { kind: 'sukRescue'; player: string; event: string; territory: string; mode: 'normal' | 'skilled'; options: SukRescueOption[]; reserveHomes?: { id: string; name: string; secondary: boolean }[] }
   | { kind: 'rihani'; player: string; event: string; stage: 'offer' | 'return' }
   | { kind: 'fullPlanOffer'; player: string }
   | {kind:'bureaucratPayment';player:string;event:string}
@@ -2093,7 +2093,7 @@ export type Game = {
       signature: string;
     };
     winnerDiscards?: { cards: string[]; completed: boolean; signature: string };
-    sukRescue?: { signature: string; completed: boolean };
+    sukRescue?: { signature: string; completed: boolean; physical?: SukPhysicalRescueReceipt };
     ixSubstitution?: { signature: string; completed: boolean };
     rihani?: { skill: RihaniSkill; cards: string[]; signature: string; completed: boolean; faceDanceStarted?: true };
     sandmaster?: { leader: string; key: string; before: number; after: number };
@@ -9524,7 +9524,10 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
   requireRule(discoveryModuleProfile(state), 'Discovery requires a fresh supported classic, E1/E2 or standalone E3 lobby without unrelated overlays.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
-  const g = initializeSetupGameForAudit(state, false, false, false, true, false, false, state.expansions.length > 0);
+  const homeworlds = classicHomeworldDiscoveryProfile(state);
+  if (homeworlds) requireRule(state.homeworlds?.custody === null,
+    'Start Homeworld Discovery with original undealt native custody.');
+  const g = initializeSetupGameForAudit(state, homeworlds, false, false, true, false, false, state.expansions.length > 0);
   if (byFaction(g, 'ecaz')) g.ecazOccupyPreview = true;
   if (g.advanced && byFaction(g, 'moritani')) initializeMoritaniAssassinateState(g);
   return g;
@@ -9532,6 +9535,13 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
 /** Gated development setup; never dispatched by a player action or room route. */
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
+  const homeworlds = classicHomeworldLeaderSkillsProfile(state);
+  if (state.homeworlds) {
+    requireRule(homeworlds && state.homeworlds.custody === null,
+      'Homeworld Leader Skills require a fresh classic lobby without other optional modules or previews.');
+    requireFreshBaseRuntime(state);
+    requireFreshFactionInventory(state);
+  }
   if (state.discoveryEnabled) {
     requireRule(classicDiscoveryLeaderSkillsProfile(state) || nativeDiscoveryLeaderSkillsProfile(state) || classicNexusLeaderSkillsProfile(state), 'Discovery Leader Skills require a fresh supported classic or native lobby with optional original Nexus, Tech or Advanced Strongholds and no unrelated overlays.');
     requireFreshBaseRuntime(state);
@@ -9540,7 +9550,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
   const classicNexus = classicNexusLeaderSkillsProfile(g);
-  const initialized = initializeSetupGameForAudit(g, false, classicNexus || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
+  const initialized = initializeSetupGameForAudit(g, homeworlds, classicNexus || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   if (nativeDiscoveryLeaderSkillsProfile(initialized) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
@@ -21643,8 +21653,8 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
     g.pendingSukRescue = {
       event: g.lastBattleContext.event, turn: g.turn, player: winner.id,
       territory: b.territory, skill: quote.sukGraduate,
-      commitment, pool: sukForcePool(winner, b.territory),
-      cards: [...quote.winnerCards], physical: sukPhysicalSignature(winner), losses: null, signature: '',
+      commitment, pool: sukForcePool(g, winner, b.territory),
+      cards: [...quote.winnerCards], physical: sukPhysicalSignature(winner, g), losses: null, signature: '',
       ...(winner.faction === 'ixians' ? { eliteOrigins: true as const } : {}),
       ...(fixedSukLoss ? { occupyCasualties: { ...structuredClone(casualtyCommitment), owner: casualtyCommitment.owner! } } : {}),
     };
@@ -21786,9 +21796,10 @@ function settleWinnerCasualties(
     pending.losses = { ...choice };
     updateSukReceipt(g);
     const options = sukRescueOptions(pending.skill, pending.pool, choice, pending.eliteOrigins);
-    if (options.length === 1) settleSukRescue(g, options[0], true);
+    const reserveHomes = sukReserveHomes(g, p, to, options);
+    if (options.length === 1 && !reserveHomes) settleSukRescue(g, options[0], true);
     else g.decision = { kind: 'sukRescue', player: p.id, event: pending.event,
-      territory: to, mode: pending.skill.mode, options };
+      territory: to, mode: pending.skill.mode, options, ...(reserveHomes ? { reserveHomes } : {}) };
     return;
   }
   if (to.startsWith('homeworld:')) homeworldBattleLossIntegrity(g);
@@ -21876,13 +21887,28 @@ function completeIxSubstitution(g: Game) {
   g.pendingIxSubstitution = null;
   if (g.lastBattleContext?.ixSubstitution) g.lastBattleContext.ixSubstitution.completed = true;
 }
-function sukForcePool(p: Player, territory: string): SukForceGroup[] {
+function sukForcePool(g: Game, p: Player, territory: string): SukForceGroup[] {
+  if (territory.startsWith('homeworld:')) {
+    const { normal, elite } = combatArmy(g, p.id, territory);
+    return [{ key: territory, normal, elite }];
+  }
   return Object.entries(p.forces).filter(([key]) => splitLocation(key).territory === territory)
     .map(([key, total]) => ({ key, normal: total - (p.elites?.forces[key] ?? 0), elite: p.elites?.forces[key] ?? 0 }));
 }
-function sukPhysicalSignature(p: Player) {
+function sukPhysicalSignature(p: Player, g?: Game) {
   return JSON.stringify({ forces: p.forces, elites: p.elites ?? null,
-    reserves: p.reserves, tanks: p.tanks, battleLosses: p.battleLosses });
+    reserves: p.reserves, tanks: p.tanks, battleLosses: p.battleLosses,
+    ...(g?.homeworlds?.custody ? { homeworlds: g.homeworlds.custody } : {}) });
+}
+function sukReserveHomes(g: Game, player: Player, territory: string, options: readonly SukRescueOption[]): Extract<Decision, { kind: 'sukRescue' }>['reserveHomes'] {
+  if (!g.homeworlds?.custody || !classicHomeworldLeaderSkillsProfile(g) ||
+    !options.some(option => option.normal + option.elite > (option.kept ? 1 : 0))) return;
+  const homes = homeworldRule(() => homeworldForceGroups(homeworldContext(g), g.homeworlds!.custody!));
+  if (homes.some(home => home.id === territory && home.native === player.id)) return;
+  const native = homes.filter(home => home.native === player.id);
+  if (native.length > 1) return native.map(home => ({
+    id: home.id, name: combatLocationName(g, home.id), secondary: !!home.secondary,
+  }));
 }
 function updateSukReceipt(g: Game) {
   const pending = g.pendingSukRescue!;
@@ -21904,9 +21930,9 @@ function sukRescueIntegrity(g: Game) {
     context.result === 'normal' && context.winner === pending.player && context.territory === pending.territory &&
     context.sukRescue?.signature === pending.signature && !context.sukRescue.completed &&
     pending.signature === sukReceiptSignature(pending) &&
-    pending.physical === sukPhysicalSignature(player) &&
+    pending.physical === sukPhysicalSignature(player, g) &&
     (pending.eliteOrigins === undefined || pending.eliteOrigins === true && player.faction === 'ixians') &&
-    JSON.stringify(pending.pool) === JSON.stringify(sukForcePool(player, pending.territory)) &&
+    JSON.stringify(pending.pool) === JSON.stringify(sukForcePool(g, player, pending.territory)) &&
     pending.commitment.forces.normal === pending.pool.reduce((sum, group) => sum + group.normal, 0) &&
     pending.commitment.forces.elite === pending.pool.reduce((sum, group) => sum + group.elite, 0) &&
     JSON.stringify(pending.commitment.options) === JSON.stringify(casualtyOptions(pending.commitment.forces, pending.commitment.dial, pending.commitment.support)) &&
@@ -21916,7 +21942,8 @@ function sukRescueIntegrity(g: Game) {
     requireRule(pending.commitment.options.some((o) => JSON.stringify(o) === JSON.stringify(pending.losses)) &&
       decisions.length === 1 && decisions.every((d) => d.player === pending.player && d.event === pending.event &&
         d.territory === pending.territory && d.mode === pending.skill.mode &&
-        JSON.stringify(d.options) === JSON.stringify(sukRescueOptions(pending.skill, pending.pool, pending.losses!, pending.eliteOrigins))),
+        JSON.stringify(d.options) === JSON.stringify(sukRescueOptions(pending.skill, pending.pool, pending.losses!, pending.eliteOrigins)) &&
+        JSON.stringify(d.reserveHomes) === JSON.stringify(sukReserveHomes(g, player, pending.territory, d.options))),
       'The saved Suk Graduate rescue choices differ from the committed casualties.');
   } else {
     const lossDecision = homeworldSavedDecisions(g).find((d) => d.kind === 'battleLosses' && d.player === pending.player);
@@ -21931,10 +21958,10 @@ function sukRescueIntegrity(g: Game) {
       'The Suk Graduate rescue lost its casualty continuation.');
   }
 }
-function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
+function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean, destinations?: SukReserveDestinations) {
   const pending = g.pendingSukRescue!;
   const player = getPlayer(g, pending.player);
-  requireRule(pending.losses && pending.physical === sukPhysicalSignature(player),
+  requireRule(pending.losses && pending.physical === sukPhysicalSignature(player, g),
     'The Suk Graduate rescue no longer has its committed physical counters.');
   const sardaukar = g.nexusSardaukarHistory?.find(record =>
     record.receipt.battle === pending.event && record.receipt.owner === pending.player);
@@ -21943,8 +21970,20 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
       dial:sardaukar.casualties.dial,support:sardaukar.casualties.support,options:sardaukar.casualties.options}) &&
     sardaukar.casualties.options.some(choice => JSON.stringify(choice) === JSON.stringify(pending.losses)),
     'The Suk rescue lost its original Nexus Sardaukar casualty allocation.');
-  const quote = quoteSukRescue(pending.skill, pending.pool, pending.losses, option, pending.eliteOrigins);
-  for (const group of quote.removed) {
+  let physical: SukPhysicalRescueQuote | undefined;
+  if (classicHomeworldLeaderSkillsProfile(g)) {
+    try {
+      physical = homeworldRule(() => quoteSukPhysicalRescue(homeworldLossContext(g), g.homeworlds!.custody!, {
+        player: player.id, territory: pending.territory, skill: pending.skill,
+        pool: pending.pool, losses: pending.losses!, option, destinations,
+      }));
+    } catch (error) {
+      if (error instanceof SukPhysicalRescueError) throw new RuleError(error.message);
+      throw error;
+    }
+  } else requireRule(destinations === undefined, 'Suk reserve destinations require the original Homeworld composition.');
+  const quote = physical ? null : quoteSukRescue(pending.skill, pending.pool, pending.losses, option, pending.eliteOrigins);
+  if (!physical || !pending.territory.startsWith('homeworld:')) for (const group of physical?.removed ?? quote!.removed) {
     player.forces[group.key] -= group.normal + group.elite;
     if (!player.forces[group.key]) delete player.forces[group.key];
     if (player.elites) {
@@ -21952,12 +21991,18 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
       if (!player.elites.forces[group.key]) delete player.elites.forces[group.key];
     }
   }
-  player.reserves += quote.reserves.normal + quote.reserves.elite;
-  player.tanks += quote.tanks.normal + quote.tanks.elite;
-  player.battleLosses += quote.tanks.normal + quote.tanks.elite;
-  if (player.elites) {
-    player.elites.reserves += quote.reserves.elite;
-    player.elites.tanks += quote.tanks.elite;
+  if (physical) {
+    commitHomeworldResources(g, physical);
+    if (pending.territory.startsWith('homeworld:')) g.homeworldBattleLoss = null;
+    g.lastBattleContext!.sukRescue!.physical = physical.receipt;
+  } else {
+    player.reserves += quote!.reserves.normal + quote!.reserves.elite;
+    player.tanks += quote!.tanks.normal + quote!.tanks.elite;
+    player.battleLosses += quote!.tanks.normal + quote!.tanks.elite;
+    if (player.elites) {
+      player.elites.reserves += quote!.reserves.elite;
+      player.elites.tanks += quote!.tanks.elite;
+    }
   }
   if (sardaukar?.casualties) {
     sardaukar.casualties.outcome = 'complete';
@@ -21965,9 +22010,16 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean) {
   }
   g.pendingSukRescue = null;
   g.lastBattleContext!.sukRescue!.completed = true;
-  log(g, `${player.name}'s Suk Graduate saved ${option.normal} ordinary and ${option.elite} elite forces: ${option.kept ? `1 remained in sector ${splitLocation(option.kept.key).sector}` : 'none remained in the battle territory'}, ${quote.reserves.normal + quote.reserves.elite} returned to reserves, and ${quote.tanks.normal + quote.tanks.elite} casualties went to the Tanks.${automatic ? ' The only legal rescue was applied automatically.' : ''}`, { faction: player.faction, name: 'Suk Graduate rescue' });
+  const native = physical?.receipt.source === 'native-homeworld';
+  const returned = native ? 0 : option.normal + option.elite - (option.kept ? 1 : 0);
+  const tanks = physical?.receipt.tanks ?? quote!.tanks;
+  const kept = native ? `${option.normal + option.elite} saved counters remained in their original Homeworld reserve pool`
+    : option.kept ? option.kept.key.startsWith('homeworld:')
+      ? `1 remained on ${combatLocationName(g, option.kept.key)}` : `1 remained in sector ${splitLocation(option.kept.key).sector}`
+      : 'none remained in the battle territory';
+  log(g, `${player.name}'s Suk Graduate saved ${option.normal} ordinary and ${option.elite} elite forces: ${kept}, ${returned} returned to reserves, and ${tanks.normal + tanks.elite} casualties went to the Tanks.${automatic ? ' The only legal rescue was applied automatically.' : ''}`, { faction: player.faction, name: 'Suk Graduate rescue' });
   observeOccupation(g);
-  if (pending.eliteOrigins) stageIxSubstitution(g, player, pending.territory, pending.cards, quote.eliteTanks!);
+  if (pending.eliteOrigins) stageIxSubstitution(g, player, pending.territory, pending.cards, quote!.eliteTanks!);
   finishWinner(g, player, pending.territory, pending.cards);
 }
 function winnerDiscardSignature(pending: NonNullable<Game['pendingWinnerDiscards']>) {
@@ -29036,10 +29088,10 @@ function applyActionInner(
       const choice = decision.options[integer(action.choice, 0, decision.options.length - 1, 'Casualty choice')];
       settleHomeworldExplosion(g, choice, false);
     } else if (decision.kind === 'sukRescue') {
-      requireRule(action.event === decision.event && Object.keys(action).every((key) => ['type', 'event', 'choice'].includes(key)),
+      requireRule(action.event === decision.event && Object.keys(action).every((key) => ['type', 'event', 'choice', 'destinations'].includes(key)),
         'Choose only the current Suk Graduate rescue.');
       const option = decision.options[integer(action.choice, 0, decision.options.length - 1, 'Rescue choice')];
-      settleSukRescue(g, option, false);
+      settleSukRescue(g, option, false, action.destinations as SukReserveDestinations | undefined);
     } else if (decision.kind === 'rihani') {
       actRihani(g, p, decision, action);
     } else if (decision.kind === 'battleLosses') {

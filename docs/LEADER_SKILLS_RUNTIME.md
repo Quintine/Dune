@@ -5,6 +5,21 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Classic Homeworld composition — 6 October 2026
+
+Fresh Basic/Advanced two–six unique base-faction private skill prototypes may
+retain Homeworlds alone with all fourteen original offers. Original setup
+waits for skill assignment before placing physical native reserves. Trained
+and normal Suk use source-qualified native/visitor/Arrakis pools and typed
+custody; explicit external Emperor return allocation is an implementation
+interpretation, not ordinary revival placement. Native saved counters stay
+at the same home. Existing payment redirection, original skill lifecycle and
+minimal legal bots are connected. Source,94-test union, two genuine games
+and actual390px human Suk submission are recorded in
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026).
+Other overlays/native families and pending specific interactions remain
+separate; no public or complete-mode gate changes.
+
 ## Native trained Skills/Nexus/Discovery — 6 October 2026
 
 Fresh original `leader-skills --nexus-cards --discoveries` now extends the

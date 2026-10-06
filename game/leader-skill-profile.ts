@@ -376,6 +376,28 @@ export function nativeTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean
   return !!game.techTokens && nativeExpansionLeaderSkillsProfile(game);
 }
 
+/** Original classic Homeworld/Skills; custody and undealt components belong to setup. */
+export function classicHomeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  const players = game.players;
+  if (!game.homeworlds || typeof game.advanced !== 'boolean' || game.expansions.length ||
+    !players || players.length < 2 || players.length > 6 ||
+    game.nexusCards || game.discoveries || game.discoveryEnabled || game.discoveryStash ||
+    game.greatMaker || game.techTokens || game.strongholdCards || game.ecazTreachery ||
+    game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview ||
+    game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
+    game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
+    game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview ||
+    game.mentatQuestionPreview || game.spiceBankerIncomePreview) return false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let classic = false;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction) { classic = faction.expansion === 'base'; break; }
+    if (!classic) return false;
+  }
+  return true;
+}
+
 /** Shared by rule quotes, controls and minimal legal bot participation. */
 export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): boolean {
   return (noOtherLeaderSkillModules(game) &&
@@ -383,5 +405,6 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
     pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
-    classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game);
+    classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game) ||
+    classicHomeworldLeaderSkillsProfile(game);
 }

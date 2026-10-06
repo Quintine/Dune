@@ -2697,7 +2697,19 @@ function policyActions(g: GameView): Action[] {
         score: option.normal + option.elite * (level > 0 ? 2.5 : 1) +
           (option.kept ? 1 + (option.kept.kind === 'elite' && level > 0 ? 0.5 : 0) : 0),
       })).sort((a, b) => b.score - a.score)
-        .map(({ choice }) => ({ type: 'decision', event: d.event, choice }));
+        .map(({ choice }) => {
+          const option = d.options[choice];
+          const normal = option.normal - (option.kept?.kind === 'normal' ? 1 : 0);
+          const elite = option.elite - (option.kept?.kind === 'elite' ? 1 : 0);
+          if (!d.reserveHomes || normal + elite === 0) return { type: 'decision', event: d.event, choice };
+          const primary = d.reserveHomes.find(home => !home.secondary)!;
+          const destinations: Record<string, { normal: number; elite: number }> = {};
+          for (const home of d.reserveHomes) destinations[home.id] = {
+            normal: home.id === primary.id ? normal : 0,
+            elite: home.id === primary.id ? elite : 0,
+          };
+          return { type: 'decision', event: d.event, choice, destinations };
+        });
     }
     if (d.kind === 'rihani') {
       if (d.stage === 'offer') return [{ type: 'decision', event: d.event, draw: true }];

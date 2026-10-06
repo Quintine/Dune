@@ -35,7 +35,7 @@ import {
   type Game,
 } from '../game/engine';
 import { sampleInventory, verifySampleCustody } from './sample-custody';
-import { classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from '../game/leader-skill-profile';
+import { classicHomeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from '../game/leader-skill-profile';
 import { createTechTokens } from '../game/tech-tokens';
 import { createStrongholdCards } from '../game/stronghold-cards';
 import { privateOutputDirectory, sourceSnapshot } from './verification';
@@ -56,7 +56,8 @@ type Profile = 'base' | 'choam' | 'ecaz' | 'ecaz-treachery' | 'ecaz-occupy' | 'm
   | 'discovery-nexus-skills' | 'discovery-nexus-skills-tech' | 'discovery-nexus-skills-stronghold' | 'discovery-nexus-skills-stronghold-tech'
   | 'paired-discovery-nexus' | 'paired-discovery-nexus-tech' | 'paired-discovery-nexus-stronghold' | 'paired-discovery-nexus-stronghold-tech'
   | 'paired-discovery-nexus-skills' | 'paired-discovery-nexus-skills-tech' | 'paired-discovery-nexus-skills-stronghold' | 'paired-discovery-nexus-skills-stronghold-tech'
-  | 'e3-discovery-nexus-skills' | 'e3-discovery-nexus-skills-tech' | 'e3-discovery-nexus-skills-stronghold' | 'e3-discovery-nexus-skills-stronghold-tech';
+  | 'e3-discovery-nexus-skills' | 'e3-discovery-nexus-skills-tech' | 'e3-discovery-nexus-skills-stronghold' | 'e3-discovery-nexus-skills-stronghold-tech'
+  | 'homeworld-skills' | 'homeworld-discovery';
 const discoveryStrongholdProfile = (profile: string) => profile === 'discovery-stronghold' ||
   profile === 'discovery-stronghold-tech' || profile === 'discovery-skills-stronghold' ||
   profile === 'discovery-skills-stronghold-tech' || profile === 'native-discovery-skills-stronghold' ||
@@ -79,6 +80,7 @@ const nativeDiscoveryNexusSkillsProfile = (profile: string) =>
   profile === 'paired-discovery-nexus-skills-stronghold' || profile === 'paired-discovery-nexus-skills-stronghold-tech' ||
   profile === 'e3-discovery-nexus-skills' || profile === 'e3-discovery-nexus-skills-tech' ||
   profile === 'e3-discovery-nexus-skills-stronghold' || profile === 'e3-discovery-nexus-skills-stronghold-tech';
+const homeworldClassicModuleProfile = (profile: string) => profile === 'homeworld-skills' || profile === 'homeworld-discovery';
 type Rules = 'basic' | 'advanced';
 
 type Scenario = {
@@ -153,6 +155,9 @@ const BASE_SCENARIOS: readonly Scenario[] = [2, 3, 4, 5, 6].flatMap((players) =>
     roster: BASE_ROSTER.slice(0, players),
   })),
 );
+const HOMEWORLD_CLASSIC_MODULE_SCENARIOS: readonly Scenario[] =
+  (['homeworld-skills', 'homeworld-discovery'] as const).flatMap((profile, band) =>
+    BASE_SCENARIOS.map((scenario, index): Scenario => ({ ...scenario, profile, ordinal: 6400 + band * 100 + index })));
 const NEXUS_SKILLS_SCENARIOS: readonly Scenario[] = BASE_SCENARIOS.map((scenario, index) => ({
   ...scenario, profile: 'nexus-skills', ordinal: 1410 + index,
 }));
@@ -560,9 +565,9 @@ const SKILLS_STRONGHOLD_SCENARIOS: readonly Scenario[] =
 const strongholdSkillProfile = (profile: string) => profile === 'skills-stronghold' || profile === 'skills-stronghold-tech';
 const discoverySkillsProfile = (profile: string) => profile === 'discovery-skills' || profile === 'discovery-skills-tech' ||
   profile === 'discovery-skills-stronghold' || profile === 'discovery-skills-stronghold-tech';
-const skillProfile = (profile: string) => nativeDiscoveryNexusSkillsProfile(profile) || discoveryNexusSkillsProfile(profile) || nativeDiscoverySkillsProfile(profile) || discoverySkillsProfile(profile) || e3NexusSkillsProfile(profile) || pairedNexusSkillsModuleProfile(profile) || nexusSkillsModuleProfile(profile) || profile === 'nexus-skills' || profile === 'paired-nexus-skills' || profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills' || profile === 'choam-skills' || profile === 'richese-skills' || profile === 'ecaz-skills' || profile === 'skills-tech' || strongholdSkillProfile(profile);
+const skillProfile = (profile: string) => profile === 'homeworld-skills' || nativeDiscoveryNexusSkillsProfile(profile) || discoveryNexusSkillsProfile(profile) || nativeDiscoverySkillsProfile(profile) || discoverySkillsProfile(profile) || e3NexusSkillsProfile(profile) || pairedNexusSkillsModuleProfile(profile) || nexusSkillsModuleProfile(profile) || profile === 'nexus-skills' || profile === 'paired-nexus-skills' || profile === 'moritani-skills' || profile === 'tleilaxu-skills' || profile === 'ix-skills' || profile === 'choam-skills' || profile === 'richese-skills' || profile === 'ecaz-skills' || profile === 'skills-tech' || strongholdSkillProfile(profile);
 const discoveryProfile = (profile: string) => profile === 'discovery' || profile === 'discovery-tech' ||
-  profile === 'discovery-stronghold' || profile === 'discovery-stronghold-tech';
+  profile === 'discovery-stronghold' || profile === 'discovery-stronghold-tech' || profile === 'homeworld-discovery';
 const assassinationScenario = (scenario: Scenario) => scenario.rules === 'advanced' &&
   scenario.roster.includes('moritani') &&
   (scenario.profile === 'moritani-assassinate' || discoveryProfile(scenario.profile) || nativeStrongholdProfile(scenario.profile) || nativeTechProfile(scenario.profile) || skillProfile(scenario.profile));
@@ -630,6 +635,7 @@ function usage() {
     + '\nDiscovery uses fresh classic, paired E1/E2 or standalone Ecaz OR Moritani setups with original selected decks, six Discovery territory cards, Great Maker and eight physical tokens in Basic/Advanced2..6. Discovery-tech preserves unused original Tech3..6. Native setup, actual token entry, typed force paths, stash and nested location controls reuse original handlers. No Skills/HW/Nexus/Strongholds, mixed E3 families, new contested/shared-payer rulings, public starts or played-game conversion.'
     + '\nDiscovery-skills selects classic/base33/all14 Skills with original Discovery7/8, Basic/Advanced2..6. Discovery-skills-tech preserves unused original Tech3..6. Original trained posture, physical free entry, fixed-three carried movement, paid nested routes, stash capacity, skill battle rescue/rewards and distinct-party Bureaucrat invoices remain. Native families, Nexus/Strongholds/HW, Banker/Mentat previews, pending contested/shared/mixed effects, public starts and save conversion stay separate.'
     + '\nDiscovery-nexus uses classic/base33/all12 Nexus/Discovery7+8, Basic/Advanced2..6. Discovery-nexus-tech adds original Tech3+; discovery-nexus-stronghold adds Advanced Strongholds2+; both requires3+ Advanced. Original Great Maker/worm/vote/ride, settled-alliance end-Spice closing deal, end-Mentat held-card settlement, next-turn entry and source-clear borrowed force/tariff/card effects remain. No Skills/HW/native families, mixed-module Fremen Betrayal, new pending rulings, public starts or save conversion.'
+    + '\nHomeworld-skills and homeworld-discovery use original classic/base33 rosters in Basic/Advanced2..6. The first retains all14 original offered training, actual Homeworld combat/rescue and split native custody; the second retains Discovery7/8, actual Maker vote/typed reserve ride, next-turn parent-board entry and split Imperial nested shipment. Original setup/cards/force sources remain. No other optional modules, native families, public starts, save conversion or pending-rule changes.'
   );
 }
 
@@ -660,6 +666,8 @@ function positive(value: string | undefined) {
 }
 
 function scenarioName(scenario: Scenario) {
+  if (homeworldClassicModuleProfile(scenario.profile))
+    return `${scenario.profile}-classic-${scenario.roster.join('-')}-${scenario.roster.length}-${scenario.rules}`;
   if (nativeDiscoverySkillsProfile(scenario.profile) || discoveryNexusSkillsProfile(scenario.profile) ||
     pairedDiscoveryNexusSampleProfile(scenario.profile) || nativeDiscoveryNexusSkillsProfile(scenario.profile))
     return `${scenario.profile}-${scenario.expansions.join('-')}-${scenario.roster.join('-')}-${scenario.roster.length}-${scenario.rules}`;
@@ -754,7 +762,7 @@ function freshGame(scenario: Scenario) {
   if (scenario.ecazTreachery) game.ecazTreachery = true;
   if (discoveryTechProfile(scenario.profile) || scenario.profile === 'skills-tech' || scenario.profile === 'skills-stronghold-tech' || nativeTechProfile(scenario.profile) || nexusTechProfile(scenario.profile)) game.techTokens = createTechTokens();
   if (discoveryStrongholdProfile(scenario.profile) || strongholdSkillProfile(scenario.profile) || nexusStrongholdProfile(scenario.profile)) game.strongholdCards = createStrongholdCards();
-  if (scenario.profile === 'homeworld' || scenario.profile === 'homeworld-occupation' || scenario.profile === 'homeworld-nexus' || scenario.profile === 'combined-homeworld-nexus')
+  if (homeworldClassicModuleProfile(scenario.profile) || scenario.profile === 'homeworld' || scenario.profile === 'homeworld-occupation' || scenario.profile === 'homeworld-nexus' || scenario.profile === 'combined-homeworld-nexus')
     game.homeworlds = { custody: null };
   if (scenario.profile === 'paired-nexus-skills' || scenario.profile === 'nexus-skills' || scenario.profile === 'nexus' || nexusModuleProfile(scenario.profile) || scenario.profile === 'homeworld-nexus' || scenario.profile === 'choam-nexus' || scenario.profile === 'ecaz-nexus' || scenario.profile === 'ix-nexus' || scenario.profile === 'combined-nexus' || scenario.profile === 'combined-homeworld-nexus')
     game.nexusCards = { cards: null, phase: null };
@@ -819,7 +827,7 @@ function resumedGame(path: string) {
     throw new Error(
       '--resume is not an incomplete faction-games snapshot with saved AI profiles.',
     );
-  const composedSkills = (classicDiscoveryLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) || classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) || strongholdLeaderSkillsProfile(game)) && !game.spiceBankerIncomePreview;
+  const composedSkills = (classicHomeworldLeaderSkillsProfile(game) || classicDiscoveryLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) || classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) || strongholdLeaderSkillsProfile(game)) && !game.spiceBankerIncomePreview;
   const discovery = game.discoveryEnabled === true && !!game.discoveries;
   if (
     (game.leaderSkills && !nativeExpansionLeaderSkillsProfile(game) && !composedSkills) ||
@@ -828,10 +836,10 @@ function resumedGame(path: string) {
     game.mentatQuestionPreview
   )
     throw new Error('--resume sample scenarios exclude unsupported optional modules.');
-  const scenario = [...SCENARIOS, ...COMBINED_NEXUS_SCENARIOS, ...COMBINED_HOMEWORLD_NEXUS_SCENARIOS, ...BASE_SCENARIOS, ...MODULE_SCENARIOS, ...EXPANSION_ROSTER_SCENARIOS, ...ECAZ_TREACHERY_SCENARIOS, ...ECAZ_OCCUPY_SCENARIOS, ...PAIRED_NEXUS_SCENARIOS, ...MORITANI_ASSASSINATE_SCENARIOS, ...STRONGHOLD_FACTIONS_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...IX_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS, ...RICHESE_SKILLS_SCENARIOS, ...ECAZ_SKILLS_SCENARIOS, ...SKILLS_TECH_SCENARIOS, ...SKILLS_STRONGHOLD_SCENARIOS, ...NATIVE_TECH_SCENARIOS, ...CLASSIC_NEXUS_MODULE_SCENARIOS, ...PAIRED_NEXUS_MODULE_SCENARIOS, ...NEXUS_SKILLS_SCENARIOS, ...PAIRED_NEXUS_SKILLS_SCENARIOS, ...NEXUS_SKILLS_MODULE_SCENARIOS, ...PAIRED_NEXUS_SKILLS_MODULE_SCENARIOS, ...E3_NEXUS_SKILLS_SCENARIOS, ...HOMEWORLD_OCCUPATION_SCENARIOS, ...DISCOVERY_SCENARIOS, ...DISCOVERY_SKILLS_SCENARIOS, ...DISCOVERY_NEXUS_SCENARIOS, ...DISCOVERY_STRONGHOLD_SCENARIOS, ...NATIVE_DISCOVERY_SKILLS_SCENARIOS, ...DISCOVERY_NEXUS_SKILLS_SCENARIOS, ...PAIRED_DISCOVERY_NEXUS_SCENARIOS, ...NATIVE_DISCOVERY_NEXUS_SKILLS_SCENARIOS].find(
+  const scenario = [...SCENARIOS, ...COMBINED_NEXUS_SCENARIOS, ...COMBINED_HOMEWORLD_NEXUS_SCENARIOS, ...BASE_SCENARIOS, ...MODULE_SCENARIOS, ...EXPANSION_ROSTER_SCENARIOS, ...ECAZ_TREACHERY_SCENARIOS, ...ECAZ_OCCUPY_SCENARIOS, ...PAIRED_NEXUS_SCENARIOS, ...MORITANI_ASSASSINATE_SCENARIOS, ...STRONGHOLD_FACTIONS_SCENARIOS, ...MORITANI_SKILLS_SCENARIOS, ...TLEILAXU_SKILLS_SCENARIOS, ...IX_SKILLS_SCENARIOS, ...CHOAM_SKILLS_SCENARIOS, ...RICHESE_SKILLS_SCENARIOS, ...ECAZ_SKILLS_SCENARIOS, ...SKILLS_TECH_SCENARIOS, ...SKILLS_STRONGHOLD_SCENARIOS, ...NATIVE_TECH_SCENARIOS, ...CLASSIC_NEXUS_MODULE_SCENARIOS, ...PAIRED_NEXUS_MODULE_SCENARIOS, ...NEXUS_SKILLS_SCENARIOS, ...PAIRED_NEXUS_SKILLS_SCENARIOS, ...NEXUS_SKILLS_MODULE_SCENARIOS, ...PAIRED_NEXUS_SKILLS_MODULE_SCENARIOS, ...E3_NEXUS_SKILLS_SCENARIOS, ...HOMEWORLD_OCCUPATION_SCENARIOS, ...DISCOVERY_SCENARIOS, ...DISCOVERY_SKILLS_SCENARIOS, ...DISCOVERY_NEXUS_SCENARIOS, ...DISCOVERY_STRONGHOLD_SCENARIOS, ...NATIVE_DISCOVERY_SKILLS_SCENARIOS, ...DISCOVERY_NEXUS_SKILLS_SCENARIOS, ...PAIRED_DISCOVERY_NEXUS_SCENARIOS, ...NATIVE_DISCOVERY_NEXUS_SKILLS_SCENARIOS, ...HOMEWORLD_CLASSIC_MODULE_SCENARIOS].find(
     (candidate) =>
       (nativeDiscoverySkillsProfile(candidate.profile) || discoveryProfile(candidate.profile) || discoverySkillsProfile(candidate.profile) || discoveryNexusProfile(candidate.profile)) === discovery &&
-      (candidate.profile === 'homeworld' || candidate.profile === 'homeworld-occupation' || candidate.profile === 'homeworld-nexus' || candidate.profile === 'combined-homeworld-nexus') === !!game.homeworlds &&
+      (homeworldClassicModuleProfile(candidate.profile) || candidate.profile === 'homeworld' || candidate.profile === 'homeworld-occupation' || candidate.profile === 'homeworld-nexus' || candidate.profile === 'combined-homeworld-nexus') === !!game.homeworlds &&
       (candidate.profile === 'paired-nexus-skills' || candidate.profile === 'nexus-skills' || candidate.profile === 'nexus' || nexusModuleProfile(candidate.profile) || candidate.profile === 'homeworld-nexus' || candidate.profile === 'choam-nexus' || candidate.profile === 'ecaz-nexus' || candidate.profile === 'ix-nexus' || candidate.profile === 'combined-nexus' || candidate.profile === 'combined-homeworld-nexus') === !!game.nexusCards &&
       (candidate.profile === 'homeworld-occupation') === !!game.homeworldOccupationPreview &&
       skillProfile(candidate.profile) === !!game.leaderSkills &&
@@ -1059,7 +1067,8 @@ async function main() {
   if ((discoveryTechProfile(profile) || (discoveryNexusProfile(profile) && nexusTechProfile(profile))) && players === 2)
     throw new Error('Discovery with Tech Tokens requires three through six players.');
   const resume = values.resume ? resumedGame(values.resume) : null;
-  const requestedSamples = nativeDiscoveryNexusSkillsProfile(profile) ? NATIVE_DISCOVERY_NEXUS_SKILLS_SCENARIOS
+  const requestedSamples = homeworldClassicModuleProfile(profile) ? HOMEWORLD_CLASSIC_MODULE_SCENARIOS
+    : nativeDiscoveryNexusSkillsProfile(profile) ? NATIVE_DISCOVERY_NEXUS_SKILLS_SCENARIOS
     : discoveryNexusSkillsProfile(profile) ? DISCOVERY_NEXUS_SKILLS_SCENARIOS
     : pairedDiscoveryNexusSampleProfile(profile) ? PAIRED_DISCOVERY_NEXUS_SCENARIOS
     : nativeDiscoverySkillsProfile(profile) ? NATIVE_DISCOVERY_SKILLS_SCENARIOS
