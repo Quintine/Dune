@@ -7,17 +7,19 @@ Advanced start gates, and the publication gate, remain closed.
 
 ## Classic Homeworld composition — 6 October 2026
 
-Fresh private Discovery setup may retain Homeworlds alone in Basic/Advanced
-with two–six unique base factions, original seven cards/eight tokens and
-native placement. Authorized PDF21–23 permits this composition. Existing
-Maker consequences and typed reserve rides, reveal/Collection, next-turn
-entry and nested shipment consume their real physical sources; no alternate
-Discovery mechanic was added. Real turn-one Emperor internal movement and
-turn-two split-home nested shipment retain actual custody. See
-[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026)
-for focused tests, original games, exact source batches and actual human
-Cistern submission. Native rosters and other overlays remain separate in
-this bounded profile, not excluded from the complete project goal.
+Fresh private classic Discovery setup retains Homeworlds in Basic/Advanced
+two–six unique base factions, original seven cards/eight tokens and native
+placement. Original Tech requires3+; Stronghold Cards require Advanced2+.
+The separate original `leader-skills --discoveries` entry additionally
+composes all fourteen Skills. Authorized PDF21–23 permits these variants.
+Maker consequences/typed reserve rides, reveal/Collection, later parent
+entry, nested shipment and battle rescue keep actual physical sources.
+Industry pays only at phase end; held cards remain source-local and original
+cleanup precedes mandatory winner Tech. See
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-optional-module-compositions--6-october-2026)
+for145 affected tests, source-qualified games and actual human nested rescue
+and Homeworld winner Tech choice. Nexus/native Homeworld rosters and unrelated
+overlays remain separate in this bounded profile, not outside the full goal.
 
 ## Source and setup boundary
 
@@ -33,7 +35,7 @@ and standalone Ecaz **or** Moritani with classic opponents use their original
 decks and native setup. Canonical unused Tech Tokens may be preserved at three
 through six seats; original Stronghold Cards require Advanced. Advanced Moritani
 retains its non-Harkonnen assassination profile; paired/mixed E3, Skills,
-Homeworlds, Nexus and unrelated previews stay outside this entry.
+native Homeworld combinations, Nexus and unrelated previews stay outside this entry.
 
 Discoveries are enabled before components are dealt. The initializer adds the
 seven cards to the selected original Spice Deck, retaining Ix Sandtrout, and

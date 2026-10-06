@@ -17,15 +17,21 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**In progress — classic Homeworld optional modules.** Next source-clear batch
-composes Skills+Discovery together and optionally original Tech3+ or Advanced
-Strongholds2+ across each classic Homeworld Skills/Discovery family. Original
-four-seat fresh combined entry rejects before the change and now reaches
-genuine skill/Traitor setup; full changed-path verification is still pending.
-Parent owns shared admission, engine, tools and controls. Disjoint original
-Skills/Discovery and industry/held-card programmes own their new fixture/runtime
-pairs. No Nexus/native rosters, pending rulings, public starts or played-save
-conversion are opened by this batch.
+**Classic Homeworld optional modules — bounded Development Verified.**
+Fresh classic Basic/Advanced2–6 now composes Skills, Discovery or both with
+original Tech3+ and/or Advanced Strongholds2+. Original all14/DS7+8 setup,
+native pools, phase-end industry, source-local held effects and mandatory
+winner Tech timing remain. New14 cases and affected145/145 across17 files,
+types/lint/build pass. Fourteen completed original six-seat samples total
+9008/9008 actions/237 JSON across two source batches; an incidental internal
+view-copy failure was preserved, repaired and continued, not hidden or
+reported as an uninterrupted first-tree pass. Actual human390px
+`XJCJ3H3W`v17 submits typed nested Suk allocation; `WM8E7CFG`v17 chooses
+Spice Production after real Homeworld battle cleanup, retaining the actual
+visitor/native armies. Both tabs closed and temporary scripts removed.
+[Exact scope and provenance](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-optional-module-compositions--6-october-2026).
+Nexus/native rosters, pending specific rulings, public starts and protected
+deployment remain separate; the complete project goal is unchanged.
 
 **Classic Homeworld + Skills or Discovery — bounded Development Verified.**
 Fresh Basic/Advanced two–six unique base factions retain original Homeworld

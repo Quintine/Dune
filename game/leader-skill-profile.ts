@@ -376,13 +376,15 @@ export function nativeTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean
   return !!game.techTokens && nativeExpansionLeaderSkillsProfile(game);
 }
 
-/** Original classic Homeworld/Skills; custody and undealt components belong to setup. */
+/** Original classic Homeworld/Skills, optionally Discovery/Tech/Advanced Strongholds. */
 export function classicHomeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   const players = game.players;
   if (!game.homeworlds || typeof game.advanced !== 'boolean' || game.expansions.length ||
     !players || players.length < 2 || players.length > 6 ||
-    game.nexusCards || game.discoveries || game.discoveryEnabled || game.discoveryStash ||
-    game.greatMaker || game.techTokens || game.strongholdCards || game.ecazTreachery ||
+    game.nexusCards ||
+    (game.discoveryEnabled !== true && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||
+    (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
+    game.ecazTreachery ||
     game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||

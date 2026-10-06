@@ -9,11 +9,12 @@ export function discoveryModuleProfile(game: FactionModuleProfile): boolean {
     discoveryModeSupported(game);
 }
 
-/** Original classic Homeworld/Discovery; live Arrakis-only token frames are expected. */
+/** Original classic Homeworld/Discovery, optionally Tech/Advanced Strongholds. */
 export function classicHomeworldDiscoveryProfile(game: FactionModuleProfile): boolean {
   if (!game.homeworlds || typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.expansions.length || game.players.length < 2 || game.players.length > 6 ||
-    game.leaderSkills || game.nexusCards || game.techTokens || game.strongholdCards ||
+    game.leaderSkills || game.nexusCards || (game.techTokens && game.players.length < 3) ||
+    (game.strongholdCards && !game.advanced) ||
     game.ecazTreachery || game.semutaPreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
@@ -66,14 +67,14 @@ export function discoveryModeSupported(game: FactionModuleProfile): boolean {
   return (!e3 || native === 1) && !(game.advanced && moritani && harkonnen);
 }
 
-/** Fresh or live classic all-fourteen Skills/Discovery, optionally Tech/Advanced Strongholds.
+/** Fresh or live classic all-fourteen Skills/Discovery, optionally Homeworlds/Tech/Advanced Strongholds.
  * Physical undealt components and existing inventories belong to the initializer. */
 export function classicDiscoveryLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   const players = game.players;
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.expansions.length || !players || players.length < 2 || players.length > 6 ||
     (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
-    game.homeworlds || game.nexusCards || game.ecazTreachery || game.semutaPreview ||
+    game.nexusCards || game.ecazTreachery || game.semutaPreview ||
     game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||

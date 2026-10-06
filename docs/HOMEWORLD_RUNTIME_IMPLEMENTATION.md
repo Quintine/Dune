@@ -6,6 +6,68 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
+## Classic optional-module compositions — 6 October 2026
+
+The fresh classic Homeworld prototypes now compose **Skills, Discovery or
+both**, with original unused Tech at three or more seats and/or original
+Stronghold Cards in Advanced at two or more seats. Basic/Advanced two–six
+unique base factions; both optional industry/card modules require Advanced3+.
+Existing `leader-skills --discoveries` and `discovery` private room entries
+preserve selected Homeworlds and original components; no parallel setup or
+save conversion. The runner adds ten profiles at stable bands6600–7500 while
+retaining existing6400/6500 names/seeds. Families `homeworld-skills`,
+`homeworld-discovery` and `homeworld-discovery-skills` add `-tech`,
+`-stronghold` or `-stronghold-tech` under those prerequisites.
+
+Authorized PDF21–23 expressly permits variants together/separately. Original
+all14 offers, DS7/8, first-Storm industry ownership, end-Mentat held cards and
+native reserve placement remain. Nested battles get no Homeworld native
+bonus. Typed Suk returns use actual homes; support is already paid before
+rescue, while later Cistern income is a separate printed reward. Native saves
+still stay at their original home; the external Imperial split remains the
+implementation interpretation recorded below, not ordinary revival placement.
+Printed industry accrues once and pays at phase end; Guild-only transport is
+excluded. Held Arrakeen support and Carthag poison defense remain source-local,
+not borrowed by Homeworlds or Cistern. Physical cleanup precedes mandatory
+winner Tech choice without replaying armies or casualties.
+
+New semantic cases14/14; affected union145/145 across17 files; types/lint
+and build pass. Original private room entry also exercises real combinations
+and rejects two-seat Tech/Basic Strongholds with the saved lobby unchanged.
+Four-policy original six-seat games cover ten added profiles: thirteen
+completed7879/7879 actions with207 JSON continuations on unchanged tree
+`bf9b1f8a59f77494c1f2dcbd79326705aae1a00c37bc09bd3a157d4de9fb0851`.
+One Advanced `homeworld-discovery-stronghold` seed20268015 stopped at
+turn8/Shipment after1110/1110/29 because an internal view-copy assertion
+treated four optional `undefined` advisor-response properties as different
+from JSON omission. That incidental assertion was deleted, not re-pinned;
+physical custody, rival-privacy checks and actual restored play remain.
+The preserved capture completes19 further actions. The same original fresh
+sample then completes1129/1129/30 on unchanged tree
+`b47a9b126b4f7edf4a29a346fc124ee9427e22d7659c3f0762b0b16ad96fe2f2`.
+Thus fourteen completed original samples total9008/9008/237 across two source
+batches, **not** one final-tree certificate or fourteen uninterrupted passes
+on the first tree. Reports/capture remain under
+`/tmp/dune-homeworld-optional-*-20261006`; no rules guard was bypassed.
+
+Human QA: original HTTP four-seat lobbies, real host module toggles, original
+private CLI and explicit unplayed offer/card/token lotteries feed genuine
+action programmes. `XJCJ3H3W`v17 actually submits trained Cistern Suk:
+three ordinary remain inside, reserves17/5 and Tanks0; Kaitain11 ordinary/
+1 Sardaukar, Salusa1/4. Separate Collection pays Cistern2; original industry
+and held-card custody remain. `WM8E7CFG`v17 actually chooses Spice Production
+from two real mandatory Tech options after two genuine Homeworld battles and
+original winner cleanup. Emperor retains one ordinary visitor in Southern
+Hemisphere, native home is empty, reserves14/4, Tanks2/0 and original parent
+army3 with1 Sardaukar. The defeated Fremen retains Axlotl; physical armies
+are not replaced by the Tech action. Both390px surfaces, choices and fresh
+resulting state were observed. These were working-tree controls, not a pushed
+revision/deployment claim. Both tabs closed; temporary human scripts removed.
+
+Nexus, native expansion rosters, unrelated previews/variants and pending
+specific rulings remain separate in this checkpoint. Public starts, full
+combinations, comprehensive assurance, calibration and deployment stay open.
+
 ## Classic Skills and Discovery — 6 October 2026
 
 Fresh private prototypes now support Homeworlds with **either** Leader Skills

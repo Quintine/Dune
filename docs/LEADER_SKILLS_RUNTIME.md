@@ -7,18 +7,19 @@ records the fresh publisher/designer search requested by the user.
 
 ## Classic Homeworld composition — 6 October 2026
 
-Fresh Basic/Advanced two–six unique base-faction private skill prototypes may
-retain Homeworlds alone with all fourteen original offers. Original setup
-waits for skill assignment before placing physical native reserves. Trained
-and normal Suk use source-qualified native/visitor/Arrakis pools and typed
-custody; explicit external Emperor return allocation is an implementation
-interpretation, not ordinary revival placement. Native saved counters stay
-at the same home. Existing payment redirection, original skill lifecycle and
-minimal legal bots are connected. Source,94-test union, two genuine games
-and actual390px human Suk submission are recorded in
-[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026).
-Other overlays/native families and pending specific interactions remain
-separate; no public or complete-mode gate changes.
+Fresh Basic/Advanced two–six unique base-faction private skill prototypes
+retain Homeworlds with all fourteen offers, optionally Discovery7/8,
+original Tech3+ and Advanced Strongholds2+. Original training precedes
+native placement. Native/visitor/nested Suk uses actual typed pools; native
+saved counters remain at the same home. External Emperor return allocation
+stays an implementation interpretation, not ordinary revival placement.
+Support precedes rescue; later Cistern income and mandatory winner Tech are
+separate original effects. Held cards stay source-local. Payment redirection,
+original lifecycle and minimal legal bots remain connected. See
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-optional-module-compositions--6-october-2026)
+for145 affected cases, exact game provenance and actual390px human nested
+Suk submission. Nexus/native Homeworld rosters, unrelated overlays and
+pending specific interactions remain separate; no public/full-mode gate changes.
 
 ## Native trained Skills/Nexus/Discovery — 6 October 2026
 
@@ -57,8 +58,9 @@ Actual Great Maker losses/votes/typed reserve rides, both Advanced piles and
 settled alliance precede the original end-Spice closing choice, not Mentat.
 Source-clear Emperor/Fremen free-return ledgers, original Axlotl settlement,
 skilled nested battle and mandatory original-winner Tech reuse existing rules.
-Native Skills/Nexus/Discovery, HW/variants/previews/public starts/conversion
-and unresolved effects remain guarded.
+Native Skills/Nexus/Discovery has separate bounded evidence above. Homeworlds
+remain outside this Nexus profile; unrelated variants/previews, public starts,
+conversion and unresolved effects stay guarded.
 
 [Canonical combined evidence](DISCOVERY_PROTOTYPE.md#classic-skillsnexus-and-paired-native-nexus-discovery--6-october-2026)
 records the169 affected union, eighteen genuine six-seat completions and three
@@ -78,8 +80,9 @@ and E3 trained death/assassination/own revival use original consumers.
 Actual offered training and printed starting hands are not replaced.
 The same supported live Ecaz profile keeps mandatory owner-labelled coalition
 battles; shared Duke assignments and Basic odd-force rounding remain guarded.
-Nexus/HW/variants/Banker/Mentat previews/public starts/save conversion stay
-separate. This does not certify all fourteen effects or complete native factions.
+Other Nexus profiles have separate bounded evidence above. Native Homeworlds,
+unrelated variants, Banker/Mentat previews, public starts and save conversion
+remain separate. This does not certify all fourteen effects or complete factions.
 
 [The Discovery contract](DISCOVERY_PROTOTYPE.md#native-leader-skills-composition--6-october-2026)
 records affected107, actual producer programmes and three original human

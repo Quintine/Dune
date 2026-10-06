@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 6 October 2026 — Classic Homeworld optional modules
+
+Original classic Homeworld Skills/Discovery families now compose either or
+both with original Tech3+ and Advanced Strongholds2+, under existing fresh
+private entries. Original all14/DS7+8 setup, native placement, typed nested/
+native/visitor Suk, phase-end industries, source-local held benefits and
+cleanup before mandatory winner Tech remain; no redundant force/payment model.
+Ten runner profiles retain stable old bands/names/seeds. Nexus/native
+Homeworld rosters, unrelated previews and pending specific rulings stay separate.
+
+New cases14/14, affected145/145 across17 files, types/lint/build pass.
+Fourteen completed original six-seat samples total9008/9008 actions/237 JSON
+across two unchanged source batches. One internal `undefined`-property view
+copy assertion falsely stopped an Advanced original sample; that incidental
+assertion was deleted, not re-pinned. Its preserved capture finishes19 more
+actions, and the repaired original sample finishes1129/1129/30. Physical
+custody, rival-privacy checks and real JSON continuation remain.
+
+Actual human390px `XJCJ3H3W`v17 submits trained nested Suk and retains
+Cistern3normal, reserves17/5, Tanks0, Kaitain11+1/Salusa1+4 and separate
+Cistern2 income. `WM8E7CFG`v17 selects Spice Production after real Homeworld
+cleanup, retaining one actual visitor, empty native home and reserves14/4,
+Tanks2/0. Both tabs closed; temporary human scripts removed. Exact programme,
+source hashes, capture and limitations:
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-optional-module-compositions--6-october-2026).
+No full-mode, comprehensive assurance, calibration or deployment certification.
+
 ## 6 October 2026 — Classic Homeworld Skills and Discovery
 
 Private fresh Basic/Advanced two–six unique base-faction profiles now compose

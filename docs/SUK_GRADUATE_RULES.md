@@ -17,12 +17,15 @@ on authorized PDF22 or a direct user/publisher ruling. The whole quote
 validates before mutation and preserves native custody, visitors, reserves
 and Tanks without repeating support, deaths or card disposal.
 
-Actual human trained mixed rescue, native normal/trained rescue, visitor and
-Arrakis cases, rejection boundaries and genuine game evidence are recorded
-in [Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026).
-Advanced Atreides/KH, Diplomat retreat and the separate Emperor Face Dance
-allocation question remain unchanged. Other overlays/native rosters are
-not covered by this bounded composition.
+Actual human trained mixed rescue, native/visitor/Arrakis and nested cases,
+rejection boundaries and source-qualified games are recorded in
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-optional-module-compositions--6-october-2026).
+The classic Homeworld profile optionally composes Discovery, original Tech3+
+and Advanced Strongholds2+: support is paid before rescue, source-local
+cards remain separate, original cleanup precedes Tech choice and surviving
+Cistern forces collect its printed income independently. Advanced Atreides/KH,
+Diplomat retreat, Emperor Face Dance allocation, Nexus/native Homeworld
+rosters and unrelated overlays remain outside this bounded composition.
 
 ## Source contract
 

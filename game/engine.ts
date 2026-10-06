@@ -9538,7 +9538,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = classicHomeworldLeaderSkillsProfile(state);
   if (state.homeworlds) {
     requireRule(homeworlds && state.homeworlds.custody === null,
-      'Homeworld Leader Skills require a fresh classic lobby without other optional modules or previews.');
+      'Homeworld Leader Skills require a fresh classic lobby with only supported original Discovery, Tech or Advanced Stronghold modules.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -9587,8 +9587,9 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   homeworldShipmentIntegrity(state);
   const g = structuredClone(state);
   requireFreshSetup(g, homeworlds || nexus || ix || factions);
+  const homeworldSkills = leaderSkills && classicHomeworldLeaderSkillsProfile(g);
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
-  const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold || classicDiscoveryLeaderSkillsProfile(g));
+  const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold || homeworldSkills || classicDiscoveryLeaderSkillsProfile(g));
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
   const discoveryComposition = discovery && (discoveryModuleProfile(g) ||
     classicDiscoveryNexusProfile(g) || pairedDiscoveryNexusProfile(g) ||
@@ -9598,7 +9599,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),
   'Tech Tokens require a fresh supported three-through-six-seat lobby with unused tokens.');
-  requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || nexusModules || discoveryComposition) &&
+  requireRule(!g.strongholdCards || strongholdFactions || ((skillStronghold || homeworldSkills || nexusModules || discoveryComposition) &&
     JSON.stringify(g.strongholdCards) === JSON.stringify(createStrongholdCards())),
   'Stronghold Cards require a fresh supported Advanced lobby with unused cards.');
   requireRule(
@@ -9610,7 +9611,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       (nexus || !g.nexusCards) &&
       (ecazTreachery || !g.ecazTreachery) &&
       (!g.techTokens || skillTech || nativeTech || nexusModules || discoveryComposition) &&
-      (strongholdFactions || skillStronghold || nexusModules || discoveryComposition || !g.strongholdCards) &&
+      (strongholdFactions || skillStronghold || homeworldSkills || nexusModules || discoveryComposition || !g.strongholdCards) &&
       (homeworlds || !g.homeworlds) &&
       g.players.every((p) =>
         FACTIONS.some(

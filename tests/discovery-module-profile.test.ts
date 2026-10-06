@@ -55,13 +55,12 @@ void test('Discovery cannot redeal started components or silently remove another
 void test('Discovery Skills cannot silently drop unsupported native families or unrelated modules and previews', () => {
   const unsupported = lobby(['ixians', 'ecaz', 'guild'], ['ix', 'ecaz']);
   assert.throws(() => initializeLeaderSkillsGameForAudit(unsupported), RuleError);
-  const overlays = Array.from({ length: 5 }, () => lobby(['guild', 'emperor', 'harkonnen'], []));
-  overlays[0].homeworlds = { custody: null };
-  overlays[1] = lobby(['ixians', 'choam', 'guild'], ['ix', 'choam']);
-  overlays[1].nexusCards = { cards: null, phase: null };
-  overlays[2].advanced = false; overlays[2].strongholdCards = createStrongholdCards();
-  overlays[3].mentatQuestionPreview = true;
-  overlays[4].spiceBankerIncomePreview = true;
+  const overlays = Array.from({ length: 4 }, () => lobby(['guild', 'emperor', 'harkonnen'], []));
+  overlays[0] = lobby(['ixians', 'choam', 'guild'], ['ix', 'choam']);
+  overlays[0].nexusCards = { cards: null, phase: null };
+  overlays[1].advanced = false; overlays[1].strongholdCards = createStrongholdCards();
+  overlays[2].mentatQuestionPreview = true;
+  overlays[3].spiceBankerIncomePreview = true;
   for (const game of overlays) assert.throws(() => initializeLeaderSkillsGameForAudit(game), RuleError);
   const two = lobby(['guild', 'emperor'], []); two.techTokens = createTechTokens();
   assert.throws(() => initializeLeaderSkillsGameForAudit(two), RuleError);
