@@ -4,7 +4,7 @@
 bands to real battle resolution, player choices, AI and saved continuation.
 Complete module, faction and publication gates remain closed.
 
-## Native Homeworld composition — 8 October 2026
+## Native Homeworld composition — 6 October 2026
 
 Supported fresh native E1/E2 and standalone Ecaz OR Moritani/classic
 Homeworld skill entries retain the original rescue bands with optional
@@ -15,7 +15,7 @@ Tanks for equal Suboid substitution after rescue, repairing a reproduced
 automatic-normal-Suk null-quote crash. Rescued Cyborgs are not available for
 that substitution. Existing non-native Homeworld Face Dance suppression,
 support, skill-first assassination and original cleanup remain unchanged.
-See [native runtime proof](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--8-october-2026).
+See [native runtime proof](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--6-october-2026).
 Advanced Atreides/KH, Diplomat retreat, Emperor Face Dance allocation, Nexus
 with Homeworlds and other pending interpretations remain guarded.
 

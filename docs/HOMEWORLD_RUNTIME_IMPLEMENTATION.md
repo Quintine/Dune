@@ -6,7 +6,7 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
-## Native optional-module compositions — 8 October 2026
+## Native optional-module compositions — 6 October 2026
 
 The existing fresh private entries now preserve Homeworlds with Skills,
 Discovery or both for supported native E1/E2 single/paired rosters and
@@ -92,6 +92,17 @@ pushed revision or deployed acceptance claim.
 This bounded composition is Development Verified, not complete faction/
 module coverage, all combinations, comprehensive assurance, calibration or
 protected deployment.
+
+Pushed gameplay `3fb047c93d4f41840ee527883b3d7deda35b1645` then receives an
+exact build and owned isolated-QA restart. Both originalv74/v56 tables display
+that full revision at390px and retain the observed native/visitor counters.
+The actual updated native Homeworld guide renders at document width390.
+All tabs are closed. Final container
+[run37510034689/job112428482102](https://github.com/Quintine/Dune/actions/runs/37510034689/job/112428482102)
+completed successfully; isolated verification7 finishes before publication9.
+No protected server is deployed. Checkpoint dates follow the actual6October
+revision timestamp; private numeric run-directory labels are not calendar evidence.
+
 
 ## Classic optional-module compositions — 6 October 2026
 

@@ -1,6 +1,6 @@
 # Dune implementation status
 
-## 8 October 2026 — Native Homeworld optional modules
+## 6 October 2026 — Native Homeworld optional modules
 
 Original supported native E1/E2 and standalone Ecaz OR Moritani/classic
 Homeworld entries now retain Skills, Discovery or both with optional
@@ -26,7 +26,7 @@ Ixian starting card/training and typed paid native invasion; `TYH3JS3C`v56
 chooses native Moritani Suk rescue after a genuine defensive Homeworld win.
 Original armies, Tanks, skill custody and Collection continuation remain.
 Both tabs closed; temporary scripts removed.
-[Source-qualified evidence and limits](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--8-october-2026).
+[Source-qualified evidence and limits](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--6-october-2026).
 No full-mode, comprehensive assurance, calibration or protected-deployment claim.
 
 ## 6 October 2026 — Classic Homeworld optional modules

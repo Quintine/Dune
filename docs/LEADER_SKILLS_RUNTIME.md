@@ -5,7 +5,7 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
-## Native Homeworld composition — 8 October 2026
+## Native Homeworld composition — 6 October 2026
 
 Fresh supported native E1/E2 or standalone Ecaz OR Moritani/classic entries
 now retain original Homeworlds with all14 Skills, optional Discovery7/8,
@@ -14,7 +14,7 @@ assassination restrictions remain. The original Ixian card-before-training
 stage precedes native placement; physical Suk rescue forwards only residual
 Cyborg Tanks into equal Suboid substitution. Native-world rescue, genuine
 Tleilaxu own revival and Moritani death/replacement use existing custody.
-See [source-qualified native proof](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--8-october-2026).
+See [source-qualified native proof](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--6-october-2026).
 Nexus with Homeworlds, unsupported E3 pairs/mixed families, pending
 interpretations, public starts and full-mode acceptance remain separate.
 

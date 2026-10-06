@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 8 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 6 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -16,6 +16,14 @@ open mode gates.
 
 
 ## Current checkpoint and work
+
+**In progress — classic Homeworld Nexus composition.** The original eight
+Basic/Advanced Skills/no-Skills Discovery/no-Discovery admission cases reject
+before the classic-only envelope amendment and now reach original setup.
+Parent reuses existing module predicates and typed reserve deposits; disjoint
+skill-physical and no-Skills Discovery/lifecycle programmes are being authored.
+Native Homeworld/Nexus and pending effect gates are unchanged. This next
+composition has no frozen semantic/runtime/browser checkpoint yet.
 
 **Native Homeworld modules — bounded Development Verified.** Existing E1/E2 and
 standalone Ecaz OR Moritani/classic setup now compose Skills, Discovery or
@@ -35,8 +43,15 @@ Ixian card/training and ships one Suboid/one Cyborg to Kaitain for2, retaining
 Ix9/3, visitor1/1 and original HMS3/3. `TYH3JS3C`v56 submits actual native
 Moritani Suk rescue: Grumman14, own Tanks0, defeated Guild Tanks2; original
 Collection follows. Both tabs closed; throwaway smoke scripts removed.
-[Exact native scope](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--8-october-2026).
+[Exact native scope](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--6-october-2026).
 No public, ruling, comprehensive-assurance or protected-deployment gate changes.
+
+Gameplay `3fb047c93d4f41840ee527883b3d7deda35b1645` is pushed. Both original
+v74/v56 native tables and the updated guide were observed at390px on that
+exact build after an owned isolated-QA restart. Final
+[run37510034689/job112428482102](https://github.com/Quintine/Dune/actions/runs/37510034689/job/112428482102)
+completed successfully, isolated verification7 before publication9. Protected
+deployment remains separate.
 
 **Classic Homeworld optional modules — bounded Development Verified.**
 Fresh classic Basic/Advanced2–6 now composes Skills, Discovery or both with
