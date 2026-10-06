@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 6 October 2026 — Classic Homeworld Nexus optional modules
+
+Original classic Homeworld/Nexus now composes all14 Skills, Discovery7/8 or
+both with optional Tech3+/Advanced Strongholds2+, and no-Skills/no-Discovery
+Homeworld/Nexus retains the industry/card modules. Three existing envelopes
+are amended; original setup, typed native returns and physical consumers
+remain. Native optional-module families and pending rulings are not opened.
+Fifteen runner profiles keep stable8800–10200 bands and older names/seeds.
+
+New13 meaningful cases and affected242/242 across20 files, types/lint/build
+pass. Incidental raw/input/view/default-shape and fake identity assertions
+are removed rather than re-pinned. An observed zero-sample false pass for
+unsupported Basic Strongholds is repaired using the existing prerequisite
+guards; two-seat Tech also rejects before producing a report.
+Twenty-two original six-seat games across all15 families finish14233/14233
+actions with375 JSON continuations on one unchanged source tree.
+
+Actual human390px `RCGZK4CF`v167 keeps its originally offered Suk, draws
+Fremen after a real closing Nexus, declares a paid typed invasion and zero
+rescue, then spends the actual card for2 normal/1 Sardaukar revival:
+Kaitain14/Salusa5, native reserves19/5, Tanks0/0, original visitor1 and
+uncharged return wallet6. `A3LV8Y3U`v74 randomly reveals Shrine, enters
+with3 original Imperial counters, votes a genuine Maker majority and rides
+2 native Fremen including1 Fedaykin inside, then randomly draws Moritani
+after both actual Advanced piles and settled alliance. Atreides losses2
+do not repeat; original source armies/custody remain.
+All tabs close; temporary scripts are removed.
+[Exact programme/source receipts and limits](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-homeworld-nexus-composition--6-october-2026).
+No full-mode, comprehensive assurance, calibration or protected deployment claim.
+
 ## 6 October 2026 — Native Homeworld optional modules
 
 Original supported native E1/E2 and standalone Ecaz OR Moritani/classic

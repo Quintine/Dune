@@ -2,14 +2,14 @@ import { FACTIONS } from './catalog';
 import type { FactionModuleProfile } from './faction-module-profile';
 import { classicDiscoveryNexusProfile, pairedDiscoveryNexusProfile } from './discovery-module-profile';
 
-/** Public classic configuration only; the initializer checks undealt physical components. */
+/** Original classic Nexus modules, optionally Homeworlds; initializer checks undealt components. */
 export function classicNexusModulesProfile(game: FactionModuleProfile): boolean {
   if (game.discoveryEnabled || game.discoveries) return classicDiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || !game.nexusCards ||
     (!game.techTokens && !game.strongholdCards) || game.expansions.length !== 0 ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) ||
-    (game.strongholdCards && !game.advanced) || game.leaderSkills || game.homeworlds ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
     game.ecazTreachery || game.semutaPreview || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||

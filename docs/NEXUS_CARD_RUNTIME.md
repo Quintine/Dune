@@ -1,5 +1,14 @@
 # Nexus cards: common lifecycle checkpoint
 
+**Later classic Homeworld composition — 6 October 2026:** the original private
+Nexus entry now preserves Homeworlds with optional Discovery/Tech/Advanced
+Strongholds; the original skill/Nexus entry additionally retains all14
+training. Native optional-module Homeworld/Nexus families remain separate.
+Actual Maker/free entry/closing draw and typed fixed-three return reuse
+original handlers, not a second setup or borrowed native identity.
+[Source-bound13 cases/242 affected,22 original games and390px human proof](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-homeworld-nexus-composition--6-october-2026).
+Pending effects, public starts, full combinations and deployed acceptance remain open.
+
 **Later Harkonnen Betrayal checkpoint:** the separate fresh local
 `harkonnen-betrayal` profile connects actual personal and allied native
 traitor calls. Native allied counters precede provisional neutral

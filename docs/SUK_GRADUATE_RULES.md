@@ -4,6 +4,19 @@
 bands to real battle resolution, player choices, AI and saved continuation.
 Complete module, faction and publication gates remain closed.
 
+## Classic Homeworld Nexus composition — 6 October 2026
+
+Only fresh classic Homeworld skill entries additionally compose Nexus with
+optional Discovery/Tech/Advanced Strongholds. Original native saves stay
+local; external Imperial split remains the existing interpretation. The
+human may genuinely choose zero skilled saves, leaving typed casualties
+available for a later actual Fremen Nexus exact-three return. That ordinary
+revival separately deposits Sardaukar at Salusa through the printed native
+rule, not the Suk split. Paid wheel support settles before rescue; PDF22's
+free native strength bonus does not waive support for dialed forces.
+See [actual programmes,242 affected cases and human return](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-homeworld-nexus-composition--6-october-2026).
+Native Homeworld/Nexus, Advanced Atreides/KH and other pending effects remain guarded.
+
 ## Native Homeworld composition — 6 October 2026
 
 Supported fresh native E1/E2 and standalone Ecaz OR Moritani/classic

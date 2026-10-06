@@ -2,7 +2,6 @@ import type { Game, Player } from './engine';
 import { eliteRevivalRemaining } from './revival';
 import { classicNexusModulesProfile } from './nexus-module-profile';
 import { classicNexusLeaderSkillsProfile } from './leader-skill-profile';
-import { classicDiscoveryNexusProfile } from './discovery-module-profile';
 
 export const EMPEROR_NEXUS_REVIVALS = 3;
 export type EmperorNexusPools = {
@@ -66,7 +65,7 @@ export function emperorNexusModeSupported(g: Game): boolean {
         p.faction,
       ),
     ) &&
-    (classicDiscoveryNexusProfile(g) || (!!g.leaderSkills && classicNexusLeaderSkillsProfile(g)) ||
+    (classicNexusModulesProfile(g) || (!!g.leaderSkills && classicNexusLeaderSkillsProfile(g)) ||
       (!g.homeworlds &&
         (!g.leaderSkills || classicNexusLeaderSkillsProfile(g)) &&
         !g.discoveryEnabled &&

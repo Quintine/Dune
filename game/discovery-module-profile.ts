@@ -73,13 +73,13 @@ export function classicDiscoveryLeaderSkillsProfile(game: LeaderSkillProfile): b
   return true;
 }
 
-/** Original classic Nexus/Discovery, optionally Tech and Advanced Strongholds.
+/** Original classic Nexus/Discovery, optionally Homeworlds/Tech/Advanced Strongholds.
  * Setup verifies undealt inventories; live token/encounter frames are expected. */
 export function classicDiscoveryNexusProfile(game: FactionModuleProfile): boolean {
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     !game.nexusCards || game.expansions.length || game.players.length < 2 ||
     game.players.length > 6 || (game.techTokens && game.players.length < 3) ||
-    (game.strongholdCards && !game.advanced) || game.leaderSkills || game.homeworlds ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills ||
     game.ecazTreachery || game.semutaPreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||

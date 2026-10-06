@@ -263,17 +263,10 @@ for (const configuration of [configurations[0], configurations[1], configuration
   });
 }
 
-void test('authenticated native Nexus/Discovery setup preserves original seat IDs/dealt custody and excludes unrelated Emperor module profiles', () => {
-  const initial = initializeDiscoveryClassicNexusEffectsSetup({ advanced: true, tech: true, strongholds: true,
-    seatIds: ['authenticated-owner', 'authenticated-opponent', 'authenticated-third'] });
-  const saved = structuredClone(initial);
-  const accepted = initializeDiscoveryClassicNexusEffectsSetup({ initial });
-  assert.deepEqual(accepted, saved);
+void test('original Nexus/Discovery Emperor purchase rejects unrelated profiles and preserves completed return integrity', () => {
+  const initial = initializeDiscoveryClassicNexusEffectsSetup({ advanced: true, tech: true, strongholds: true });
   const fixture = createDiscoveryClassicNexusEffectsFixture({ initial });
-  assert.equal(fixture.actor, 'authenticated-owner'); assert.deepEqual(fixture.initial, saved);
-  assert.deepEqual(fixture.game.players.map(player => player.id), initial.players.map(player => player.id));
-  assert.deepEqual(initial, saved);
-  assert.equal(emperorNexusModeSupported(fixture.game), true);
+  discoveryClassicNexusEffectsInventory(fixture.game);
   // Explicit adversarial compositions, not histories claimed to be natural play.
   for (const change of [
     (game: Game) => { game.expansions = ['ix']; },

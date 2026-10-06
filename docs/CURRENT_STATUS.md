@@ -17,13 +17,23 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**In progress — classic Homeworld Nexus composition.** The original eight
-Basic/Advanced Skills/no-Skills Discovery/no-Discovery admission cases reject
-before the classic-only envelope amendment and now reach original setup.
-Parent reuses existing module predicates and typed reserve deposits; disjoint
-skill-physical and no-Skills Discovery/lifecycle programmes are being authored.
-Native Homeworld/Nexus and pending effect gates are unchanged. This next
-composition has no frozen semantic/runtime/browser checkpoint yet.
+**Classic Homeworld Nexus — bounded Development Verified.** Fresh original
+classic Basic/Advanced2–6 now composes Homeworlds/all12 with all14 Skills,
+Discovery7/8 or both, optional Tech3+/Advanced Strongholds2+. No-Skills/
+no-Discovery also retains the industry/card modules. Original predicates,
+setup, typed native returns and pending guards remain; native families are
+separate. New13 semantic cases, affected242/242 across20 files and final
+types/lint/build pass. All15 added families finish22 original six-seat
+games14233/14233 actions/375 JSON on one unchanged source tree.
+Actual human390px `RCGZK4CF`v167 draws a real Fremen singleton, submits paid
+typed invasion/zero-Suk and exact-three return: Kaitain14, Salusa5, native
+19/5, Tanks0/0, original visitor1 and unchanged return wallet6.
+`A3LV8Y3U`v74 randomly reveals Shrine, enters3 Imperial counters, votes the
+Maker majority, rides2 native Fremen including1 Fedaykin inside, then draws
+Moritani after both actual Advanced piles and settled alliance. Atreides
+losses2 do not repeat; original armies remain. All tabs closed; temporary
+scripts removed. [Exact scope/source receipts](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-homeworld-nexus-composition--6-october-2026).
+No complete-mode, final assurance, calibration or protected-deployment claim.
 
 **Native Homeworld modules — bounded Development Verified.** Existing E1/E2 and
 standalone Ecaz OR Moritani/classic setup now compose Skills, Discovery or

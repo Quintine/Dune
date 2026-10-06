@@ -6,6 +6,89 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
+## Classic Homeworld Nexus composition — 6 October 2026
+
+Fresh classic Basic/Advanced2–6 now composes original Homeworlds/all12 Nexus
+with all14 Skills, Discovery7/8 or both, optionally original Tech3+ and
+Advanced Strongholds2+. Without Skills/Discovery, original Homeworld/Nexus
+additionally retains Tech and/or Advanced Strongholds. Existing `nexus`
+with optional `--discoveries`, and `leader-skills --nexus-cards` with optional
+`--discoveries`, remain the only private setup paths. Original base33,
+private offers/hands, native placement and unchanged fresh-inventory guards
+remain; no public start, new profile initializer or saved-game conversion.
+Native Homeworld/Nexus optional-module families remain separate.
+
+Eight original admission cases reject before the amendment and reach
+original Traitors/Skills afterward. Three existing classic envelopes are
+extended; native predicates remain authoritative. The existing
+`addRevivedReserves`/`quoteNativeRevivalDeposit` already routes actual native
+returns, so no second revival adapter is added. The fixed Emperor grant
+uses the existing classic Nexus module predicate, including its Discovery
+route. Printed Nexus faces retain their own source authority; the supplied
+revision21–23 supplies the other variant and Homeworld mechanics.
+
+Thirteen semantic cases and the affected20-file union242/242 pass;
+final types/lint/build pass. Actual programmes cover qualified closing draws,
+typed native/visitor Suk, original cleanup/winner Tech, death/card return,
+exact-three Fremen Nexus revival, Maker casualties/votes/typed reserve ride,
+both Advanced piles and next-turn parent entry. JSON continuations and all
+four minimal legal policies exercise those actual windows. Support pays at
+resolution before Suk, not at reveal. PDF22 grants the native strength
+bonus for free, not free support for dialed forces. Ordinary stronghold
+Collection income remains separate from the printed blow harvest. A preceding
+Shai-Hulud may already resolve losses before Great Maker; those casualties
+do not repeat. Incidental input/view copies, fake-auth/identity pins and
+undefined-object/spice-property shape assertions are deleted, not re-pinned.
+
+Fifteen new runner profiles retain stable bands8800–10200 without changing
+older6400–8700 names/seeds. Families `homeworld-nexus-skills`,
+`homeworld-nexus-discovery` and `homeworld-nexus-discovery-skills` optionally
+add `-tech`, `-stronghold` or `-stronghold-tech`; no-Skills/no-Discovery
+profiles are `homeworld-nexus-tech`, `homeworld-nexus-stronghold` and
+`homeworld-nexus-stronghold-tech`. Existing prerequisite guards now include
+these Homeworld classifiers: an observed unsupported Basic Stronghold
+request falsely reported passed with zero samples; it now rejects, as does
+two-seat Tech, before output creation. The original empty receipt remains.
+
+Twenty-two original six-seat games across all15 families finish
+14233 accepted/14233 attempted actions with375 JSON continuations and no
+rejected candidates on unchanged source tree
+`3f53782ade5a1824388ddc1dc552558da79ab0b2ef6354c1819ef919d07f1b08`
+(HEAD `b5f5de5c83cf00e4b3006c422dad97f9d87a625c`). Every report's before/
+after receipt is read. This is one frozen gameplay batch, not complete-mode/
+final assurance or a later documentation-tree certificate. Private reports:
+`/tmp/dune-classic-homeworld-nexus-*-six-seat-20261006`.
+
+Human390px `RCGZK4CF` uses its original HTTP four-seat lobby/private CLI.
+Its actually offered Suk on Hasimir is selected without redealing. Conserved
+unplayed Spice/Nexus order selects the qualifying encounter/singleton; all
+armies, alliances, losses and payments follow real actions. The human draws
+Fremen after actual alliance settlement, ships3 ordinary/1 Sardaukar from
+Kaitain/Salusa to Junction for4, then explicitly chooses zero Suk saves.
+At next original Revival the human spends that actual Nexus for2 ordinary/
+1 Sardaukar. Atv167: reserves19/5, Tanks0/0, Kaitain14 ordinary, Salusa5
+Sardaukar, original Junction visitor1 ordinary, wallet6 unchanged by return.
+The physical Nexus is discarded once; the original trained disc survives.
+An offline auction-plan divergence is not retried: subsequent actions use
+the actual current owned policy/offer. No event or outcome is staged.
+
+Human390px `A3LV8Y3U` uses the original no-Skills Nexus/Discovery CLI,
+three actual seats and Homeworld/Tech/Strongholds. Only original unplayed
+Spice order is selected; the real supply lottery yields Shrine and the later
+Nexus draw yields Moritani without selecting either face. The human reveals
+Shrine, freely enters with the actual3-counter Imperial parent army, votes
+for the real majority, and rides2 native Fremen reserves including1 Fedaykin
+inside. The prior Atreides blow army goes to Tanks2 once. Both actual
+Advanced piles finish before settled alliance and the sole closing draw.
+Atv74: Shrine Emperor3/1 and Fremen2/1, native Southern Hemisphere6/2,
+Atreides Tanks2, held Moritani; no duplicate movement, shipment or fee.
+Choice screenshots, fresh state/accessibility and document width390 prove
+these working-tree controls. All tabs close and temporary scripts are removed.
+
+Native compositions, pending effect interpretations, public starts, full
+combinations, comprehensive assurance/calibration and protected deployment
+remain open; this bounded prototype does not shrink the complete goal.
+
 ## Native optional-module compositions — 6 October 2026
 
 The existing fresh private entries now preserve Homeworlds with Skills,

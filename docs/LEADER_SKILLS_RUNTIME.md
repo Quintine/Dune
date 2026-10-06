@@ -5,6 +5,20 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Classic Homeworld Nexus composition — 6 October 2026
+
+Fresh classic all14 Skills/all12 Nexus now retains original Homeworlds,
+optionally Discovery7/8, Tech3+ and Advanced Strongholds2+, through the
+existing private `leader-skills --nexus-cards` entry. Native Homeworld/Nexus
+optional-module families remain separate. Actual native/visitor Suk and
+source-local support, skill death and original cleanup/winner Tech remain.
+The next actual Fremen Nexus exact-three revival uses printed native deposit,
+including Sardaukar to Salusa, not the external Suk split interpretation.
+Thirteen meaningful cases, affected242/242, types/lint/build,22 original
+six-seat games and actual390px typed human return are recorded in
+[the source-bound Homeworld evidence](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-homeworld-nexus-composition--6-october-2026).
+No full-skill, combined-mode, ruling, public or deployed acceptance claim.
+
 ## Native Homeworld composition — 6 October 2026
 
 Fresh supported native E1/E2 or standalone Ecaz OR Moritani/classic entries

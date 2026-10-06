@@ -8571,7 +8571,7 @@ export function initializeNexusGameForAudit(state: Game): Game {
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null,
     'Enable Nexus cards in a fresh audit lobby first.');
   if (state.discoveryEnabled) {
-    requireRule(classicDiscoveryNexusProfile(state), 'Discovery Nexus requires a fresh classic lobby with optional original Tech and Advanced Strongholds.');
+    requireRule(classicDiscoveryNexusProfile(state), 'Discovery Nexus requires a fresh classic lobby with optional original Homeworlds, Tech and Advanced Strongholds.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -9540,7 +9540,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const homeworlds = homeworldLeaderSkillsProfile(state);
   if (state.homeworlds) {
     requireRule(homeworlds && state.homeworlds.custody === null,
-      'Homeworld Leader Skills require a fresh supported classic or native lobby with only original Discovery, Tech or Advanced Stronghold modules.');
+      'Homeworld Leader Skills require a fresh supported classic or native lobby with original optional modules; Nexus composition requires classic factions.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -9631,7 +9631,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
       : ix
       ? 'The Ix prototype supports base, Ixian and Tleilaxu factions without optional modules.'
       : homeworlds
-      ? 'The Homeworld setup audit supports implemented deck sets without Tech Tokens or Stronghold Cards.'
+      ? 'The Homeworld setup audit requires a fresh supported roster with original selected optional modules.'
       : discoveryComposition
       ? 'Discovery supports fresh classic, selected E1/E2 or standalone E3 factions with optional original Tech or Advanced Strongholds and no other overlays.'
       : 'The audit initializer supports base factions without expansions or optional modules.',

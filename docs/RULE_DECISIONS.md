@@ -165,6 +165,23 @@ reveal history and the log now name the sourced forfeiture. Exceptional leader
 custody and the independent private-step UX/public-preview gates are unchanged.
 See [the cutover and Advanced sequence](MORITANI_ASSASSINATE_LEADERS.md#authority-and-advanced-duration-cutover).
 
+## Classic Homeworld Nexus module composition — 6 October 2026
+
+The supplied revision21–23 permits the printed Homeworld/Skills/Discovery/
+Tech/Stronghold variants together or separately. Nexus faces retain their
+publisher/component source authority; this composition does not derive a
+Nexus effect or blanket immunity from the supplied PDF. Fresh classic
+Homeworld/Nexus therefore reuses the existing optional-module predicates,
+all14 offered training when selected and the original closing deal.
+Physical native Suk saves stay local. Fixed-three Fremen Nexus revival
+uses the existing printed native deposit, placing actual revived Sardaukar
+at Salusa, separate from the external Suk split interpretation.
+PDF22's free native strength bonus is not free dialed-force support.
+Actual prior Shai-Hulud casualties do not repeat at Great Maker.
+Native compositions, pending interpretations, public starts and full-mode
+acceptance remain separate.
+[Exact source-qualified scope](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-homeworld-nexus-composition--6-october-2026).
+
 ## Native Homeworld module composition — 6 October 2026
 
 Authorized supplied revision physical21–23 permits Homeworlds, Skills,

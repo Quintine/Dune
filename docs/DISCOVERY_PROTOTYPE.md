@@ -5,6 +5,21 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Classic Homeworld Nexus composition — 6 October 2026
+
+The original classic Nexus/Discovery entry now retains Homeworlds with
+optional Tech3+/Advanced Strongholds2+. The original skill/Nexus entry also
+retains Discovery7/8 and all14 training with those classic Homeworld modules.
+Real free parent entry, Maker losses/votes/typed native reserve ride, both
+Advanced piles and settled-alliance closing deal reuse original consumers.
+A preceding Shai-Hulud's completed losses do not repeat at Great Maker.
+Actual human supply/draw lotteries yield Shrine and Moritani; the human
+enters with3 Imperial counters, rides2 Fremen including1 Fedaykin inside,
+then draws only after both piles and alliance settlement. Source-qualified
+13 cases/242 affected and22 original completed games:
+[Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-homeworld-nexus-composition--6-october-2026).
+Native Homeworld/Nexus, pending effects, public starts and full-mode acceptance remain separate.
+
 ## Native Homeworld composition — 6 October 2026
 
 Fresh supported E1/E2 and standalone Ecaz OR Moritani/classic Discovery
