@@ -17,6 +17,30 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Standalone E3 Nexus without Skills — bounded changed-path proof.**
+Original Ecaz OR Moritani/classic ecaz33/all12 composes optional Homeworld/
+Discovery/Tech3+/Advanced Strongholds2+ through the existing generic entry.
+48 original admissions reject before and reach Traitors after. Original
+native setup, distinct roster/Cunning exclusions and ruling gates remain.
+New15 semantic cases and affected372/372 across32 files, types/lint/build pass.
+
+Across16 families,46/48 original six-seat games complete44,796accepted/
+45,084attempts/1,189JSON across two frozen trees. Eight initial new trace
+name collisions are preserved/repaired without changing seeds; only those
+interrupted families rerun. Basic odd-force/high-threshold revival captures
+keep their actual source guards; no first-batch48-green claim.
+Actual390px no-training `W6SCKGAA`v114 consumes supply Cunning then reveals
+on paid Guild1 arrival: Staban dies once, bounty5 credits12→17, Guild
+res14/Polar1/Tanks0. `WFEGQTRU`v94 retains random Cistern/free2 entry, actual
+Maker/both-pile/alliance close, paid native Junction1 and living-Duke Cunning:
+res11/Imperial6/Cistern2/visitor1/Tanks0, unchanged Cunning purse7.
+[Canonical source/game/human receipts](NEXUS_CARD_RULES.md#standalone-e3-nexus-without-skills--6-october-2026).
+Final types/lint/build and compiled no-training Nexus guide/evidence pass
+at viewport/document390. Owned QA cutover retains originalv114/v94;
+all tabs close and our three temporary scripts are removed. Checkpoint/
+exact-revision receipt follows. Other native families, pending rulings,
+full-mode acceptance and protected deployment remain open.
+
 **Native Homeworld Nexus — bounded Development Verified.** Existing paired
 E1/E2 Skills/no-Skills module/Discovery and standalone Ecaz OR Moritani
 Skills entries retain original Homeworld/Nexus with optional Discovery/

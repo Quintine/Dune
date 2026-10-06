@@ -16,6 +16,7 @@ export function homeworldDiscoveryProfile(game: FactionModuleProfile): boolean {
 
 /** The same roster/module contract during play; live Discovery frames are expected. */
 export function discoveryModeSupported(game: FactionModuleProfile): boolean {
+  if (game.nexusCards) return standaloneE3DiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) || game.expansions.length > 2 ||
@@ -123,4 +124,34 @@ export function pairedDiscoveryNexusProfile(game: FactionModuleProfile): boolean
     if (player.faction === secondary) hasSecondary = true;
   }
   return hasPrimary && hasSecondary;
+}
+
+/** One original E3 native/classics with Nexus/Discovery and no Skills.
+ * Optional Homeworlds/Tech/Advanced Strongholds retain their original prerequisites. */
+export function standaloneE3DiscoveryNexusProfile(game: FactionModuleProfile): boolean {
+  if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
+    !game.nexusCards || game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
+    game.players.length < 2 || game.players.length > 6 ||
+    (game.techTokens && game.players.length < 3) ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills ||
+    game.ecazTreachery || game.semutaPreview || game.advancedPreview || game.kullPreview ||
+    game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  let native: 'ecaz' | 'moritani' | null = null, harkonnen = false;
+  for (let i = 0; i < game.players.length; i++) {
+    const player = game.players[i];
+    for (let j = 0; j < i; j++) if (player.faction === game.players[j].faction) return false;
+    if (player.faction === 'ecaz' || player.faction === 'moritani') {
+      if (native !== null) return false;
+      native = player.faction;
+    } else {
+      let classic = false;
+      for (const faction of FACTIONS)
+        if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }
+      if (!classic) return false;
+    }
+    if (player.faction === 'harkonnen') harkonnen = true;
+  }
+  return native !== null && !(game.advanced && native === 'moritani' && harkonnen);
 }

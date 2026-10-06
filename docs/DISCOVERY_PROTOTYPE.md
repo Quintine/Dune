@@ -5,6 +5,24 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Standalone E3 Nexus without Skills — 6 October 2026
+
+Original Ecaz OR Moritani/classic `nexus --discoveries` now composes
+ecaz33/all12/Discovery7+8 without Skills, optional Homeworlds, Tech3+ and
+Advanced Strongholds2+. The existing generic initializer and original
+native aftermath are reused. Ecaz's no-Skills roster/independent Cunning
+exclusion and Advanced Moritani's non-Harkonnen boundary remain distinct.
+No starting Nexus deal, public start or played-save conversion is added.
+
+Actual human Ecaz inspects its random Cistern, reveals it and freely moves
+its two paid native parent counters at the next turn. Real Maker majority,
+both Advanced piles and settled alliance precede its actual closing draw;
+a paid native Junction visitor and living-Duke Cunning preserve20 counters.
+Native/nested losses, private assassination, original card cleanup/Tech
+and ordinary Collection remain separate source-local effects.
+[Canonical15-case/372-check,16-family and human receipts](NEXUS_CARD_RULES.md#standalone-e3-nexus-without-skills--6-october-2026).
+Two original ruling captures and all broader release/assurance gates remain.
+
 ## Native Homeworld Nexus composition — 6 October 2026
 
 Original paired Ixians+Tleilaxu OR CHOAM+Richese Nexus/Discovery entries,

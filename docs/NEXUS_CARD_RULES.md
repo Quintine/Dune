@@ -2,6 +2,113 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Standalone E3 Nexus without Skills — 6 October 2026
+
+The existing original `nexus` private entry now admits Ecaz **OR** Moritani
+with classic opponents and the exact ecaz33/all12 components, without
+Leader Skills. Basic/Advanced2–6 retains original Traitors/native placement,
+optionally Homeworlds, Discovery7/8 through `--discoveries`, unused Tech3+
+and Advanced Strongholds2+. Exactly one native E3 faction is required.
+Advanced Moritani excludes Harkonnen. No-Skills Ecaz may face Advanced
+Harkonnen under its original roster contract; that does **not** lift the
+independent Duke Cunning exclusion.
+
+Revision physical PDF21–23 permits these optional variants together or
+separately. Original printed Nexus faces still own each effect. Two focused
+no-Skills profile predicates extend the existing generic Nexus initializer;
+the paired initializer remains a genuine both-native contract. No new
+setup/deposit adapter, training component, starting Nexus hand, public start
+or played-save conversion is added. Original Ecaz Arrakis Occupy and
+Advanced Moritani assassination opt-ins retain their own source boundaries.
+
+Fifteen original semantic cases and the affected32-file union372/372 pass;
+types/lint/build pass. Actual closing draws, native paid Homeworld entry,
+living unclaimed Duke/expiry, chosen coalition payer and separately owned
+casualties, source-local held benefits, native Cunning supply placement,
+real Terror entry/death, Harkonnen Secret Ally's two-Traitor exchange,
+post-loss assassination/normal-call forfeiture/private replacement and
+Discovery reveal/free entry retain original physical pieces. All four
+minimal saved policies consume actual owned windows with JSON continuation.
+
+The real continuation determines timing: native assassination pauses the
+original winner's casualties/support/bounty/cleanup suffix; a sole loser
+Tech token transfers automatically after cleanup, not through an invented
+prompt. Ordinary last-battle Collection is separate from held-card battle
+income and native free strength. Foreign Homeworld visitors cannot make
+normal Traitor calls, so actual forfeiture is proved on Arrakis before a
+later paid Homeworld loss. A legal Grumman decline preserves original
+Assassination supply for Cunning without rewriting a token or its bank income.
+New incidental view/default/response-shape/action-type/whole-disc-copy pins
+are removed, not re-pinned. An existing no-Nexus Discovery assassination
+fixture preserves its physical regression with conserved ordinary unplayed
+land ordering before the first blow; it no longer randomly consumes the
+later fixture token. Duplicate private view/history-copy assertions are removed.
+
+Sixteen runner profiles preserve stable bands12600–14100 and older names/
+seeds: `e3-nexus`, `e3-discovery-nexus`, `e3-homeworld-nexus` and
+`e3-homeworld-nexus-discovery`, each optionally `-tech`, `-stronghold` or
+`-stronghold-tech`. Original dispatch, explicit prerequisites and exact
+saved-scenario matching remain. Two-seat Tech and Basic Stronghold requests
+reject before creating output directories.
+
+The first genuine batch exposes eight new no-Homeworld trace-name collisions:
+Ecaz and Moritani previously share profile/count/rules filenames. Partial
+directories/stdout/traces are preserved; the original faction/roster name
+branch is extended only to these new families. No file is overwritten or
+existing scenario seed/name changed. The unaffected eight Homeworld families
+produce24 original games,23 completions (23,497accepted/23,785attempts/625JSON)
+on unchanged tree
+`37f84f1a265139d041ad0926c96e33a1c1d50969f83de69a0bbdd5e59a60c73f`.
+Only the eight interrupted families are rerun in new private directories at
+their original seeds:24 games,23 completions (21,299/21,299actions/564JSON)
+on unchanged tree
+`df686433db6066146a154d35db70b4d6acd27e90d6138b4bf9be38d63f3dca9e`.
+Every report's before/after receipt is read. Combined46/48 finishes
+44,796accepted/45,084attempts/1,189JSON across **two** frozen trees, not an
+uninterrupted first-batch or later-documentation certificate. Both original
+remaining trace reasons are read: Basic odd-force Ecaz and a Homeworld
+revival crossing its high threshold retain existing source guards.
+Reports/captures remain `/tmp/dune-standalone-{profile}-six-seat-20261006`
+and `...-name-repaired-20261006`, seed20269006; partial collision artifacts remain.
+
+Actual390px `W6SCKGAA` uses its original Mori/Guild/Atreides HTTP lobby,
+ready Homeworld/Tech/Strongholds and `nexus --discoveries` CLI. The human
+keeps actually offered Esmar; no training or hands are injected. Only
+original unplayed Spice/Nexus order is selected. Real first-Mentat Extortion,
+both Advanced piles, Guild/Atreides alliance and closing draw precede the
+actual Moritani singleton. Real Grumman declines keep supply available.
+Atv85 the human selects Cunning/Assassination/Polar Sink; v86 consumes the
+card and commits the original supply token, purse12 unchanged. Guild's
+actual paid native1 arrival then triggers the human reveal: atv114 the
+original Staban Tuek dies once, the token is removed, Mori receives its
+printed5 bounty (12→17), Guild reserves14/Polar1/Tanks0 remain.
+This is Terror death, not a fabricated native post-loss Traitor assassination.
+
+Actual390px `WFEGQTRU` uses its original Ecaz/Guild/Emperor HTTP lobby and
+the same original no-Skills CLI/modules. The human keeps offered Hasimir;
+original Ecaz6 placement and first hands complete. A real supply lottery
+yields Cistern: paid native2 parent shipment, human private inspection/
+public revelation and v54 free entry precede actual Maker majority, both
+Advanced piles, Guild/Emperor alliance and closing draw. The human draws
+Ecaz, then declares native1 to Junction for1 (reserves12→11, separate
+visitor1). At the real Battle boundary v94 the human spends Ecaz for the
+living unclaimed Duke, purse7 unchanged. Original20 counters remain:
+native11, Imperial Basin6, Cistern2 and Junction visitor1; Tanks0.
+Fresh choice/result accessibility, screenshots and document width390 prove
+both bounded working-tree paths. Each singleton is discarded once.
+
+Other native singles/mixed decks/E3 pairs, native free-return/companion and
+Terror relocation/Grumman/HMS rulings, shared/captured/Ghola Duke authority,
+full modes, comprehensive assurance/calibration and protected deployment
+remain open. These prototypes do not reduce the complete project goal.
+
+Final types/lint/build and compiled no-training Nexus guide pass. The
+owned isolated worker cutover retains originalv114/v94 counters, removed
+Terror, dead Staban/bounty and living Duke. Fresh guide/evidence text and
+screenshots render at viewport/document390. All three managed tabs close;
+our three temporary TypeScript helpers are removed. Credential-free human
+and source receipts, partial collisions and ruling captures remain outside Git.
+
 ## Native Homeworld Nexus composition — 6 October 2026
 
 Existing paired Ixians+Tleilaxu OR CHOAM+Richese entries retain original

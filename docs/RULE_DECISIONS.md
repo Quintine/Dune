@@ -2,6 +2,23 @@
 
 Updated 2 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Standalone E3 Nexus without Skills — 6 October 2026
+
+Revision physical PDF21–23 permits original optional modules together/
+separately. The fresh one-native Ecaz OR Moritani/classic Nexus entry
+therefore composes Homeworld/Discovery/Tech/Advanced Strongholds without
+training, retaining each original prerequisite and printed effect source.
+Legal no-Skills Advanced Ecaz/Harkonnen admission does not grant Duke
+Cunning there; Advanced Moritani/Harkonnen remains inadmissible.
+Foreign Homeworld visitors cannot make normal Traitor calls.
+[Canonical source/consumer receipts](NEXUS_CARD_RULES.md#standalone-e3-nexus-without-skills--6-october-2026)
+distinguish actual native Cunning supply, Harkonnen extra Traitor exchange,
+Terror death and post-loss private assassination, support/cleanup/Tech and
+ordinary Collection. No default response/prompt or bank income is invented.
+Original Basic odd-force Ecaz and high-threshold revival timing captures
+remain guarded; native free returns, exceptional Duke and Terror relocation/
+Grumman/HMS questions are not settled by software passes.
+
 ## Native Homeworld Nexus composition — 6 October 2026
 
 Authorized revision physical PDF21–23 permits optional variants together

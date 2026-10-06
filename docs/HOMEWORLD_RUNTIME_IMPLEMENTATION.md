@@ -6,6 +6,22 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
+## Standalone E3 Nexus without Skills — 6 October 2026
+
+Fresh original Ecaz OR Moritani/classic Nexus now retains Homeworlds with
+no Skills, optional Discovery7/8, Tech3+ and Advanced Strongholds2+.
+Original ecaz33/all12, native setup, typed pools and roster/effect exclusions
+remain. Generic Nexus setup reuses the original faction flag; no parallel
+initializer or return adapter is added.
+
+Actual human native Ecaz2 free Cistern entry, paid Junction visitor1 and
+living-Duke Cunning retain native11/Imperial6/Cistern2/visitor1. Original
+Mori supply Cunning/paid Guild1 Polar arrival/human Assassination reveal
+consume one Nexus/token and kill the actual Staban once for its printed5.
+[Full canonical source/game/human receipts](NEXUS_CARD_RULES.md#standalone-e3-nexus-without-skills--6-october-2026)
+records372 affected checks and46/48 completed original games across two
+frozen source trees. No full-mode, new ruling or protected deployment claim.
+
 ## Native Homeworld Nexus composition — 6 October 2026
 
 Fresh original paired Ixians+Tleilaxu OR CHOAM+Richese entries now retain

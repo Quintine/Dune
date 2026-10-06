@@ -1,6 +1,6 @@
-import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
+import { classicNexusModulesProfile, pairedNexusModulesProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, pairedDiscoveryNexusProfile } from './discovery-module-profile';
+import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, pairedDiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
@@ -7612,6 +7612,8 @@ function e3StrongholdFactionProfile(g: Game): boolean {
   return native !== null && (native !== 'moritani' || !byFaction(g, 'harkonnen'));
 }
 function moritaniAssassinateModeSupported(g: Game) {
+  if (standaloneE3NexusProfile(g))
+    return g.advanced && g.players.some(player => player.faction === 'moritani');
   if (g.discoveryEnabled || g.discoveries)
     return g.advanced && !!g.discoveries &&
       (discoveryModeSupported(g) || nativeDiscoveryLeaderSkillsProfile(g)) &&
@@ -8566,16 +8568,22 @@ export function initializeHomeworldOccupationGameForAudit(state: Game): Game {
   if (byFaction(g, 'ecaz')) g.homeworldEcazVictoryPreview = true;
   return g;
 }
-/** Offline-only seam for the independent Nexus module; public starts remain gated. */
+/** Original classic or standalone E3 Nexus setup; public starts remain gated. */
 export function initializeNexusGameForAudit(state: Game): Game {
   requireRule(!!state.nexusCards && state.nexusCards.cards === null && state.nexusCards.phase === null,
     'Enable Nexus cards in a fresh audit lobby first.');
+  const standalone = standaloneE3NexusProfile(state);
   if (state.discoveryEnabled) {
-    requireRule(classicDiscoveryNexusProfile(state), 'Discovery Nexus requires a fresh classic lobby with optional original Homeworlds, Tech and Advanced Strongholds.');
+    requireRule(classicDiscoveryNexusProfile(state) || standaloneE3DiscoveryNexusProfile(state),
+      'Discovery Nexus requires a fresh classic or standalone E3 lobby with optional original Homeworlds, Tech and Advanced Strongholds.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
-  return initializeSetupGameForAudit(state, !!state.homeworlds, true, false, classicDiscoveryNexusProfile(state));
+  const g = initializeSetupGameForAudit(state, !!state.homeworlds, true, false,
+    classicDiscoveryNexusProfile(state) || standaloneE3DiscoveryNexusProfile(state), false, false, standalone);
+  if (standalone && byFaction(g, 'ecaz')) g.ecazOccupyPreview = true;
+  if (standalone && g.advanced && byFaction(g, 'moritani')) initializeMoritaniAssassinateState(g);
+  return g;
 }
 /** Fresh audit admission only; ordinary games and public starts never opt in. */
 export function initializeHarkonnenNexusBetrayalGameForAudit(state: Game): Game {
@@ -9391,6 +9399,8 @@ export function initializeFactionExpansionsGameForAudit(state: Game): Game {
   return initialized;
 }
 function ecazOccupyCompositionSupported(g: Game): boolean {
+  if (g.ecazOccupyPreview === true && standaloneE3NexusProfile(g) &&
+    g.players.some(player => player.faction === 'ecaz')) return true;
   if (g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g) &&
       g.players.some(p => p.faction === 'ecaz')) return true;
   if (g.ecazOccupyPreview === true && g.discoveries && discoveryModeSupported(g) &&
@@ -9597,7 +9607,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   const discoveryComposition = discovery && (discoveryModuleProfile(g) ||
     classicDiscoveryNexusProfile(g) || pairedDiscoveryNexusProfile(g) ||
     (leaderSkills && (classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || classicNexusLeaderSkillsProfile(g))));
-  const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) ||
+  const nexusModules = nexus && (classicNexusModulesProfile(g) || pairedNexusModulesProfile(g) || standaloneE3NexusProfile(g) ||
     (leaderSkills && (classicNexusLeaderSkillsProfile(g) || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g))));
   requireRule(!g.techTokens || ((skillTech || nativeTech || nexusModules || discoveryComposition) &&
     JSON.stringify(g.techTokens) === JSON.stringify(createTechTokens())),

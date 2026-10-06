@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 6 October 2026 — Standalone E3 Nexus without Skills
+
+Original Ecaz OR Moritani/classic ecaz33/all12 Nexus now composes optional
+Homeworld/Discovery/Tech3+/Advanced Strongholds2+ without training, through
+the generic existing initializer and original native aftermath.48 original
+admissions reject before and reach real Traitors afterward. Ecaz's legal
+no-Skills Harkonnen roster does not lift its separate Cunning exclusion;
+Advanced Moritani/Harkonnen, mixed families and pending effects stay gated.
+
+New15 semantic cases and affected372/372 across32 files, types/lint/build
+pass. Actual continuation, foreign-Homeworld no-Traitor rule, Grumman decline,
+sole-token automatic transfer and separate ordinary Collection correct
+fixture assumptions without suppressing game rules. Old no-Nexus native
+Discovery assassination retains its physical regression with conserved
+ordinary unplayed land ordering; private view-copy pins are removed.
+
+Sixteen runner families preserve seeds/bands12600–14100. Eight new trace
+name collisions are repaired by the original faction/roster name branch;
+partial artifacts are preserved. Original unaffected24 gives23 completions;
+only interrupted24 is rerun at original seeds and gives23 completions.
+Combined46/48 across two frozen trees completes44,796/45,084 actions/
+1,189JSON, not one uninterrupted certificate. Two source guards remain.
+
+Original human390px `W6SCKGAA`v114 plays actual supply-only Cunning then
+reveals Assassination on Guild's paid native1 Polar arrival: original Staban
+dies once, one token/card is consumed, bounty5 credits Mori12→17, Guild
+14reserves/Polar1/Tanks0. `WFEGQTRU`v94 randomly inspects/reveals Cistern,
+freely enters native2 after real parent payment, finishes Maker/both piles/
+alliance/closing draw, pays for native Junction visitor1 and spends Ecaz
+for the living Duke with unchanged purse7 and original20 counters.
+[Exact source/game/control evidence and limits](NEXUS_CARD_RULES.md#standalone-e3-nexus-without-skills--6-october-2026).
+Final types/lint/build and compiled no-training Nexus guide/evidence pass
+at viewport/document390. Owned QA cutover retains originalv114/v94;
+all tabs close and temporary helpers are removed. Private source/human
+receipts and partial/ruling artifacts remain. Exact checkpoint receipt
+follows; no complete-mode or protected-deployment claim.
+
 ## 6 October 2026 — Native Homeworld Nexus optional modules
 
 Original paired E1/E2 skill/Nexus and no-Skills Nexus module/Discovery
