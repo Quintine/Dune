@@ -17,6 +17,16 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**In progress — classic Homeworld optional modules.** Next source-clear batch
+composes Skills+Discovery together and optionally original Tech3+ or Advanced
+Strongholds2+ across each classic Homeworld Skills/Discovery family. Original
+four-seat fresh combined entry rejects before the change and now reaches
+genuine skill/Traitor setup; full changed-path verification is still pending.
+Parent owns shared admission, engine, tools and controls. Disjoint original
+Skills/Discovery and industry/held-card programmes own their new fixture/runtime
+pairs. No Nexus/native rosters, pending rulings, public starts or played-save
+conversion are opened by this batch.
+
 **Classic Homeworld + Skills or Discovery — bounded Development Verified.**
 Fresh Basic/Advanced two–six unique base factions retain original Homeworld
 setup with either all fourteen Skills or Discovery seven cards/eight tokens.
@@ -38,6 +48,15 @@ surfaces are390px without overflow. See
 [Homeworld runtime](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-skills-and-discovery--6-october-2026)
 for exact scope, source provenance and limitations. Public starts, full-mode
 certification and protected deployment remain gated.
+
+Pushed gameplay revision: `e2dcebca35a89ed1e1d129b1fbc2428378b1d700`.
+After exact build and owned isolated-QA restart, both original humanv11 tables
+show that full revision at390px; the actual Homeworld guide paragraph renders
+without overflow. Tabs are closed and temporary human staging scripts removed.
+Exact container [run37427758535/job112151199196](https://github.com/Quintine/Dune/actions/runs/37427758535/job/112151199196)
+completed successfully: isolated storage/HTTP verification7 finished before
+publication9. Final job record was read. This is not protected-server
+deployment evidence.
 
 **Native trained Skills/Nexus/Discovery — bounded Development Verified:**
 original paired E1 Ixians+Tleilaxu/Ix47, paired E2 CHOAM+Richese/CHOAM35+cache

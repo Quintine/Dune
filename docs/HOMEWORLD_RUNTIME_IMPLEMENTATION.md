@@ -58,6 +58,15 @@ Both rendered surfaces have document width390; fresh state and accessibility
 were observed after submission. Nested shipment has engine/runtime coverage,
 not an additional human submission claim.
 
+Gameplay checkpoint `e2dcebca35a89ed1e1d129b1fbc2428378b1d700` is pushed.
+An exact build and owned isolated-QA restart retain both originalv11 tables;
+each displays the full checkpoint revision at390px. The actual Homeworld
+guide paragraph renders without overflow. All QA tabs are closed and the
+temporary human lottery/staging scripts were removed. Exact container
+[run37427758535/job112151199196](https://github.com/Quintine/Dune/actions/runs/37427758535/job/112151199196)
+completed successfully; final job record confirms isolated storage/HTTP
+verification7 finished before publication9. No protected server was deployed.
+
 Native expansion combinations, other overlays, Advanced Atreides Suk/KH,
 captured replacement, Diplomat Homeworld retreat and the separate Emperor
 Face Dance allocation question remain guarded. No public start, deployment,
