@@ -45,10 +45,9 @@ void test('Discovery cannot redeal started components or silently remove another
   const initial = lobby(['ixians', 'tleilaxu', 'guild'], ['ix']);
   const started = initializeDiscoveryGameForAudit(initial);
   assert.throws(() => initializeDiscoveryGameForAudit(started), RuleError);
-  const overlays: Game[] = [structuredClone(initial), structuredClone(initial), structuredClone(initial)];
-  overlays[0].homeworlds = { custody: null };
-  overlays[1].nexusCards = { cards: null, phase: null };
-  overlays[2].advanced = false; overlays[2].strongholdCards = createStrongholdCards();
+  const overlays: Game[] = [structuredClone(initial), structuredClone(initial)];
+  overlays[0].nexusCards = { cards: null, phase: null };
+  overlays[1].advanced = false; overlays[1].strongholdCards = createStrongholdCards();
   for (const game of overlays) assert.throws(() => initializeDiscoveryGameForAudit(game), RuleError);
 });
 

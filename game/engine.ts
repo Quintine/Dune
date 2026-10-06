@@ -1,7 +1,7 @@
 import { classicNexusModulesProfile, pairedNexusModulesProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
-import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, classicHomeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, pairedDiscoveryNexusProfile } from './discovery-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, classicHomeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, pairedDiscoveryNexusProfile } from './discovery-module-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedNexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -7622,7 +7622,8 @@ function moritaniAssassinateModeSupported(g: Game) {
     (!g.nexusCards || (!!g.leaderSkills && standaloneE3NexusLeaderSkillsProfile(g))) &&
     (!g.leaderSkills || advancedMoritaniLeaderSkillsProfile(g)) &&
     (!g.strongholdCards || e3StrongholdFactionProfile(g) ||
-      (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) && !g.homeworlds &&
+      (!!g.leaderSkills && strongholdLeaderSkillsProfile(g))) &&
+    (!g.homeworlds || (!!g.leaderSkills && homeworldLeaderSkillsProfile(g))) &&
     !g.discoveryEnabled && !g.discoveries &&
     (!g.techTokens || nativeFactionTechProfile(g) || (!!g.leaderSkills && nativeTechLeaderSkillsProfile(g)));
 }
@@ -7652,7 +7653,8 @@ function moritaniAssassinateIntegrity(g: Game) {
     const opponent = getPlayer(g,receipt.opponent);
     requireRule(receipt.turn <= g.turn && opponent.faction === receipt.faction &&
       receipt.owner === state.owner && (TERRITORIES.some(t => t.id === receipt.territory) ||
-        validGameLocation(g, receipt.territory, 0)),
+        validGameLocation(g, receipt.territory, 0) ||
+        (receipt.territory.startsWith('homeworld:') && !!homeworldBattleLocation(g, receipt.territory))),
       'The assassination history no longer matches its original battle participants.');
   }
   const pending = state.opportunities.filter(r => r.stage === 'skills' || r.stage === 'choice');
@@ -9524,7 +9526,7 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
   requireRule(discoveryModuleProfile(state), 'Discovery requires a fresh supported classic, E1/E2 or standalone E3 lobby without unrelated overlays.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
-  const homeworlds = classicHomeworldDiscoveryProfile(state);
+  const homeworlds = homeworldDiscoveryProfile(state);
   if (homeworlds) requireRule(state.homeworlds?.custody === null,
     'Start Homeworld Discovery with original undealt native custody.');
   const g = initializeSetupGameForAudit(state, homeworlds, false, false, true, false, false, state.expansions.length > 0);
@@ -9535,10 +9537,10 @@ export function initializeDiscoveryGameForAudit(state: Game): Game {
 /** Gated development setup; never dispatched by a player action or room route. */
 export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   requireRule(!state.leaderSkills, 'Leader Skills cannot redeal existing skill cards.');
-  const homeworlds = classicHomeworldLeaderSkillsProfile(state);
+  const homeworlds = homeworldLeaderSkillsProfile(state);
   if (state.homeworlds) {
     requireRule(homeworlds && state.homeworlds.custody === null,
-      'Homeworld Leader Skills require a fresh classic lobby with only supported original Discovery, Tech or Advanced Stronghold modules.');
+      'Homeworld Leader Skills require a fresh supported classic or native lobby with only original Discovery, Tech or Advanced Stronghold modules.');
     requireFreshBaseRuntime(state);
     requireFreshFactionInventory(state);
   }
@@ -9553,7 +9555,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const initialized = initializeSetupGameForAudit(g, homeworlds, classicNexus || pairedNexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g), false, classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
-  if (nativeDiscoveryLeaderSkillsProfile(initialized) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
+  if ((homeworlds || nativeDiscoveryLeaderSkillsProfile(initialized)) && byFaction(initialized, 'ecaz')) initialized.ecazOccupyPreview = true;
   return initialized;
 }
 /** Fresh all-fourteen-card classic or supported native skills; no public income toggle. */
@@ -9587,7 +9589,7 @@ function initializeSetupGameForAudit(state: Game, homeworlds: boolean, nexus = f
   homeworldShipmentIntegrity(state);
   const g = structuredClone(state);
   requireFreshSetup(g, homeworlds || nexus || ix || factions);
-  const homeworldSkills = leaderSkills && classicHomeworldLeaderSkillsProfile(g);
+  const homeworldSkills = leaderSkills && homeworldLeaderSkillsProfile(g);
   const skillStronghold = leaderSkills && strongholdLeaderSkillsProfile(g);
   const skillTech = leaderSkills && (classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || skillStronghold || homeworldSkills || classicDiscoveryLeaderSkillsProfile(g));
   const nativeTech = factions && !leaderSkills && nativeFactionTechProfile(g);
@@ -21902,7 +21904,7 @@ function sukPhysicalSignature(p: Player, g?: Game) {
     ...(g?.homeworlds?.custody ? { homeworlds: g.homeworlds.custody } : {}) });
 }
 function sukReserveHomes(g: Game, player: Player, territory: string, options: readonly SukRescueOption[]): Extract<Decision, { kind: 'sukRescue' }>['reserveHomes'] {
-  if (!g.homeworlds?.custody || !classicHomeworldLeaderSkillsProfile(g) ||
+  if (!g.homeworlds?.custody || !homeworldLeaderSkillsProfile(g) ||
     !options.some(option => option.normal + option.elite > (option.kept ? 1 : 0))) return;
   const homes = homeworldRule(() => homeworldForceGroups(homeworldContext(g), g.homeworlds!.custody!));
   if (homes.some(home => home.id === territory && home.native === player.id)) return;
@@ -21972,11 +21974,11 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean, d
     sardaukar.casualties.options.some(choice => JSON.stringify(choice) === JSON.stringify(pending.losses)),
     'The Suk rescue lost its original Nexus Sardaukar casualty allocation.');
   let physical: SukPhysicalRescueQuote | undefined;
-  if (classicHomeworldLeaderSkillsProfile(g)) {
+  if (homeworldLeaderSkillsProfile(g)) {
     try {
       physical = homeworldRule(() => quoteSukPhysicalRescue(homeworldLossContext(g), g.homeworlds!.custody!, {
         player: player.id, territory: pending.territory, skill: pending.skill,
-        pool: pending.pool, losses: pending.losses!, option, destinations,
+        pool: pending.pool, losses: pending.losses!, option, destinations, eliteOrigins: pending.eliteOrigins,
       }));
     } catch (error) {
       if (error instanceof SukPhysicalRescueError) throw new RuleError(error.message);
@@ -22020,7 +22022,8 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean, d
       : 'none remained in the battle territory';
   log(g, `${player.name}'s Suk Graduate saved ${option.normal} ordinary and ${option.elite} elite forces: ${kept}, ${returned} returned to reserves, and ${tanks.normal + tanks.elite} casualties went to the Tanks.${automatic ? ' The only legal rescue was applied automatically.' : ''}`, { faction: player.faction, name: 'Suk Graduate rescue' });
   observeOccupation(g);
-  if (pending.eliteOrigins) stageIxSubstitution(g, player, pending.territory, pending.cards, quote!.eliteTanks!);
+  if (pending.eliteOrigins) stageIxSubstitution(g, player, pending.territory, pending.cards,
+    physical ? physical.eliteTanks! : quote!.eliteTanks!);
   finishWinner(g, player, pending.territory, pending.cards);
 }
 function winnerDiscardSignature(pending: NonNullable<Game['pendingWinnerDiscards']>) {

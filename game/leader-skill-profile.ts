@@ -113,6 +113,8 @@ export function standaloneE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): 
 /** Discovery keeps original native roster predicates; only this module envelope
  * differs. Live token/entry/Great Maker frames are original consumers. */
 function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+  if (game.homeworlds)
+    return game.discoveryEnabled === true && homeworldLeaderSkillModulesSupported(game);
   const players = game.players;
   return typeof game.advanced === 'boolean' && game.discoveryEnabled === true &&
     !!players && players.length >= 2 && players.length <= 6 &&
@@ -129,6 +131,7 @@ function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
 
 /** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
 function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+  if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
   if (noOtherLeaderSkillModules(game) || pairedNexusLeaderSkillsProfile(game)) return true;
   if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
@@ -151,6 +154,7 @@ function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
 
 /** Standalone E3 native predicates retain their own roster, Duke and assassination limits. */
 function e3LeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
+  if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
   if (noOtherLeaderSkillModules(game) || standaloneE3NexusLeaderSkillsProfile(game)) return true;
   if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
@@ -376,20 +380,31 @@ export function nativeTechLeaderSkillsProfile(game: LeaderSkillProfile): boolean
   return !!game.techTokens && nativeExpansionLeaderSkillsProfile(game);
 }
 
-/** Original classic Homeworld/Skills, optionally Discovery/Tech/Advanced Strongholds. */
-export function classicHomeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+/** Original Homeworld module envelope; native roster/deck predicates stay authoritative. */
+function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   const players = game.players;
-  if (!game.homeworlds || typeof game.advanced !== 'boolean' || game.expansions.length ||
+  if (!game.homeworlds || typeof game.advanced !== 'boolean' ||
     !players || players.length < 2 || players.length > 6 ||
     game.nexusCards ||
     (game.discoveryEnabled !== true && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||
     (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
     game.ecazTreachery ||
-    game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview ||
+    game.semutaPreview || game.advancedPreview ||
+    (game.moritaniAssassinatePreview && (!game.advanced || game.expansions.length !== 1 ||
+      game.expansions[0] !== 'ecaz' || !players.some(player => player.faction === 'moritani'))) ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview ||
     game.mentatQuestionPreview || game.spiceBankerIncomePreview) return false;
+  return true;
+}
+
+/** Original classic or existing native Homeworld/Skills, optionally Discovery/Tech/Strongholds. */
+export function homeworldLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (!game.homeworlds) return false;
+  if (game.expansions.length) return nativeExpansionLeaderSkillsProfile(game);
+  if (!homeworldLeaderSkillModulesSupported(game)) return false;
+  const players = game.players!;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
     let classic = false;
@@ -408,5 +423,5 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
     pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
     classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game) ||
-    classicHomeworldLeaderSkillsProfile(game);
+    homeworldLeaderSkillsProfile(game);
 }

@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 8 October 2026 — Native Homeworld optional modules
+
+Original supported native E1/E2 and standalone Ecaz OR Moritani/classic
+Homeworld entries now retain Skills, Discovery or both with optional
+Tech3+/Advanced Strongholds2+. Existing family decks, native setup and
+pending rulings remain. Exact Ixian pre-training nullable custody and
+same-quote residual Cyborg Tanks repair reproduced admission/Suk crashes.
+Native CHOAM invoices/support, Richese caps/nested invoices, Tleilaxu
+revival, Ecaz Arrakis Occupy and Moritani skill-first assassination retain
+original consumers. Twelve native runner families preserve old names/seeds.
+
+New35 cases; affected180/180 across19 files, final repair46/46 and
+types/lint/build pass. Original six-seat14/19 completions and all12-family
+Advanced three-seat134/144 initial completions retain exact source trees
+and ruling captures. Two actual Ambassador bot deadlocks finish from their
+preserved states after base-board target enumeration is repaired; every
+difficulty legally advances both captures. Not an uninterrupted144 pass or
+a final-tree certificate. A genuine Guild cancellation and natural-Storm
+fixture boundary are repaired with explicit legal programme choices, not
+altered shipment/storm rules.
+
+Human390px original HTTP/private CLI `4AG8J2ZX`v74 chooses its original
+Ixian starting card/training and typed paid native invasion; `TYH3JS3C`v56
+chooses native Moritani Suk rescue after a genuine defensive Homeworld win.
+Original armies, Tanks, skill custody and Collection continuation remain.
+Both tabs closed; temporary scripts removed.
+[Source-qualified evidence and limits](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--8-october-2026).
+No full-mode, comprehensive assurance, calibration or protected-deployment claim.
+
 ## 6 October 2026 — Classic Homeworld optional modules
 
 Original classic Homeworld Skills/Discovery families now compose either or

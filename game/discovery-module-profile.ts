@@ -9,34 +9,17 @@ export function discoveryModuleProfile(game: FactionModuleProfile): boolean {
     discoveryModeSupported(game);
 }
 
-/** Original classic Homeworld/Discovery, optionally Tech/Advanced Strongholds. */
-export function classicHomeworldDiscoveryProfile(game: FactionModuleProfile): boolean {
-  if (!game.homeworlds || typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
-    game.expansions.length || game.players.length < 2 || game.players.length > 6 ||
-    game.leaderSkills || game.nexusCards || (game.techTokens && game.players.length < 3) ||
-    (game.strongholdCards && !game.advanced) ||
-    game.ecazTreachery || game.semutaPreview || game.advancedPreview || game.kullPreview ||
-    game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
-    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
-    game.nexusHarkonnenBetrayalPreview) return false;
-  for (let i = 0; i < game.players.length; i++) {
-    const player = game.players[i];
-    for (let j = 0; j < i; j++) if (game.players[j].faction === player.faction) return false;
-    let classic = false;
-    for (const faction of FACTIONS)
-      if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }
-    if (!classic) return false;
-  }
-  return true;
+/** Original Homeworld/Discovery under the same classic/native roster contract. */
+export function homeworldDiscoveryProfile(game: FactionModuleProfile): boolean {
+  return !!game.homeworlds && discoveryModeSupported(game);
 }
 
 /** The same roster/module contract during play; live Discovery frames are expected. */
 export function discoveryModeSupported(game: FactionModuleProfile): boolean {
-  if (classicHomeworldDiscoveryProfile(game)) return true;
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) || game.expansions.length > 2 ||
-    (game.strongholdCards && !game.advanced) || game.leaderSkills || game.homeworlds || game.nexusCards ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills || game.nexusCards ||
     game.ecazTreachery ||
     game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||

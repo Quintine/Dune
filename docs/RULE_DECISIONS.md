@@ -165,6 +165,21 @@ reveal history and the log now name the sourced forfeiture. Exceptional leader
 custody and the independent private-step UX/public-preview gates are unchanged.
 See [the cutover and Advanced sequence](MORITANI_ASSASSINATE_LEADERS.md#authority-and-advanced-duration-cutover).
 
+## Native Homeworld module composition — 8 October 2026
+
+Authorized supplied revision physical21–23 permits Homeworlds, Skills,
+Discovery, Tech and Strongholds together/separately irrespective of faction
+selection. The bounded fresh native composition therefore reuses supported
+E1/E2 and standalone Ecaz OR Moritani/classic setup predicates, not a new
+rule model. Original skill-before-faction ordering applies to typed Suk and
+residual Cyborg substitution; Homeworlds remain outside Arrakis Occupy and
+Intrusion. Existing CHOAM low-opening-income, Basic odd Ecaz and exhausted
+Richese-cache guards remain visible in original game captures. The external
+Imperial Suk split is still an implementation interpretation, not ordinary
+revival placement or a new user/publisher ruling. Native Face Dance,
+Diplomat retreat and other pending interpretations remain separate.
+[Exact scope and evidence](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--8-october-2026).
+
 ## Advanced Homeworld occupation source cutover — 5 October 2026
 
 The authorized supplied revision, physical **page22**, qualifies an occupier

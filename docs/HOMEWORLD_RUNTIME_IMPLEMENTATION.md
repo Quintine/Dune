@@ -6,6 +6,93 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
+## Native optional-module compositions — 8 October 2026
+
+The existing fresh private entries now preserve Homeworlds with Skills,
+Discovery or both for supported native E1/E2 single/paired rosters and
+Advanced distinct-family decks, or standalone Ecaz **OR** Moritani with
+classic opponents. Basic/Advanced2–6; original unused Tech3+ and Advanced
+Strongholds2+ remain optional. Original roster/deck, Duke and assassination
+exclusions remain; no Nexus, unsupported E3 pairs/mixed families, unrelated
+previews, public starts or played-game conversion is admitted.
+
+Authorized revision physical21–23 permits the variants together/separately
+irrespective of factions. Existing native predicates and initializers remain
+the single setup path. Nullable Homeworld custody now covers the original
+Ixian `skillTreachery` card choice before training/force placement. Actual
+normal/trained native/visitor Suk rescue forwards residual Cyborg Tanks from
+the same physical quote into optional equal Suboid substitution, fixing a
+reproduced null-quote crash without restoring rescued counters to the Tanks.
+Native saved forces stay at the original home; the Imperial external split
+remains the implementation interpretation below, not ordinary revival.
+Non-native Homeworld winners retain the existing Face Dance offer prohibition.
+Original CHOAM payer/support, Richese caps and revealed nested invoice,
+Tleilaxu own leader revival, Ecaz Arrakis-only Occupy, Moritani assassination/
+skill return and native-world winner Tech timing remain distinct mechanics.
+
+Thirty-five new semantic cases and the affected19-file union180/180 pass.
+After the subsequently discovered Ambassador bot and natural-Storm fixture
+repairs, the final four-file union46/46, types/lint and build pass.
+The old classic invasion fixture now explicitly allows the original Guild
+interception decision: a real Easy-AI Karama cancellation had removed the
+army/battle under test. A preserved reproduction and80 original repaired
+invasion boundaries prove the fixture change, not a new shipment rule.
+
+The runner adds twelve `native-homeworld-{skills,discovery,discovery-skills}`
+families with optional `-tech`, `-stronghold`, `-stronghold-tech` at stable
+bands7600–8700; existing classic names/seeds6400–7500 are unchanged.
+Original six-seat `native-homeworld-skills` samples:14/19 complete,
+18693 accepted/18718 attempted actions and501 JSON continuations among those
+completed games, on unchanged tree
+`fc792b6089e8d3a17e661daf5a76b9148ad45692c3dfafb2d9481520822d6a31`.
+Five original captures stop at existing CHOAM low-opening-income, exhausted
+Richese cache or Basic odd Ecaz Occupy ruling guards; none is bypassed.
+
+All twelve families then run twelve original Advanced three-seat samples
+each:134/144 initially complete,34730 accepted/34853 attempted actions/
+867 JSON among completed games, on unchanged tree
+`3a99f592826e5476825d43330397c7fdca6582157f2bc05600f24a7b7919105f`.
+Eight captures retain the existing CHOAM ruling guard. Two actual Ecaz
+placement deadlocks exposed a bot enumerating revealed Discovery strongholds
+although the original engine/UI permit only base-board strongholds.
+The bot now uses that same base-board enumeration; every difficulty legally
+declines on both preserved exhausted-destination states and advances to
+Shipment. Those exact original captures complete102/124/2 and21/29/0 further
+accepted/attempted/JSON actions on unchanged tree
+`f80a99ba1799254ea93bd3eed6cc64ece7d95195d5503f115c0f570cf9e1828a`.
+This is136 completed three-seat games **across repaired continuations**,
+not144 uninterrupted passes or a final-tree certificate. Existing rejected
+competing Ambassador-arrival candidates remain visible in these reports.
+Reports/captures are private `/tmp/dune-native-homeworld-*-20261008` and
+`/tmp/dune-native-homeworld-skills-first-games-20261007`; no original game,
+native custody or pending ruling is reset.
+
+Human390px QA uses two original authenticated HTTP lobbies and the existing
+private CLI, with no redeal, held-card/force injection or outcome lottery.
+`4AG8J2ZX`v9 starts original Ixian `skillTreachery`: the human chooses its
+original Shield, then Prana-Bindu Adept on C’tair Pilru before original
+Traitors/native placement. In actual turn-one Shipment the human declares
+one Suboid plus one Cyborg from Ix to Kaitain for2 spice. Atv74 Ix retains
+9 Suboids/3 Cyborgs, the original Kaitain visitor group is1/1, the separate
+HMS army remains3/3 and the Ixian wallet is7. Original Skills/Discovery/
+Tech/Stronghold custody remains.
+
+`TYH3JS3C` uses original standalone Advanced Moritani Homeworld/Skills
+setup without Discovery. The human keeps its actually offered Suk Graduate
+on Lupino Ord. A genuine two-force Guild invasion and original1-supported
+native plan produce the native Moritani win. The human saves the actual
+single ordinary casualty through the owned Suk panel. Atv56 Grumman still
+has14 native forces, Moritani Tanks0, Guild Tanks2 and no visitors remain.
+The original Grumman Collection decision follows; no native force is moved
+to another home and support/plans/casualties are not replayed.
+Both actual choice screenshots, fresh accessibility/resulting state and
+document width390 were observed. These are working-tree controls, not a
+pushed revision or deployed acceptance claim.
+
+This bounded composition is Development Verified, not complete faction/
+module coverage, all combinations, comprehensive assurance, calibration or
+protected deployment.
+
 ## Classic optional-module compositions — 6 October 2026
 
 The fresh classic Homeworld prototypes now compose **Skills, Discovery or

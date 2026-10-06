@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 6 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 8 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -17,17 +17,26 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**In progress — original native Homeworld modules.** Parent integrates the
-existing E1/E2 and standalone E3 roster/deck predicates with original Skills,
-Discovery or both, optional Tech/Advanced Strongholds and no Nexus. Disjoint
-native E1/E2 and standalone E3 programmes are authored/frozen. Eight original
-native setups initially reject before play; admission exposes the genuine
-Ixian pre-training card stage and a real physical-Suk null-quote crash.
-Exact pre-placement nullable custody and source-qualified residual Cyborg
-forwarding are repaired; focused native/visitor normal/trained rescue and
-existing non-native Face Dance offer suppression pass. The authored remaining
-programmes still have failures, including real pending CHOAM low-income gates;
-they are not a verified native checkpoint. No ruling/public/deployment gate changes.
+**Native Homeworld modules — bounded Development Verified.** Existing E1/E2 and
+standalone Ecaz OR Moritani/classic setup now compose Skills, Discovery or
+both with optional Tech/Advanced Strongholds, no Nexus. Genuine Ixian
+pre-training nullable custody and physical-Suk residual Cyborg forwarding
+repair reproduced setup/crash cases. New35 cases and affected180/180 across
+19 files pass; final repair union46/46, types/lint/build pass.
+Original six-seat samples14/19 complete; all12 new families run144 original
+Advanced three-seat samples, initially134 complete. Eight CHOAM ruling
+captures remain; two genuine Ecaz placement deadlocks were repaired by
+using the engine/UI's existing base-board stronghold enumeration. All four
+policies advance both exact captures, which finish102/124/2 and21/29/0
+further accepted/attempted/JSON actions. Source batches and prior five
+six-seat ruling captures remain explicit; no uninterrupted144/final-tree
+certificate is claimed. Actual human390px `4AG8J2ZX`v74 chooses its original
+Ixian card/training and ships one Suboid/one Cyborg to Kaitain for2, retaining
+Ix9/3, visitor1/1 and original HMS3/3. `TYH3JS3C`v56 submits actual native
+Moritani Suk rescue: Grumman14, own Tanks0, defeated Guild Tanks2; original
+Collection follows. Both tabs closed; throwaway smoke scripts removed.
+[Exact native scope](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--8-october-2026).
+No public, ruling, comprehensive-assurance or protected-deployment gate changes.
 
 **Classic Homeworld optional modules — bounded Development Verified.**
 Fresh classic Basic/Advanced2–6 now composes Skills, Discovery or both with

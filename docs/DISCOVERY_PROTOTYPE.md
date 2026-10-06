@@ -5,6 +5,20 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Native Homeworld composition — 8 October 2026
+
+Fresh supported E1/E2 and standalone Ecaz OR Moritani/classic Discovery
+entries retain original Homeworlds, optionally all14 Skills through the
+existing `leader-skills --discoveries` entry, Tech3+ and Advanced Strongholds2+.
+Existing Basic/Advanced roster and family-deck boundaries remain. Actual
+parent entry, source-qualified nested invoices, capped native No-Fields and
+native/visitor/nested casualty aftermath reuse original consumers. Ambassador
+placement still targets only base-board strongholds, not revealed Discovery
+strongholds; minimal legal AI now respects that existing engine/UI boundary.
+See [original programmes and preserved captures](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#native-optional-module-compositions--8-october-2026).
+Nexus with Homeworlds, unsupported E3 pairs/mixed families, pending
+interpretations, public starts and full-mode acceptance remain separate.
+
 ## Classic Homeworld composition — 6 October 2026
 
 Fresh private classic Discovery setup retains Homeworlds in Basic/Advanced

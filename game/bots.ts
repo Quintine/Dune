@@ -1762,7 +1762,7 @@ function policyActions(g: GameView): Action[] {
         ambassadors.nextCost <= (me.spice ?? 0)
       ) {
         const token = ambassadors.tokens.find((t) => t.zone === 'supply');
-        const target = gameTerritories(g).find(
+        const target = TERRITORIES.find(
           (t) =>
             t.type === 'stronghold' &&
             t.id !== MOBILE_STRONGHOLD &&

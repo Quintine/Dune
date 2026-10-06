@@ -3,7 +3,7 @@ import {
   applyAction, createGame, initializeDiscoveryGameForAudit, joinGame, newPlayer,
   viewGame, type Action, type Game,
 } from '../game/engine';
-import { classicHomeworldDiscoveryProfile } from '../game/discovery-module-profile';
+import { homeworldDiscoveryProfile } from '../game/discovery-module-profile';
 import { DISCOVERY_CARD_PLACEMENTS, DISCOVERY_SPICE_CARDS, DISCOVERY_TOKEN_BY_ID, validateDiscoveryState,
   type DiscoveryLocationId, type DiscoveryOpaqueTokenId } from '../game/discoveries';
 import { discoveryEntryMoveAction } from '../game/discovery-entry-options';
@@ -42,6 +42,8 @@ export const homeworldClassicDiscoveryPlayer = (game: Game, actor: string) => {
 export function nextHomeworldClassicDiscoveryStep(game: Game): HomeworldClassicDiscoveryStep {
   if (!game.phaseOpening && !game.response) {
     const decision = game.decision;
+    if (decision?.kind === 'homeworldShipmentGuild')
+      return { actor: decision.player, action: { type: 'decision', event: decision.event, allow: true } };
     if (decision?.kind === 'discoveryEntry' || decision?.kind === 'greatMakerRide')
       return { actor: decision.player, action: { type: 'decision', event: decision.event, accept: false } };
     if (decision?.kind === 'greatMakerVote')
@@ -118,7 +120,7 @@ export function createHomeworldClassicDiscoveryFixture(options: HomeworldClassic
     game.discoveryEnabled = true;
   }
   assert.ok(game.status === 'lobby' || (game.status === 'setup' && game.turn === 1 && game.phase === 0));
-  assert.ok(classicHomeworldDiscoveryProfile(game));
+  assert.ok(homeworldDiscoveryProfile(game));
   const collector = game.players.find(player => player.faction === 'emperor')!.id;
   const fremen = game.players.find(player => player.faction === 'fremen')!.id;
   assert.ok(collector && fremen);

@@ -43,6 +43,8 @@ export type SukPhysicalRescueRequest = {
   losses: Casualties;
   option: SukRescueOption;
   destinations?: SukReserveDestinations;
+  /** Preserve actual per-source Cyborg Tank losses for subsequent substitution. */
+  eliteOrigins?: true;
 };
 export type SukPhysicalRescueReceipt = {
   player: string;
@@ -58,6 +60,7 @@ export type SukPhysicalRescueQuote = {
   players: HomeworldCombatLossPlayer[];
   removed: SukForceGroup[];
   receipt: SukPhysicalRescueReceipt;
+  eliteTanks?: Record<string, number>;
 };
 
 export function sukReceiptSignature(receipt: SukRescueReceipt): string {
@@ -171,7 +174,7 @@ export class SukPhysicalRescueError extends Error {
   }
 }
 
-/** Detached classic Homeworld settlement, including Arrakis rescue returns.
+/** Detached Homeworld settlement, including Arrakis rescue returns.
  * Printed Suk saves only real casualties. Native Homeworld forces already ARE
  * reserves, so every saved native counter remains in its original pool.
  *
@@ -190,7 +193,7 @@ export function quoteSukPhysicalRescue(
   quoteHomeworldCombatLoss(context, custody, {
     location: nativeHomes[0].id, player: request.player, losses: { normal: 0, elite: 0 },
   });
-  const rescue = quoteSukRescue(request.skill, request.pool, request.losses, request.option);
+  const rescue = quoteSukRescue(request.skill, request.pool, request.losses, request.option, request.eliteOrigins);
   const home = homes.find(candidate => candidate.id === request.territory);
   if (request.territory.startsWith('homeworld:') && !home)
     throw new SukPhysicalRescueError('Suk Graduate needs its original canonical battle Homeworld.');
@@ -254,7 +257,7 @@ export function quoteSukPhysicalRescue(
     location: nativeHomes[0].id, player: request.player, losses: { normal: 0, elite: 0 },
   });
   return {
-    custody: transaction.state, players, removed,
+    custody: transaction.state, players, removed, eliteTanks: rescue.eliteTanks,
     receipt: {
       player: request.player, territory: request.territory,
       source: home ? native ? 'native-homeworld' : 'visitor-homeworld' : 'arrakis',
