@@ -64,6 +64,15 @@ are not replaced by the Tech action. Both390px surfaces, choices and fresh
 resulting state were observed. These were working-tree controls, not a pushed
 revision/deployment claim. Both tabs closed; temporary human scripts removed.
 
+Gameplay checkpoint `fa025220f858e1cf3797f9a34ed39c0822c29bbd` is pushed.
+After an exact build and owned isolated-QA restart, both originalv17 tables
+display that full revision at390px and retain their observed counters/token
+choices. The actual updated Homeworld guide paragraph renders without overflow;
+all tabs are closed. Exact container
+[run37432875364/job112167625286](https://github.com/Quintine/Dune/actions/runs/37432875364/job/112167625286)
+completed successfully; final job record confirms isolated verification7
+finished before publication9. No protected server was deployed.
+
 Nexus, native expansion rosters, unrelated previews/variants and pending
 specific rulings remain separate in this checkpoint. Public starts, full
 combinations, comprehensive assurance, calibration and deployment stay open.

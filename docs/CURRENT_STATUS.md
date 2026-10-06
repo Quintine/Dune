@@ -17,6 +17,18 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**In progress — original native Homeworld modules.** Parent integrates the
+existing E1/E2 and standalone E3 roster/deck predicates with original Skills,
+Discovery or both, optional Tech/Advanced Strongholds and no Nexus. Disjoint
+native E1/E2 and standalone E3 programmes are authored/frozen. Eight original
+native setups initially reject before play; admission exposes the genuine
+Ixian pre-training card stage and a real physical-Suk null-quote crash.
+Exact pre-placement nullable custody and source-qualified residual Cyborg
+forwarding are repaired; focused native/visitor normal/trained rescue and
+existing non-native Face Dance offer suppression pass. The authored remaining
+programmes still have failures, including real pending CHOAM low-income gates;
+they are not a verified native checkpoint. No ruling/public/deployment gate changes.
+
 **Classic Homeworld optional modules — bounded Development Verified.**
 Fresh classic Basic/Advanced2–6 now composes Skills, Discovery or both with
 original Tech3+ and/or Advanced Strongholds2+. Original all14/DS7+8 setup,
@@ -32,6 +44,12 @@ visitor/native armies. Both tabs closed and temporary scripts removed.
 [Exact scope and provenance](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-optional-module-compositions--6-october-2026).
 Nexus/native rosters, pending specific rulings, public starts and protected
 deployment remain separate; the complete project goal is unchanged.
+
+Pushed gameplay `fa025220f858e1cf3797f9a34ed39c0822c29bbd`; both originalv17
+tables and updated Homeworld guide were observed on that exact build at390px.
+Final container [run37432875364/job112167625286](https://github.com/Quintine/Dune/actions/runs/37432875364/job/112167625286)
+completed successfully, isolated verification7 before publication9. Protected
+deployment remains separate.
 
 **Classic Homeworld + Skills or Discovery — bounded Development Verified.**
 Fresh Basic/Advanced two–six unique base factions retain original Homeworld
