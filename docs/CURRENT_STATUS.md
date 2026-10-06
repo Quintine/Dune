@@ -17,7 +17,7 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**Standalone E3 Nexus without Skills — bounded changed-path proof.**
+**Standalone E3 Nexus without Skills — bounded Development Verified.**
 Original Ecaz OR Moritani/classic ecaz33/all12 composes optional Homeworld/
 Discovery/Tech3+/Advanced Strongholds2+ through the existing generic entry.
 48 original admissions reject before and reach Traitors after. Original
@@ -35,11 +35,16 @@ res14/Polar1/Tanks0. `WFEGQTRU`v94 retains random Cistern/free2 entry, actual
 Maker/both-pile/alliance close, paid native Junction1 and living-Duke Cunning:
 res11/Imperial6/Cistern2/visitor1/Tanks0, unchanged Cunning purse7.
 [Canonical source/game/human receipts](NEXUS_CARD_RULES.md#standalone-e3-nexus-without-skills--6-october-2026).
-Final types/lint/build and compiled no-training Nexus guide/evidence pass
-at viewport/document390. Owned QA cutover retains originalv114/v94;
-all tabs close and our three temporary scripts are removed. Checkpoint/
-exact-revision receipt follows. Other native families, pending rulings,
-full-mode acceptance and protected deployment remain open.
+Final types/lint/build and compiled no-training Nexus guide pass.
+Pushed gameplay `185f3b37be96d7f09f1e35f774521bcedbbc2fac` receives an
+exact rebuild/owned QA cutover: both originalv114/v94 tables show its full
+revision with retained Terror/Staban/bounty/Duke/counters, and the new
+scope/evidence renders390. All tabs close; temporary helpers are removed.
+Final container
+[run37545814914/job112549436153](https://github.com/Quintine/Dune/actions/runs/37545814914/job/112549436153)
+completes successfully, isolated verification7 before publication9.
+The terminal record is read; no protected server is deployed. Other native
+families, pending rulings and full-mode acceptance remain open.
 
 **Native Homeworld Nexus — bounded Development Verified.** Existing paired
 E1/E2 Skills/no-Skills module/Discovery and standalone Ecaz OR Moritani

@@ -109,6 +109,17 @@ screenshots render at viewport/document390. All three managed tabs close;
 our three temporary TypeScript helpers are removed. Credential-free human
 and source receipts, partial collisions and ruling captures remain outside Git.
 
+Gameplay checkpoint `185f3b37be96d7f09f1e35f774521bcedbbc2fac` is pushed,
+rebuilt exactly and loaded into the owned isolated QA worker. Both original
+v114/v94 tables show its full Git revision at390px with retained Terror,
+Staban/bounty, Duke and physical counters. The updated no-training Nexus
+scope/evidence renders at document390; all three exact-checkpoint tabs close.
+Final container
+[run37545814914/job112549436153](https://github.com/Quintine/Dune/actions/runs/37545814914/job/112549436153)
+completes successfully, isolated verification7 before verified publication9.
+The complete terminal job record is read. This publishes the verified image;
+it is **not** protected-server deployment.
+
 ## Native Homeworld Nexus composition — 6 October 2026
 
 Existing paired Ixians+Tleilaxu OR CHOAM+Richese entries retain original
