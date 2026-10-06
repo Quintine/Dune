@@ -35,6 +35,13 @@ losses2 do not repeat; original armies remain. All tabs closed; temporary
 scripts removed. [Exact scope/source receipts](HOMEWORLD_RUNTIME_IMPLEMENTATION.md#classic-homeworld-nexus-composition--6-october-2026).
 No complete-mode, final assurance, calibration or protected-deployment claim.
 
+Pushed gameplay `c7073dc6b6602f09d15bea55c89608eaabb82613` receives an exact
+build/owned isolated-QA restart. Both originalv167/v74 tables and the actual
+combined Homeworld guide display/retain the observed state at390px on that
+revision. Final [run37524999649/job112479645440](https://github.com/Quintine/Dune/actions/runs/37524999649/job/112479645440)
+completes successfully, isolated verification7 before image publication9.
+Protected deployment remains separate.
+
 **Native Homeworld modules — bounded Development Verified.** Existing E1/E2 and
 standalone Ecaz OR Moritani/classic setup now compose Skills, Discovery or
 both with optional Tech/Advanced Strongholds, no Nexus. Genuine Ixian

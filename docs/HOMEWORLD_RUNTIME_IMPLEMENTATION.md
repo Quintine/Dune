@@ -89,6 +89,16 @@ Native compositions, pending effect interpretations, public starts, full
 combinations, comprehensive assurance/calibration and protected deployment
 remain open; this bounded prototype does not shrink the complete goal.
 
+Pushed gameplay `c7073dc6b6602f09d15bea55c89608eaabb82613` then receives an
+exact build and owned isolated-QA restart. The originalv167/v74 tables show
+that full revision at390px with retained native/visitor and Shrine/Maker
+custody; the actual updated combined Homeworld guide remains document390.
+Both tabs close. Final container
+[run37524999649/job112479645440](https://github.com/Quintine/Dune/actions/runs/37524999649/job/112479645440)
+completes successfully, isolated verification7 before verified publication9.
+No protected server is deployed.
+
+
 ## Native optional-module compositions — 6 October 2026
 
 The existing fresh private entries now preserve Homeworlds with Skills,
