@@ -28,7 +28,7 @@ Mixed/E3 pairs, shared-Duke training, borrowed Smuggler/pair-companion
 arithmetic, native free-return, captured/foreign training, Basic odd Ecaz,
 Advanced Harkonnen and the exhausted-cache count ruling stay guarded.
 
-Affected205/14files, types/lint and build pass. All14 real six-seat profiles
+Affected205/14files, types/lint and build pass. All eight new six-seat profiles
 were exercised: **23 of24** original samples completed with **25,751 accepted/
 25,751 attempts/685 JSON**, including actual typed Cunning rescue before equal
 Cyborg substitution, physical winner cleanup/Tech before matching Face Dance,
@@ -56,8 +56,9 @@ Basic/Advanced2–6, optional Tech3+ and Advanced Strongholds2+.
 Actual Maker losses/votes/typed rides, both piles, settled alliances and
 end-Spice closing deals use original controls. Signed native nested markers
 retain their one-invoice/current-revealed-site/physical-reserve contract.
-Other overlays, native Skills/Nexus/Discovery, pending rulings, public starts
-and played-save conversion stay gated.
+At that earlier checkpoint, native Skills/Nexus/Discovery stayed gated; the
+newer trained checkpoint above supersedes that limit. Other overlays, pending
+rulings, public starts and played-save conversion stay gated.
 
 Affected169, types/lint and build pass. All18 original six-seat samples complete:
 13,576 accepted/13,576 attempts/359 JSON on unchanged7c65011d working tree.

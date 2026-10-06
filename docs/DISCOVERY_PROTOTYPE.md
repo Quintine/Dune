@@ -69,10 +69,12 @@ Ecaz keeps the quiet living/unclaimed Duke separate from training and a real
 owner-labelled mandatory Occupy; Moritani keeps skill-first assassination,
 printed bounty and one private Mentat replacement.
 
-Affected union **205/205** across14 files; types/lint and build pass. All14 real
-six-seat profiles were exercised. **23 of24** original samples completed with
-**25,751 accepted/25,751 attempts/685 JSON round trips**, unchanged working tree
-`b1177766e25ad2b8818238fb04bc425d6f1b690d0e82b948d7db608718a9d23a`. The one
+Affected union **205/205** across14 files; types/lint and build pass. All eight
+new six-seat profiles were exercised. **23 of24** original samples completed
+with **25,751 accepted/25,751 attempts/685 JSON round trips**. The initial
+four five-module samples used unchanged `acc980c0` source; the remaining
+twenty used unchanged `b1177766` source after programme repairs. These are
+two source-bound batches, not one frozen-tree certificate. The one
 unfinished sample (Richese seed20273010) is preserved at turn-10 Bidding with an
 empty cache under the existing `richese-settlement` exhausted-cache count guard
 (1,726accepted/1,727attempts/46JSON); no bypass or re-run was applied. New
@@ -98,6 +100,13 @@ offered training, physical counters and live native states. Fresh390px
 accessibility/screenshots show full 2270c07 revision, document width390 and no
 horizontal overflow. Owned tabs are closed. This is not protected NAS
 deployment or live acceptance.
+
+The fourth native surface was separately exercised at the exact pushed
+2270c07 revision: GRM4XMUH11 exposes the original Guild Mentat and three-force
+Shrine entry; human entry12 retains Shrine3, spice4/reserves17.
+Fresh390px screenshot/accessibility proof and the original response were
+observed, then the owned tab closed. The full CI job step record confirms7
+completed before9.
 
 ## Classic Skills/Nexus and paired native Nexus Discovery — 6 October 2026
 

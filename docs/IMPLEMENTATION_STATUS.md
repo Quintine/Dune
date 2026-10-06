@@ -10,9 +10,9 @@ selected Discovery only through the exact supported paired-skill profile.
 Original actors/hands/offers/native components and the mandatory Ecaz coalition
 plus Moritani assassination/own-revival consumers are inherited unchanged.
 
-Affected205/14files, types/lint and build pass. All14 real six-seat profiles
+Affected205/14files, types/lint and build pass. All eight new six-seat profiles
 were exercised:23 of24 original samples complete25,751accepted/25,751attempts/
-685JSON on unchangedb1177766 working tree. Trained consumers are physical:
+685JSON across source-bound acc980c0 and b1177766 batches. Trained consumers are physical:
 E1 Suk rescue before one equal Cyborg Tank substitution then cleanup/Tech/
 matching Face Dance; E2 signed one-invoice nested pair with private caps;
 Ecaz quiet living/unclaimed Duke then owner-labelled mandatory Occupy;
@@ -46,8 +46,9 @@ Tech3+/Advanced Strongholds2+. Exact existing family predicates, original
 constructors, actors/offers/starting hands and native setup remain.
 Source-clear revival quotas, training, typed aftermath and held effects stay
 shared. Richese Cunning keeps its signed one-tariff pair and current revealed
-destination. Native combined Skills/Nexus/Discovery, other overlays, public
-starts, conversion and unresolved rulings remain gated.
+destination. At this earlier checkpoint native combined Skills/Nexus/Discovery stayed
+gated; the newer trained checkpoint above supersedes that boundary. Other
+overlays, public starts, conversion and unresolved rulings remain gated.
 
 Affected169/14files, types/lint and build pass. Genuine original eighteen
 six-seat samples finish13,576/13,576/359 JSON on unchanged7c65011d tree.
