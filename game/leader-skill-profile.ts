@@ -85,6 +85,24 @@ export function pairedNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolea
   return hasPrimary && hasSecondary;
 }
 
+/** Exactly one original E1/E2 native with classics; paired/mixed rosters stay separate. */
+export function singleE1E2NexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.expansions.length !== 1 || !nexusLeaderSkillModulesSupported(game, false, true)) return false;
+  const expansion = game.expansions[0];
+  if (expansion !== 'ix' && expansion !== 'choam') return false;
+  const players = game.players!;
+  let native = 0;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let family: string | undefined;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction) { family = faction.expansion; break; }
+    if (family !== 'base' && family !== expansion) return false;
+    if (family === expansion) native++;
+  }
+  return native === 1;
+}
+
 /** One original E3 native with classics and optional Homeworlds/Discovery; no shared Duke or mixed family. */
 export function standaloneE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
@@ -131,7 +149,8 @@ function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
 /** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
 function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
-  if (noOtherLeaderSkillModules(game) || pairedNexusLeaderSkillsProfile(game)) return true;
+  if (noOtherLeaderSkillModules(game) || pairedNexusLeaderSkillsProfile(game) ||
+    singleE1E2NexusLeaderSkillsProfile(game)) return true;
   if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
@@ -385,7 +404,8 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
   if (!game.homeworlds || typeof game.advanced !== 'boolean' ||
     !players || players.length < 2 || players.length > 6 ||
     (game.nexusCards && !classicNexusLeaderSkillsProfile(game) &&
-      !pairedNexusLeaderSkillsProfile(game) && !standaloneE3NexusLeaderSkillsProfile(game)) ||
+      !pairedNexusLeaderSkillsProfile(game) && !singleE1E2NexusLeaderSkillsProfile(game) &&
+      !standaloneE3NexusLeaderSkillsProfile(game)) ||
     (game.discoveryEnabled !== true && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||
     (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
     game.ecazTreachery ||
@@ -421,6 +441,7 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
+    singleE1E2NexusLeaderSkillsProfile(game) ||
     pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
     classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game) ||
     homeworldLeaderSkillsProfile(game);

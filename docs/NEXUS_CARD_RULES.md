@@ -2,6 +2,107 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Single-native E1/E2 Nexus composition — 7 October 2026
+
+The original private `nexus` and `leader-skills --nexus-cards` entries now
+admit exactly **one** Ixians OR Tleilaxu with the Ix47 deck, or CHOAM OR
+Richese with CHOAM35 and the native Richese cache when seated, plus classic
+opponents. All12 Nexus remain; all14 Skills are present only when selected.
+Basic/Advanced2–6 may retain original Homeworlds, Discovery7/8 through
+`--discoveries`, Tech3+ and Advanced Strongholds2+. Selecting both industry
+and Strongholds requires Advanced3+.
+
+Original setup is reused: Ixian first offers/HMS, physical Tleilaxu Face
+Dancers, CHOAM Auditor exclusion and Richese markers/cache retain their
+native inventories. The paired entry still requires both native factions;
+no parallel initializer, shipment/return adapter or played-save migration
+is added. Mixed-deck Nexus, E3 pairs, public starts and unresolved printed
+effects remain separate.
+
+Original programmes cover typed native/visitor/nested Suk, residual Cyborg
+substitution after Suboid Cunning, cleanup/winner Tech before Face Dance,
+source-local Tleilaxu refresh and optional own-disc revival training,
+Special/Shield CHOAM fuel and delayed paid support, and Basic/Advanced
+signed Richese pairs with one invoice and actual materialization. Native
+CHOAM Worthless-only effects and unrelated Semuta rules are not weakened.
+Actual revival training first accepts the original optional two-card draw;
+an empty offer before that acceptance is not a dealt hand.
+
+Development evidence: **192 original fresh admissions**, versus eight
+before this composition; **15 meaningful programmes**, all four minimal
+policies and **398/398 affected checks across35 files**, types/lint pass.
+The obsolete solo-Ix admission rejection is deleted, not re-pinned.
+No complete-mode, deployed, recovery or calibration claim.
+
+The32 original runner families use `single-nexus`,
+`single-discovery-nexus`, `single-homeworld-nexus` and
+`single-homeworld-nexus-discovery`, each optionally `-skills`, then
+`-tech`, `-stronghold` or `-stronghold-tech`. Stable14200–17300 bands leave
+older names/seeds unchanged. Each scenario name includes the actual native
+roster to avoid collisions between the four original setups.
+
+All32 original six-seat families at seed20270007 retain unchanged tree
+`dbc4efcd95aa185fb14b3ab73a05d0939896bb3f105cc4ec218957ccbe2a0c99`
+on HEAD204d919:189 of192 finish206,487 accepted/206,493 attempted actions,
+5,493 JSON continuations. Every before/after source receipt was read.
+The two source-bound exhausted Richese cache/low-Tupile CHOAM captures
+remain preserved. The third capture exposed an actual ordinary-skill
+consumer omission: without HW/Discovery/Tech/Strongholds, the new single
+Nexus predicate was absent from `ordinaryLeaderSkillModeSupported`.
+All four policies had no plan for the sole available Smuggler-trained
+leader. One shared original predicate term repairs it without changing
+Smuggler rules or adding an AI exception. The exact original capture
+finishes40/40 actions/one JSON on unchanged
+`cc4fab886b6169faf7ddeb9004ed11c01617a0587be65f8939b3f0e8e4fcaa52`.
+Combined190/192 completion accounts for the retained1678/1680/45 prefix
+and its continuation:208,205 accepted/208,213 attempted/5,539 JSON across
+**two** frozen trees, not192 uninterrupted passes or final-tree assurance.
+The added original bare-Skills programme proves printed Smuggler5 then
+ordinary Collection1 from one physical six-spice pile, paid exactly once.
+
+Original human room **4CR7JHUL v160**: HTTP Ix/Guild/Fremen ready lobby,
+original private Skills/Nexus/Discovery entry and actual La La La offer;
+human chooses the genuinely offered Planetologist on C’tair. Native
+2/1 Gara8 shipment pays4 spice, actual random Cistern inspection/reveal
+and next-turn free1 Suboid/1 Cyborg entry preserve20 physical/seven Cyborgs.
+Real Maker majority/typed Fremen2/1 ride, both Advanced piles and settled
+Guild/Fremen alliance precede the human Ixian closing draw. Human Cunning
+spends one singleton atv150; actual normal1/full/free quote, C’tair5/dial1/
+support0 seal, normal battle and chosen Cyborg1 loss lead to human equal
+1 Suboid/1 Cyborg nested substitution. Purse7 stays unchanged through
+exchange; later original Cistern Collection2 is separate. Final12 native,
+6 HMS,1 Cistern Cyborg and1 normal Tanks total20; Cyborgs3native+3HMS+
+1Cistern, none in Tanks. C’tair remains alive/trained; discard exactly[Ixians].
+
+Original no-training room **LNHZXDEE v102**: fresh Richese/Guild/Fremen
+HTTP/private Nexus/Discovery setup, native20/cache10 and actual Haloa Rund
+traitor choice. Original paid Guild3 parent/free entry and random Cistern,
+real Maker majority/both piles/alliance and closing draw precede native
+Cunning. Human five-plus-three nested pair quotes **one** spice: atv101,
+purse5→4, native20→15, Cistern5 plus concealed3; human reveal atv102
+materializes exactly3 more, native12/Cistern8/Tanks0, no marker or extra
+fee. No absent CHOAM native income is fabricated; discard exactly[Richese].
+Actual controls, fresh AX/screens and both20-counter public inspectors
+fit viewport/document390. Only conserved unplayed order and undealt
+closing singleton were selected by exact owned-room CAS; no cards dealt,
+forces, wallets, deaths, phases or battle outcomes were staged.
+
+Actual CLI rejects two-seat single Skills/Tech and Basic single HW/Nexus/
+Discovery/Strongholds with exit1 **before** either output directory exists.
+Source-qualified reports and credential-free human evidence remain in
+`/tmp/dune-single-native-nexus-human-proof-20261007.json`, outside Git.
+Final types/lint/build pass. The final compiled Nexus scope/398-check
+evidence renders at viewport/document390 after reloading only the owned
+isolated QA worker; both changed rooms retainv160/v102 and physical pools.
+Exact pushed-revision publication receipts remain pending; protected
+deployment stays separately blocked.
+
+Canonical implementation: `game/leader-skill-profile.ts`,
+`game/nexus-module-profile.ts`, `game/discovery-module-profile.ts` and the
+existing `game/engine.ts` initializers; original programme evidence:
+`tests/single-nexus-e1-runtime.test.ts` and
+`tests/single-nexus-e2-runtime.test.ts`.
+
 ## Standalone E3 Nexus without Skills — 6 October 2026
 
 The existing original `nexus` private entry now admits Ecaz **OR** Moritani

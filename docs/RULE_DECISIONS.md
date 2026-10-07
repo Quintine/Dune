@@ -2,6 +2,21 @@
 
 Updated 2 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
 
+## Single-native E1/E2 Nexus composition — 7 October 2026
+
+The same authorized physical PDF21–23 optional-module independence admits
+exactly one original Ixians OR Tleilaxu, or CHOAM OR Richese, with classic
+opponents and its required one-family deck. Original Nexus/Skills setup
+now composes optional Homeworlds/Discovery/Tech/Advanced Strongholds;
+the paired entry still requires both natives. This removes an admission
+limitation, not a printed effect guard. Native-only own-disc revival
+training first accepts its optional draw; native CHOAM Worthless effects
+are distinct from Nexus any-Treachery fuel.
+[Canonical scope and current consumer evidence](NEXUS_CARD_RULES.md#single-native-e1e2-nexus-composition--7-october-2026).
+Mixed decks, native free-return/companion, public-start/save conversion and
+pending printed rulings remain separate. Software passes confer no new
+source authority or complete-mode certification.
+
 ## Standalone E3 Nexus without Skills — 6 October 2026
 
 Revision physical PDF21–23 permits original optional modules together/

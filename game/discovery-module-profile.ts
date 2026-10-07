@@ -16,7 +16,7 @@ export function homeworldDiscoveryProfile(game: FactionModuleProfile): boolean {
 
 /** The same roster/module contract during play; live Discovery frames are expected. */
 export function discoveryModeSupported(game: FactionModuleProfile): boolean {
-  if (game.nexusCards) return standaloneE3DiscoveryNexusProfile(game);
+  if (game.nexusCards) return standaloneE3DiscoveryNexusProfile(game) || singleE1E2DiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) || game.expansions.length > 2 ||
@@ -154,4 +154,30 @@ export function standaloneE3DiscoveryNexusProfile(game: FactionModuleProfile): b
     if (player.faction === 'harkonnen') harkonnen = true;
   }
   return native !== null && !(game.advanced && native === 'moritani' && harkonnen);
+}
+
+/** Exactly one original E1/E2 native/classics with Nexus/Discovery and no Skills. */
+export function singleE1E2DiscoveryNexusProfile(game: FactionModuleProfile): boolean {
+  if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
+    !game.nexusCards || game.expansions.length !== 1 ||
+    game.players.length < 2 || game.players.length > 6 ||
+    (game.techTokens && game.players.length < 3) ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills ||
+    game.ecazTreachery || game.semutaPreview || game.advancedPreview || game.kullPreview ||
+    game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  const expansion = game.expansions[0];
+  if (expansion !== 'ix' && expansion !== 'choam') return false;
+  let native = 0;
+  for (let i = 0; i < game.players.length; i++) {
+    const player = game.players[i];
+    for (let j = 0; j < i; j++) if (player.faction === game.players[j].faction) return false;
+    let family: string | undefined;
+    for (const faction of FACTIONS)
+      if (faction.id === player.faction) { family = faction.expansion; break; }
+    if (family !== 'base' && family !== expansion) return false;
+    if (family === expansion) native++;
+  }
+  return native === 1;
 }

@@ -1,5 +1,28 @@
 # Dune implementation status
 
+## 7 October 2026 — Single-native E1/E2 Nexus
+
+Original one-native Ixians OR Tleilaxu/Ix47, or CHOAM OR Richese/CHOAM35
+plus native cache, composes Nexus with or without Skills and optional
+Homeworlds/Discovery/Tech3+/Advanced Strongholds2+. Existing original
+initializers and source-local consumers remain; paired predicates still
+require both natives.192 admissions reach setup versus eight before.
+New15 programmes/affected398 across35 files and types/lint pass.
+All32 original six-seat families yield190/192 completed208,205accepted/
+208,213attempted/5,539JSON across two frozen trees: one real shared
+ordinary-skill omission is repaired and its original Smuggler capture
+finishes40/40/one JSON; two printed ruling guards remain preserved.
+The obsolete solo-Ix rejection is deleted, not re-pinned. New physical
+Smuggler5 plus ordinary Collection1 pays one six-spice pile exactly once.
+Actual original390px Ixian offer/training/typed entry/Cunning/free support/
+equal nested Cyborg substitution and no-training Richese one-spice5+3/
+concealed reveal preserve20 counters in4CR7JHULv160/LNHZXDEEv102.
+[Canonical source/game/human qualifications](NEXUS_CARD_RULES.md#single-native-e1e2-nexus-composition--7-october-2026).
+Final types/lint/build and actual compiled390px guide pass; only the owned
+QA worker reloads, retainingv160/v102 and physical pools. Exact pushed-revision
+publication receipt remains pending; no full-mode, protected deployment
+or comprehensive-assurance claim.
+
 ## 6 October 2026 — Standalone E3 Nexus without Skills
 
 Original Ecaz OR Moritani/classic ecaz33/all12 Nexus now composes optional

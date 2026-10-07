@@ -70,10 +70,7 @@ void test('Discovery Skills cannot replace already initialized Discovery compone
   assert.throws(() => initializeLeaderSkillsGameForAudit(started), RuleError);
 });
 
-void test('Discovery Nexus rejects native families, used components and incompatible prerequisites before redealing', () => {
-  const native = lobby(['ixians', 'guild', 'fremen'], ['ix']);
-  native.nexusCards = { cards: null, phase: null };
-  assert.throws(() => initializeNexusGameForAudit(native), RuleError);
+void test('Discovery Nexus rejects used components and incompatible prerequisites before redealing', () => {
   const two = lobby(['guild', 'emperor'], []);
   two.nexusCards = { cards: null, phase: null }; two.techTokens = createTechTokens();
   assert.throws(() => initializeNexusGameForAudit(two), RuleError);

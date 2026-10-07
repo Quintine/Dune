@@ -5,6 +5,25 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Single-native E1/E2 Nexus composition — 7 October 2026
+
+Original `leader-skills --nexus-cards` now admits exactly one native Ixians
+OR Tleilaxu OR CHOAM OR Richese with classics and the required one-family
+deck, all14 Skills/all12 Nexus, optional Homeworlds/Discovery7/8/Tech3+
+and Advanced Strongholds2+. Original Ix offers, ordinary-disc training,
+Auditor exclusion, physical rescue/substitution and cleanup/Tech/Face
+Dance remain. Optional revived own-disc training accepts the original
+two-card draw before selection; foreign revival grants no new training.
+[Canonical current programme evidence and retained boundaries](NEXUS_CARD_RULES.md#single-native-e1e2-nexus-composition--7-october-2026).
+Fifteen original programmes/398 affected checks and source-qualified
+190/192 completed games retain two printed ruling captures. The actual
+bare-Nexus ordinary-skill omission is repaired through one shared term;
+its original Smuggler capture finishes40/40 actions. Original bare
+Smuggler5 plus Collection1 pays one physical six-spice pile exactly once.
+Human C’tair's offered Planetologist remains alive/trained after free
+Suboid support and equal nested Cyborg exchange. Comprehensive assurance,
+full AI, public starts and complete-mode acceptance remain open.
+
 ## Native Homeworld Nexus composition — 6 October 2026
 
 Original paired Ixians+Tleilaxu OR CHOAM+Richese and standalone Ecaz OR

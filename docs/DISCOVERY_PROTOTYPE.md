@@ -5,6 +5,21 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Single-native E1/E2 Nexus composition — 7 October 2026
+
+Original single-native Ixians OR Tleilaxu/Ix47, or CHOAM OR
+Richese/CHOAM35 plus its native cache, now retain Discovery7/8/all12 Nexus
+with classics, optionally all14 Skills/Homeworlds/Tech3+/Advanced
+Strongholds2+. Real original parent entry, Maker/both-pile closing deals,
+typed nested rescue, signed one-invoice Richese materialization and
+source-local held/industry/winner effects are reused, not adapted.
+[Canonical source-qualified192-admission/15-programme/398-check evidence](NEXUS_CARD_RULES.md#single-native-e1e2-nexus-composition--7-october-2026).
+Original32-family games finish190/192 across two frozen trees, including
+one repaired original Smuggler continuation; two printed ruling stops
+remain. Actual human typed Cistern entry, Maker/both-pile closing,
+Suboid Cunning/equal exchange and signed5+3/reveal preserve20 counters.
+Mixed native families, public starts and pending printed rulings remain separate.
+
 ## Standalone E3 Nexus without Skills — 6 October 2026
 
 Original Ecaz OR Moritani/classic `nexus --discoveries` now composes

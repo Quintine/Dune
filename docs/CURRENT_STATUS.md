@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 6 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 7 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -16,6 +16,24 @@ open mode gates.
 
 
 ## Current checkpoint and work
+
+**Single-native E1/E2 Nexus — bounded Development Verified; publication pending.** Original Ixians OR
+Tleilaxu OR CHOAM OR Richese/classic entries compose Nexus with Skills or no
+Skills, optional Homeworld/Discovery/Tech3+/Advanced Strongholds2+ and one
+family deck.192 original admissions reach real setup versus eight before;
+paired predicates remain both-native. New15 semantic programmes and
+affected398/398 across35 files plus types/lint pass. The actual bare-Skills
+Smuggler deadlock is repaired in the shared ordinary-skill predicate.
+Across32 original six-seat families,190/192 complete208,205accepted/
+208,213attempted/5,539JSON across two frozen trees including one preserved
+capture continuation; exhausted-cache/low-Tupile ruling stops remain.
+Actual390px original Ixian trained offer/typed Cistern entry/Cunning/free
+Suboid plan/equal Cyborg substitution and no-training Richese one-invoice
+five-plus-three pair/reveal preserve20 counters in **4CR7JHUL v160** and
+**LNHZXDEE v102**. Final types/lint/build and actual compiled390px guide
+pass; the owned QA reload retains both versions/pools. Exact pushed-revision
+publication receipts remain pending; no full-mode or protected deployment claim.
+[Canonical qualified evidence](NEXUS_CARD_RULES.md#single-native-e1e2-nexus-composition--7-october-2026).
 
 **Standalone E3 Nexus without Skills — bounded Development Verified.**
 Original Ecaz OR Moritani/classic ecaz33/all12 composes optional Homeworld/

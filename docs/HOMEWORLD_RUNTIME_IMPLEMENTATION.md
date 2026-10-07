@@ -6,6 +6,21 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
+## Single-native E1/E2 Nexus composition — 7 October 2026
+
+Original Homeworld/Nexus now composes exactly one Ixians OR Tleilaxu,
+or CHOAM OR Richese, with classics and one family deck, with or without
+Skills. Discovery7/8, Tech3+ and Advanced Strongholds2+ remain optional.
+Typed native, visitor and nested rescue, residual Cyborg substitution,
+printed own-disc revival training, physical Face Dance and signed Richese
+one-invoice marker pairs reuse the original consumers.
+[Canonical source-qualified verification](NEXUS_CARD_RULES.md#single-native-e1e2-nexus-composition--7-october-2026)
+records192 setup admissions,15 programmes/398 affected checks and190/192
+completed original games across two frozen trees. Actual390px native typed
+Cistern entry/equal Cyborg exchange and signed five-plus-three reveal keep
+20 physical counters. Paired predicates still require both natives;
+printed ruling and complete-mode/protected deployment gates remain.
+
 ## Standalone E3 Nexus without Skills — 6 October 2026
 
 Fresh original Ecaz OR Moritani/classic Nexus now retains Homeworlds with
