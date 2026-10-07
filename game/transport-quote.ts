@@ -126,10 +126,6 @@ export function guildTransportQuote(g: GameView, action: Action) {
     (to === 'reserves' || validGameLocation(g, to, sector));
   if (to === 'reserves' && p.faction !== 'guild' && !nexusAllowed)
     unavailableReasons.push('Only the Guild may return forces to reserves.');
-  if (to === 'reserves' && nexus && g.homeworlds?.worlds?.length)
-    unavailableReasons.push(
-      'Guild Secret Ally return to native Homeworld reserves awaits a ruling.',
-    );
   if (!validDestination)
     unavailableReasons.push('Choose a sector belonging to the destination.');
   else if (

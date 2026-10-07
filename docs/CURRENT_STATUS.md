@@ -43,6 +43,10 @@ Ecaz can lend the available existing disc to that new ally or continue without
 lending it. Owned controls and legal AI are connected; the entrant resumes once.
 One-battle use and turn-end set-aside expiry are provisional first-version policies.
 One direct Basic alliance-and-loan smoke passes; no broad suite was run.
+**Guild Secret Ally return control corrected.** The human transport preview
+no longer rejects the already-ruled own-native-reserve return. One Basic quote
+smoke offers three physical counters for two spice; no broad suite was run.
+
 
 
 
