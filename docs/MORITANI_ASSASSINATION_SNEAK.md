@@ -20,6 +20,31 @@ The proposed core behavior—bounded reserve transfer, no spice charge, no ordin
 
 Therefore neither “Sneak Attack definitely bypasses all shipment reactions” nor “a specific FAQ explicitly orders all these reactions” is supported. An implementation may adopt the shipment composition explicitly, or gate affected combinations pending a ruling. It should not accidentally adopt one by calling or omitting a generic shipment helper.
 
+## Adopted shipment classification, 7 October 2026
+
+The engine now **adopts the shipment composition explicitly for the Heighliners
+token**: a positive Sneak Attack in Shipment and Movement calls the same
+`techIncome(g, 'heighliners', entrant)` helper used by ordinary off-planet
+arrivals, so the token owner accrues its once-per-turn income and collects it
+at the phase boundary. The token itself still enforces its working phase, its
+printed Guild exception and one accrual per turn, and a zero-force resolution
+calls nothing — the earlier phase-5 guard is removed rather than left as a
+duplicate check.
+
+This is an **explicit implementation interpretation**, not a retrieved
+publisher ruling: the printed verb is “Send”, and the classification of that
+off-planet reserve transfer as a shipment is the supported reading recorded in
+the table above. The Bene Gesserit spiritual-advisor accompaniment and
+Intrusion rows remain **gated** (`Sneak Attack combined with Bene Gesserit
+arrival reactions is still being implemented`) because their ordering inherits
+the unresolved arrival-timing boundary; adopting the Heighliners row does not
+adopt them. A Spice Blow worm-ride Sneak Attack stays outside the token's
+working phase and accrues nothing.
+
+Evidence: `tests/moritani-force-leader.test.ts` asserts the accrual, the
+once-per-turn guard, the unchanged zero-force resolution and the altered-sector
+rejection; `docs/COMPONENT_INVENTORY.md` records the reduced boundary.
+
 ## Assassination pool: safe ordinary support
 
 Ordinary live native discs held by the entrant are the straightforward pool. Killing a disc already in the Tanks again, or awarding its strength again, is not supported. Do not award Moritani a player-chosen victim. Zoal's explicit payout must survive any generic strength calculation.

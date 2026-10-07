@@ -50,6 +50,16 @@ settles, without replaying payment or force transfer. A Terror entry already in
 flight and every Ambassador combination still reject. Selected decks/cache,
 shared-Duke/capture, force/payment and pending-effect guards remain.
 
+**In progress — Sneak Attack shipment classification.** A positive Moritani
+Sneak Attack in Shipment and Movement now accrues the Heighliners token once
+for its owner through the ordinary off-planet-arrival helper, under an
+**explicitly adopted** shipment classification rather than a retrieved ruling;
+a zero-force resolution accrues nothing, and the token still enforces its
+working phase, Guild exception and one accrual per turn. Bene Gesserit
+spiritual-advisor accompaniment and Intrusion stay gated because their ordering
+inherits the unresolved arrival-timing boundary. See
+[MORITANI_ASSASSINATION_SNEAK.md](MORITANI_ASSASSINATION_SNEAK.md#adopted-shipment-classification-7-october-2026).
+
 **In progress — Tleilaxu Ambassador force return.** The last unimplemented
 Ambassador effect is now wired: a placed Tleilaxu token gives its beneficiary —
 the Ecaz owner or its ally — a private decision to return one to four physical

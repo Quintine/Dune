@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 7 October 2026 — Sneak Attack adopts the shipment classification for Heighliners
+
+A positive Moritani Sneak Attack in Shipment and Movement now accrues the
+Heighliners token once for its owner through the same `techIncome` helper as an
+ordinary off-planet arrival. The token still enforces its working phase, its
+printed Guild exception and one accrual per turn, and a zero-force resolution
+accrues nothing; the previous phase-5 guard is removed rather than duplicated.
+
+This is an **explicitly adopted implementation interpretation**, not a retrieved
+publisher ruling: the printed verb is “Send”, and classifying the expressly
+off-planet reserve transfer as a shipment is the supported reading already
+recorded in the source note. The Bene Gesserit spiritual-advisor accompaniment
+and Intrusion rows remain gated because their ordering inherits the unresolved
+arrival-timing boundary, and a Spice Blow worm-ride Sneak Attack stays outside
+the token's working phase.
+
+Evidence: `tests/moritani-force-leader.test.ts` asserts the accrual, the
+once-per-turn guard, the unchanged zero-force resolution and the altered-sector
+rejection; the former "unsupported technology classification" pin was replaced
+by the adopted behaviour rather than re-pinned.
+`docs/COMPONENT_INVENTORY.md`, the source note and the pending-interpretation
+registry record the reduced boundary. No game, seat, saved state or deployment
+changes.
+
 ## 7 October 2026 — Tleilaxu Ambassador force return wired
 
 The last unimplemented Ambassador effect is now reachable. A placed Tleilaxu

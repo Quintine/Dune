@@ -315,16 +315,25 @@ void test('advanced Harkonnen tables uniformly disable Assassination without exp
   rejected(held, { type: 'decision', reveal: true });
 });
 
-void test('Sneak Attack rejects an altered client sector and unsupported technology classification while allowing zero', () => {
+void test('Sneak Attack rejects an altered client sector and accrues Heighliners once for a positive entry while allowing zero', () => {
   const revealed = decide(offered('sneakAttack'), { reveal: true });
   rejected(revealed, { type: 'decision', amount: 1, sector: 9 });
   const valid = decide(revealed, { amount: 1, sector: 10 });
   assert.equal(player(valid, 'm').forces['arrakeen:10'], 1);
   const technology = reload(revealed);
   technology.techTokens = createTechTokens();
-  technology.techTokens.heighliners.owner = 'm';
+  technology.techTokens.heighliners.owner = 'a';
   technology.techTokens.heighliners.spice = 2;
-  rejected(technology, { type: 'decision', amount: 1 });
+  const accrued = decide(technology, { amount: 1, sector: 10 });
+  assert.equal(player(accrued, 'm').forces['arrakeen:10'], 1);
+  assert.equal(accrued.techTokens!.heighliners.triggeredTurn, accrued.turn);
+  assert.equal(accrued.techTokens!.heighliners.spice, 1);
+  assert.equal(
+    accrued.log.some((line) =>
+      line.text.includes('Heighliners accrued 1 spice for Atreides'),
+    ),
+    true,
+  );
   const passed = decide(technology, { amount: 0 });
   assert.deepEqual(passed.techTokens, technology.techTokens);
   assert.deepEqual(passed.players, technology.players);

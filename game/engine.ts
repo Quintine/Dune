@@ -16951,9 +16951,6 @@ function sneakAttackOptions(
   )
     blocked =
       'Sneak Attack combined with Bene Gesserit arrival reactions is still being implemented.';
-  if (!blocked && g.phase === 5 && g.techTokens)
-    blocked =
-      'Sneak Attack combined with Heighliners technology is still being implemented.';
   return { maximum, blocked };
 }
 function terrorAllianceBlocked(
@@ -17191,6 +17188,11 @@ function decideTerror(g: Game, p: Player, action: Action) {
       p.reserves -= amount;
       place(p, entry.territory, entry.sector, amount);
       observeOccupation(g);
+      // A positive Sneak Attack transfers Moritani's expressly off-planet
+      // reserves onto the board, so it is classified as an off-planet
+      // shipment for the Heighliners token. The token itself enforces its
+      // working phase, its Guild exception and one accrual per turn.
+      techIncome(g, 'heighliners', p);
       log(
         g,
         `${p.name} sent ${amount} reserves into ${territory(entry.territory).name} through Sneak Attack.`,
