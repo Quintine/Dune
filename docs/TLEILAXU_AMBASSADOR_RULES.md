@@ -59,10 +59,46 @@ These three change meaningful legal choices or resources and require a supported
 
 Verification used publisher-authored local extracts `base.txt`, `ix-official-mirror.txt`, `choam-lelekan-mirror.txt`, and `ecaz-audit.txt` under `/tmp/dune-rules`, plus freshly indexed official GF9 E1/E2/E3 and November FAQ passages. Movie-game rules, tournament amendments and unofficial implementations were not used as authority. No runtime files, tests, live rooms or automation were changed.
 
+## Engine wiring checkpoint, 7 October 2026
+
+`game/tleilaxu-ambassador-forces.ts` is now wired into the Ambassador
+resolution. When an eligible entrant triggers a placed Tleilaxu token, the
+beneficiary — the Ecaz owner or its ally — receives the printed force
+alternative as a private `ecazAmbassador` decision at stage `revival`:
+
+- one to four physical counters return from the Tanks to reserves, at zero
+  cost, in the printed amount and without touching ordinary revival prices;
+- the shared Fedaykin/Sardaukar one-per-turn counter is spent and enforced
+  through the same helper (Ixian cyborgs keep their distinct uncapped
+  treatment);
+- the player view projects the maximum, the Tanks and elite inventory and the
+  current elite usage to the beneficiary only, and the entry control offers a
+  per-count button plus an explicit "Return no forces" decline;
+- all four AI profiles pick a legal return from the decision owner's own view,
+  or decline when the Tanks are empty.
+
+**Still gated, unchanged:** the printed leader alternative (the decision's
+projection reports `leaderAlternative: false`), ordinary force/free/leader
+allowance accounting before and after this independent grant, dead-twice
+eligibility, and Tleilaxu free-income repeat scope. The three recorded policy
+questions above are not answered here. No ordinary revival allowance, price,
+phase or income path changes, and the Tleilaxu special Karama keeps its
+FAQ-resolved Revival-only timing.
+
+Focused evidence: `tests/tleilaxu-ambassador-engine.test.ts` drives a genuine
+arrival into a placed token and asserts the projection, the typed return, the
+shared elite limit, malformed and over-maximum rejections with immutability,
+the ordinary-only return, the decline path and unchanged spice; the four-profile
+`tests/ecaz-entry-bots.test.ts` loop now covers `tleilaxu`, and the former
+"unsupported effect" pin was replaced by the supported offer/decline
+expectation rather than re-pinned.
+
+
+
 ## Physical foundation checkpoint, 7 September 2026
 
 The later `game/tleilaxu-ambassador-forces.ts` helper implements only the resolved physical force quotation. It accepts a beneficiary's faction, reserve/Tanks totals and typed elite inventory, and quotes one through four returned counters with detached before/after custody and the shared elite revival counter. It rejects malformed counts, unavailable ordinary/elite selections, unsupported elite factions and unsafe arithmetic. It uses the minimum necessary elite count when no explicit count is selected; zero returns remain a separate caller choice. Ixian cyborgs retain their distinct uncapped treatment.
 
 Root reviewed the complete helper and its tests. All **11 focused tests pass**, covering all twelve ordinary faction pools, mixed custody conservation, cross-event elite limits, Ixian quantities, invalid selections, safe arithmetic, detached results and independence from private information and RNG. The tests are registered in `npm test`; formatting, lint and full TypeScript checks pass. Root's focused result is `/tmp/dune-tleilaxu-ambassador-forces-root.log`.
 
-This helper is not wired into the engine and does not activate the Ambassador, add player or AI controls, change ordinary revival allowances, choose leader eligibility or pay income. The three material accounting/leader/income questions above are pending user interpretation. The prior Guild checkpoint remains 2,930 passing registered tests plus twenty completed Basic games; these eleven new helper tests are additional focused evidence, not another full-suite or full-expansion run.
+**Superseded 7 October 2026:** the helper is now wired into the Ambassador resolution — see the engine wiring checkpoint above. Ordinary revival allowances, leader eligibility and income still remain unchanged, and the three material accounting/leader/income questions above remain pending user interpretation. The prior Guild checkpoint remains 2,930 passing registered tests plus twenty completed Basic games; these eleven new helper tests are additional focused evidence, not another full-suite or full-expansion run.

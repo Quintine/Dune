@@ -50,6 +50,18 @@ settles, without replaying payment or force transfer. A Terror entry already in
 flight and every Ambassador combination still reject. Selected decks/cache,
 shared-Duke/capture, force/payment and pending-effect guards remain.
 
+**In progress — Tleilaxu Ambassador force return.** The last unimplemented
+Ambassador effect is now wired: a placed Tleilaxu token gives its beneficiary —
+the Ecaz owner or its ally — a private decision to return one to four physical
+counters from the Tanks to reserves at zero cost, using the existing
+`game/tleilaxu-ambassador-forces.ts` quotation, the shared Fedaykin/Sardaukar
+one-per-turn counter, a beneficiary-only projection and an entry control with
+an explicit decline. All four AI profiles pick a legal return or decline. The
+printed leader alternative, ordinary allowance accounting, dead-twice
+eligibility and Tleilaxu income repeat scope stay gated exactly as recorded in
+[TLEILAXU_AMBASSADOR_RULES.md](TLEILAXU_AMBASSADOR_RULES.md#implementation-decision-boundary);
+no ordinary revival allowance, price, phase or income path changed.
+
 **In progress — administrator operations.** The owner-only operations page now
 also diagnoses [stalled decisions](ADMIN_STALLED_DECISIONS.md): a bounded,
 read-only sample of at most ten live rooms whose public pending interaction — a

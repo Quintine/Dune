@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 7 October 2026 — Tleilaxu Ambassador force return wired
+
+The last unimplemented Ambassador effect is now reachable. A placed Tleilaxu
+token gives its beneficiary — the Ecaz owner or its ally — a private
+`ecazAmbassador` decision at stage `revival`: one to four physical counters
+return from the Tanks to reserves at zero cost, quoted by the existing
+`game/tleilaxu-ambassador-forces.ts`, which also enforces the shared
+Fedaykin/Sardaukar one-per-turn counter and keeps Ixian cyborgs uncapped. The
+player view projects the maximum, Tanks and elite inventory and current elite
+usage to the beneficiary only; the entry control offers a per-count button and
+an explicit "Return no forces" decline; all four AI profiles choose a legal
+return from the decision owner's own view or decline when the Tanks are empty.
+
+Kept gated exactly as recorded: the printed leader alternative
+(`leaderAlternative: false`), ordinary force/free/leader allowance accounting
+around this independent grant, dead-twice eligibility, and Tleilaxu
+free-income repeat scope. No ordinary revival allowance, price, phase or
+income path changes; the Tleilaxu special Karama keeps its FAQ-resolved
+Revival-only timing.
+
+Evidence: `tests/tleilaxu-ambassador-engine.test.ts` drives a genuine arrival
+into a placed token and asserts the beneficiary-only projection, the typed
+return with unchanged spice, the shared elite limit, malformed/over-maximum
+rejection with immutability, the ordinary-only return and the decline path. The
+four-profile `tests/ecaz-entry-bots.test.ts` loop now covers `tleilaxu`, and its
+former unsupported-effect pin was replaced by the supported offer/decline
+expectation rather than re-pinned. No game, seat, saved state, deployment,
+public start or played-save conversion changes.
+
 ## 7 October 2026 — administrator stalled-decision diagnosis
 
 The owner-only operations page gains **List stalled decisions**: a bounded,

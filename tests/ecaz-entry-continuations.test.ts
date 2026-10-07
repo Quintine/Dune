@@ -210,7 +210,7 @@ void test('unselected BG copy permits spending its final Ixian discard while a F
         .map((choice) => choice.effect)
         .sort();
     assert.equal(g.pendingAmbassador?.stage, 'copy');
-    assert.deepEqual(copies(g), ['fremen', 'guild', 'ixians']);
+    assert.deepEqual(copies(g), ['fremen', 'guild', 'ixians', 'tleilaxu']);
     assert.equal(
       g.ecazAmbassadors!.tokens.find(
         (token) => token.effect === 'beneGesserit',
@@ -249,7 +249,7 @@ void test('unselected BG copy permits spending its final Ixian discard while a F
     assert.equal(g.pendingAmbassador?.event, event);
     assert.equal(g.pendingAmbassador?.stage, 'copy');
     assert.deepEqual(g.players[1].hand, []);
-    assert.deepEqual(copies(g), ['fremen', 'guild']);
+    assert.deepEqual(copies(g), ['fremen', 'guild', 'tleilaxu']);
     assert.equal(g.discard.filter((held) => held.id === card).length, 1);
     if (karama)
       assert.equal(g.discard.filter((held) => held.id === karama).length, 1);

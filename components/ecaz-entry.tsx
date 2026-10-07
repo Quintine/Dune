@@ -32,7 +32,7 @@ export function EcazEntry({
     !entry ||
     game.decision?.kind !== 'ecazAmbassador' ||
     game.decision.player !== game.me ||
-    !['offer', 'allianceReply', 'copy', 'cards', 'move', 'ship'].includes(
+    !['offer', 'allianceReply', 'copy', 'cards', 'move', 'ship', 'revival'].includes(
       entry.stage,
     )
   )
@@ -253,6 +253,59 @@ export function EcazEntry({
               </article>
             );
           })}
+        </>
+      ) : entry.stage === 'revival' ? (
+        <>
+          <p className="m-0 text-sm leading-6">
+            Return up to {entry.revival?.maximum ?? 0} physical{' '}
+            {(entry.revival?.maximum ?? 0) === 1 ? 'force' : 'forces'} from the
+            Tanks to your reserves for free. Ordinary revival allowances,
+            prices and income are unchanged. The printed leader alternative
+            stays unavailable pending its recorded interpretation.
+          </p>
+          {entry.revival?.blocked && (
+            <p className="m-0 text-sm leading-6">{entry.revival.blocked}</p>
+          )}
+          {!entry.revival?.blocked &&
+            (entry.revival?.maximum ?? 0) > 0 && (
+              <fieldset
+                className="flex min-w-0 flex-col gap-2 border-0 p-0"
+                disabled={busy}
+              >
+                <legend className="text-sm">Forces to return</legend>
+                {Array.from(
+                  { length: entry.revival!.maximum },
+                  (_, index) => index + 1,
+                ).map((count) => (
+                  <Button
+                    key={count}
+                    variant="outline"
+                    className={buttonClass}
+                    disabled={busy}
+                    onClick={() =>
+                      send({
+                        forces: count,
+                        elite: Math.min(
+                          entry.revival!.eliteTanks,
+                          Math.max(0, 1 - entry.revival!.eliteRevived),
+                          count,
+                        ),
+                      })
+                    }
+                  >
+                    Return {count} {count === 1 ? 'force' : 'forces'}
+                  </Button>
+                ))}
+              </fieldset>
+            )}
+          <Button
+            variant="outline"
+            className={buttonClass}
+            disabled={busy}
+            onClick={() => send({ decline: true })}
+          >
+            Return no forces
+          </Button>
         </>
       ) : entry.stage === 'ship' ? (
         <AmbassadorShipment

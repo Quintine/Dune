@@ -123,6 +123,7 @@ void test('all four profiles legally resolve each supported ordinary effect from
       'harkonnen',
       'choam',
       'ixians',
+      'tleilaxu',
     ] as const) {
       const initial = enter(fixture(effect));
       for (const id of ['entrant', 'ally'])
@@ -166,19 +167,22 @@ void test('all four profiles legally resolve each supported ordinary effect from
     }
 });
 
-void test('unsupported effects are explicitly declined without consuming the placed token at every difficulty', () => {
-  for (const difficulty of DIFFICULTIES)
-    for (const effect of ['tleilaxu'] as const) {
-      const entered = enter(fixture(effect));
-      const { action, next } = choose(entered, difficulty);
-      assert.equal(action.decline, true);
-      assert.equal(next.pendingAmbassador, null);
-      assert.equal(
-        next.ecazAmbassadors!.tokens.find((t) => t.effect === effect)!.zone,
-        'placed',
-      );
-      assert.equal(next.players[0].spice, 10);
-    }
+void test('the Tleilaxu force return is offered and declined when the beneficiary has nothing in the Tanks', () => {
+  for (const difficulty of DIFFICULTIES) {
+    const entered = enter(fixture('tleilaxu'));
+    const offered = choose(entered, difficulty).next;
+    assert.equal(offered.pendingAmbassador?.stage, 'revival');
+    assert.equal(offered.decision?.kind, 'ecazAmbassador');
+    const { action, next } = choose(offered, difficulty);
+    assert.equal(action.decline, true);
+    assert.equal(next.pendingAmbassador, null);
+    assert.equal(
+      next.ecazAmbassadors!.tokens.find((t) => t.effect === 'tleilaxu')!.zone,
+      'used',
+    );
+    assert.equal(next.players[0].spice, 10);
+    assert.equal(next.players[0].tanks, 0);
+  }
 });
 
 void test('Bene Gesserit copies choose only supported projected effects and complete without another acknowledgement', () => {

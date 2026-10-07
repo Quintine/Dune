@@ -14,6 +14,7 @@ import {
   type BattleLeaderSkill,
 } from './leader-skill-combat';
 import { quoteSukPhysicalRescue, quoteSukRescue, SukPhysicalRescueError, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukPhysicalRescueQuote, type SukPhysicalRescueReceipt, type SukReserveDestinations, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
+import { quoteTleilaxuAmbassadorForces, TleilaxuAmbassadorForceError } from './tleilaxu-ambassador-forces';
 import { leaderSkillStrongholdCount, sandmasterVictorySpice } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, selectedOriginElites, groundMovementRange, type PlanetologistMovement } from './planetologist-movement';
@@ -1601,6 +1602,7 @@ export type Game = {
       | 'bonus'
       | 'move'
       | 'ship'
+      | 'revival'
       | 'arrival';
     relocation?: {
       order: FremenAmbassadorMove;
@@ -14660,6 +14662,7 @@ const implementedAmbassadorEffects: readonly AmbassadorEffect[] = [
   'richese',
   'fremen',
   'guild',
+  'tleilaxu',
 ];
 function returnAmbassadorsIn(g: Game, to: string, reason: string) {
   for (const token of g.ecazAmbassadors?.tokens.filter(
@@ -16319,6 +16322,20 @@ function resolveAmbassadorEffect(g: Game) {
     g.decision = { kind: 'ecazAmbassador', player: p.id };
     return;
   }
+  if (effect === 'tleilaxu') {
+    // Printed grant: "Revive one of your leaders or up to 4 of your forces for
+    // free." Only the physical force alternative is source-supported here; the
+    // leader alternative, ordinary allowance accounting and Tleilaxu income for
+    // this distinct event stay gated pending the recorded interpretations.
+    entry.stage = 'revival';
+    g.decision = { kind: 'ecazAmbassador', player: p.id };
+    log(
+      g,
+      `${p.name} may return up to four physical forces from the Tanks for free through the Tleilaxu Ambassador. Ordinary revival allowances and income are unchanged.`,
+      { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' },
+    );
+    return;
+  }
   if (effect === 'emperor') {
     p.spice += 5;
     log(
@@ -16449,6 +16466,65 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         g,
         `${entrant.name} refused the Ecaz Ambassador alliance. No alliance or Duke transfer occurred; the triggered token remains in Ecaz’s supply and the entrant’s remaining actions resume.`,
       );
+    finishAmbassador(g);
+    return;
+  }
+  if (entry.stage === 'revival') {
+    requireRule(
+      Object.keys(action).every((key) =>
+        ['type', 'event', 'decline', 'forces', 'elite'].includes(key),
+      ),
+      'Choose a physical force return or decline it.',
+    );
+    if (action.decline === true) {
+      log(
+        g,
+        `${p.name} returned no forces through the Tleilaxu Ambassador.`,
+        { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' },
+      );
+      finishAmbassador(g);
+      return;
+    }
+    const forces = integer(action.forces, 1, 4, 'Forces to return');
+    const elite =
+      action.elite === undefined
+        ? undefined
+        : integer(action.elite, 0, 4, 'Special forces to return');
+    let quote;
+    try {
+      quote = quoteTleilaxuAmbassadorForces(
+        {
+          faction: p.faction,
+          reserves: p.reserves,
+          tanks: p.tanks,
+          elites: p.elites
+            ? {
+                reserves: p.elites.reserves,
+                tanks: p.elites.tanks,
+                revived: p.elites.revived,
+              }
+            : undefined,
+        },
+        forces,
+        elite,
+      );
+    } catch (error) {
+      if (error instanceof TleilaxuAmbassadorForceError)
+        throw new RuleError(error.message);
+      throw error;
+    }
+    p.reserves = quote.after.reserves;
+    p.tanks = quote.after.tanks;
+    if (p.elites) {
+      p.elites.reserves = quote.after.eliteReserves;
+      p.elites.tanks = quote.after.eliteTanks;
+      p.elites.revived = quote.eliteRevivedNext;
+    }
+    log(
+      g,
+      `${p.name} returned ${quote.amount} physical ${quote.amount === 1 ? 'force' : 'forces'} (${quote.elite} special) from the Tanks to its reserves for free through the Tleilaxu Ambassador. Ordinary revival allowances, prices and income are unchanged.`,
+      { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' },
+    );
     finishAmbassador(g);
     return;
   }
@@ -31964,6 +32040,23 @@ export function viewGame(state: Game, id: string) {
                     blocked: ambassadorDiscardBlock(g, me, card, entry.effect),
                   }))
                 : [],
+            revival:
+              entry.stage === 'revival' && id === entry.beneficiary
+                ? {
+                    maximum: Math.min(4, me.tanks),
+                    tanks: me.tanks,
+                    eliteTanks: me.elites?.tanks ?? 0,
+                    eliteRevived: me.elites?.revived ?? 0,
+                    leaderAlternative: false,
+                    blocked:
+                      ambassadorEffectBlock(
+                        g,
+                        'tleilaxu',
+                        me,
+                        entrant,
+                      ) ?? null,
+                  }
+                : null,
           };
         })()
       : null,

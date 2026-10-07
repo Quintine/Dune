@@ -1911,6 +1911,19 @@ function policyActions(g: GameView): Action[] {
             me.noField.deployed.location.sector !== g.storm)
         );
       if (entry.stage === 'allianceReply') return [{ ...action, accept: true }];
+      if (entry.stage === 'revival') {
+        const revival = entry.revival;
+        if (!revival || revival.blocked || revival.maximum < 1)
+          return [{ ...action, decline: true }];
+        // Minimal legal participation: return as many Tanks counters as the
+        // printed maximum allows, spending the single elite option first.
+        const elite = Math.min(
+          revival.eliteTanks,
+          Math.max(0, 1 - revival.eliteRevived),
+        );
+        const forces = Math.min(revival.maximum, revival.tanks);
+        return [{ ...action, forces, elite: Math.min(elite, forces) }];
+      }
       if (entry.stage === 'offer') {
         if (entry.effect === 'ecaz')
           return [

@@ -374,21 +374,27 @@ void test('unresolved simultaneous Terror or Guild income rejects the complete o
   }
 });
 
-void test('incomplete effect remains visibly unavailable and can be declined without consuming its token', () => {
+void test('the Tleilaxu effect is offered to an eligible beneficiary and returns forces without consuming its token early', () => {
   for (const effect of ['tleilaxu'] as const) {
     const g = enter(ambassadorFixture(effect));
-    assert.match(
-      viewGame(g, 'ec').ambassadorEntry!.beneficiaries[0].blocked!,
-      /implemented/,
+    assert.equal(
+      viewGame(g, 'ec').ambassadorEntry!.beneficiaries[0].blocked,
+      null,
     );
-    reject(g, 'ec', {
-      type: 'decision',
-      event: g.pendingAmbassador!.event,
+    const offered = decide(g, 'ec', {
       trigger: true,
       beneficiary: 'ec',
+      choice: 'effect',
     });
-    const done = decide(g, 'ec', { decline: true });
-    assert.deepEqual(done.ecazAmbassadors, g.ecazAmbassadors);
+    assert.equal(offered.pendingAmbassador?.stage, 'revival');
+    assert.equal(offered.decision?.player, 'ec');
+    assert.equal(viewGame(offered, 'ec').ambassadorEntry!.revival?.maximum, 0);
+    const done = decide(offered, 'ec', { decline: true });
+    assert.equal(done.pendingAmbassador, null);
+    assert.equal(
+      done.ecazAmbassadors!.tokens.find((t) => t.effect === effect)!.zone,
+      'used',
+    );
   }
 });
 
