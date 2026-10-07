@@ -257,15 +257,20 @@ export function EcazEntry({
       ) : entry.stage === 'revival' ? (
         <>
           <p className="m-0 text-sm leading-6">
-            Return up to {entry.revival?.maximum ?? 0} physical{' '}
-            {(entry.revival?.maximum ?? 0) === 1 ? 'force' : 'forces'} from the
-            Tanks to your reserves for free. Ordinary revival allowances,
-            prices and income are unchanged. The printed leader alternative
-            stays unavailable pending its recorded interpretation.
+            Revive one eligible own leader, or return up to {entry.revival?.maximum ?? 0}
+            {' '}physical forces from the Tanks for free. This independent grant
+            leaves ordinary allowances and income unchanged provisionally.
+            Repeat-death and shared-leader interactions remain unfinished.
           </p>
           {entry.revival?.blocked && (
             <p className="m-0 text-sm leading-6">{entry.revival.blocked}</p>
           )}
+          {!entry.revival?.blocked && entry.revival?.leaders.map(leader => (
+            <Button key={leader.id} variant="outline" className={buttonClass}
+              disabled={busy} onClick={() => send({ leader: leader.id })}>
+              Revive {leader.name} for free
+            </Button>
+          ))}
           {!entry.revival?.blocked &&
             (entry.revival?.maximum ?? 0) > 0 && (
               <fieldset

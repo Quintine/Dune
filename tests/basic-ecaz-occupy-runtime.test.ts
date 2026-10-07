@@ -8,7 +8,7 @@ import { advanceToNextStorm, finishToMovement } from './fixture-advanced-source'
 import { chooseEcazOccupyLead, cancelEcazOccupy, openEcazOccupyPlans,
   ecazOccupyTerritoryForces, stageEcazOccupyCard, allowEcazOccupyResponses,
   type EcazOccupyFixture } from './fixture-ecaz-occupy';
-import { basicEcazOccupyFixture, basicEcazOccupyBattleAction } from './fixture-basic-ecaz-occupy';
+import { basicEcazOccupyFixture } from './fixture-basic-ecaz-occupy';
 
 const seat = (game: Game, id: string): Player => game.players.find(p => p.id === id)!;
 const forces = (game: Game, fixture: EcazOccupyFixture, id: string) =>
@@ -198,15 +198,6 @@ for (const lead of ['ecaz', 'ally'] as const)
     assert.equal(game.phase, 7);
   });
 
-void test('Basic odd uncanceled native choice rejects before creating a lead frame or committing forces', () => {
-  const fixture = basicEcazOccupyFixture({ ecazForces: 3, chooseBattle: false });
-  const { actor, action } = basicEcazOccupyBattleAction(fixture);
-  reject(fixture.game, actor, action);
-  assert.equal(fixture.game.battle, null);
-  assert.equal(fixture.game.decision, null);
-  assert.equal(forces(fixture.game, fixture, fixture.ecaz), 3);
-  assert.equal(forces(fixture.game, fixture, fixture.ally), 4);
-});
 
 for (const difficulty of ['Easy', 'Medium', 'Hard', 'Brutal'] as const)
   for (const lead of ['ecaz', 'ally'] as const)

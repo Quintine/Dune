@@ -1,6 +1,6 @@
 # Ecaz Occupy: Basic and Advanced source, and historical conflict
 
-Historical primary-source audit, 2026-09-07, corrected after independent verification. The old publisher/designer casualty-rounding conflict remains unresolved as a publisher correction and for odd Basic counts. Its earlier false attribution to Jack Reda is still withdrawn. The later user-authorized Advanced source below selects explicit Advanced arithmetic, and the Basic even-force composition selects E/2 for even counts; neither retroactively certifies that attribution.
+Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
 ## Original live Discovery coalition — 5 October 2026
 
@@ -324,7 +324,7 @@ Ecaz losses on ordinary allied win = ceil(E / 2)
 Ecaz survivors on ordinary allied win = floor(E / 2)
 ```
 
-The historical publisher/mirror example still conflicts for E=5, and the earlier audits correctly record that publisher gap. Basic now has the bounded even-force composition above: E/2 is source-clear for even counts, and the still-contradictory odd counts are rejected rather than rounded. Advanced uses the separately user-authorized source cutover above: its explicit ceil contribution and floor survivors select the arithmetic without claiming a designer correction. Fixed Ecaz losses stay independent of the ally's variable dial losses.
+The historical publisher/mirror example still conflicts for E=5. The 8 October first-version implementation uses the p8 reading in Basic, including odd counts, and labels it provisional in the lead-choice and plan controls. Advanced uses the separately user-authorized source cutover. Fixed Ecaz losses remain independent of the ally's variable dial losses. One actual Basic five-counter coalition smoke reaches Collection with three Ecaz casualties and two survivors; broader interaction refinement is deferred.
 
 ## Occupation, controller and battle order
 

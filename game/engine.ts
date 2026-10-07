@@ -1537,6 +1537,8 @@ export type Game = {
       | 'complete';
     position: 'first' | 'last' | null;
     normalCount: number | null;
+    /** Frozen before the cache deduction; cancellation never recounts live hands. */
+    normalCountBeforeCache?: number;
     blackMarketSold: boolean;
     cacheCanceled: boolean;
     cacheAuthority?: string;
@@ -9445,7 +9447,7 @@ function ecazOccupyCompositionSupported(g: Game): boolean {
     !g.discoveryStash && !g.greatMaker &&
     (g.ecazTreachery === undefined || g.ecazTreachery === true);
 }
-/** Fresh native Occupy profile; Basic's disputed odd-force arithmetic stays guarded. */
+/** Fresh native Occupy profile; Basic odd counts use the main printed rule provisionally. */
 export function initializeEcazOccupyGameForAudit(state: Game): Game {
   requireRule(ecazOccupyCompositionSupported(state),
     'Occupy requires supported native factions and their distinct selected decks; Basic uses Ecaz/classic/optional Moritani without optional modules.');
@@ -10755,13 +10757,31 @@ function richeseDeclaration(g: Game) {
   richeseDeclarationCache(g);
   const round = g.richeseBidding!;
   round.stage = 'declaration';
+  round.normalCountBeforeCache = Math.max(
+    0, auctionEligible(g).length - Number(round.blackMarketSold),
+  );
   round.normalCount = Math.max(
-    0,
-    auctionEligible(g).length -
-      Number(richeseCacheRuns(g)) -
-      Number(round.blackMarketSold),
+    0, round.normalCountBeforeCache - Number(richeseCacheRuns(g)),
   );
   richeseDecision(g, 'richeseDeclaration');
+}
+function validateRicheseCacheCancellation(g: Game, response: ResponseWindow) {
+  const round = g.richeseBidding;
+  requireRule(g.status === 'playing' && g.phase === 3 && round &&
+    round.turn === g.turn && round.stage === 'declaration' &&
+    round.owner === response.owner && getPlayer(g, round.owner).faction === 'richese' &&
+    (round.position === 'first' || round.position === 'last') &&
+    Number.isSafeInteger(round.normalCount) && round.normalCount! >= 0 &&
+    round.normalCount! <= g.players.length && !round.cacheCanceled &&
+    !g.auction && !g.richeseAuction && !g.ixAuction &&
+    (round.normalCountBeforeCache === undefined ||
+      Number.isSafeInteger(round.normalCountBeforeCache) &&
+      round.normalCountBeforeCache >= round.normalCount! &&
+      round.normalCountBeforeCache <= g.players.length &&
+      round.normalCountBeforeCache - round.normalCount! <= 1),
+    'Cache cancellation needs the original undealt Richese declaration.');
+  richeseDeclarationCache(g);
+  return round;
 }
 function prepareRicheseNormal(g: Game) {
   g.richeseBidding!.stage = 'normal';
@@ -12775,10 +12795,8 @@ function validateKaramaUse(
         response: { kind: use.response.kind, owner: use.response.owner },
         canceled: true,
       });
-    requireRule(
-      use.response.kind !== 'richeseAuction',
-      'The canceled Richese auction count is awaiting an official ruling or an explicit table interpretation.',
-    );
+    if (use.response.kind === 'richeseAuction')
+      validateRicheseCacheCancellation(g, use.response);
     if (
       use.response.kind === 'richeseBlackMarket' ||
       (use.response.kind === 'atreidesAuction' && g.richeseAuction)
@@ -16319,15 +16337,13 @@ function resolveAmbassadorEffect(g: Game) {
     return;
   }
   if (effect === 'tleilaxu') {
-    // Printed grant: "Revive one of your leaders or up to 4 of your forces for
-    // free." Only the physical force alternative is source-supported here; the
-    // leader alternative, ordinary allowance accounting and Tleilaxu income for
-    // this distinct event stay gated pending the recorded interpretations.
+    // Initial leader path: first-death own discs, independent of ordinary quota.
+    // Repeat-death and shared-disc interactions remain explicit refinement work.
     entry.stage = 'revival';
     g.decision = { kind: 'ecazAmbassador', player: p.id };
     log(
       g,
-      `${p.name} may return up to four physical forces from the Tanks for free through the Tleilaxu Ambassador. Ordinary revival allowances and income are unchanged.`,
+      `${p.name} may revive one first-death own leader or return up to four physical forces for free through the Tleilaxu Ambassador. Ordinary revival allowances and income are unchanged.`,
       { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' },
     );
     return;
@@ -16468,9 +16484,9 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
   if (entry.stage === 'revival') {
     requireRule(
       Object.keys(action).every((key) =>
-        ['type', 'event', 'decline', 'forces', 'elite'].includes(key),
+        ['type', 'event', 'decline', 'forces', 'elite', 'leader'].includes(key),
       ),
-      'Choose a physical force return or decline it.',
+      'Choose one leader, a physical force return, or decline.',
     );
     if (action.decline === true) {
       log(
@@ -16478,6 +16494,20 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         `${p.name} returned no forces through the Tleilaxu Ambassador.`,
         { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' },
       );
+      finishAmbassador(g);
+      return;
+    }
+    if (action.leader !== undefined) {
+      requireRule(action.forces === undefined && action.elite === undefined,
+        'Choose a leader or forces, not both.');
+      const leader = p.leaders.find(l => l.id === action.leader &&
+        l.faction === p.faction && l.dead && l.deaths === 1 &&
+        !l.capturedBy && !l.gholaBy);
+      requireRule(leader, 'Choose a first-death own leader from the Tanks.');
+      leader.dead = false;
+      delete leader.usedAt;
+      log(g, `${p.name} revived ${leader.name} for free through the Tleilaxu Ambassador. The ordinary leader allowance is unchanged.`,
+        { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' });
       finishAmbassador(g);
       return;
     }
@@ -23946,12 +23976,13 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     if (pending.movement && g.pendingChoamMove) resumeChoamMovement(g);
     if (pending.mentat) g.decision = { kind: 'choamMentat', player: choam.id };
   } else if (response.kind === 'richeseAuction') {
-    const round = g.richeseBidding!;
+    const round = validateRicheseCacheCancellation(g, response);
     if (canceled) {
-      // User ruling 7 October 2026: a canceled or prevented compulsory cache
-      // auction restores one ordinary lot, since no cache lot replaces it.
+      // Restore the frozen count, retaining the independent Black Market deduction.
+      // Older saved declarations lack the additive before-cache field.
+      round.normalCount = round.normalCountBeforeCache ??
+        Math.max(0, round.normalCount! + Number(richeseCacheRuns(g)));
       round.cacheCanceled = true;
-      round.normalCount = Math.max(0, (round.normalCount ?? 0) + 1);
       log(
         g,
         'The compulsory Richese cache auction was canceled; one ordinary lot is restored.',
@@ -31279,8 +31310,6 @@ function applyActionInner(
     if (combined) {
       requireRule(ecazOccupyCompositionSupported(g),
         'Combined Occupy requires source-selected native factions; optional overlays remain gated.');
-      requireRule(g.advanced || fighterCount(ecaz!, choice.territory) % 2 === 0,
-        'Odd-force Basic Occupy awaits the preserved publisher casualty-rounding ruling.');
     }
     const battleEvent = crypto.randomUUID();
     g.battle = {
@@ -32073,7 +32102,9 @@ export function viewGame(state: Game, id: string) {
                     tanks: me.tanks,
                     eliteTanks: me.elites?.tanks ?? 0,
                     eliteRevived: me.elites?.revived ?? 0,
-                    leaderAlternative: false,
+                    leaders: me.leaders.filter(l => l.faction === me.faction &&
+                      l.dead && l.deaths === 1 && !l.capturedBy && !l.gholaBy)
+                      .map(l => ({ id: l.id, name: l.name, strength: l.strength })),
                     blocked:
                       ambassadorEffectBlock(
                         g,

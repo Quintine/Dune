@@ -20,6 +20,11 @@ export function EcazOccupyLeadChoice({ game, act, busy }: {
       Treachery cards and spice. With Occupy active, {ally} supplies the variable
       dialed army regardless of who leads; Ecaz’s contribution is mandatory and free.
     </p>
+    {!game.advanced && <p className="fine">
+      Basic prototype: Ecaz’s half-force contribution and winning losses round up;
+      survivors round down. The main printed rule is used provisionally because
+      its odd-force FAQ example conflicts.
+    </p>}
     <p className="fine">
       Karama may cancel Occupy after this choice, before battle powers and plans.
       The chosen lead then dials only their own army; the other ally contributes zero.
@@ -54,6 +59,9 @@ export function EcazOccupyBattleSummary({ game }: { game: GameView }) {
       The total dial must include <strong>{profile.fixedEcazDial} fixed Ecaz strength</strong> at full strength,
       with no spice cost, plus the chosen variable army strength.
     </p>}
+    {!game.advanced && !profile.canceled && profile.ecazForces.normal % 2 !== 0 &&
+      <p className="fine">Provisional Basic rounding: {profile.fixedEcazDial} Ecaz
+        counters contribute and are lost on an ordinary win; the remainder survive.</p>}
     {game.response?.kind === 'ecazOccupy' && <p className="fine">
       Allow this power to keep the combined army, or use an eligible Karama below.
       Cancellation keeps {lead} as lead and replaces the variable army with {lead}’s own forces before planning.

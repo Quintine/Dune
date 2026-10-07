@@ -29,9 +29,13 @@ for the in-memory SQLite tests. `tsx` is a pinned development dependency.
 
 ## Prototype the remaining scope first
 
-- The user prioritizes working first versions of all remaining functions across
-  Basic, Advanced and every expansion, followed by integration, refinement and
-  polish. Reuse existing capabilities; batch related functions by dependency.
+- The 8 October 2026 user amendment sets the content order: complete Basic
+  rules for all twelve factions first, then Advanced rules, then refine
+  interactions. Usable first versions may be imperfect; mark provisional
+  interpretations honestly rather than postponing all independent content.
+  Defer administration detours, broad test suites, capture-resumption sweeps and
+  combination campaigns. Use only brief changed-path smoke during rule delivery;
+  batch type/lint feedback rather than repeating it for each small edit.
 - The 2 October 2026 amendment supersedes the 26 September sequencing:
   implement all rules first; save/recovery, privacy and custody assurance plus
   comprehensive review follow afterward, not as per-prototype gates. Do not

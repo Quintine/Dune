@@ -23,7 +23,7 @@ import { TERRITORIES } from '@/game/board';
 import { faction } from '@/game/catalog';
 
 export const AMBASSADOR_COVERAGE =
-  'Development coverage: Ambassador placement, Ecaz’s direct Duke acquisition and consensual alliance, Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen, Guild and Tleilaxu entry effects are supported, plus Bene Gesserit copies of those eight ordinary effects. The Tleilaxu effect returns physical forces only; its printed leader alternative and ordinary revival accounting remain unfinished. Duke loan choices, other effects and some competing arrival reactions remain unfinished; full Ecaz starts remain disabled.';
+  'Development coverage: Ambassador placement, Ecaz’s direct Duke acquisition and consensual alliance, Emperor, Atreides, Harkonnen, CHOAM, Ixian, Richese, Fremen, Guild and Tleilaxu entry effects are supported, plus Bene Gesserit copies. The Tleilaxu effect offers physical force returns or a first-death own-leader revival. Ordinary allowance and income accounting, repeat-death and shared-leader cases remain for refinement. Duke loan choices and some competing arrival reactions remain unfinished; full Ecaz starts remain disabled.';
 function tokenLocation(token: AmbassadorToken) {
   if (token.zone === 'placed')
     return `Placed in ${TERRITORIES.find((t) => t.id === token.location)?.name ?? 'a stronghold'}`;

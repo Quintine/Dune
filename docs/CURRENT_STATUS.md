@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 7 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 8 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -16,6 +16,29 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Current priority — Basic → Advanced → interaction refinement.** The user
+requests usable first versions for every faction before refinement. Administration
+is deferred. Broad suites and capture-resumption campaigns are deferred; rule
+delivery uses brief changed-path smoke only, with batched compiler feedback.
+
+**Richese cache cancellation connected.** The printed Karama cancellation
+now reaches the restore-one-ordinary-lot policy selected on 7 October. First/last
+cache offers are skipped after cancellation; the physical cache stays intact.
+Advanced Bene Gesserit conversion uses its existing separate response.
+Seven direct engine smoke scenarios pass, including Basic first/last cancellation;
+no broad suite was run for this change.
+
+**Basic Ecaz odd-force Occupy prototype.** The main printed paragraph supplies
+ceiling contribution/loss and floor survivors, including odd counts. Controls
+explicitly label the conflicting-FAQ interpretation as provisional. One five-counter
+coalition smoke reaches Collection with three Ecaz losses and two survivors.
+
+**Tleilaxu Ambassador leader alternative.** The beneficiary can revive a
+first-death own leader for free instead of returning forces. Private choices,
+zero price and legal AI are connected. Independent allowance treatment is
+provisional; repeat-death/shared-disc and income interactions remain for refinement.
+One Basic arrival-and-bot smoke passes.
+
 
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in

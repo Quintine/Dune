@@ -92,9 +92,9 @@ function requireBattle(condition: unknown, message: string): asserts condition {
 const text = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0;
 
-/** Advanced retains ceil(E/2); source-clear Basic admits only even E and uses
- * E/2. The increment is free. The selected lead supplies the plan and pays for
- * the actual ally's dial; selecting Ecaz does not transfer the ally's counters. */
+/** Printed p8: ceil(E/2) free contribution and winning losses. Basic odd counts
+ * use this provisionally under the 8 October breadth-first instruction; the
+ * conflicting FAQ remains recorded, not silently promoted to a settled ruling. */
 export function quoteEcazOccupyBattle(
   input: EcazOccupyBattleInput,
 ): EcazOccupyBattleProfile {
@@ -137,14 +137,9 @@ export function quoteEcazOccupyBattle(
     typeof canceled === 'boolean',
     'The Occupy profile needs its pre-plan cancellation state.',
   );
-  requireBattle(
-    advanced || canceled || ecaz.forces.normal % 2 === 0,
-    'Uncanceled Basic Occupy needs an even Ecaz force count; odd-force publisher casualty wording remains unresolved.',
-  );
   const forceOwner = canceled ? lead : ally.id;
   const forces = forceOwner === ecaz.id ? ecaz.forces : ally.forces;
-  const fixedEcazDial = canceled ? 0 :
-    advanced ? Math.ceil(ecaz.forces.normal / 2) : ecaz.forces.normal / 2;
+  const fixedEcazDial = canceled ? 0 : Math.ceil(ecaz.forces.normal / 2);
   return {
     advanced,
     battleOrderActor,

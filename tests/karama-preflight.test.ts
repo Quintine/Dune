@@ -86,45 +86,16 @@ function countOpportunity(position: 'first' | 'last' = 'first') {
   return { g, worthless, printed, spare };
 }
 
-for (const form of ['printed', 'worthless'] as const)
-  for (const position of ['first', 'last'] as const)
-    void test(`${form} cancellation of the real ${position} Richese count rejects before cost or conversion, without randomness`, (t) => {
-      const { g, worthless, printed } = countOpportunity(position);
-      const before = structuredClone(g);
-      const physical = inventory(g);
-      const random = t.mock.method(crypto, 'getRandomValues', () => {
-        throw Error('Rejected preflight must not draw randomness.');
-      });
-      const uuid = t.mock.method(crypto, 'randomUUID', () => {
-        throw Error('Rejected preflight must not allocate an event.');
-      });
-      for (let attempt = 0; attempt < 2; attempt++)
-        assert.throws(
-          () =>
-            applyAction(g, form === 'printed' ? 'e' : 'b', {
-              type: 'card',
-              card: form === 'printed' ? printed : worthless,
-              mode: 'cancel',
-            }),
-          /canceled Richese auction count.*ruling/i,
-        );
-      assert.deepEqual(g, before);
-      assert.deepEqual(inventory(g), physical);
-      assert.equal(g.pendingKarama, undefined);
-      assert.equal(g.discard.length, 0);
-      assert.equal(random.mock.callCount(), 0);
-      assert.equal(uuid.mock.callCount(), 0);
-    });
 
-void test('printed cancellation of a legacy BG conversion restores the original Richese count instead of executing its unsupported cancellation', () => {
+void test('printed cancellation of a saved BG conversion restores the original Richese cache opportunity', () => {
   const { g: initial, worthless, printed, spare } = countOpportunity();
   const physical = inventory(initial);
   const original = structuredClone(initial.response!);
   const legacy = reload(initial);
   const bg = player(legacy, 'b');
-  // Historical saves accepted this conversion before checking the eventual
-  // unsupported count cancellation. Preserve its real parent and spent card;
-  // do not use the newly rejected declaration to manufacture a legacy save.
+  // Restore a saved conversion frame with its original declaration and spent
+  // Worthless card. Countering the conversion restores, rather than cancels,
+  // the original cache opportunity.
   const index = bg.hand.findIndex((c) => c.id === worthless);
   legacy.discard.push(bg.hand.splice(index, 1)[0]);
   legacy.pendingKarama = {

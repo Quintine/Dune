@@ -1913,8 +1913,11 @@ function policyActions(g: GameView): Action[] {
       if (entry.stage === 'allianceReply') return [{ ...action, accept: true }];
       if (entry.stage === 'revival') {
         const revival = entry.revival;
-        if (!revival || revival.blocked || revival.maximum < 1)
-          return [{ ...action, decline: true }];
+        if (!revival || revival.blocked) return [{ ...action, decline: true }];
+        if (revival.maximum < 1)
+          return [revival.leaders[0]
+            ? { ...action, leader: revival.leaders[0].id }
+            : { ...action, decline: true }];
         // Minimal legal participation: return as many Tanks counters as the
         // printed maximum allows, spending the single elite option first.
         const elite = Math.min(

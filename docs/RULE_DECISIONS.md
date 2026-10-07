@@ -172,6 +172,12 @@ Secrecy (physical page 16), Duke Vidal's ghola exception (30), Kull and other
 independent decisions are not reconciled by this cutover.
 
 ## Basic Ecaz Occupy even-force boundary — 4 October 2026
+**Superseded for prototype availability on 8 October:** the user requests Basic
+first versions even when imperfect. Basic odd-count Occupy now uses the main p8
+paragraph provisionally (`ceil(E/2)` contribution/loss, `floor(E/2)` survivors),
+with a visible control warning. The conflicting FAQ is not adjudicated by this
+implementation choice. The historical even-only checkpoint below is retained.
+
 
 Fresh bounded `ecaz-occupy` now admits Basic with the exact `ecaz` deck and
 classic or optional Moritani opponents, no optional modules. For an even Ecaz

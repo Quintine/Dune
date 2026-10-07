@@ -161,10 +161,9 @@ void test('Basic sole traitor victory spares both armies; defeat, mutual traitor
   }
 });
 
-void test('uncanceled Basic odd Ecaz is source-blocked before commitment, while Advanced keeps ceil losses and floor survivors', () => {
+void test('Advanced odd Ecaz keeps ceil losses and floor survivors', () => {
   for (const ecazCount of [1, 3, 5, 19]) {
     for (const lead of ['ecaz-seat', 'ally-seat']) {
-      assert.throws(() => quoteEcazOccupyBattle(battle(false, ecazCount, lead)), EcazOccupyBattleError);
       const profile = quoteEcazOccupyBattle(battle(true, ecazCount, lead));
       const win = quoteEcazOccupyOutcome(profile, {
         result: 'normal', won: true, dial: Math.ceil(ecazCount / 2), support: 0,

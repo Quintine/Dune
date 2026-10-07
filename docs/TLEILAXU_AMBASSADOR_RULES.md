@@ -1,6 +1,17 @@
 # Tleilaxu Ambassador revival: source contract
 
-Primary-source review, 2026-09-07. This document supplements the [Ambassador effects audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md) and [runtime readiness review](TLEILAXU_AMBASSADOR_RUNTIME_READINESS.md). It does not activate the effect or select the unresolved accounting and shared-leader policies.
+Primary-source review, 2026-09-07, with later runtime checkpoints below. This document supplements the [Ambassador effects audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md) and [runtime readiness review](TLEILAXU_AMBASSADOR_RUNTIME_READINESS.md). Recorded source questions remain distinct from the Basic-first implementation choices.
+
+## First-version leader alternative — 8 October 2026
+
+The beneficiary may now revive one first-death own leader for free instead of
+returning forces. Its identity and death count remain unchanged; the original
+entrant resumes after the choice. The private leader selector and minimal legal
+AI path are connected. The independent grant does not spend the ordinary leader
+allowance provisionally, matching the existing independent force path; this is
+an implementation choice for the user-requested first version, not a settled
+quota ruling. Dead-twice, shared Duke/KH and revival-income interactions remain
+refinement boundaries. A direct Basic arrival-and-bot smoke passes.
 
 ## Printed grant and immediate consequences
 
