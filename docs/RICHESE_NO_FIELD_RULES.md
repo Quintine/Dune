@@ -2,6 +2,39 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Basic mixed battle prototype — 8 October 2026
+
+The Basic-first pass now admits an ordinary Richese battle containing both
+physical forces and a concealed No-Field. It reuses the existing private
+prospective pool: **physical forces already in the territory plus
+`min(token value, current reserves)`**. This is a visibly provisional
+mixed-pool interpretation, not an adjudication of the FAQ's reserve-cap
+ambiguity below. Advanced mixed battles and combined Ecaz Occupy remain
+guarded for their separate pass/composition work.
+
+`Battle.basicMixedNoFieldPlayers` retains initial mixed participation.
+Only the participating owner's view receives `battle.basicMixedNoField`
+and its private prospective bounds. The actual Battle Wheel explains the
+formula and its provisional status; marker-only wording no longer claims
+that the mixed pool consists entirely of reserve materialization.
+Basic AI may form mixed groups and uses the authoritative own force quote,
+without consulting an opponent's hidden denomination.
+
+The existing sealed-plan path materializes the token once after both plans
+are submitted, preserving ordinary physical units. Native losses and
+aftermath then operate on actual counters. Ordinary Atreides dial secrecy,
+the whole-plan inspection guard, token history and public-mode gates are
+unchanged. Reserve changes during sealed plans and wider mixed-sector,
+typed-unit, skill and allied interactions remain for refinement.
+
+**Brief smoke:** reproduced the old Basic admission rejection; the same
+two-force/three-token fixture now quotes five fighters privately, provides
+legal Easy plans, keeps the first plan concealed, materializes three once,
+and completes native losses/aftermath with twenty total physical counters.
+Chromium observed actual `GameTable` SSR Battle Wheel/plan controls and the
+five-fighter provisional warning. Types pass. No broad suite or deployed
+acceptance was run.
+
 ## Authority
 
 - [GF9 CHOAM & Richese rulebook](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf), printed pp.5–6,10–12. The full publisher-authored PDF was read from `/tmp/dune-rules/choam-lelekan-mirror.pdf` and its extracted text; fresh publisher-indexed excerpts corroborate the No-Field paragraph and FAQ. The official direct URL is inaccessible from this environment, while the older local files named `choam-primary.pdf` and `choam-publisher-audit.pdf` are HTML errors.
@@ -55,7 +88,7 @@ This table records the original adapter contract. The implemented subset and cur
 ## Unresolved or compositional boundaries
 
 1. **Reserve shortage when destroyed.** Voluntary/battle text explicitly caps by reserves; the destruction sentence says to lose the indicated quantity without repeating the shortage clause. The pure model caps materialization to avoid creating physical units, but that is conservation-based composition for storm/worm losses, not an independently answered FAQ. It does not select substitute losses from unrelated board forces.
-2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. A territory can also contain ordinary forces (the Smuggler answer demonstrates mixed presence), but no retrieved answer expressly defines that limit with existing forces, multiple sectors, typed units or independently committed reserve uses. Keep ordinary board forces and token materialization separate; do not certify a guessed global cap formula.
+2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. A territory can also contain ordinary forces (the Smuggler answer demonstrates mixed presence), but no retrieved answer expressly defines that limit with existing forces, multiple sectors, typed units or independently committed reserve uses. The Basic prototype above uses an explicitly provisional additive pool; this does not settle the source question. Advanced and combined Occupy remain guarded.
 3. **Full-plan special Karama and structured Truthtrance.** The ordinary Atreides dial prohibition is explicit. Whether a broader entire-plan power or a particular promise question overrides it was not resolved by a retrieved specific answer. Do not leak the value through private legal-plan previews, public maximum dials, error strings or bot reasoning.
 4. **Homeworld use.** R3 recommends Richese in a Homeworld combination but supplies no retrieved No-Field-specific rule defining off-planet hidden custody, one-on-planet versus off-planet coexistence, or homeworld threshold disclosure. General module availability is not an answer to those lifecycle questions. The isolated model represents a single Arrakis marker and does not authorize Homeworld placement.
 5. **Capturing, transferring or returning a concealed marker as a force.** Movement-as-a-force and Gamont's explicit forced reveal do not establish a general conversion for every card or Guild transport-to-reserves. A generic return helper must not erase a hidden token without a source-backed reveal/custody cause. This module exposes no such automatic escape from last-use history.
@@ -80,7 +113,7 @@ Root integration review also corrected the Polar Sink address: its ordinary boar
 
 `game/force-presence.ts` distinguishes presence from actual units, and map/occupancy, battle discovery, collection and control use that distinction. A marker is one collector even at zero. Storm checks the exact exposed marker sector before materialization/casualties; sheltered Imperial Basin and other sectors are preserved in focused checks. Unprotected worm destruction runs the actual reveal/casualty path, including a real Thumper trigger. Protected-worm and additional removal effects remain bounded by the source interpretations above.
 
-Marker-only battle admission computes the owner's prospective pool from denomination and remaining reserves. The view exposes that pool only to its owning combatant; another player sees its own pool or none. Both plans seal before public reveal materializes the marker. The battle's `noFieldPlayers` flag persists, so zero still has its leader/cards/traitor resolution. Ordinary Atreides dial prescience is rejected on the server and avoided by controls/AI. Mixed physical-plus-marker battle admission and special whole-plan inspection are guarded pending the unresolved rules. Physical mixed movement being supported is not approval of a guessed mixed battle dial formula. Broader Truthtrance remains an audit boundary.
+Marker-only battle admission computes the owner's prospective pool from denomination and remaining reserves. The view exposes that pool only to its owning combatant; another player sees its own pool or none. Both plans seal before public reveal materializes the marker. The battle's `noFieldPlayers` flag persists, so zero still has its leader/cards/traitor resolution. Ordinary Atreides dial prescience is rejected on the server and avoided by controls/AI. Basic physical-plus-marker admission now has the provisional prototype above; Advanced/combined mixed admission and special whole-plan inspection remain guarded. Broader Truthtrance remains an audit boundary.
 
 **Player controls — Partial.** `components/richese-no-field.tsx` provides concealed board markers plus owner-only denomination inventory, last-use status, token selection, ordinary one-force price/ally-share feedback and authoritative unavailable reasons. The parent table adds explicit marker movement selection and private prospective battle bounds. Token identifiers and hidden values are absent from rival board projections. The separate `components/richese-allied-no-field.tsx` supplies owner opportunity/proposal/payment controls and private recipient accept/decline/typed-force controls. Own shipment, marker movement and invitation/reveal have passed browser checks; an allied owner proposal was checked, but recipient browser acceptance and mobile remain pending.
 

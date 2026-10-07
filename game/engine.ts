@@ -725,6 +725,8 @@ export type Battle = {
   preLeader?: { event: string; ready: string[]; closed: boolean };
   /** Public marker participation persists after a zero-token reveal. */
   noFieldPlayers?: string[];
+  /** Provisional Basic mixed-pool participation, separate from the hidden value. */
+  basicMixedNoFieldPlayers?: string[];
   truthPromises?: BattlePromise[];
   poisonTooth?: Record<string, boolean>;
   stoneBurner?: Record<string, 'kill' | 'ignore'>;
@@ -31382,13 +31384,16 @@ function applyActionInner(
       (player.id === choice.attacker || player.id === choice.defender ||
         (g.advanced && connected && ecaz && ally?.ally === ecaz.id && player.id === ally.id &&
           (choice.attacker === ecaz.id || choice.defender === ecaz.id)))).map(player => player.id);
-    for (const playerId of noFieldPlayers)
-      requireRule(
-        Object.entries(getPlayer(g, playerId).forces).every(
-          ([key, n]) => !n || splitLocation(key).territory !== choice.territory,
-        ),
-        'Mixed ordinary-force and No-Field battle dialing awaits a ruling. Reveal voluntarily before Battle while that option is available.',
+    let basicMixedNoFieldPlayers: string[] | undefined;
+    for (const playerId of noFieldPlayers) {
+      const mixed = Object.entries(getPlayer(g, playerId).forces).some(
+        ([key, n]) => n > 0 && splitLocation(key).territory === choice.territory,
       );
+      if (!mixed) continue;
+      requireRule(!g.advanced && !combined,
+        'Mixed Advanced or combined Occupy No-Field battle dialing awaits a ruling. Basic ordinary mixed battles use the visible provisional pool.');
+      (basicMixedNoFieldPlayers ??= []).push(playerId);
+    }
     if (combined) {
       requireRule(ecazOccupyCompositionSupported(g),
         'Combined Occupy requires source-selected native factions; optional overlays remain gated.');
@@ -31407,6 +31412,7 @@ function applyActionInner(
         ? { preLeader: { event: battleEvent, ready: [], closed: false } }
         : {}),
       ...(noFieldPlayers.length ? { noFieldPlayers } : {}),
+      ...(basicMixedNoFieldPlayers ? { basicMixedNoFieldPlayers } : {}),
       prepared: true,
       plans: {},
       revealed: false,
@@ -32919,6 +32925,7 @@ export function viewGame(state: Game, id: string) {
           ) as Record<string, StrongholdId | null>,
           tieWinner: battleTieWinner(g),
           noFieldPlayers: [b.attacker, b.defender].filter(player => battleNoFieldPlan(g, player)),
+          ...(b.basicMixedNoFieldPlayers?.includes(id) ? { basicMixedNoField: true as const } : {}),
           ownForces: [b.attacker, b.defender].includes(id)
             ? planCombatForces(g, me, getPlayer(g, b.attacker === id ? b.defender : b.attacker))
             : null,

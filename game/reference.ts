@@ -1008,6 +1008,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'Richese No-Field tokens',
     category: 'Advanced & expansions',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'Concealed zero, three and five tokens represent one force until they are revealed.',
     steps: [
@@ -1020,9 +1021,10 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Development tables support your own concealed shipment, movement of a marker alone or with a physical group, voluntary reveal and one-force board presence. Physical reserves remain unchanged until reveal. Karama can prevent the No-Field shipment, with Guild shipment prevention and payment handled separately. Price and chosen allied funding are shown before shipment.',
       'The map shows a concealed marker without its denomination to everyone. Richese privately sees its token values, last-use restriction and reveal control. Movement selection keeps the marker separate from physical forces. No hidden denomination or physical token identity is included in another player’s projected board state.',
       'Marker-only battles use the owner’s private reserve-limited force pool. Both plans must be sealed before the token materializes. A zero-token battle still resolves with its leader, cards and traitor decisions. Ordinary Atreides prescience cannot request this opponent’s dial; other eligible plan elements remain available.',
+      'Basic ordinary mixed battles have a provisional private pool: physical forces already here plus the token value capped by current reserves. The Battle Wheel labels that interpretation explicitly. Both plans seal before materialization, then native casualties and aftermath use actual forces. This first version does not adjudicate the FAQ mixed dial cap.',
       'Concealed collection, occupancy and control use one-force presence. Exposed storm sectors and unprotected worm destruction reveal and remove the resulting actual forces. Storm shelter and other sectors remain separate. Trip to Gamont at a location with a marker reveals it, even if ordinary forces also occupy that sector, then returns one actual force if present. It is still used if zero forces remain. Canceling the CHOAM power leaves the marker concealed.',
       'All four AI profiles choose from their own private token inventory, pay only the one-force shipment price, move the marker explicitly and reveal positive tokens when useful. They retain zero-token presence and use only public information to assess opponents. They also offer safe positive tokens from their own inventory during the allied opportunity, fund them with their own spice and accept or decline private offers using their own force and payment information. A human Richese player’s offer window holds an AI ally’s shipment. Pending responses, decisions and Truthtrance retain priority.',
-      'Mixed-force battle dials and entire-plan special Karama inspection against a No-Field are guarded pending rules resolution. Guild-recipient and active-Karama allied pricing, Homeworld custody, broader Truthtrance and some interrupted entry combinations remain unfinished. Ordinary physical movement can coexist with a marker, but this does not settle the mixed battle formula. Richese starts remain disabled.',
+      'Advanced mixed-force battles, combined Ecaz Occupy and entire-plan special Karama inspection against a No-Field remain guarded. Guild-recipient and active-Karama allied pricing, Homeworld custody, broader Truthtrance and interrupted compositions remain unfinished. The Basic mixed-pool prototype is not a completed or publisher-verified formula. Richese starts remain disabled.',
     ],
     related: [
       'richese-cards',
@@ -1036,7 +1038,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Own shipment, movement, voluntary reveal, effective presence, collection, storm/unprotected-worm destruction, Gamont reveal/return and marker-only battle integration work in development fixtures. Allied offers, typed recipient consent, either full payer or a one-each two-spice split, prevention and immediate reveal are integrated. Mixed battles, whole-plan inspection, Guild/Karama allied pricing and broader combinations remain guarded or unfinished.',
+          'Own shipment, movement, voluntary reveal, effective presence, collection, storm/unprotected-worm destruction, Gamont reveal/return and marker-only battle integration work in development fixtures. Basic mixed physical/marker battle has a connected provisional pool, native reveal and aftermath. Allied offers, typed recipient consent, full/split funding, prevention and immediate reveal are integrated. Advanced/combined mixed battles, whole-plan inspection, Guild/Karama allied pricing and broader combinations remain guarded or unfinished.',
       },
       {
         area: 'Player controls',
@@ -1048,7 +1050,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'AI',
         status: 'Partial',
         detail:
-          'All four profiles support own shipment, marker movement/reveal and marker-only battles using entitled projections. They handle the allied offer/acceptance window, preserve human ownership and avoid repeated declined offers, unsupported mixed groups and forbidden dial prescience. Complete Richese-game strategy remains unverified.',
+          'All four profiles support own shipment, marker movement/reveal and marker-only battles using entitled projections. Basic mixed groups now use the private authoritative battle pool; one Easy planning/aftermath smoke passes. Allied offer/acceptance preserves human ownership and avoids repeated declined offers and forbidden dial prescience. Complete Richese-game strategy remains unverified.',
       },
       {
         area: 'Documentation',

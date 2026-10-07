@@ -5001,7 +5001,9 @@ export function GameTable({
                             <p className="fine">
                               {ownNoField &&
                               g.battle.noFieldPlayers.includes(me.id)
-                                ? `Your concealed No-Field can reveal ${battleForces} physical forces from your current reserves. This estimate is private.`
+                                ? g.battle.basicMixedNoField
+                                  ? `Provisional Basic mixed No-Field pool: ${battleForces} fighters, combining forces already here with the token's reserve-limited materialization. This estimate is private; the mixed-pool formula is not an adjudicated publisher ruling.`
+                                  : `Your concealed No-Field can reveal ${battleForces} physical forces from your current reserves. This estimate is private.`
                                 : occupyProfile
                                   ? `${battleForceOwnerName} supplies ${battleForces} physical fighters for the variable dial.`
                                   : `You have ${battleForces} fighting forces here.`}

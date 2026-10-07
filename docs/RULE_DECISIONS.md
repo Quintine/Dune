@@ -1,6 +1,24 @@
 # Rule decision index
 
-Updated 7 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+Updated 8 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+
+## Content-first Basic prototypes — 8 October 2026
+
+The user's Basic-first instruction authorizes usable first versions before
+interaction refinement. The following implementation policies are explicitly
+provisional, **not numerical user rulings or newly located publisher answers**.
+They supersede earlier software-absence claims only within their named scope.
+
+| Basic behavior | First-version policy | Canonical contract |
+| --- | --- | --- |
+| Odd-force Ecaz Occupy | Main paragraph: ceiling contribution/loss, floor survivors; conflicting FAQ remains unresolved. | [Occupy](ECAZ_OCCUPY_RULES.md) |
+| New-ally Duke loan | Optional existing-disc loan after Ambassador alliance consent; one battle and unused turn-end set-aside. | [Duke acquisition](ECAZ_DUKE_ACQUISITION.md) |
+| Tleilaxu Ambassador leader alternative | First-death own native leader revives free instead of forces, independently of ordinary revival allowance. | [Ambassador](TLEILAXU_AMBASSADOR_RULES.md) |
+| Ordinary allied shipment transit | Depart during the shipper's turn; excess new physical visitors still present at ending go to Tanks, even when exit was prevented. Old co-occupation timing is separate. | [Allied transit](ALLIED_TRANSIT_RULES.md) |
+| Ordinary mixed No-Field battle | Private pool is physical forces plus reserve-limited token materialization; both plans seal before one reveal. Advanced and combined Occupy remain separate. | [No-Field](RICHESE_NO_FIELD_RULES.md) |
+
+No publication or faction/mode gate is opened. The exact 7 October user
+rulings below remain distinct from these prototype choices.
 
 ## User rulings — 7 October 2026
 

@@ -188,18 +188,16 @@ void test('positive markers reveal before a new shipment while zero and empty pr
   }
 });
 
-void test('marker candidates honor public occupancy, storm, own physical custody and authoritative blocked flags', () => {
+void test('marker candidates honor public occupancy, storm and authoritative blocked flags', () => {
   for (const level of DIFFICULTIES) {
     const g = fixture();
     g.players[1].forces = { 'arrakeen:9': 2 };
     g.players[2].forces = { 'arrakeen:9': 2 };
-    g.players[0].forces = { 'carthag:11': 3 };
     const v = projection(g, level);
     assert.ok(
       noFieldShips(v).every(
         (a) =>
           a.territory !== 'arrakeen' &&
-          a.territory !== 'carthag' &&
           a.sector !== 18,
       ),
     );
@@ -215,17 +213,6 @@ void test('marker candidates honor public occupancy, storm, own physical custody
     const foreign = projection(g, level, 'a');
     assert.ok(
       !botActions(foreign).some((a) => a.noField || a.type === 'revealNoField'),
-    );
-    const separate = deploy(fixture(), 0);
-    separate.players[0].shipped = false;
-    separate.players[0].forces = { 'arrakeen:9': 4 };
-    assert.ok(
-      botActions(projection(separate, level))
-        .filter(
-          (a) => ['ship', 'move', 'guildShip'].includes(a.type) && !a.noField,
-        )
-        .every((a) => a.territory !== 'imperial_basin'),
-      'ordinary groups do not create an unsupported mixed marker battle',
     );
   }
 });

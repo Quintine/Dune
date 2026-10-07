@@ -2,6 +2,18 @@
 
 Read-only audit, 2026-09-06, followed by a bounded integration checkpoint. The hook findings below describe the engine at the original audit; line numbers are approximate because implementation is concurrent. Function/action names are the durable anchors. It supplements `RICHESE_NO_FIELD_RULES.md` and does not certify a playable Richese expansion.
 
+## Basic mixed runtime amendment — 8 October 2026
+
+Ordinary Basic physical-plus-marker battle admission now has a connected,
+visibly provisional additive private pool, native joint reveal and actual
+casualty/aftermath path. Basic bots may form mixed groups; Advanced/combined
+Occupy guards remain. One direct before/after smoke and current types pass;
+actual SSR Battle Wheel/plan controls were observed in Chromium.
+[The current contract](RICHESE_NO_FIELD_RULES.md#basic-mixed-battle-prototype--8-october-2026)
+states the unresolved formula and refinement boundaries. The earlier
+mixed-battle absence/avoidance claims in the checkpoint below are historical,
+not the current Basic implementation.
+
 ## Current resolution of the audited hooks
 
 - **Implemented in development fixtures:** separate physical `Player.noField` custody; public `force-presence` counting and location keys; own No-Field shipment with cancellation/payment stages; physical-plus-marker or marker-only movement; event-fenced voluntary reveal; collection and occupancy/control consumers; exact exposed storm sector and unprotected worm materialization/casualties; marker-only prospective battle pools, joint reveal and persistent zero-battle identity; server-enforced ordinary prescience no-dial restriction; allied opportunity/private consent/typed immediate shipment with fixed full or equal-split funding; Gamont reveal at a selected marker location followed by one actual force returned when present, including zero and colocated ordinary-unit cases.

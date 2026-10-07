@@ -53,6 +53,12 @@ no-exit policy sends only excess new visitors to Tanks when the turn ends;
 old co-occupation timing remains separate. Three brief engine scenarios pass,
 including Medium departure, old/ally force preservation and stronghold capacity.
 Advanced entry and concealed/optional arrivals remain unchanged.
+**Basic Richese mixed No-Field battle prototype.** Physical forces plus a
+concealed token can enter ordinary Basic battles. The private pool uses existing
+physical forces plus reserve-limited token materialization, visibly marked as a
+provisional formula. Native sealing/reveal, casualties, controls and legal AI
+are connected. One before/after engine smoke completes the battle; types pass.
+Advanced mixed battles and combined Occupy remain guarded.
 
 
 
