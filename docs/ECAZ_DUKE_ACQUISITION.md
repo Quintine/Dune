@@ -4,6 +4,20 @@ Integrated 7 September 2026. Ecaz can now choose **Acquire Duke Vidal for Ecaz**
 
 The direct acquisition and tenure follow the publisher’s [Ecaz & Moritani rules, pp.7–9](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf). Fresh indexed publisher retrieval rechecked eligibility outside Tanks, captured or ghola custody. The prior [Duke source audit](DUKE_VIDAL_RULES.md) and [remaining effects readiness review](ECAZ_REMAINING_EFFECTS_READINESS.md) record the separate unresolved combinations. This implements the direct self-acquisition choice; it does not certify the token’s alliance and loan alternatives, full Ecaz or a complete expansion game.
 
+## Basic new-ally loan first version — 8 October 2026
+
+After the reusable Ambassador alliance is accepted in Basic, Ecaz receives a
+separate optional loan choice when Duke is available. The new ally controls
+the same disc; no native leader or Traitor card is created. Ecaz may decline,
+leaving the disc unchanged. The original entrant resumes after this choice.
+Private decision ownership and a minimal legal bot choice are connected.
+
+The first version uses one-battle tenure and sets an unused living loan aside
+at turn end. These are labelled implementation policies under the Basic-first
+instruction, not a publisher clarification of return destination or mid-loan
+alliance changes. Advanced loans and exceptional custody remain for later work.
+A direct Basic arrival → consent → legal bot loan → resumed entrant smoke passes.
+
 ## Rules and authoritative execution
 
 `game/ecaz-duke-acquisition.ts` quotes a detached next `DukeState` using the existing custody helper. It requires a current seated Ecaz owner and the existing canonical shared disc. It preserves identity, death history and `usedAt`; it never appends a leader to a native roster, adds a Traitor card, manufactures a replacement disc, samples randomness or grants new battle-use permissions. Starting-force initialization remains the normal disc-creation boundary.

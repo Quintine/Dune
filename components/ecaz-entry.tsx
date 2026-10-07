@@ -32,7 +32,7 @@ export function EcazEntry({
     !entry ||
     game.decision?.kind !== 'ecazAmbassador' ||
     game.decision.player !== game.me ||
-    !['offer', 'allianceReply', 'copy', 'cards', 'move', 'ship', 'revival'].includes(
+    !['offer', 'allianceReply', 'loan', 'copy', 'cards', 'move', 'ship', 'revival'].includes(
       entry.stage,
     )
   )
@@ -141,7 +141,8 @@ export function EcazEntry({
               <p className="m-0 text-sm leading-6">
                 Both factions must be unallied. The entrant chooses whether to
                 accept. The triggered Ambassador returns to supply even if the
-                offer is refused. Duke loans remain unfinished.
+                offer is refused. In Basic, an accepted alliance can be followed
+                by an optional Duke loan when the disc is available.
               </p>
             </>
           ) : (
@@ -194,8 +195,8 @@ export function EcazEntry({
           <p className="m-0 text-sm leading-6">
             {game.players.find((p) => p.id === entry.owner)?.name} offers you an
             alliance. Accepting activates both factions’ alliance abilities
-            immediately. Duke Vidal is not included in this offer. Your
-            remaining actions resume after your reply.
+            immediately. In Basic, Ecaz can then optionally lend an available
+            Duke Vidal. Your remaining actions resume after those choices.
           </p>
           <Button
             className={buttonClass}
@@ -212,6 +213,19 @@ export function EcazEntry({
           >
             Refuse alliance
           </Button>
+        </>
+      ) : entry.stage === 'loan' ? (
+        <>
+          <p className="m-0 text-sm leading-6">
+            Lend Duke Vidal to your new ally for this turn, or continue without
+            lending him. Basic prototype: one battle; an unused living Duke is
+            set aside at turn end. Return and capture interactions remain provisional.
+          </p>
+          <Button className={buttonClass} disabled={busy || !!entry.dukeLoan?.blocked}
+            onClick={() => send({ loan: true })}>Lend Duke Vidal to the new ally</Button>
+          {entry.dukeLoan?.blocked && <p>{entry.dukeLoan.blocked}</p>}
+          <Button variant="outline" className={buttonClass} disabled={busy}
+            onClick={() => send({ loan: false })}>Continue without lending Duke</Button>
         </>
       ) : entry.stage === 'copy' ? (
         <>

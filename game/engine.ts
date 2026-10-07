@@ -1598,6 +1598,7 @@ export type Game = {
     stage:
       | 'offer'
       | 'allianceReply'
+      | 'loan'
       | 'copy'
       | 'cards'
       | 'income'
@@ -16395,6 +16396,18 @@ function ecazAllianceQuote(g: Game, owner: string, entrant: string) {
     throw error;
   }
 }
+function ecazAmbassadorLoanBlock(g: Game, owner: Player, entrant: Player) {
+  if (g.advanced) return 'This first-version Duke loan is available in Basic.';
+  if (owner.ally !== entrant.id || entrant.ally !== owner.id)
+    return 'The new Ecaz alliance is no longer current.';
+  const duke = g.dukeVidal;
+  if (!duke || duke.leader.id !== DUKE_VIDAL_ID ||
+    duke.leader.faction !== 'ecaz' || duke.leader.strength !== 6 ||
+    duke.leader.dead || duke.leader.concealed ||
+    duke.leader.capturedBy || duke.leader.gholaBy)
+    return 'Duke Vidal is unavailable for this loan.';
+  return duke.controller === owner.id ? null : ecazDukeAcquisitionBlock(g, owner.id);
+}
 function ecazAllianceIntegrity(g: Game) {
   const entry = g.pendingAmbassador;
   const continuation = g.pendingTreacheryDiscard?.continuation;
@@ -16414,7 +16427,7 @@ function ecazAllianceIntegrity(g: Game) {
     );
     return;
   }
-  if (entry.stage !== 'allianceReply') return;
+  if (entry.stage !== 'allianceReply' && entry.stage !== 'loan') return;
   const token = g.ecazAmbassadors?.tokens.find((t) => t.id === entry.token);
   requireRule(
     g.status === 'playing' &&
@@ -16424,18 +16437,21 @@ function ecazAllianceIntegrity(g: Game) {
       typeof entry.event === 'string' &&
       entry.event.length > 0 &&
       entry.effect === 'ecaz' &&
-      entry.beneficiary === entry.entrant &&
+      entry.beneficiary === (entry.stage === 'loan' ? entry.owner : entry.entrant) &&
       token?.effect === 'ecaz' &&
       token.zone === 'supply' &&
       token.location === null &&
       controls.some(
         (control) =>
           control?.decision?.kind === 'ecazAmbassador' &&
-          control.decision.player === entry.entrant,
+          control.decision.player === (entry.stage === 'loan' ? entry.owner : entry.entrant),
       ),
     'The Ecaz alliance reply has lost its original Ambassador or decision owner.',
   );
-  ecazAllianceQuote(g, entry.owner, entry.entrant);
+  if (entry.stage === 'allianceReply') ecazAllianceQuote(g, entry.owner, entry.entrant);
+  else requireRule(getPlayer(g, entry.owner).ally === entry.entrant &&
+    getPlayer(g, entry.entrant).ally === entry.owner,
+    'The Duke loan lost its accepted Ecaz alliance.');
 }
 function decideAmbassador(g: Game, p: Player, action: Action) {
   const entry = g.pendingAmbassador;
@@ -16452,6 +16468,19 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
     p.id === (entry.stage === 'offer' ? owner.id : entry.beneficiary),
     'The Ambassador choice belongs to another player.',
   );
+  if (entry.stage === 'loan') {
+    requireRule(typeof action.loan === 'boolean',
+      'Choose whether to lend Duke Vidal to the new ally.');
+    if (action.loan) {
+      const blocked = ecazAmbassadorLoanBlock(g, owner, entrant);
+      requireRule(!blocked, blocked ?? 'This Duke loan is unavailable.');
+      g.dukeVidal = acquireDuke(g.dukeVidal!, entrant.id, g.turn, 'ally');
+      log(g, `${owner.name} lent Duke Vidal to ${entrant.name} for this turn. The Basic prototype allows one battle; an unused living Duke is set aside at turn end.`,
+        { faction: 'ecaz', name: 'Ambassador Duke loan' });
+    }
+    finishAmbassador(g);
+    return;
+  }
   if (entry.stage === 'allianceReply') {
     requireRule(
       typeof action.accept === 'boolean',
@@ -16473,6 +16502,12 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         `${owner.name} and ${entrant.name} formed an alliance through the Ecaz Ambassador. Both were unallied and ${entrant.name} accepted. Their alliance abilities apply immediately; the entrant’s remaining actions resume.`,
         { faction: 'ecaz', name: 'Ambassador alliance' },
       );
+      if (!ecazAmbassadorLoanBlock(g, owner, entrant)) {
+        entry.stage = 'loan';
+        entry.beneficiary = owner.id;
+        g.decision = { kind: 'ecazAmbassador', player: owner.id };
+        return;
+      }
     } else
       log(
         g,
@@ -32060,6 +32095,9 @@ export function viewGame(state: Game, id: string) {
               id === owner.id
                 ? { blocked: ambassadorEffectBlock(g, 'ecaz', owner, entrant) }
                 : null,
+            dukeLoan:
+              entry.stage === 'loan' && id === owner.id
+                ? { blocked: ecazAmbassadorLoanBlock(g, owner, entrant) } : null,
             beneficiaries:
               entry.stage === 'offer' && id === owner.id
                 ? g.players

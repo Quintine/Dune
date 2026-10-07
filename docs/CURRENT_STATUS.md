@@ -38,6 +38,12 @@ first-death own leader for free instead of returning forces. Private choices,
 zero price and legal AI are connected. Independent allowance treatment is
 provisional; repeat-death/shared-disc and income interactions remain for refinement.
 One Basic arrival-and-bot smoke passes.
+**Basic Ecaz new-ally Duke loan.** After an Ambassador alliance is accepted,
+Ecaz can lend the available existing disc to that new ally or continue without
+lending it. Owned controls and legal AI are connected; the entrant resumes once.
+One-battle use and turn-end set-aside expiry are provisional first-version policies.
+One direct Basic alliance-and-loan smoke passes; no broad suite was run.
+
 
 
 **7 October 2026 — five pending rulings resolved by the user.** The user

@@ -89,11 +89,17 @@ function propose(g: Game) {
   return applyAction(g, 'ec', proposal(g));
 }
 function answer(g: Game, accept: boolean) {
-  return applyAction(json(g), 'in', {
+  let done = applyAction(json(g), 'in', {
     type: 'decision',
     event: g.pendingAmbassador!.event,
     accept,
   });
+  // These scenarios exercise alliance-only continuation, declining the optional loan.
+  if (done.pendingAmbassador?.stage === 'loan')
+    done = applyAction(done, 'ec', {
+      type: 'decision', event: done.pendingAmbassador.event, loan: false,
+    });
+  return done;
 }
 function reject(g: Game, id: string, action: Action) {
   const before = structuredClone(g);
@@ -372,7 +378,7 @@ for (const level of DIFFICULTIES)
     assert.equal(reply.accept, true);
     const done = applyAction(offered, 'in', reply);
     assert.equal(seat(done, 'ec').ally, 'in');
-    assert.equal(done.pendingAmbassador, null);
+    assert.equal(done.pendingAmbassador?.stage, 'loan');
   });
 
 void test('saved alliance replies reject missing events, corrupted token custody and changed entrant bindings before any answer', () => {

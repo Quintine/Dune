@@ -118,16 +118,16 @@ void test('single-battle consumption releases custody while retaining alive or d
   }
 });
 
-void test('turn end releases only Moritani tenure and preserves Ecaz holdings and unresolved allied loans', () => {
+void test('turn end releases Moritani tenure and allied loans while preserving unused Ecaz holdings', () => {
   for (const source of ['moritani', 'ally', 'ecaz'] as const) {
     const state = acquireDuke(createDukeVidal(), 'holder', 4, source);
     const earlier = expireDuke(state, 3);
     assert.deepEqual(earlier, state);
     for (const turn of [4, 5]) {
       const expired = expireDuke(state, turn);
-      assert.equal(expired.controller, source === 'moritani' ? null : 'holder');
-      assert.equal(expired.acquiredTurn, source === 'moritani' ? null : 4);
-      assert.equal(expired.source, source === 'moritani' ? null : source);
+      assert.equal(expired.controller, source === 'ecaz' ? 'holder' : null);
+      assert.equal(expired.acquiredTurn, source === 'ecaz' ? 4 : null);
+      assert.equal(expired.source, source === 'ecaz' ? source : null);
       assert.deepEqual(expired.leader, state.leader);
     }
     assert.equal(state.controller, 'holder');

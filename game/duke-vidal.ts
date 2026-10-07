@@ -76,13 +76,13 @@ export function consumeDuke(state: DukeState): DukeState {
 
 /**
  * End-turn custody only. Ecaz's ordinary Ambassador acquisition lasts until
- * battle use; the distinct Ecaz Nexus Cunning acquisition lasts this turn.
- * Allied loans and captured/ghola release destinations need a verified return contract.
+ * battle use; Ecaz Nexus Cunning and the Basic Ambassador ally loan last this
+ * turn. The prototype sets an unused loan aside, pending return-policy refinement.
  */
 export function expireDuke(state: DukeState, turn: number): DukeState {
   validTurn(turn);
   if (
-    (state.source === 'moritani' || state.source === 'ecazNexus') &&
+    (state.source === 'moritani' || state.source === 'ecazNexus' || state.source === 'ally') &&
     state.acquiredTurn !== null &&
     state.acquiredTurn <= turn &&
     !state.leader.dead &&
@@ -116,8 +116,9 @@ export const DUKE_VIDAL_RULES = Object.freeze({
     revival: 'ecaz-only-set-aside',
     ambassadorAcquisition: 'ecaz-self-implemented',
     ambassadorAlliance: 'consent-implemented',
+    ambassadorNewAllyLoan: 'basic-prototype',
     ambassadorAllyAcquisition: 'unresolved',
-    allyLoanReturn: 'unresolved',
+    allyLoanReturn: 'basic-set-aside-provisional',
     sourceAudit: 'docs/DUKE_VIDAL_RULES.md',
   }),
 });

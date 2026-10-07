@@ -1911,6 +1911,8 @@ function policyActions(g: GameView): Action[] {
             me.noField.deployed.location.sector !== g.storm)
         );
       if (entry.stage === 'allianceReply') return [{ ...action, accept: true }];
+      if (entry.stage === 'loan')
+        return [{ ...action, loan: !!entry.dukeLoan && !entry.dukeLoan.blocked }];
       if (entry.stage === 'revival') {
         const revival = entry.revival;
         if (!revival || revival.blocked) return [{ ...action, decline: true }];
