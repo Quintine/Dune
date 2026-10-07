@@ -2,6 +2,45 @@
 
 Audit: 7 September 2026. Read-only source and code audit, retained by the coordinating agent. Scope is classic GF9 base rules and the applicable November 2020 FAQ, not tournament or movie-game rules.
 
+## Basic ordinary allied shipment prototype — 8 October 2026
+
+The content-first Basic pass connects the FAQ's ordinary physical
+reserve-shipment-then-departure sequence. It is available only before the
+shipper's movement, on its own turn, with its ordinary shipment unused.
+Storm, stronghold capacity, reserve/payment rules and movement range still
+apply. Normal ground-movement endpoints retain the ally guard; Polar Sink
+and native Ecaz coexistence need no temporary permission.
+
+`Game.basicAlliedShipment` records the current actor, reciprocal ally,
+turn, territory and pre-arrival normal/special physical baseline. The
+own-seat `GameView.basicAlliedShipment` warning quotes excess physical
+visitors still present there. Normal ending consumes the receipt once.
+If the ally has left or the original reciprocal alliance no longer holds,
+there is no visitor consequence. Physical counters are fungible: mixed
+old/new groups use the aggregate baseline, not invented counter identities.
+
+**Provisional policy, not a publisher ruling:** excess visiting forces
+left behind at the end of the shipper's turn go to Tanks, including when
+an interruption prevented departure. This implements a non-stalling first
+version under the user's Basic-first instruction; it does not adjudicate
+the no-exit source gap below. The pre-shipment notice and ending warning
+name that policy. Losses do not count as Battle losses. Existing Basic
+co-occupation deadlines still resolve separately. AI prioritizes available
+native departures and does not retain a stronghold sentinel from a
+visiting group.
+
+Concealed and allied No-Field arrivals, mobile/homeworld transports,
+optional arrival compositions and Advanced entry permission are not
+expanded by this prototype. Refinement of interrupted and mixed-cohort
+interactions remains later work.
+
+**Brief smoke evidence:** paid Basic allied arrival followed by Medium's
+native departure and clean ending; ending without departure removes two
+new visitors while preserving five old counters and the ally's three;
+ally-plus-rival stronghold capacity remains enforced. Actual `GameTable`
+SSR markup was observed in Chromium with the provisional count warning
+and enabled finish control. This is not deployed browser acceptance.
+
 ## Authorized Advanced source cutover — 1 October 2026
 
 The user-supplied root `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`

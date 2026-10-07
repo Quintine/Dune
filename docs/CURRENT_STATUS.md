@@ -46,6 +46,13 @@ One direct Basic alliance-and-loan smoke passes; no broad suite was run.
 **Guild Secret Ally return control corrected.** The human transport preview
 no longer rejects the already-ruled own-native-reserve return. One Basic quote
 smoke offers three physical counters for two spice; no broad suite was run.
+**Basic allied shipment transit prototype.** Ordinary physical reserve forces
+can ship into an ally's territory and then depart through native movement.
+Owned warnings and minimal legal AI are connected. A visibly provisional
+no-exit policy sends only excess new visitors to Tanks when the turn ends;
+old co-occupation timing remains separate. Three brief engine scenarios pass,
+including Medium departure, old/ally force preservation and stronghold capacity.
+Advanced entry and concealed/optional arrivals remain unchanged.
 
 
 

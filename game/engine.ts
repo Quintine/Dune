@@ -562,7 +562,8 @@ import {
   settleAdvisors,
   arrivalAsAdvisor,
 } from './advisors';
-import { quoteAlliedSeparation } from './allied-separation';
+import { quoteAlliedSeparation, isBasicAlliedShipmentVisit, alliedShipmentPhysicalPool,
+  type BasicAlliedShipment } from './allied-separation';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, validCombatForces, type Casualties, type CombatForces } from './combat';
 import { FACTIONS, faction, type FactionId } from './catalog';
 import { quoteLobbyBotConfiguration } from './lobby-bot-configuration';
@@ -1696,6 +1697,8 @@ export type Game = {
     resume: 'none' | 'wormRide' | 'ambassador';
     ambassadorEvent?: string;
   } | null;
+  /** Current ordinary Basic shipment's physical departure obligation. */
+  basicAlliedShipment?: BasicAlliedShipment | null;
   /** Committed entries whose optional reactions must wait for the arrival's own
    * pending interaction (payment, advisor choice, storm protection). */
   pendingArrivalReaction?: {
@@ -13741,6 +13744,7 @@ function allowedEntry(
   s: number,
   stormShipment = false,
   advisors = false,
+  temporaryAlliedShipment = false,
 ) {
   requireRule(
     t !== MOBILE_STRONGHOLD || g.mobileStronghold?.location,
@@ -13755,7 +13759,7 @@ function allowedEntry(
     'That sector is in storm.',
   );
   const blocked = occupancyRule(() =>
-    territoryEntryBlock(g.players, p.id, t, advisors),
+    territoryEntryBlock(g.players, p.id, t, advisors, temporaryAlliedShipment),
   );
   requireRule(!blocked, blocked ?? 'This territory cannot be entered.');
 }
@@ -14636,12 +14640,48 @@ function advancedAllySeparationView(g: Game, p: Player): {territories: string[]}
   return territories.length ? {territories} : null;
 }
 
+function basicAlliedShipmentView(g: Game, p: Player) {
+  const visit = g.basicAlliedShipment;
+  if (g.advanced || g.phase !== 5 || !visit || visit.player !== p.id ||
+      visit.turn !== g.turn || p.ally !== visit.ally) return null;
+  const ally = getPlayer(g, visit.ally);
+  if (ally.ally !== p.id || !at(ally, visit.territory) ||
+      sharesEcazOccupation(g, p, visit.territory)) return null;
+  const pool = alliedShipmentPhysicalPool(p, visit.territory);
+  const normal = Math.max(0, pool.normal - visit.baseline.normal);
+  const elite = Math.max(0, pool.elite - visit.baseline.elite);
+  return normal + elite ? { territory: territory(visit.territory).name, normal, elite } : null;
+}
+
+/** Provisional no-exit policy: only the excess physical visitors go to Tanks. */
+function finishBasicAlliedShipment(g: Game, p: Player) {
+  const visit = g.basicAlliedShipment;
+  if (!visit || visit.player !== p.id) return;
+  const quote = basicAlliedShipmentView(g, p);
+  g.basicAlliedShipment = null;
+  if (!quote) return;
+  let normal = quote.normal;
+  let elite = quote.elite;
+  for (const key in p.forces) {
+    if (splitLocation(key).territory !== visit.territory) continue;
+    const special = p.elites?.forces[key] ?? 0;
+    const lostElite = Math.min(elite, special);
+    const lostNormal = Math.min(normal, p.forces[key] - special);
+    if (lostElite + lostNormal) kill(g, p, key, lostElite + lostNormal, false, lostElite);
+    elite -= lostElite;
+    normal -= lostNormal;
+    if (!normal && !elite) break;
+  }
+  log(g, `${p.name}'s ${quote.normal + quote.elite} new allied-shipment visitors left in ${quote.territory} went to Tanks. This is the provisional Basic no-departure policy, not a publisher ruling.`);
+}
+
 /** A played movement card is already retired before queue advancement. */
 function finishMovementTurn(g: Game, id: string) {
   const p = getPlayer(g, id);
   requireAlliedSeparationCustody(g, p);
   const cunning = currentGuildCunning(g,id);
   if (cunning) { requireRule(cunning.stage !== 'pending' && cunning.shipment?.stage !== 'pending', 'Finish the Guild Cunning response or shipment first.'); cunning.stage = 'completed'; saveGuildCunning(g,cunning); }
+  finishBasicAlliedShipment(g, p);
   g.karamaShipping = null;
   g.movementRemaining ??= g.order.slice(g.order.indexOf(id));
   const shared = p.ally
@@ -25086,6 +25126,7 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
     shipment.sector,
     !shipment.guildSecretEvent && g.advanced && p.faction === 'fremen',
     shipment.advisors,
+    !shipment.noField && !shipment.alliedNoField && isBasicAlliedShipmentVisit(g, p, shipment.territory),
   );
   if (p.faction === 'fremen' && !shipment.guildSecretEvent)
     requireRule(
@@ -25584,6 +25625,11 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
   }
   let homeworldOrigins = '';
   if (!shipment.noField) {
+    if (!shipment.alliedNoField && n > 0 && isBasicAlliedShipmentVisit(g, p, to))
+      g.basicAlliedShipment = {
+        player: p.id, ally: p.ally!, turn: g.turn, territory: to,
+        baseline: alliedShipmentPhysicalPool(p, to),
+      };
     const receipts = withdrawNativeReserves(
       g,
       p,
@@ -30829,7 +30875,8 @@ function applyActionInner(
       to !== MOBILE_STRONGHOLD || p.faction === 'ixians',
       'Only Ixians may ship directly into the mobile stronghold.',
     );
-    allowedEntry(g, p, to, s, !guildSecretEvent && g.advanced && p.faction === 'fremen', advisors);
+    allowedEntry(g, p, to, s, !guildSecretEvent && g.advanced && p.faction === 'fremen', advisors,
+      action.noField === undefined && isBasicAlliedShipmentVisit(g, p, to));
     let noField: PendingShipment['noField'];
     if (action.noField !== undefined) {
       requireRule(
@@ -32327,6 +32374,7 @@ export function viewGame(state: Game, id: string) {
       g.guildRateBlocked.player === id,
     stormPending: g.stormPending ?? null,
     advancedAllySeparation: advancedAllySeparationView(g, me),
+    basicAlliedShipment: basicAlliedShipmentView(g, me),
     stormForecast:
       me.faction === 'fremen' && g.stormCardKnown ? g.stormCard : null,
     stormRevealed:

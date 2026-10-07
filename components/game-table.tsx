@@ -176,6 +176,7 @@ import { nexusGuildSecretAllyAction, nexusGuildSecretAllyQuote } from '@/game/ne
 import { nexusRicheseAction, nexusRicheseQuote } from '@/game/nexus-richese-options';
 import { guildTransportQuote } from '@/game/transport-quote';
 import { fremenReserveEntry, botGroundMoveAllowed } from '@/game/bot-mobility';
+import { isBasicAlliedShipmentVisit } from '@/game/allied-separation';
 import { location as boardLocation } from '@/game/board';
 import { fighterCount, isAdvisor } from '@/game/advisors';
 import { useState } from 'react';
@@ -4392,6 +4393,14 @@ export function GameTable({
                       </div>
                     )}
                     {destination}
+                    {isBasicAlliedShipmentVisit(g, me, selected) && (
+                      <p className="notice">
+                        Basic allied transit: ship ordinary forces here, then move the visiting group out
+                        before finishing your turn. Storm and stronghold capacity still apply.
+                        Provisional fallback: new visitors left behind go to Tanks, even if departure is prevented.
+                        This does not waive the older allied co-occupation deadline.
+                      </p>
+                    )}
                     {amountInput}
                     {g.karamaShipping?.player === me.id && (
                       <p className="fine">
@@ -4732,6 +4741,13 @@ export function GameTable({
                           </>
                         )}
                       </>
+                    )}
+                    {g.basicAlliedShipment && (
+                      <p className="notice">
+                        Move your new visitors out of {g.basicAlliedShipment.territory} before finishing.
+                        Provisional Basic policy: finishing now sends {g.basicAlliedShipment.normal} normal
+                        {' '}and {g.basicAlliedShipment.elite} special visiting forces to Tanks, not your ally’s forces.
+                      </p>
                     )}
                     <AdvancedAllySeparation quote={g.advancedAllySeparation} />
                     {g.nexusGuildCunning?.offer && (

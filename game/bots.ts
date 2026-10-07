@@ -3481,6 +3481,7 @@ function policyActions(g: GameView): Action[] {
         const origin = splitLocation(from).territory;
         const retained =
           level > 0 &&
+          g.basicAlliedShipment?.territory !== territory(origin).name &&
           territory(origin).type === 'stronghold' &&
           !isAdvisor(me, origin)
             ? 1
@@ -4118,6 +4119,15 @@ export function botActions(g: GameView): Action[] {
     return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) && !botArrivalBlock(g, sourced) ? [sourced] : [];
   });
   const me = g.players.find((p) => p.id === g.me)!;
+  if (g.basicAlliedShipment && g.phase === 5 && g.active === me.id &&
+      me.shipped && me.moved === 0) {
+    // Do not choose an unrelated move or retain a city sentinel while visitors
+    // owe departure. Native response/decision branches do not offer these moves.
+    const departures = actions.filter(action => action.type === 'move' &&
+      typeof action.from === 'string' &&
+      territory(splitLocation(action.from).territory).name === g.basicAlliedShipment!.territory);
+    if (departures.length) return departures;
+  }
   const ghola = standaloneGholaAction(g, actions);
   if (ghola && !homeworldRevivalActionBlock(g, ghola)) return [ghola];
   if (

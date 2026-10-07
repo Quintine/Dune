@@ -37,6 +37,7 @@ export function territoryEntryBlock(
   playerId: string,
   to: string,
   advisors = false,
+  temporaryAlliedShipment = false,
 ): string | null {
   // Validate the complete identity roster even for an empty destination.
   ecazOccupancyIdentity(players, playerId, { kind: 'territory', id: to });
@@ -44,6 +45,7 @@ export function territoryEntryBlock(
   const player = players.find((p) => p.id === playerId)!;
   const ally = players.find((p) => p.id === player.ally);
   if (
+    !temporaryAlliedShipment &&
     to !== 'polar_sink' &&
     ally &&
     presenceAt(ally, to) > 0 &&
