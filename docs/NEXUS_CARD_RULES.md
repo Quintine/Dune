@@ -94,8 +94,15 @@ Source-qualified reports and credential-free human evidence remain in
 Final types/lint/build pass. The final compiled Nexus scope/398-check
 evidence renders at viewport/document390 after reloading only the owned
 isolated QA worker; both changed rooms retainv160/v102 and physical pools.
-Exact pushed-revision publication receipts remain pending; protected
-deployment stays separately blocked.
+Checkpoint **30a0bdbbb6830eeb1b1fa6c765f958cc7e66a3e4** is pushed.
+Its exact build and owned-only QA cutover preserve the samev160/v102
+states, pools and training, with both full SHA title attributes/fresh
+phone screenshots and the exact compiled390px guide observed.
+[CI37554058440/job112576050305](https://github.com/Quintine/Dune/actions/runs/37554058440/job/112576050305)
+is **completed/success**; the complete terminal step record was read.
+Mandatory isolated storage/HTTP step7 ends00:54:45Z, before verified-image
+publication step9 starts00:54:46Z; the job ends00:55:30Z on7 October2026.
+This is verified publication, **not** protected NAS deployment.
 
 Canonical implementation: `game/leader-skill-profile.ts`,
 `game/nexus-module-profile.ts`, `game/discovery-module-profile.ts` and the

@@ -17,7 +17,7 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**Single-native E1/E2 Nexus — bounded Development Verified; publication pending.** Original Ixians OR
+**Single-native E1/E2 Nexus — bounded Development Verified.** Original Ixians OR
 Tleilaxu OR CHOAM OR Richese/classic entries compose Nexus with Skills or no
 Skills, optional Homeworld/Discovery/Tech3+/Advanced Strongholds2+ and one
 family deck.192 original admissions reach real setup versus eight before;
@@ -31,8 +31,11 @@ Actual390px original Ixian trained offer/typed Cistern entry/Cunning/free
 Suboid plan/equal Cyborg substitution and no-training Richese one-invoice
 five-plus-three pair/reveal preserve20 counters in **4CR7JHUL v160** and
 **LNHZXDEE v102**. Final types/lint/build and actual compiled390px guide
-pass; the owned QA reload retains both versions/pools. Exact pushed-revision
-publication receipts remain pending; no full-mode or protected deployment claim.
+pass; exact pushed **30a0bdbbb6830eeb1b1fa6c765f958cc7e66a3e4**
+build/owned QA cutover retains both versions/pools and full SHA markers.
+[CI37554058440/job112576050305](https://github.com/Quintine/Dune/actions/runs/37554058440/job/112576050305)
+is completed/success: isolated7 before publication9, complete terminal
+record read. No full-mode or protected deployment claim.
 [Canonical qualified evidence](NEXUS_CARD_RULES.md#single-native-e1e2-nexus-composition--7-october-2026).
 
 **Standalone E3 Nexus without Skills — bounded Development Verified.**

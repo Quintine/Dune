@@ -19,9 +19,12 @@ equal nested Cyborg substitution and no-training Richese one-spice5+3/
 concealed reveal preserve20 counters in4CR7JHULv160/LNHZXDEEv102.
 [Canonical source/game/human qualifications](NEXUS_CARD_RULES.md#single-native-e1e2-nexus-composition--7-october-2026).
 Final types/lint/build and actual compiled390px guide pass; only the owned
-QA worker reloads, retainingv160/v102 and physical pools. Exact pushed-revision
-publication receipt remains pending; no full-mode, protected deployment
-or comprehensive-assurance claim.
+QA worker reloads, retainingv160/v102 and physical pools. Exact pushed
+30a0bdbbb6830eeb1b1fa6c765f958cc7e66a3e4 build/owned cutover shows both
+full SHA markers and the compiled guide; its terminal container job
+112576050305/run37554058440 succeeds isolated7 before publication9.
+Canonical evidence records the source-qualified receipt; no full-mode,
+protected deployment or comprehensive-assurance claim.
 
 ## 6 October 2026 — Standalone E3 Nexus without Skills
 
