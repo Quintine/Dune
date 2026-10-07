@@ -1,5 +1,28 @@
 # Dune implementation status
 
+## 7 October 2026 — Sneak Attack composes the Bene Gesserit arrival reactions
+
+A positive Moritani Sneak Attack now resolves its committed Terror entry first
+— placing the reserve forces and accruing the Heighliners token — and then
+offers the Bene Gesserit reactions the same adopted shipment classification
+already uses for ordinary off-planet arrivals: an eligible Advanced Intrusion
+choice when Bene Gesserit fighters stand in the destination, carrying the free
+spiritual-advisor follow-up, and the advisor shipment itself when the intrusion
+is declined, with its existing territory, storm and occupancy validation. A
+zero-force resolution still opens none of them.
+
+This selected order is an **implementation interpretation**, not a located
+ruling; it is recorded in the source note and the pending-interpretation
+registry, and the last `Sneak Attack combined with Bene Gesserit arrival
+reactions` guard is removed rather than left as a duplicate check.
+
+Evidence: `tests/moritani-force-leader.test.ts` asserts the post-entry
+Intrusion offer and the full decline → advisor decision → placement chain with
+nothing left pending; the former gated-interaction pin was replaced by the
+composed behaviour. `docs/COMPONENT_INVENTORY.md`, the source note, the
+registry and the status paragraph record the reduced boundary. No game, seat,
+saved state or deployment changes.
+
 ## 7 October 2026 — Sneak Attack adopts the shipment classification for Heighliners
 
 A positive Moritani Sneak Attack in Shipment and Movement now accrues the

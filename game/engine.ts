@@ -16943,14 +16943,6 @@ function sneakAttackOptions(
     if (!(error instanceof RuleError)) throw error;
     blocked = error.message;
   }
-  const bg = byFaction(g, 'beneGesserit');
-  if (
-    !blocked &&
-    bg &&
-    (bg.reserves > 0 || (g.advanced && fighterCount(bg, entry.territory) > 0))
-  )
-    blocked =
-      'Sneak Attack combined with Bene Gesserit arrival reactions is still being implemented.';
   return { maximum, blocked };
 }
 function terrorAllianceBlocked(
@@ -17199,6 +17191,20 @@ function decideTerror(g: Game, p: Player, action: Action) {
       );
     } else log(g, `${p.name} sent no forces through Sneak Attack.`);
     finishTerrorEntry(g);
+    // The Terror effect is the arrival itself, so the adopted order resolves
+    // the committed entry first and then offers the Bene Gesserit reactions
+    // the same off-planet reserve entry already uses for ordinary shipments.
+    if (amount > 0) {
+      const bg = byFaction(g, 'beneGesserit');
+      const followup =
+        bg &&
+        bg.id !== p.id &&
+        spiritualAdvisorMaximum(g, bg.id) > 0
+          ? { shipment: p.id, destination: location(entry.territory, entry.sector) }
+          : undefined;
+      if (!intrusion(g, p, entry.territory, followup ? { followup } : undefined) && followup)
+        g.decision = { kind: 'advisor', player: bg!.id, ...followup };
+    }
   } else if (entry.stage === 'robbery') {
     requireRule(
       token.kind === 'robbery' &&

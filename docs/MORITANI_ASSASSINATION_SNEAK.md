@@ -34,16 +34,24 @@ duplicate check.
 This is an **explicit implementation interpretation**, not a retrieved
 publisher ruling: the printed verb is “Send”, and the classification of that
 off-planet reserve transfer as a shipment is the supported reading recorded in
-the table above. The Bene Gesserit spiritual-advisor accompaniment and
-Intrusion rows remain **gated** (`Sneak Attack combined with Bene Gesserit
-arrival reactions is still being implemented`) because their ordering inherits
-the unresolved arrival-timing boundary; adopting the Heighliners row does not
-adopt them. A Spice Blow worm-ride Sneak Attack stays outside the token's
+the table above. A Spice Blow worm-ride Sneak Attack stays outside the token's
 working phase and accrues nothing.
 
-Evidence: `tests/moritani-force-leader.test.ts` asserts the accrual, the
-once-per-turn guard, the unchanged zero-force resolution and the altered-sector
-rejection; `docs/COMPONENT_INVENTORY.md` records the reduced boundary.
+**Bene Gesserit reactions are now composed under the same interpretation.** The
+committed Terror entry resolves first — the Moritani forces are placed and the
+entry closes — and the Bene Gesserit reactions then run exactly as they do for
+an ordinary off-planet shipment: an eligible Intrusion choice (Advanced, when
+Bene Gesserit fighters stand in the destination) carries the spiritual-advisor
+follow-up, and declining it still offers the free one-to-two-force advisor
+shipment, whose own arrival keeps its existing territory and storm validation.
+A zero-force resolution opens none of these, because no force arrived. This
+selected order is an implementation interpretation, not a located ruling; it is
+recorded here and in the pending-interpretation registry.
+
+Evidence: `tests/moritani-force-leader.test.ts` asserts the Heighliners accrual,
+the once-per-turn guard, the unchanged zero-force resolution, the altered-sector
+rejection, the post-entry Intrusion offer and the full decline → advisor →
+placement chain; `docs/COMPONENT_INVENTORY.md` records the reduced boundary.
 
 ## Assassination pool: safe ordinary support
 

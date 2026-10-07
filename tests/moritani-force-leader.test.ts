@@ -340,17 +340,48 @@ void test('Sneak Attack rejects an altered client sector and accrues Heighliners
   assert.equal(passed.pendingTerrorEntry, null);
 });
 
-void test('Sneak Attack leaves unresolved Bene Gesserit arrival interactions unchanged and permits zero', () => {
+void test('Sneak Attack resolves the committed entry and then offers the Bene Gesserit arrival reactions', () => {
   const initial = fixture('sneakAttack', 'beneGesserit');
   initial.advanced = true;
   player(initial, 'e').forces = { 'arrakeen:10': 1 };
   player(initial, 'e').reserves = 19;
   const revealed = decide(enter(initial), { reveal: true });
-  rejected(revealed, { type: 'decision', amount: 1 });
-  const done = decide(revealed, { amount: 0 });
-  assert.deepEqual(done.players, revealed.players);
+  const done = decide(revealed, { amount: 1 });
+  assert.equal(player(done, 'm').forces['arrakeen:10'], 1);
+  assert.equal(player(done, 'm').reserves, 19);
   assert.equal(done.pendingTerrorEntry, null);
-  assert.equal(done.decision, null);
+  assert.equal(done.decision?.kind, 'intrusion');
+  assert.equal(done.decision?.player, 'e');
+  const zero = decide(revealed, { amount: 0 });
+  assert.deepEqual(zero.players, revealed.players);
+  assert.equal(zero.pendingTerrorEntry, null);
+  assert.equal(zero.decision, null);
+});
+
+void test('declining the Bene Gesserit intrusion still offers the free advisor shipment and completes the entry', () => {
+  const initial = fixture('sneakAttack', 'beneGesserit');
+  initial.advanced = true;
+  player(initial, 'e').forces = { 'arrakeen:10': 1 };
+  player(initial, 'e').reserves = 19;
+  const revealed = decide(enter(initial), { reveal: true });
+  const sneaked = decide(revealed, { amount: 2 });
+  assert.equal(sneaked.decision?.kind, 'intrusion');
+  const declined = applyAction(sneaked, 'e', { type: 'decision', accept: false });
+  assert.equal(declined.decision?.kind, 'advisor');
+  assert.equal(declined.decision?.player, 'e');
+  const offered = applyAction(declined, 'e', {
+    type: 'decision',
+    accept: true,
+    amount: 1,
+  });
+  assert.equal(offered.response ?? null, null);
+  assert.equal(offered.pendingTerrorEntry, null);
+  assert.equal(player(offered, 'm').forces['arrakeen:10'], 2);
+  assert.equal(
+    player(offered, 'e').forces['polar_sink:0'] ?? 0,
+    1,
+    'The declined intrusion still lets the Bene Gesserit send one free reserve force.',
+  );
 });
 
 void test('all four AI profiles complete blocked effects by declining instead of retrying illegal choices', () => {

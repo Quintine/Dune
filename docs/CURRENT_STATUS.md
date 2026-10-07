@@ -56,8 +56,10 @@ for its owner through the ordinary off-planet-arrival helper, under an
 **explicitly adopted** shipment classification rather than a retrieved ruling;
 a zero-force resolution accrues nothing, and the token still enforces its
 working phase, Guild exception and one accrual per turn. Bene Gesserit
-spiritual-advisor accompaniment and Intrusion stay gated because their ordering
-inherits the unresolved arrival-timing boundary. See
+spiritual-advisor accompaniment and Intrusion are now composed: the committed Terror entry resolves first, then an eligible
+Bene Gesserit Intrusion choice (Advanced, with fighters present) carries the
+free spiritual-advisor follow-up, and declining it still offers the one-to-two
+force advisor shipment; a zero-force resolution opens none of them. See
 [MORITANI_ASSASSINATION_SNEAK.md](MORITANI_ASSASSINATION_SNEAK.md#adopted-shipment-classification-7-october-2026).
 
 **In progress — Tleilaxu Ambassador force return.** The last unimplemented
