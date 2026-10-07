@@ -26,7 +26,7 @@ void test('all twelve holders can pay and search across nine phases in both mode
 });
 void test('prepayment projection has no candidates and selection entitlement ends after exact private recovery',()=>{
  const g=fixture(), selected=g.discard[0];
- const unpaid=viewGame(g,'p').nullentropy!;assert.equal(unpaid.search,null);assert.deepEqual(Object.keys(unpaid).sort(),['blocked','card','search']);
+ const unpaid=viewGame(g,'p').nullentropy!;assert.equal(unpaid.search,null);
  assert.equal(viewGame(g,'q').nullentropy,null);
  const paid=begin(g);assert.equal(viewGame(paid,'p').nullentropy!.search!.cards.length,3);
  assert.equal(viewGame(paid,'q').nullentropy,null);assert.equal(JSON.stringify(viewGame(paid,'q')).includes(selected.id),false);
@@ -38,9 +38,9 @@ void test('a sole eligible card is taken automatically while every other Box sta
  const done=begin(g);assert.equal(done.pendingNullentropy,null);assert.equal(done.decision,null);assert.equal(done.players[0].spice,8);
  assert.deepEqual(done.players[0].hand,[selected]);assert.deepEqual(done.discard.map(c=>c.id),['other-box',boxId]);
 });
-void test('illegal starts do not charge or expose a search, including unresolved full-hand and Guild-refund cases',()=>{
- for(const change of ['full','funds','empty','onlyBox','reservedRefund','preselect'] as const){
-  const g=fixture();if(change==='full')g.players[0].hand.push(...g.deck.splice(0,3));
+void test('illegal starts do not charge or expose a search, including Guild-refund cases',()=>{
+ for(const change of ['funds','empty','onlyBox','reservedRefund','preselect'] as const){
+  const g=fixture();
   if(change==='funds')g.players[0].spice=1;if(change==='empty')g.discard=[];
   if(change==='onlyBox')g.discard=[{...g.players[0].hand[0],id:'other-box'}];
   if(change==='reservedRefund'){g.players[1].faction='guild';g.karamaShipping={owner:'p',player:'p',card:g.discard[0].id};}

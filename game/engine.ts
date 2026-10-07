@@ -4098,9 +4098,12 @@ function validateNullentropyBegin(g: Game, owner: Player, cardId: string) {
   );
   const reserved = transferCardBlock(g, owner, card);
   requireRule(!reserved, reserved ?? 'The Box is already committed.');
+  const limit = handLimit(owner);
   requireRule(
-    owner.hand.length < handLimit(owner),
-    'Full-hand Nullentropy Box use is unresolved; the current guard requires a pre-existing free hand slot.',
+    g.advanced ? owner.hand.length < limit : owner.hand.length <= limit,
+    g.advanced
+      ? 'Full-hand Nullentropy Box use is unresolved; the current guard requires a pre-existing free hand slot.'
+      : 'The final exchanged hand must not exceed its hand limit.',
   );
   const guild = byFaction(g, 'guild');
   requireRule(
@@ -4168,6 +4171,7 @@ function finishNullentropy(
       cardId,
       remaining.map((c) => c.id),
       handLimit(owner),
+      !g.advanced,
     );
   } catch (error) {
     throw new RuleError(
@@ -4194,6 +4198,7 @@ function finishNullentropy(
     cardId,
     order,
     handLimit(owner),
+    !g.advanced,
   );
   owner.hand = result.ownerHand;
   g.discard = result.discard;
@@ -4257,10 +4262,12 @@ function nullentropyView(g: Game, owner: Player) {
     (c) => richeseCardDefinition(c)?.card.effect === 'nullentropyBox',
   );
   if (!card) return null;
+  const fullHandExchange = !g.advanced && owner.hand.length === handLimit(owner);
   if (pending?.player === owner.id) {
     const blocked = nullentropyIntegrity(g);
     return {
       card,
+      ...(fullHandExchange ? { fullHandExchange: true as const } : {}),
       blocked,
       search: blocked
         ? null
@@ -4280,7 +4287,8 @@ function nullentropyView(g: Game, owner: Player) {
     if (!(error instanceof RuleError)) throw error;
     blocked = error.message;
   }
-  return { card, blocked, search: null };
+  return { card, blocked, search: null,
+    ...(fullHandExchange ? { fullHandExchange: true as const } : {}) };
 }
 function savedTransferResponses(g: Game) {
   const canceled = (pending: Game['pendingKarama']) =>

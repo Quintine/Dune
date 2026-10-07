@@ -5,6 +5,8 @@ import type { Action, GameView } from '@/game/engine';
 import { Button } from './ui/button';
 import { CardInspector, CardRules } from './card-inspector';
 
+const fullHandPolicy = 'Provisional Basic full-hand exchange: retrieval and the played Box discard settle atomically, leaving your final hand at its limit. The printed intermediate-capacity timing remains unresolved.';
+
 type BoxProps = {
   game: GameView;
   act: (action: Action) => void;
@@ -21,6 +23,7 @@ export function NullentropyBox({ game, act, busy }: BoxProps) {
       <p className="notice">
         Your Nullentropy Box search is paid. Complete the private card choice in
         the decision panel above.
+        {box.fullHandExchange && <span className="block">{fullHandPolicy}</span>}
       </p>
     );
   return (
@@ -39,6 +42,7 @@ export function NullentropyBox({ game, act, busy }: BoxProps) {
           the cards. If only one card is eligible, the server takes it
           automatically.
         </p>
+        {box.fullHandExchange && <p className="notice">{fullHandPolicy}</p>}
         <CardRules card={box.card} />
         <CardInspector card={box.card} />
         {box.blocked && (
@@ -80,6 +84,7 @@ export function NullentropySearch({ game, act, busy }: BoxProps) {
         These discard cards are visible only to you during this paid search.
         Inspection does not select a card.
       </p>
+      {game.nullentropy?.fullHandExchange && <p className="notice">{fullHandPolicy}</p>}
       <div
         className="grid min-w-0 gap-4"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 16rem), 1fr))' }}

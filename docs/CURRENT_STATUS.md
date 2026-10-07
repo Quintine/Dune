@@ -65,6 +65,12 @@ provisional policy is one spice at the rounded one-force Guild rate, entirely
 to bank even when Richese pays. Shared quotes connect engine, owned controls
 and AI. Two before/after engine scenarios pass, including an actual native
 Karama purchase and Easy consent; types pass. Advanced counterparts remain guarded.
+**Basic full-hand Nullentropy Box prototype.** A holder at its current limit
+can pay for the private search and atomically exchange the Box for one non-Box
+card without increasing the final hand. Owned controls label intermediate
+capacity as unresolved. One before/after smoke pays two once, uses Easy's
+private selection, retains four final cards and puts the Box on top. Types pass;
+Advanced full-hand and Guild-refund guards remain.
 
 
 

@@ -18,6 +18,7 @@ They supersede earlier software-absence claims only within their named scope.
 | Ordinary mixed No-Field battle | Private pool is physical forces plus reserve-limited token materialization; both plans seal before one reveal. Advanced and combined Occupy remain separate. | [No-Field](RICHESE_NO_FIELD_RULES.md) |
 | Guild-recipient allied No-Field | Rounded one-force Guild fee: one spice to bank, even when Richese funds it; no Guild self-shipment income. | [Allied No-Field payment](RICHESE_ALLIED_SHIPMENT_AUDIT.md) |
 | Already-active Karama / allied No-Field | Honor the already-played rounded one-force Guild rate and bank routing; no implicit additional card or shipment. | [Allied No-Field payment](RICHESE_ALLIED_SHIPMENT_AUDIT.md) |
+| Full-hand Nullentropy Box | Basic permits an atomic retrieval/Box-disposal exchange with final hand within its actual limit; Box remains last/on top. Intermediate capacity is not adjudicated; Advanced remains guarded. | [Box runtime](NULLENTROPY_BOX_ENGINE_AUDIT.md) |
 
 No publication or faction/mode gate is opened. The exact 7 October user
 rulings below remain distinct from these prototype choices.

@@ -940,6 +940,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'Nullentropy Box: paid private discard search',
     category: 'Cards',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'Pay two spice to search privately, recover one non-Box card, shuffle the remainder and discard the Box on top.',
     steps: [
@@ -948,10 +949,10 @@ export const RULE_TOPICS: RuleTopic[] = [
       'During the paid decision, inspect the cards and use Take on one card to finish. Inspection itself does not select anything. There is no free cancellation after viewing the pile and no second confirmation after selection. If exactly one legal card is available, the server selects it automatically without asking for an identical acknowledgement.',
       'Payment is recorded once before inspection. Refresh or reconnect restores an unfinished paid search for its owner without charging again. While it is open, other gameplay actions wait so they cannot change the reserved Box or discard pile. The completed search saves the recovered card and shuffled pile before restoring an interrupted response, decision or phase opening. Recovery does not charge, select or shuffle again, and does not replay the earlier action.',
       'The selected card enters your hand privately. Other players do not receive the selected identity or the shuffled discard faces. Temporary search access ends on completion; the normal discard pile remains private, even though the played Box is placed face up on top. Past inspection records do not become a permanent live discard browser.',
-      'An active Truthtrance question and exact card or transaction commitments must resolve as required. A full hand is currently guarded: the printed sequence adds the recovered card before discarding the Box, and the temporary capacity question is unresolved. The current implementation requires a pre-existing free hand slot. This is not a verified prohibition on every net-zero exchange.',
+      'An active Truthtrance question and exact card or transaction commitments must resolve as required. Basic full-hand holders now have a visibly provisional atomic exchange: retrieve one non-Box and discard the played Box, leaving the final hand at its current limit. The printed intermediate-capacity question remains unresolved. Advanced still requires a pre-existing spare slot, and Basic over-limit hands are rejected.',
       'A pending Guild refund claim on a discarded shipping Karama also blocks starting the search while that provisional refund policy is unresolved. The guard protects the competing claim to that card; it is not a general ban on Box during Shipment. Empty or only-Box searches are rejected before payment under the current unsupported-empty-search policy; there is no fallback deck draw.',
       'All four AI profiles start only when their own projected availability and spice reserve allow it. They do not inspect unpaid discard contents. Once paid, they choose from their entitled cards, prefer existing functional effects over unfinished Richese faces and complete a legal selection even if only unfinished effects remain. A paid search takes priority over optional actions.',
-      'This bounded search, its controls and recovery are integrated in development fixtures. Full-hand activation and the provisional Guild refund interaction remain unresolved. In the explicit Semuta preview, another holder may recover the used Box after a clean completed search without replaying payment or shuffle; other Semuta discard sources remain unfinished. Mirror Weapon has a separate bounded CHOAM/Richese-deck classic-faction battle path, and full Richese starts remain disabled. Complete browser, mobile and full-game acceptance is not claimed here.',
+      'The paid search and continuations are integrated in development fixtures, with a connected Basic full-hand prototype. Advanced full-hand activation and the provisional Guild refund interaction remain guarded. The explicit Semuta preview can recover the used Box after a clean completed search without replaying payment or shuffle; other discard compositions remain separate. Full Richese starts and complete browser/mobile/full-game acceptance remain gated.',
     ],
     related: [
       'card-richese-nullentropy-box',
@@ -965,7 +966,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Paid inspection, exact private custody, server-shuffled remainder, Box on top, sole-choice automatic completion and restored parent continuations are integrated. Full-hand and provisional Guild-refund guards remain; future discard reactions are unfinished.',
+          'Paid inspection, exact private custody, shuffled remainder, Box on top, sole-choice completion and restored parent continuations are integrated. Basic full-hand exchange has a connected provisional final-capacity policy. Advanced full-hand and Guild-refund guards remain; wider discard/commitment refinement is separate.',
       },
       {
         area: 'Player controls',

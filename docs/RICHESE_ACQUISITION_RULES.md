@@ -45,6 +45,11 @@ Distrans itself as the gifted card is not resolved by the face's give-then-disca
 
 ## 4. Nullentropy Box
 
+**8 October Basic runtime amendment:** Nullentropy Box now supports a visibly
+provisional full-hand atomic exchange, preserving the final limit and discarding
+the used Box last. This does not settle the printed intermediate-capacity
+question; Advanced remains guarded. [Current Box contract](NULLENTROPY_BOX_ENGINE_AUDIT.md).
+
 **Exact printed sequence, in original prose:**
 
 1. Pay two spice to the bank.

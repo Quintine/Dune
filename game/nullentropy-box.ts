@@ -37,6 +37,7 @@ export function resolveNullentropyBox(
   selectedId: string,
   remainingOrderIds: readonly string[],
   handLimit: number,
+  allowFullHandExchange = false,
 ): NullentropyBoxResult {
   if (!Number.isSafeInteger(handLimit) || handLimit < 0)
     throw new RangeError('The hand limit must be a nonnegative safe integer.');
@@ -46,10 +47,11 @@ export function resolveNullentropyBox(
     throw new Error(
       'Use the canonical Nullentropy Box physically in your hand.',
     );
-  if (ownerHand.length >= handLimit)
-    throw new Error(
-      'Full-hand Nullentropy Box use is unresolved; a pre-existing free hand slot is required by the current guard.',
-    );
+  if (ownerHand.length > handLimit ||
+      (!allowFullHandExchange && ownerHand.length === handLimit))
+    throw new Error(allowFullHandExchange
+      ? 'The final exchanged hand must not exceed its hand limit.'
+      : 'Full-hand Nullentropy Box use is unresolved; a pre-existing free hand slot is required by the current guard.');
   const selected = discard.find((card) => card.id === selectedId);
   if (!selected || isAnyBox(selected))
     throw new Error('Choose a discard card other than any Nullentropy Box.');

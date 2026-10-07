@@ -1,6 +1,31 @@
 # Nullentropy Box: paid search and engine continuation audit
 
-Audit: 2026-09-06. This document proposes an implementation contract; it does not activate the card or certify complete Richese support. Read with [the acquisition audit](RICHESE_ACQUISITION_RULES.md). The user has already been asked about full-hand activation; that answer is pending and this audit does not ask again.
+Audit: 2026-09-06, with a Basic runtime amendment on 8 October below. This is a source/continuation contract, not complete Richese certification. Read with [the acquisition audit](RICHESE_ACQUISITION_RULES.md). The full-hand publisher question remains unresolved; the user's Basic-first instruction permits the visibly qualified first version below, not a new timing ruling.
+
+## Basic full-hand exchange prototype — 8 October 2026
+
+Any Basic holder at its current hand limit may now pay for the search.
+**Provisional capacity policy:** retrieval and final Box disposal settle
+as one atomic exchange, with the final hand no larger than its actual
+limit. The Box remains reserved in hand while the owner chooses; it is
+still discarded last/on top after the remainder is shuffled. This does
+not reverse the printed disposal order or adjudicate intermediate capacity.
+
+The pure resolver accepts the engine's explicit Basic full-hand policy;
+its default unknown/Advanced policy still requires a spare slot. Both
+the completion preview and real settlement use the same policy. Basic
+over-limit hands remain rejected. Payment, private inspection entitlement,
+canonical/non-Box identities, search lock, event-bound choice and restored
+parent paths are unchanged. Own controls expose `fullHandExchange` with a
+provisional notice before payment and during selection.
+
+One before/after direct smoke starts from four real cards including the
+Box, pays two once, accepts Easy's private choice, leaves four final
+cards and exactly one used Box on top. Chromium observed the actual
+SSR panel with the warning and enabled paid-search button. Types pass;
+no broad suite, recovery campaign or deployed acceptance was run.
+Advanced full-hand and Guild-refund contexts remain guarded; wider
+interruption/commitment refinement remains later work.
 
 ## Verified authority and remaining boundaries
 
@@ -15,7 +40,7 @@ The publisher's physical card face was independently read again from `/tmp/dune-
 
 This is an ordinary card effect: no generic faction/alliance Karama cancellation, no recipient consent, no Emperor purchase income, Harkonnen bonus or Ixian purchase replacement. The bank is explicit, even with Emperor in the game. No bidding exclusion is printed on Box; Distrans's separate unresolved-bid guard is not transferable to this card.
 
-Unresolved full-hand activation remains a development guard: adding the retrieved card precedes discarding Box in the literal sequence, and no retrieved authority resolves a temporary full hand. An empty pile or a pile containing only Boxes has no legal result. Reject before payment under an explicit unsupported-empty-search policy; there is no authorized deck fallback or printed permission to waste the fee deliberately. Exclude every Box, not only the activating physical ID. Variant/legacy extra Boxes require semantic Box exclusion as well as strict canonical activation validation.
+The full-hand intermediate-capacity question remains unresolved. Basic now uses the explicit atomic-exchange prototype above; Advanced retains the spare-slot guard. Empty or only-Box piles still have no legal result and are rejected before payment under the existing unsupported-empty-search policy. There is no deck fallback or permission to waste the fee; every Box is excluded from retrieval.
 
 A further boundary comes from an existing provisional engine policy, not the Box source. `executeSpecialKaramaIntent` for Guild may refund `g.karamaShipping.card` by taking that exact previously discarded Karama back into its original owner's hand. Box could first recover that same card. Pausing the pile during search does not resolve the later conflicting claim. Do not silently blacklist an otherwise legal non-Box search card as an official rule. Until the provisional refund policy is resolved, guard that particular pending-refund context before payment and label the reason accurately. No broader ban on Box during Shipment is justified.
 
