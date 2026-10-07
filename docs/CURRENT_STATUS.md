@@ -20,6 +20,11 @@ open mode gates.
 requests usable first versions for every faction before refinement. Administration
 is deferred. Broad suites and capture-resumption campaigns are deferred; rule
 delivery uses brief changed-path smoke only, with batched compiler feedback.
+**Active pass — Advanced first versions.** Basic standalone core-function
+inventory is closed at prototype level, with its stated provisional policies.
+This does not certify Basic timing variants, combinations or public expansion
+starts. Those remain after the Advanced function pass.
+
 
 **Richese cache cancellation connected.** The printed Karama cancellation
 now reaches the restore-one-ordinary-lot policy selected on 7 October. First/last
@@ -77,6 +82,12 @@ paths; Advanced-only powers and deferred combinations were kept separate.
 Compact faction guides now describe connected Basic Richese/Ecaz prototypes
 and bounded Moritani effects rather than stale blanket absence. This is an
 inventory result, not comprehensive rules or complete-mode acceptance.
+**Advanced Ecaz new-ally Duke grant.** Supplied PDF physical p30 adds an available
+shared Duke automatically after Ambassador alliance consent. The accepting action
+now grants the original disc and resumes the entrant without another loan choice.
+Basic remains optional. One-battle tenure stays provisional; unavailable/captured
+scope remains guarded. One actual grant-and-battle smoke and three changed
+contract cases pass; types pass. No broad suite or deployed acceptance was run.
 
 
 

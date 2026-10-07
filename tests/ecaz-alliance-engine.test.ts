@@ -122,7 +122,7 @@ function conserved(g: Game) {
 }
 
 for (const advanced of [false, true])
-  void test(`${advanced ? 'Advanced' : 'Basic'} actual shipment allows bilateral Ecaz alliance and resumes the paid entrant without changing Duke`, () => {
+  void test(`${advanced ? 'Advanced grants the available Duke' : 'Basic can decline the loan'} while bilateral Ecaz alliance resumes the paid entrant`, () => {
     const initial = fixture(advanced);
     const token = initial.ecazAmbassadors!.tokens.find(
       (t) => t.effect === 'ecaz',
@@ -157,7 +157,11 @@ for (const advanced of [false, true])
     assert.equal(seat(done, 'in').ally, 'ec');
     assert.equal(seat(done, 'ec').allySinceTurn, 2);
     assert.equal(seat(done, 'in').allySinceTurn, 2);
-    assert.deepEqual(done.dukeVidal, duke);
+    if (advanced) {
+      assert.equal(done.dukeVidal!.controller, 'in');
+      assert.equal(done.dukeVidal!.source, 'ally');
+      assert.deepEqual(done.dukeVidal!.leader, duke!.leader);
+    } else assert.deepEqual(done.dukeVidal, duke);
     assert.equal(done.pendingAmbassador, null);
     assert.equal(done.decision, null);
     assert.equal(done.active, 'in');
@@ -256,7 +260,7 @@ void test('acceptance clears obsolete offers involving the new pair and leaves u
     );
 });
 
-void test('a dead or previously controlled Duke cannot gate the no-loan alliance or be moved by it', () => {
+void test('Advanced new-ally Duke grant transfers available shared custody while a dead Duke never blocks the alliance', () => {
   for (const dead of [false, true]) {
     const g = fixture(true);
     g.dukeVidal = acquireDuke(g.dukeVidal!, 'a', 1, 'moritani');
@@ -271,7 +275,11 @@ void test('a dead or previously controlled Duke cannot gate the no-loan alliance
       null,
     );
     const done = answer(propose(entered), true);
-    assert.deepEqual(done.dukeVidal, duke);
+    if (dead) assert.deepEqual(done.dukeVidal, duke);
+    else {
+      assert.equal(done.dukeVidal!.controller, 'in');
+      assert.deepEqual(done.dukeVidal!.leader, duke!.leader);
+    }
   }
   const g = fixture(true);
   g.players[2] = newPlayer('a', 'Harkonnen', 'harkonnen');

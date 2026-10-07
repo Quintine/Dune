@@ -23,6 +23,18 @@ They supersede earlier software-absence claims only within their named scope.
 No publication or faction/mode gate is opened. The exact 7 October user
 rulings below remain distinct from these prototype choices.
 
+## Advanced prototype pass — 8 October 2026
+
+The Basic standalone core-function inventory is closed at first-version
+level, not complete-mode acceptance; Advanced function delivery now precedes
+timing/combination refinement. Ecaz's supplied physical PDF **p30, A**
+requires an available Duke grant after accepted Ambassador alliance consent.
+The accepting action now performs that same-disc transfer automatically,
+without a new loan acknowledgement. Basic keeps its optional prototype.
+Turn-end set-aside is supplied text; one-battle loan release remains the
+explicit provisional implementation policy. Existing exceptional custody and
+Advanced Harkonnen guards remain. [Current Duke grant contract](ECAZ_DUKE_ACQUISITION.md).
+
 ## User rulings — 7 October 2026
 
 Five previously pending questions were answered directly by the user. These are

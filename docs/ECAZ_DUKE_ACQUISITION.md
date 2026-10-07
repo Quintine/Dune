@@ -15,8 +15,31 @@ Private decision ownership and a minimal legal bot choice are connected.
 The first version uses one-battle tenure and sets an unused living loan aside
 at turn end. These are labelled implementation policies under the Basic-first
 instruction, not a publisher clarification of return destination or mid-loan
-alliance changes. Advanced loans and exceptional custody remain for later work.
+alliance changes. Exceptional custody and wider combinations remain for refinement.
 A direct Basic arrival → consent → legal bot loan → resumed entrant smoke passes.
+
+## Advanced accepted-alliance Duke grant — 8 October 2026
+
+The authorized supplied `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`,
+physical **page 30, Ecaz A**, says “Then, add Duke Vidal to the triggering
+faction’s leader pool” after alliance consent, and sets an unused disc
+aside at turn end. Advanced therefore grants an available canonical Duke
+automatically in the accepting action, with **no separate Ecaz loan choice
+or acknowledgement**. Basic keeps its existing optional prototype choice.
+
+The same disc changes controller/source, preserving identity and death
+history without appending a native leader or Traitor. Existing dead,
+captured/ghola and Advanced-Harkonnen scope guards remain; unavailable
+Duke does not veto alliance consent. One-battle release remains the
+explicit provisional tenure policy, not an additional supplied-text ruling.
+The entrant’s original arrival suffix resumes once after consent/grant.
+
+One direct Advanced smoke reproduces the missing grant, then uses Easy's
+real consent, the automatic same-disc grant, a real Duke Battle Plan and
+surviving release through native aftermath. Three changed alliance
+contract cases pass, including Basic decline and dead/shared custody.
+Actual SSR consent controls were observed in Chromium with automatic
+grant wording. Types pass; no broad suite or deployed acceptance was run.
 
 ## Rules and authoritative execution
 

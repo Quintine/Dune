@@ -16449,7 +16449,8 @@ function ecazAllianceQuote(g: Game, owner: string, entrant: string) {
   }
 }
 function ecazAmbassadorLoanBlock(g: Game, owner: Player, entrant: Player) {
-  if (g.advanced) return 'This first-version Duke loan is available in Basic.';
+  if (g.advanced && byFaction(g, 'harkonnen'))
+    return 'Advanced Duke loans with Harkonnen capture remain guarded.';
   if (owner.ally !== entrant.id || entrant.ally !== owner.id)
     return 'The new Ecaz alliance is no longer current.';
   const duke = g.dukeVidal;
@@ -16555,10 +16556,16 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
         { faction: 'ecaz', name: 'Ambassador alliance' },
       );
       if (!ecazAmbassadorLoanBlock(g, owner, entrant)) {
-        entry.stage = 'loan';
-        entry.beneficiary = owner.id;
-        g.decision = { kind: 'ecazAmbassador', player: owner.id };
-        return;
+        if (g.advanced) {
+          g.dukeVidal = acquireDuke(g.dukeVidal!, entrant.id, g.turn, 'ally');
+          log(g, `${entrant.name} received the available Duke Vidal as part of accepting the Ecaz Ambassador alliance. No separate loan acknowledgement is required. The first version uses one-battle tenure; an unused living Duke is set aside at turn end.`,
+            { faction: 'ecaz', name: 'Ambassador Duke grant' });
+        } else {
+          entry.stage = 'loan';
+          entry.beneficiary = owner.id;
+          g.decision = { kind: 'ecazAmbassador', player: owner.id };
+          return;
+        }
       }
     } else
       log(
