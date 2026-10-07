@@ -20,8 +20,13 @@ paid typed native/visitor transport, free Suboid plan and separate living
 Duke preserve20 physical counters in3AVHJN76v765/PSDLV4FJv121.
 Human Ixian loses: no winner-only rescue or unobserved nested entry claimed.
 [Canonical source and runtime qualifications](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
-Final489/489 union, bundle and actual390px guide pass; push/exact CI follow;
-complete rules, public/deployment gates and deferred assurance remain open.
+Final489/489 union, bundle and actual390px guide pass. Exact pushed
+05ab2c92b05a41edd3691aaf3592e32ed2c989e3 build/owned cutover shows full
+SHA markers, original765/121 native pools/Duke and exact guide390.
+Terminal run37565696416/job112612773421 completes success: isolated7
+ends03:17:43Z before publication9 starts03:17:44Z,7 October2026; the full
+final record is read. Complete rules, protected deployment and deferred
+assurance remain open.
 
 ## 7 October 2026 — Single-native E1/E2 Nexus
 

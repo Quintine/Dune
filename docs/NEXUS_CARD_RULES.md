@@ -145,9 +145,17 @@ The final489/489 affected union, types/lint and compiled bundle pass.
 The actual compiled guide shows current source/roster limits and qualified
 31+2/489/258-of-288 evidence at viewport/document390px; same original
 765/121 native states are observed after the owned-only code cutover.
-Checkpoint push and exact terminal CI receipt follow. Full rules,
-recovery/privacy/custody assurance, strategic AI/calibration and protected
-deployment remain open.
+Exact pushed **05ab2c92b05a41edd3691aaf3592e32ed2c989e3** builds and
+loads only into the owned isolated QA worker; both original765/121 tables
+show its full SHA and native pools/Duke control, and its compiled guide
+renders at390px. All three managed tabs close afterward.
+[Terminal container run37565696416](https://github.com/Quintine/Dune/actions/runs/37565696416),
+job112612773421, completes **success** with the full final step record read:
+isolated verification7 ends03:17:43Z before publication9 begins03:17:44Z
+on7 October2026; publication ends03:18:16Z and the job03:18:31Z.
+This is verified image publication, **not protected NAS deployment**.
+Full rules, recovery/privacy/custody assurance, strategic AI/calibration
+and protected deployed acceptance remain open.
 
 ## Single-native E1/E2 Nexus composition — 7 October 2026
 

@@ -17,7 +17,14 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**Mixed E1/E2 and paired E3 Nexus — source-qualified prototype checkpoint.**
+**In progress — mixed E3 and three-family Nexus.** Read-only mapping of
+original Ecaz/Moritani plus selected E1/E2 and all-three-family native
+Nexus admission and consumers, with Skills or no Skills and optional
+original Homeworld/Discovery/Tech/Advanced Strongholds. Original selected
+decks, physical setup and pending-ruling boundaries remain; no new
+admission/runtime checkpoint or public activation is claimed.
+
+**Mixed E1/E2 and paired E3 Nexus — bounded Development Verified.**
 Original both-family Ix+CHOAM/union47 or both Ecaz+Moritani/ecaz33/classic
 entries preserve Skills or no Skills, original Homeworld/Discovery/Tech3+/
 Advanced Strongholds2+.312 original admissions reach setup versus four
@@ -36,8 +43,13 @@ Actual390px original native human setup/offers, Maker/both piles and card
 draws, typed paid Ixian visitor/free Suboid plan and Ecaz foreign arrival/
 separate living Duke preserve20 counters in **3AVHJN76 v765** and
 **PSDLV4FJ v121**. Losing Ixians receive no winner-only Suk rescue; no missed
-human nested entry or Moritani reveal is invented. The final union and
-compiled bundle and actual390px guide pass; checkpoint push/exact CI follow.
+human nested entry or Moritani reveal is invented. Final489/489, bundle
+and actual390px guide pass. Exact pushed
+**05ab2c92b05a41edd3691aaf3592e32ed2c989e3** build/owned cutover retains
+both full SHA markers, original765/121 and compiled guide. Terminal
+[container run37565696416](https://github.com/Quintine/Dune/actions/runs/37565696416),
+job112612773421, completes success with isolated7 ending03:17:43Z before
+publication9 starts03:17:44Z on7 October2026; the full final record is read.
 Protected deployment and complete modes remain gated.
 [Canonical qualified evidence](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
 
