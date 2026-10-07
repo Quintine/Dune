@@ -255,12 +255,14 @@ void test('Black Market declaration exhaustion is a separate pure immediate-cont
   assert.deepEqual(quoteRicheseSettlement(value), {
     kind: 'retainBlackMarket',
   });
-  for (const count of [undefined, 0, -1, 0.5, Infinity, NaN])
+  // User ruling 7 October 2026: an exhausted cache (count 0) is legal; only a
+  // malformed or negative count is rejected.
+  for (const count of [undefined, -1, 0.5, Infinity, NaN])
     assert.throws(
       () => requireRicheseDeclarationCache(count),
       RicheseSettlementError,
     );
-  for (const count of [1, 2, 10])
+  for (const count of [0, 1, 2, 10])
     assert.doesNotThrow(() => requireRicheseDeclarationCache(count));
   assert.deepEqual(value, before);
   // A sold lot can first suspend for replacement/bonus; quote is not phase advancement.
@@ -417,32 +419,26 @@ void test('quotes agree with real sold settlement debits, transfer and deferred 
     assert.equal(g.currentAuctionSale?.origin, source);
   }
 });
-void test('a canceled unbid Black Market has the same exhausted-cache boundary as live continuation', () => {
+void test('an exhausted cache is legal and restores one ordinary lot in the Richese declaration', () => {
+  // User ruling 7 October 2026: when no cache lot can run (exhausted cache, or
+  // a canceled/prevented cache auction) the cache's one-lot reduction is not
+  // applied, so the ordinary pool runs one more lot.
+  const counts: number[] = [];
   for (const exhausted of [false, true]) {
     const g = engineFixture('blackMarket');
     g.richeseAuction!.outcome = { kind: 'unbid' };
     if (exhausted) g.richeseCache = [];
+    requireRicheseDeclarationCache(g.richeseCache?.length);
     const before = structuredClone(g);
-    assert.equal(
-      quoteRicheseSettlement(engineInput(g)).kind,
-      'retainBlackMarket',
-    );
-    if (exhausted) {
-      assert.throws(
-        () => requireRicheseDeclarationCache(g.richeseCache?.length),
-        /exhausted Richese cache/,
-      );
-      assert.throws(
-        () => observed.settleRicheseLot!(structuredClone(g)),
-        /exhausted Richese cache/,
-      );
-      assert.deepEqual(g, before);
-    } else {
-      requireRicheseDeclarationCache(g.richeseCache?.length);
-      observed.settleRicheseLot!(g);
-      assert.equal(g.decision?.kind, 'richeseDeclaration');
-      assert.equal(g.richeseBidding!.blackMarketSold, false);
-      assert.deepEqual(g.players, before.players);
-    }
+    observed.settleRicheseLot!(g);
+    assert.equal(g.decision?.kind, 'richeseDeclaration');
+    assert.equal(g.richeseBidding!.blackMarketSold, false);
+    assert.deepEqual(g.players, before.players);
+    counts.push(g.richeseBidding!.normalCount!);
   }
+  assert.equal(
+    counts[1],
+    counts[0] + 1,
+    'The exhausted cache restores exactly one ordinary lot',
+  );
 });

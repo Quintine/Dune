@@ -17,6 +17,33 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**7 October 2026 — five pending rulings resolved by the user.** The user
+answered five recorded questions; each is now recorded in
+[the decision index](RULE_DECISIONS.md#user-rulings--7-october-2026) and
+implemented:
+- CHOAM's opening income counts as a qualifying collection, so low-population
+  Tupile adds its bank increment under the Inflation multiplier
+  (`game/engine.ts`, charity projection and controls).
+- A Richese exhausted cache is legal and a canceled/prevented compulsory cache
+  auction restores one ordinary lot (`game/richese-settlement.ts`,
+  `game/auction-continuation-quote.ts`, `game/engine.ts`).
+- Suk-rescued casualties count toward Advanced Atreides' seven Kwisatz Haderach
+  losses, and the earlier Suk availability restriction is removed.
+- The Guild Nexus Secret Ally reserve return overrides the Arrakis-to-native-
+  Homeworld restriction for the holder's own reserves, depositing through the
+  shared native-reserve pipeline (`game/nexus-guild-secret-ally-options.ts`,
+  `game/engine.ts`).
+- Interior passengers count as entering the territories a relocated Ixian HMS
+  points into, so Sandmaster collects there before the native collection
+  (`game/sandmaster-movement.ts`, `game/engine.ts`).
+
+The remaining recorded questions (Bureaucrat/Emperor gifts, Recruits late
+accounting, ordinary Guild cancellation, base special Karama, Nexus
+composition, Orgiz, Testing Station, Jacurutu, occupied Homeworlds and the
+Homeworld restoration questions) stay pending. Preserved combined
+Homeworld/Nexus, occupation-profile and Richese captures can now be resumed
+against the rulings; resumption itself is not yet re-run here.
+
 **In progress — mixed E3 and three-family Nexus.** Original selected Ecaz
 plus Ix and/or CHOAM now requires an actual native from every selected
 family, with optional classics: Basic/Advanced2–6/all12 Nexus, optionally
@@ -2630,7 +2657,7 @@ These links define bounded working behavior, not complete module certification.
 | --- | --- |
 | Basic core | Ordinary Guild repricing/transport settlement, broader truthful commitments, unresolved special timing and integrated rules/human/AI acceptance. |
 | Six-faction Advanced | Base gaps, provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. The user-authorized unfinished preview is available; setup matrices and complete samples do not certify full compliance. |
-| Twelve factions and all optional modules | Every missing effect, remaining skill bands, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. Detailed boundaries remain in the checklist/decision index. |
+| Twelve factions and all optional modules | Every missing effect, remaining skill bands, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. The 7 October 2026 rulings settled CHOAM's low-population opening income, the Richese exhausted/canceled cache count, Suk/Kwisatz loss counting, the Guild Secret Ally Homeworld reserve return and Sandmaster HMS-relocation eligibility; the preserved captures can be resumed. Detailed boundaries remain in the checklist/decision index. |
 | AI | Maintain minimal legal participation and critical correctness fixes while game features are unfinished. Full implementation, strategy refinement and calibration wait until all non-AI features are complete; then target approximately 75% higher-tier wins for Medium/Easy, Hard/Medium and Brutal/Hard. See the [AI development plan](AI_DEVELOPMENT_PLAN.md). These targets remain unverified. |
 | Multiplayer | Broader disconnected/abandoned-seat recovery, unattended continuation and network-failure acceptance, while preserving authoritative versioning, custody, privacy and saves. |
 | Administration | Complete the [admin panel](ADMIN_PANEL.md): permissions, room directory and creation/removal, lifecycle controls, participant support, backup/restore and operational audit tools. Required before full AI refinement. |

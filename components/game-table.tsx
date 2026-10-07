@@ -2358,9 +2358,15 @@ export function GameTable({
               )}
               {g.response.kind === 'choamCharity' && (
                 <p className="muted">
-                  CHOAM receives {2 * g.players.length * g.charity.multiplier}{' '}
-                  spice before anyone claims charity. Karama cancels this income
-                  and sends this turn’s charity payments to the Spice Bank.
+                  CHOAM receives{' '}
+                  {2 * g.players.length * g.charity.multiplier +
+                    g.charity.incomeHomeworld * g.charity.multiplier}{' '}
+                  spice before anyone claims charity
+                  {g.charity.incomeHomeworld > 0
+                    ? ', including the low-population Homeworld bank bonus'
+                    : ''}
+                  . Karama cancels this income and sends this turn’s charity
+                  payments to the Spice Bank.
                 </p>
               )}
               {g.response.kind === 'mobileStronghold' && g.mobileRoute && (

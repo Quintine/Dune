@@ -70,7 +70,14 @@ for (const advanced of [false, true]) for (const band of ['normal', 'skilled'] a
     assert.equal(rescued.forces[fixture.key], band === 'skilled' ? 5 : 4);
     assert.equal(rescued.reserves, ownerBefore.reserves + (band === 'skilled' ? 2 : 1));
     assert.equal(rescued.tanks, ownerBefore.tanks + (band === 'skilled' ? 1 : 3));
-    assert.equal(rescued.battleLosses, ownerBefore.battleLosses + (band === 'skilled' ? 1 : 3));
+    // User ruling 7 October 2026: rescued counters still count toward the seven
+    // Kwisatz Haderach losses, so the counter gains the full dialed allocation.
+    assert.equal(
+      rescued.battleLosses,
+      ownerBefore.battleLosses +
+        (rescued.tanks - ownerBefore.tanks) +
+        (band === 'skilled' ? 3 : 1),
+    );
     assert.equal(game.lastBattleContext!.sukRescue!.completed, true);
     assert.equal(game.pendingSukRescue, null);
     assert.equal(game.decision?.kind, 'battleCards');

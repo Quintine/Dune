@@ -134,7 +134,7 @@ void test('a private setup offer renders only its two physical cards and eligibl
 });
 
 void test('an unavailable offered skill remains inspectable while the other card is selected', () => {
-  const reason = 'Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.';
+  const reason = 'This Leader Skill is unavailable in the current profile.';
   const html = markup(view({
     offer: { event: 'guarded-offer', cards: ['suk-graduate', 'warmaster'], leader: null },
     eligibleLeaders: [leaders[0]],

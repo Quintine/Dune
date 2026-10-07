@@ -92,7 +92,9 @@ void test('held Arrakeen support pays only the actual subsidy while trained phys
     assert.equal(player(cleanup, fixture.owner).forces[fixture.key], 4);
     assert.equal(player(cleanup, fixture.owner).reserves, original.reserves + 2);
     assert.equal(player(cleanup, fixture.owner).tanks, original.tanks + 2);
-    assert.equal(player(cleanup, fixture.owner).battleLosses, original.battleLosses + 2);
+    // User ruling 7 October 2026: rescued counters still count toward the seven
+    // Kwisatz Haderach losses, so the counter gains every dialed casualty.
+    assert.equal(player(cleanup, fixture.owner).battleLosses, original.battleLosses + quote.casualties!.options[0].normal);
     assert.equal(ordinaryTotal(cleanup, fixture.owner), ordinaryTotal(revealed, fixture.owner));
     assert.equal(cleanup.decision?.kind, 'battleCards');
     assert.deepEqual(cleanup.techTokens, revealed.techTokens);

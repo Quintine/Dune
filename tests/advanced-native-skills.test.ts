@@ -218,17 +218,19 @@ void test('native CHOAM Bureaucrat redirects only another payer while its native
   custody(game);
 });
 
-void test('Advanced native admission preserves Atreides Suk and rejects a forged Ix-controlled foreign ghola without mutation', () => {
+void test('Advanced native admission assigns Atreides Suk and rejects a forged Ix-controlled foreign ghola without mutation', () => {
   const options = { family: 'ixians' as const, skillOwner: 'atreides' as const, requestedSkill: 'suk-graduate' as const };
   let game = initializeAdvancedNativeSkillsSetup(options);
   while (game.decision?.kind === 'ixSetup') game = advancedNativeStep(game);
   const actor = player(game, 'atreides').id;
   const offer = game.leaderSkills!.offers[actor];
   const leader = viewGame(game, actor).leaderSkills!.eligibleLeaders[0].id;
-  reject(game, actor, { type: 'leaderSkill', event: offer.event, skill: 'suk-graduate', leader }, /Suk Graduate is unavailable/);
-  game = completeAdvancedNativeSkillsSetup(game, options);
-  assert.ok(game.leaderSkills!.deck.includes('suk-graduate'));
-  assert.notEqual(game.leaderSkills!.assignments.find(a => a.owner === actor)!.skill, 'suk-graduate');
+  // User ruling 7 October 2026: Suk is no longer withheld from Advanced Atreides.
+  const assigned = applyAction(game, actor, { type: 'leaderSkill', event: offer.event, skill: 'suk-graduate', leader });
+  assert.equal(assigned.leaderSkills!.assignments.find(a => a.owner === actor)!.skill, 'suk-graduate');
+  assert.ok(!assigned.leaderSkills!.deck.includes('suk-graduate'));
+  game = completeAdvancedNativeSkillsSetup(assigned, options);
+  assert.equal(game.leaderSkills!.assignments.find(a => a.owner === actor)!.skill, 'suk-graduate');
   custody(game);
   // An Ixian cannot control this original foreign disc. Legitimate native
   // Tleilaxu revival is covered separately, without fabricating assignments.

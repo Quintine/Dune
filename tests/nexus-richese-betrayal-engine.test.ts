@@ -241,15 +241,19 @@ void test('Richese can fund its buyer from escrow with no unpledged spice, with 
   }
 });
 
-void test('an exhausted cache rejects a Black Market closing bid before saving an unfinishable Harkonnen acknowledgement', () => {
-  let before: Game | null = null, serialized = '';
-  assert.throws(() => createRicheseBetrayalFixture('sale',{source:'blackMarket',beforeFinalBid(g) {
+void test('an exhausted cache no longer blocks a Black Market closing bid or its betrayal receipt', () => {
+  let emptied = false;
+  const fixture = createRicheseBetrayalFixture('sale',{source:'blackMarket',beforeFinalBid(g) {
     (g.richeseRemoved ??= []).push(...g.richeseCache!.splice(0));
-    before = g;serialized = JSON.stringify(g);
-  }}), /cache/i);
-  assert.ok(before);
-  assert.equal(JSON.stringify(before),serialized);
-  assert.equal((before as Game).pendingRicheseBetrayal,null);
-  assert.equal((before as Game).richeseBetrayal!.current,null);
-  assert.equal((before as Game).richeseAuction!.outcome,null);
+    emptied = true;
+  }});
+  assert.ok(emptied);
+  const g = fixture.game;
+  // User ruling 7 October 2026: an exhausted cache is legal, so the closing bid
+  // completes and reaches its betrayal receipt with the physical cache preserved.
+  assert.equal(g.richeseCache?.length ?? 0,0);
+  assert.equal(g.richeseRemoved?.length,10);
+  assert.ok(g.pendingRicheseBetrayal);
+  assert.equal(g.pendingRicheseBetrayal.receipt.invoice.kind,'sale');
+  assert.equal(g.richeseBidding!.cacheCanceled,false);
 });

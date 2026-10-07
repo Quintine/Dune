@@ -192,7 +192,7 @@ void test('borrowed cross and return quotes preserve typed physical groups; no n
   }
 });
 
-void test('Homeworld selection discounts independently legal typed custody; own world and Arrakis return remain unavailable', () => {
+void test('Homeworld selection discounts independently legal typed custody; own world stays unavailable but the reserve return is granted', () => {
   const f = nexusGuildSecretAllyFixture({
     ownerFaction: 'emperor',
     advanced: true,
@@ -243,7 +243,10 @@ void test('Homeworld selection discounts independently legal typed custody; own 
     ).action,
     null,
   );
-  assert.equal(nexusGuildSecretAllyQuote(v, 'reserves', 5), null);
+  // User ruling 7 October 2026: the grant overrides the Arrakis-to-native-
+  // Homeworld restriction for the holder's own reserves, but not own-world
+  // or foreign-world destination shipments.
+  assert.ok(nexusGuildSecretAllyQuote(v, 'reserves', 5));
   assert.equal(
     nexusGuildSecretAllyAction(v, v.nexusGuildSecretAlly!.event, {
       type: 'guildHomeworldShip',

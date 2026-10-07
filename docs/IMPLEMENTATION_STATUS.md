@@ -1,5 +1,50 @@
 # Dune implementation status
 
+## 7 October 2026 — five pending user rulings implemented
+
+The user resolved five recorded rule questions; each is indexed in
+`RULE_DECISIONS.md#user-rulings--7-october-2026` and implemented with a focused
+regression:
+
+- **CHOAM low-population opening income.** CHOAM's phase-opening income now
+  counts as a qualifying collection, so a low-population native Homeworld adds
+  its bank increment under the same Inflation multiplier as ordinary charity.
+  The previous `requireRule` guard is removed; the projection and the CHOAM
+  income notice expose the added bonus. `tests/homeworld-charity-engine.test.ts`
+  compares low and non-low Tupile with and without Inflation.
+- **Richese exhausted/canceled cache.** `requireRicheseDeclarationCache` now
+  rejects only a malformed or negative count, and an exhausted cache runs the
+  ordinary pool at its full declared count. A canceled/prevented compulsory
+  cache auction sets `cacheCanceled`, restores one ordinary lot and runs the
+  pool; the cache offer is skipped whenever no cache lot can run, and the pure
+  continuation quote mirrors that. `tests/richese-settlement-preflight.test.ts`
+  asserts the one-lot restoration, and
+  `tests/nexus-richese-betrayal-engine.test.ts` asserts an exhausted-cache
+  Black Market sale now completes.
+- **Suk Graduate / Kwisatz Haderach.** Rescued counters count toward Advanced
+  Atreides' seven battle losses: the battle-loss counter gains the full dialed
+  casualty allocation in both the ordinary and Homeworld rescue paths, and the
+  earlier Suk availability restriction (assignment block, battle preflight and
+  `unavailableSkills` projection) is removed. `tests/suk-graduate.test.ts` and
+  `tests/advanced-native-skills.test.ts` cover assignment and loss counting.
+- **Guild Secret Ally Homeworld reserve return.** The reserve-return grant now
+  overrides the Arrakis-to-native-Homeworld restriction for the holder's own
+  reserves. The return deposits through the shared native-reserve pipeline
+  (`addNativeReserves`/`quoteNativeReserveDeposit`, generalized from the revival
+  deposit), so Homeworld custody stays conserved.
+  `tests/nexus-guild-secret-ally-engine.test.ts` returns a staged Emperor group
+  with Homeworld custody and `tests/nexus-guild-secret-ally-controls.test.ts`
+  updates the route expectation.
+- **Sandmaster / native HMS relocation.** Interior passengers count as entering
+  the territories the stronghold points into, so the Sandmaster skill collects
+  one spice per entered territory with an unambiguous pile before the faction's
+  own traversed-sector collection. `tests/sandmaster-movement.test.ts` compares
+  an identical relocation with and without the assigned skill.
+
+The related union passes; types and lint are green. Preserved combined
+Homeworld/Nexus, occupation-profile and Richese captures are now unblocked but
+have not been re-run here.
+
 ## 7 October 2026 — distinct Mentat replacement and reproducible suites
 
 `replaceMoritaniAssassinationTraitors` now draws the first **distinct** physical

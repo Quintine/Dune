@@ -129,7 +129,9 @@ for (const scenario of [
     assert.equal(player(game, fixture.owner).forces[fixture.key], 8 - scenario.casualties + 1);
     assert.equal(player(game, fixture.owner).reserves, before.reserves + 2);
     assert.equal(player(game, fixture.owner).tanks, before.tanks + scenario.casualties - 3);
-    assert.equal(player(game, fixture.owner).battleLosses, before.battleLosses + scenario.casualties - 3);
+    // User ruling 7 October 2026: rescued counters still count toward the
+    // seven Kwisatz Haderach losses, so the counter gains every dialed casualty.
+    assert.equal(player(game, fixture.owner).battleLosses, before.battleLosses + scenario.casualties);
     moneyBeforeCleanup(fixture, revealed, game);
     reject(game, fixture.owner, action);
   });

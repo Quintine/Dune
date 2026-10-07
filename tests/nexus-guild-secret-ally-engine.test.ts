@@ -16,6 +16,9 @@ import {
   nexusGuildSecretAllianceFixture,
 } from './fixture-nexus-guild-secret-ally';
 import { nexusAllow } from './fixture-nexus-cards';
+import { homeworldContext } from '../game/homeworld-game';
+import { quoteNativeReserveWithdrawal } from '../game/homeworld-native-reserves';
+import { observeHomeworldOccupation } from '../game/homeworld-occupation-history';
 function rejected(g: Game, owner: string, action: Action) {
   const before = structuredClone(g);
   assert.throws(() => applyAction(g, owner, action));
@@ -302,5 +305,55 @@ void test('a genuine Moritani arrival alliance preserves completed Guild Secret 
   assert.equal(g.players[0].forces['hagga_basin:12'], 5);
   g = applyAction(g, f.owner, { type: 'endMovement' });
   assert.notEqual(g.active, f.owner);
+  stable(g);
+});
+
+void test('Guild Secret Ally returns typed counters to the holder own native Homeworld reserves under Homeworlds', () => {
+  const f = nexusGuildSecretAllyFixture({
+    ownerFaction: 'emperor',
+    advanced: true,
+    homeworlds: true,
+  });
+  const p = f.g.players[0];
+  // Withdraw the staged board group through the real native-reserve pipeline so
+  // Homeworld custody stays conserved; the Emperor splits normal/Sardaukar.
+  const withdrawal = quoteNativeReserveWithdrawal(
+    homeworldContext(f.g),
+    f.g.homeworlds!.custody!,
+    p.id,
+    { normal: 3, elite: 2 },
+  );
+  const seat = withdrawal.players.find((s) => s.id === p.id)!;
+  p.reserves = seat.reserves;
+  p.elites!.reserves = seat.eliteReserves;
+  f.g.homeworlds!.custody = withdrawal.state;
+  // Mirror the engine's observeOccupation so the qualification history stays
+  // consistent with the staged custody change.
+  if (f.g.homeworlds!.historyVersion === 1 && f.g.homeworldOccupationHistory)
+    f.g.homeworldOccupationHistory = observeHomeworldOccupation(
+      f.g.homeworldOccupationHistory,
+      homeworldContext(f.g),
+      f.g.homeworlds!.custody!,
+      f.g.turn,
+      'change',
+      `homeworld-change-${f.g.homeworldOccupationHistory.sources[0].event}-${f.g.homeworldOccupationHistory.sources.length}`,
+    );
+  p.forces['arrakeen:10'] = 5;
+  p.elites!.forces['arrakeen:10'] = 2;
+  stable(f.g);
+  const action = nexusGuildSecretAllyRequest(f.g, f.owner, {
+    type: 'guildShip',
+    from: 'arrakeen:10',
+    territory: 'reserves',
+    sector: 0,
+    amount: 5,
+    elite: 2,
+  });
+  const g = applyAction(f.g, f.owner, action);
+  assert.equal(g.players[0].spice, 17);
+  assert.equal(g.players[0].reserves, 20);
+  assert.equal(g.players[0].elites!.reserves, 5);
+  assert.equal(g.players[0].forces['arrakeen:10'], undefined);
+  rejected(g, f.owner, action);
   stable(g);
 });

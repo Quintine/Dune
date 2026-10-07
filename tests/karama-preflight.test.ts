@@ -224,36 +224,38 @@ function blackMarketOpportunity(winner: 'a' | 'b' | 'e' = 'a') {
 }
 
 for (const form of ['printed', 'worthless'] as const)
-  void test(`${form} Black Market cancellation rejects an exhausted-cache saved continuation before cost`, (t) => {
-    const { g: initial, worthless, printed } = blackMarketOpportunity();
-    const g = reload(initial);
-    // A constructed corruption boundary: a real offered Black Market retains
-    // its response while its cache has been exhausted. Preserve all card IDs.
-    g.richeseRemoved!.push(...g.richeseCache!);
-    g.richeseCache = [];
-    const before = structuredClone(g);
-    const physical = inventory(g);
-    const random = t.mock.method(crypto, 'getRandomValues', () => {
-      throw Error('Preflight must not draw randomness.');
-    });
-    const uuid = t.mock.method(crypto, 'randomUUID', () => {
-      throw Error('Preflight must not allocate a declaration event.');
-    });
-    assert.throws(
-      () =>
-        applyAction(g, form === 'printed' ? 'e' : 'b', {
-          type: 'card',
-          card: form === 'printed' ? printed : worthless,
-          mode: 'cancel',
-        }),
-      /exhausted Richese cache.*ruling/i,
+  void test(`${form} Black Market cancellation with an exhausted cache continues and restores the ordinary lot`, () => {
+    // User ruling 7 October 2026: an exhausted cache is legal, so a canceled
+    // Black Market settles and the round declares the ordinary pool with the
+    // cache's one-lot reduction restored.
+    const counts: number[] = [];
+    for (const exhausted of [false, true]) {
+      const { g: initial, worthless, printed } = blackMarketOpportunity();
+      const g = reload(initial);
+      // A real offered Black Market keeps its response while its cache is
+      // exhausted; every physical card ID is preserved.
+      if (exhausted) {
+        g.richeseRemoved!.push(...g.richeseCache!);
+        g.richeseCache = [];
+      }
+      const physical = inventory(g);
+      let canceled = applyAction(g, form === 'printed' ? 'e' : 'b', {
+        type: 'card',
+        card: form === 'printed' ? printed : worthless,
+        mode: 'cancel',
+      });
+      // The Worthless card opens its own conversion response before settling.
+      canceled = passKind(canceled, 'worthlessKarama');
+      assert.equal(canceled.decision?.kind, 'richeseDeclaration');
+      assert.ok(!canceled.pendingKarama);
+      assert.deepEqual(inventory(canceled), physical);
+      counts.push(canceled.richeseBidding!.normalCount!);
+    }
+    assert.equal(
+      counts[1],
+      counts[0] + 1,
+      'The exhausted cache restores exactly one ordinary lot',
     );
-    assert.deepEqual(g, before);
-    assert.deepEqual(inventory(g), physical);
-    assert.equal(g.pendingKarama, undefined);
-    assert.equal(g.discard.length, 0);
-    assert.equal(random.mock.callCount(), 0);
-    assert.equal(uuid.mock.callCount(), 0);
   });
 
 function passKind(initial: Game, kind: NonNullable<Game['response']>['kind']) {

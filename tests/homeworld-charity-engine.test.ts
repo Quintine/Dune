@@ -356,3 +356,40 @@ void test('a paid Nullentropy search preserves the actual BG charity split and r
   rejects(reload(g), 'b', { type: 'charity' });
   homeworldGameIntegrity(g);
 });
+
+void test('low-population Tupile adds its bank bonus to CHOAM opening income under the same Inflation multiplier', () => {
+  // User ruling 7 October 2026: CHOAM's opening income counts as a qualifying
+  // collection, so the low-population bank bonus applies (scaled by Inflation).
+  const run = (lowTupile: boolean, multiplier: number) => {
+    let g = choam(setup());
+    g.phase = 1;
+    g.nexus = true;
+    g.choamCharity = undefined;
+    if (lowTupile) low(g, 'c', 5); // Tupile below its 11-reserve high threshold
+    if (multiplier === 2) {
+      g.turn = 2;
+      g.inflation = {
+        side: 'double',
+        placedTurn: 1,
+        updatedTurn: 1,
+        flipped: false,
+      };
+    }
+    seat(g, 'a').spice = 0;
+    seat(g, 'b').spice = 0;
+    const before = seat(g, 'c').spice;
+    for (const id of ['a', 'b', 'c']) g = applyAction(g, id, { type: 'ready' });
+    while (g.decision?.kind === 'choamMarket')
+      g = applyAction(g, 'c', { type: 'decision', done: true });
+    assert.equal(g.phase, 2);
+    assert.equal(g.choamCharity?.canceled, false);
+    assert.equal(viewGame(g, 'a').charity.incomeHomeworld, lowTupile ? 1 : 0);
+    return seat(g, 'c').spice - before;
+  };
+  for (const multiplier of [1, 2]) {
+    const withLow = run(true, multiplier);
+    const withoutLow = run(false, multiplier);
+    assert.equal(withoutLow, 2 * 3 * multiplier, 'Ordinary opening income');
+    assert.equal(withLow - withoutLow, multiplier, 'Low-population bank bonus');
+  }
+});

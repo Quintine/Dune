@@ -139,10 +139,11 @@ export function quoteNativeReserveWithdrawal(
   });
 }
 
-/** Revival destination only: E3 p.10 restores Advanced Emperor's normal forces
- * to Kaitain and Sardaukar to Salusa. Other native reserve returns must use their
- * own route contract; this does not validate Tanks, cost or revival allowances. */
-export function quoteNativeRevivalDeposit(
+/** Authorized native-reserve deposits: E3 p.10 restores Advanced Emperor's
+ * normal forces to Kaitain and Sardaukar to Salusa. Used by revival and by the
+ * Nexus Secret Ally reserve return (user ruling 7 October 2026); it does not
+ * validate Tanks, cost, revival allowances or route permission. */
+export function quoteNativeReserveDeposit(
   context: HomeworldCustodyContext,
   custody: HomeworldCustody,
   actor: string,

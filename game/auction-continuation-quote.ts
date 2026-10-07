@@ -435,15 +435,18 @@ function calculate(
   if (index === a.cards.length || !able.length) {
     const round = input.richeseBidding,
       activeRound = round?.turn === input.turn && round.stage === 'normal';
+    // User ruling 7 October 2026: the cache lot only runs when physical cache
+    // cards remain and the compulsory auction was not canceled.
+    const cacheLast =
+      !!activeRound &&
+      round.position === 'last' &&
+      !round.cacheCanceled &&
+      (input.richeseCacheCount ?? 0) > 0;
     return result({
       kind: 'normalEnd',
       returned: structuredClone(a.cards.slice(index)),
-      after:
-        activeRound && round.position === 'last' && !round.cacheCanceled
-          ? 'richeseCache'
-          : 'phase',
-      completeRound:
-        !!activeRound && !(round.position === 'last' && !round.cacheCanceled),
+      after: cacheLast ? 'richeseCache' : 'phase',
+      completeRound: !!activeRound && !cacheLast,
     });
   }
   let opener = a.opener;

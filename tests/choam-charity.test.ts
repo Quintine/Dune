@@ -318,6 +318,7 @@ void test('charity projections expose the payer and own entitlement without leak
     payer: 'c',
     incomePending: false,
     incomeCanceled: false,
+    incomeHomeworld: 0,
   });
   assert.equal(v.players[0].spice, undefined);
   assert.equal(v.players[0].handLimit, 5);

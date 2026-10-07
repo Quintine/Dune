@@ -6,7 +6,7 @@ import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-optio
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
 import { createLeaderSkills, validateLeaderSkills, dealLeaderSkills, chooseLeaderSkill, returnDeadLeaderSkills, offerRevivedLeaderSkill, drawRevivedLeaderSkills, declineRevivedLeaderSkill, LeaderSkillError, type LeaderSkillsState, type LeaderSkillsView } from './leader-skills';
-import { leaderSkillCard, type LeaderSkillId } from './leader-skill-cards';
+import { leaderSkillCard } from './leader-skill-cards';
 import { bureaucratPaymentModeSupported, bureaucratPaymentSignature, bureaucratUsed, quoteBureaucratPayment, type BureaucratPaymentSource, type BureaucratPaymentUse, type BureaucratPaymentView } from './bureaucrat-payment';
 import { MENTAT_EMPTY_HAND, MentatQuestionError, mentatQuestionModeSupported, mentatWeaponNames, mentatHand, quoteMentatReveal, mentatSignature, type MentatQuestionReceipt, type MentatObservation, type MentatView } from './mentat-question';
 import {
@@ -21,7 +21,7 @@ import { planetologistMovementModeSupported, planetologistLeader, planetologistR
 import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFieldCompanion } from './smuggler-no-field';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, type SmugglerBattleReceipt } from './smuggler-battle';
-import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterRouteDistance, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
+import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterCollectible, sandmasterLeader, sandmasterRouteDistance, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { BankerIncomeError, createBankerIncomeState, validateBankerIncomeState, quoteBankerIncome, commitBankerIncome, quoteBankerIncomeCollection, commitBankerIncomeCollection, projectBankerIncome, type BankerIncomeState, type BankerIncomeAuthority, type BankerIncomeContext } from './spice-banker-income';
@@ -164,7 +164,7 @@ import {
 } from './homeworld-emperor-move';
 import {
   quoteNativeReserveWithdrawal,
-  quoteNativeRevivalDeposit,
+  quoteNativeReserveDeposit,
   NativeReserveError,
   type NativeReserveSelections,
 } from './homeworld-native-reserves';
@@ -2687,7 +2687,7 @@ function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
     offer?.revival.blocked ?? 'Choose the current Emperor Nexus revival and an eligible exact three-force group.');
   const elite = action.elite as number, before = emperorNexusPools(p);
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
-  addRevivedReserves(g,p,EMPEROR_NEXUS_REVIVALS,elite); p.tanks -= EMPEROR_NEXUS_REVIVALS;
+  addNativeReserves(g,p,EMPEROR_NEXUS_REVIVALS,elite); p.tanks -= EMPEROR_NEXUS_REVIVALS;
   if (p.elites) {p.elites.tanks -= elite;p.elites.revived += elite;}
   techIncome(g, 'axlotl', p);
   const record:NexusEmperorRevival = {kind:'revival',event:offer.event,owner:p.id,turn:g.turn,phase:4,
@@ -2862,7 +2862,7 @@ function playNexusFremenRevive(g: Game, p: Player, action: Action) {
     offer?.blocked ?? 'Choose a current eligible three-force Fremen Nexus return.');
   const elite = action.elite as number, before = fremenNexusRevivalPools(p);
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
-  addRevivedReserves(g, p, FREMEN_NEXUS_FREE_FORCES, elite);
+  addNativeReserves(g, p, FREMEN_NEXUS_FREE_FORCES, elite);
   p.tanks -= FREMEN_NEXUS_FREE_FORCES;
   p.revived += FREMEN_NEXUS_FREE_FORCES;
   p.freeForcesRevived = (p.freeForcesRevived ?? 0) + FREMEN_NEXUS_FREE_FORCES;
@@ -7105,14 +7105,17 @@ function withdrawNativeReserves(
   observeOccupation(g);
   return result.receipts;
 }
-function addRevivedReserves(g: Game, p: Player, amount: number, elite: number) {
+/** Adds counters to a faction's reserves, depositing into the native Homeworld
+ * custody when Homeworlds are enabled. Used by revival and by the authorized
+ * Nexus Secret Ally reserve return (user ruling 7 October 2026). */
+function addNativeReserves(g: Game, p: Player, amount: number, elite: number) {
   if (!g.homeworlds?.custody) {
     p.reserves += amount;
     if (p.elites) p.elites.reserves += elite;
     return;
   }
   const result = homeworldRule(() =>
-    quoteNativeRevivalDeposit(
+    quoteNativeReserveDeposit(
       homeworldContext(g),
       g.homeworlds!.custody!,
       p.id,
@@ -7596,19 +7599,6 @@ function skillEligibleLeaders(g: Game, owner: string): string[] {
         ),
     )
     .map((leader) => leader.id);
-}
-const ADVANCED_ATREIDES_SUK_ASSIGNMENT_BLOCK =
-  'Suk Graduate is unavailable to Advanced Atreides while the Kwisatz Haderach loss-count ruling is pending.';
-function leaderSkillAssignmentUnavailable(
-  g: Game,
-  owner: string,
-  skill: string,
-): string | null {
-  return g.advanced &&
-    getPlayer(g, owner).faction === 'atreides' &&
-    skill === 'suk-graduate'
-    ? ADVANCED_ATREIDES_SUK_ASSIGNMENT_BLOCK
-    : null;
 }
 /** Public standalone E3 roster; the existing held-card owner remains the plan actor. */
 function e3StrongholdFactionProfile(g: Game): boolean {
@@ -8285,12 +8275,6 @@ function projectedLeaderSkills(
   const offer = g.leaderSkills.offers[owner] ?? null;
   const eligible = skillEligibleLeaders(g, owner);
   const assignment = nativeLeaderSkill(g, owner);
-  const unavailableSkills = Object.fromEntries(
-    (offer?.cards ?? []).flatMap((skill) => {
-      const reason = leaderSkillAssignmentUnavailable(g, owner, skill);
-      return reason ? [[skill, reason]] : [];
-    }),
-  ) as Partial<Record<LeaderSkillId, string>>;
   return {
     assignments: g.leaderSkills.assignments.map((a) => {
       const controller = leaderSkillController(g, a);
@@ -8303,7 +8287,6 @@ function projectedLeaderSkills(
       };
     }),
     offer,
-    ...(Object.keys(unavailableSkills).length ? { unavailableSkills } : {}),
     eligibleLeaders: getPlayer(g, owner)
       .leaders.filter((l) => eligible.includes(l.id))
       .map((l) => ({ id: l.id, name: l.name })),
@@ -10762,13 +10745,21 @@ function beginRicheseBidding(g: Game) {
     richeseDecision(g, 'richeseBlackMarket');
   else richeseDeclaration(g);
 }
+/** User ruling 7 October 2026: a cache lot runs only while physical cache cards
+ * remain and the compulsory auction was not canceled; otherwise one ordinary
+ * lot is restored, so the cache's one-lot reduction is not applied. */
+function richeseCacheRuns(g: Game) {
+  return (g.richeseCache?.length ?? 0) > 0 && !g.richeseBidding!.cacheCanceled;
+}
 function richeseDeclaration(g: Game) {
   richeseDeclarationCache(g);
   const round = g.richeseBidding!;
   round.stage = 'declaration';
   round.normalCount = Math.max(
     0,
-    auctionEligible(g).length - 1 - Number(round.blackMarketSold),
+    auctionEligible(g).length -
+      Number(richeseCacheRuns(g)) -
+      Number(round.blackMarketSold),
   );
   richeseDecision(g, 'richeseDeclaration');
 }
@@ -10784,7 +10775,7 @@ function offerRicheseCache(g: Game) {
 function finishNormalBidding(g: Game) {
   const round = g.richeseBidding;
   if (round?.turn === g.turn && round.stage === 'normal') {
-    if (round.position === 'last' && !round.cacheCanceled) {
+    if (round.position === 'last' && richeseCacheRuns(g)) {
       offerRicheseCache(g);
       return;
     }
@@ -11276,7 +11267,7 @@ function decideRichese(g: Game, p: Player, decision: Decision, action: Action) {
     round.position = action.position as 'first' | 'last';
     log(
       g,
-      `${p.name} announced the Richese cache auction ${round.position}, before normal pool preparation. ${round.normalCount} normal lots are scheduled after the cache reduction${round.blackMarketSold ? ' and completed Black Market sale' : ''}.`,
+      `${p.name} announced the Richese cache auction ${round.position}, before normal pool preparation. ${round.normalCount} normal lots are scheduled ${richeseCacheRuns(g) ? 'after the cache reduction' : 'because no cache lot can run'}${round.blackMarketSold ? ' and completed Black Market sale' : ''}.`,
     );
     g.response = { kind: 'richeseAuction', owner: p.id, passed: [] };
   } else if (decision.kind === 'richeseCacheTerms') {
@@ -20055,7 +20046,7 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
     );
     const group = { amount: n, elite, free: 0 };
     const grant = requireHomeworldRevivalGrant(g, p, 'ghola', group);
-    addRevivedReserves(g, p, n, elite);
+    addNativeReserves(g, p, n, elite);
     p.tanks -= n;
     if (p.elites) {
       p.elites.tanks -= elite;
@@ -21261,9 +21252,6 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
     for (const withdrawal of quote.harassWithdraw ?? [])
       validateReserveReturnCounters(getPlayer(g, withdrawal.player), withdrawal.returned);
     if (quote.sukGraduate) requireRule(
-      !g.advanced || getPlayer(g, quote.winner!).faction !== 'atreides',
-      'Suk Graduate rescue for Advanced Atreides awaits the Kwisatz Haderach loss-count ruling.');
-    if (quote.sukGraduate) requireRule(
       ordinaryLeaderSkillModeSupported(g) &&
       (nativeExpansionLeaderSkillsProfile(g) || g.players.every((p) => faction(p.faction).expansion === 'base')),
       'Suk Graduate rescue with expansion factions or other optional modules is still being implemented.');
@@ -22154,7 +22142,10 @@ function settleSukRescue(g: Game, option: SukRescueOption, automatic: boolean, d
   } else {
     player.reserves += quote!.reserves.normal + quote!.reserves.elite;
     player.tanks += quote!.tanks.normal + quote!.tanks.elite;
-    player.battleLosses += quote!.tanks.normal + quote!.tanks.elite;
+    // User ruling 7 October 2026: rescued counters still count toward the seven
+    // battle losses that activate Kwisatz Haderach, so the full dialed casualty
+    // allocation is added, not only the counters that reach the Tanks.
+    player.battleLosses += pending.losses.normal + pending.losses.elite;
     if (player.elites) {
       player.elites.reserves += quote!.reserves.elite;
       player.elites.tanks += quote!.tanks.elite;
@@ -22917,7 +22908,7 @@ function currentHomeworldRevivalGrant(
   group: HomeworldRevivalDeploymentGroup,
 ) {
   if (!g.homeworlds?.custody || !['fremen', 'tleilaxu'].includes(p.faction)) return null;
-  const deposit = homeworldRule(() => quoteNativeRevivalDeposit(
+  const deposit = homeworldRule(() => quoteNativeReserveDeposit(
     homeworldContext(g), g.homeworlds!.custody!, p.id,
     { normal: group.amount - group.elite, elite: group.elite },
   ));
@@ -23157,7 +23148,7 @@ function finishRevival(
       elite = revival.elite ?? 0;
     const source = revival.emperorExtra ? 'emperorExtra' : 'normal';
     const group = { amount: n, elite, free: revival.free };
-    addRevivedReserves(g, p, n, elite);
+    addNativeReserves(g, p, n, elite);
     p.tanks -= n;
     if (revival.emperorExtra)
       g.emperorExtra[p.id] = (g.emperorExtra[p.id] ?? 0) + n;
@@ -23955,11 +23946,19 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     if (pending.movement && g.pendingChoamMove) resumeChoamMovement(g);
     if (pending.mentat) g.decision = { kind: 'choamMentat', player: choam.id };
   } else if (response.kind === 'richeseAuction') {
-    requireRule(
-      !canceled,
-      'The canceled Richese auction count is awaiting an official ruling or an explicit table interpretation.',
-    );
-    if (g.richeseBidding!.position === 'first') offerRicheseCache(g);
+    const round = g.richeseBidding!;
+    if (canceled) {
+      // User ruling 7 October 2026: a canceled or prevented compulsory cache
+      // auction restores one ordinary lot, since no cache lot replaces it.
+      round.cacheCanceled = true;
+      round.normalCount = Math.max(0, (round.normalCount ?? 0) + 1);
+      log(
+        g,
+        'The compulsory Richese cache auction was canceled; one ordinary lot is restored.',
+      );
+      prepareRicheseNormal(g);
+    } else if (round.position === 'first' && richeseCacheRuns(g))
+      offerRicheseCache(g);
     else prepareRicheseNormal(g);
   } else if (response.kind === 'richeseBlackMarket') {
     if (canceled) {
@@ -24226,11 +24225,13 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
         : { turn: g.turn, canceled };
     if (!canceled) {
       const choam = getPlayer(g, response.owner);
-      requireRule(
-        homeworldLowBonus(g, choam.id) === 0,
-        'Low-population CHOAM opening income awaits its Homeworld charity ruling.',
-      );
-      const amount = 2 * g.players.length * charityMultiplier(g);
+      // User ruling 7 October 2026: CHOAM's phase-opening income is a
+      // qualifying collection, so a low-population native Homeworld adds its
+      // bank bonus under the same Inflation multiplier as ordinary charity.
+      const multiplier = charityMultiplier(g);
+      const amount =
+        2 * g.players.length * multiplier +
+        homeworldLowBonus(g, choam.id) * multiplier;
       choam.spice += amount;
       log(g, `${choam.name} collected ${amount} spice before charity claims.`);
     } else
@@ -25337,8 +25338,9 @@ function commitGuildTransport(
     if (p.elites) p.elites.reserves -= elite;
   } else removeGroup(p, group, eliteGroup);
   if (to === 'reserves') {
-    p.reserves += amount;
-    if (p.elites) p.elites.reserves += elite;
+    // User ruling 7 October 2026: the Nexus Secret Ally reserve return is an
+    // authorized native-reserve return, so it deposits into Homeworld custody.
+    addNativeReserves(g, p, amount, elite);
   } else {
     place(p, to, sector, amount, elite);
     if (advisors) {
@@ -25643,7 +25645,22 @@ function relocateMobileStronghold(
   const blocked = homeworldRule(() => homeworldMobileStrongholdMovementBlock(g, p.id));
   requireRule(!blocked, blocked ?? 'The mobile stronghold cannot move.');
   let collected = 0;
-  if (move.collect)
+  if (move.collect) {
+    // User ruling 7 October 2026: passengers remaining inside a relocated HMS
+    // interior count as entering the outside territories the stronghold points
+    // into, so the Sandmaster skill collects there before the faction's own
+    // traversed-sector collection.
+    if (sandmasterLeader(g, move.player))
+      for (const pile of sandmasterCollectible(g, { interior: move.route })) {
+        g.spice[pile]--;
+        if (!g.spice[pile]) delete g.spice[pile];
+        p.spice++;
+        log(
+          g,
+          `${p.name}'s Sandmaster collected 1 spice as the stronghold entered ${territory(splitLocation(pile).territory).name}. This territory grants at most one collection during this relocation.`,
+          { faction: p.faction, name: 'Sandmaster collection' },
+        );
+      }
     for (const key of move.route) {
       const amount = Math.min(g.spice[key] ?? 0, at(p, MOBILE_STRONGHOLD) * 2);
       if (amount) {
@@ -25652,6 +25669,7 @@ function relocateMobileStronghold(
         collected += amount;
       }
     }
+  }
   g.mobileStronghold!.location = move.route.at(-1)!;
   const loc = splitLocation(g.mobileStronghold!.location);
   log(
@@ -27104,7 +27122,7 @@ export function executeSpecialKaramaIntent(
     } else {
       const n = intent.amount,
         elite = intent.elite;
-      addRevivedReserves(g, p, n, elite);
+      addNativeReserves(g, p, n, elite);
       p.tanks -= n;
       if (p.elites) {
         p.elites.tanks -= elite;
@@ -28243,8 +28261,6 @@ function applyActionInner(
       else {
         requireRule(action.mode === undefined, 'Choose draw, decline or a dealt skill.');
         const skill = stringField(action.skill);
-        const unavailable = leaderSkillAssignmentUnavailable(g, id, skill);
-        requireRule(!unavailable, unavailable ?? 'This Leader Skill is unavailable.');
         g.leaderSkills = skillRule(() => chooseLeaderSkill(g.leaderSkills!, id, stringField(action.event), skill, stringField(action.leader), skillEligibleLeaders(g,id), random));
         log(g, `${p.name} assigned ${leaderSkillCard(action.skill as Parameters<typeof leaderSkillCard>[0]).name} to a newly revived leader.`, {faction:p.faction,name:'Leader Skill'});
       }
@@ -29847,8 +29863,6 @@ function applyActionInner(
     if (t === 'leaderSkill') {
       requireRule(Object.keys(action).every((key) => ['type','event','skill','leader'].includes(key)), 'Choose only your dealt skill and its eligible leader.');
       const skill = stringField(action.skill), leader = stringField(action.leader);
-      const unavailable = leaderSkillAssignmentUnavailable(g, id, skill);
-      requireRule(!unavailable, unavailable ?? 'This Leader Skill is unavailable.');
       g.leaderSkills = skillRule(() => chooseLeaderSkill(g.leaderSkills!, id, stringField(action.event), skill, leader, skillEligibleLeaders(g, id), random));
       log(g, `${p.name} assigned ${leaderSkillCard(skill as Parameters<typeof leaderSkillCard>[0]).name} to ${p.leaders.find((l) => l.id === leader)!.name}.`, { faction: p.faction, name: 'Leader Skill' });
     } else if (t === 'advisorSetup') {
@@ -30933,8 +30947,6 @@ function applyActionInner(
       to !== 'reserves' || p.faction === 'guild' || !!guildSecretEvent,
       'Only the Guild may ship forces back to reserves.',
     );
-    requireRule(!guildSecretEvent || to !== 'reserves' || !g.homeworlds?.custody,
-      'Guild Secret Ally return to Homeworld reserves awaits its route ruling.');
     const advisors = to !== 'reserves' && arrivalAsAdvisor(g, p, to);
     const sourceLock = p.advisors?.[origin]?.lockedTurn;
     requireRule(
@@ -31735,6 +31747,7 @@ export function viewGame(state: Game, id: string) {
   settleAdvisors(g);
   normalizeBattle(g);
   const me = getPlayer(g, id);
+  const choamPlayer = byFaction(g, 'choam');
   let victoryProgress: StrongholdProgress[] = [];
   let fremenVictory: FremenVictoryProgress | null = null;
   let ecazHomeworldVictory: EcazHomeworldVictoryProgress | null = null;
@@ -32406,6 +32419,7 @@ export function viewGame(state: Game, id: string) {
       incomePending: !!byFaction(g, 'choam') && g.choamCharity?.turn !== g.turn,
       incomeCanceled:
         g.choamCharity?.turn === g.turn && g.choamCharity.canceled,
+      incomeHomeworld: choamPlayer ? homeworldLowBonus(g, choamPlayer.id) : 0,
     },
     moritaniAssassinate: projectedMoritaniAssassinate(g,id),
     moritaniRetention: g.moritaniRetention ?? null,

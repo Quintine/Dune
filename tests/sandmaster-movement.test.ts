@@ -12,13 +12,14 @@ import {
   sandmasterDefaultChoice,
   type SandmasterChoice,
 } from '../game/sandmaster-movement';
-import { splitLocation, territory } from '../game/board';
+import { splitLocation, territory, mobileRoutes, mobileRouteDistance, MOBILE_LOCATION as INSIDE } from '../game/board';
 import {
   sandmasterMove,
   sandmasterMovementGame,
 } from './sandmaster-movement-fixture';
 import { createTechTokens } from '../game/tech-tokens';
 import { placeFixtureHand } from './fixture-hand';
+import { smugglerShipmentGame } from './smuggler-shipment-fixture';
 
 const restored = (g: Game): Game => JSON.parse(JSON.stringify(g));
 function unchanged(
@@ -287,4 +288,40 @@ void test('A separate Hajr movement can collect again and only a later re-entry 
   assert.equal(next.players[0].spice, g.players[0].spice + 2);
   assert.equal(next.players[0].moved, 2);
   conserved(next, g);
+});
+
+void test('interior passengers count as entering the territories the relocated stronghold points into', () => {
+  // User ruling 7 October 2026: a relocated HMS interior counts as entering the
+  // outside territories, so the Sandmaster skill collects there. Compare the
+  // identical relocation with and without the assigned skill.
+  const run = (skill: 'sandmaster' | 'smuggler') => {
+    let g = smugglerShipmentGame('ixians', false, skill, undefined, ['ix']);
+    g.players[0].forces = { [INSIDE]: 6 };
+    g.players[0].reserves = 14;
+    if (g.players[0].elites) g.players[0].elites.forces = { [INSIDE]: 3 };
+    g.mobileStronghold = { location: 'polar_sink:0' };
+    g.spice = {};
+    g.phase = 8;
+    g.active = null;
+    for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
+    for (const p of g.players) g = applyAction(g, p.id, { type: 'ready' });
+    assert.equal(g.decision?.kind, 'mobileStronghold');
+    const route = mobileRoutes(g, 3).find((r) => mobileRouteDistance(r) === 3)!;
+    const end = route.at(-1)!;
+    g.spice[end] = 100;
+    const before = g.players[0].spice;
+    g = applyAction(g, 'p', { type: 'decision', route, collect: true });
+    while (g.response)
+      g = applyAction(
+        g,
+        g.players.find((p) => !g.response!.passed.includes(p.id))!.id,
+        { type: 'passResponse' },
+      );
+    assert.equal(g.mobileStronghold!.location, end);
+    return { spice: g.players[0].spice - before, pile: g.spice[end] ?? 0 };
+  };
+  const without = run('smuggler');
+  const with_ = run('sandmaster');
+  assert.equal(with_.spice, without.spice + 1, 'Sandmaster collects one extra spice');
+  assert.equal(with_.pile, without.pile - 1);
 });

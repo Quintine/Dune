@@ -127,20 +127,17 @@ Human L7C8HTQT confirms17 Ecaz reserves/0 Tanks/3 board, ally16 reserves/
 See [standalone source and evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
 
 
-## Atreides loss-count question
+## Atreides loss-count question — resolved 7 October 2026
 
 The base Advanced rules activate Kwisatz Haderach after seven force losses.
 Suk describes rescued counters as losses redirected away from the Tanks, and
-the designer describes the retained counter as having been killed. Counting
-the raw dialed casualties is therefore the stronger textual inference, but
-the retrieved publisher/designer sources do not expressly settle this combination.
-The user question is pending. New Advanced Atreides setup and revival offers
-retain their physical cards but make Suk unavailable, explain why and allow the
-other offered card. The server, private view, controls and bots share this
-prototype restriction. Already-assigned saved combinations retain the battle
-preflight guard before final traitor votes or resources commit. This availability
-restriction is not an official rule. Other rescued counters are kept out of the
-physical Tank and ordinary battle-loss totals in this bounded prototype.
+the designer describes the retained counter as having been killed. The user
+ruled that **rescued casualties count toward the seven losses** (raw dialed
+casualties), so Suk is no longer withheld from Advanced Atreides: the setup
+and revival offers can assign it, and the battle path records the full dialed
+casualty allocation on the battle-loss counter rather than only the counters
+that reach the Tanks. The earlier prototype restriction (unavailable skill,
+battle preflight guard) is removed.
 
 ## Evidence and remaining work
 

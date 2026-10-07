@@ -166,7 +166,9 @@ for (const band of ['normal', 'skilled'] as const) for (const support of [3, 6])
     assert.equal(player(game, fixture.owner).forces[fixture.key], 7 - physicalLoss + kept);
     assert.equal(player(game, fixture.owner).reserves, before.reserves + saved - kept);
     assert.equal(player(game, fixture.owner).tanks, before.tanks + physicalLoss - saved);
-    assert.equal(player(game, fixture.owner).battleLosses, before.battleLosses + physicalLoss - saved);
+    // User ruling 7 October 2026: rescued counters still count toward the
+    // seven Kwisatz Haderach losses, so the counter gains every dialed casualty.
+    assert.equal(player(game, fixture.owner).battleLosses, before.battleLosses + physicalLoss);
     assert.deepEqual(player(game, fixture.owner).elites, before.elites);
     assert.equal(game.pendingSukRescue, null);
     assert.equal(game.lastBattleContext!.sukRescue!.completed, true);

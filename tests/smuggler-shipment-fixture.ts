@@ -19,8 +19,9 @@ export function smugglerShipmentGame(
   advanced = false,
   skill: 'smuggler' | 'sandmaster' = 'smuggler',
   opponentFaction?: FactionId,
+  expansions: readonly string[] = [],
 ): Game {
-  let g = createGame('SMUGSHIP', newPlayer('p', 'Smuggler', faction), advanced);
+  let g = createGame('SMUGSHIP', newPlayer('p', 'Smuggler', faction), advanced, [...expansions]);
   joinGame(
     g,
     newPlayer('h', 'Opponent', opponentFaction ?? (faction === 'guild' ? 'emperor' : 'guild')),
@@ -43,7 +44,14 @@ export function smugglerShipmentGame(
       const view = viewGame(g, p.id);
       const skills = view.leaderSkills!;
       const options =
-        g.setupStage === 'leaderSkills' && skills.offer
+        g.decision?.kind === 'ixSetup'
+          ? [
+              {
+                type: 'decision',
+                card: viewGame(g, g.decision.player).ixTechnology!.setup![0].id,
+              },
+            ]
+          : g.setupStage === 'leaderSkills' && skills.offer
           ? [
               {
                 type: 'leaderSkill',

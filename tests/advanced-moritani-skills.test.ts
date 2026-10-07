@@ -351,7 +351,7 @@ void test('original Enemy of My Enemy and ally retention exclude a consumed nati
   assert.deepEqual(normalizeAutomaticGame(reload(game)), game);
 });
 
-void test('new native admission preserves public, Harkonnen assassination, foreign family/module and Advanced Atreides Suk boundaries', () => {
+void test('new native admission preserves public, Harkonnen assassination, foreign family/module and Advanced Atreides Suk assignment', () => {
   const make = (faction: 'atreides' | 'harkonnen' | 'ixians' | 'ecaz' = 'atreides', expansions: Game['expansions'] = ['ecaz']) => {
     const game = createGame('MORIGATE', newPlayer('original-m', 'Moritani', 'moritani'), true, expansions);
     joinGame(game, newPlayer('original-other', faction, faction));
@@ -387,9 +387,11 @@ void test('new native admission preserves public, Harkonnen assassination, forei
   const offered = initializeAdvancedNativeSkillsSetup(options);
   const actor = player(offered, 'atreides').id, offer = offered.leaderSkills!.offers[actor];
   const own = viewGame(offered, actor).leaderSkills!;
-  reject(offered, actor, { type: 'leaderSkill', event: offer.event, skill: 'suk-graduate', leader: own.eligibleLeaders[0].id });
-  const complete = completeAdvancedNativeSkillsSetup(offered, options);
-  assert.notEqual(trainer(complete, actor).skill, 'suk-graduate');
-  assert.ok(complete.leaderSkills!.deck.includes('suk-graduate'));
+  // User ruling 7 October 2026: Suk is available to Advanced Atreides.
+  const assigned = applyAction(offered, actor, { type: 'leaderSkill', event: offer.event, skill: 'suk-graduate', leader: own.eligibleLeaders[0].id });
+  assert.equal(trainer(assigned, actor).skill, 'suk-graduate');
+  assert.ok(!assigned.leaderSkills!.deck.includes('suk-graduate'));
+  const complete = completeAdvancedNativeSkillsSetup(assigned, options);
+  assert.equal(trainer(complete, actor).skill, 'suk-graduate');
   custody(complete);
 });

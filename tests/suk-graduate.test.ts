@@ -3,6 +3,7 @@ import test from 'node:test';
 import { applyAction, normalizeAutomaticGame, viewGame, type Action, type Game } from '../game/engine';
 import { sukGraduateSkill, sukRescueOptions, quoteSukRescue } from '../game/suk-graduate';
 import { validateLeaderSkills } from '../game/leader-skills';
+import type { LeaderSkillId } from '../game/leader-skill-cards';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { advancedAtreidesSukOffer, sukBattle, resolveSuk } from './suk-graduate-fixture';
@@ -37,57 +38,54 @@ void test('Suk entitlement distinguishes public, selected, bluff, killed and cap
   assert.equal(sukGraduateSkill([{ ...assignment, captured: true }], { id: 'skilled', dead: false }, true)?.mode, 'skilled');
 });
 
-void test('new Advanced Atreides setup and revival keep the physical Suk offer private but reject its assignment immutably', () => {
+void test('new Advanced Atreides setup and revival can assign the physical Suk offer', () => {
   const game = advancedAtreidesSukOffer();
   const ownerView = viewGame(game, 'a');
-  const otherView = viewGame(game, 'd');
   const offer = ownerView.leaderSkills!.offer!;
   assert.equal(offer.cards.length, 2);
   assert.ok(offer.cards.includes('suk-graduate'));
-  assert.match(
-    ownerView.leaderSkills!.unavailableSkills?.['suk-graduate'] ?? '',
-    /Kwisatz Haderach loss-count ruling is pending/,
-  );
-  assert.equal(otherView.leaderSkills?.unavailableSkills, undefined);
+  const leader = ownerView.leaderSkills!.eligibleLeaders[0].id;
 
-  const available = offer.cards.find((skill) => skill !== 'suk-graduate')!;
-
-  const blockedAction: Action = {
-    type: 'leaderSkill', event: offer.event, skill: 'suk-graduate', leader: 'atreides-0',
+  // User ruling 7 October 2026: Suk is available to Advanced Atreides.
+  const action: Action = {
+    type: 'leaderSkill', event: offer.event, skill: 'suk-graduate', leader,
   };
-  const before = JSON.stringify(game);
-  assert.throws(() => applyAction(game, 'a', blockedAction), /Suk Graduate is unavailable/);
-  assert.equal(JSON.stringify(game), before);
-  validateLeaderSkills(game.leaderSkills!, game.players);
-
-  const assigned = applyAction(game, 'a', { ...blockedAction, skill: available });
-  assert.equal(assigned.leaderSkills!.assignments.find((a) => a.owner === 'a')?.skill, available);
-  assert.ok(assigned.leaderSkills!.deck.includes('suk-graduate'));
+  const assigned = applyAction(game, 'a', action);
+  assert.equal(
+    assigned.leaderSkills!.assignments.find((a) => a.owner === 'a')?.skill,
+    'suk-graduate',
+  );
+  assert.ok(!assigned.leaderSkills!.deck.includes('suk-graduate'));
   validateLeaderSkills(assigned.leaderSkills!, assigned.players);
 
   const revival = structuredClone(game);
   revival.status = 'playing';
   revival.setupStage = undefined;
-  revival.leaderSkills!.offers.a.leader = 'atreides-0';
+  revival.leaderSkills!.offers.a.leader = leader;
   revival.decision = { kind: 'leaderSkillRevival', player: 'a', event: offer.event };
-  const revivalBefore = JSON.stringify(revival);
-  assert.throws(() => applyAction(revival, 'a', blockedAction), /Suk Graduate is unavailable/);
-  assert.equal(JSON.stringify(revival), revivalBefore);
-  validateLeaderSkills(revival.leaderSkills!, revival.players);
+  const revived = applyAction(revival, 'a', action);
+  assert.equal(
+    revived.leaderSkills!.assignments.find((a) => a.owner === 'a')?.skill,
+    'suk-graduate',
+  );
+  validateLeaderSkills(revived.leaderSkills!, revived.players);
 });
 
-void test('all four Advanced Atreides bots choose the available other skill', () => {
+void test('all four Advanced Atreides bots assign an offered skill', () => {
   for (const difficulty of DIFFICULTIES) {
     const game = advancedAtreidesSukOffer();
     const view = viewGame(game, 'a');
     view.players.find((player) => player.id === 'a')!.bot = difficulty;
     const offer = view.leaderSkills!.offer!;
-    const available = offer.cards.find((skill) => skill !== 'suk-graduate')!;
     const action = botActions(view)[0];
     assert.equal(action?.type, 'leaderSkill', difficulty);
-    assert.equal(action?.skill, available, difficulty);
+    const chosen = action!.skill as LeaderSkillId;
+    assert.ok(offer.cards.includes(chosen), difficulty);
     const assigned = applyAction(game, 'a', action);
-    assert.equal(assigned.leaderSkills!.assignments.find((a) => a.owner === 'a')?.skill, available);
+    assert.equal(
+      assigned.leaderSkills!.assignments.find((a) => a.owner === 'a')?.skill,
+      chosen,
+    );
     validateLeaderSkills(assigned.leaderSkills!, assigned.players);
   }
 });
@@ -275,11 +273,22 @@ void test('Advanced normal rescue offers the actual casualty types and returns t
   conserved(game);
 });
 
-void test('Advanced Atreides pending ruling rejects before the final traitor vote; Basic rescue remains playable', () => {
-  const blocked = sukBattle({ advanced: true, atreides: true });
-  const before = JSON.stringify(blocked);
-  assert.throws(() => resolveSuk(blocked), /Kwisatz Haderach loss-count ruling/);
-  assert.equal(JSON.stringify(blocked), before);
+void test('Advanced Atreides rescue proceeds and rescued casualties count toward the Kwisatz Haderach threshold', () => {
+  const advanced = resolveSuk(sukBattle({ advanced: true, atreides: true }));
+  const decision = advanced.decision;
+  assert.equal(decision?.kind, 'sukRescue');
+  if (decision?.kind !== 'sukRescue') throw new Error('Missing rescue');
+  const owner = advanced.players.find((p) => p.id === 'a')!;
+  const lossesBefore = owner.battleLosses;
+  const tanksBefore = owner.tanks;
+  // User ruling 7 October 2026: rescued counters still count as battle losses,
+  // so the counter gains the rescued three as well as the Tank-bound counters.
+  const rescued = chooseRescue(advanced, 3);
+  const after = rescued.players.find((p) => p.id === 'a')!;
+  const tanksDelta = after.tanks - tanksBefore;
+  assert.equal(after.battleLosses - lossesBefore, tanksDelta + 3);
+  assert.ok(tanksDelta > 0, 'Some dialed casualties still reach the Tanks');
+  conserved(rescued);
   const basic = resolveSuk(sukBattle({ atreides: true }));
   assert.equal(basic.decision?.kind, 'sukRescue');
   conserved(chooseRescue(basic, 3));

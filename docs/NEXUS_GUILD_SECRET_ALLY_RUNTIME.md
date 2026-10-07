@@ -12,7 +12,7 @@ Fremen can retain their ordinary free reinforcement option. Choosing the Nexus i
 
 For an independently legal world-to-world shipment, the Nexus changes only the price to half a spice per force, rounded upward. Actual foreign/native source custody, special counters, own-world return restriction and ally-world prohibition remain authoritative. The card does not grant arbitrary Arrakis-to-foreign-Homeworld transport or high-Junction sponsorship.
 
-The material interaction between the card's return to reserves and the Homeworld native-Guild route restriction has been asked of the user. Until resolved, returning to Homeworld reserves with this grant is unavailable. Concealed No-Field transport retains its existing separate implementation boundary.
+**Resolved 7 October 2026:** the user ruled that the card's return to reserves overrides the Homeworld native-Guild route restriction for the holder's own reserves, so returning to Homeworld reserves with this grant is available and deposits through the shared native-reserve pipeline. Concealed No-Field transport retains its existing separate implementation boundary.
 
 ## Payment, arrival and saved history
 

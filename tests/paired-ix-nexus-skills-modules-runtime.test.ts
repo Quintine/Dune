@@ -174,7 +174,9 @@ for (const mode of MODES) for (const band of ['normal', 'skilled'] as const) {
     assert.deepEqual(pending.techTokens, revealed.techTokens, 'Physical rescue/substitution must precede original Tech transfer');
     const p = player(pending, f.ixians);
     assert.equal(p.tanks, original.tanks + 2); assert.equal(p.elites!.tanks, original.elites!.tanks + 2);
-    assert.equal(p.battleLosses, original.battleLosses + 2);
+    // User ruling 7 October 2026: rescued counters still count toward the
+    // seven Kwisatz Haderach losses, so the counter gains every dialed casualty.
+    assert.equal(p.battleLosses, original.battleLosses + 3);
     assert.equal(p.reserves, original.reserves + (band === 'normal' ? 1 : 0));
     assert.equal(p.elites!.reserves, original.elites!.reserves + (band === 'normal' ? 1 : 0));
     assert.equal(p.forces[f.location], band === 'normal' ? 3 : 4);

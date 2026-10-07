@@ -6,7 +6,7 @@ import {
   type HomeworldCustodyContext,
 } from './homeworld-custody';
 import { homeworldContext } from './homeworld-game';
-import { quoteNativeRevivalDeposit } from './homeworld-native-reserves';
+import { quoteNativeReserveDeposit } from './homeworld-native-reserves';
 import { homeworldPopulations } from './homeworld-population';
 
 export type HomeworldRevivalDeploymentContext = Pick<
@@ -86,7 +86,7 @@ export function quoteHomeworldRevivalDeployment(
     );
   const beforeContext = homeworldContext(before);
   const afterContext = homeworldContext(after);
-  const expected = quoteNativeRevivalDeposit(
+  const expected = quoteNativeReserveDeposit(
     beforeContext,
     before.homeworlds.custody,
     player,

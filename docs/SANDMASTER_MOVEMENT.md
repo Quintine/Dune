@@ -93,7 +93,10 @@ allows Karama to prevent HMS relocation and collection together.
 
 The checked card, designer walkthrough and available official rules did not
 clarify whether passengers staying in the interior count as entering outside
-territories. Skill-before-faction precedence settles ordering only if eligibility
-is established. A user ruling question was sent; no answer is assumed. Native
-relocation and ordinary Sandmaster entry/exit remain available. No extra
-collection is silently applied, and full combined compliance remains unverified.
+territories. **Resolved 7 October 2026 by user ruling:** interior passengers
+**do count as entering** the outside territories the stronghold points into, so
+the Sandmaster skill collects one spice per entered territory with an
+unambiguous pile during a native relocation, before the faction's own
+traversed-sector collection. Skill-before-faction precedence settles the
+ordering. Ordinary Sandmaster entry/exit and native relocation are unchanged;
+full combined compliance remains unverified.

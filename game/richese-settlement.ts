@@ -145,16 +145,19 @@ export function quoteRicheseSettlement(
 }
 
 /**
- * The existing declaration boundary rejects an exhausted cache. Use when a
- * canceled/unbid Black Market lot will immediately enter richeseDeclaration;
- * settlement quoting alone deliberately does not execute that continuation.
- * A sold Black Market lot may first pause for replacement/bonus handling.
+ * Use when a canceled/unbid Black Market lot will immediately enter
+ * richeseDeclaration; settlement quoting alone deliberately does not execute
+ * that continuation. A sold Black Market lot may first pause for
+ * replacement/bonus handling.
+ *
+ * User ruling 7 October 2026: an exhausted cache is legal — the ordinary pool
+ * then runs its full declared count — so only a malformed count is rejected.
  */
 export function requireRicheseDeclarationCache(
   cacheCount: number | undefined,
 ): void {
   requireSettlement(
-    Number.isSafeInteger(cacheCount) && cacheCount! > 0,
-    'An exhausted Richese cache needs an official ruling on the normal auction count.',
+    Number.isSafeInteger(cacheCount) && cacheCount! >= 0,
+    'The Richese cache count must be a readable non-negative number.',
   );
 }

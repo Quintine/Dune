@@ -248,7 +248,8 @@ export function quoteSukPhysicalRescue(
     ...transaction.players[index],
     tanks: player.tanks + (player.id === request.player ? rescue.tanks.normal + rescue.tanks.elite : 0),
     eliteTanks: player.eliteTanks + (player.id === request.player ? rescue.tanks.elite : 0),
-    battleLosses: player.battleLosses + (player.id === request.player ? rescue.tanks.normal + rescue.tanks.elite : 0),
+    battleLosses: player.battleLosses + (player.id === request.player
+      ? request.losses.normal + request.losses.elite : 0),
     boardForces: !home && player.id === request.player
       ? { normal: player.boardForces.normal - removedTotal.normal, elite: player.boardForces.elite - removedTotal.elite }
       : { ...player.boardForces },

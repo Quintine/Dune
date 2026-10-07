@@ -427,16 +427,18 @@ void test('canceling a partial Richese-paid Emperor invoice advances to native H
   assert.ok(canceled.next.kind === 'response' && canceled.next.response.kind === 'harkonnenBonus');
   assert.deepEqual(g, before);
 });
-void test('Black Market cache exhaustion is checked only when reaching that declaration boundary; seller balance overflow rejects before credit', () => {
+void test('Black Market cache exhaustion is legal at the declaration boundary; seller balance overflow rejects before credit', () => {
   const g = richese();
   g.richeseCacheCount = 0;
   assert.equal(
     quoteAuctionContinuation(g, { kind: 'sale', free: false }).next.kind,
     'response',
   );
-  assert.throws(
-    () => quoteAuctionContinuation(g, { kind: 'next' }),
-    /exhausted/,
+  // User ruling 7 October 2026: an exhausted cache is legal, so the declaration
+  // boundary is reached instead of rejecting.
+  assert.equal(
+    quoteAuctionContinuation(g, { kind: 'next' }).next.kind,
+    'richeseEnd',
   );
   g.richeseCacheCount = 8;
   g.players.find((p) => p.id === 'r')!.spice = Number.MAX_SAFE_INTEGER;

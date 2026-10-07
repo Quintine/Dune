@@ -46,7 +46,8 @@ export function nexusGuildSecretAllyQuote(
     return null;
   const me = g.players.find((p) => p.id === g.me)!;
   if (destination === 'reserves') {
-    if (g.homeworlds?.worlds?.length) return null;
+    // User ruling 7 October 2026: the Secret Ally return grant overrides the
+    // Arrakis-to-native-Homeworld restriction for the holder's own reserves.
     return quoteNexusGuildSecretShipment('reserves', amount);
   }
   const world = g.homeworlds?.worlds?.find((w) => w.id === destination);
