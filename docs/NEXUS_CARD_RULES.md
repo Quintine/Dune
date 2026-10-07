@@ -2,6 +2,41 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Mixed E3 and three-family Nexus — 7 October 2026
+
+The original `nexus` and `leader-skills --nexus-cards` entries, and the
+bounded five/six-native combined sample, now admit **selected Ecaz plus Ix
+and/or CHOAM** with an actual native from *every* selected family, optional
+classic opponents, Basic/Advanced2–6 and all12 Nexus; all14 only with
+Skills. Original Homeworlds/Discovery7+8/Tech3+/Advanced Strongholds2+
+remain optional. The ordinary deck is Ix47 when Ix is selected, otherwise
+CHOAM35, and the seated native Richese cache10 stays separate. Advanced
+Harkonnen is excluded from the Skills envelope and from the Moritani
+envelope; standalone no-Skills Ecaz may still face it without lifting the
+separate Duke Cunning exclusion.
+
+Existing setup, hands/offers, native HMS/Face Dancers/Auditor/cache and
+native inventory are reused; fresh native Ecaz marks original Arrakis
+Occupy and Advanced native Moritani marks original assassination, whose
+ordinary printed opponent list now includes Ixians, Tleilaxu, CHOAM and
+Richese. The ordinary coalition, Bureaucrat, Duke, Richese Cunning and the
+serialized storm-order overlap (only when **both** Ecaz and Moritani are
+seated) use their existing consumers. The shared Duke never trains, and
+Sandtrout, exceptional Ghola/capture, mixed-marker and pending force or
+payment effects keep their guards. No new initializer, return adapter,
+public start or played-save conversion is added.
+
+Original1536 fresh admissions across36 roster families reach real
+Traitors, Skills or Ixian pre-training offers, versus eight legacy combined
+admissions before, on an unchanged source tree. Two real captured consumer
+omissions are repaired: the CLI's fixed physical stock check now counts
+Ecaz's separately held Loyalty card, and the engine's printed Traitor
+inventory check now counts Tleilaxu Face Dancers. Dedicated original
+programme evidence for this envelope is **not** yet green; it was
+withdrawn rather than shipped failing, and the composition todo records the
+diagnosed engine constraints for resuming. This is scoped prototype
+evidence, not complete modes, assurance or deployed acceptance.
+
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 
 The original private Nexus/Skills entries now admit native factions from
