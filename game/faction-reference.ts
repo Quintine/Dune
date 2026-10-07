@@ -153,7 +153,7 @@ export const FACTION_RULES: Record<
       'Once Around lets each other faction bid or pass once in your chosen direction before your final opportunity. Silent bidding reveals simultaneous offers and resolves ties in storm order. A zero result allows the cache card to be kept or removed. Ordinary Karama acquisition cannot take this special lot.',
       'Your concealed No-Field tokens represent zero, three or five forces, while counting as one presence until revelation. Actual forces come from the reserves available when the token is revealed. Use the No-Field guide for shipment, movement and revelation choices.',
       'You may give your ally a Richese-family card already in your hand when they have room. Allied No-Field shipments reveal immediately and use the ally’s reserves.',
-      'Empty-cache continuation, exceptional allied pricing, mixed No-Field battles and several technology-card effects remain unfinished. Consult the linked guides for the available development choices.',
+      'Exhausted/canceled cache restores the declared ordinary pool. Basic mixed No-Field battles and Guild/active-Karama allied prices now have connected, visibly provisional first versions. Technology-card controls are present in bounded scopes; wider timing, custody and combined interactions remain for refinement.',
     ],
     advanced: [
       'Before the regular auction sequence, Black Market may offer a concealed card from your hand. The buyer pays you. An unsold card stays in your hand; a completed sale reduces the regular auction pool by one. Atreides can inspect the offered card.',
@@ -169,7 +169,7 @@ export const FACTION_RULES: Record<
       'Your Ecaz Ambassador can acquire an available Duke Vidal or offer an alliance when both participants are unallied. Duke availability, loans and custody use his separate rules.',
       'You and your ally may share territories. Divide shared desert spice by agreement; without agreement, divide as equally as possible and give the odd spice to your ally. Both factions occupying each of three qualifying strongholds provides an allied victory route.',
       'When you are allied with Fremen, sharing Sietch Tabr does not itself prevent the Fremen special victory. Its other conditions still apply.',
-      'Basic combined Occupy combat, Tleilaxu Ambassador revival, Duke loans and exceptional custody, and remaining competing arrival reactions are unfinished. The connected Sietch Tabr exception does not establish every special-victory combination.',
+      'Basic combined Occupy, the Tleilaxu Ambassador first-death leader alternative and the new-ally Duke loan now have connected first versions, with explicit provisional policies where the source is unresolved. Exceptional custody and competing arrival interactions remain for refinement; this is not complete-mode certification.',
     ],
     advanced: [
       'At Spice Collection, both allies receive the normal bank income from a jointly occupied Arrakeen, Carthag or Tuek’s Sietch. Canceling Ecaz’s Collection benefit leaves the ally’s income intact.',
@@ -186,7 +186,7 @@ export const FACTION_RULES: Record<
       'Before revealing a would-trigger token, Enemy of My Enemy may offer the entrant an alliance, except Ecaz. Acceptance replaces existing alliances and returns the token; refusal requires its revelation.',
       'When your ally loses a battle that has a winner, the ally may retain one eligible played Treachery Card that it could have kept after winning.',
       'Moritani can acquire Duke Vidal at the end of Shipment and Movement under his separate stronghold-battle and custody conditions. Inspect his guide before choosing him for a battle.',
-      'Atomics, Extortion, exceptional leader custody and full combined play remain unfinished. Public Terror descriptions do not reveal the identities of placed tokens.',
+      'All six Terror effects have bounded first-version controls, including Atomics and Extortion. Exceptional leader custody and full combined interactions remain for refinement. Public Terror descriptions never reveal the identities of placed tokens.',
     ],
     advanced: [
       'After losing a qualifying battle with no traitor called and the opposing leader surviving, you may reveal a held Traitor Card naming a different leader from that opposing faction. A living target dies and pays its printed strength from the bank; an already-dead target pays nothing.',

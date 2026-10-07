@@ -71,6 +71,12 @@ card without increasing the final hand. Owned controls label intermediate
 capacity as unresolved. One before/after smoke pays two once, uses Easy's
 private selection, retains four final cards and puts the Box on top. Types pass;
 Advanced full-hand and Guild-refund guards remain.
+**Bounded Basic faction inventory.** Read-only Ixians/Tleilaxu and Ecaz/Moritani
+mapping found no additional absent core Basic faction primitive in the examined
+paths; Advanced-only powers and deferred combinations were kept separate.
+Compact faction guides now describe connected Basic Richese/Ecaz prototypes
+and bounded Moritani effects rather than stale blanket absence. This is an
+inventory result, not comprehensive rules or complete-mode acceptance.
 
 
 
