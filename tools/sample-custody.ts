@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { leaders, treacheryDeck } from '../game/cards';
+import { createAuditorLeader, leaders, treacheryDeck } from '../game/cards';
 import type { Game } from '../game/engine';
 import { richeseCards } from '../game/richese-cards';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
@@ -29,7 +29,16 @@ export function sampleInventory(game: Game) {
       !game.moritaniAssassinatePreview
       ? null
       : traitorDeck(
-          game.players.map((player) => ({ leaders: leaders(player.faction) })),
+          game.players.map((player) => ({
+            // Advanced CHOAM adds its printed extra Auditor disc during setup, so
+            // its Traitor Card is part of the physical deck.
+            leaders: [
+              ...leaders(player.faction),
+              ...(game.advanced && player.faction === 'choam'
+                ? [createAuditorLeader()]
+                : []),
+            ],
+          })),
           game.expansions.includes('ix'),
         ).sort(),
   };

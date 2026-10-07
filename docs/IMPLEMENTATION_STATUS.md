@@ -38,6 +38,21 @@ on the five implemented rulings:
 No capture was reset, force-completed or bypassed, and no guard was weakened.
 The resumed runs are saved-position continuations, not fresh re-runs.
 
+### Fresh `combined-homeworld-nexus` run and the Auditor custody fix
+
+A fresh `--profile combined-homeworld-nexus --rules both --players all` run
+exposed a harness gap rather than a product defect: `tools/sample-custody.ts`
+built its expected Traitor deck from the printed leaders only, while Advanced
+CHOAM adds its printed extra **Auditor** disc during setup, so every fresh
+Advanced all-expansion sample failed at setup with `physical traitor custody`.
+The expectation now includes the Auditor for Advanced CHOAM seats.
+
+With that fixed the fresh run completes **2/4** (both Advanced: 6-seat winner
+ixians, 5-seat winner ecaz + ixians). The two Basic samples stop at phase 6 on
+`Odd-force Basic Occupy awaits the preserved publisher casualty-rounding
+ruling` — the same third-party question listed above, not the implemented
+rulings. `tests/sample-custody.test.ts` (11 cases) still passes.
+
 ## 7 October 2026 — five pending user rulings implemented
 
 The user resolved five recorded rule questions; each is indexed in
