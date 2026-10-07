@@ -9,13 +9,13 @@ recovery and persistence systems where suitable.
 
 | Area | Required behavior | Stage |
 | --- | --- | --- |
-| Administrator access | Personal access keys, server-enforced owner/operator/viewer roles, persistent eight-hour sessions and individual/all-session sign-out. [Owner-only account management](ADMIN_ACCOUNTS.md) adds a paginated directory, browser-created one-time keys, role changes, disabling and fresh-key rotation/re-enable with session revocation, live authority and exact retries. A room host is not a site administrator. Failed-attempt history and further operational permissions remain. | Prototyped, partial |
+| Administrator access | Personal access keys, server-enforced owner/operator/viewer roles, persistent eight-hour sessions and individual/all-session sign-out. [Owner-only account management](ADMIN_ACCOUNTS.md) adds a paginated directory, browser-created one-time keys, role changes, disabling and fresh-key rotation/re-enable with session revocation, live authority and exact retries. A room host is not a site administrator. [Failed-attempt history](ADMIN_ATTEMPTS.md) records rejected sign-ins and role denials without storing any credential; further operational permissions remain. | Prototyped, partial |
 | Room directory | Search room codes/public player names, filter status/rules/availability, sort and paginate; show host, roster, modules, game change time, pause/join flags and bounded decision ownership. Detailed setup/shared-window ownership remains. | Prototyped |
 | Create and configure | [Create a lobby](ADMIN_ROOM_CREATION.md) with an explicitly owned new host seat, Basic/Advanced preview and initial AI configuration; invite humans and use ordinary lobby controls/voluntary host-seat handover. [Neutral lobby configuration](ADMIN_LOBBY_CONFIGURATION.md) adds rules/modules, AI seats and host assignment to an existing human without private access. Reserved human seats remain. | Prototyped, partial |
 | Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. [Archive/unarchive](ADMIN_ROOM_ARCHIVE.md) has separate directory filters and exact retries. Permanent deletion and bulk actions remain missing. | Prototyped, partial |
 | Participant support | [Participant AI](ADMIN_PARTICIPANT_AI.md) enables an existing difficulty on an eligible human seat in a paused game, retaining access/takeback and private custody. [Discussion controls](ADMIN_DISCUSSION.md) mute/unmute new sends while retaining history and gameplay. Participant removal, access revocation, assisted recovery and further replacement remain. Existing lobby controls can reassign the host. | Prototyped, partial |
 | Saved-game operations | [Owner-only room backups](ADMIN_BACKUPS.md) capture/list/download a size-limited, version-fenced room snapshot without changing play or access; import validation, safe checkpoint restore and interrupted-work diagnosis/resume remain missing. | Prototyped, partial |
-| Operations and audit | [Action history](ADMIN_ACTION_HISTORY.md) searches existing durable operations with safe settings and role-limited reasons. The owner-only [operations page](../app/admin/operations/page.tsx) samples build revision, room/seat flags, JSON syntax failures and backup/export counts without exposing game contents. [Stalled-decision diagnosis](ADMIN_STALLED_DECISIONS.md) adds a bounded, read-only sample of live rooms whose public pending interaction has been idle longest, with aggregate counters. An explicit owner action runs read-only SQLite quick/foreign-key checks and returns only pass/fail, never corrupt row details. Failed-attempt records, disk capacity and maintenance controls remain. | Prototyped, partial |
+| Operations and audit | [Action history](ADMIN_ACTION_HISTORY.md) searches existing durable operations with safe settings and role-limited reasons. The owner-only [operations page](../app/admin/operations/page.tsx) samples build revision, room/seat flags, JSON syntax failures and backup/export counts without exposing game contents. [Stalled-decision diagnosis](ADMIN_STALLED_DECISIONS.md) adds a bounded, read-only sample of live rooms whose public pending interaction has been idle longest, with aggregate counters. An explicit owner action runs read-only SQLite quick/foreign-key checks and returns only pass/fail, never corrupt row details. [Failed-attempt history](ADMIN_ATTEMPTS.md) records rejected authentication and authorization attempts with a fixed reason, the attempted role and an already-known account id — never a key, token, body or address — and exposes seven-day counters plus a bounded recent sample to the owner. Disk capacity and maintenance controls remain. | Prototyped, partial |
 
 Track each area through Missing, Prototyped, Integrated, Verified and Polished.
 As implementation begins, link its controls, server actions, persistence,
@@ -83,6 +83,14 @@ time, never a table name, row ID, private save or SQLite diagnostic text.
 The check can take time; a failed check calls for a protected snapshot and
 private diagnosis, not automatic repair. It does not prove disk capacity,
 backup recoverability or valid game rules.
+
+[Failed-attempt history](ADMIN_ATTEMPTS.md) adds **List failed attempts**: seven-day
+per-reason counters and the twenty most recent rejected administrator requests —
+malformed, unknown or disabled keys, missing, unknown, expired or revoked
+sessions, and role-denied actions. Recording is best-effort inside the rejection
+path and stores no credential; the read repeats live owner authority and
+answers `no-store`. The history is diagnostic: it never locks out, disables or
+revokes anything by itself.
 
 [Stalled-decision diagnosis](ADMIN_STALLED_DECISIONS.md) adds **List stalled
 decisions**: a bounded, read-only sample of at most ten live rooms whose public

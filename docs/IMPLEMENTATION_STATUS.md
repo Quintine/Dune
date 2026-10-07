@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 7 October 2026 — administrator failed-attempt history
+
+Rejected administrator authentication and authorization attempts are now
+recorded durably in a new additive `admin_attempts` table with a fixed reason
+(`invalid_key_format`, `unknown_or_disabled_key`, `missing_session`,
+`unknown_or_expired_session`, `role_denied`), the attempt kind, the attempted
+role and an already-known account id. No key, key hash, session token, session
+hash, request body, origin, address or user agent is stored, and the
+unknown/disabled distinction is deliberately collapsed so the lookup cannot
+become an account-enumeration oracle.
+
+`GET /api/admin/operations?attempts=1` returns seven-day per-reason counters
+plus the twenty most recent attempts, newest first, to a live owner only, with
+`no-store` and the same query guard as the other reads. The operations page adds
+**List failed attempts** with the counters and the bounded sample, truncating
+each account id to eight characters. Recording is best-effort inside the
+rejection path, so a rejected request keeps its own answer even when the table
+is unavailable; the history never locks out, disables or revokes anything by
+itself.
+
+Evidence: `tests/admin-attempts.test.ts` asserts every recorded reason, the
+kind/role/account fields, that successful sign-ins and privileged reads record
+nothing, that no credential text appears anywhere in the page, the reporting
+window, the twenty-row bound and owner-only recheck after demotion, and that a
+dropped attempts table leaves the original rejection answer unchanged. The
+anonymous HTTP boundary also denies `?attempts=1`. The shared `AdminError` moved
+to `db/admin-error.ts` so the recorder and the access module no longer form a
+value-import cycle. No game, seat, saved state or deployment changes.
+
 ## 7 October 2026 — Sneak Attack composes the Bene Gesserit arrival reactions
 
 A positive Moritani Sneak Attack now resolves its committed Terror entry first

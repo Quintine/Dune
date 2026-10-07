@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ClientRequestError, requestJson } from '@/lib/client-request';
+import type { AdminAttempt, AdminAttemptReason } from '@/db/admin-attempts';
 import type { AdminIntegrity, AdminOperations, AdminStalledDecision } from '@/db/admin-operations';
 import '../admin.css';
 import './operations.css';
@@ -10,6 +11,20 @@ import './operations.css';
 type Account = { id: string; role: 'owner' | 'operator' | 'viewer' };
 type Snapshot = AdminOperations & { revision: string };
 type Stalled = { observedAt: number; stallMs: number; stalled: AdminStalledDecision[] };
+type Attempts = {
+  observedAt: number;
+  windowMs: number;
+  total: number;
+  byReason: { reason: AdminAttemptReason; count: number }[];
+  recent: AdminAttempt[];
+};
+const ATTEMPT_LABELS: Record<AdminAttemptReason, string> = {
+  invalid_key_format: 'Malformed access key',
+  unknown_or_disabled_key: 'Unknown or disabled access key',
+  missing_session: 'Missing or malformed session',
+  unknown_or_expired_session: 'Unknown, expired or revoked session',
+  role_denied: 'Role does not permit the action',
+};
 const message = (error: unknown) => error instanceof Error ? error.message : 'Operational status is unavailable.';
 const idle = (idleMs: number) => `${Math.floor(idleMs / 3_600_000)}h ${Math.floor(idleMs % 3_600_000 / 60_000)}m`;
 
@@ -26,6 +41,10 @@ export default function OperationsPage() {
   const [stalledNotice, setStalledNotice] = useState('');
   const [loadingStalled, setLoadingStalled] = useState(false);
   const stalledEpoch = useRef(0);
+  const [attempts, setAttempts] = useState<Attempts | null>(null);
+  const [attemptsNotice, setAttemptsNotice] = useState('');
+  const [loadingAttempts, setLoadingAttempts] = useState(false);
+  const attemptsEpoch = useRef(0);
   useEffect(() => {
     let canceled = false;
     const epoch = integrityEpoch;
@@ -89,11 +108,34 @@ export default function OperationsPage() {
     }
   }
 
+  async function checkAttempts() {
+    const epoch = ++attemptsEpoch.current;
+    setLoadingAttempts(true);
+    setAttempts(null);
+    setAttemptsNotice('');
+    try {
+      const { admin } = await requestJson<{ admin: Account }>('/api/admin/session', { cache: 'no-store' });
+      if (admin.role !== 'owner') throw new Error('Operations are available only to an owner.');
+      const result = await requestJson<Attempts>('/api/admin/operations?attempts=1', {
+        cache: 'no-store', headers: { 'X-Dune-Admin-Id': admin.id },
+      });
+      if (epoch === attemptsEpoch.current) setAttempts(result);
+    } catch (error) {
+      if (epoch === attemptsEpoch.current)
+        setAttemptsNotice(error instanceof ClientRequestError && [401, 403].includes(error.status ?? 0)
+          ? 'Owner access changed or expired. Sign in to administration again.' : message(error));
+    } finally {
+      if (epoch === attemptsEpoch.current) setLoadingAttempts(false);
+    }
+  }
+
   return <main className="admin-shell">
     <header className="admin-header"><div><a className="admin-return" href="/admin">Administration</a><h1>Operations</h1></div>
       <Button variant="outline" disabled={loading} onClick={() => {
         integrityEpoch.current++;
         stalledEpoch.current++;
+        attemptsEpoch.current++;
+        setAttempts(null); setAttemptsNotice(''); setLoadingAttempts(false);
         setIntegrity(null); setIntegrityNotice(''); setChecking(false);
         setStalled(null); setStalledNotice(''); setLoadingStalled(false);
         setSnapshot(null); setLoading(true); setRefresh(value => value + 1);
@@ -138,6 +180,28 @@ export default function OperationsPage() {
             </tr>)}</tbody>
           </table>}
         <p>This sample changes nothing. Pause, resume, close or remove a room only through its own controls and audit.</p>
+      </section>}
+      <Button variant="outline" disabled={loadingAttempts} onClick={() => void checkAttempts()}>List failed attempts</Button>
+      <p>Read-only counters and the twenty most recent rejected administrator requests. Only a fixed reason, the attempted role and an already-known account id are stored: never a key, session token, request body or address.</p>
+      {loadingAttempts && <output>Sampling rejected requests…</output>}
+      {attemptsNotice && <p role="alert" className="admin-notice">{attemptsNotice}</p>}
+      {attempts && <section aria-label="Failed administrator attempts">
+        <p>Sampled {new Date(attempts.observedAt).toLocaleString()}; counters cover the last {Math.round(attempts.windowMs / 86_400_000)} days ({attempts.total} rejected requests).</p>
+        {attempts.byReason.length === 0 ? <p>No rejected administrator request was recorded in the window.</p>
+          : <ul>{attempts.byReason.map(row => <li key={row.reason}>{ATTEMPT_LABELS[row.reason]}: <strong>{row.count}</strong></li>)}</ul>}
+        {attempts.recent.length === 0 ? null
+          : <table className="admin-stalled-table">
+            <caption>Most recent rejected requests, newest first</caption>
+            <thead><tr><th scope="col">When</th><th scope="col">Kind</th><th scope="col">Reason</th><th scope="col">Role</th><th scope="col">Account</th></tr></thead>
+            <tbody>{attempts.recent.map((row, index) => <tr key={`${row.createdAt}-${index}`}>
+              <td>{new Date(row.createdAt).toLocaleString()}</td>
+              <td>{row.kind}</td>
+              <td>{ATTEMPT_LABELS[row.reason]}</td>
+              <td>{row.role ?? '—'}</td>
+              <td>{row.accountId ? `${row.accountId.slice(0, 8)}…` : '—'}</td>
+            </tr>)}</tbody>
+          </table>}
+        <p>This sample changes nothing and identifies no credential. Use it to notice repeated failures, not to lock out a seat or account automatically.</p>
       </section>}
       <Button variant="outline" disabled={checking} onClick={() => void checkIntegrity()}>Run integrity check</Button>
       <p>This manual, read-only SQLite quick check and foreign-key check may take time. It reports pass/fail only: not disk capacity, backup recoverability or game-rule validity.</p>

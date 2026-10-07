@@ -148,6 +148,13 @@
       "when": 1790682568002,
       "tag": "0020_admin_key_rotation",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1791359663204,
+      "tag": "0021_wealthy_thunderbird",
+      "breakpoints": true
     }
   ]
 }

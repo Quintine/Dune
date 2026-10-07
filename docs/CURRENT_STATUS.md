@@ -74,6 +74,15 @@ eligibility and Tleilaxu income repeat scope stay gated exactly as recorded in
 [TLEILAXU_AMBASSADOR_RULES.md](TLEILAXU_AMBASSADOR_RULES.md#implementation-decision-boundary);
 no ordinary revival allowance, price, phase or income path changed.
 
+**In progress — administrator failed-attempt history.** Rejected administrator
+authentication and authorization attempts are now recorded durably with a fixed
+reason, the attempted role and an already-known account id — never a key, token,
+body or address — and the owner-only operations page lists seven-day per-reason
+counters plus the twenty most recent entries. Recording is best-effort inside
+the rejection path, so a rejected request keeps its own answer, and the history
+never locks out, disables or revokes anything by itself. See
+[ADMIN_ATTEMPTS.md](ADMIN_ATTEMPTS.md).
+
 **In progress — administrator operations.** The owner-only operations page now
 also diagnoses [stalled decisions](ADMIN_STALLED_DECISIONS.md): a bounded,
 read-only sample of at most ten live rooms whose public pending interaction — a
@@ -82,7 +91,7 @@ decision, response, Truthtrance or phase opening — has been idle longest, plus
 Paused, closed, removed and archived rooms are excluded and no private game
 content is selected; `GET /api/admin/operations?stalled=1` stays owner-only,
 `no-store` and read-only, and it repairs nothing. Failed-attempt records, disk
-capacity and maintenance controls remain.
+Disk capacity and maintenance controls remain.
 
 
 **Mixed E1/E2 and paired E3 Nexus — bounded Development Verified.**

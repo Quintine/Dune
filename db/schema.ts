@@ -557,3 +557,29 @@ export const adminRoomBackupDownloads = sqliteTable(
   },
   (table) => [index('admin_room_backup_downloads_room').on(table.roomCode, table.createdAt)],
 );
+
+// Rejected administrator authentication and authorization attempts. Secret-free:
+// only a fixed reason code, the attempted role and an already-known account id.
+export const adminAttempts = sqliteTable(
+  'admin_attempts',
+  {
+    id: text('id').primaryKey(),
+    createdAt: integer('created_at').notNull(),
+    kind: text('kind').notNull(),
+    reason: text('reason').notNull(),
+    role: text('role'),
+    accountId: text('account_id'),
+  },
+  (table) => [
+    index('admin_attempts_created').on(table.createdAt),
+    check('admin_attempts_kind', sql`${table.kind} IN ('login','session','role')`),
+    check(
+      'admin_attempts_reason',
+      sql`${table.reason} IN ('invalid_key_format','unknown_or_disabled_key','missing_session','unknown_or_expired_session','role_denied')`,
+    ),
+    check(
+      'admin_attempts_role',
+      sql`${table.role} IS NULL OR ${table.role} IN ('owner','operator','viewer')`,
+    ),
+  ],
+);

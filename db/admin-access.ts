@@ -1,3 +1,6 @@
+import { AdminError } from './admin-error';
+import { recordAdminAttempt } from './admin-attempts';
+
 export type AdminRole = 'owner' | 'operator' | 'viewer';
 export type AdminAccount = { id: string; name: string; role: AdminRole };
 export type AdminIdentity = AdminAccount & { sessionHash: string };
@@ -9,15 +12,7 @@ const UUID =
 const KEY_PATTERN = new RegExp(`^dune-admin\\.(${UUID})\\.[0-9a-f]{64}$`);
 const TOKEN_PATTERN = /^[0-9a-f]{64}$/;
 
-export class AdminError extends Error {
-  constructor(
-    message: string,
-    readonly status: number,
-  ) {
-    super(message);
-    this.name = 'AdminError';
-  }
-}
+export { AdminError };
 
 function isRole(value: string): value is AdminRole {
   return value === 'owner' || value === 'operator' || value === 'viewer';
@@ -54,9 +49,15 @@ export async function adminLogin(
 }> {
   const invalid = () =>
     new AdminError('Administrator access key is invalid or revoked.', 401);
-  if (typeof key !== 'string') throw invalid();
+  if (typeof key !== 'string') {
+    await recordAdminAttempt(database, { kind: 'login', reason: 'invalid_key_format' }, now);
+    throw invalid();
+  }
   const match = KEY_PATTERN.exec(key);
-  if (!match || match[0] !== key) throw invalid();
+  if (!match || match[0] !== key) {
+    await recordAdminAttempt(database, { kind: 'login', reason: 'invalid_key_format' }, now);
+    throw invalid();
+  }
   const keyHash = await hash(key);
   const account = await database
     .prepare(
@@ -64,7 +65,12 @@ export async function adminLogin(
     )
     .bind(match[1], keyHash)
     .first<AdminAccount & { session_generation: number }>();
-  if (!account || !isRole(account.role)) throw invalid();
+  if (!account || !isRole(account.role)) {
+    // The lookup cannot distinguish an unknown key from a disabled account
+    // without becoming an account-enumeration oracle, so both share one reason.
+    await recordAdminAttempt(database, { kind: 'login', reason: 'unknown_or_disabled_key' }, now);
+    throw invalid();
+  }
 
   const token = sessionToken();
   const tokenHash = await hash(token);
@@ -95,7 +101,14 @@ export async function adminLogin(
       )
       .bind(crypto.randomUUID(), now, JSON.stringify({ sessionId }), tokenHash),
   ]);
-  if (results[0].meta.changes !== 1) throw invalid();
+  if (results[0].meta.changes !== 1) {
+    await recordAdminAttempt(
+      database,
+      { kind: 'login', reason: 'unknown_or_disabled_key', accountId: account.id },
+      now,
+    );
+    throw invalid();
+  }
   // Return current role/name, and fail if revocation committed after creation.
   const { id, name, role } = await requireAdmin(
     database,
@@ -117,8 +130,10 @@ export async function requireAdmin(
     typeof token !== 'string' ||
     token.length !== 64 ||
     !TOKEN_PATTERN.test(token)
-  )
+  ) {
+    await recordAdminAttempt(database, { kind: 'session', reason: 'missing_session' }, now);
     throw signInRequired();
+  }
   const sessionHash = await hash(token);
   const account = await database
     .prepare(
@@ -129,12 +144,25 @@ export async function requireAdmin(
     )
     .bind(sessionHash, now)
     .first<AdminAccount>();
-  if (!account || !isRole(account.role)) throw signInRequired();
-  if (roles && !roles.includes(account.role))
+  if (!account || !isRole(account.role)) {
+    await recordAdminAttempt(
+      database,
+      { kind: 'session', reason: 'unknown_or_expired_session' },
+      now,
+    );
+    throw signInRequired();
+  }
+  if (roles && !roles.includes(account.role)) {
+    await recordAdminAttempt(
+      database,
+      { kind: 'role', reason: 'role_denied', role: account.role, accountId: account.id },
+      now,
+    );
     throw new AdminError(
       'Your administrator role does not permit this action.',
       403,
     );
+  }
   return {
     id: account.id,
     name: account.name,
