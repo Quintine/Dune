@@ -17,6 +17,30 @@ open mode gates.
 
 ## Current checkpoint and work
 
+**Mixed E1/E2 and paired E3 Nexus — source-qualified prototype checkpoint.**
+Original both-family Ix+CHOAM/union47 or both Ecaz+Moritani/ecaz33/classic
+entries preserve Skills or no Skills, original Homeworld/Discovery/Tech3+/
+Advanced Strongholds2+.312 original admissions reach setup versus four
+before; actual Ix pre-training offers and ordinary native setup remain.
+New31 physical programmes plus two Loyalty-stock regressions and the
+final489/489 affected checks across42 files pass with types/lint/build.
+Native Ecaz assassination, separately held physical Loyalty
+stock and exact paired original overlap admission repair real consumer
+omissions, without new printed rulings or public activation.
+
+Across64 original six-seat families,258/288 finish338,931accepted/
+339,426attempted/9,013JSON across three frozen trees and preserved-prefix
+continuations. Every original/continuation source receipt and all30
+remaining source-guard traces are read. This is not288 uninterrupted passes.
+Actual390px original native human setup/offers, Maker/both piles and card
+draws, typed paid Ixian visitor/free Suboid plan and Ecaz foreign arrival/
+separate living Duke preserve20 counters in **3AVHJN76 v765** and
+**PSDLV4FJ v121**. Losing Ixians receive no winner-only Suk rescue; no missed
+human nested entry or Moritani reveal is invented. The final union and
+compiled bundle and actual390px guide pass; checkpoint push/exact CI follow.
+Protected deployment and complete modes remain gated.
+[Canonical qualified evidence](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
+
 **Single-native E1/E2 Nexus — bounded Development Verified.** Original Ixians OR
 Tleilaxu OR CHOAM OR Richese/classic entries compose Nexus with Skills or no
 Skills, optional Homeworld/Discovery/Tech3+/Advanced Strongholds2+ and one

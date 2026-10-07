@@ -158,6 +158,7 @@ export function verifySampleCustody(
     assert.deepEqual(
       [
         ...(game.traitorReserve ?? []),
+        ...(game.ecazLoyalty?.card ? [game.ecazLoyalty.card] : []),
         ...game.players.flatMap((player) => [
           ...player.traitors, ...(player.faceDancers ?? []).map(card => card.leader),
         ]),

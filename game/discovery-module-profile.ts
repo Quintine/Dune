@@ -16,7 +16,8 @@ export function homeworldDiscoveryProfile(game: FactionModuleProfile): boolean {
 
 /** The same roster/module contract during play; live Discovery frames are expected. */
 export function discoveryModeSupported(game: FactionModuleProfile): boolean {
-  if (game.nexusCards) return standaloneE3DiscoveryNexusProfile(game) || singleE1E2DiscoveryNexusProfile(game);
+  if (game.nexusCards) return standaloneE3DiscoveryNexusProfile(game) || singleE1E2DiscoveryNexusProfile(game) ||
+    mixedE1E2DiscoveryNexusProfile(game) || pairedE3DiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) || game.expansions.length > 2 ||
@@ -180,4 +181,58 @@ export function singleE1E2DiscoveryNexusProfile(game: FactionModuleProfile): boo
     if (family === expansion) native++;
   }
   return native === 1;
+}
+
+/** Original natives from both selected E1/E2 families with Nexus/Discovery and no Skills. */
+export function mixedE1E2DiscoveryNexusProfile(game: FactionModuleProfile): boolean {
+  if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
+    !game.nexusCards || game.expansions.length !== 2 ||
+    !game.expansions.includes('ix') || !game.expansions.includes('choam') ||
+    game.players.length < 2 || game.players.length > 6 ||
+    (game.techTokens && game.players.length < 3) ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills ||
+    game.ecazTreachery || game.semutaPreview || game.advancedPreview || game.kullPreview ||
+    game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  let ix = false, choam = false;
+  for (let i = 0; i < game.players.length; i++) {
+    const player = game.players[i];
+    for (let j = 0; j < i; j++) if (player.faction === game.players[j].faction) return false;
+    let family: string | undefined;
+    for (const faction of FACTIONS)
+      if (faction.id === player.faction) { family = faction.expansion; break; }
+    if (family !== 'base' && family !== 'ix' && family !== 'choam') return false;
+    if (family === 'ix') ix = true;
+    if (family === 'choam') choam = true;
+  }
+  return ix && choam;
+}
+
+/** Both original E3 natives with Nexus/Discovery and no Skills; Advanced capture exclusion remains. */
+export function pairedE3DiscoveryNexusProfile(game: FactionModuleProfile): boolean {
+  if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
+    !game.nexusCards || game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
+    game.players.length < 2 || game.players.length > 6 ||
+    (game.techTokens && game.players.length < 3) ||
+    (game.strongholdCards && !game.advanced) || game.leaderSkills ||
+    game.ecazTreachery || game.semutaPreview || game.advancedPreview || game.kullPreview ||
+    game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
+    game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
+    game.nexusHarkonnenBetrayalPreview) return false;
+  let ecaz = false, moritani = false;
+  for (let i = 0; i < game.players.length; i++) {
+    const player = game.players[i];
+    for (let j = 0; j < i; j++) if (player.faction === game.players[j].faction) return false;
+    if (player.faction === 'ecaz') ecaz = true;
+    else if (player.faction === 'moritani') moritani = true;
+    else {
+      if (game.advanced && player.faction === 'harkonnen') return false;
+      let classic = false;
+      for (const faction of FACTIONS)
+        if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }
+      if (!classic) return false;
+    }
+  }
+  return ecaz && moritani;
 }

@@ -5,6 +5,26 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
+
+The original all14/Nexus entry now composes natives from both selected
+Ix+CHOAM families/union47 or both Ecaz+Moritani/ecaz33 with classics and
+optional original Homeworlds/Discovery7/8/Tech3+/Advanced Strongholds2+.
+Native offers, ordinary discs, Auditor/shared-Duke exclusions and physical
+payments/rescue/rewards remain. The exact new bare-Nexus profiles feed
+the existing Bureaucrat payment consumer; two real five-spice bribes
+redirect two to the bank once, not owner income or a payer refund.
+
+New31 physical programmes plus two separate-Loyalty stock regressions,
+the final489/489 affected checks across42 files pass with types/lint/build.
+Original64-family play completes258/288 across **three** frozen trees and
+preserved continuations;30 source-guard captures remain. Actual original
+human Ixian offer/hidden trained plan, paid typed visitor shipment and
+native free Suboid support preserve20 counters. Its actual loss is not
+a winner-only Suk rescue; the winning programmes prove those outcomes.
+[Canonical source and runtime qualifications](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
+Complete rules, public starts, full AI and comprehensive assurance remain open.
+
 ## Single-native E1/E2 Nexus composition — 7 October 2026
 
 Original `leader-skills --nexus-cards` now admits exactly one native Ixians

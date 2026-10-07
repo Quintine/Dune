@@ -127,6 +127,46 @@ export function standaloneE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): 
     (native === 'moritani' || !game.moritaniAssassinatePreview);
 }
 
+/** Original E1/E2 natives from both selected families with classics and Nexus. */
+export function mixedE1E2NexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.expansions.length !== 2 || !game.expansions.includes('ix') ||
+    !game.expansions.includes('choam') || !nexusLeaderSkillModulesSupported(game, false, true)) return false;
+  const players = game.players!;
+  let ix = false, choam = false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let family: string | undefined;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction) { family = faction.expansion; break; }
+    if (family !== 'base' && family !== 'ix' && family !== 'choam') return false;
+    if (family === 'ix') ix = true;
+    if (family === 'choam') choam = true;
+  }
+  return ix && choam;
+}
+
+/** Both original E3 natives and classic opponents; the shared Duke is never a training disc. */
+export function pairedE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.expansions.length !== 1 || game.expansions[0] !== 'ecaz' ||
+    !nexusLeaderSkillModulesSupported(game, game.advanced === true, true)) return false;
+  const players = game.players!;
+  let ecaz = false, moritani = false;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    const player = players[i];
+    if (player.faction === 'ecaz') ecaz = true;
+    else if (player.faction === 'moritani') moritani = true;
+    else {
+      if (game.advanced && player.faction === 'harkonnen') return false;
+      let classic = false;
+      for (const faction of FACTIONS)
+        if (faction.id === player.faction) { classic = faction.expansion === 'base'; break; }
+      if (!classic) return false;
+    }
+  }
+  return ecaz && moritani;
+}
+
 /** Discovery keeps original native roster predicates; only this module envelope
  * differs. Live token/entry/Great Maker frames are original consumers. */
 function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
@@ -150,7 +190,7 @@ function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
 function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
   if (noOtherLeaderSkillModules(game) || pairedNexusLeaderSkillsProfile(game) ||
-    singleE1E2NexusLeaderSkillsProfile(game)) return true;
+    singleE1E2NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game)) return true;
   if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
@@ -173,7 +213,8 @@ function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
 /** Standalone E3 native predicates retain their own roster, Duke and assassination limits. */
 function e3LeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
-  if (noOtherLeaderSkillModules(game) || standaloneE3NexusLeaderSkillsProfile(game)) return true;
+  if (noOtherLeaderSkillModules(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
+    pairedE3NexusLeaderSkillsProfile(game)) return true;
   if (game.discoveryEnabled || game.discoveries) return discoveryLeaderSkillModulesSupported(game);
   const players = game.players;
   if ((!game.techTokens && !game.strongholdCards) || !players ||
@@ -384,7 +425,8 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
 }
 
 export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game) ||
+  return mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
+    basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game) ||
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
 }
 
@@ -405,6 +447,7 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
     !players || players.length < 2 || players.length > 6 ||
     (game.nexusCards && !classicNexusLeaderSkillsProfile(game) &&
       !pairedNexusLeaderSkillsProfile(game) && !singleE1E2NexusLeaderSkillsProfile(game) &&
+      !mixedE1E2NexusLeaderSkillsProfile(game) && !pairedE3NexusLeaderSkillsProfile(game) &&
       !standaloneE3NexusLeaderSkillsProfile(game)) ||
     (game.discoveryEnabled !== true && (game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker)) ||
     (game.techTokens && players.length < 3) || (game.strongholdCards && !game.advanced) ||
@@ -442,6 +485,7 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
     singleE1E2NexusLeaderSkillsProfile(game) ||
+    mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
     pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
     classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game) ||
     homeworldLeaderSkillsProfile(game);

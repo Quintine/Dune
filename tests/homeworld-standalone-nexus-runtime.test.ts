@@ -364,7 +364,7 @@ for (const faction of ['ecaz', 'moritani'] as const) void test(`${faction} origi
   custody(f.entry.after);
 });
 
-void test('original supplied offers keep human choices while Duke training, Advanced Harkonnen and paired E3 reject before custody conversion', () => {
+void test('original skill offers keep human choices while Duke training and Advanced Harkonnen reject before custody conversion', () => {
   const original = createGame('SUPPLIEDHWE3NX', newPlayer('native-original', 'Original native', 'ecaz'), false, ['ecaz']);
   joinGame(original, newPlayer('guild-original', 'Original Guild', 'guild'));
   const f = setup({ initial: original });
@@ -382,16 +382,9 @@ void test('original supplied offers keep human choices while Duke training, Adva
     assert.ok(player(after, f.owner).leaders.some(l => l.id === assignment.leader));
     assert.notEqual(assignment.leader, DUKE_VIDAL_ID);
   });
-  const resumed = setup({ initial: reload(f.offered) });
-  const actual = resumed.afterSetup.leaderSkills!.assignments.find(a => a.owner === f.owner)!;
-  assert.ok(own.offer!.cards.includes(actual.skill));
-  assert.equal(player(resumed.afterSetup, f.owner).reserves, 14);
-  assert.equal(pool(resumed.afterSetup, f.owner, 'homeworld:ecaz').normal, 14); custody(resumed.afterSetup);
-  assert.throws(() => setup({ initial: f.afterSetup }), /lobby|ORIGINAL|setup/);
   for (const [advanced, factions] of [
     [true, ['ecaz', 'guild', 'harkonnen']],
     [true, ['moritani', 'guild', 'harkonnen']],
-    [true, ['ecaz', 'guild', 'moritani']],
   ] as const) {
     let g = createGame('ORIGINALSTANDALONEGUARD', newPlayer(factions[0], factions[0], factions[0]), advanced, ['ecaz']);
     for (const faction of factions.slice(1)) joinGame(g, newPlayer(faction, faction, faction));

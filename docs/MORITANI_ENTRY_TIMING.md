@@ -23,6 +23,33 @@ Both optional trigger opportunities belong to the **same already committed entry
 
 This bounded path excludes competing BG fighter Intrusion, Guild income/advisor and CHOAM prevention windows, Homeworlds, Nexus, Discoveries, Leader Skills and the still-unfinished Atomics effect. Fremen relocation or Guild free-shipment Ambassador effects can create nested arrivals before the second owner; they remain declineable but cannot be activated in this overlap until their child continuation is integrated. These guards are development boundaries, not physical-game prohibitions.
 
+## Paired native Nexus composition — 7 October 2026
+
+The existing selected storm-order interpretation now also composes the
+**exact original paired Ecaz/Moritani Nexus profiles**, without Skills or
+with all14, optionally original Homeworlds/Discovery/Tech/Advanced Strongholds.
+This extends a software envelope, not publisher authority or the pending
+priority questions. Original competing live reactions, Atomics and
+unsupported child-effect guards remain.
+
+An original six-seat Advanced Discovery/Nexus/Tech continuation reaches
+turn9 after its original Intrusion decline and Guild income are finished.
+BG's accompanying free counter joins **two existing fighters**, not an
+exempt advisor group, in Habbanya Ridge Sietch. Both native markers qualify.
+The old classic-only overlap predicate rejects the original advisor
+allowance. Both exact paired profiles now reuse the same serialized
+original entrant, amount, token identity and storm order. All four saved
+policies finish Ecaz decline then Moritani Terror reveal: fighters2→3,
+one reserve withdrawn, BG purse unchanged. No original paid shipment,
+force transfer, Intrusion or income replays.
+
+The exact original seed20291514 capture finishes221/221 actions and five
+JSON after that original prefix; its source and input SHA remain recorded
+in the [canonical qualified proof](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
+This does not merge an advisor's separate arrival into the parent's
+reaction, make advisors eligible for Ambassadors, or claim a universal
+optional-module priority order.
+
 ## Atomics and later allies
 
 The current official indexed p. 5 still says: “From this turn forward, your hand limit is reduced by 1 (as well as your ally’s)”. It does not specify how a later alliance change affects either former or new allies. Both a continuing current-ally modifier and a detonation-time recipient remain interpretations. No targeted clarification was found. [GF9 E3, p. 5](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=5)

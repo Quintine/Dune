@@ -5,6 +5,25 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
+
+Original native Nx/Discovery now admits both selected Ix+CHOAM families
+with union47, or both Ecaz+Moritani with ecaz33/classics, optionally all14
+Skills/Homeworlds/Tech3+/Advanced Strongholds2+. Discovery7/8, original
+parent/nested force sources, actual Maker votes/both-pile progression and
+alliance-change closing deals remain. Ordinary visitors are not native
+world forces, and held Stronghold effects do not migrate into nested sites.
+
+31 original physical programmes plus two Loyalty-stock regressions,
+final489/489 checks across42 files and qualified258/288 original games
+span three frozen trees and preserved continuations. All30 remaining
+source-guard traces are read. Human original supply produces Cistern and
+Testing Station without a chosen token face; actual all-four Maker votes
+and both-pile native card draws are observed. No human free/nested entry
+or winning Suk is invented where its traversal missed that opportunity.
+[Canonical precise source/game/human evidence](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
+Complete combinations, pending printed rulings and public starts remain open.
+
 ## Single-native E1/E2 Nexus composition — 7 October 2026
 
 Original single-native Ixians OR Tleilaxu/Ix47, or CHOAM OR

@@ -20,6 +20,7 @@ import {
   stageAssassinationBattle,
 } from './moritani-assassinate-fixture';
 import { createStrongholdFactionsFixture } from './fixture-stronghold-factions';
+import { createPairedE3NexusSetup } from './fixture-paired-e3-nexus-modules';
 
 void test('Moritani Skills sample custody checks the physical skill and Traitor inventories after genuine setup', () => {
   const game = completedMoritaniSkillsGame();
@@ -35,6 +36,22 @@ void test('Moritani Skills sample custody checks the physical skill and Traitor 
   const traitors = structuredClone(game);
   traitors.players[0].traitors[0] = traitors.players[1].traitors[0];
   assert.throws(() => verifySampleCustody(traitors, inventory), /traitor custody/);
+});
+
+for (const skills of [false, true]) void test(`paired native Ecaz loyalty remains one physical Traitor with ${skills ? 'all14 Skills' : 'no Skills'}`, () => {
+  const fixture = createPairedE3NexusSetup({ skills, homeworlds: false, discovery: false, tech: false, strongholds: false });
+  const inventory = sampleInventory(fixture.offered);
+  verifySampleCustody(fixture.afterSetup, inventory);
+  const loyaltyCard = fixture.afterSetup.ecazLoyalty?.card;
+  assert.ok(loyaltyCard);
+
+  const missing = structuredClone(fixture.afterSetup);
+  delete missing.ecazLoyalty;
+  assert.throws(() => verifySampleCustody(missing, inventory));
+
+  const duplicated = structuredClone(fixture.afterSetup);
+  duplicated.traitorReserve!.push(loyaltyCard);
+  assert.throws(() => verifySampleCustody(duplicated, inventory));
 });
 
 void test('Moritani assassination samples conserve retired Traitors after real battle and Mentat replacement', () => {

@@ -2,6 +2,153 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
+
+The original private Nexus/Skills entries now admit native factions from
+**both** selected Ix+CHOAM families with classics, union47 Treachery Cards
+and the separate native Richese cache10, or **both** Ecaz+Moritani with
+classics/ecaz33. All12 Nexus remain, with all14 Skills only when selected.
+Basic/Advanced2–6 may retain Homeworlds, Discovery7/8, Tech3+ and Advanced
+Strongholds2+; both industry/Strongholds requires Advanced3+. Paired E3
+retains the original Advanced Harkonnen capture exclusion, but does not
+invent a Basic Harkonnen restriction.
+
+Existing setup, first cards/offers, ordinary training, native HMS/Face
+Dancers/Auditor/cache and E3 Ambassadors/Terror/shared Duke are reused.
+Fresh paired E3 marks original Arrakis Occupy and Advanced assassination;
+the shared Duke never becomes a training disc. Original same-source
+rescue/exchange, paid support, holder-only effects and cleanup/winner
+Tech/Face Dance timing remain. No initializer, shipment/return adapter,
+public start or played-save conversion is added.
+
+Original312 fresh admissions reach real setup, versus four before;
+Ixian all14 still begins with its real pre-training offer. The31 new
+physical programmes plus two physical-loyalty regressions retain eight
+original assassination quotes and the original overlap cases.
+The final affected union passes489/489 across42 files, with types/lint
+and the compiled application passing.
+Representative programmes cover bare-Nexus Smuggler,
+Basic mixed families, original native/visitor/nested Suk and residual
+Cyborg exchange, original matching Face Dance, signed Richese5+3 and
+delayed CHOAM actual support, native coalition/selected Warmaster,
+quiet Duke, assassination/replacement, supply Cunning/Terror and Basic
+odd-force rejection.
+
+One real original consumer gap is repaired: Moritani's trigger/receipt
+opponent list retained only classic factions after paired Ecaz admission.
+The printed ability permits a different ordinary opposing-faction disc
+once per faction; this was a software scope limit, not a printed Ecaz ban.
+Actual original no-Skills/all14 losses to native Ecaz reject assassination
+before, then kill a different original disc for printed bounty and one
+actual Mentat replacement after the shared list gains Ecaz. The unused
+winning-disc, normal-call forfeiture, shared/captured/Ghola and Advanced
+Harkonnen boundaries are not weakened.
+[Canonical native source](MORITANI_ASSASSINATE_LEADERS.md#authority-and-advanced-duration-cutover).
+
+Foreign Homeworlds exclude a visitor's **normal** Traitor call, not this
+separate native assassination. The original no-Skills receipt pauses
+before winner casualties; all14 finishes casualties/Suk first. Both retain
+and resume the original winner suffix. Quiet face-up normal Suk and
+behind-shield selected training are actual distinct legal choices, not
+interchangeable prompt defaults. Sietch Tabr victory income is the opposing
+dial's floor; Tuek's Worthless income is a different effect.
+
+An original bare mixed all14 Bureaucrat runtime smoke pays two actual
+five-spice bribes: payer10→0, recipient shield escrow0→8, two redirected
+to the bank once this phase, owner purse unchanged. No payer rebate,
+invented native income or duplicate phase use is introduced.
+
+The64 runner families are `mixed-nexus`, `mixed-discovery-nexus`,
+`mixed-homeworld-nexus`, `mixed-homeworld-nexus-discovery` and their
+`paired-e3-` counterparts, each optionally `-skills`, then `-tech`,
+`-stronghold` or `-stronghold-tech`. Stable17400–23700 bands leave prior
+names/seeds unchanged. Actual family/deck/full-roster names distinguish
+all four cross-native pairs and the four-native mixed roster; paired E3
+uses its original paired initializer. Resume requires exact components
+and original Ecaz/Moritani marks.
+
+Original64 families run288 six-seat Basic/Advanced samples at seed20270007.
+The first unchanged `95582a34d0fe3f006952783d0636129455d94275208aa7aaad14e176e637e0c0`
+tree completes226, with313,954 accepted/314,143 attempted/8,351 JSON.
+All64 before/after receipts are read. Thirty-two paired Advanced samples
+stop at original setup because the CLI's fixed physical stock check omitted
+Ecaz's separately held Loyalty card, not because the engine lost that card.
+The verifier now counts the actual non-null card; two original no-Skills/
+all14 regressions reject its deletion or duplication instead of weakening
+the stock assertion.
+
+All32 original post-setup captures resume at their **same scenario seeds**,
+without replaying their setup. The unchanged
+`df0acb2918b144f5bc92992ca2ee77e436ee4848ec8d117089c154e5993dc590`
+tree completes31 with24,756/25,062 actions and657 JSON. Every receipt and
+input SHA is read. The remaining actual turn9 advisor response joins two
+existing BG fighters and then reaches both native markers; its classic-only
+overlap predicate omitted these exact paired Nexus envelopes. It is not an
+exempt spiritual-advisor arrival. The existing selected storm-order policy
+now composes these two original paired profiles, while competing reaction
+and child-effect guards remain.
+[Exact interpretation and limits](MORITANI_ENTRY_TIMING.md#paired-native-nexus-composition--7-october-2026).
+
+All four original policies settle that actual capture into three fighters,
+with one reserve counter withdrawn and the BG purse unchanged: original
+Ecaz decline, then native Terror reveal, no repeated shipment or payment.
+Its original seed20291514 continuation finishes221/221/five JSON on unchanged
+`12f02271f9c05ce520158d1ab3969a5e88c56f1e741d21dd687950ad1ac0ca1e`,
+input SHA `f018f39e2bc9d0c59a228f85e4f265fc44df39ee894f9b7d550db23870adc271`.
+The combined258/288 with338,931 accepted/339,426 attempted/9,013 JSON is
+**three frozen trees and preserved-prefix continuations**, not288 green
+uninterrupted games or a final-document-tree certificate. All30 remaining
+actual stop traces are read:24 low-Tupile opening-income, two exhausted
+Richese caches, one first-high Homeworld revival deployment and three Basic
+odd-force Occupy guards. No guard is bypassed or rerun for confirmation.
+
+Original human **3AVHJN76 v765**, Ixians/CHOAM/Guild/Fremen, preserves HW/
+Tech/Stronghold selection through the original all14/Nexus/Discovery entry.
+The actual four-card Ix offer supplies Shield; its actual Swordmaster/Suk
+offer supplies Suk on C’tair. No trainer, hand, army or outcome is staged.
+The first two overly restrictive traversal predicates miss their windows
+and actual play continues, not a reset or clock rewrite. Its first native
+draw occurs at the real turn5 worm after a real Guild/Fremen alliance change.
+The original entirely undealt all12 packet is permuted only then.
+
+Native typed two-force/one-Cyborg Gara arrival pays four,10→6, reserves14→12
+and Cyborg reserves4→3. Later actual one-normal/one-Cyborg visitor transport
+to Junction pays two,7→5, reserves12→10/Cyborg3→2. In the original selected
+Battle, hidden C’tair's native Cunning spends Ix Nexus with purse6 unchanged;
+the actual one-force/zero-support plan keeps the free Suboid support.
+Guild's funded native plan wins, pays its original two support, and native
+CHOAM receives its printed one spice. The visitor's normal Traitor attempt
+rejects before a legal Guild no-call. **Suk is a winner-only dialed-casualty
+rescue:** this actual Ixian loss grants no rescue or substitution; the31
+programmes prove winning native/visitor/nested rescue and residual exchange.
+The final physical20 are10 native, six HMS and four Tanks; seven Cyborgs
+remain two native, three HMS and two Tanks.
+
+Original human **PSDLV4FJ v121**, both Ecaz/Moritani with Guild/Emperor,
+uses the existing no-Skills paired Nexus initializer with the same modules.
+Original five-disc Ecaz/Loyalty, native placements and Advanced assassination
+marks remain; Moritani's actual offer contains no Ecaz card and is not
+rewritten. Actual all-four Maker votes and both piles precede a real
+Guild/Emperor alliance change and the first wholly undealt packet. Native
+Ecaz ships one original reserve to Junction for one spice,12→11/res14→13,
+then human quiet Battle Cunning spends Ecaz Nexus and takes the one living,
+untrained Duke for this turn without another debit. The physical20 are13
+native, six Imperial Basin and one Junction visitor. Actual390px public
+force inspectors show20 in both rooms; the Duke inspector shows strength6,
+Ecaz control and one shared disc with no Traitor Card. Both viewport and
+document are390px. No human winning Suk, nested entry or Moritani reveal is
+invented from these observations.
+
+Real CLI two-seat mixed Skills/Tech and Basic paired Discovery/Stronghold
+requests reject with exit1 **before** creating either output directory.
+The final489/489 affected union, types/lint and compiled bundle pass.
+The actual compiled guide shows current source/roster limits and qualified
+31+2/489/258-of-288 evidence at viewport/document390px; same original
+765/121 native states are observed after the owned-only code cutover.
+Checkpoint push and exact terminal CI receipt follow. Full rules,
+recovery/privacy/custody assurance, strategic AI/calibration and protected
+deployment remain open.
+
 ## Single-native E1/E2 Nexus composition — 7 October 2026
 
 The original private `nexus` and `leader-skills --nexus-cards` entries now

@@ -1,4 +1,4 @@
-import { pairedNexusModulesProfile } from '../game/nexus-module-profile';
+import { pairedE3NexusProfile, pairedNexusModulesProfile } from '../game/nexus-module-profile';
 import type { DatabaseSync } from 'node:sqlite';
 import {
   initializeIxGameForAudit,
@@ -162,7 +162,7 @@ export function startPrototypeRoom(
       : profile === 'factions'
         ? initializeFactionExpansionsGameForAudit(initial)
         : profile === 'nexus'
-          ? pairedNexusModulesProfile(initial)
+          ? pairedNexusModulesProfile(initial) || pairedE3NexusProfile(initial)
             ? initializePairedNexusGameForAudit(initial)
             : initializeNexusGameForAudit(initial)
           : profile === 'leader-skills'

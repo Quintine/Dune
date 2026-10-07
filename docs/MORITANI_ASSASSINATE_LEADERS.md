@@ -58,6 +58,20 @@ casualties cannot replay after reveal/decline. A different eligible trained
 disc returns its physical skill once; printed bounty and original Mentat
 replacement remain. This scope is not a printed restriction on other combinations.
 
+**7 October 2026 — original paired native Nexus composition:** the exact
+Ecaz/Moritani/classic profiles, without Skills or with all14 and original
+optional modules, now admit **Ecaz as an opposing printed faction**.
+The classic-only trigger/receipt list was a software scope limit, not
+a printed prohibition. Two real original native Ecaz battle losses reject
+before, then reveal a different actual held Ecaz card, kill its original
+disc for printed bounty and replace it once at Mentat after the shared list
+gains Ecaz. Winning-disc exclusion, game-long normal-call forfeiture,
+shared/captured/Ghola and Advanced Harkonnen guards remain. A foreign
+Homeworld's normal Traitor prohibition does not prohibit this distinct
+native ability. The no-Skills receipt retains its earlier pause before
+winner casualties; all14 retains its skill-first pause afterward.
+[Canonical programme, game and human qualifications](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
+
 Every publicly qualifying loss gets the same private reveal-or-continue opportunity,
 regardless of the hidden eligible card. Only Moritani sees its candidate identities
 and blocked reason; rivals see the same decision and no private options. This

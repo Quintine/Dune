@@ -1,5 +1,28 @@
 # Dune implementation status
 
+## 7 October 2026 — Mixed E1/E2 and paired E3 Nexus
+
+Original both-family Ix+CHOAM/union47 or both Ecaz+Moritani/ecaz33 with
+classics preserves all12 Nexus, optional all14/HW/Discovery7/8/Tech3+/
+Advanced Strongholds2+ through existing initializers and consumers.
+312 original fresh admissions reach setup versus four before.
+New31 physical programmes plus two Loyalty-stock regressions and the
+final489/489 affected checks across42 files pass with types/lint/build.
+Native Ecaz assassination, omitted separate Loyalty stock and exact paired
+overlap admission repair actual captured consumer gaps. Obsolete old
+mixed/paired rejection rows are removed, not re-pinned.
+
+All64 original six-seat families finish258/288 with338,931accepted/
+339,426attempted/9,013JSON across three frozen trees and original-prefix
+continuations. All receipts and30 retained source-guard traces are read.
+Actual390px original native offers/training, Maker/both piles/card draws,
+paid typed native/visitor transport, free Suboid plan and separate living
+Duke preserve20 physical counters in3AVHJN76v765/PSDLV4FJv121.
+Human Ixian loses: no winner-only rescue or unobserved nested entry claimed.
+[Canonical source and runtime qualifications](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
+Final489/489 union, bundle and actual390px guide pass; push/exact CI follow;
+complete rules, public/deployment gates and deferred assurance remain open.
+
 ## 7 October 2026 — Single-native E1/E2 Nexus
 
 Original one-native Ixians OR Tleilaxu/Ix47, or CHOAM OR Richese/CHOAM35

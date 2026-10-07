@@ -331,12 +331,9 @@ void test('original Discovery supply, reveal and free nested entry survive the l
   physical(done);
 });
 
-void test('Advanced Harkonnen and mixed-E3 original lobbies remain inadmissible without mutating the declared source pieces', () => {
+void test('Advanced Harkonnen original lobbies remain inadmissible without mutating declared source pieces', () => {
   const native = lobby(); joinGame(native, newPlayer('harkonnen', 'Harkonnen', 'harkonnen'));
-  const mixed = lobby(); joinGame(mixed, newPlayer('ecaz', 'Ecaz', 'ecaz'));
-  for (const g of [native, mixed]) {
-    let ready = reload(g);
-    for (const p of ready.players) ready = act(ready, { actor: p.id, action: { type: 'ready' } });
-    const before = structuredClone(ready); assert.throws(() => initializeNexusGameForAudit(ready)); assert.deepEqual(ready, before);
-  }
+  let ready = reload(native);
+  for (const p of ready.players) ready = act(ready, { actor: p.id, action: { type: 'ready' } });
+  const before = structuredClone(ready); assert.throws(() => initializeNexusGameForAudit(ready)); assert.deepEqual(ready, before);
 });

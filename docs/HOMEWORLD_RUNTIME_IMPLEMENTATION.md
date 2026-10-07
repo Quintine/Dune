@@ -6,6 +6,24 @@ disabled.** It does not certify Homeworld battles, occupation, card effects or
 complete Advanced/expansion games. The earlier component checkpoint remains
 in [HOMEWORLD_IMPLEMENTATION.md](HOMEWORLD_IMPLEMENTATION.md).
 
+## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
+
+Original Homeworld/Nexus now composes natives from both selected Ix+CHOAM
+families/union47 or both Ecaz+Moritani/ecaz33 with classics, optionally
+all14 Skills/Discovery7/8/Tech3+/Advanced Strongholds2+. Original typed
+native/visitor custody, source-local winning rescue/residual substitution,
+shared Duke, native assassination and printed payer ledgers are reused.
+
+312 original admissions,31 programmes plus two Loyalty-stock regressions,
+final489/489 checks across42 files and qualified258/288 original games
+retain30 printed source stops. Actual390px mixed Ixian native2/1 shipping
+and one-normal/one-Cyborg world transport charge the original four/two
+spice; actual paired Ecaz native1 transport costs one, then native Cunning
+takes the separate living Duke with no extra debit. Both public inspectors
+show20 counters. No new return adapter, played-save conversion or
+complete-mode/deployment gate is opened.
+[Canonical qualified evidence](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-nexus--7-october-2026).
+
 ## Single-native E1/E2 Nexus composition — 7 October 2026
 
 Original Homeworld/Nexus now composes exactly one Ixians OR Tleilaxu,
