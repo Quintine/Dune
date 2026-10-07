@@ -40,9 +40,18 @@ implemented:
 The remaining recorded questions (Bureaucrat/Emperor gifts, Recruits late
 accounting, ordinary Guild cancellation, base special Karama, Nexus
 composition, Orgiz, Testing Station, Jacurutu, occupied Homeworlds and the
-Homeworld restoration questions) stay pending. Preserved combined
-Homeworld/Nexus, occupation-profile and Richese captures can now be resumed
-against the rulings; resumption itself is not yet re-run here.
+Homeworld restoration questions) stay pending.
+
+**Preserved captures resumed under the rulings.** All 123 preserved
+`failed-*.json` captures were resumed in place (same position, seed and
+custody, no reset): **102 now complete**, 14 remain. The low-Tupile CHOAM
+ruling unblocked all 23 `choamCharity` captures, the exhausted-cache ruling all
+three `richeseBlackMarket` captures, and nine of thirteen occupation captures.
+The 14 remaining are gated on **three other unresolved questions** — the
+competing-occupier/native-repopulation occupation lifecycle, the Homeworld
+high-threshold revival-deployment timing, and the odd-force Basic Ecaz Occupy
+casualty rounding — not on the five implemented rulings. See
+[the resumption evidence](IMPLEMENTATION_STATUS.md#7-october-2026--preserved-captures-resumed-under-the-five-rulings).
 
 **In progress — mixed E3 and three-family Nexus.** Original selected Ecaz
 plus Ix and/or CHOAM now requires an actual native from every selected

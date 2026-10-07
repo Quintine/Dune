@@ -1,5 +1,43 @@
 # Dune implementation status
 
+## 7 October 2026 — preserved captures resumed under the five rulings
+
+Every preserved `failed-*.json` capture under `/tmp/dune-*/` (123 distinct
+files) was resumed in place with `tools/faction-games.ts --resume` — the same
+saved position, seed and physical custody, no reset and no re-run from
+scratch. **102 of the 116 that produced a report now complete** (seven runs
+collided on duplicate basenames and were re-run with unique output
+directories); 14 remain.
+
+Ruling-by-ruling:
+
+- **Low-Tupile CHOAM opening income.** All 23 captures that stopped at
+  `response: choamCharity` now complete, across `mixed-homeworld-nexus-*`,
+  `single-homeworld-nexus-discovery-skills-tech`, `paired-homeworld-nexus-*`,
+  `native-homeworld-skills-*` and `homeworld-occupation-choam-6-basic`.
+- **Richese exhausted/canceled cache.** All three captures that stopped at
+  `decision: richeseBlackMarket` now complete
+  (`discovery-stronghold-tech-choam-choam-6-advanced` seed 20265033,
+  `paired-discovery-nexus-skills-stronghold-...` seed 20273010, and the paired
+  E3 discovery variant).
+- **Occupation profile.** Nine of the thirteen preserved
+  `homeworld-occupation` captures now complete (atreides-5/6-advanced,
+  choam-2/5/6, ecaz-6-advanced, ixians-5/6-advanced, moritani-6-advanced).
+- **Suk / Kwisatz, Guild Secret Ally return and Sandmaster relocation** changed
+  no capture outcome; their focused regressions cover the changed paths.
+
+The 14 remaining captures are gated on **three other unresolved questions**, not
+on the five implemented rulings:
+
+| Guard | Captures | Recorded question |
+| --- | --- | --- |
+| `Southern Hemisphere occupied benefits await the pending competing-occupier/native-repopulation ruling` | 7 `battleCards`/phase-6 and 2 phase-7 stalls | [Occupation lifecycle](HOMEWORLD_OCCUPATION_RULES.md#questions-the-retrieved-sources-do-not-settle) |
+| `Revival deployment when this return first reaches the high Homeworld threshold awaits a timing ruling` | 4 `emperorRevival` stalls | [Homeworld revival timing](HOMEWORLD_BENEFITS_RULES.md) |
+| `Odd-force Basic Occupy awaits the preserved publisher casualty-rounding ruling` | 3 phase-6 stalls | [Basic Occupy boundary](ECAZ_OCCUPY_RULES.md) |
+
+No capture was reset, force-completed or bypassed, and no guard was weakened.
+The resumed runs are saved-position continuations, not fresh re-runs.
+
 ## 7 October 2026 — five pending user rulings implemented
 
 The user resolved five recorded rule questions; each is indexed in
