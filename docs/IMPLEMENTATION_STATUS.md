@@ -1,5 +1,49 @@
 # Dune implementation status
 
+## 7 October 2026 — mixed E3 programme evidence and the deferred Terror entry
+
+The withdrawn mixed E3 programme pairs are green: Moritani9/9 and Ecaz14/14
+(stable across 20 consecutive full-file runs). The recorded resume
+constraints became real fixture repairs, not re-pinned assertions: Moritani
+starts in an unoccupied printed stronghold, a pending Leader-Skill posture is
+concealed before both plans are submitted, a normal Traitor call requires the
+card that matches the opponent's plan leader, the winner's automatic casualty
+is not an assassination effect, the public history never carries the private
+Mentat replacement, and the Moritani Terror/Cunning window uses its own real
+shipment. Two restored consumer omissions were corrected against the engine:
+the Discovery entry asserts the token's actual random face and conserved
+counters, and the Suk rescue asserts the winner's own dialed casualties with
+the loser never rescued.
+
+**New engine behavior.** `Game.pendingArrivalReaction` queues a committed
+Terror entry whose arrival also opened its own interaction — Guild income, a
+Bene Gesserit fighter Intrusion or advisor choice, or Fremen storm protection —
+and `settleAutomaticContinuations` opens the oldest queued entry once nothing
+is pending. Payment, force transfer and the original movement never replay; a
+Terror entry already in flight and every Ambassador combination still reject.
+The selected order is a provisional implementation interpretation, not a
+publisher priority ruling.
+
+Former limitation pins now assert the accepted, deferred outcome and drive it
+to completion instead of the removed rejection: `bot-arrival`,
+`ambassador-terror-overlap-worm`, `moritani-entry`, both Richese No-Field
+files, `homeworld-grumman-engine`, `karama-movement-preflight` and
+`ornithopter-discard-continuations`.
+
+Pre-existing failures inherited at `45e6084` were repaired against current
+engine behavior rather than re-pinned: the stale Discovery module gates in
+both native skills integrations, the Ix prototype and Ix skills gates, the
+advanced Moritani skill boundary, the expansion-faction prototype and recovery
+gates, and the Richese Nexus betrayal sale-credit expectation (the authorized
+Advanced source sends Richese's own contribution to the Emperor, or the Bank
+with no Emperor seated). One incidental gate message ("excludes other optional
+modules") and one flaky Collection-readiness assertion in the Ecaz Homeworld
+victory runtime were also corrected; the flake reproduced at HEAD.
+
+Offline suite 7,793/7,793 with typecheck and lint clean at this checkpoint; no
+game, seat, saved-state, deployment, public-start or played-save conversion is
+claimed.
+
 ## 7 October 2026 — Mixed E1/E2 and paired E3 Nexus
 
 Original both-family Ix+CHOAM/union47 or both Ecaz+Moritani/ecaz33 with

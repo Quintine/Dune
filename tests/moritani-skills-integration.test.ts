@@ -34,10 +34,17 @@ void test('every canonical skill can be dealt and publicly assigned to Basic Mor
 });
 
 void test('Moritani skill starts retain immutable Ecaz, optional-module and public-start rejection', () => {
+  // Native Discovery Leader Skills are now admitted for this fresh lobby.
+  const discovery = createGame('MORIGATE', newPlayer('m', 'Moritani', 'moritani'), false, ['ecaz']);
+  joinGame(discovery, newPlayer('a', 'Atreides', 'atreides'));
+  discovery.players.forEach(p => { p.ready = true; });
+  discovery.discoveryEnabled = true;
+  assert.ok(initializeLeaderSkillsGameForAudit(discovery).leaderSkills);
   for (const change of [
     (g: Game) => { g.players[1] = newPlayer('a', 'Ecaz', 'ecaz'); },
     (g: Game) => { g.expansions.push('choam'); },
-    (g: Game) => { g.discoveryEnabled = true; },
+    (g: Game) => { g.discoveryEnabled = true; g.expansions.push('choam'); },
+    (g: Game) => { g.discoveryEnabled = true; g.players[1] = newPlayer('a', 'Ecaz', 'ecaz'); },
     (g: Game) => { g.ecazTreachery = true; },
   ]) {
     const lobby = createGame('MORIGATE', newPlayer('m', 'Moritani', 'moritani'), false, ['ecaz']);

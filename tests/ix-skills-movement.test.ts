@@ -114,7 +114,7 @@ void test('all fourteen physical skills reach genuine Ix card selection, Traitor
   assert.equal(player(offers, 't').faceDancers, undefined);
 });
 
-void test('genuine ready Ix lobbies keep public starts, Advanced and additional module profiles closed', () => {
+void test('genuine ready Ix lobbies keep public starts closed and initialize the supported native module profiles', () => {
   const lobby = () => {
     let g = createGame('IXGATED', newPlayer('i', 'Ixians', 'ixians'), false, ['ix']);
     joinGame(g, newPlayer('t', 'Tleilaxu', 'tleilaxu'));
@@ -123,19 +123,27 @@ void test('genuine ready Ix lobbies keep public starts, Advanced and additional 
     return g;
   };
   reject(lobby(), 'i', {type: 'start'});
+  // The supported native Advanced, Discovery, Tech Token and Homeworld
+  // profiles now initialize for a fresh Ix lobby without mutating it.
   for (const change of [
     (g: Game) => { g.advanced = true; },
     (g: Game) => { g.discoveryEnabled = true; },
     (g: Game) => { g.techTokens = createTechTokens(); },
-    (g: Game) => { g.expansions.push('choam'); },
     (g: Game) => { g.homeworlds = {custody: null}; },
   ]) {
     const g = lobby();
     change(g);
     const before = structuredClone(g);
-    assert.throws(() => initializeLeaderSkillsGameForAudit(g));
-    assert.deepEqual(g, before);
+    assert.ok(initializeLeaderSkillsGameForAudit(g).leaderSkills,
+      'The supported native module profile initializes.');
+    assert.deepEqual(g, before, 'The authoritative lobby is never mutated.');
   }
+  // A combined CHOAM expansion still rejects.
+  const combined = lobby();
+  combined.expansions.push('choam');
+  const before = structuredClone(combined);
+  assert.throws(() => initializeLeaderSkillsGameForAudit(combined));
+  assert.deepEqual(combined, before);
 });
 
 void test('Planetologist gives selected suboids range two independently and cyborg range three through saved native permission', () => {

@@ -83,7 +83,7 @@ void test('Homeworld-sourced AI shipments avoid unsupported paired entry reactio
   assert.equal(botArrivalBlock(ownView(game), action), null);
 });
 
-void test('Guild cross-planet transport avoids a Terror arrival blocked by its Guild income response', () => {
+void test('Guild cross-planet transport ships into a Terror arrival from its committed income response', () => {
   const game = shipmentArrivalGame();
   const bg = arrivalPlayer(game, 'bg');
   const guild = arrivalPlayer(game, 'guild');
@@ -97,11 +97,22 @@ void test('Guild cross-planet transport avoids a Terror arrival blocked by its G
   game.moritaniTerror = placeTerror(terror, terror.tokens[0].id, 'carthag', 2);
   const action: Action = { type: 'guildShip', from: 'sietch_tabr:14', amount: 2,
     territory: 'carthag', sector: 11 };
-  assert.throws(() => applyAction(game, bg.id, action), overlap);
   const before = JSON.stringify(game);
+  // Guild income from the ally went to the bank with nothing left pending, so the
+  // supported Terror entry opens in the same commit as the shipped forces.
+  const shipped = applyAction(game, bg.id, action);
+  const arrived = arrivalPlayer(shipped, 'bg');
+  assert.deepEqual(arrived.forces, { 'carthag:11': 2 });
+  assert.equal(arrived.shipped, true);
+  assert.equal(shipped.decision?.kind, 'moritaniTerror');
+  assert.equal(shipped.pendingTerrorEntry?.cause, 'guildTransport');
+  assert.equal(shipped.pendingArrivalReaction ?? null, null);
+  assert.equal(shipped.response ?? null, null);
+  assert.match(shipped.log.at(-1)!.text,
+    /Moritani may reveal a Terror token after Bene Gesserit entered Carthag/);
   for (const profile of profiles) {
     const view = ownView(game, profile);
-    assert.match(botArrivalBlock(view, action) ?? '', overlap);
+    assert.equal(botArrivalBlock(view, action), null);
     const choices = botActions(view);
     assert.ok(choices.length, profile);
     assert.equal(choices.some(candidate => candidate.type === 'guildShip' &&
@@ -113,7 +124,9 @@ void test('Guild cross-planet transport avoids a Terror arrival blocked by its G
   funded.aid[guild.id] = { recipient: bg.id, amount: 1 };
   const guildPaid = { ...action, allyPayment: 1 };
   assert.equal(botArrivalBlock(ownView(funded), guildPaid), null);
-  assert.ok(applyAction(funded, bg.id, guildPaid));
+  const paid = applyAction(funded, bg.id, guildPaid);
+  assert.equal(paid.decision?.kind, 'moritaniTerror');
+  assert.equal(paid.pendingTerrorEntry?.cause, 'guildTransport');
 });
 
 void test('single reactions and matching-faction Ambassador immunity remain playable', () => {

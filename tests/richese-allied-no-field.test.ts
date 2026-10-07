@@ -329,9 +329,28 @@ void test('unsupported simultaneous arrivals fail before consent is committed an
   );
   hold(g, 'e', 'Karama');
   g = offer(g);
-  const before = structuredClone(g);
-  assert.throws(() => accept(g), /combined with another arrival/);
-  assert.deepEqual(g, before);
+  // The consent commits its real shipment; the committed Terror entry waits
+  // for the arrival's own reaction instead of failing the whole consent.
+  const committed = accept(g);
+  // The consent commits its shipment and opens the No-Field response instead of
+  // rejecting the whole consent because a Terror token shares the destination.
+  assert.equal(committed.response?.kind, 'richeseNoField');
+  assert.deepEqual(committed.players[1].forces, {}, 'No force moves before the response settles.');
+  conserve(committed);
+  // Once the response settles, the committed arrival still offers its Terror entry.
+  let arrived = committed;
+  for (let i = 0; arrived.response && i < 8; i++) {
+    const passer = arrived.players.find(p => {
+      const controls = viewGame(arrived, p.id).responseControls;
+      return controls && controls.cancelCards.length && !controls.hasPassed;
+    });
+    assert.ok(passer, 'The No-Field response keeps a legal passer.');
+    arrived = send(arrived, passer!.id, { type: 'passResponse' });
+  }
+  assert.ok((arrived.pendingArrivalReaction?.length ?? 0) > 0 ||
+    arrived.pendingTerrorEntry !== null || arrived.decision?.kind === 'moritaniTerror',
+    'The committed Terror entry is offered or waits behind the arrival reaction.');
+  conserve(arrived);
   const automated = structuredClone(g);
   automated.players[1].bot = 'Medium';
   const declined = runBots(automated, 1);

@@ -364,10 +364,14 @@ void test('new native admission preserves public, Harkonnen assassination, forei
     assert.throws(() => initializeLeaderSkillsGameForAudit(game));
     assert.deepEqual(game, before);
   }
+  // Native Discovery Leader Skills are now admitted for this fresh Moritani
+  // lobby; the foreign-family and combined-expansion lobbies still reject.
   const discoveryLobby = make();
   discoveryLobby.players.forEach(p => { p.ready = true; });
   discoveryLobby.discoveryEnabled = true;
-  assert.throws(() => initializeLeaderSkillsGameForAudit(discoveryLobby));
+  const discoveryBefore = reload(discoveryLobby);
+  assert.ok(initializeLeaderSkillsGameForAudit(discoveryLobby).leaderSkills);
+  assert.deepEqual(discoveryLobby, discoveryBefore, 'The lobby is never mutated.');
   // Basic Moritani keeps its original Harkonnen-compatible skills profile; it
   // does not acquire the Advanced-only assassination preview.
   const basicLobby = make('harkonnen');

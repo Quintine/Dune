@@ -231,7 +231,10 @@ void test('Richese can fund its buyer from escrow with no unpledged spice, with 
     assert.equal(f.game.aid[f.target].amount,2);
     const done = use ? applyAction(reload(f.game),f.holder,{type:'richeseBetrayalUse',event:f.event}) : passes(reload(f.game));
     assert.equal(player(done,f.buyer).spice,player(f.game,f.buyer).spice - 4);
-    assert.equal(player(done,f.target).spice,use ? 0 : 6);
+    // The authorized Advanced source sends Richese's own contribution to the
+    // Emperor or, with no Emperor seated, to the Bank: the seller receives only
+    // the buyer's own payment. Basic keeps the full sale credit.
+    assert.equal(player(done,f.target).spice,use ? 0 : source === 'cache' ? 6 : 4);
     assert.equal(done.aid[f.target].amount,0);
     assert.deepEqual(census(done),census(f.game));
     assert.deepEqual(normalizeAutomaticGame(reload(done)),done);

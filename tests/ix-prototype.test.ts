@@ -336,26 +336,33 @@ void test('the Ix prototype keeps public gates and rejects unsupported or nonemp
   unsupported.players.forEach((p) => (p.ready = true));
   rejectInitializer(unsupported, /base, Ixian and Tleilaxu/);
 
-  const moduleFactories: Array<[string, (g: Game) => Game]> = [
+  const moduleFactories: Array<[string, (g: Game) => Game, RegExp]> = [
     [
       'tech',
       (g) => applyAction(g, g.host, { type: 'techTokens', enabled: true }),
+      /Tech Tokens require a fresh supported three-through-six-seat lobby/,
     ],
     [
       'homeworld',
       (g) => applyAction(g, g.host, { type: 'homeworlds', enabled: true }),
+      /without optional modules/,
     ],
     [
       'stronghold',
       (g) => applyAction(g, g.host, { type: 'strongholdCards', enabled: true }),
+      /Stronghold Cards require a fresh supported Advanced lobby/,
     ],
-    ['nexus', (g) => ({ ...g, nexusCards: { cards: null, phase: null } })],
+    [
+      'nexus',
+      (g) => ({ ...g, nexusCards: { cards: null, phase: null } }),
+      /without optional modules/,
+    ],
   ];
-  for (const [name, enable] of moduleFactories) {
+  for (const [name, enable, rejection] of moduleFactories) {
     let g = enable(lobby(name === 'stronghold'));
     for (const p of g.players)
       if (!p.ready) g = applyAction(g, p.id, { type: 'ready' });
-    rejectInitializer(g, /without optional modules/);
+    rejectInitializer(g, rejection);
   }
 
   const occupied = lobby();

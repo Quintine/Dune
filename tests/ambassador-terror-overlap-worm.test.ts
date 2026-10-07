@@ -194,7 +194,7 @@ void test('bots treat the supported overlapping stronghold as a legal ordinary a
   assert.equal(seat(entered, 'in').forces['arrakeen:10'], 2);
 });
 
-void test('worm-riding bots avoid Terror arrival while BG fighter intrusion is pending', () => {
+void test('worm-riding bots treat the Terror arrival beside a pending BG intrusion as a legal deferred entry', () => {
   const { g } = table('robbery');
   g.ecazAmbassadors = createAmbassadors(() => 0.2);
   const bg = newPlayer('bg', 'Bene Gesserit', 'beneGesserit');
@@ -206,16 +206,48 @@ void test('worm-riding bots avoid Terror arrival while BG fighter intrusion is p
   g.decision = { kind: 'wormRide', player: 'in', territory: 'imperial_basin' };
   g.wormRides = ['hagga_basin'];
   const before = JSON.stringify(g);
-  assert.throws(() => action(g, 'in', ride),
-    /Terror combined with another arrival reaction/);
+  // The ride commits; the BG fighter intrusion owns the pending interaction, so the
+  // Terror entry is deferred in `pendingArrivalReaction` instead of being rejected.
+  const entered = action(g, 'in', ride);
+  assert.deepEqual(entered.decision, {
+    kind: 'intrusion', player: 'bg', territory: 'arrakeen', wormRide: true,
+  });
+  assert.equal(entered.pendingTerrorEntry ?? null, null);
+  assert.equal(entered.pendingArrivalReaction?.[0]?.cause, 'wormRide');
+  assert.equal(entered.pendingArrivalReaction?.[0]?.entrant, 'in');
+  assert.equal(entered.pendingArrivalReaction?.[0]?.territory, 'arrakeen');
+  assert.equal(entered.pendingArrivalReaction?.[0]?.sector, 10);
+  assert.equal(entered.pendingArrivalReaction?.[0]?.amount, 2);
+  assert.equal(entered.pendingArrivalReaction?.[0]?.resume, 'wormRide');
+  assert.deepEqual(entered.wormRides, ['hagga_basin']);
+  assert.equal(seat(entered, 'in').forces['arrakeen:10'], 2);
+  assert.equal(seat(entered, 'in').forces['imperial_basin:10'], 1);
   for (const bot of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
     const view = viewGame(g, 'in');
     view.players.find(p => p.id === 'in')!.bot = bot;
+    assert.equal(botArrivalBlock(view, ride), null);
     const choices = botActions(view);
     assert.ok(choices.length, bot);
-    assert.equal(choices.some(choice => choice.type === 'decision' &&
-      choice.accept === true && choice.territory === 'arrakeen'), false, bot);
+    // The formerly rejected stronghold ride is now a legal choice bots offer.
+    assert.ok(choices.some(choice => choice.type === 'decision' &&
+      choice.accept === true && choice.territory === 'arrakeen'), bot);
     assert.ok(applyAction(g, 'in', choices[0]));
   }
   assert.equal(JSON.stringify(g), before);
+  // Answering the intrusion and the queued ride settles the deferral: the Terror
+  // entry now opens from the stored arrival reaction.
+  let state = action(g, 'in', ride);
+  state = action(state, 'bg', { type: 'decision', accept: false });
+  assert.deepEqual(state.decision, queuedRide);
+  assert.equal(state.pendingArrivalReaction?.[0]?.cause, 'wormRide');
+  assert.equal(state.pendingTerrorEntry ?? null, null);
+  state = action(state, 'in', { type: 'decision', accept: false });
+  assert.equal(state.pendingArrivalReaction ?? null, null);
+  assert.equal(state.pendingTerrorEntry?.cause, 'wormRide');
+  assert.equal(state.pendingTerrorEntry?.resume, 'wormRide');
+  assert.equal(state.pendingTerrorEntry?.stage, 'offer');
+  assert.equal(state.decision?.kind, 'moritaniTerror');
+  assert.match(state.log.at(-1)!.text,
+    /Moritani may reveal a Terror token after Rider entered Arrakeen/);
+  assert.equal(seat(state, 'in').forces['arrakeen:10'], 2);
 });

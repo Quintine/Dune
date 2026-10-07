@@ -21,7 +21,7 @@ No targeted publisher/designer clarification establishes which of Ecaz's Ambassa
 
 Both optional trigger opportunities belong to the **same already committed entry**. Snapshot the original entrant, token identities, physical arrival amount and turn; finish the first owner's choice and its allowable continuations before offering the second. Revalidate the second effect's physical requirements without replaying the original shipment payment, movement or force transfer. Owner-private Terror identity remains concealed until revealed. If the first reaction changes an alliance, the other owner keeps the trigger earned at the original entry; it does not gain a new trigger from a later action.
 
-This bounded path excludes competing BG fighter Intrusion, Guild income/advisor and CHOAM prevention windows, Homeworlds, Nexus, Discoveries, Leader Skills and the still-unfinished Atomics effect. Fremen relocation or Guild free-shipment Ambassador effects can create nested arrivals before the second owner; they remain declineable but cannot be activated in this overlap until their child continuation is integrated. These guards are development boundaries, not physical-game prohibitions.
+This bounded path originally excluded competing BG fighter Intrusion, Guild income/advisor and CHOAM prevention windows, Homeworlds, Nexus, Discoveries, Leader Skills and the still-unfinished Atomics effect. **The competing BG fighter Intrusion, Guild income and BG advisor windows are now integrated as a deferred entry — see the 7 October 2026 section below.** Fremen relocation or Guild free-shipment Ambassador effects can create nested arrivals before the second owner; they remain declineable but cannot be activated in this overlap until their child continuation is integrated. These guards are development boundaries, not physical-game prohibitions.
 
 ## Paired native Nexus composition — 7 October 2026
 
@@ -49,6 +49,33 @@ in the [canonical qualified proof](NEXUS_CARD_RULES.md#mixed-e1e2-and-paired-e3-
 This does not merge an advisor's separate arrival into the parent's
 reaction, make advisors eligible for Ambassadors, or claim a universal
 optional-module priority order.
+
+## Deferred arrival entry behind the arrival's own interactions — 7 October 2026
+
+The engine no longer rejects a Terror arrival that coincides with the arrival's
+own pending interaction. `openTerritoryEntry` stores the already committed
+entry in the additive `Game.pendingArrivalReaction` record — original entrant,
+destination, sector, amount, elite, cause, resume kind and turn/phase — and
+`settleAutomaticContinuations` opens it as soon as no response, decision,
+Terror entry, Ambassador entry or Ecaz/Moritani overlap is pending. Payment,
+force transfer and the original movement are never replayed; the deferred
+record only reopens the entry.
+
+**Selected order (provisional implementation interpretation, not a publisher
+ruling):** the arrival's own interaction settles first — the committed
+shipment's Guild income payment and BG advisor choice, the BG fighter
+Intrusion, or Fremen storm protection — and the Terror entry is offered
+afterwards. This reuses the bounded policy already recorded for an accompanying
+counter, whose own qualifying entry likewise follows earlier Intrusion and
+income, and it respects the November 2020 FAQ wording that Intrusion must occur
+immediately when the other faction intrudes. No source ranks the optional
+Terror reaction against those windows; this table selects one order rather than
+leaving the entry uncommitted.
+
+Still guarded after this integration: `controls.pendingTerror` (a Terror entry
+already in flight), every Ambassador combination
+(`Ambassadors combined with another arrival reaction`), Atomics, unsupported
+child effects and the CHOAM prevention windows.
 
 ## Atomics and later allies
 

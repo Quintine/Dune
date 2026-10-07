@@ -261,11 +261,15 @@ void test('BG intrusion uses current opposing fighters, requires Advanced rules 
     quoteCompletedMovementArrival({ ...input, players: advisors }).intrusion,
     false,
   );
-  for (const tokens of [{ ambassadors: [ambassador] }, { terror: [terror] }])
-    assert.throws(
-      () => quoteCompletedMovementArrival({ ...input, players, ...tokens }),
-      /another arrival reaction/,
-    );
+  assert.throws(
+    () => quoteCompletedMovementArrival({ ...input, players, ambassadors: [ambassador] }),
+    /Ambassadors combined/,
+  );
+  // A Terror entry behind the pending Intrusion is now committed and deferred.
+  assert.equal(
+    quoteCompletedMovementArrival({ ...input, players, terror: [terror] }).reaction,
+    'terror',
+  );
 });
 
 void test('mover advisor stance is the declared resulting stance, not its stale destination map', () => {
@@ -295,14 +299,13 @@ void test('mover advisor stance is the declared resulting stance, not its stale 
     }).reaction,
     null,
   );
-  assert.throws(
-    () =>
-      quoteCompletedMovementArrival({
-        ...base,
-        terror: [terror],
-        order: { ...base.order, advisors: true, wantsFighters: true },
-      }),
-    /Terror combined/,
+  assert.equal(
+    quoteCompletedMovementArrival({
+      ...base,
+      terror: [terror],
+      order: { ...base.order, advisors: true, wantsFighters: true },
+    }).reaction,
+    'terror',
   );
 });
 
@@ -348,14 +351,14 @@ void test('current controls and the move-created fighter response are checked wi
       /Ambassadors combined/,
     );
   for (const flag of ['response', 'decision'] as const)
-    assert.throws(
-      () =>
-        quoteCompletedMovementArrival({
-          ...input,
-          terror: [terror],
-          controls: { ...input.controls, [flag]: true },
-        }),
-      /Terror combined/,
+    assert.equal(
+      quoteCompletedMovementArrival({
+        ...input,
+        terror: [terror],
+        controls: { ...input.controls, [flag]: true },
+      }).reaction,
+      'terror',
+      `A committed ${flag} arrival defers its Terror entry instead of rejecting it.`,
     );
   assert.throws(
     () =>

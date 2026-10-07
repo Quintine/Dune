@@ -333,18 +333,20 @@ void test('simultaneous entry reactions fail atomically and stale CHOAM continua
     'arrakeen',
     1,
   );
-  reject(
-    g,
-    'r',
-    {
-      type: 'ship',
-      noField: token(g, 5),
-      event: g.players[0].noFieldEvent,
-      territory: 'arrakeen',
-      sector: 10,
-    },
-    /Terror combined/,
-  );
+  const committed = applyAction(g, 'r', {
+    type: 'ship',
+    noField: token(g, 5),
+    event: g.players[0].noFieldEvent,
+    territory: 'arrakeen',
+    sector: 10,
+  });
+  // The committed shipment and its Terror entry both survive; the entry waits
+  // for the arrival's own reaction instead of rejecting the shipment.
+  assert.equal(committed.players[0].noField!.deployed!.tokenId, token(g, 5));
+  assert.equal(committed.players[0].shipped, true);
+  assert.ok((committed.pendingArrivalReaction?.length ?? 0) > 0 ||
+    committed.pendingTerrorEntry !== null || committed.decision?.kind === 'moritaniTerror',
+    'The committed Terror entry is offered or waits behind the arrival reaction.');
   let moving = marker(fixture(), 3, 'imperial_basin', 10);
   moving.players[1] = newPlayer('a', 'CHOAM', 'choam');
   moving.players[1].forces = { 'arrakeen:10': 1 };

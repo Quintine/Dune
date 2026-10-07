@@ -420,7 +420,7 @@ void test('all four bots respect the projected count cap for both Ambassador rou
     }
 });
 
-void test('movement preflight permits the low two-force Intrusion arrival and keeps unsupported three-force ordering immutable', () => {
+void test('movement preflight commits each Intrusion arrival and defers its Terror entry behind the pending Intrusion', () => {
   for (const reserves of [7, 8]) {
     const g = fixture(reserves, 'emperor', true);
     const bg = newPlayer('b', 'Bene Gesserit', 'beneGesserit');
@@ -444,13 +444,23 @@ void test('movement preflight permits the low two-force Intrusion arrival and ke
       assert.equal(result.pendingTerrorEntry ?? null, null);
       assert.equal(player(result, 'e').forces['arrakeen:10'], 2);
       homeworldGameIntegrity(result);
-    } else reject(g, 'e', move, /Terror combined/);
-    reject(
-      g,
-      'e',
-      { ...move, forces: { 'imperial_basin:10': 3 } },
-      /Terror combined/,
-    );
+    } else {
+      const result = applyAction(g, 'e', move);
+      assert.equal(result.decision?.kind, 'intrusion');
+      assert.equal(result.pendingArrivalReaction?.[0]?.amount, 2,
+        'The committed entry waits for the Intrusion choice.');
+      assert.equal(result.pendingTerrorEntry ?? null, null);
+      assert.equal(player(result, 'e').forces['arrakeen:10'], 2);
+      assert.equal(player(result, 'e').forces['imperial_basin:10'], 1);
+      homeworldGameIntegrity(result);
+    }
+    const three = applyAction(g, 'e', { ...move, forces: { 'imperial_basin:10': 3 } });
+    assert.equal(three.decision?.kind, 'intrusion');
+    assert.equal(three.pendingArrivalReaction?.[0]?.amount, 3,
+      'The whole committed group is one deferred entry.');
+    assert.equal(three.pendingTerrorEntry ?? null, null);
+    assert.equal(player(three, 'e').forces['arrakeen:10'], 3);
+    homeworldGameIntegrity(three);
   }
 });
 

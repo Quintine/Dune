@@ -148,10 +148,7 @@ export function quoteCompletedMovementArrival(
   if (triggersTerror) {
     if (controls.pendingTerror)
       throw new MovementArrivalError('Resolve the pending Terror entry first.');
-    if (response || decision)
-      throw new MovementArrivalError(
-        'Terror combined with another arrival reaction is still being implemented. This entry has not been committed.',
-      );
+    // The arrival's own interaction settles first; the engine defers the entry.
     return { ...base, reaction: 'terror' };
   }
   return { ...base, reaction: null };

@@ -262,18 +262,31 @@ void test('normal movement triggers after moving forces once, while an internal 
   assert.equal(player(shifted, f.target).forces['imperial_basin:11'], 2);
 });
 
-void test('overlapping Guild income and Bene Gesserit arrival reactions reject the entire shipment atomically', () => {
-  for (const faction of ['guild', 'beneGesserit'] as const) {
-    const initial = fixture();
-    initial.players.push(newPlayer('x', 'Arrival reaction', faction));
-    initial.order.push('x');
-    rejected(
-      initial,
-      'e',
-      shipment,
-      /Terror combined with another arrival reaction/,
-    );
-  }
+void test('overlapping Guild income and Bene Gesserit arrival reactions defer the Terror entry to the committed shipment', () => {
+  // A seated Guild takes its real income; the committed entry then opens.
+  const guild = fixture();
+  guild.players.push(newPlayer('x', 'Arrival reaction', 'guild'));
+  guild.order.push('x');
+  const paid = applyAction(guild, 'e', shipment);
+  assert.equal(paid.decision?.kind, 'moritaniTerror');
+  assert.equal(paid.pendingArrivalReaction ?? null, null);
+  assert.deepEqual(player(paid, 'e').forces, { 'arrakeen:10': 2 });
+  assert.equal(player(paid, 'e').spice, 18, 'The real shipment price is paid once.');
+
+  // A seated BG advisor choice settles first; the entry waits for it.
+  const advisor = fixture();
+  advisor.players.push(newPlayer('x', 'Arrival reaction', 'beneGesserit'));
+  advisor.order.push('x');
+  const deferred = applyAction(advisor, 'e', shipment);
+  assert.equal(deferred.decision?.kind, 'advisor');
+  assert.equal(deferred.pendingTerrorEntry ?? null, null);
+  assert.equal(deferred.pendingArrivalReaction?.[0]?.entrant, 'e');
+  assert.deepEqual(player(deferred, 'e').forces, { 'arrakeen:10': 2 });
+  const declined = applyAction(deferred, 'x', { type: 'decision', accept: false });
+  assert.equal(declined.decision?.kind, 'moritaniTerror', 'The deferred entry opens once the advisor choice settles.');
+  assert.equal(declined.pendingArrivalReaction ?? null, null);
+
+  // Advanced BG fighters raise the Intrusion choice first.
   const intrusion = fixture();
   intrusion.advanced = true;
   const bg = newPlayer('b', 'Bene Gesserit', 'beneGesserit');
@@ -281,12 +294,13 @@ void test('overlapping Guild income and Bene Gesserit arrival reactions reject t
   bg.reserves = 0;
   intrusion.players.push(bg);
   intrusion.order.push('b');
-  rejected(
-    intrusion,
-    'e',
-    shipment,
-    /Terror combined with another arrival reaction/,
-  );
+  const waiting = applyAction(intrusion, 'e', shipment);
+  assert.equal(waiting.decision?.kind, 'intrusion');
+  assert.equal(waiting.pendingTerrorEntry ?? null, null);
+  assert.equal(waiting.pendingArrivalReaction?.[0]?.entrant, 'e');
+  const answered = applyAction(waiting, 'b', { type: 'decision', accept: false });
+  assert.equal(answered.decision?.kind, 'moritaniTerror', 'The deferred entry opens after the Intrusion choice.');
+  assert.equal(answered.pendingArrivalReaction ?? null, null);
 });
 
 void test('Guild cross-shipment settles once and returning forces to reserves has no entry trigger', () => {

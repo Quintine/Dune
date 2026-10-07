@@ -1691,6 +1691,19 @@ export type Game = {
     resume: 'none' | 'wormRide' | 'ambassador';
     ambassadorEvent?: string;
   } | null;
+  /** Committed entries whose optional reactions must wait for the arrival's own
+   * pending interaction (payment, advisor choice, storm protection). */
+  pendingArrivalReaction?: {
+    entrant: string;
+    territory: string;
+    sector: number;
+    amount: number;
+    elite: number;
+    cause: NonNullable<Game['pendingTerrorEntry']>['cause'];
+    resume: 'none' | 'wormRide';
+    turn: number;
+    phase: number;
+  }[] | null;
   /** One committed entry with two independently optional expansion reactions. */
   pendingArrivalOverlap?: {
     event: string;
@@ -14826,6 +14839,16 @@ function openTerritoryEntry(
   cause: NonNullable<Game['pendingTerrorEntry']>['cause'],
   resume: 'none' | 'wormRide' = 'none',
 ) {
+  // The arrival's own interaction (guild payment, advisor choice, storm
+  // protection) settles first; the entry then opens from the automatic pass.
+  if (g.response || g.decision || g.pendingTerrorEntry || g.pendingAmbassador ||
+      g.pendingArrivalOverlap) {
+    (g.pendingArrivalReaction ??= []).push({
+      entrant: entrant.id, territory: to, sector, amount, elite, cause, resume,
+      turn: g.turn, phase: g.phase,
+    });
+    return true;
+  }
   const owner = byFaction(g, 'ecaz');
   const token = g.ecazAmbassadors?.tokens.find(
     (t) => t.zone === 'placed' && t.location === to,
@@ -27456,6 +27479,16 @@ function settleAutomaticContinuations(g: Game) {
     prepareTupileCleanup(g);
     if (g.pendingHomeworldTupileCleanup || tupileSourceBlock(g)) return;
     if (g.truthtrance || g.phaseOpening || g.status === 'finished') return;
+    if (g.pendingArrivalReaction?.length && !g.response && !g.decision &&
+        !g.pendingTerrorEntry && !g.pendingAmbassador && !g.pendingArrivalOverlap) {
+      const deferred = g.pendingArrivalReaction.shift()!;
+      if (!g.pendingArrivalReaction.length) g.pendingArrivalReaction = null;
+      const entrant = g.players.find(p => p.id === deferred.entrant);
+      requireRule(!!entrant, 'The deferred arrival entry has lost its entrant.');
+      openTerritoryEntry(g, entrant!, deferred.territory, deferred.sector,
+        deferred.amount, deferred.elite, deferred.cause, deferred.resume);
+      continue;
+    }
     const response = g.response;
     const before = JSON.stringify(g);
     const bonus = g.pendingHomeworldOccupiedBonus;

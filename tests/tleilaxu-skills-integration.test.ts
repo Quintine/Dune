@@ -62,8 +62,16 @@ void test('all fourteen skills admit genuine Basic Tleilaxu setup while public, 
     assert.equal(basicTleilaxuLeaderSkillsProfile(viewGame(game, 'a')), true);
     stable(game);
   }
+  // Native E1 Discovery Leader Skills are now admitted for this fresh lobby;
+  // unsupported Discovery overlays still reject.
+  const discovery = createGame('TLEIGATE',newPlayer('t','Tleilaxu','tleilaxu'),false,['ix']);
+  joinGame(discovery,newPlayer('e','Emperor','emperor'));discovery.players.forEach(p => {p.ready = true;});
+  discovery.discoveryEnabled = true;
+  assert.equal(basicTleilaxuLeaderSkillsProfile(initializeLeaderSkillsGameForAudit(discovery)), true);
   for (const mutate of [(g: Game) => {g.players[1] = newPlayer('x','Richese','richese');},
-    (g: Game) => {g.discoveryEnabled = true;}, (g: Game) => {g.expansions.push('choam');}]) {
+    (g: Game) => {g.expansions.push('choam');},
+    (g: Game) => {g.discoveryEnabled = true; g.players[1] = newPlayer('x','Richese','richese');},
+    (g: Game) => {g.discoveryEnabled = true; g.expansions.push('choam');}]) {
     const g = createGame('TLEIGATE',newPlayer('t','Tleilaxu','tleilaxu'),false,['ix']);
     joinGame(g,newPlayer('e','Emperor','emperor'));g.players.forEach(p => {p.ready = true;});mutate(g);
     const before = JSON.stringify(g);assert.throws(() => initializeLeaderSkillsGameForAudit(g));assert.equal(JSON.stringify(g),before);

@@ -33,17 +33,22 @@ Loyalty card, and the engine's assassination inventory check now counts
 Tleilaxu Face Dancers. Selected decks/cache, shared-Duke/capture,
 force/payment and pending-effect guards remain.
 
-Dedicated original programme evidence for this envelope is **not** yet
-green: two independently authored programme pairs reached11/21 cases and
-were withdrawn from this checkpoint rather than shipped failing. Recorded
-engine constraints for resuming: the loser must dial for the winner to have
-rescuable casualties; Ixian Suboids are half-strength so dials are
-half-integers; support is capped by `maxCombatSupport`/`battleSupportBudget`;
-a Worthless card is a defense, not a weapon; a normal Traitor call needs the
-held card to match the opponent's plan leader; and the mixed-E3 Moritani
-Terror/Cunning windows need their own real shipment. No new frozen
-test/build/game/human checkpoint, public start or played-save conversion
-is claimed.
+Dedicated original programme evidence for this envelope is now green for the
+Moritani pair (9/9) and the Ecaz pair (14/14, stable across 20 consecutive
+full-file runs). The former recorded engine
+constraints are resolved as real fixture or engine defects: Moritani must start
+in an unoccupied printed stronghold (never a seated faction's own start), a
+pending Leader-Skill posture must be concealed before both plans are submitted,
+a normal Traitor call is legal only for the card that actually matches the
+opponent's plan leader, the winner's automatic casualty application is not an
+assassination effect, and the mixed-E3 Moritani Terror/Cunning window now uses
+its own real shipment. **New engine behavior:** a Terror arrival whose entry
+coincides with the arrival's own interaction (Guild income, Bene Gesserit
+fighter Intrusion or advisor choice, Fremen storm protection) is queued in the
+additive `Game.pendingArrivalReaction` and opens as soon as that interaction
+settles, without replaying payment or force transfer. A Terror entry already in
+flight and every Ambassador combination still reject. Selected decks/cache,
+shared-Duke/capture, force/payment and pending-effect guards remain.
 
 
 **Mixed E1/E2 and paired E3 Nexus — bounded Development Verified.**

@@ -73,6 +73,30 @@ genuine-setup replay completes in 786 accepted attempts, zero rejections,
 candidate legality, not the unsupported arrival-rule composition or public
 expansion start gate.
 
+## 7 October: the deferred Terror entry is a supported arrival
+
+The engine now commits a Terror arrival whose entry coincides with the
+arrival's own interaction. `openTerritoryEntry` queues the committed entry in
+the additive `Game.pendingArrivalReaction` list and
+`settleAutomaticContinuations` opens the oldest queued entry as soon as no
+response, decision, Terror entry, Ambassador entry or Ecaz/Moritani overlap is
+pending. Payment, force transfer and the original movement never replay.
+
+Consequently `quoteCompletedMovementArrival` no longer rejects a Terror
+arrival because a Guild income response, a Bene Gesserit fighter Intrusion or
+advisor choice, or Fremen storm protection is present; those windows settle
+first and the entry follows. The preflight still rejects a Terror entry already
+in flight (`controls.pendingTerror`) and every Ambassador combination
+(`Ambassadors combined with another arrival reaction`).
+
+The two former bot policies that avoided those combinations are updated, not
+re-pinned: `tests/bot-arrival.test.ts` now asserts the Guild transport ships
+into its committed Terror entry, and
+`tests/ambassador-terror-overlap-worm.test.ts` asserts the queued worm ride
+defers the entry behind the pending Intrusion and then opens it after the
+decline. Both drive the deferred path to completion and keep the profiles'
+other policy checks.
+
 ## 29 September: Guild cross-planet transport and Terror
 
 An unmodified six-seat Advanced Moritani sample at base seed `20260930`
@@ -114,3 +138,8 @@ accepted attempts, zero rejects and 41 JSON continuations. No hidden Terror
 face or rival hand enters the quote. Homeworld rides and other special
 arrivals retain their own gates; this does not implement the conflicting
 reaction or open public expansion starts.
+
+**Superseded 7 October 2026:** the conflicting reaction is now implemented as
+the deferred entry above. The owned bot candidate may choose that destination
+again; the focused regression now asserts the ride is accepted, the entry waits
+behind the pending Intrusion and then opens after the decline.

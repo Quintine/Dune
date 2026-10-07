@@ -338,7 +338,7 @@ void test('faction prototype rejects stale, wrong-profile, optional-module and r
         unsupported.source.version,
         'factions',
       ),
-    /excludes optional modules/,
+    /excludes other optional modules/,
   );
   assert.deepEqual(storageSnapshot(store.sqlite), before);
 

@@ -754,7 +754,7 @@ void test('ending without flight escrow never emits an empty Ornithopter discard
   assert.equal(done.active, 'q');
 });
 
-void test('a final flight with competing BG intrusion and Terror rejects atomically before saving any retirement', () => {
+void test('a final flight with competing BG intrusion and Terror commits its retirement and defers the Terror entry', () => {
   const initial = fixture('richese', true);
   initial.players[1] = newPlayer('q', 'Moritani', 'moritani');
   initial.players[2] = newPlayer('e', 'Bene Gesserit', 'beneGesserit');
@@ -769,15 +769,24 @@ void test('a final flight with competing BG intrusion and Terror rejects atomica
   );
   const before = structuredClone(initial),
     action = first({ ornithopter: 'range3' });
-  assert.throws(() => applyAction(initial, 'p', action), /Terror combined/);
-  assert.throws(() => inner(initial, 'p', action), /Terror combined/);
-  assert.deepEqual(initial, before);
-  assert.ok(player(initial, 'p').hand.some((c) => c.id === ORNI));
-  assert.equal(initial.pendingTreacheryDiscard ?? null, null);
-  assert.equal(initial.ornithopter ?? null, null);
-  assert.equal(player(initial, 'p').moved, 0);
-  assert.equal(player(initial, 'p').forces[ORIGIN], 3);
-  inventory(initial);
+  const flown = applyAction(initial, 'p', action);
+  assert.deepEqual(initial, before, 'The authoritative input is not mutated.');
+  assert.equal(flown.decision?.kind, 'intrusion');
+  assert.equal(flown.pendingArrivalReaction?.[0]?.entrant, 'p');
+  assert.equal(flown.pendingArrivalReaction?.[0]?.territory, 'arrakeen');
+  assert.equal(flown.pendingArrivalReaction?.[0]?.amount, 1);
+  assert.equal(flown.pendingTerrorEntry ?? null, null,
+    'The Terror entry waits for the pending Intrusion choice.');
+  assert.equal(player(flown, 'p').moved, 1);
+  assert.deepEqual(player(flown, 'p').forces, { 'imperial_basin:10': 2, 'arrakeen:10': 1 });
+  assert.equal(flown.ornithopter ?? null, null);
+  inventory(flown);
+  // The same committed flight saves its real physical retirement continuation.
+  const saved = inner(initial, 'p', action);
+  assert.equal(saved.pendingTreacheryDiscard?.continuation?.kind, 'ornithopterDiscard');
+  assert.equal(player(saved, 'p').moved, 1);
+  assert.deepEqual(player(saved, 'p').forces, { 'imperial_basin:10': 2, 'arrakeen:10': 1 });
+  inventory(saved);
 });
 
 void test('automatic Fremen faction-speed allowance drains the final group frame through the response loop', () => {

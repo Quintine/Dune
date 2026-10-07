@@ -590,6 +590,12 @@ void test('accepting the Ecaz deck selector does not open existing Homeworld or 
     reject(home, initializeHomeworldGameForAudit);
     const nexus = lobby(expansions, true);
     nexus.nexusCards = { cards: null, phase: null };
-    reject(nexus, initializeNexusGameForAudit);
+    // The combined Ix/Ecaz Nexus roster is now admitted; the single-family
+    // CHOAM and Ecaz rosters still reject the same initializer.
+    if (expansions.join('+') === 'ix+ecaz') {
+      const before = structuredClone(nexus);
+      assert.ok(initializeNexusGameForAudit(nexus).nexusCards);
+      assert.deepEqual(nexus, before);
+    } else reject(nexus, initializeNexusGameForAudit);
   }
 });

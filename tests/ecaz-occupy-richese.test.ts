@@ -168,6 +168,14 @@ for (const lead of ['ecaz', 'ally'] as const) void test(`Atreides cannot inspect
     game = nextOccupyRichese(game);
   assert.equal(game.battle!.preparation!.kind, 'prescience');
   let saved = structuredClone(game);
+  // A random response window can still be open here; settle it before the
+  // inspection attempt so the rejection is the inspection authority itself.
+  for (let i = 0; game.response && i < 6; i++) {
+    const responder = game.players.find(p => !game.response!.passed.includes(p.id));
+    assert.ok(responder, 'The open response window keeps a legal responder.');
+    game = applyAction(game, responder!.id, { type: 'passResponse' });
+  }
+  saved = structuredClone(game);
   assert.throws(() => applyAction(game, fixture.opponent, { type: 'prescience', field: 'dial' }), /may not inspect/);
   assert.deepEqual(game, saved);
   game = applyAction(game, fixture.opponent, { type: 'declineBattlePower' });
