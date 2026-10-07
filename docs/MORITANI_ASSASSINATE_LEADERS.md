@@ -84,6 +84,12 @@ normal traitor call can be skipped without consulting hidden eligibility.
 All four AI profiles use the same owner-only quote. They choose a legal card or
 decline and do not inspect rival hidden state. The public history shows only
 revealed cards and face-up set-aside markers; replacement identities remain private.
+
+The Mentat replacement now draws the first **distinct** physical Traitor Card in
+the reserve rather than the reserve's first entry: the set-aside card can still
+sit in that list, and re-drawing it would duplicate a card instead of replacing
+it. When no distinct card remains, the replacement is blocked with an explicit
+reason instead of committing an invalid receipt. (7 October 2026)
 Dead-target inspection retains the printed leader strength despite its zero bounty.
 
 ## Save and physical custody

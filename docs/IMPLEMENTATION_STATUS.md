@@ -1,5 +1,49 @@
 # Dune implementation status
 
+## 7 October 2026 — distinct Mentat replacement and reproducible suites
+
+`replaceMoritaniAssassinationTraitors` now draws the first **distinct** physical
+Traitor Card from the reserve instead of the reserve's first entry, because the
+face-up set-aside card can still sit in that list: re-drawing it produced a
+receipt whose replacement equalled the revealed card, which the assassination
+integrity check rejects mid-Mentat. When no distinct card remains the step is
+blocked with an explicit reason rather than committing an invalid receipt.
+
+Four genuine tests were also made reproducible after measuring their real
+failure rates; a suite that fails for random reasons cannot act as a checkpoint
+gate:
+- `discovery-native-typed-runtime` (~15–25%): the chosen Discovery Spice Blow
+  card now has every other card for the same territory removed from the deck, so
+  one blow deposits the printed amount instead of stacking a second deposit.
+  Measured 0/20 after the change.
+- `discovery-native-e2-skills-runtime` (~20%): the deal is pinned with the new
+  shared `tests/deterministic-random.ts` helper, because an unseeded
+  Lasgun-shield pair explodes and legitimately leaves no winner, which would
+  pre-empt the casualty and skill consumer the test exists to exercise. Measured
+  0/12 after the change.
+- `ecaz-occupy-ix-choam-runtime` (~10%): a random deal can leave the actor
+  already in Collection with only an optional card play, so the policy check
+  accepts any legal action and still asserts the phase the continuation reaches.
+  Measured 0/30 after the change.
+- `mixed-e3-moritani-nexus-runtime` (~20%): `red_chasm` has one sector, so a
+  random storm could cover the committed shipment; the test now keeps the storm
+  off that destination. Measured 0/25 after the change.
+
+No product behaviour changed for the three test-only repairs. Full offline
+suite, typecheck and lint are green at this checkpoint.
+
+## 7 October 2026 — operations report the database size
+
+The owner aggregate sample now also reports the SQLite database size and page
+count, read through `PRAGMA page_count`/`PRAGMA page_size` in the same
+authority-checked batch as the lifecycle counters, with non-numeric or negative
+values clamped to zero. The operations page renders both, and the page text now
+states that free disk space is still unknown. Evidence:
+`tests/admin-operations.test.ts` asserts the new fields, that the page count is
+positive, and that the byte total equals pages times the database's own page
+size rather than echoing the returned value. No game, seat, saved state or
+deployment changes.
+
 ## 7 October 2026 — administrator failed-attempt history
 
 Rejected administrator authentication and authorization attempts are now

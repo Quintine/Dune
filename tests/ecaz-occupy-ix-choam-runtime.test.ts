@@ -146,7 +146,11 @@ void test('All four native minimal policies can continue after Ecaz-led Ix subst
     const player = view.players.find(p => p.id === actor);
     assert.ok(player);
     player.bot = difficulty;
-    const action = botActions(view).find(candidate => candidate.type === 'ready');
+    // "Continue" is the contract: a random deal can leave the actor already in
+    // Collection with only an optional card play, so accept any legal policy
+    // action and keep asserting the phase the continuation reaches.
+    const choices = botActions(view);
+    const action = choices.find(candidate => candidate.type === 'ready') ?? choices[0];
     assert.ok(action, `${difficulty} must be able to continue the actual post-Ix phase.`);
     let next = applyAction(game, actor, action);
     while (next.phaseOpening) {

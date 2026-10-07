@@ -240,6 +240,9 @@ void test('supply-only native Cunning and the real Terror arrival retain the phy
   assert.ok(f.firstMentat && f.alliance);
   // The native Cunning is offered only inside its own quiet window.
   let g = advance(reload(f.game), s => viewGame(s, f.moritani).nexusMoritani?.blocked === null, f.actions);
+  // red_chasm has one sector; a random storm can cover it and reject the
+  // committed shipment this test needs, so keep the storm off the destination.
+  g.storm = 0;
   const request = cunning(g, f.moritani, 'robbery', 'red_chasm');
   rejects(g, f.native, request);
   rejects(g, f.moritani, { ...request, nexus: 'stale-cunning' });

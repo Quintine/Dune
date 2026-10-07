@@ -275,7 +275,11 @@ void test('original E1 Discovery Spice Blow producer destroys actual ordinary/st
     const printed = DISCOVERY_SPICE_CARDS.find(card => card.sector !== game.storm)!;
     const index = game.spiceDeck.findIndex(card => 'territory' in card && card.discovery === printed.discovery);
     assert.ok(index >= 0);
-    game.spiceDeck.unshift(game.spiceDeck.splice(index, 1)[0]);
+    const [chosen] = game.spiceDeck.splice(index, 1);
+    game.spiceDeck.unshift(chosen);
+    // One blow only: another card for the same territory would stack a second
+    // deposit and make the printed amount depend on the random storm.
+    game.spiceDeck = game.spiceDeck.filter(card => card === chosen || !('territory' in card && card.territory === printed.territory));
     const key = `${printed.territory}:${printed.sector}`;
     nativeTypedPlace(game, 'i', key, 1, 1);
     nativeTypedPlace(game, 'f', key, 1, advanced ? 1 : 0);

@@ -15,6 +15,8 @@ export type AdminOperations = {
   backupDownloads: number;
   stalledRooms: number;
   oldestStalledChange: number | null;
+  databasePages: number;
+  databaseBytes: number;
 };
 
 export type AdminIntegrity = {
@@ -56,11 +58,12 @@ const stalledJoins = `FROM rooms r
   LEFT JOIN room_archives a ON a.room_code=r.code
   LEFT JOIN room_controls k ON k.room_code=r.code`;
 
-type Counts = Omit<AdminOperations, 'observedAt'>;
+type Counts = Omit<AdminOperations, 'observedAt' | 'databasePages' | 'databaseBytes'>;
 
 /** Aggregate only operational counters, never serialized game or private backup rows. */
 export async function readAdminOperations(database: D1Database, identity: AdminIdentity, now = Date.now()): Promise<AdminOperations> {
-  const row = await database.prepare(`SELECT
+  const [counters, pages, pageSize] = await database.batch([
+    database.prepare(`SELECT
     (SELECT COUNT(*) FROM rooms) rooms,
     (SELECT COUNT(*) FROM rooms r JOIN room_removals m ON m.room_code=r.code WHERE m.removed=1) removedRooms,
     (SELECT COUNT(*) FROM rooms r JOIN room_archives a ON a.room_code=r.code WHERE a.archived=1) archivedRooms,
@@ -75,9 +78,23 @@ export async function readAdminOperations(database: D1Database, identity: AdminI
     (SELECT COUNT(*) ${stalledJoins} WHERE ${stalledRoom} AND r.updated_at<?) stalledRooms,
     (SELECT MIN(r.updated_at) ${stalledJoins} WHERE ${stalledRoom} AND r.updated_at<?) oldestStalledChange
     WHERE EXISTS (${ownerAuthority})`)
-    .bind(now - ADMIN_STALL_MS, now - ADMIN_STALL_MS, identity.sessionHash, identity.id, now).first<Counts>();
+      .bind(now - ADMIN_STALL_MS, now - ADMIN_STALL_MS, identity.sessionHash, identity.id, now),
+    database.prepare('PRAGMA page_count'),
+    database.prepare('PRAGMA page_size'),
+  ]);
+  const row = counters.results[0] as Counts | undefined;
   if (!row) throw new AdminError('Owner sign-in required.', 403);
-  return { observedAt: now, ...row };
+  const count = (result: D1Result, column: string): number => {
+    const value = (result.results[0] as Record<string, unknown> | undefined)?.[column];
+    return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : 0;
+  };
+  const databasePages = count(pages, 'page_count');
+  return {
+    observedAt: now,
+    ...row,
+    databasePages,
+    databaseBytes: databasePages * count(pageSize, 'page_size'),
+  };
 }
 
 /** Bounded, read-only stalled-decision sample for the owner operations page. */

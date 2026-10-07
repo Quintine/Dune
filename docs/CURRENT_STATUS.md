@@ -90,8 +90,10 @@ decision, response, Truthtrance or phase opening — has been idle longest, plus
 `stalledRooms` and `oldestStalledChange` counters in the aggregate sample.
 Paused, closed, removed and archived rooms are excluded and no private game
 content is selected; `GET /api/admin/operations?stalled=1` stays owner-only,
-`no-store` and read-only, and it repairs nothing. Failed-attempt records, disk
-Disk capacity and maintenance controls remain.
+`no-store` and read-only, and it repairs nothing. Failed-attempt records and
+disk capacity were the remaining operations gaps; the aggregate sample now also
+reports the SQLite database size and page count, while free disk space and
+maintenance controls remain.
 
 
 **Mixed E1/E2 and paired E3 Nexus — bounded Development Verified.**

@@ -28,12 +28,16 @@ void test('owner operations sample counts saved states and backup provenance wit
     store.sqlite.prepare('INSERT INTO admin_room_backup_downloads(download_id,operation_id,actor_admin_id,room_code,created_at) VALUES(?,?,?,?,?)').run(randomUUID(), backupId, owner.id, 'OPERAABC', now);
     const before = store.sqlite.prepare('SELECT code,state,version FROM rooms ORDER BY code').all();
     const result = await readAdminOperations(store.database, identity, now);
-    assert.deepEqual(result, {
+    const { databasePages, databaseBytes, ...counters } = result;
+    assert.deepEqual(counters, {
       observedAt: now, rooms: 2, removedRooms: 1, archivedRooms: 1,
       pausedRooms: 1, closedRooms: 1, activeSeats: 1, unreadableRooms: 1,
       lastRoomChange: 9200, backupSnapshots: 1, backupBytes: 14, backupDownloads: 1,
       stalledRooms: 0, oldestStalledChange: null,
     });
+    const pageSize = store.sqlite.prepare('PRAGMA page_size').get() as { page_size: number };
+    assert.ok(databasePages > 0);
+    assert.equal(databaseBytes, databasePages * pageSize.page_size);
     assert.equal(JSON.stringify(result).includes('secret'), false);
     assert.deepEqual(store.sqlite.prepare('SELECT code,state,version FROM rooms ORDER BY code').all(), before);
     assert.deepEqual(await readAdminIntegrity(store.database, identity, now),

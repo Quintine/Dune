@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { pinDeterministicRandom } from './deterministic-random';
 import { applyAction, handLimit, normalizeAutomaticGame, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
@@ -296,7 +297,11 @@ for (const advanced of [false, true]) for (const marker of [0, 3, 5] as const) {
   });
 }
 
-void test('four minimal policies resolve actual nested marker plans into physical revelation and a completed casualty/skill consumer', () => {
+void test('four minimal policies resolve actual nested marker plans into physical revelation and a completed casualty/skill consumer', (t) => {
+  // The deal is pinned: an unseeded Lasgun-shield pair explodes, destroys both
+  // armies and legitimately leaves no winner, which would pre-empt the casualty
+  // and skill consumer this test exists to exercise.
+  pinDeterministicRandom(t);
   const f = createDiscoveryNativeE2SkillsFixture({ advanced: true, tech: true, strongholds: true });
   const battle = prepareDiscoveryNativeE2SkillsMarkerBattle(f, { marker: 5, reserveCap: 3 });
   for (const difficulty of DIFFICULTIES) {
@@ -319,7 +324,8 @@ void test('four minimal policies resolve actual nested marker plans into physica
     assert.equal(player(game, f.richese).forces[battle.key], 3);
     assert.equal(player(game, f.richese).reserves, 0);
     const done = finishDiscoveryNativeE2SkillsBattle(game);
-    assert.ok(done.lastBattleContext?.winner === f.richese || done.lastBattleContext?.winner === f.guild);
+    assert.ok(done.lastBattleContext?.winner === f.richese || done.lastBattleContext?.winner === f.guild,
+      `The non-exploding marker battle must resolve to a real winner, not ${done.lastBattleContext?.result}.`);
     assert.equal(done.battle, null);
     assert.equal(player(done, f.richese).noField!.deployed, null);
     assert.equal(player(done, f.richese).noField!.lastShipped, battle.token);

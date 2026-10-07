@@ -159,6 +159,8 @@ export default function OperationsPage() {
         <div><dt>Recorded private exports</dt><dd>{snapshot.backupDownloads}</dd></div>
         <div><dt>Rooms waiting on a stalled interaction</dt><dd>{snapshot.stalledRooms}</dd></div>
         <div><dt>Oldest stalled room write</dt><dd>{snapshot.oldestStalledChange === null ? 'None stalled' : new Date(snapshot.oldestStalledChange).toLocaleString()}</dd></div>
+        <div><dt>Database size</dt><dd>{(snapshot.databaseBytes / 1048576).toFixed(1)} MB</dd></div>
+        <div><dt>Database pages</dt><dd>{snapshot.databasePages.toLocaleString()}</dd></div>
       </dl>
       <p>These counters do not check SQLite integrity, disk free space, backup recoverability or server health outside this request. The invalid JSON count detects syntax only, not rule-level save validity; this page cannot repair a room.</p>
       <Button variant="outline" disabled={loadingStalled} onClick={() => void checkStalled()}>List stalled decisions</Button>
