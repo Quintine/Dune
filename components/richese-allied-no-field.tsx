@@ -3,6 +3,7 @@
 import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import { territory, MOBILE_STRONGHOLD } from '@/game/board';
+import { alliedNoFieldShipmentPricing } from '@/game/shipment-price';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -46,6 +47,7 @@ export function RicheseAlliedNoFieldControls({
           ? 'Each ally pays 1 spice'
           : `${game.players.find((player) => player.id === offer.payer)?.name} pays ${offer.cost} spice`}{' '}
         if the shipment completes. Declining costs nothing.
+        {offer.pricingPolicy && <span className="block">{offer.pricingPolicy}</span>}
       </p>
     );
   if (game.phase !== 5 || game.active !== ally.id || ally.shipped) return null;
@@ -55,7 +57,8 @@ export function RicheseAlliedNoFieldControls({
   const selected =
     available.find((candidate) => candidate.id === token) ?? available[0];
   const target = territory(destination);
-  const cost = target.type === 'stronghold' ? 1 : 2;
+  const pricing = alliedNoFieldShipmentPricing(game, ally);
+  const cost = target.type === 'stronghold' ? pricing.stronghold : pricing.other;
   const selectedPayer =
     payer === 'both' && cost === 2
       ? 'both'
@@ -91,6 +94,7 @@ export function RicheseAlliedNoFieldControls({
           token reveals when the shipment resolves. No payment or existing
           marker changes occur on decline.
         </p>
+        {pricing.policy && <p className="notice">{pricing.policy}</p>}
         {info.private.deployed && (
           <p className="fine">
             If accepted and allowed, your existing concealed No-Field must
@@ -223,6 +227,7 @@ export function RicheseAlliedNoFieldDecision({
           if the shipment completes.
         </p>
       )}
+      {offer.pricingPolicy && <p className="notice">{offer.pricingPolicy}</p>}
       <p className="fine">
         The chosen token and force count are private to this alliance until the
         shipment reveals them. Accepting uses your normal shipment opportunity;

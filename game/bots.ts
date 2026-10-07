@@ -82,7 +82,7 @@ import {
   canUseAsKaramaRole,
   shrineTruthtranceBotAction,
 } from './shrine';
-import { reserveShipmentCost } from './shipment-price';
+import { reserveShipmentCost, alliedNoFieldShipmentPricing } from './shipment-price';
 import { quoteSmugglerShipment } from './smuggler-shipment';
 import { quoteSmugglerNoField } from './smuggler-no-field';
 import { spiceBankerBattleMaximum, spiceBankerModeSupported } from './spice-banker';
@@ -153,15 +153,17 @@ const variation = (g: GameView, salt: string) => {
 };
 function alliedNoFieldOffer(g: GameView): Action | null {
   const me = g.players.find((p) => p.id === g.me)!;
+  const ally = g.players.find(p => p.id === me.ally);
   const level = rank(g);
   const alliedNoField = g.richeseNoField;
   if (
     alliedNoField?.owner === me.id &&
     alliedNoField.canOfferAlly &&
     !alliedNoField.allyDeclined &&
-    alliedNoField.private
+    alliedNoField.private && ally
   ) {
     const inventory = alliedNoField.private;
+    const pricing = alliedNoFieldShipmentPricing(g, ally);
     const oldMarker = inventory.deployed;
     const oldValue =
       inventory.tokens.find((token) => token.id === oldMarker?.tokenId)
@@ -202,7 +204,7 @@ function alliedNoFieldOffer(g: GameView): Action | null {
         .sort((a, b) => b.score - a.score);
       if (token) {
         const target = targets.find(
-          ({ t }) => (t.type === 'stronghold' ? 1 : 2) <= (me.spice ?? 0),
+          ({ t }) => (t.type === 'stronghold' ? pricing.stronghold : pricing.other) <= (me.spice ?? 0),
         );
         if (target)
           return {

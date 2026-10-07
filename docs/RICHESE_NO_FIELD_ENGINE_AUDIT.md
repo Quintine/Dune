@@ -14,6 +14,14 @@ states the unresolved formula and refinement boundaries. The earlier
 mixed-battle absence/avoidance claims in the checkpoint below are historical,
 not the current Basic implementation.
 
+Basic Guild-recipient and already-active Karama allied offers now also use
+a visibly provisional one-spice/bank quote, with connected supplier,
+recipient and AI paths. Two direct before/after cases and current types
+pass; SSR offer/consent surfaces were observed in Chromium. Advanced
+counterparts remain guarded. This supersedes the earlier blanket price
+absence below; [the payment contract](RICHESE_ALLIED_SHIPMENT_AUDIT.md)
+retains the unresolved publisher precedence.
+
 ## Current resolution of the audited hooks
 
 - **Implemented in development fixtures:** separate physical `Player.noField` custody; public `force-presence` counting and location keys; own No-Field shipment with cancellation/payment stages; physical-plus-marker or marker-only movement; event-fenced voluntary reveal; collection and occupancy/control consumers; exact exposed storm sector and unprotected worm materialization/casualties; marker-only prospective battle pools, joint reveal and persistent zero-battle identity; server-enforced ordinary prescience no-dial restriction; allied opportunity/private consent/typed immediate shipment with fixed full or equal-split funding; Gamont reveal at a selected marker location followed by one actual force returned when present, including zero and colocated ordinary-unit cases.

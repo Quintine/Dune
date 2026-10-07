@@ -469,6 +469,7 @@ import {
   guildShipmentCost,
   guildShipmentIncome,
   shipmentPaymentBounds,
+  alliedNoFieldShipmentPricing,
 } from './shipment-price';
 import {
   TERROR_DEFINITIONS,
@@ -3941,7 +3942,7 @@ function noFieldAllyOfferBlock(
     return 'No-Field inventory is not initialized.';
   if (ally.faction === 'fremen')
     return 'Fremen reserves are on the planet; this ability ships off-planet reserves.';
-  if (ally.faction === 'guild' || g.karamaShipping?.player === ally.id)
+  if (g.advanced && (ally.faction === 'guild' || g.karamaShipping?.player === ally.id))
     return 'Allied No-Field pricing with Guild or Karama discounts awaits a ruling.';
   if (
     g.richeseAllyBlocked?.turn === g.turn &&
@@ -4000,7 +4001,8 @@ function alliedNoFieldQuote(
     false,
     advisors,
   );
-  const cost = territory(offer.territory).type === 'stronghold' ? 1 : 2;
+  const pricing = alliedNoFieldShipmentPricing(g, recipient);
+  const cost = territory(offer.territory).type === 'stronghold' ? pricing.stronghold : pricing.other;
   requireRule(
     offer.payer !== 'both' || cost === 2,
     'An equal split requires the two-spice shipment price.',
@@ -25665,7 +25667,8 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
     ally: p.ally,
     cost,
     allyPayment,
-    bankOnly: g.karamaShipping?.player === p.id,
+    bankOnly: g.karamaShipping?.player === p.id ||
+      !!(shipment.alliedNoField && alliedNoFieldShipmentPricing(g, p).bankOnly),
   });
   if (!settlement?.recipient && guild && guildPayment > 0)
     g.response = guildPaymentResponse(g, guild.id, shipmentIncomeContributions(g, p, cost, allyPayment),
@@ -32764,6 +32767,8 @@ export function viewGame(state: Game, id: string) {
           if (!offer || ![offer.owner, offer.recipient].includes(id))
             return null;
           const { event, owner, recipient, territory, sector, payer } = offer;
+          const recipientSeat = g.players.find(player => player.id === recipient);
+          const pricingPolicy = recipientSeat ? alliedNoFieldShipmentPricing(g, recipientSeat).policy : null;
           try {
             const {
               cost,
@@ -32789,6 +32794,7 @@ export function viewGame(state: Game, id: string) {
               eliteMin,
               eliteMax,
               blocked: null as string | null,
+              ...(pricingPolicy ? { pricingPolicy } : {}),
             };
           } catch (error) {
             if (!(error instanceof RuleError)) throw error;
@@ -32807,6 +32813,7 @@ export function viewGame(state: Game, id: string) {
               eliteMin: 0,
               eliteMax: 0,
               blocked: error.message,
+              ...(pricingPolicy ? { pricingPolicy } : {}),
             };
           }
         })(),

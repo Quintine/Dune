@@ -2,6 +2,40 @@
 
 Primary-source audit, 2026-09-06. This narrows the broad integration warnings in the earlier No-Field audits. Ordinary turn ownership, consent and typed force selection can be composed without inventing extra faction powers. The genuinely unresolved payment and interruption intersections below remain distinct. The ordinary contract is now implemented in development fixtures as recorded below; this document does not activate a mode or certify all combinations.
 
+## Basic discounted allied shipment prototype — 8 October 2026
+
+The Basic-first pass connects Guild recipients and already-active Karama
+shipment rates. **Provisional price/payee policy:** use the rounded
+one-force Guild fee, one spice for either printed destination class, and
+send the entire payment to the bank even when Richese funds it. This
+chooses the ordinary discounted-rate reading for a usable first version;
+it is not a publisher answer to the precedence conflicts below.
+
+`alliedNoFieldShipmentPricing` supplies the same immutable price/policy
+quote to the engine, supplier controls and legal AI. Private pending-offer
+and recipient-consent views carry the explanatory `pricingPolicy` only
+to the pair. One payer funds the one-spice cost; the two-spice equal split
+is not offered for this price. Native acceptance/commit revalidation,
+token history, recipient force composition, cancellation/prevention,
+prior-marker reveal and shipment ownership remain in their original paths.
+Karama must already have been played through its own grant; this does not
+spend a second card implicitly or grant another shipment.
+
+The Guild income adapter routes these Basic payments entirely to bank;
+Guild gains no self-shipment/donor fee. The native Heighliner call still
+uses the force recipient, not the token supplier. Advanced Guild/active
+Karama combinations remain guarded. Ordinary undiscounted allied prices,
+on-planet Fremen exclusion, destination restrictions and public-mode gates
+are unchanged.
+
+**Brief smoke:** both old Basic guards reproduced. Guild-recipient and
+actual native Karama-purchase scenarios now reach a private one-spice
+offer and legal Easy consent, materialize five actual recipient forces,
+spend only the supplier's one spice, leave Guild income unchanged and
+consume only the recipient shipment. Supplier/consent SSR controls were
+observed in Chromium with matching price and provisional warning. Types
+pass; no broad suite, recovery campaign or deployed acceptance was run.
+
 ## Sources checked
 
 - **R2**, [GF9 CHOAM & Richese rulebook](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf), pp6,11–12: allied offer, prior-marker reveal, shared last-use history, explicit one/two-spice payment and either payer, Guild-recipient Heighliner exception, No-Field cancellation. The full publisher-authored mirror `/tmp/dune-rules/choam-lelekan-mirror.pdf` and `.txt` were read; fresh official-domain search results reproduced the relevant pages. Mirror provenance is in `RICHESE_NO_FIELD_RULES.md`.
@@ -55,7 +89,7 @@ Test supplier-versus-recipient turn ownership, both full payers and any supporte
 
 ## Implemented ordinary contract before final checks
 
-**Implementation — Partial.** The engine opens `richeseAllyOpportunity` once for the active eligible recipient’s unused shipment, holding that turn for Richese to offer or pass. A direct voluntary offer also records the opportunity. `richeseAllyShipment` then requires the recipient’s explicit acceptance of exact private terms and legal typed mix, or decline. The proposal/payment implementation supports either full payer, plus `payer: both` only at cost two with one spice each. The recipient’s actual regular/elite reserves constrain composition. Fremen’s ordinary on-planet pool remains ineligible; Guild-recipient and active-Karama pricing remain guarded pending the specific ruling.
+**Implementation — Partial.** The engine opens `richeseAllyOpportunity` once for the active eligible recipient's unused shipment, holding that turn for Richese to offer or pass. `richeseAllyShipment` requires recipient consent and legal typed composition, or decline. Ordinary full/equal-split funding remains supported. Basic Guild and already-active Karama recipients now use the explicit discounted prototype above; their Advanced counterparts remain guarded. Fremen's ordinary on-planet reserves remain ineligible.
 
 Prevention precedes commitment. At successful commit the prior owner marker reveals first, the new allied token materializes immediately, exact funding settles once and only the recipient’s shipment is consumed. Decline/cancellation preserves the prior concealed marker and custody. This is the documented transaction composition above, not an explicit publisher FAQ about online action ordering.
 

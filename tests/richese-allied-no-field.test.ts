@@ -279,12 +279,7 @@ void test('invalid payer, occupancy, repeated token, wrong turn and on-planet Fr
   assert.deepEqual(g, before);
   g.players[1].faction = 'fremen';
   assert.throws(() => offer(g), /on the planet/);
-  g.players[1].faction = 'guild';
-  assert.throws(() => offer(g), /awaits a ruling/);
   g.players[1].faction = 'atreides';
-  g.karamaShipping = { player: 'a', owner: 'r' };
-  assert.throws(() => offer(g), /awaits a ruling/);
-  g.karamaShipping = null;
   g.active = 'r';
   assert.throws(() => offer(g), /ally’s unused/);
   g.active = 'a';

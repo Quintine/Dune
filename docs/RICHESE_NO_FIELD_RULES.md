@@ -2,6 +2,19 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Basic discounted allied price prototype — 8 October 2026
+
+Guild recipients and already-active Karama rates now have a connected
+Basic first version: rounded one-force Guild price, one spice, entirely to
+bank even when Richese pays. Supplier and recipient controls label this
+as provisional; it does not settle the printed price/payee precedence.
+The shared quote supplies engine, controls and AI without charging for
+the materialized unit count or granting another shipment.
+[Canonical payment contract](RICHESE_ALLIED_SHIPMENT_AUDIT.md).
+Two before/after direct engine cases cover a Guild recipient and an actual
+native Karama purchase, private offers, Easy consent, five actual arrivals
+and one bank payment. Types pass. Advanced counterparts remain guarded.
+
 ## Basic mixed battle prototype — 8 October 2026
 
 The Basic-first pass now admits an ordinary Richese battle containing both
@@ -92,7 +105,7 @@ This table records the original adapter contract. The implemented subset and cur
 3. **Full-plan special Karama and structured Truthtrance.** The ordinary Atreides dial prohibition is explicit. Whether a broader entire-plan power or a particular promise question overrides it was not resolved by a retrieved specific answer. Do not leak the value through private legal-plan previews, public maximum dials, error strings or bot reasoning.
 4. **Homeworld use.** R3 recommends Richese in a Homeworld combination but supplies no retrieved No-Field-specific rule defining off-planet hidden custody, one-on-planet versus off-planet coexistence, or homeworld threshold disclosure. General module availability is not an answer to those lifecycle questions. The isolated model represents a single Arrakis marker and does not authorize Homeworld placement.
 5. **Capturing, transferring or returning a concealed marker as a force.** Movement-as-a-force and Gamont's explicit forced reveal do not establish a general conversion for every card or Guild transport-to-reserves. A generic return helper must not erase a hidden token without a source-backed reveal/custody cause. This module exposes no such automatic escape from last-use history.
-6. **Allied discounts and reserve source.** Ordinary rules compose recipient consent, typed physical-force allocation and allied funding; these are now integrated as described in `RICHESE_ALLIED_SHIPMENT_AUDIT.md`. Guild-recipient and active-Karama pricing/payee precedence remain guarded pending a ruling. Ordinary Fremen reserves are on-planet and do not qualify for this off-planet shipment method; this is a source-location exclusion, not a missing elite-allocation rule.
+6. **Allied discounts and reserve source.** Ordinary consent, typed allocation and funding are integrated. Basic Guild-recipient and already-active Karama price/payee have the explicitly provisional prototype above; their Advanced counterparts remain guarded pending resolution. Ordinary Fremen reserves are on-planet and remain ineligible for this off-planet method. See `RICHESE_ALLIED_SHIPMENT_AUDIT.md`.
 7. **Supply orientation.** Concealed denomination is explicit. Hiding unused IDs/values in public JSON is the minimum privacy consequence, not a claim about an otherwise undocumented physical supply layout. The last revealed used face is public until another deployment; historical log knowledge may legitimately remain.
 
 ## Required verification

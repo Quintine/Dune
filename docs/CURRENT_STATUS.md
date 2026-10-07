@@ -59,6 +59,12 @@ physical forces plus reserve-limited token materialization, visibly marked as a
 provisional formula. Native sealing/reveal, casualties, controls and legal AI
 are connected. One before/after engine smoke completes the battle; types pass.
 Advanced mixed battles and combined Occupy remain guarded.
+**Basic Richese allied discounted prices prototype.** Guild recipients and
+already-active Karama rates can receive allied No-Field shipments. The explicit
+provisional policy is one spice at the rounded one-force Guild rate, entirely
+to bank even when Richese pays. Shared quotes connect engine, owned controls
+and AI. Two before/after engine scenarios pass, including an actual native
+Karama purchase and Easy consent; types pass. Advanced counterparts remain guarded.
 
 
 
