@@ -7799,7 +7799,12 @@ function replaceMoritaniAssassinationTraitors(g: Game) {
     requireRule(r.turn === g.turn && owner.traitors.includes(r.card!) && (g.traitorReserve?.length ?? 0) > 0,
       'Mentat replacement needs the original revealed card and one remaining physical Traitor Card.');
     owner.traitors = owner.traitors.filter(id => id !== r.card);
-    r.replacement = g.traitorReserve!.shift()!;
+    // The set-aside card can still sit in the reserve; the replacement must be
+    // a distinct physical Traitor Card, never the revealed one again.
+    const index = g.traitorReserve!.findIndex(id => id !== r.card);
+    requireRule(index >= 0,
+      'The Traitor Deck cannot supply a distinct replacement for the revealed Assassinate traitor.');
+    r.replacement = g.traitorReserve!.splice(index, 1)[0];
     owner.traitors.push(r.replacement);
     r.stage = 'replaced';
     syncMoritaniAssassinateReceipt(g,r);
