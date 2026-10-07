@@ -1,5 +1,5 @@
 import { FACTIONS } from './catalog';
-import type { FactionModuleProfile } from './faction-module-profile';
+import { mixedE3NexusRosterProfile, type FactionModuleProfile } from './faction-module-profile';
 import type { LeaderSkillProfile } from './leader-skill-profile';
 
 /** Public unused-lobby admission only. The original initializer owns physical
@@ -17,7 +17,7 @@ export function homeworldDiscoveryProfile(game: FactionModuleProfile): boolean {
 /** The same roster/module contract during play; live Discovery frames are expected. */
 export function discoveryModeSupported(game: FactionModuleProfile): boolean {
   if (game.nexusCards) return standaloneE3DiscoveryNexusProfile(game) || singleE1E2DiscoveryNexusProfile(game) ||
-    mixedE1E2DiscoveryNexusProfile(game) || pairedE3DiscoveryNexusProfile(game);
+    mixedE3DiscoveryNexusProfile(game) || mixedE1E2DiscoveryNexusProfile(game) || pairedE3DiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || game.discoveryEnabled !== true ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) || game.expansions.length > 2 ||
@@ -235,4 +235,16 @@ export function pairedE3DiscoveryNexusProfile(game: FactionModuleProfile): boole
     }
   }
   return ecaz && moritani;
+}
+
+/** Original mixed E3 or all-three-family Nexus/Discovery without Skills. */
+export function mixedE3DiscoveryNexusProfile(game: FactionModuleProfile): boolean {
+  return game.discoveryEnabled === true && !!game.nexusCards && !game.leaderSkills &&
+    (!game.techTokens || game.players.length >= 3) &&
+    (!game.strongholdCards || game.advanced) &&
+    !game.ecazTreachery && !game.semutaPreview && !game.advancedPreview &&
+    !game.kullPreview && !game.nexusKullPreview && !game.guildBetrayalPreview &&
+    !game.richeseBetrayalPreview && !game.nexusIxianReplacementPreview &&
+    !game.nexusIxianBetrayalPreview && !game.nexusHarkonnenBetrayalPreview &&
+    mixedE3NexusRosterProfile(game);
 }

@@ -1,4 +1,4 @@
-import { homeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, noOtherLeaderSkillModules, pairedE3NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile, type LeaderSkillProfile } from './leader-skill-profile';
+import { homeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, noOtherLeaderSkillModules, pairedE3NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile, type LeaderSkillProfile } from './leader-skill-profile';
 import { classicDiscoveryLeaderSkillsProfile } from './discovery-module-profile';
 export type BureaucratPaymentKind = 'auction' | 'shipment' | 'bribe' | 'revival';
 export type BureaucratPaymentSource = {
@@ -36,7 +36,7 @@ export function bureaucratPaymentSignature(value: object): string {
   return JSON.stringify({ ...value, signature: undefined });
 }
 export function bureaucratPaymentModeSupported(game: LeaderSkillProfile): boolean {
-  return mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
+  return mixedE3NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
     (noOtherLeaderSkillModules(game) &&
     (!game.expansions.length ||
       (game.expansions.length === 1 && game.expansions[0] === 'choam') ||

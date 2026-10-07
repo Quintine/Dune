@@ -1,6 +1,6 @@
 import { FACTIONS } from './catalog';
-import type { FactionModuleProfile } from './faction-module-profile';
-import { classicDiscoveryNexusProfile, mixedE1E2DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
+import { mixedE3NexusRosterProfile, type FactionModuleProfile } from './faction-module-profile';
+import { classicDiscoveryNexusProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 
 /** Original classic Nexus modules, optionally Homeworlds; initializer checks undealt components. */
 export function classicNexusModulesProfile(game: FactionModuleProfile): boolean {
@@ -171,4 +171,18 @@ export function pairedE3NexusProfile(game: FactionModuleProfile): boolean {
     }
   }
   return ecaz && moritani;
+}
+
+/** Original mixed E3 or all-three-family Nexus without Skills, optionally original modules. */
+export function mixedE3NexusProfile(game: FactionModuleProfile): boolean {
+  if (game.discoveryEnabled || game.discoveries) return mixedE3DiscoveryNexusProfile(game);
+  return !!game.nexusCards && !game.leaderSkills &&
+    (!game.techTokens || game.players.length >= 3) &&
+    (!game.strongholdCards || game.advanced) &&
+    !game.discoveryEnabled && !game.discoveries && !game.discoveryStash && !game.greatMaker &&
+    !game.ecazTreachery && !game.semutaPreview && !game.advancedPreview &&
+    !game.kullPreview && !game.nexusKullPreview && !game.guildBetrayalPreview &&
+    !game.richeseBetrayalPreview && !game.nexusIxianReplacementPreview &&
+    !game.nexusIxianBetrayalPreview && !game.nexusHarkonnenBetrayalPreview &&
+    mixedE3NexusRosterProfile(game);
 }

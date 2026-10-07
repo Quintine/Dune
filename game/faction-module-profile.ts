@@ -66,3 +66,38 @@ export function nativeFactionTechProfile(game: FactionModuleProfile): boolean {
   return native > 0 && (!e3 || native === 1) &&
     !(game.advanced && moritani && harkonnen);
 }
+
+export type MixedE3NativeRoster = {
+  advanced?: boolean;
+  expansions: readonly string[];
+  players?: readonly { faction: string }[];
+};
+
+/** Selected E3 plus E1 and/or E2, with an actual native from every selected family. */
+export function mixedE3NexusRosterProfile(game: MixedE3NativeRoster, skills = false): boolean {
+  const players = game.players;
+  if (typeof game.advanced !== 'boolean' || !players || players.length < 2 || players.length > 6 ||
+    game.expansions.length < 2 || game.expansions.length > 3 || !game.expansions.includes('ecaz'))
+    return false;
+  for (let i = 0; i < game.expansions.length; i++) {
+    const expansion = game.expansions[i];
+    if (expansion !== 'ecaz' && expansion !== 'ix' && expansion !== 'choam') return false;
+    for (let j = 0; j < i; j++) if (expansion === game.expansions[j]) return false;
+  }
+  let ix = false, choam = false, e3 = false, moritani = false, harkonnen = false;
+  for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+    for (let j = 0; j < i; j++) if (player.faction === players[j].faction) return false;
+    let family: string | undefined;
+    for (const faction of FACTIONS)
+      if (faction.id === player.faction) { family = faction.expansion; break; }
+    if (family === undefined || (family !== 'base' && !game.expansions.includes(family))) return false;
+    if (family === 'ix') ix = true;
+    if (family === 'choam') choam = true;
+    if (family === 'ecaz') e3 = true;
+    if (player.faction === 'moritani') moritani = true;
+    if (player.faction === 'harkonnen') harkonnen = true;
+  }
+  return e3 && ix === game.expansions.includes('ix') && choam === game.expansions.includes('choam') &&
+    !(game.advanced && harkonnen && (skills || moritani));
+}

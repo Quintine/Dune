@@ -17,12 +17,34 @@ open mode gates.
 
 ## Current checkpoint and work
 
-**In progress — mixed E3 and three-family Nexus.** Read-only mapping of
-original Ecaz/Moritani plus selected E1/E2 and all-three-family native
-Nexus admission and consumers, with Skills or no Skills and optional
-original Homeworld/Discovery/Tech/Advanced Strongholds. Original selected
-decks, physical setup and pending-ruling boundaries remain; no new
-admission/runtime checkpoint or public activation is claimed.
+**In progress — mixed E3 and three-family Nexus.** Original selected Ecaz
+plus Ix and/or CHOAM now requires an actual native from every selected
+family, with optional classics: Basic/Advanced2–6/all12 Nexus, optionally
+all14 Skills/Homeworlds/Discovery7/8/Tech3+/Advanced Strongholds2+.
+Original1536 admissions across36 roster families reach actual Traitors,
+Skills or Ixian pre-training offers versus eight legacy combined admissions
+before, on an unchanged source tree. The original generic Nexus/Skills and
+the combined five/six-native entry now also mark fresh native Ecaz Occupy
+and Advanced Moritani assassination, and the ordinary coalition, Bureaucrat,
+Duke, Richese Cunning, serialized overlap and printed native-opponent
+consumers are connected. Two real captured consumer omissions are repaired:
+the CLI's fixed physical stock check now counts Ecaz's separately held
+Loyalty card, and the engine's assassination inventory check now counts
+Tleilaxu Face Dancers. Selected decks/cache, shared-Duke/capture,
+force/payment and pending-effect guards remain.
+
+Dedicated original programme evidence for this envelope is **not** yet
+green: two independently authored programme pairs reached11/21 cases and
+were withdrawn from this checkpoint rather than shipped failing. Recorded
+engine constraints for resuming: the loser must dial for the winner to have
+rescuable casualties; Ixian Suboids are half-strength so dials are
+half-integers; support is capped by `maxCombatSupport`/`battleSupportBudget`;
+a Worthless card is a defense, not a weapon; a normal Traitor call needs the
+held card to match the opponent's plan leader; and the mixed-E3 Moritani
+Terror/Cunning windows need their own real shipment. No new frozen
+test/build/game/human checkpoint, public start or played-save conversion
+is claimed.
+
 
 **Mixed E1/E2 and paired E3 Nexus — bounded Development Verified.**
 Original both-family Ix+CHOAM/union47 or both Ecaz+Moritani/ecaz33/classic

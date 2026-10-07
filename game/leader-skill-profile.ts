@@ -1,4 +1,5 @@
 import { FACTIONS } from './catalog';
+import { mixedE3NexusRosterProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile } from './discovery-module-profile';
 
 /** Public configuration only; never gate a skill on a hidden card or random deal. */
@@ -165,6 +166,12 @@ export function pairedE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): bool
     }
   }
   return ecaz && moritani;
+}
+
+/** Original two/three selected families with native E3, Nexus and optional original modules. */
+export function mixedE3NexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  return nexusLeaderSkillModulesSupported(game, game.advanced === true, true) &&
+    mixedE3NexusRosterProfile(game, true);
 }
 
 /** Discovery keeps original native roster predicates; only this module envelope
@@ -425,7 +432,7 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
 }
 
 export function nativeExpansionLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  return mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
+  return mixedE3NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
     basicExpansionLeaderSkillsProfile(game) || advancedNativeLeaderSkillsProfile(game) ||
     advancedMoritaniLeaderSkillsProfile(game) || nativeEcazLeaderSkillsProfile(game);
 }
@@ -485,7 +492,7 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
     singleE1E2NexusLeaderSkillsProfile(game) ||
-    mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
+    mixedE3NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
     pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) ||
     classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game) ||
     homeworldLeaderSkillsProfile(game);

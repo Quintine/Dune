@@ -3,8 +3,8 @@ import type { Game } from './engine';
 import { acquireDuke, DUKE_VIDAL_ID, type DukeSource } from './duke-vidal';
 import { nexusCardMode } from './nexus-cards';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
-import { pairedE3NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile } from './leader-skill-profile';
-import { pairedE3NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
+import { mixedE3NexusLeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile } from './leader-skill-profile';
+import { mixedE3NexusProfile, pairedE3NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 
 const SUPPORTED_FACTIONS: Partial<Record<FactionId, true>> = {
   ecaz: true, moritani: true, atreides: true, harkonnen: true,
@@ -88,11 +88,11 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
 }
 
 export function nexusEcazDukeModeSupported(g: Game): boolean {
-  if ((standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
+  if ((mixedE3NexusProfile(g) || standaloneE3NexusProfile(g) || pairedE3NexusProfile(g)) &&
     g.players.some(player => player.faction === 'ecaz') &&
     !g.sandtrout && !(g.advanced && g.players.some(player => player.faction === 'harkonnen')))
     return !!g.nexusCards?.cards && g.players.length >= 3;
-  if (g.leaderSkills && (standaloneE3NexusLeaderSkillsProfile(g) || pairedE3NexusLeaderSkillsProfile(g)) &&
+  if (g.leaderSkills && (mixedE3NexusLeaderSkillsProfile(g) || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3NexusLeaderSkillsProfile(g)) &&
     g.players.some(player => player.faction === 'ecaz') && !g.sandtrout)
     return !!g.nexusCards?.cards && g.players.length >= 3;
   return !!g.nexusCards?.cards && g.players.length >= 3 && g.players.length <= 6 &&

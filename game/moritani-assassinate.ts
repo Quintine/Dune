@@ -65,6 +65,10 @@ const opponents: readonly FactionId[] = [
   'emperor',
   'fremen',
   'ecaz',
+  'ixians',
+  'tleilaxu',
+  'choam',
+  'richese',
 ];
 const identifier = (value: unknown): value is string =>
   typeof value === 'string' &&
