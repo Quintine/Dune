@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 7 October 2026 — administrator stalled-decision diagnosis
+
+The owner-only operations page gains **List stalled decisions**: a bounded,
+read-only sample of at most ten live rooms whose public pending interaction —
+`decision`, `response`, `truthtrance` or `phaseOpening` — has been idle longest,
+reported as room code, idle duration, interaction kind, turn and phase. The
+aggregate sample adds `stalledRooms` and `oldestStalledChange` for the same
+predicate. `GET /api/admin/operations?stalled=1` repeats live owner authority,
+answers `no-store`, rejects any other query combination with `400` and stays
+read-only: it repairs nothing and pause/close/remove/archive keep their own
+audited controls.
+
+Paused, closed, removed and archived rooms are excluded, as are unreadable JSON
+states and non-playing rooms. Only public coordination facts are selected — no
+hands, orders, private decisions, seat credentials or raw saved state — and the
+sample is bounded to ten rows, oldest first. A stall is inferred from the room
+write time, so a slow human turn also counts; the sample does not diagnose why a
+decision is stuck, disk capacity or backup recoverability.
+
+Owner-only unit coverage asserts the counters, the oldest stalled write, the
+bounded oldest-first order, every exclusion boundary, idle arithmetic, the
+absence of private content and the owner recheck after demotion. The anonymous
+HTTP boundary now also denies `?stalled=1`; the full HTTP integration suite
+passes 55/55 against a local build of this revision. No game, seat, saved state,
+deployment, public start or played-save conversion changes.
+
 ## 7 October 2026 — mixed E3 programme evidence and the deferred Terror entry
 
 The withdrawn mixed E3 programme pairs are green: Moritani9/9 and Ecaz14/14

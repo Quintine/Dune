@@ -15,7 +15,7 @@ recovery and persistence systems where suitable.
 | Lifecycle and removal | [Pause/resume and joining locks](ADMIN_ROOM_CONTROLS.md), [administrative close/reopen](ADMIN_ROOM_CLOSURE.md) and [recoverable removal/restoration](ADMIN_ROOM_REMOVAL.md) have controls, durable audit, exact retries and player/AI enforcement. [Archive/unarchive](ADMIN_ROOM_ARCHIVE.md) has separate directory filters and exact retries. Permanent deletion and bulk actions remain missing. | Prototyped, partial |
 | Participant support | [Participant AI](ADMIN_PARTICIPANT_AI.md) enables an existing difficulty on an eligible human seat in a paused game, retaining access/takeback and private custody. [Discussion controls](ADMIN_DISCUSSION.md) mute/unmute new sends while retaining history and gameplay. Participant removal, access revocation, assisted recovery and further replacement remain. Existing lobby controls can reassign the host. | Prototyped, partial |
 | Saved-game operations | [Owner-only room backups](ADMIN_BACKUPS.md) capture/list/download a size-limited, version-fenced room snapshot without changing play or access; import validation, safe checkpoint restore and interrupted-work diagnosis/resume remain missing. | Prototyped, partial |
-| Operations and audit | [Action history](ADMIN_ACTION_HISTORY.md) searches existing durable operations with safe settings and role-limited reasons. The owner-only [operations page](../app/admin/operations/page.tsx) samples build revision, room/seat flags, JSON syntax failures and backup/export counts without exposing game contents. An explicit owner action runs read-only SQLite quick/foreign-key checks and returns only pass/fail, never corrupt row details. Failed-attempt records, disk capacity, stalled-decision diagnosis and maintenance controls remain. | Prototyped, partial |
+| Operations and audit | [Action history](ADMIN_ACTION_HISTORY.md) searches existing durable operations with safe settings and role-limited reasons. The owner-only [operations page](../app/admin/operations/page.tsx) samples build revision, room/seat flags, JSON syntax failures and backup/export counts without exposing game contents. [Stalled-decision diagnosis](ADMIN_STALLED_DECISIONS.md) adds a bounded, read-only sample of live rooms whose public pending interaction has been idle longest, with aggregate counters. An explicit owner action runs read-only SQLite quick/foreign-key checks and returns only pass/fail, never corrupt row details. Failed-attempt records, disk capacity and maintenance controls remain. | Prototyped, partial |
 
 Track each area through Missing, Prototyped, Integrated, Verified and Polished.
 As implementation begins, link its controls, server actions, persistence,
@@ -82,7 +82,16 @@ owner authority inside the query batch and returns only pass/fail and sample
 time, never a table name, row ID, private save or SQLite diagnostic text.
 The check can take time; a failed check calls for a protected snapshot and
 private diagnosis, not automatic repair. It does not prove disk capacity,
-backup recoverability, valid game rules or the absence of stalled decisions.
+backup recoverability or valid game rules.
+
+[Stalled-decision diagnosis](ADMIN_STALLED_DECISIONS.md) adds **List stalled
+decisions**: a bounded, read-only sample of at most ten live rooms whose public
+pending interaction — a decision, response, Truthtrance or phase opening — has
+been idle longest, with the room code, idle duration, interaction kind, turn
+and phase. Paused, closed, removed and archived rooms are excluded, no private
+game content is selected, and the sample repairs nothing; the aggregate sample
+also reports the stalled count and the oldest stalled write. A stall is inferred
+from the room write time, so a slow human turn counts too.
 
 The directory uses an explicit field allowlist, independent of any player view.
 It never returns hands, Traitors, predictions, plans, private messages, recovery

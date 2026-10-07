@@ -50,6 +50,16 @@ settles, without replaying payment or force transfer. A Terror entry already in
 flight and every Ambassador combination still reject. Selected decks/cache,
 shared-Duke/capture, force/payment and pending-effect guards remain.
 
+**In progress — administrator operations.** The owner-only operations page now
+also diagnoses [stalled decisions](ADMIN_STALLED_DECISIONS.md): a bounded,
+read-only sample of at most ten live rooms whose public pending interaction — a
+decision, response, Truthtrance or phase opening — has been idle longest, plus
+`stalledRooms` and `oldestStalledChange` counters in the aggregate sample.
+Paused, closed, removed and archived rooms are excluded and no private game
+content is selected; `GET /api/admin/operations?stalled=1` stays owner-only,
+`no-store` and read-only, and it repairs nothing. Failed-attempt records, disk
+capacity and maintenance controls remain.
+
 
 **Mixed E1/E2 and paired E3 Nexus — bounded Development Verified.**
 Original both-family Ix+CHOAM/union47 or both Ecaz+Moritani/ecaz33/classic

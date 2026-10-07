@@ -14,3 +14,17 @@
 
 .admin-operations-grid dt { color: #b7bbaf; font-size: 0.9rem; }
 .admin-operations-grid dd { margin: 0.35rem 0 0; font-size: 1.2rem; overflow-wrap: anywhere; }
+
+.admin-stalled-table {
+  width: 100%;
+  margin: 0.75rem 0;
+  border-collapse: collapse;
+}
+
+.admin-stalled-table caption { text-align: left; color: #b7bbaf; font-size: 0.9rem; padding-bottom: 0.35rem; }
+.admin-stalled-table th, .admin-stalled-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.admin-stalled-table thead th { color: #b7bbaf; font-size: 0.9rem; }

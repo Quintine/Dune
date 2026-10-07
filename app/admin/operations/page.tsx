@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ClientRequestError, requestJson } from '@/lib/client-request';
-import type { AdminIntegrity, AdminOperations } from '@/db/admin-operations';
+import type { AdminIntegrity, AdminOperations, AdminStalledDecision } from '@/db/admin-operations';
 import '../admin.css';
 import './operations.css';
 
 type Account = { id: string; role: 'owner' | 'operator' | 'viewer' };
 type Snapshot = AdminOperations & { revision: string };
+type Stalled = { observedAt: number; stallMs: number; stalled: AdminStalledDecision[] };
 const message = (error: unknown) => error instanceof Error ? error.message : 'Operational status is unavailable.';
+const idle = (idleMs: number) => `${Math.floor(idleMs / 3_600_000)}h ${Math.floor(idleMs % 3_600_000 / 60_000)}m`;
 
 export default function OperationsPage() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
@@ -20,6 +22,10 @@ export default function OperationsPage() {
   const [integrityNotice, setIntegrityNotice] = useState('');
   const [checking, setChecking] = useState(false);
   const integrityEpoch = useRef(0);
+  const [stalled, setStalled] = useState<Stalled | null>(null);
+  const [stalledNotice, setStalledNotice] = useState('');
+  const [loadingStalled, setLoadingStalled] = useState(false);
+  const stalledEpoch = useRef(0);
   useEffect(() => {
     let canceled = false;
     const epoch = integrityEpoch;
@@ -62,11 +68,34 @@ export default function OperationsPage() {
     }
   }
 
+  async function checkStalled() {
+    const epoch = ++stalledEpoch.current;
+    setLoadingStalled(true);
+    setStalled(null);
+    setStalledNotice('');
+    try {
+      const { admin } = await requestJson<{ admin: Account }>('/api/admin/session', { cache: 'no-store' });
+      if (admin.role !== 'owner') throw new Error('Operations are available only to an owner.');
+      const result = await requestJson<Stalled>('/api/admin/operations?stalled=1', {
+        cache: 'no-store', headers: { 'X-Dune-Admin-Id': admin.id },
+      });
+      if (epoch === stalledEpoch.current) setStalled(result);
+    } catch (error) {
+      if (epoch === stalledEpoch.current)
+        setStalledNotice(error instanceof ClientRequestError && [401, 403].includes(error.status ?? 0)
+          ? 'Owner access changed or expired. Sign in to administration again.' : message(error));
+    } finally {
+      if (epoch === stalledEpoch.current) setLoadingStalled(false);
+    }
+  }
+
   return <main className="admin-shell">
     <header className="admin-header"><div><a className="admin-return" href="/admin">Administration</a><h1>Operations</h1></div>
       <Button variant="outline" disabled={loading} onClick={() => {
         integrityEpoch.current++;
+        stalledEpoch.current++;
         setIntegrity(null); setIntegrityNotice(''); setChecking(false);
+        setStalled(null); setStalledNotice(''); setLoadingStalled(false);
         setSnapshot(null); setLoading(true); setRefresh(value => value + 1);
       }}>Refresh status</Button></header>
     <p>Owner-only, read-only counts from the current database and the revision baked into this server build. Refresh to take a new sample; no monitoring or automatic repair runs here.</p>
@@ -86,8 +115,30 @@ export default function OperationsPage() {
         <div><dt>Room backup snapshots</dt><dd>{snapshot.backupSnapshots}</dd></div>
         <div><dt>Backup snapshot payload bytes</dt><dd>{snapshot.backupBytes.toLocaleString()}</dd></div>
         <div><dt>Recorded private exports</dt><dd>{snapshot.backupDownloads}</dd></div>
+        <div><dt>Rooms waiting on a stalled interaction</dt><dd>{snapshot.stalledRooms}</dd></div>
+        <div><dt>Oldest stalled room write</dt><dd>{snapshot.oldestStalledChange === null ? 'None stalled' : new Date(snapshot.oldestStalledChange).toLocaleString()}</dd></div>
       </dl>
-      <p>These counters do not check SQLite integrity, disk free space, backup recoverability, stalled decisions or server health outside this request. The invalid JSON count detects syntax only, not rule-level save validity; this page cannot repair a room.</p>
+      <p>These counters do not check SQLite integrity, disk free space, backup recoverability or server health outside this request. The invalid JSON count detects syntax only, not rule-level save validity; this page cannot repair a room.</p>
+      <Button variant="outline" disabled={loadingStalled} onClick={() => void checkStalled()}>List stalled decisions</Button>
+      <p>Read-only sample of up to ten live rooms whose public pending interaction has been idle longest. It excludes paused, closed, removed and archived rooms and shows no private game contents.</p>
+      {loadingStalled && <output>Sampling stalled rooms…</output>}
+      {stalledNotice && <p role="alert" className="admin-notice">{stalledNotice}</p>}
+      {stalled && <section aria-label="Stalled decisions">
+        <p>Sampled {new Date(stalled.observedAt).toLocaleString()}; idle means no room write for {Math.round(stalled.stallMs / 3_600_000)} hours.</p>
+        {stalled.stalled.length === 0 ? <p>No live room is waiting on a stalled interaction.</p>
+          : <table className="admin-stalled-table">
+            <caption>Stalled rooms, longest idle first</caption>
+            <thead><tr><th scope="col">Room</th><th scope="col">Waiting on</th><th scope="col">Turn</th><th scope="col">Phase</th><th scope="col">Idle</th></tr></thead>
+            <tbody>{stalled.stalled.map(room => <tr key={room.code}>
+              <th scope="row">{room.code}</th>
+              <td>{room.kind}</td>
+              <td>{room.turn ?? '—'}</td>
+              <td>{room.phase ?? '—'}</td>
+              <td>{idle(room.idleMs)}</td>
+            </tr>)}</tbody>
+          </table>}
+        <p>This sample changes nothing. Pause, resume, close or remove a room only through its own controls and audit.</p>
+      </section>}
       <Button variant="outline" disabled={checking} onClick={() => void checkIntegrity()}>Run integrity check</Button>
       <p>This manual, read-only SQLite quick check and foreign-key check may take time. It reports pass/fail only: not disk capacity, backup recoverability or game-rule validity.</p>
       {checking && <output>Checking database structure and references…</output>}
