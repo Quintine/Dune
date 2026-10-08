@@ -99,7 +99,7 @@ import {
   guildTransportCost,
 } from './bot-mobility';
 import { planetologistMovementModeSupported, planetologistLeader } from './planetologist-movement';
-import { sandmasterDefaultChoice, sandmasterDestinationCollection } from './sandmaster-movement';
+import { quoteSandmasterStronghold, sandmasterDefaultChoice, sandmasterDestinationCollection } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
@@ -1452,15 +1452,18 @@ function policyActions(g: GameView): Action[] {
         ),
       }))
       .sort((a, b) => b.value - a.value)[0];
-    if (route && route.value >= [4, 5, 6, 6][level])
+    if (route && route.value >= [4, 5, 6, 6][level]) {
+      const sandmaster = quoteSandmasterStronghold(g, me.id, route.route);
       return [
         {
           type: 'card',
           mode: 'special',
           card: specialCard.id,
           route: route.route,
+          ...(sandmaster ? { sandmasterPiles: sandmaster.collect } : {}),
         },
       ];
+    }
   }
   if (
     specialCard &&
@@ -2209,7 +2212,11 @@ function policyActions(g: GameView): Action[] {
       return [
         ...routes
           .filter((r) => r.score > 0)
-          .map((r) => ({ type: 'decision', route: r.route })),
+          .map(r => {
+            const sandmaster = quoteSandmasterStronghold(g, me.id, r.route);
+            return { type: 'decision', route: r.route,
+              ...(sandmaster ? { sandmasterPiles: sandmaster.collect } : {}) };
+          }),
         { type: 'decision', decline: true },
       ];
     }

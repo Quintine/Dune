@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 9 October 2026 — owned native HMS Sandmaster pile allocation
+
+Both native Storm relocation and Advanced special Karama carry optional
+explicit `sandmasterPiles`. The common quote supplies one positive key per
+entered territory; controls allow a different sector or bonus decline,
+without declining native collection. Invalid/undeclared ambiguity rejects
+before cost. The original entered-territory eligibility and skill-before-
+faction order come from the 7 October ruling; owner allocation is provisional.
+
+Selected keys persist through the ordinary Karama window, special intent
+and action reconstruction. Older queued moves retain their original single-
+pile behavior. Native geography, ordinary transport allowances and
+faction collection caps stay unchanged. The UI preview simulates skill
+debits before faction collection and depletion on repeated route sectors.
+
+Basic/Advanced native smoke: six passengers, traversed Arsunt11=12 and
+Arsunt12=5. Selecting11 earns12; selecting12 earns13 and leaves0/4.
+Cancellation leaves pointer/piles/balance unchanged. JSON continues the
+selected pending route. All four policies emit legal selected routes.
+A labelled phase-five special-Karama seam moves/collects once, spends the
+physical card once and preserves ordinary shipment/movement.
+At390px, production controls show12→13, exercise bonus decline/reselection
+and commit the same0/4 piles with spice10→23 after native allowance.
+
+`check:quick`, 15 movement/control and 92 shared mobile/special/Kull cases
+pass. No full suite, new recovery campaign or deployment was run.
+Temporary scripts and the dedicated in-memory QA service were removed.
+
 ## 9 October 2026 — owned worm and physical Ambassador destination piles
 
 The shared destination quote exposes all legal positive piles and an exact

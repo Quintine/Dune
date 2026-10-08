@@ -29,6 +29,20 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Owned HMS Sandmaster piles — 9 October.** Storm relocation and Advanced
+Ixian special Karama now select one bonus debit pile per entered territory,
+or decline that bonus while retaining native collection. Existing preparation
+and the pending route retain the keys; cancellation transfers nothing.
+The preview applies Sandmaster before native collection. Native smoke in
+both modes and a labelled special-Karama seam show12 total when debiting
+the traversed pile versus13 from another sector. All four legal policies
+retain declared keys. At390px, the actual control previews12→13 and commits
+Arsunt11/Arsunt12 at0/4 with personal spice10→23.
+Types/lint, 15 movement/control and 92 shared special-power cases pass.
+See [the HMS policy](SANDMASTER_MOVEMENT.md#owned-native-hms-pile-allocation--9-october-2026);
+allocation remains provisional and public/comprehensive gates stay closed.
+
+
 **Owned Sandmaster destination piles — 9 October.** Native worm rides and
 physical Fremen Ambassador relocation now select an exact positive pile
 when several exist. Collection remains optional and capped at one spice;
@@ -38,7 +52,7 @@ all four existing legal policies pass without destination-strategy changes.
 At390px, actual worm controls debit Pasty Mesa6 while landing four forces
 in Mesa5 (spice5→6); Ambassador controls reset on a destination change and
 debit South Mesa5 while landing two forces in Mesa4 (spice20→21).
-Types/lint and 91 affected cases pass. HMS multi-pile controls remain open.
+Types/lint and 91 affected cases pass; the later HMS checkpoint above extends these controls.
 See [worm](SANDMASTER_WORM.md#connected-behavior) and
 [physical Ambassador](SANDMASTER_MOVEMENT.md#physical-ambassador-owned-destination-allocation--9-october-2026).
 

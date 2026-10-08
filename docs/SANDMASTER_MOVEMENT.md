@@ -30,10 +30,35 @@ becomes3, and three forces arrive in Cielago East.
 
 Destination relocation choices are separate from these ground-route controls;
 physical Fremen Ambassador allocation is recorded below and worm collection
-in [its own contract](SANDMASTER_WORM.md). Native HMS relocation retains its
-single-pile scope. No public start or broader source adjudication is opened
-by this ground-route change.
+in [its own contract](SANDMASTER_WORM.md). Native HMS relocation now has
+the owned-pile control described below. No public start or broader source
+adjudication is opened by this ground-route change.
 
+
+## Owned native HMS pile allocation — 9 October 2026
+
+Storm relocation and Advanced Ixian special Karama now offer one Sandmaster
+debit pile per entered territory, or an independent decline of that bonus.
+The global collection opt-out still declines all collection. The shared
+quote requires a living native Ixian trainer and actual interior passengers.
+Explicit `sandmasterPiles` declarations preserve the exact chosen keys
+through native cancellation and special-Karama preparation/reconstruction.
+Ambiguous undeclared or duplicate-territory selections reject before cost.
+
+Sandmaster debits first, then the unchanged native collection uses the
+traversed sectors and two-spice-per-passenger cap. The route preview follows
+the same order, including repeated sector visits. With six passengers,
+Arsunt11 holding12 and Arsunt12 holding5, choosing11 earns12 total;
+choosing12 earns13, leaves Arsunt12 at4 and drains Arsunt11. Native
+cancellation moves neither pointer nor spice. Older queued moves without
+the new selection retain their original unambiguous-pile behavior.
+
+Owner sector allocation is provisional, not publisher adjudication; the
+7 October user eligibility/order ruling is unchanged. Basic/Advanced
+native smoke, selected-key JSON continuation, cancellation, all four legal
+policies and a labelled Advanced special-Karama seam pass. At390px,
+the real control changes the preview12→13, declines/reselects the bonus
+and completes the native route with personal spice10→23.
 
 ## Physical Ambassador owned-destination allocation — 9 October 2026
 
@@ -168,8 +193,8 @@ Broad checkpoint results are recorded with the checkpoint. These checks do not c
 The [worm-ride follow-up](SANDMASTER_WORM.md) connects native Fremen destination
 collection, including saved arrival reactions. Physical Fremen Ambassador
 relocation is connected above. Other nonordinary relocations, special cards,
-concealed-marker collection, multi-pile HMS collection and wider
-interaction/strategy acceptance remain. The lower battle band is in
+concealed-marker collection and wider interaction/strategy acceptance remain.
+The lower battle band is in
 [the battle-effects contract](LEADER_BATTLE_EFFECTS.md).
 
 ## 21 September: native HMS relocation eligibility
@@ -192,8 +217,7 @@ The checked card, designer walkthrough and available official rules did not
 clarify whether passengers staying in the interior count as entering outside
 territories. **Resolved 7 October 2026 by user ruling:** interior passengers
 **do count as entering** the outside territories the stronghold points into, so
-the Sandmaster skill collects one spice per entered territory with an
-unambiguous pile during a native relocation, before the faction's own
-traversed-sector collection. Skill-before-faction precedence settles the
-ordering. Ordinary Sandmaster entry/exit and native relocation are unchanged;
-full combined compliance remains unverified.
+the Sandmaster skill collects one spice per entered territory before the
+faction's own traversed-sector collection. The 9 October owner-allocation
+prototype above extends the earlier unambiguous-pile path; it does not
+change the user ruling. Full combined compliance remains unverified.

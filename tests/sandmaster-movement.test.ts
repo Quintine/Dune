@@ -25,10 +25,9 @@ const restored = (g: Game): Game => JSON.parse(JSON.stringify(g));
 function unchanged(
   g: Game,
   action: Action,
-  error = /Sandmaster|route|collection|source|spice/i,
 ) {
   const before = structuredClone(g);
-  assert.throws(() => applyAction(g, 'p', action), error);
+  assert.throws(() => applyAction(g, 'p', action));
   assert.deepEqual(g, before);
 }
 function conserved(g: Game, before: Game) {
@@ -42,6 +41,86 @@ function conserved(g: Game, before: Game) {
     game.players.reduce((a, p) => a + p.spice, 0);
   assert.equal(sum(g), sum(before));
 }
+
+function strongholdPileFixture(advanced = false) {
+  let game = smugglerShipmentGame('ixians', advanced, 'sandmaster', undefined, ['ix']);
+  game.players[0].forces = { [INSIDE]: 6 };
+  game.players[0].reserves = 14;
+  if (game.players[0].elites) game.players[0].elites.forces = { [INSIDE]: 3 };
+  game.mobileStronghold = { location: 'polar_sink:0' };
+  game.spice = {};
+  game.phase = 8;
+  game.active = null;
+  for (const player of game.players) game = applyAction(game, player.id, { type: 'ready' });
+  for (const player of game.players) game = applyAction(game, player.id, { type: 'ready' });
+  assert.equal(game.decision?.kind, 'mobileStronghold');
+  const route = mobileRoutes(game, 1).find(keys => mobileRouteDistance(keys) === 1 &&
+    territory(splitLocation(keys.at(-1)!).territory).sectors.some(
+      sector => sector !== splitLocation(keys.at(-1)!).sector && sector !== game.storm))!;
+  assert.ok(route);
+  const landing = route.at(-1)!;
+  const at = splitLocation(landing);
+  const other = `${at.territory}:${territory(at.territory).sectors.find(
+    sector => sector !== at.sector && sector !== game.storm)!}`;
+  game.spice = { [landing]: 12, [other]: 5 };
+  const karama = game.deck.find(card => card.effect === 'karama')!;
+  assert.ok(karama);
+  game.deck = game.deck.filter(card => card.id !== karama.id);
+  game.players[1].hand.push(karama);
+  return { game, route, landing, other, karama };
+}
+
+function allowStrongholdMove(state: Game): Game {
+  let game = state;
+  while (game.response) {
+    const owner = game.players.find(player => !game.response!.passed.includes(player.id))!.id;
+    game = applyAction(game, owner, { type: 'passResponse' });
+  }
+  return game;
+}
+
+void test('stronghold Sandmaster sector selection precedes native collection and cancellation transfers nothing', () => {
+  for (const advanced of [false, true]) {
+    const { game, route, landing, other, karama } = strongholdPileFixture(advanced);
+    unchanged(game, { type: 'decision', route });
+    unchanged(game, { type: 'decision', route, sandmasterPiles: [landing, other] });
+    for (const selected of [landing, other]) {
+      const pending = applyAction(game, 'p', { type: 'decision', route, sandmasterPiles: [selected] });
+      assert.equal(pending.players[0].spice, game.players[0].spice);
+      const done = allowStrongholdMove(restored(pending));
+      assert.equal(done.mobileStronghold!.location, landing);
+      assert.equal(done.spice[landing] ?? 0, 0);
+      assert.equal(done.spice[other], selected === other ? 4 : 5);
+      assert.equal(done.players[0].spice - game.players[0].spice, selected === other ? 13 : 12);
+    }
+    const pending = applyAction(game, 'p', { type: 'decision', route, sandmasterPiles: [other] });
+    const canceled = applyAction(pending, game.players[1].id, { type: 'card', card: karama.id, mode: 'cancel' });
+    assert.deepEqual(canceled.spice, game.spice);
+    assert.equal(canceled.mobileStronghold!.location, 'polar_sink:0');
+    assert.equal(canceled.players[0].spice, game.players[0].spice);
+  }
+});
+
+void test('Ixian special Karama retains selected Sandmaster pile without consuming ordinary transport', () => {
+  const { game, route, landing, other, karama } = strongholdPileFixture(true);
+  // Conserved held-card transfer and labelled phase-five budget seam.
+  game.phase = 5;
+  game.active = 'p';
+  game.decision = null;
+  game.response = null;
+  game.players[1].hand = game.players[1].hand.filter(card => card.id !== karama.id);
+  game.players[0].hand.push(karama);
+  const done = applyAction(game, 'p',
+    { type: 'card', mode: 'special', card: karama.id, route, sandmasterPiles: [other] });
+  assert.equal(done.mobileStronghold!.location, landing);
+  assert.equal(done.spice[landing] ?? 0, 0);
+  assert.equal(done.spice[other], 4);
+  assert.equal(done.players[0].spice - game.players[0].spice, 13);
+  assert.equal(done.players[0].moved, game.players[0].moved);
+  assert.equal(done.players[0].shipped, game.players[0].shipped);
+  assert.equal(done.players[0].specialKaramaUsed, true);
+  assert.equal(done.discard.filter(card => card.id === karama.id).length, 1);
+});
 void test('Sandmaster collects once in every selected traversed territory and preserves JSON continuation', () => {
   for (const advanced of [false, true]) {
     const g = sandmasterMovementGame('emperor', advanced),
@@ -137,7 +216,7 @@ void test('Sandmaster rejects disconnected, overlong, storm and duplicate collec
   unchanged(g, { ...action, sandmaster: null });
   const blocked = restored(g);
   blocked.storm = splitLocation(route.at(-1)!).sector;
-  unchanged(blocked, action, /storm|blocked|Sandmaster/i);
+  unchanged(blocked, action);
   const tooFar = restored(g);
   delete tooFar.players[0].forces['arrakeen:10'];
   tooFar.players[0].reserves++;

@@ -21,7 +21,7 @@ import { planetologistMovementModeSupported, planetologistLeader, planetologistR
 import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFieldCompanion } from './smuggler-no-field';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, smugglerBattleAllocationRequired, chooseSmugglerBattleAllocation, type SmugglerBattleReceipt, type SmugglerBattleCollectionOffer } from './smuggler-battle';
-import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterCollectionPiles, sandmasterLeader, sandmasterRouteDistance, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
+import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterCollectionPiles, sandmasterLeader, sandmasterRouteDistance, validateSandmasterStronghold, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { BankerIncomeError, createBankerIncomeState, validateBankerIncomeState, quoteBankerIncome, commitBankerIncome, quoteBankerIncomeCollection, commitBankerIncomeCollection, projectBankerIncome, type BankerIncomeState, type BankerIncomeAuthority, type BankerIncomeContext } from './spice-banker-income';
@@ -1829,6 +1829,7 @@ export type Game = {
     player: string;
     route: string[];
     collect: boolean;
+    sandmasterPiles?: string[];
   } | null;
   revivalRules?: RevivalRules;
   revivalRequests?: Record<
@@ -25771,23 +25772,24 @@ function validateMobileMove(g: Game, p: Player, input: unknown, max: number) {
 }
 function relocateMobileStronghold(
   g: Game,
-  move: { player: string; route: string[]; collect: boolean },
+  move: { player: string; route: string[]; collect: boolean; sandmasterPiles?: string[] },
 ) {
   const p = getPlayer(g, move.player);
   const blocked = homeworldRule(() => homeworldMobileStrongholdMovementBlock(g, p.id));
   requireRule(!blocked, blocked ?? 'The mobile stronghold cannot move.');
+  const skillPiles = move.sandmasterPiles !== undefined
+    ? nexusRule(() => validateSandmasterStronghold(g, p.id, move.route, move.sandmasterPiles, move.collect))
+    : sandmasterLeader(g, p.id)
+      ? Object.values(sandmasterCollectionPiles(g, { interior: move.route })).filter(piles => piles.length === 1).map(piles => piles[0])
+      : [];
   let collected = 0;
   if (move.collect) {
     // User ruling 7 October 2026: passengers remaining inside a relocated HMS
     // interior count as entering the outside territories the stronghold points
     // into, so the Sandmaster skill collects there before the faction's own
     // traversed-sector collection.
-    if (sandmasterLeader(g, move.player))
-      for (const piles of Object.values(sandmasterCollectionPiles(g, { interior: move.route }))) {
-        // HMS relocation keeps its existing single-pile scope until its
-        // separate route controls can select the Sandmaster debit sector.
-        if (piles.length !== 1) continue;
-        const pile = piles[0];
+    // Unselected older queued moves retain their original unambiguous-pile path.
+    for (const pile of skillPiles) {
         g.spice[pile]--;
         if (!g.spice[pile]) delete g.spice[pile];
         p.spice++;
@@ -26760,7 +26762,7 @@ export type SpecialKaramaIntent = {
 } & (
   | { kind: 'choam'; cards: string[] }
   | { kind: 'richese'; acquire: string }
-  | { kind: 'ixians'; route: string[]; collect: boolean }
+  | { kind: 'ixians'; route: string[]; collect: boolean; sandmasterPiles?: string[] }
   | { kind: 'tleilaxu'; target: string; revival: PendingRevival }
   | { kind: 'fremen'; territory: string }
   | {
@@ -26907,11 +26909,14 @@ export function prepareSpecialKaramaIntent(
       'Move the stronghold with special Karama during your own Shipment and Movement turn.',
     );
     const route = validateMobileMove(g, p, action.route, 2);
+    const sandmasterPiles = nexusRule(() => validateSandmasterStronghold(
+      g, p.id, route, action.sandmasterPiles, action.collect !== false));
     return {
       ...base,
       kind: 'ixians',
       route: [...route],
       collect: action.collect !== false,
+      ...(action.sandmasterPiles !== undefined ? { sandmasterPiles } : {}),
     };
   } else if (p.faction === 'tleilaxu') {
     requireRule(
@@ -27082,7 +27087,8 @@ function specialKaramaAction(intent: SpecialKaramaIntent): Action {
     case 'choam':
       return { ...action, cards: [...intent.cards] };
     case 'ixians':
-      return { ...action, route: [...intent.route], collect: intent.collect };
+      return { ...action, route: [...intent.route], collect: intent.collect,
+        ...(intent.sandmasterPiles !== undefined ? { sandmasterPiles: [...intent.sandmasterPiles] } : {}) };
     case 'tleilaxu':
     case 'atreides':
     case 'guild':
@@ -27241,6 +27247,7 @@ export function executeSpecialKaramaIntent(
       player: p.id,
       route,
       collect: intent.collect,
+      ...(intent.sandmasterPiles !== undefined ? { sandmasterPiles: intent.sandmasterPiles } : {}),
     });
   } else if (intent.kind === 'tleilaxu') {
     const target = intent.target;
@@ -29089,10 +29096,13 @@ function applyActionInner(
       } else if (action.decline === true) beginStormTurn(g);
       else {
         const route = validateMobileMove(g, p, action.route, 3);
+        const sandmasterPiles = nexusRule(() => validateSandmasterStronghold(
+          g, p.id, route, action.sandmasterPiles, action.collect !== false));
         g.pendingMobileMove = {
           player: p.id,
           route,
           collect: action.collect !== false,
+          ...(action.sandmasterPiles !== undefined ? { sandmasterPiles } : {}),
         };
         g.response = {
           kind: 'mobileStronghold',
@@ -32366,6 +32376,7 @@ export function viewGame(state: Game, id: string) {
       ? {
           route: g.pendingMobileMove.route,
           collect: g.pendingMobileMove.collect,
+          sandmasterPiles: g.pendingMobileMove.sandmasterPiles,
         }
       : null,
     techTokens: g.techTokens ?? null,

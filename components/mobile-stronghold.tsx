@@ -11,6 +11,7 @@ import {
   territory,
 } from '@/game/board';
 import type { Action, GameView } from '@/game/engine';
+import { quoteSandmasterStronghold } from '@/game/sandmaster-movement';
 const label = (key: string) => {
   const loc = splitLocation(key);
   return `${territory(loc.territory).name}${loc.sector ? ` · sector ${loc.sector}` : ''}`;
@@ -32,6 +33,7 @@ export function MobileStronghold({
   const [destination, setDestination] = useState('polar_sink:0');
   const [route, setRoute] = useState<string[]>(pointer ? [pointer] : []);
   const [collect, setCollect] = useState(true);
+  const [skillSelections, setSkillSelections] = useState<Record<string, string | false>>({});
   const max = card ? 2 : 3;
   const current = route.at(-1) ?? '';
   const choices = placement
@@ -45,11 +47,20 @@ export function MobileStronghold({
           splitLocation(route[0]).sector !== g.storm,
       );
   const me = g.players.find((p) => p.id === g.me)!;
-  const preview = route.reduce(
-    (sum, key) =>
-      sum + Math.min(g.spice[key] ?? 0, (me.forces[MOBILE_LOCATION] ?? 0) * 2),
-    0,
-  );
+  const sandmaster = placement ? null : quoteSandmasterStronghold(g, me.id, route);
+  const skillPiles = collect && sandmaster
+    ? Object.entries(sandmaster.piles).flatMap(([id, keys]) => {
+        const chosen = skillSelections[id];
+        return chosen === false ? [] : [typeof chosen === 'string' && keys.includes(chosen) ? chosen : keys[0]];
+      }) : [];
+  let preview = 0;
+  const remaining: Record<string, number> = {};
+  for (const key of route) {
+    const before = remaining[key] ?? Math.max(0, (g.spice[key] ?? 0) - Number(skillPiles.includes(key)));
+    const amount = Math.min(before, (me.forces[MOBILE_LOCATION] ?? 0) * 2);
+    remaining[key] = before - amount;
+    preview += amount;
+  }
   const valid =
     placement ||
     (!blocked && route.length > 1 &&
@@ -82,7 +93,7 @@ export function MobileStronghold({
           </ol>
           <p className="fine">
             {mobileRouteDistance(route)} / {max} territories ·{' '}
-            {collect ? preview : 0} spice to collect
+            {collect ? preview + skillPiles.length : 0} spice to collect
           </p>
         </>
       )}
@@ -121,6 +132,27 @@ export function MobileStronghold({
             />
             Collect spice along the route
           </label>
+          {sandmaster && Object.keys(sandmaster.piles).length > 0 && (
+            <fieldset className="space-y-3">
+              <legend>Sandmaster · one spice per entered territory</legend>
+              <p className="fine">Provisional owner allocation: choose one existing pile or decline each collection. Sandmaster resolves before the faction’s route collection; this is not a publisher allocation ruling.</p>
+              {Object.entries(sandmaster.piles).map(([id, keys]) => (
+                <label className="flex flex-col gap-2" key={id}>
+                  {territory(id).name} · Sandmaster debit pile
+                  <select className="min-h-11 w-full" disabled={busy || !collect}
+                    value={skillSelections[id] === false ? '' :
+                      keys.includes(String(skillSelections[id])) ? String(skillSelections[id]) : keys[0]}
+                    onChange={event => setSkillSelections({ ...skillSelections, [id]: event.target.value || false })}>
+                    <option value="">Decline Sandmaster collection here</option>
+                    {keys.map(key => <option key={key} value={key}>
+                      Sector {splitLocation(key).sector}: {g.spice[key]} → {g.spice[key] - 1} spice
+                    </option>)}
+                  </select>
+                </label>
+              ))}
+              <p className="fine">{skillPiles.length} Sandmaster spice; {collect ? preview : 0} native faction spice.</p>
+            </fieldset>
+          )}
           {!valid && route.length > 1 && (
             <p className="fine">Finish in a non-stronghold territory.</p>
           )}
@@ -134,8 +166,10 @@ export function MobileStronghold({
             placement
               ? { type: 'decision', location: destination }
               : card
-                ? { type: 'card', mode: 'special', card, route, collect }
-                : { type: 'decision', route, collect },
+                ? { type: 'card', mode: 'special', card, route, collect,
+                    ...(sandmaster ? { sandmasterPiles: skillPiles } : {}) }
+                : { type: 'decision', route, collect,
+                    ...(sandmaster ? { sandmasterPiles: skillPiles } : {}) },
           )
         }
       >

@@ -178,6 +178,41 @@ export function sandmasterCollectionPiles(
   }
   return choices;
 }
+
+export function quoteSandmasterStronghold(game: Game | GameView, player: string, route: string[]) {
+  const seat = game.players.find(p => p.id === player);
+  const leader = sandmasterLeader(game, player);
+  if (!leader || !sandmasterModeSupported(game) || seat?.faction !== 'ixians' ||
+      !(seat.forces[MOBILE_LOCATION] > 0)) return null;
+  const piles = sandmasterCollectionPiles(game, { interior: route });
+  return { leader, piles, collect: Object.values(piles).map(keys => keys[0]) };
+}
+
+/** Native collection remains separate; this selects only the skill's one spice per territory. */
+export function validateSandmasterStronghold(
+  game: Game | GameView, player: string, route: string[], selection: unknown, enabled = true,
+): string[] {
+  if (!enabled) {
+    requireMove(selection === undefined || (Array.isArray(selection) && selection.length === 0),
+      'Declining stronghold collection cannot take Sandmaster spice.');
+    return [];
+  }
+  const quote = quoteSandmasterStronghold(game, player, route);
+  if (selection === undefined) {
+    requireMove(!quote || Object.values(quote.piles).every(keys => keys.length === 1),
+      'Choose the Sandmaster debit pile for each entered territory, or decline its collection.');
+    return quote?.collect ?? [];
+  }
+  requireMove(Array.isArray(selection) && selection.every(key => typeof key === 'string'),
+    'Choose Sandmaster pile keys for this stronghold route.');
+  requireMove(selection.length === 0 || !!quote,
+    'Stronghold Sandmaster collection needs its living native trainer and passengers.');
+  requireMove(selection.every(key => quote?.piles[splitLocation(key).territory]?.includes(key) &&
+      Number.isSafeInteger(game.spice[key]) && game.spice[key] > 0) &&
+    new Set(selection.map(key => splitLocation(key).territory)).size === selection.length,
+    'Collect from at most one positive pile per entered territory.');
+  return [...selection];
+}
 export function quoteSandmasterMovement(
   g: Game | GameView,
   player: string,
