@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 9 October 2026 — owned worm and physical Ambassador destination piles
+
+The shared destination quote exposes all legal positive piles and an exact
+selection. Native worm and physical Fremen Ambassador declarations add
+`sandmasterPile` when collecting; ambiguity requires a supplied key.
+Single-pile boolean declarations remain valid. One ride/relocation earns
+only one spice, regardless of forces or piles, before arrival reactions.
+Owner allocation is visibly provisional, not publisher adjudication.
+
+The actual UI selectors reset stale destination selection, retain optional
+opt-out and show before/after quantities. Existing native/profile,
+same-territory and concealed-marker guards stay. Stored Ambassador movement
+reconstructs its exact frozen key through the original receipt.
+
+Basic/Advanced native smoke chooses Pasty Mesa6 (3→2), preserves Mesa5 at2,
+lands four forces in Mesa5 and credits5→6 without changing normal movement.
+Physical Ambassador smoke chooses South Mesa5 (2→1), preserves Mesa4 at4,
+lands two forces in Mesa4 and credits20→21 with moved0/shippedfalse.
+All four existing policies retain legal continuation and send explicit keys
+when they choose collection; optional destination strategy is unchanged.
+Isolated 390px production controls reproduce both results, including
+Ambassador destination reset and opt-out/reselection. No existing game store
+or deployed acceptance is claimed.
+
+`check:quick` passes; 91 affected native, quote, control, bot, cancellation
+and movement cases pass. The selected-pile Intrusion/JSON cases settle once.
+A duplicate control case that enabled an undealt card variant was removed;
+existing valid profile guards remain covered. Temporary scripts and the
+dedicated service were removed. No broad recovery/HTTP campaign or deployment.
+
 ## 9 October 2026 — owned Sandmaster ground-movement pile selection
 
 The shared ground quote now groups all positive pile keys by entered

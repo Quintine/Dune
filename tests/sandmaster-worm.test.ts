@@ -36,7 +36,7 @@ void test('Sandmaster collects once at a worm destination for multiple source se
     reject(next, action);
   }
 });
-void test('optional decline, legacy actions and absent or ambiguous piles keep ordinary worm riding available', () => {
+void test('optional decline and legacy actions keep ordinary worm riding available with or without spice', () => {
   for (const amount of [0, 1, 2]) for (const collect of [false, undefined]) {
     const g = sandmasterWormGame();
     g.spice['red_chasm:7'] = amount;
@@ -50,14 +50,52 @@ void test('optional decline, legacy actions and absent or ambiguous piles keep o
   const empty = sandmasterWormGame(); empty.spice['red_chasm:7'] = 0;
   assert.match(sandmasterWormCollection(empty, 'p', 'red_chasm', 7)!.blocked!, /no spice/);
   reject(empty, sandmasterRide());
-  const multiple = sandmasterWormGame();
-  multiple.spice = { 'pasty_mesa:5': 2, 'pasty_mesa:6': 3 };
-  const ambiguous: Action = { ...sandmasterRide(), territory: 'pasty_mesa', sector: 5 };
-  assert.match(sandmasterWormCollection(multiple, 'p', 'pasty_mesa', 5)!.blocked!, /multiple spice piles/);
-  reject(multiple, ambiguous);
-  delete ambiguous.eliteForces;
-  const next = applyAction(multiple, 'p', { ...ambiguous, sandmasterCollect: false });
+});
+void test('a selected destination pile supplies only one spice in Basic and Advanced worm rides', () => {
+  for (const advanced of [false, true]) for (const key of ['pasty_mesa:5', 'pasty_mesa:6']) {
+    const g = sandmasterWormGame(advanced);
+    g.spice = { 'wind_pass:14': 7, 'pasty_mesa:5': 2, 'pasty_mesa:6': 3 };
+    const action: Action = { ...sandmasterRide(), territory: 'pasty_mesa', sector: 5, sandmasterPile: key };
+    if (!advanced) delete action.eliteForces;
+    const next = applyAction(JSON.parse(JSON.stringify(g)), 'p', action);
+    assert.equal(next.players[0].spice, 6);
+    assert.equal(next.spice[key], g.spice[key] - 1);
+    const other = key === 'pasty_mesa:5' ? 'pasty_mesa:6' : 'pasty_mesa:5';
+    assert.equal(next.spice[other], g.spice[other]);
+    assert.equal(next.spice['wind_pass:14'], 7);
+    assert.equal(next.players[0].forces['pasty_mesa:5'], 4);
+    if (advanced) assert.equal(next.players[0].elites!.forces['pasty_mesa:5'], 2);
+    assert.equal(next.players[0].moved, 1);
+    assert.equal(next.log.filter(l => l.automatic?.name === 'Sandmaster collection').length, 1);
+    conserved(next);
+  }
+});
+void test('ambiguous collection needs an exact positive destination pile, but decline still rides', () => {
+  const g = sandmasterWormGame();
+  g.spice = { 'wind_pass:14': 7, 'pasty_mesa:5': 2, 'pasty_mesa:6': 3 };
+  const action: Action = { ...sandmasterRide(), territory: 'pasty_mesa', sector: 5 };
+  delete action.eliteForces;
+  reject(g, action);
+  for (const key of ['wind_pass:14', 'pasty_mesa:9', '', 6])
+    reject(g, { ...action, sandmasterPile: key });
+  const emptied = structuredClone(g); emptied.spice['pasty_mesa:6'] = 0;
+  reject(emptied, { ...action, sandmasterPile: 'pasty_mesa:6' });
+  const next = applyAction(g, 'p', { ...action, sandmasterCollect: false });
   assert.equal(next.players[0].spice, 5);
+  assert.deepEqual(next.spice, g.spice);
+  assert.equal(next.players[0].forces['pasty_mesa:5'], 4);
+  conserved(next);
+});
+void test('destination quoting requires current native ride ownership and phase even with a selected pile', () => {
+  const g = sandmasterWormGame();
+  g.spice = { 'pasty_mesa:5': 2, 'pasty_mesa:6': 3 };
+  assert.equal(sandmasterWormCollection(g, 'p', 'pasty_mesa', 5, null, 'pasty_mesa:6'), null);
+  assert.equal(sandmasterWormCollection(g, 'p', 'pasty_mesa', 5,
+    { kind: 'wormRide', player: 'h', territory: 'wind_pass' }, 'pasty_mesa:6'), null);
+  const wrongPhase = structuredClone(g); wrongPhase.phase = 5;
+  assert.equal(sandmasterWormCollection(wrongPhase, 'p', 'pasty_mesa', 5, g.decision, 'pasty_mesa:6'), null);
+  const nonNative = structuredClone(g); nonNative.players[0].faction = 'guild';
+  assert.equal(sandmasterWormCollection(nonNative, 'p', 'pasty_mesa', 5, g.decision, 'pasty_mesa:6'), null);
 });
 void test('failed force selection, storm entry and collecting without a ride cannot debit spice', () => {
   const g = sandmasterWormGame(true);
@@ -77,6 +115,8 @@ void test('Sandmaster requires the owned living native trainer and the supported
     (g: typeof view) => { g.leaderSkills!.assignments.find(a => a.owner === 'p')!.faceUp = false; },
     (g: typeof view) => { g.leaderSkills!.assignments.find(a => a.owner === 'p')!.controller = 'h'; },
     (g: typeof view) => { g.players[0].leaders.find(l => l.id === g.leaderSkills!.assignments.find(a => a.owner === 'p')!.leader)!.dead = true; },
+    (g: typeof view) => { g.players[0].leaders.find(l => l.id === g.leaderSkills!.assignments.find(a => a.owner === 'p')!.leader)!.capturedBy = 'h'; },
+    (g: typeof view) => { g.players[0].leaders.find(l => l.id === g.leaderSkills!.assignments.find(a => a.owner === 'p')!.leader)!.gholaBy = 'h'; },
   ]) {
     const bad = structuredClone(view); mutate(bad);
     assert.equal(sandmasterWormCollection(bad, 'p', 'red_chasm', 7), null);
@@ -86,23 +126,36 @@ void test('Sandmaster requires the owned living native trainer and the supported
     (g: typeof view) => { g.players[1].faction = 'richese'; },
   ]) {
     const unsupported = structuredClone(view); mutate(unsupported);
-    assert.match(sandmasterWormCollection(unsupported, 'p', 'red_chasm', 7)!.blocked!, /other optional modules/);
+    const quote = sandmasterWormCollection(unsupported, 'p', 'red_chasm', 7)!;
+    assert.ok(quote.blocked);
+    assert.deepEqual(quote.piles, []);
   }
 });
 void test('collection is committed before an interrupted BG arrival and is not repeated after JSON restoration', () => {
-  const g = sandmasterWormGame(true, true);
-  g.spice['red_chasm:7'] = 1;
-  const pending = applyAction(g, 'p', sandmasterRide());
-  assert.equal(pending.decision?.kind, 'intrusion');
-  assert.equal(pending.players[0].spice, 6);
-  assert.equal(pending.spice['red_chasm:7'], 0);
-  const restored = normalizeAutomaticGame(JSON.parse(JSON.stringify(pending)));
-  assert.deepEqual(restored, pending);
-  const done = applyAction(restored, 'h', { type: 'decision', accept: false });
-  assert.equal(done.players[0].spice, 6);
-  assert.equal(done.log.filter(l => l.automatic?.name === 'Sandmaster collection').length, 1);
-  assert.equal(done.players[0].moved, 1);
-  conserved(done);
+  for (const multiple of [false, true]) {
+    const g = sandmasterWormGame(true, true);
+    const action = sandmasterRide();
+    if (multiple) {
+      g.spice = { 'wind_pass:14': 7, 'pasty_mesa:5': 3, 'pasty_mesa:6': 1 };
+      g.players[1].forces = { 'pasty_mesa:5': 1 };
+      Object.assign(action, { territory: 'pasty_mesa', sector: 5, sandmasterPile: 'pasty_mesa:6' });
+    } else g.spice['red_chasm:7'] = 1;
+    const key = multiple ? 'pasty_mesa:6' : 'red_chasm:7';
+    const pending = applyAction(g, 'p', action);
+    assert.equal(pending.decision?.kind, 'intrusion');
+    assert.equal(pending.players[0].spice, 6);
+    assert.equal(pending.spice[key], 0);
+    if (multiple) assert.equal(pending.spice['pasty_mesa:5'], 3);
+    const restored = normalizeAutomaticGame(JSON.parse(JSON.stringify(pending)));
+    assert.deepEqual(restored, pending);
+    const done = applyAction(restored, 'h', { type: 'decision', accept: false });
+    assert.equal(done.players[0].spice, 6);
+    assert.equal(done.spice[key], 0);
+    if (multiple) assert.equal(done.spice['pasty_mesa:5'], 3);
+    assert.equal(done.log.filter(l => l.automatic?.name === 'Sandmaster collection').length, 1);
+    assert.equal(done.players[0].moved, 1);
+    conserved(done);
+  }
 });
 void test('all profiles attach collection to legal rides without changing the existing destination policy', () => {
   for (const difficulty of DIFFICULTIES) {

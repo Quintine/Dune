@@ -409,6 +409,8 @@ function fremenAmbassadorMoves(g: GameView): Action[] {
             (presenceAt(me, destination.territory) ? 8 : 0) -
             (abandons ? 25 : 0) -
             (destination.advisors ? 3 : 0);
+      const sandmaster = !marker
+        ? sandmasterDestinationCollection(g, me.id, source.territory, destination.territory, destination.sector) : null;
       candidates.push({
         score,
         action: {
@@ -418,8 +420,8 @@ function fremenAmbassadorMoves(g: GameView): Action[] {
           eliteForces,
           territory: destination.territory,
           sector: destination.sector,
-          ...(!marker && sandmasterDestinationCollection(g, me.id, source.territory, destination.territory, destination.sector)?.blocked === null
-            ? { sandmasterCollect: true } : {}),
+          ...(sandmaster?.blocked === null
+            ? { sandmasterCollect: true, sandmasterPile: sandmaster.key } : {}),
           ...(marker
             ? { noField: { tokenId: marker.tokenId, event: marker.event } }
             : {}),
@@ -2805,13 +2807,15 @@ function policyActions(g: GameView): Action[] {
         )
         .slice(0, 16)
         .map(
-          (to): Action => ({
+          (to): Action => {
+            const sandmaster = sandmasterWormCollection(g, me.id, to.t, to.s);
+            return {
             type: 'decision',
             accept: true,
             territory: to.t,
             sector: to.s,
-            ...(sandmasterWormCollection(g, me.id, to.t, to.s)?.blocked === null
-              ? { sandmasterCollect: true } : {}),
+            ...(sandmaster?.blocked === null
+              ? { sandmasterCollect: true, sandmasterPile: sandmaster.key } : {}),
             forces: Object.fromEntries(
               Object.entries(me.forces).filter(
                 ([key]) =>
@@ -2819,7 +2823,8 @@ function policyActions(g: GameView): Action[] {
                   splitLocation(key).sector !== g.storm,
               ),
             ),
-          }),
+            };
+          },
         ),
       { type: 'decision', accept: false },
     ];

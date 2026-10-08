@@ -24,35 +24,68 @@ the common skill-before-faction order. Subsequent arrival effects do not undo it
 
 ## Connected behavior
 
-A shared public quote validates the player, destination, skill and single positive
-pile. The checkbox defaults to collection but permits declining it. An empty or
-ambiguous pile suppresses collection without blocking ordinary riding. Legacy
-saved actions without the new field retain their original behavior. No invented
-intermediate route or extra normal movement is consumed. Multi-sector and typed
-elite selections transfer one spice total, not one per force or source sector.
+A shared public quote validates the player, destination, skill and all positive
+destination piles. Collection remains optional and capped at one spice for the
+entire ride. With several valid piles, the owner chooses the exact sector supplying
+that spice; placement of the riding forces does not constrain the chosen pile.
+This allocation policy is **provisional**, not a publisher sector-allocation ruling.
+It does not invent a pile, an intermediate route or extra normal movement.
+Multi-sector and typed elite selections still transfer one spice total, not one
+per force, source sector or destination pile.
+
+The checkbox defaults to collection but permits declining it. A multi-pile
+selector is controlled by the parent's selected quote key and shows each sector's
+before → before − 1 quantity. A single pile needs no selector; an empty destination
+or unsupported quote has no collection checkbox. None of these cases prevents
+ordinary riding without collection, and there is no extra confirmation.
+
+`sandmasterWormCollection(game, player, destination, sector, decision = game.decision,
+selectedPile?: string)` retains its native Fremen, phase, decision, leader and
+configuration guards. Its quote includes `piles: Array<{ key: string; before: number }>`,
+the selected `key` and `before`, and any `blocked` reason. Without `selectedPile`,
+the quote offers the first legal pile; this UI default is not action authorization.
+An invalid selected key blocks the quote, and blocked quotes expose `piles: []`.
+
+An accepted worm-ride action may set `sandmasterCollect: true` and
+`sandmasterPile: "territory:sector"`. Collection from multiple positive destination
+piles requires that explicit key; omitting it rejects the action without mutation.
+Single-pile collection still accepts the legacy boolean-only action. Send the pile
+field only when collecting. Declining collection or omitting both fields preserves
+ordinary riding and leaves board/player spice unchanged.
+
+`SandmasterWormChoice` receives `quote`, `collect`, `onChange(collect)` and the
+required `onPileChange(key)` callback. The parent owns selection state, requotes
+that exact key and includes it in the collecting action.
 
 The engine validates every force before moving spice from the board to the
 player, logs the automatic effect and then opens any Bene Gesserit arrival choice.
 Existing versioned room writes commit that transfer once. A saved pending arrival
 resumes only the remaining reaction and ride queue; no new receipt is needed.
-All four AI profiles attach the optional collection flag to the existing legal
-ride candidates. Destination policy and strength tuning are unchanged.
+All four AI profiles attach the optional collection flag and exact quoted pile key
+to the existing legal ride candidates. Destination policy and strength tuning are
+unchanged.
 
 ## Verification and remaining work
 
-Focused engine, controls and SQLite checks cover Basic/Advanced force custody,
-source exclusion, decline, omitted legacy fields, empty and ambiguous piles,
-illegal requests without mutation, native trainer ownership/visibility, public
-mode guards, private views, duplicate concurrent requests and restart during a
-Bene Gesserit reaction. Separate queued rides and a real special-Karama worm
-through Nexus exercise the production continuation. The fixture preserves the
-Fremen three-elite total rather than assuming the Emperor five-elite total.
-Independent source and implementation review found no material defect in this
-bounded contract. Final check/build/HTTP results, targeted browser continuation,
-sample games, saved-game preservation and Git delivery belong to the private
-source-bound checkpoint and commit message.
+The focused suites include Basic/Advanced force custody, source exclusion, decline,
+omitted legacy fields, empty destinations, explicit allocation between two positive
+piles, ambiguous or invalid requests without mutation, native trainer
+ownership/visibility, public mode guards, private views and JSON restoration during
+a Bene Gesserit reaction. The selected pile loses only one spice, other piles remain
+unchanged, and a pending arrival cannot collect a second time. Separate queued rides
+and a real special-Karama worm through Nexus exercise the production continuation.
+The fixture preserves the Fremen three-elite total rather than assuming the Emperor
+five-elite total. Controls retain eligible-owner and blocked-state coverage rather
+than pinning selector wording, HTML order or callback echoes.
 
-Other expansion factions/modules, the Ecaz card variant and multiple positive
-piles remain guarded. Other special relocation, full Leader Skills integration,
+Integrated native smoke in both modes collects exactly one from selected
+Pasty Mesa6 (3→2), leaves Mesa5 at2 and lands four forces in Mesa5 without
+changing normal movement. An isolated 390px production control selects
+Mesa6 and observes the same live-engine result, personal spice5→6.
+All four existing policies retain legal continuation; collecting declarations
+carry explicit pile keys without changing destination strategy.
+
+Other expansion factions/modules and the Ecaz card variant remain guarded.
+Other special relocation, full Leader Skills integration,
 complete human games and final presentation remain unfinished. Strategy refinement
 waits for the [AI feature-completion gate](AI_DEVELOPMENT_PLAN.md).

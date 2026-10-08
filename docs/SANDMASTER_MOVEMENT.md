@@ -28,10 +28,49 @@ declines/reselects the territory, and commits the same move: personal
 spice10→12, South Mesa4 remains4, South Mesa5 becomes1, Cielago East3
 becomes3, and three forces arrive in Cielago East.
 
-Worm/physical-Ambassador destination choices and native HMS relocation
-retain their separate single-pile scope. No public start or broader
-source adjudication is opened by this ground-route change.
+Destination relocation choices are separate from these ground-route controls;
+physical Fremen Ambassador allocation is recorded below and worm collection
+in [its own contract](SANDMASTER_WORM.md). Native HMS relocation retains its
+single-pile scope. No public start or broader source adjudication is opened
+by this ground-route change.
 
+
+## Physical Ambassador owned-destination allocation — 9 October 2026
+
+Physical Fremen Ambassador relocation now offers every existing positive
+destination-territory pile and collects at most one spice from exactly one
+chosen sector before physical arrival and its reactions. The checkbox remains
+optional. With multiple legal piles, the real relocation control shows their
+sector quantities as before→before−1, defaults to the first legal pile, and
+allows another sector. Changing source or destination resets the selection;
+an unavailable selection cannot strand the draft. Declining sends no pile key
+and transfers no spice.
+
+`sandmasterCollect: true` with multiple positive piles requires an explicit
+`sandmasterPile` key. A single-pile boolean declaration remains valid. Native
+validation rejects missing, malformed, foreign, unknown or exhausted selections
+before force or spice mutation. The shared `sandmasterDestinationCollection`
+quote supplies the legal piles and the selected quantity; `ambassadorSandmaster`
+retains the exact native trainer, key and original quantity as its frozen proof.
+Stored continuation revalidates that same key, not a fresh default; a committed
+arrival interruption resumes without collecting twice.
+
+Choosing the debit sector is **provisional owner allocation**, not a publisher
+ruling: the source grants one spice for entering the territory but does not
+name its sector. Same-territory moves, living-native skill eligibility,
+concealed-marker restrictions, typed forces, ordinary allowances and the
+original Ambassador event remain unchanged. This does not change ground-route
+or native HMS eligibility, add spice or invent intervening sectors.
+
+Focused native-engine cases now cover Basic/Advanced alternate-pile allocation,
+decline, invalid declarations without mutation, living-trainer restrictions and
+collection before a JSON-restored Intrusion continuation. Integrated native
+smoke in both modes chooses South Mesa5 (2→1), preserves Mesa4 at4,
+lands two forces in Mesa4 and credits spice20→21 without ordinary
+shipment/movement use. At390px, the actual control changes destination,
+resets the pile selection, opts out/reselects and commits the same result.
+The 8 October rejection evidence below remains a dated checkpoint, not
+the current multi-pile policy.
 
 ## Physical Fremen Ambassador relocation — 8 October 2026
 
@@ -129,7 +168,7 @@ Broad checkpoint results are recorded with the checkpoint. These checks do not c
 The [worm-ride follow-up](SANDMASTER_WORM.md) connects native Fremen destination
 collection, including saved arrival reactions. Physical Fremen Ambassador
 relocation is connected above. Other nonordinary relocations, special cards,
-concealed-marker collection, multi-pile destination/HMS collection and wider
+concealed-marker collection, multi-pile HMS collection and wider
 interaction/strategy acceptance remain. The lower battle band is in
 [the battle-effects contract](LEADER_BATTLE_EFFECTS.md).
 

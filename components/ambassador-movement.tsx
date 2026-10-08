@@ -31,6 +31,11 @@ export function AmbassadorMovement({
   const [takeMarker, setTakeMarker] = useState(false);
   const [fighters, setFighters] = useState(false);
   const [collectSandmaster, setCollectSandmaster] = useState(true);
+  const [sandmasterSelection, setSandmasterSelection] = useState<{
+    source: string;
+    target: string;
+    key: string;
+  } | null>(null);
   const entry = game.ambassadorEntry;
   if (
     entry?.stage !== 'move' ||
@@ -83,6 +88,12 @@ export function AmbassadorMovement({
   const sandmaster = !includesMarker && destination
     ? sandmasterDestinationCollection(game, game.me, source.territory, destination.territory, destination.sector)
     : null;
+  const sandmasterPile =
+    sandmasterSelection?.source === source.territory &&
+    sandmasterSelection.target === target &&
+    sandmaster?.piles.some((pile) => pile.key === sandmasterSelection.key)
+      ? sandmasterSelection.key
+      : sandmaster?.key;
   const reason =
     destination?.blocked ??
     (!destination
@@ -98,6 +109,7 @@ export function AmbassadorMovement({
     setForces((old) => ({ ...old, [key]: 0 }));
     setElites((old) => ({ ...old, [key]: 0 }));
     setFighters(false);
+    setSandmasterSelection(null);
   };
   const targetTerritories = [...new Set(destinations.map((d) => d.territory))];
   return (
@@ -123,6 +135,7 @@ export function AmbassadorMovement({
             setElites({});
             setTakeMarker(false);
             setFighters(false);
+            setSandmasterSelection(null);
           }}
         >
           {sources.map((s) => (
@@ -286,6 +299,31 @@ export function AmbassadorMovement({
           {sandmaster.blocked ?? 'Collect 1 spice here with Sandmaster before arrival reactions'}
         </label>
       )}
+      {sandmaster && !sandmaster.blocked && sandmaster.piles.length > 1 && (
+        <label className="flex flex-col gap-2" htmlFor={`${id}-sandmaster-pile`}>
+          Sandmaster debit sector — provisional owner allocation
+          <select
+            id={`${id}-sandmaster-pile`}
+            className="min-h-11"
+            disabled={busy || !collectSandmaster}
+            value={sandmasterPile ?? ''}
+            onChange={(event) => setSandmasterSelection({
+              source: source.territory,
+              target,
+              key: event.target.value,
+            })}
+          >
+            {sandmaster.piles.map((pile) => (
+              <option key={pile.key} value={pile.key}>
+                Sector {splitLocation(pile.key).sector}: {pile.before} → {pile.before - 1}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {sandmaster && !sandmaster.blocked && sandmaster.piles.length > 1 && (
+        <p className="fine">You choose the one-spice debit sector. This provisional allocation policy is not a publisher ruling.</p>
+      )}
       <p className="m-0 text-sm" aria-live="polite">
         Selected: {total} physical forces
         {includesMarker ? ' and one concealed No-Field' : ''}.
@@ -317,7 +355,12 @@ export function AmbassadorMovement({
                 }
               : {}),
             ...(fighters && destination.canFight ? { fighters: true } : {}),
-            ...(sandmaster?.blocked === null ? { sandmasterCollect: collectSandmaster } : {}),
+            ...(sandmaster?.blocked === null
+              ? {
+                  sandmasterCollect: collectSandmaster,
+                  ...(collectSandmaster && sandmasterPile ? { sandmasterPile } : {}),
+                }
+              : {}),
           });
         }}
       >

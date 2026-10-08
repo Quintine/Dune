@@ -330,13 +330,20 @@ export function quoteFremenAmbassadorMove(
   );
   requireMove(action.sandmasterCollect === undefined || typeof action.sandmasterCollect === 'boolean',
     'Choose whether to collect spice with Sandmaster.');
+  requireMove(action.sandmasterPile === undefined ||
+    (action.sandmasterCollect === true && typeof action.sandmasterPile === 'string'),
+    'Choose a Sandmaster spice pile only when collecting.');
   let ambassadorSandmaster: FremenAmbassadorMove['ambassadorSandmaster'];
   if (action.sandmasterCollect) {
     requireMove(physical > 0 && !noField,
       'Sandmaster collection with concealed Ambassador relocation is still being integrated.');
-    const quote = sandmasterDestinationCollection(g, p.id, origin, to, sector);
+    const quote = sandmasterDestinationCollection(
+      g, p.id, origin, to, sector, action.sandmasterPile,
+    );
     requireMove(quote && !quote.blocked && quote.key,
       quote?.blocked ?? 'Sandmaster collection needs the living native trainer.');
+    requireMove(quote.piles.length <= 1 || typeof action.sandmasterPile === 'string',
+      'Choose the destination spice pile for Sandmaster collection.');
     ambassadorSandmaster = { leader: quote.leader, key: quote.key, before: quote.before };
   }
   return {

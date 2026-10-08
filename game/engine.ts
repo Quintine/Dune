@@ -14162,7 +14162,8 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
       territory: move.to,
       sector: move.sector,
       fighters: move.wantsFighters,
-      ...(move.ambassadorSandmaster ? { sandmasterCollect: true } : {}),
+      ...(move.ambassadorSandmaster
+        ? { sandmasterCollect: true, sandmasterPile: move.ambassadorSandmaster.key } : {}),
       ...(move.noField
         ? {
             noField: {
@@ -29775,6 +29776,9 @@ function applyActionInner(
       );
       requireRule(action.sandmasterCollect === undefined || typeof action.sandmasterCollect === 'boolean',
         'Choose whether to collect spice with Sandmaster.');
+      requireRule(action.sandmasterPile === undefined ||
+        (action.sandmasterCollect === true && typeof action.sandmasterPile === 'string'),
+        'Choose a Sandmaster destination pile only when collecting.');
       requireRule(action.accept || !action.sandmasterCollect,
         'Sandmaster collection requires an accepted worm ride.');
       if (action.accept) {
@@ -29785,9 +29789,14 @@ function applyActionInner(
           'Choose another destination territory.',
         );
         allowedEntry(g, p, to, sector);
-        const sandmaster = action.sandmasterCollect ? sandmasterWormCollection(g, p.id, to, sector, decision) : null;
-        if (action.sandmasterCollect) requireRule(sandmaster && !sandmaster.blocked,
-          sandmaster?.blocked ?? 'Sandmaster collection needs the living native trainer.');
+        const sandmaster = action.sandmasterCollect
+          ? sandmasterWormCollection(g, p.id, to, sector, decision, action.sandmasterPile as string | undefined) : null;
+        if (action.sandmasterCollect) {
+          requireRule(sandmaster && !sandmaster.blocked && sandmaster.key,
+            sandmaster?.blocked ?? 'Sandmaster collection needs the living native trainer.');
+          requireRule(sandmaster.piles.length <= 1 || typeof action.sandmasterPile === 'string',
+            'Choose the destination spice pile for Sandmaster collection.');
+        }
         requireRule(
           action.forces &&
             typeof action.forces === 'object' &&

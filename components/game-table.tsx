@@ -493,7 +493,13 @@ export function GameTable({
   const [moveForces, setMoveForces] = useState<Record<string, number>>({});
   const [rideForces, setRideForces] = useState<Record<string, number>>({});
   const [collectSandmasterRide, setCollectSandmasterRide] = useState(true);
-  const sandmasterRide = sandmasterWormCollection(g, me.id, selected, sector);
+  const [sandmasterRidePile, setSandmasterRidePile] = useState<{ target: string; key: string } | null>(null);
+  const sandmasterRideTarget = JSON.stringify([g.turn, g.decision?.kind === 'wormRide' ? g.decision : null, selected, sector]);
+  const baseSandmasterRide = sandmasterWormCollection(g, me.id, selected, sector);
+  const selectedRidePile = sandmasterRidePile?.target === sandmasterRideTarget
+    ? baseSandmasterRide?.piles.find(pile => pile.key === sandmasterRidePile.key) : null;
+  const sandmasterRide = selectedRidePile && baseSandmasterRide
+    ? { ...baseSandmasterRide, key: selectedRidePile.key, before: selectedRidePile.before } : baseSandmasterRide;
   const [exchangeCards, setExchangeCards] = useState<Record<string, boolean>>(
     {},
   );
@@ -3646,10 +3652,13 @@ export function GameTable({
                         />
                       ))}
                   <SandmasterWormChoice quote={sandmasterRide} collect={collectSandmasterRide}
-                    onChange={setCollectSandmasterRide} />
+                    onChange={setCollectSandmasterRide}
+                    onPileChange={key => setSandmasterRidePile({ target: sandmasterRideTarget, key })} />
                   {actionButton('Ride Shai-Hulud', {
                     type: 'decision',
-                    ...(sandmasterRide?.blocked === null ? { sandmasterCollect: collectSandmasterRide } : {}),
+                    ...(sandmasterRide?.blocked === null
+                      ? { sandmasterCollect: collectSandmasterRide,
+                          ...(collectSandmasterRide ? { sandmasterPile: sandmasterRide.key } : {}) } : {}),
                     eliteForces,
                     accept: true,
                     territory: selected,

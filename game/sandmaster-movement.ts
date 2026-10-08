@@ -60,6 +60,7 @@ export type SandmasterDestinationCollection = {
   leader: string;
   key: string | null;
   before: number;
+  piles: { key: string; before: number }[];
   blocked: string | null;
 };
 
@@ -70,18 +71,18 @@ export function sandmasterDestinationCollection(
   origin: string,
   destination: string,
   sector: number,
+  selectedPile?: string,
 ): SandmasterDestinationCollection | null {
   const leader = sandmasterLeader(game, player);
   if (!leader) return null;
   const blocked = (reason: string): SandmasterDestinationCollection =>
-    ({ leader, key: null, before: 0, blocked: reason });
+    ({ leader, key: null, before: 0, piles: [], blocked: reason });
   if (!sandmasterModeSupported(game))
     return blocked('Sandmaster collection with this configuration is still being integrated.');
   if (origin === destination || !validGameLocation(game, destination, sector) ||
       sector === game.storm)
     return blocked('Choose a different legal destination territory for Sandmaster collection.');
-  let key: string | null = null;
-  let before = 0;
+  const piles: { key: string; before: number }[] = [];
   for (const pile in game.spice) {
     const at = splitLocation(pile);
     if (at.territory !== destination) continue;
@@ -91,15 +92,16 @@ export function sandmasterDestinationCollection(
         !Number.isSafeInteger(amount) || amount < 0)
       return blocked('Sandmaster needs a valid destination spice pile.');
     if (!amount) continue;
-    if (key) return blocked('Sandmaster collection among multiple spice piles awaits its allocation ruling.');
-    key = pile;
-    before = amount;
+    piles.push({ key: pile, before: amount });
   }
-  if (!key) return blocked('There is no spice to collect at this destination.');
+  if (!piles.length) return blocked('There is no spice to collect at this destination.');
+  piles.sort((a, b) => a.key.localeCompare(b.key));
+  const chosen = selectedPile === undefined ? piles[0] : piles.find(pile => pile.key === selectedPile);
+  if (!chosen) return blocked('Choose an existing positive spice pile at this destination.');
   const spice = game.players.find(p => p.id === player)?.spice;
   if (!Number.isSafeInteger(spice) || !Number.isSafeInteger(spice! + 1))
     return blocked('Sandmaster collection needs a valid spice balance.');
-  return { leader, key, before, blocked: null };
+  return { leader, key: chosen.key, before: chosen.before, piles, blocked: null };
 }
 
 export function sandmasterPathBlocked(

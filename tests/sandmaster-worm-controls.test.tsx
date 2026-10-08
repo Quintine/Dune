@@ -7,18 +7,14 @@ import { sandmasterWormCollection } from '../game/sandmaster-worm';
 import { viewGame } from '../game/engine';
 import { sandmasterWormGame } from './fixture-sandmaster-worm';
 
-void test('the ride control shows optional destination collection only for its eligible owner and preserves opt-out', () => {
+void test('worm collection controls are restricted to the eligible owner and disappear when blocked', () => {
   const g = sandmasterWormGame();
-  const quote = sandmasterWormCollection(viewGame(g, 'p'), 'p', 'red_chasm', 7);
-  const html = (collect: boolean) => renderToStaticMarkup(createElement(SandmasterWormChoice, { quote, collect, onChange() {} }));
-  assert.match(html(true), /checked=""/);
-  assert.doesNotMatch(html(false), /checked=""/);
-  assert.equal(renderToStaticMarkup(createElement(SandmasterWormChoice, {
-    quote: sandmasterWormCollection(viewGame(g, 'h'), 'h', 'red_chasm', 7), collect: true, onChange() {},
-  })), '');
-  g.spice['red_chasm:7'] = 0;
-  const blocked = renderToStaticMarkup(createElement(SandmasterWormChoice, {
-    quote: sandmasterWormCollection(viewGame(g, 'p'), 'p', 'red_chasm', 7), collect: true, onChange() {},
+  const render = (player: string) => renderToStaticMarkup(createElement(SandmasterWormChoice, {
+    quote: sandmasterWormCollection(viewGame(g, player), player, 'red_chasm', 7),
+    collect: true, onChange() {}, onPileChange() {},
   }));
-  assert.doesNotMatch(blocked, /type="checkbox"/);
+  assert.match(render('p'), /type="checkbox"/);
+  assert.equal(render('h'), '');
+  g.spice['red_chasm:7'] = 0;
+  assert.doesNotMatch(render('p'), /<(?:input|select)\b/);
 });

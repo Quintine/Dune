@@ -146,6 +146,19 @@ function trigger(g: Game, beneficiary = 'a', copy = false) {
   return out;
 }
 
+function sandmasterFixture(advanced = true, extra: FactionId[] = []) {
+  const g = fixture('fremen', extra);
+  g.advanced = advanced;
+  g.expansions = ['ecaz'];
+  army(g, 'a', { 'red_chasm:7': 2 });
+  g.spice = { 'south_mesa:4': 4, 'south_mesa:5': 2 };
+  const skills = createLeaderSkills(() => 0.2);
+  skills.deck = skills.deck.filter(skill => skill !== 'sandmaster');
+  skills.assignments = [{ skill: 'sandmaster', owner: 'a', leader: p(g, 'a').leaders[0].id }];
+  g.leaderSkills = skills;
+  return g;
+}
+
 void test('physical Fremen Ambassador relocation collects optional Sandmaster spice without consuming ordinary allowances', () => {
   for (const collect of [false, true]) {
     const start = fixture();
@@ -170,6 +183,107 @@ void test('physical Fremen Ambassador relocation collects optional Sandmaster sp
     assert.equal(p(done, 'a').tanks, 0);
     assert.equal(done.pendingAmbassador, null);
   }
+});
+
+void test('Basic and Advanced Ambassador relocation debit exactly the chosen destination pile or decline both', () => {
+  for (const advanced of [false, true]) {
+    const pending = trigger(enter(sandmasterFixture(advanced)));
+    for (const selected of [undefined, 'south_mesa:4', 'south_mesa:5']) {
+      const action: Action = {
+        type: 'decision',
+        event: pending.pendingAmbassador!.event,
+        forces: { 'red_chasm:7': 2 },
+        territory: 'south_mesa',
+        sector: 4,
+        sandmasterCollect: selected !== undefined,
+        ...(selected ? { sandmasterPile: selected } : {}),
+      };
+      const done = applyAction(reload(pending), 'a', action);
+      assert.equal(p(done, 'a').forces['south_mesa:4'], 2);
+      assert.equal(p(done, 'a').forces['red_chasm:7'] ?? 0, 0);
+      assert.equal(p(done, 'a').spice, selected ? 21 : 20);
+      assert.equal(done.spice['south_mesa:4'], selected === 'south_mesa:4' ? 3 : 4);
+      assert.equal(done.spice['south_mesa:5'], selected === 'south_mesa:5' ? 1 : 2);
+      assert.equal(p(done, 'a').moved, 0);
+      assert.equal(p(done, 'a').shipped, false);
+      assert.equal(p(done, 'a').reserves, 18);
+      assert.equal(done.pendingAmbassador, null);
+    }
+  }
+});
+
+void test('Ambassador collecting declarations reject missing, malformed, foreign and exhausted pile keys before mutation', () => {
+  const start = sandmasterFixture();
+  start.spice['red_chasm:7'] = 3;
+  const pending = trigger(enter(start));
+  const action: Action = {
+    type: 'decision',
+    event: pending.pendingAmbassador!.event,
+    forces: { 'red_chasm:7': 2 },
+    territory: 'south_mesa',
+    sector: 4,
+    sandmasterCollect: true,
+  };
+  for (const key of [undefined, '', 'south_mesa:999', 'red_chasm:7', 5, null, ['south_mesa:5']])
+    reject(pending, { ...action, sandmasterPile: key } as Action);
+  reject(pending, { ...action, sandmasterCollect: false, sandmasterPile: 'south_mesa:5' });
+  const exhausted = reload(pending);
+  exhausted.spice['south_mesa:5'] = 0;
+  reject(exhausted, { ...action, sandmasterPile: 'south_mesa:5' });
+  const dead = reload(pending);
+  p(dead, 'a').leaders[0].dead = true;
+  reject(dead, { ...action, sandmasterPile: 'south_mesa:5' });
+  const captured = reload(pending);
+  p(captured, 'a').leaders[0].capturedBy = 'in';
+  reject(captured, { ...action, sandmasterPile: 'south_mesa:5' });
+});
+
+void test('selected Ambassador collection commits before Intrusion and a restored arrival resumes without a second debit', () => {
+  const start = sandmasterFixture(true, ['beneGesserit']);
+  army(start, 'beneGesserit', { 'south_mesa:4': 1 });
+  let g = trigger(enter(start));
+  const event = g.pendingAmbassador!.event;
+  g = move(g, {
+    forces: { 'red_chasm:7': 2 },
+    territory: 'south_mesa',
+    sector: 4,
+    sandmasterCollect: true,
+    sandmasterPile: 'south_mesa:5',
+  });
+  assert.equal(g.decision?.kind, 'intrusion');
+  assert.equal(g.pendingAmbassador?.stage, 'arrival');
+  assert.equal(g.pendingAmbassador?.event, event);
+  assert.equal(p(g, 'a').forces['south_mesa:4'], 2);
+  assert.equal(p(g, 'a').spice, 21);
+  assert.equal(g.spice['south_mesa:4'], 4);
+  assert.equal(g.spice['south_mesa:5'], 1);
+  g = applyAction(reload(g), 'beneGesserit', { type: 'decision', accept: true });
+  g = allow(reload(g));
+  assert.equal(p(g, 'a').forces['south_mesa:4'], 2);
+  assert.equal(p(g, 'a').spice, 21);
+  assert.equal(g.spice['south_mesa:4'], 4);
+  assert.equal(g.spice['south_mesa:5'], 1);
+  assert.equal(g.log.filter(entry => entry.automatic?.name === 'Sandmaster collection').length, 1);
+  settled(g);
+});
+
+void test('Ambassador sector relocation within its source territory earns no Sandmaster spice', () => {
+  const start = sandmasterFixture();
+  army(start, 'a', { 'wind_pass:14': 2 });
+  start.spice = { 'wind_pass:14': 4, 'wind_pass:15': 2 };
+  const pending = trigger(enter(start));
+  const action: Action = {
+    type: 'decision',
+    event: pending.pendingAmbassador!.event,
+    forces: { 'wind_pass:14': 2 },
+    territory: 'wind_pass',
+    sector: 15,
+  };
+  reject(pending, { ...action, sandmasterCollect: true, sandmasterPile: 'wind_pass:15' });
+  const done = applyAction(reload(pending), 'a', action);
+  assert.equal(p(done, 'a').forces['wind_pass:15'], 2);
+  assert.equal(p(done, 'a').spice, 20);
+  assert.deepEqual(done.spice, start.spice);
 });
 function move(g: Game, extra: Omit<Action, 'type'>, actor = 'a') {
   return applyAction(g, actor, {
