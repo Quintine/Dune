@@ -211,6 +211,19 @@ candidate is occasionally absent (2/20 failing runs at `4ed6beb` versus 3/20
 now), and for the paired Moritani skill-runtime tests. Those intermittent
 failures are pre-existing prototype/AI gaps and are not new regressions.
 
+**Gated captures resumed under the new prototypes.** The 14 captures that
+remained gated after the 7 October rulings were resumed in place against their
+saved positions. Every previously stalled Southern Hemisphere occupied-benefit
+capture and every previously stalled odd-force Basic Ecaz Occupy capture now
+completes (`homeworld-occupation-atreides-4/5-basic`, `ixians-6-basic`,
+`moritani-6-basic`, plus five Basic Occupy bodies finishing in 135–688 actions).
+Four Advanced captures still stop on the open high-Homeworld-threshold revival-
+deployment timing, and one Basic `native-homeworld-skills` overlay capture stops
+on the explicitly gated combined-Occupy composition. No capture was reset,
+force-completed or bypassed; results and logs are under
+`/tmp/dune-resume-wave2-20261009`. See
+[the resumption evidence](IMPLEMENTATION_STATUS.md#9-october-2026--gated-captures-resumed-under-the-basic-occupation-and-odd-force-occupy-prototypes).
+
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in
 [the decision index](RULE_DECISIONS.md#user-rulings--7-october-2026) and

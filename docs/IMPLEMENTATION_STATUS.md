@@ -1,5 +1,45 @@
 # Dune implementation status
 
+## 9 October 2026 — gated captures resumed under the Basic occupation and odd-force Occupy prototypes
+
+The 14 captures that remained gated on 7 October were resumed in place with
+`tools/faction-games.ts --resume` against the same preserved positions (same
+seed, custody and turn; no reset, no re-run from scratch and no guard
+weakened). Results are in `/tmp/dune-resume-wave2-20261009` (logs beside each
+output directory).
+
+**Now completing.** Two of the three previously blocking questions no longer
+block:
+
+- **Southern Hemisphere occupied-benefit lifecycle.** The visibly provisional
+  Basic current-sole policy replaces the pending competing-occupier /
+  native-repopulation block, so every previously stalled
+  `homeworld-occupation-*-basic` capture now finishes:
+  `homeworld-occupation-atreides-4-basic` (a second copy finishes in 6 actions
+  and 5 actions from its two saved copies), `atreides-5-basic` (413 actions),
+  `ixians-6-basic` (688 actions) and `moritani-6-basic` (11 actions), each
+  reaching turn 3–10 phase 8.
+- **Odd-force Basic Ecaz Occupy casualty rounding.** The provisional main-print
+  `ceil(E/2)` contribution/loss with floor survivors admits the declaration, so
+  the previously stalled Basic Occupy captures now finish:
+  `e3-discovery-nexus-ecaz-…-6-basic` (135 actions),
+  `e3-homeworld-nexus-skills-tech-ecaz-…-6-basic` (648 actions),
+  `paired-e3-nexus-ecaz-…-6-basic` (489 actions),
+  `paired-e3-homeworld-nexus-ecaz-…-6-basic` (424 actions) and
+  `paired-e3-homeworld-nexus-skills-ecaz-…-6-basic` (176 actions).
+
+**Still gated, unchanged.** Four Advanced captures still stop at
+`phase 4` on `Revival deployment when this return first reaches the high
+Homeworld threshold awaits a timing ruling`
+(`e3-homeworld-nexus-discovery-…` seed 20274745,
+`e3-homeworld-nexus-discovery-skills-stronghold-tech-…`,
+`mixed-homeworld-nexus-discovery-skills-…` seed 20281145 and
+`mixed-homeworld-nexus-discovery-skills-stronghold-…`), and one Basic
+`native-homeworld-skills-ecaz-…` capture stops at phase 6 with
+`Combined Occupy requires source-selected native factions; optional overlays
+remain gated.` — an explicitly gated optional-overlay composition rather than a
+defect. No capture was reset, force-completed or bypassed.
+
 ## 7 October 2026 — preserved captures resumed under the five rulings
 
 Every preserved `failed-*.json` capture under `/tmp/dune-*/` (123 distinct
