@@ -27,7 +27,7 @@ function place(g: BoardContext, id: string, key: string) {
   player.forces = { ...player.forces, [key]: 1 };
 }
 
-void test('allied Ecaz co-occupation is ignored only at Sietch Tabr in Basic and Advanced', () => {
+void test('allied Ecaz co-occupation at Sietch Tabr permits Fremen victory in Basic and Advanced', () => {
   for (const advanced of [false, true]) {
     const g = fixture(advanced);
     place(g, 'f', 'sietch_tabr:14');
@@ -80,7 +80,7 @@ void test('solitary, nonallied and third-party Ecaz presence do not receive the 
   assert.equal(fremenSpecialVictory(third)!.qualifies, false);
 });
 
-void test('Ecaz co-occupation at Habbanya remains a blocker', () => {
+void test('Basic Ecaz co-occupation at Habbanya remains a blocker', () => {
   const g = fixture();
   place(g, 'f', 'habbanya_ridge_sietch:17');
   place(g, 'e', 'habbanya_ridge_sietch:17');
@@ -88,6 +88,15 @@ void test('Ecaz co-occupation at Habbanya remains a blocker', () => {
   assert.equal(result.sietches[1].ecazCooccupation, true);
   assert.deepEqual(result.sietches[1].blockers, ['e']);
   assert.equal(result.qualifies, false);
+});
+
+void test('supplied Advanced Ecaz cooccupation permits Habbanya while preserving Basic and solitary Ecaz blockers', () => {
+  const g = fixture(true);
+  place(g, 'f', 'habbanya_ridge_sietch:17');
+  place(g, 'e', 'habbanya_ridge_sietch:17');
+  assert.equal(fremenSpecialVictory(g)!.qualifies, true);
+  seat(g, 'f').forces = {};
+  assert.deepEqual(fremenSpecialVictory(g)!.sietches[1].blockers, ['e']);
 });
 
 void test('accompanied BG advisors do not block, while mandatory lone-advisor release restores fighter presence', () => {

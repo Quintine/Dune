@@ -18,10 +18,10 @@ export type FremenVictoryProgress = {
   tueksBlockers: string[];
 };
 
-/** Public current-board facts for the Fremen final-turn victory condition.
- * Turn timing, prior stronghold winners and the Guild fallback belong to the
- * victory quote. The only Ecaz exception established here is co-occupied
- * Sietch Tabr; the same forces still block Habbanya Ridge Sietch. */
+/** Public settled-board facts. Basic keeps the publisher's Tabr-only Ecaz
+ * exception; supplied Advanced PDF p32 permits coexisting allies in both
+ * protected sietches. Timing, earlier winners and Guild fallback remain
+ * the victory quote's responsibility. */
 export function fremenSpecialVictory(
   g: BoardContext,
 ): FremenVictoryProgress | null {
@@ -58,7 +58,7 @@ export function fremenSpecialVictory(
         if (player.id === fremen.id || fighterCount(player, territory) === 0)
           return false;
         return !(
-          territory === 'sietch_tabr' &&
+          (g.advanced || territory === 'sietch_tabr') &&
           ecazCooccupation &&
           player.id === ecaz!.id
         );

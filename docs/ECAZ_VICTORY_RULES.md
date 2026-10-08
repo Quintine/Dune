@@ -1,8 +1,30 @@
 # Ecaz victory implementation contract
 
-The [14 September runtime follow-up](#fremen-final-turn-runtime-follow-up) connects
-the explicit Fremen/Ecaz Sietch Tabr exception. The original audit and its
-unimplemented Habbanya inference remain below as source context.
+Basic retains the [14 September Tabr-only runtime](#fremen-final-turn-runtime-follow-up).
+Advanced now follows the authorized supplied revision's physical p32 allowance
+in both protected sietches. The publisher audit below remains historical context.
+
+## Authorized Advanced two-sietch allowance — 8 October 2026
+
+`UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`, physical **p32,
+Fremen I**, permits “Fremen forces (± coexisting Ecaz forces) or no one”
+in **Sietch Tabr and Habbanya Sietch**. This is an explicit Advanced
+source cutover, not a newly located publisher symmetry ruling.
+
+The shared `fremenSpecialVictory` quote now ignores reciprocal allied
+Ecaz cooccupation in either protected sietch when both factions actually
+have fighters there. Basic stays Tabr-only. Solitary/nonallied Ecaz and
+third-faction fighters still block; other Tuek/final-turn/ordinary-winner/
+prediction/fallback conditions do not change. Public progress and real
+victory evaluation consume the same quote without another decision.
+
+One native Collection-to-Mentat smoke reproduces the old Guild fallback,
+then awards Fremen/Ecaz on the same Advanced board while preserving
+Basic and solitary-Ecaz exclusions. Three Habbanya contract cases pass.
+No broad suite or deployed acceptance was run.
+
+**Superseded for Advanced:** the Habbanya rows below predate the authorized
+supplied p32 cutover above. Basic still follows the Tabr-only audit.
 
 Primary-source review, 2026-09-07. This separates the explicit three-stronghold rule from its ordinary control and prediction consequences. No combat-rounding decision is needed for a victory predicate operating on an already-settled board. The unrelated rounding conflict remains as corrected in [Ecaz Occupy rules](ECAZ_OCCUPY_RULES.md).
 
@@ -38,7 +60,7 @@ Stronghold Cards are benefits held between end-turn settlements, not additional 
 
 Base p.16 requires Sietch Tabr and Habbanya Sietch to be empty or occupied only by Fremen for its last-turn special victory. The November FAQ p.5 expressly says ordinary allied forces do not count as Fremen for this restriction. E3 p.15 then specifically allows **Ecaz and Fremen co-occupying Sietch Tabr**. [Base p.16](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=16), [November FAQ p.5](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=5), [E3 p.15](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=15)
 
-The supported narrow implementation requires an actual reciprocal Ecaz/Fremen alliance and Fremen presence **in that same territory** before ignoring Ecaz's additional presence. Ecaz alone in Sietch Tabr does not meet the stated co-occupation exception. Presence of any further faction remains disqualifying. A blanket `p.faction === 'ecaz'` exemption would permit non-allied or solitary Ecaz and is not justified by the FAQ.
+The supported narrow implementation requires an actual reciprocal Ecaz/Fremen alliance and Fremen presence **in that same territory** before ignoring Ecaz's additional presence. Ecaz alone in Sietch Tabr does not meet the stated co-occupation exception. Presence of any further faction remains disqualifying. A blanket `p.faction === 'ecaz'` exemption would permit non-allied or solitary Ecaz and is not justified by the FAQ. Advanced supersedes the Tabr-only scope above.
 
 | Protected territory occupants                                                            | Result and evidence                                                                                                                                                                         |
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

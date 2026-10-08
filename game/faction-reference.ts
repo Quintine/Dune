@@ -102,7 +102,7 @@ export const FACTION_RULES: Record<
       'Bring reserves to the Great Flat or one territory within two territories of it for no spice, subject to storm and occupancy restrictions. Ordinary movement has range two, or three when eligible for ornithopters.',
       'Worms do not devour Fremen. After the Nexus, move some or all forces from the worm territory to a legal destination. The destination’s existing forces survive.',
       'You choose whether a worm spares your ally and whether to grant your ally three free force revivals. These benefits are optional.',
-      'At the final turn, the special victory requires Sietch Tabr and Habbanya Sietch to be empty or occupied by Fremen, with no Atreides, Harkonnen or Emperor in Tuek’s Sietch. The specific Ecaz alliance exception permits Fremen and Ecaz to share Sietch Tabr; it does not waive the other conditions or extend to Habbanya Sietch. Advanced Richese also prevents this victory while occupying Tuek’s Sietch.',
+      'Basic final-turn victory requires protected sietches empty or occupied by Fremen and no Atreides/Harkonnen/Emperor in Tuek. Reciprocal allied Ecaz cooccupation is permitted at Sietch Tabr only; other conditions remain. Advanced follows the separate supplied two-sietch allowance below.',
     ],
     advanced: [
       'Once per game during Spice Blow and Nexus, spend Karama to call Shai-Hulud in sand. Resolve destruction and optional protections immediately; Nexus follows at the end of the blow, with eligible Fremen rides afterward. The called worm consumes no spice-deck card.',
@@ -110,6 +110,7 @@ export const FACTION_RULES: Record<
       'Additional worms after the first in a spice blow can be placed in a sand territory chosen by Fremen.',
       'Fremen loses half its forces, rounded up, to storm exposure. Reserves may arrive under storm at half loss. Ordinary movement and worm rides may not enter or leave storm.',
       'Three Fedaykin tokens count as two forces in battle and casualties. Only one may be revived per turn. All Fremen forces fight at full strength without spice support.',
+      'Supplied Advanced p32 permits reciprocal Ecaz/Fremen cooccupation in both Sietch Tabr and Habbanya Sietch for the final-turn special victory. Ecaz without Fremen still blocks. Richese also blocks Tuek in Advanced; prior ordinary victory and Guild fallback ordering remain unchanged.',
     ],
   },
   guild: {

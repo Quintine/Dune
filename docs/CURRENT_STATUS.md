@@ -96,6 +96,11 @@ cleanup. Both have owned live controls and minimum legal AI; numeric/custody
 precedence interpretations are explicit. Two direct battle smokes and types pass;
 live isolated React declarations/selectors submit exact native payloads in Chromium.
 No broad suite, deployed acceptance or strategic AI work was run.
+**Advanced Fremen/Ecaz protected sietches cutover.** Supplied physical p32
+permits cooccupation in Habbanya as well as Tabr. The shared quote now feeds
+both public progress and actual turn-ten victory. Basic stays Tabr-only;
+solitary Ecaz and third-party blockers remain. One before/after native ending
+smoke and three Habbanya contract cases pass; no broad suite was run.
 
 
 
