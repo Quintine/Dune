@@ -156,19 +156,24 @@ void test('private options validate exactly and do not mutate state or expose ca
   g.richeseCache![0].name = 'Forged face';
   assert.throws(() => purchase(g), /verified card/);
 });
-void test('full-hand and last-cache capacity edges remain explicit atomic implementation guards', () => {
-  const g = fixture();
-  g.players[0].hand.push(...g.deck.splice(0, 3));
-  const before = JSON.stringify(g);
-  assert.throws(() => purchase(g), /awaits a ruling/);
-  assert.equal(JSON.stringify(g), before);
-  assert.match(
-    viewGame(g, 'r').richeseSpecialKarama!.blocked!,
-    /awaits a ruling/,
-  );
-  g.players[0].hand.splice(1);
-  g.richeseCache = g.richeseCache!.slice(0, 1);
-  assert.throws(() => purchase(g), /empty-cache/);
+
+void test('full-hand special purchase exchanges the spent Karama and may exhaust the cache under the resolved auction rule', () => {
+  const start = fixture();
+  start.players[0].hand.push(...start.deck.splice(0, 3));
+  const spent = start.players[0].hand.find(card => card.effect === 'karama')!.id;
+  const chosen = start.richeseCache!.find(card => card.id === 'richese-ornithopter')!;
+  start.richeseRemoved!.push(...start.richeseCache!.filter(card => card.id !== chosen.id));
+  start.richeseCache = [chosen];
+  const held = start.players[0].hand.filter(card => card.id !== spent).map(card => card.id);
+  const result = purchase(start, chosen.id);
+  assert.equal(result.players[0].hand.length, 4);
+  assert.ok(held.every(id => result.players[0].hand.some(card => card.id === id)));
+  assert.ok(result.players[0].hand.some(card => card.id === chosen.id));
+  assert.equal(result.discard.filter(card => card.id === spent).length, 1);
+  assert.equal(result.richeseCache!.length, 0);
+  assert.equal(result.players[0].spice, 7);
+  assert.equal(result.players[2].spice, 13);
+  assert.equal(result.players[0].specialKaramaUsed, true);
 });
 void test('insufficient or pledged spice, Basic mode, used power and committed Karama are rejected atomically', () => {
   for (const configure of [

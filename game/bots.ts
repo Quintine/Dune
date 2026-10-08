@@ -2908,8 +2908,8 @@ function policyActions(g: GameView): Action[] {
     richesePurchase.karamas.length &&
     (me.spice ?? 0) >= [6, 7, 8, 8][level]
   ) {
-    // Until the other cache effects are enabled, acquire only the usable
-    // canonical Karama. Keep a spice reserve and never inspect a hidden cache.
+    // Minimal legal participation prefers reusable canonical Karama.
+    // Keep a spice reserve and never inspect another player's hidden cache.
     const choice = richesePurchase.cards.find(
       (card) => richeseCardDefinition(card)?.card.effect === 'karama',
     );

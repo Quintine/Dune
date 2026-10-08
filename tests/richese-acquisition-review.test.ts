@@ -279,16 +279,8 @@ void test('special purchase cannot spend sealed bid funds or take the already of
   rejected(g, { ...action, acquire: offered }, /offered for auction/);
 });
 
-void test('full-hand, final-cache and noncanonical selections remain explicit atomic unsupported or invalid cases', () => {
-  let g = fixture();
-  const action = command(g);
-  g.players[0].hand.push(...g.deck.splice(0, 3));
-  rejected(g, action, /full hand.*ruling/);
-  g = fixture();
-  const last = command(g);
-  g.richeseCache = g.richeseCache!.filter((c) => c.id === last.acquire);
-  rejected(g, last, /final cache.*implementation/);
-  g = fixture();
+void test('noncanonical cache selections remain invalid before any purchase cost', () => {
+  const g = fixture();
   const fake = command(g);
   g.richeseCache!.find((c) => c.id === fake.acquire)!.name =
     'Invented replacement';

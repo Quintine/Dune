@@ -19,6 +19,7 @@ export function RicheseSpecialKarama({
   const [selection, setSelection] = useState('');
   const purchase = game.richeseSpecialKarama;
   if (!purchase) return null;
+  const me = game.players.find(player => player.id === game.me);
   const karama =
     purchase.karamas.find((card) => card.id === activation) ??
     purchase.karamas[0];
@@ -51,6 +52,15 @@ export function RicheseSpecialKarama({
           its separate response. The remaining Richese card effects are still
           being implemented; inspect a card before choosing it.
         </p>
+        {me && me.hand?.length === me.handLimit && (
+          <p className="notice">
+            Provisional full-hand exchange: spending the held Karama frees the
+            slot for one cache card in this action, leaving the final hand at
+            its limit. The acquisition/discard timing is not an adjudicated
+            publisher ruling. The final cache card may be acquired under the
+            resolved exhausted-cache rule.
+          </p>
+        )}
         {purchase.karamas.length > 0 && (
           <>
             <label htmlFor={`${id}-activation`}>Karama to spend</label>

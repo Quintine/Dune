@@ -13,13 +13,37 @@ Targeted searches found discussion titles concerning full hands and alliance can
 
 ## 1. Advanced special Karama purchase
 
+### Full-hand/final-cache follow-up — 8 October 2026
+
+The 7 October exhausted-cache ruling also permits spending special Karama
+to acquire the final cached card. The subsequent native Bidding opening
+uses its ordinary pool without an unavailable compulsory cache lot.
+The currently offered/reserved auction card remains ineligible.
+
+**Provisional full-hand policy:** spend the physically held Karama and
+acquire one cache card in the same action, leaving the final hand within
+its current limit. The executor already discards the activation before
+placing the acquisition. This is a visibly qualified first version,
+not a numerical user ruling or publisher timing clarification. An already
+over-limit hand is not eligible. Funds, commitments, once-use, private
+identity and the separate Emperor-income response retain their safeguards.
+
+Three native before/after smokes cover last-card, full-hand and combined
+edges. Easy submits the actual purchase, one Karama leaves, three spice
+settle to Emperor when allowed, and the combined result is hand4/cache0.
+Both exhausted-cache positions enter native ordinary Bidding afterward.
+In Chromium, live owned controls show the provisional notice and reach
+hand4/cache0/spice7; the independent income acknowledgement then produces
+Emperor13 without another purchase. No broad suite or deployed proof.
+
+
 **Directly supported.** Richese's once-per-game special Karama use spends a Karama and three spice to choose one card secretly from its own remaining cache. The new power is advanced-only; ordinary Karama acquisition cannot buy cache lots or Black Market lots. The special rule is its own exception and is not an auction. The selected card enters Richese's hand, not an ally's. The played Karama is discarded normally. The updated Karama face expressly prevents using Karama to cancel another special Karama power. This does not waive a separate prohibition on playing a Karama, such as an applicable CHOAM effect.
 
 **Normal composition, with provenance.** The special paragraph does not name the payment recipient. B19 p19 sends payments by another faction for a Treachery Card to Emperor instead of the bank, and this special power explicitly purchases a card. Apply that general rule: three to Emperor when present and eligible, otherwise bank. This is a general-rule composition, not a Richese-specific FAQ answer. Do not silently treat it as the bank-only activation fee explicitly printed on Box. Any distinct Emperor-income cancellation must affect that income only, never cancel or repeat the special purchase.
 
 Richese itself is the buyer. Harkonnen's extra-card-on-purchase power therefore does not trigger, including when Harkonnen is the ally. An ensuing hand gift is not a Harkonnen purchase either. Ixian allied replacement requires a bidding purchase and R2 expressly excludes direct-cache acquisitions; this purchase neither creates an auction nor changes its acquisition origin. Do not trigger Ixian allied replacement. Ordinary bidding aid does not automatically authorize spending an ally's funds on this separate action; use Richese's spendable spice unless a separately verified payment permission applies.
 
-**Still unresolved:** B19's hand cap applies at all times, while special Karama is discarded after play. Neither retrieved special paragraph supplies a full-hand exception or specifies whether spending the Karama frees a slot before the new card arrives. The ordinary free-purchase Karama explicitly disallows a full hand, but that clause cannot simply be asserted to govern the different special power. A first implementation may require a pre-existing free slot and label the full-hand case unsupported, pending a ruling. Do not certify that guard as a printed prohibition. The special purchase also changes the remaining compulsory auction cache: a reserved/offered card cannot simultaneously be purchased, and taking the final card can enter the already documented empty-cache/count boundary.
+**Timing remains unresolved:** the retrieved paragraphs do not specify full-hand acquisition/discard precedence. The current visibly provisional exchange policy above supersedes the earlier spare-slot guard; it is not a publisher answer. The final-cache boundary is resolved by the 7 October exhausted-cache ruling. Reserved auction custody remains binding.
 
 **Atomic contract.** Validate advanced Richese ownership, unused special power, exact owned Karama, exact unreserved cached identity, funds, capacity policy and timing before paying or consuming either card. Persist a normalized intent if an independent response is required. Apply the purchase, discard and once-per-game flag once; resume the original phase/auction checkpoint without rebuilding pools. Project the selected face only to the entitled owner; other players do not receive the cache list or selected identity through pending intent, validation errors or logs. Cache/hand counts may update without naming the acquired face.
 
@@ -45,10 +69,10 @@ Distrans itself as the gifted card is not resolved by the face's give-then-disca
 
 ## 4. Nullentropy Box
 
-**8 October Basic runtime amendment:** Nullentropy Box now supports a visibly
-provisional full-hand atomic exchange, preserving the final limit and discarding
-the used Box last. This does not settle the printed intermediate-capacity
-question; Advanced remains guarded. [Current Box contract](NULLENTROPY_BOX_ENGINE_AUDIT.md).
+**8 October runtime amendment:** Nullentropy Box supports a visibly
+provisional full-hand atomic exchange in Basic and Advanced, preserving
+the final limit and discarding the used Box last. Intermediate capacity is
+not adjudicated. [Current Box contract](NULLENTROPY_BOX_ENGINE_AUDIT.md).
 
 **Exact printed sequence, in original prose:**
 
@@ -75,7 +99,7 @@ Semuta's response to the final Box discard, multiple discard triggers, deck recy
 
 ## Bounded special-purchase integration checkpoint
 
-The engine's existing SpecialKaramaIntent now has a Richese branch, with a separate Emperor purchase-income response. The owner-only `richeseSpecialKarama` projection supplies legal cache choices, spendable activating Karamas, a blocked reason and the payment recipient. Full-hand and final-cache acquisition remain guarded. This does not activate gifts, Distrans or Box.
+SpecialKaramaIntent has a Richese branch and separate Emperor income. The owner-only projection supplies legal cache choices, spendable Karamas, availability and payee. Full-hand exchange and final-cache acquisition are connected above. Gift, Distrans and Box remain separate effects with their own current contracts.
 
 `components/richese-special-karama.tsx` is integrated beside the private hand's other faction tools. It has separate activation/cache selectors and enlarged inspectors, a three-spice/once-per-game explanation, payment recipient and authoritative unavailable reason. It sends the exact activating and acquired physical IDs. There is no acknowledgement step or public cache projection. `game/reference.ts` adds `richese-acquisition` with all five checklist facets and source-boundary explanations.
 
@@ -85,8 +109,8 @@ Four named scenarios in `tests/richese-acquisition-bots.test.ts` pass across all
 
 ## Integrated purchase checkpoint
 
-The special Karama branch is now wired through the authoritative normalized-intent validator/executor. It validates exact canonical cache custody, unused Advanced Richese power, spendable owned Karama and three uncommitted own spice. A currently offered cache card cannot be taken out of its auction. Full-hand activation and acquiring the final cache card remain explicit unresolved development guards.
+The normalized-intent validator/executor checks canonical cache custody, unused Advanced Richese power, spendable held Karama and three uncommitted own spice. An offered cache card stays reserved. Full-hand exchange uses the provisional final-capacity policy; final-cache purchase follows the resolved exhausted-cache rule.
 
 The completed purchase discards the activating Karama, moves the selected physical card to the hand and consumes the once-per-game power atomically. Its identity is absent from public response state and logs. An independent Emperor-income response preserves the exact parent response, decision and pending Bene Gesserit conversion; payment goes to Emperor or the bank after that response, without an auction bonus or Ixian replacement. Restored continuations never replay the acquisition.
 
-Private controls and all four AI profiles are integrated. Current AI conservatively buys only the functional canonical Karama and retains spice; the other nine effects remain unfinished. Eight primary engine tests, nine independent review tests, four AI scenarios and two additional persisted concurrency/restart scenarios pass. A real desktop browser purchase and fresh-tab seat restoration across the controlled server restart passed in QPNV5XJJ. The broader full-hand/final-cache boundaries, gift, Distrans and Box remain unfinished; no full Richese game is certified.
+**Historical initial checkpoint:** eight engine, nine review, four AI and two persisted concurrency/restart scenarios plus QPNV5XJJ desktop purchase/restoration established the earlier bounded flow. Those dated results do not verify today's capacity/exhaustion changes. Current full-hand/final-cache behavior and separate gift/Distrans/Box contracts supersede the old absence claims; full Richese certification remains open.

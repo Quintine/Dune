@@ -26808,8 +26808,8 @@ export function prepareSpecialKaramaIntent(
       'The Karama reserved for Black Market cannot activate another effect.',
     );
     requireRule(
-      p.hand.length < handLimit(p),
-      'Special Richese Karama with a full hand awaits a ruling on acquisition and discard order.',
+      p.hand.length <= handLimit(p),
+      'The final exchanged hand must not exceed its hand limit.',
     );
     requireRule(
       uncommittedSpice(g, p) >= 3,
@@ -26830,10 +26830,6 @@ export function prepareSpecialKaramaIntent(
         g.currentAuctionSale ||
         g.richeseAuction.cardId !== acquire,
       'The card already offered for auction must remain in that auction.',
-    );
-    requireRule(
-      g.richeseCache!.length > 1,
-      'Buying the final cache card awaits the empty-cache Bidding rule implementation.',
     );
     return { ...base, kind: 'richese', acquire };
   } else if (p.faction === 'choam') {

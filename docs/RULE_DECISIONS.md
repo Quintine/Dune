@@ -36,6 +36,11 @@ Turn-end set-aside is supplied text; one-battle loan release remains the
 explicit provisional implementation policy. Existing exceptional custody and
 Advanced Harkonnen guards remain. [Current Duke grant contract](ECAZ_DUKE_ACQUISITION.md).
 
+Richese special Karama may now buy its final cached card under the 7 October
+exhausted-cache ruling. Its full-hand spent-Karama exchange uses an explicitly
+provisional final-capacity policy, not a numerical user ruling. Separate
+income and reservation safeguards remain. [Acquisition contract](RICHESE_ACQUISITION_RULES.md).
+
 Advanced Richese ordinary mixed battles, Guild/active-Karama allied prices
 and full-hand Box now share the visibly qualified Basic prototype policies.
 Native Advanced support and shipment prevention remain separate. These are

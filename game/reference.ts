@@ -558,6 +558,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'Richese special Karama purchase',
     category: 'Advanced & expansions',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'Spend a Karama and three spice once per game to choose a private cache card for your own hand.',
     steps: [
@@ -566,7 +567,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A Karama cannot cancel the special purchase itself. Emperor income has a separate response: canceling that income does not undo the purchase or restore the spent special power.',
       'The separate Richese Nexus Betrayal preview connects ordinary public self-cache auctions, not this private special acquisition. The native Karama cancellation exception above is not authority for deciding whether Nexus Betrayal applies to a special purchase.',
       'The private hand panel provides both card selectors and enlarged inspection. It shows the payment recipient and the server’s current availability reason. A reserved auction card cannot be taken from that lot. Spending pledged or already committed funds is not allowed.',
-      'Full-hand activation is guarded pending a ruling on when the spent Karama leaves the hand. Buying the final cached card is also guarded pending the empty-cache auction rule. Pending interactions may need to finish first. These development limits are not claimed as printed prohibitions.',
+      'Full-hand activation now has a visibly provisional exchange policy: spend the held Karama and acquire one cache card, leaving the final hand within its actual limit. This is not a publisher timing clarification or numerical user ruling. Buying the final cached card is legal under the resolved exhausted-cache auction rule; subsequent Bidding restores the ordinary pool. Reserved cards, over-limit hands and pending commitments remain ineligible.',
       'All four AI profiles can choose the canonical Richese Karama when the projection allows it and enough spice remains. They leave other cache effects to future implementation and give pending responses, decisions and Truthtrance priority.',
       'Richese ally gifts, Distrans transfer and Nullentropy Box search have their own hand-panel controls and rules topics. These are separate from special Karama purchase and retain their own capacity, timing and private-custody boundaries. Selectable Richese and combined advanced starts remain disabled.',
     ],
@@ -584,7 +585,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Private cache acquisition, once-per-game consumption and separate Emperor income are integrated in development fixtures. Full-hand, final-cache and further transfer/search cases remain guarded or unfinished.',
+          'Private cache acquisition, once-use and separate Emperor income are integrated. Full-hand exchange is a visibly provisional final-capacity policy; final-cache acquisition reaches the resolved ordinary Bidding continuation. Further timing and transfer/search compositions remain open.',
       },
       {
         area: 'Player controls',

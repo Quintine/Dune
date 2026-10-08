@@ -166,6 +166,14 @@ guards remain. Two native Basic/Advanced smokes and live owned React controls
 prove exact usage/payment/card results; no broad suite or deployed proof.
 Types/lint and two targeted late-accounting/remaining-guard cases pass.
 
+**Richese acquisition edges connected.** Final-cache special purchase now
+follows the resolved exhausted-cache rule and reaches native ordinary Bidding.
+Full-hand purchase uses a visible provisional spent-Karama exchange, keeping
+final capacity and separate Emperor income. Three native edge smokes and live
+owned React purchase/income controls prove hand4/cache0, one fee/card/once-use.
+No broad suite, recovery campaign or deployed acceptance was run.
+Types/lint and the three-file acquisition union pass **21/21**.
+
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in
 [the decision index](RULE_DECISIONS.md#user-rulings--7-october-2026) and

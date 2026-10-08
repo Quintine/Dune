@@ -90,7 +90,7 @@ void test('all four profiles acquire only usable canonical Karama and settle onc
   }
 });
 
-void test('all profiles decline unavailable, used, basic, full-hand and low-budget purchases', () => {
+void test('all profiles decline unavailable, used, basic and low-budget purchases', () => {
   for (const difficulty of DIFFICULTIES) {
     for (const change of [
       (g: Game) => {
@@ -101,9 +101,6 @@ void test('all profiles decline unavailable, used, basic, full-hand and low-budg
       },
       (g: Game) => {
         g.players[0].spice = 3;
-      },
-      (g: Game) => {
-        g.players[0].hand.push(...g.deck.splice(0, 3));
       },
       (g: Game) => {
         g.players[0].hand = [];
