@@ -3,6 +3,7 @@
 import { useId, useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import { location, splitLocation, territory } from '@/game/board';
+import { sandmasterDestinationCollection } from '@/game/sandmaster-movement';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -29,6 +30,7 @@ export function AmbassadorMovement({
   const [elites, setElites] = useState<Record<string, number>>({});
   const [takeMarker, setTakeMarker] = useState(false);
   const [fighters, setFighters] = useState(false);
+  const [collectSandmaster, setCollectSandmaster] = useState(true);
   const entry = game.ambassadorEntry;
   if (
     entry?.stage !== 'move' ||
@@ -78,6 +80,9 @@ export function AmbassadorMovement({
     !!source.marker &&
     location(source.territory, source.marker.sector) === target;
   const includesMarker = !!source.marker && takeMarker && !markerAtTarget;
+  const sandmaster = !includesMarker && destination
+    ? sandmasterDestinationCollection(game, game.me, source.territory, destination.territory, destination.sector)
+    : null;
   const reason =
     destination?.blocked ??
     (!destination
@@ -270,6 +275,17 @@ export function AmbassadorMovement({
           Request a flip to fighters on arrival
         </label>
       )}
+      {sandmaster && (
+        <label className="flex min-h-11 items-center gap-3">
+          <input
+            type="checkbox"
+            checked={collectSandmaster && !sandmaster.blocked}
+            disabled={busy || !!sandmaster.blocked}
+            onChange={(event) => setCollectSandmaster(event.target.checked)}
+          />
+          {sandmaster.blocked ?? 'Collect 1 spice here with Sandmaster before arrival reactions'}
+        </label>
+      )}
       <p className="m-0 text-sm" aria-live="polite">
         Selected: {total} physical forces
         {includesMarker ? ' and one concealed No-Field' : ''}.
@@ -301,6 +317,7 @@ export function AmbassadorMovement({
                 }
               : {}),
             ...(fighters && destination.canFight ? { fighters: true } : {}),
+            ...(sandmaster?.blocked === null ? { sandmasterCollect: collectSandmaster } : {}),
           });
         }}
       >

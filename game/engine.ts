@@ -14167,6 +14167,7 @@ function validateMovementOrder(g: Game, p: Player, move: MovementOrder) {
       territory: move.to,
       sector: move.sector,
       fighters: move.wantsFighters,
+      ...(move.ambassadorSandmaster ? { sandmasterCollect: true } : {}),
       ...(move.noField
         ? {
             noField: {
@@ -15758,6 +15759,14 @@ function ambassadorRelocationMovement(g: Game, player: string) {
 function commitAmbassadorRelocation(g: Game, move: FremenAmbassadorMove) {
   const { entry, beneficiary: p } = currentFremenAmbassador(g);
   validateAmbassadorRelocationArrival(g, move);
+  if (move.ambassadorSandmaster) {
+    const { key } = move.ambassadorSandmaster;
+    g.spice[key]--;
+    if (!g.spice[key]) delete g.spice[key];
+    p.spice++;
+    log(g, `${p.name}'s Sandmaster collected 1 spice at ${territory(move.to).name} during Fremen Ambassador relocation, before arrival reactions.`,
+      { faction: p.faction, name: 'Sandmaster collection' });
+  }
   if (move.noField) {
     requireRule(
       p.noField && p.noFieldEvent === move.noField.event,
@@ -27407,6 +27416,7 @@ type CompletedMovement = Pick<
 > & { noField: boolean };
 type MovementOrder = {
   sandmaster?: SandmasterMovement;
+  ambassadorSandmaster?: FremenAmbassadorMove['ambassadorSandmaster'];
   source?: 'ambassador';
   ambassadorEvent?: string;
   player: string;

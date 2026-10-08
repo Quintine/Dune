@@ -5,6 +5,35 @@ ground movement now connects the normal band through explicit routes, optional
 collection, player controls, all four AI profiles and saved continuation.
 This does not open public Leader Skills starts or publication.
 
+## Physical Fremen Ambassador relocation — 8 October 2026
+
+The Ambassador expressly relocates a board force group. The normal
+Sandmaster movement band now optionally collects one spice at its entered
+destination, before arrival reactions. No intervening route is implied.
+Moving between sectors of the same territory earns none. The existing
+living native trainer, supported-profile and unique positive pile rules
+remain; concealed-marker relocation is still separate.
+
+`sandmasterDestinationCollection` is shared by this direct relocation and
+the existing worm adapter. Human controls expose a checked, optional
+destination collection choice; bots attach it only to an eligible physical
+relocation. Native quoting records the trainer and exact pile in
+`ambassadorSandmaster`, distinct from ordinary ground-route receipts.
+Suspended CHOAM movement revalidates that receipt through the original
+Ambassador event. Cancellation collects nothing; commit transfers one
+board spice once before the original arrival continuation.
+
+Basic and Advanced direct smokes cover collection, decline, same-territory
+and multiple-pile rejection. A bounded owned-destination Easy candidate
+reaches the real relocation engine. The adjacent native Advanced worm
+still transfers one spice and moves four forces. In Chromium, live React
+controls ran against the native engine: Basic collection produced
+spice21/board1, Advanced opt-out spice20/board2, both with destination2
+forces, unchanged ordinary allowances and completed Ambassador events.
+This is an isolated component/engine smoke, not HTTP or deployed acceptance.
+No broad suite or recovery campaign was run.
+
+
 ## Source contract
 
 The physical card and [Jack Reda's designer walkthrough, 15:48–16:08](https://www.youtube.com/watch?v=XT_azRVLq_0&t=948s)
@@ -70,9 +99,10 @@ awaited the human. This is targeted browser evidence, not a complete human game.
 Broad checkpoint results are recorded with the checkpoint. These checks do not certify every skill or combined module.
 
 The [worm-ride follow-up](SANDMASTER_WORM.md) connects native Fremen destination
-collection, including saved arrival reactions. Remaining work includes other
-nonordinary relocation, special movement cards, expansion/module integration, multiple-pile adjudication and
-wider interaction and strategy acceptance. The lower battle band remains in
+collection, including saved arrival reactions. Physical Fremen Ambassador
+relocation is connected above. Other nonordinary relocations, special cards,
+concealed-marker collection, multiple-pile adjudication and wider interaction/
+strategy acceptance remain. The lower battle band is in
 [the battle-effects contract](LEADER_BATTLE_EFFECTS.md).
 
 ## 21 September: native HMS relocation eligibility

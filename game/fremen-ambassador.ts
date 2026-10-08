@@ -12,6 +12,7 @@ import { presenceAt } from './force-presence';
 import { territoryEntryBlock } from './occupancy';
 import { ecazOccupancyRelation } from './ecaz-occupy';
 import { homeworldNoFieldMovementBlock } from './homeworld-mobility';
+import { sandmasterDestinationCollection } from './sandmaster-movement';
 
 export class FremenAmbassadorMoveError extends Error {
   constructor(message: string) {
@@ -32,6 +33,7 @@ export type FremenAmbassadorMove = {
   wantsFighters: boolean;
   lockedTurn?: number;
   noField?: { tokenId: string; event: string; from: string };
+  ambassadorSandmaster?: { leader: string; key: string; before: number };
 };
 export type FremenAmbassadorMovement = {
   sources: {
@@ -326,6 +328,17 @@ export function quoteFremenAmbassadorMove(
       count((p.elites?.forces[target] ?? 0) + elite),
     'The resulting force quantity is invalid.',
   );
+  requireMove(action.sandmasterCollect === undefined || typeof action.sandmasterCollect === 'boolean',
+    'Choose whether to collect spice with Sandmaster.');
+  let ambassadorSandmaster: FremenAmbassadorMove['ambassadorSandmaster'];
+  if (action.sandmasterCollect) {
+    requireMove(physical > 0 && !noField,
+      'Sandmaster collection with concealed Ambassador relocation is still being integrated.');
+    const quote = sandmasterDestinationCollection(g, p.id, origin, to, sector);
+    requireMove(quote && !quote.blocked && quote.key,
+      quote?.blocked ?? 'Sandmaster collection needs the living native trainer.');
+    ambassadorSandmaster = { leader: quote.leader, key: quote.key, before: quote.before };
+  }
   return {
     player: p.id,
     group,
@@ -339,6 +352,7 @@ export function quoteFremenAmbassadorMove(
     wantsFighters,
     ...(lockedTurn === undefined ? {} : { lockedTurn }),
     ...(noField ? { noField } : {}),
+    ...(ambassadorSandmaster ? { ambassadorSandmaster } : {}),
   };
 }
 

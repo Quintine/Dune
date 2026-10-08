@@ -23,6 +23,7 @@ import {
 } from '../game/richese-no-field';
 import { createTerrorState, placeTerror } from '../game/moritani-terror';
 import { MOBILE_LOCATION, MOBILE_STRONGHOLD } from '../game/board';
+import { createLeaderSkills } from '../game/leader-skills';
 
 const p = (g: Game, id: string) => g.players.find((p) => p.id === id)!;
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
@@ -144,6 +145,32 @@ function trigger(g: Game, beneficiary = 'a', copy = false) {
     });
   return out;
 }
+
+void test('physical Fremen Ambassador relocation collects optional Sandmaster spice without consuming ordinary allowances', () => {
+  for (const collect of [false, true]) {
+    const start = fixture();
+    start.expansions = ['ecaz'];
+    army(start, 'a', { 'red_chasm:7': 2 });
+    start.spice = { 'hagga_basin:12': 2 };
+    const skills = createLeaderSkills(() => 0.2);
+    skills.deck = skills.deck.filter(skill => skill !== 'sandmaster');
+    skills.assignments = [{ skill: 'sandmaster', owner: 'a', leader: p(start, 'a').leaders[0].id }];
+    start.leaderSkills = skills;
+    const pending = trigger(enter(start));
+    const done = move(pending, {
+      forces: { 'red_chasm:7': 2 }, territory: 'hagga_basin', sector: 12,
+      sandmasterCollect: collect,
+    });
+    assert.equal(p(done, 'a').forces['hagga_basin:12'], 2);
+    assert.equal(p(done, 'a').spice, collect ? 21 : 20);
+    assert.equal(done.spice['hagga_basin:12'], collect ? 1 : 2);
+    assert.equal(p(done, 'a').shipped, false);
+    assert.equal(p(done, 'a').moved, 0);
+    assert.equal(p(done, 'a').reserves, 18);
+    assert.equal(p(done, 'a').tanks, 0);
+    assert.equal(done.pendingAmbassador, null);
+  }
+});
 function move(g: Game, extra: Omit<Action, 'type'>, actor = 'a') {
   return applyAction(g, actor, {
     type: 'decision',

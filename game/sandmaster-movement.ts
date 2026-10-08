@@ -1,6 +1,6 @@
 import { ordinaryLeaderSkillModeSupported } from './leader-skill-profile';
 import type { Action, Game, GameView } from './engine';
-import { GRAPH, location, mobileRouteDistance, splitLocation, MOBILE_LOCATION } from './board';
+import { GRAPH, location, mobileRouteDistance, splitLocation, MOBILE_LOCATION, validGameLocation } from './board';
 import { isAdvisor } from './advisors';
 import { strongholdPathBlocked } from './occupancy';
 import { botMovementRange } from './bot-mobility';
@@ -55,6 +55,53 @@ export function sandmasterLeader(
     ? leader.id
     : null;
 }
+
+export type SandmasterDestinationCollection = {
+  leader: string;
+  key: string | null;
+  before: number;
+  blocked: string | null;
+};
+
+/** Direct relocation enters only its destination, never an invented route. */
+export function sandmasterDestinationCollection(
+  game: Game | GameView,
+  player: string,
+  origin: string,
+  destination: string,
+  sector: number,
+): SandmasterDestinationCollection | null {
+  const leader = sandmasterLeader(game, player);
+  if (!leader) return null;
+  const blocked = (reason: string): SandmasterDestinationCollection =>
+    ({ leader, key: null, before: 0, blocked: reason });
+  if (!sandmasterModeSupported(game))
+    return blocked('Sandmaster collection with this configuration is still being integrated.');
+  if (origin === destination || !validGameLocation(game, destination, sector) ||
+      sector === game.storm)
+    return blocked('Choose a different legal destination territory for Sandmaster collection.');
+  let key: string | null = null;
+  let before = 0;
+  for (const pile in game.spice) {
+    const at = splitLocation(pile);
+    if (at.territory !== destination) continue;
+    const amount = game.spice[pile];
+    if (!validGameLocation(game, at.territory, at.sector) ||
+        pile !== location(at.territory, at.sector) ||
+        !Number.isSafeInteger(amount) || amount < 0)
+      return blocked('Sandmaster needs a valid destination spice pile.');
+    if (!amount) continue;
+    if (key) return blocked('Sandmaster collection among multiple spice piles awaits its allocation ruling.');
+    key = pile;
+    before = amount;
+  }
+  if (!key) return blocked('There is no spice to collect at this destination.');
+  const spice = game.players.find(p => p.id === player)?.spice;
+  if (!Number.isSafeInteger(spice) || !Number.isSafeInteger(spice! + 1))
+    return blocked('Sandmaster collection needs a valid spice balance.');
+  return { leader, key, before, blocked: null };
+}
+
 export function sandmasterPathBlocked(
   g: Game | GameView,
   player: string,

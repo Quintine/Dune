@@ -132,6 +132,16 @@ without a city sentinel. Three direct scenarios, one cross-mode arrival/ending
 regression, types/lint and native GameTable SSR pre-arrival/ending controls
 pass; no broad suite or deployed proof was run.
 
+**Sandmaster / physical Fremen Ambassador connected.** Relocation now offers
+optional destination collection before arrival reactions, without an invented
+route or extra ordinary move. Shared quotes preserve trainer/profile and
+single-pile bounds; CHOAM-suspended orders keep the distinct collection receipt.
+Basic/Advanced direct smokes and the adjacent native worm path pass. Live React
+controls in Chromium reach native collection and opt-out outcomes with exact
+spice/counters and completed events. No broad suite, recovery campaign or
+deployed acceptance was run.
+Compiler/lint and two affected Ambassador/worm contract cases pass.
+
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in
 [the decision index](RULE_DECISIONS.md#user-rulings--7-october-2026) and

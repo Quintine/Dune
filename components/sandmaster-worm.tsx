@@ -1,7 +1,7 @@
-import type { SandmasterWormCollection } from '@/game/sandmaster-worm';
+import type { SandmasterDestinationCollection } from '@/game/sandmaster-movement';
 
 export function SandmasterWormChoice({ quote, collect, onChange }: {
-  quote: SandmasterWormCollection | null;
+  quote: SandmasterDestinationCollection | null;
   collect: boolean;
   onChange: (collect: boolean) => void;
 }) {

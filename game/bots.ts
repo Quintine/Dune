@@ -99,7 +99,7 @@ import {
   guildTransportCost,
 } from './bot-mobility';
 import { planetologistMovementModeSupported, planetologistLeader } from './planetologist-movement';
-import { sandmasterDefaultChoice } from './sandmaster-movement';
+import { sandmasterDefaultChoice, sandmasterDestinationCollection } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { richeseCardDefinition } from './richese-cards';
 import { presenceAt } from './force-presence';
@@ -418,6 +418,8 @@ function fremenAmbassadorMoves(g: GameView): Action[] {
           eliteForces,
           territory: destination.territory,
           sector: destination.sector,
+          ...(!marker && sandmasterDestinationCollection(g, me.id, source.territory, destination.territory, destination.sector)?.blocked === null
+            ? { sandmasterCollect: true } : {}),
           ...(marker
             ? { noField: { tokenId: marker.tokenId, event: marker.event } }
             : {}),
