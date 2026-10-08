@@ -11,7 +11,7 @@ for (const db of config.d1_databases) {
     throw new Error(`Migration/runtime database identity mismatch for ${db.binding}`);
   }
 }
-const state = resolve(process.env.DUNE_STATE_PATH || '/data');
+const state = resolve(process.env.DUNE_STATE_PATH || '.wrangler/state');
 const port = Number(process.env.DUNE_PORT || 3000);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid DUNE_PORT');
 async function modulesIn(directory) {

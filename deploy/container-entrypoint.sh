@@ -3,7 +3,8 @@ set -eu
 
 # A failed migration must stop startup. Both commands use the same local D1 ID
 # and storage root. Never reset or replace this directory during updates.
-state_path=${DUNE_STATE_PATH:-/data}
+export DUNE_STATE_PATH="${DUNE_STATE_PATH:-/data}"
+state_path=$DUNE_STATE_PATH
 # Validate before migration; this is an administrator setting, not a request header.
 node --input-type=module -e '
   const value = process.env.DUNE_PUBLIC_ORIGIN;

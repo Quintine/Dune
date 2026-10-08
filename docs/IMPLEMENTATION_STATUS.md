@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 9 October 2026 — built npm runtime uses the proxy-free adapter
+
+`npm start` still invoked Wrangler despite the container's existing direct
+Miniflare runtime and the recorded dev-proxy disconnect. It now runs
+`deploy/serve.mjs`; the default local path remains `.wrangler/state`, while
+the container entrypoint exports its existing `/data` default explicitly.
+No application authorization, automatic HTTP retry or migration changes.
+The [upstream proxy report](https://github.com/cloudflare/workers-sdk/issues/14641)
+and earlier literal “worker restarted mid-request” witness explain the
+local tooling distinction; this is not an upstream SDK repair.
+
+Official Node22.23.3 archive SHA-256 matches the
+[published checksum](https://nodejs.org/dist/v22.23.3/SHASUMS256.txt)
+and its extracted executable. The actual build, `npm start`, throwaway
+HTTP program and same-executable test subprocesses use that Node22.
+Eleven HTTP probes return the expected 200/400/403/413/201/200/409 plus
+four 400 responses at five-second cadence, without retry. Four original
+normal-room, Advanced-lobby and denied-admin boundary cases pass. The new
+QA room QZD2XV8L and integration records are only in
+`/tmp/dune-built-runtime-20261009-T1OPGq`; existing stores were not targeted.
+Types/lint and `sh -n` pass. Build retains its existing chunk-size warning.
+
+The historical paired failure is separate: API metadata confirms
+CI37208188809/job111453717886 failed isolated step7 and skipped publication;
+public annotations contain only exit1 and its log endpoint returns403.
+`gh` and Docker are unavailable here. API metadata confirms the later
+CI37211854749/job111464477749 success, but neither that result nor current
+proxy-free passes identify the former failing request/cause. Diagnosis and
+dependent repair remain blocked without authorized logs or a reproducer.
+No complete HTTP/Docker/deployed acceptance is claimed.
+
 ## 9 October 2026 — owned multi-pile Smuggler and Sandmaster choices
 
 The multi-pile guards now have working choices in supported Basic/Advanced

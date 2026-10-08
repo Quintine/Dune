@@ -29,6 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Built-runtime proxy cutover — 9 October.** `npm start` now uses the
+existing direct Miniflare adapter rather than Wrangler's development proxy.
+Local storage defaults to `.wrangler/state`; the container explicitly keeps
+`/data`. No API authorization, retry or migration policy changed. A
+checksum-verified Node22.23.3 build/start and eleven real HTTP probes pass:
+HTML200, invalid JSON400, foreign origin403, oversized413, create201,
+authenticated read200, anonymous denial409 and four five-second-cadenced
+invalid POST400 responses. Four original focused integration cases also
+pass against a dedicated new QA store; types/lint and entrypoint syntax pass.
+
+The separate historical paired CI failure remains unidentified:
+[job111453717886](https://github.com/Quintine/Dune/actions/runs/37208188809/job/111453717886)
+exposes only step7/exit1; annotations add no failing request, log download
+returns403, and this host has neither `gh` nor Docker. The later
+[job111464477749](https://github.com/Quintine/Dune/actions/runs/37211854749/job/111464477749)
+is independently observed success, not proof of the earlier cause. Those
+diagnosis/dependent-repair tasks remain blocked on authorized historical
+logs or an exact reproducible failure. No deployment or Docker proof is
+claimed for this cutover.
+
+
 **Multi-pile battle skills prototype — 9 October.** A surviving Smuggler
 controller can allocate its fixed reveal-time collection across existing
 sectors; a surviving Sandmaster winner selects one remaining pile for +3.

@@ -337,7 +337,7 @@ See [source-bound verification](docs/VERIFICATION_WORKFLOW.md#compact-checks-and
 for private full logs/reports and deferred final audits. Existing games, access
 controls, secret protection and CI/deployment/publication gates remain protected.
 
-The production build is written to `dist`. `npm start` runs that build with Wrangler; apply its database migrations to the intended storage environment before use. The included local migration command targets the development database, not a remote deployment.
+The production build is written to `dist`. `npm start` serves that immutable build directly through Miniflare, without Wrangler's development proxy. Apply migrations to the intended storage environment first. Local serving defaults to the existing `.wrangler/state` and port 3000; `DUNE_STATE_PATH` and `DUNE_PORT` select explicit alternatives. The container entrypoint retains `/data` and applies additive migrations before startup. The local migration command does not target a remote deployment.
 
 Reproduce the current AI study with:
 
