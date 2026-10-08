@@ -96,7 +96,7 @@ void test('high Tleilax selects only actual normal Free-Revived forces from a mi
   }
 });
 
-void test('reaching the high threshold returns an explicit unresolved block while remaining low grants nothing', () => {
+void test('reaching the high threshold grants the same return’s redeployment while remaining low grants nothing', () => {
   for (const [faction, start, elite] of [
     ['fremen', 2, 1],
     ['tleilaxu', 8, 0],
@@ -113,7 +113,11 @@ void test('reaching the high threshold returns an explicit unresolved block whil
     assert.ok(result);
     assert.equal(result.beforePopulation, start);
     assert.equal(result.afterPopulation, start + 1);
-    assert.match(result.blocked!, /first reaches.*threshold.*timing ruling/);
+    // Provisional composition policy: the population resulting from this
+    // return decides the ability, so the crossing return itself may redeploy.
+    assert.equal(result.blocked, null);
+    assert.equal(result.elite, faction === 'fremen' ? elite : 0);
+    assert.equal(result.normal, faction === 'tleilaxu' ? group.free : 0);
     const low = fixture(faction, start - 1);
     assert.equal(
       quoteHomeworldRevivalDeployment(

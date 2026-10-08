@@ -291,10 +291,12 @@ void test('actual Bidding exit snapshots low Tleilax; later crossing high suppre
   });
   const initial = p(g, 'tleilaxu').spice;
   const before = structuredClone(g);
-  assert.throws(
-    () => applyAction(g, 'tleilaxu', { type: 'revive', amount: 2, elite: 0 }),
-    /timing ruling/,
-  );
+  // The crossing return now qualifies under the provisional post-return
+  // population policy: it stages its own redeployment choice instead of
+  // blocking, while the source state stays untouched.
+  const crossing = applyAction(reload(g), 'tleilaxu', { type: 'revive', amount: 2, elite: 0 });
+  assert.equal(crossing.homeworldRevivalReturn!.stage, 'choice');
+  assert.equal(viewGame(crossing, 'tleilaxu').homeworldRevivalDeployment?.player, 'tleilaxu');
   assert.deepEqual(g, before);
   g = applyAction(g, 'tleilaxu', { type: 'revive', amount: 1, elite: 0 });
   assert.equal(p(g, 'tleilaxu').reserves, 8);

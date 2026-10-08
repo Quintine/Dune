@@ -2,6 +2,30 @@
 
 Source audit, 9 September 2026. This separates publisher wording, rule composition, and remaining decisions. It does not enable Homeworld games or replace the outstanding Ambassador/Duke revival rulings.
 
+## Provisional high-threshold revival deployment — 9 October 2026
+
+The previously blocked case "a supported revival whose own return first reaches
+the Homeworld's high threshold" now has a visibly provisional policy: the
+population **resulting** from that return decides the deployment ability, so the
+crossing return may itself place its revived starred (Fremen Southern
+Hemisphere) or ordinary free (Tleilaxu High) group instead of only returning it
+to reserves. The printed card grants the ability while the faction is at High,
+and the returned forces are what make it High, so evaluating after the deposit
+is the natural composition of the two texts.
+
+This is a first-version implementation choice, **not a located publisher timing
+ruling**. The Tleilaxu low-income condition still snapshots native status on
+entry to Revival, so crossing high later does not erase that printed
+start-condition. Partial groups, split destinations, Southern storm placement,
+allied-Homeworld limits and entry effects requiring a shipment classification
+remain guarded.
+
+Evidence: the `homeworld-revival` union (65 cases) passes with the crossing
+return staging its own placement choice, and the four preserved Advanced
+captures that previously stopped at `phase 4` on this question now complete
+(78/68/932/133 further actions) with zero rejections. See
+[the resumption record](IMPLEMENTATION_STATUS.md#9-october-2026--gated-captures-resumed-under-the-basic-occupation-and-odd-force-occupy-prototypes).
+
 ## Publisher facts and provenance
 
 | Source                                                                                                         | Verified material                                                                                                                                                                                                                                                                                                                                                                                                       |

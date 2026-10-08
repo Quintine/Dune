@@ -217,11 +217,13 @@ saved positions. Every previously stalled Southern Hemisphere occupied-benefit
 capture and every previously stalled odd-force Basic Ecaz Occupy capture now
 completes (`homeworld-occupation-atreides-4/5-basic`, `ixians-6-basic`,
 `moritani-6-basic`, plus five Basic Occupy bodies finishing in 135–688 actions).
-Four Advanced captures still stop on the open high-Homeworld-threshold revival-
-deployment timing, and one Basic `native-homeworld-skills` overlay capture stops
-on the explicitly gated combined-Occupy composition. No capture was reset,
+The four Advanced captures that still stopped on the high-Homeworld-threshold
+revival-deployment timing now also complete (78/68/932/133 further actions) after
+that question received a visibly provisional resulting-population policy. One
+Basic `native-homeworld-skills` capture still stops on the explicitly gated
+combined-Occupy optional-overlay composition. No capture was reset,
 force-completed or bypassed; results and logs are under
-`/tmp/dune-resume-wave2-20261009`. See
+`/tmp/dune-resume-wave2-20261009` and `/tmp/dune-resume-wave3-20261009`. See
 [the resumption evidence](IMPLEMENTATION_STATUS.md#9-october-2026--gated-captures-resumed-under-the-basic-occupation-and-odd-force-occupy-prototypes).
 
 **7 October 2026 — five pending rulings resolved by the user.** The user

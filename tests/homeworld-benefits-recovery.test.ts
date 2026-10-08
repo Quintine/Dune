@@ -382,16 +382,15 @@ void test('Tleilaxu low phase-entry receipt survives a later physical population
     };
     assert.deepEqual(g.homeworldRevival, receipt);
     f.save(g);
-    await assert.rejects(
-      f.rooms.act(
-        f.code,
-        f.auths[0],
-        g.version,
-        { type: 'revive', amount: 2, elite: 0 },
-        clock,
-      ),
-      /timing ruling/,
+    // The crossing return is now legal under the provisional post-return
+    // population policy. Prove it on an isolated clone so the persisted low
+    // receipt and write count stay untouched.
+    const crossingTrial = engine.applyAction(
+      JSON.parse(JSON.stringify(g)),
+      g.players[0].id,
+      { type: 'revive', amount: 2, elite: 0 },
     );
+    assert.equal(crossingTrial.homeworldRevivalReturn!.stage, 'choice');
     assert.equal(f.writes.length, 0);
     assert.deepEqual(await f.rooms.readRoom(f.code), g);
     await f.rooms.act(

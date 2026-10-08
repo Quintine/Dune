@@ -253,7 +253,7 @@ void test('Southern Ghola retires its physical card before choice and restores t
   }
 });
 
-void test('low populations do not invent a deployment; first reaching high rejects ordinary and Ghola returns before payment or custody changes', () => {
+void test('low populations do not invent a deployment; a return that first reaches high stages its own redeployment choice', () => {
   for (const ghola of [false, true]) {
     let g = homeworldRevivalFixture();
     positionRevivalForces(g, 'f', { native: 1, tanks: 5, eliteTanks: 2 });
@@ -267,12 +267,22 @@ void test('low populations do not invent a deployment; first reaching high rejec
     assert.equal(viewGame(low, 'f').homeworldRevivalDeployment, null);
     assert.equal(p(low, 'f').reserves, 2);
     stable(low);
-    reject(g, 'f', { ...action, amount: 2 }, /timing ruling/);
+    // The crossing return now qualifies under the provisional post-return
+    // population policy and may redeploy instead of only returning to reserves.
+    const crossing = applyAction(reload(g), 'f', { ...action, amount: 2 });
+    assert.notEqual(crossing.homeworldRevivalReturn ?? null, null);
+    assert.equal(viewGame(crossing, 'f').homeworldRevivalDeployment?.player, 'f');
+    const placed = applyAction(reload(crossing), 'f', choice(crossing, 'f'));
+    assert.equal(placed.homeworldRevivalReturn!.stage, 'complete');
+    stable(placed);
   }
   let t = homeworldRevivalFixture({ tleilaxu: true });
   positionRevivalForces(t, 't', { native: 8, tanks: 5 });
   t = enterHomeworldRevival(t);
-  reject(t, 't', { type: 'revive', amount: 1, elite: 0 }, /timing ruling/);
+  const crossing = applyAction(reload(t), 't', { type: 'revive', amount: 1, elite: 0 });
+  assert.notEqual(crossing.homeworldRevivalReturn ?? null, null);
+  assert.equal(viewGame(crossing, 't').homeworldRevivalDeployment?.player, 't');
+  stable(applyAction(reload(crossing), 't', choice(crossing, 't')));
   const card = holdRevivalCard(t, 't', 'ghola');
   const done = applyAction(t, 't', { type: 'card', card, amount: 2, elite: 0 });
   assert.equal(
@@ -348,35 +358,25 @@ void test('real deployment projections expose destinations only to their owner a
   }
 });
 
-void test('every bot profile avoids actual low-to-high ordinary and Ghola star returns while the shared block permits a leader return', () => {
+void test('every bot profile uses legal returns across the low-to-high crossing and the shared block permits a leader return', () => {
   for (const advanced of [false, true]) {
     let g = homeworldRevivalFixture({ advanced });
     positionRevivalForces(g, 'f', { native: 2, tanks: 3, eliteTanks: 3 });
     g = enterHomeworldRevival(g);
     const ghola = holdRevivalCard(g, 'f', 'ghola');
     const ownView = viewGame(g, 'f');
-    assert.match(
-      homeworldRevivalActionBlock(ownView, {
-        type: 'revive',
-        amount: 1,
-        elite: 1,
-      })!,
-      /timing ruling/,
-    );
-    if (!advanced)
-      assert.match(
-        homeworldRevivalActionBlock(ownView, { type: 'card', card: ghola })!,
-        /timing ruling/,
+    // A return that itself reaches the high side is now legal under the
+    // provisional post-return population policy.
+    for (const action of [
+      { type: 'revive', amount: 1, elite: 1 },
+      { type: 'card', card: ghola, amount: 1, elite: 1 },
+      { type: 'card', card: ghola, amount: 1 },
+    ] as Action[])
+      assert.equal(
+        homeworldRevivalActionBlock(ownView, action),
+        null,
+        JSON.stringify(action),
       );
-    assert.match(
-      homeworldRevivalActionBlock(ownView, {
-        type: 'card',
-        card: ghola,
-        amount: 1,
-      })!,
-      /timing ruling/,
-    );
-    reject(g, 'f', { type: 'card', card: ghola, amount: 1 }, /timing ruling/);
     for (const profile of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
       const view = viewGame(reload(g), 'f');
       view.players.find((player) => player.id === 'f')!.bot = profile;
@@ -384,13 +384,6 @@ void test('every bot profile avoids actual low-to-high ordinary and Ghola star r
       assert.ok(
         actions.length,
         `${profile} must retain a legal way to advance.`,
-      );
-      assert.ok(
-        actions.every(
-          (action) =>
-            action.type !== 'revive' &&
-            !(action.type === 'card' && action.card === ghola),
-        ),
       );
       for (const action of actions) {
         assert.equal(homeworldRevivalActionBlock(view, action), null);

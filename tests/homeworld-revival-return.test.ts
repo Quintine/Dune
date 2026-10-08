@@ -154,7 +154,7 @@ void test('original fields, eligible subset and unknown saved fields cannot be c
   }
 });
 
-void test('constructor rejects impossible quotes, free source mismatches and unresolved threshold crossings', () => {
+void test('constructor rejects impossible quotes, free source mismatches and inconsistent populations', () => {
   const { original } = fixture();
   for (const patch of [
     { group: { amount: 0, elite: 0, free: 0 } },
@@ -163,7 +163,7 @@ void test('constructor rejects impossible quotes, free source mismatches and unr
     { group: { amount: 3, elite: 2, free: 4 } },
     { quote: { ...original.quote, normal: 1 } },
     { quote: { ...original.quote, elite: 1 } },
-    { quote: { ...original.quote, beforePopulation: 2, afterPopulation: 5 } },
+    { quote: { ...original.quote, beforePopulation: 3, afterPopulation: 5 } },
     { quote: { ...original.quote, blocked: 'Timing unresolved' } },
     { source: 'emperorExtra' },
     { source: 'ghola' },

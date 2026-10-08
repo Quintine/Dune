@@ -40,6 +40,23 @@ Homeworld threshold awaits a timing ruling`
 remain gated.` — an explicitly gated optional-overlay composition rather than a
 defect. No capture was reset, force-completed or bypassed.
 
+### Later the same day — the threshold-deployment question resolved provisionally
+
+The provisional resulting-population policy recorded in
+[Homeworld benefits](HOMEWORLD_BENEFITS_RULES.md#provisional-high-threshold-revival-deployment--9-october-2026)
+was then applied, and the four Advanced captures above were resumed again into
+`/tmp/dune-resume-wave3-20261009`: **all 16 saved copies now complete**
+(`e3-homeworld-nexus-discovery-ecaz-moritani-…` 78 actions,
+`e3-homeworld-nexus-discovery-skills-stronghold-tech-…` 68,
+`mixed-homeworld-nexus-discovery-skills-ix-choam-ixians-richese-…` 932 and
+`mixed-homeworld-nexus-discovery-skills-stronghold-ix-choam-ixians-richese-…`
+133; each reaching turn 6–10 phase 8) with zero rejected actions.
+
+That leaves **one** previously gated capture, the Basic
+`native-homeworld-skills-ecaz-…` sample, which still stops on the explicitly
+gated combined-Occupy optional-overlay composition rather than on a rules
+question.
+
 ## 7 October 2026 — preserved captures resumed under the five rulings
 
 Every preserved `failed-*.json` capture under `/tmp/dune-*/` (123 distinct

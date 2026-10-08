@@ -49,7 +49,10 @@ function physicalWorlds(
 
 /** Quote the eligible subset of one actual typed native revival deposit.
  * Timing, destinations, splitting and durable completion belong to the caller.
- * A newly attained high threshold remains an explicit unresolved boundary. */
+ * Provisional first version: the high-threshold placement ability is evaluated
+ * on the population *resulting* from this return, so the redeployment that
+ * itself reaches the high side qualifies. This is a visibly provisional
+ * composition policy, not a located publisher timing ruling. */
 export function quoteHomeworldRevivalDeployment(
   before: HomeworldRevivalDeploymentContext,
   after: HomeworldRevivalDeploymentContext,
@@ -127,9 +130,6 @@ export function quoteHomeworldRevivalDeployment(
     elite: kind === 'fedaykin' ? group.elite : 0,
     beforePopulation: prior.population,
     afterPopulation: current.population,
-    blocked:
-      prior.side === 'low'
-        ? 'Revival deployment when this return first reaches the high Homeworld threshold awaits a timing ruling.'
-        : null,
+    blocked: null,
   };
 }

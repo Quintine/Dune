@@ -161,12 +161,14 @@ function validateOriginal(frame: Original): void {
   )
     fail();
   const quote = frame.quote;
+  // Provisional composition policy: the population resulting from this return
+  // decides the ability, so the crossing return's frame is valid even though
+  // the pre-return population was below the high threshold.
   if (quote.kind === 'fedaykin') {
     if (
       quote.normal !== 0 ||
       !count(quote.elite, 1, 3) ||
-      quote.elite !== frame.group.elite ||
-      quote.beforePopulation < 3
+      quote.elite !== frame.group.elite
     )
       fail();
   } else if (quote.kind === 'tleilax') {
@@ -175,8 +177,7 @@ function validateOriginal(frame: Original): void {
       frame.group.elite !== 0 ||
       quote.elite !== 0 ||
       quote.normal !== frame.group.free ||
-      quote.normal < 1 ||
-      quote.beforePopulation < 9
+      quote.normal < 1
     )
       fail();
   } else fail();
