@@ -412,7 +412,7 @@ void test('No-Skills original assassination pause retains the unfinished winner 
   inventory(later);
 });
 
-void test('real Basic odd Ecaz FORCE remains unresolved before coalition lead, any debit, casualties or rewards', () => {
+void test('real Basic odd Ecaz FORCE admits provisional ceiling losses, floor survivors and actual coalition rewards', () => {
   const f = programme({ advanced: false, skills: false, tech: true });
   let g = advance(f.game, s => s.turn === 3 && s.phase === 1 && clean(s), undefined, quiet);
   const at = g.spiceDeck.findIndex(c => 'worm' in c && !c.greatMaker && !c.suppressed); assert.ok(at >= 0);
@@ -431,7 +431,49 @@ void test('real Basic odd Ecaz FORCE remains unresolved before coalition lead, a
   }
   assert.equal(player(g, f.ecaz).forces['sietch_tabr:14'], 3);
   const choice = viewGame(g, g.active!).battleChoices.find(c => c.territory === 'sietch_tabr'); assert.ok(choice);
-  reject(g, choice.chooser, { type: 'chooseBattle', territory: 'sietch_tabr',
-    target: choice.attacker === choice.chooser ? choice.defender : choice.attacker }, /Odd-force Basic Occupy/);
-  assert.equal(g.battle, null); inventory(g);
+  const before = reload(g);
+  g = step(g, { actor: choice.chooser, action: { type: 'chooseBattle', territory: 'sietch_tabr',
+    target: choice.attacker === choice.chooser ? choice.defender : choice.attacker } });
+  assert.ok(g.battle);
+  const d = g.decision; assert.ok(d?.kind === 'ecazBattleLead');
+  inventory(g);
+  for (const lead of [f.ecaz, ally]) {
+    const chosen = step(g, { actor: f.ecaz, action: { type: 'decision', event: d.event, lead } });
+    const ready = advance(chosen, s => !!s.battle && clean(s) && !s.battle.preparation && s.battle.preLeader?.closed !== false,
+      undefined, quiet);
+    const profile = viewGame(ready, lead).battle!.ecazOccupy!.profile!;
+    assert.equal(profile.ecazForces.normal, 3);
+    assert.equal(profile.fixedEcazDial, Math.ceil(3 / 2));
+    assert.equal(profile.planOwner, lead);
+    assert.equal(profile.payer, lead);
+    assert.equal(profile.forceOwner, ally);
+    const own = player(ready, lead).leaders.filter(l => !l.dead && !l.usedAt).sort((a, b) => b.strength - a.strength)[0];
+    const enemy = player(ready, opponent).leaders.filter(l => !l.dead && !l.usedAt).sort((a, b) => a.strength - b.strength)[0];
+    assert.ok(own && enemy);
+    const revealed = reveal(ready, [
+      { actor: lead, action: { type: 'battlePlan', leader: own.id, dial: profile.fixedEcazDial + 2, support: 0 } },
+      { actor: opponent, action: { type: 'battlePlan', leader: enemy.id, dial: 0, support: 0 } },
+    ]), q = quote(revealed), done = settle(revealed);
+    assert.equal(q.winner, lead);
+    assert.equal(done.lastBattleContext!.winner, lead);
+    assert.deepEqual(q.fixedLosses, [{ owner: f.ecaz, normal: Math.ceil(3 / 2), elite: 0 }]);
+    assert.equal(q.casualties!.owner, ally);
+    assert.deepEqual(q.casualties!.options, [{ normal: 2, elite: 0, paidNormal: 0, paidElite: 0 }]);
+    assert.ok(q.payments.every(payment => payment.ownPayment === 0));
+    assert.deepEqual(q.strongholdIncome, []);
+    for (const payment of q.payments)
+      assert.equal(player(done, payment.player).spice,
+        player(revealed, payment.player).spice + collectionIncome(done, payment.player));
+    assert.equal(player(done, f.ecaz).tanks - player(before, f.ecaz).tanks, Math.ceil(3 / 2));
+    assert.equal(player(done, f.ecaz).forces['sietch_tabr:14'], Math.floor(3 / 2));
+    assert.equal(player(done, ally).tanks - player(before, ally).tanks, 2);
+    assert.equal(player(done, ally).forces['sietch_tabr:14'] ?? 0, 0);
+    assert.equal(player(done, opponent).tanks - player(before, opponent).tanks, 2);
+    const token = ownedTech(before.techTokens, opponent)[0]; assert.ok(token);
+    assert.equal(done.techTokens![token].owner, lead);
+    for (const owner of [f.ecaz, ally])
+      for (const retained of ownedTech(before.techTokens, owner))
+        assert.equal(done.techTokens![retained].owner, owner, 'Only the loser’s Tech transfers.');
+    inventory(done);
+  }
 });

@@ -327,7 +327,13 @@ async function invariant(f: Fixture, g: engine.Game) {
   assert.equal(g.active, entrant.id);
   assert.equal(g.pendingAmbassador, null);
   assert.equal(g.decision, null);
-  assert.deepEqual(g.dukeVidal, f.initial.dukeVidal);
+  const accepted = entrant.ally === f.ownerAuth.playerId;
+  assert.deepEqual(g.dukeVidal, accepted ? {
+    ...f.initial.dukeVidal,
+    controller: entrant.id,
+    acquiredTurn: g.turn,
+    source: 'ally',
+  } : f.initial.dukeVidal);
   assert.deepEqual(
     g.ecazAmbassadors!.cohort,
     f.initial.ecazAmbassadors!.cohort,
@@ -370,7 +376,15 @@ for (const accept of [true, false])
         assert.equal(player(after, f.entrantAuth.playerId).allySinceTurn, 2);
         assert.deepEqual(after.allianceOffers, {});
       } else assert.deepEqual(after.allianceOffers, f.initial.allianceOffers);
-      assert.equal(after.log.length, offered.log.length + 1);
+      assert.equal(after.log.length, offered.log.length + (accept ? 2 : 1));
+      const entries = after.log.slice(offered.log.length);
+      if (accept) {
+        assert.match(entries[0].text, /formed an alliance through the Ecaz Ambassador/);
+        assert.match(entries[1].text, /received the available Duke Vidal as part of accepting/);
+      } else {
+        assert.match(entries[0].text, /refused the Ecaz Ambassador alliance/);
+        assert.deepEqual(after.dukeVidal, offered.dukeVidal);
+      }
       await fresh(f);
       await invariant(f, after);
       f.writes.length = 0;
@@ -414,7 +428,7 @@ for (const accept of [true, false])
     }
   });
 
-void test('competing accept and refuse requests produce one complete consent outcome and one chronicle entry', async () => {
+void test('competing accept and refuse requests produce one complete consent outcome without duplicate chronicle records', async () => {
   const f = await fixture();
   try {
     const offered = await enterAndPropose(f);
@@ -427,7 +441,15 @@ void test('competing accept and refuse requests produce one complete consent out
       player(after, f.entrantAuth.playerId).ally,
       accepted ? f.ownerAuth.playerId : null,
     );
-    assert.equal(after.log.length, offered.log.length + 1);
+    assert.equal(after.log.length, offered.log.length + (accepted ? 2 : 1));
+    const entries = after.log.slice(offered.log.length);
+    if (accepted) {
+      assert.match(entries[0].text, /formed an alliance through the Ecaz Ambassador/);
+      assert.match(entries[1].text, /received the available Duke Vidal as part of accepting/);
+    } else {
+      assert.match(entries[0].text, /refused the Ecaz Ambassador alliance/);
+      assert.deepEqual(after.dukeVidal, offered.dukeVidal);
+    }
     await invariant(f, after);
   } finally {
     f.sqlite.close();

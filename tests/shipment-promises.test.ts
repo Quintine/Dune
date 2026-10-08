@@ -126,9 +126,10 @@ function ship(
 ) {
   return applyAction(g, 'p', { type: 'ship', territory, sector, amount });
 }
-function reject(g: Game, id: string, action: Action) {
+function reject(g: Game, id: string, action: Action, reason?: string) {
   const before = structuredClone(g);
-  assert.throws(() => applyAction(g, id, action));
+  if (reason) assert.throws(() => applyAction(g, id, action), { message: reason });
+  else assert.throws(() => applyAction(g, id, action));
   assert.deepEqual(g, before);
 }
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
@@ -245,7 +246,7 @@ void test('Yes cannot be evaded by moving first, ending movement or another Guil
   assert.doesNotThrow(() => applyAction(done, 'p', { type: 'endMovement' }));
 });
 
-void test('storm, allied occupancy and two enemy factions deny impossible Yes without exposing a private witness', () => {
+void test('allied occupancy permits either shipment answer while storm and two enemy factions still deny impossible Yes privately', () => {
   for (const blocked of ['storm', 'ally', 'full']) {
     const g = fixture();
     if (blocked === 'storm') g.storm = 11;
@@ -261,8 +262,62 @@ void test('storm, allied occupancy and two enemy factions deny impossible Yes wi
       }
     }
     const asked = ask(g);
-    assert.deepEqual(viewGame(asked, 'p').truthShipmentAnswers, ['no']);
-    reject(asked, 'p', { type: 'truthAnswer', answer: 'yes' });
+    assert.deepEqual(viewGame(asked, 'p').truthShipmentAnswers,
+      blocked === 'ally' ? ['yes', 'no'] : ['no']);
+    if (blocked === 'ally') {
+      const promised = answer(reload(asked), 'yes');
+      reject(promised, 'p', { type: 'endMovement' },
+        'Honor your Truthtrance shipment answer before using this shipment opportunity.');
+      let arrived = ship(promised, 6);
+      assert.equal(arrived.shipmentPromises?.[0].fulfilled, true);
+      assert.equal(arrived.players[1].forces['carthag:11'], 6);
+      assert.equal(arrived.players[1].reserves, 14);
+      assert.equal(arrived.players[1].spice, 94);
+      assert.equal(arrived.players[1].shipped, true);
+      assert.equal(arrived.players[1].moved, 0);
+      assert.equal(arrived.players[1].tanks, 0);
+      assert.deepEqual(arrived.players[0].forces, g.players[0].forces);
+      assert.deepEqual(viewGame(arrived, 'p').basicAlliedShipment, {
+        territory: 'Carthag', normal: 6, elite: 0,
+      });
+      if (arrived.decision?.kind === 'advisor')
+        arrived = applyAction(arrived, arrived.decision.player, { type: 'decision', accept: false });
+      const done = applyAction(reload(arrived), 'p', { type: 'endMovement' });
+      assert.deepEqual(done.players[1].forces, {});
+      assert.equal(done.players[1].tanks, 6);
+      assert.equal(done.players[1].reserves, 14);
+      assert.equal(done.players[1].spice, 94);
+      assert.deepEqual(done.players[0].forces, g.players[0].forces);
+      assert.deepEqual(done.deck, arrived.deck);
+      assert.deepEqual(done.discard, arrived.discard);
+      assert.deepEqual(done.players.map((p) => p.hand), arrived.players.map((p) => p.hand));
+      for (const p of done.players)
+        assert.equal(p.reserves + p.tanks + Object.values(p.forces).reduce((n, x) => n + x, 0), 20);
+      const refused = answer(reload(asked), 'no');
+      reject(refused, 'p', {
+        type: 'ship', territory: 'carthag', sector: 11, amount: 6,
+      }, 'Honor your Truthtrance shipment answer before using this shipment opportunity.');
+      const fewer = ship(refused, 5);
+      assert.equal(fewer.players[1].forces['carthag:11'], 5);
+      assert.equal(fewer.shipmentPromises?.[0].fulfilled, true);
+      const skipped = applyAction(refused, 'p', { type: 'endMovement' });
+      assert.equal(skipped.shipmentPromises?.[0].fulfilled, true);
+      assert.equal(skipped.players[1].reserves, 20);
+      assert.equal(skipped.players[1].tanks, 0);
+    } else {
+      reject(asked, 'p', { type: 'truthAnswer', answer: 'yes' },
+        'Choose an answer consistent with your available shipment and earlier promises.');
+      const refused = answer(reload(asked), 'no');
+      const skipped = applyAction(refused, 'p', { type: 'endMovement' });
+      assert.equal(skipped.shipmentPromises?.[0].fulfilled, true);
+      reject(refused, 'p', {
+        type: 'ship', territory: 'carthag', sector: 11, amount: 6,
+      }, 'Honor your Truthtrance shipment answer before using this shipment opportunity.');
+      reject(g, 'p', {
+        type: 'ship', territory: 'carthag', sector: 11, amount: 6,
+      }, blocked === 'storm' ? 'That sector is in storm.' :
+        'A stronghold cannot contain three occupying factions.');
+    }
     for (const id of ['a', 'o']) {
       assert.equal(viewGame(asked, id).truthShipmentAnswers, null);
       assert.equal(viewGame(asked, id).shipmentCompletion, null);
@@ -277,7 +332,7 @@ void test('storm, allied occupancy and two enemy factions deny impossible Yes wi
     territory: 'wind_pass',
     sector: 15,
     amount: 1,
-  });
+  }, 'That sector is in storm.');
 });
 
 void test('Ghola, retained Karama and recoverable outgoing ally escrow combine into an executable completion', () => {

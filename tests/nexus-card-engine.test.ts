@@ -367,6 +367,20 @@ for (const hostFaction of ['moritani', 'ecaz'] as const)
     assert.equal(nexusPlayer(accepted, 'f').ally, 'a');
     assert.equal(nexusPlayer(accepted, 'a').shipped, true);
     assert.equal(accepted.pendingTerrorEntry ?? null, null);
-    assert.equal(accepted.pendingAmbassador ?? null, null);
-    nexusInventory(accepted);
+    // The Basic Ecaz Ambassador leaves an optional new-ally Duke loan open;
+    // declining it closes the entry with every other outcome unchanged.
+    if (hostFaction === 'ecaz') {
+      assert.equal(accepted.pendingAmbassador?.stage, 'loan');
+      const closed = applyAction(nexusReload(accepted), 'f', {
+        type: 'decision',
+        event: accepted.pendingAmbassador!.event,
+        loan: false,
+      });
+      assert.equal(closed.pendingAmbassador ?? null, null);
+      assert.equal(nexusPlayer(closed, 'f').ally, 'a');
+      nexusInventory(closed);
+    } else {
+      assert.equal(accepted.pendingAmbassador ?? null, null);
+      nexusInventory(accepted);
+    }
   });

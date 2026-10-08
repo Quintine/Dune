@@ -272,7 +272,7 @@ void test('Atreides inspection grants only its entitled view and survives JSON b
   assert.equal(viewGame(g, 'e').richeseAuction!.cardId, null);
   assert.equal(g.players[0].hand[0].id, card.id);
 });
-void test('unresolved cache-cancel and seller self-bid branches reject atomically and gates stay closed', () => {
+void test('connected cache-cancel restores the ordinary pool while seller self-bid and lobby gates still reject atomically', () => {
   const before = fixture();
   const k = before.deck.find((c) => c.effect === 'karama')!;
   before.players[2].hand = [k];
@@ -280,11 +280,14 @@ void test('unresolved cache-cancel and seller self-bid branches reject atomicall
   let g = begin(before);
   g = decision(g, { position: 'first' });
   const snapshot = structuredClone(g);
-  assert.throws(
-    () => applyAction(g, 'e', { type: 'card', card: k.id, mode: 'cancel' }),
-    /ruling|interpretation/,
-  );
-  assert.deepEqual(g, snapshot);
+  // The 7 October exhausted-cache ruling makes this cancellation legal and
+  // restores one ordinary lot; it is no longer an unresolved branch.
+  const canceled = applyAction(structuredClone(g), 'e', { type: 'card', card: k.id, mode: 'cancel' });
+  assert.equal(canceled.richeseAuction, null);
+  assert.ok(canceled.auction && canceled.auction.cards.length > 0);
+  assert.equal(canceled.players[2].hand.some((c) => c.id === k.id), false);
+  assert.equal(canceled.discard.filter((c) => c.id === k.id).length, 1);
+  assert.deepEqual(g, snapshot, 'the source declaration is unchanged by the trial cancellation');
   const bm = fixture(true);
   bm.players[0].hand = [bm.deck.shift()!];
   g = begin(bm);

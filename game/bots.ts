@@ -3281,7 +3281,8 @@ function policyActions(g: GameView): Action[] {
         : null;
     if (
       reveal &&
-      (!me.shipped ||
+      (physicalAlongsideMarker ||
+        !me.shipped ||
         (me.moved ?? 0) >= (me.movesAllowed ?? 1))
     )
       return [reveal];

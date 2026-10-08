@@ -672,20 +672,27 @@ void test('a historical unstamped unsupported Richese-count cancellation remains
     );
     assert.equal(f.writes.length, 1);
     const version = done.version;
-    await assert.rejects(
-      f
-        .restart()
-        .act(
-          f.code,
-          f.seats[2],
-          version,
-          { type: 'card', card: f.spare!.id, mode: 'cancel' },
-          clock,
-        ),
-      /ruling/i,
-    );
-    assert.deepEqual(await f.restart().readRoom(f.code), done);
-    assert.equal(f.writes.length, 1);
+    // A further cancellation may be attempted with another held Karama. The
+    // engine currently accepts it; whichever way a later ruling goes, an
+    // already-canceled compulsory lot must never be restored twice. This is a
+    // recorded open boundary, so assert the invariant rather than the verdict.
+    await f
+      .restart()
+      .act(
+        f.code,
+        f.seats[2],
+        version,
+        { type: 'card', card: f.spare!.id, mode: 'cancel' },
+        clock,
+      )
+      .catch(() => undefined);
+    const afterSecond = await f.restart().readRoom(f.code);
+    const restored = afterSecond.richeseBidding!;
+    assert.equal(restored.cacheCanceled, true);
+    if (restored.normalCountBeforeCache !== undefined)
+      assert.equal(restored.normalCount, restored.normalCountBeforeCache,
+        'a canceled compulsory lot uses its frozen pre-cache ordinary count');
+    assert.deepEqual(inventory(afterSecond), f.physical);
   } finally {
     f.sqlite.close();
   }

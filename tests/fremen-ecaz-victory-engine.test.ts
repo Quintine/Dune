@@ -43,16 +43,53 @@ void test('prospective guide does not award an early victory and a normal winner
   assert.deepEqual(finishFremenEcazTurn(g).winner, ['gu']);
 });
 
-void test('no alliance, absent Fremen, a third faction and the unresolved Habbanya extension do not create the exception', () => {
-  for (const kind of ['unallied', 'fremenAbsent', 'thirdFaction', 'habbanya'] as const) {
-    const g = fremenEcazFinalTurn();
-    if (kind === 'unallied') for (const p of g.players.slice(0, 2)) p.ally = null;
-    if (kind === 'fremenAbsent') { g.players[1].reserves += 3; g.players[1].forces = {}; }
-    if (kind === 'thirdFaction') { g.players[2].reserves--; g.players[2].forces['sietch_tabr:14'] = 1; }
-    if (kind === 'habbanya') for (const p of g.players.slice(0, 2)) p.forces = { 'habbanya_ridge_sietch:17': 3 };
-    assert.equal(viewGame(g, 'ec').fremenVictory?.qualifies, false);
-    const done = finishFremenEcazTurn(g);
-    assert.deepEqual(done.winner, ['gu']);
-    assert.doesNotMatch(done.log.at(-1)!.text, /Fremen special victory/);
-  }
+void test('Advanced reciprocal Fremen/Ecaz cooccupation qualifies in both sietches while Basic stays Tabr-only', () => {
+  for (const advanced of [false, true])
+    for (const territory of ['sietch_tabr', 'habbanya_ridge_sietch']) {
+      const g = fremenEcazFinalTurn(advanced);
+      const key = territory === 'sietch_tabr' ? 'sietch_tabr:14' : 'habbanya_ridge_sietch:17';
+      for (const p of g.players.slice(0, 2)) p.forces = { [key]: 3 };
+      const before = structuredClone(g);
+      const qualifies = advanced || territory === 'sietch_tabr';
+      const guide = viewGame(g, 'ec').fremenVictory!;
+      assert.equal(guide.qualifies, qualifies);
+      const sietch = guide.sietches.find((s) => s.territory === territory)!;
+      assert.equal(sietch.ecazCooccupation, true);
+      assert.deepEqual(sietch.blockers, qualifies ? [] : ['ec']);
+      const done = finishFremenEcazTurn(g);
+      assert.deepEqual(done.winner, qualifies ? ['fr', 'ec'] : ['gu']);
+      assert.deepEqual(g, before);
+      assert.deepEqual(fremenEcazCustody(done), fremenEcazCustody(g));
+      if (qualifies) assert.match(done.log.at(-1)!.text, /Fremen special victory/);
+      else assert.doesNotMatch(done.log.at(-1)!.text, /Fremen special victory/);
+    }
+});
+
+void test('solitary or nonallied Ecaz and third parties block in either sietch in Basic and Advanced', () => {
+  for (const advanced of [false, true])
+    for (const territory of ['sietch_tabr', 'habbanya_ridge_sietch'])
+      for (const kind of ['unallied', 'fremenAbsent', 'thirdFaction'] as const) {
+        const g = fremenEcazFinalTurn(advanced);
+        const key = territory === 'sietch_tabr' ? 'sietch_tabr:14' : 'habbanya_ridge_sietch:17';
+        for (const p of g.players.slice(0, 2)) p.forces = { [key]: 3 };
+        if (kind === 'unallied') for (const p of g.players.slice(0, 2)) p.ally = null;
+        if (kind === 'fremenAbsent') {
+          g.players[1].reserves += 3;
+          g.players[1].forces = {};
+        }
+        if (kind === 'thirdFaction') {
+          g.players[2].reserves--;
+          g.players[2].forces[key] = 1;
+        }
+        const before = structuredClone(g);
+        const guide = viewGame(g, 'ec').fremenVictory!;
+        assert.equal(guide.qualifies, false);
+        assert.ok(guide.sietches.find((s) => s.territory === territory)!
+          .blockers.includes(kind === 'thirdFaction' ? 'gu' : 'ec'));
+        const done = finishFremenEcazTurn(g);
+        assert.deepEqual(done.winner, ['gu']);
+        assert.deepEqual(g, before);
+        assert.deepEqual(fremenEcazCustody(done), fremenEcazCustody(g));
+        assert.doesNotMatch(done.log.at(-1)!.text, /Fremen special victory/);
+      }
 });

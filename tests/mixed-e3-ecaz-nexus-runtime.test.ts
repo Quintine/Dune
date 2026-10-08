@@ -243,11 +243,51 @@ for (const advanced of [false, true]) void test(`${advanced ? 'Advanced selected
   }
 });
 
-void test('Basic odd mixed Occupy rejects an actual paid three-force contribution before lead selection or reward', () => {
+void test('Basic odd mixed Occupy admits the paid three-force contribution with provisional ceiling losses and floor survivors', () => {
   const f = coalition({ advanced: false, skills: false, tech: true }, 'ixians', 3);
   assert.equal(player(f.beforeBattle, f.owner).forces[f.location], 3);
-  reject(f.beforeBattle, f.choice.actor, f.choice.action);
-  assert.equal(f.beforeBattle.battle, null); inventory(f.beforeBattle);
+  for (const arrival of f.arrivals) {
+    const count = Number(arrival.step.action.amount), actor = arrival.step.actor;
+    assert.equal(player(arrival.after, actor).reserves, player(arrival.before, actor).reserves - count);
+    assert.equal(player(arrival.after, actor).forces[f.location], (player(arrival.before, actor).forces[f.location] ?? 0) + count);
+    assert.ok(player(arrival.after, actor).spice < player(arrival.before, actor).spice);
+  }
+  const admitted = step(f.beforeBattle, f.choice);
+  assert.ok(admitted.battle);
+  assert.equal(admitted.decision?.kind, 'ecazBattleLead');
+  inventory(admitted);
+  for (const lead of [f.owner, f.ally]) {
+    const ready = chooseLead({ ...f, game: admitted }, lead);
+    const profile = viewGame(ready, lead).battle!.ecazOccupy!.profile!;
+    assert.equal(profile.ecazForces.normal, 3);
+    assert.equal(profile.fixedEcazDial, Math.ceil(3 / 2));
+    assert.equal(profile.planOwner, lead);
+    assert.equal(profile.payer, lead);
+    assert.equal(profile.forceOwner, f.ally);
+    const revealed = reveal(ready, coalitionPlans(f, ready, lead)), q = quote(revealed), done = settle(revealed);
+    assert.equal(q.winner, lead);
+    assert.equal(done.lastBattleContext!.winner, lead);
+    assert.deepEqual(q.fixedLosses, [{ owner: f.owner, normal: Math.ceil(3 / 2), elite: 0 }]);
+    assert.equal(q.casualties!.owner, f.ally);
+    assert.deepEqual(q.casualties!.options, [{ normal: 4, elite: 0, paidNormal: 0, paidElite: 0 }]);
+    assert.ok(q.payments.every(payment => payment.ownPayment === 0));
+    assert.deepEqual(q.strongholdIncome, []);
+    for (const payment of q.payments) {
+      const collection = done.phase === 7 ? quoteSpiceCollection(done).receipts.find(r => r.player === payment.player)?.strongholds ?? 0 : 0;
+      assert.equal(player(done, payment.player).spice, player(revealed, payment.player).spice + collection);
+    }
+    assert.equal(player(done, f.owner).tanks - player(ready, f.owner).tanks, Math.ceil(3 / 2));
+    assert.equal(player(done, f.owner).forces[f.location], Math.floor(3 / 2));
+    assert.equal(player(done, f.ally).tanks - player(ready, f.ally).tanks, 4);
+    assert.equal(player(done, f.ally).forces[f.location] ?? 0, 0);
+    assert.equal(player(done, f.opponent).tanks - player(ready, f.opponent).tanks, 8);
+    const token = ownedTech(ready.techTokens, f.opponent)[0]; assert.ok(token);
+    assert.equal(done.techTokens![token].owner, lead);
+    for (const owner of [f.owner, f.ally])
+      for (const retained of ownedTech(ready.techTokens, owner))
+        assert.equal(done.techTokens![retained].owner, owner, 'Only the loser’s Tech transfers.');
+    inventory(done);
+  }
 });
 
 void test('E3/E2 classic-led coalition never borrows the hidden native Warmaster or Ecaz-held battle income', () => {

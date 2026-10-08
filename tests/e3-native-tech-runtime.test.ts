@@ -145,10 +145,58 @@ for (const lead of ['ecaz', 'ally'] as const)
     physical(game);
   });
 
-void test('Basic native Tech Ecaz retains the actual odd-force chooseBattle ruling guard', () => {
+void test('Basic native Tech Ecaz admits odd forces with provisional ceiling losses and floor survivors', () => {
   const f = createEcazNativeTechFixture({ advanced: false, ecazForces: 3, chooseBattle: false });
-  assert.throws(() => applyAction(f.game, f.battleAction.actor, f.battleAction.action), /Odd-force Basic Occupy/);
-  physical(f.game);
+  const admitted = applyAction(f.game, f.battleAction.actor, f.battleAction.action);
+  assert.ok(admitted.battle);
+  assert.equal(admitted.decision?.kind, 'ecazBattleLead');
+  physical(admitted);
+  for (const lead of ['ecaz', 'ally'] as const) {
+    const result = revealEcazNativeTechBattle({ ...f, game: admitted }, lead);
+    const { before, revealed, pending, actor } = result;
+    const battle = revealed.battle!, publicBattle = viewGame(revealed, actor).battle!;
+    const profile = publicBattle.ecazOccupy!.profile!;
+    assert.equal(profile.ecazForces.normal, 3);
+    assert.equal(profile.fixedEcazDial, Math.ceil(3 / 2));
+    assert.equal(profile.planOwner, actor);
+    assert.equal(profile.payer, actor);
+    assert.equal(profile.forceOwner, f.ally);
+    const side = (id: string): ResolutionCombatant => {
+      const p = player(revealed, id), view = viewGame(revealed, id).battle!;
+      assert.ok(view.ownForces);
+      return { id, faction: p.faction, ally: p.ally, spice: p.spice, hand: p.hand,
+        plan: battle.plans[id], leader: p.leaders.find(l => l.id === battle.plans[id].leader),
+        forces: view.ownForces, stronghold: view.strongholdEffects[id] };
+    };
+    const quote = quoteBattleResolution({ advanced: false, turn: revealed.turn, territory: f.territory,
+      ecazOccupy: profile, aggressor: publicBattle.aggressor,
+      attacker: side(battle.attacker), defender: side(battle.defender),
+      voters: publicBattle.traitorVoters.map(id => ({ id, called: false, traitors: player(revealed, id).traitors,
+        beneficiary: [battle.attacker, battle.defender].includes(id) ? id : actor })),
+      participants: revealed.players, physicalCards: [...revealed.deck, ...revealed.discard, ...revealed.players.flatMap(p => p.hand)],
+      pendingAuditorPresent: false, pendingRetentionPresent: false });
+    assert.equal(quote.winner, actor);
+    assert.deepEqual(quote.fixedLosses, [{ owner: f.ecaz, normal: Math.ceil(3 / 2), elite: 0 }]);
+    assert.equal(quote.casualties!.owner, f.ally);
+    assert.deepEqual(quote.casualties!.options, [{ normal: 3, elite: 0, paidNormal: 0, paidElite: 0 }]);
+    assert.ok(quote.payments.every(payment => payment.ownPayment === 0));
+    assert.deepEqual(quote.strongholdIncome, []);
+    assert.equal(player(pending, actor).spice, player(before, actor).spice);
+    const token = ownedTech(before.techTokens, f.opponent)[0]; assert.ok(token);
+    assert.equal(pending.techTokens![token].owner, f.opponent, 'Winner-card cleanup still precedes Tech transfer.');
+    const game = finishEcazStronghold(pending), nonLead = actor === f.ecaz ? f.ally : f.ecaz;
+    assert.equal(game.lastBattleContext!.winner, actor);
+    assert.equal(game.techTokens![token].owner, actor);
+    assert.equal(ownedTech(game.techTokens, actor).length, 2);
+    assert.equal(ownedTech(game.techTokens, nonLead).length, 1);
+    assert.equal(ownedTech(game.techTokens, f.opponent).length, 0);
+    assert.equal(player(game, f.ecaz).tanks - player(before, f.ecaz).tanks, Math.ceil(3 / 2));
+    assert.equal(player(game, f.ecaz).forces[f.location], Math.floor(3 / 2));
+    assert.equal(player(game, f.ally).tanks - player(before, f.ally).tanks, 3);
+    assert.equal(player(game, f.ally).forces[f.location], 1);
+    assert.equal(player(game, f.opponent).tanks - player(before, f.opponent).tanks, 8);
+    physical(game);
+  }
 });
 
 for (const strongholds of [false, true])

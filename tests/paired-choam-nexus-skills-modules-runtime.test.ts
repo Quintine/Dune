@@ -373,7 +373,7 @@ void test('paired ordinary Suk in retained Arrakeen uses original bank support w
   assertBattleWallets(revealed, game); custody(game);
 });
 
-void test('paired retained Habbanya wins a tied ordinary battle only after actual reveal; mixed marker plans remain excluded', () => {
+void test('paired retained Habbanya wins a tied ordinary battle only after actual reveal; an ordinary mixed marker plan is now admitted', () => {
   const f = fixture();
   let game = allow(applyAction(f.game, f.richese, richeseRequest(f)));
   place(game, f.guild, f.location, 6, f.staging);
@@ -382,9 +382,13 @@ void test('paired retained Habbanya wins a tied ordinary battle only after actua
   assert.equal(game.phase, 6);
   assert.ok(game.active === f.richese || game.active === f.guild);
   const beforeMixed = snapshot(game);
-  assert.throws(() => applyAction(game, game.active!, { type: 'chooseBattle', territory: 'habbanya_ridge_sietch',
-    target: game.active === f.richese ? f.guild : f.richese }), /Mixed ordinary-force and No-Field/);
-  assert.deepEqual(game, beforeMixed);
+  const mixed = applyAction(structuredClone(game), game.active!, { type: 'chooseBattle', territory: 'habbanya_ridge_sietch',
+    target: game.active === f.richese ? f.guild : f.richese });
+  assert.equal(mixed.battle?.territory, 'habbanya_ridge_sietch');
+  assert.equal(mixed.battle!.noFieldPlayers!.includes(f.richese), true);
+  assert.equal(mixed.battle!.mixedNoFieldPlayers?.includes(f.richese), true,
+    'an ordinary marker alongside physical forces uses the visible provisional mixed pool');
+  assert.deepEqual(game, beforeMixed, 'the trial declaration does not mutate the source game');
   game = reveal(beforeMovementEnd, f.richese);
   game = openBattle(game, f.richese, f.guild, { band: 'skilled' });
   const r = player(game, f.richese), g = player(game, f.guild);

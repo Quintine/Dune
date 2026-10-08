@@ -156,23 +156,68 @@ for (const actor of ['ec', 'al']) {
     conserved(done);
   });
 }
-void test('ordinary non-Ecaz allies still cannot enter together and still incur the existing departure penalty', () => {
-  const g = fixture();
-  player(g, 'ec').faction = 'atreides';
-  army(g, 'al', { 'arrakeen:10': 1 });
-  const before = structuredClone(g);
-  assert.throws(
-    () => applyAction(g, 'ec', { type: 'ship', amount: 1, ...destination }),
-    /occupied by your ally/,
-  );
-  assert.deepEqual(g, before);
-  army(g, 'ec', { 'arrakeen:10': 2 });
-  const done = applyAction(g, 'ec', { type: 'endMovement' });
-  assert.deepEqual(player(done, 'ec').forces, {});
-  assert.equal(player(done, 'ec').tanks, 2);
-  assert.equal(player(done, 'al').forces['arrakeen:10'], 1);
-  assert.equal(done.phase, 5);
-  conserved(done);
+void test('ordinary non-Ecaz allies permit reserve arrivals with Basic visitor and Advanced whole-group departure obligations', () => {
+  for (const advanced of [false, true])
+    for (const baseline of [0, 2]) {
+      const g = fixture();
+      g.advanced = advanced;
+      player(g, 'ec').faction = 'atreides';
+      army(g, 'al', { 'arrakeen:10': 1 });
+      if (baseline) {
+        army(g, 'ec', { 'arrakeen:10': baseline });
+        // Keep the ally's turn pending to distinguish Basic visitors from the
+        // separate legacy loss of an older group after both allies have ended.
+        g.movementRemaining = ['ec', 'al', 'en', 'x'];
+      }
+      const before = structuredClone(g);
+      const arrived = applyAction(g, 'ec', {
+        type: 'ship',
+        amount: 1,
+        ...destination,
+      });
+      assert.deepEqual(g, before);
+      assert.equal(player(arrived, 'ec').forces['arrakeen:10'], baseline + 1);
+      assert.equal(player(arrived, 'ec').reserves, 19 - baseline);
+      assert.equal(player(arrived, 'ec').spice, 9);
+      assert.equal(player(arrived, 'ec').shipped, true);
+      assert.equal(player(arrived, 'ec').moved, 0);
+      assert.equal(player(arrived, 'ec').tanks, 0);
+      assert.deepEqual(player(arrived, 'al'), player(g, 'al'));
+      assert.deepEqual(arrived.deck, g.deck);
+      assert.deepEqual(arrived.discard, g.discard);
+      assert.deepEqual(arrived.players.map((p) => p.hand), g.players.map((p) => p.hand));
+      const view = viewGame(arrived, 'ec');
+      assert.deepEqual(view.basicAlliedShipment, advanced ? null : {
+        territory: 'Arrakeen', normal: 1, elite: 0,
+      });
+      assert.deepEqual(view.advancedAllySeparation, advanced ? {
+        territories: ['Arrakeen'],
+      } : null);
+      conserved(arrived);
+      const restored = JSON.parse(JSON.stringify(arrived)) as Game;
+      const done = applyAction(restored, 'ec', { type: 'endMovement' });
+      assert.deepEqual(player(done, 'ec').forces,
+        !advanced && baseline ? { 'arrakeen:10': baseline } : {});
+      assert.equal(player(done, 'ec').tanks, advanced ? baseline + 1 : 1);
+      assert.equal(player(done, 'ec').reserves, 19 - baseline);
+      assert.equal(player(done, 'ec').spice, 9);
+      assert.equal(player(done, 'ec').shipped, true);
+      assert.equal(player(done, 'ec').moved, 0);
+      assert.deepEqual(player(done, 'al'), player(restored, 'al'));
+      assert.deepEqual(done.deck, arrived.deck);
+      assert.deepEqual(done.discard, arrived.discard);
+      assert.deepEqual(done.players.map((p) => p.hand), arrived.players.map((p) => p.hand));
+      if (!advanced) {
+        assert.equal(done.basicAlliedShipment, null);
+        assert.ok(done.log.some((entry) =>
+          /1 new allied-shipment visitors.*provisional Basic no-departure policy, not a publisher ruling/.test(entry.text)));
+      }
+      assert.equal(done.active, baseline ? 'al' : 'en');
+      assert.deepEqual(done.movementRemaining, baseline ? ['al', 'en', 'x'] : ['en', 'x']);
+      assert.equal(done.phase, 5);
+      assert.equal(done.battle, null);
+      conserved(done);
+    }
 });
 void test('a third unrelated side is rejected for shipment and movement before any payment or force change', () => {
   const g = fixture();

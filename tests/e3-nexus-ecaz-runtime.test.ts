@@ -276,11 +276,56 @@ for (const advanced of [true, false]) void test(`${advanced ? 'Advanced held Tab
   physical(completed);
 });
 
-void test('the real Basic odd-FORCE coalition remains guarded before any selected lead, loss or reward can be consumed', () => {
+void test('the real Basic odd-FORCE coalition admits provisional ceiling losses, floor survivors and native Nexus continuation', () => {
   const f = coalition({ advanced: false, tech: true }, 3);
-  reject(f.beforeBattle, f.choice.actor, f.choice.action, /Odd-force Basic Occupy/);
+  assertClosing(f);
   assert.equal(player(f.beforeBattle, f.owner).forces[f.location], 3);
-  assert.equal(f.beforeBattle.battle, null); physical(f.beforeBattle);
+  const admitted = step(f.beforeBattle, f.choice), d = admitted.decision;
+  assert.ok(admitted.battle);
+  assert.ok(d?.kind === 'ecazBattleLead');
+  physical(admitted);
+  for (const lead of [f.owner, f.ally]) {
+    const selected = step(admitted, { actor: f.owner, action: { type: 'decision', event: d.event, lead } });
+    const ready = advance(selected, s => !!s.battle && clean(s) && !s.battle.preparation && s.battle.preLeader?.closed !== false);
+    const profile = viewGame(ready, lead).battle!.ecazOccupy!.profile!;
+    assert.equal(profile.ecazForces.normal, 3);
+    assert.equal(profile.fixedEcazDial, Math.ceil(3 / 2));
+    assert.equal(profile.planOwner, lead);
+    assert.equal(profile.payer, lead);
+    assert.equal(profile.forceOwner, f.ally);
+    const own = player(ready, lead).leaders.filter(l => !l.dead && !l.usedAt).sort((a, b) => b.strength - a.strength)[0];
+    const enemy = player(ready, f.opponent).leaders.filter(l => !l.dead && !l.usedAt).sort((a, b) => a.strength - b.strength)[0];
+    assert.ok(own && enemy);
+    const revealed = reveal(ready, [
+      { actor: lead, action: { type: 'battlePlan', leader: own.id, dial: profile.fixedEcazDial + 3, support: 0 } },
+      { actor: f.opponent, action: { type: 'battlePlan', leader: enemy.id, dial: 1, support: 0 } },
+    ]), q = battleQuote(revealed), done = settle(revealed);
+    assert.equal(q.winner, lead);
+    assert.equal(done.lastBattleContext!.winner, lead);
+    assert.deepEqual(q.fixedLosses, [{ owner: f.owner, normal: Math.ceil(3 / 2), elite: 0 }]);
+    assert.equal(q.casualties!.owner, f.ally);
+    assert.deepEqual(q.casualties!.options, [{ normal: 3, elite: 0, paidNormal: 0, paidElite: 0 }]);
+    assert.ok(q.payments.every(payment => payment.ownPayment === 0));
+    assert.deepEqual(q.strongholdIncome, []);
+    for (const payment of q.payments)
+      assert.equal(player(done, payment.player).spice,
+        player(revealed, payment.player).spice + ordinaryCollectionSpice(done, payment.player));
+    assert.equal(player(done, f.owner).tanks - player(ready, f.owner).tanks, Math.ceil(3 / 2));
+    assert.equal(player(done, f.owner).forces[f.location], Math.floor(3 / 2));
+    assert.equal(player(done, f.ally).tanks - player(ready, f.ally).tanks, 3);
+    assert.equal(player(done, f.ally).forces[f.location], 1);
+    assert.equal(player(done, f.opponent).tanks - player(ready, f.opponent).tanks, 8);
+    const token = ownedTech(ready.techTokens, f.opponent)[0]; assert.ok(token);
+    assert.equal(done.techTokens![token].owner, lead);
+    assert.equal(ownedTech(done.techTokens, lead).length, 2);
+    assert.equal(ownedTech(done.techTokens, lead === f.owner ? f.ally : f.owner).length, 1);
+    physical(done);
+    const continued = advance(done, s => s.turn === 4 && s.phase === 0);
+    assert.equal(continued.status, 'playing');
+    assert.equal(continued.lastBattleContext!.winner, lead);
+    assert.equal(continued.techTokens![token].owner, lead);
+    physical(continued);
+  }
 });
 
 void test('original Discovery reveal and free parent entry precede, rather than predeal, the later qualifying Ecaz closing draw', () => {

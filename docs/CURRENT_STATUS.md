@@ -187,20 +187,29 @@ to the already-implemented 7 October ordinary-lot contract.
 
 **Stale-guard test sweep and one bot correctness fix.** Full offline runs
 (`npm test`) were compared against the pre-session revision `4ed6beb` to
-separate inherited debt from new regressions. Five superseded guard-pin tests
-now assert the shipped contracts (Basic/Advanced mixed No-Field admission,
-allied reserve arrival, combined-Occupy rejection message, the resolved
-exhausted-cache cancellation), three reference wording-pin tests were deleted in
-favour of the existing structural five-facet/evidence check, and the stale
-Tleilaxu negotiated-revival guards and Duke-Tanks/shipment-integrity cases were
-updated to real native outcomes. One genuine bot defect was fixed: a bot kept
-proposing `acceptLeaderRevival` for a request whose leader was no longer dead
-and captured (it now requires the leader to still be revivable and otherwise
-cancels the unhonourable request), which removed 22 rejected actions from the
-combined-expansion CLI sample. Twenty offline failures remain and all are
-present at `4ed6beb` (odd-force Ecaz Occupy/high-threshold guards, several
-alliance-entry and cache-cancel boundary cases, and two intermittently failing
-Moritani skill-runtime tests measured at the same 3/30 rate on both revisions).
+separate inherited debt from new regressions. Superseded guard pins now assert
+the shipped contracts: Basic/Advanced mixed No-Field admission, allied reserve
+arrival and its departure obligation, the combined-Occupy rejection message, the
+resolved exhausted-cache cancellation, the authorized odd-force Basic Ecaz
+Occupy arithmetic (`ceil(E/2)` provisional), Advanced Fremen/Ecaz Habbanya
+cooccupation, both structured Truthtrance promise answers, and the two-entry
+Ecaz alliance acceptance chronicle. Three reference wording-pin tests were
+deleted in favour of the existing structural five-facet/evidence check, and the
+Tleilaxu negotiated-revival, Duke-Tanks and pending-shipment cases were updated
+to real native outcomes. Two genuine bot defects were fixed: a bot kept
+proposing `acceptLeaderRevival` for a request whose leader was no longer a dead
+uncaptured disc (it now requires the leader to still be revivable and otherwise
+cancels the request, removing 22 rejected actions from the combined-expansion
+CLI sample), and a concealed marker with a physical companion alongside now
+reveals before that companion moves, in both modes. A repeated-Karama
+cancellation of an already-canceled compulsory cache lot remains an explicit
+open boundary recorded in the decision index. Two intermittently failing
+Moritani skill-runtime tests were measured at the same 3/30 rate on both
+revisions, so they are pre-existing nondeterminism rather than a regression; the
+same holds for `tests/ecaz-occupy-options.test.ts`, whose Easy Occupy plan
+candidate is occasionally absent (2/20 failing runs at `4ed6beb` versus 3/20
+now), and for the paired Moritani skill-runtime tests. Those intermittent
+failures are pre-existing prototype/AI gaps and are not new regressions.
 
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in
