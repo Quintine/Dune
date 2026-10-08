@@ -21,7 +21,7 @@ import { planetologistMovementModeSupported, planetologistLeader, planetologistR
 import { quoteSmugglerNoField, smugglerNoFieldModeSupported, type SmugglerNoFieldCompanion } from './smuggler-no-field';
 import { quoteSmugglerShipment, type SmugglerShipment } from './smuggler-shipment';
 import { createSmugglerBattle, settleSmugglerBattle, smugglerBattleModeSupported, smugglerBattlePlanBlock, smugglerBattlePile, smugglerBattleSignature, smugglerBattleAllocationRequired, chooseSmugglerBattleAllocation, type SmugglerBattleReceipt, type SmugglerBattleCollectionOffer } from './smuggler-battle';
-import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterCollectible, sandmasterLeader, sandmasterRouteDistance, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
+import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterCollectionPiles, sandmasterLeader, sandmasterRouteDistance, type SandmasterMovement, type SandmasterOrder } from './sandmaster-movement';
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { BankerIncomeError, createBankerIncomeState, validateBankerIncomeState, quoteBankerIncome, commitBankerIncome, quoteBankerIncomeCollection, commitBankerIncomeCollection, projectBankerIncome, type BankerIncomeState, type BankerIncomeAuthority, type BankerIncomeContext } from './spice-banker-income';
@@ -25782,7 +25782,11 @@ function relocateMobileStronghold(
     // into, so the Sandmaster skill collects there before the faction's own
     // traversed-sector collection.
     if (sandmasterLeader(g, move.player))
-      for (const pile of sandmasterCollectible(g, { interior: move.route })) {
+      for (const piles of Object.values(sandmasterCollectionPiles(g, { interior: move.route }))) {
+        // HMS relocation keeps its existing single-pile scope until its
+        // separate route controls can select the Sandmaster debit sector.
+        if (piles.length !== 1) continue;
+        const pile = piles[0];
         g.spice[pile]--;
         if (!g.spice[pile]) delete g.spice[pile];
         p.spice++;

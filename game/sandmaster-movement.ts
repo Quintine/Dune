@@ -163,17 +163,18 @@ export function sandmasterEnteredTerritories(
     ),
   ];
 }
-/** Multiple piles retain the existing unresolved physical-pile boundary. */
-export function sandmasterCollectible(
+/** Optional collection chooses at most one existing pile in each entered territory. */
+export function sandmasterCollectionPiles(
   g: Game | GameView,
   routes: Record<string, string[]>,
-): string[] {
-  return sandmasterEnteredTerritories(routes).flatMap((id) => {
-    const piles = Object.entries(g.spice).filter(
-      ([key, n]) => splitLocation(key).territory === id && n > 0,
-    );
-    return piles.length === 1 ? [piles[0][0]] : [];
-  });
+): Record<string, string[]> {
+  const choices: Record<string, string[]> = {};
+  const keys = Object.keys(g.spice);
+  for (const id of sandmasterEnteredTerritories(routes)) {
+    const piles = keys.filter(key => splitLocation(key).territory === id && g.spice[key] > 0).sort();
+    if (piles.length) choices[id] = piles;
+  }
+  return choices;
 }
 export function quoteSandmasterMovement(
   g: Game | GameView,
@@ -221,12 +222,12 @@ export function quoteSandmasterMovement(
     routes[from] = [...route];
   }
   const collect = value.collect;
-  const available = sandmasterCollectible(g, routes);
+  const offered = sandmasterCollectionPiles(g, routes);
   requireMove(
-    collect.every(
-      (key) => typeof key === 'string' && available.includes(key),
-    ) && new Set(collect).size === collect.length,
-    'Collect once per entered territory with one unambiguous spice pile, or decline that collection.',
+    collect.every(key => typeof key === 'string' &&
+      offered[splitLocation(key).territory]?.includes(key)) &&
+      new Set(collect.map(key => splitLocation(key).territory)).size === collect.length,
+    'Choose at most one positive pile per entered territory, or decline its collection.',
   );
   return {
     leader,
@@ -361,5 +362,5 @@ export function sandmasterDefaultChoice(
     if (!route) return null;
     routes[from] = route;
   }
-  return { routes, collect: sandmasterCollectible(g, routes) };
+  return { routes, collect: Object.values(sandmasterCollectionPiles(g, routes)).map(piles => piles[0]) };
 }

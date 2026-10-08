@@ -10,7 +10,7 @@ import {
 import {
   quoteSandmasterMovement,
   sandmasterActionOrder,
-  sandmasterCollectible,
+  sandmasterCollectionPiles,
   sandmasterDefaultChoice,
   sandmasterLeader,
   sandmasterModeSupported,
@@ -49,10 +49,12 @@ export function sandmasterMoveDraft(
         'Sandmaster needs a supported ordinary force movement and its living native trainer.',
     };
   const selectedRoutes = routes ?? defaults.routes;
-  const collectible = sandmasterCollectible(game, selectedRoutes);
+  const offered = sandmasterCollectionPiles(game, selectedRoutes);
+  const collectible = Object.values(offered).flat();
   const choice = {
     routes: selectedRoutes,
-    collect: collectible.filter((key) => !declined.includes(key)),
+    collect: Object.values(offered).map(piles => piles.find(key => !declined.includes(key)))
+      .filter((key): key is string => key !== undefined),
   };
   try {
     quoteSandmasterMovement(game, game.me, order, choice);
@@ -134,10 +136,11 @@ export function SandmasterMovement({
     >
       <h3 id={`${id}-heading`}>Sandmaster movement</h3>
       <p>
-        {leaderName} may collect 1 spice from one unambiguous pile in each
-        distinct territory these forces enter or pass through. Choose the exact
-        sector route for every moving source.
+        {leaderName} may collect 1 spice in each distinct territory these forces
+        enter or pass through. Choose one existing pile per territory, or decline
+        that collection, and select the exact sector route for every source.
       </p>
+      <p className="fine">Provisional multi-pile policy: you choose which sector supplies the one spice; this is not a publisher allocation ruling.</p>
       {order.group.map(([from]) => {
         const route = routes[from] ?? [from];
         const last = route.at(-1)!;
@@ -222,30 +225,33 @@ export function SandmasterMovement({
         <fieldset className="space-y-2">
           <legend>Optional spice collection</legend>
           {draft.collectible.map((key) => (
-            <label className="decision-checkbox" key={key}>
+            <label className="decision-checkbox flex items-start gap-2" key={key}>
               <input
                 type="checkbox"
-                checked={!declined.includes(key)}
+                className="mt-1 shrink-0"
+                checked={draft.choice?.collect.includes(key) ?? false}
                 disabled={busy}
-                onChange={(event) =>
+                onChange={(event) => {
+                  const peers = draft.collectible.filter(candidate =>
+                    splitLocation(candidate).territory === splitLocation(key).territory);
                   setSaved({
                     key: draftKey,
                     routes,
                     declined: event.target.checked
-                      ? declined.filter((candidate) => candidate !== key)
-                      : [...new Set([...declined, key])],
-                  })
-                }
+                      ? [...new Set([...declined.filter(candidate => !peers.includes(candidate)),
+                          ...peers.filter(candidate => candidate !== key)])]
+                      : [...new Set([...declined, ...peers])],
+                  });
+                }}
               />
-              Collect 1 spice in {placeName(game, key)} ({game.spice[key]} on
-              the pile)
+              <span>Collect 1 spice in {placeName(game, key)} ({game.spice[key]} on the pile)</span>
             </label>
           ))}
         </fieldset>
       ) : (
         <p className="fine">
-          This route enters no territory with one unambiguous positive spice
-          pile. You may still declare the route without collecting.
+          This route enters no territory with positive spice.
+          You may still declare the route without collecting.
         </p>
       )}
       {blocked && (

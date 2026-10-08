@@ -5,6 +5,34 @@ ground movement now connects the normal band through explicit routes, optional
 collection, player controls, all four AI profiles and saved continuation.
 This does not open public Leader Skills starts or publication.
 
+## Owned ground-route pile selection — 9 October 2026
+
+Ordinary ground movement now offers every existing positive pile in each
+entered territory. The owner selects at most one pile per territory, or
+declines that territory's collection. Choosing another pile deselects the
+previous one; clearing the selected checkbox declines the whole territory.
+The source grants one spice per territory but does not specify the debit
+sector, so owner selection is explicitly a provisional allocation policy.
+
+The shared `sandmasterCollectionPiles` quote groups offered keys by entered
+territory. Human controls and legal AI start with one deterministic choice
+per group; authoritative validation rejects two selected sectors from the
+same territory before forces or spice move. Signed original route and pile
+receipts retain their existing continuation behavior.
+
+Both mode engine smokes choose South Mesa sector5 instead of sector4,
+collect once there and once in Cielago East, preserve the unselected pile,
+and move three physical forces. All four profiles produce legal collected
+routes. An isolated 390px Chromium control smoke switches the sector,
+declines/reselects the territory, and commits the same move: personal
+spice10→12, South Mesa4 remains4, South Mesa5 becomes1, Cielago East3
+becomes3, and three forces arrive in Cielago East.
+
+Worm/physical-Ambassador destination choices and native HMS relocation
+retain their separate single-pile scope. No public start or broader
+source adjudication is opened by this ground-route change.
+
+
 ## Physical Fremen Ambassador relocation — 8 October 2026
 
 The Ambassador expressly relocates a board force group. The normal
@@ -60,10 +88,10 @@ Hajr was located; this follows the card's movement-triggered grammar rather
 than introducing a once-per-phase limit that the card does not state.
 
 Collection commits when the legal move completes, before arrival reactions.
-Canceled or rejected declarations move neither forces nor spice. If several
-positive sector piles exist in a territory, that collection remains unavailable
-because the source does not specify which pile to debit. Movement and collection
-from other eligible territories remain available.
+Canceled or rejected declarations move neither forces nor spice. With
+several positive sector piles, ordinary ground routes now use the
+provisional owner selection above. The once-per-entered-territory limit
+does not become one collection per pile.
 
 ## Implementation and verification boundary
 
@@ -101,8 +129,8 @@ Broad checkpoint results are recorded with the checkpoint. These checks do not c
 The [worm-ride follow-up](SANDMASTER_WORM.md) connects native Fremen destination
 collection, including saved arrival reactions. Physical Fremen Ambassador
 relocation is connected above. Other nonordinary relocations, special cards,
-concealed-marker collection, multiple-pile adjudication and wider interaction/
-strategy acceptance remain. The lower battle band is in
+concealed-marker collection, multi-pile destination/HMS collection and wider
+interaction/strategy acceptance remain. The lower battle band is in
 [the battle-effects contract](LEADER_BATTLE_EFFECTS.md).
 
 ## 21 September: native HMS relocation eligibility

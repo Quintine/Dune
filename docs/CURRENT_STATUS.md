@@ -29,6 +29,19 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Owned Sandmaster ground-pile choice — 9 October.** Ordinary route
+collection now offers every positive pile, but permits only one selected
+sector per entered territory. The checkbox group supports switching piles
+or declining the whole territory; default human/bot choices are legal.
+Basic/Advanced native engine smokes preserve an unselected South Mesa
+pile and collect two total spice across two territories. A 390px isolated
+production control switches sector4→5, opts out/reselects, and completes
+the move with personal spice10→12 and three Cielago East forces.
+Multi-pile destination and HMS controls retain their existing boundaries.
+The [ground policy](SANDMASTER_MOVEMENT.md#owned-ground-route-pile-selection--9-october-2026)
+is provisional owner allocation, not a publisher ruling.
+
+
 **Built-runtime proxy cutover — 9 October.** `npm start` now uses the
 existing direct Miniflare adapter rather than Wrangler's development proxy.
 Local storage defaults to `.wrangler/state`; the container explicitly keeps

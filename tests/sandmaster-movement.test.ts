@@ -87,7 +87,32 @@ void test('Sandmaster can decline each territory or the entire effect; legacy mo
     g.players[0].spice,
   );
 });
-void test('Sandmaster rejects disconnected, overlong, storm, duplicate and ambiguous collection choices without mutation', () => {
+
+void test('Sandmaster chooses either positive sector pile but never collects twice from one entered territory', () => {
+  for (const advanced of [false, true]) {
+    const game = sandmasterMovementGame('emperor', advanced);
+    const action = sandmasterMove(game);
+    const choice = action.sandmaster as SandmasterChoice;
+    const original = choice.collect.find(key => territory(splitLocation(key).territory).sectors.some(
+      sector => sector !== splitLocation(key).sector && sector !== game.storm));
+    assert.ok(original);
+    const at = splitLocation(original);
+    const sector = territory(at.territory).sectors.find(value => value !== at.sector && value !== game.storm)!;
+    const alternate = `${at.territory}:${sector}`;
+    game.spice[alternate] = 2;
+    unchanged(game, { ...action, sandmaster: { ...choice, collect: [...choice.collect, alternate] } });
+    const collect = choice.collect.map(key => key === original ? alternate : key);
+    const done = applyAction(restored(game), 'p', { ...action, sandmaster: { ...choice, collect } });
+    assert.equal(done.spice[original], game.spice[original]);
+    assert.equal(done.spice[alternate], 1);
+    assert.equal(done.players[0].spice, game.players[0].spice + collect.length);
+    assert.equal(done.players[0].moved, 1);
+    const defaults = sandmasterDefaultChoice(viewGame(game, 'p'), 'p', action)!;
+    assert.equal(new Set(defaults.collect.map(key => splitLocation(key).territory)).size, defaults.collect.length);
+    conserved(done, game);
+  }
+});
+void test('Sandmaster rejects disconnected, overlong, storm and duplicate collection choices without mutation', () => {
   const g = sandmasterMovementGame(),
     action = sandmasterMove(g),
     choice = action.sandmaster as SandmasterChoice;
@@ -117,22 +142,6 @@ void test('Sandmaster rejects disconnected, overlong, storm, duplicate and ambig
   delete tooFar.players[0].forces['arrakeen:10'];
   tooFar.players[0].reserves++;
   unchanged(tooFar, action);
-  const id = splitLocation(choice.collect[0]).territory;
-  const second = territory(id).sectors.find(
-    (s) => `${id}:${s}` !== choice.collect[0],
-  );
-  if (second !== undefined) {
-    const ambiguous = restored(g);
-    ambiguous.spice[`${id}:${second}`] = 2;
-    unchanged(ambiguous, action);
-    const decline = {
-      ...choice,
-      collect: choice.collect.filter((key) => key !== choice.collect[0]),
-    };
-    assert.doesNotThrow(() =>
-      applyAction(ambiguous, 'p', { ...action, sandmaster: decline }),
-    );
-  }
 });
 void test('Fremen Sandmaster waits for movement permission and cancellation releases untouched spice', () => {
   const g = sandmasterMovementGame('fremen'),

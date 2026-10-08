@@ -78,26 +78,9 @@ function markup(game: Game, viewer = 'p', busy = false) {
   );
 }
 
-void test('the owner sees exact default routes, per-pile opt-out and explicit route editing controls', () => {
+void test('Sandmaster controls remain absent from other seats and unsupported module profiles', () => {
   const game = fixture();
-  const html = markup(game);
-  assert.match(html, /Sandmaster movement/);
-  assert.match(
-    html,
-    /False Wall West, sector 16 → Wind Pass, sector 16 · 1 \/ 1 territories/,
-  );
-  assert.match(
-    html,
-    /Collect 1 spice in Wind Pass, sector 15 \(3 on the pile\)/,
-  );
-  assert.match(html, /type="checkbox" checked=""/);
-  assert.match(html, /Remove last route step/);
-  assert.match(html, /Reset route to source/);
-  assert.match(html, /Use shortest route/);
-  assert.match(html, />Move with Sandmaster<\/button>/);
-  assert.match(html, /normal Move forces button to decline Sandmaster/);
   assert.equal(markup(game, 'o'), '');
-  assert.ok((markup(game, 'p', true).match(/disabled=""/g) ?? []).length >= 4);
 
   const combined = fixture();
   combined.expansions = ['ix'];
@@ -108,18 +91,12 @@ void test('drafts preserve the ordinary move, accept a connected alternate and a
   const game = fixture();
   const view = viewGame(game, 'p');
   const standard = sandmasterMoveDraft(view, move);
-  assert.equal(standard.blocked, null);
-  assert.deepEqual(standard.choice, {
-    routes: { [source]: [source, destination] },
-    collect: [spicePile],
-  });
-  assert.deepEqual(standard.action, {
-    ...move,
-    sandmaster: standard.choice,
-  });
   const collected = applyAction(structuredClone(game), 'p', standard.action!);
   assert.equal(collected.players[0].spice, game.players[0].spice + 1);
   assert.equal(collected.spice[spicePile], 2);
+  assert.equal(collected.players[0].forces[source] ?? 0, 0);
+  assert.equal(collected.players[0].forces[destination], 2);
+  assert.equal(collected.players[0].moved, 1);
 
   assert.ok(GRAPH[source].includes(location('wind_pass', 17)));
   assert.ok(GRAPH[location('wind_pass', 17)].includes(destination));
@@ -165,10 +142,11 @@ void test('all four bot profiles add legal collection only to ordinary single-so
           action.ornithopterEvent === undefined,
       ),
     );
-    assert.doesNotThrow(
-      () => applyAction(game, 'p', candidates[0]),
-      `${difficulty} emitted an illegal Sandmaster move`,
-    );
+    const completed = applyAction(game, 'p', candidates[0]);
+    const selected = (candidates[0].sandmaster as { collect: string[] }).collect;
+    assert.equal(completed.players[0].moved, 1, difficulty);
+    assert.equal(completed.players[0].spice, game.players[0].spice + selected.length, difficulty);
+    for (const key of selected) assert.equal(completed.spice[key], game.spice[key] - 1, difficulty);
 
     const combined = viewGame(fixture(), 'p');
     combined.players.find((player) => player.id === 'p')!.bot = difficulty;

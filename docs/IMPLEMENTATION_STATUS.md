@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 9 October 2026 — owned Sandmaster ground-movement pile selection
+
+The shared ground quote now groups all positive pile keys by entered
+territory. The owner can select either sector or decline collection;
+authoritative validation rejects two selected piles from one territory
+before any physical movement or spice transfer. Human and minimal legal
+AI defaults select at most one per group. The obsolete singleton helper
+is removed; native HMS retains its separate unambiguous-pile scope.
+Worm and physical Ambassador destination controls are unchanged.
+
+Basic and Advanced runtime smokes choose South Mesa5 rather than4,
+leave sector4's four spice untouched, collect one there and one in Cielago
+East, and move three forces. Personal spice10→12; South Mesa5 ends1 and
+Cielago East3 ends3. All four profiles emit legal collected-route candidates.
+Chromium at390px exercises switching, full-territory opt-out and reselection,
+then observes the same engine result with document width390/no overflow.
+This is isolated production-component/engine proof, not deployed acceptance.
+Owner allocation is visibly provisional; no publication gate is opened.
+
+Frozen verification: `check:quick` and all 21 affected movement, control
+and worm cases pass. Incidental HTML-attribute-order/default-action pins
+were removed rather than re-pinned; the retained control regressions
+exercise actual force movement, spice debit and unavailable-seat/profile
+boundaries. Temporary UI scripts/service were removed. No broad suite,
+recovery campaign or deployment was run.
+
 ## 9 October 2026 — built npm runtime uses the proxy-free adapter
 
 `npm start` still invoked Wrangler despite the container's existing direct
