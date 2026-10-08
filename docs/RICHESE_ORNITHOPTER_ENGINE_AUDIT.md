@@ -2,6 +2,31 @@
 
 Audit: 2026-09-06. Document-only source and engine review. The canonical component is `richese-ornithopter`; this is distinct from ordinary Arrakeen/Carthag ornithopter access and the later Ecaz discovery token. No runtime effect or complete expansion compliance is claimed here.
 
+## Provisional Kulon coexistence — 9 October 2026
+
+Both modes now remain usable after Kulon. The one-group card move retains
+its explicit maximum of three territories; Kulon extends the normal range
+of each distinct group in the two-group mode. This applies in Basic and
+Advanced without changing movement quotas, cohort identity, storm/entry
+rules or physical card disposal. The owned control labels the policy.
+
+This is a content-first composition choice, **not a publisher ruling**.
+The photographed card supplies “up to three”; R2 p7 supplies Kulon's
+extra territory. The authorized supplied Advanced PDF repeats “one extra
+territory during your Force Movement” on physical p29, but does not resolve
+the separately named Richese card's maximum. Choosing the explicit card
+cap avoids inventing a four-territory exception. Hajr/prior-move and
+Advanced advisor combinations remain guarded.
+
+Changed-path proof: real Kulon activation followed by a three-territory
+card move, four-territory rejection, both normal groups moving two
+territories, and legal candidates from all four profiles in both modes.
+An isolated Chromium surface mounted the production movement component
+against the real engine: the enabled control moved two forces from Red
+Chasm to Imperial Basin and discarded Ornithopter once. It used in-memory
+QA state, not a saved room or deployed application.
+
+
 ## Authority
 
 The photographed GF9 card face was independently inspected at `/tmp/dune-rules/choam-ornithopter-reading.png`, derived from the publisher components shown in [the product gallery](https://www.tabletopfinder.eu/en/boardgame/32692/dune-choam-richese). Full photo provenance and limits are recorded in [RICHESE_ACQUISITION_RULES.md](RICHESE_ACQUISITION_RULES.md) and [RICHESE_COMPONENTS.md](RICHESE_COMPONENTS.md). It is a Special / Movement card. During the holder's movement, it offers either one group moving up to three territories or two different groups using normal movement. It is discarded after use. No spice payment, faction restriction, alliance transfer of the effect, reserve shipment or Karama cancellation is printed.
@@ -27,7 +52,7 @@ The card changes movement allowance, not geography. Keep storm paths, stronghold
 Genuine source interactions not settled by retrieved card-specific authority:
 
 1. **Hajr and prior moves:** does the two-group option replace a normal movement action, increase the turn total to two, or compose into three/four moves with Hajr? Can an earlier completed move be counted retroactively as the first group? Existing Hajr implementation alone is not evidence. A bounded initial adapter may require an unused ordinary move and exclude concurrent Hajr with an explicit unfinished-combination reason, but cannot label that an official prohibition.
-2. **Kulon:** its additive territory text and this card's explicit maximum three need a deliberate composition decision. Existing code adds Kulon to ordinary stronghold access. That does not itself prove a fixed-card range becomes four, or how a turn-scoped Kulon interacts with both normal-mode groups. No retrieved specific answer settles it.
+2. **Kulon:** no retrieved card-specific answer settles its additive text against the fixed maximum. The provisional coexistence policy above now preserves the three-territory cap and extends both normal-range groups; this no longer blocks declaration.
 3. **Advisors:** the printed general prohibition on using ornithopters must not be ignored, but whether the two-normal-group card option is also covered is not expressly resolved. Keep this named boundary rather than silently treating the advisor path flag as permission.
    The following are primarily implementation work, not missing rulings. “Different groups” does not say “different territories”: distinct subsets may share an origin, but no physical unit can be counted in both. A distinct-origin-only shortcut would be an incomplete implementation, not a rule. The same accounting prevents the first group's arrivals from being moved again after merging with another stack. Base rules check stronghold access at the start of a force move, so normal-mode range should be recomputed for each accepted group; freezing both at declaration is not required. The player may end optional movement without a separate acknowledgement; after any actual card use, closing that use discards the card once. An uncommitted illegal route spends no movement. Interruption handling must preserve completed movements and remaining distinct-group custody rather than inventing a rollback. Exact provenance through complicated simultaneous force-removal effects can remain a named implementation limitation without asking for a new rule.
 

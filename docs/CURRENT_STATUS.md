@@ -29,6 +29,16 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Kulon/Ornithopter coexistence prototype — 9 October.** Active Kulon no
+longer blocks the card's fixed-range mode in either rules mode. The labeled
+provisional policy retains its three-territory maximum and extends both
+normal-range groups. Real Kulon/card activation, boundary rejection and
+four-profile legal-candidate smoke pass in both modes. Isolated Chromium
+controls complete the three-territory move against the production engine;
+no saved room or deployed application was changed. Hajr/prior moves and
+advisor composition remain guarded. See the
+[movement contract](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#provisional-kulon-coexistence--9-october-2026).
+
 
 **Richese cache cancellation connected.** The printed Karama cancellation
 now reaches the restore-one-ordinary-lot policy selected on 7 October. First/last

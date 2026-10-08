@@ -194,6 +194,13 @@ export function OrnithopterMovement({
           </p>
         </>
       )}
+      {me.faction === 'choam' && game.choamMovementBonus > 0 && (
+        <p className="notice">
+          Provisional Kulon combination: the one-group card move stays capped
+          at three territories. Kulon still extends each normal-range move in
+          the two-group mode.
+        </p>
+      )}
       {reason && (
         <p className="notice" id={`${id}-reason`}>
           {reason}

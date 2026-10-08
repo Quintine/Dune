@@ -13856,7 +13856,6 @@ function emperorHomeworldMoveEvent(g: Game, p: Player) {
 function ornithopterBlock(
   g: Game,
   p: Player,
-  mode: OrnithopterMode,
 ): string | null {
   if (g.status !== 'playing' || g.phase !== 5 || g.active !== p.id)
     return 'Use Ornithopter during your own Shipment and Movement turn.';
@@ -13867,13 +13866,8 @@ function ornithopterBlock(
   if (currentGuildCunning(g,p.id)) return 'Guild Cunning combined with the physical Ornithopter card awaits its timing ruling.';
   if (p.moved || g.hajr.includes(p.id))
     return 'Ornithopter combined with prior moves or Hajr awaits its timing ruling.';
-  if (
-    mode === 'range3' &&
-    p.faction === 'choam' &&
-    g.choamMovement?.turn === g.turn &&
-    g.choamMovement.bonus
-  )
-    return 'Kulon combined with the fixed three-territory card range awaits a ruling.';
+  // Provisional composition: Kulon augments normal movement, not the
+  // Ornithopter card's explicit maximum of three territories.
   return null;
 }
 function discoveryFlightIntegrity(g: Game) {
@@ -13981,7 +13975,7 @@ function ornithopterView(g: Game, p: Player) {
   if (!card) return null;
   const modes = (['range3', 'twoGroups'] as const).map((mode) => ({
     mode,
-    blocked: ornithopterBlock(g, p, mode) ?? transferCardBlock(g, p, card),
+    blocked: ornithopterBlock(g, p) ?? transferCardBlock(g, p, card),
   }));
   return {
     card,
@@ -26424,7 +26418,6 @@ function choamPowerPlays(g: Game, p: Player) {
     else if (g.decision && !(g.decision.player === p.id && ['choamStorm','choamFreeRevival','choamMovement','choamMentat'].includes(g.decision.kind)))
       blocked = 'Finish the current decision before declaring this effect.';
     else if (effect === 'kulon' && (g.active !== p.id || p.moved >= movesAllowed(g,p))) blocked = 'Use Kulon before an available move on your own turn.';
-    else if (effect === 'kulon' && g.ornithopter?.mode === 'range3' && g.ornithopter.player === p.id) blocked = 'Kulon combined with fixed Ornithopter range awaits a ruling.';
     else if (effect === 'jubba' && !(g.decision?.kind === 'choamStorm' && g.decision.player === p.id)) blocked = 'Use Jubba Cloak in your moving-storm response.';
     return {source:'nexus' as const,card,effect,event:JSON.stringify(['nexusChoam',g.turn,g.phase,p.id,card.id,effect]),blocked};
   }))];
@@ -26499,10 +26492,6 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
   let elite: number | undefined;
   let noFieldEvent: string | undefined;
   if (effectName === 'Kulon') {
-    requireRule(
-      g.ornithopter?.mode !== 'range3' || g.ornithopter.player !== p.id,
-      'Kulon combined with fixed Ornithopter range awaits a ruling.',
-    );
     requireRule(
       g.phase === 5 && g.active === p.id && p.moved < movesAllowed(g, p),
       'Use Kulon on your movement turn before an available move.',
@@ -31270,7 +31259,7 @@ function applyActionInner(
         mode === 'range3' || mode === 'twoGroups',
         'Choose an Ornithopter movement mode.',
       );
-      const blocked = ornithopterBlock(g, p, mode);
+      const blocked = ornithopterBlock(g, p);
       requireRule(!blocked, blocked ?? 'Ornithopter cannot be played.');
       const card = p.hand.find((c) => c.id === action.movementCard);
       requireRule(

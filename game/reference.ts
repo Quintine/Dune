@@ -887,7 +887,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A concealed No-Field may move as a group member without exposing its value. A marker moved in the first group cannot also move in the second. Revealing an unmoved marker converts its remaining entitlement to its actual placed forces; revealing a moved marker does not give those forces another move.',
       'A validated declaration moves the physical card from your hand to the public played-card area. It remains there through genuine CHOAM, Ixian or other arrival decisions and is discarded once when the chosen use ends. Random hand effects act on cards still in hand. Ending your movement closes any remaining card movement without undoing a completed group.',
       'The saved event binds retries and the remaining original-group data. Refresh and reconnect preserve that event. After disposal, recovery preserves the completed forces and marker event before opening arrival decisions or advancing an early-ended turn; it does not move the group again. Missing saved group data cannot be reconstructed from merged forces and blocks the damaged continuation instead of allowing reuse.',
-      'Hajr and prior-move composition, Kulon against the fixed three-territory maximum, and advanced advisor use remain explicit unresolved combinations. These development guards are not printed prohibitions. Existing unfinished entry and optional-module interactions remain unfinished; full Richese starts are still disabled.',
+      'Kulon and the fixed-range card now coexist under a provisional policy: the one-group move stays capped at three territories, while each normal-range group receives Kulon’s bonus. Hajr/prior-move composition and advanced advisor use remain guarded; these development guards are not printed prohibitions. Other unfinished entry and optional-module interactions remain unfinished; full Richese starts are still disabled.',
       'All four AI profiles use their own projected movement choices and original-group limits. They can use a longer route, split distinct groups, finish interrupted movement and end optional movement when no legal second group remains. Complete Richese-game calibration is not yet certified.',
     ],
     related: [
@@ -901,7 +901,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Both movement modes, played-card custody, exact event continuation, typed original-group quotas, concealed-marker conversion and separate disposal recovery for completed moves or early endings are integrated. Three named source combinations and existing expansion interactions remain unresolved.',
+          'Both movement modes, played-card custody, exact event continuation, typed original-group quotas, concealed-marker conversion and separate disposal recovery are integrated. Kulon coexistence uses a labeled provisional three-territory cap; Hajr/prior moves and advisor composition remain guarded.',
       },
       {
         area: 'Player controls',
@@ -1159,7 +1159,7 @@ export const RULE_TOPICS: RuleTopic[] = [
               : definition.card.effect === 'nullentropyBox'
                 ? 'Use the Nullentropy Box panel to pay two bank spice for a private discard search. Full-hand activation and provisional Guild refund claims remain guarded pending resolution.'
                 : definition.card.effect === 'ornithopter'
-                  ? 'Use the Ornithopter movement controls with a selected group and destination. Hajr/prior-move composition, fixed-range Kulon and advanced advisors remain explicitly unresolved.'
+                  ? 'Use the Ornithopter movement controls with a selected group and destination. Provisionally, Kulon coexists without raising the one-group maximum of three; both normal-range groups retain its bonus. Hajr/prior-move composition and advanced advisors remain guarded.'
                   : definition.card.effect === 'residualPoison'
                     ? 'Use the Residual Poison panel before either combatant commits a leader. A shared preparation step provides an opportunity regardless of hand contents; advanced Harkonnen tables remain guarded pending the secret-captive ruling. In the explicit Semuta preview, a clean death with no readiness or inspection commitments pauses after public disposal for the neutral offer, then resumes the same preparation.'
                     : definition.card.effect === 'stoneBurner'
@@ -3476,7 +3476,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Six printed effects cover range, revival, movement, storm protection, force return and Kull Wahad’s opt-in Karama reaction.',
     steps: [
       'These CHOAM abilities work in basic and advanced games. Choose a printed Worthless card from the phase controls. Its name and intended effect are announced, then a Karama response occurs before discard. A canceled card remains in hand and cannot be retried for its effect during that phase.',
-      'On your own Shipment and Movement turn, play Kulon while a movement remains. It adds one territory to your movement range, including ornithopters. It does not add another movement action, bypass the storm or relax alliance/stronghold entry rules. The current implementation applies the bonus to both movements if Hajr is used; this combination remains under audit.',
+      'On your own Shipment and Movement turn, play Kulon while a movement remains. It adds one territory to normal movement, including ordinary stronghold ornithopter access. Under the provisional Richese card policy, it does not raise the fixed one-group maximum of three, but extends both normal-range groups. It does not add a movement action or bypass storm/alliance/stronghold rules. Applying the bonus to both Hajr movements remains under audit.',
       'During Revival, play La La La and select a player to prevent its free force revivals for the rest of the phase. Earlier revivals are unchanged. The prohibition also prevents a Fremen allied free allowance from providing free returns, even if granted later.',
       'Whenever another faction requests a normal revival with a free portion, CHOAM receives a response decision independently of its private hand. Allow the request, or declare La La La for that requester. If the effect succeeds, the whole pending request stops without payment, force movement or quota use; a faction permitted to purchase normal revivals can submit a paid request. If the effect is canceled, the original quote resumes through any Tleilaxu and other applicable responses.',
       'La La La does not prevent otherwise legal paid revivals or separate Ghola card effects. With Tleilaxu in the game, Fremen may submit a paid request within their current limit after free revival is prevented. Without Tleilaxu, Fremen’s base purchase restriction leaves no normal force return available. Emperor-funded extras remain separate. The prohibition resets when the next Revival phase begins. Card custody is checked at settlement: if CHOAM cashed in the declared card during the response, no Worthless effect occurs and the interrupted revival resumes.',

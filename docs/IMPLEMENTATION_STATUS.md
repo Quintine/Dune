@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 9 October 2026 — provisional Kulon/Ornithopter coexistence
+
+Active Kulon no longer blocks either mode of the Richese movement card.
+The labeled prototype keeps the fixed three-territory cap and applies
+Kulon to both normal-range groups. The source distinction and remaining
+Hajr/advisor boundaries are in the [movement contract](RICHESE_ORNITHOPTER_ENGINE_AUDIT.md#provisional-kulon-coexistence--9-october-2026).
+
+`check:quick` passes; 39 affected engine, bot and discard-continuation cases
+pass. A throwaway runtime script plays actual Kulon, moves with the card,
+rejects four territories, finishes both extended normal groups after JSON,
+and executes fixed-card candidates from all four profiles in both modes.
+An isolated Chromium surface mounts the production control and commits
+the three-territory move through the real engine, leaving three forces in
+Red Chasm and two in Imperial Basin with Kulon/Ornithopter in discard.
+This is not full-table/deployed acceptance. QA scaffolds were removed.
+
 ## 9 October 2026 — gated captures resumed under the Basic occupation and odd-force Occupy prototypes
 
 The 14 captures that remained gated on 7 October were resumed in place with

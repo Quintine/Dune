@@ -67,16 +67,33 @@ void test('played card escrow, owner-only remaining quotas and ended movement su
  assert.equal(ended.active,'q');
 });
 void test('invalid source, blocked route, committed card and explicitly unresolved combinations are immutable',()=>{
- for(const change of ['range','storm','prior','hajr','advisor','kulon','gift','wrongMode'] as const){
-  const g=fixture(change==='advisor'?'beneGesserit':change==='kulon'?'choam':'emperor',change==='advisor');
+ for(const change of ['range','storm','prior','hajr','advisor','gift','wrongMode'] as const){
+  const g=fixture(change==='advisor'?'beneGesserit':'emperor',change==='advisor');
   let key=destination(g,origin,3);const extra:Partial<Action>={movementCard:card,ornithopter:'range3'};
   if(change==='range')key=destination(g,origin,4);if(change==='storm')g.storm=splitLocation(key).sector;
   if(change==='prior')g.players[0].moved=1;if(change==='hajr')g.hajr=['p'];
   if(change==='advisor'){g.players[0].advisors={red_chasm:{}};g.players[1].forces={[origin]:1};}
-  if(change==='kulon')g.choamMovement={turn:g.turn,bonus:1};
   if(change==='wrongMode')extra.ornithopter='both';
   if(change==='gift')g.pendingRicheseGift={event:'reserved',intent:{owner:'p',recipient:'q',cardId:card},turn:g.turn,phase:g.phase,resume:{response:null,decision:null,pendingKarama:null,phaseOpening:null}} as Game['pendingRicheseGift'];
   const before=structuredClone(g);assert.throws(()=>move(g,key,extra),change);assert.deepEqual(g,before);
+ }
+});
+void test('Kulon coexists with a capped card move and extends both normal-range groups',()=>{
+ for(const advanced of [false,true]){
+  const g=fixture('choam',advanced);g.choamMovement={turn:g.turn,bonus:1};
+  const key=destination(g,origin,3);
+  const done=move(g,key,{movementCard:card,ornithopter:'range3'});
+  assert.equal(done.players[0].forces[key],2);
+  assert.equal(done.discard.filter(c=>c.id===card).length,1);
+  const before=structuredClone(g);
+  assert.throws(()=>move(g,destination(g,origin,4),{movementCard:card,ornithopter:'range3'}));
+  assert.deepEqual(g,before);
+  const normal=destination(g,origin,2);
+  let two=move(g,normal,{movementCard:card,ornithopter:'twoGroups'});
+  two=move(reload(two),normal,{amount:3,ornithopterEvent:two.ornithopter!.event});
+  assert.equal(two.players[0].forces[normal],5);
+  assert.equal(two.players[0].moved,2);
+  assert.equal(two.discard.filter(c=>c.id===card).length,1);
  }
 });
 void test('Ixian fixed card range does not open a faction-speed cancellation but two-group normal range does',()=>{
