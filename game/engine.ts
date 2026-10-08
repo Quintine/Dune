@@ -32683,6 +32683,7 @@ export function viewGame(state: Game, id: string) {
       leaders: leaderSkillRevivalBlocked(g, id) ? [] : leaderRevivals.leaders,
       kwisatz: leaderRevivals.kwisatz,
       cycleBlock: leaderRevivals.cycleBlock,
+      ...(leaderRevivals.auditorCyclePolicy ? { auditorCyclePolicy: leaderRevivals.auditorCyclePolicy } : {}),
       dukeBlocked: leaderRevivals.dukeBlocked,
       prevented: revivalPrevented(g, me.id),
       eliteRemaining: eliteRevivalRemaining(me, g.advanced),

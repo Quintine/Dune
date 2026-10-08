@@ -51,6 +51,12 @@ not publisher clarifications. [Ecaz combat](ECAZ_OCCUPY_RULES.md) and
 [distinct Moritani special disposal](MORITANI_ALLY_RETENTION_RULES.md) retain
 their exact scope and observed evidence.
 
+Supplied **p29 CHOAM E** permits native Auditor revival each turn, including
+repeat deaths. Ordinary price, one-leader allowance and prevention remain.
+The separate five-ordinary-disc cycle exclusion is a visibly provisional
+implementation policy, not a numerical user ruling or publisher answer.
+[Source, policy and runtime evidence](CHOAM_AUDITOR.md).
+
 ## User rulings — 7 October 2026
 
 Five previously pending questions were answered directly by the user. These are

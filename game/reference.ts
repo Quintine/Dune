@@ -3626,6 +3626,7 @@ export const RULE_TOPICS: RuleTopic[] = [
     title: 'CHOAM Auditor',
     category: 'Advanced & expansions',
     coverage: 'Partial',
+    developmentStage: 'Prototyped',
     summary:
       'An additional strength-2 leader inspects unused opposing hand cards after battle.',
     steps: [
@@ -3635,8 +3636,8 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Karama cancellation resolves first. If the power remains active, the opponent can pay CHOAM one spice per actually viewable card to cancel the entire inspection. A surviving Auditor with only one eligible card costs one spice to stop. There is no partial payment.',
       'If the opponent cannot afford the full payment, inspection proceeds automatically. An empty eligible hand needs no decision. Sampling happens once after cancellation choices; no card is transferred or discarded.',
       'Only CHOAM receives the inspected faces. Its private snapshot survives refresh and the transition out of Battle, and expires at the next battle or turn. It does not track later changes in the opposing hand and needs no confirmation to continue.',
-      'The Auditor cannot be captured, acquired as a foreign ghola by Tleilaxu, or receive a leader skill. CHOAM’s own Ghola card can revive it. Its first ordinary revival can occur before the other leaders die, costs two spice before any discount, and consumes the usual one-leader allowance.',
-      'Repeated Auditor revival and the effect of its sixth disc on ordinary CHOAM death cycles await a ruling. Full expansion starts remain disabled until all required powers and interactions are complete.',
+      'The Auditor cannot be captured, acquired as a foreign ghola by Tleilaxu, or receive a leader skill. CHOAM’s own Ghola card can revive it. Supplied Advanced p29 permits ordinary revival each turn even after repeated deaths, for two spice before discounts, using the usual one-leader allowance.',
+      'The ordinary-cycle first version explicitly excludes Auditor from the five ordinary CHOAM discs: its life or repeated deaths neither delay nor open that cohort. This is a visibly provisional policy, not a publisher clarification or numerical user ruling. Full expansion starts remain disabled.',
     ],
     example:
       'CHOAM loses a battle but its Auditor survives. The opponent keeps a played Shield and has one unplayed Crysknife. Only Crysknife is eligible: the opponent can pay one spice to CHOAM or let CHOAM inspect it.',
@@ -3652,7 +3653,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Implementation',
         status: 'Partial',
         detail:
-          'Setup identity, inspection, payment, Karama, capture/foreign-ghola exclusions and first revival are integrated; repeat cycles and full combinations remain open.',
+          'Setup identity, inspection, payment, Karama and capture/foreign-ghola exclusions are integrated. Supplied each-turn Auditor revival and provisional five-ordinary-disc cycles are connected; wider combinations remain open.',
         evidence: [
           'game/choam-auditor.ts',
           'game/engine.ts',
@@ -3663,8 +3664,8 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Player controls',
         status: 'Implemented',
         detail:
-          'Auditor offer, exact cancellation payment and private inspectable card results have dedicated controls.',
-        evidence: ['components/choam-auditor.tsx'],
+          'Auditor offer, exact cancellation payment and private inspectable card results have dedicated controls. Owned Revival lists repeat-death Auditor and eligible ordinary discs with an explicit provisional cycle warning.',
+        evidence: ['components/choam-auditor.tsx', 'components/game-table.tsx'],
       },
       {
         area: 'AI',
@@ -3684,8 +3685,8 @@ export const RULE_TOPICS: RuleTopic[] = [
         area: 'Verification',
         status: 'Partial',
         detail:
-          'Identity, uniform sampling and focused engine/lifecycle/recovery scenarios are being verified; full expansion combinations remain uncertified.',
-        evidence: ['tests/choam-auditor.test.ts'],
+          'Two before/after native Easy revival smokes, two focused cycle regressions and isolated GameTable SSR Chromium surfaces pass. Earlier identity/sampling evidence remains; full expansion combinations and deployed acceptance remain uncertified.',
+        evidence: ['tests/choam-auditor.test.ts', 'tests/choam-auditor-lifecycle.test.ts'],
       },
     ],
   },
@@ -3702,7 +3703,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'A canceled request within the new allowance uses the new price. If it is too large or cannot be paid, no forces or spice move; choose another request. Completed earlier revivals remain intact.',
       'Fremen may grant their allied CHOAM three free revivals. The free allowance is tracked across requests. Tleilaxu may separately offer its ally half price, rounded up on the total payment; canceling that discount retains CHOAM’s native price if it is still active.',
       'Emperor-funded extra revivals keep their separate allowance and price. Advanced Tleilaxu special Karama can prevent the normal request before either pricing response. Revival payments go to Tleilaxu when present, with a separate income response.',
-      'Force revival has tested support. Auditor’s first normal return and separate inspection power are described in its topic; repeated death cycles, combined-expansion pricing and the complete faction audit remain unfinished. CHOAM starts stay disabled.',
+      'Force revival has tested support. Auditor’s each-turn return and provisional five-ordinary-disc cycles are described in its topic. Combined-expansion pricing and the complete faction audit remain unfinished; CHOAM starts stay disabled.',
     ],
     related: [
       'revival',

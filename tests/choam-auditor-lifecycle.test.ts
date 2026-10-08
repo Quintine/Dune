@@ -190,6 +190,36 @@ void test('first Auditor revival works while five native leaders are alive and c
   assert.throws(() => revive(occupied), /one leader/);
 });
 
+void test('supplied each-turn Auditor return preserves repeated death history and the ordinary allowance', () => {
+  const start = fixture();
+  const auditor = player(start, 'c').leaders.at(-1)!;
+  auditor.deaths = 2;
+  const g = allow(revive(start));
+  assert.equal(player(g, 'c').leaders.at(-1)!.dead, false);
+  assert.equal(player(g, 'c').leaders.at(-1)!.deaths, 2);
+  assert.equal(player(g, 'c').revivalCycle, 0);
+  assert.equal(player(g, 'c').spice, 18);
+  assert.equal(player(g, 'c').leaderRevived, true);
+  assert.throws(() => revive(g), /one leader/);
+});
+
+void test('provisional five-disc CHOAM cycle ignores a living Auditor and its independent death history', () => {
+  const start = fixture();
+  const choam = player(start, 'c');
+  for (const leader of choam.leaders.slice(0, 5)) {
+    leader.dead = true;
+    leader.deaths = 1;
+  }
+  const auditor = choam.leaders.at(-1)!;
+  auditor.dead = false;
+  auditor.deaths = 3;
+  const g = allow(applyAction(start, 'c', { type: 'reviveLeader', leader: choam.leaders[0].id }));
+  assert.equal(player(g, 'c').revivalCycle, 1);
+  assert.equal(player(g, 'c').leaders[0].dead, false);
+  assert.equal(player(g, 'c').spice, 20 - choam.leaders[0].strength);
+  assert.deepEqual(player(g, 'c').leaders.at(-1), auditor);
+});
+
 void test('first Auditor revival uses the existing allied discount and pays the actual Tleilaxu revival income', () => {
   let g = fixture(true);
   player(g, 'c').ally = 't';

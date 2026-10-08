@@ -4229,6 +4229,9 @@ export function GameTable({
                       spice.
                     </p>
                   )}
+                  {g.revival.auditorCyclePolicy && (
+                    <p className="notice">{g.revival.auditorCyclePolicy}</p>
+                  )}
                   {g.revival.leaders.length > 0
                     ? (() => {
                         const selectedRevival = g.revival.leaders.find(

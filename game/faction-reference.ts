@@ -22,6 +22,7 @@ export const FACTION_RULES: Record<
       'Reserve spice to pay for some or all of your ally’s battle support. Each sealed plan records its own and allied shares. A Karama response may prevent this alliance benefit for one battle; unused funding returns at the end of Battle.',
       'Receive half of each other player’s actual force-support payment, rounded down, unless any traitor is revealed. Your own payments, including support paid for your ally, go to the bank. A separate Karama response can cancel this battle’s income. See CHOAM combat for examples and outstanding interaction audits.',
       'The Auditor is an additional strength-two leader. After using it in battle, CHOAM may inspect two randomly selected unused opposing Treachery Cards if it survives, or one if it dies, limited by the unused cards available. The opponent may pay CHOAM one spice per card that would be inspected to prevent the whole inspection; Karama can also cancel the power. Use the Auditor guide for the exact private choices and limits. Setup and inspection are supported in development games; complete combined play remains unfinished.',
+      'Supplied Advanced p29 permits Auditor revival each turn even after repeat deaths, for two spice before discounts and using the ordinary one-leader allowance. The five-ordinary-disc cycle policy excludes Auditor and is visibly provisional; it neither opens nor delays ordinary revival.',
     ],
   },
   ixians: {

@@ -113,6 +113,13 @@ boundaries remain; no broad suite or deployed acceptance was run.
 The preceding supplied p34 cutover excludes Ixian Technology from Richese
 auctions; ordinary Technology and allied post-purchase replacement remain.
 
+**Advanced Auditor revival connected.** Supplied p29 each-turn permission now
+works after repeat deaths. The separate ordinary-cycle prototype excludes
+Auditor from the five ordinary discs, visibly marked as provisional.
+Two native Easy smokes, two cycle regression cases, owned GameTable SSR
+Chromium choices and types/lint pass. No broad suite or deployed acceptance
+was run; prevention, price, death history and one-leader allowance remain.
+
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in
 [the decision index](RULE_DECISIONS.md#user-rulings--7-october-2026) and

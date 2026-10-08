@@ -131,11 +131,18 @@ export function forceRevivalRemaining(
   );
 }
 export function normalRevivalCycle(
-  p: Pick<Player, 'leaders' | 'revivalCycle'>,
+  p: Pick<Player, 'faction' | 'leaders' | 'revivalCycle'>,
 ) {
-  return p.leaders.every((l) => l.dead || l.capturedBy || l.gholaBy)
-    ? Math.min(...p.leaders.map((l) => (l.dead ? l.deaths : l.deaths + 1)))
-    : p.revivalCycle;
+  let cycle = Infinity;
+  for (const leader of p.leaders) {
+    // Provisional CHOAM policy: the independently revivable extra Auditor
+    // does not open or delay the ordinary five-disc cohort.
+    if (p.faction === 'choam' && isAuditorLeader(leader)) continue;
+    if (!leader.dead && !leader.capturedBy && !leader.gholaBy)
+      return p.revivalCycle;
+    cycle = Math.min(cycle, leader.dead ? leader.deaths : leader.deaths + 1);
+  }
+  return cycle;
 }
 
 /** The five-disc Ecaz opening is recorded in revivalCycle on the first
@@ -184,16 +191,15 @@ export function leaderRevivalOptions(
   const leaders = p.leaders.flatMap((leader) => {
     if (!enabled || !leader.dead || leader.capturedBy || leader.gholaBy)
       return [];
-    // Auditor's first return expressly waives the all-in-Tanks prerequisite.
-    // Repeat-death and sixth-disc cycle interpretations remain separately unverified.
-    const auditorFirstReturn =
+    // Supplied Advanced p29 E permits Auditor revival each turn regardless
+    // of the other leaders in Tanks; retain the ordinary one-leader allowance.
+    const auditorReturn =
       g.advanced &&
       p.faction === 'choam' &&
-      isAuditorLeader(leader) &&
-      leader.deaths === 1;
+      isAuditorLeader(leader);
     const normal =
       !p.leaderRevived &&
-      (auditorFirstReturn || (cycle > 0 && leader.deaths === cycle));
+      (auditorReturn || (cycle > 0 && leader.deaths === cycle));
     if (
       !normal &&
       (p.faction !== 'tleilaxu' ||
@@ -233,8 +239,12 @@ export function leaderRevivalOptions(
     cycle >= (p.kwisatz.revivalCycle ?? 1)
       ? { cost: kwisatzCost, affordable: p.spice >= kwisatzCost }
       : null;
-  return { cycle, leaders, kwisatz, dukeBlocked, cycleBlock: repeatHistory
-    ? 'Ecaz six-disc repeated revival cycles are not yet resolved.' : null };
+  return { cycle, leaders, kwisatz, dukeBlocked,
+    ...(g.advanced && p.faction === 'choam' && p.leaders.some(isAuditorLeader)
+      ? { auditorCyclePolicy: 'Supplied Advanced p29 permits Auditor revival each turn. Provisional ordinary-cycle policy: only the five ordinary CHOAM discs determine revival cycles; a living or repeatedly killed Auditor neither delays nor opens them. Auditor still uses the normal one-leader allowance.' }
+      : {}),
+    cycleBlock: repeatHistory
+      ? 'Ecaz six-disc repeated revival cycles are not yet resolved.' : null };
 }
 export type PendingRevival = {
   player: string;

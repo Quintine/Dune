@@ -2,6 +2,13 @@
 
 Audit: 2026-09-07 local date. Documentation-only review of the current engine; no runtime, component, test, or start-gate change is claimed here.
 
+**Historical audit.** Current runtime and the supplied Advanced p29 each-turn
+revival cutover are in [CHOAM Auditor](CHOAM_AUDITOR.md). Its 8 October
+follow-up also records the visibly provisional five-ordinary-disc cohort
+policy. Absence claims and publisher-only boundaries below are dated evidence,
+not current runtime status.
+
+
 ## Authority and component identity
 
 The [GF9 CHOAM & Richese rulebook](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf), printed pp.3, 8, 10 and 12, supplies the component, power, payment clarification and Karama entry. The publisher-authored local mirror is `/tmp/dune-rules/choam-lelekan-mirror.pdf`, with extracted text alongside it. Its provenance, hash and independent full-page visual inspection are recorded in [CHOAM_RICHESE_LEADERS.md](CHOAM_RICHESE_LEADERS.md). Fresh publisher-targeted searches recovered the indexed p.8 text but no separate Auditor erratum. Unrelated editions, fan compilations and forum answers were not used as authority.

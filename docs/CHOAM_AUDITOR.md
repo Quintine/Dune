@@ -1,12 +1,35 @@
 # CHOAM Auditor implementation
 
-7 September 2026. This checkpoint implements the directly specified inspection, component identity and custody rules. It does not certify the complete CHOAM faction or all expansion combinations; public Advanced and expansion starts remain gated.
+7 September 2026 checkpoint, with an 8 October Advanced revival follow-up. Inspection, component identity and custody rules are connected. This does not certify the complete CHOAM faction or all expansion combinations; public Advanced and expansion starts remain gated.
+
+## Advanced revival follow-up — 8 October 2026
+
+The authorized supplied PDF, physical **p29 CHOAM E**, says the Auditor is
+eligible to be revived **each turn**, regardless of how many leaders are in
+Tanks. Native ordinary revival now applies that permission after repeated
+deaths as well as the first death, with printed cost2 before discounts,
+the existing one-leader allowance and unchanged Tleilaxu prevention.
+Death history is retained, not reset; own Ghola remains independent.
+
+**Provisional ordinary-cycle policy:** only the five ordinary CHOAM discs
+determine the normal cohort. A living or repeatedly killed Auditor neither
+delays nor opens that cohort. This is the content-first implementation
+choice, not a numerical user ruling or publisher clarification. It is
+shown in CHOAM's owned Revival panel and recorded in the rules checklist.
+Non-CHOAM cohorts and exceptional Duke custody retain their existing rules.
+
+Two before/after native smoke positions now let Easy revive a second-death
+Auditor for two spice and open an ordinary five-disc cycle despite a living
+Auditor. Exact death history, price and single allowance are preserved.
+Chromium observed actual GameTable SSR options and the provisional warning.
+No broad suite, recovery campaign or deployed acceptance was run.
+
 
 ## Authority
 
 The [GF9 CHOAM & Richese rulebook](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf), printed pp.3, 8, 10 and 12, establishes the strength-2 extra disc, matching traitor, survival-based optional inspection, actual-card cancellation cost, revival permission, custody restrictions and Karama prevention. The publisher-authored mirror and its provenance are recorded in [CHOAM_RICHESE_LEADERS.md](CHOAM_RICHESE_LEADERS.md). The [earlier source/engine audit](CHOAM_AUDITOR_ENGINE_AUDIT.md) and independent `/tmp/dune-auditor-source-review.md` record searches and unresolved boundaries. Base ordinary revival is on printed p.9, correcting the earlier audit's p.7 citation.
 
-Printed publisher rules and official clarifications take precedence. No tournament rules, fan amendments or rules from another edition were substituted.
+For Advanced, the [authorized supplied PDF amendment](RULE_DECISIONS.md#authorized-source-amendment--1-october-2026) governs source precedence. Printed publisher components and official clarifications remain sources for omitted details; the five-disc cohort policy above is explicitly provisional.
 
 ## Runtime and information
 
@@ -24,9 +47,9 @@ Pending-state checks bind the current turn, last battle participants, real terri
 
 ## Revival boundary
 
-The first normal Auditor return explicitly bypasses the all-in-Tanks prerequisite, costs two before existing discounts, and consumes CHOAM's ordinary one-leader allowance. Tleilaxu prevention and allied discount cancellation use the shared revival pipeline. CHOAM's own Ghola card can revive it through the independent card path.
+Ordinary Auditor return bypasses cohort eligibility on any death count, costs two before existing discounts, and consumes CHOAM's ordinary one-leader allowance. Tleilaxu prevention and allied discount cancellation use the shared revival pipeline. CHOAM's own Ghola card can revive it through the independent card path.
 
-Two material source questions remain pending with the user: whether Auditor can ignore the separate repeated-death restriction, and whether a living sixth Auditor delays the ordinary five leaders' revival cycle. The implementation adds only the unambiguous first-return exception and retains existing cycle behavior otherwise. This is an unresolved boundary, not a claim that this fallback is publisher-certified. No new user interpretation has yet been accepted.
+The 8 October source cutover and provisional ordinary-cohort policy supersede the earlier first-return-only implementation. The ordinary-cycle publisher question remains unresolved; the first version does not claim the user answered it.
 
 ## Presentation and verification
 
