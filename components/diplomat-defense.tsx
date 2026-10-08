@@ -1,7 +1,8 @@
 'use client';
 
 import type { Action, GameView } from '@/game/engine';
-import { battleCardLabel } from '@/game/battle-cards';
+import { isPortableSnooper } from '@/game/battle-cards';
+import { copiedDefenseKind, diplomatDefenseLabel } from '@/game/diplomat-defense';
 import { Button } from './ui/button';
 
 export function DiplomatDefense({
@@ -20,7 +21,16 @@ export function DiplomatDefense({
   const visibleCards = [...(game.battle?.cards ?? []), ...(me?.hand ?? [])];
   const card = (id: string) => visibleCards.find((entry) => entry.id === id);
   const source = card(decision.source);
-  const copiedDefense = source ? battleCardLabel(source.kind) : 'defense';
+  const copiedKind =
+    game.battle?.diplomatDefense?.kind ?? copiedDefenseKind(source);
+  const copiedDefense = copiedKind
+    ? diplomatDefenseLabel(copiedKind)
+    : 'defense';
+  const interpretedRole =
+    copiedKind === 'shieldSnooper' ||
+    copiedKind === 'weirdingWay' ||
+    copiedKind === 'chemistry' ||
+    isPortableSnooper(source);
   return (
     <div className="flex flex-col gap-3" aria-label="Diplomat defense choice">
       <p>
@@ -34,6 +44,13 @@ export function DiplomatDefense({
         must be discarded after this battle. Decline to proceed without a copied
         defense.
       </p>
+      {interpretedRole && (
+        <p className="fine" data-copied-role-interpretation="true">
+          First-version interpretation: copy the defense role already used by
+          the opponent, not its activation, late-play opportunity or requirement
+          for another card in your own plan.
+        </p>
+      )}
       {decision.cards.map((id) => (
         <Button
           key={id}

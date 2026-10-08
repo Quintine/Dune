@@ -15,7 +15,7 @@ type DukeBefore = {
   controller: string | null;
   acquiredTurn: number | null;
   source: DukeSource | null;
-  leader: { id: typeof DUKE_VIDAL_ID; dead: false; capturedBy: null; gholaBy: null };
+  leader: { id: typeof DUKE_VIDAL_ID; dead: boolean; capturedBy: null; gholaBy: null };
 };
 
 /** A completed physical card play, not a second copy of the Duke's current custody. */
@@ -72,10 +72,13 @@ export function quoteNexusEcazDuke(g: Game, owner: string, automaticPending = fa
     blocked = 'Use Ecaz Nexus Cunning at the Battle phase boundary.';
   else if (nexusCleanPlayBlocked(g, automaticPending))
     blocked = 'Finish the current interaction before using Ecaz Nexus Cunning.';
-  else if (!duke || duke.leader.id !== DUKE_VIDAL_ID || duke.leader.dead ||
+  else if (!duke || duke.leader.id !== DUKE_VIDAL_ID ||
     duke.leader.capturedBy || duke.leader.gholaBy)
-    blocked = 'Only a living, uncaptured, non-Ghola Duke Vidal can be acquired.';
-  else if (duke.leader.usedAt)
+    blocked = 'Only an uncaptured, non-Ghola Duke Vidal can be acquired.';
+  else if (duke.leader.dead &&
+    (duke.controller !== null || duke.acquiredTurn !== null || duke.source !== null))
+    blocked = 'Duke Vidal must be set aside in the Tanks before Ecaz Nexus acquisition.';
+  else if (!duke.leader.dead && duke.leader.usedAt)
     blocked = 'Duke Vidal has already been used in battle this turn.';
   else if (duke.controller === owner)
     blocked = 'Ecaz already controls Duke Vidal.';
@@ -122,7 +125,7 @@ export function createNexusEcazDukeReceipt(
     turn: g.turn, phase: 6, sequence,
     before: {
       controller: duke.controller, acquiredTurn: duke.acquiredTurn, source: duke.source,
-      leader: { id: DUKE_VIDAL_ID, dead: false, capturedBy: null, gholaBy: null },
+      leader: { id: DUKE_VIDAL_ID, dead: duke.leader.dead, capturedBy: null, gholaBy: null },
     },
     after: { controller: after.controller!, acquiredTurn: after.acquiredTurn!, source: 'ecazNexus' },
     signature: '',
@@ -161,8 +164,10 @@ export function validateNexusEcazDuke(
     !turn(receipt.turn) || receipt.turn > g.turn ||
     receipt.phase !== 6 || (receipt.turn === g.turn && g.phase < 6) ||
     !Number.isSafeInteger(index) || index < 0 || receipt.sequence !== index ||
-    leader.id !== DUKE_VIDAL_ID || leader.dead !== false ||
+    leader.id !== DUKE_VIDAL_ID || typeof leader.dead !== 'boolean' ||
     leader.capturedBy !== null || leader.gholaBy !== null ||
+    (leader.dead &&
+      (before.controller !== null || before.acquiredTurn !== null || before.source !== null)) ||
     !(before.controller === null ||
       g.players.some(player => player.id === before.controller)) ||
     (before.controller === null

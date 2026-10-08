@@ -47,7 +47,7 @@ void test('Ecaz Cunning physically overrides Moritani Duke custody and expires w
   }
 });
 
-void test('a stale offer, busy table, dead, captured or Ghola Duke cannot spend Ecaz Cunning', () => {
+void test('a stale offer, busy table, invalid retained Tanks custody, captured or Ghola Duke cannot spend Ecaz Cunning', () => {
   const { game, action } = position();
   const changed = reload(game);
   changed.dukeVidal = acquireDuke(changed.dukeVidal!, 'r', changed.turn, 'ecaz');

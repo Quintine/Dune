@@ -142,6 +142,22 @@ spice/counters and completed events. No broad suite, recovery campaign or
 deployed acceptance was run.
 Compiler/lint and two affected Ambassador/worm contract cases pass.
 
+**Printed defense / Tanked Duke wave integrated.** Disjoint helper/control
+slices are integrated by the parent. Native Ix/Richese skill battles prove
+hybrid protection, Weirding's non-Shield behavior, Chemistry against Tooth,
+additional Ix Snooper and sealed Portable, with one physical Worthless discard.
+Existing capability1 battles finish without a retroactive hybrid choice;
+new battles use capability2. Basic/Advanced Ecaz spends one actual Nexus,
+revives the same Tanked Duke, preserves deaths2, uses him in a native battle
+and releases once. The independent resurrection/use reset remains provisional;
+captured/Ghola and wider timing remain guarded.
+Live isolated React controls in Chromium reach hybrid survival/disposal and
+Tanked acquisition with exact native outcomes. No broad suite, recovery
+campaign, HTTP or deployed acceptance was run.
+Types/lint and the affected five-file union pass **33/33**. The sole initial
+failure was an erroneous unsupported-Shield fixture row, removed before
+the focused repair and union rerun; runtime code was not weakened.
+
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in
 [the decision index](RULE_DECISIONS.md#user-rulings--7-october-2026) and

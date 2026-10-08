@@ -87,31 +87,72 @@ the bounded runtime below.
 When Ecaz and Moritani are both seated in a three-to-six-player Basic or
 Advanced game using only their expansion and Nexus cards (other seats may be
 classic factions), an unallied Ecaz holder may spend the physical Ecaz Nexus
-card at a quiet Battle phase boundary to take the **existing** living,
-uncaptured, non-Ghola Duke Vidal. This transfers the one shared disc even if
-Moritani controls him; it does not add a leader or Traitor Card to a native
-roster. The owner's private offer reports the current public controller and
-availability. Other seats see no held-card-dependent offer or pause.
+card at a quiet Battle phase boundary to take the **existing** uncaptured,
+non-Ghola Duke Vidal, living or set aside in the Tanks. This transfers the one
+shared disc even if Moritani controls the living Duke; a Tanked acquisition
+revives that same disc and preserves its death count. It does not add a leader
+or Traitor Card to a native roster. The owner's private offer reports the
+current public controller and availability. Other seats see no
+held-card-dependent offer or pause.
 
-Acceptance binds the original controller, source, turn, seated factions and
-event to a signed saved receipt, discards the single card, changes Duke custody
-and retains independent replay markers. The ordinary battle leader path may
-then select Duke, and battle use sets him aside through its existing lifecycle.
+Acceptance binds the original controller, source, alive/dead status, turn,
+seated factions and event to a signed saved receipt, discards the single card,
+changes Duke custody and retains independent replay markers. Receipt keys and
+signature field order are unchanged: older completed living receipts remain
+valid, with no invented historical death count. The actual shared disc retains
+its death history. The ordinary battle leader path may then select Duke, and
+battle use sets him aside through its existing lifecycle.
 Unused **Nexus** custody ends at turn end. This distinct temporary source does
 not shorten the ordinary Ecaz Ambassador tenure, which lasts until battle use
 or a later Moritani acquisition. JSON restoration and saved-room replay retain
 the completed play without recomputing historical custody from a later turn.
 
-The printed Cunning explicitly reaches Duke in capture, Tanks or Ghola custody;
-this **bounded prototype does not**. Those return destinations and exceptional
-priority interactions need a coherent physical-custody contract before they
-are enabled. The face does not print a Battle-only timing restriction; the
+The printed Cunning explicitly reaches Duke in capture, Tanks or Ghola custody.
+The **bounded prototype now includes set-aside Tanks custody**, but not capture
+or Ghola acquisition. Those return destinations and exceptional priority
+interactions still need a coherent physical-custody contract before they are
+enabled. The face does not print a Battle-only timing restriction; the
 quiet phase-six window is a product implementation boundary, **not** a GF9
 ruling. Advanced Harkonnen tables are also excluded: the existing shared
 leader battle path cannot select Duke there, so the card must not be spent
 for an unusable disc. At that initial checkpoint other expansion factions,
 Homeworlds, Discoveries, Leader Skills and combined optional modules remained
 gated. This was not full Ecaz, Moritani or Nexus module acceptance.
+
+### Tanks Cunning composition — 8 October 2026
+
+The printed Ecaz Cunning supplies the Tanks allowance. Only its native,
+unallied Ecaz holder may spend the actual Ecaz Nexus card to perform this
+acquisition at the existing quiet Battle boundary. The pure custody transition
+permits a dead disc only for `ecazNexus`, with controller, acquisition turn and
+source all null before acquisition. It revives the existing disc and assigns
+Ecaz's current-turn Nexus custody. Moritani, ordinary Ecaz Ambassador and ally
+acquisitions still reject a dead Duke; capture/Ghola and Advanced Harkonnen
+gates are unchanged.
+
+Clearing the old battle-use stamp on this independent resurrection permits
+one new use under the normal shared-Duke lifecycle. That allowance/use
+composition is **provisional**, not an inspected GF9 FAQ ruling. A living,
+already-used Duke remains unavailable; taking a living disc does not clear
+its stamp. There is no separate paid revival charge or native revival slot
+for this Nexus action. This does not broaden the exact user ruling that only
+Ecaz revives Duke, including when using the Ghola Treachery Card, into support
+for Cunning's exceptional Ghola custody or return destinations.
+
+Focused cases are authored in [the quote/source tests](../tests/nexus-ecaz-duke-quote.test.ts):
+source-specific dead-disc rejection, same-disc revival with preserved death
+history and cleared prior use, real Basic/Advanced setup and physical Nexus
+spending by all four bot profiles, living-used rejection, set-aside custody,
+and the unchanged historical receipt shape. These additions are not a claim
+of executed checks or live-control proof.
+
+Parent native Basic/Advanced smokes now spend one original Nexus, acquire
+the same Tanked Duke with deaths2 retained and old use cleared, then seal
+him in a real new battle and release once after survival. No spice is
+charged for the Nexus action. The live owned control in Chromium reaches
+the same acquisition, death history and card disposal against the native
+engine. This is isolated rule/control proof, not HTTP, recovery or deployed
+acceptance; no broad suite was run.
 
 ### Standalone skill/Nexus follow-up — 5 October 2026
 
@@ -121,10 +162,15 @@ and selected original Tech/Advanced Strongholds. Moritani need not be seated.
 Five ordinary training discs remain; the shared Duke receives no assignment.
 Human YZLNTNEZ uses Duke6 with face-up normal Warmaster/Worthless and a held
 Shield against actual poison, wins7–5, releases Duke before cleanup and keeps
-the original winner reward/city income. Advanced Harkonnen, dead/captured/
-Ghola recovery, shared-Duke training and unrelated overlays remain guarded.
+the original winner reward/city income. At that checkpoint Advanced Harkonnen,
+dead/captured/Ghola recovery, shared-Duke training and unrelated overlays
+remained guarded; the Tanks-only Cunning change above supersedes its dead-disc
+gate, not its capture/Ghola boundaries.
 See [the exact standalone profile and evidence](NEXUS_CARD_RULES.md#standalone-e3-nexus-skills-and-original-components--5-october-2026).
 
+
+The following describes the initial living-only checkpoint, not verification
+of the Tanks follow-up:
 
 [The focused Duke tests](../tests/nexus-ecaz-duke-engine.test.ts) exercise
 genuine Ecaz/Moritani setup, physical draw/spend, Basic and Advanced transfer,

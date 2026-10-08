@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { applyAction, viewGame, type Game, type Action } from '../game/engine';
-import { baseDeck } from '../game/cards';
+import { baseDeck, ixBattleCards, ixStandardCards, type Card } from '../game/cards';
+import { richeseCards } from '../game/richese-cards';
+import {
+  battleWeaponsExplode,
+  defenseTypes,
+  isShield,
+  weaponKills,
+} from '../game/battle-cards';
 import {
   quoteDiplomatDefense,
   copiedDiplomatDefense,
@@ -12,6 +19,11 @@ import {
   revealDiplomatPlans,
   takeBattleCard,
 } from './diplomat-defense-fixture';
+import {
+  completedAdvancedNativeSkillsGame,
+  stageAdvancedNativeSkillBattle,
+  openAdvancedNativeSkillBattle,
+} from './fixture-advanced-native-skills';
 
 function choose(game: Game, card: string | null): Game {
   assert.equal(game.decision?.kind, 'diplomatDefense');
@@ -305,4 +317,246 @@ void test('old unmarked revealed battles retain their original continuation with
     done.players[0].leaders.find((l) => l.id === 'emperor-1')!.dead,
     true,
   );
+});
+
+void test('a copied printed role keeps Shield Snooper hybrid, defensive Weirding Way and Chemistry distinct', () => {
+  const worthless = baseDeck().filter((c) => c.kind === 'worthless');
+  const ix = ixBattleCards();
+  const hybrid = ix.find((c) => c.kind === 'shieldSnooper')!,
+    weirding = ix.find((c) => c.kind === 'weirdingWay')!,
+    chemistry = ix.find((c) => c.kind === 'chemistry')!,
+    poisonTooth = ix.find((c) => c.kind === 'poisonTooth')!;
+  const deck = baseDeck();
+  const projectile = deck.find((c) => c.kind === 'projectile')!,
+    lasgun = deck.find((c) => c.kind === 'lasgun')!,
+    poison = deck.find((c) => c.kind === 'poison')!,
+    snooper = deck.find((c) => c.kind === 'snooper')!;
+  const assignments = [
+    {
+      skill: 'diplomat' as const,
+      leader: 'trainer',
+      faceUp: true,
+      captured: false,
+    },
+  ];
+  const copy = (opposingDefense: Card, opposingWeapon?: Card) => {
+    const quote = quoteDiplomatDefense({
+      assignments,
+      selectedLeader: 'other',
+      weapon: worthless[0],
+      opposingDefense,
+      opposingWeapon,
+    });
+    assert.ok(quote, `${opposingDefense.name} should supply a copied role`);
+    const copied = copiedDiplomatDefense(quote, worthless[0].id);
+    assert.equal(copied.id, worthless[0].id);
+    return copied;
+  };
+  const hybridCopy = copy(hybrid, lasgun);
+  assert.equal(hybridCopy.kind, 'shieldSnooper');
+  assert.deepEqual(defenseTypes(hybridCopy), ['shield', 'snooper']);
+  assert.ok(isShield(hybridCopy));
+  assert.ok(battleWeaponsExplode(lasgun, undefined, undefined, hybridCopy));
+
+  // Defensive Weirding Way keeps its original paired-weapon prerequisite.
+  assert.equal(
+    quoteDiplomatDefense({
+      assignments,
+      selectedLeader: 'other',
+      weapon: worthless[0],
+      opposingDefense: weirding,
+    }),
+    null,
+  );
+  const weirdingCopy = copy(weirding, projectile);
+  assert.equal(weirdingCopy.kind, 'weirdingWay');
+  assert.equal(isShield(weirdingCopy), false);
+  assert.equal(weaponKills(projectile, weirdingCopy), false);
+  assert.equal(battleWeaponsExplode(lasgun, undefined, undefined, weirdingCopy), false);
+  // Copying the used role does not copy its own-slot prerequisite onto this plan.
+  assert.ok(
+    quoteDiplomatDefense({
+      assignments,
+      selectedLeader: 'other',
+      weapon: worthless[0],
+      opposingDefense: weirding,
+      opposingWeapon: worthless[1],
+    }),
+  );
+
+  const chemistryCopy = copy(chemistry, poisonTooth);
+  assert.equal(chemistryCopy.kind, 'chemistry');
+  assert.equal(weaponKills(poisonTooth, chemistryCopy), false);
+  assert.equal(weaponKills(poisonTooth, hybridCopy), true);
+  assert.equal(weaponKills(poison, chemistryCopy), false);
+  assert.equal(weaponKills(projectile, chemistryCopy), true);
+
+  const snooperCopy = copy(snooper, poison);
+  assert.equal(snooperCopy.kind, 'snooper');
+  assert.equal(weaponKills(poison, snooperCopy), false);
+  assert.equal(weaponKills(poisonTooth, snooperCopy), true);
+});
+
+void test('a sealed Portable Snooper supplies only its original poison-defense role', () => {
+  const portable = richeseCards().find((c) => c.effect === 'portableSnooper')!;
+  const worthless = baseDeck().filter((c) => c.kind === 'worthless');
+  const deck = baseDeck();
+  const poison = deck.find((c) => c.kind === 'poison')!,
+    projectile = deck.find((c) => c.kind === 'projectile')!,
+    shield = deck.find((c) => c.kind === 'shield')!;
+  const assignments = [
+    {
+      skill: 'diplomat' as const,
+      leader: 'trainer',
+      faceUp: true,
+      captured: false,
+    },
+  ];
+  const quote = quoteDiplomatDefense({
+    assignments,
+    selectedLeader: 'other',
+    weapon: worthless[0],
+    defense: worthless[1],
+    opposingDefense: portable,
+  })!;
+  assert.equal(quote.kind, 'snooper');
+  const copied = copiedDiplomatDefense(quote, worthless[1].id);
+  assert.equal(copied.kind, 'snooper');
+  assert.equal(copied.id, worthless[1].id);
+  assert.equal(isShield(copied), false);
+  assert.equal(weaponKills(poison, copied), false);
+  assert.equal(weaponKills(projectile, copied), true);
+  for (const forged of [
+    { ...portable, name: 'Snooper' },
+    { ...portable, kind: 'snooper' as const },
+    { ...portable, id: 'richese-portable-snooper-copy' },
+    { ...portable, effect: undefined },
+  ])
+    assert.equal(
+      quoteDiplomatDefense({
+        assignments,
+        selectedLeader: 'other',
+        weapon: worthless[0],
+        opposingDefense: forged,
+      }),
+      null,
+      forged.id,
+    );
+  const ix = ixBattleCards();
+  for (const unsupported of [
+    poison,
+    projectile,
+    worthless[0],
+    ix.find((c) => c.kind === 'poisonTooth')!,
+    ix.find((c) => c.kind === 'artillery')!,
+    ix.find((c) => c.kind === 'poisonBlade')!,
+  ])
+    assert.equal(
+      quoteDiplomatDefense({
+        assignments,
+        selectedLeader: 'other',
+        weapon: worthless[0],
+        opposingDefense: unsupported,
+      }),
+      null,
+      unsupported.id,
+    );
+  // A forged face cannot inherit the role by claiming a printed name alone.
+  for (const forged of [
+    { ...ix.find((c) => c.kind === 'weirdingWay')!, kind: 'shield' as const },
+    { ...ix.find((c) => c.kind === 'chemistry')!, kind: 'snooper' as const },
+    { ...shield, kind: 'shieldSnooper' as const },
+    { ...shield, id: 'ix-shield', kind: 'shieldSnooper' as const },
+  ])
+    assert.equal(
+      quoteDiplomatDefense({
+        assignments,
+        selectedLeader: 'other',
+        weapon: worthless[0],
+        opposingDefense: forged,
+        opposingWeapon: projectile,
+      }),
+      null,
+      forged.id,
+    );
+});
+
+void test('an older battle admits only its original base Shield and Snooper sources', () => {
+  const worthless = baseDeck().filter((c) => c.kind === 'worthless');
+  const deck = baseDeck();
+  const shield = deck.find((c) => c.kind === 'shield')!,
+    snooper = deck.find((c) => c.kind === 'snooper')!,
+    projectile = deck.find((c) => c.kind === 'projectile')!;
+  const ix = ixBattleCards();
+  const ixStandard = ixStandardCards();
+  const portable = richeseCards().find((c) => c.effect === 'portableSnooper')!;
+  const assignments = [
+    {
+      skill: 'diplomat' as const,
+      leader: 'trainer',
+      faceUp: true,
+      captured: false,
+    },
+  ];
+  const legacy = (opposingDefense: Card, opposingWeapon?: Card) =>
+    quoteDiplomatDefense({
+      assignments,
+      selectedLeader: 'other',
+      weapon: worthless[0],
+      opposingDefense,
+      opposingWeapon,
+      expandedDefenses: false,
+    });
+  assert.equal(legacy(shield)?.kind, 'shield');
+  assert.equal(legacy(snooper, projectile)?.kind, 'snooper');
+  for (const unavailable of [
+    ix.find((c) => c.kind === 'shieldSnooper')!,
+    ix.find((c) => c.kind === 'weirdingWay')!,
+    ix.find((c) => c.kind === 'chemistry')!,
+    ixStandard.find((c) => c.id === 'ix-shield')!,
+    ixStandard.find((c) => c.id === 'ix-snooper')!,
+    portable,
+  ])
+    assert.equal(
+      legacy(unavailable, unavailable.kind === 'weirdingWay' ? projectile : undefined),
+      null,
+      unavailable.id,
+    );
+  for (const unavailable of [
+    ix.find((c) => c.kind === 'shieldSnooper')!,
+    ix.find((c) => c.kind === 'weirdingWay')!,
+    ix.find((c) => c.kind === 'chemistry')!,
+    portable,
+  ])
+    assert.ok(
+      quoteDiplomatDefense({
+        assignments,
+        selectedLeader: 'other',
+        weapon: worthless[0],
+        opposingDefense: unavailable,
+        opposingWeapon:
+          unavailable.kind === 'weirdingWay' ? projectile : undefined,
+      }),
+      unavailable.id,
+    );
+});
+
+void test('an already-open base-only battle finishes without a retroactive hybrid copy or missing-receipt deadlock', () => {
+  const initialized = completedAdvancedNativeSkillsGame({
+    family: 'ixians', requestedSkill: 'diplomat', skillOwner: 'emperor', opponents: ['guild'],
+  });
+  let game = stageAdvancedNativeSkillBattle(initialized, 'emperor', 'guild');
+  const worthless = takeBattleCard(game, 'emperor', 'worthless');
+  const weapon = takeBattleCard(game, 'guild', 'poisonBlade');
+  const defense = takeBattleCard(game, 'guild', 'shieldSnooper');
+  game = openAdvancedNativeSkillBattle(game, 'emperor', 'guild', true);
+  // An in-flight battle created before printed-defense capability was enabled.
+  game.battle!.diplomatDefenseVersion = 1;
+  game = applyAction(game, 'emperor', { type: 'battlePlan', dial: 0, leader: 'emperor-0', defense: worthless.id });
+  game = applyAction(game, 'guild', { type: 'battlePlan', dial: 0, leader: 'guild-1', weapon: weapon.id, defense: defense.id });
+  assert.equal(game.decision, null);
+  assert.equal(game.battle!.diplomatDefense, undefined);
+  game = applyAction(game, 'emperor', { type: 'traitorCall', call: false });
+  game = applyAction(game, 'guild', { type: 'traitorCall', call: false });
+  assert.equal(game.players.find(player => player.id === 'emperor')!.leaders.find(leader => leader.id === 'emperor-0')!.dead, true);
 });

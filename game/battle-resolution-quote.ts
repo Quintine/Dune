@@ -378,11 +378,12 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     if (copy === undefined) return defense;
     const quote = quoteDiplomatDefense({ assignments: side.leaderSkills ?? [], selectedLeader: side.plan.leader,
       weapon: card(side, side.plan.weapon), defense: card(side, side.plan.defense),
-      opposingDefense: card(other, other.plan.defense) });
+      opposingDefense: card(other, other.plan.defense), opposingWeapon: card(other, other.plan.weapon),
+      expandedDefenses: true });
     requireQuote(copy && quote && !side.lateDefense && !other.lateDefense &&
       !side.stronghold && !other.stronghold && !input.homeworld &&
       copy.leader === quote.leader && copy.source === quote.source && copy.kind === quote.kind && quote.cards.includes(copy.card),
-      'The copied Diplomat defense lost its native trainer, committed Worthless or opposing base defense.');
+      'The copied Diplomat defense lost its native trainer, committed Worthless or opposing printed defense.');
     return copiedDiplomatDefense(quote, copy.card);
   };
   const effectiveAd = effectiveDefense(a, d, ad), effectiveDd = effectiveDefense(d, a, dd);

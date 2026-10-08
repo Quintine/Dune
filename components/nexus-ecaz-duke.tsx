@@ -16,8 +16,8 @@ export function NexusEcazDuke({ game, act, busy }: Props) {
     <section aria-label="Your Ecaz Nexus Duke Cunning" className="space-y-3 rounded-lg border border-[#a88b60]/50 p-3">
       <h3>Ecaz Nexus · Cunning · Duke Prad Vidal</h3>
       <p>Current public controller: {offer.dukeController ? controller?.name ?? 'another player' : 'none'}.</p>
-      <p>Spend and discard your physical Ecaz Nexus card to take the living, uncaptured, non-Ghola Duke for this turn, even from Moritani. If unused, this temporary control expires at turn end; using him in battle consumes the shared Duke.</p>
-      <p className="fine">The printed Tanks revival, capture, and Ghola effects are not supported by this Cunning action.</p>
+      <p>Spend and discard your physical Ecaz Nexus card to take the uncaptured, non-Ghola Duke for this turn, even from Moritani or the Tanks. A Tanked acquisition revives the same shared disc without a separate paid revival and preserves his death history. If unused, this temporary control expires at turn end; using him in battle sets the shared Duke aside.</p>
+      <p className="fine">This independent resurrection clears his prior battle-use stamp and permits a new battle use. Taking a living Duke does not clear a battle-use stamp. That use composition is provisional; capture and Ghola acquisition/return destinations remain unsupported, as does Duke battle use with Advanced Harkonnen.</p>
       {offer.blocked && <p className="notice">{offer.blocked}</p>}
       <Button className="game-action min-h-11 whitespace-normal" disabled={busy || !action}
         onClick={() => { if (!busy && action) act(action); }}>

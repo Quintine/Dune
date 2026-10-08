@@ -40,9 +40,10 @@ function validTurn(turn: number) {
 }
 
 /**
- * Custody only: the caller authorizes the faction power and resolves Karama first.
- * Blocking captured/ghola acquisition is an implementation boundary for unresolved
- * Moritani interactions, not a verified blanket restriction on the printed power.
+ * The caller authorizes the faction power and resolves any applicable Karama.
+ * Ecaz Nexus Cunning independently revives the set-aside shared disc from Tanks.
+ * Captured/ghola acquisition remains an unresolved implementation boundary,
+ * not a verified blanket restriction on the printed powers.
  */
 export function acquireDuke(
   state: DukeState,
@@ -55,13 +56,27 @@ export function acquireDuke(
     throw new Error('Choose a player to control Duke Vidal.');
   if (!['moritani', 'ecaz', 'ecazNexus', 'ally'].includes(source))
     throw new Error('Choose a valid source of Duke Vidal custody.');
-  if (state.leader.dead)
-    throw new Error('Duke Vidal is in the Tanks and cannot be acquired.');
+  if (state.leader.dead && source !== 'ecazNexus')
+    throw new Error('Duke Vidal is in the Tanks and cannot be acquired by this source.');
   if (state.leader.capturedBy || state.leader.gholaBy)
     throw new Error(
       'Acquiring Duke Vidal from captured or ghola custody is still being implemented.',
     );
-  return { ...cloneDuke(state), controller, acquiredTurn: turn, source };
+  if (state.leader.dead &&
+    (state.controller !== null || state.acquiredTurn !== null || state.source !== null))
+    throw new Error('Duke Vidal must be set aside in the Tanks before Ecaz Nexus acquisition.');
+  if (source === 'ecazNexus' && !state.leader.dead && state.leader.usedAt)
+    throw new Error('Duke Vidal has already been used in battle this turn.');
+  const acquired = cloneDuke(state);
+  if (state.leader.dead) {
+    acquired.leader.dead = false;
+    // An independent resurrection permits a new battle use without erasing deaths.
+    delete acquired.leader.usedAt;
+  }
+  acquired.controller = controller;
+  acquired.acquiredTurn = turn;
+  acquired.source = source;
+  return acquired;
 }
 
 /** The battle caller resolves leader death and bounty before releasing temporary control. */

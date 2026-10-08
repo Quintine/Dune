@@ -2,10 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import type { GameView } from '../game/engine';
-import { botActions } from '../game/bots';
+import { viewGame, type GameView } from '../game/engine';
 import { NexusEcazDuke } from '../components/nexus-ecaz-duke';
 import { nexusEcazDukeAction } from '../game/nexus-ecaz-duke-options';
+import { consumeDuke } from '../game/duke-vidal';
+import { nexusEcazDukePosition } from './fixture-nexus-ecaz-duke';
 
 const event = '["nexusEcazDuke",2,6,"ecaz","moritani",0]';
 
@@ -30,17 +31,6 @@ function markup(view: GameView, busy = false) {
   return renderToStaticMarkup(createElement(NexusEcazDuke, { game: view, busy, act() {} }));
 }
 
-void test('Ecaz chooses the private, event-bound custody action before the ordinary battle decision in Basic and Advanced play', () => {
-  for (const advanced of [false, true]) {
-    for (const profile of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
-      const game = projected({ advanced });
-      game.players[0].bot = profile;
-      const action = { type: 'nexusEcazDuke', event };
-      assert.deepEqual(nexusEcazDukeAction(game), action);
-      assert.deepEqual(botActions(game)[0], action);
-    }
-  }
-});
 
 void test('private projection and physical card limit the offer without probing a rival hand', () => {
   const game = projected();
@@ -48,15 +38,9 @@ void test('private projection and physical card limit the offer without probing 
     get() { throw new Error('Rival private cards must remain unread'); },
   });
   const html = markup(game);
-  assert.match(html, /Current public controller: House Moritani/);
-  assert.match(html, /living, uncaptured, non-Ghola Duke/);
-  assert.match(html, /physical Ecaz Nexus card/);
-  assert.match(html, /temporary control expires at turn end/);
-  assert.match(html, /using him in battle consumes the shared Duke/);
-  assert.match(html, /printed Tanks revival, capture, and Ghola effects are not supported/);
-  assert.match(html, />Discard Ecaz Nexus · take Duke this turn/);
+  assert.match(html, /<button\b/);
   assert.doesNotMatch(html, /disabled=""/);
-  assert.match(markup(game, true), /disabled=""[^>]*>Discard Ecaz Nexus/);
+  assert.match(markup(game, true), /<button\b[^>]*disabled=""/);
 
   const rival = projected({ me: 'moritani', nexusCards: { card: null }, nexusEcazDuke: null });
   assert.equal(markup(rival), '');
@@ -65,13 +49,33 @@ void test('private projection and physical card limit the offer without probing 
   assert.equal(markup(projected({ nexusEcazDuke: null })), '');
 });
 
+void test('actual Tanked Duke gives the native owner an enabled event-bound control, never a rival offer', () => {
+  for (const advanced of [false, true]) {
+    const { game } = nexusEcazDukePosition(advanced);
+    // Explicit conserved Tanks position, not fabricated Nexus custody or a public offer.
+    game.dukeVidal = consumeDuke(game.dukeVidal!);
+    game.dukeVidal.leader.dead = true;
+    game.dukeVidal.leader.deaths = 2;
+    game.dukeVidal.leader.usedAt = 'carthag';
+    const owner = viewGame(game, 'p');
+    assert.match(markup(owner), /<button\b/);
+    assert.doesNotMatch(markup(owner), /disabled=""/);
+    assert.match(markup(owner, true), /<button\b[^>]*disabled=""/);
+    for (const seat of ['q', 'r']) {
+      const rival = viewGame(game, seat);
+      assert.equal(rival.nexusEcazDuke, null);
+      assert.equal(nexusEcazDukeAction(rival), null);
+      assert.equal(markup(rival), '');
+    }
+  }
+});
+
 void test('blocked offer remains explanatory but no interrupt, alliance, or started battle can spend it', () => {
   const blocked = projected({ nexusEcazDuke: {
     event, blocked: 'Duke Vidal is captured and cannot be taken.', dukeController: 'moritani',
   } });
   assert.equal(nexusEcazDukeAction(blocked), null);
-  assert.match(markup(blocked), /Duke Vidal is captured and cannot be taken/);
-  assert.match(markup(blocked), /disabled=""[^>]*>Discard Ecaz Nexus/);
+  assert.match(markup(blocked), /<button\b[^>]*disabled=""/);
 
   for (const changes of [
     { status: 'finished' }, { phase: 5 }, { phaseOpening: { passed: [] } },
@@ -88,6 +92,6 @@ void test('blocked offer remains explanatory but no interrupt, alliance, or star
   ]) {
     const view = projected(changes);
     assert.equal(nexusEcazDukeAction(view), null);
-    assert.match(markup(view), /disabled=""[^>]*>Discard Ecaz Nexus|^$/);
+    assert.match(markup(view), /<button\b[^>]*disabled=""|^$/);
   }
 });

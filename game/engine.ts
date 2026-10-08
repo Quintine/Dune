@@ -25,7 +25,7 @@ import { quoteSandmasterMovement, validateSandmasterMovement, sandmasterCollecti
 import { sandmasterWormCollection } from './sandmaster-worm';
 import { spiceBankerModeSupported, validateSpiceBankerSpend } from './spice-banker';
 import { BankerIncomeError, createBankerIncomeState, validateBankerIncomeState, quoteBankerIncome, commitBankerIncome, quoteBankerIncomeCollection, commitBankerIncomeCollection, projectBankerIncome, type BankerIncomeState, type BankerIncomeAuthority, type BankerIncomeContext } from './spice-banker-income';
-import { quoteDiplomatDefense, diplomatDefenseModeSupported, type DiplomatDefenseQuote } from './diplomat-defense';
+import { quoteDiplomatDefense, diplomatDefenseModeSupported, diplomatDefenseLabel, type DiplomatDefenseQuote } from './diplomat-defense';
 import { diplomatRetreatChoices, type DiplomatRetreatSelection, type DiplomatRetreatDestination } from './diplomat-retreat';
 import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair } from './battle-card-slots';
@@ -707,7 +707,7 @@ export type Battle = {
   mentatQuestionEvent?: string;
   mentatQuestion?: MentatQuestionReceipt;
   /** New battles opt into the revealed Diplomat step; legacy battles are not reopened. */
-  diplomatDefenseVersion?: 1;
+  diplomatDefenseVersion?: 1 | 2;
   diplomatDefenseEvent?: string;
   diplomatDefense?: DiplomatDefenseReceipt;
   /** New battles may pause after the outcome is known, before loser losses. */
@@ -21021,6 +21021,8 @@ function diplomatDefenseOffer(g: Game): (DiplomatDefenseQuote & { player: string
       selectedLeader: plan.leader,
       weapon: cardOf(p, plan.weapon), defense: cardOf(p, plan.defense),
       opposingDefense: cardOf(other, opposingPlan.defense),
+      opposingWeapon: cardOf(other, opposingPlan.weapon),
+      expandedDefenses: b.diplomatDefenseVersion === 2,
     });
     if (quote) return { ...quote, player };
   }
@@ -21043,7 +21045,7 @@ function diplomatDefenseIntegrity(g: Game) {
   const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'diplomatDefense');
   if (b?.diplomatDefenseVersion === undefined && b?.diplomatDefense === undefined &&
     b?.diplomatDefenseEvent === undefined && !decisions.length) return;
-  requireRule(b && b.diplomatDefenseVersion === 1,
+  requireRule(b && (b.diplomatDefenseVersion === 1 || b.diplomatDefenseVersion === 2),
     'The saved Diplomat choice lost its original battle version.');
   const receipt = b.diplomatDefense;
   const offer = diplomatDefenseOffer(g);
@@ -21075,7 +21077,7 @@ function diplomatDefenseIntegrity(g: Game) {
 }
 function offerDiplomatDefense(g: Game): boolean {
   const b = g.battle!;
-  if (b.diplomatDefenseVersion !== 1 || b.diplomatDefense) return false;
+  if ((b.diplomatDefenseVersion !== 1 && b.diplomatDefenseVersion !== 2) || b.diplomatDefense) return false;
   const offer = diplomatDefenseOffer(g);
   if (!offer) return false;
   requireRule(b.event && !Object.keys(b.traitorCalls).length,
@@ -21087,7 +21089,7 @@ function offerDiplomatDefense(g: Game): boolean {
   b.diplomatDefense = receipt;
   b.diplomatDefenseEvent = event;
   g.decision = { kind: 'diplomatDefense', player: offer.player, event, cards: [...offer.cards], source: offer.source };
-  log(g, `${getPlayer(g, offer.player).name} may use Diplomat to make one committed Worthless card copy the opposing ${offer.kind === 'shield' ? 'Shield' : 'Snooper'} before traitor decisions.`,
+  log(g, `${getPlayer(g, offer.player).name} may use Diplomat to make one committed Worthless card copy the opposing ${diplomatDefenseLabel(offer.kind)} before traitor decisions.`,
     { faction: getPlayer(g, offer.player).faction, name: 'Diplomat defense' });
   return true;
 }
@@ -29273,7 +29275,7 @@ function applyActionInner(
       receipt.stage = receipt.card ? 'copied' : 'declined';
       receipt.signature = diplomatDefenseSignature(receipt);
       log(g, receipt.card
-        ? `${p.name} used Diplomat: ${cardOf(p, receipt.card)!.name} copies the opposing ${receipt.kind === 'shield' ? 'Shield' : 'Snooper'} for this battle and must be discarded afterward. The original plans and physical card identities remain unchanged.`
+        ? `${p.name} used Diplomat: ${cardOf(p, receipt.card)!.name} copies the opposing ${diplomatDefenseLabel(receipt.kind)} for this battle and must be discarded afterward. The original plans and physical card identities remain unchanged.`
         : `${p.name} declined to copy the opposing defense with Diplomat.`,
         { faction: p.faction, name: 'Diplomat defense' });
       nextRevealedDecision(g);
@@ -31477,7 +31479,7 @@ function applyActionInner(
       event: battleEvent,
       ...(g.leaderSkills ? { smugglerCollectionVersion: 1 as const } : {}),
       ...(g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
-      ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 1 as const } : {}),
+      ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 2 as const } : {}),
       ...(g.leaderSkills && ordinaryLeaderSkillModeSupported(g) ? { diplomatRetreatVersion: 1 as const } : {}),
       ...(g.ecazTreachery ? { harassAllocationVersion: 1 as const } : {}),
       ...(byFaction(g, 'richese')
