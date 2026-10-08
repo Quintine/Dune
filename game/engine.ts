@@ -12455,8 +12455,6 @@ function recruitsPlayBlock(g: Game, owner: Player, card: Card): string | null {
       return 'Normal force revival history is inconsistent; Recruits cannot safely reprice it.';
     if (player.revived > 0 && player.freeForcesRevived === undefined)
       return 'Earlier normal force revival history is incomplete; Recruits cannot safely reprice it.';
-    if (player.revived > (player.freeForcesRevived ?? 0))
-      return 'Recruits after a paid normal force revival awaits a rules ruling.';
   }
   return null;
 }

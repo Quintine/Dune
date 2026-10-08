@@ -107,6 +107,30 @@ void test('the accepted card changes the authoritative normal revival quote and 
   rejectUnchanged(g, player.id, { type: 'revive', amount: 4, elite: 0 });
 });
 
+void test('provisional late-paid Recruits preserves payment and permits only the remaining recorded free allowance', () => {
+  for (const advanced of [false, true]) {
+    let g = settleRevival(applyAction(recruitsGame(advanced), 'at', { type: 'revive', amount: 3, elite: 0 }));
+    const before = g.players.find(player => player.id === 'at')!;
+    assert.equal(before.revived, 3);
+    assert.equal(before.freeForcesRevived, 2);
+    assert.equal(before.spice, 18);
+    const reserves = before.reserves, tanks = before.tanks;
+    g = applyAction(g, 'ch', play);
+    assert.equal(viewGame(g, 'at').revival.freeRemaining, 2);
+    assert.equal(viewGame(g, 'at').revival.forcesRemaining, 4);
+    assert.equal(g.players.find(player => player.id === 'at')!.spice, 18);
+    g = settleRevival(applyAction(g, 'at', { type: 'revive', amount: 2, elite: 0 }));
+    const after = g.players.find(player => player.id === 'at')!;
+    assert.equal(after.spice, 18);
+    assert.equal(after.revived, 5);
+    assert.equal(after.freeForcesRevived, 4);
+    assert.equal(after.reserves, reserves + 2);
+    assert.equal(after.tanks, tanks - 2);
+    assert.equal(viewGame(g, 'at').revival.freeRemaining, 0);
+    assert.equal(g.discard.filter(card => card.id === play.card).length, 1);
+  }
+});
+
 void test('free prevention remains zero and canceled unlimited faction caps compose to seven', () => {
   const g = recruitsGame();
   g.revivalRules = {
@@ -145,12 +169,11 @@ void test('prior settled Fremen ally grant is doubled, while a grant after activ
   rejectUnchanged(active, 'fr', { type: 'grantRevival' });
 });
 
-void test('activation rejects pending, prior paid, unknown and inconsistent revival histories without consuming the card', () => {
+void test('activation rejects pending, unknown and inconsistent revival histories without consuming the card', () => {
   const cases = [
     (g: Game) => {
       g.decision = { kind: 'revivalStop', player: 'at', recipient: 'at', revival: 'forces' };
     },
-    (g: Game) => { const p = g.players[0]; p.revived = 2; p.freeForcesRevived = 1; },
     (g: Game) => { const p = g.players[0]; p.revived = 1; delete p.freeForcesRevived; },
     (g: Game) => { const p = g.players[0]; p.revived = 1; p.freeForcesRevived = 2; },
   ];

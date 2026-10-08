@@ -158,6 +158,14 @@ Types/lint and the affected five-file union pass **33/33**. The sole initial
 failure was an erroneous unsupported-Shield fixture row, removed before
 the focused repair and union rerun; runtime code was not weakened.
 
+**Late-paid Recruits first version connected.** Recorded free usage now allows
+play after paid ordinary returns. The visible provisional policy retains
+payment and total counters, without refund: Atreides' two-free/one-paid may
+take two additional free forces. Missing ledgers and pending/rate/replay
+guards remain. Two native Basic/Advanced smokes and live owned React controls
+prove exact usage/payment/card results; no broad suite or deployed proof.
+Types/lint and two targeted late-accounting/remaining-guard cases pass.
+
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in
 [the decision index](RULE_DECISIONS.md#user-rulings--7-october-2026) and

@@ -3,8 +3,30 @@
 14 September 2026. **Prototyped, not full card-variant acceptance.** The independent
 Ecaz & Moritani Treachery Cards variant is included before genuine Basic or
 Advanced faction setup. All three physical cards are present exactly once.
-Recruits has connected controls, AI and saved continuation; Reinforcements and
-Harass & Withdraw remain unfinished. Public starts and publication remain gated.
+Recruits, bounded Reinforcements and Harass & Withdraw have connected controls,
+AI and saved continuation; full interactions and public starts remain gated.
+
+## Provisional late-paid activation — 8 October 2026
+
+The content-first pass now permits Recruits after recorded paid ordinary
+returns, once the current transaction has finished. **Provisional policy:**
+prior payments are retained; only actual recorded free returns consume the
+doubled free rate, while all returns consume the total allowance. No refund,
+reset or retroactive reclassification is performed. This is not a numerical
+user ruling or a newly retrieved publisher answer.
+
+Thus Atreides' actual two-free/one-paid return retains its two-spice payment
+and three total returns; after Recruits it may take two additional free
+forces under the seven total cap. Missing or inconsistent free-use ledgers,
+pending declarations, later rate changes and same-turn replay remain guarded.
+The owned before-play panel and public active panel name this interpretation.
+
+Basic/Advanced before/after native smokes use a genuinely dealt card, an
+actual three-force return and useful allied Easy activation, then two free
+returns: total5/free4, unchanged paid spice and one card disposal. Live React
+controls in Chromium produce the same available2/remaining4 quote and preserve
+spice18/total3/free2 at activation. No broad suite, recovery or deployed proof.
+
 
 ## Rules contract
 
@@ -17,11 +39,11 @@ Fresh publisher/designer-linked PDF fetches on 14 September returned HTTP 403;
 this follow-up uses the earlier recorded primary-source audit and independent
 source review. No newly retrieved late-paid ruling is claimed.
 
-The connected scope permits clean activation before normal returns or after only
-exactly recorded free normal returns, once existing priority windows and transactions
-have finished. Earlier paid returns, unknown legacy usage, later Fremen grants,
-same-turn replay after recovery and additional optional modules remain guarded.
-Those guards identify unfinished cases; they are not new printed timing rules.
+The scope permits activation before returns or after consistently recorded
+free/paid normal returns, once priority windows and transactions finish.
+Unknown legacy usage, later Fremen grants, same-turn replay after recovery
+and additional optional modules remain guarded. These are unfinished cases,
+not new printed timing rules.
 Already-ready players retain their Revival opportunity while phase four is open.
 
 Atreides doubles two to four, Fremen three to six, and Guild one to two. Native
@@ -35,10 +57,10 @@ inference from independent effects, not a direct combined publisher FAQ.** A
 Tleilaxu limit response is not opened merely for crossing three under Recruits;
 other qualifying price/prevention responses retain their original purposes.
 
-The user has been asked about Atreides taking two free plus one paid return before
-Recruits: preserve the gate, provide two further free returns without refund, or
-provide one further free return without refund. No answer is assumed. The source
-audit also records the refund alternative and later changing-rate ambiguity.
+The earlier user question about one versus two further free Atreides returns
+remains unanswered. The 8 October first version uses the visibly provisional
+two-further-free policy above; it does not claim that question was adjudicated.
+The source audit retains the alternatives and later changing-rate ambiguity.
 
 ## Connected path and persistence
 

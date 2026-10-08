@@ -2,6 +2,13 @@
 
 Audit: 2026-09-06. Scope: the Recruits card interacting with prior revivals, existing unlimited/expanded allowances, prevention, Fremen ally grants and pending declarations. No runtime changes. This supplements [ECAZ_TREACHERY_RULES.md](./ECAZ_TREACHERY_RULES.md), which contains the original component figure and card-face provenance.
 
+**Runtime follow-up — 8 October 2026:** the content-first prototype now uses
+recorded actual free usage after paid returns, preserving payments and total
+returns without refund. This is an explicitly provisional implementation choice,
+not an answer to the publisher/user question below. See [the current runtime
+contract](RECRUITS_RUNTIME.md#provisional-late-paid-activation--8-october-2026).
+
+
 ## Primary evidence
 
 | Source                                                                                                                                   | Relevant verified rule                                                                                                                                                                                                                                           |

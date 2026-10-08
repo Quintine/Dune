@@ -23,6 +23,7 @@ export function Recruits({ game, act, busy }: {
           : 'Play this card to double every faction’s free revival rate and raise the ordinary force limit to seven for this turn. Factions with unlimited revival keep that advantage.'}
       </p>
       <p className="fine">Already completed revivals still count. Paid forces retain their normal prices, and special-force revival limits still apply.</p>
+      <p className="notice">Provisional late-play accounting: prior paid revivals keep their payments and count toward the total force limit, but only recorded free returns consume the doubled free allowance. No refund or retroactive reclassification. This is a first-version policy, not a publisher clarification or numerical user ruling.</p>
       <table className="w-full text-left text-sm">
         <caption className="sr-only">Current revival rates</caption>
         <thead><tr><th scope="col" className="pr-3">Faction</th><th scope="col" className="pr-3">Free rate</th><th scope="col">Force limit</th></tr></thead>
