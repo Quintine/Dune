@@ -1877,8 +1877,6 @@ function policyActions(g: GameView): Action[] {
       const card = cards.find((c) => c.kind === 'worthless') ?? cards[0];
       return card ? [{ type: 'decision', card: card.id }] : [];
     }
-    if (d.kind === 'ixRicheseTechnology')
-      return [{ type: 'decision', event: d.event, decline: true }];
     if (d.kind === 'richeseBlackMarket')
       return [
         { type: 'decision', event: g.richeseBidding!.event, decline: true },

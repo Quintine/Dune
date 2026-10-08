@@ -51,7 +51,6 @@ const DECISIONS = {
   ixSetup: true,
   ixAuction: true,
   ixTechnology: true,
-  ixRicheseTechnology: true,
   ixAllyCard: true,
   mobileStronghold: true,
   ixSubstitution: true,

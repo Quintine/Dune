@@ -11,7 +11,6 @@ import { DrawPiles } from './draw-piles';
 import { HandBrowser } from './hand-browser';
 import { LobbyBotControls } from './lobby-bot-controls';
 import { AdvancedPreviewNotice, RulesetControls } from './ruleset-controls';
-import { IxRicheseTechnology } from './ix-richese-technology';
 import { EcazOccupyLeadChoice, EcazOccupyBattleSummary, EcazOccupyDialExplanation } from './ecaz-occupy';
 import { ecazOccupyOwnProfile, ecazOccupyPlanControl } from '@/game/ecaz-occupy-options';
 import { nexusGuildCunningAction, nexusGuildCunningActive, nexusGuildMovementAvailable, nexusGuildShipmentAvailable, nexusGuildSkipShipmentAction } from '@/game/nexus-guild-cunning-options';
@@ -2514,8 +2513,6 @@ export function GameTable({
               <h2>
                 {g.decision.kind === 'ecazBattleLead'
                   ? 'Ecaz · choose the combined-army lead'
-                  : g.decision.kind === 'ixRicheseTechnology'
-                  ? 'Ixian Technology · Richese lot'
                   : g.decision.kind === 'caladanReinforcement'
                   ? 'Caladan victory reinforcement'
                   : g.decision.kind === 'grummanCollection'
@@ -2792,8 +2789,6 @@ export function GameTable({
                   act={act}
                   busy={busy}
                 />
-              ) : g.decision.kind === 'ixRicheseTechnology' ? (
-                <IxRicheseTechnology game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'richeseBlackMarket' ||
                 g.decision.kind === 'richeseDeclaration' ||
                 g.decision.kind === 'richeseCache' ||

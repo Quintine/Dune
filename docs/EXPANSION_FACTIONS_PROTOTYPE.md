@@ -266,11 +266,13 @@ No pieces were staged or phases skipped in these samples.
 | All three expansion sets, Advanced | 614 | 16 | Stopped at turn three on an existing CHOAM movement/Ambassador arrival guard. |
 
 The first combined Advanced run stopped at action 70 on the old Ixian/Richese
-special-lot guard. With the decline continuation, the same seed declined three
-Richese lots and reached eleven ordinary Technology decisions before the separate
-arrival stop. This is evidence of the connected auction path, not a completed
-combined Advanced game. The current movement stop and rejected arrival candidates
-remain integration work; public modes stay gated.
+special-lot guard. A temporary per-lot decline continuation once let the same seed
+pass three Richese lots, but the authorized supplied Advanced physical p34
+expressly excludes Richese auctions from Ixian Technology, so that scaffolding was
+removed on 8 October and a Richese special lot now opens directly. This is evidence
+of the connected auction path, not a completed combined Advanced game. The current
+movement stop and rejected arrival candidates remain integration work; public modes
+stay gated.
 
 An initial CHOAM Basic custody audit mistakenly counted the already sold current
 normal-auction card both in its winner's hand and in its sale receipt. Correcting

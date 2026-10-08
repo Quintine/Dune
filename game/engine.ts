@@ -852,7 +852,6 @@ export type Decision =
   | { kind: 'ixSetup'; player: string }
   | { kind: 'ixAuction'; player: string }
   | { kind: 'ixTechnology'; player: string }
-  | { kind: 'ixRicheseTechnology'; player: string; event: string; source: 'cache' | 'blackMarket' }
   | { kind: 'ixAllyCard'; player: string }
   | { kind: 'nexusIxianReplacement'; player: string; event: string }
   | { kind: 'mobileStronghold'; player: string; placement: boolean }
@@ -1562,22 +1561,6 @@ export type Game = {
   richesePeekKnown?: boolean;
   richeseOfferedCard?: Card | null;
   richeseClaim?: string | null;
-  /** Private pre-lot offer. The public Ixian choice contains no Black Market card identity. */
-  pendingIxRicheseTechnology?: {
-    event: string;
-    player: string;
-    owner: string;
-    round: string;
-    turn: number;
-    source: 'cache' | 'blackMarket';
-    card: Card;
-    method: RicheseAuction['method'];
-    direction: 'clockwise' | 'counterclockwise' | null;
-    claim: string | null;
-    frame: string;
-    signature: string;
-  };
-  ixRicheseTechnologyEvent?: string;
   currentAuctionSale?: {
     occupiedEvent?: string;
     occupiedContributions?: { payer: string; amount: number }[];
@@ -4314,8 +4297,6 @@ function savedTransferResponses(g: Game) {
   ];
 }
 function transferCardBlock(g: Game, owner: Player, card: Card) {
-  if (g.pendingIxRicheseTechnology?.owner === owner.id && g.pendingIxRicheseTechnology.card.id === card.id)
-    return 'This card is reserved for the pending Richese lot and Ixian choice.';
   if (isPortableSnooper(card) && homeworldSavedDecisions(g).some((d) => d.kind === 'homeworldDefense' && d.player === owner.id))
     return 'Resolve the Homeworld late-defense choice before transferring its Portable Snooper.';
 
@@ -4844,8 +4825,6 @@ function draw(g: Game) {
   return g.deck.shift();
 }
 function discard(g: Game, p: Player, id: string, role?: Omit<EcazPoisonDiscard, 'card'>) {
-  requireRule(g.pendingIxRicheseTechnology?.card.id !== id,
-    'The card reserved for the pending Richese lot cannot be discarded.');
   requireRule(
     !g.pendingTreacheryDiscard,
     'Finish the committed discard continuation before another discard.',
@@ -10943,7 +10922,7 @@ function richeseBetrayalSourcePreflight(g: Game, quote: Extract<RicheseSettlemen
     !g.auction && !g.currentAuctionSale && !g.response && !g.decision && !g.phaseOpening &&
     !g.truthtrance && !g.pendingKarama && !g.pendingNullentropy && !g.pendingTreacheryDiscard &&
     !g.pendingKull && !g.pendingChoamWorthless && !g.choamMarket && !g.pendingIxAlly &&
-    !g.pendingRicheseGift && !g.pendingRichesePurchaseIncome && !g.pendingIxRicheseTechnology &&
+    !g.pendingRicheseGift && !g.pendingRichesePurchaseIncome &&
     !g.biddingEnd && !g.bureaucratPayments?.pending &&
     !pendingNexusTraitors(g),
   'Richese Betrayal requires a clean ordinary Richese lot before payment, without another effect overlay.');
@@ -11159,53 +11138,10 @@ function settleRicheseSoldLot(g: Game, quote: Extract<RicheseSettlementQuote,{ki
     g.decision = { kind: 'ixAllyCard', player: winner.id };
   } else continueAuctionSale(g, false);
 }
-function richeseOfferBlock(g: Game): string | null {
-  const ixians = byFaction(g, 'ixians');
-  return g.advanced && ixians?.hand.length && g.ixTechnologyTurn !== g.turn
-    ? 'Ixian Technology on Richese lots is awaiting a ruling on replacement-card custody.'
-    : null;
-}
-function ixRicheseTechnologyFrame(g: Game): string {
-  return JSON.stringify({ round: g.richeseBidding, order: g.order, positions: normalizedPlayerPositions(g) });
-}
-function ixRicheseTechnologySignature(pending: NonNullable<Game['pendingIxRicheseTechnology']>): string {
-  return JSON.stringify({ ...pending, signature: undefined });
-}
-function ixRicheseTechnologyIntegrity(g: Game) {
-  const pending = g.pendingIxRicheseTechnology;
-  const decisions = homeworldSavedDecisions(g).filter(d => d.kind === 'ixRicheseTechnology');
-  if (pending === undefined && g.ixRicheseTechnologyEvent === undefined && !decisions.length) return;
-  const round = g.richeseBidding, ixians = byFaction(g, 'ixians'), owner = byFaction(g, 'richese');
-  requireRule(pending && g.status === 'playing' && g.phase === 3 && g.advanced &&
-    ixians && g.ixTechnologyTurn !== g.turn && owner && round &&
-    pending.player === ixians.id && pending.owner === owner.id && pending.round === round.event &&
-    pending.turn === g.turn && round.turn === g.turn && round.owner === owner.id &&
-    typeof pending.event === 'string' && pending.event.length > 0 && pending.event === g.ixRicheseTechnologyEvent &&
-    ['cache', 'blackMarket'].includes(pending.source) &&
-    round.stage === (pending.source === 'cache' ? 'cacheOffer' : 'blackMarketOffer') &&
-    !g.auction && !g.richeseAuction && !g.ixAuction && !g.currentAuctionSale && !g.richeseOfferedCard &&
-    pending.frame === ixRicheseTechnologyFrame(g) && pending.signature === ixRicheseTechnologySignature(pending),
-    'The saved Ixian Richese-lot choice lost or changed its original offer, round or event.');
-  requireRule(['normal', 'onceAround', 'silent'].includes(pending.method) &&
-    (pending.source !== 'cache' || pending.method !== 'normal') &&
-    (pending.direction === null || ['clockwise', 'counterclockwise'].includes(pending.direction)) &&
-    (pending.method !== 'onceAround' || pending.direction !== null) &&
-    (pending.source === 'cache' ? pending.claim === null : pending.claim === null ||
-      typeof pending.claim === 'string' && pending.claim === pending.claim.trim() && pending.claim.length <= 300),
-    'The saved Ixian Richese-lot choice has invalid auction terms.');
-  const held = (pending.source === 'cache' ? g.richeseCache : owner.hand)?.filter(c => c.id === pending.card?.id);
-  requireRule(held?.length === 1 && JSON.stringify(held[0]) === JSON.stringify(pending.card) &&
-    physicalTreacheryCards(g).filter(c => c.id === pending.card.id).length === 1,
-    'The pending Richese offer must retain its exact unique card in the original custody.');
-  requireRule(decisions.length === 1 && decisions[0].player === pending.player && decisions[0].event === pending.event &&
-    decisions[0].source === pending.source && Object.keys(decisions[0]).every(key => ['kind', 'player', 'event', 'source'].includes(key)),
-    'The saved Ixian Richese-lot choice lost or duplicated its original decision.');
-}
 function beginRicheseLot(
   g: Game,
   source: 'cache' | 'blackMarket',
   action: Action,
-  technologyDeclined = false,
 ) {
   const round = g.richeseBidding!,
     owner = getPlayer(g, round.owner);
@@ -11232,25 +11168,6 @@ function beginRicheseLot(
     action.method !== 'onceAround' || action.direction !== undefined,
     'Choose a physical bidding direction.',
   );
-  if (richeseOfferBlock(g) && !technologyDeclined) {
-    requireRule(!g.pendingIxRicheseTechnology && g.ixRicheseTechnologyEvent === undefined,
-      'Finish the existing Ixian choice before declaring another Richese offer.');
-    const event = crypto.randomUUID(), player = byFaction(g, 'ixians')!.id;
-    const pending: NonNullable<Game['pendingIxRicheseTechnology']> = {
-      event, player, owner: owner.id, round: round.event, turn: g.turn, source, card: structuredClone(card),
-      method: action.method as RicheseAuction['method'],
-      direction: (action.direction as 'clockwise' | 'counterclockwise' | undefined) ?? null,
-      claim: source === 'blackMarket' && typeof action.claim === 'string' ? action.claim.trim().slice(0, 300) : null,
-      frame: ixRicheseTechnologyFrame(g), signature: '',
-    };
-    pending.signature = ixRicheseTechnologySignature(pending);
-    g.pendingIxRicheseTechnology = pending;
-    g.ixRicheseTechnologyEvent = event;
-    g.decision = { kind: 'ixRicheseTechnology', player, event, source };
-    g.active = player;
-    log(g, `${getPlayer(g, player).name} must choose whether to continue without exchanging this Richese ${source === 'cache' ? 'cache' : 'Black Market'} lot. The exchange is not yet implemented; Technology remains available for later lots.`);
-    return;
-  }
   const positions = normalizedPlayerPositions(g);
   let order = [...g.order];
   if (action.method === 'onceAround') {
@@ -12157,8 +12074,6 @@ function karamaSpendingBlock(g: Game, p: Player, card: Card): string | null {
     (g.pendingKull.card === card.id || g.pendingChoamWorthless?.card === card.id ||
       g.pendingKull.worthless?.card === card.id))
     return 'This physical card is reserved for the interrupted Kull transaction.';
-  if (g.pendingIxRicheseTechnology?.card.id === card.id)
-    return 'This card is reserved for the pending Richese lot and Ixian choice.';
   if (g.battle?.lateDefense?.[p.id] === card.id)
     return 'This Portable Snooper is already played and reserved for battle cleanup.';
   if (giftReserved(g, p.id, card.id))
@@ -26900,8 +26815,6 @@ export function prepareSpecialKaramaIntent(
       'Resolve the previous purchase income first.',
     );
     const acquire = stringField(action.acquire);
-    requireRule(g.pendingIxRicheseTechnology?.card.id !== acquire,
-      'The card reserved for the pending Richese lot cannot be acquired by another effect.');
     const chosen = g.richeseCache?.find((c) => c.id === acquire);
     requireRule(
       chosen && richeseCardDefinition(chosen),
@@ -27096,11 +27009,6 @@ export function prepareSpecialKaramaIntent(
     requireRule(
       g.pendingRicheseGift?.intent.owner !== target.id,
       'Resolve the reserved Richese gift before randomly exchanging that hand.',
-    );
-    requireRule(
-      g.pendingIxRicheseTechnology?.source !== 'blackMarket' ||
-        g.pendingIxRicheseTechnology.owner !== target.id,
-      'Resolve the pending Black Market Ixian choice before randomly exchanging that hand.',
     );
     const count = integer(
       action.amount,
@@ -27566,7 +27474,6 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
-  ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
@@ -27774,7 +27681,6 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   homeworldSubstitutionIntegrity(g);
   homeworldDefenseIntegrity(g);
   homeworldShipmentIntegrity(g);
-  ixRicheseTechnologyIntegrity(g);
   harkonnenExchangeIntegrity(g);
   moritaniExtortionIntegrity(g);
   guildRateIntegrity(g);
@@ -27950,7 +27856,6 @@ export function normalizeAutomaticGame(state: Game): Game {
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
-  ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
@@ -28023,7 +27928,6 @@ export function normalizeAutomaticGame(state: Game): Game {
   homeworldSubstitutionIntegrity(g);
   homeworldDefenseIntegrity(g);
   homeworldShipmentIntegrity(g);
-  ixRicheseTechnologyIntegrity(g);
   harkonnenExchangeIntegrity(g);
   moritaniExtortionIntegrity(g);
   guildRateIntegrity(g);
@@ -28600,19 +28504,6 @@ function applyActionInner(
       return g;
     }
     if (decision.kind === 'bureaucratPayment') {actBureaucratPayment(g,action);return g;}
-    if (decision.kind === 'ixRicheseTechnology') {
-      const pending = g.pendingIxRicheseTechnology!;
-      requireRule(action.event === pending.event && action.decline === true &&
-        Object.keys(action).every(key => ['type', 'event', 'decline'].includes(key)),
-        'Ixian exchange custody for Richese lots is not implemented. Explicitly continue without this exchange.');
-      delete g.pendingIxRicheseTechnology;
-      delete g.ixRicheseTechnologyEvent;
-      log(g, `${p.name} continued without exchanging this Richese lot; Technology remains available for later lots.`);
-      beginRicheseLot(g, pending.source, { type: 'decision', card: pending.card.id, method: pending.method,
-        ...(pending.direction !== null ? { direction: pending.direction } : {}),
-        ...(pending.claim !== null ? { claim: pending.claim } : {}) }, true);
-      return g;
-    }
     if (decision.kind === 'homeworldRevivalDeployment') {
       decideHomeworldRevivalReturn(g, p, action);
       return g;
@@ -32005,7 +31896,6 @@ export function viewGame(state: Game, id: string) {
   harkonnenExchangeIntegrity(state);
   validateEcazLoyalty(state);
   ecazTreacheryIntegrity(state);
-  ixRicheseTechnologyIntegrity(state);
   leaderSkillsIntegrity(state);
   moritaniExtortionIntegrity(state);
   guildRateIntegrity(state);
@@ -33024,13 +32914,6 @@ export function viewGame(state: Game, id: string) {
       ? { ecazSpecialKarama: ecazSpecialKaramaView(g, me) } : {}),
     ...(g.moritaniSpecialKarama?.source.owner === me.id && g.moritaniSpecialKarama.stage === 'offer'
       ? { moritaniSpecialKarama: currentMoritaniSpecialKaramaQuote(g) } : {}),
-    ixRicheseTechnology: g.pendingIxRicheseTechnology ? {
-      event: g.pendingIxRicheseTechnology.event,
-      player: g.pendingIxRicheseTechnology.player,
-      owner: g.pendingIxRicheseTechnology.owner,
-      source: g.pendingIxRicheseTechnology.source,
-      exchangeBlocked: 'Ixian exchange custody for Richese lots is not implemented. You can explicitly continue without this exchange; Technology remains available for later lots.',
-    } : null,
     richeseBidding:
       g.richeseBidding?.turn === g.turn
         ? {

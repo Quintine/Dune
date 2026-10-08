@@ -12,7 +12,7 @@ export function nexusCleanPlayBlocked(g: Game, automaticPending = false): boolea
     g.pendingChoamWorthless || g.pendingChoamBattleIncome ||
     g.pendingChoamMarketGhola || g.pendingAuditor || g.pendingFaceDance ||
     g.pendingTech || g.pendingIxTechnology || g.pendingIxAlly ||
-    g.pendingIxSubstitution || g.pendingIxRicheseTechnology ||
+    g.pendingIxSubstitution ||
     g.pendingWinnerDiscards || g.pendingSukRescue || g.ornithopter ||
     g.summonedWorm || g.battle || g.auction || g.richeseAuction ||
     g.choamMarket || g.nexusTraitorPending ||

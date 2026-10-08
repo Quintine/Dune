@@ -320,7 +320,7 @@ void test('normal paid auctions after a cache sale route income to Emperor witho
   assert.equal(g.auction!.index, 1);
 });
 
-void test('advanced unused Ixian Technology pauses special lots for an explicit per-lot decline', () => {
+void test('advanced unused Ixian Technology does not pause Richese special lots', () => {
   let g = fixture(true);
   g.players[2].faction = 'ixians';
   g.players[2].hand = [g.deck.shift()!];
@@ -330,15 +330,9 @@ void test('advanced unused Ixian Technology pauses special lots for an explicit 
     card: g.players[0].hand[0].id,
     method: 'silent',
   });
-  assert.equal(blackMarket.decision?.kind, 'ixRicheseTechnology');
-  assert.equal(blackMarket.richeseAuction, null);
-  const resumed = applyAction(blackMarket, g.players[2].id, {
-    type: 'decision',
-    event: blackMarket.pendingIxRicheseTechnology!.event,
-    decline: true,
-  });
-  assert.equal(resumed.richeseAuction?.source, 'blackMarket');
-  assert.equal(resumed.ixTechnologyTurn, g.ixTechnologyTurn);
+  assert.equal(blackMarket.decision, null);
+  assert.equal(blackMarket.richeseAuction?.source, 'blackMarket');
+  assert.equal(blackMarket.ixTechnologyTurn, g.ixTechnologyTurn);
   g = decision(g, { decline: true });
   g = decision(g, { position: 'first' });
   const cache = applyAction(g, 'r', {
@@ -347,15 +341,9 @@ void test('advanced unused Ixian Technology pauses special lots for an explicit 
     card: g.richeseCache![0].id,
     method: 'silent',
   });
-  assert.equal(cache.decision?.kind, 'ixRicheseTechnology');
-  assert.equal(cache.richeseAuction, null);
-  const resumedCache = applyAction(cache, g.players[2].id, {
-    type: 'decision',
-    event: cache.pendingIxRicheseTechnology!.event,
-    decline: true,
-  });
-  assert.equal(resumedCache.richeseAuction?.source, 'cache');
-  assert.equal(resumedCache.ixTechnologyTurn, g.ixTechnologyTurn);
+  assert.equal(cache.decision, null);
+  assert.equal(cache.richeseAuction?.source, 'cache');
+  assert.equal(cache.ixTechnologyTurn, g.ixTechnologyTurn);
   g.ixTechnologyTurn = g.turn;
   g = decision(g, { card: g.richeseCache![0].id, method: 'silent' });
   assert.equal(g.richeseAuction!.source, 'cache');
