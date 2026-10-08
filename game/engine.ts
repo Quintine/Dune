@@ -549,6 +549,10 @@ import {
   playedVoiceMatch,
 } from './battle-cards';
 import { mirrorWeaponModeBlock } from './mirror-weapon-mode';
+import { quoteEcazSpecialKarama, quoteEcazSpecialKaramaDeclaration, ecazSpecialKaramaPlanAllowed,
+  EcazSpecialKaramaError, type EcazSpecialKaramaDeclaration } from './ecaz-special-karama';
+import { quoteMoritaniSpecialKarama, validateMoritaniSpecialKaramaChoice,
+  MoritaniSpecialKaramaError, type MoritaniSpecialKaramaSource } from './moritani-special-karama';
 import {
   TECH_TOKENS,
   createTechTokens,
@@ -728,6 +732,7 @@ export type Battle = {
   noFieldPlayers?: string[];
   /** Provisional Basic mixed-pool participation, separate from the hidden value. */
   basicMixedNoFieldPlayers?: string[];
+  ecazSpecialKarama?: EcazSpecialKaramaDeclaration;
   truthPromises?: BattlePromise[];
   poisonTooth?: Record<string, boolean>;
   stoneBurner?: Record<string, 'kill' | 'ignore'>;
@@ -961,6 +966,7 @@ export type Decision =
       source?: 'nexus';
       event?: string;
     }
+  | { kind: 'moritaniSpecialKarama'; player: string; event: string }
   | { kind: 'battleCards'; player: string; territory: string; cards: string[] };
 type SpiceBankerIncomePayment = {
   event: string;
@@ -1702,6 +1708,12 @@ export type Game = {
   } | null;
   /** Current ordinary Basic shipment's physical departure obligation. */
   basicAlliedShipment?: BasicAlliedShipment | null;
+  moritaniSpecialKarama?: {
+    source: MoritaniSpecialKaramaSource;
+    cards: string[];
+    optional: string[];
+    stage: 'offer' | 'discard' | 'done';
+  } | null;
   /** Committed entries whose optional reactions must wait for the arrival's own
    * pending interaction (payment, advisor choice, storm protection). */
   pendingArrivalReaction?: {
@@ -7047,6 +7059,10 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
   } else if (next.kind === 'terrorAtomics') {
     g.pendingTerrorEntry = next.entry;
     finishTerrorEntry(g);
+  } else if (next.kind === 'battleCleanup' && next.source === 'winner' &&
+      g.moritaniSpecialKarama?.stage === 'discard' &&
+      next.event === g.moritaniSpecialKarama.source.event) {
+    resumeMoritaniSpecialKarama(g);
   } else {
     finishBattle(g);
   }
@@ -19681,6 +19697,9 @@ function validatePlan(
       typeof input.defense === 'string' && input.defense ? input.defense : null,
     support,
   };
+  if (b.ecazSpecialKarama?.owner === p.id)
+    requireRule(ecazSpecialKaramaPlanAllowed(plan),
+      'The declared Ecaz special Karama requires neither a weapon nor a defense.');
   requireRule(
     input.kwisatz === undefined || typeof input.kwisatz === 'boolean',
     'Choose whether to use the Kwisatz Haderach.',
@@ -20192,6 +20211,7 @@ function findLegalBattlePlan(
   options: {
     promises?: BattlePromise[];
     prescience?: { field: PlanField; value: unknown };
+    unarmed?: boolean;
   } = {},
 ): Plan | null {
   const b = g.battle!;
@@ -20199,6 +20219,7 @@ function findLegalBattlePlan(
   const fixed = options.prescience;
   const commitments = committedPlanElements(b, p.id);
   const accepts = (plan: Partial<Plan>) =>
+    (!options.unarmed || (!plan.weapon && !plan.defense)) &&
     commitments.every(element =>
       inspectedPlanMatches(p, element.field, element.value, plan[element.field])) &&
     respectsBattlePromises(promises, p.id, plan, p.hand) &&
@@ -21323,6 +21344,7 @@ function currentBattleResolutionQuote(g: Game, canceledVoter?: string) {
       hand: p.hand,
       plan,
       leader: controlledLeaders(g, p).find((l) => l.id === plan.leader),
+      ...(b.ecazSpecialKarama?.owner === p.id ? { ecazSpecialKarama: true as const } : {}),
       leaderSkills: battleLeaderSkills(g, p),
       occupiedStrongholds: leaderSkillStrongholdCount(g, p),
       forces: planCombatForces(g, p, opponent),
@@ -22486,6 +22508,23 @@ function finishWinner(g: Game, winner: Player, t: string, cards: string[]) {
       kind: 'winnerMandatoryDiscard', event: pending.event, player: winner.id,
       territory: t, optional: [...cards], commitment: structuredClone(pending) });
     return;
+  }
+  const context = g.lastBattleContext;
+  const moritani = byFaction(g, 'moritani');
+  if (g.advanced && context && moritani && !moritani.specialKaramaUsed &&
+      context.winner === winner.id && context.combatants.includes(moritani.id) &&
+      moritani.id !== winner.id && cards.length &&
+      g.moritaniSpecialKarama?.source.event !== context.event) {
+    g.moritaniSpecialKarama = {
+      source: { event: context.event, turn: g.turn, territory: t,
+        owner: moritani.id, opponent: winner.id },
+      cards: [...cards], optional: [...cards], stage: 'offer',
+    };
+    if (currentMoritaniSpecialKaramaQuote(g)) {
+      g.decision = { kind: 'moritaniSpecialKarama', player: moritani.id, event: context.event };
+      return;
+    }
+    g.moritaniSpecialKarama.stage = 'done';
   }
   if (cards.length)
     g.decision = {
@@ -26694,6 +26733,64 @@ function playChoamWorthless(g: Game, p: Player, action: Action) {
     ? `${p.name} spent CHOAM Nexus Cunning and declared ${effectName}. Its chosen Treachery card stays private and is discarded only if the effect occurs; Karama may prevent this native advantage.`
     : `${p.name} declared ${effectName} for its special effect.`);
 }
+function expansionSpecialKaramaRule<T>(calculate: () => T): T {
+  try { return calculate(); }
+  catch (error) {
+    if (error instanceof EcazSpecialKaramaError || error instanceof MoritaniSpecialKaramaError)
+      throw new RuleError(error.message);
+    throw error;
+  }
+}
+function actualSpecialKaramaCards(g: Game, p: Player) {
+  return p.hand.filter(card => card.kind === 'special' && card.effect === 'karama' &&
+    !karamaSpendingBlock(g, p, card));
+}
+function ecazSpecialKaramaContext(g: Game, p: Player) {
+  const b = g.battle;
+  return { status: g.status, phase: g.phase, advanced: g.advanced, owner: p,
+    cards: actualSpecialKaramaCards(g, p),
+    battle: b ? { event: b.event, attacker: b.attacker, defender: b.defender,
+      revealed: b.revealed, ownPlan: b.plans[p.id], declaration: b.ecazSpecialKarama } : null };
+}
+function ecazSpecialKaramaView(g: Game, p: Player) {
+  if (!g.advanced || p.faction !== 'ecaz' || !g.battle) return null;
+  const quote = quoteEcazSpecialKarama(ecazSpecialKaramaContext(g, p));
+  if (!quote.declared && (g.response || g.decision || g.battle.preparation ||
+      (g.battle.preLeader && !g.battle.preLeader.closed)))
+    quote.blocked = 'Finish the current battle preparation or response before declaring.';
+  if (!quote.blocked && !findLegalBattlePlan(g, p, { unarmed: true }))
+    quote.blocked = 'Existing battle commitments leave no legal unarmed plan.';
+  return quote;
+}
+function currentMoritaniSpecialKaramaQuote(g: Game) {
+  const pending = g.moritaniSpecialKarama;
+  const context = g.lastBattleContext;
+  if (!pending || pending.stage !== 'offer' || !context ||
+      context.event !== pending.source.event || context.turn !== g.turn) return null;
+  const owner = getPlayer(g, pending.source.owner);
+  const winner = getPlayer(g, pending.source.opponent);
+  const cards = pending.cards.map(id => winner.hand.find(card => card.id === id));
+  requireRule(cards.every(card => !!card), 'The public played cards changed before Moritani’s choice.');
+  return expansionSpecialKaramaRule(() => quoteMoritaniSpecialKarama({
+    advanced: g.advanced, phase: g.phase, battlePresent: !!g.battle, turn: g.turn,
+    owner, used: !!owner.specialKaramaUsed, battle: context,
+    karamas: actualSpecialKaramaCards(g, owner), playedCards: cards as Card[],
+    heldPlayedIds: pending.cards, keepableIds: pending.cards,
+  }));
+}
+function resumeMoritaniSpecialKarama(g: Game) {
+  const pending = g.moritaniSpecialKarama!;
+  requireRule(g.lastBattleContext?.event === pending.source.event &&
+    g.lastBattleContext.winner === pending.source.opponent,
+    'Resume the original Moritani winner-card opportunity.');
+  pending.stage = 'done';
+  g.decision = null;
+  if (pending.optional.length)
+    g.decision = { kind: 'battleCards', player: pending.source.opponent,
+      territory: pending.source.territory, cards: [...pending.optional] };
+  else finishBattle(g);
+}
+
 /** Internal normalized command; never accept this object directly from a route. */
 export type SpecialKaramaIntent = {
   owner: string;
@@ -26716,6 +26813,8 @@ export type SpecialKaramaIntent = {
   | { kind: 'emperorForces'; amount: number; elite: number }
   | { kind: 'emperorLeader'; leader: string }
   | { kind: 'harkonnen'; target: string; amount: number }
+  | { kind: 'ecaz'; event: string }
+  | { kind: 'moritani'; source: MoritaniSpecialKaramaSource; keep: string[]; discard: string[] }
 );
 
 /** Validates and copies a selection without spending resources, continuing play, or drawing RNG. */
@@ -26758,6 +26857,24 @@ export function prepareSpecialKaramaIntent(
   const activationBlock = karamaSpendingBlock(g, p, card);
   requireRule(!activationBlock, activationBlock ?? 'This Karama is committed elsewhere.');
   const base = { owner: p.id, card: card.id, turn: g.turn, phase: g.phase };
+  if (p.faction === 'ecaz') {
+    requireRule(!g.response && !g.decision && !g.battle?.preparation &&
+      (!g.battle?.preLeader || g.battle.preLeader.closed),
+      'Finish battle preparation before declaring the Ecaz special Karama.');
+    const selection = expansionSpecialKaramaRule(() => quoteEcazSpecialKaramaDeclaration(
+      ecazSpecialKaramaContext(g, p), { event: stringField(action.event), card: card.id }));
+    requireRule(!!findLegalBattlePlan(g, p, { unarmed: true }),
+      'Your existing Voice, inspection or Truthtrance commitments leave no legal unarmed plan.');
+    return { ...base, kind: 'ecaz', event: selection.event };
+  }
+  if (p.faction === 'moritani') {
+    const quote = currentMoritaniSpecialKaramaQuote(g);
+    requireRule(quote && g.decision?.kind === 'moritaniSpecialKarama' &&
+      g.decision.player === p.id, 'Use the current Moritani post-loss card opportunity.');
+    const choice = expansionSpecialKaramaRule(() => validateMoritaniSpecialKaramaChoice(
+      quote, g.moritaniSpecialKarama!.source, p.id, action));
+    return { ...base, kind: 'moritani', source: choice.source, keep: choice.keep, discard: choice.discard };
+  }
   if (p.faction === 'richese') {
     const blocked = karamaSpendingBlock(g, p, card);
     requireRule(!blocked, blocked ?? 'This Karama is committed elsewhere.');
@@ -27007,6 +27124,10 @@ export function prepareSpecialKaramaIntent(
 function specialKaramaAction(intent: SpecialKaramaIntent): Action {
   const action = { type: 'card', mode: 'special', card: intent.card };
   switch (intent.kind) {
+    case 'ecaz':
+      return { ...action, event: intent.event };
+    case 'moritani':
+      return { ...action, event: intent.source.event, keep: [...intent.keep], discard: [...intent.discard] };
     case 'richese':
       return { ...action, acquire: intent.acquire };
     case 'choam':
@@ -27081,6 +27202,13 @@ export function executeSpecialKaramaIntent(
       sameDeclaration(intent.battle, prepared.battle),
       'The original battle is no longer awaiting special prescience.',
     );
+  if (intent.kind === 'ecaz' && prepared.kind === 'ecaz')
+    requireRule(intent.event === prepared.event, 'The Ecaz battle event changed before execution.');
+  if (intent.kind === 'moritani' && prepared.kind === 'moritani')
+    requireRule(sameDeclaration(intent.source, prepared.source) &&
+      JSON.stringify(intent.keep) === JSON.stringify(prepared.keep) &&
+      JSON.stringify(intent.discard) === JSON.stringify(prepared.discard),
+      'The original Moritani card selection changed before execution.');
   const p = getPlayer(g, intent.owner);
   const card = p.hand.find((candidate) => candidate.id === intent.card)!;
   const converted = card.effect === 'truthtrance';
@@ -27089,7 +27217,31 @@ export function executeSpecialKaramaIntent(
       g,
       `${p.name} used the physical Truthtrance as Karama for their special faction power.`,
     );
-  if (intent.kind === 'richese') {
+  if (intent.kind === 'ecaz') {
+    discard(g, p, card.id);
+    p.specialKaramaUsed = true;
+    g.battle!.ecazSpecialKarama = { owner: p.id, card: card.id, event: intent.event };
+    log(g, `${p.name} declared the once-game unarmed Ecaz special Karama. The revealed disc-value difference adds provisional virtual dial strength, without additional physical losses.`,
+      { faction: 'ecaz', name: 'Special Karama' });
+  } else if (intent.kind === 'moritani') {
+    const pending = g.moritaniSpecialKarama!;
+    discard(g, p, card.id);
+    p.specialKaramaUsed = true;
+    const winner = getPlayer(g, intent.source.opponent);
+    pending.optional = pending.cards.filter(id => !intent.keep.includes(id) && !intent.discard.includes(id));
+    const entries = intent.discard.map(id => ({ card: discard(g, winner, id,
+      cleanupDiscardRole(g, winner, id)), discardedBy: winner.id, publicFace: true }));
+    log(g, `${p.name} used special Karama to force ${intent.keep.length} played card(s) kept and ${intent.discard.length} discarded. Mandatory named-card disposal remains the provisional precedence.`,
+      { faction: 'moritani', name: 'Special Karama' });
+    if (entries.length) {
+      pending.stage = 'discard';
+      g.decision = null;
+      stageTreacheryDiscard(g, 'battle:winner', entries, { kind: 'battleCleanup',
+        event: pending.source.event, combatants: [...g.lastBattle],
+        territory: pending.source.territory, player: winner.id, source: 'winner',
+        played: [...intent.discard], kept: [] });
+    } else resumeMoritaniSpecialKarama(g);
+  } else if (intent.kind === 'richese') {
     const selected = g.richeseCache!.findIndex((c) => c.id === intent.acquire);
     discard(g, p, card.id);
     p.spice -= 3;
@@ -29746,6 +29898,11 @@ function applyActionInner(
           return g;
       } else log(g, `${p.name} declined the sandworm ride.`);
       nextWormRide(g);
+    } else if (decision.kind === 'moritaniSpecialKarama') {
+      requireRule(g.moritaniSpecialKarama?.stage === 'offer' &&
+        decision.event === action.event && decision.event === g.moritaniSpecialKarama.source.event &&
+        action.decline === true, 'Decline only the current Moritani special Karama opportunity.');
+      resumeMoritaniSpecialKarama(g);
     } else if (decision.kind === 'battleCards') {
       requireRule(
         Array.isArray(action.discard) &&
@@ -32863,6 +33020,10 @@ export function viewGame(state: Game, id: string) {
         }
       : null,
     richeseSpecialKarama: richeseSpecialKaramaView(g, me),
+    ...(me.faction === 'ecaz' && g.advanced && g.battle
+      ? { ecazSpecialKarama: ecazSpecialKaramaView(g, me) } : {}),
+    ...(g.moritaniSpecialKarama?.source.owner === me.id && g.moritaniSpecialKarama.stage === 'offer'
+      ? { moritaniSpecialKarama: currentMoritaniSpecialKaramaQuote(g) } : {}),
     ixRicheseTechnology: g.pendingIxRicheseTechnology ? {
       event: g.pendingIxRicheseTechnology.event,
       player: g.pendingIxRicheseTechnology.player,

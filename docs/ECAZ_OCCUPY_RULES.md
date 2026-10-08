@@ -2,6 +2,31 @@
 
 Historical primary-source audit, 2026-09-07, corrected after independent verification. The publisher/designer odd-force conflict remains unresolved as a publisher correction. Under the 8 October Basic-first prototype instruction, Basic now provisionally uses the main p8 paragraph: ceiling contribution/loss and floor survivors, with a visible control warning. This is not a numerical ruling by the user or designer. Advanced retains its separately authorized source. The earlier false attribution to Jack Reda remains withdrawn.
 
+## Advanced Ecaz special Karama first version — 8 October 2026
+
+The authorized supplied revision, physical **p30, Ecaz G**, permits Karama
+before plans reveal to add the leader-disc difference to the number dialed
+when Ecaz plays neither weapon nor defense. The native Ecaz combatant now
+declares this through the existing normalized special-use, real-card cost
+and once-per-game pipeline. Declare before sealing or after an unarmed own
+plan, without inspecting the opponent's hidden leader.
+
+**Provisional interpretation:** absolute printed/copied disc-value
+difference is virtual dial strength, not new counters, extra support or
+additional physical casualties. KH/skill modifiers are excluded. Ordinary
+traitor/explosion precedence remains unchanged. Later plans enforce both
+empty card slots; existing Voice/inspection/Truthtrance constraints must
+leave a legal unarmed plan before the cost can commit.
+
+`game/ecaz-special-karama.ts` supplies the owner-only quote and numeric
+bonus; authoritative resolution adds the virtual strength independently
+from physical dial/losses. `components/ecaz-special-karama.tsx` and minimum
+legal AI are connected. A direct smoke uses Easy's declaration, rejects
+an armed plan, changes the winner through the disc difference and observes
+two actual losses/two spice support. Live isolated React controls submit
+the exact current event/card in Chromium. Types pass; no broad suite or
+complete-mode/deployed acceptance follows.
+
 ## Original live Discovery coalition — 5 October 2026
 
 The original standalone Ecaz Discovery profile marks its native Occupy path,

@@ -176,6 +176,7 @@ export const FACTION_RULES: Record<
       'Loyalty: before initial Traitor dealing, randomly set aside one of your five native Traitor Cards face up for everyone. It stays outside the deck for the whole game, including later Traitor and Face Dancer draws. Karama cannot prevent this automatic power; the corresponding leader disc is unchanged.',
       'In the bounded Advanced Occupy preview, choose Ecaz or your ally as lead. The lead uses its own leaders, cards and spice; total dial includes the ceiling of half your fighters at free full strength plus chosen allied army strength. An ordinary win leaves the floor of half your fighters and settles allied dial losses separately. Every participating whole army must be storm-clear and connected.',
       'Karama prevention keeps the selected lead but switches to that lead’s own forces; the other ally contributes zero. These numbers use the authorized revised Advanced sheet, not a Basic ruling; only Ecaz may revive Duke, including by Ghola.',
+      'Once per game before plans reveal, declare special Karama while playing neither weapon nor defense. The supplied p30 disc difference has a connected provisional virtual-strength/no-extra-casualty first version; the owned panel explains the formula.',
       'Loyalty, Collection and bounded Advanced Occupy have connected development implementations. Remaining powers and combined interactions are still being completed; this sheet is not a complete faction certification.',
     ],
   },
@@ -191,6 +192,7 @@ export const FACTION_RULES: Record<
     advanced: [
       'After losing a qualifying battle with no traitor called and the opposing leader surviving, you may reveal a held Traitor Card naming a different leader from that opposing faction. A living target dies and pays its printed strength from the bank; an already-dead target pays nothing.',
       'During Mentat Pause, set the revealed card aside face up as that faction’s use marker and draw its replacement. Use this advantage once against each faction; Karama cannot prevent it.',
+      'Once per game after a battle loss with a winner, special Karama can force kept/discarded subsets of that opponent’s public played cards. Owned selectors, native cost and cleanup are connected; mandatory named-card disposal has explicitly provisional precedence.',
       'Advanced assassination is available in an opted-in development preview. The duration of forfeiture after calling a normal traitor and exceptional leader-custody interactions remain unresolved.',
     ],
   },

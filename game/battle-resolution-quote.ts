@@ -53,6 +53,7 @@ import {
   type LeaderSkillBattleBonus,
 } from './leader-skill-combat';
 import { quoteEcazOccupyOutcome, type EcazOccupyBattleProfile } from './ecaz-occupy-battle';
+import { ecazSpecialKaramaBonus, ecazSpecialKaramaPlanAllowed } from './ecaz-special-karama';
 
 export class BattleResolutionQuoteError extends Error {
   constructor(message: string) {
@@ -100,6 +101,8 @@ export type ResolutionCombatant = ResolutionParticipant & {
   occupiedStrongholds?: number;
   /** The current aidFor result: this escrow has already left the donor's balance. */
   aid?: { donor: string; amount: number };
+  /** Revealed Ecaz declaration; virtual dial strength never changes physical commitments. */
+  ecazSpecialKarama?: true;
 };
 export type BattleResolutionInput = {
   ecazOccupy?: EcazOccupyBattleProfile;
@@ -598,6 +601,10 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     attacker: battleLeaderStrength(a.leader, d.leader),
     defender: battleLeaderStrength(d.leader, a.leader),
   };
+  for (const side of [a, d])
+    requireQuote(!side.ecazSpecialKarama ||
+      (input.advanced && side.faction === 'ecaz' && ecazSpecialKaramaPlanAllowed(side.plan)),
+      'Ecaz special Karama requires its native unarmed Advanced plan.');
   let winner: ResolutionCombatant | null = null;
   let effects: BattleResolutionQuote['effects'] = null;
   let scores: BattleResolutionQuote['scores'] = null;
@@ -668,6 +675,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     scores = {
       attacker:
         a.plan.dial - attackerPenalty +
+        (a.ecazSpecialKarama ? ecazSpecialKaramaBonus(strengths.attacker, strengths.defender) : 0) +
         (reinforcements[0]?.player === a.id ? 2 : 0) +
         (a.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.attacker || effects.stunned
@@ -677,6 +685,7 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
             (a.plan.kwisatz ? 2 : 0)),
       defender:
         d.plan.dial - defenderPenalty +
+        (d.ecazSpecialKarama ? ecazSpecialKaramaBonus(strengths.defender, strengths.attacker) : 0) +
         (reinforcements[0]?.player === d.id ? 2 : 0) +
         (d.id === homeworld?.native ? homeworld.strength : 0) +
         (deaths.defender || effects.stunned

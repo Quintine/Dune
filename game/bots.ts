@@ -83,6 +83,7 @@ import {
   shrineTruthtranceBotAction,
 } from './shrine';
 import { reserveShipmentCost, alliedNoFieldShipmentPricing } from './shipment-price';
+import { moritaniSpecialKaramaBotAction } from './moritani-special-karama-options';
 import { quoteSmugglerShipment } from './smuggler-shipment';
 import { quoteSmugglerNoField } from './smuggler-no-field';
 import { spiceBankerBattleMaximum, spiceBankerModeSupported } from './spice-banker';
@@ -1791,6 +1792,11 @@ function policyActions(g: GameView): Action[] {
         ? {type:'decision',event:d.event,card:cards[0].card}
         : {type:'decision',event:d.event,decline:true}];
     }
+    if (d.kind === 'moritaniSpecialKarama')
+      return [g.moritaniSpecialKarama
+        ? moritaniSpecialKaramaBotAction(g.moritaniSpecialKarama) ??
+          { type: 'decision', event: d.event, decline: true }
+        : { type: 'decision', event: d.event, decline: true }];
     if (d.kind === 'moritaniRetention') {
       const candidates = (me.hand ?? [])
         .filter((card) => d.cards.includes(card.id))
@@ -3754,6 +3760,11 @@ function policyActions(g: GameView): Action[] {
         value: battleCategoryInspectionValue(field, candidatePlan(p)[field], me.hand?.find(card => card.id === p[field])),
       }));
     }
+    const ecazPower = g.ecazSpecialKarama;
+    if (ecazPower && !ecazPower.blocked && !ecazPower.declared && ecazPower.event &&
+        ecazPower.cards.length && (me.hand ?? []).every(card =>
+          ['special', 'worthless', 'hero'].includes(card.kind)))
+      return [{ type: 'card', mode: 'special', card: ecazPower.cards[0].id, event: ecazPower.event }];
     if (b.revealed) {
       const ownsTraitorDecision =
         b.traitorVoters.includes(me.id) && !b.traitorSubmitted.includes(me.id);
@@ -4117,6 +4128,8 @@ export function botActions(g: GameView): Action[] {
   if (intelligence.length) return intelligence;
   const actions = [...junctionTransportActions(g, rank(g)), ...policyActions(g)].flatMap((action) => {
     if (action.type === 'move' && nexusGuildCunningActive(g) && !nexusGuildMovementAvailable(g)) return [];
+    if (action.type === 'battlePlan' && g.ecazSpecialKarama?.declared &&
+        (action.weapon || action.defense)) return [];
     const sourced = withNativeShipmentSources(g, action);
     return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) && !botArrivalBlock(g, sourced) ? [sourced] : [];
   });

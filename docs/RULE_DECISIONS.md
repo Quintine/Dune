@@ -35,6 +35,16 @@ Turn-end set-aside is supplied text; one-battle loan release remains the
 explicit provisional implementation policy. Existing exceptional custody and
 Advanced Harkonnen guards remain. [Current Duke grant contract](ECAZ_DUKE_ACQUISITION.md).
 
+Supplied **p30 Ecaz G** and **p35 Moritani F** now have connected once-game
+special Karama first versions. Ecaz uses an explicitly provisional absolute
+disc-value virtual dial addition without extra physical losses; declaration
+enforces an unarmed plan without hidden-opponent preview. Moritani forces
+public played-card keep/discard subsets, with an explicitly provisional
+mandatory-disposal-first boundary. These are implementation interpretations,
+not publisher clarifications. [Ecaz combat](ECAZ_OCCUPY_RULES.md) and
+[distinct Moritani special disposal](MORITANI_ALLY_RETENTION_RULES.md) retain
+their exact scope and observed evidence.
+
 ## User rulings — 7 October 2026
 
 Five previously pending questions were answered directly by the user. These are

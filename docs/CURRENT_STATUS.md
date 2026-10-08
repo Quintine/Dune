@@ -88,6 +88,14 @@ now grants the original disc and resumes the entrant without another loan choice
 Basic remains optional. One-battle tenure stays provisional; unavailable/captured
 scope remains guarded. One actual grant-and-battle smoke and three changed
 contract cases pass; types pass. No broad suite or deployed acceptance was run.
+**Advanced Ecaz and Moritani special Karama connected.** Ecaz's supplied p30
+unarmed disc-difference declaration now reaches real cost/once-use and virtual
+strength without additional physical losses. Moritani's supplied p35 post-loss
+power now controls exact public winner-card keep/discard subsets before optional
+cleanup. Both have owned live controls and minimum legal AI; numeric/custody
+precedence interpretations are explicit. Two direct battle smokes and types pass;
+live isolated React declarations/selectors submit exact native payloads in Chromium.
+No broad suite, deployed acceptance or strategic AI work was run.
 
 
 

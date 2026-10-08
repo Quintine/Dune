@@ -108,6 +108,7 @@ const decisions = {
   nexusFremenCunningOffer: true,
   nexusFremenCunningRide: true,
   moritaniRetention: true,
+  moritaniSpecialKarama: true,
   battleCards: true,
 } satisfies Record<Decision['kind'], true>;
 const responses = {

@@ -2,6 +2,33 @@
 
 Bounded source and implementation audit, 2026-09-06. No runtime edits or live-room actions were performed.
 
+## Distinct Advanced special Karama first version — 8 October 2026
+
+This is **not** the ally-retention ability below. Authorized supplied PDF
+physical **p35, Moritani F** lets Moritani, after losing a battle, force
+its winning opponent to keep/discard played Treachery Cards. The native
+unspent Moritani receives an owned opportunity before optional winner
+disposal, with only publicly revealed played identities still held there.
+It can decline or spend one actual Karama for disjoint forced keep/discard
+subsets. Unchanged cards retain the winner's ordinary choice.
+
+**Provisional precedence:** existing compulsory named-card disposal
+finishes first; force keep targets only ordinarily retainable cards.
+This does not adjudicate a special-power override of Tooth/Artillery/
+skill-card mandatory disposal. No arbitrary unused opposing hand is exposed.
+
+`game/moritani-special-karama.ts` revalidates the exact resolved source and
+subsets. The original normalized cost/once-use pipeline then applies real
+forced discards and a typed fresh-discard continuation before resuming the
+remaining winner choice once; forced keeps cannot be selected in that
+choice. Owned controls and legal AI are connected.
+
+One real-loss smoke observes the opportunity, legal bot discard candidate,
+one physical Karama cost, an actual forced weapon discard, retained Snooper
+and completed cleanup. Live isolated React controls in Chromium change
+both selectors and submit the exact native event/card/identity subsets.
+Types pass; no broad suite or complete-mode/deployed acceptance follows.
+
 ## Explicit effect and eligible outcomes
 
 When Moritani’s ally loses a battle that has a winner, **the ally** may retain **one of its played Treachery cards**, provided it could have retained that card as the winner. This is optional, does not benefit Moritani itself, and does not retrieve arbitrary unplayed hand cards or the opponent’s cards. The paragraph is the ordinary Alliance ability, not the advanced Assassinate Leaders ability. [GF9 Ecaz & Moritani, printed p. 6](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=6)

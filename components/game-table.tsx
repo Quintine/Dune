@@ -69,6 +69,8 @@ import {
 } from './stronghold-cards';
 import { EcazPlacement, AmbassadorSupply } from './ecaz-ambassadors';
 import { EcazEntry, AmbassadorInsights } from './ecaz-entry';
+import { EcazSpecialKarama } from './ecaz-special-karama';
+import { MoritaniSpecialKarama } from './moritani-special-karama';
 import { RicheseAuctionDecision, RicheseAuctionLot } from './richese-auctions';
 import { RicheseSpecialKarama } from './richese-special-karama';
 import { RicheseGift } from './richese-gift';
@@ -2805,6 +2807,9 @@ export function GameTable({
                 />
               ) : g.decision.kind === 'moritaniAssassinate' ? (
                 <MoritaniAssassinate key={g.decision.event} game={g} act={act} busy={busy} />
+              ) : g.decision.kind === 'moritaniSpecialKarama' ? (
+                <MoritaniSpecialKarama quote={g.moritaniSpecialKarama ?? null} act={act} busy={busy}
+                  declineAction={{ type: 'decision', event: g.decision.event, decline: true }} />
               ) : g.decision.kind === 'moritaniRetention' ? (
                 <MoritaniRetention game={g} act={act} busy={busy} />
               ) : g.decision.kind === 'moritaniTerror' ? (
@@ -5377,6 +5382,7 @@ export function GameTable({
           <>
             <ChoamCashIn game={g} act={act} busy={busy} />
             <RicheseSpecialKarama game={g} act={act} busy={busy} />
+            <EcazSpecialKarama quote={g.ecazSpecialKarama ?? null} act={act} busy={busy} />
             <RicheseGift game={g} act={act} busy={busy} />
             <Distrans game={g} act={act} busy={busy} />
             <JuiceOfSapho game={g} act={act} busy={busy} />
