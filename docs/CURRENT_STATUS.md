@@ -20,10 +20,14 @@ open mode gates.
 requests usable first versions for every faction before refinement. Administration
 is deferred. Broad suites and capture-resumption campaigns are deferred; rule
 delivery uses brief changed-path smoke only, with batched compiler feedback.
-**Active pass — Advanced first versions.** Basic standalone core-function
-inventory is closed at prototype level, with its stated provisional policies.
-This does not certify Basic timing variants, combinations or public expansion
-starts. Those remain after the Advanced function pass.
+**Active pass — rule interactions and remaining optional paths.** Basic and
+Advanced standalone core-function inventories are closed at prototype level.
+Bounded classic/expansion mapping plus the connected follow-ups below found
+no further absent standalone faction primitive in the examined paths.
+This is not complete-mode acceptance: exceptional custody, timing variants,
+optional skill bands, combinations and public expansion starts remain open.
+Rules implementation continues; comprehensive assurance and administration
+remain deferred until all rules are implemented.
 
 
 **Richese cache cancellation connected.** The printed Karama cancellation
@@ -119,6 +123,14 @@ Auditor from the five ordinary discs, visibly marked as provisional.
 Two native Easy smokes, two cycle regression cases, owned GameTable SSR
 Chromium choices and types/lint pass. No broad suite or deployed acceptance
 was run; prevention, price, death history and one-leader allowance remain.
+
+**Advanced ordinary allied arrival connected.** Scoped physical reserve
+shipment can enter an ally's territory before movement. Native supplied
+p15 ending removes all shared actor forces, including old counters; Basic
+keeps its separate provisional visitor policy. Medium departs typed arrivals
+without a city sentinel. Three direct scenarios, one cross-mode arrival/ending
+regression, types/lint and native GameTable SSR pre-arrival/ending controls
+pass; no broad suite or deployed proof was run.
 
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in

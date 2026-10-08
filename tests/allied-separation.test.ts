@@ -4,6 +4,7 @@ import {
   quoteAlliedSeparation,
   type AlliedSeparationQuoteContext,
 } from '../game/allied-separation';
+import { applyAction, createGame, newPlayer } from '../game/engine';
 
 type TerritoryFacts = AlliedSeparationQuoteContext['territories'][number];
 
@@ -195,4 +196,27 @@ void test('quoting frozen canonical facts does not change them or retain a mutab
   result.splice(0, 1, 'carthag');
   assert.deepEqual(quoteAlliedSeparation(input), ['arrakeen']);
   assert.deepEqual(input, before);
+});
+
+void test('ordinary allied reserve arrival retains distinct Basic visitor and Advanced whole-group ending losses', () => {
+  for (const advanced of [false, true]) {
+    let g = createGame('ALLIEDARRIVAL', newPlayer('e', 'Emperor', 'emperor'), advanced);
+    g.players.push(newPlayer('a', 'Atreides', 'atreides'));
+    g.status = 'playing'; g.phase = 5; g.turn = 2; g.storm = 18;
+    g.active = 'e'; g.order = ['e', 'a']; g.movementRemaining = ['e', 'a'];
+    for (const p of g.players) {
+      p.forces = {}; p.reserves = 20; p.tanks = 0; p.spice = 10;
+      p.hand = []; p.traitors = []; p.shipped = false; p.moved = 0;
+    }
+    g.players[0].ally = 'a'; g.players[1].ally = 'e';
+    g.players[0].forces = { 'arrakeen:10': 5 }; g.players[0].reserves = 15;
+    g.players[1].forces = { 'arrakeen:10': 3 }; g.players[1].reserves = 17;
+    g = applyAction(g, 'e', { type: 'ship', amount: 2, territory: 'arrakeen', sector: 10 });
+    assert.equal(g.players[0].spice, 8);
+    g = applyAction(g, 'e', { type: 'endMovement' });
+    assert.equal(g.players[0].tanks, advanced ? 7 : 2);
+    assert.equal(g.players[0].forces['arrakeen:10'] ?? 0, advanced ? 0 : 5);
+    assert.equal(g.players[1].forces['arrakeen:10'], 3);
+    assert.equal(g.players[1].tanks, 0);
+  }
 });

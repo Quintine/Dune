@@ -12,10 +12,9 @@ export type BasicAlliedShipment = Readonly<{
   baseline: Readonly<{ normal: number; elite: number }>;
 }>;
 
-/** Ordinary Basic reserve arrivals only; movement endpoints keep their guard. */
-export function isBasicAlliedShipmentVisit(
+/** Ordinary reserve arrivals only; movement endpoints keep their guard. */
+export function isAlliedShipmentVisit(
   context: Readonly<{
-    advanced: boolean;
     phase: number;
     active: string | null;
     players: readonly OccupancySeat[];
@@ -23,7 +22,7 @@ export function isBasicAlliedShipmentVisit(
   player: OccupancySeat & Readonly<{ shipped?: boolean; moved?: number }>,
   to: string,
 ): boolean {
-  if (context.advanced || context.phase !== 5 || context.active !== player.id ||
+  if (context.phase !== 5 || context.active !== player.id ||
       player.shipped !== false || player.moved !== 0 || to === 'polar_sink' ||
       to === MOBILE_STRONGHOLD) return false;
   const ally = context.players.find(seat => seat.id === player.ally);

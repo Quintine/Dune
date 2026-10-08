@@ -177,7 +177,7 @@ import { nexusGuildSecretAllyAction, nexusGuildSecretAllyQuote } from '@/game/ne
 import { nexusRicheseAction, nexusRicheseQuote } from '@/game/nexus-richese-options';
 import { guildTransportQuote } from '@/game/transport-quote';
 import { fremenReserveEntry, botGroundMoveAllowed } from '@/game/bot-mobility';
-import { isBasicAlliedShipmentVisit } from '@/game/allied-separation';
+import { isAlliedShipmentVisit } from '@/game/allied-separation';
 import { location as boardLocation } from '@/game/board';
 import { fighterCount, isAdvisor } from '@/game/advisors';
 import { useState } from 'react';
@@ -4396,12 +4396,12 @@ export function GameTable({
                       </div>
                     )}
                     {destination}
-                    {isBasicAlliedShipmentVisit(g, me, selected) && (
+                    {isAlliedShipmentVisit(g, me, selected) && (
                       <p className="notice">
-                        Basic allied transit: ship ordinary forces here, then move the visiting group out
-                        before finishing your turn. Storm and stronghold capacity still apply.
-                        Provisional fallback: new visitors left behind go to Tanks, even if departure is prevented.
-                        This does not waive the older allied co-occupation deadline.
+                        {g.advanced
+                          ? 'Advanced allied transit: ship ordinary forces here, then depart before finishing. Supplied p15 sends all your forces left sharing with an ally to Tanks, including old forces; advisor, Polar Sink and native Ecaz coexistence exemptions remain.'
+                          : 'Basic allied transit: ship ordinary forces here, then move the visiting group out before finishing your turn. Provisional fallback: new visitors left behind go to Tanks, even if departure is prevented. This does not waive the older allied co-occupation deadline.'}
+                        {' '}Storm and stronghold capacity still apply.
                       </p>
                     )}
                     {amountInput}

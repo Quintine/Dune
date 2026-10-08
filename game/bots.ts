@@ -3485,6 +3485,7 @@ function policyActions(g: GameView): Action[] {
         const retained =
           level > 0 &&
           g.basicAlliedShipment?.territory !== territory(origin).name &&
+          !g.advancedAllySeparation?.territories.includes(territory(origin).name) &&
           territory(origin).type === 'stronghold' &&
           !isAdvisor(me, origin)
             ? 1
@@ -4128,13 +4129,15 @@ export function botActions(g: GameView): Action[] {
     return sourced && botHomeworldShipmentPaymentAllowed(g, sourced) && !homeworldRevivalActionBlock(g, sourced) && !botArrivalBlock(g, sourced) ? [sourced] : [];
   });
   const me = g.players.find((p) => p.id === g.me)!;
-  if (g.basicAlliedShipment && g.phase === 5 && g.active === me.id &&
-      me.shipped && me.moved === 0) {
-    // Do not choose an unrelated move or retain a city sentinel while visitors
-    // owe departure. Native response/decision branches do not offer these moves.
+  const advancedDepartures = g.advancedAllySeparation?.territories;
+  if ((g.basicAlliedShipment || advancedDepartures?.length) &&
+      g.phase === 5 && g.active === me.id && me.shipped && me.moved === 0) {
+    // Depart from shared groups before unrelated moves; do not retain a
+    // sentinel that the ending alliance constraint would send to Tanks.
     const departures = actions.filter(action => action.type === 'move' &&
       typeof action.from === 'string' &&
-      territory(splitLocation(action.from).territory).name === g.basicAlliedShipment!.territory);
+      (territory(splitLocation(action.from).territory).name === g.basicAlliedShipment?.territory ||
+        advancedDepartures?.includes(territory(splitLocation(action.from).territory).name)));
     if (departures.length) return departures;
   }
   const ghola = standaloneGholaAction(g, actions);

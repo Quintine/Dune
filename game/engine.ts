@@ -567,7 +567,7 @@ import {
   settleAdvisors,
   arrivalAsAdvisor,
 } from './advisors';
-import { quoteAlliedSeparation, isBasicAlliedShipmentVisit, alliedShipmentPhysicalPool,
+import { quoteAlliedSeparation, isAlliedShipmentVisit, alliedShipmentPhysicalPool,
   type BasicAlliedShipment } from './allied-separation';
 import { casualtyOptions, maxCombatDial, maxCombatSupport, validCombatForces, type Casualties, type CombatForces } from './combat';
 import { FACTIONS, faction, type FactionId } from './catalog';
@@ -25095,7 +25095,7 @@ function validatePhysicalShipment(g: Game, shipment: PendingShipment) {
     shipment.sector,
     !shipment.guildSecretEvent && g.advanced && p.faction === 'fremen',
     shipment.advisors,
-    !shipment.noField && !shipment.alliedNoField && isBasicAlliedShipmentVisit(g, p, shipment.territory),
+    !shipment.noField && !shipment.alliedNoField && isAlliedShipmentVisit(g, p, shipment.territory),
   );
   if (p.faction === 'fremen' && !shipment.guildSecretEvent)
     requireRule(
@@ -25594,7 +25594,7 @@ function commitShipment(g: Game, shipment: PendingShipment, settlement?: {recipi
   }
   let homeworldOrigins = '';
   if (!shipment.noField) {
-    if (!shipment.alliedNoField && n > 0 && isBasicAlliedShipmentVisit(g, p, to))
+    if (!g.advanced && !shipment.alliedNoField && n > 0 && isAlliedShipmentVisit(g, p, to))
       g.basicAlliedShipment = {
         player: p.id, ally: p.ally!, turn: g.turn, territory: to,
         baseline: alliedShipmentPhysicalPool(p, to),
@@ -30940,7 +30940,7 @@ function applyActionInner(
       'Only Ixians may ship directly into the mobile stronghold.',
     );
     allowedEntry(g, p, to, s, !guildSecretEvent && g.advanced && p.faction === 'fremen', advisors,
-      action.noField === undefined && isBasicAlliedShipmentVisit(g, p, to));
+      action.noField === undefined && isAlliedShipmentVisit(g, p, to));
     let noField: PendingShipment['noField'];
     if (action.noField !== undefined) {
       requireRule(

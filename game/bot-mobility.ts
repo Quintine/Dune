@@ -9,7 +9,7 @@ import {
   type PlanetologistMoveMode,
 } from './planetologist-movement';
 import { territoryEntryBlock, strongholdPathBlocked } from './occupancy';
-import { isBasicAlliedShipmentVisit } from './allied-separation';
+import { isAlliedShipmentVisit } from './allied-separation';
 import {
   distance,
   gameDistance,
@@ -67,7 +67,7 @@ export function botEntryAllowed(
     return false;
   try {
     return !territoryEntryBlock(g.players, p.id, to, advisors,
-      kind === 'ship' && isBasicAlliedShipmentVisit(g, p, to));
+      kind === 'ship' && isAlliedShipmentVisit(g, p, to));
   } catch (error) {
     if (error instanceof EcazOccupancyError) return false;
     throw error;

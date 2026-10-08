@@ -25,9 +25,10 @@ rulings below remain distinct from these prototype choices.
 
 ## Advanced prototype pass — 8 October 2026
 
-The Basic standalone core-function inventory is closed at first-version
-level, not complete-mode acceptance; Advanced function delivery now precedes
-timing/combination refinement. Ecaz's supplied physical PDF **p30, A**
+Basic and Advanced standalone core-function inventories are closed at
+first-version level, not complete-mode acceptance. Exceptional custody,
+timing variants and optional combinations remain active rule work.
+Ecaz's supplied physical PDF **p30, A**
 requires an available Duke grant after accepted Ambassador alliance consent.
 The accepting action now performs that same-disc transfer automatically,
 without a new loan acknowledgement. Basic keeps its optional prototype.
@@ -56,6 +57,12 @@ repeat deaths. Ordinary price, one-leader allowance and prevention remain.
 The separate five-ordinary-disc cycle exclusion is a visibly provisional
 implementation policy, not a numerical user ruling or publisher answer.
 [Source, policy and runtime evidence](CHOAM_AUDITOR.md).
+
+Advanced ordinary allied reserve shipment now uses the FAQ's scoped
+shipment-then-departure permission and supplied **p15** end-turn constraint.
+Its ending removes all shared actor forces, not the Basic prototype's
+excess newcomers. Storm/capacity and advisor/Polar/Ecaz exemptions remain.
+No-Field and optional transports are separate. [Allied transit](ALLIED_TRANSIT_RULES.md).
 
 ## User rulings — 7 October 2026
 

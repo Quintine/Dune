@@ -2,6 +2,33 @@
 
 Audit: 7 September 2026. Read-only source and code audit, retained by the coordinating agent. Scope is classic GF9 base rules and the applicable November 2020 FAQ, not tournament or movie-game rules.
 
+## Advanced ordinary allied shipment follow-up — 8 October 2026
+
+Ordinary physical reserve shipment may now enter an ally's territory on the
+shipper's own unused turn before movement, under the same scoped entry
+permission as Basic. This composes the November FAQ's shipment/departure
+permission with the authorized supplied **physical p15** ending constraint.
+Stronghold capacity, storm, price, counters and movement range still apply.
+No-Fields, allied No-Field offers, Homeworld and mobile transports keep their
+separate guards; normal ground-movement endpoints are not broadened.
+
+Advanced creates no Basic visitor receipt. At ending, the existing native
+Advanced quote removes **all the ending player's shared forces**, including
+old counters, not just newcomers. Advisor, Polar Sink and native Ecaz
+coexistence exemptions remain. Basic keeps its visibly provisional excess-
+visitor policy and older co-occupation deadline. No extra move or refund
+is granted when departure is unavailable.
+
+The pre-shipment notice explains the mode-specific consequence; the
+existing ending warning names the shared territories. Minimal legal AI
+prioritizes a native departure and does not leave a city sentinel behind.
+Three direct smokes cover paid normal1/special1 arrival and Medium departure,
+ending with old5 plus new2 (only the actor's7 go to Tanks), and third-faction
+capacity rejection. Chromium observed native GameTable SSR pre-arrival and
+ending warnings with enabled finish. No broad suite, recovery campaign or
+deployed acceptance was run.
+
+
 ## Basic ordinary allied shipment prototype — 8 October 2026
 
 The content-first Basic pass connects the FAQ's ordinary physical
@@ -29,10 +56,10 @@ co-occupation deadlines still resolve separately. AI prioritizes available
 native departures and does not retain a stronghold sentinel from a
 visiting group.
 
-Concealed and allied No-Field arrivals, mobile/homeworld transports,
-optional arrival compositions and Advanced entry permission are not
-expanded by this prototype. Refinement of interrupted and mixed-cohort
-interactions remains later work.
+Concealed and allied No-Field arrivals, mobile/homeworld transports and
+optional arrival compositions are not expanded by the Basic prototype.
+Advanced ordinary physical entry is connected in the follow-up above.
+Refinement of interrupted and mixed-cohort interactions remains later work.
 
 **Brief smoke evidence:** paid Basic allied arrival followed by Medium's
 native departure and clean ending; ending without departure removes two
@@ -69,13 +96,13 @@ the existing later-player and formation-turn conditions, including its
 non-exempt advisor treatment.
 
 This resolves the **Advanced** timing/advisor and end-turn consequence
-questions below. It does not remove the current allied-entry guard, grant
-new shipments or extra moves, alter alliance formation/breaking windows,
-or settle every optional arrival composition. A forced end consequence
-does not require a new loss confirmation; the existing `endMovement`
-action remains legal even when no escape is available. The native force,
-elite and No-Field custody paths remove the ending player's group once,
-not its ally's group.
+questions below. The 8 October follow-up also connects scoped ordinary
+allied reserve entry, without granting new shipments or extra moves,
+altering alliance formation/breaking windows or settling optional arrivals.
+A forced end consequence needs no new loss confirmation; `endMovement`
+remains legal even when no escape is available. Native custody removes the
+ending player's group once, not its ally's group; concealed No-Field removal
+retains its separate custody guard.
 
 The own clean-turn warning uses the canonical engine quote via
 `GameView.advancedAllySeparation: { territories: string[] } | null`.
