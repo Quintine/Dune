@@ -158,25 +158,52 @@ void test('a real qualifying revival earns Banker independently; No-Field compan
   assertAdvancedNativeCustody(continued);
 });
 
-void test('original mixed own-marker battle guard survives Skills + Tech; only native voluntary reveal before Battle permits physical combat', () => {
-  const fixture = createRicheseSkillsTechFixture({ kind: 'shipment', marker: 5 });
-  let paid = payRicheseSkillsTechShipment(fixture);
-  const enemy = player(paid, fixture.opponent);
-  enemy.reserves -= 6; enemy.forces[fixture.key] = 6; // Explicit conserved opponent position, not a played shipment claim.
-  const battle = advanceRicheseSkillsTechToPhase(paid, 6);
-  const actor = battle.active!, target = actor === fixture.owner ? fixture.opponent : fixture.owner;
-  reject(battle, actor, { type: 'chooseBattle', territory: fixture.territory, target });
-  const own = player(paid, fixture.owner), token = own.noField!.deployed!.tokenId;
-  reject(battle, fixture.owner, { type: 'revealNoField', token, event: own.noFieldEvent });
-  paid = applyAction(paid, fixture.owner, { type: 'revealNoField', token, event: own.noFieldEvent });
-  assert.equal(player(paid, fixture.owner).forces[fixture.key], 6);
-  assert.equal(player(paid, fixture.owner).reserves, 14);
-  assert.equal(player(paid, fixture.owner).noField!.deployed, null);
-  const ready = advanceRicheseSkillsTechToPhase(paid, 6);
-  const opened = openRicheseSkillsTechBattle({ ...fixture, game: ready });
-  assert.equal(viewGame(opened, fixture.owner).battle!.ownForces!.normal, 6);
-  assertAdvancedNativeCustody(opened);
-});
+for (const advanced of [false, true]) for (const marker of [0, 3, 5] as const)
+  void test(`${advanced ? 'Advanced' : 'Basic'} mixed Smuggler and No-Field ${marker} battle seals a capped pool before real losses and Tech reward`, () => {
+    const fixture = createRicheseSkillsTechFixture({ advanced, kind: 'shipment', marker });
+    const paid = payRicheseSkillsTechShipment(fixture);
+    const own = player(paid, fixture.owner), enemy = player(paid, fixture.opponent);
+    // Explicit conserved scarcity and opponent positions, not played shipment claims.
+    own.forces['polar_sink:0'] = own.reserves - 2; own.reserves = 2;
+    enemy.reserves -= 6; enemy.forces[fixture.key] = 6;
+    const ready = advanceRicheseSkillsTechToPhase(paid, 6);
+    let game = openRicheseSkillsTechBattle({ ...fixture, game: ready });
+    const materialized = Math.min(marker, 2), pool = 1 + materialized;
+    assert.equal(viewGame(game, fixture.owner).battle!.mixedNoField, true);
+    assert.equal(viewGame(game, fixture.owner).battle!.ownForces!.normal, pool);
+    assert.equal(viewGame(game, fixture.opponent).battle!.mixedNoField, undefined);
+    assert.equal(viewGame(game, fixture.opponent).battle!.opponentForces, null);
+    const token = own.noField!.deployed!.tokenId;
+    reject(game, fixture.owner, { type: 'revealNoField', token, event: own.noFieldEvent });
+    reject(game, fixture.owner, { ...fixture.ownerPlan, dial: pool + 1, support: advanced ? pool + 1 : 0 });
+    const dial = Math.min(2, pool);
+    game = applyAction(game, fixture.owner, { ...fixture.ownerPlan, dial, support: advanced ? dial : 0 });
+    assert.equal(game.battle!.revealed, false);
+    assert.ok(player(game, fixture.owner).noField!.deployed);
+    assert.equal(player(game, fixture.owner).forces[fixture.key], 1);
+    assert.equal(player(game, fixture.owner).reserves, 2);
+    game = applyAction(game, fixture.opponent, fixture.opponentPlan);
+    assert.equal(game.battle!.revealed, true);
+    assert.equal(player(game, fixture.owner).noField!.deployed, null);
+    assert.equal(player(game, fixture.owner).forces[fixture.key], pool);
+    assert.equal(player(game, fixture.owner).reserves, 2 - materialized);
+    assertAdvancedNativeCustody(game);
+    game = finishRicheseSkillsTechBattle(calls(game));
+    const winner = game.lastBattleContext!.winner;
+    assert.ok(winner === fixture.owner || winner === fixture.opponent);
+    const ownerWon = winner === fixture.owner;
+    assert.equal(player(game, fixture.owner).forces[fixture.key] ?? 0, ownerWon ? pool - dial : 0);
+    assert.equal(player(game, fixture.owner).tanks, ownerWon ? dial : pool);
+    assert.equal(player(game, fixture.owner).reserves, 2 - materialized);
+    assert.equal(player(game, fixture.opponent).forces[fixture.key] ?? 0, ownerWon ? 0 : 6);
+    assert.equal(player(game, fixture.opponent).tanks, ownerWon ? 6 : 0);
+    const loser = ownerWon ? fixture.opponent : fixture.owner;
+    const tokenReward = ownedTech(ready.techTokens, loser)[0]; assert.ok(tokenReward);
+    assert.deepEqual(changedTokens(ready, game), [tokenReward]);
+    assert.equal(game.techTokens![tokenReward].owner, winner);
+    assert.deepEqual(cards(game), cards(ready));
+    assertAdvancedNativeCustody(game);
+  });
 
 for (const mode of ['kill', 'ignore'] as const) void test(`cache-acquired Stone ${mode} uses real undialed forces and cleanup before awarding the actual winner an original loser-owned Tech Token`, () => {
   const fixture = createRicheseSkillsTechFixture({ kind: 'stone' });

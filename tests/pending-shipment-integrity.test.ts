@@ -234,10 +234,6 @@ void test('saved destination and advisor stance must still permit the declared p
     pendingRecord(g).territory = 'missing';
     decisionRecord(g).territory = 'missing';
   });
-  corrupted('ally moved into destination', (g) => {
-    g.players[2].forces = { 'arrakeen:10': 1 };
-    g.players[2].reserves = 19;
-  });
   corrupted('stronghold filled', (g) => {
     g.players[1].forces = { 'arrakeen:10': 1 };
     g.players[1].reserves = 19;
@@ -248,6 +244,39 @@ void test('saved destination and advisor stance must still permit the declared p
     corrupted(`false advisor flag ${String(advisors)}`, (g) => {
       pendingRecord(g).advisors = advisors;
     });
+});
+
+void test('saved ordinary shipment commits after an ally enters the destination', () => {
+  const pending = declare();
+  pending.players[2].forces = { 'arrakeen:10': 1 };
+  pending.players[2].reserves = 19;
+  const restored = JSON.parse(JSON.stringify(pending)) as Game;
+  const snapshot = structuredClone(restored);
+  const allowed = permit(restored);
+  assert.deepEqual(restored, snapshot);
+  assert.equal(allowed.pendingShipment, null);
+  assert.equal(allowed.players[0].reserves, 16);
+  assert.equal(allowed.players[0].forces['arrakeen:10'], 4);
+  assert.equal(allowed.players[0].elites!.reserves, 3);
+  assert.equal(allowed.players[0].elites!.forces['arrakeen:10'], 2);
+  assert.equal(allowed.players[0].spice, 18);
+  assert.equal(allowed.players[2].spice, 17);
+  assert.equal(allowed.aid.a.amount, 1);
+  assert.equal(allowed.players[0].shipped, true);
+  assert.equal(allowed.players[2].forces['arrakeen:10'], 1);
+  assert.equal(allowed.players[2].reserves, 19);
+  assert.throws(() => permit(allowed));
+  const complete = finishFollowups(allowed);
+  assert.equal(complete.players[1].spice, 24);
+  inventory(complete);
+  const ended = applyAction(complete, 'e', { type: 'endMovement' });
+  assert.equal(ended.players[0].forces['arrakeen:10'] ?? 0, 0);
+  assert.equal(ended.players[0].tanks, 4);
+  assert.equal(ended.players[0].elites!.forces['arrakeen:10'] ?? 0, 0);
+  assert.equal(ended.players[0].elites!.tanks, 2);
+  assert.equal(ended.players[2].forces['arrakeen:10'], 1);
+  assert.equal(ended.players[2].tanks, 0);
+  inventory(ended);
 });
 
 void test('public Guild permission must bind to the saved shipper, destination, amount and actual Guild seat', () => {

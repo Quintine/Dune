@@ -289,21 +289,13 @@ void test('wrong actor/event/turn and invalid splits cannot consume a pending pe
   }
 });
 
-void test('changed reciprocal alliance or continuous entitlement cannot replace the original frozen recipient', () => {
-  for (const change of ['alliance', 'departure-return', 'competitor', 'repopulation'] as const) {
+void test('changed reciprocal alliance, contest or native repopulation cannot replace the original frozen recipient', () => {
+  for (const change of ['alliance', 'competitor', 'repopulation'] as const) {
     const { game, world } = occupiedIncomeFixture('richese');
     const source = actualSource('richese-income', 7);
     const quote = quoteOccupiedPercentageSource(game, source, createOccupiedPercentageState());
-    const owner = game.players.find(player => player.id === 'owner')!;
     if (change === 'alliance') game.players.find(player => player.id === 'ally')!.ally = null;
-    else if (change === 'departure-return') {
-      delete game.homeworlds!.custody!.visitors[world];
-      owner.reserves++;
-      observeControlledIncomePosition(game, 'labelled-original-owner-departure');
-      game.homeworlds!.custody!.visitors[world] = { owner: { normal: 1, elite: 0 } };
-      owner.reserves--;
-      observeControlledIncomePosition(game, 'labelled-original-owner-return');
-    } else if (change === 'competitor') {
+    else if (change === 'competitor') {
       game.homeworlds!.custody!.visitors[world].competitor = { normal: 1, elite: 0 };
       game.players.find(player => player.id === 'competitor')!.reserves--;
       observeControlledIncomePosition(game, 'labelled-second-foreign-garrison');
@@ -318,7 +310,7 @@ void test('changed reciprocal alliance or continuous entitlement cannot replace 
     assert.deepEqual({ game, state: quote.state }, before);
     if (change !== 'alliance') {
       const unknown = quoteOccupiedPercentageSource(game, { ...source, event: 'blocked-new-actual-source' }, createOccupiedPercentageState());
-      assert.equal(unknown.receipt.status, 'blocked');
+      assert.equal(unknown.receipt.status, 'settled', 'no current-sole controller means no occupied share, not an ambiguous source');
       assert.equal(unknown.receipt.entitlement, null);
       assert.deepEqual(unknown.receipt.credits, []);
       assert.deepEqual(balances(game), balances(before.game));
@@ -327,6 +319,29 @@ void test('changed reciprocal alliance or continuous entitlement cannot replace 
     }
     homeworldGameIntegrity(game);
   }
+});
+
+void test('Basic current-sole departure then return resumes the same observed source instead of a new epoch', () => {
+  const { game, world } = occupiedIncomeFixture('richese');
+  const source = actualSource('richese-income', 7);
+  const quote = quoteOccupiedPercentageSource(game, source, createOccupiedPercentageState());
+  const owner = game.players.find(player => player.id === 'owner')!;
+  delete game.homeworlds!.custody!.visitors[world];
+  owner.reserves++;
+  observeControlledIncomePosition(game, 'labelled-original-owner-departure');
+  const departed = quoteOccupiedPercentageSource(game, { ...source, event: 'departed-source' }, createOccupiedPercentageState());
+  assert.equal(departed.receipt.status, 'settled', 'an empty world earns no occupied share rather than an ambiguous block');
+  assert.equal(departed.receipt.entitlement, null);
+  assert.deepEqual(departed.receipt.credits, []);
+  assert.throws(() => allocateOccupiedPercentageReceipt(quote.state, game, 'owner', source.event, 2, source), HomeworldCustodyError);
+  game.homeworlds!.custody!.visitors[world] = { owner: { normal: 1, elite: 0 } };
+  owner.reserves--;
+  observeControlledIncomePosition(game, 'labelled-original-owner-return');
+  const resumed = allocateOccupiedPercentageReceipt(quote.state, game, 'owner', source.event, 2, source);
+  assert.equal(resumed.receipt.status, 'settled');
+  assert.equal(resumed.receipt.entitlement!.qualification, quote.receipt.entitlement!.qualification);
+  assert.equal(resumed.receipt.entitlement!.occupier, 'owner');
+  homeworldGameIntegrity(game);
 });
 
 void test('zero-share unknown entitlement completes through JSON without selecting a replacement or needing allocation', () => {

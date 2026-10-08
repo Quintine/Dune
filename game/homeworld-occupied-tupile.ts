@@ -108,7 +108,7 @@ export function quoteOccupiedTupileAuthority(game: OccupiedTupileContext): Occup
   if (!game.homeworldTupilePreview || !native) return none;
   if (!game.homeworldOccupationPreview) return Object.freeze({ ...base, status: 'unknown',
     lowIntelligence: 'unknown', blocked: 'Tupile slots require the original fresh occupation profile.' });
-  const quote = quoteStableHomeworldOccupation(game, 'tupile');
+  const quote = quoteStableHomeworldOccupation(game, 'tupile', { basic: 'epoch' });
   const entitlement = quote.entitlement;
   const blocked = quote.blocked ?? (entitlement?.ally === native.id
     ? 'The native CHOAM cannot ally with its own Homeworld occupier.' : null);

@@ -482,7 +482,7 @@ void test('original Richese Ambassador purchase displaces one real Giedi bonus, 
   }
 });
 
-void test('native Richese conducting-auction cancellation remains SOURCE-BLOCKED pending the original ordinary-lot-count ruling, with immutable stock and wallets', () => {
+void test('native Richese compulsory-cache Karama cancellation restores one ordinary lot without changing cache or wallets', () => {
   let game = freshBiddingGame('richese');
   qualifyDefensePosition(game, 'homeworld:richese');
   const counter = stageBiddingKarama(game, 'observer');
@@ -492,17 +492,19 @@ void test('native Richese conducting-auction cancellation remains SOURCE-BLOCKED
   const receipts = game.homeworldOccupiedPercentageLedger!.receipts.length;
   const action = { type: 'card', card: counter.id, mode: 'cancel' };
   for (const state of [game, JSON.parse(JSON.stringify(game)) as Game]) {
-    const frozen = structuredClone(state);
-    assert.throws(() => applyAction(state, 'observer', action), RuleError);
-    assert.deepEqual(state, frozen, 'blocked original cancellation preserves exact card/cache/wallet/control state');
-    assert.ok(biddingPlayer(state, 'observer').hand.some(card => card.id === counter.id));
-    assert.deepEqual(state.richeseCache!.map(card => card.id), cache);
-    assert.deepEqual(cash(state), before);
-    assert.equal(state.pendingHomeworldOccupiedPercentage, null);
-    assert.equal(state.pendingHomeworldOccupiedBonus, null);
-    assert.equal(state.homeworldOccupiedPercentageLedger!.receipts.length, receipts);
-    assert.deepEqual(biddingPhysicalIds(state), original);
-    assertDefenseInventory(state);
+    const canceled = applyAction(state, 'observer', action);
+    assert.equal(canceled.phase, 3);
+    assert.equal(canceled.richeseAuction, null, 'the compulsory cache lot does not run after cancellation');
+    assert.ok(canceled.auction && canceled.auction.cards.length > 0, 'one ordinary lot is restored');
+    assert.deepEqual(canceled.richeseCache!.map(card => card.id), cache, 'the physical cache is untouched');
+    assert.deepEqual(cash(canceled), before, 'the cancellation itself costs no spice');
+    assert.equal(biddingPlayer(canceled, 'observer').hand.some(card => card.id === counter.id), false, 'the Karama leaves its hand');
+    assert.equal(canceled.discard.filter(card => card.id === counter.id).length, 1, 'exactly one physical Karama is consumed');
+    assert.equal(canceled.pendingHomeworldOccupiedPercentage, null);
+    assert.equal(canceled.pendingHomeworldOccupiedBonus, null);
+    assert.equal(canceled.homeworldOccupiedPercentageLedger!.receipts.length, receipts);
+    assert.deepEqual(biddingPhysicalIds(canceled), original);
+    assertDefenseInventory(canceled);
   }
 });
 

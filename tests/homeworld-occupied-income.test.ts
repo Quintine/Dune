@@ -5,6 +5,7 @@ import { HOMEWORLD_CARDS, type HomeworldId } from '../game/homeworld-cards';
 import { homeworldGameIntegrity } from '../game/homeworld-game';
 import { HomeworldCustodyError } from '../game/homeworld-custody';
 import { occupiedHomeworldSardaukarStatus } from '../game/homeworld-occupied-defenses';
+import { quoteStableHomeworldOccupation } from '../game/homeworld-stable-occupation';
 import {
   beginHomeworldOccupiedIncome, homeworldOccupiedIncomeOffer, quoteHomeworldOccupiedIncomeChoice,
   type HomeworldOccupiedIncomeState,
@@ -147,46 +148,48 @@ void test('preview disabled never provides bank entitlement; repeated offer read
   assert.notEqual(homeworldOccupiedIncomeOffer(state, game, 'owner')!.blocked, null);
 });
 
-void test('departed then returned qualifier is blocked by original history, not paid to its current garrison', () => {
+void test('Basic current-sole control drops on departure and resumes for the returned qualifier without rerouting its frozen receipt', () => {
   const { game, world } = occupiedIncomeFixture();
   const state = beginHomeworldOccupiedIncome(game, 'collection-departure');
   const owner = game.players.find(player => player.id === 'owner')!;
   delete game.homeworlds!.custody!.visitors[world];
   owner.reserves++;
   observeControlledIncomePosition(game, 'controlled-departure');
+  assert.equal(beginHomeworldOccupiedIncome(game, 'collection-departed').queue.length, 0);
+  const before = structuredClone({ game, state });
+  assert.notEqual(homeworldOccupiedIncomeOffer(state, game, 'owner')!.blocked, null);
+  assert.throws(() => quoteHomeworldOccupiedIncomeChoice(state, game, 'owner', state.event, world, 2), HomeworldCustodyError);
+  assert.deepEqual({ game, state }, before);
   game.homeworlds!.custody!.visitors[world] = { owner: { normal: 1, elite: 0 } };
   owner.reserves--;
   observeControlledIncomePosition(game, 'controlled-return');
+  const fresh = beginHomeworldOccupiedIncome(game, 'collection-returned');
+  assert.equal(fresh.queue.length, 1);
+  assert.equal(fresh.queue[0].occupier, 'owner');
+  assert.equal(fresh.queue[0].qualification, state.queue[0].qualification, 'the same observed source resumes; no new epoch is invented');
+  assert.deepEqual(settle(game, state, 2).credits, [{ player: 'owner', amount: 2 }]);
+});
+
+void test('Basic contested foreign presence removes current-sole control while a frozen receipt stays unreroutable', () => {
+  const { game, world } = occupiedIncomeFixture();
+  const state = beginHomeworldOccupiedIncome(game, 'collection-contested');
+  const custody = game.homeworlds!.custody!;
+  const competitor = game.players.find(player => player.id === 'competitor')!;
+  custody.visitors[world].competitor = { normal: 1, elite: 0 };
+  competitor.reserves--;
+  observeControlledIncomePosition(game, 'controlled-competing-arrival');
+  assert.equal(beginHomeworldOccupiedIncome(game, 'collection-contested-fresh').queue.length, 0);
   const before = structuredClone({ game, state });
   assert.notEqual(homeworldOccupiedIncomeOffer(state, game, 'owner')!.blocked, null);
-  assert.throws(() => beginHomeworldOccupiedIncome(game, 'collection-after-return'), HomeworldCustodyError);
-  assert.throws(() => quoteHomeworldOccupiedIncomeChoice(state, game, 'owner', state.event, world, 2), HomeworldCustodyError);
+  assert.throws(() => quoteHomeworldOccupiedIncomeChoice(state, game, 'owner', state.event, world, 1), HomeworldCustodyError);
   assert.deepEqual({ game, state }, before);
+  delete custody.visitors[world].competitor;
+  competitor.reserves++;
+  observeControlledIncomePosition(game, 'controlled-contest-cleared');
+  assert.deepEqual(settle(game, state, 1).credits, [{ player: 'owner', amount: 1 }, { player: 'ally', amount: 1 }]);
 });
 
-void test('competing qualification or a competing foreign army blocks all bank settlement, including an earlier queued entitlement', () => {
-  for (const departed of [false, true]) {
-    const { game, world } = occupiedIncomeFixture();
-    const state = beginHomeworldOccupiedIncome(game, 'collection-contested');
-    const custody = game.homeworlds!.custody!;
-    if (departed) {
-      delete custody.visitors[world];
-      game.players.find(player => player.id === 'owner')!.reserves++;
-      observeControlledIncomePosition(game, 'controlled-original-departure');
-    }
-    custody.visitors[world] ??= {};
-    custody.visitors[world].competitor = { normal: 1, elite: 0 };
-    game.players.find(player => player.id === 'competitor')!.reserves--;
-    observeControlledIncomePosition(game, 'controlled-competing-arrival');
-    const before = structuredClone({ game, state });
-    assert.notEqual(homeworldOccupiedIncomeOffer(state, game, 'owner')!.blocked, null);
-    assert.throws(() => beginHomeworldOccupiedIncome(game, 'collection-ambiguous'), HomeworldCustodyError);
-    assert.throws(() => quoteHomeworldOccupiedIncomeChoice(state, game, 'owner', state.event, world, 1), HomeworldCustodyError);
-    assert.deepEqual({ game, state }, before);
-  }
-});
-
-void test('restoring the native high threshold after qualification blocks the pending bank grant without erasing history', () => {
+void test('Basic native repopulation removes current-sole control without erasing history or a frozen receipt guard', () => {
   const { game, world } = occupiedIncomeFixture();
   const state = beginHomeworldOccupiedIncome(game, 'collection-native-restored');
   const qualifications = structuredClone(game.homeworldOccupationHistory!.qualifications);
@@ -195,11 +198,35 @@ void test('restoring the native high threshold after qualification blocks the pe
   native.tanks -= 6;
   observeControlledIncomePosition(game, 'controlled-native-repopulation');
   assert.deepEqual(game.homeworldOccupationHistory!.qualifications, qualifications);
+  assert.equal(beginHomeworldOccupiedIncome(game, 'collection-restored-native-fresh').queue.length, 0);
   const before = structuredClone({ game, state });
   assert.notEqual(homeworldOccupiedIncomeOffer(state, game, 'owner')!.blocked, null);
-  assert.throws(() => beginHomeworldOccupiedIncome(game, 'collection-restored-native'), HomeworldCustodyError);
   assert.throws(() => quoteHomeworldOccupiedIncomeChoice(state, game, 'owner', state.event, world, 2), HomeworldCustodyError);
   assert.deepEqual({ game, state }, before);
+});
+
+void test('Basic current-sole control transfers to a newly observed sole faction and never rewrites earlier history', () => {
+  const { game, world } = occupiedIncomeFixture();
+  const owner = game.players.find(player => player.id === 'owner')!;
+  const competitor = game.players.find(player => player.id === 'competitor')!;
+  const original = structuredClone(game.homeworldOccupationHistory!.qualifications);
+  const custody = game.homeworlds!.custody!;
+  delete custody.visitors[world];
+  owner.reserves++;
+  observeControlledIncomePosition(game, 'controlled-transfer-out');
+  assert.equal(beginHomeworldOccupiedIncome(game, 'collection-no-controller').queue.length, 0);
+  custody.visitors[world] = { competitor: { normal: 1, elite: 0 } };
+  competitor.reserves--;
+  assert.equal(
+    quoteStableHomeworldOccupation(game, 'caladan').blocked,
+    'The original Basic sole-occupation change must be observed before its benefit settles.',
+    'a physical write without its semantic observation grants nothing',
+  );
+  observeControlledIncomePosition(game, 'controlled-transfer-in');
+  const state = beginHomeworldOccupiedIncome(game, 'collection-new-controller');
+  assert.equal(state.queue.length, 1);
+  assert.equal(state.queue[0].occupier, 'competitor');
+  assert.deepEqual(game.homeworldOccupationHistory!.qualifications.slice(0, original.length), original);
 });
 
 void test('Advanced contested zero-icon Salusa retains its original strength penalty without blocking Kaitain income', () => {

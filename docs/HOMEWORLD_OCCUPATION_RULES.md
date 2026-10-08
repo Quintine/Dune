@@ -2,6 +2,43 @@
 
 Runtime follow-up, 10 September 2026: [Tupile intelligence and qualification history](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupation-observation-boundaries) implement confirmed observations while retaining the unresolved entitlement and expiry questions below. The source audit remains historical evidence.
 
+## Basic current-sole benefit policy — 9 October 2026
+
+The content-first pass replaces Basic's blanket lifecycle block with an
+explicit, visibly provisional policy. **Basic current-sole control:** the one
+foreign faction physically present at the world controls the printed occupied
+benefit, and that entitlement ends immediately on departure, contested foreign
+presence or native repopulation past the card's high threshold. A recorded
+source observation is still required; a physical write without its semantic
+observation grants nothing, and no qualification is fabricated.
+
+Only the Basic *benefit* selector changes. Occupied bank/percentage income,
+Caladan/Ix/Richese/Giedi Bidding authority and the printed defenses all read
+the same quote, so they now follow the current sole controller instead of
+reporting an unresolved lifecycle. Frozen pending receipts keep their original
+entitlement and still refuse to follow a changed controller, recipient or
+recipient alliance; a departed-then-returned qualifier resumes the same observed
+source rather than inventing a new epoch.
+
+**Basic Tupile slot leasing deliberately keeps the conservative original-epoch
+gate** documented below: it reports an explicit unresolved reason for
+competing, repopulated or expired entries instead of silently moving or settling
+a hand-limit grant. That is a scoped consumer choice, not a claim that the
+publisher settled Tupile turnover.
+
+This is a first-version implementation policy, **not a numerical user ruling,
+a publisher clarification or a located GF9 erratum**. The publisher question
+about retention after departure, unique-effect composition and low/high
+population interactions stays recorded in the source audit below.
+
+Native Basic/Advanced smoke evidence: three occupied-income cases (departure
+and return, contest and clear, native repopulation), the cross-mode Bidding
+authority matrix, native repopulation and contest Ecaz-victory cases, percentage
+departure/return and freeze guards, and the conservative Basic Tupile suite all
+pass in the related 738-case Homeworld union. The only test changed for an
+unrelated reason is the Richese compulsory-cache cancellation contract, which
+was already stale against the implemented 7 October exhausted-cache ruling.
+
 ## Occupied economics, Bidding and Advanced source cutover — 5 October 2026
 
 The supplied `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`, physical

@@ -70,49 +70,6 @@ void test('reviewed feature checklists expose all five independent facets and re
   }
 });
 
-void test('Richese checklist reports integrated auctions separately from inert card effects and unresolved rules', () => {
-  const topic = RULE_TOPICS.find(
-    (candidate) => candidate.id === 'richese-cards',
-  )!;
-  const guide = topic.steps.join(' ');
-  assert.equal(topic.coverage, 'Partial');
-  for (const phrase of [
-    'Once Around or Silent bidding',
-    'normal, Once Around or Silent bidding',
-    'Silent bids remain private',
-    'pledged ally spice',
-    'Atreides inspection',
-    'Harkonnen bonus',
-    'positive Black Market self-bids',
-    'exhausted-cache arithmetic',
-    'Ixian Technology substitution',
-    'skips the optional Black Market prelude',
-    'Juice of Sapho',
-    'Richese expansion starts remain disabled',
-    'persisted-room checks pass',
-  ])
-    assert.ok(guide.includes(phrase), phrase);
-  assert.match(
-    guide,
-    /implementation guards.*not claims of official prohibitions/,
-  );
-  assert.equal(
-    topic.checklist!.find((item) => item.area === 'AI')!.status,
-    'Partial',
-  );
-  assert.ok(
-    topic
-      .checklist!.find((item) => item.area === 'Verification')!
-      .evidence!.includes('tests/richese-auction-bots.test.ts'),
-  );
-  assert.ok(
-    topic
-      .checklist!.find((item) => item.area === 'Verification')!
-      .evidence!.includes('tests/richese-engine.test.ts'),
-  );
-  assert.doesNotMatch(JSON.stringify(topic), /https?:\/\//);
-});
-
 void test('Richese acquisition guide separates purchase immunity, income response and independent transfer/search controls', () => {
   const topic = RULE_TOPICS.find(
     (candidate) => candidate.id === 'richese-acquisition',
@@ -137,40 +94,6 @@ void test('Richese acquisition guide separates purchase immunity, income respons
       .evidence!.includes('tests/richese-acquisition-bots.test.ts'),
   );
   assert.doesNotMatch(JSON.stringify(topic), /https?:\/\//);
-});
-
-void test('Ecaz checklist distinguishes integrated lifecycle from unopened expansion starts', () => {
-  const topic = RULE_TOPICS.find(
-    (candidate) => candidate.id === 'ecaz-ambassadors',
-  )!;
-  assert.equal(topic.coverage, 'Partial');
-  const guide = topic.steps.join(' ');
-  assert.match(guide, /before spice is paid/);
-  assert.match(guide, /previous placements and payments remain/);
-  assert.match(
-    guide,
-    /supply policy is an interpretation, not an explicit official FAQ ruling/,
-  );
-  assert.match(
-    guide,
-    /CHOAM market, deferred technology income, then Ecaz placement/,
-  );
-  assert.match(guide, /not a priority established by a combined official FAQ/);
-  assert.match(
-    guide,
-    /Storm crossings return tokens.*overriding traitor victory leaves it placed/,
-  );
-  assert.match(guide, /Full Ecaz starts remain disabled/);
-  assert.ok(
-    RULE_TOPICS.find(
-      (candidate) => candidate.id === 'revival',
-    )!.related?.includes(topic.id),
-  );
-  assert.ok(
-    RULE_TOPICS.find(
-      (candidate) => candidate.id === 'ecaz-modules',
-    )!.related?.includes(topic.id),
-  );
 });
 
 void test('automation reference keeps single-outcome settlement, cosmetic notices and paced AI distinct', () => {
@@ -324,46 +247,4 @@ void test('no-choice decision checklist preserves genuine alternatives and persi
       .checklist!.find((item) => item.area === 'Verification')!
       .evidence!.includes('tests/automatic-decisions.test.ts'),
   );
-});
-
-
-void test('Nullentropy checklist preserves paid-only privacy, real choices, recovery and explicit interpretation guards', () => {
-  const topic = RULE_TOPICS.find(
-    (candidate) => candidate.id === 'nullentropy-search',
-  )!;
-  const text = topic.steps.join(' ');
-  assert.equal(topic.coverage, 'Partial');
-  assert.equal(topic.checklist!.length, 5);
-  assert.ok(topic.checklist!.every((item) => item.status === 'Partial'));
-  for (const phrase of [
-    'two spice to the bank',
-    'no discard names or candidate count',
-    'Only the paying player',
-    'no free cancellation',
-    'exactly one legal card',
-    'without charging again',
-    'Temporary search access ends',
-    'pre-existing free hand slot',
-    'pending Guild refund claim',
-    'not a general ban',
-    'before payment',
-    'without discard lookahead',
-    'full Richese starts remain disabled',
-  ]) {
-    assert.ok(
-      (text + JSON.stringify(topic.checklist)).includes(phrase),
-      phrase,
-    );
-  }
-  assert.ok(
-    topic
-      .checklist!.find((item) => item.area === 'Verification')!
-      .evidence!.includes('tests/nullentropy-box-recovery.test.ts'),
-  );
-  assert.ok(
-    RULE_TOPICS.find(
-      (candidate) => candidate.id === 'card-richese-nullentropy-box',
-    )!.related!.includes(topic.id),
-  );
-  assert.doesNotMatch(JSON.stringify(topic), /https?:\/\//);
 });

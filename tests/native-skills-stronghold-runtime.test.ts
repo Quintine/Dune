@@ -186,17 +186,47 @@ void test('Tabr/Tuek original winner keeps spice/cards and optional Tech before 
   }
 });
 
-void test('original mixed ordinary-force/No-Field boundary remains guarded even with trained Suk and a retained Stronghold Card', () => {
+void test('mixed ordinary-force/No-Field battle retains trained Suk and its Stronghold Card through real capped losses', () => {
   const f = fixture({ kind: 'richese-marker' });
-  const game = structuredClone(f.beforeBattle), richese = player(game, f.owner);
+  let game = structuredClone(f.beforeBattle);
+  const richese = player(game, f.owner);
   // Explicit conserved alternative board position: one existing Polar Sink
   // counter accompanies the marker, not a shipment or played-turn claim.
   richese.forces[f.boardSource]--;
   richese.forces[f.location] = 1;
-  const before = structuredClone(game), actor = game.active!;
-  assert.throws(() => applyAction(game, actor, { type: 'chooseBattle', territory: f.territory,
-    target: actor === f.owner ? f.opponent : f.owner }), /Mixed ordinary-force and No-Field/);
-  assert.deepEqual(game, before); custody(game);
+  const actor = game.active!;
+  game = applyAction(game, actor, { type: 'chooseBattle', territory: f.territory,
+    target: actor === f.owner ? f.opponent : f.owner });
+  for (let i = 0; (game.decision || game.response || game.battle?.preparation || game.battle?.preLeader?.closed === false) && i < 100; i++) {
+    const next = nextNativeSkillsStrongholdStep(game); assert.ok(next);
+    game = applyAction(game, next.actor, next.action);
+  }
+  assert.equal(viewGame(game, f.owner).battle!.mixedNoField, true);
+  assert.equal(viewGame(game, f.owner).battle!.ownForces!.normal, 4);
+  assert.equal(viewGame(game, f.opponent).battle!.mixedNoField, undefined);
+  const before = structuredClone(game);
+  assert.throws(() => applyAction(game, f.owner, { ...f.plans[0].action, dial: 5 }));
+  assert.deepEqual(game, before);
+  game = applyAction(game, f.owner, f.plans[0].action);
+  assert.equal(game.battle!.revealed, false);
+  assert.ok(player(game, f.owner).noField!.deployed);
+  assert.equal(player(game, f.owner).forces[f.location], 1);
+  assert.equal(player(game, f.owner).reserves, 3);
+  game = applyAction(game, f.opponent, f.plans[1].action);
+  assert.equal(game.battle!.revealed, true);
+  assert.equal(player(game, f.owner).noField!.deployed, null);
+  assert.equal(player(game, f.owner).forces[f.location], 4);
+  assert.equal(player(game, f.owner).reserves, 0);
+  const revealed = game;
+  assert.equal(quoteNativeSkillsStrongholdBattle(revealed).payments.find(p => p.player === f.owner)!.bankSupport, 2);
+  const resolved = settle(revealed);
+  assert.equal(resolved.lastBattleContext!.winner, f.owner);
+  assert.equal(player(resolved, f.owner).forces[f.location], 2);
+  assert.equal(player(resolved, f.owner).reserves, 2);
+  assert.equal(player(resolved, f.owner).tanks, 0);
+  assert.equal(player(resolved, f.opponent).tanks, 6);
+  assert.equal(resolved.strongholdCards!.owners[f.territory], f.owner);
+  assertBattleWallets(revealed, resolved); custody(resolved);
 });
 
 void test('reserve-capped marker-only Richese materializes three after both plans, earns retained Arrakeen subsidy and rescues only physical casualties', () => {

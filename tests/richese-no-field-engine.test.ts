@@ -195,38 +195,48 @@ void test('marker-only and mixed physical movement preserve physical conservatio
   assert.equal(single.players[0].moved, 1);
   conserve(single);
 });
-void test('No-Field occupancy blocks a third stronghold faction and allied co-occupation', () => {
-  let g = marker(fixture());
-  g.players.push(newPlayer('e', 'Emperor', 'emperor'));
-  g.players[2].forces = { 'arrakeen:10': 1 };
-  g.players[2].reserves = 19;
-  g.active = 'h';
-  assert.throws(
-    () =>
-      send(g, 'h', {
-        type: 'ship',
-        territory: 'arrakeen',
-        sector: 10,
-        amount: 1,
+void test('No-Field occupancy blocks a third stronghold faction but admits allied reserve visitors with ending losses', () => {
+  for (const advanced of [false, true]) {
+    let g = marker(fixture(advanced));
+    g.players.push(newPlayer('e', 'Emperor', 'emperor'));
+    g.players[2].forces = { 'arrakeen:10': 1 };
+    g.players[2].reserves = 19;
+    g.active = 'h';
+    const before = structuredClone(g);
+    assert.throws(
+      () => send(g, 'h', {
+        type: 'ship', territory: 'arrakeen', sector: 10, amount: 1,
       }),
-    /three occupying factions/,
-  );
-  g.players.pop();
-  g.players[0].ally = 'h';
-  g.players[1].ally = 'r';
-  g = normalizeAutomaticGame(g);
-  assert.equal(g.decision?.kind, 'richeseAllyOpportunity');
-  g = send(g, 'r', { type: 'decision', decline: true });
-  assert.throws(
-    () =>
-      send(g, 'h', {
-        type: 'ship',
-        territory: 'arrakeen',
-        sector: 10,
-        amount: 1,
-      }),
-    /occupied by your ally/,
-  );
+      /three occupying factions/,
+    );
+    assert.deepEqual(g, before);
+    g.players.pop();
+    g.players[0].ally = 'h';
+    g.players[1].ally = 'r';
+    g.movementRemaining = ['h', 'r'];
+    g = normalizeAutomaticGame(g);
+    assert.equal(g.decision?.kind, 'richeseAllyOpportunity');
+    g = send(g, 'r', { type: 'decision', decline: true });
+    // Conserved pre-existing ally counters distinguish Basic visitor losses
+    // from Advanced separation of the actor's entire shared group.
+    g.players[1].forces['arrakeen:10'] = 2;
+    g.players[1].reserves = 18;
+    g = send(g, 'h', {
+      type: 'ship', territory: 'arrakeen', sector: 10, amount: 1,
+    });
+    assert.equal(g.players[1].forces['arrakeen:10'], 3);
+    assert.equal(g.players[1].reserves, 17);
+    assert.equal(g.players[1].spice, 9);
+    assert.ok(g.players[0].noField!.deployed);
+    conserve(g);
+    g = send(g, 'h', { type: 'endMovement' });
+    assert.equal(g.players[1].forces['arrakeen:10'] ?? 0, advanced ? 0 : 2);
+    assert.equal(g.players[1].tanks, advanced ? 3 : 1);
+    assert.equal(g.players[1].reserves, 17);
+    assert.ok(g.players[0].noField!.deployed);
+    assert.equal(g.players[0].reserves, 20);
+    conserve(g);
+  }
 });
 void test('marker-only collection treats every secret value as one collector, without reserve transfer', () => {
   const target = TERRITORIES.find(

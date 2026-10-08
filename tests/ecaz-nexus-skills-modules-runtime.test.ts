@@ -292,14 +292,37 @@ void test('each of the five genuine native discs may take its actual offered ski
   assert.deepEqual(offered, before, 'Original own-seat offers cannot be redealt to satisfy a fixture request.');
 });
 
-void test('quiet-boundary custody guards remain pure and reject receipt creation; exceptional recovery is not staged as played history', () => {
+void test('quiet-boundary Cunning revives the set-aside Duke from Tanks while invalid custody and timing remain immutable', () => {
   const f = fixture({ tech: false, stronghold: false });
   const g = f.beforeCunning, duke = g.dukeVidal!, event = viewGame(g, f.owner).nexusEcazDuke!.event;
-  // Quote-only hypothetical inputs, NOT accepted games, fabricated acquisitions,
-  // resurrected leaders or completed receipts. Actual runtime sources above are
-  // unchanged; each rejected alternative must leave the physical card unspent.
+  const tanks = structuredClone(g);
+  tanks.dukeVidal!.leader = { ...duke.leader, dead: true, deaths: 2, usedAt: f.territory };
+  const beforeRevival = structuredClone(tanks);
+  assert.equal(quoteNexusEcazDuke(tanks, f.owner)?.blocked, null);
+  const receipt = createNexusEcazDukeReceipt(tanks, f.owner);
+  assert.equal(receipt.before.leader.dead, true);
+  assert.deepEqual(tanks, beforeRevival);
+  const revived = act(tanks, f.owner, { type: 'nexusEcazDuke', event: receipt.event });
+  assert.deepEqual(tanks, beforeRevival);
+  assert.deepEqual(revived.dukeVidal, {
+    ...duke, controller: f.owner, source: 'ecazNexus', acquiredTurn: revived.turn,
+    leader: { ...duke.leader, dead: false, deaths: 2 },
+  });
+  assert.equal(revived.dukeVidal!.leader.usedAt, undefined);
+  assert.equal(revived.nexusCards!.cards!.hands[f.owner], null);
+  assert.equal(revived.nexusCards!.cards!.discard.filter(c => c === 'ecaz').length,
+    beforeRevival.nexusCards!.cards!.discard.filter(c => c === 'ecaz').length + 1);
+  assert.equal(revived.nexusEcazDukeHistory!.length, (beforeRevival.nexusEcazDukeHistory?.length ?? 0) + 1);
+  assert.deepEqual(revived.leaderSkills, g.leaderSkills);
+  assert.deepEqual(revived.players.map(p => p.leaders), g.players.map(p => p.leaders));
+  reject(revived, f.owner, { type: 'nexusEcazDuke', event: receipt.event });
+  custody(revived);
   const alternatives: Game[] = [
-    { ...g, dukeVidal: { ...duke, leader: { ...duke.leader, dead: true } } },
+    { ...tanks, dukeVidal: { ...tanks.dukeVidal!, controller: f.opponent } },
+    { ...tanks, dukeVidal: { ...tanks.dukeVidal!, acquiredTurn: g.turn } },
+    { ...tanks, dukeVidal: { ...tanks.dukeVidal!, source: 'ecazNexus' } },
+    { ...tanks, dukeVidal: { ...tanks.dukeVidal!, leader: { ...tanks.dukeVidal!.leader, capturedBy: f.opponent } } },
+    { ...tanks, dukeVidal: { ...tanks.dukeVidal!, leader: { ...tanks.dukeVidal!.leader, gholaBy: f.opponent } } },
     { ...g, dukeVidal: { ...duke, leader: { ...duke.leader, capturedBy: f.opponent } } },
     { ...g, dukeVidal: { ...duke, leader: { ...duke.leader, gholaBy: f.opponent } } },
     { ...g, dukeVidal: { ...duke, leader: { ...duke.leader, usedAt: f.territory } } },
@@ -309,8 +332,11 @@ void test('quiet-boundary custody guards remain pure and reject receipt creation
     { ...g, battle: f.game.battle },
   ];
   for (const input of alternatives) {
+    const before = structuredClone(input);
     assert.ok(quoteNexusEcazDuke(input, f.owner)?.blocked);
     assert.throws(() => createNexusEcazDukeReceipt(input, f.owner));
+    assert.deepEqual(input, before);
+    reject(input, f.owner, { type: 'nexusEcazDuke', event: quoteNexusEcazDuke(input, f.owner)!.event });
     assert.equal(g.nexusCards!.cards!.hands[f.owner], 'ecaz');
     assert.equal(g.nexusEcazDukeHistory?.length ?? 0, 0);
   }

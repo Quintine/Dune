@@ -76,24 +76,24 @@ for (const advanced of [false, true]) {
     assert.equal(row.blocked, null);
   });
 
-  void test(`${advanced ? 'Advanced' : 'Basic'} established source authority distinguishes native repopulation from physical foreign presence`, () => {
+  void test(`${advanced ? 'Advanced' : 'Basic'} native repopulation expires the Basic holding outright while Advanced retains its original epoch`, () => {
     const { game } = ecazHomeworldFixture(advanced);
     ecazSeat(game, 'at').reserves = 20;
     observeEcazPosition(game, 'controlled-native-caladan-repopulation');
     const row = ecazHomeworldVictoryProgress(game)!;
     assert.equal(row.qualifies, advanced);
     assert.equal(row.foreignHomeworlds.length, advanced ? 2 : 1);
-    assert.equal(row.blocked === null, advanced);
+    assert.equal(row.blocked, null, 'decided expiry is not an unresolved ambiguity');
   });
 
-  void test(`${advanced ? 'Advanced' : 'Basic'} third Homeworld visitors preserve Advanced retained authority but block unresolved Basic occupation`, () => {
+  void test(`${advanced ? 'Advanced' : 'Basic'} contest removes Basic current-sole control while Advanced retains its original epoch`, () => {
     const { game } = ecazHomeworldFixture(advanced);
     game.homeworlds!.custody!.visitors['homeworld:atreides'].observer = { normal: 1, elite: 0 };
     ecazSeat(game, 'observer').reserves--;
     observeEcazPosition(game, 'controlled-third-homeworld-visitor');
     const row = ecazHomeworldVictoryProgress(game)!;
     assert.equal(row.qualifies, advanced);
-    assert.equal(row.blocked === null, advanced);
+    assert.equal(row.blocked, null, 'contested presence is a decided expiry, not an ambiguity');
   });
 }
 
@@ -216,13 +216,13 @@ void test('missing or legacy source history blocks a potential two-native win wi
   }
 });
 
-void test('Basic expiry stays unresolved; Advanced retains occupation while its original holder remains', () => {
+void test('Basic current-sole control persists across turns while Advanced retains its original epoch', () => {
   for (const advanced of [false, true]) {
     const { game } = ecazHomeworldFixture(advanced);
     game.turn++;
     const row = ecazHomeworldVictoryProgress(game)!;
-    assert.equal(row.qualifies, advanced);
-    assert.equal(row.blocked === null, advanced);
+    assert.equal(row.qualifies, true);
+    assert.equal(row.blocked, null);
   }
 });
 

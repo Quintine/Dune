@@ -162,7 +162,7 @@ void test('borrowed Emperor free-return remains source guarded for either native
   }
 });
 
-void test('quiet native Ecaz Cunning acquires the living unclaimed Duke separately from training, and rejects exceptional custody or an already-open battle', () => {
+void test('quiet native Ecaz Cunning acquires the living unclaimed or set-aside dead Duke separately from training, and rejects exceptional custody or an already-open battle', () => {
   const f = fixture({ native: 'ecaz' }), closing = close(f), acquired = cunning(f, closing.game);
   assert.equal(acquired.before.status, 'playing');
   assert.equal(acquired.before.turn, closing.game.turn);
@@ -176,10 +176,32 @@ void test('quiet native Ecaz Cunning acquires the living unclaimed Duke separate
   assert.equal(acquired.after.nexusCards!.cards!.hands[f.owner], null);
   assert.deepEqual(acquired.after.leaderSkills, acquired.before.leaderSkills);
   assert.ok(acquired.after.leaderSkills!.assignments.every(a => a.leader !== DUKE_VIDAL_ID));
-  for (const property of ['dead', 'capturedBy', 'gholaBy', 'usedAt'] as const) {
+  const tanks = structuredClone(acquired.before);
+  tanks.dukeVidal!.leader = { ...tanks.dukeVidal!.leader, dead: true, deaths: 2, usedAt: 'cistern' };
+  const beforeRevival = structuredClone(tanks), revived = step(tanks, acquired.step);
+  assert.deepEqual(tanks, beforeRevival);
+  assert.deepEqual(revived.dukeVidal, {
+    ...beforeRevival.dukeVidal!,
+    controller: f.owner, acquiredTurn: revived.turn, source: 'ecazNexus',
+    leader: { ...acquired.before.dukeVidal!.leader, dead: false, deaths: 2 },
+  });
+  assert.equal(revived.dukeVidal!.leader.usedAt, undefined);
+  assert.equal(revived.nexusCards!.cards!.hands[f.owner], null);
+  assert.equal(revived.nexusCards!.cards!.discard.filter(c => c === 'ecaz').length,
+    beforeRevival.nexusCards!.cards!.discard.filter(c => c === 'ecaz').length + 1);
+  assert.equal(revived.nexusEcazDukeHistory!.length, (beforeRevival.nexusEcazDukeHistory?.length ?? 0) + 1);
+  assert.deepEqual(revived.leaderSkills, beforeRevival.leaderSkills);
+  custody(revived);
+  for (const property of ['controller', 'acquiredTurn', 'source'] as const) {
+    const input = structuredClone(tanks);
+    if (property === 'controller') input.dukeVidal!.controller = f.opponent;
+    else if (property === 'acquiredTurn') input.dukeVidal!.acquiredTurn = input.turn;
+    else input.dukeVidal!.source = 'ecazNexus';
+    reject(input, f.owner, acquired.step.action);
+  }
+  for (const property of ['capturedBy', 'gholaBy', 'usedAt'] as const) {
     const input = structuredClone(acquired.before);
-    if (property === 'dead') input.dukeVidal!.leader.dead = true;
-    else if (property === 'usedAt') input.dukeVidal!.leader.usedAt = 'cistern';
+    if (property === 'usedAt') input.dukeVidal!.leader.usedAt = 'cistern';
     else input.dukeVidal!.leader[property] = f.opponent;
     reject(input, f.owner, acquired.step.action);
   }

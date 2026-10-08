@@ -146,7 +146,7 @@ void test('Original concealed Richese presence permits a zero prospective pool, 
   assert.deepEqual(input, saved);
 });
 
-for (const role of ['ally', 'opponent'] as const) void test(`Mixed ordinary-plus-marker ${role} battle is rejected immutably`, () => {
+for (const role of ['ally', 'opponent'] as const) void test(`Combined Occupy ordinary-plus-marker ${role} battle is rejected immutably`, () => {
   const fixture = ecazOccupyRicheseFixture({ allyFaction: role === 'ally' ? 'richese' : 'guild',
     opponentFaction: role === 'opponent' ? 'richese' : 'guild', marker: 5,
     richeseReserves: 2, mixedRicheseForces: 1 });
@@ -154,7 +154,8 @@ for (const role of ['ally', 'opponent'] as const) void test(`Mixed ordinary-plus
   const saved = structuredClone(game);
   const choice = viewGame(game, game.active!).battleChoices.find(b => b.territory === fixture.territory)!;
   assert.throws(() => applyAction(game, choice.chooser, { type: 'chooseBattle', territory: fixture.territory,
-    target: choice.attacker === choice.chooser ? choice.defender : choice.attacker }), /Mixed ordinary-force and No-Field/);
+    target: choice.attacker === choice.chooser ? choice.defender : choice.attacker }),
+    { message: 'Combined Occupy No-Field battle dialing awaits a ruling. Ordinary mixed battles use the visible provisional pool.' });
   assert.deepEqual(game, saved);
 });
 

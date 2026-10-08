@@ -275,7 +275,7 @@ void test('Recruits restores privately and counts earlier free revivals once acr
   }
 });
 
-void test('pending and already paid revivals reject Recruits after restart without changing the saved transaction', async (t) => {
+void test('pending revivals stay immutable after restart while settled paid returns allow provisional Recruits without refunds', async (t) => {
   const f = await fixture(t);
   const pending = await act(f, f.ids[0], {
     type: 'revive',
@@ -298,24 +298,43 @@ void test('pending and already paid revivals reject Recruits after restart witho
   assert.equal(paid.players[0].revived, 3);
   assert.equal(paid.players[0].freeForcesRevived, 2);
   assert.equal(paid.players[0].spice, 18);
-  assert.match(
-    viewGame(paid, f.owner).recruitsPreview!.play!.blocked!,
-    /after a paid normal force revival/,
+  const action = recruitsPlayAction(viewGame(paid, f.owner).recruitsPreview);
+  assert.deepEqual(action, play);
+  assert.ok(action);
+  const played = await act(f, f.owner, action);
+  assert.deepEqual(played.recruits, {
+    turn: paid.turn,
+    player: f.owner,
+    card: 'ecaz-recruits',
+  });
+  assert.deepEqual(
+    played.players.map((player) => player.spice),
+    paid.players.map((player) => player.spice),
   );
-  assert.equal(
-    recruitsPlayAction(viewGame(paid, f.owner).recruitsPreview),
-    null,
-  );
-  await noWrite(
-    f,
-    f.owner,
-    play,
-    undefined,
-    /after a paid normal force revival/,
-  );
+  assert.equal(played.players[0].revived, 3);
+  assert.equal(played.players[0].freeForcesRevived, 2);
+  assert.ok(!played.players[3].hand.some((card) => card.id === 'ecaz-recruits'));
+  assert.equal(played.discard.filter((card) => card.id === 'ecaz-recruits').length, 1);
   const final = await restored(f);
-  assert.equal(final.recruits, undefined);
-  assert.ok(final.players[3].hand.some((card) => card.id === 'ecaz-recruits'));
+  assert.equal(viewGame(final, f.ids[0]).revival.freeRemaining, 2);
+  assert.equal(viewGame(final, f.ids[0]).revival.forcesRemaining, 4);
+  await noWrite(f, f.owner, play);
+  await act(f, f.ids[0], { type: 'revive', amount: 2, elite: 0 });
+  const free = await settleRevival(f);
+  assert.equal(free.players[0].revived, 5);
+  assert.equal(free.players[0].freeForcesRevived, 4);
+  assert.equal(free.players[0].spice, paid.players[0].spice);
+  assert.equal(viewGame(free, f.ids[0]).revival.freeRemaining, 0);
+  assert.equal(viewGame(free, f.ids[0]).revival.forcesRemaining, 2);
+  await act(f, f.ids[0], { type: 'revive', amount: 2, elite: 0 });
+  const capped = await settleRevival(f);
+  assert.equal(capped.players[0].revived, 7);
+  assert.equal(capped.players[0].freeForcesRevived, 4);
+  assert.equal(capped.players[0].spice, paid.players[0].spice - 4);
+  assert.equal(viewGame(capped, f.ids[0]).revival.forcesRemaining, 0);
+  assert.equal(capped.discard.filter((card) => card.id === 'ecaz-recruits').length, 1);
+  await noWrite(f, f.ids[0], { type: 'revive', amount: 1, elite: 0 });
+  await restored(f);
 });
 
 void test('competing authenticated Recruits plays commit one physical discard and one effect', async (t) => {

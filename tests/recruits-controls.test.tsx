@@ -50,16 +50,70 @@ void test('Recruits owner has an accessible physical-card action; rivals cannot 
   assert.ok(cardPresentation(card).topics.some((topic) => topic.id === 'card-recruits'));
 });
 
-void test('late-paid and wrong-phase controls stay guarded through the shared action adapter', () => {
-  let g = ownerGame();
-  g = allowRevival(applyAction(g, 'at', { type: 'revive', amount: 3 }));
-  const preview = viewGame(g, 'at').recruitsPreview;
-  assert.match(preview?.play?.blocked ?? '', /paid normal force revival/);
-  assert.equal(recruitsPlayAction(preview), null);
-  assert.match(render(g), /aria-describedby="recruits-unavailable"/);
-  assert.match(render(g), /disabled=""/);
-  g.phase = 5;
-  assert.equal(render(g), '');
+void test('late-paid controls allow provisional Recruits without refunding prior paid returns', () => {
+  const paid = allowRevival(applyAction(ownerGame(), 'at', { type: 'revive', amount: 3 }));
+  assert.equal(paid.players[0].revived, 3);
+  assert.equal(paid.players[0].freeForcesRevived, 2);
+  assert.equal(paid.players[0].spice, 18);
+  const preview = viewGame(paid, 'at').recruitsPreview;
+  assert.equal(preview?.play?.blocked, null);
+  const action = recruitsPlayAction(preview);
+  assert.deepEqual(action, { type: 'card', card: 'ecaz-recruits' });
+  assert.ok(action);
+  assert.match(render(paid), /Play Recruits · Discard card/);
+  assert.doesNotMatch(render(paid), /disabled=""/);
+  const played = applyAction(paid, 'at', action);
+  assert.deepEqual(played.recruits, { turn: paid.turn, player: 'at', card: 'ecaz-recruits' });
+  assert.equal(played.discard.filter((card) => card.id === 'ecaz-recruits').length, 1);
+  assert.ok(!played.players[0].hand.some((card) => card.id === 'ecaz-recruits'));
+  assert.deepEqual(played.players.map((player) => player.spice), paid.players.map((player) => player.spice));
+  assert.equal(played.players[0].revived, 3);
+  assert.equal(played.players[0].freeForcesRevived, 2);
+  assert.equal(viewGame(played, 'at').revival.freeRemaining, 2);
+  assert.equal(viewGame(played, 'at').revival.forcesRemaining, 4);
+  const free = allowRevival(applyAction(played, 'at', { type: 'revive', amount: 2 }));
+  assert.equal(free.players[0].revived, 5);
+  assert.equal(free.players[0].freeForcesRevived, 4);
+  assert.equal(free.players[0].spice, paid.players[0].spice);
+  assert.equal(viewGame(free, 'at').revival.freeRemaining, 0);
+  assert.equal(viewGame(free, 'at').revival.forcesRemaining, 2);
+});
+
+void test('missing and inconsistent ledgers, pending transactions, wrong phase and replay remain immutable guards', () => {
+  const paid = allowRevival(applyAction(ownerGame(), 'at', { type: 'revive', amount: 3 }));
+  const missing = structuredClone(paid);
+  delete missing.players[0].freeForcesRevived;
+  const inconsistent = structuredClone(paid);
+  inconsistent.players[0].freeForcesRevived = inconsistent.players[0].revived + 1;
+  const pending = applyAction(ownerGame(), 'at', { type: 'revive', amount: 3 });
+  assert.ok(pending.pendingRevival);
+  const wrongPhase = ownerGame();
+  wrongPhase.phase = 5;
+  const active = applyAction(ownerGame(), 'at', { type: 'card', card: 'ecaz-recruits' });
+  const recovered = structuredClone(active);
+  const [card] = recovered.discard.splice(recovered.discard.findIndex((held) => held.id === 'ecaz-recruits'), 1);
+  assert.ok(card);
+  recovered.players[0].hand.push(card);
+  for (const [label, g] of [
+    ['missing ledger', missing],
+    ['inconsistent ledger', inconsistent],
+    ['pending transaction', pending],
+    ['wrong phase', wrongPhase],
+    ['already-active recovered copy', recovered],
+  ] as const) {
+    const before = structuredClone(g);
+    const preview = viewGame(g, 'at').recruitsPreview;
+    assert.ok(preview?.play?.blocked, label);
+    assert.equal(recruitsPlayAction(preview), null, label);
+    assert.throws(() => applyAction(g, 'at', { type: 'card', card: 'ecaz-recruits' }), label);
+    assert.deepEqual(g, before, label);
+  }
+  const beforeReplay = structuredClone(active);
+  assert.throws(() => applyAction(active, 'at', { type: 'card', card: 'ecaz-recruits' }));
+  assert.deepEqual(active, beforeReplay);
+  assert.match(render(missing), /aria-describedby="recruits-unavailable"/);
+  assert.match(render(missing), /disabled=""/);
+  assert.equal(render(wrongPhase), '');
   assert.equal(recruitsPlayAction(undefined), null);
 });
 

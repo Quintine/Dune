@@ -3101,13 +3101,26 @@ function policyActions(g: GameView): Action[] {
             actions.push({ type: 'tleilaxuRevivalLimit', target: player.id });
     } else if (tleilaxu && !me.leaderRevived) {
       const request = g.revivalRequests[me.id];
+      // The server re-validates that the requested leader is still a dead,
+      // uncaptured native disc (or a dead Kwisatz Haderach) at acceptance, so
+      // never keep proposing an acceptance the authoritative guard rejects.
+      const requestedLeader = request?.leader === undefined
+        ? undefined
+        : me.leaders.find((l) => l.id === request.leader);
+      const stillRevivable = !!request && (request.leader === 'kwisatz'
+        ? me.kwisatz?.dead === true
+        : !!requestedLeader?.dead && !requestedLeader.capturedBy);
       if (
         request &&
         !request.declined &&
         request.price !== null &&
-        request.price <= (me.spice ?? 0)
+        request.price <= (me.spice ?? 0) &&
+        stillRevivable
       )
         actions.push({ type: 'acceptLeaderRevival' });
+      else if (request && !stillRevivable)
+        // Clear an unhonourable request so the phase can request again.
+        actions.push({ type: 'cancelLeaderRequest' });
       if (
         !request &&
         me.leaders.filter((l) => l.faction === me.faction && nativeAvailable(l))

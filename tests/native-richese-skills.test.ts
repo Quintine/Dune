@@ -145,27 +145,40 @@ void test('zero native No-Field retains an actual skilled leader battle and no p
   custody(game);
 });
 
-void test('original Smuggler companion remains physical and mixed No-Field battle stays guarded until voluntary native reveal', () => {
-  const staged = markerGame(5, 'smuggler', 'advanced', 20, true);
-  const owner = player(staged.game, 'richese');
-  assert.equal(owner.reserves, 19);
-  assert.equal(owner.forces['wind_pass:14'], 1);
-  reject(staged.game, staged.actor, { type: 'chooseBattle', territory: 'wind_pass', target: staged.target });
-  const token = owner.noField!.deployed!.tokenId;
-  reject(staged.game, staged.actor, { type: 'revealNoField', token, event: owner.noFieldEvent });
-  let game = applyAction(staged.beforeBattle, staged.actor, { type: 'revealNoField', token, event: owner.noFieldEvent });
-  assert.equal(player(game, 'richese').forces['wind_pass:14'], 6);
-  assert.equal(player(game, 'richese').reserves, 14);
-  Object.assign(game, { phase: 6, active: staged.actor, ready: [], phaseOpening: null, response: null, decision: null });
-  game = openAdvancedNativeSkillBattle(game, staged.actor, staged.target);
-  game = applyAction(game, staged.actor, { type: 'battlePlan', dial: 0, support: 0, leader: untrained(game, staged.actor) });
-  game = applyAction(game, staged.target, { type: 'battlePlan', dial: 0, support: 0, leader: untrained(game, staged.target) });
-  game = applyAction(game, staged.actor, { type: 'traitorCall', call: false });
-  game = applyAction(game, staged.target, { type: 'traitorCall', call: false });
-  game = finishAdvancedNativeSkillAftermath(game);
-  assert.equal(game.lastBattleContext!.winner, staged.target);
-  assert.equal(player(game, 'richese').tanks, 6);
-  assert.equal(player(game, 'richese').forces['wind_pass:14'] ?? 0, 0);
-  assert.equal(player(game, 'richese').reserves, 14);
-  custody(game);
+void test('Basic and Advanced Smuggler companions join capped mixed No-Field battles and lose only real counters', () => {
+  for (const rules of ['basic', 'advanced'] as const) for (const reserves of [3, 20]) {
+    const staged = markerGame(5, 'smuggler', rules, reserves, true);
+    const owner = player(staged.game, 'richese');
+    const materialized = Math.min(5, reserves - 1), pool = 1 + materialized;
+    assert.equal(owner.reserves, reserves - 1);
+    assert.equal(owner.forces['wind_pass:14'], 1);
+    let game = openAdvancedNativeSkillBattle(staged.game, staged.actor, staged.target);
+    assert.deepEqual(game.battle!.mixedNoFieldPlayers, [staged.actor]);
+    assert.equal(viewGame(game, staged.actor).battle!.mixedNoField, true);
+    assert.equal(viewGame(game, staged.actor).battle!.ownForces!.normal, pool);
+    assert.equal(viewGame(game, staged.target).battle!.mixedNoField, undefined);
+    assert.equal(viewGame(game, staged.target).battle!.opponentForces, null);
+    const token = owner.noField!.deployed!.tokenId;
+    reject(game, staged.actor, { type: 'revealNoField', token, event: owner.noFieldEvent });
+    reject(game, staged.actor, { type: 'battlePlan', dial: pool + 1, support: 0, leader: untrained(game, staged.actor) });
+    game = applyAction(game, staged.actor, { type: 'battlePlan', dial: 0, support: 0, leader: untrained(game, staged.actor) });
+    assert.equal(game.battle!.revealed, false);
+    assert.ok(player(game, 'richese').noField!.deployed);
+    assert.equal(player(game, 'richese').forces['wind_pass:14'], 1);
+    assert.equal(player(game, 'richese').reserves, reserves - 1);
+    game = applyAction(game, staged.target, { type: 'battlePlan', dial: 0, support: 0, leader: untrained(game, staged.target) });
+    assert.equal(game.battle!.revealed, true);
+    assert.equal(player(game, 'richese').noField!.deployed, null);
+    assert.equal(player(game, 'richese').forces['wind_pass:14'], pool);
+    assert.equal(player(game, 'richese').reserves, reserves - 1 - materialized);
+    custody(game);
+    game = applyAction(game, staged.actor, { type: 'traitorCall', call: false });
+    game = applyAction(game, staged.target, { type: 'traitorCall', call: false });
+    game = finishAdvancedNativeSkillAftermath(game);
+    assert.equal(game.lastBattleContext!.winner, staged.target);
+    assert.equal(player(game, 'richese').tanks, 20 - reserves + pool);
+    assert.equal(player(game, 'richese').forces['wind_pass:14'] ?? 0, 0);
+    assert.equal(player(game, 'richese').reserves, reserves - 1 - materialized);
+    custody(game);
+  }
 });

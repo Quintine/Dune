@@ -193,7 +193,7 @@ void test('Giedi uses original discard refill stock without ever drawing a physi
 });
 
 for (const [kind, rule] of Object.entries(effects) as [OccupiedBiddingKind, { native: FactionId; card: HomeworldId }][]) {
-  void test(`${rule.card}: Basic retains publisher turn-boundary qualification rather than a current garrison shortcut`, () => {
+  void test(`${rule.card}: Basic requires an observed qualification before current-sole control`, () => {
     const game = freshBiddingGame(rule.native, 'emperor', false);
     const world = `homeworld:${rule.native}`;
     const high = HOMEWORLD_CARDS.find(card => card.id === rule.card)!.high.reserves.min;
@@ -215,59 +215,70 @@ for (const [kind, rule] of Object.entries(effects) as [OccupiedBiddingKind, { na
     assertDefenseInventory(game);
   });
 
-  void test(`${rule.card}: Basic pending lifecycle and missing historical sources fail closed`, () => {
+  void test(`${rule.card}: Basic current-sole control follows the present garrison while missing history still fails closed`, () => {
     const qualified = freshBiddingGame(rule.native, 'emperor', false);
     const world = `homeworld:${rule.native}`;
     qualifyDefensePosition(qualified, world);
     const high = HOMEWORLD_CARDS.find(card => card.id === rule.card)!.high.reserves.min;
-    for (const mode of ['departure', 'competition', 'replacement', 'repopulation', 'expired', 'missing-history'] as const) {
+    const originalCards = biddingPhysicalIds(qualified);
+    for (const mode of ['turn', 'contest-cleared', 'replacement', 'repopulation-cleared'] as const) {
       const game = structuredClone(qualified);
-      if (mode === 'departure') {
-        removeDefenseVisitor(game, world);
-        recordDefensePosition(game, 'original-qualifier-left');
-        addDefenseVisitor(game, world);
-        recordDefensePosition(game, 'same-qualifier-returned-with-no-invented-expiry-rule');
-      } else if (mode === 'competition') {
+      if (mode === 'turn') game.turn++;
+      else if (mode === 'contest-cleared') {
         addDefenseVisitor(game, world, 'observer');
-        recordDefensePosition(game, 'second-original-foreign-group-arrived');
+        recordDefensePosition(game, 'second-foreign-group-arrived');
+        assert.equal(quoteOccupiedBiddingAuthority(game, kind).occupied, false, 'two foreign factions never grant current-sole control');
         removeDefenseVisitor(game, world, 'observer');
-        recordDefensePosition(game, 'contest-cleared-with-history-retained');
+        recordDefensePosition(game, 'contest-cleared');
       } else if (mode === 'replacement') {
         removeDefenseVisitor(game, world);
-        recordDefensePosition(game, 'original-qualifier-departed-before-turnover');
+        recordDefensePosition(game, 'original-qualifier-departed');
         addDefenseVisitor(game, world, 'observer');
-        recordDefensePosition(game, 'different-original-sole-qualifier-arrived');
-      } else if (mode === 'repopulation') {
+        recordDefensePosition(game, 'different-sole-qualifier-arrived');
+      } else {
         const native = biddingPlayer(game, 'native');
         native.tanks -= high;
         native.reserves += high;
-        recordDefensePosition(game, 'native-original-high-threshold-restored');
+        recordDefensePosition(game, 'native-high-threshold-restored');
+        assert.equal(quoteOccupiedBiddingAuthority(game, kind).occupied, false, 'native repopulation ends the provisional benefit');
         clearDefenseNative(game, world);
-        recordDefensePosition(game, 'native-fell-low-after-restoration');
-      } else if (mode === 'expired') {
-        game.turn++;
-      } else delete game.homeworldOccupationHistory;
-      const before = structuredClone(game);
-      const blocked = quoteOccupiedBiddingAuthority(game, kind);
-      assert.notEqual(blocked.blocked, null);
-      assert.equal(blocked.provider, 'native', 'source provider is not reassigned even when effect must wait');
-      assert.equal(blocked.controller, null);
-      assert.deepEqual(blocked.inspectionAudience, [], 'uncertain history never leaks an original private pool/card');
-      assert.deepEqual(blocked.bonusRecipients, []);
-      assert.throws(() => requireOccupiedBiddingController(game, kind, 'native'), HomeworldCustodyError);
-      assert.throws(() => requireOccupiedBiddingController(game, kind, 'occupier'), HomeworldCustodyError);
-      if (kind === 'harkonnenBonus')
-        assert.throws(() => requireOccupiedBiddingBonusRecipient(game, 'occupier'), HomeworldCustodyError);
-      assert.deepEqual(game, before);
+        recordDefensePosition(game, 'native-fell-low-again');
+      }
+      const controller = mode === 'replacement' ? 'observer' : 'occupier';
+      const authority = quoteOccupiedBiddingAuthority(game, kind);
+      assert.equal(authority.blocked, null);
+      assert.equal(authority.occupied, true);
+      assert.equal(authority.provider, 'native');
+      assert.equal(authority.controller, kind === 'atreidesInspection' ? 'native' : controller);
+      if (kind === 'atreidesInspection' || kind === 'richeseCache')
+        assert.ok(authority.inspectionAudience.includes(controller), 'the current-sole controller shares the printed audience');
+      assert.deepEqual(biddingPhysicalIds(game), originalCards);
       assertDefenseInventory(game);
-      const saved: Game = JSON.parse(JSON.stringify(game));
-      assert.equal(quoteOccupiedBiddingAuthority(saved, kind).controller, null);
-      assert.notEqual(quoteOccupiedBiddingAuthority(saved, kind).blocked, null);
-      delete saved.homeworldOccupationPreview;
-      const legacy = quoteOccupiedBiddingAuthority(saved, kind);
-      assert.equal(legacy.controller, 'native');
-      assert.equal(legacy.blocked, null, 'outside fresh preview does not convert or gate native saved-game rules');
     }
+    const missing = structuredClone(qualified);
+    delete missing.homeworldOccupationHistory;
+    const before = structuredClone(missing);
+    const blocked = quoteOccupiedBiddingAuthority(missing, kind);
+    assert.notEqual(blocked.blocked, null);
+    assert.equal(blocked.provider, 'native', 'source provider is not reassigned even when effect must wait');
+    assert.equal(blocked.controller, null);
+    assert.deepEqual(blocked.inspectionAudience, [], 'uncertain history never leaks an original private pool/card');
+    assert.deepEqual(blocked.bonusRecipients, []);
+    assert.throws(() => requireOccupiedBiddingController(missing, kind, 'native'), HomeworldCustodyError);
+    assert.throws(() => requireOccupiedBiddingController(missing, kind, 'occupier'), HomeworldCustodyError);
+    if (kind === 'harkonnenBonus')
+      assert.throws(() => requireOccupiedBiddingBonusRecipient(missing, 'occupier'), HomeworldCustodyError);
+    assert.deepEqual(missing, before);
+    assertDefenseInventory(missing);
+  });
+
+  void test(`${rule.card}: deleting the fresh preview falls back to the native saved-game rule`, () => {
+    const qualified = freshBiddingGame(rule.native, 'emperor', false);
+    qualifyDefensePosition(qualified, `homeworld:${rule.native}`);
+    delete qualified.homeworldOccupationPreview;
+    const legacy = quoteOccupiedBiddingAuthority(qualified, kind);
+    assert.equal(legacy.controller, 'native');
+    assert.equal(legacy.blocked, null, 'outside fresh preview does not convert or gate native saved-game rules');
   });
 }
 

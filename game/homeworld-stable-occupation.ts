@@ -21,14 +21,30 @@ export type StableHomeworldOccupationQuote = {
   blocked: string | null;
 };
 type SourceWorld = [string, [string, number, number][]];
+type HomeworldCard = (typeof HOMEWORLD_CARDS)[number];
+type HomeworldWorld = ReturnType<typeof homeworldForceGroups>[number];
+type History = NonNullable<Game['homeworldOccupationHistory']>;
+type Player = Game['players'][number];
+
+export type StableHomeworldOccupationOptions = {
+  /** Basic-only policy selector. `currentSole` is the provisional default used
+   * by occupied income, Bidding, defenses and percentage effects. `epoch` keeps
+   * the conservative original-epoch gate for Basic Tupile slot leasing while
+   * the retention/turnover ruling stays open. Advanced ignores this option. */
+  basic?: 'currentSole' | 'epoch';
+};
 
 /** Original source history supplies entitlement, never a current-controller
  * shortcut. Advanced uses the authorized supplied rulebook p.22: qualification
  * requires sole foreign presence and survives until that occupier leaves.
- * Basic retains the publisher-only pending lifecycle guards below. */
+ * Basic defaults to a visibly provisional current-sole-controller policy; the
+ * sole-foreign-controller entitlement expires immediately on departure,
+ * contest or native repopulation. Tupile keeps the conservative Basic epoch
+ * gate documented in its own module. Neither mode invents an unobserved event. */
 export function quoteStableHomeworldOccupation(
   game: StableHomeworldOccupationContext,
   cardId: HomeworldId,
+  options: StableHomeworldOccupationOptions = {},
 ): StableHomeworldOccupationQuote {
   const none: StableHomeworldOccupationQuote = { entitlement: null, blocked: null };
   if (!game.homeworldOccupationPreview) return none;
@@ -69,6 +85,57 @@ export function quoteStableHomeworldOccupation(
     return { entitlement: { world: world.id, card: cardId, native: native.id, occupier: occupier.id,
       ally, qualification: retained.event, turn: game.turn, spice: card.occupied.spiceIcons }, blocked: null };
   }
+  return options.basic === 'epoch'
+    ? basicEpochOccupation(game, card, world, native, history)
+    : basicCurrentSoleOccupation(game, card, world, native, history);
+}
+
+/** Provisional Basic default: the currently present sole foreign faction
+ * controls the occupied benefit, expiring immediately on departure, contest or
+ * native repopulation. Entitlement still requires an observed qualification;
+ * the quote never manufactures one from a physical write. */
+function basicCurrentSoleOccupation(
+  game: StableHomeworldOccupationContext,
+  card: HomeworldCard,
+  world: HomeworldWorld,
+  native: Player,
+  history: History,
+): StableHomeworldOccupationQuote {
+  if (!history.qualifications.some(f => f.world === world.id)) return { entitlement: null, blocked: null };
+  let nativeHigh = false;
+  const foreign: string[] = [];
+  for (const [id, forces] of Object.entries(world.forces)) {
+    const amount = forces.normal + forces.elite;
+    if (id === native.id) {
+      const population = card.reserveType === 'sardaukar' ? forces.elite : amount;
+      if (population >= card.high.reserves.min) nativeHigh = true;
+    } else if (amount > 0) foreign.push(id);
+  }
+  if (nativeHigh || foreign.length !== 1) return { entitlement: null, blocked: null };
+  const qualified = history.qualifications.filter(f => f.world === world.id && f.player === foreign[0]).at(-1);
+  if (!qualified)
+    return { entitlement: null,
+      blocked: 'The original Basic sole-occupation change must be observed before its benefit settles.' };
+  const occupier = game.players.find(p => p.id === foreign[0])!;
+  const ally = occupier.ally && game.players.some(p => p.id === occupier.ally && p.ally === occupier.id)
+    ? occupier.ally : null;
+  return { entitlement: { world: world.id, card: card.id, native: native.id, occupier: occupier.id,
+    ally, qualification: qualified.event, turn: game.turn, spice: card.occupied.spiceIcons }, blocked: null };
+}
+
+/** Conservative Basic epoch gate retained for Tupile slot leasing while the
+ * retention, composition and turnover ruling is open: the original first
+ * qualifier must be alone and have qualified this turn, and departure, contest
+ * or native repopulation reports an explicit unresolved reason instead of a
+ * silent hand-off. */
+function basicEpochOccupation(
+  game: StableHomeworldOccupationContext,
+  card: HomeworldCard,
+  world: HomeworldWorld,
+  native: Player,
+  history: History,
+): StableHomeworldOccupationQuote {
+  const none: StableHomeworldOccupationQuote = { entitlement: null, blocked: null };
   const first = history.qualifications.find(f => f.world === world.id);
   if (!first) return none;
   const blocked = (detail: string): StableHomeworldOccupationQuote => ({ entitlement: null,
@@ -115,6 +182,6 @@ export function quoteStableHomeworldOccupation(
   const occupier = game.players.find(p => p.id === first.player)!;
   const ally = occupier.ally && game.players.some(p => p.id === occupier.ally && p.ally === occupier.id)
     ? occupier.ally : null;
-  return { entitlement: { world: world.id, card: cardId, native: native.id, occupier: occupier.id,
+  return { entitlement: { world: world.id, card: card.id, native: native.id, occupier: occupier.id,
     ally, qualification: first.event, turn: game.turn, spice: card.occupied.spiceIcons }, blocked: null };
 }

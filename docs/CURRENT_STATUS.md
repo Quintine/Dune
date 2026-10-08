@@ -174,6 +174,34 @@ owned React purchase/income controls prove hand4/cache0, one fee/card/once-use.
 No broad suite, recovery campaign or deployed acceptance was run.
 Types/lint and the three-file acquisition union pass **21/21**.
 
+**Basic occupied Homeworld lifecycle connected.** The shared stable-occupation
+quote now has a visibly provisional Basic current-sole policy: the present sole
+foreign garrison controls occupied income, Caladan/Ix/Richese/Giedi Bidding
+authority, printed defenses, percentage shares and the Ecaz-victory holding, and
+expires immediately on departure, contest or native repopulation. A recorded
+source observation is still required. Basic Tupile slot leasing deliberately
+keeps the conservative original-epoch gate. Frozen receipts keep their original
+entitlement. The 738-case Homeworld union passes, including the changed-path
+native smokes; one unrelated stale Richese cache-cancellation test was corrected
+to the already-implemented 7 October ordinary-lot contract.
+
+**Stale-guard test sweep and one bot correctness fix.** Full offline runs
+(`npm test`) were compared against the pre-session revision `4ed6beb` to
+separate inherited debt from new regressions. Five superseded guard-pin tests
+now assert the shipped contracts (Basic/Advanced mixed No-Field admission,
+allied reserve arrival, combined-Occupy rejection message, the resolved
+exhausted-cache cancellation), three reference wording-pin tests were deleted in
+favour of the existing structural five-facet/evidence check, and the stale
+Tleilaxu negotiated-revival guards and Duke-Tanks/shipment-integrity cases were
+updated to real native outcomes. One genuine bot defect was fixed: a bot kept
+proposing `acceptLeaderRevival` for a request whose leader was no longer dead
+and captured (it now requires the leader to still be revivable and otherwise
+cancels the unhonourable request), which removed 22 rejected actions from the
+combined-expansion CLI sample. Twenty offline failures remain and all are
+present at `4ed6beb` (odd-force Ecaz Occupy/high-threshold guards, several
+alliance-entry and cache-cancel boundary cases, and two intermittently failing
+Moritani skill-runtime tests measured at the same 3/30 rate on both revisions).
+
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in
 [the decision index](RULE_DECISIONS.md#user-rulings--7-october-2026) and
