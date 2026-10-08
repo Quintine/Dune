@@ -2,6 +2,29 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Advanced first versions — 8 October 2026
+
+Advanced ordinary mixed battles and discounted allied shipments now reuse
+the explicitly provisional policies below. Supplied physical p36 B gives
+reserve-limited materialization and p36 D permits allied off-planet forces;
+p37 C gives the rounded Guild fee. These passages do not specifically
+adjudicate the mixed dial cap or price/payee precedence. Combined Ecaz
+Occupy and whole-plan inspection remain guarded; mode gates are unchanged.
+
+`Battle.mixedNoFieldPlayers` and the owner-only `battle.mixedNoField` notice
+apply in both modes. Native Advanced support is committed separately and
+paid at battle resolution; token revelation does not grant free support.
+Minimal AI may form mixed groups using its existing private force quote.
+Two direct battle smokes cover unsupported and two-spice-supported plans:
+physical2 + token3 gives private5, the first seal keeps the marker hidden,
+the second materializes3 once, and ordinary losses/aftermath finish.
+Two allied smokes cover Guild and actual native Karama rates with Easy
+consent, physical5, bank1 and only the recipient's shipment consumed.
+Actual GameTable SSR controls were observed in Chromium, including the
+Advanced mixed-pool warning and discounted consent. This is isolated
+surface evidence, not deployed or full-game acceptance.
+
+
 ## Basic discounted allied price prototype — 8 October 2026
 
 Guild recipients and already-active Karama rates now have a connected
@@ -13,7 +36,7 @@ the materialized unit count or granting another shipment.
 [Canonical payment contract](RICHESE_ALLIED_SHIPMENT_AUDIT.md).
 Two before/after direct engine cases cover a Guild recipient and an actual
 native Karama purchase, private offers, Easy consent, five actual arrivals
-and one bank payment. Types pass. Advanced counterparts remain guarded.
+and one bank payment. Advanced now shares this provisional policy above.
 
 ## Basic mixed battle prototype — 8 October 2026
 
@@ -22,15 +45,15 @@ physical forces and a concealed No-Field. It reuses the existing private
 prospective pool: **physical forces already in the territory plus
 `min(token value, current reserves)`**. This is a visibly provisional
 mixed-pool interpretation, not an adjudication of the FAQ's reserve-cap
-ambiguity below. Advanced mixed battles and combined Ecaz Occupy remain
-guarded for their separate pass/composition work.
+ambiguity below. Combined Ecaz Occupy remains guarded; Advanced ordinary
+mixed battles now use the same policy as described above.
 
-`Battle.basicMixedNoFieldPlayers` retains initial mixed participation.
-Only the participating owner's view receives `battle.basicMixedNoField`
+`Battle.mixedNoFieldPlayers` retains initial mixed participation.
+Only the participating owner's view receives `battle.mixedNoField`
 and its private prospective bounds. The actual Battle Wheel explains the
 formula and its provisional status; marker-only wording no longer claims
 that the mixed pool consists entirely of reserve materialization.
-Basic AI may form mixed groups and uses the authoritative own force quote,
+Basic and Advanced AI may form mixed groups and use the authoritative own force quote,
 without consulting an opponent's hidden denomination.
 
 The existing sealed-plan path materializes the token once after both plans
@@ -101,11 +124,11 @@ This table records the original adapter contract. The implemented subset and cur
 ## Unresolved or compositional boundaries
 
 1. **Reserve shortage when destroyed.** Voluntary/battle text explicitly caps by reserves; the destruction sentence says to lose the indicated quantity without repeating the shortage clause. The pure model caps materialization to avoid creating physical units, but that is conservation-based composition for storm/worm losses, not an independently answered FAQ. It does not select substitute losses from unrelated board forces.
-2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. A territory can also contain ordinary forces (the Smuggler answer demonstrates mixed presence), but no retrieved answer expressly defines that limit with existing forces, multiple sectors, typed units or independently committed reserve uses. The Basic prototype above uses an explicitly provisional additive pool; this does not settle the source question. Advanced and combined Occupy remain guarded.
+2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. A territory can also contain ordinary forces (the Smuggler answer demonstrates mixed presence), but no retrieved answer expressly defines that limit with existing forces, multiple sectors, typed units or independently committed reserve uses. Basic and Advanced prototypes use an explicitly provisional additive pool; this does not settle the source question. Combined Occupy remains guarded.
 3. **Full-plan special Karama and structured Truthtrance.** The ordinary Atreides dial prohibition is explicit. Whether a broader entire-plan power or a particular promise question overrides it was not resolved by a retrieved specific answer. Do not leak the value through private legal-plan previews, public maximum dials, error strings or bot reasoning.
 4. **Homeworld use.** R3 recommends Richese in a Homeworld combination but supplies no retrieved No-Field-specific rule defining off-planet hidden custody, one-on-planet versus off-planet coexistence, or homeworld threshold disclosure. General module availability is not an answer to those lifecycle questions. The isolated model represents a single Arrakis marker and does not authorize Homeworld placement.
 5. **Capturing, transferring or returning a concealed marker as a force.** Movement-as-a-force and Gamont's explicit forced reveal do not establish a general conversion for every card or Guild transport-to-reserves. A generic return helper must not erase a hidden token without a source-backed reveal/custody cause. This module exposes no such automatic escape from last-use history.
-6. **Allied discounts and reserve source.** Ordinary consent, typed allocation and funding are integrated. Basic Guild-recipient and already-active Karama price/payee have the explicitly provisional prototype above; their Advanced counterparts remain guarded pending resolution. Ordinary Fremen reserves are on-planet and remain ineligible for this off-planet method. See `RICHESE_ALLIED_SHIPMENT_AUDIT.md`.
+6. **Allied discounts and reserve source.** Ordinary consent, typed allocation and funding are integrated. Guild-recipient and already-active Karama price/payee use the explicitly provisional prototype in both modes. Ordinary Fremen reserves are on-planet and remain ineligible for this off-planet method. See `RICHESE_ALLIED_SHIPMENT_AUDIT.md`.
 7. **Supply orientation.** Concealed denomination is explicit. Hiding unused IDs/values in public JSON is the minimum privacy consequence, not a claim about an otherwise undocumented physical supply layout. The last revealed used face is public until another deployment; historical log knowledge may legitimately remain.
 
 ## Required verification
@@ -126,7 +149,7 @@ Root integration review also corrected the Polar Sink address: its ordinary boar
 
 `game/force-presence.ts` distinguishes presence from actual units, and map/occupancy, battle discovery, collection and control use that distinction. A marker is one collector even at zero. Storm checks the exact exposed marker sector before materialization/casualties; sheltered Imperial Basin and other sectors are preserved in focused checks. Unprotected worm destruction runs the actual reveal/casualty path, including a real Thumper trigger. Protected-worm and additional removal effects remain bounded by the source interpretations above.
 
-Marker-only battle admission computes the owner's prospective pool from denomination and remaining reserves. The view exposes that pool only to its owning combatant; another player sees its own pool or none. Both plans seal before public reveal materializes the marker. The battle's `noFieldPlayers` flag persists, so zero still has its leader/cards/traitor resolution. Ordinary Atreides dial prescience is rejected on the server and avoided by controls/AI. Basic physical-plus-marker admission now has the provisional prototype above; Advanced/combined mixed admission and special whole-plan inspection remain guarded. Broader Truthtrance remains an audit boundary.
+Marker-only battle admission computes the owner's prospective pool from denomination and remaining reserves. The view exposes that pool only to its owning combatant; another player sees its own pool or none. Both plans seal before public reveal materializes the marker. The battle's `noFieldPlayers` flag persists, so zero still has its leader/cards/traitor resolution. Ordinary Atreides dial prescience is rejected on the server and avoided by controls/AI. Basic and Advanced physical-plus-marker admission use the provisional prototype above; combined mixed admission and special whole-plan inspection remain guarded. Broader Truthtrance remains an audit boundary.
 
 **Player controls — Partial.** `components/richese-no-field.tsx` provides concealed board markers plus owner-only denomination inventory, last-use status, token selection, ordinary one-force price/ally-share feedback and authoritative unavailable reasons. The parent table adds explicit marker movement selection and private prospective battle bounds. Token identifiers and hidden values are absent from rival board projections. The separate `components/richese-allied-no-field.tsx` supplies owner opportunity/proposal/payment controls and private recipient accept/decline/typed-force controls. Own shipment, marker movement and invitation/reveal have passed browser checks; an allied owner proposal was checked, but recipient browser acceptance and mobile remain pending.
 

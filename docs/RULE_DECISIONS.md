@@ -15,10 +15,10 @@ They supersede earlier software-absence claims only within their named scope.
 | New-ally Duke loan | Optional existing-disc loan after Ambassador alliance consent; one battle and unused turn-end set-aside. | [Duke acquisition](ECAZ_DUKE_ACQUISITION.md) |
 | Tleilaxu Ambassador leader alternative | First-death own native leader revives free instead of forces, independently of ordinary revival allowance. | [Ambassador](TLEILAXU_AMBASSADOR_RULES.md) |
 | Ordinary allied shipment transit | Depart during the shipper's turn; excess new physical visitors still present at ending go to Tanks, even when exit was prevented. Old co-occupation timing is separate. | [Allied transit](ALLIED_TRANSIT_RULES.md) |
-| Ordinary mixed No-Field battle | Private pool is physical forces plus reserve-limited token materialization; both plans seal before one reveal. Advanced and combined Occupy remain separate. | [No-Field](RICHESE_NO_FIELD_RULES.md) |
+| Ordinary mixed No-Field battle | Private pool is physical forces plus reserve-limited token materialization; both plans seal before one reveal. Advanced now shares this provisional policy; combined Occupy remains separate. | [No-Field](RICHESE_NO_FIELD_RULES.md) |
 | Guild-recipient allied No-Field | Rounded one-force Guild fee: one spice to bank, even when Richese funds it; no Guild self-shipment income. | [Allied No-Field payment](RICHESE_ALLIED_SHIPMENT_AUDIT.md) |
 | Already-active Karama / allied No-Field | Honor the already-played rounded one-force Guild rate and bank routing; no implicit additional card or shipment. | [Allied No-Field payment](RICHESE_ALLIED_SHIPMENT_AUDIT.md) |
-| Full-hand Nullentropy Box | Basic permits an atomic retrieval/Box-disposal exchange with final hand within its actual limit; Box remains last/on top. Intermediate capacity is not adjudicated; Advanced remains guarded. | [Box runtime](NULLENTROPY_BOX_ENGINE_AUDIT.md) |
+| Full-hand Nullentropy Box | Basic and Advanced permit an atomic retrieval/Box-disposal exchange with final hand within its actual limit; Box remains last/on top. Intermediate capacity is not adjudicated. | [Box runtime](NULLENTROPY_BOX_ENGINE_AUDIT.md) |
 
 No publication or faction/mode gate is opened. The exact 7 October user
 rulings below remain distinct from these prototype choices.
@@ -34,6 +34,12 @@ without a new loan acknowledgement. Basic keeps its optional prototype.
 Turn-end set-aside is supplied text; one-battle loan release remains the
 explicit provisional implementation policy. Existing exceptional custody and
 Advanced Harkonnen guards remain. [Current Duke grant contract](ECAZ_DUKE_ACQUISITION.md).
+
+Advanced Richese ordinary mixed battles, Guild/active-Karama allied prices
+and full-hand Box now share the visibly qualified Basic prototype policies.
+Native Advanced support and shipment prevention remain separate. These are
+first-version implementation choices, not exact numerical user rulings;
+combined Occupy, whole-plan inspection and Guild-refund boundaries remain.
 
 Supplied **p30 Ecaz G** and **p35 Moritani F** now have connected once-game
 special Karama first versions. Ecaz uses an explicitly provisional absolute

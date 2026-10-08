@@ -3266,15 +3266,13 @@ function policyActions(g: GameView): Action[] {
         : null;
     if (
       reveal &&
-      ((g.advanced && physicalAlongsideMarker) ||
-        !me.shipped ||
+      (!me.shipped ||
         (me.moved ?? 0) >= (me.movesAllowed ?? 1))
     )
       return [reveal];
     const markerTargets = targets.filter(
       (to) =>
         to.t !== MOBILE_STRONGHOLD &&
-        (!g.advanced || countAt(me, to.t) === 0) &&
         !territoryEntryBlock(g.players, me.id, to.t),
     );
     if (noField?.canShip && ownNoField && !marker && !me.shipped) {
@@ -3380,7 +3378,6 @@ function policyActions(g: GameView): Action[] {
             (me.faction !== 'fremen' || fremenReserveEntry(to.t)),
         )
         .slice(0, 24)) {
-        if (g.advanced && marker?.location.territory === to.t) continue;
         const desired = Math.min(
           me.reserves,
           level === 0 ? (quoteSmugglerShipment(g, me.id, to.t, 2) ? 2 : 1) : Math.max([1, 3, 4, 5][level], to.enemy + 2),
@@ -3512,7 +3509,6 @@ function policyActions(g: GameView): Action[] {
       for (const to of targets
         .filter(
           (to) =>
-            (!g.advanced || marker?.location.territory !== to.t) &&
             movingSources.some((source) =>
               botGroundMoveAllowed(g, me, source.from, to.key, source.elite),
             ),

@@ -5,7 +5,7 @@ import type { Action, GameView } from '@/game/engine';
 import { Button } from './ui/button';
 import { CardInspector, CardRules } from './card-inspector';
 
-const fullHandPolicy = 'Provisional Basic full-hand exchange: retrieval and the played Box discard settle atomically, leaving your final hand at its limit. The printed intermediate-capacity timing remains unresolved.';
+const fullHandPolicy = 'Provisional full-hand exchange: retrieval and the played Box discard settle atomically, leaving your final hand at its limit. The printed intermediate-capacity timing remains unresolved.';
 
 type BoxProps = {
   game: GameView;

@@ -160,7 +160,7 @@ export const FACTION_RULES: Record<
       'Before the regular auction sequence, Black Market may offer a concealed card from your hand. The buyer pays you. An unsold card stays in your hand; a completed sale reduces the regular auction pool by one. Atreides can inspect the offered card.',
       'Once per game, spend Karama and three spice to acquire an eligible cache card privately for your hand. This is separate from an auction purchase.',
       'Richese occupation of Tuek’s Sietch also prevents the Fremen special victory in Advanced play.',
-      'Black Market self-purchase, Ixian substitution on special lots and wider card interactions remain guarded in development games.',
+      'Ordinary mixed No-Field battles and Guild/active-Karama allied prices share Basic’s visibly provisional policies, with native Advanced support and shipment-stop timing. Full-hand Box exchange is likewise provisional. Black Market self-purchase and wider card interactions remain guarded; supplied p34 excludes Ixian Technology from Richese auctions.',
     ],
   },
   ecaz: {

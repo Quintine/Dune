@@ -188,8 +188,7 @@ void test('offer choices do not use hidden recipient money and respect projectio
     const view = projection(fixture(), difficulty);
     view.richeseNoField!.canOfferAlly = false;
     assert.ok(!botActions(view).some((a) => a.type === 'offerRicheseNoField'));
-    for (const faction of ['fremen', 'guild'] as const)
-      assert.equal(offerAction(fixture(faction), difficulty), undefined);
+    assert.equal(offerAction(fixture('fremen'), difficulty), undefined);
     const inactive = fixture();
     inactive.active = 'r';
     assert.equal(offerAction(inactive, difficulty), undefined);

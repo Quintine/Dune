@@ -730,8 +730,8 @@ export type Battle = {
   preLeader?: { event: string; ready: string[]; closed: boolean };
   /** Public marker participation persists after a zero-token reveal. */
   noFieldPlayers?: string[];
-  /** Provisional Basic mixed-pool participation, separate from the hidden value. */
-  basicMixedNoFieldPlayers?: string[];
+  /** Provisional mixed-pool participation, separate from the hidden value. */
+  mixedNoFieldPlayers?: string[];
   ecazSpecialKarama?: EcazSpecialKaramaDeclaration;
   truthPromises?: BattlePromise[];
   poisonTooth?: Record<string, boolean>;
@@ -3937,8 +3937,6 @@ function noFieldAllyOfferBlock(
     return 'No-Field inventory is not initialized.';
   if (ally.faction === 'fremen')
     return 'Fremen reserves are on the planet; this ability ships off-planet reserves.';
-  if (g.advanced && (ally.faction === 'guild' || g.karamaShipping?.player === ally.id))
-    return 'Allied No-Field pricing with Guild or Karama discounts awaits a ruling.';
   if (
     g.richeseAllyBlocked?.turn === g.turn &&
     g.richeseAllyBlocked.recipient === ally.id
@@ -4095,10 +4093,8 @@ function validateNullentropyBegin(g: Game, owner: Player, cardId: string) {
   requireRule(!reserved, reserved ?? 'The Box is already committed.');
   const limit = handLimit(owner);
   requireRule(
-    g.advanced ? owner.hand.length < limit : owner.hand.length <= limit,
-    g.advanced
-      ? 'Full-hand Nullentropy Box use is unresolved; the current guard requires a pre-existing free hand slot.'
-      : 'The final exchanged hand must not exceed its hand limit.',
+    owner.hand.length <= limit,
+    'The final exchanged hand must not exceed its hand limit.',
   );
   const guild = byFaction(g, 'guild');
   requireRule(
@@ -4166,7 +4162,7 @@ function finishNullentropy(
       cardId,
       remaining.map((c) => c.id),
       handLimit(owner),
-      !g.advanced,
+      true,
     );
   } catch (error) {
     throw new RuleError(
@@ -4193,7 +4189,7 @@ function finishNullentropy(
     cardId,
     order,
     handLimit(owner),
-    !g.advanced,
+    true,
   );
   owner.hand = result.ownerHand;
   g.discard = result.discard;
@@ -4257,7 +4253,7 @@ function nullentropyView(g: Game, owner: Player) {
     (c) => richeseCardDefinition(c)?.card.effect === 'nullentropyBox',
   );
   if (!card) return null;
-  const fullHandExchange = !g.advanced && owner.hand.length === handLimit(owner);
+  const fullHandExchange = owner.hand.length === handLimit(owner);
   if (pending?.player === owner.id) {
     const blocked = nullentropyIntegrity(g);
     return {
@@ -31450,15 +31446,15 @@ function applyActionInner(
       (player.id === choice.attacker || player.id === choice.defender ||
         (g.advanced && connected && ecaz && ally?.ally === ecaz.id && player.id === ally.id &&
           (choice.attacker === ecaz.id || choice.defender === ecaz.id)))).map(player => player.id);
-    let basicMixedNoFieldPlayers: string[] | undefined;
+    let mixedNoFieldPlayers: string[] | undefined;
     for (const playerId of noFieldPlayers) {
       const mixed = Object.entries(getPlayer(g, playerId).forces).some(
         ([key, n]) => n > 0 && splitLocation(key).territory === choice.territory,
       );
       if (!mixed) continue;
-      requireRule(!g.advanced && !combined,
-        'Mixed Advanced or combined Occupy No-Field battle dialing awaits a ruling. Basic ordinary mixed battles use the visible provisional pool.');
-      (basicMixedNoFieldPlayers ??= []).push(playerId);
+      requireRule(!combined,
+        'Combined Occupy No-Field battle dialing awaits a ruling. Ordinary mixed battles use the visible provisional pool.');
+      (mixedNoFieldPlayers ??= []).push(playerId);
     }
     if (combined) {
       requireRule(ecazOccupyCompositionSupported(g),
@@ -31478,7 +31474,7 @@ function applyActionInner(
         ? { preLeader: { event: battleEvent, ready: [], closed: false } }
         : {}),
       ...(noFieldPlayers.length ? { noFieldPlayers } : {}),
-      ...(basicMixedNoFieldPlayers ? { basicMixedNoFieldPlayers } : {}),
+      ...(mixedNoFieldPlayers ? { mixedNoFieldPlayers } : {}),
       prepared: true,
       plans: {},
       revealed: false,
@@ -32991,7 +32987,7 @@ export function viewGame(state: Game, id: string) {
           ) as Record<string, StrongholdId | null>,
           tieWinner: battleTieWinner(g),
           noFieldPlayers: [b.attacker, b.defender].filter(player => battleNoFieldPlan(g, player)),
-          ...(b.basicMixedNoFieldPlayers?.includes(id) ? { basicMixedNoField: true as const } : {}),
+          ...(b.mixedNoFieldPlayers?.includes(id) ? { mixedNoField: true as const } : {}),
           ownForces: [b.attacker, b.defender].includes(id)
             ? planCombatForces(g, me, getPlayer(g, b.attacker === id ? b.defender : b.attacker))
             : null,

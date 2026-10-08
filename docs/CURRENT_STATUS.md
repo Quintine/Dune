@@ -102,8 +102,16 @@ both public progress and actual turn-ten victory. Basic stays Tabr-only;
 solitary Ecaz and third-party blockers remain. One before/after native ending
 smoke and three Habbanya contract cases pass; no broad suite was run.
 
-
-
+**Advanced Richese first-version follow-up.** Ordinary mixed No-Field battles,
+Guild/active-Karama allied rates and full-hand Box exchange now share the
+visibly provisional Basic policies. Native Advanced support and Guild-stop
+timing remain connected. Four direct scenarios cover unsupported/supported
+mixed battles, actual allied shipment settlement and private Box exchange;
+GameTable SSR surfaces were observed in Chromium. Types/lint and one affected
+bot contract pass. Combined Occupy, whole-plan inspection and Guild-refund
+boundaries remain; no broad suite or deployed acceptance was run.
+The preceding supplied p34 cutover excludes Ixian Technology from Richese
+auctions; ordinary Technology and allied post-purchase replacement remain.
 
 **7 October 2026 — five pending rulings resolved by the user.** The user
 answered five recorded questions; each is now recorded in

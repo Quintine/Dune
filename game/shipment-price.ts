@@ -27,19 +27,18 @@ export function guildShipmentCost(
 const ordinaryAlliedNoFieldPricing = Object.freeze({
   stronghold: 1, other: 2, bankOnly: false, policy: null,
 });
-const basicDiscountedAlliedNoFieldPricing = Object.freeze({
+const discountedAlliedNoFieldPricing = Object.freeze({
   stronghold: 1, other: 1, bankOnly: true,
-  policy: 'Provisional Basic pricing: a Guild recipient or already-active Karama rate uses the rounded one-force Guild fee (1 spice), paid entirely to the bank. This price/payee precedence is not an adjudicated publisher ruling.',
+  policy: 'Provisional pricing: a Guild recipient or already-active Karama rate uses the rounded one-force Guild fee (1 spice), paid entirely to the bank. This price/payee precedence is not an adjudicated publisher ruling.',
 });
 
-/** Basic first version; Advanced keeps its separate unresolved-entry guard. */
+/** Shared first-version price/payee policy for Basic and Advanced. */
 export function alliedNoFieldShipmentPricing(
   context: { advanced: boolean; karamaShipping?: { player: string } | null },
   recipient: { id: string; faction: FactionId },
 ) {
-  return !context.advanced &&
-    (recipient.faction === 'guild' || context.karamaShipping?.player === recipient.id)
-    ? basicDiscountedAlliedNoFieldPricing : ordinaryAlliedNoFieldPricing;
+  return recipient.faction === 'guild' || context.karamaShipping?.player === recipient.id
+    ? discountedAlliedNoFieldPricing : ordinaryAlliedNoFieldPricing;
 }
 
 /** A pledge is already escrowed. Selecting a share never spends a donor's
