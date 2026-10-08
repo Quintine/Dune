@@ -133,3 +133,4 @@ void test('Rihani return controls separate new-card keeps from unused old-card r
   assert.ok(completed.includes(`returned ${identityName(owner, given)}`));
   assert.equal(historyHtml(viewGame(done, 'd')), '');
 });
+

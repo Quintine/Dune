@@ -78,6 +78,8 @@ import { JuiceOfSapho } from './juice-of-sapho';
 import { LeaderSkillsPanel } from './leader-skills';
 import { LeaderSkillBattleGuide } from './leader-skill-battle-guide';
 import { smugglerBattleModeSupported, smugglerBattlePlanBlock } from '@/game/smuggler-battle';
+import { SmugglerBattleCollection } from './smuggler-battle-collection';
+import { SandmasterVictorySpice } from './sandmaster-victory-spice';
 import { RihaniChoice, RihaniHistory } from './rihani-decipherer';
 import { MentatQuestion, MentatHistory } from './mentat-question';
 import { BureaucratPayment } from './bureaucrat-payment';
@@ -2537,6 +2539,10 @@ export function GameTable({
                     ? g.decision.stage === 'offer' ? 'Rihani Decipherer — optional draw' : 'Choose your Traitor exchange'
                   : g.decision.kind === 'sukRescue'
                     ? 'Save your battle casualties'
+                  : g.decision.kind === 'smugglerCollection'
+                    ? 'Choose Smuggler collection sectors'
+                  : g.decision.kind === 'sandmasterVictorySpice'
+                    ? 'Choose Sandmaster victory spice sector'
                   : g.decision.kind === 'harassWithdraw'
                     ? 'Choose undialed forces to return'
                   : g.decision.kind === 'diplomatRetreat'
@@ -2989,6 +2995,10 @@ export function GameTable({
                     mode: 'ignore',
                   })}
                 </>
+              ) : g.decision.kind === 'smugglerCollection' ? (
+                <SmugglerBattleCollection key={g.decision.event} offer={g.decision} act={act} busy={busy} />
+              ) : g.decision.kind === 'sandmasterVictorySpice' ? (
+                <SandmasterVictorySpice offer={g.decision} act={act} busy={busy} />
               ) : g.decision.kind === 'harassWithdraw' ? (
                 <>
                   <HarassWithdrawChoice key={g.decision.event} game={g} act={act} busy={busy} />
@@ -4933,8 +4943,8 @@ export function GameTable({
                     g.battle.revealed ? (
                       <>
                         {g.battle.smugglerCollection && <p className="notice">
-                          {g.players.find(p => p.id === g.battle!.smugglerCollection!.player)?.name}’s Smuggler has {g.battle.smugglerCollection.amount} spice pending from the reveal-time pile.
-                          Collection is automatic if the leader survives, even after a defeat. That spice is not yet spendable.
+                          {g.players.find(p => p.id === g.battle!.smugglerCollection!.player)?.name}’s Smuggler has {g.battle.smugglerCollection.amount} spice pending from the reveal-time piles.
+                          If the leader survives, collection resolves before battle settlement, even after defeat. A partial collection across several piles requires its owner’s sector choice. That spice is not yet spendable.
                         </p>}
                         {!g.battle.traitorSubmitted.includes(me.id) && (
                           <>

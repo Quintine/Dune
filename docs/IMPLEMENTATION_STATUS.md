@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 9 October 2026 — owned multi-pile Smuggler and Sandmaster choices
+
+The multi-pile guards now have working choices in supported Basic/Advanced
+skill profiles. Smuggler retains a signed reveal-time aggregate and exact
+per-pile capacities. Only a surviving partial collection needs an owned
+allocation; death, all/none and a single pile remain automatic. Sandmaster
+then offers the winner one existing positive pile for +3, with no new pile
+or direct faction income. The sector-selection policies are explicitly
+provisional, not publisher adjudications.
+
+The final-outcome gateway waits for both choices before physical settlement,
+then retains existing retreat, casualties, card cleanup and later effects.
+Malformed/foreign choices and stale replays reject; JSON preserves the
+event and signed allocation. Modified Smuggler strength, unrelated module
+guards and public starts remain unchanged.
+
+Actual-engine smoke runs in both modes: collect six as 2/4 from original
+4/5 piles, select sector 15 for +3, leave piles 2/4 and credit the collector
+20→26 once. All four profiles finish the path through legal owned actions.
+A standalone Sandmaster selects 9→12 in sector 15 without changing sector
+14 or personal spice. Seven focused allocation/transition cases pass.
+Chromium at 390px used both production components, actual styles and the
+real engine in isolated in-memory QA; it produced the same final values.
+No existing room or deployed acceptance result is claimed.
+
+Frozen checks: `check:quick` passes and 52 affected receipt, battle,
+control, retreat and cancellation cases pass. No full suite, HTTP/recovery
+campaign, whole-database comparison or deployment was run. Temporary QA
+scripts and the dedicated in-memory service were removed.
+
 ## 9 October 2026 — two Occupy failures isolated to test contracts and staging
 
 Deterministic seed 8 reproduces the recorded missing-immediate-plan failure.

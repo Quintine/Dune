@@ -29,6 +29,20 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Multi-pile battle skills prototype — 9 October.** A surviving Smuggler
+controller can allocate its fixed reveal-time collection across existing
+sectors; a surviving Sandmaster winner selects one remaining pile for +3.
+Single-pile, forced all/none and void collections remain automatic.
+Owner selection is explicitly provisional, not a publisher ruling.
+Both mode smokes preserve frozen spice until the choices finish, then settle
+Smuggler before Sandmaster and resume the original battle. All four legal
+bot policies finish the same path. A 390px isolated production-control
+surface collects six spice as 2/4, then adds three to sector 15, leaving
+Wind Pass piles 2/4 and the Smuggler holder at 26 spice. See
+[Smuggler allocation](SMUGGLER_BATTLE.md#multi-pile-allocation-policy-and-pure-api--9-october-2026)
+and [Sandmaster placement](LEADER_BATTLE_EFFECTS.md#source-contract).
+
+
 **Kulon/Ornithopter coexistence prototype — 9 October.** Active Kulon no
 longer blocks the card's fixed-range mode in either rules mode. The labeled
 provisional policy retains its three-territory maximum and extends both

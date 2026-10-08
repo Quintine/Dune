@@ -4,7 +4,7 @@ import { quoteEcazOccupyDial } from './ecaz-occupy-battle';
 import { recruitsPlayAction } from './recruits';
 import type { Card } from './cards';
 import { bureaucratBattlePenalty, canUsePlanetologistBattleSpecial, leaderSkillBattleBonus, usesSurvivingSkilledLeader } from './leader-skill-combat';
-import { smugglerBattlePlanBlock } from './smuggler-battle';
+import { defaultSmugglerBattleAllocation, smugglerBattlePlanBlock } from './smuggler-battle';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair, type BattlePlanInspectionField } from './battle-card-slots';
 import { mirrorWeaponModeBlock } from './mirror-weapon-mode';
 import { defaultHarassWithdrawAllocation, quoteHarassWithdraw } from './harass-withdraw';
@@ -1611,6 +1611,11 @@ function policyActions(g: GameView): Action[] {
     // A decision without its private view offer must not become an ordinary action.
     if (d.kind === 'nexusIxianReplacement') return [];
     if (d.kind === 'leaderSkillVisibility' || d.kind === 'leaderSkillRevival' || d.kind === 'mentatQuestion' || d.kind === 'bureaucratPayment') return [];
+    if (d.kind === 'smugglerCollection')
+      return [{ type: 'decision', event: d.event,
+        allocations: defaultSmugglerBattleAllocation(d.piles, d.amount) }];
+    if (d.kind === 'sandmasterVictorySpice')
+      return d.piles.length ? [{ type: 'decision', event: d.event, key: d.piles[0].key }] : [];
     if (d.kind === 'harassWithdraw') {
       const offer = g.battle?.harassAllocation;
       if (!offer || offer.event !== d.event) return [];

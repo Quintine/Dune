@@ -5,6 +5,10 @@ import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { smugglerBattle, revealSmuggler, finishSmuggler, setOtherSkill } from './fixture-smuggler-battle';
+import {
+  chooseSmugglerBattleAllocation, createSmugglerBattle, settleSmugglerBattle,
+  smugglerBattleAllocationRequired, smugglerBattleSignature,
+} from '../game/smuggler-battle';
 
 function reject(game: Game, action: Action, id = 'a') {
   const before = JSON.stringify(game);
@@ -116,6 +120,46 @@ void test('Smuggler collection precedes a surviving Sandmaster winner and may re
     assert.equal(!!done.lastBattleContext!.sandmaster, amount === 8);
   }
 });
+void test('owned multi-pile Smuggler allocation resumes into Sandmaster selection before physical battle settlement', () => {
+  for (const advanced of [false, true]) {
+    const start = smugglerBattle({ advanced });
+    start.spice = { 'wind_pass:14': 4, 'wind_pass:15': 5 };
+    setOtherSkill(start, 'sandmaster');
+    start.battle!.leaderSkillHidden!.d = true;
+    let game = finishSmuggler(revealSmuggler(start, { dial: 0, enemyDial: 5, enemyLeader: 'guild-0' }));
+    assert.equal(game.decision?.kind, 'smugglerCollection');
+    const event = game.decision!.event;
+    reject(game, { type: 'decision', event, allocations: { 'wind_pass:14': 5, 'wind_pass:15': 1 } });
+    reject(game, { type: 'decision', event, allocations: { 'wind_pass:14': 2, 'wind_pass:15': 4 } }, 'd');
+    game = applyAction(normalizeAutomaticGame(JSON.parse(JSON.stringify(game))), 'a',
+      { type: 'decision', event, allocations: { 'wind_pass:14': 2, 'wind_pass:15': 4 } });
+    assert.equal(game.decision?.kind, 'sandmasterVictorySpice');
+    assert.equal(game.players[0].spice, 20);
+    assert.deepEqual(game.spice, { 'wind_pass:14': 4, 'wind_pass:15': 5 });
+    reject(game, { type: 'decision', event, key: 'wind_pass:16' }, 'd');
+    game = applyAction(JSON.parse(JSON.stringify(game)), 'd',
+      { type: 'decision', event, key: 'wind_pass:15' });
+    assert.equal(game.players[0].spice, 26);
+    assert.deepEqual(game.spice, { 'wind_pass:14': 2, 'wind_pass:15': 4 });
+    assert.equal(game.battle, null);
+    assert.equal(game.lastBattleContext!.sandmaster!.key, 'wind_pass:15');
+    reject(game, { type: 'decision', event, allocations: { 'wind_pass:14': 2, 'wind_pass:15': 4 } });
+  }
+});
+
+void test('multi-pile explosion voids collection without offering sectors or restoring destroyed spice', () => {
+  const game = smugglerBattle();
+  game.spice['wind_pass:15'] = 5;
+  const defense = take(game, 'a', 'shield');
+  const enemyWeapon = take(game, 'd', 'lasgun');
+  const done = finishSmuggler(revealSmuggler(game, { defense, enemyWeapon }));
+  assert.equal(done.lastBattleContext!.result, 'explosion');
+  assert.equal(done.lastBattleContext!.smugglerCollection!.stage, 'void');
+  assert.equal(done.spice['wind_pass:14'], undefined);
+  assert.equal(done.spice['wind_pass:15'], undefined);
+  assert.equal(done.players[0].spice, 20);
+  assert.equal(done.battle, null);
+});
 void test('changed reveal receipts, spice, plans or skill identity are rejected by reads, actions and restoration', () => {
   const pending = revealSmuggler(smugglerBattle());
   for (const corrupt of [
@@ -134,12 +178,10 @@ void test('changed reveal receipts, spice, plans or skill identity are rejected 
   assert.equal(viewGame(smugglerBattle(), 'd').battle!.smugglerCollection, null);
   assert.equal('frame' in viewGame(pending, 'd').battle!.smugglerCollection!, false);
 });
-void test('own modified plans and multiple piles fail before sealing without changing any resources', () => {
+void test('own modified plans fail before sealing without changing any resources', () => {
   const game = smugglerBattle({ advanced: true, atreides: true });
   game.players[0].battleLosses = 7;
   reject(game, { type: 'battlePlan', leader: 'atreides-0', dial: 0, support: 0, kwisatz: true });
-  const multiple = smugglerBattle(); multiple.spice['wind_pass:15'] = 2;
-  reject(multiple, { type: 'battlePlan', leader: 'emperor-0', dial: 0 });
   const trainer = smugglerBattle({ captured: true, hide: false });
   setOtherSkill(trainer, 'warmaster', 'a');
   reject(trainer, { type: 'battlePlan', leader: 'guild-0', dial: 0, weapon: trainer.players[0].hand[0].id });
@@ -176,4 +218,105 @@ void test('all four actual bot profiles retain a legal unmodified path and finis
     assert.equal(game.battle, null, difficulty);
     assert.ok(game.lastBattleContext!.smugglerCollection, difficulty);
   }
+});
+
+function collectionReceipt(spice: Record<string, number>, strength = 6) {
+  return createSmugglerBattle({ event: 'battle:collection', turn: 1, territory: 'wind_pass',
+    player: 'a', frame: 'revealed-plan-binding', supported: true, spice,
+    plan: { leader: { id: 'emperor-0', strength },
+      assignments: [{ skill: 'smuggler', leader: 'emperor-0', faceUp: false, captured: false }] } })!;
+}
+void test('aggregate receipt fixes the cap while a signed owner choice changes concrete debited sectors', () => {
+  const spice = { 'wind_pass:15': 5, 'wind_pass:14': 4, 'wind_pass:16': 0, 'carthag:11': 3 };
+  const receipt = collectionReceipt(spice);
+  assert.equal(receipt.key, null);
+  assert.equal(receipt.before, 9);
+  assert.equal(receipt.amount, 6);
+  assert.deepEqual(receipt.piles, { 'wind_pass:14': 4, 'wind_pass:15': 5 });
+  assert.equal(smugglerBattleAllocationRequired(receipt, true), true);
+  const before = structuredClone({ spice, receipt });
+  assert.throws(() => settleSmugglerBattle(receipt, true, spice));
+  for (const allocations of [
+    { 'wind_pass:14': 1, 'wind_pass:15': 5 },
+    { 'wind_pass:14': 4, 'wind_pass:15': 2 },
+  ]) {
+    const chosen = chooseSmugglerBattleAllocation(receipt, allocations);
+    assert.equal(chosen.signature, smugglerBattleSignature(chosen));
+    assert.notEqual(chosen.signature, receipt.signature);
+    assert.equal(smugglerBattleAllocationRequired(chosen, true), false);
+    const result = settleSmugglerBattle(JSON.parse(JSON.stringify(chosen)), true, { ...spice });
+    assert.equal(result.amount, 6);
+    assert.equal(result.receipt.stage, 'collected');
+    assert.equal(result.receipt.signature, smugglerBattleSignature(result.receipt));
+    assert.deepEqual(result.spice, { ...spice, 'wind_pass:14': 4 - allocations['wind_pass:14'],
+      'wind_pass:15': 5 - allocations['wind_pass:15'] });
+    assert.throws(() => settleSmugglerBattle(result.receipt, true, result.spice));
+  }
+  assert.deepEqual({ spice, receipt }, before);
+});
+void test('allocation rejects unknown or empty keys, unsafe quantities, overdraw and incorrect totals immutably', () => {
+  const spice = { 'wind_pass:14': 4, 'wind_pass:15': 5, 'wind_pass:16': 0 };
+  const receipt = collectionReceipt(spice);
+  const invalidAllocations: Record<string, number>[] = [
+    { 'wind_pass:14': 5, 'wind_pass:15': 1 },
+    { 'wind_pass:14': -1, 'wind_pass:15': 7 },
+    { 'wind_pass:14': 1.5, 'wind_pass:15': 4.5 },
+    { 'wind_pass:14': Number.MAX_SAFE_INTEGER + 1 },
+    { 'wind_pass:14': NaN },
+    { 'wind_pass:14': 1, 'wind_pass:15': 4 },
+    { 'wind_pass:14': 2, 'wind_pass:15': 5 },
+    { 'wind_pass:14': 1, 'wind_pass:15': 5, 'wind_pass:16': 0 },
+    { 'wind_pass:14': 1, 'wind_pass:15': 5, 'carthag:11': 0 },
+    {},
+  ];
+  for (const allocations of invalidAllocations) {
+    const before = structuredClone({ spice, receipt, allocations });
+    assert.throws(() => chooseSmugglerBattleAllocation(receipt, allocations));
+    assert.deepEqual({ spice, receipt, allocations }, before);
+  }
+  const third = { ...spice, 'wind_pass:16': 2 };
+  const chosen = chooseSmugglerBattleAllocation(collectionReceipt(third),
+    { 'wind_pass:14': 1, 'wind_pass:15': 5, 'wind_pass:16': 0 });
+  assert.deepEqual(chosen.allocations, { 'wind_pass:14': 1, 'wind_pass:15': 5 });
+});
+void test('death, full aggregate collection, zero cap and legacy single receipts require no allocation choice', () => {
+  const spice = { 'wind_pass:14': 4, 'wind_pass:15': 5 };
+  const pending = collectionReceipt(spice);
+  assert.equal(smugglerBattleAllocationRequired(pending, false), false);
+  const dead = settleSmugglerBattle(pending, false, spice);
+  assert.equal(dead.amount, 0);
+  assert.equal(dead.receipt.stage, 'void');
+  assert.deepEqual(dead.spice, spice);
+  for (const strength of [0, 9, 12]) {
+    const receipt = collectionReceipt(spice, strength);
+    assert.equal(smugglerBattleAllocationRequired(receipt, true), false);
+    const result = settleSmugglerBattle(receipt, true, spice);
+    assert.equal(result.amount, strength ? 9 : 0);
+    assert.deepEqual(result.spice, strength ? { 'wind_pass:14': 0, 'wind_pass:15': 0 } : spice);
+  }
+  const single = { 'wind_pass:14': 8 };
+  const legacy = collectionReceipt(single);
+  assert.equal('piles' in legacy, false);
+  assert.equal('allocations' in legacy, false);
+  assert.equal(smugglerBattleAllocationRequired(legacy, true), false);
+  assert.deepEqual(settleSmugglerBattle(JSON.parse(JSON.stringify(legacy)), true, single).spice,
+    { 'wind_pass:14': 2 });
+});
+void test('selected aggregate settlement rejects a changed reveal pile or choice binding without mutation', () => {
+  const spice = { 'wind_pass:14': 4, 'wind_pass:15': 5 };
+  const chosen = chooseSmugglerBattleAllocation(collectionReceipt(spice),
+    { 'wind_pass:14': 1, 'wind_pass:15': 5 });
+  const changedPiles: Record<string, number>[] = [
+    { ...spice, 'wind_pass:14': 3, 'wind_pass:15': 6 },
+    { ...spice, 'wind_pass:16': 1 },
+  ];
+  for (const changed of changedPiles) {
+    const before = structuredClone({ chosen, changed });
+    assert.throws(() => settleSmugglerBattle(chosen, true, changed));
+    assert.deepEqual({ chosen, changed }, before);
+  }
+  const corrupted = { ...chosen, allocations: { 'wind_pass:14': 2, 'wind_pass:15': 4 } };
+  const before = structuredClone({ corrupted, spice });
+  assert.throws(() => settleSmugglerBattle(corrupted, true, spice));
+  assert.deepEqual({ corrupted, spice }, before);
 });

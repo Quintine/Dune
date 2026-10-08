@@ -63,9 +63,23 @@ void test('Sandmaster adds board spice once after a surviving victory even when 
   }
   const empty = resolveLeaderSkillBattle(leaderSkillBattle({ skill: 'sandmaster' }));
   assert.equal(empty.lastBattleContext?.sandmaster, undefined);
-  const ambiguous = leaderSkillBattle({ skill: 'sandmaster', territory: 'wind_pass', sector: 14 });
-  ambiguous.spice = { 'wind_pass:14': 2, 'wind_pass:15': 3 };
-  reject(ambiguous, 'd', { type: 'traitorCall', call: false });
+});
+
+void test('Sandmaster owner selects one remaining existing pile and resumes without crediting income', () => {
+  const start = leaderSkillBattle({ skill: 'sandmaster', territory: 'wind_pass', sector: 14 });
+  start.spice = { 'wind_pass:14': 2, 'wind_pass:15': 9 };
+  const pending = resolveLeaderSkillBattle(start);
+  assert.equal(pending.decision?.kind, 'sandmasterVictorySpice');
+  const event = pending.decision!.event;
+  reject(pending, 'd', { type: 'decision', event, key: 'wind_pass:15' });
+  reject(pending, 'a', { type: 'decision', event, key: 'red_chasm:7' });
+  const done = applyAction(JSON.parse(JSON.stringify(pending)), 'a',
+    { type: 'decision', event, key: 'wind_pass:15' });
+  assert.deepEqual(done.spice, { 'wind_pass:14': 2, 'wind_pass:15': 12 });
+  assert.equal(done.players[0].spice, 20);
+  assert.equal(done.lastBattleContext!.sandmaster!.key, 'wind_pass:15');
+  assert.equal(done.battle, null);
+  reject(done, 'a', { type: 'decision', event, key: 'wind_pass:15' });
 });
 
 void test('native Rihani has a compulsory private peek then commits its separate optional draw before seeing cards', () => {

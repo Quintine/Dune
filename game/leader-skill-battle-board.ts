@@ -1,4 +1,5 @@
-import { gameTerritories, splitLocation, type MobileBoard } from './board';
+import { gameTerritories, location, splitLocation, validLocation } from './board';
+import type { MobileBoard } from './board';
 import { fighterCount } from './advisors';
 import { isDiscoveryLocationId, JACURUTU_SIETCH } from './discoveries';
 import type { ForcePresence } from './force-presence';
@@ -14,13 +15,43 @@ export function leaderSkillStrongholdCount(
     fighterCount(player, t.id) > 0).length;
 }
 
+export type SandmasterVictorySpiceOffer = {
+  event: string;
+  player: string;
+  territory: string;
+  piles: Array<{ key: string; before: number; after: number }>;
+};
+
 /** The card adds board spice to an existing pile; it grants no direct faction income. */
-export function sandmasterVictorySpice(territory: string, spice: Readonly<Record<string, number>>) {
-  const piles = Object.entries(spice).filter(([key, amount]) => amount > 0 && splitLocation(key).territory === territory);
-  if (piles.length > 1) throw new Error('Sandmaster placement among multiple spice piles awaits its sector ruling.');
-  if (!piles.length) return null;
-  const [key, before] = piles[0];
-  if (!Number.isSafeInteger(before) || before < 1 || !Number.isSafeInteger(before + 3))
-    throw new Error('Sandmaster requires a valid existing spice pile.');
-  return { key, before, after: before + 3 };
+export function sandmasterVictoryPiles(
+  territory: string,
+  spice: Readonly<Record<string, number>>,
+): Array<{ key: string; before: number; after: number }> {
+  const piles: Array<{ key: string; before: number; after: number }> = [];
+  for (const [key, before] of Object.entries(spice)) {
+    const at = splitLocation(key);
+    if (at.territory !== territory) continue;
+    if (!validLocation(at.territory, at.sector) || key !== location(at.territory, at.sector) ||
+      !Number.isSafeInteger(before) || before < 0 ||
+      (before > 0 && !Number.isSafeInteger(before + 3)))
+      throw new Error('Sandmaster requires a valid existing spice pile.');
+    if (before > 0) piles.push({ key, before, after: before + 3 });
+  }
+  return piles;
+}
+
+/** Owner selection among existing piles is provisional, not a publisher ruling. */
+export function sandmasterVictorySpice(
+  territory: string,
+  spice: Readonly<Record<string, number>>,
+  key?: string,
+) {
+  const piles = sandmasterVictoryPiles(territory, spice);
+  if (key !== undefined) {
+    const selected = piles.find((pile) => pile.key === key);
+    if (!selected) throw new Error('Sandmaster must select an offered existing spice pile.');
+    return selected;
+  }
+  if (piles.length > 1) throw new Error('Sandmaster requires selection of one existing spice pile.');
+  return piles[0] ?? null;
 }

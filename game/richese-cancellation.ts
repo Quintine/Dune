@@ -19,6 +19,8 @@ const DECISIONS = {
   diplomatDefense: true,
   diplomatRetreat: true,
   harassWithdraw: true,
+  smugglerCollection: true,
+  sandmasterVictorySpice: true,
   choamAudit: true,
   nexusChoamInspection: true,
   choamAuditPayment: true,

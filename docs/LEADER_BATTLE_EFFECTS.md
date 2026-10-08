@@ -23,9 +23,15 @@ walkthrough supply the individual effects; see the [component inventory](LEADER_
   though combined-module play remains gated.
 - [Sandmaster, 15:48](https://www.youtube.com/watch?v=XT_azRVLq_0&t=948s): a
   surviving skilled winner adds three board spice to an existing pile in the
-  battle territory automatically. This grants no direct income and does not
-  require surviving forces. No pile means no addition. Multiple positive piles
-  are guarded before the final battle vote pending a sector-placement ruling.
+  battle territory. This grants no direct income and does not require surviving
+  forces. No pile means no addition; a single positive pile resolves automatically.
+  With several positive piles, the winning owner must select exactly one existing
+  pile after survival is established and before physical battle settlement. Each
+  option shows its current quantity and the exact +3 result; this mandatory effect
+  has no decline or extra acknowledgement. **Provisional allocation policy:**
+  owner selection is a prototype choice, not a publisher sector-placement ruling.
+  It cannot create a new sector pile. Smuggler collection precedes placement, so
+  exhausted piles are not offered.
 - [Rihani, 12:49](https://www.youtube.com/watch?v=XT_azRVLq_0&t=769s): a face-up
   native trainer grants the normal private inspection after a victory using
   another leader. A surviving selected native skilled winner receives both
@@ -57,11 +63,13 @@ alone. These boundaries are implementation limits, not prohibitions in the game.
 ## Connected behavior and checks
 
 Shared battle quotes calculate score changes; bots use the same public
-stronghold count. Sandmaster resolves automatically. Rihani offers owned
-draw/decline controls, then separate inspectable keep-new and reveal-old
-selections. All four AI profiles use only their permitted view. Only the owner
-receives inspection history and drawn identities. The public log names the
-returned old card, never the kept or unkept new identity.
+stronghold count. Sandmaster resolves automatically for zero or one remaining
+positive pile; multiple piles use an owned, event-bound placement decision with
+one direct button per existing sector. Only supplied public pile quantities appear
+in the controls. Rihani offers owned draw/decline controls, then separate inspectable
+keep-new and reveal-old selections. All four AI profiles use only their permitted
+view. Only the owner receives inspection history and drawn identities. The public
+log names the returned old card, never the kept or unkept new identity.
 
 Physical snapshots, an event-bound obligation and saved stages preserve Rihani
 through casualties, winner cleanup and captive return. Independent review found
@@ -71,6 +79,12 @@ restart tests cover both choices, concurrent writes, stale replays, normal versu
 captured eligibility, actual-use exclusion and native Suk rescue preceding a
 captured Rihani exchange. Focused checks also cover score-boundary winners,
 dead/bluffed skills, Sandmaster without surviving forces and UI privacy.
+
+Pure Sandmaster boundary tests cover exact +3 offers, independent sector selection,
+empty and singleton behavior, malformed locations and quantities, overflow,
+unoffered keys and input immutability. Isolated Chromium at 390px exercised
+the production placement control after Smuggler allocation, selected sector
+15 and observed its actual +3 change before the original battle continued.
 
 Fresh browser room `HNGSR8GB` used genuine module setup, then a separately
 staged conserved battle. The human inspected two private cards, drew two
