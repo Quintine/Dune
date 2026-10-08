@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 9 October 2026 — two Occupy failures isolated to test contracts and staging
+
+Deterministic seed 8 reproduces the recorded missing-immediate-plan failure.
+The bot actually offers a legal Ecaz special Karama action; Easy, Medium,
+Hard and Brutal each then seal the selected lead's plan on their next action.
+The actual captured engine smoke consumes Karama once and submits the plan.
+No bot or rule behavior changed.
+
+The regression now pins entropy and follows actual first-policy actions to
+a sealed plan for both leads and active/canceled Occupy instead of requiring
+the first action list to contain a plan. That case passes.
+
+Deterministic seed 62 also reproduces the Harass ally/explosion failure:
+when Lasgun must come from another hand, fixture staging gives that donor
+the actor's sole held Harass, then tries to seal the now-unavailable defense.
+The engine correctly rejects it. The staging helper now funds a donor
+replacement from the original deck when the recipient has room, retaining
+its earlier selected physical cards. Full hands keep the existing exchange.
+The real repaired scenario returns two forces before the explosion,
+discards Harass once and reaches Collection. Its deterministic regression
+passes. Neither repair changes production engine or bot behavior.
+
+Frozen verification: `check:quick` passes and all 270 cases in the nine
+affected Occupy, Stronghold and native-tech files pass. No full offline
+suite, HTTP campaign, database audit or deployment was run.
+
 ## 9 October 2026 — provisional Kulon/Ornithopter coexistence
 
 Active Kulon no longer blocks either mode of the Richese movement card.

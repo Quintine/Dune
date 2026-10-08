@@ -215,13 +215,17 @@ reveals before that companion moves, in both modes. A repeated-Karama
 cancellation of an already-canceled compulsory cache lot remains an explicit
 open boundary recorded in the decision index. Two intermittently failing
 Moritani skill-runtime tests were measured at the same 3/30 rate on both
-revisions, so they are pre-existing nondeterminism rather than a regression; the
-same holds for `tests/ecaz-occupy-options.test.ts`, whose Easy Occupy plan
-candidate is occasionally absent (2/20 failing runs at `4ed6beb` versus 3/20
-now), for the paired Moritani skill-runtime tests, and for
-`tests/ecaz-occupy-cards-runtime.test.ts` (one intermittent Harass/explosion
-case, passing 5/5 standalone). Those intermittent failures are pre-existing
-prototype/AI gaps and are not new regressions.
+revisions, so they are pre-existing nondeterminism rather than a regression.
+The Occupy policy failure (2/20 at `4ed6beb`, 3/20 here) is now explained by
+an obsolete immediate-plan assertion: seed 8 legally activates Ecaz special
+Karama before sealing. All four profiles finish that captured state in two
+actions; the deterministic regression now checks finite legal progression.
+The Harass/explosion failure is now reproduced at deterministic seed 62:
+the fixture's donor exchange removed its already-selected Harass card.
+Staging now uses a conserved deck replacement while hand capacity remains.
+The repaired physical scenario returns two forces before the explosion,
+discards Harass once and reaches Collection. Neither finding changes rules
+or bot behavior; the earlier attribution to prototype/AI gaps was incorrect.
 
 **Gated captures resumed under the new prototypes.** The 14 captures that
 remained gated after the 7 October rulings were resumed in place against their

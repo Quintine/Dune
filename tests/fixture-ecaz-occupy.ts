@@ -157,7 +157,10 @@ export function stageEcazOccupyCard(game: Game, owner: string,
     assert.ok(donor, 'A conserved original physical card must supply this rule case.');
     const donorIndex = donor.hand.findIndex(predicate);
     card = donor.hand[donorIndex];
-    const replacement = player.hand.shift() ?? game.deck.shift();
+    // Keep previously staged battle cards when there is still hand capacity.
+    // A donor's replacement comes from the original deck, just as a direct
+    // staging draw does; only a full hand must fund it with a held card.
+    const replacement = player.hand.length >= 4 ? player.hand.shift() : game.deck.shift();
     assert.ok(replacement, 'A conserved physical face must preserve the donor hand.');
     donor.hand[donorIndex] = replacement;
   }

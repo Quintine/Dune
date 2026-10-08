@@ -4,6 +4,7 @@ import { applyAction, viewGame } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { controlsLeader } from '../game/leader-control';
+import { pinDeterministicRandom } from './deterministic-random';
 import {
   ecazOccupyDialChoices,
   ecazOccupyLeadOptions,
@@ -107,21 +108,28 @@ void test('typed Fremen and Emperor variable armies retain native legal incremen
   assert.equal(ecazOccupyPlanControl(emperorView, 8, 4)?.blocked, null);
 });
 
-void test('all four native policies can seal a legal total plan for either lead, active or canceled', () => {
+void test('all four native policies finish Occupy planning through optional powers for either lead, active or canceled', (t) => {
+  pinDeterministicRandom(t, 8);
   for (const lead of ['ecaz', 'ally'] as const) for (const canceled of [false, true]) {
     const fixture = ecazOccupyFixture({ allyFaction: 'guild', ecazForces: 3 });
     const game = openEcazOccupyPlans(canceled
       ? cancelEcazOccupy(fixture, lead) : chooseEcazOccupyLead(fixture, lead));
     const actor = lead === 'ecaz' ? fixture.ecaz : fixture.ally;
     for (const policy of DIFFICULTIES) {
-      const view = viewGame(game, actor);
-      view.players.find((player) => player.id === actor)!.bot = policy;
-      const plan = botActions(view).find((action) => action.type === 'battlePlan');
-      assert.ok(plan, `${policy}/${lead}/${canceled}: native policy must supply a sealable plan`);
-      assert.equal(ecazOccupyPlanControl(view, Number(plan.dial), Number(plan.support ?? 0))?.blocked, null);
-      const next = applyAction(game, actor, plan);
-      assert.ok(viewGame(next, actor).battle?.submitted.includes(actor),
-        `${policy}/${lead}/${canceled}: the native table must show the selected lead's sealed plan`);
+      let state = structuredClone(game);
+      for (let step = 0; step < 4; step++) {
+        const view = viewGame(state, actor);
+        view.players.find((player) => player.id === actor)!.bot = policy;
+        const actions = botActions(view);
+        const action = actions[0];
+        assert.ok(action, `${policy}/${lead}/${canceled}: planning must retain a legal continuation`);
+        if (action.type === 'battlePlan')
+          assert.equal(ecazOccupyPlanControl(view, Number(action.dial), Number(action.support ?? 0))?.blocked, null);
+        state = applyAction(state, actor, action);
+        if (viewGame(state, actor).battle?.submitted.includes(actor)) break;
+      }
+      assert.ok(viewGame(state, actor).battle?.submitted.includes(actor),
+        `${policy}/${lead}/${canceled}: optional powers must finish and the selected lead must seal a plan`);
     }
   }
 });

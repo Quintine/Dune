@@ -5,6 +5,7 @@ import { botActions } from '../game/bots';
 import { treacheryDeck } from '../game/cards';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
 import { splitLocation } from '../game/board';
+import { pinDeterministicRandom } from './deterministic-random';
 import {
   createEcazOccupySetup, ecazOccupyTerritoryForces, type EcazOccupyFixtureOptions,
 } from './fixture-ecaz-occupy';
@@ -121,7 +122,8 @@ for (const lead of ['ecaz', 'ally'] as const) for (const slot of ['weapon', 'def
 
 for (const lead of ['ecaz', 'ally'] as const) {
   for (const outcome of ['loss', 'soleTraitor', 'opposingTraitor', 'mutualTraitors', 'explosion'] as const) {
-    void test(`Harass ${lead} lead, actual ${outcome}: returns precede losses except an opposing successful traitor`, () => {
+    void test(`Harass ${lead} lead, actual ${outcome}: returns precede losses except an opposing successful traitor`, (t) => {
+      pinDeterministicRandom(t, 62);
       const result = ecazOccupyCardsCase({ lead, outcome, slot: 'defense' });
       const { fixture, actor, game } = result;
       const canceledReturn = outcome === 'opposingTraitor' || outcome === 'mutualTraitors';
