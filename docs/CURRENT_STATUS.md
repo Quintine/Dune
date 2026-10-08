@@ -208,8 +208,10 @@ Moritani skill-runtime tests were measured at the same 3/30 rate on both
 revisions, so they are pre-existing nondeterminism rather than a regression; the
 same holds for `tests/ecaz-occupy-options.test.ts`, whose Easy Occupy plan
 candidate is occasionally absent (2/20 failing runs at `4ed6beb` versus 3/20
-now), and for the paired Moritani skill-runtime tests. Those intermittent
-failures are pre-existing prototype/AI gaps and are not new regressions.
+now), for the paired Moritani skill-runtime tests, and for
+`tests/ecaz-occupy-cards-runtime.test.ts` (one intermittent Harass/explosion
+case, passing 5/5 standalone). Those intermittent failures are pre-existing
+prototype/AI gaps and are not new regressions.
 
 **Gated captures resumed under the new prototypes.** The 14 captures that
 remained gated after the 7 October rulings were resumed in place against their
