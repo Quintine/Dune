@@ -14,12 +14,18 @@ gifts and competing parents retain the original direct transfer
 behavior without this Semuta reaction. The table below remains the
 broader producer/continuation inventory, not a claim of complete coverage.
 
+A clean definite Truthtrance answer now offers its consumed card even when another
+question remains reserved, provided no promise bound this answer. Claim or
+all-seat decline leaves public history and the consumed card's custody settled,
+then restores the same remaining queue at `ask` once. Shrine-source, queued
+shipment and queued battle-plan answers retain their automatic continuation.
+
 The same preview also pauses a final definite Truthtrance after its
-public answer, history and physical card disposal are committed. Only
-an ordinary held Truthtrance with no following queued question, new
-promise or competing parent qualifies. A claim may move that consumed
-card, never re-answer the question or rewrite its history; other
-Truthtrance continuations remain automatic.
+public answer, history and physical card disposal are committed. An
+ordinary held Truthtrance with no new promise or competing parent
+qualifies; a claim may move that consumed card, never re-answer the
+question or rewrite its history. Other Truthtrance continuations remain
+automatic.
 
 Clean Once Around Sapho stages `saphoAuctionDiscard` after the open
 lot's finite bidder reorder, hand-slot release and public card disposal,

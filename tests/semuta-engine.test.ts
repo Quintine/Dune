@@ -688,6 +688,54 @@ void test('a final definite Truthtrance answer offers its consumed card after pu
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
 });
 
+void test('a queued definite Truthtrance answer offers its card before the next reserved question resumes', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const truthA = take(g, 'truthtrance');
+  const truthE = take(g, 'truthtrance');
+  const shield = g.deck.splice(g.deck.findIndex(card => card.name === 'Shield'), 1)[0];
+  assert.ok(shield);
+  player(g, 'a').hand.push(truthA);
+  player(g, 'e').hand.push(truthE, shield);
+  Object.assign(g, { order: ['a', 'e', 'r'] });
+  const original = inventory(g);
+  let declared = applyAction(g, 'a', { type: 'card', card: truthA.id });
+  declared = applyAction(declared, 'e', { type: 'card', card: truthE.id });
+  while (declared.truthtrance?.stage === 'priority') {
+    const responder = declared.players.find(p => !declared.truthtrance!.passed.includes(p.id))!;
+    declared = applyAction(declared, responder.id, { type: 'truthPass' });
+  }
+  const queue = declared.truthtrance!.queue.map(entry => entry.player);
+  assert.equal(queue.length, 2);
+  const asked = applyAction(declared, queue[0], { type: 'truthAsk',
+    question: { kind: 'fact', target: 'e', fact: { kind: 'hand', name: 'Shield' } },
+  });
+  const pending = applyAction(asked, 'e', { type: 'truthAnswer', answer: 'yes' });
+  assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'truthtranceDiscard');
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  const continuation = pending.pendingTreacheryDiscard!.continuation;
+  assert.deepEqual(continuation.kind === 'truthtranceDiscard' ? continuation.remaining?.queue.map(entry => entry.player) : null,
+    queue.slice(1));
+  assert.equal(pending.truthHistory?.length, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  for (const resumed of [declined, claimed]) {
+    assert.equal(resumed.pendingTreacheryDiscard, null);
+    assert.equal(resumed.truthtrance?.stage, 'ask');
+    assert.equal(resumed.truthtrance!.question, null);
+    assert.deepEqual(resumed.truthtrance!.queue.map(entry => entry.player), queue.slice(1));
+    assert.deepEqual(resumed.truthHistory, pending.truthHistory);
+    assert.deepEqual(inventory(resumed), original);
+    assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event }));
+  }
+  assert.equal(declined.discard.filter(card => card.id === truthA.id).length, 1);
+  assert.equal(player(claimed, 'r').hand.some(card => card.id === truthA.id), true);
+  assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
+});
+
 void test('a completed Sapho first-movement reorder offers its public card before changing the active turn', () => {
   const { g, semuta, hajr } = fixture();
   player(g, 'a').hand = [];

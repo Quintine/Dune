@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta before a reserved Truthtrance question resumes
+
+The typed `truthtranceDiscard` receipt already captured the remaining queue and
+restored it at `ask`; the Semuta admission check additionally required no
+reserved question. Removing only that clause lets an ordinary definite answer
+offer its consumed card while another question stays pending. The integrity
+validator already enforced the remaining queue's card custody and priority, so
+no new custody path was added. Shrine-source answers, promise-bound shipment
+answers and battle-plan answers keep their automatic continuation because the
+promise clause is retained.
+
+The permanent regression fails before the change with no offer and passes after,
+covering the reserved queue's identity, public history, claimant/decline custody,
+a retired-event rejection and full inventory conservation. Types/lint pass and
+the 97-case affected union passes. Seven isolated CLI scenarios cover claim and
+all-seat decline, four legal AI profiles and a rejected replayed claim. This is
+local changed-path proof, not complete Semuta, recovery or deployed acceptance.
+Contracts: [discard continuations](SEMUTA_DISCARD_CONTINUATIONS.md),
+[source boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 ## 11 October 2026 — native Fremen Cunning with original Tech/Strongholds
 
 The classic original-component Nexus envelope already permits Tech Tokens3+

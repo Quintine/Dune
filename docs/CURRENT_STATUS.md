@@ -29,6 +29,18 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Queued Truthtrance answer — 11 October.** An ordinary definite Truthtrance
+answer now offers its consumed card even when another question remains reserved.
+Only the `remaining === null` software restriction changed: claim or all-seat
+decline leaves public history and the consumed card's custody settled, then
+restores the same remaining queue at `ask` once. Promise-bound shipment and
+battle-plan answers, shrine source and every other Truthtrance path stay
+automatic. Types/lint pass; the affected 97-case union passes. Seven isolated
+runtime scenarios cover claim/pass, four legal AI profiles and a rejected
+retired-event replay. The permanent regression fails before and passes after.
+No saved store or deployed game was targeted. See
+[discard continuations](SEMUTA_DISCARD_CONTINUATIONS.md).
+
 **Fremen Cunning / original components — 11 October.** Classic Nexus games
 with original Tech Tokens and/or Advanced Stronghold Cards now receive the same
 empty-worm native Cunning offer as Nexus alone. The isolated software guard is

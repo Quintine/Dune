@@ -6678,7 +6678,7 @@ function semutaOfferSupported(
           !g.pendingArrivalOverlap))) &&
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&
-      continuation.remaining === null && continuation.promise === null)) return false;
+      continuation.promise === null)) return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

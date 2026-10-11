@@ -234,7 +234,7 @@ policy**, not a newly discovered publisher timing rule. Full-hand
 Semuta uses the explicit user-approved atomic exchange; its completed
 hand count is unchanged. Pending gifts, competing responses,
 completed Ornithopter arrivals with Ecaz Ambassador or Moritani Terror,
-queued or promise-bound Truthtrance, pending battle rewards and other
+promise-bound Truthtrance answers, pending battle rewards and other
 typed producers retain their automatic continuation; Semuta cannot
 claim those events yet.
 The completed Box's selected
@@ -244,6 +244,18 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — queued Truthtrance answer.** An ordinary definite answer now
+offers its consumed card while another question remains reserved. Only the
+`remaining === null` software restriction changed; promise-bound shipment and
+battle-plan answers, shrine source and every other Truthtrance path stay
+automatic. Claim or all-seat decline restores the same remaining queue at `ask`
+once with history, card custody and priority intact.
+
+The permanent regression fails before and passes after. The affected union
+passes 97 cases and typecheck/lint pass. Seven isolated CLI scenarios cover
+claim/pass, four legal AI profiles and a rejected retired-event replay. This is
+local changed-path evidence, not complete Semuta or deployed acceptance.
 
 **11 October 2026 — native Intrusion suffix.** Final Ornithopter movement now
 offers the retired public card to Semuta before native Bene Gesserit Intrusion.
