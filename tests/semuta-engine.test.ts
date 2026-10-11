@@ -1815,7 +1815,7 @@ void test('Semuta settles mandatory and winner discards before the original Hark
   }
 });
 
-void test('a mandatory winner Hero discard can be claimed before optional battle cleanup', () => {
+void test('a mandatory winner Hero is reserved through the loser offer and claimable before optional cleanup', () => {
   const { g, semuta, hajr } = fixture();
   player(g, 'a').hand = [];
   g.deck.push(hajr);
@@ -1852,7 +1852,12 @@ void test('a mandatory winner Hero discard can be claimed before optional battle
   battle = applyAction(battle, 'e', { type: 'battlePlan', dial: 0, support: 0,
     leader: player(battle, 'e').leaders[0].id, defense: defense.id });
   battle = applyAction(battle, 'a', { type: 'traitorCall', call: false });
-  const pending = applyAction(battle, 'e', { type: 'traitorCall', call: false });
+  let pending = applyAction(battle, 'e', { type: 'traitorCall', call: false });
+  assert.equal(player(pending, 'a').hand.some(card => card.id === hero.id), true);
+  assert.equal(pending.discard.some(card => card.id === hero.id), false);
+  const loserEvent = pending.pendingTreacheryDiscard!.batch.event;
+  for (const id of ['e', 'a', 'r'])
+    pending = applyAction(pending, id, { type: 'semutaPass', event: loserEvent });
   assert.equal(pending.pendingTreacheryDiscard?.continuation.kind, 'winnerMandatoryDiscard');
   assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
   assert.deepEqual(pending.pendingTreacheryDiscard?.batch.entries.map(entry => entry.card.id), [hero.id]);

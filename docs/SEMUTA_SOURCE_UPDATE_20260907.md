@@ -636,3 +636,32 @@ claims Hunter Seeker, offers Axlotl Tanks/Heighliners to Atreides, takes only
 Heighliners, then restores Tleilaxu's Decline Face Dancer control. Phase7 original
 Ix opening retains the card and all three owners with no horizontal overflow.
 This is local changed-path evidence, not complete Semuta or deployed acceptance.
+
+**11 October 2026 — native casualties and allied retention.** A completed
+mandatory loser-card batch may now offer Semuta with the original compulsory
+winning-card queue still reserved. Native Ixian casualty settlement and
+one-for-one substitution keep their original position before the winning used
+Tooth is physically discarded. That later Tooth is a separate fresh opportunity
+before optional Shield cleanup, not an early target at the first reaction.
+The pending Ixian-substitution guard remains: no actual discard was moved into
+that active decision. Forty-eight runtime scenarios cover both modes, both
+discard boundaries, claim/pass/four legal profiles and substitution/decline;
+four more preserve the native rival Karama cancellation instead of substituting.
+Actual 390px GameTable claims Snooper, confirms1/1, allows the original power,
+retires the later Tooth offer and keeps Shield. The force inspector proves
+Arrakeen1Suboid+1Cyborg, Tanks1Suboid, reserves17, with the claimed Snooper still
+held at phase7 original Ix opening and no horizontal overflow.
+
+The Basic native Moritani entry now offers its completed unkept-card batch,
+plus preceding compulsory/optional winner batches while the original native
+choose-stage retention remains pending. Existing canonical aftermath validation
+and reciprocal alliance checks preserve the original choice. Kept/unrelated
+cards and a newly Semuta-acquired winner card cannot enter its original pool.
+Native Karama still finishes first; taking one fresh card cannot repeat the
+choice, combat or bounty. `battleResolved` with pending retention, Advanced
+native Moritani and Nexus retention remain separate. Thirty-four runtime cases
+cover keep either/none, claim/pass/four legal profiles, both preceding winner
+frames and original enemy/ally Karama allowance/cancellation. Real390px table
+declines native retention, commits and privately selects Maula Pistol from the
+two fresh cards, then reaches phase7 without re-offering retention or overflow.
+These are local bounded continuation proofs, not complete Semuta/mode acceptance.

@@ -104,3 +104,26 @@ The engine now implements this flow with `moritaniRetention` and the shared `can
 `spendKarama` and `cashInCards` reject reserved cards, including during winner cleanup and nested Worthless conversion. The interface and bot response choices also honor the reservation. A public declared-card projection enables response-stage inspection without exposing unrelated hand contents. The linked internal reference and general battle-card guide now explain the exception.
 
 Eighteen focused real-battle/server tests and five AI tests cover the integrated ability. The full suite reached935 passes;45 persisted multiplayer checks, TypeScript, lint and build passed. Independent review additionally exercised both nested Worthless cancellation and counter-cancellation through JSON reloads. Desktop browser QA completed declaration, response refresh and final exact-card settlement in S85SLVRR. Complete Moritani/expansion acceptance remains unfinished and faction starts remain gated.
+
+## Semuta composition — 11 October 2026
+
+The existing Basic Richese/Moritani CHOAM/Ecaz entry now offers Semuta after
+completed native allied-card disposal. The losing ally's original choice and
+native Karama response finish first; only unkept played cards form the fresh
+batch. A sole card completes automatically after commitment; multiple cards
+require one private selection. Kept and unrelated hand cards remain unavailable.
+
+Compulsory/optional winner-card batches may also pause before the original
+choose-stage retention. Existing aftermath validation and reciprocal alliance
+checks preserve that native opportunity. A loser acquiring the winner's card
+through Semuta cannot add it to the original played/eligible pool. All losing
+played cards are reserved in this envelope, so no losing `battleResolved`
+batch precedes retention; that distinct pending-retention path stays gated.
+Advanced native Moritani and Nexus/Skills compositions are not opened.
+
+Thirty-four isolated runtime cases cover keep either/none, claim/pass/four legal
+AI profiles, both preceding winner batches and original enemy/ally Karama
+allowance or cancellation. Actual GameTable at390px declines native retention,
+commits Semuta, privately selects Maula Pistol from two fresh cards and reaches
+phase7 without another retention choice or horizontal overflow. No source
+ruling, original native behavior outside the Semuta entry or public gate changed.

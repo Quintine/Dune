@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 11 October 2026 — native casualty and allied-retention Semuta continuations
+
+Two disjoint native slices supply genuine setup fixtures and consumer-visible
+regressions; one owner integrates shared engine, table and guidance changes.
+The actual Ixian blocker was the original compulsory-winner queue, not a
+discard inside active substitution: loser disposal precedes winner casualties,
+then native substitution/decline precedes winning used Tooth disposal. Allowing
+that initial resolved-battle batch preserves the reserved Tooth and optional
+Shield. The pending Ixian-substitution exclusion stays intact.
+
+Basic native Moritani now admits winner compulsory/optional batches before the
+original choose-stage retention and its completed unkept-card batch afterward.
+Existing canonical aftermath validation plus reciprocal alliance binds the
+preceding native opportunity. The original selected kept card, unrelated hand
+card and a newly acquired winner card never enter another claim/retention pool.
+Native Karama finishes before final disposal. All losing played cards are
+reserved here, so `battleResolved` with retention remains gated, as do Advanced
+native Moritani and Nexus retention. No original handler, source ruling,
+module/profile composition or public mode gate is changed.
+
+Types/lint pass; 162 unit cases across thirteen affected files pass. The initial
+native cases reproduce missing offers. A test fixture lacked a physical rival
+Karama but expected its response; conserving one original Karama repairs that
+fixture. A nullable-shape assertion became a public no-reaction assertion and
+one captured union narrowing was repaired. The original Hero consumer test now
+passes the preceding loser offer before claiming the later reserved Hero;
+the former immediate-Hero assumption was obsolete, not an engine regression.
+Setup/default-copy tests and the proposed malformed-save campaign were removed.
+
+Forty-eight Ix runtime cases cover both modes, both fresh boundaries,
+claim/pass/four legal profiles and substitution/decline; four more cancel
+the original exchange with a real rival Karama. Typed counters, payment,
+casualties, winner and physical Treachery inventory remain intact once.
+Thirty-four Moritani cases cover keep either/none, both preceding winner
+frames, claim/pass/four legal profiles and native enemy/ally allowance/cancel.
+The first throwaway probe mixed IDs from independently shuffled fixtures;
+binding each action to its actual fixture corrected that probe only.
+
+Real GameTable at390px claims Snooper, confirms1Suboid/1Cyborg, allows native
+Karama, completes later Tooth acknowledgements and keeps Shield. Actual force
+inspection shows board1Suboid+1Cyborg, Tanks1Suboid and reserves17 at the original
+phase7 Ix opening, with Snooper still Richese-owned. Basic native retention
+declines, commits and privately selects Maula Pistol from two fresh cards, then
+reaches phase7 without another retention choice. Both surfaces have no
+horizontal overflow. Warning, card tooltips, internal reference and contracts
+match these boundaries. Temporary probes/services/tabs removed; existing games,
+storage, user PDF and deployment untouched. Complete Semuta/mode acceptance
+remains unfinished.
+
 ## 11 October 2026 — original native Tech after Semuta battle discards
 
 The fresh CHOAM/optional-Ix Semuta entry now retains original unused Tech at

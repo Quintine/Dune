@@ -202,7 +202,19 @@ once. Native capture, Face Dance, quoted CHOAM force income and Auditor remain
 pending across the offer; original native Tech is also supported in the fresh
 three-to-six-seat CHOAM/optional-Ix entry. Token custody stays unchanged until
 card cleanup completes and the original winner takes one loser-owned token,
-still before Face Dance. Other rewards remain automatic without Semuta.
+still before Face Dance. The original compulsory winner-card queue may remain
+reserved during the earlier loser batch. Native Ixian casualties/substitution
+finish before the used winning Tooth becomes its own later fresh discard.
+
+Basic native Moritani additionally admits preceding compulsory/optional winner
+batches with the original choose-stage allied retention still pending, then
+the completed `battleCleanup` with `source: 'moritani'`. The chosen kept card
+never enters that batch. Native Karama finishes first; claim/pass neither
+re-offers retention nor expands its original played-card pool. Canonical
+aftermath validation and reciprocal alliance bind the preceding native choice.
+`battleResolved` with pending retention, Nexus retention, Advanced native
+Moritani and a pending Ixian substitution remain outside this bounded offer.
+Other rewards remain automatic without Semuta.
 
 The explicit Richese preview also accepts a fresh physical Ix deck.
 Clean Thumper disposal stages `thumperDiscard` before `blowSpice`

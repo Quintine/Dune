@@ -29,6 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native casualty and retention continuations — 11 October.**
+Mandatory loser discards now react while the original compulsory winner card
+remains reserved. Native Ixian casualties/substitution still finish before
+the used winning Tooth becomes its own fresh target. Basic native Moritani
+additionally admits preceding compulsory/optional winner batches and completed
+unkept allied-card disposal, preserving its original choice, Karama response,
+kept card and played-card pool. Existing canonical aftermath validation and
+reciprocal alliance checks bind the pending native opportunity; pending Ixian
+substitution, `battleResolved` with retention, Advanced Moritani and Nexus
+retention remain guarded. No module/profile or mode gate changed.
+Targeted cases fail before and pass after; 162 affected unit cases across
+thirteen files pass. Eighty-six isolated runtime cases prove both native modes,
+actual ordering, claim/pass/four legal profiles, typed substitution/decline and
+original cancellation. Real390px tables claim Snooper, confirm1/1 and inspect
+the final Ixian counters; native Basic retention declines, commits and selects
+Maula Pistol from two fresh cards. Both reach original phase7 with no overflow
+or repeated effect. Types/lint passed; one fixture narrowing and the obsolete
+Hero timing assumption were repaired rather than changing native behavior.
+See [native retention contract](MORITANI_ALLY_RETENTION_RULES.md#semuta-composition--11-october-2026)
+and [Semuta ordering evidence](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime).
+
 **Semuta / original native Tech — 11 October.** Fresh three-through-six-seat
 Basic/Advanced Richese games with CHOAM and optional Ix now retain original
 unused Tech under existing native roster prerequisites. Printed and first-Storm

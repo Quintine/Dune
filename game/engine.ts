@@ -6652,9 +6652,19 @@ function treacheryDiscardIntegrity(g: Game) {
       batch.entries.every((entry) => entry.discardedBy === c.owner && !entry.publicFace),
       'The committed Kaitain discard no longer matches its payment and closing opportunity.');
   } else throw new RuleError('Unknown saved discard continuation.');
+  if (pending.reaction && g.moritaniRetention &&
+      (continuation.kind === 'winnerMandatoryDiscard' ||
+        (continuation.kind === 'battleCleanup' && continuation.source === 'winner'))) {
+    const retention = g.moritaniRetention;
+    const owner = getPlayer(g, retention.owner), loser = getPlayer(g, retention.player);
+    requireRule(!g.advanced && retention.source === undefined && retention.stage === 'choose' &&
+      owner.faction === 'moritani' && owner.ally === loser.id && loser.ally === owner.id,
+      'The pending native allied retention no longer matches the preceding winner discard.');
+    currentBattleAftermathQuote(g);
+  }
 }
 /** Bounded public single-card reaction after completed effects. Battle cleanup
- * may preserve native Tech, capture, Face Dance, CHOAM income and Auditor; other rewards stay gated.
+ * preserves the original winner queue and bounded native retention/rewards without replaying them.
  * Final flight arrival may resume native Intrusion, but other entry responses remain gated. */
 function semutaOfferSupported(
   g: Game,
@@ -6684,7 +6694,10 @@ function semutaOfferSupported(
     continuation.kind !== 'choamBalisetDiscard' &&
     continuation.kind !== 'choamGamontDiscard' &&
     continuation.kind !== 'choamJubbaDiscard' &&
-    !(continuation.kind === 'battleCleanup' && continuation.source === 'winner') &&
+    !(continuation.kind === 'battleCleanup' &&
+      (continuation.source === 'winner' ||
+        (!g.advanced && continuation.source === 'moritani' &&
+          continuation.retention?.source === undefined))) &&
     continuation.kind !== 'winnerMandatoryDiscard' &&
     continuation.kind !== 'battleResolved' &&
     !(continuation.kind === 'ornithopterDiscard' &&
@@ -6702,7 +6715,9 @@ function semutaOfferSupported(
   if ((continuation.kind === 'battleCleanup' ||
     continuation.kind === 'winnerMandatoryDiscard' ||
     continuation.kind === 'battleResolved') &&
-    (g.pendingWinnerDiscards || g.moritaniRetention ||
+    ((g.pendingWinnerDiscards && continuation.kind !== 'battleResolved') ||
+      (g.moritaniRetention && (g.advanced || g.moritaniRetention.source !== undefined ||
+        g.moritaniRetention.stage !== 'choose' || continuation.kind === 'battleResolved')) ||
       g.pendingIxSubstitution)) return false;
   if (continuation.kind === 'terrorDiscard' &&
     (continuation.entry.resume !== 'none' ||
