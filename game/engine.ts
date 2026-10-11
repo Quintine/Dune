@@ -5517,7 +5517,7 @@ function treacheryDiscardIntegrity(g: Game) {
   requireRule(g.semutaPreview === undefined || g.semutaPreview === true &&
     g.expansions.includes('choam') && !!byFaction(g, 'richese') &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.discoveries &&
-    !g.discoveryEnabled && !g.techTokens && !g.strongholdCards,
+    !g.discoveryEnabled && (!g.techTokens || nativeFactionTechProfile(g, true)) && !g.strongholdCards,
   'This Semuta preview no longer matches its original Richese profile.');
   const pending = g.pendingTreacheryDiscard;
   const sequence = g.treacheryDiscardSequence ?? 0;
@@ -6654,7 +6654,7 @@ function treacheryDiscardIntegrity(g: Game) {
   } else throw new RuleError('Unknown saved discard continuation.');
 }
 /** Bounded public single-card reaction after completed effects. Battle cleanup
- * may preserve native capture, Face Dance, CHOAM income and Auditor; other rewards stay gated.
+ * may preserve native Tech, capture, Face Dance, CHOAM income and Auditor; other rewards stay gated.
  * Final flight arrival may resume native Intrusion, but other entry responses remain gated. */
 function semutaOfferSupported(
   g: Game,
@@ -6702,8 +6702,7 @@ function semutaOfferSupported(
   if ((continuation.kind === 'battleCleanup' ||
     continuation.kind === 'winnerMandatoryDiscard' ||
     continuation.kind === 'battleResolved') &&
-    (g.pendingTech ||
-      g.pendingWinnerDiscards || g.moritaniRetention ||
+    (g.pendingWinnerDiscards || g.moritaniRetention ||
       g.pendingIxSubstitution)) return false;
   if (continuation.kind === 'terrorDiscard' &&
     (continuation.entry.resume !== 'none' ||
@@ -9555,8 +9554,8 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   initializeMoritaniAssassinateState(g);
   return g;
 }
-/** Development-only Semuta in fresh Richese games: optional Ix deck, or a
- * bounded Basic native Moritani/E3 profile. Public expansion starts stay gated. */
+/** Development-only Semuta in fresh Richese games: optional Ix deck and original
+ * native Tech profile, or bounded Basic native Moritani/E3. Public starts stay gated. */
 export function initializeSemutaGameForAudit(state: Game): Game {
   const nativeTerror = !state.advanced && state.expansions.length === 2 &&
     state.expansions.includes('choam') && state.expansions.includes('ecaz') &&
@@ -9567,7 +9566,7 @@ export function initializeSemutaGameForAudit(state: Game): Game {
     state.expansions.includes('choam') &&
     (state.expansions.every(id => id === 'choam' || id === 'ix') || nativeTerror) &&
     state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game with no optional modules: CHOAM with optional Ix, or Basic native Moritani with CHOAM and Ecaz decks and classic opponents.');
+  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix and original native Tech prerequisites, or Basic native Moritani with CHOAM and Ecaz decks and classic opponents; other optional modules remain excluded.');
   const g = initializeFactionExpansionsGameForAudit(state);
   g.semutaPreview = true;
   return g;

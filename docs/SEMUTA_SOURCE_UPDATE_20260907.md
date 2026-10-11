@@ -78,6 +78,12 @@ Do not ask again about normal targets, forced-discard owner bookkeeping, simulta
 The explicit `semuta` development profile starts a fresh Richese roster
 with CHOAM & Richese and optionally the physical Ix deck, or the bounded Basic
 native Moritani entry described below, without opening public expansion starts.
+Original unused Tech Tokens may also remain in the CHOAM/optional-Ix entry at
+three through six seats, Basic or Advanced, under its existing native roster
+prerequisites. Genuine setup and printed/first-Storm ownership remain native.
+This does not add Tech to the separate Basic CHOAM/Ecaz Moritani entry or admit
+Skills, Strongholds, other overlays, played-game conversion or public starts.
+
 It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
@@ -613,3 +619,20 @@ the original Become advisors control and Finish shipment & movement advancing
 to the next seat with unchanged force counts. Public/full-mode gates stay closed.
 TypeScript/lint pass; the final affected union passes 113 cases. The regression
 checks actual fighter counts rather than the incidental advisor marker shape.
+
+**11 October 2026 — original native Tech reward.** Mandatory and winner battle
+card discards now offer Semuta before the original winner takes one loser-owned
+Tech Token. Every token and income ledger remains in place across the reaction.
+Claim or all-seat decline completes original casualties/card cleanup, then
+restores the same token choice before native Face Dance. The card claimant does
+not inherit the award. No token is a Treachery discard target.
+
+Eight isolated genuine lobby/setup/first-Storm scenarios cover both modes and
+three through six seats. Twenty-four battle runtime scenarios cover both
+producers, claim/pass and four legal AI profiles; sixteen also use the original
+winner's legal Tech AI choice. Physical Treachery custody, casualties and one
+award survive the native Face Dance decline suffix. Real GameTable at 390px
+claims Hunter Seeker, offers Axlotl Tanks/Heighliners to Atreides, takes only
+Heighliners, then restores Tleilaxu's Decline Face Dancer control. Phase7 original
+Ix opening retains the card and all three owners with no horizontal overflow.
+This is local changed-path evidence, not complete Semuta or deployed acceptance.

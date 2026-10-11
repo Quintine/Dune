@@ -1163,7 +1163,9 @@ export function GameTable({
       {g.semutaPreview && (
         <p className="notice" role="status">
           Semuta Drug development preview · bounded fresh-discard reactions,
-          not complete Richese or certified expansion rules. Native Moritani
+          not complete Richese or certified expansion rules. Original Tech Tokens
+          may remain in supported fresh 3–6-seat CHOAM/Ix profiles; the original
+          winner’s award follows card cleanup and precedes Face Dance. Native Moritani
           support is Basic only: clean shipment/movement Sabotage and Robbery
           overflow; other arrival continuations remain guarded.{' '}
           <a href="/rules?topic=card-richese-semuta-drug#card-richese-semuta-drug">Preview rules and limits</a>

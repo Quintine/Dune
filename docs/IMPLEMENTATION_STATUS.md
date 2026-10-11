@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 11 October 2026 — original native Tech after Semuta battle discards
+
+The fresh CHOAM/optional-Ix Semuta entry now retains original unused Tech at
+three through six seats, Basic/Advanced, under existing native roster rules.
+An explicit Semuta context reuses the original profile predicate; existing
+callers retain its strict default. Skills, Strongholds, other overlays, the
+separate Basic CHOAM/Ecaz Moritani entry and played-game conversion stay closed.
+Only the pending Tech battle-reaction exclusion is removed.
+
+Four regressions reproduce the original profile failure and pass after the
+cutover. Genuine setup/first Storm retains the printed Tleilaxu Axlotl owner
+and assigns the remaining physical tokens. Mandatory/winner claim or decline
+leaves custody unchanged until cleanup finishes, then the original winner
+chooses one of two loser-owned tokens. Both selections preserve the other
+owners and claimed card, reject repeat use, and precede native Face Dance.
+
+Types/lint and 123 unit cases across eight affected files pass. Eight isolated
+fresh-start runtime cases cover both modes and three through six seats.
+Twenty-four battle cases cover both producers, claim/pass/four legal Semuta AI
+profiles; sixteen also take an original legal Tech AI choice. Actual casualties,
+physical Treachery custody and one award survive the native Face Dance decline.
+Real GameTable at390px claims Hunter Seeker, shows both token choices, takes
+only Heighliners for Atreides, restores Tleilaxu's Decline Face Dancer and
+reaches phase7 original Ix opening with owners/card intact and no overflow.
+The isolated Vite probe required route-order correction and a retry after its
+dependency optimization reload; no production UI defect was observed.
+
+Entry help, persistent warning, card tooltips, internal reference and Semuta
+contracts are updated. Temporary probes/services/tabs removed. Existing games,
+storage, user PDF and deployment untouched; no complete-mode claim.
+
 ## 11 October 2026 — native Auditor after Semuta battle discards
 
 Removing only the audit reward exclusion admits mandatory/winner discard

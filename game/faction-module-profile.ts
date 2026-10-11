@@ -26,15 +26,16 @@ export type FactionModuleProfile = {
   nexusHarkonnenBetrayalPreview?: unknown;
 };
 
-/** Original E1/E2 families or standalone Ecaz/Moritani; no unrelated overlays. */
-export function nativeFactionTechProfile(game: FactionModuleProfile): boolean {
+/** Original E1/E2 families or standalone Ecaz/Moritani; explicit Semuta context only. */
+export function nativeFactionTechProfile(game: FactionModuleProfile, semuta = false): boolean {
   if (typeof game.advanced !== 'boolean' || !game.techTokens ||
     game.players.length < 3 || game.players.length > 6 ||
     game.expansions.length < 1 || game.expansions.length > 2 ||
     (game.strongholdCards && !game.advanced) || game.leaderSkills ||
     game.homeworlds || game.nexusCards || game.discoveryEnabled || game.discoveries ||
     game.discoveryStash || game.greatMaker || game.ecazTreachery ||
-    game.semutaPreview || game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
+    (game.semutaPreview && (!semuta || game.semutaPreview !== true)) ||
+    game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
     game.nexusHarkonnenBetrayalPreview) return false;

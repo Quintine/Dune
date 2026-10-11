@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / original native Tech — 11 October.** Fresh three-through-six-seat
+Basic/Advanced Richese games with CHOAM and optional Ix now retain original
+unused Tech under existing native roster prerequisites. Printed and first-Storm
+owners remain native. Mandatory/winner card reactions preserve token custody
+until original cleanup, then the original winner takes one loser-owned token
+before Face Dance. Other native Tech callers remain strict; Skills, Strongholds,
+other overlays and the separate CHOAM/Ecaz Moritani entry remain excluded.
+Four regressions pass after the original profile failure. Types/lint and
+123 affected unit cases across eight files pass. Eight genuine fresh-start
+runtime scenarios cover both modes and three through six seats; twenty-four
+battle cases cover both producers, claim/pass and four legal AI profiles,
+including sixteen original Tech AI choices. Real GameTable at390px claims
+Hunter Seeker, takes only Heighliners for Atreides, restores native Face Dance
+and reaches phase7 original Ix opening with the card/owners intact and no
+horizontal overflow. No existing game/store, deployment or mode gate changed.
+See [entry and reward contract](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime).
+
 **Semuta / native Auditor — 11 October.** Mandatory/winner discard reactions
 now preserve the original audit before cleanup/income finish and its owner
 offer. Frozen survival and opposing-player used IDs are unchanged; the current

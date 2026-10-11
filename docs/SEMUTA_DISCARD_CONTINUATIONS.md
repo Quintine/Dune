@@ -199,7 +199,10 @@ and an optional winner selection uses a third `battleCleanup` batch.
 Every supported stage has a neutral all-seat offer; committed holders
 select one fresh card, leave the others in the pile and resume exactly
 once. Native capture, Face Dance, quoted CHOAM force income and Auditor remain
-pending across the offer; tech and other rewards remain automatic without Semuta.
+pending across the offer; original native Tech is also supported in the fresh
+three-to-six-seat CHOAM/optional-Ix entry. Token custody stays unchanged until
+card cleanup completes and the original winner takes one loser-owned token,
+still before Face Dance. Other rewards remain automatic without Semuta.
 
 The explicit Richese preview also accepts a fresh physical Ix deck.
 Clean Thumper disposal stages `thumperDiscard` before `blowSpice`
