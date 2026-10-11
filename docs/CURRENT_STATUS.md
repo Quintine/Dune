@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / explicit original Leader Skills — 11 October.** The initializer's
+optional second argument and `--profile semuta --leader-skills` now delegate
+original all14 native Basic Richese/CHOAM or Advanced E1/E2 training, retaining
+original Tech/Advanced Stronghold prerequisites. Default callers are unchanged.
+Three original profile gates recognize explicit native-Richese context; ordinary
+and native-Tech skill eligibility survives Semuta. Original Suk/Rihani handlers
+already preserve the correct order and need no separate effect rewrite.
+No E3, Homeworld/Nexus/Discovery/Banker, new Mentat ruling or public gate opens.
+Types/lint and184 affected unit cases across18 files pass. Four genuine starts,
+36 private-question and48 aftermath runtime cases cover claim/pass, four legal
+profiles and original modules. Actual memory-only prototype dispatch persists
+original offers/version1; CLI parses the new flag. Styled390px controls complete
+Hajr→Commit→Crysknife naming/showing/face-up Mentat; Suk inspector shows14reserves,
+1normalTank,5board including2Sardaukar; Rihani keeps Flinto/reveals Lady Jessica
+before Artillery and Shield cleanup. Human training in all three native seats
+reaches original Traitors, with Auditor excluded from CHOAM's eligible five.
+Observed stale skill guidance was corrected and reinspected. Existing games,
+storage, user PDF/deployment untouched; full skill/mode acceptance remains open.
+See [explicit original skill contract](LEADER_SKILLS_RUNTIME.md#explicit-semuta-composition--11-october-2026).
+
 **Semuta / original Advanced Strongholds — 11 October.** Fresh Richese
 CHOAM/optional-Ix games now retain original unused Stronghold Cards at2–6
 Advanced seats, optionally original Tech at3–6. The existing native initializer

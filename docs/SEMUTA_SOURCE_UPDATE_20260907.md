@@ -82,7 +82,8 @@ Original unused Tech Tokens may also remain in the CHOAM/optional-Ix entry at
 three through six seats, Basic or Advanced, under its existing native roster
 prerequisites. Genuine setup and printed/first-Storm ownership remain native.
 This does not add Tech to the separate Basic CHOAM/Ecaz Moritani entry or admit
-Skills, other overlays, played-game conversion or public starts.
+other overlays, played-game conversion or public starts. Original Leader Skills
+require the explicit option described below; the default entry is unchanged.
 
 Advanced additionally preserves original unused Stronghold Cards at two
 through six seats in the same CHOAM/optional-Ix entry. Combining original Tech
@@ -90,6 +91,14 @@ requires three through six. The existing native Stronghold initializer and
 its shared roster predicate supply genuine setup; original first-Storm Tech
 and final-Mentat Stronghold custody remain native. The six separate public
 module cards never become Treachery discard candidates.
+
+`--profile semuta --leader-skills` (or the initializer's explicit second
+argument) composes original all14 training in native Basic Richese/CHOAM with
+exact CHOAM, or Advanced E1/E2 with native Richese and selected CHOAM/optional
+Ix decks. Original Tech/Advanced Stronghold prerequisites remain. This does not
+open Basic Ix mixtures, E3, Homeworld/Nexus/Discovery/Banker, unapproved
+empty-hand/Moritani Mentat steps or general public starts.
+
 
 
 It interrupts **clean public
@@ -734,3 +743,30 @@ claim2, Arrakeen held by Atreides and Carthag unclaimed, with no overflow.
 The combo's original Tech owners remain visible; source/reference/help and
 persistent warning match the boundary. Full mode/deployment acceptance is
 not certified by these local changed-path proofs.
+
+**11 October 2026 — explicit original Leader Skills.** The opt-in delegates
+original native setup before marking Semuta. Three existing profile gates
+recognize only explicit native-Richese context; original roster/module
+predicates still govern legality. Ordinary/native-Tech skill consumers retain
+their eligibility after Semuta. Suk and Rihani handlers, receipt signatures
+and effect ordering need no separate rewrite.
+
+Four genuine native starts include Basic/Advanced Emperor and CHOAM, with the
+Auditor excluded from training. Thirty-six private-question runtime cases
+cover all six supported module configurations, claim/pass/four legal profiles:
+Hajr resumes its original Movement owner before native Mentat naming/showing.
+Hands/cards remain physical; the target still explicitly shows an exact
+Crysknife or chooses its fallback card. Forty-eight aftermath cases cover both
+skills and original module profiles. Typed Suk saves one ordinary in its pool
+and returns two to reserves; Rihani performs its original normal private peek
+and optional exchange before compulsory winning Artillery disposal. Traitor
+movement is not a Treachery event and no effect repeats.
+
+A real memory-only prototype-room dispatch saves the explicit skill setup at
+version1 with original offers; CLI help parses the new flag without store
+access. Styled390px GameTable completes Hajr→Commit→native question/show/posture,
+Suk→original card cleanup→Collection, and Rihani draw→keep/reveal→Artillery
+acknowledgements→Shield cleanup→Collection. Native CHOAM's five eligible normal
+discs exclude Auditor; human training in all three seats reaches real Traitors.
+Observed stale skill guidance was corrected and its actual surface reinspected.
+This is bounded local evidence, not full skill/mode or deployed certification.

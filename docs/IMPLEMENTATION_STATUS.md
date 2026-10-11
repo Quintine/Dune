@@ -1,5 +1,58 @@
 # Dune implementation status
 
+## 11 October 2026 — explicit Semuta/original Leader Skills composition
+
+`initializeSemutaGameForAudit(state,skills=false)` and the new scoped
+`--profile semuta --leader-skills` option reuse original all14 training before
+marking Semuta. Default callers retain their old entry. Only explicit
+native-Richese context passes three original Basic/Advanced native profile
+gates; original roster/module predicates still govern. Semuta integrity uses
+ordinary/native-Tech skill eligibility. Original Tech3+ and Advanced
+Strongholds2+ remain; E3, Homeworld/Nexus/Discovery/Banker, unapproved Mentat
+steps and public starts are not opened.
+
+The before probe's requested option silently produced faction-only Traitors
+with no skills; after it produces original private skill offers. Two disjoint
+fixture/test slices then connect actual Hajr→Movement→Mentat and mandatory
+loser disposal→Suk/Rihani→original winner cleanup. Native handlers/signatures
+already preserve timing; no rescue/exchange rewrite was needed. Compulsory
+winning Artillery stays reserved until Rihani finishes. Traitor/Face Dancer
+movements never become fresh Treachery targets.
+
+Types/lint and184 unit cases across18 affected files pass. Twenty-four new
+behavioral cases avoid constructor-only assertions. Fixture repair, not rule
+change: Basic Emperor has no elite counters; Advanced uses its real two.
+Internal paid-loss shape and discard-sequence assertions were removed rather
+than repinned. Original Rihani normal inspection is inherited alongside its
+skilled exchange; the fixture's proposed suppression was wrong. A fresh typed
+cleanup binding repairs one stale TypeScript narrowing; unused setup snapshot
+and incidental posture-shape assertions were removed.
+
+Four actual Basic/Advanced Emperor/CHOAM starts,36 question cases and48
+aftermath cases pass. Both Semuta outcomes preserve original ownership,
+private exact/fallback replies, actual wallets/leaders/forces and physical
+cards/skills. Suk retains one ordinary in its pool, returns two to reserves
+and leaves one Tank casualty; Rihani peeks normally, optionally exchanges
+two new/one old, then actual Artillery/Shield cleanup and reward finish once.
+A fresh memory-only prototype-room option writes original offers/version1;
+actual CLI help accepts the new flag, without existing-store access.
+
+Styled390px GameTable completes Hajr→Commit→original Movement→private Crysknife
+question/show→face-up posture. Original Suk choice/cleanup reaches Collection;
+force inspection shows14reserves/1normalTank/5board with2Sardaukar. Rihani draws,
+keeps Flinto and reveals/returns Lady Jessica before later Artillery
+acknowledgements and Shield cleanup, retaining one new Traitor. Native CHOAM
+training lists five eligible normal discs, not Auditor; human choices in all
+three seats reach original Traitors. Observed stale component guidance is
+corrected to normal Mentat/printed defense/current timing gates and its actual
+surface reinspected. Action notices were acknowledged, not treated as rule
+stalls; all tested surfaces have no overflow.
+
+Warning, reference, launcher metadata/help and canonical Semuta/skill
+contracts updated. Temporary probes/services/tabs removed; no existing game,
+storage, user PDF or deployment touched. Complete skill/mode and deployed
+acceptance remain unfinished.
+
 ## 11 October 2026 — original Advanced Strongholds in fresh Semuta games
 
 Fresh Advanced Richese/CHOAM/optional-Ix Semuta now retains unused original

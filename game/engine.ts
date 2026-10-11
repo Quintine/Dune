@@ -5528,8 +5528,10 @@ function suspendedControlsIntegrity(
 function treacheryDiscardIntegrity(g: Game) {
   requireRule(g.semutaPreview === undefined || g.semutaPreview === true &&
     g.expansions.includes('choam') && !!byFaction(g, 'richese') &&
-    !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.discoveries &&
-    !g.discoveryEnabled && (!g.techTokens || nativeFactionTechProfile(g, true)) &&
+    !g.homeworlds && !g.nexusCards &&
+    (!g.leaderSkills || ordinaryLeaderSkillModeSupported(g)) && !g.discoveries &&
+    !g.discoveryEnabled && (!g.techTokens || (g.leaderSkills
+      ? nativeTechLeaderSkillsProfile(g) : nativeFactionTechProfile(g, true))) &&
     (!g.strongholdCards || nativeStrongholdFactionRoster(g)),
   'This Semuta preview no longer matches its original Richese profile.');
   const pending = g.pendingTreacheryDiscard;
@@ -9602,9 +9604,9 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   initializeMoritaniAssassinateState(g);
   return g;
 }
-/** Development-only Semuta in fresh Richese games: original native Tech and
- * Advanced Stronghold compositions, or bounded Basic Moritani/E3. Public starts stay gated. */
-export function initializeSemutaGameForAudit(state: Game): Game {
+/** Development-only Semuta with original native Tech/Advanced Strongholds and
+ * explicit native skills, or bounded Basic Moritani/E3. Public starts stay gated. */
+export function initializeSemutaGameForAudit(state: Game, skills = false): Game {
   const nativeTerror = !state.advanced && state.expansions.length === 2 &&
     state.expansions.includes('choam') && state.expansions.includes('ecaz') &&
     state.players.some(p => p.faction === 'moritani') &&
@@ -9614,9 +9616,9 @@ export function initializeSemutaGameForAudit(state: Game): Game {
     state.expansions.includes('choam') &&
     (state.expansions.every(id => id === 'choam' || id === 'ix') || nativeTerror) &&
     state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix, original native Tech prerequisites and Advanced Stronghold Cards, or Basic native Moritani with CHOAM and Ecaz decks and classic opponents; other optional modules remain excluded.');
-  const g = state.strongholdCards
-    ? initializeStrongholdFactionsGameForAudit(state)
+  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix, original Tech/Advanced Strongholds, and explicit native Basic Richese or Advanced E1/E2 Leader Skills; separate Basic Moritani uses CHOAM/Ecaz and classics without modules. Other overlays remain excluded.');
+  const g = skills ? initializeLeaderSkillsGameForAudit(state)
+    : state.strongholdCards ? initializeStrongholdFactionsGameForAudit(state)
     : initializeFactionExpansionsGameForAudit(state);
   g.semutaPreview = true;
   return g;

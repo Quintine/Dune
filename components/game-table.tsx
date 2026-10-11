@@ -1167,7 +1167,9 @@ export function GameTable({
           may remain in supported fresh 3–6-seat CHOAM/Ix profiles; the original
           winner’s award follows card cleanup and precedes Face Dance. Original
           Stronghold Cards may remain in Advanced 2–6-seat profiles and are claimed
-          only at the end of Mentat. Native Moritani
+          only at the end of Mentat. The explicit Leader Skills entry retains all
+          fourteen original skills and native training; other overlays stay guarded.
+          Native Moritani
           support is Basic only: clean shipment/movement Sabotage and Robbery
           overflow plus native losing-ally card-retention cleanup; other arrival
           continuations remain guarded.{' '}

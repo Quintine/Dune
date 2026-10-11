@@ -5,6 +5,34 @@ Normal mode starts and publication remain gated. The [source contract](LEADER_SK
 contains all fourteen physical cards; the [capture interpretation](LEADER_SKILLS_CAPTURE.md)
 records the fresh publisher/designer search requested by the user.
 
+## Explicit Semuta composition — 11 October 2026
+
+`--profile semuta --leader-skills` reuses original all14 native setup for Basic
+Richese/CHOAM with exact CHOAM, or Advanced E1/E2 with native Richese and selected
+CHOAM/optional Ix. Original Tech3+ and Advanced Strongholds2+ may remain. Default
+Semuta callers are unchanged. Skills do not add Homeworld/Nexus/Discovery/E3,
+Banker overlays, Basic Ix mixtures, public starts or played-save conversion.
+
+Actual offers and training precede real phase/battle controls. Completed Hajr
+claim/pass resumes the original Movement owner, then the approved normal
+Mentat private naming/card-show contract. Completed mandatory loser disposal
+may precede trained Suk rescue or original Rihani normal inspection and optional
+skilled exchange. Winning compulsory Artillery stays reserved until that
+skill finishes; only then is it fresh Treachery. Traitor/Face Dancer movement
+does not enter a Semuta batch. Original native handlers/skill rulings are reused.
+
+Four genuine starts,36 question cases and48 aftermath cases cover claim/pass,
+four legal profiles and original module envelopes. The isolated prototype-room
+option stores a real original skill offer in one fresh memory-only record.
+Styled390px controls exercise all three continuations plus actual native
+CHOAM/other-seat training; Auditor is absent from its five eligible discs.
+Suk inspector shows14reserves/1normalTank/5board including2Sardaukar. Rihani keeps
+one new private Traitor and returns its selected old card before Artillery and
+Shield cleanup; normal private inspection remains inherited, not suppressed.
+No comprehensive privacy/custody/recovery campaign or mode certification is
+claimed by these changed-path proofs.
+
+
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 
 The original all14/Nexus entry now composes natives from both selected

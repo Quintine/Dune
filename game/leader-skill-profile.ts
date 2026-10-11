@@ -192,6 +192,12 @@ function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
     !game.spiceBankerIncomePreview;
 }
 
+/** Recognize only the explicit overlay; native predicates still own roster/module legality. */
+function semutaLeaderSkillContext(game: LeaderSkillProfile): boolean {
+  return game.semutaPreview === true && !game.spiceBankerIncomePreview &&
+    game.expansions.includes('choam') && !!game.players?.some(p => p.faction === 'richese');
+}
+
 /** E1/E2 native skills may add Tech and Advanced Strongholds; original roster/decks remain. */
 function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
   if (game.homeworlds) return homeworldLeaderSkillModulesSupported(game);
@@ -204,7 +210,7 @@ function nativeLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean {
     (game.strongholdCards && game.advanced !== true) ||
     game.expansions.length < 1 || game.expansions.length > 2 ||
     game.homeworlds || game.nexusCards || game.discoveries || game.discoveryEnabled ||
-    game.ecazTreachery || game.semutaPreview ||
+    game.ecazTreachery || (game.semutaPreview && !semutaLeaderSkillContext(game)) ||
     game.moritaniAssassinatePreview || game.advancedPreview || game.kullPreview ||
     game.nexusKullPreview || game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
@@ -372,7 +378,8 @@ export function basicRicheseLeaderSkillsProfile(game: LeaderSkillProfile): boole
   const players = game.players;
   if (game.advanced !== false || game.expansions.length !== 1 ||
     game.expansions[0] !== 'choam' || !players || players.length < 2 || players.length > 6 ||
-    !nativeLeaderSkillModulesSupported(game) || game.semutaPreview || game.moritaniAssassinatePreview ||
+    !nativeLeaderSkillModulesSupported(game) ||
+    (game.semutaPreview && !semutaLeaderSkillContext(game)) || game.moritaniAssassinatePreview ||
     game.advancedPreview || game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||
@@ -404,7 +411,8 @@ export function advancedNativeLeaderSkillsProfile(game: LeaderSkillProfile): boo
     game.expansions.length < 1 || game.expansions.length > 2 ||
     (game.expansions.length === 2 && game.expansions[0] === game.expansions[1]) ||
     !nativeLeaderSkillModulesSupported(game) ||
-    game.semutaPreview || game.moritaniAssassinatePreview || game.advancedPreview ||
+    (game.semutaPreview && !semutaLeaderSkillContext(game)) ||
+    game.moritaniAssassinatePreview || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview ||
     game.guildBetrayalPreview || game.richeseBetrayalPreview ||
     game.nexusIxianReplacementPreview || game.nexusIxianBetrayalPreview ||

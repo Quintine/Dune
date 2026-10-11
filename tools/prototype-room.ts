@@ -55,6 +55,8 @@ export type PrototypeOptions = {
   nexusCards?: boolean;
   /** Explicit classic Discovery/Skills composition, not a public activation. */
   discoveries?: boolean;
+  /** Explicit original native skills only with the Semuta profile. */
+  leaderSkills?: boolean;
 };
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
   return PROTOTYPE_PROFILES.some((profile) => profile === value);
@@ -100,6 +102,8 @@ export function startPrototypeRoom(
     throw new Error('--nexus-cards requires the leader-skills profile.');
   if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus')
     throw new Error('--discoveries requires the leader-skills or nexus profile.');
+  if (options.leaderSkills && profile !== 'semuta')
+    throw new Error('--leader-skills requires the semuta profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)
     initial.nexusCards = { cards: null, phase: null };
@@ -121,7 +125,7 @@ export function startPrototypeRoom(
       : profile === 'moritani-assassinate'
         ? initializeMoritaniAssassinateGameForAudit(initial)
       : profile === 'semuta'
-        ? initializeSemutaGameForAudit(initial)
+        ? initializeSemutaGameForAudit(initial, options.leaderSkills)
       : profile === 'kull'
         ? initializeKullGameForAudit(initial)
       : profile === 'richese-betrayal'
