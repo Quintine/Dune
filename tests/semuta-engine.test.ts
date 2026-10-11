@@ -53,6 +53,63 @@ function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emp
   return { g, semuta, hajr };
 }
 
+void test('Semuta restores closing CHOAM Mentat after Gamont before the native victory check', () => {
+  const { g, semuta } = fixture(false, false, false, 'choam');
+  const card = take(g, g.deck.find(c => c.name === 'Trip to Gamont')!.id);
+  player(g, 'e').hand.push(card);
+  for (const p of g.players) Object.assign(p, { forces: {}, reserves: 20, tanks: 0 });
+  Object.assign(player(g, 'a'), { forces: {
+    'arrakeen:10': 1, 'carthag:11': 1, 'sietch_tabr:14': 1,
+  }, reserves: 17 });
+  Object.assign(g, { phase: 7, active: null, movementRemaining: [], ready: [] });
+  const original = inventory(g);
+  let state = g;
+  for (const id of ['a', 'e', 'r']) state = applyAction(state, id, { type: 'ready' });
+  state = applyAction(state, 'e', { type: 'decision', done: true });
+  assert.equal(state.phase, 8);
+  assert.equal(state.status, 'playing');
+  for (const id of ['a', 'e', 'r']) state = applyAction(state, id, { type: 'ready' });
+  state = applyAction(state, 'e', { type: 'decision', done: true });
+  assert.equal(state.decision?.kind, 'choamMentat');
+  assert.equal(state.status, 'playing');
+  const unopposed = applyAction(state, 'e', { type: 'decision', done: true });
+  assert.equal(unopposed.status, 'finished');
+  assert.deepEqual(unopposed.winner, ['a']);
+  let pending = applyAction(state, 'e', { type: 'card', mode: 'choam', card: card.id,
+    target: 'a', from: 'arrakeen:10', elite: 0 });
+  while (pending.response) {
+    const actor = pending.players.find(p => !pending.response!.passed.includes(p.id))!;
+    pending = applyAction(pending, actor.id, { type: 'passResponse' });
+  }
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(player(pending, 'a').forces['arrakeen:10'], 1);
+  assert.equal(pending.status, 'playing');
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  for (const resumed of [declined, claimed]) {
+    assert.equal(resumed.decision?.kind, 'choamMentat');
+    assert.equal(resumed.decision?.player, 'e');
+    assert.equal(resumed.turn, 2);
+    assert.equal(resumed.phase, 8);
+    assert.equal(resumed.status, 'playing');
+    assert.deepEqual(player(resumed, 'a').forces, { 'carthag:11': 1, 'sietch_tabr:14': 1 });
+    assert.equal(player(resumed, 'a').reserves, 18);
+    assert.deepEqual(inventory(resumed), original);
+    assert.throws(() => applyAction(resumed, 'a', { type: 'decision', done: true }));
+    assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event }));
+    const next = applyAction(resumed, 'e', { type: 'decision', done: true });
+    assert.equal(next.status, 'playing');
+    assert.equal(next.turn, 3);
+    assert.equal(next.phase, 0);
+    assert.deepEqual(next.winner, []);
+    assert.deepEqual(inventory(next), original);
+  }
+  assert.equal(player(claimed, 'r').hand.some(c => c.id === card.id), true);
+  assert.equal(claimed.discard.some(c => c.id === semuta.id), true);
+});
+
 void test('Semuta preserves one elite Gamont return without spending revival usage', () => {
   const { g, semuta } = fixture(false, false, true, 'choam', 'emperor');
   const card = take(g, g.deck.find(c => c.name === 'Trip to Gamont')!.id);

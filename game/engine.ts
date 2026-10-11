@@ -1399,6 +1399,7 @@ export type Game = {
           location: string;
           elite?: 1;
           noFieldEvent?: string;
+          mentat?: true;
           stateSignature: string;
         }
       | {
@@ -5259,6 +5260,7 @@ function choamGamontDiscardSignature(g: Game, c: ChoamGamontDiscardContinuation)
   return JSON.stringify({
     player: c.player, card: c.card, target: c.target, location: c.location,
     elite: c.elite, noFieldEvent: c.noFieldEvent,
+    mentat: c.mentat, mentatPending: c.mentat ? g.choamMentatPending : undefined,
     turn: g.turn, phase: g.phase, active: g.active, order: g.order,
     ready: g.ready, storm: g.storm,
     parent: nullentropyParentSignature(g,
@@ -5972,6 +5974,7 @@ function treacheryDiscardIntegrity(g: Game) {
       (c.elite === undefined || c.elite === 1) &&
       (c.noFieldEvent === undefined ||
         (typeof c.noFieldEvent === 'string' && c.noFieldEvent.length > 0)) &&
+      (c.mentat === undefined || (c.mentat === true && g.choamMentatPending === true)) &&
       gamontAvailable(g, c.target, c.location, c.elite ?? 0, c.noFieldEvent) &&
       !g.pendingChoamWorthless && !g.response && !g.decision &&
       !g.phaseOpening && !g.choamMarket &&
@@ -6966,6 +6969,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
   } else if (next.kind === 'choamGamontDiscard') {
     completeChoamGamont(g, getPlayer(g, next.player), next.target,
       next.location, next.elite ?? 0, next.noFieldEvent);
+    if (next.mentat) g.decision = { kind: 'choamMentat', player: next.player };
   } else if (next.kind === 'choamJubbaDiscard') {
     completeChoamJubba(g, getPlayer(g, next.player), next.territory);
     offerChoamStorm(g);
@@ -24059,7 +24063,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
       } else if (pending.effect === 'gamont') {
         if (g.semutaPreview && used.name === 'Trip to Gamont' &&
           !pending.storm && !pending.revival && !pending.movement &&
-          !pending.mentat && !pending.nexusEvent) {
+          !pending.nexusEvent) {
           const continuation: ChoamGamontDiscardContinuation = {
             kind: 'choamGamontDiscard', player: choam.id,
             card: used.id, target: pending.target!,
@@ -24067,6 +24071,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
           };
           if (pending.elite === 1) continuation.elite = 1;
           if (pending.noFieldEvent) continuation.noFieldEvent = pending.noFieldEvent;
+          if (pending.mentat) continuation.mentat = true;
           const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
           if (semutaOfferSupported(g, continuation, entries)) {
             continuation.stateSignature = choamGamontDiscardSignature(g, continuation);

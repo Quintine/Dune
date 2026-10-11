@@ -29,6 +29,20 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / CHOAM final Mentat — 11 October.** Gamont disposal in the native
+final opportunity now offers Semuta, then restores the same CHOAM-owned window.
+Claim/pass returns the selected force but never checks victory or advances
+the turn; the original owner must still finish. The regression fails before
+and passes after, with a native baseline that would give Atreides victory
+without the recall. Twelve runtime scenarios cover both modes, claim/pass and
+four legal AI profiles, including owner-window completion.
+Types/lint and 82 affected unit cases across six files pass.
+Real GameTable at 390px performs Return this force → Commit Semuta → restored
+Finish and check victory → turn3/Storm, still playing, without overflow.
+Temporary QA scaffolds are removed; no saved store or deployed game was targeted.
+Nexus and other parents remain separate. See
+[the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / typed and concealed Gamont — 11 October.** A clean proactive
 discard now preserves the selected elite counter or native No-Field event,
 instead of hard-coding an ordinary return. The original native helper performs

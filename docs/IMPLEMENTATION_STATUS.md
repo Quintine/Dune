@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 11 October 2026 — original final Mentat after Semuta/Gamont
+
+The Gamont receipt now carries an optional final-Mentat marker and signs the
+native pending opportunity. After the selected physical return, claim/pass
+restores the same `choamMentat` decision for CHOAM. No victory check or phase
+advance runs inside the receipt; the original owner must still finish.
+Unmarked proactive signatures remain unchanged.
+
+The regression fails before and passes after. Actual native market, readiness
+and done actions create the closing window. Its unopposed board gives Atreides
+a three-stronghold victory; recall removes Arrakeen before the same owner can
+finish. Claim/pass preserves turn2/Mentat, exact force return and cards;
+wrong-owner completion and retired reactions reject. CHOAM's actual Done then
+advances to turn3/Storm with no winner. The fixture initially checked phase
+before native market completion and placed Tabr in sector13; corrected
+progression and canonical sector14 required no production rule change.
+
+Twelve isolated runtime scenarios cover Basic/Advanced, claim/pass and all
+four legal AI profiles, including each profile finishing the restored owner
+window. Real production GameTable at 390px performs Return this force, Semuta
+commitment, the restored Finish and check victory and actual turn3/Storm
+continuation, without horizontal overflow.
+Types/lint and 82 affected unit cases across six files pass.
+
+Temporary scripts, isolated server and browser tab are removed/stopped; no
+saved store or deployed game was targeted. Nexus and other competing parents
+remain separate. Full Semuta/CHOAM and deployed acceptance remain open.
+Contracts: [source/runtime](SEMUTA_SOURCE_UPDATE_20260907.md),
+[discard suffix](SEMUTA_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — typed and concealed Gamont with Semuta
 
 The existing receipt already signs target elite and No-Field custody, but the

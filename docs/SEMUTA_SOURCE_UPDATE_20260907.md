@@ -149,12 +149,13 @@ legal. A clean ordinary declared move is already stopped without spending a
 movement. Movement-card/Ambassador parents, Nexus conversion and competing
 arrivals retain their original automatic paths.
 
-A clean proactive Trip to Gamont response pauses after its public card cost,
+A clean proactive or final-Mentat Trip to Gamont pauses after its public card cost,
 before returning the selected ordinary/elite physical force or performing the
 native concealed No-Field reveal and capped recall. The receipt binds target,
 location, exact counter type or marker event and pre-return custody. Claim or
 decline applies the original selection once; a zero marker reveals without
-inventing a force. Closing Mentat, Nexus and competing parents remain automatic.
+inventing a force. Final Mentat restores the same owner decision before victory;
+Nexus and competing parents remain automatic.
 
 An accepted printed Jubba Cloak response pauses after its
 public Worthless card cost but before the chosen CHOAM territory
@@ -247,6 +248,34 @@ separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
 
+**11 October 2026 — original final-Mentat continuation.** Gamont disposal
+inside CHOAM's final opportunity now offers Semuta too. The receipt signs an
+optional `mentat` marker and the still-pending native opportunity. Claim or
+all-seat decline performs the original selected return, then restores
+`choamMentat` for the same CHOAM owner. It never checks victory or advances the
+turn itself; the original owner still chooses Finish and check victory.
+Proactive receipt signatures are unchanged when this marker is absent.
+
+The regression fails before and passes after. Genuine native Collection/Mentat
+market, readiness and done actions create the final window. Without Gamont,
+the same closing board gives Atreides a three-stronghold victory. With the
+return and claim/pass, one force leaves Arrakeen, the same owner window remains
+on turn2/Mentat, wrong-owner completion and retired reaction reject, and only
+CHOAM's Done advances to turn3/Storm with no winner. The fixture first placed
+its phase assertion before the market completion and used the wrong Tabr
+sector; corrected actual progression and canonical sector14 require no rule
+change.
+
+Twelve isolated runtime scenarios cover Basic/Advanced, claim/pass and all four
+legal AI profiles; the four profiles also complete the restored owner window.
+Real GameTable at 390px uses Return this force, Commit Semuta, the restored
+Finish and check victory control and actual turn3/Storm continuation. The game
+stays playing and has no horizontal overflow. Temporary scripts/server/browser
+are removed or stopped; no saved store or deployed game was targeted.
+Types/lint and 82 affected unit cases across six files pass.
+Nexus and competing parents remain separate; no complete or deployed acceptance
+is claimed.
+
 **11 October 2026 — elite and concealed Gamont targets.** The existing
 receipt already signed target elite and No-Field custody, but stored neither
 selection and resumed with a literal ordinary-force argument. It now carries
@@ -276,8 +305,9 @@ Types/lint and 163 affected unit cases across nine files pass.
 Optional signature fields now serialize directly, and reactive stopped markers
 are assigned without temporary spread objects. Absent optional fields are
 omitted by JSON, preserving the prior ordinary/proactive signature shape.
-Closing Mentat, Nexus and competing parents remain separate. This is bounded
-counter-selection coverage, not complete Semuta/CHOAM or deployed acceptance.
+Closing Mentat remained separate at this counter-selection checkpoint; the
+later continuation above admits it. Nexus and competing parents remain separate.
+This is bounded coverage, not complete Semuta/CHOAM or deployed acceptance.
 
 **11 October 2026 — reactive Baliset and La La La.** Accepted native
 declarations now offer their used public card in the clean reactive paths too.
