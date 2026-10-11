@@ -29,6 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / reactive Baliset and La La La — 11 October.** Accepted native
+declarations now offer their used card after stopping the original uncommitted
+move or free-force request. Claim/pass installs the same restriction once;
+denied requests consume no forces, movement, revival usage or spice. Another
+legal move or paid revival remains available. Both regressions fail before
+and pass after; types/lint and 130 affected unit cases across seven files pass.
+Twenty-four runtime scenarios cover both effects, both rule
+modes, claim/pass and four legal AI profiles; four Karama cancellations retain
+the card and finish the original request without a Worthless discard.
+Real GameTable at 390px claims Baliset, keeps the Carthag restriction and
+moves once to Arrakeen; its revival case claims La La La, shows the four-spice
+quote and returns two paid counters to reserves19/Tanks1/spice6. No overflow.
+Other parents remain separate. Temporary QA scaffolds are removed; no saved
+store or deployed game was targeted. See
+[the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / clean battle Distrans — 11 October.** The completed clean transfer
 now offers only its public used Distrans during battle. The private gift and
 sealed opposing plan remain committed; the recipient may itself claim with

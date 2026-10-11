@@ -131,22 +131,23 @@ The same one-range effect then applies exactly once. Fixed-range
 Ornithopter combinations, reactive movement parents and other
 Worthless powers retain their original automatic paths.
 
-A clean proactive La La La response also pauses after its named
+A clean proactive or reactive La La La response also pauses after its named
 public Worthless card cost but before blocking the selected
 target's remaining free force revival. The saved receipt binds the
 target and old Revival rules; claim or decline installs the block
-once without replaying the response. Paid revival remains legal.
-A reactive free-revival request, Nexus conversion and other
-Worthless effects retain their earlier automatic paths.
+once without replaying the response. Paid revival remains legal. A reactive
+free-revival request is already stopped without revival or payment. Nexus
+conversion and other Worthless contexts retain their automatic paths.
 
-A clean proactive Baliset response pauses after its public
+A clean proactive or reactive Baliset response pauses after its public
 Worthless card cost but before restricting the selected player
 from moving into the CHOAM-occupied territory. The saved
 receipt binds that target, territory, current CHOAM occupancy
 and existing restrictions. Claim or decline installs one
 restriction without replaying the response. Shipment remains
-legal. Reactive declared movement, Nexus conversion and
-competing arrivals retain their original automatic paths.
+legal. A clean ordinary declared move is already stopped without spending a
+movement. Movement-card/Ambassador parents, Nexus conversion and competing
+arrivals retain their original automatic paths.
 
 A clean proactive ordinary Trip to Gamont response pauses after
 its named public card cost but before moving one selected force
@@ -165,8 +166,8 @@ spice-clearance sequence. Canceled Jubba, Nexus conversion
 and competing parents retain their original direct paths.
 
 An early-ended Ornithopter advances the saved queue; a completed
-flight resumes one committed arrival only without BG, Ecaz or
-Moritani entry reactions. Distrans's gift remains private with its
+flight may resume native Bene Gesserit Intrusion; Ecaz and Moritani entry
+reactions remain separate. Distrans's gift remains private with its
 recipient; Truthtrance answer/history and Sapho first/last order are
 already bound. A clean Once Around Sapho discard commits its public
 finite bidder order, retains prior bids/funding and frees the holder's
@@ -246,6 +247,42 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — reactive Baliset and La La La.** Accepted native
+declarations now offer their used public card in the clean reactive paths too.
+After the cost, the uncommitted ordinary move or force-revival request is
+detached as already stopped; the existing typed receipt carries only
+`stoppedMovement` or `stoppedRevival`, not a request to execute. Claim or all-seat
+decline installs the original restriction and stopped-request notice once.
+No forces, movement allowance, revival usage or spice payment were consumed by
+the denied request. Another legal move or a paid revival remains available.
+When another parent prevents the offer, the temporary pointer is restored and
+the original automatic handler runs. Proactive receipts retain their existing
+signature when the new optional marker is absent.
+
+Both permanent regressions fail before and pass after, covering claim/pass,
+unchanged request resources, retained restrictions, a legal alternate move or
+paid two-force revival and retired-event rejection. Twenty-four isolated
+runtime scenarios cover both effects, Basic/Advanced, claim/pass and four legal
+AI profiles. Four additional printed-Karama cancellations retain the Worthless
+and Semuta, open no Worthless discard reaction, and complete the original move
+or free revival. The first cancel probe pinned absent-versus-null internal state;
+its corrected assertion observes the actual public reaction instead.
+
+Real GameTable at 390px uses Prevent movement, Commit Semuta, the unchanged
+Imperial Basin source and the visible Carthag restriction, then moves one force
+legally to Arrakeen and ends the turn with one movement. A second memory-only
+case uses La La La, commits Semuta, displays zero free allowance and the actual
+four-spice quote, then revives two paid forces to reserves19/Tanks1/spice6.
+Neither surface overflows horizontally. The isolated Vite dependency reload
+caused one browser-open timeout; the optimized server opened successfully
+without restarting any existing service. Temporary scripts/server/browser are
+removed or stopped; no saved store or deployed game was targeted.
+Types/lint and 130 affected unit cases across seven files pass.
+
+Nexus, movement-card/Ambassador and other competing parents remain separate.
+This is bounded reaction coverage, not a new publisher cancellation/timing
+ruling, complete CHOAM/Semuta or deployed acceptance.
 
 **11 October 2026 — clean battle Distrans.** A completed clean private
 Distrans transfer now offers its public used card during battle. Only the

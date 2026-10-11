@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 11 October 2026 — reactive Worthless denials with Semuta
+
+The existing `choamBalisetDiscard` and `choamLaLaLaDiscard` receipts now admit
+clean reactive ordinary movement/free-force requests. The accepted cost stops
+the uncommitted request before staging. An optional true marker records only
+that stopped status; retirement installs the original restriction and notice,
+never re-executing a move or revival. Existing proactive signatures are
+unchanged when the marker is absent. If a competing parent prevents the offer,
+the temporary pointer is restored before the original handler runs.
+
+Both native regressions fail before and pass after. Claim/pass preserves
+resources, force/movement/revival usage and card inventory; the original target
+restriction remains, and a legal alternate move or paid two-force revival
+works. Retired events reject. Twenty-four isolated runtime scenarios cover both
+effects in Basic/Advanced with claim/pass and all four legal AI profiles.
+Four printed-Karama cancellations retain the Worthless card and Semuta, open
+no Worthless discard reaction and complete the original request. The first
+cancel probe's absent-versus-null internal-state pin was removed in favor of
+observing the public reaction.
+
+Real GameTable at 390px performs reactive Prevent movement, Semuta commitment,
+visible Carthag restriction, one alternate move to Arrakeen and turn completion.
+The revival case performs La La La, Semuta commitment and one actual paid
+two-force revival: quote4, reserves19/Tanks1/spice6 and no free usage. Both
+surfaces have no horizontal overflow. A Vite optimization reload caused one
+initial open timeout; the optimized server opened without an existing-service
+restart. Temporary scripts, isolated server and browser tab are removed/stopped;
+no saved store or deployed game was targeted.
+Types/lint and 130 affected unit cases across seven files pass.
+
+Nexus, movement-card/Ambassador and other competing parents remain outside
+these new paths. Cancellation rules and public gates are unchanged.
+Contracts: [Semuta](SEMUTA_SOURCE_UPDATE_20260907.md),
+[native denial/resumption](CHOAM_WORTHLESS_CANCELLATION_RECOVERY.md).
+
 ## 11 October 2026 — Semuta after a clean battle Distrans transfer
 
 The completed `distransDiscard` receipt already binds the donor/recipient hand

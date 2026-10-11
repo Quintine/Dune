@@ -2,6 +2,16 @@
 
 This checkpoint implements the bounded work identified in [CHOAM_WORTHLESS_CONTINUATION_AUDIT.md](CHOAM_WORTHLESS_CONTINUATION_AUDIT.md). The source audit remains the record of the original defects and applicable publisher evidence. No new rule interpretation or public mode activation is introduced.
 
+11 October 2026 Semuta update: accepted reactive Baliset and La La La now pause
+after the used-card cost in the explicit development preview. The original
+uncommitted ordinary move or free-force request is already stopped; a typed
+marker resumes only the original restriction and notice, never the denied
+request. Claim/pass leaves resources unspent and permits another legal move or
+paid revival. Canceled declarations still retain their card, create no
+Worthless discard and resume the original request under the unchanged quote.
+Nexus, movement-card/Ambassador and competing parents remain separate.
+See [the bounded runtime evidence](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 ## Resolved defects and shared execution
 
 The original in-memory probe produced a real reactive La La La declaration, then corrupted its saved parent. Increasing the request to 99 forces returned negative Tanks after printed cancellation; a null benefit queue accepted a new BG cancellation cost before failing later; a contradictory Mentat flag restored an impossible phase-4 decision. The unchanged probe now rejects all three cases for both printed Karama and BG conversion. These were malformed-save defects, not demonstrated legitimate-action exploits.

@@ -126,21 +126,23 @@ unspent movement. A neutral claim or decline restores the same
 one-range increment without replaying the response. Reactive,
 Nexus and overlapping movement parents retain their automatic path.
 
-Clean proactive La La La stages `choamLaLaLaDiscard` after its
+Clean proactive or reactive La La La stages `choamLaLaLaDiscard` after its
 accepted public Worthless card cost but before blocking a selected
 target's free force revival. The receipt binds the target, old
 Revival rules and physical card. A neutral claim or decline applies
-the one saved block; paid revival remains legal. Reactive requests,
-Nexus and other Worthless effects retain their automatic paths.
+the one saved block; paid revival remains legal. A reactive request is already
+stopped and its marker cannot revive or charge it. Nexus and other contexts
+retain their automatic paths.
 
-Clean proactive Baliset stages `choamBalisetDiscard` after its
+Clean proactive or reactive Baliset stages `choamBalisetDiscard` after its
 accepted public Worthless card cost but before restricting the
 chosen player from movement into CHOAM's occupied territory. The
 receipt binds the target, territory, CHOAM's current forces,
 existing restrictions and physical card. A neutral claim or
-decline installs the one saved restriction; shipment remains
-possible. Declared moves, Nexus conversion and overlapping
-arrival parents retain their automatic paths.
+decline installs the one saved restriction; shipment remains possible. A clean
+ordinary declared move is already stopped without spending its allowance.
+Nexus, movement-card/Ambassador and overlapping arrival parents retain their
+automatic paths.
 
 Clean proactive ordinary Trip to Gamont stages
 `choamGamontDiscard` after the accepted public card cost but

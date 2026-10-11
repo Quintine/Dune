@@ -1379,6 +1379,7 @@ export type Game = {
           player: string;
           card: string;
           target: string;
+          stoppedRevival?: true;
           stateSignature: string;
         }
       | {
@@ -1387,6 +1388,7 @@ export type Game = {
           card: string;
           target: string;
           territory: string;
+          stoppedMovement?: true;
           stateSignature: string;
         }
       | {
@@ -5218,6 +5220,7 @@ function choamLaLaLaDiscardSignature(g: Game, c: ChoamLaLaLaDiscardContinuation)
   const owner = getPlayer(g, c.player), target = getPlayer(g, c.target);
   return JSON.stringify({
     player: c.player, card: c.card, target: c.target,
+    ...(c.stoppedRevival ? { stoppedRevival: true } : {}),
     turn: g.turn, phase: g.phase, active: g.active, order: g.order,
     revivalRules: g.revivalRules, pendingRevival: g.pendingRevival,
     parent: nullentropyParentSignature(g,
@@ -5235,6 +5238,7 @@ function choamBalisetDiscardSignature(g: Game, c: ChoamBalisetDiscardContinuatio
   const owner = getPlayer(g, c.player);
   return JSON.stringify({
     player: c.player, card: c.card, target: c.target, territory: c.territory,
+    ...(c.stoppedMovement ? { stoppedMovement: true } : {}),
     turn: g.turn, phase: g.phase, active: g.active, order: g.order,
     restrictions: g.choamBaliset, remaining: g.movementRemaining,
     parent: nullentropyParentSignature(g,
@@ -5928,6 +5932,7 @@ function treacheryDiscardIntegrity(g: Game) {
     requireRule(
       g.phase === 4 && owner?.faction === 'choam' &&
       g.players.some(p => p.id === c.target) &&
+      (c.stoppedRevival === undefined || c.stoppedRevival === true) &&
       !g.revivalRules?.freeBlocked?.includes(c.target) &&
       !g.pendingChoamWorthless && !g.pendingRevival &&
       !g.response && !g.decision && !g.phaseOpening &&
@@ -5944,6 +5949,7 @@ function treacheryDiscardIntegrity(g: Game) {
     requireRule(
       g.phase === 5 && owner?.faction === 'choam' &&
       c.target !== c.player && g.players.some(p => p.id === c.target) &&
+      (c.stoppedMovement === undefined || c.stoppedMovement === true) &&
       at(owner, c.territory) > 0 &&
       !g.pendingChoamWorthless && !g.pendingChoamMove &&
       !g.response && !g.decision && !g.phaseOpening && !g.ornithopter &&
@@ -6945,8 +6951,12 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     completeChoamKulon(g, getPlayer(g, next.player));
   } else if (next.kind === 'choamLaLaLaDiscard') {
     completeChoamLaLaLa(g, next.target);
+    if (next.stoppedRevival)
+      log(g, 'The free revival request was stopped without moving forces or paying spice. Choose a paid revival if desired.');
   } else if (next.kind === 'choamBalisetDiscard') {
     completeChoamBaliset(g, next.target, next.territory);
+    if (next.stoppedMovement)
+      log(g, 'The declared move was prevented without moving forces or spending a movement.');
   } else if (next.kind === 'choamGamontDiscard') {
     completeChoamGamont(g, getPlayer(g, next.player), next.target,
       next.location, 0);
@@ -24008,12 +24018,17 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
         completeChoamJubba(g, choam, pending.location!);
       } else if (pending.effect === 'baliset') {
         if (g.semutaPreview && used.name === 'Baliset' &&
-          !pending.storm && !pending.revival && !pending.movement &&
-          !pending.mentat && !pending.nexusEvent) {
+          !pending.storm && !pending.revival && !pending.mentat && !pending.nexusEvent &&
+          (!pending.movement || (g.pendingChoamMove && !g.pendingChoamMove.source &&
+            !g.pendingChoamMove.ornithopterEvent && !g.pendingChoamMove.ornithopterRange &&
+            !g.pendingChoamMove.discoveryFlight))) {
+          const movement = pending.movement ? g.pendingChoamMove : null;
+          if (movement) g.pendingChoamMove = null;
           const continuation: ChoamBalisetDiscardContinuation = {
             kind: 'choamBalisetDiscard', player: choam.id,
             card: used.id, target: pending.target!,
             territory: pending.location!, stateSignature: '',
+            ...(movement ? { stoppedMovement: true as const } : {}),
           };
           const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
           if (semutaOfferSupported(g, continuation, entries)) {
@@ -24021,6 +24036,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
             stageTreacheryDiscard(g, 'choam:baliset', entries, continuation);
             return;
           }
+          if (movement) g.pendingChoamMove = movement;
         }
         completeChoamBaliset(g, pending.target!, pending.location!);
         if (pending.movement) {
@@ -24055,11 +24071,15 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
           pending.elite!, pending.noFieldEvent);
       } else {
         if (g.semutaPreview && used.name === 'La La La' &&
-          !pending.storm && !pending.revival && !pending.movement &&
-          !pending.mentat && !pending.nexusEvent) {
+          !pending.storm && !pending.movement && !pending.mentat && !pending.nexusEvent &&
+          (!pending.revival || (g.pendingRevival?.kind === 'forces' &&
+            g.pendingRevival.player === pending.target))) {
+          const revival = pending.revival ? g.pendingRevival : null;
+          if (revival) g.pendingRevival = null;
           const continuation: ChoamLaLaLaDiscardContinuation = {
             kind: 'choamLaLaLaDiscard', player: choam.id,
             card: used.id, target: pending.target!, stateSignature: '',
+            ...(revival ? { stoppedRevival: true as const } : {}),
           };
           const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
           if (semutaOfferSupported(g, continuation, entries)) {
@@ -24067,6 +24087,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
             stageTreacheryDiscard(g, 'choam:laLaLa', entries, continuation);
             return;
           }
+          if (revival) g.pendingRevival = revival;
         }
         completeChoamLaLaLa(g, pending.target!);
         if (pending.revival) {
