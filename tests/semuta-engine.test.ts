@@ -7,6 +7,7 @@ import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { spiceDeck } from '../game/cards';
 import { saphoAggressorGame, aggressorAction, prepareAggressorPlans } from './fixture-sapho-aggressor';
 import { takeSaphoBattleCard } from './fixture-sapho-battle-order';
+import { createTerrorState, placeTerror } from '../game/moritani-terror';
 
 const reload = (g: Game): Game => JSON.parse(JSON.stringify(g));
 const player = (g: Game, id: string) => g.players.find(p => p.id === id)!;
@@ -23,10 +24,11 @@ function inventory(g: Game) {
   assert.equal(new Set(ids).size, ids.length);
   return ids;
 }
-function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emperor' | 'beneGesserit' | 'harkonnen' = 'emperor') {
-  let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), advanced, ix ? ['choam', 'ix'] : ['choam']);
+function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emperor' | 'beneGesserit' | 'harkonnen' | 'moritani' = 'emperor') {
+  let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), advanced,
+    opponent === 'moritani' ? ['choam', 'ecaz'] : ix ? ['choam', 'ix'] : ['choam']);
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
-  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : opponent === 'beneGesserit' ? 'Bene Gesserit' : opponent === 'harkonnen' ? 'Harkonnen' : 'Emperor',
+  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : opponent === 'beneGesserit' ? 'Bene Gesserit' : opponent === 'harkonnen' ? 'Harkonnen' : opponent === 'moritani' ? 'Moritani' : 'Emperor',
     ixianAlly ? 'ixians' : opponent));
   for (const p of g.players) { p.bot = 'Medium'; p.ready = true; }
   g = initializeSemutaGameForAudit(g);
@@ -49,6 +51,68 @@ function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emp
     response: null, phaseOpening: null, stormPending: null, movementRemaining: ['a', 'r', 'e'] });
   return { g, semuta, hajr };
 }
+
+for (const kind of ['sabotage', 'robbery'] as const) void test(
+  `Semuta takes the private ${kind} discard before the original native arrival suffix`, () => {
+    const { g, semuta } = fixture(false, false, false, 'moritani');
+    for (const id of ['a', 'e']) Object.assign(player(g, id), { forces: {}, reserves: 20, shipped: false, moved: 0 });
+    const gift = take(g, g.deck.find(c => c.kind === 'shield')!.id);
+    if (kind === 'sabotage') {
+      player(g, 'e').hand.push(gift);
+      for (let i = 0; i < 2; i++) player(g, 'a').hand.push(take(g, g.deck.find(c => c.kind === 'projectile')!.id));
+    } else {
+      g.deck.push(gift);
+      for (let i = 0; i < 4; i++) player(g, 'e').hand.push(take(g,
+        g.deck.find(c => !c.effect || c.kind === 'worthless')!.id));
+    }
+    g.moritaniTerror = createTerrorState(() => 0);
+    const token = g.moritaniTerror.tokens.find(t => t.kind === kind)!;
+    g.moritaniTerror = placeTerror(g.moritaniTerror, token.id, 'carthag', g.turn);
+    const original = inventory(g);
+    let state = applyAction(g, 'a', { type: 'ship', territory: 'carthag', sector: 11, amount: 2 });
+    state = applyAction(state, 'e', { type: 'decision', reveal: true });
+    let drawn: string | undefined;
+    if (kind === 'robbery') {
+      drawn = state.deck[0].id;
+      state = applyAction(state, 'e', { type: 'decision', choice: 'card' });
+      assert.equal(player(state, 'e').hand.some(c => c.id === drawn), true);
+      state = applyAction(state, 'e', { type: 'decision', card: player(state, 'e').hand[0].id });
+    }
+    assert.equal(state.pendingTreacheryDiscard?.continuation.kind, 'terrorDiscard');
+    assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(state.pendingTreacheryDiscard!.batch.entries[0].publicFace, false);
+    const victim = state.pendingTreacheryDiscard!.batch.entries[0].card.id;
+    const event = state.pendingTreacheryDiscard!.batch.event;
+    assert.deepEqual(viewGame(state, 'r').semutaReaction?.candidates, []);
+    const settled = (game: Game) => game.players.map(p => ({ id: p.id, spice: p.spice,
+      forces: p.forces, reserves: p.reserves, tanks: p.tanks, shipped: p.shipped, moved: p.moved }));
+    let declined = reload(state);
+    for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+    const claimed = applyAction(reload(state), 'r', { type: 'semutaCommit', event });
+    for (let resumed of [declined, claimed]) {
+      assert.deepEqual(settled(resumed), settled(state));
+      assert.equal(resumed.moritaniTerror!.tokens.find(t => t.id === token.id)!.status, 'removed');
+      assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event }));
+      if (kind === 'sabotage') {
+        assert.equal(resumed.pendingTerrorEntry?.stage, 'gift');
+        resumed = applyAction(resumed, 'e', { type: 'decision', card: gift.id });
+        assert.equal(player(resumed, 'a').hand.some(c => c.id === gift.id), true);
+        assert.equal(player(resumed, 'a').hand.length, 3);
+      } else {
+        assert.equal(player(resumed, 'e').hand.length, 4);
+        assert.equal(player(resumed, 'e').hand.some(c => c.id === drawn), true);
+      }
+      assert.equal(resumed.pendingTerrorEntry, null);
+      assert.equal(resumed.active, 'a');
+      assert.equal(player(resumed, 'a').forces['carthag:11'], 2);
+      assert.equal(player(resumed, 'a').reserves, 18);
+      assert.deepEqual(inventory(resumed), original);
+      assert.throws(() => applyAction(resumed, 'a', { type: 'ship', territory: 'carthag', sector: 11, amount: 2 }));
+    }
+    assert.equal(player(claimed, 'r').hand.some(c => c.id === victim), true);
+    assert.equal(claimed.discard.some(c => c.id === semuta.id), true);
+    assert.equal(declined.discard.some(c => c.id === victim), true);
+  });
 
 void test('private Ixian ally discard offers Semuta before replacement without revealing its face', () => {
   const { g, semuta, hajr } = fixture(true, true);

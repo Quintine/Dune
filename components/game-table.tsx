@@ -1160,6 +1160,15 @@ export function GameTable({
           {g.richeseBidding.offerBlocked}
         </output>
       )}
+      {g.semutaPreview && (
+        <p className="notice" role="status">
+          Semuta Drug development preview · bounded fresh-discard reactions,
+          not complete Richese or certified expansion rules. Native Moritani
+          support is Basic only: clean shipment/movement Sabotage and Robbery
+          overflow; other arrival continuations remain guarded.{' '}
+          <a href="/rules?topic=card-richese-semuta-drug#card-richese-semuta-drug">Preview rules and limits</a>
+        </p>
+      )}
       {g.nexusKullPreview ? (
         <p className="notice" role="status">
           CHOAM Nexus Cunning · Kull Wahad development preview. Any eligible

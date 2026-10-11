@@ -12,6 +12,15 @@ The saved `terrorDiscard` continuation contains source, Moritani owner, detached
 
 The suffix retires the discard sequence before restoring the arrival. Worm-ride completion continues through the existing `finishTerrorEntry`/`nextWormRide` path. A Nexus deferred by an intervening summoned worm still opens before the next ride or phase advancement.
 
+11 October 2026 Semuta update: the explicit local entry admits Basic native
+Richese/Moritani with classic opponents, CHOAM/Ecaz decks and no optional modules.
+Sabotage and Robbery-overflow receipts after clean ordinary shipment/movement
+arrivals now offer a private fresh-discard reaction. Claim or all-seat decline
+restores the original gift/overflow suffix without repeating the victim, draw,
+token reveal, payment or physical arrival. Faces stay hidden before commitment.
+Worm/Ambassador/other nested arrivals retain automatic continuation. The table
+persistently labels this incomplete development profile; no public gate opens.
+
 ## Validation and privacy
 
 Read, action and automatic recovery all verify one private fresh card receipt, exact custody, current turn/phase, matching removed token and source, seated former owner and Moritani, stronghold/sector, typed arrival counts, pre-discard hand size and the appropriate consumed stage. Robbery validates that the hand exceeded its limit before the discard; four cards afterward is valid.

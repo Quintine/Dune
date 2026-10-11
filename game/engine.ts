@@ -6649,6 +6649,7 @@ function semutaOfferSupported(
   if (continuation.kind !== 'ordinaryCardDiscard' &&
     continuation.kind !== 'nullentropyDiscard' &&
     continuation.kind !== 'distransDiscard' &&
+    continuation.kind !== 'terrorDiscard' &&
     continuation.kind !== 'saphoMovementDiscard' &&
     continuation.kind !== 'saphoAggressorDiscard' &&
     continuation.kind !== 'saphoAuctionDiscard' &&
@@ -6690,6 +6691,12 @@ function semutaOfferSupported(
       g.pendingFaceDance || g.pendingChoamBattleIncome ||
       g.pendingWinnerDiscards || g.moritaniRetention ||
       g.pendingIxSubstitution)) return false;
+  if (continuation.kind === 'terrorDiscard' &&
+    (continuation.entry.resume !== 'none' ||
+      (continuation.entry.cause !== 'shipment' && continuation.entry.cause !== 'movement') ||
+      g.pendingArrivalOverlap || g.pendingChoamMove || g.pendingIxMove ||
+      g.pendingFremenMove || g.ornithopter || g.summonedWorm ||
+      g.wormRides.length > 0)) return false;
   if ((continuation.kind === 'distransDiscard' ||
     continuation.kind === 'truthtranceDiscard' ||
     continuation.kind === 'saphoMovementDiscard' ||
@@ -6716,7 +6723,7 @@ function semutaOfferSupported(
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
-    (continuation.kind === 'ixAllyCard'
+    (continuation.kind === 'ixAllyCard' || continuation.kind === 'terrorDiscard'
       ? entries.length === 1 && !entries[0].publicFace
       : continuation.kind === 'battleCleanup' ||
         continuation.kind === 'winnerMandatoryDiscard' ||
@@ -6735,6 +6742,7 @@ function semutaOfferSupported(
       continuation.kind === 'winnerMandatoryDiscard' ||
       continuation.kind === 'battleResolved' ||
       continuation.kind === 'ixAllyCard' ||
+      continuation.kind === 'terrorDiscard' ||
       continuation.kind === 'choamSaleDiscard' ||
       continuation.kind === 'choamKulonDiscard' ||
       continuation.kind === 'choamLaLaLaDiscard' ||
@@ -9527,14 +9535,19 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   initializeMoritaniAssassinateState(g);
   return g;
 }
-/** Development-only Semuta reaction in fresh Richese games, optionally with
- * the physical Ix Treachery deck; public expansion starts stay gated. */
+/** Development-only Semuta in fresh Richese games: optional Ix deck, or a
+ * bounded Basic native Moritani/E3 profile. Public expansion starts stay gated. */
 export function initializeSemutaGameForAudit(state: Game): Game {
+  const nativeTerror = !state.advanced && state.expansions.length === 2 &&
+    state.expansions.includes('choam') && state.expansions.includes('ecaz') &&
+    state.players.some(p => p.faction === 'moritani') &&
+    state.players.every(p => p.faction === 'richese' || p.faction === 'moritani' ||
+      faction(p.faction).expansion === 'base');
   requireRule(!state.semutaPreview &&
     state.expansions.includes('choam') &&
-    state.expansions.every(id => id === 'choam' || id === 'ix') &&
+    (state.expansions.every(id => id === 'choam' || id === 'ix') || nativeTerror) &&
     state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game with no optional modules.');
+  'Semuta needs a fresh Richese faction game with no optional modules: CHOAM with optional Ix, or Basic native Moritani with CHOAM and Ecaz decks and classic opponents.');
   const g = initializeFactionExpansionsGameForAudit(state);
   g.semutaPreview = true;
   return g;
@@ -32104,6 +32117,7 @@ export function viewGame(state: Game, id: string) {
     schema: g.schema,
     botsPending: g.botsPending ?? false,
     semutaReaction: projectedSemutaReaction(g, me),
+    semutaPreview: g.semutaPreview === true,
     automaticContinuationPending: (!!g.pendingTreacheryDiscard && !g.pendingTreacheryDiscard.reaction) || homeworldRevealPending(g) || homeworldShipmentAutomatic(g) || homeworldOccupiedIncomeAutomatic(g) || grummanCollectionAutomatic(g) || tupileAutomatic(g),
     botNextActionAt: g.botNextActionAt ?? null,
     code: g.code,

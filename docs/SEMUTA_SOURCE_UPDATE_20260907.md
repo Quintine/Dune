@@ -76,8 +76,9 @@ Do not ask again about normal targets, forced-discard owner bookkeeping, simulta
 ## 30 September 2026 — bounded clean-discard runtime
 
 The explicit `semuta` development profile starts a fresh Richese roster
-with CHOAM & Richese and optionally the physical Ix deck, without
-opening public expansion starts. It interrupts **clean public
+with CHOAM & Richese and optionally the physical Ix deck, or the bounded Basic
+native Moritani entry described below, without opening public expansion starts.
+It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
 Truthtrance, four bounded Sapho scopes, pre-leader Residual Poison,
 printed Karama canceling clean CHOAM Charity, Inflation or Bene
@@ -86,7 +87,8 @@ CHOAM sale or clean Kulon/proactive La La La/Baliset/ordinary
 Trip to Gamont Worthless discard, accepted moving-storm Jubba
 Cloak, battle and Ix-deck Thumper/Amal discards**, plus
 a clean **private** normal-auction or Black Market Ixian ally replacement discard
-before its draw. Other
+before its draw, or native Sabotage/Robbery overflow after a clean ordinary
+shipment/movement arrival in the Basic Richese/Moritani entry. Other
 than the one explicitly suspended charity/Inflation response, the
 parent transaction has no competing response. Every seat sees the
 same neutral fresh-discard opportunity
@@ -244,6 +246,44 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — native Basic Terror discards.** The same local `semuta`
+entry additionally admits fresh Basic native Richese/Moritani with classic
+opponents, exactly CHOAM/Ecaz decks and no optional modules. Native setup remains
+genuine; a persistent table warning explicitly qualifies Semuta and the Basic
+Moritani arrival scope. Existing CHOAM/optional-Ix entries are unchanged.
+Advanced Moritani, native Ecaz and Ix/E3 mixtures remain outside this entry.
+
+Private Sabotage and Robbery-overflow `terrorDiscard` receipts now offer Semuta
+after clean ordinary shipment/movement arrivals. The random victim or original
+Robbery draw, removed token, payment and physical arrival already commit. Every
+seat sees the same neutral response; no candidate face is shown before commitment.
+Claim or all-seat decline restores the original optional Sabotage gift or closes
+the existing Robbery overflow, never rerolling, drawing or arriving again.
+Worm, Ambassador, advisor/Guild-transport, active Ornithopter and overlap parents
+retain their automatic paths; this is implementation coverage, not a printed ban.
+The existing Semuta printed face/FAQ source has no forced-discard or phase
+exclusion; no new publisher timing or capacity ruling is asserted.
+
+Two permanent native regressions fail at the old entry guard and pass after,
+covering the private receipt, claim/pass, original gift/draw and token, conserved
+cards and arrival resources, and retired-event/second-shipment rejection.
+Thirty-six isolated engine scenarios cover both producers and shipment/movement,
+claim/pass and all four legal AI profiles, with Sabotage gift acceptance/decline.
+Each finishes the original turn with Carthag11 forces2/reserves18 and the original
+movement count. Four rejected fresh-lobby probes cover Advanced, native Ecaz,
+missing Moritani and an extra Ix family without mutating their inputs.
+
+Real production GameTable at 390px displays the persistent preview qualification
+and no candidate face, claims the private Stunner, restores Moritani's optional
+Shield gift, then finishes the original Atreides turn to Richese with exactly two
+Carthag forces and eighteen reserves. There is no horizontal overflow. The QA
+adapter only switches seats around the real controls in memory; no saved store
+or deployed game was targeted. Temporary scripts/server/browser are removed or
+stopped. These are bounded prototype proofs, not complete Semuta/Moritani or
+deployed acceptance.
+Types/lint and 80 affected unit cases across eight files pass; actual CLI help
+prints the entry without store access.
 
 **11 October 2026 — paid battle Box.** A completed paid Nullentropy Box
 search now offers the used Box during battle. Only the battle-presence guard

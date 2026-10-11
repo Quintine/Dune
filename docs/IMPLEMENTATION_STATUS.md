@@ -1,5 +1,47 @@
 # Dune implementation status
 
+## 11 October 2026 — native Basic Semuta/Terror continuation
+
+The local `semuta` initializer now additionally admits Basic native
+Richese/Moritani plus classics with exactly CHOAM/Ecaz decks and no optional
+modules. The existing CLI profile delegates to the same initializer; help
+documents the entry. Advanced Moritani, native Ecaz and Ix/E3 mixtures remain
+excluded. Existing CHOAM/optional-Ix entries are unchanged.
+
+Private Sabotage and Robbery-overflow receipts after clean ordinary
+shipment/movement arrivals now receive the existing neutral all-seat offer and
+committed-only candidate access. Only admission changed: random victim/draw,
+removed token, payment, physical entry and original gift/overflow suffix remain
+native. Worm, Ambassador, other arrival causes, active movement cards and overlap
+parents retain automatic continuation. The public projection now includes the
+explicit `semutaPreview` configuration so GameTable persistently labels this
+incomplete mode rather than implying certified expansion play.
+
+Two native setup/regression cases fail before and pass after, covering both
+private producers, original optional gift or drawn-card custody, card
+conservation, settled arrival resources and rejected retired/second-shipment
+actions. Thirty-six isolated engine scenarios cover both producers and arrival
+types, claim/pass, all four legal AI profiles and Sabotage gift accept/decline.
+Each ends the original turn with exactly two Carthag counters and eighteen
+reserves; movement entries keep their one completed move. Four fresh-lobby
+probes reject Advanced, native Ecaz, missing Moritani and extra Ix without
+mutating their inputs.
+
+Real production GameTable at 390px displays the profile warning, hides the
+private face before commitment, claims Stunner, restores the original optional
+Shield gift and finishes the Atreides turn to Richese. Arrival counters stay
+2/reserves18; there is no horizontal overflow. The adapter only mounts the real
+table and switches seats against memory-only state; no saved store was used.
+Temporary scripts, isolated server and browser tab are removed/stopped.
+
+Types/lint and 80 affected unit cases across eight files pass. The actual
+`start-prototype --help` command prints the documented entry without opening a
+store. SQLite recovery/complete-game/deployed assurance is not claimed here.
+
+Contracts: [Semuta source/entry](SEMUTA_SOURCE_UPDATE_20260907.md),
+[native Terror suffix](TERROR_DISCARD_CONTINUATIONS.md). Full Semuta/Moritani,
+combinations and deployed acceptance remain open.
+
 ## 11 October 2026 — Semuta after a paid battle Box search
 
 The completed `nullentropyDiscard` receipt already binds the acquired card,

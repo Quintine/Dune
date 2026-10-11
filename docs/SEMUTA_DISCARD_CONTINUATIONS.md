@@ -44,6 +44,15 @@ used Box is fresh; payment, private acquisition, shuffled pile and original
 battle remain committed. Claim or decline restores clean planning without
 repeating the search, shuffle or payment. Competing parents remain separate.
 
+The local Semuta entry additionally admits Basic native Richese/Moritani with
+classic opponents, CHOAM/Ecaz decks and no optional modules. Private Sabotage and
+Robbery overflow after clean ordinary shipment/movement arrivals now offer the
+fresh card before the original suffix. No face is projected before commitment.
+The random victim/draw, removed token, payment and physical arrival remain
+committed; Sabotage's optional gift is restored afterward. Other arrival parents
+retain their automatic paths. Advanced Moritani and wider family/module mixtures
+are not admitted by this entry.
+
 Clean Once Around Sapho stages `saphoAuctionDiscard` after the open
 lot's finite bidder reorder, hand-slot release and public card disposal,
 but before settlement. The saved receipt binds the lot, prior funding,

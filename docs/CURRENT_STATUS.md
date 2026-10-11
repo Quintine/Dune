@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Basic Terror — 11 October.** The local `semuta` entry now
+admits fresh Basic native Richese/Moritani plus classics with CHOAM/Ecaz decks
+and no optional modules. Private Sabotage and Robbery overflow after clean
+ordinary shipment/movement arrivals offer the fresh card before the original
+gift/arrival suffix; no victim, draw, payment or forces repeat. The persistent
+table warning visibly qualifies the profile and Basic Moritani boundary.
+Two native regressions fail before and pass after; types/lint and 80 affected
+unit cases across eight files pass. CLI help prints the entry without store
+access. Thirty-six runtime scenarios
+cover both producers/arrival types, claim/pass, four legal AI profiles and
+Sabotage gift accept/decline; four excluded-entry probes reject without mutation.
+Real GameTable at 390px hides candidates, claims Stunner, gives Shield and ends
+the original Atreides turn to Richese with Carthag2/reserves18 and no overflow.
+Advanced Moritani, native Ecaz, Ix/E3 mixtures and other arrival parents remain
+separate. Temporary QA scaffolds are removed; no saved store or deployed game was
+targeted. See [source and entry scope](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / paid battle Box — 11 October.** A completed paid Nullentropy Box
 search now offers only the used Box during battle, preserving the payment,
 private acquired card, shuffled pile and opposing sealed plan. The regression
