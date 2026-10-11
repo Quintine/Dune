@@ -121,12 +121,14 @@ claim or decline marks the one protected territory and resumes
 the same storm exactly once. Canceled cards, Nexus conversion
 and competing parents retain their direct paths.
 
-Completed Ornithopter movement now offers the same retired public card
-before its already committed arrival suffix only in a roster without
-Bene Gesserit intrusion, Ecaz Ambassador or Moritani Terror response
-sources. The final forces and move counter are held in the existing
-bound flight frame; claim or decline retires that frame and logs the
-arrival once. Mixed entry reactions remain unsupported for Semuta.
+Completed Ornithopter movement now offers its retired public card before
+the original arrival suffix, including native Bene Gesserit Intrusion.
+The final forces and move counter stay committed in the bound flight frame.
+Claim or decline retires that frame before logging arrival and opening the
+original optional fighter-to-advisor choice once. This order is the existing
+discard-before-arrival composition, not a new publisher priority ruling.
+Ecaz Ambassador, Moritani Terror and overlapping entry reactions remain outside
+this Semuta boundary. (11 October 2026)
 
 Clean `battleResolved` now pauses the first public mandatory batch
 after combat result and actual card custody are committed but before

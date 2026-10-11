@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta before original Bene Gesserit Intrusion
+
+Final Ornithopter movement already commits forces, counters and a typed
+discard-before-arrival frame. Its Semuta admission still excluded every roster
+with Bene Gesserit. That software limit is removed without changing the arrival
+suffix: claim or all-seat decline precedes the original native Intrusion once.
+Basic retains no Advanced Intrusion; Ecaz/Moritani and overlap guards remain.
+This is the existing ordering composition, not a publisher priority ruling.
+
+The regression fails before the admission change. The repaired test checks
+fighters remain fighters during the Semuta pause, then become zero fighters
+after the original optional flip while the two physical counters remain.
+An initial assertion incorrectly expected the advisor marker to be a boolean;
+it was deleted rather than re-pinning its object representation. Final 113/113
+affected cases pass. TypeScript and lint pass.
+
+Ten isolated CLI scenarios cover Basic/Advanced claim/pass, Intrusion decline,
+final two-group completion and four legal bots. Real GameTable at 390px, using
+the installed production Vinext image adapter, proves Commit recovering the
+physical Ornithopter, the original Become advisors control and Finish shipment
+& movement advancing Atreides→Richese. Atreides retains Imperial Basin2/Arrakeen1
+and BG retains its original two counters as advisors. No horizontal overflow.
+The observed stale Semuta availability tooltip is corrected to describe the
+connected private Black Market replacement, native Intrusion and approved
+full-hand exchange.
+
+The fixture uses real setup/engine/table with conserved staged forces and no
+saved store. Temporary scripts/services/tabs were removed or closed. This is
+local changed-path proof, not deployed, full-module, asset or recovery acceptance.
+Contracts: [Semuta](SEMUTA_SOURCE_UPDATE_20260907.md),
+[Ornithopter](ORNITHOPTER_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — Semuta before Black Market allied replacement draw
 
 The native Black Market purchase already offers Ixian allied replacement and

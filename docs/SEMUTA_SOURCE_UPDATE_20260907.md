@@ -233,8 +233,7 @@ This neutral all-seat acknowledgement is a conservative **application
 policy**, not a newly discovered publisher timing rule. Full-hand
 Semuta uses the explicit user-approved atomic exchange; its completed
 hand count is unchanged. Pending gifts, competing responses,
-completed Ornithopter
-arrivals with BG intrusion, Ecaz Ambassador or Moritani Terror,
+completed Ornithopter arrivals with Ecaz Ambassador or Moritani Terror,
 queued or promise-bound Truthtrance, pending battle rewards and other
 typed producers retain their automatic continuation; Semuta cannot
 claim those events yet.
@@ -245,3 +244,17 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — native Intrusion suffix.** Final Ornithopter movement now
+offers the retired public card to Semuta before native Bene Gesserit Intrusion.
+Physical movement and counters have already committed; claim or decline resumes
+the same arrival and optional fighter-to-advisor choice once. Basic still has
+no Advanced Intrusion. Range3 and final two-group completion work; other entry
+families and overlap guards are unchanged. This is the existing typed
+discard-before-arrival composition, not a new publisher priority ruling.
+Ten isolated engine scenarios prove claim/pass in both modes, Intrusion decline,
+two-group completion and four legal bots. Real GameTable at 390px proves Commit,
+the original Become advisors control and Finish shipment & movement advancing
+to the next seat with unchanged force counts. Public/full-mode gates stay closed.
+TypeScript/lint pass; the final affected union passes 113 cases. The regression
+checks actual fighter counts rather than the incidental advisor marker shape.

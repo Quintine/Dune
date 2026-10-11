@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyAction, createGame, initializeSemutaGameForAudit, joinGame, newPlayer, normalizeAutomaticGame, viewGame, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
+import { fighterCount } from '../game/advisors';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { spiceDeck } from '../game/cards';
 import { saphoAggressorGame, aggressorAction, prepareAggressorPlans } from './fixture-sapho-aggressor';
@@ -22,11 +23,11 @@ function inventory(g: Game) {
   assert.equal(new Set(ids).size, ids.length);
   return ids;
 }
-function fixture(ix = false, ixianAlly = false, advanced = false) {
+function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emperor' | 'beneGesserit' = 'emperor') {
   let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), advanced, ix ? ['choam', 'ix'] : ['choam']);
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
-  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : 'Emperor',
-    ixianAlly ? 'ixians' : 'emperor'));
+  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : opponent === 'beneGesserit' ? 'Bene Gesserit' : 'Emperor',
+    ixianAlly ? 'ixians' : opponent));
   for (const p of g.players) { p.bot = 'Medium'; p.ready = true; }
   g = initializeSemutaGameForAudit(g);
   for (let step = 0; g.status === 'setup' && step < 80; step++) {
@@ -536,6 +537,49 @@ void test('a retired Ornithopter can be claimed after one flight group without r
     assert.deepEqual(viewGame(reload(claimed), p.id), viewGame(claimed, p.id));
   assert.deepEqual(normalizeAutomaticGame(reload(claimed)), reload(claimed));
   assert.throws(() => applyAction(claimed, 'r', { type: 'semutaCommit', event }));
+});
+
+void test('final Ornithopter discard resolves Semuta before the original Bene Gesserit intrusion without moving twice', () => {
+  const { g, semuta, hajr } = fixture(false, false, true, 'beneGesserit');
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const ornithopter = take(g, 'richese-ornithopter');
+  player(g, 'a').hand.push(ornithopter);
+  Object.assign(player(g, 'a'), { forces: { 'imperial_basin:10': 3 }, reserves: 17, shipped: true });
+  Object.assign(player(g, 'e'), { forces: { 'arrakeen:10': 2 }, reserves: 18, advisors: {} });
+  const original = inventory(g);
+  const pending = applyAction(g, 'a', {
+    type: 'move', movementCard: ornithopter.id, ornithopter: 'range3',
+    forces: { 'imperial_basin:10': 1 }, territory: 'arrakeen', sector: 10,
+  });
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.decision, null);
+  assert.equal(fighterCount(player(pending, 'e'), 'arrakeen'), 2);
+  assert.equal(player(pending, 'a').moved, 1);
+  assert.deepEqual(player(pending, 'a').forces, { 'imperial_basin:10': 2, 'arrakeen:10': 1 });
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  for (const resumed of [declined, claimed]) {
+    assert.equal(resumed.pendingTreacheryDiscard, null);
+    assert.equal(resumed.decision?.kind, 'intrusion');
+    assert.equal(resumed.decision?.player, 'e');
+    let finished = applyAction(resumed, 'e', { type: 'decision', accept: true });
+    while (finished.response?.kind === 'advisorFlip') {
+      const actor = finished.players.find(p => !finished.response!.passed.includes(p.id))!;
+      finished = applyAction(finished, actor.id, { type: 'passResponse' });
+    }
+    assert.equal(finished.decision, null);
+    assert.equal(fighterCount(player(finished, 'e'), 'arrakeen'), 0);
+    assert.deepEqual(player(finished, 'e').forces, { 'arrakeen:10': 2 });
+    assert.equal(player(finished, 'a').moved, 1);
+    assert.deepEqual(player(finished, 'a').forces, { 'imperial_basin:10': 2, 'arrakeen:10': 1 });
+    assert.deepEqual(inventory(finished), original);
+    assert.throws(() => applyAction(finished, 'r', { type: 'semutaCommit', event }));
+  }
+  assert.equal(player(claimed, 'r').hand.some(card => card.id === ornithopter.id), true);
+  assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
 });
 
 void test('a completed private Distrans transfer offers only its public used card', () => {

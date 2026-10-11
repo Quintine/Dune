@@ -2,6 +2,24 @@
 
 7 September 2026. Retiring the played Ornithopter now preserves the exact remaining arrival or turn-ending step. This continues the shared discard infrastructure without enabling Semuta or changing any unresolved movement rule or expansion start gate.
 
+## 11 October 2026 — Semuta before native Intrusion
+
+The explicit Semuta development envelope now pauses the final public Ornithopter
+discard even when Bene Gesserit is seated. Its forces and movement counters are
+already committed. Claim or all-seat decline retires the same saved frame before
+the original native Intrusion choice; it cannot move the group again or skip that
+choice. Basic has no Advanced Intrusion. Ecaz, Moritani and overlapping entry
+reactions remain outside this Semuta boundary. This is the existing typed
+discard-before-arrival ordering, not a new publisher priority ruling.
+
+Ten isolated engine scenarios cover Basic/Advanced claim/pass, retaining fighters,
+final two-group completion and four legal bots. In real GameTable at 390px,
+Commit recovers the physical Ornithopter; Become advisors flips the original
+two BG counters; Finish shipment & movement advances from Atreides to Richese.
+Atreides retains two counters in Imperial Basin and one in Arrakeen. No saved
+store was targeted. [Current Semuta scope](SEMUTA_SOURCE_UPDATE_20260907.md).
+The dated 7 September infrastructure and assurance evidence below is historical.
+
 ## Two endings, one physical card
 
 A completed final group has already moved its forces and concealed marker, consumed its original-group quota and incremented movement counters. The retired card is moved from played escrow to the discard pile once, and the retirement log is committed. Its `ornithopterDiscard` frame with source `move` preserves only the final movement facts needed to log and open arrival decisions. Recovery never repeats force removal, placement, marker event generation, shipment completion or movement counters.

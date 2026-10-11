@@ -6640,7 +6640,7 @@ function treacheryDiscardIntegrity(g: Game) {
 }
 /** Bounded public single-card reaction after clean completed effects. Battle
  * winner cleanup may resume only without other pending battle rewards; final
- * flight arrival excludes factions that open intrusion or entry responses. */
+ * flight arrival may resume native Intrusion, but other entry responses remain gated. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -6674,8 +6674,7 @@ function semutaOfferSupported(
     !(continuation.kind === 'ornithopterDiscard' &&
       (continuation.source === 'end' ||
         (continuation.source === 'move' &&
-          !g.players.some(p => p.faction === 'beneGesserit' ||
-            p.faction === 'ecaz' || p.faction === 'moritani') &&
+          !g.players.some(p => p.faction === 'ecaz' || p.faction === 'moritani') &&
           !g.pendingArrivalOverlap))) &&
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&

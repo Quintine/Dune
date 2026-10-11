@@ -40,7 +40,7 @@ export function richeseCardActionBlock(card: VisibleCard): string | null {
   if (definition?.card.effect === 'distrans')
     return 'Choose a recipient and card in the Distrans transfer panel.';
   if (definition?.card.effect === 'semutaDrug')
-    return 'Use the neutral fresh-discard response in the Semuta development preview. Clean ordinary-card, paid Box, Ornithopter, Distrans, Truthtrance, four Sapho scopes, unready pre-leader Residual Poison, printed Karama canceling CHOAM Charity, Inflation or Bene Gesserit Charity, battle-card and Ix-deck Thumper/Amal discards are connected; pending rewards, other producers and full-hand sequencing remain unfinished.';
+    return 'Use the neutral fresh-discard response in the Semuta development preview. Clean ordinary-card, paid Box, retired Ornithopter (before native Intrusion), Distrans, Truthtrance, four Sapho scopes, unready pre-leader Residual Poison, printed Karama canceling CHOAM Charity, Inflation or Bene Gesserit Charity, battle-card and Ix-deck Thumper/Amal discards are connected, as are private normal-auction and Black Market Ixian allied replacements. The approved full-hand exchange spends Semuta without increasing the completed hand. Pending rewards, other producers and nested responses remain unfinished.';
   return definition && definition.card.effect !== 'karama'
     ? 'This Richese card’s effect is not implemented yet. You can inspect its rules.'
     : null;

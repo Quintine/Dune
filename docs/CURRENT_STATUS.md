@@ -29,6 +29,20 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Intrusion — 11 October.** Final Ornithopter movement now
+offers the retired card before the original Bene Gesserit Intrusion choice.
+Forces and move counters stay committed; claim or decline cannot move twice or
+skip the original arrival. Basic keeps no Advanced Intrusion; Ecaz/Moritani and
+overlap guards remain. Types/lint pass and 113 affected cases pass after replacing
+a mistaken advisor-storage assertion with actual fighter-count behavior.
+Ten isolated runtime scenarios cover both modes, claim/pass, fighter retention,
+two-group completion and four legal bots. Real GameTable at 390px proves Commit,
+Become advisors and Finish shipment & movement advancing to the next seat with
+unchanged force counts and no horizontal overflow. The observed stale Semuta
+tooltip now names Black Market replacement, native Intrusion and the approved
+full-hand exchange. No saved store or deployed game was targeted. See
+[the movement continuation](ORNITHOPTER_DISCARD_CONTINUATIONS.md#11-october-2026--semuta-before-native-intrusion).
+
 **Semuta / Black Market replacement — 11 October.** A clean native Ixian
 allied replacement now offers Semuta before drawing from a Black Market
 purchase, as already supported for normal auctions. The discarded card belongs
