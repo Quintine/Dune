@@ -16,10 +16,11 @@ broader producer/continuation inventory, not a claim of complete coverage.
 
 A clean definite Truthtrance answer now offers its consumed card even when another
 question remains reserved, and also when the answer bound a shipment promise in
-the supported Richese Semuta profile. Claim or all-seat decline leaves public
-history, the consumed card's custody and any bound promise settled, then restores
-the same remaining queue at `ask` once. Shrine-source, battle-plan and unsupported
-native No-Field shipment answers retain their automatic continuation.
+the supported Richese Semuta profile or an unsubmitted battle-plan promise. Claim
+or all-seat decline leaves public history, the consumed card's custody and any
+bound promise settled, then restores the same remaining queue at `ask` once.
+Shrine-source, submitted/revealed battle-plan and unsupported native No-Field
+shipment answers retain their automatic continuation.
 
 The same preview also pauses a final definite Truthtrance after its
 public answer, history and physical card disposal are committed. An

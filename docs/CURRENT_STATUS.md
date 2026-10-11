@@ -29,6 +29,13 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / battle-plan promise — 11 October.** An unsubmitted battle-plan
+Truthtrance answer now offers the consumed card too; the battle promise and its
+legality enforcement are unchanged, and submitted/revealed plans stay automatic.
+Types/lint pass and 126 affected cases pass after adding the regression and a
+corrected readiness step in its fixture. No saved store or deployed game was
+targeted. See [the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / Truthtrance shipment promise — 11 October.** A classic payer's ordinary
 Truthtrance shipment answer in the Richese Semuta profile now offers the consumed
 card; the binding promise and its enforcement are unchanged. The structured

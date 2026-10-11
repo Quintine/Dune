@@ -1,5 +1,26 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta with a bound battle-plan promise
+
+The Truthtrance receipt already carried a battle promise and the integrity
+validator already enforced it. The Semuta admission excluded every promise kind
+other than none, and a separate guard refused any reaction while a battle existed.
+Admitting `kind === 'battle'` and exempting `truthtranceDiscard` from the
+battle-presence guard lets an unsubmitted battle-plan answer offer its consumed
+card without touching the promise or its enforcement. Submitted and revealed plans
+bind no new promise and remain automatic.
+
+The regression fails before (no offer) and passes after, covering claim and
+decline, the surviving promise, an illegal-dial rejection, the legal dial, public
+history and inventory conservation. Types/lint pass and the 126-case affected
+union passes. The fixture needed both combatants marked ready in the shared
+pre-leader phase before a plan can be committed; that is existing battle
+preparation, not a change to it.
+
+This is local changed-path proof, not complete Semuta or deployed acceptance.
+Contracts: [source boundary](SEMUTA_SOURCE_UPDATE_20260907.md),
+[discard continuations](SEMUTA_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — Semuta with a bound Truthtrance shipment promise
 
 The typed `truthtranceDiscard` receipt already carried a bound promise and the

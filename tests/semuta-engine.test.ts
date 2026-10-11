@@ -784,6 +784,58 @@ for (const answer of ['yes', 'no'] as const) void test(
     assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
   });
 
+void test('Semuta preserves an unsubmitted battle-plan promise through claim and decline', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const truth = take(g, 'truthtrance');
+  player(g, 'a').hand.push(truth);
+  Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+    decision: null, response: null, phaseOpening: null, movementRemaining: [] });
+  for (const id of ['a', 'e']) {
+    player(g, id).forces = { 'arrakeen:10': 4 };
+    player(g, id).reserves = 16;
+  }
+  const original = inventory(g);
+  let state = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+  while (state.battle?.preparation)
+    state = applyAction(state, state.battle.preparation.owner, { type: 'declineBattlePower' });
+  while (state.battle?.preLeader && !state.battle.preLeader.closed)
+    for (const id of ['a', 'e'])
+      if (!state.battle!.preLeader!.ready.includes(id))
+        state = applyAction(state, id, { type: 'battlePreparationReady', event: state.battle!.preLeader!.event });
+  state = applyAction(state, 'a', { type: 'card', card: truth.id });
+  while (state.truthtrance?.stage === 'priority') {
+    const actor = state.players.find(p => !state.truthtrance!.passed.includes(p.id))!;
+    state = applyAction(state, actor.id, { type: 'truthPass' });
+  }
+  state = applyAction(state, 'a', { type: 'truthAsk',
+    question: { kind: 'battlePlan', target: 'e', territory: 'arrakeen',
+      claim: { kind: 'dial', compare: 'gte', value: 2 } } });
+  const pending = applyAction(state, 'e', { type: 'truthAnswer', answer: 'yes' });
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(pending.battle?.truthPromises?.length, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  const plan = (dial: number) => ({ type: 'battlePlan' as const, dial, support: 0,
+    leader: player(pending, 'e').leaders[0].id });
+  for (const resumed of [declined, claimed]) {
+    assert.equal(resumed.pendingTreacheryDiscard, null);
+    assert.deepEqual(resumed.battle, pending.battle);
+    assert.deepEqual(resumed.truthHistory, pending.truthHistory);
+    assert.throws(() => applyAction(resumed, 'e', plan(0)));
+    const planned = applyAction(resumed, 'e', plan(2));
+    assert.equal(planned.battle!.plans.e.dial, 2);
+    assert.equal(planned.battle!.truthPromises!.length, 1);
+    assert.equal(planned.battle!.truthPromises![0].released ?? false, false);
+    assert.deepEqual(inventory(planned), original);
+  }
+  assert.equal(player(claimed, 'r').hand.some(card => card.id === truth.id), true);
+  assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
+});
+
 void test('a completed Sapho first-movement reorder offers its public card before changing the active turn', () => {
   const { g, semuta, hajr } = fixture();
   player(g, 'a').hand = [];

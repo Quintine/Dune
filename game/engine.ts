@@ -6678,7 +6678,9 @@ function semutaOfferSupported(
           !g.pendingArrivalOverlap))) &&
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&
-      (continuation.promise === null || continuation.promise.kind === 'shipment'))) return false;
+      (continuation.promise === null ||
+        continuation.promise.kind === 'shipment' ||
+        continuation.promise.kind === 'battle'))) return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||
@@ -6761,7 +6763,8 @@ function semutaOfferSupported(
     (continuation.kind === 'saphoAuctionDiscard' ||
       continuation.kind === 'ixAllyCard' || !g.richeseAuction) &&
     (continuation.kind === 'saphoAggressorDiscard' ||
-      continuation.kind === 'residualPoisonDiscard' || !g.battle) &&
+      continuation.kind === 'residualPoisonDiscard' ||
+      continuation.kind === 'truthtranceDiscard' || !g.battle) &&
     (continuation.kind !== 'choamKulonDiscard' ||
       (!g.ornithopter && !g.pendingChoamMove && !g.summonedWorm &&
         g.wormRides.length === 0)) &&

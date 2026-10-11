@@ -234,7 +234,7 @@ policy**, not a newly discovered publisher timing rule. Full-hand
 Semuta uses the explicit user-approved atomic exchange; its completed
 hand count is unchanged. Pending gifts, competing responses,
 completed Ornithopter arrivals with Ecaz Ambassador or Moritani Terror,
-battle-plan Truthtrance answers, pending battle rewards and other
+pending battle rewards and other
 typed producers retain their automatic continuation; Semuta cannot
 claim those events yet.
 The completed Box's selected
@@ -244,6 +244,17 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — battle-plan promise answer.** An unsubmitted battle-plan
+Truthtrance answer now offers the consumed card too. Only the promise-kind
+admission and the battle-presence exemption changed; the battle promise and its
+legality enforcement are untouched, and a submitted or revealed plan still binds
+no new promise and stays automatic. Claim or all-seat decline leaves the plan
+binding enforceable.
+
+The permanent regression fails before and passes after; the affected union passes
+126 cases and typecheck/lint pass. This is local changed-path evidence, not
+complete Semuta or deployed acceptance.
 
 **11 October 2026 — shipment-promise answer.** A classic payer's ordinary
 Truthtrance shipment answer in the Richese Semuta profile now offers the consumed
