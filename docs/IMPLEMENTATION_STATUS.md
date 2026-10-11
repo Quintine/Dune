@@ -1,5 +1,41 @@
 # Dune implementation status
 
+## 11 October 2026 — native Auditor after Semuta battle discards
+
+Removing only the audit reward exclusion admits mandatory/winner discard
+reactions while preserving the original native opportunity. Survival and the
+audited opponent's used-card IDs remain frozen; the same cleanup/income schedule
+precedes its owner offer, then current hand custody determines pool and price.
+No quote, payment or sampling algorithm changed.
+
+A source check prevents the wrong wider exclusion: authorized supplied PDF
+physical p29 CHOAM E names cards **that opposing player used**. The quote already
+records those identities. A card acquired from the other combatant can be
+eligible while the target's own retained weapon stays excluded. The old
+publisher URL redirects and its temporary mirror is absent; the available
+authorized local document supplied the wording, not a new publisher fetch.
+
+Both regressions fail before and pass after. Twenty-four isolated runtime
+cases cover target/third-party holders and mandatory/winner producers,
+claim/pass, four legal Semuta AI profiles and payment/private inspection.
+The exact singleton price1 is paid once or that current card is inspected
+once. Hands stay intact, target/observer insight stays null, retired
+reaction/payment rejects and the original market completes to phase7 with
+no repeat payment or sample.
+
+Real production GameTable at 390px performs target-held Semuta, acquires
+Snooper, retains its own Crysknife, declares the native audit, shows Pay1/Allow,
+and privately reveals only Snooper to CHOAM. The actual inspector is readable.
+The owner then completes the original market with its historical snapshot
+intact at phase7's Ix opening, without horizontal overflow.
+Types/lint and 152 affected unit cases across twelve files pass.
+
+Temporary scripts, isolated server and browser tab are removed/stopped; no
+saved store or deployed game was targeted. Tech and other parents remain
+separate. Full CHOAM/Semuta and deployed acceptance remain open.
+Contracts: [Auditor](CHOAM_AUDITOR.md#semuta-and-current-hand-eligibility--11-october-2026),
+[Semuta](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 ## 11 October 2026 — quoted CHOAM income after Semuta battle discards
 
 The existing battle receipt validates the native CHOAM owner and positive

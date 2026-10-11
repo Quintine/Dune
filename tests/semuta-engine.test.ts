@@ -53,6 +53,85 @@ function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emp
   return { g, semuta, hajr };
 }
 
+for (const holder of ['a', 'r'] as const) void test(
+  `Semuta held by ${holder} preserves the Auditor's current-hand price and opponent-used exclusions`, () => {
+    const { g, semuta, hajr } = fixture(true, false, true, 'choam');
+    if (holder === 'a') {
+      player(g, 'a').hand = [semuta];
+      player(g, 'r').hand = [];
+      g.deck.push(hajr);
+    }
+    const weapon = take(g, g.deck.find(c => c.kind === 'projectile')!.id);
+    const defense = take(g, g.deck.find(c => c.kind === 'snooper')!.id);
+    player(g, 'a').hand.push(weapon);
+    player(g, 'e').hand.push(defense);
+    for (const p of g.players) Object.assign(p, { forces: {}, reserves: 20, tanks: 0 });
+    for (const id of ['a', 'e']) Object.assign(player(g, id), { forces: { 'arrakeen:10': 5 }, reserves: 15 });
+    Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+      response: null, decision: null, phaseOpening: null, movementRemaining: [], ready: [] });
+    const original = inventory(g);
+    let state = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+    for (let step = 0; step < 40; step++) {
+      if (state.response) {
+        const actor = state.players.find(p => !state.response!.passed.includes(p.id))!;
+        state = applyAction(state, actor.id, { type: 'passResponse' });
+      } else if (state.battle?.preparation)
+        state = applyAction(state, state.battle.preparation.owner, { type: 'declineBattlePower' });
+      else if (state.decision?.kind === 'fullPlanOffer')
+        state = applyAction(state, state.decision.player, { type: 'decision', decline: true });
+      else break;
+    }
+    for (const id of ['a', 'e'])
+      state = applyAction(state, id, { type: 'battlePreparationReady', event: state.battle!.preLeader!.event });
+    state = applyAction(state, 'a', { type: 'battlePlan', dial: 2, support: 2,
+      leader: player(state, 'a').leaders[0].id, weapon: weapon.id });
+    state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
+      leader: player(state, 'e').leaders.find(isAuditorLeader)!.id, defense: defense.id });
+    for (const id of ['a', 'e']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+    assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    const pass = (game: Game) => {
+      const event = game.pendingTreacheryDiscard!.batch.event;
+      for (const id of ['a', 'e', 'r']) game = applyAction(game, id, { type: 'semutaPass', event });
+      return game;
+    };
+    if (holder === 'r') {
+      state = pass(state);
+      state = applyAction(state, 'a', { type: 'decision', discard: [weapon.id] });
+      assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    }
+    const event = state.pendingTreacheryDiscard!.batch.event;
+    for (const claim of [false, true]) {
+      let resumed = claim ? applyAction(reload(state), holder, { type: 'semutaCommit', event }) : pass(reload(state));
+      if (resumed.decision?.kind === 'battleCards')
+        resumed = applyAction(resumed, 'a', { type: 'decision', discard: [] });
+      assert.equal(resumed.decision?.kind, 'choamAudit');
+      assert.equal(resumed.pendingAuditor?.survived, false);
+      const auditEvent = resumed.pendingAuditor!.event;
+      const expected = holder === 'r' ? hajr.id : claim ? defense.id : semuta.id;
+      for (const pay of [false, true]) {
+        let audited = applyAction(reload(resumed), 'e', { type: 'decision', event: auditEvent, audit: true });
+        assert.equal(audited.decision?.kind, 'choamAuditPayment');
+        const beforeTarget = player(audited, 'a').spice, beforeOwner = player(audited, 'e').spice;
+        audited = applyAction(audited, 'a', pay
+          ? { type: 'decision', event: auditEvent, pay: true, count: 1 }
+          : { type: 'decision', event: auditEvent, pay: false });
+        assert.equal(audited.pendingAuditor, null);
+        assert.equal(player(audited, 'a').spice, beforeTarget - Number(pay));
+        assert.equal(player(audited, 'e').spice, beforeOwner + Number(pay));
+        if (pay) assert.equal(audited.auditorInsight == null, true);
+        else assert.deepEqual(audited.auditorInsight!.cards.map(c => c.id), [expected]);
+        assert.equal(viewGame(audited, 'r').auditorInsight, null);
+        assert.equal(viewGame(audited, 'a').auditorInsight, null);
+        assert.deepEqual(inventory(audited), original);
+        assert.throws(() => applyAction(audited, holder, { type: 'semutaCommit', event }));
+        assert.throws(() => applyAction(audited, 'a', { type: 'decision', event: auditEvent, pay: true, count: 1 }));
+        const closed = applyAction(audited, 'e', { type: 'decision', done: true });
+        assert.equal(closed.phase, 7);
+        assert.deepEqual(inventory(closed), original);
+      }
+    }
+  });
+
 void test('Semuta preserves quoted CHOAM battle income through original allowance or cancellation', () => {
   const { g, semuta, hajr } = fixture(true, false, true, 'choam');
   player(g, 'a').hand = [];

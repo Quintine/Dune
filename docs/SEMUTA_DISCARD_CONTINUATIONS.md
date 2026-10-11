@@ -51,6 +51,13 @@ cleanup, then its native allow/Karama response resumes. Allow credits once;
 cancellation redirects only the income and does not refund force payments.
 The original post-battle CHOAM market still finishes before the next phase.
 
+Native Auditor opportunities may also remain pending across those offers.
+The frozen survival limit and audited opponent's played IDs remain original;
+claim/pass changes the current hand before eligibility and payment are quoted.
+The authorized p29 exclusion names cards that opponent used, so an acquired
+other-combatant card can be eligible. Original payment or private inspection
+resumes once, with the snapshot entitled only to CHOAM.
+
 Completed ordinary Ghola disposal may now offer Semuta during battle as well.
 Revival has already committed; the receipt binds the returned leader/forces and
 original battle, including a sealed opposing plan. Claim or decline restores
@@ -191,8 +198,8 @@ winning-card cleanup uses a separate `winnerMandatoryDiscard` batch,
 and an optional winner selection uses a third `battleCleanup` batch.
 Every supported stage has a neutral all-seat offer; committed holders
 select one fresh card, leave the others in the pile and resume exactly
-once. Native capture, Face Dance and quoted CHOAM force income remain pending
-across the offer; Auditor, tech and other rewards remain automatic without Semuta.
+once. Native capture, Face Dance, quoted CHOAM force income and Auditor remain
+pending across the offer; tech and other rewards remain automatic without Semuta.
 
 The explicit Richese preview also accepts a fresh physical Ix deck.
 Clean Thumper disposal stages `thumperDiscard` before `blowSpice`

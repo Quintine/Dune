@@ -6654,7 +6654,7 @@ function treacheryDiscardIntegrity(g: Game) {
   } else throw new RuleError('Unknown saved discard continuation.');
 }
 /** Bounded public single-card reaction after completed effects. Battle cleanup
- * may preserve native capture, Face Dance and CHOAM income; other rewards remain gated.
+ * may preserve native capture, Face Dance, CHOAM income and Auditor; other rewards stay gated.
  * Final flight arrival may resume native Intrusion, but other entry responses remain gated. */
 function semutaOfferSupported(
   g: Game,
@@ -6702,7 +6702,7 @@ function semutaOfferSupported(
   if ((continuation.kind === 'battleCleanup' ||
     continuation.kind === 'winnerMandatoryDiscard' ||
     continuation.kind === 'battleResolved') &&
-    (g.pendingAuditor || g.pendingTech ||
+    (g.pendingTech ||
       g.pendingWinnerDiscards || g.moritaniRetention ||
       g.pendingIxSubstitution)) return false;
   if (continuation.kind === 'terrorDiscard' &&

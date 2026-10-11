@@ -29,6 +29,21 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Auditor — 11 October.** Mandatory/winner discard reactions
+now preserve the original audit before cleanup/income finish and its owner
+offer. Frozen survival and opposing-player used IDs are unchanged; the current
+hand supplies eligibility and payment. Authorized supplied p29 excludes cards
+the audited opponent used, not every combatant's cards; the quote already
+implements that distinction. Both regressions fail before and pass after.
+Types/lint and 152 affected unit cases across twelve files pass.
+Twenty-four runtime cases cover target/third-party holders, claim/pass, four
+legal Semuta AI profiles and pay/inspect. Real GameTable at 390px claims Snooper,
+retains Crysknife, shows Pay1/Allow and privately inspects only Snooper for
+CHOAM; hands remain intact and target/observer insight is null. The original
+market reaches phase7's Ix opening with the snapshot intact and no overflow.
+Temporary QA scaffolds are removed; no saved store or deployed game was targeted.
+See [source and live-hand semantics](CHOAM_AUDITOR.md#semuta-and-current-hand-eligibility--11-october-2026).
+
 **Semuta / quoted CHOAM battle income — 11 October.** Mandatory and winner
 discard offers now preserve the original Advanced force-payment quote unpaid
 through cleanup, then restore its native allow/Karama response. Allow credits

@@ -237,9 +237,9 @@ policy**, not a newly discovered publisher timing rule. Full-hand
 Semuta uses the explicit user-approved atomic exchange; its completed
 hand count is unchanged. Pending gifts, competing responses,
 completed Ornithopter arrivals with Ecaz Ambassador or Moritani Terror,
-pending battle rewards other than native capture, Face Dance or quoted CHOAM
-income and other typed producers retain automatic continuation; Semuta cannot
-claim those events yet.
+pending battle rewards other than native capture, Face Dance, quoted CHOAM
+income or Auditor and other typed producers retain automatic continuation;
+Semuta cannot claim those events yet.
 The completed Box's selected
 search card stays private and its paid shuffle is not repeated
 when another seat takes the used Box. No source ruling is inferred
@@ -247,6 +247,39 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — native Auditor/current-hand suffix.** Mandatory and
+winner discard batches now offer Semuta with an original native audit pending.
+Only its reward exclusion changed; frozen survival, opponent-used IDs,
+calculation and private snapshot rules are untouched. Claim/pass restores
+original cleanup/income ordering before the owner offer, then the current hand
+supplies eligibility and the full payment price.
+
+The available authorized supplied PDF, physical **p29 CHOAM E**, excludes cards
+that the audited opponent used. The quote already records only those IDs; a
+proposed broader all-combatant exclusion would have been wrong. A defense the
+target acquires from the other combatant can remain eligible while its own
+retained weapon is excluded. The original publisher URL now redirects and the
+old temporary mirror is absent, so this check claims the authorized local text,
+not a fresh publisher fetch.
+
+Both permanent regressions fail before and pass after. Twenty-four isolated
+runtime cases cover target/third-party Semuta holders at mandatory/winner
+producers, claim/pass, all four legal Semuta AI profiles and pay/inspect.
+The killed Auditor's actual one-card quote charges one or inspects the exact
+current singleton; payment changes only the two balances, inspection preserves
+hands and is visible only to CHOAM. Retired reactions/audit payments reject,
+and the original market completes to phase7 without another payment or sample.
+
+Real GameTable at 390px claims Snooper, retains the target's Crysknife, declares
+the original audit and displays Pay1/Allow. Allow privately inspects only the
+newly held Snooper; target/observer insight remains null, both held cards stay
+intact, and the actual private inspector is readable. The original market
+finishes with that snapshot intact at phase7's Ix opening, without horizontal
+overflow. Temporary scripts/server/browser are removed or stopped; no saved
+store or deployed game was targeted. Tech and other parents remain separate;
+no complete CHOAM/Semuta or deployed acceptance is claimed.
+Types/lint and 152 affected unit cases across twelve files pass.
 
 **11 October 2026 — quoted CHOAM force-payment income.** Mandatory and
 winner discard batches now offer Semuta while the native Advanced income quote
@@ -271,7 +304,8 @@ income with Allow/Cancel controls, allows it once (CHOAM spice2→3), then finis
 the original market and reaches the phase7 opening with spice still3. Claimed
 card custody persists; there is no horizontal overflow. Temporary scripts,
 isolated server and browser are removed/stopped; no saved store or deployed
-game was targeted. Auditor, tech and other rewards remain separate. This is
+game was targeted. Auditor remained separate at this checkpoint; the later
+audit continuation above admits it. Tech and other rewards remain separate. This is
 bounded income continuation proof, not complete CHOAM/Semuta or deployed
 acceptance.
 Types/lint and 119 affected unit cases across eight files pass.
@@ -283,7 +317,8 @@ the pending native owner, original winner and territory. Claim/pass preserves
 casualties and winner-card cleanup before the same private opportunity; it
 cannot replace an army early, repeat replacement or move the claimed card back.
 CHOAM income was separate at this checkpoint; its later continuation above now
-admits it. Auditor, tech and other reward exclusions remain separate.
+admits it. The later audit continuation above also admits Auditor; tech and
+other reward exclusions remain separate.
 
 The permanent regression fails before and passes after, covering both discard
 producers, claim/pass, one replacement, original leader death, force and card

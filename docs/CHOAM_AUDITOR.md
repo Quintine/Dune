@@ -2,6 +2,37 @@
 
 7 September 2026 checkpoint, with an 8 October Advanced revival follow-up. Inspection, component identity and custody rules are connected. This does not certify the complete CHOAM faction or all expansion combinations; public Advanced and expansion starts remain gated.
 
+## Semuta and current-hand eligibility — 11 October 2026
+
+The explicit Semuta preview now preserves the original pending audit through
+mandatory and winner-card discard reactions. Battle survival and the audited
+opponent's used-card identities remain frozen; the original income/cleanup
+order still precedes the native owner offer. The current opposing hand supplies
+the actual pool and complete payment price afterward.
+
+The authorized supplied PDF, physical **p29 CHOAM E**, excludes cards **the
+audited opponent used** in battle. The existing quote already records those
+opponent-specific IDs; no calculation change was needed. A defense acquired
+with Semuta from the other combatant can therefore be eligible, while the
+target's own retained weapon remains excluded. This clarifies the generic
+“cards used in battle” shorthand below, not a new all-card exclusion.
+The old publisher URL currently redirects and the earlier temporary mirror is
+absent; this wording check used the available authorized supplied document,
+not newly fetched publisher text.
+
+Both new regressions fail before and pass after, covering target/third-party
+Semuta holders, mandatory/winner producers, claim/pass, one-card payment or
+exact private singleton inspection, unchanged hands and retired-event rejection.
+Twenty-four isolated runtime cases cover those holders, claim/pass, four legal
+Semuta AI profiles and pay/inspect. Real GameTable at 390px claims Snooper,
+retains the target's Crysknife, shows the actual one-spice price, privately
+inspects only Snooper for CHOAM and preserves that snapshot through the original
+market to phase7's Ix opening. Target/observer projections have no insight and
+there is no horizontal overflow. Temporary QA scaffolds are removed; no saved
+store or deployed game was targeted. Full CHOAM/Semuta acceptance remains open.
+Types/lint and 152 affected unit cases across twelve files pass.
+
+
 ## Advanced revival follow-up — 8 October 2026
 
 The authorized supplied PDF, physical **p29 CHOAM E**, says the Auditor is
@@ -33,9 +64,9 @@ For Advanced, the [authorized supplied PDF amendment](RULE_DECISIONS.md#authoriz
 
 ## Runtime and information
 
-`game/cards.ts` defines the canonical extra `choam-auditor` disc and fresh factory; `leaders('choam')` still returns the five ordinary discs. Advanced setup installs the additional disc before prediction and traitor dealing. Existing traitor and remaining Face Dancer pools include this identity naturally. Capture and Tleilaxu foreign-ghola acquisition reject the canonical ID, not arbitrary display names. Leader Skills remains an unfinished module, so no skill assignment is enabled.
+`game/cards.ts` defines the canonical extra `choam-auditor` disc and fresh factory; `leaders('choam')` still returns the five ordinary discs. Advanced setup installs the additional disc before prediction and traitor dealing. Existing traitor and remaining Face Dancer pools include this identity naturally. Capture and Tleilaxu foreign-ghola acquisition reject the canonical ID, not arbitrary display names. The Auditor is excluded from Leader Skill assignment; supported ordinary-disc skill prototypes remain separate.
 
-`game/choam-auditor.ts` filters the opponent's current physical hand by exact used-card IDs. Uniform partial Fisher–Yates sampling selects one or two distinct cards; an entire eligible pool needs no random draw. Returned faces are detached snapshots. Eligibility excludes original weapon/defense, hero and late Portable Snooper, including retained cards. It does not inspect a deck, cache, another hand or old discard.
+`game/choam-auditor.ts` filters the opponent's current physical hand by that opponent's exact used-card IDs. Uniform partial Fisher–Yates sampling selects one or two distinct cards; an entire eligible pool needs no random draw. Returned faces are detached snapshots. Eligibility excludes the opponent's original weapon/defense, hero and late Portable Snooper, including retained cards. It does not inspect a deck, cache, another hand or old discard.
 
 At battle resolution the engine freezes actual Auditor survival, the two combatants, used physical IDs, territory, turn and unique battle event before cleanup. Survival, rather than victory, determines the limit. The same trigger applies after traitor and explosion resolution. The engine preserves these facts through winner casualties, Moritani retention, CHOAM battle income, tech claims and Harkonnen capture, offers the audit, then resumes Face Dancing. This is an explicit application schedule where the sources do not prescribe every competing optional aftermath priority. Capture income can therefore fund cancellation; later Face Dance death does not alter the frozen audit limit.
 
