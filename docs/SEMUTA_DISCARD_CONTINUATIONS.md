@@ -177,8 +177,8 @@ winning-card cleanup uses a separate `winnerMandatoryDiscard` batch,
 and an optional winner selection uses a third `battleCleanup` batch.
 Every supported stage has a neutral all-seat offer; committed holders
 select one fresh card, leave the others in the pile and resume exactly
-once. Pending Auditor, capture, tech, Face Dance or CHOAM rewards
-remain automatic without Semuta.
+once. Native Advanced Harkonnen capture now remains pending across the offer;
+Auditor, tech, Face Dance and CHOAM rewards remain automatic without Semuta.
 
 The explicit Richese preview also accepts a fresh physical Ix deck.
 Clean Thumper disposal stages `thumperDiscard` before `blowSpice`

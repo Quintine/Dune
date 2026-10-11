@@ -155,5 +155,5 @@ could move behind the shield after asking. Production SQLite tests separately
 verify that the opponent and questioner alone retain the observation.
 
 The checkpoint's source-bound broad results are recorded with its Git commit.
-Normal activation still awaits the uniform-response UX answer; empty hands and
-other module combinations remain unfinished. No mode or publication gate opens.
+Normal uniform-response UX was approved and activated on 11 October. Empty hands
+and other module combinations remain unfinished. No publication gate opens.
