@@ -695,6 +695,53 @@ void test('final Ornithopter discard resolves Semuta before the original Bene Ge
   assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
 });
 
+for (const recipient of ['a', 'r'] as const) void test(
+  `Semuta claims battle Distrans to ${recipient} without repeating its private transfer or changing a sealed plan`, () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const distrans = take(g, 'richese-distrans');
+  const weapon = take(g, g.deck.find(c => c.kind === 'projectile')!.id);
+  player(g, 'e').hand.push(distrans, weapon);
+  Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+    response: null, decision: null, phaseOpening: null, movementRemaining: [] });
+  for (const id of ['a', 'e']) {
+    player(g, id).forces = { 'arrakeen:10': 4 };
+    player(g, id).reserves = 16;
+  }
+  const original = inventory(g);
+  let state = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+  while (state.battle?.preparation)
+    state = applyAction(state, state.battle.preparation.owner, { type: 'declineBattlePower' });
+  for (const id of ['a', 'e'])
+    state = applyAction(state, id, { type: 'battlePreparationReady', event: state.battle!.preLeader!.event });
+  state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
+    leader: player(state, 'e').leaders[0].id });
+  const transfer = { type: 'card', card: distrans.id, target: recipient, give: weapon.id };
+  const pending = applyAction(state, 'e', transfer);
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(pending.pendingTreacheryDiscard!.batch.entries.map(entry => entry.card.id), [distrans.id]);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  for (const resumed of [declined, claimed]) {
+    assert.equal(player(resumed, recipient).hand.filter(c => c.id === weapon.id).length, 1);
+    assert.equal(player(resumed, 'e').hand.some(c => c.id === weapon.id || c.id === distrans.id), false);
+    assert.deepEqual(resumed.battle, state.battle);
+    assert.deepEqual(inventory(resumed), original);
+    assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event }));
+    assert.throws(() => applyAction(resumed, 'e', transfer));
+    const planned = applyAction(resumed, 'a', { type: 'battlePlan', dial: 1, support: 0,
+      leader: player(resumed, 'a').leaders[0].id, ...(recipient === 'a' ? { weapon: weapon.id } : {}) });
+    if (recipient === 'a') assert.equal(planned.battle!.plans.a.weapon, weapon.id);
+    assert.deepEqual(planned.battle!.plans.e, state.battle!.plans.e);
+  }
+  assert.equal(player(claimed, 'r').hand.some(c => c.id === distrans.id), true);
+  assert.equal(player(claimed, 'r').hand.some(c => c.id === weapon.id), recipient === 'r');
+  assert.equal(claimed.discard.some(c => c.id === semuta.id), true);
+});
+
 void test('a completed private Distrans transfer offers only its public used card', () => {
   const { g, semuta, hajr } = fixture();
   const distrans = take(g, 'richese-distrans');

@@ -247,6 +247,25 @@ separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
 
+**11 October 2026 — clean battle Distrans.** A completed clean private
+Distrans transfer now offers its public used card during battle. Only the
+battle-presence guard gained that existing receipt exception; transfer legality,
+sealed plans and competing-parent exclusions are unchanged. The privately given
+card is already held by the recipient and never becomes a fresh discard target.
+A recipient holding Semuta may claim the used Distrans while keeping the gift.
+
+The original permanent case fails before and passes after; the final regression
+also covers the claimant being the recipient. Claim/pass preserves the single
+gift, card conservation and original sealed opposing plan. Retired reaction and
+original transfer replays reject; the recipient combatant may use the given
+weapon in its next legal plan. Twenty-four isolated engine scenarios cover
+Basic/Advanced, a separate recipient or the Semuta holder, claim/pass and all
+four legal AI profiles. Each resumes legal planning with the same original
+opposing plan and one exact gift. Temporary scripts are removed; no saved store
+or deployed game was targeted. Existing human transfer, Semuta and planning
+controls are reused; no new browser evidence is claimed here.
+Types/lint and 69 affected unit cases across seven files pass.
+
 **11 October 2026 — native Basic Terror discards.** The same local `semuta`
 entry additionally admits fresh Basic native Richese/Moritani with classic
 opponents, exactly CHOAM/Ecaz decks and no optional modules. Native setup remains

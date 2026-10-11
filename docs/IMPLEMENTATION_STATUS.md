@@ -1,5 +1,30 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta after a clean battle Distrans transfer
+
+The completed `distransDiscard` receipt already binds the donor/recipient hand
+identities and original battle parent. The reaction guard now admits it during
+battle without changing transfer legality or competing-parent exclusions. Only
+the public used Distrans is fresh; the private gift is already held and is not
+a Semuta target.
+
+The original regression fails before and passes after. The final two cases
+cover a separate recipient and the Semuta claimant as recipient, preserving one
+gift, card conservation and the original sealed plan. Original transfer and
+retired reaction replay reject. A recipient combatant may commit the given
+weapon in its next legal plan; a claimant recipient retains both its gift and
+the claimed used Distrans.
+Types/lint and 69 affected unit cases across seven files pass.
+
+Twenty-four isolated engine scenarios cover Basic/Advanced, both recipient
+roles, claim/pass and all four legal AI profiles, then legal planning. Each
+retains the original opposing plan and one exact transfer. Temporary scripts
+are removed; no saved store or deployed game was targeted. Existing transfer,
+Semuta and plan controls are reused; no new browser evidence is claimed.
+Full Semuta and combinations remain open. Contracts:
+[Semuta](SEMUTA_SOURCE_UPDATE_20260907.md),
+[printed transfer and commitments](RICHESE_DISTRANS_ENGINE_AUDIT.md).
+
 ## 11 October 2026 — native Basic Semuta/Terror continuation
 
 The local `semuta` initializer now additionally admits Basic native

@@ -14,6 +14,12 @@ gifts and competing parents retain the original direct transfer
 behavior without this Semuta reaction. The table below remains the
 broader producer/continuation inventory, not a claim of complete coverage.
 
+11 October 2026 update: the same clean receipt is admitted during battle.
+Only the public used Distrans is fresh; the private gift and sealed plans remain
+committed. Claim or decline restores clean planning without another transfer.
+The recipient may claim with its own held Semuta while keeping the earlier
+gift. Competing parents retain their separate boundaries.
+
 A clean ordinary definite Truthtrance answer now offers its consumed card even
 when another question remains reserved, when the answer bound a supported
 shipment or unsubmitted battle-plan promise, or when it concerns a submitted/

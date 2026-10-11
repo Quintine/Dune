@@ -29,6 +29,19 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / clean battle Distrans — 11 October.** The completed clean transfer
+now offers only its public used Distrans during battle. The private gift and
+sealed opposing plan remain committed; the recipient may itself claim with
+Semuta without losing or repeating the gift. The original regression fails
+before and passes after; the final cases cover both separate and claimant
+recipients. Types/lint and 69 affected unit cases across seven files pass.
+Twenty-four runtime scenarios cover both rule modes, recipient
+roles, claim/pass and all four legal AI profiles, followed by legal planning.
+Competing parents remain separate. Temporary scripts are removed; no saved
+store or deployed game was targeted. Existing human panels are reused; no new
+browser evidence is claimed. See
+[the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / native Basic Terror — 11 October.** The local `semuta` entry now
 admits fresh Basic native Richese/Moritani plus classics with CHOAM/Ecaz decks
 and no optional modules. Private Sabotage and Robbery overflow after clean

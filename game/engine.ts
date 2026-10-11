@@ -6774,6 +6774,7 @@ function semutaOfferSupported(
       continuation.kind === 'residualPoisonDiscard' ||
       continuation.kind === 'truthtranceDiscard' ||
       continuation.kind === 'nullentropyDiscard' ||
+      continuation.kind === 'distransDiscard' ||
       (continuation.kind === 'ordinaryCardDiscard' && continuation.effect === 'ghola') ||
       !g.battle) &&
     (continuation.kind !== 'choamKulonDiscard' ||
