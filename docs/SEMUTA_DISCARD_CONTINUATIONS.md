@@ -14,20 +14,18 @@ gifts and competing parents retain the original direct transfer
 behavior without this Semuta reaction. The table below remains the
 broader producer/continuation inventory, not a claim of complete coverage.
 
-A clean definite Truthtrance answer now offers its consumed card even when another
-question remains reserved, and also when the answer bound a shipment promise in
-the supported Richese Semuta profile or an unsubmitted battle-plan promise. Claim
-or all-seat decline leaves public history, the consumed card's custody and any
-bound promise settled, then restores the same remaining queue at `ask` once.
-Shrine-source, submitted/revealed battle-plan and unsupported native No-Field
-shipment answers retain their automatic continuation.
+A clean ordinary definite Truthtrance answer now offers its consumed card even
+when another question remains reserved, when the answer bound a supported
+shipment or unsubmitted battle-plan promise, or when it concerns a submitted/
+revealed battle plan or a fact during battle. Claim or all-seat decline leaves
+public history, plans, the consumed card's custody and any bound promise settled,
+then restores the same remaining queue at `ask` once. Submitted/revealed plans
+bind no new promise; their answers do not skip the offer.
 
-The same preview also pauses a final definite Truthtrance after its
-public answer, history and physical card disposal are committed. An
-ordinary held Truthtrance with no new promise or competing parent
-qualifies; a claim may move that consumed card, never re-answer the
-question or rewrite its history. Other Truthtrance continuations remain
-automatic.
+Shrine-source answers and competing-parent continuations remain automatic.
+Native Richese/No-Field shipment questions and unsupported module combinations
+remain outside the admitted shipment-question scope. A claim may move the
+consumed card, never re-answer the question or rewrite its history.
 
 Clean Once Around Sapho stages `saphoAuctionDiscard` after the open
 lot's finite bidder reorder, hand-slot release and public card disposal,

@@ -245,16 +245,21 @@ separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
 
-**11 October 2026 — battle-plan promise answer.** An unsubmitted battle-plan
-Truthtrance answer now offers the consumed card too. Only the promise-kind
-admission and the battle-presence exemption changed; the battle promise and its
-legality enforcement are untouched, and a submitted or revealed plan still binds
-no new promise and stays automatic. Claim or all-seat decline leaves the plan
-binding enforceable.
+**11 October 2026 — ordinary battle answer.** Ordinary definite Truthtrance
+answers now offer the consumed card during battle. This includes unsubmitted
+battle-plan promises, questions about submitted/revealed plans and fact questions.
+Only the promise-kind admission and battle-presence exemption changed; promise
+legality enforcement is untouched. A submitted or revealed plan binds no new
+promise, but its consumed Truthtrance still receives the offer. Claim or all-seat
+decline preserves the same plans, history and any binding promise.
 
-The permanent regression fails before and passes after; the affected union passes
-126 cases and typecheck/lint pass. This is local changed-path evidence, not
-complete Semuta or deployed acceptance.
+The permanent promise regression fails before and passes after; the affected
+union passes 126 cases and typecheck/lint pass. An isolated engine smoke covers
+all four question/plan states with claim, all-seat pass and four legal AI profiles
+(24 scenarios). It observes unchanged battle/history, retired-event rejection,
+illegal-dial rejection and legal commitment after a bound promise, and subsequent
+plan submission after the submitted-plan and fact answers. This is local
+changed-path evidence, not complete Semuta or deployed acceptance.
 
 **11 October 2026 — shipment-promise answer.** A classic payer's ordinary
 Truthtrance shipment answer in the Richese Semuta profile now offers the consumed
@@ -263,20 +268,24 @@ all-seat decline leaves the same obligation enforceable. To admit it, the
 structured shipment-question scope gained the Richese Semuta profile for a
 non-Richese active payer; the availability boundary is now server-projected
 (`truthShipmentSupported`) so human controls and validation share it. Native
-No-Field shipments and other module combinations stay automatic.
+Richese/No-Field shipment questions and other module combinations remain outside
+this admitted question scope.
 
 The permanent regressions fail before and pass after. The affected union passes
 125 cases and typecheck/lint pass. Eight isolated CLI scenarios cover both answers
 across four legal AI profiles, plus a real 390px control check that the shipment
-question is selectable for a classic payer and refused for a Richese target. This
-is local changed-path evidence, not complete Semuta or deployed acceptance.
+question is selectable for the active classic payer and refused for a non-active
+Richese target. That control check does not independently prove an active Richese
+boundary. This is local changed-path evidence, not complete Semuta or deployed
+acceptance.
 
 **11 October 2026 — queued Truthtrance answer.** An ordinary definite answer now
 offers its consumed card while another question remains reserved. Only the
-`remaining === null` software restriction changed; promise-bound shipment and
-battle-plan answers, shrine source and every other Truthtrance path stay
-automatic. Claim or all-seat decline restores the same remaining queue at `ask`
-once with history, card custody and priority intact.
+`remaining === null` software restriction changed. Promise-bound shipment and
+battle answers still continued automatically at that checkpoint; the later
+checkpoints above admit them. Shrine-source answers remain automatic. Claim or
+all-seat decline restores the same remaining queue at `ask` once with history,
+card custody and priority intact.
 
 The permanent regression fails before and passes after. The affected union
 passes 97 cases and typecheck/lint pass. Seven isolated CLI scenarios cover

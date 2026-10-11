@@ -29,23 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Semuta / battle-plan promise — 11 October.** An unsubmitted battle-plan
-Truthtrance answer now offers the consumed card too; the battle promise and its
-legality enforcement are unchanged, and submitted/revealed plans stay automatic.
-Types/lint pass and 126 affected cases pass after adding the regression and a
-corrected readiness step in its fixture. No saved store or deployed game was
-targeted. See [the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+**Semuta / ordinary battle Truthtrance — 11 October.** Ordinary definite
+Truthtrance answers now offer the consumed card during battle, including a bound
+unsubmitted-plan promise, a question about a submitted/revealed plan and a fact
+question. Submitted/revealed plans bind no new promise; they do not skip Semuta.
+An isolated engine smoke covers all four paths with claim, all-seat pass and four
+legal AI profiles (24 scenarios), preserving history and plans, rejecting retired
+events and enforcing the unsubmitted-plan promise. Types/lint and 126 affected
+cases passed at implementation. No saved store or deployed game was targeted.
+See [the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
 
 **Semuta / Truthtrance shipment promise — 11 October.** A classic payer's ordinary
 Truthtrance shipment answer in the Richese Semuta profile now offers the consumed
 card; the binding promise and its enforcement are unchanged. The structured
 shipment-question scope gained that profile for a non-Richese active payer, and the
 availability boundary is now server-projected (`truthShipmentSupported`) so the
-human Truthtrance panel and validation share it. Native No-Field shipments and
-other module combinations stay automatic. Types/lint pass and 125 affected cases
-pass. Eight isolated runtime scenarios cover both answers across four legal AI
-profiles; a real 390px control check confirms the shipment question is selectable
-for a classic payer and refused for a Richese target, with no horizontal overflow.
+human Truthtrance panel and validation share it. Native Richese/No-Field shipment
+questions and other module combinations remain outside this admitted question
+scope. Types/lint pass and 125 affected cases pass. Eight isolated runtime
+scenarios cover both answers across four legal AI profiles; a real 390px control
+check confirms the shipment question is selectable for the active classic payer
+and refused for a non-active Richese target, with no horizontal overflow.
 No saved store or deployed game was targeted. See
 [the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
 
@@ -61,9 +65,10 @@ deleted. Types/lint pass and 41 cases pass.
 answer now offers its consumed card even when another question remains reserved.
 Only the `remaining === null` software restriction changed: claim or all-seat
 decline leaves public history and the consumed card's custody settled, then
-restores the same remaining queue at `ask` once. Promise-bound shipment and
-battle-plan answers, shrine source and every other Truthtrance path stay
-automatic. Types/lint pass; the affected 97-case union passes. Seven isolated
+restores the same remaining queue at `ask` once. At that checkpoint, promise-bound
+shipment and battle answers still continued automatically; the later checkpoints
+above admit those paths. Shrine-source answers remain automatic. Types/lint
+pass; the affected 97-case union passes. Seven isolated
 runtime scenarios cover claim/pass, four legal AI profiles and a rejected
 retired-event replay. The permanent regression fails before and passes after.
 No saved store or deployed game was targeted. See

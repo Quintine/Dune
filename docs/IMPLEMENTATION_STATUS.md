@@ -6,9 +6,10 @@ The Truthtrance receipt already carried a battle promise and the integrity
 validator already enforced it. The Semuta admission excluded every promise kind
 other than none, and a separate guard refused any reaction while a battle existed.
 Admitting `kind === 'battle'` and exempting `truthtranceDiscard` from the
-battle-presence guard lets an unsubmitted battle-plan answer offer its consumed
-card without touching the promise or its enforcement. Submitted and revealed plans
-bind no new promise and remain automatic.
+battle-presence guard lets an ordinary definite battle answer offer its consumed
+card without touching the promise or its enforcement. Submitted/revealed-plan
+questions bind no new promise but still offer Semuta, as do ordinary fact answers
+during battle; the original checkpoint's automatic-continuation claim was wrong.
 
 The regression fails before (no offer) and passes after, covering claim and
 decline, the surviving promise, an illegal-dial rejection, the legal dial, public
@@ -16,6 +17,12 @@ history and inventory conservation. Types/lint pass and the 126-case affected
 union passes. The fixture needed both combatants marked ready in the shared
 pre-leader phase before a plan can be committed; that is existing battle
 preparation, not a change to it.
+
+An isolated runtime smoke subsequently exercises unsubmitted, submitted, revealed
+and battle-fact answers with claim, all-seat pass and four legal AI profiles
+(24 scenarios). Battle plans and history remain unchanged; retired events reject.
+The unsubmitted promise rejects dial0 and accepts dial2; the submitted and fact
+paths accept the next legal plan without changing the answered plan.
 
 This is local changed-path proof, not complete Semuta or deployed acceptance.
 Contracts: [source boundary](SEMUTA_SOURCE_UPDATE_20260907.md),
