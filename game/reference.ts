@@ -1174,6 +1174,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         ...(definition.card.effect === 'semutaDrug' ? [
           'Mandatory and winner battle discards also pause before native Advanced Harkonnen capture. Claim or Continue completes the original casualties and card cleanup before the capture offer; it does not sample a captive early or repeat capture. Other pending rewards remain outside this bounded path.',
           'An ordinary Ghola played during battle also offers its consumed card after revival. Claim or Continue preserves the revived leader or forces and the opposing sealed plan, then normal planning resumes. It cannot revive again by resuming the receipt.',
+          'A completed paid Nullentropy Box search during battle offers only the used Box. Claim or Continue preserves the two-spice payment, private recovered card, already-shuffled pile and sealed opposing plan. The recovered card may be used in normal legal planning; the search is not repeated.',
         ] : []),
       ],
       ...(definition.card.effect === 'semutaDrug'

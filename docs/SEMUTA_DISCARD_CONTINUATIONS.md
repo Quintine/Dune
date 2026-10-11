@@ -39,6 +39,11 @@ original battle, including a sealed opposing plan. Claim or decline restores
 planning without reviving again or changing that plan. This does not admit
 competing parents or market-specific Ghola interruptions.
 
+Completed paid Box disposal may now offer Semuta during battle as well. Only the
+used Box is fresh; payment, private acquisition, shuffled pile and original
+battle remain committed. Claim or decline restores clean planning without
+repeating the search, shuffle or payment. Competing parents remain separate.
+
 Clean Once Around Sapho stages `saphoAuctionDiscard` after the open
 lot's finite bidder reorder, hand-slot release and public card disposal,
 but before settlement. The saved receipt binds the lot, prior funding,

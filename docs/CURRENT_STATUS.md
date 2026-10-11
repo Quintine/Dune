@@ -29,6 +29,18 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / paid battle Box — 11 October.** A completed paid Nullentropy Box
+search now offers only the used Box during battle, preserving the payment,
+private acquired card, shuffled pile and opposing sealed plan. The regression
+fails before and passes after; types/lint and 72 affected unit cases across seven
+files pass. Twenty-four isolated runtime scenarios cover
+Basic/Advanced, sole/multiple-target selection, claim/pass and all four legal AI
+profiles; each uses the recovered weapon in a legal plan with one two-spice
+payment. Competing parents remain separate. Temporary scripts are removed; no
+saved store or deployed game was targeted. Existing human controls are reused;
+no new browser evidence is claimed. See
+[the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / ordinary battle Ghola — 11 October.** A completed ordinary Ghola
 now offers its consumed card during battle. Revival, the opposing sealed plan
 and existing competing-parent boundaries are unchanged. The regression fails

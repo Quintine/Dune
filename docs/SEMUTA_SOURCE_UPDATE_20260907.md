@@ -245,6 +245,24 @@ separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
 
+**11 October 2026 — paid battle Box.** A completed paid Nullentropy Box
+search now offers the used Box during battle. Only the battle-presence guard
+gained that receipt exception; payment, private acquisition, shuffled pile and
+original battle already commit and remain unchanged. Claim or all-seat decline
+restores clean planning without another search, shuffle or payment. Competing
+parents retain their existing exclusions.
+
+The permanent regression fails before and passes after, covering claim/pass,
+exact two-spice payment, one recovered weapon, unchanged opposing sealed plan,
+discard order, card conservation and retired-reaction/search replay rejection.
+Twenty-four isolated engine scenarios cover Basic/Advanced, automatic sole-target
+or explicit multiple-target selection, claim/pass and all four legal AI profiles.
+Each commits the recovered weapon in the next legal plan while preserving the
+original opposing plan and exactly one payment. Temporary scripts are removed;
+no saved store or deployed game was targeted. Existing human search, Semuta and
+plan panels are reused; no new browser evidence is claimed at this checkpoint.
+Types/lint and 72 affected unit cases across seven files pass.
+
 **11 October 2026 — ordinary battle Ghola.** The consumed Ghola now receives
 the same Semuta offer during battle after its revival commits. Only the
 battle-presence guard gained the completed ordinary Ghola exception; revival,

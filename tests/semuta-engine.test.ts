@@ -488,6 +488,55 @@ void test('a completed paid Box discard can be claimed before resumption without
   assert.deepEqual(normalizeAutomaticGame(reload(claimed)), reload(claimed));
 });
 
+void test('Semuta claims a battle Box after its paid search without changing the recovered weapon or sealed plan', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const box = take(g, 'richese-nullentropy-box');
+  const weapon = take(g, g.deck.find(c => c.kind === 'projectile')!.id);
+  player(g, 'a').hand.push(box);
+  g.discard.push(weapon, g.deck.shift()!);
+  Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+    response: null, decision: null, phaseOpening: null, movementRemaining: [] });
+  for (const id of ['a', 'e']) {
+    player(g, id).forces = { 'arrakeen:10': 4 };
+    player(g, id).reserves = 16;
+  }
+  const original = inventory(g);
+  const spice = player(g, 'a').spice;
+  let state = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+  while (state.battle?.preparation)
+    state = applyAction(state, state.battle.preparation.owner, { type: 'declineBattlePower' });
+  for (const id of ['a', 'e'])
+    state = applyAction(state, id, { type: 'battlePreparationReady', event: state.battle!.preLeader!.event });
+  state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
+    leader: player(state, 'e').leaders[0].id });
+  const paid = applyAction(state, 'a', { type: 'card', card: box.id });
+  const search = paid.pendingNullentropy!.event;
+  const pending = applyAction(paid, 'a', { type: 'decision', event: search, card: weapon.id });
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  const shuffled = pending.discard.filter(c => c.id !== box.id).map(c => c.id);
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  for (const resumed of [declined, claimed]) {
+    assert.equal(player(resumed, 'a').spice, spice - 2);
+    assert.equal(player(resumed, 'a').hand.filter(c => c.id === weapon.id).length, 1);
+    assert.deepEqual(resumed.battle, state.battle);
+    assert.deepEqual(resumed.discard.filter(c => c.id !== box.id && c.id !== semuta.id).map(c => c.id), shuffled);
+    assert.deepEqual(inventory(resumed), original);
+    assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event }));
+    assert.throws(() => applyAction(resumed, 'a', { type: 'decision', event: search, card: weapon.id }));
+    const planned = applyAction(resumed, 'a', { type: 'battlePlan', dial: 1, support: 0,
+      leader: player(resumed, 'a').leaders[0].id, weapon: weapon.id });
+    assert.equal(planned.battle!.plans.a.weapon, weapon.id);
+    assert.deepEqual(planned.battle!.plans.e, state.battle!.plans.e);
+  }
+  assert.equal(player(claimed, 'r').hand.some(c => c.id === box.id), true);
+  assert.equal(claimed.discard.some(c => c.id === semuta.id), true);
+});
+
 void test('a retired Ornithopter can be claimed after one flight group without replaying movement', () => {
   const { g, semuta, hajr } = fixture();
   player(g, 'a').hand = [];

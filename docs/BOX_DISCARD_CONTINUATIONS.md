@@ -10,6 +10,13 @@ The `nullentropyDiscard` continuation records the search owner/event, activating
 
 With one eligible target, staging and retirement occur in the original paid action without another acknowledgement. Multiple targets retain the existing owner-only paid decision. A restored Harkonnen bonus may legitimately refill the deck after the completed Box frame retires; that subsequent draw does not repeat the Box search.
 
+11 October 2026 Semuta update: the explicit Richese preview offers the used Box
+after a completed paid battle search, including automatic sole-target selection.
+The recovered card, payment, shuffled pile and original battle already commit.
+Claim or all-seat decline restores clean planning without another charge,
+search or shuffle; a sealed opposing plan remains unchanged. Competing parents
+retain their existing exclusions.
+
 ## Integrity and private information
 
 Action, projection and automatic recovery validate the one public activating Box, exact former owner, canonical card identity, unique physical custody, top position, selected card in its owner's hand and the frozen final pile. Search identity and suspended controls are bound to the unchanged live pending obligations by a serialized parent signature. This detects changed saved records; it is not cryptographic authentication against wholesale rewriting of every receipt and signature.

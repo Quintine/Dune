@@ -1,5 +1,28 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta after a paid battle Box search
+
+The completed `nullentropyDiscard` receipt already binds the acquired card,
+ordered shuffled pile and original battle. The Semuta battle-presence guard now
+admits that receipt without changing search/payment rules or existing
+competing-parent exclusions. Only the used Box is fresh; claiming it does not
+claim the searched card or replay the transaction.
+
+The permanent regression fails before and passes after, covering claim/pass,
+exact two-spice payment, one recovered weapon, unchanged opposing sealed plan,
+discard order and card conservation. Retired reaction and paid-search replay
+reject. Twenty-four isolated runtime scenarios cover both rule modes,
+automatic sole-target or explicit multiple-target selection, claim/pass and
+all four legal AI profiles. Each uses the recovered weapon in the next legal
+plan, preserving the original opposing plan and exactly one payment.
+Types/lint and 72 affected unit cases across seven files pass.
+
+Temporary scripts are removed; no saved store or deployed game was targeted.
+Existing human Box, Semuta and planning controls are reused; this is engine
+runtime proof, not new browser/deployed acceptance. Full Semuta remains open.
+Contracts: [Semuta](SEMUTA_SOURCE_UPDATE_20260907.md),
+[paid search continuation](BOX_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — Semuta after ordinary battle Ghola revival
 
 The completed ordinary-card receipt already binds Ghola revival and the original
