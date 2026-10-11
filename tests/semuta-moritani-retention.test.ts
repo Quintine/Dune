@@ -112,9 +112,13 @@ for (const holder of ['w', 'l'] as const) for (const cancel of [false, true]) {
     assert.equal(viewGame(response, 'w').semutaReaction, null);
     assert.equal(viewGame(response, 'w').moritaniRetentionCard?.id, f.weapon);
     rejected(response, 'l', { type: 'card', card: f.weapon, mode: 'discard' });
-    const settled = cancel
+    let settled = cancel
       ? applyAction(reload(response), holder, { type: 'card', card: f.karama!, mode: 'cancel' })
       : allowSemutaMoritaniResponse(reload(response));
+    if (cancel) {
+      assert.deepEqual(settled.pendingTreacheryDiscard!.batch.entries.map(e => e.card.id), [f.karama]);
+      settled = passSemutaMoritaniDiscard(settled);
+    }
     assert.equal(settled.pendingTreacheryDiscard?.batch.cause, 'battle:moritani');
     assert.equal(settled.pendingTreacheryDiscard?.reaction?.stage, 'offer');
     assert.deepEqual(settled.pendingTreacheryDiscard!.batch.entries.map(e => e.card.id), cancel ? [f.weapon, f.defense] : [f.defense]);

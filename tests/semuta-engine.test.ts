@@ -189,9 +189,14 @@ void test('Semuta preserves quoted CHOAM battle income through original allowanc
       assert.deepEqual(resumed.pendingChoamBattleIncome, state.pendingChoamBattleIncome);
       assert.equal(player(resumed, 'e').spice, beforeIncome);
       for (const cancel of [false, true]) {
-        const settled = cancel
+        let settled = cancel
           ? applyAction(reload(resumed), 'r', { type: 'card', mode: 'cancel', card: karama.id })
           : applyAction(reload(resumed), 'r', { type: 'passResponse' });
+        if (cancel) {
+          assert.deepEqual(settled.pendingTreacheryDiscard!.batch.entries.map(entry => entry.card.id), [karama.id]);
+          assert.deepEqual(settled.pendingChoamBattleIncome, state.pendingChoamBattleIncome);
+          settled = pass(settled);
+        }
         assert.equal(settled.pendingChoamBattleIncome, null);
         assert.equal(player(settled, 'e').spice, beforeIncome + Number(!cancel));
         assert.equal(player(settled, 'a').spice, paidBalance);

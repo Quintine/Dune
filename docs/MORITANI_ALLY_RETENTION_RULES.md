@@ -121,6 +121,15 @@ played cards are reserved in this envelope, so no losing `battleResolved`
 batch precedes retention; that distinct pending-retention path stays gated.
 Advanced native Moritani and Nexus/Skills compositions are not opened.
 
+An enemy or the defeated ally spending a printed Karama to cancel the proposed
+keep now produces an earlier singleton cost offer through `karamaBattleDiscard`.
+The original response/keep proposal remains pending across that reaction.
+Claim/pass then completes cancellation once and discards all original played
+IDs in the later allied batch. A distinct holder may acquire the activating
+cost, including the approved full-hand exchange, but it never joins that
+played pool or restores retention. Own discarded costs are not eligible.
+The original Moritani power owner still cannot cancel its own power.
+
 Thirty-four isolated runtime cases cover keep either/none, claim/pass/four legal
 AI profiles, both preceding winner batches and original enemy/ally Karama
 allowance or cancellation. Actual GameTable at390px declines native retention,

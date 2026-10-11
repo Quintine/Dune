@@ -665,3 +665,41 @@ frames and original enemy/ally Karama allowance/cancellation. Real390px table
 declines native retention, commits and privately selects Maula Pistol from the
 two fresh cards, then reaches phase7 without re-offering retention or overflow.
 These are local bounded continuation proofs, not complete Semuta/mode acceptance.
+
+**11 October 2026 — printed native battle-cancellation costs.** The shared
+response-discard pipeline now admits one `karamaBattleDiscard` receipt for
+printed Karama canceling native Harkonnen capture, CHOAM Auditor or quoted
+battle income, Ixian casualty substitution, or Basic native Moritani retention.
+Only the activating physical Karama is fresh. Its accepted cancellation,
+original response and pending native facts remain suspended until claim/pass;
+retirement restores the saved controls and calls the original cancellation
+once. Acquiring that cost cannot restore capture, inspection/payment, income,
+the declared exchange or the proposed kept card.
+
+The original native quotes still validate the pending opportunity. Signature
+binding preserves its response, battle facts, physical counters, leaders,
+wallets and hand custody; old charity/Inflation signature shapes are unchanged.
+Auditor validation now recognizes the saved response inside this receipt,
+rather than requiring the detached live window. No Skills, Nexus, Homeworld,
+Worthless conversion, optional-module composition or public start is opened.
+
+Forty-eight isolated runtime cases cover all five native families, both Ix
+modes, enemy/ally retention cancelers, distinct and full-hand defeated holders,
+claim/pass and four legal AI profiles. The cost is spent once, later native
+Tooth/Shield or allied-card batches finish, inventories remain physical and
+original costs/casualties stay committed. Canceled income remains unpaid;
+Auditor cancellation samples nothing. Its original income precedes the audit
+and already paid1 remains. Native capture cancellation reaches ordinary
+Arrakeen Collection13→15, not a second capture/bounty.
+
+Actual styled GameTable at390px completes all five Cancel with Karama →
+Commit paths and original markets/cleanup. CHOAM wallets11/10 distinguish
+already allowed pre-Auditor income from canceled income. Actual Ix inspection
+shows board2Suboids, Tanks1Cyborg, reserves17 after the canceled exchange.
+A Guild4/4 holder claims the cost and ends with only its original Worthless
+and Karama2/4 after both played cards discard; retention is not re-offered.
+The updated Semuta inspector is readable. The first isolated harness lacked
+the app's Tailwind PostCSS plugin; that was corrected from `vite.config.ts`,
+and all five styled paths were repeated. Earlier unstyled screenshots do not
+certify styled presentation. No production dialog patch was needed.
+These are local changed-path proofs, not complete mode or deployed acceptance.

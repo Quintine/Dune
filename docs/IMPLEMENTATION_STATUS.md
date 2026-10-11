@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 11 October 2026 — printed native battle-cancellation cost reactions
+
+One shared `karamaBattleDiscard` receipt extends the existing response-discard
+pipeline to printed Karama canceling capture, Auditor, quoted battle income,
+Ixian substitution or Basic native Moritani retention. Accepted public cost is
+singleton; original response/native opportunity remains pending across neutral
+Semuta. Retirement restores saved controls and cancels once. Taking that cost
+cannot undo cancellation. Original quotes remain authoritative; the new kind
+signs battle/retention/Tech and physical force/leader/wallet/hand facts without
+changing old charity/Inflation JSON shapes. Auditor validation finds its saved
+response inside the new receipt. No native effect algorithm, ruling, module,
+Worthless conversion or public gate changed.
+
+The native Moritani fail-before probe immediately discarded losing cards and
+cleared retention after the cost, without offering that Karama. Capture/income
+likewise skipped the cost; corrected Auditor setup reaches the same gap.
+Twenty meaningful new regressions cover eligible distinct holders, claim/pass,
+native finality and legal AI. Self-discard claim rows and forwarding/signature-
+length assertions were removed. Existing income/retention cases now retire the
+new cost before testing the later canceled-effect/card batch.
+
+Types/lint and 203 unit cases across 18 files pass; final types pass after the
+existing income timing migration. Forty-eight runtime cases cover all five
+families, both Ix modes, enemy/ally cancelers, distinct/full-hand holders and
+four legal profiles. Original Tooth/Shield/allied batches and markets finish,
+with physical inventory, casualties and costs once. The initial fixture's
+inferred ordering was wrong: force income precedes Auditor, so its1 is already
+paid before audit cancellation. Canceled capture then gets ordinary Arrakeen
+Collection13→15; comparison uses the native baseline, not a frozen phase6
+wallet through phase7. Neither correction required a native rule change.
+
+Styled real GameTable at390px completes all five Cancel with Karama→Commit
+paths. CHOAM wallets11/10 distinguish pre-Auditor paid from canceled income.
+Ix inspection shows board2Suboids, Tanks1Cyborg, reserves17 after canceled1/1;
+Tooth acknowledgements and original Shield choice finish. Guild4/4 claims
+the foreign cost, both played cards discard, and final hand is Worthless/
+Karama2/4 without another retention choice. No tested surface overflows;
+enlarged Semuta guidance is readable. The first temporary Vite harness omitted
+the app's Tailwind PostCSS plugin; it was corrected and all five styled paths
+repeated, without production dialog changes. Earlier unstyled captures are not
+styled-presentation certification.
+
+Two disjoint fixture/test slices were integrated by one owner. Temporary
+probes/services/tabs removed; existing games, storage, user PDF and deployment
+untouched. Reference/tooltips and Semuta/retention contracts updated. Complete
+Semuta/mode and deployed acceptance remain unfinished.
+
 ## 11 October 2026 — native casualty and allied-retention Semuta continuations
 
 Two disjoint native slices supply genuine setup fixtures and consumer-visible

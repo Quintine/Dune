@@ -29,6 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / printed native battle-cancellation costs — 11 October.** One
+`karamaBattleDiscard` receipt now pauses the physical printed Karama before
+native capture, Auditor, quoted battle-income, Ixian-substitution or Basic
+Moritani-retention cancellation. Claim/pass restores the original response
+and cancels once; acquiring its cost cannot restore the canceled effect.
+Original quotes and signed physical facts remain authoritative. Auditor
+validation recognizes its saved response; no module, Worthless conversion,
+source ruling or public gate is opened.
+Targeted gaps fail before and pass after. Types/lint and 203 affected unit
+cases across 18 files pass. Forty-eight isolated runtime cases cover all five
+families, both Ix modes, enemy/ally cancelers, distinct/full-hand holders,
+claim/pass/four legal AI profiles and native cleanup/markets. Actual styled
+GameTable at390px completes all five Cancel→Commit paths. CHOAM11/10 wallets,
+canceled Ix board2Suboids/Tanks1Cyborg and Guild4/4→2/4 with only Worthless and
+Karama demonstrate original consequences; no inspection or keeper choice
+reopens. The first temporary harness omitted Tailwind PostCSS; it was corrected
+from the app config and all five styled paths plus the enlarged inspector
+were repeated. Earlier unstyled captures do not certify styled presentation.
+No existing game/store, deployment or mode gate changed. See
+[cost and ordering contract](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime).
+
 **Semuta / native casualty and retention continuations — 11 October.**
 Mandatory loser discards now react while the original compulsory winner card
 remains reserved. Native Ixian casualties/substitution still finish before
