@@ -1067,6 +1067,15 @@ CHOAM winner inspection then excludes all actually played opposing cards,
 including a retained one. Card spend, casualties, income and cleanup remain
 single original events. Ordinary city Collection is separate from battle costs.
 
+**11 October — native Fremen Cunning.** The original classic Tech/Stronghold
+envelope now offers the same empty-worm native Cunning as Nexus alone.
+Original card/occurrence and post-Nexus riding remain; a completed remote ride
+does not spend normal movement or alter Tech/Stronghold ownership or income.
+Nine bounded runtime scenarios and real 390px spend/typed-ride controls prove
+the changed path. Great Maker, dynamic destinations, Skills/Homeworld/Discovery
+and unresolved protection remain separate. See
+[the current native contract](NEXUS_FREMEN_RULES.md#original-tech-and-strongholds--11-october-2026).
+
 Borrowed Voice, Fremen worm-protection reaction policy, Tleilaxu revival
 accounting and other unresolved interpretations remain guarded. This is
 bounded composition, not complete Nexus/faction/module or release acceptance.

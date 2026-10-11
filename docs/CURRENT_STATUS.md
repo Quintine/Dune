@@ -29,6 +29,20 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Fremen Cunning / original components — 11 October.** Classic Nexus games
+with original Tech Tokens and/or Advanced Stronghold Cards now receive the same
+empty-worm native Cunning offer as Nexus alone. The isolated software guard is
+removed; physical card/occurrence, provisional Karama response and one post-Nexus
+remote ride remain original. Dynamic destinations, Great Maker, Skills,
+Homeworlds, Discovery and expansion factions/decks stay separate.
+Types/lint and 41 affected cases pass. Nine runtime scenarios cover the four
+legal component configurations, four legal bots and printed Karama cancellation.
+Real GameTable at 390px spends Cunning and moves two Wind Pass14 counters to
+Polar Sink0; reserves8/spice3 and original component custody remain unchanged.
+A labelled QA control advances the original post-Nexus suffix between real
+spend and ride controls. No saved store or deployed game was targeted. See
+[the native contract](NEXUS_FREMEN_RULES.md#original-tech-and-strongholds--11-october-2026).
+
 **Semuta / native Intrusion — 11 October.** Final Ornithopter movement now
 offers the retired card before the original Bene Gesserit Intrusion choice.
 Forces and move counters stay committed; claim or decline cannot move twice or

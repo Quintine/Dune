@@ -9,6 +9,7 @@ import { captureFremenCunningOccurrence, fremenCunningDestinationBlock,
 import { applyAction, normalizeAutomaticGame, viewGame, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { nexusFixture, nexusTurnTwo, nexusReady, nexusAllow, nexusInventory, nexusReload, orderNexusSpice } from './fixture-nexus-cards';
+import { nexusFremenComponentsAppearance, completeNexusFremenComponentsRide } from './fixture-nexus-fremen-components';
 
 function fixture() {
   const g = nexusFixture({ advanced: true });
@@ -273,4 +274,41 @@ void test('an accepted Advanced additional-worm placement offers the distinct em
   assert.equal(g.nexusFremenCunningRides?.[0].occurrence.event, occurrence.event);
   assert.equal(g.nexusCards!.cards!.hands.f, null);
   nexusInventory(g);
+});
+
+void test('original Tech and Strongholds preserve the private empty-worm opportunity and one remote ride', () => {
+  const fixture = nexusFremenComponentsAppearance({ advanced: true, tech: true, strongholds: true });
+  const { actor, source } = fixture;
+  let g = fixture.game;
+  assert.equal(g.decision?.kind, 'nexusFremenCunningOffer');
+  const event = g.nexusFremenCunningOffer!.occurrence.event;
+  const components = { tech: structuredClone(g.techTokens), strongholds: structuredClone(g.strongholdCards) };
+  const fremen = g.players.find(player => player.id === actor)!;
+  const sourceBefore = fremen.forces[source];
+  const reserves = fremen.reserves, spice = fremen.spice;
+  const observer = g.players.find(player => player.id !== actor)!.id;
+  const absent = nexusReload(g);
+  absent.nexusCards!.cards!.hands[actor] = null;
+  absent.nexusCards!.cards!.deck.push('fremen');
+  assert.deepEqual(viewGame(absent, observer).decision, viewGame(g, observer).decision);
+  assert.throws(() => applyAction(absent, actor, { type: 'decision', event, accept: true }));
+  const declined = applyAction(absent, actor, { type: 'decision', event, accept: false });
+  assert.equal(declined.nexusFremenCunningOffer, null);
+  g = applyAction(g, actor, { type: 'decision', event, accept: true });
+  g = completeNexusFremenComponentsRide(g);
+  g = applyAction(g, actor, { type: 'decision', event, accept: true,
+    source: 'wind_pass', forces: { [source]: { normal: 2, elite: 0 } },
+    territory: 'polar_sink', sector: 0 });
+  const moved = g.players.find(player => player.id === actor)!;
+  assert.equal(moved.forces[source] ?? 0, sourceBefore - 2);
+  assert.equal(moved.forces['polar_sink:0'], 2);
+  assert.equal(moved.reserves, reserves);
+  assert.equal(moved.spice, spice);
+  assert.equal(g.nexusFremenCunningRides?.[0].stage, 'complete');
+  assert.equal(g.nexusCards!.cards!.discard.filter(card => card === 'fremen').length, 1);
+  assert.deepEqual(g.techTokens, components.tech);
+  assert.deepEqual(g.strongholdCards, components.strongholds);
+  assert.throws(() => applyAction(g, actor, { type: 'decision', event, accept: true,
+    source: 'wind_pass', forces: { [source]: { normal: 2, elite: 0 } },
+    territory: 'polar_sink', sector: 0 }));
 });

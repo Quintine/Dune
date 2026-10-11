@@ -10069,7 +10069,6 @@ function beginWorm(g: Game, t: string, origin: 'natural' | 'additional' | 'summo
     !g.greatMaker && g.nexusCards?.cards &&
     !g.expansions.length && !g.homeworlds && !g.leaderSkills &&
     !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
-    !g.techTokens && !g.strongholdCards &&
     g.players.every(seat => ['atreides', 'harkonnen', 'emperor', 'guild', 'beneGesserit', 'fremen'].includes(seat.faction)) &&
     fremen && !fremen.ally && g.phase === 1 &&
     fremen.fremenNexusWormBlockedTurn !== g.turn &&

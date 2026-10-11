@@ -81,14 +81,36 @@ Two interactions need a concrete decision before treating this as a complete fea
 
 `game/nexus-fremen-cunning.ts` captures `{event, turn, territory, origin, pile?, parent?, initiallyEmpty}` at the accepted appearance before destruction, using public `presenceAt` across players. Advisers and public No-Field markers count without revealing marker denomination. `beginWorm` offers the same Fremen decision for an initially empty appearance whether or not that seat holds its own card; the owner-only card view controls the spend button. The server, not the client, issues the event and later `{event, turn, owner}` ride authorization. The actual Fremen card moves to the Nexus discard on acceptance.
 
-The current runtime path covers natural and accepted additional worms in Basic/Advanced, plus Fremen special-Karama summoned worms in Advanced, with seated classic factions, Nexus alone and no other optional modules. The summon mints a separate server-side parent event when its physical Karama is spent; a new empty appearance binds the Cunning occurrence to that parent before devouring. A saved offer or pending ride must still belong to the active summon. A summon occurring inside another unresolved Cunning offer or ride retains its ordinary worm path without a second Cunning offer. Great Maker is not enabled for this Cunning path; Sandtrout-suppressed and first-turn ignored *drawn* worms never call the appearance hook, while a real special summon still does. `quoteFremenCunning` checks native unallied entitlement and lists typed forces in each occupied sand territory. After spending, `quoteFremenCunningRide` requires the saved event authorization and spent physical card; `validateFremenCunningSelection` requotes one source and a subset of normal/Fedaykin counters immediately before moving. The destination uses Arrakis entry, storm and occupation rules, not the desert-only source restriction. Ordinary worm destruction and the applicable Nexus happen first; `nextWormRide` schedules native rides before the remote ride afterward, without consuming normal movement. BG intrusion and territory-entry continuations use the native worm-ride path. JSON normalization and rejected-action checks cover a live offer, a spent response and the post-Nexus selection.
+The current runtime path covers natural and accepted additional worms in Basic/Advanced, plus Fremen special-Karama summoned worms in Advanced, with seated classic factions and Nexus, optionally retaining original Tech Tokens3+ and/or Advanced Stronghold Cards2+. Skills, Homeworlds, Discovery and expansion factions/decks stay outside this Cunning boundary. The summon mints a separate server-side parent event when its physical Karama is spent; a new empty appearance binds the Cunning occurrence to that parent before devouring. A saved offer or pending ride must still belong to the active summon. A summon occurring inside another unresolved Cunning offer or ride retains its ordinary worm path without a second Cunning offer. Great Maker is not enabled for this Cunning path; Sandtrout-suppressed and first-turn ignored *drawn* worms never call the appearance hook, while a real special summon still does. `quoteFremenCunning` checks native unallied entitlement and lists typed forces in each occupied sand territory. After spending, `quoteFremenCunningRide` requires the saved event authorization and spent physical card; `validateFremenCunningSelection` requotes one source and a subset of normal/Fedaykin counters immediately before moving. The destination uses Arrakis entry, storm and occupation rules, not the desert-only source restriction. Ordinary worm destruction and the applicable Nexus happen first; `nextWormRide` schedules native rides before the remote ride afterward, without consuming normal movement. BG intrusion and territory-entry continuations use the native worm-ride path. JSON normalization and rejected-action checks cover a live offer, a spent response and the post-Nexus selection.
 
 A special summon during an existing Cunning offer or Karama response saves and
 restores that original control. When it interrupts a selected remote ride, the
 unfinished ride returns to its queue so the new Nexus and ordinary worm rides
 resolve first; no second Cunning offer is opened for that nested appearance.
 
-One Karama response may cancel only this additional remote ride after the Nexus card is spent. The originally empty appearance still destroys/places spice as usual; the remote source is not destroyed, and unrelated native rides continue. This is a **provisional enhanced-native cancellation composition**, not an explicit publisher ruling about Nexus/Karama classification. Games requiring other modules, a second Cunning offer inside an already pending Cunning control, Great Maker reserve replacement or Sandmaster collection stay gated until their own adapters/rulings are verified. The accepted receipt is server-issued but not cryptographically signed; this path does not claim malicious-save authentication.
+One Karama response may cancel only this additional remote ride after the Nexus card is spent. The originally empty appearance still destroys/places spice as usual; the remote source is not destroyed, and unrelated native rides continue. This is a **provisional enhanced-native cancellation composition**, not an explicit publisher ruling about Nexus/Karama classification. Games requiring modules beyond original Tech/Advanced Strongholds, a second Cunning offer inside an already pending Cunning control, Great Maker reserve replacement or Sandmaster collection stay gated until their own adapters/rulings are verified. The accepted receipt is server-issued but not cryptographically signed; this path does not claim malicious-save authentication.
+
+### Original Tech and Strongholds — 11 October 2026
+
+The existing classic Nexus component envelope now receives the same public
+empty-worm offer as Nexus alone. Private card entitlement, original occurrence,
+card cost, provisional Karama response and post-Nexus remote ride are unchanged.
+No new dynamic destination or Great Maker adapter is inferred.
+
+The reusable fixture completes genuine setup, first-Storm Tech assignment,
+first-Mentat Stronghold claims and the actual turn-two Spice Blow. Only
+conserved physical card/deck order and two reserve counters are staged.
+Nine isolated runtime scenarios cover Basic Tech, Advanced Tech, Advanced
+Strongholds and both; four legal AI profiles and printed Karama cancellation.
+Each completed ride moves the original two counters once, preserves wallet,
+reserves and original component custody, and spends one physical Nexus card.
+At 390px, real GameTable spends Cunning and selects Wind Pass14→Polar Sink0:
+two counters arrive, reserves stay8 and spice stays3, with no horizontal
+overflow. A labelled QA control advances the original post-Nexus suffix;
+the spend and final typed ride use production controls. No saved store or
+deployed game was targeted; complete module/public acceptance remains open.
+TypeScript/lint and the final 41-case affected union pass. The permanent regression
+fails before the software guard removal and passes afterward.
 
 ## Secret Ally protection
 

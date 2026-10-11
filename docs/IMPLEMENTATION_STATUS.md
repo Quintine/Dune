@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 11 October 2026 — native Fremen Cunning with original Tech/Strongholds
+
+The classic original-component Nexus envelope already permits Tech Tokens3+
+and Advanced Stronghold Cards2+, independently or together. `beginWorm` still
+suppressed native Cunning whenever either component was present. Removing that
+software guard preserves all existing occurrence/card/source/arrival processing
+and leaves other module/faction gates unchanged. No new dynamic destination,
+Great Maker or Tleilaxu revival ruling is inferred.
+
+The regression fails before and passes after the guard removal. Its genuine
+setup and first-turn progression establish original Tech and Stronghold owners;
+only conserved deck/card order and two reserve counters are staged at the actual
+turn-two Spice Blow. It checks the public opportunity in a paired no-card state,
+one physical card spend, exact remote movement, original wallet/reserves and
+component custody, and rejection of a retired ride event.
+
+TypeScript/lint and 41/41 affected cases pass. Nine isolated runtime scenarios
+cover Basic Tech, Advanced Tech, Advanced Strongholds and both, all four legal
+AI profiles, and printed Karama cancellation retaining the remote source.
+At 390px, real GameTable shows Spend Fremen Cunning, then the original typed
+desert/destination controls. Two Wind Pass14 counters reach Polar Sink0 while
+reserves8/spice3 and original component custody remain unchanged; no horizontal
+overflow. A labelled QA button runs the existing post-Nexus continuation policy
+between the production spend and ride controls. Completed local notices were
+dismissed explicitly; no production save, room or credential was used.
+
+Temporary scripts/server/tab were removed or closed. This is local changed-path
+proof, not full games, all optional combinations, recovery or deployed acceptance.
+Contracts: [native Cunning](NEXUS_FREMEN_RULES.md),
+[original component composition](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026).
+
 ## 11 October 2026 — Semuta before original Bene Gesserit Intrusion
 
 Final Ornithopter movement already commits forces, counters and a typed
