@@ -23,6 +23,12 @@ private opportunity; native replacement runs once and does not undo a Semuta
 claim. Face Dancer cards remain their separate physical deck, never Treachery
 discard targets. Other pending reward exclusions are unchanged.
 
+Quoted Advanced CHOAM force-payment income now also survives those offers.
+The native quote remains unpaid through cleanup; its original allow/Karama
+response credits once or redirects income to bank without a payer refund.
+The original CHOAM market and following phase opening still run afterward.
+Auditor, tech and other reward exclusions remain unchanged.
+
 Sequence retirement precedes the remaining work. Ordinary public actions still drain these saved steps automatically. Test-only observation of unchanged private production dispatch captures real intermediate frames; this is not a public Semuta reaction window.
 
 ## Integrity, privacy and multiplayer

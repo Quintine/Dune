@@ -237,9 +237,9 @@ policy**, not a newly discovered publisher timing rule. Full-hand
 Semuta uses the explicit user-approved atomic exchange; its completed
 hand count is unchanged. Pending gifts, competing responses,
 completed Ornithopter arrivals with Ecaz Ambassador or Moritani Terror,
-pending battle rewards other than native Harkonnen capture/Face Dance and other
-typed producers retain automatic continuation; Semuta cannot claim those events
-yet.
+pending battle rewards other than native capture, Face Dance or quoted CHOAM
+income and other typed producers retain automatic continuation; Semuta cannot
+claim those events yet.
 The completed Box's selected
 search card stays private and its paid shuffle is not repeated
 when another seat takes the used Box. No source ruling is inferred
@@ -248,13 +248,42 @@ separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
 
+**11 October 2026 — quoted CHOAM force-payment income.** Mandatory and
+winner discard batches now offer Semuta while the native Advanced income quote
+remains pending. Only that reward exclusion changed. The existing receipt
+validates the original owner and positive amount; costs and income calculation
+are untouched. Claim/pass leaves it unpaid through casualties and winner cleanup,
+then restores the original allow/Karama response. Allow pays once; cancellation
+sends that income to bank without refunding the original force payments.
+
+The regression fails before and passes after, covering both producers,
+claim/pass, preserved quote, allow/cancel, payer/casualty/card conservation and
+retired-event rejection. The original quote rounds down half of each eligible
+payment: this fixture's two paid support spice yield one income, not two.
+Twenty-four runtime scenarios cover both producers, claim/pass and four legal
+Semuta AI profiles followed by both allowance and printed-Karama cancellation.
+The already-settled payer balance stays12 in both branches. The native phase6
+CHOAM market finishes afterward; no second credit occurs before phase7's Ix
+opening.
+
+Real GameTable at 390px claims Crysknife, shows the actual one-spice unpaid
+income with Allow/Cancel controls, allows it once (CHOAM spice2→3), then finishes
+the original market and reaches the phase7 opening with spice still3. Claimed
+card custody persists; there is no horizontal overflow. Temporary scripts,
+isolated server and browser are removed/stopped; no saved store or deployed
+game was targeted. Auditor, tech and other rewards remain separate. This is
+bounded income continuation proof, not complete CHOAM/Semuta or deployed
+acceptance.
+Types/lint and 119 affected unit cases across eight files pass.
+
 **11 October 2026 — native Face Dance suffix.** Mandatory and winner
 battle discard batches now offer Semuta with native Tleilaxu Face Dance pending.
 Only that reward exclusion changed. The existing battle receipt already binds
 the pending native owner, original winner and territory. Claim/pass preserves
 casualties and winner-card cleanup before the same private opportunity; it
 cannot replace an army early, repeat replacement or move the claimed card back.
-Auditor, tech, CHOAM income and other reward exclusions remain separate.
+CHOAM income was separate at this checkpoint; its later continuation above now
+admits it. Auditor, tech and other reward exclusions remain separate.
 
 The permanent regression fails before and passes after, covering both discard
 producers, claim/pass, one replacement, original leader death, force and card

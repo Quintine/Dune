@@ -4,7 +4,7 @@ import { applyAction, createGame, initializeSemutaGameForAudit, joinGame, newPla
 import { botActions } from '../game/bots';
 import { fighterCount } from '../game/advisors';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
-import { spiceDeck } from '../game/cards';
+import { spiceDeck, isAuditorLeader } from '../game/cards';
 import { saphoAggressorGame, aggressorAction, prepareAggressorPlans } from './fixture-sapho-aggressor';
 import { takeSaphoBattleCard } from './fixture-sapho-battle-order';
 import { createTerrorState, placeTerror } from '../game/moritani-terror';
@@ -52,6 +52,87 @@ function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emp
     response: null, phaseOpening: null, stormPending: null, movementRemaining: ['a', 'r', 'e'] });
   return { g, semuta, hajr };
 }
+
+void test('Semuta preserves quoted CHOAM battle income through original allowance or cancellation', () => {
+  const { g, semuta, hajr } = fixture(true, false, true, 'choam');
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const weapon = take(g, g.deck.find(c => c.kind === 'projectile')!.id);
+  const defense = take(g, g.deck.find(c => c.kind === 'snooper')!.id);
+  const karama = take(g, 'karama');
+  player(g, 'a').hand.push(weapon);
+  player(g, 'e').hand.push(defense);
+  player(g, 'r').hand.push(karama);
+  for (const p of g.players) Object.assign(p, { forces: {}, reserves: 20, tanks: 0 });
+  for (const id of ['a', 'e']) Object.assign(player(g, id), { forces: { 'arrakeen:10': 5 }, reserves: 15 });
+  Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+    response: null, decision: null, phaseOpening: null, movementRemaining: [], ready: [] });
+  const original = inventory(g), beforeIncome = player(g, 'e').spice;
+  let state = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+  for (let step = 0; step < 40; step++) {
+    if (state.response) {
+      const actor = state.players.find(p => !state.response!.passed.includes(p.id))!;
+      state = applyAction(state, actor.id, { type: 'passResponse' });
+    } else if (state.battle?.preparation)
+      state = applyAction(state, state.battle.preparation.owner, { type: 'declineBattlePower' });
+    else if (state.decision?.kind === 'fullPlanOffer')
+      state = applyAction(state, state.decision.player, { type: 'decision', decline: true });
+    else break;
+  }
+  for (const id of ['a', 'e'])
+    state = applyAction(state, id, { type: 'battlePreparationReady', event: state.battle!.preLeader!.event });
+  state = applyAction(state, 'a', { type: 'battlePlan', dial: 2, support: 2,
+    leader: player(state, 'a').leaders[0].id, weapon: weapon.id });
+  state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
+    leader: player(state, 'e').leaders.find(l => !isAuditorLeader(l))!.id, defense: defense.id });
+  for (const id of ['a', 'e']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+  assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(state.pendingChoamBattleIncome, { owner: 'e', amount: 1 });
+  assert.equal(player(state, 'e').spice, beforeIncome);
+  const paidBalance = player(state, 'a').spice;
+  const pass = (game: Game) => {
+    const event = game.pendingTreacheryDiscard!.batch.event;
+    for (const id of ['a', 'e', 'r']) game = applyAction(game, id, { type: 'semutaPass', event });
+    return game;
+  };
+  const winner = applyAction(pass(reload(state)), 'a', { type: 'decision', discard: [weapon.id] });
+  assert.equal(winner.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  for (const pending of [state, winner]) {
+    const event = pending.pendingTreacheryDiscard!.batch.event;
+    const fresh = pending.pendingTreacheryDiscard!.batch.entries[0].card.id;
+    const declined = pass(reload(pending));
+    const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+    for (let resumed of [declined, claimed]) {
+      const took = resumed === claimed;
+      if (resumed.decision?.kind === 'battleCards')
+        resumed = applyAction(resumed, 'a', { type: 'decision', discard: [] });
+      assert.equal(resumed.response?.kind, 'choamBattleIncome');
+      assert.deepEqual(resumed.pendingChoamBattleIncome, state.pendingChoamBattleIncome);
+      assert.equal(player(resumed, 'e').spice, beforeIncome);
+      for (const cancel of [false, true]) {
+        const settled = cancel
+          ? applyAction(reload(resumed), 'r', { type: 'card', mode: 'cancel', card: karama.id })
+          : applyAction(reload(resumed), 'r', { type: 'passResponse' });
+        assert.equal(settled.pendingChoamBattleIncome, null);
+        assert.equal(player(settled, 'e').spice, beforeIncome + Number(!cancel));
+        assert.equal(player(settled, 'a').spice, paidBalance);
+        assert.equal(player(settled, 'a').tanks, 2);
+        assert.equal(player(settled, 'e').tanks, 5);
+        assert.equal(player(settled, 'r').hand.some(c => c.id === fresh), took);
+        assert.equal(settled.discard.some(c => c.id === semuta.id), took);
+        assert.deepEqual(inventory(settled), original);
+        assert.throws(() => applyAction(settled, 'r', { type: 'semutaCommit', event }));
+        assert.equal(settled.decision?.kind, 'choamMarket');
+        const closed = applyAction(settled, 'e', { type: 'decision', done: true });
+        assert.equal(closed.phase, 7);
+        assert.equal(player(closed, 'e').spice, beforeIncome + Number(!cancel));
+        assert.equal(player(closed, 'a').spice, paidBalance);
+        assert.equal(player(closed, 'r').hand.some(c => c.id === fresh), took);
+        assert.deepEqual(inventory(closed), original);
+      }
+    }
+  }
+});
 
 void test('Semuta settles mandatory and winner discards before one native Face Dance replacement', () => {
   const { g, semuta, hajr } = fixture(true, false, true, 'tleilaxu');

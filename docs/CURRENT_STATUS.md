@@ -29,6 +29,21 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / quoted CHOAM battle income — 11 October.** Mandatory and winner
+discard offers now preserve the original Advanced force-payment quote unpaid
+through cleanup, then restore its native allow/Karama response. Allow credits
+once; cancellation redirects income without refunding paid support.
+The regression fails before and passes after; types/lint and 119 affected unit
+cases across eight files pass. Twenty-four runtime scenarios
+cover both producers, claim/pass, four legal Semuta AI profiles and allow/cancel,
+then finish the original market without another credit.
+Real GameTable at 390px claims Crysknife, restores the actual one-spice response,
+credits CHOAM2→3 and finishes the market to phase7's Ix opening with spice still3.
+Two eligible paid support spice yield one income under the unchanged native
+quote. No overflow; other reward exclusions remain.
+Temporary QA scaffolds are removed; no saved store or deployed game was targeted.
+See [the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / native Face Dance — 11 October.** Mandatory and winner battle
 discards now offer Semuta while native Tleilaxu replacement remains pending.
 Original casualties and card cleanup still precede the same private opportunity;

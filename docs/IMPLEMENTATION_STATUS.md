@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 11 October 2026 — quoted CHOAM income after Semuta battle discards
+
+The existing battle receipt validates the native CHOAM owner and positive
+income quote. Removing only that reward exclusion admits mandatory and winner
+discard reactions without changing force payments, quote calculation or
+aftermath ordering. Claim/pass preserves the unpaid quote through casualties
+and winner cleanup, then opens its original allow/Karama response. Allow pays
+once; cancellation redirects income to bank without a payer refund.
+
+The regression fails before and passes after, covering both producers,
+claim/pass, exact quote preservation, allow/cancel, unchanged already-paid
+balance and casualties, card conservation and retired reaction rejection.
+Twenty-four isolated runtime scenarios cover both producers with claim/pass
+and four legal Semuta AI profiles, followed by allowance and cancellation.
+The native quote gives one income for the two eligible paid support spice;
+the already-settled payer balance stays12.
+
+An additional suffix observation confirmed the original phase6 CHOAM market
+remains after income; it is not a stall or immediate Collection. Every extended
+scenario finishes that actual market to phase7's Ix opening with no second
+credit. Real production GameTable at 390px claims Crysknife, restores the quoted
+one-spice response and native Allow/Cancel controls, allows CHOAM2→3, then
+finishes the original market with spice still3. Claimed custody persists and
+there is no horizontal overflow.
+Types/lint and 119 affected unit cases across eight files pass.
+
+Temporary scripts, isolated server and browser tab are removed/stopped; no
+saved store or deployed game was targeted. Auditor, tech and other rewards
+remain separate. Full CHOAM/Semuta and deployed acceptance remain open.
+Contracts: [Semuta](SEMUTA_SOURCE_UPDATE_20260907.md),
+[battle ordering](BATTLE_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — native Face Dance after Semuta battle discards
 
 The battle receipt already validates pending native Face Dance against the

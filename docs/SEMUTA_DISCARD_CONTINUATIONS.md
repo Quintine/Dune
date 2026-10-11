@@ -45,6 +45,12 @@ decline; original casualties and winner cleanup still precede it. Native
 replacement runs once, and the claimed Treachery card remains held afterward.
 Face Dancer cards are not Treachery cards and never enter the fresh batch.
 
+Quoted Advanced CHOAM force-payment income may also remain pending across
+mandatory/winner discard offers. The original owner/amount stays unpaid through
+cleanup, then its native allow/Karama response resumes. Allow credits once;
+cancellation redirects only the income and does not refund force payments.
+The original post-battle CHOAM market still finishes before the next phase.
+
 Completed ordinary Ghola disposal may now offer Semuta during battle as well.
 Revival has already committed; the receipt binds the returned leader/forces and
 original battle, including a sealed opposing plan. Claim or decline restores
@@ -185,8 +191,8 @@ winning-card cleanup uses a separate `winnerMandatoryDiscard` batch,
 and an optional winner selection uses a third `battleCleanup` batch.
 Every supported stage has a neutral all-seat offer; committed holders
 select one fresh card, leave the others in the pile and resume exactly
-once. Native Advanced Harkonnen capture and native Face Dance remain pending
-across the offer; Auditor, tech and CHOAM rewards remain automatic without Semuta.
+once. Native capture, Face Dance and quoted CHOAM force income remain pending
+across the offer; Auditor, tech and other rewards remain automatic without Semuta.
 
 The explicit Richese preview also accepts a fresh physical Ix deck.
 Clean Thumper disposal stages `thumperDiscard` before `blowSpice`
