@@ -29,6 +29,19 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Advanced Harkonnen capture — 11 October.** Mandatory and
+winner-card battle discards now offer Semuta with the original capture pending.
+Claim or all-seat decline preserves winner casualties and cleanup before the
+same capture offer; no early sampling or second capture. Other pending reward
+exclusions are unchanged. The regression fails before and passes after;
+types/lint and 97 affected cases pass. Thirty-six isolated runtime scenarios
+cover both producers, claim/pass, four legal AI profiles and capture
+decline/retention/execution; execution earns exactly two extra spice against the
+same decline suffix. Real GameTable at 390px claims Stunner, resumes capture and
+retains one captive before Collection with no overflow. Temporary QA scaffolds
+are removed; no saved store or deployed game was targeted. See
+[the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / ordinary battle Truthtrance — 11 October.** Ordinary definite
 Truthtrance answers now offer the consumed card during battle, including a bound
 unsubmitted-plan promise, a question about a submitted/revealed plan and a fact

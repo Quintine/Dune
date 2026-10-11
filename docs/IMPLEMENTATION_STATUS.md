@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta before native Advanced Harkonnen capture
+
+The resolved battle and winner-cleanup receipts already validate the original
+pending capture's winner, loser and territory. Removing only `pendingCapture`
+from the reaction exclusion admits both discard batches without changing the
+capture handler, random selection or aftermath ordering. Other pending reward
+exclusions remain intact.
+
+The real Advanced Richese/Harkonnen fixture now covers mandatory loser disposal,
+winner disposal, claim/pass, unchanged resources and pending capture, retired
+events, card conservation and one retained captive. It fails before the guard
+change and passes after. The fixture also declines the existing Atreides
+full-plan inspection before shared readiness; no preparation bypass was added.
+Types/lint and 97 affected cases across eight files pass.
+
+Thirty-six isolated engine scenarios cover both producers with claim, all-seat
+pass and all four legal AI profiles, followed by capture decline, retention or
+execution. Each reaches Collection with zero or one captive as appropriate;
+execution gains exactly two spice against the same decline suffix. An initial
+probe wrongly attributed automatic Collection income to capture; its corrected
+comparison uses the complete same-phase baseline.
+
+Real production GameTable controls at 390px claim the winner's Stunner, resume
+Capture a leader, inspect the captive and retain exactly one before Collection,
+without horizontal overflow. The QA adapter only switched seats and mounted the
+real table against an isolated memory-only engine; it touched no saved store.
+All temporary scripts, server and browser tab are removed/stopped. The first
+compiler pass stopped on an unused temporary fixture helper; after scaffold
+removal, the frozen implementation check passed.
+
+Source/runtime boundaries: [Semuta](SEMUTA_SOURCE_UPDATE_20260907.md),
+[battle ordering](BATTLE_DISCARD_CONTINUATIONS.md). Full Semuta, expansion and
+deployed acceptance remain open.
+
 ## 11 October 2026 — Semuta with a bound battle-plan promise
 
 The Truthtrance receipt already carried a battle promise and the integrity

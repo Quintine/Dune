@@ -234,9 +234,9 @@ policy**, not a newly discovered publisher timing rule. Full-hand
 Semuta uses the explicit user-approved atomic exchange; its completed
 hand count is unchanged. Pending gifts, competing responses,
 completed Ornithopter arrivals with Ecaz Ambassador or Moritani Terror,
-pending battle rewards and other
-typed producers retain their automatic continuation; Semuta cannot
-claim those events yet.
+pending battle rewards other than native Harkonnen capture and other typed
+producers retain their automatic continuation; Semuta cannot claim those events
+yet.
 The completed Box's selected
 search card stays private and its paid shuffle is not repeated
 when another seat takes the used Box. No source ruling is inferred
@@ -244,6 +244,26 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — native Harkonnen capture suffix.** Mandatory and winner
+battle discard batches now offer Semuta while the original Advanced Harkonnen
+capture remains pending. Only the capture exclusion changed; the battle receipt
+already validates that the winning Harkonnen, loser and territory match. Claim
+or decline resumes original winner casualties and card cleanup before the same
+capture offer. No captive is sampled until the original capture response ends.
+Other pending battle rewards retain their separate exclusions.
+
+The permanent regression fails before the guard change and passes after,
+covering both discard producers, unchanged capture/cleanup order, settled
+resources, card custody, retired-event rejection and one retained captive.
+An isolated engine smoke covers both producers with claim, all-seat pass and
+four legal AI profiles, then capture decline, retention and execution (36
+scenarios). Execution adds exactly two spice compared with the same completed
+decline path, without counting automatic Collection income as capture income.
+Real GameTable controls at 390px claim the winner's Stunner, resume Capture a
+leader, inspect the captive and retain exactly one before Collection; no
+horizontal overflow. No saved store or deployed game was targeted.
+Types/lint and the affected 97-case union across eight files pass.
 
 **11 October 2026 — ordinary battle answer.** Ordinary definite Truthtrance
 answers now offer the consumed card during battle. This includes unsubmitted

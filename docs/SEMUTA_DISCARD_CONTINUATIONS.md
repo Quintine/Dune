@@ -27,6 +27,12 @@ Native Richese/No-Field shipment questions and unsupported module combinations
 remain outside the admitted shipment-question scope. A claim may move the
 consumed card, never re-answer the question or rewrite its history.
 
+Mandatory and winner battle discards may now pause before native Advanced
+Harkonnen capture. The original pending capture remains bound to the winning
+Harkonnen, loser and territory; winner casualties and optional card cleanup
+still precede the capture offer. Claim or decline neither samples a captive
+early nor repeats the capture. Other pending battle rewards remain gated.
+
 Clean Once Around Sapho stages `saphoAuctionDiscard` after the open
 lot's finite bidder reorder, hand-slot release and public card disposal,
 but before settlement. The saved receipt binds the lot, prior funding,

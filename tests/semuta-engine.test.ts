@@ -23,10 +23,10 @@ function inventory(g: Game) {
   assert.equal(new Set(ids).size, ids.length);
   return ids;
 }
-function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emperor' | 'beneGesserit' = 'emperor') {
+function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emperor' | 'beneGesserit' | 'harkonnen' = 'emperor') {
   let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), advanced, ix ? ['choam', 'ix'] : ['choam']);
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
-  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : opponent === 'beneGesserit' ? 'Bene Gesserit' : 'Emperor',
+  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : opponent === 'beneGesserit' ? 'Bene Gesserit' : opponent === 'harkonnen' ? 'Harkonnen' : 'Emperor',
     ixianAlly ? 'ixians' : opponent));
   for (const p of g.players) { p.bot = 'Medium'; p.ready = true; }
   g = initializeSemutaGameForAudit(g);
@@ -1075,6 +1075,90 @@ void test('clean winner-selected battle cards allow one committed Semuta choice 
   assert.equal(alternate.discard.filter(card => card.id === semuta.id).length, 1);
   assert.deepEqual(inventory(alternate), original);
   assert.deepEqual(settled(alternate), settled(declined));
+});
+
+void test('Semuta settles mandatory and winner discards before the original Harkonnen capture', () => {
+  const { g, semuta, hajr } = fixture(false, false, true, 'harkonnen');
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const weapon = take(g, g.deck.find(c => c.kind === 'projectile')!.id);
+  const defense = take(g, g.deck.find(c => c.kind === 'snooper')!.id);
+  player(g, 'e').hand.push(weapon);
+  player(g, 'a').hand.push(defense);
+  for (const id of ['a', 'e']) {
+    player(g, id).forces = { 'arrakeen:10': 5 };
+    player(g, id).reserves = 15;
+    for (const leader of player(g, id).leaders) leader.strength = 0;
+  }
+  Object.assign(g, { phase: 6, active: 'e', order: ['e', 'a', 'r'],
+    response: null, decision: null, phaseOpening: null, ready: [] });
+  const original = inventory(g);
+  let state = applyAction(g, 'e', { type: 'chooseBattle', territory: 'arrakeen', target: 'a' });
+  for (let step = 0; step < 40; step++) {
+    if (state.response) {
+      const actor = state.players.find(p => !state.response!.passed.includes(p.id))!;
+      state = applyAction(state, actor.id, { type: 'passResponse' });
+    } else if (state.battle?.preparation)
+      state = applyAction(state, state.battle.preparation.owner, { type: 'declineBattlePower' });
+    else if (state.decision?.kind === 'fullPlanOffer')
+      state = applyAction(state, state.decision.player, { type: 'decision', decline: true });
+    else break;
+  }
+  for (const id of ['e', 'a'])
+    state = applyAction(state, id, { type: 'battlePreparationReady', event: state.battle!.preLeader!.event });
+  state = applyAction(state, 'e', { type: 'battlePlan', dial: 2, support: 2,
+    leader: player(state, 'e').leaders[0].id, weapon: weapon.id });
+  state = applyAction(state, 'a', { type: 'battlePlan', dial: 0, support: 0,
+    leader: player(state, 'a').leaders[0].id, defense: defense.id });
+  for (const id of ['e', 'a']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+  assert.equal(state.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
+  assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.deepEqual(state.pendingCapture, { player: 'e', loser: 'a', territory: 'arrakeen' });
+  const settled = (game: Game) => game.players.map(p => ({
+    id: p.id, spice: p.spice, forces: p.forces, reserves: p.reserves, tanks: p.tanks,
+    leaders: p.leaders,
+  }));
+  const pass = (game: Game) => {
+    const event = game.pendingTreacheryDiscard!.batch.event;
+    for (const id of ['e', 'a', 'r']) game = applyAction(game, id, { type: 'semutaPass', event });
+    return game;
+  };
+  const mandatoryEvent = state.pendingTreacheryDiscard!.batch.event;
+  const mandatoryClaim = applyAction(reload(state), 'r', { type: 'semutaCommit', event: mandatoryEvent });
+  const mandatoryPass = pass(reload(state));
+  assert.equal(player(mandatoryClaim, 'r').hand.some(c => c.id === defense.id), true);
+  assert.deepEqual(settled(mandatoryClaim), settled(mandatoryPass));
+  for (const resumed of [mandatoryClaim, mandatoryPass]) {
+    assert.equal(resumed.decision?.kind, 'battleCards');
+    assert.deepEqual(resumed.pendingCapture, state.pendingCapture);
+    assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event: mandatoryEvent }));
+  }
+  const winnerDiscard = applyAction(mandatoryPass, 'e', { type: 'decision', discard: [weapon.id] });
+  assert.equal(winnerDiscard.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  const winnerEvent = winnerDiscard.pendingTreacheryDiscard!.batch.event;
+  const winnerClaim = applyAction(reload(winnerDiscard), 'r', { type: 'semutaCommit', event: winnerEvent });
+  const winnerPass = pass(reload(winnerDiscard));
+  assert.deepEqual(settled(winnerClaim), settled(winnerPass));
+  assert.equal(player(winnerClaim, 'r').hand.some(c => c.id === weapon.id), true);
+  assert.equal(winnerClaim.discard.filter(c => c.id === semuta.id).length, 1);
+  assert.equal(winnerPass.discard.some(c => c.id === semuta.id), false);
+  for (let resumed of [winnerClaim, winnerPass]) {
+    assert.equal(resumed.decision?.kind, 'captureOffer');
+    assert.deepEqual(resumed.pendingCapture, state.pendingCapture);
+    resumed = applyAction(resumed, 'e', { type: 'decision', accept: true });
+    while (resumed.response?.kind === 'capture') {
+      const actor = resumed.players.find(p => !resumed.response!.passed.includes(p.id))!;
+      resumed = applyAction(resumed, actor.id, { type: 'passResponse' });
+    }
+    assert.equal(resumed.decision?.kind, 'capturedLeader');
+    const captive = player(resumed, 'a').leaders.find(l => l.capturedBy === 'e')!;
+    assert.ok(captive);
+    resumed = applyAction(resumed, 'e', { type: 'decision', mode: 'keep' });
+    assert.equal(resumed.pendingCapture, null);
+    assert.equal(player(resumed, 'a').leaders.filter(l => l.capturedBy === 'e').length, 1);
+    assert.deepEqual(inventory(resumed), original);
+    assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event: winnerEvent }));
+  }
 });
 
 void test('a mandatory winner Hero discard can be claimed before optional battle cleanup', () => {

@@ -6638,9 +6638,9 @@ function treacheryDiscardIntegrity(g: Game) {
       'The committed Kaitain discard no longer matches its payment and closing opportunity.');
   } else throw new RuleError('Unknown saved discard continuation.');
 }
-/** Bounded public single-card reaction after clean completed effects. Battle
- * winner cleanup may resume only without other pending battle rewards; final
- * flight arrival may resume native Intrusion, but other entry responses remain gated. */
+/** Bounded public single-card reaction after completed effects. Battle cleanup
+ * may preserve native Harkonnen capture; other pending rewards remain gated.
+ * Final flight arrival may resume native Intrusion, but other entry responses remain gated. */
 function semutaOfferSupported(
   g: Game,
   continuation: NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -6686,7 +6686,7 @@ function semutaOfferSupported(
   if ((continuation.kind === 'battleCleanup' ||
     continuation.kind === 'winnerMandatoryDiscard' ||
     continuation.kind === 'battleResolved') &&
-    (g.pendingAuditor || g.pendingCapture || g.pendingTech ||
+    (g.pendingAuditor || g.pendingTech ||
       g.pendingFaceDance || g.pendingChoamBattleIncome ||
       g.pendingWinnerDiscards || g.moritaniRetention ||
       g.pendingIxSubstitution)) return false;

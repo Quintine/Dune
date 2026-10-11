@@ -10,6 +10,13 @@ Normal Advanced/Ixian winner casualties retain the effective force strengths, fr
 
 The remaining order is winner casualties, applicable Ixian substitution, optional winner cards, Moritani cleanup, CHOAM support income, tech transfer, Harkonnen capture, Auditor, Face Dance and the next battle/phase. Winner and Moritani discards are distinct later batches. Empty batches create no event. Moritani's consumed retention receipt preserves played and kept identities without requiring discarded cards to remain in hand. Older cleanup decisions without a resolved receipt can establish one from their existing authenticated parent; a mismatching existing receipt is rejected.
 
+11 October 2026 Semuta update: the explicit development preview admits mandatory
+and winner-card batches with the native Advanced Harkonnen capture still pending.
+Claim or all-seat decline retires the discard receipt before the original
+casualties, cleanup and capture suffix. The capture offer samples no captive
+until its original response finishes. Other pending reward exclusions are
+unchanged; this does not certify complete Semuta or expansion combinations.
+
 Sequence retirement precedes the remaining work. Ordinary public actions still drain these saved steps automatically. Test-only observation of unchanged private production dispatch captures real intermediate frames; this is not a public Semuta reaction window.
 
 ## Integrity, privacy and multiplayer
