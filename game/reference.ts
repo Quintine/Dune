@@ -4566,7 +4566,7 @@ export const RULE_TOPICS: RuleTopic[] = [
       'Planetologist calculates each gathered origin separately using its selected cyborgs. Canceling native cyborg movement leaves the independent skill range available. Sandmaster routes can enter or leave the HMS through its current pointer.',
       'Suk Graduate rescues finish before substitution. Select the original sectors of rescued cyborgs where needed; only cyborgs actually sent to the Tanks can return through substitution. Rihani also finishes before native substitution.',
       'Planetologist may substitute the green Thumper, Harvester or Amal in its weapon role. Their normal effects do not execute, and mandatory disposal still follows allowed, declined or canceled substitution.',
-      'Missing skill bands, Sandmaster eligibility during native HMS relocation and other combined configurations remain unresolved or unfinished. This prototype does not certify complete rules or AI strength.',
+      'Sandmaster now connects owned one-pile-per-entered-territory collection during native HMS Storm relocation and Advanced special Karama, preserving native collection and cancellation. Sector allocation is provisional. Remaining skill boundaries and other combined configurations remain unresolved or unfinished; this prototype does not certify complete rules or AI strength.',
     ],
     related: ['leader-skills', 'tleilaxu-leader-skills', 'implementation-checklist'],
     checklist: [
