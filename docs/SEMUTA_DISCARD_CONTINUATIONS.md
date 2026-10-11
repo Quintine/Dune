@@ -144,14 +144,13 @@ ordinary declared move is already stopped without spending its allowance.
 Nexus, movement-card/Ambassador and overlapping arrival parents retain their
 automatic paths.
 
-Clean proactive ordinary Trip to Gamont stages
-`choamGamontDiscard` after the accepted public card cost but
-before returning one selected opponent force to reserves. The
-receipt binds the selected location, target force/reserve
-custody and CHOAM hand; claim or decline completes the one
-return without replaying the response. Elite, concealed
-No-Field, closing Mentat decision, Nexus and competing parents
-retain their automatic paths.
+Clean proactive Trip to Gamont stages `choamGamontDiscard` after the accepted
+public card cost but before its selected ordinary/elite return or native
+No-Field reveal and capped recall. The receipt binds location, exact counter
+type/marker event, target force/reserve/elite/No-Field custody and CHOAM hand.
+Claim or decline completes the original selection once without replaying the
+response. A zero marker reveals without inventing a force; revival usage stays
+unchanged. Closing Mentat, Nexus and competing parents retain automatic paths.
 
 Accepted printed Jubba Cloak stages `choamJubbaDiscard` after
 its public Worthless card cost but before protecting CHOAM's

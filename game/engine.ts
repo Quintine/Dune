@@ -1397,6 +1397,8 @@ export type Game = {
           card: string;
           target: string;
           location: string;
+          elite?: 1;
+          noFieldEvent?: string;
           stateSignature: string;
         }
       | {
@@ -5220,7 +5222,7 @@ function choamLaLaLaDiscardSignature(g: Game, c: ChoamLaLaLaDiscardContinuation)
   const owner = getPlayer(g, c.player), target = getPlayer(g, c.target);
   return JSON.stringify({
     player: c.player, card: c.card, target: c.target,
-    ...(c.stoppedRevival ? { stoppedRevival: true } : {}),
+    stoppedRevival: c.stoppedRevival,
     turn: g.turn, phase: g.phase, active: g.active, order: g.order,
     revivalRules: g.revivalRules, pendingRevival: g.pendingRevival,
     parent: nullentropyParentSignature(g,
@@ -5238,7 +5240,7 @@ function choamBalisetDiscardSignature(g: Game, c: ChoamBalisetDiscardContinuatio
   const owner = getPlayer(g, c.player);
   return JSON.stringify({
     player: c.player, card: c.card, target: c.target, territory: c.territory,
-    ...(c.stoppedMovement ? { stoppedMovement: true } : {}),
+    stoppedMovement: c.stoppedMovement,
     turn: g.turn, phase: g.phase, active: g.active, order: g.order,
     restrictions: g.choamBaliset, remaining: g.movementRemaining,
     parent: nullentropyParentSignature(g,
@@ -5256,6 +5258,7 @@ function choamGamontDiscardSignature(g: Game, c: ChoamGamontDiscardContinuation)
   const owner = getPlayer(g, c.player), target = getPlayer(g, c.target);
   return JSON.stringify({
     player: c.player, card: c.card, target: c.target, location: c.location,
+    elite: c.elite, noFieldEvent: c.noFieldEvent,
     turn: g.turn, phase: g.phase, active: g.active, order: g.order,
     ready: g.ready, storm: g.storm,
     parent: nullentropyParentSignature(g,
@@ -5966,7 +5969,10 @@ function treacheryDiscardIntegrity(g: Game) {
     requireRule(
       g.phase === 8 && owner?.faction === 'choam' &&
       c.target !== c.player &&
-      gamontAvailable(g, c.target, c.location, 0) &&
+      (c.elite === undefined || c.elite === 1) &&
+      (c.noFieldEvent === undefined ||
+        (typeof c.noFieldEvent === 'string' && c.noFieldEvent.length > 0)) &&
+      gamontAvailable(g, c.target, c.location, c.elite ?? 0, c.noFieldEvent) &&
       !g.pendingChoamWorthless && !g.response && !g.decision &&
       !g.phaseOpening && !g.choamMarket &&
       batch.cause === 'choam:gamont' && batch.entries.length === 1 &&
@@ -5974,7 +5980,7 @@ function treacheryDiscardIntegrity(g: Game) {
       entry.card.id === c.card && entry.card.kind === 'worthless' &&
       entry.card.name === 'Trip to Gamont' &&
       c.stateSignature === choamGamontDiscardSignature(g, c),
-      'The used Trip to Gamont no longer matches its pending ordinary force return.',
+      'The used Trip to Gamont no longer matches its pending typed force return.',
     );
   } else if (continuation?.kind === 'choamJubbaDiscard') {
     const c = continuation, entry = batch.entries[0];
@@ -6959,7 +6965,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
       log(g, 'The declared move was prevented without moving forces or spending a movement.');
   } else if (next.kind === 'choamGamontDiscard') {
     completeChoamGamont(g, getPlayer(g, next.player), next.target,
-      next.location, 0);
+      next.location, next.elite ?? 0, next.noFieldEvent);
   } else if (next.kind === 'choamJubbaDiscard') {
     completeChoamJubba(g, getPlayer(g, next.player), next.territory);
     offerChoamStorm(g);
@@ -24028,8 +24034,8 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
             kind: 'choamBalisetDiscard', player: choam.id,
             card: used.id, target: pending.target!,
             territory: pending.location!, stateSignature: '',
-            ...(movement ? { stoppedMovement: true as const } : {}),
           };
+          if (movement) continuation.stoppedMovement = true;
           const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
           if (semutaOfferSupported(g, continuation, entries)) {
             continuation.stateSignature = choamBalisetDiscardSignature(g, continuation);
@@ -24052,7 +24058,6 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
         }
       } else if (pending.effect === 'gamont') {
         if (g.semutaPreview && used.name === 'Trip to Gamont' &&
-          pending.elite === 0 && !pending.noFieldEvent &&
           !pending.storm && !pending.revival && !pending.movement &&
           !pending.mentat && !pending.nexusEvent) {
           const continuation: ChoamGamontDiscardContinuation = {
@@ -24060,6 +24065,8 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
             card: used.id, target: pending.target!,
             location: pending.location!, stateSignature: '',
           };
+          if (pending.elite === 1) continuation.elite = 1;
+          if (pending.noFieldEvent) continuation.noFieldEvent = pending.noFieldEvent;
           const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
           if (semutaOfferSupported(g, continuation, entries)) {
             continuation.stateSignature = choamGamontDiscardSignature(g, continuation);
@@ -24079,8 +24086,8 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
           const continuation: ChoamLaLaLaDiscardContinuation = {
             kind: 'choamLaLaLaDiscard', player: choam.id,
             card: used.id, target: pending.target!, stateSignature: '',
-            ...(revival ? { stoppedRevival: true as const } : {}),
           };
+          if (revival) continuation.stoppedRevival = true;
           const entries = [{ card: used, discardedBy: choam.id, publicFace: true }];
           if (semutaOfferSupported(g, continuation, entries)) {
             continuation.stateSignature = choamLaLaLaDiscardSignature(g, continuation);

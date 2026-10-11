@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 11 October 2026 — typed and concealed Gamont with Semuta
+
+The existing receipt already signs target elite and No-Field custody, but the
+admission excluded those targets and the suffix used a literal ordinary-force
+argument. The receipt now stores an optional selected elite or native marker
+event, validates it and passes it to the unchanged native Gamont helper.
+Ordinary selections retain the omitted defaults and original signature shape.
+Reactive stopped-marker signatures also use direct optional fields, with
+assignments instead of temporary spread objects.
+
+All three permanent regressions fail before and pass after. The elite case
+uses genuine Advanced Emperor setup and a staged mixed stack: exactly the elite
+returns, aggregate reserves19 include elite reserves5, and normal/elite revival
+usage stays unchanged. The No-Field cases use actual original deployment actions
+before the staged Mentat position. Markers remain concealed during the offer;
+zero returns no force, while three caps materialization at the two current
+reserves and recalls one. Both preserve Tanks18, cards and prior shipment
+payment, and reject retired reactions.
+
+Thirty isolated runtime scenarios cover Advanced elite, Basic/Advanced
+zero/three markers, claim/pass and all four legal AI profiles. Real production
+GameTable at 390px claims each target case. Its force inspector verifies twenty
+physical counters after the capped three reveal: one board, one reserve,
+eighteen Tanks. Zero leaves board0/reserves2; elite leaves one normal board
+counter and five elite reserves. There is no horizontal overflow.
+Types/lint and 163 affected unit cases across nine files pass.
+
+Temporary scripts, isolated server and browser tab are removed/stopped; no
+saved store or deployed game was targeted. Closing Mentat, Nexus and competing
+parents remain separate. Full Semuta/CHOAM and deployed acceptance remain open.
+Contracts: [Semuta source/runtime](SEMUTA_SOURCE_UPDATE_20260907.md),
+[discard suffix](SEMUTA_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — reactive Worthless denials with Semuta
 
 The existing `choamBalisetDiscard` and `choamLaLaLaDiscard` receipts now admit

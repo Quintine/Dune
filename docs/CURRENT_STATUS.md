@@ -29,6 +29,20 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / typed and concealed Gamont — 11 October.** A clean proactive
+discard now preserves the selected elite counter or native No-Field event,
+instead of hard-coding an ordinary return. The original native helper performs
+one exact return or reveal/capped recall; zero invents no force and revival
+usage is unchanged. All three regressions fail before and pass after.
+Types/lint and 163 affected unit cases across nine files pass.
+Thirty runtime scenarios cover Advanced elite and Basic/Advanced zero/three
+markers with claim/pass and all four legal AI profiles. Real GameTable at 390px
+claims all three cases: capped three leaves board1/reserves1/Tanks18, zero leaves
+board0/reserves2, and elite returns to elite reserves5. The actual force inspector
+shows twenty counters; no overflow. Other parents remain separate.
+Temporary QA scaffolds are removed; no saved store or deployed game was targeted.
+See [the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / reactive Baliset and La La La — 11 October.** Accepted native
 declarations now offer their used card after stopping the original uncommitted
 move or free-force request. Claim/pass installs the same restriction once;

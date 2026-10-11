@@ -149,13 +149,12 @@ legal. A clean ordinary declared move is already stopped without spending a
 movement. Movement-card/Ambassador parents, Nexus conversion and competing
 arrivals retain their original automatic paths.
 
-A clean proactive ordinary Trip to Gamont response pauses after
-its named public card cost but before moving one selected force
-from a player's board sector to reserves. The saved receipt binds
-the target, location and pre-return force custody; a claim or
-decline returns that one force and reconciles occupation once.
-Elite, concealed No-Field, closing Mentat, Nexus and competing
-parents retain their prior automatic paths.
+A clean proactive Trip to Gamont response pauses after its public card cost,
+before returning the selected ordinary/elite physical force or performing the
+native concealed No-Field reveal and capped recall. The receipt binds target,
+location, exact counter type or marker event and pre-return custody. Claim or
+decline applies the original selection once; a zero marker reveals without
+inventing a force. Closing Mentat, Nexus and competing parents remain automatic.
 
 An accepted printed Jubba Cloak response pauses after its
 public Worthless card cost but before the chosen CHOAM territory
@@ -247,6 +246,38 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — elite and concealed Gamont targets.** The existing
+receipt already signed target elite and No-Field custody, but stored neither
+selection and resumed with a literal ordinary-force argument. It now carries
+the selected elite flag or native marker event, validates the original
+selection and resumes `completeChoamGamont` with those exact values. The native
+return/reveal rules are unchanged; ordinary receipts keep their omitted defaults.
+
+All three permanent regressions fail before and pass after. An Advanced mixed
+Emperor stack loses only its selected elite: one normal remains, aggregate
+reserves19 include all five elites, and revival usage is unchanged. Native
+zero/three markers are deployed through actual shipment before the staged
+Mentat case. They remain concealed during the offer; claim/pass performs one
+native reveal and reserve-capped recall. With reserves2/Tanks18, zero returns
+nothing and keeps reserves2; three materializes two, recalls one and leaves
+board1/reserves1. Card custody and retired-event rejection remain checked.
+
+Thirty isolated runtime scenarios cover Advanced elite and Basic/Advanced
+zero/three targets, claim/pass and all four legal AI profiles. Real GameTable at
+390px commits Semuta in all three target cases. The public force inspector shows
+20 counters after the capped three reveal: board1/reserves1/Tanks18. Zero has no
+board force and reserves2; elite leaves one normal on board and elite reserves5.
+No surface overflows horizontally. The QA cases stage actual completed native
+actions in memory; no saved store or deployed game was targeted. Temporary
+scripts/server/browser are removed or stopped.
+Types/lint and 163 affected unit cases across nine files pass.
+
+Optional signature fields now serialize directly, and reactive stopped markers
+are assigned without temporary spread objects. Absent optional fields are
+omitted by JSON, preserving the prior ordinary/proactive signature shape.
+Closing Mentat, Nexus and competing parents remain separate. This is bounded
+counter-selection coverage, not complete Semuta/CHOAM or deployed acceptance.
 
 **11 October 2026 — reactive Baliset and La La La.** Accepted native
 declarations now offer their used public card in the clean reactive paths too.
