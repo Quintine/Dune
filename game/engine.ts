@@ -6750,13 +6750,17 @@ function semutaOfferSupported(
             : !continuation.resume.phaseOpening)))) &&
     !g.karamaShipping &&
     (continuation.kind === 'ixAllyCard'
-      ? !!g.auction && g.currentAuctionSale?.origin === 'normal' &&
-        continuation.sale.origin === 'normal' && !g.richeseAuction
+      ? !!g.currentAuctionSale && continuation.sale.origin === g.currentAuctionSale.origin &&
+        (continuation.sale.origin === 'normal'
+          ? !!g.auction && !g.richeseAuction
+          : continuation.sale.origin === 'blackMarket' &&
+            g.richeseAuction?.source === 'blackMarket' && !g.auction)
       : continuation.kind === 'karamaPurchaseDiscard' ||
         continuation.kind === 'karamaPaymentDiscard'
         ? !!g.auction && !g.currentAuctionSale && !g.richeseAuction
         : !g.auction) &&
-    (continuation.kind === 'saphoAuctionDiscard' || !g.richeseAuction) &&
+    (continuation.kind === 'saphoAuctionDiscard' ||
+      continuation.kind === 'ixAllyCard' || !g.richeseAuction) &&
     (continuation.kind === 'saphoAggressorDiscard' ||
       continuation.kind === 'residualPoisonDiscard' || !g.battle) &&
     (continuation.kind !== 'choamKulonDiscard' ||

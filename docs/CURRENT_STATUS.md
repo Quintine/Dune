@@ -29,6 +29,18 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / Black Market replacement — 11 October.** A clean native Ixian
+allied replacement now offers Semuta before drawing from a Black Market
+purchase, as already supported for normal auctions. The discarded card belongs
+to the buyer and stays private; payment, seller income and one replacement
+resume once before Richese Declaration. Cache purchases retain their printed
+allied-replacement prohibition. The regression fails before/passes after;
+types/lint and 63 affected cases pass. Twelve isolated runtime scenarios cover
+three methods, claim/pass, four legal bots, empty-deck refill and full hand.
+Real 390px controls prove neutral ally visibility, private Commit and buyer
+hand 0→1 with Declaration restored. No saved store or deployed game was targeted.
+See [the current source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Approved skill decisions — 11 October.** Normal Mentat now uses the approved
 uniform private card-show step throughout the existing supported Leader Skills
 envelope; the separate flag and CLI option are removed. Newly opened battles

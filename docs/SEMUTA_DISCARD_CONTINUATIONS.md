@@ -64,14 +64,14 @@ a neutral claim or decline completes the same free settlement once.
 Richese lots, Worthless conversion and nested responses retain their
 previous automatic paths.
 
-A clean private normal-auction Ixian ally replacement now stages the
-existing `ixAllyCard` continuation as a neutral Semuta offer before
+A clean private normal-auction or Black Market Ixian ally replacement now stages
+the existing `ixAllyCard` continuation as a neutral Semuta offer before
 `draw(g)`. The original buyer owns the discarded card. Its face stays
 unknown to rivals and uncommitted holders; a sole committed claim
-moves that exact card before one saved replacement draw and ordinary
-sale continuation. Richese cache and Black Market sales retain the
-automatic path until their distinct custody and offer windows are
-integrated.
+moves that exact card before one saved replacement draw and original
+sale continuation. The 11 October Black Market extension preserves the original
+paid amount, seller income and return to Richese Declaration. Cache purchases
+retain their printed prohibition on native Ixian allied replacement.
 
 A clean completed CHOAM market sale stages `choamSaleDiscard` only after
 the accepted public card disposal and its quoted two- or three-spice

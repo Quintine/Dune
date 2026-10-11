@@ -22,8 +22,8 @@ function inventory(g: Game) {
   assert.equal(new Set(ids).size, ids.length);
   return ids;
 }
-function fixture(ix = false, ixianAlly = false) {
-  let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), false, ix ? ['choam', 'ix'] : ['choam']);
+function fixture(ix = false, ixianAlly = false, advanced = false) {
+  let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), advanced, ix ? ['choam', 'ix'] : ['choam']);
   joinGame(g, newPlayer('a', 'Atreides', 'atreides'));
   joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : 'Emperor',
     ixianAlly ? 'ixians' : 'emperor'));
@@ -115,6 +115,58 @@ void test('private Ixian ally discard offers Semuta before replacement without r
   assert.equal(declined.discard.filter(card => card.id === lot.id).length, 1);
   assert.equal(player(claimed, 'r').hand.filter(card => card.id === lot.id).length, 1);
   assert.equal(claimed.discard.filter(card => card.id === semuta.id).length, 1);
+});
+
+void test('Black Market Ixian replacement offers the private fresh card before drawing and pays the seller once', () => {
+  const { g, semuta, hajr } = fixture(true, true, true);
+  player(g, 'a').hand = [];
+  player(g, 'r').hand.push(hajr);
+  player(g, 'a').ally = 'e';
+  player(g, 'e').ally = 'a';
+  Object.assign(g, { phase: 2, active: 'a', order: ['a', 'e', 'r'], movementRemaining: [] });
+  const buyerSpice = player(g, 'a').spice;
+  const sellerSpice = player(g, 'r').spice;
+  let state = g;
+  for (const id of ['a', 'e', 'r']) state = applyAction(state, id, { type: 'ready' });
+  for (const id of ['a', 'e', 'r']) state = applyAction(state, id, { type: 'ready' });
+  assert.equal(state.decision?.kind, 'richeseBlackMarket');
+  state = applyAction(state, 'r', { type: 'decision', event: state.richeseBidding!.event,
+    card: hajr.id, method: 'silent' });
+  for (const id of ['a', 'e', 'r'])
+    state = applyAction(state, id, { type: 'richeseBid', event: state.richeseAuction!.event,
+      amount: id === 'a' ? 3 : 0 });
+  assert.equal(state.decision?.kind, 'ixAllyCard');
+  const replacement = state.deck[0].id;
+  state = applyAction(state, 'a', { type: 'decision', accept: true });
+  while (state.response?.kind === 'ixAllyCard') {
+    const actor = state.players.find(p => !state.response!.passed.includes(p.id))!;
+    state = applyAction(state, actor.id, { type: 'passResponse' });
+  }
+  assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(state.pendingTreacheryDiscard?.continuation.kind, 'ixAllyCard');
+  assert.equal(state.pendingTreacheryDiscard?.batch.entries[0].publicFace, false);
+  assert.equal(state.deck[0].id, replacement);
+  assert.equal(player(state, 'a').hand.length, 0);
+  assert.equal(player(state, 'a').spice, buyerSpice - 3);
+  assert.equal(viewGame(state, 'e').semutaReaction?.candidates.length, 0);
+  const event = state.pendingTreacheryDiscard!.batch.event;
+  const beforeInventory = inventory(state);
+  let declined = reload(state);
+  for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(state), 'r', { type: 'semutaCommit', event });
+  for (const finished of [declined, claimed]) {
+    assert.equal(finished.pendingTreacheryDiscard, null);
+    assert.equal(finished.decision?.kind, 'richeseDeclaration');
+    assert.equal(finished.richeseBidding?.blackMarketSold, true);
+    assert.equal(player(finished, 'a').spice, buyerSpice - 3);
+    assert.equal(player(finished, 'r').spice, sellerSpice + 3);
+    assert.deepEqual(player(finished, 'a').hand.map(card => card.id), [replacement]);
+    assert.deepEqual(inventory(finished), beforeInventory);
+    assert.throws(() => applyAction(finished, 'r', { type: 'semutaCommit', event }));
+  }
+  assert.equal(declined.discard.some(card => card.id === hajr.id), true);
+  assert.equal(player(claimed, 'r').hand.some(card => card.id === hajr.id), true);
+  assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
 });
 
 void test('printed Karama auction payment offers its card before the winning lot settles', () => {

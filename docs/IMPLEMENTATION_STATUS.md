@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta before Black Market allied replacement draw
+
+The native Black Market purchase already offers Ixian allied replacement and
+has a typed discard-before-draw continuation. Its Semuta admission still limited
+that receipt to normal auctions. The connected path now admits the original
+Black Market sale without replaying payment or delivery. Every seat gets the
+neutral offer; the discarded face remains private until a committed holder
+claims it. Claim or all-seat decline draws one native replacement, credits
+the original seller once, marks the original sale and restores Declaration.
+The printed cache-purchase exclusion is unchanged; no cache replacement was
+implemented or inferred from the broader Semuta effect.
+
+The permanent regression fails before the admission change and passes after,
+covering draw suspension, private candidates, claim/decline, buyer/seller spice,
+exact card custody and rejection of a retired event. Types/lint and 63 cases in
+the affected Semuta/Richese union pass. Twelve isolated CLI scenarios cover
+three Black Market methods × claim/pass, all four legal AI profiles, claiming
+before an empty-deck refill and an eligible full-hand Semuta exchange. The
+full-hand Ixian is correctly excluded from bidding and may still claim its
+ally's fresh discard afterward.
+
+At 390px, the real `SemutaReaction` component initially shows the owner Commit
+button and only neutral Continue for the uncommitted ally. Actual Commit
+recovers Hajr, completes buyer hand 0→1 and restores `richeseDeclaration`, with
+no horizontal overflow. The isolated fixture uses the real engine and no store.
+Temporary scripts, server and browser tab were removed/closed. This is local
+changed-path proof, not complete Semuta, combined-mode or deployed acceptance.
+The current contracts are [source/runtime](SEMUTA_SOURCE_UPDATE_20260907.md)
+and [discard continuations](SEMUTA_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — approved normal Mentat and Emperor gift classification
 
 The user approved normal Mentat's uniform private card-show step in the existing

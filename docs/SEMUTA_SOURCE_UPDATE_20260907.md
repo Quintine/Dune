@@ -85,7 +85,7 @@ Gesserit Charity or settling a clean normal-auction lot, a completed
 CHOAM sale or clean Kulon/proactive La La La/Baliset/ordinary
 Trip to Gamont Worthless discard, accepted moving-storm Jubba
 Cloak, battle and Ix-deck Thumper/Amal discards**, plus
-a clean **private** normal-auction Ixian ally replacement discard
+a clean **private** normal-auction or Black Market Ixian ally replacement discard
 before its draw. Other
 than the one explicitly suspended charity/Inflation response, the
 parent transaction has no competing response. Every seat sees the
@@ -96,8 +96,22 @@ The Ixian ally discard belongs to the original buyer, not the Ixians.
 Every seat sees the neutral offer without its face or a named claimant;
 only a committed eligible holder takes the exact fresh card. A claim
 removes it before the saved single replacement draw and subsequent
-normal-auction settlement. Richese cache and Black Market replacement
-discards, competing parents and other private producers remain separate.
+normal or Black Market settlement. The original buyer pays once, Richese receives
+its original Black Market income once, and the sold card stays private until
+an entitled committed claim. The native cache exclusion remains: the Richese
+FAQ prohibits Ixian allied replacement of a cache purchase. Competing parents
+and other private producers remain separate.
+
+**11 October 2026 — Black Market composition.** The existing typed
+`ixAllyCard` receipt now admits the clean Black Market Semuta offer before
+replacement draw. Claim or all-seat decline completes one original replacement
+and resumes Richese Declaration without replaying the sale. The focused
+regression fails before and passes after; types/lint and 63 affected cases pass.
+Twelve isolated engine scenarios cover all three auction methods, claim/pass,
+four legal AI profiles, empty-deck refill and a full-hand exchange. At 390px,
+the real private Commit control claims Hajr, gives the buyer one replacement
+and restores Declaration; an uncommitted ally sees only the neutral Continue.
+This is local changed-path evidence, not complete Semuta or deployed acceptance.
 
 A clean CHOAM card sale commits its one named public discard and the
 quoted two- or three-spice bank payment before the neutral offer.
