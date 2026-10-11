@@ -381,6 +381,17 @@ void test('battle death and Ghola revival preserve one private replacement skill
       territory: 'arrakeen',
       target: bg.id,
     });
+    if (game.decision?.kind === 'mentatQuestion') {
+      const owner = f.auths.findIndex(
+        (auth) => auth.playerId === game.decision!.player,
+      );
+      assert.ok(owner >= 0);
+      game = await act(f, owner, {
+        type: 'decision',
+        event: game.decision.event,
+        decline: true,
+      });
+    }
     while (game.decision?.kind === 'leaderSkillVisibility') {
       const owner = f.auths.findIndex(
         (auth) => auth.playerId === game.decision!.player,

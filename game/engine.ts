@@ -2028,8 +2028,6 @@ export type Game = {
   }};
   bureaucratPaymentEvent?: string;
   bureaucratUseEvents?: string[];
-  /** Private development opt-in pending the uniform Mentat response UX decision. */
-  mentatQuestionPreview?: true;
   /** Private development opt-in while uniform hidden-eligibility UX is pending. */
   moritaniAssassinatePreview?: true;
   /** Explicit development-only neutral Semuta reaction profile. */
@@ -7508,7 +7506,7 @@ function baseStartProfileBlock(g: Game): string | null {
     return 'Discoveries are still being implemented.';
   if (g.leaderSkills) return 'Leader Skills are still being implemented.';
   if (g.ecazTreachery) return 'Ecaz Treachery Cards are still being implemented.';
-  if (g.mentatQuestionPreview || g.moritaniAssassinatePreview || g.moritaniAssassinate)
+  if (g.moritaniAssassinatePreview || g.moritaniAssassinate)
     return 'Separate development profiles cannot be enabled by a normal start.';
   if (!g.players.every(p => FACTIONS.some(entry => entry.id === p.faction && entry.expansion === 'base')))
     return 'Expansion factions are still being implemented.';
@@ -7969,7 +7967,7 @@ function bankerIncomeProfile(g: Game): boolean {
       nativeExpansionLeaderSkillsProfile(g)) &&
     !g.nexusCards && !g.homeworlds && (!g.techTokens || classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || strongholdLeaderSkillsProfile(g)) &&
     (!g.strongholdCards || strongholdLeaderSkillsProfile(g)) && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
-    !g.greatMaker && !g.ecazTreachery && !g.semutaPreview && !g.mentatQuestionPreview &&
+    !g.greatMaker && !g.ecazTreachery && !g.semutaPreview &&
     ((!g.moritaniAssassinatePreview && !g.moritaniAssassinate) || advancedMoritaniLeaderSkillsProfile(g)) && !g.advancedPreview &&
     !g.kullPreview && !g.nexusKullPreview && !g.guildBetrayalPreview && !g.richeseBetrayalPreview &&
     !g.nexusIxianReplacementPreview && !g.nexusIxianBetrayalPreview && !g.nexusHarkonnenBetrayalPreview;
@@ -11483,8 +11481,6 @@ function createMentatQuestion(g: Game) {
   b.mentatQuestionEvent = event;
 }
 function mentatQuestionIntegrity(g: Game) {
-  requireRule(g.mentatQuestionPreview === undefined || g.mentatQuestionPreview === true,
-    'The private Mentat preview flag is invalid.');
   const history = g.mentatHistory, events = g.mentatHistoryEvents;
   requireRule(history === undefined && events === undefined || Array.isArray(history) && Array.isArray(events) &&
     history.length === events.length && new Set(events).size === events.length && new Set(history.map(observation => observation?.event)).size === history.length,
@@ -11506,11 +11502,11 @@ function mentatQuestionIntegrity(g: Game) {
   if (!receipt) {
     requireRule(receipt === undefined && !b?.mentatQuestionEvent && !decisions.length,
       'The saved Mentat question lost its original receipt.');
-    requireRule(b?.mentatQuestionVersion === undefined || b.mentatQuestionVersion === 1 && g.mentatQuestionPreview === true && !!g.leaderSkills,
+    requireRule(b?.mentatQuestionVersion === undefined || b.mentatQuestionVersion === 1 && !!g.leaderSkills && mentatQuestionModeSupported(g),
       'The saved Mentat question has an invalid battle version.');
     return;
   }
-  requireRule(b && b.mentatQuestionVersion === 1 && g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) &&
+  requireRule(b && b.mentatQuestionVersion === 1 && g.leaderSkills && mentatQuestionModeSupported(g) &&
     g.status === 'playing' && g.phase === 6 && receipt.battle === b.event && receipt.turn === g.turn && receipt.territory === b.territory &&
     typeof receipt.event === 'string' && receipt.event.length > 0 && receipt.event === b.mentatQuestionEvent &&
     [b.attacker,b.defender].includes(receipt.owner) && [b.attacker,b.defender].includes(receipt.target) && receipt.owner !== receipt.target &&
@@ -31548,7 +31544,7 @@ function applyActionInner(
       chooserEvent: battleChooserEvent(g.turn, battleOrderAfterBattle(g), g.battleOrder?.uses.length ?? 0),
       event: battleEvent,
       ...(g.leaderSkills ? { smugglerCollectionVersion: 1 as const } : {}),
-      ...(g.mentatQuestionPreview === true && g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
+      ...(g.leaderSkills && mentatQuestionModeSupported(g) ? { mentatQuestionVersion: 1 as const } : {}),
       ...(g.leaderSkills && diplomatDefenseModeSupported(g) ? { diplomatDefenseVersion: 2 as const } : {}),
       ...(g.leaderSkills && ordinaryLeaderSkillModeSupported(g) ? { diplomatRetreatVersion: 1 as const } : {}),
       ...(g.ecazTreachery ? { harassAllocationVersion: 1 as const } : {}),

@@ -6,10 +6,7 @@ import {DIFFICULTIES} from '../game/bot-profiles';
 import {NATIVE_MENTAT_FAMILIES,nativeMentatBattle} from './fixture-native-mentat';
 
 for (const family of NATIVE_MENTAT_FAMILIES) {
-  void test(`${family} Mentat requires an explicit preview and resumes native posture after a matching or fallback answer`,()=>{
-    const ordinary = nativeMentatBattle(family,true,false);
-    assert.equal(ordinary.battle!.mentatQuestion,undefined);
-    assert.equal(ordinary.decision!.kind,'leaderSkillVisibility');
+  void test(`${family} Mentat asks normally and resumes native posture after a matching or fallback answer`,()=>{
     for (const matching of [true,false]) {
       let game = nativeMentatBattle(family,matching);
       assert.equal(game.decision!.kind,'mentatQuestion');

@@ -182,6 +182,12 @@ function battleFor(
     territory: 'arrakeen',
     target: 'e',
   });
+  if (next.decision?.kind === 'mentatQuestion')
+    next = applyAction(next, next.decision.player, {
+      type: 'decision',
+      event: next.decision.event,
+      decline: true,
+    });
   while (next.decision?.kind === 'leaderSkillVisibility') {
     const decision = next.decision;
     next = applyAction(next, decision.player, {
@@ -404,6 +410,12 @@ void test('a Voice that forbids the last alternate Cheap Hero automatically conc
     territory: 'arrakeen',
     target: 'b',
   });
+  if (g.decision?.kind === 'mentatQuestion')
+    g = applyAction(g, g.decision.player, {
+      type: 'decision',
+      event: g.decision.event,
+      decline: true,
+    });
   while (g.decision?.kind === 'leaderSkillVisibility')
     g = applyAction(g, g.decision.player, {
       type: 'leaderSkillVisibility',
@@ -513,6 +525,12 @@ void test('Ghola revival during an unfinished battle preserves its power stage t
     territory: 'carthag',
     target: 'e',
   });
+  if (g.decision?.kind === 'mentatQuestion')
+    g = applyAction(g, g.decision.player, {
+      type: 'decision',
+      event: g.decision.event,
+      decline: true,
+    });
   while (g.decision?.kind === 'leaderSkillVisibility')
     g = applyAction(g, g.decision.player, {
       type: 'leaderSkillVisibility',

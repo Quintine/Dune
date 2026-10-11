@@ -57,6 +57,8 @@ function open(game: Game, territory = 'wind_pass') {
   game = act(game, 'i', { type: 'chooseBattle', territory, target: 'e' });
   for (let step = 0; step < 30; step++) {
     if (game.response) game = passResponses(game);
+    else if (game.decision?.kind === 'mentatQuestion')
+      game = act(game, game.decision.player, { type: 'decision', event: game.decision.event, decline: true });
     else if (game.decision?.kind === 'leaderSkillVisibility')
       game = act(game, game.decision.player, { type: 'leaderSkillVisibility', event: game.decision.event, hide: true });
     else if (game.battle?.preparation)

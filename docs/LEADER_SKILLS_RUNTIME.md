@@ -193,14 +193,13 @@ and two preserved six-seat CLI/human-phone rooms pass; local HTTP remains
 49/55 with six upstream503 failures. Full-module/deployed acceptance stays open; see the
 [existing Banker normal-band contract](SPICE_BANKER_RUNTIME.md#normal-income-local-contract--2-october-2026).
 
-**2 October native Mentat checkpoint:** explicit fresh
-`--profile leader-skills --mentat-question` connects the existing private
-normal-band question to supported Basic Ixian/Tleilaxu/CHOAM/Moritani starts.
-Canonical exact/default weapon roles, target-owned fallback, posture and native
-battle continuation use the existing controls and legal policies. Ordinary
-activation still awaits the uniform-response UX decision; empty hands and
-Advanced native/combined-module skills remain guarded. See
-[native preview scope](MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
+**2 October native Mentat checkpoint:** the formerly separate opt-in connected
+private normal-band questions to Basic Ixian/Tleilaxu/CHOAM/Moritani starts.
+The 11 October user approval now activates the same uniform flow normally
+through supported skill entries. Exact/default weapon roles, target-owned
+fallback, posture and native continuation remain. Empty-hand interpretation
+and complete/public mode acceptance stay open. See
+[normal activation](MENTAT_QUESTION.md#normal-activation-and-approved-ux--11-october-2026).
 
 
 ## Standalone E3 Nexus and original components — 5 October 2026
@@ -735,10 +734,10 @@ CHOAM keeps its original support payer/income distinction and unmodified
 Smuggler collection before ordinary Collection. Existing Planetologist,
 Sandmaster, Mentat, Bureaucrat and Banker helpers share this admitted native
 profile rather than independently accepting a different roster.
-Explicit `--mentat-question` remains a private timing preview; ordinary
-activation and empty-hand rulings are not resolved. The separate `banker-income`
-profile also admits this native Advanced subset; normal front-shield income
-remains unavailable until actual Mentat and keeps its provisional earned custody.
+The 11 October user-approved normal Mentat question now shares this admitted
+skill envelope; the obsolete timing opt-in is removed. Empty-hand
+interpretation remains separate. The `banker-income` profile retains its
+existing deferred front-shield custody and actual-Mentat spendability.
 
 Bounded Development Verified: affected122/122, types/lint/build, ten actual
 controlled native programs (five Ixian rescue/policy cases, one CHOAM collection,

@@ -153,7 +153,6 @@ void test('the explicit preview keeps expansion, module and separate development
     game => { game.discoveryEnabled = true; },
     game => { game.leaderSkills = createLeaderSkills(() => 0.25); },
     game => { game.ecazTreachery = true; },
-    game => { game.mentatQuestionPreview = true; },
     game => { game.moritaniAssassinatePreview = true; },
   ];
   for (const change of changes) {

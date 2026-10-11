@@ -410,6 +410,12 @@ void test('a real concealed Planetologist green Special is discarded once after 
     territory: 'arrakeen',
     target: 'a',
   });
+  if (game.decision?.kind === 'mentatQuestion')
+    game = applyAction(game, game.decision.player, {
+      type: 'decision',
+      event: game.decision.event,
+      decline: true,
+    });
   while (game.decision?.kind === 'leaderSkillVisibility') {
     const decision = game.decision;
     game = applyAction(game, decision.player, {

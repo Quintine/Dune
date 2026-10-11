@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 11 October 2026 — approved normal Mentat and Emperor gift classification
+
+The user approved normal Mentat's uniform private card-show step in the existing
+Leader Skills development envelope. `mentatQuestionModeSupported` now follows
+the ordinary supported profile; new battles receive the existing question version
+without a separate global flag. The flag, profile exclusions, CLI option and
+fixture opt-in are removed. Previously opened unversioned battles remain
+unversioned. Matching and sole-card hands still require the private target show;
+the empty-hand skip and Moritani's independent uniform-Continue question are not
+resolved by this approval. Public faction/mode gates remain closed.
+
+The user also ruled Emperor gifts are not payments for Bureaucrat. The existing
+gift implementation already excludes them; no production gift behavior changed.
+The regression verifies a 7-spice gift remains private to Emperor/ally, does not
+offer or consume Bureaucrat, and a later 5-spice bribe still offers the skill.
+Other qualifying payment behavior is unchanged.
+
+Evidence:
+
+- `npm run check:quick` passes. The affected 20-file test union passes 217/217;
+  `leader-skills-recovery.test.ts` plus
+  `moritani-skills-modules-runtime.test.ts` pass 11/11.
+- Nine throwaway engine scenarios pass: Basic/Advanced matching and fallback,
+  all four legal AI participants, and gift/bribe continuation.
+- Real production controls at 390px show the normal question, compulsory exact
+  match show and private owner history; the observer sees no receipt and the
+  target's two-card hand is unchanged.
+- Actual CLI help advertises normal activation. `--mentat-question` rejects
+  as an unknown option with exit 1 before accessing any game store.
+
+Temporary smoke scripts/services were removed. Existing games and stores were
+not targeted. This is changed-path proof, not deployed or complete-mode acceptance.
+Source and decisions: [Mentat](MENTAT_QUESTION.md),
+[Bureaucrat](BUREAUCRAT_PAYMENTS.md), [rulings](RULE_DECISIONS.md).
+
 ## 9 October 2026 — owned native HMS Sandmaster pile allocation
 
 Both native Storm relocation and Advanced special Karama carry optional

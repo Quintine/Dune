@@ -37,8 +37,18 @@ The connected paths are ordinary paid auctions, Guild shipment income, direct
 Richese auction proceeds and actual bribe transfers in the base or CHOAM-only
 skill profile. Basic Tleilaxu with Leader Skills and base opponents additionally
 supports a single payer's actual paid revival price to Tleilaxu. Other expansion
-payment sources and direct gifts remain outside this batch; omission is not a
-printed prohibition.
+payment sources remain outside this batch. Emperor gifts are excluded because
+the user ruled on 11 October that gifts are not payments.
+
+
+### User ruling — 11 October 2026
+
+**Gifts are not payments.** Emperor-to-ally gifts do not qualify for
+Bureaucrat, consume its once-per-phase use or create a qualifying-threshold
+prompt. Gift amounts remain private to giver and recipient. Ordinary paid
+auctions, shipments, revival and bribes keep their existing eligible paths.
+This explicit user classification resolves the earlier gift question; it
+does not change any gift transfer cost or disclose more information.
 
 ### 21 September gift classification review
 
@@ -52,10 +62,9 @@ amounts are projected only to Emperor and recipient. Even a threshold-only
 Bureaucrat prompt would reveal that the gift qualifies; the existing exact-amount
 payment projection must not be applied blindly.
 
-The user has been asked whether to retain this boundary or apply Bureaucrat
-with only the qualifying threshold public. No answer is assumed. Gifts remain
-outside the connected Bureaucrat payment paths while independent ordinary
-[bribe controls](BRIBE_CONTROLS.md) proceed.
+The earlier question is now resolved by the 11 October ruling above.
+Gift classification stays separate from the connected ordinary
+[bribe controls](BRIBE_CONTROLS.md).
 
 For native income, the prototype resolves the existing Karama income window
 first, then offers Bureaucrat before crediting the eligible recipient and

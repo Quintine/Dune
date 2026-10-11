@@ -107,38 +107,16 @@ void test('Mentat names exact printed/default weapons and validates physical han
   assert.throws(() => mentatHand(ixDeck().slice(0, 1), []));
 });
 
-void test('Mentat requires a private preview opt-in and never exposes or accepts that flag through a player view or action', () => {
+void test('fresh supported Leader Skills battles offer a private Mentat question without a separate opt-in', () => {
   for (const advanced of [false, true])
     for (const choam of [false, true]) {
-      const ordinary = mentatQuestionGame({ advanced, choam, preview: false });
-      assert.equal(ordinary.mentatQuestionPreview, undefined);
-      assert.equal(ordinary.battle!.mentatQuestionVersion, undefined);
-      assert.equal(ordinary.battle!.mentatQuestion, undefined);
-      assert.equal(ordinary.decision?.kind, 'leaderSkillVisibility');
-      assert.equal(viewGame(ordinary, 'a').mentat.pending, null);
-      assert.equal(
-        applyAction(ordinary, 'a', {
-          type: 'advanceBots',
-          mentatQuestionPreview: true,
-        }).mentatQuestionPreview,
-        undefined,
-      );
+      const game = mentatReload(mentatQuestionGame({ advanced, choam }));
+      assert.equal(game.battle!.mentatQuestionVersion, 1);
+      assert.equal(normalizeAutomaticGame(game).decision?.kind, 'mentatQuestion');
+      assert.equal(viewGame(game, 'a').mentat.pending!.stage, 'name');
+      assert.deepEqual(viewGame(game, 'd').mentat.pending!.weapons, []);
+      assert.deepEqual(viewGame(game, 'o').mentat.history, []);
     }
-  const preview = mentatReload(mentatQuestionGame());
-  assert.equal(preview.mentatQuestionPreview, true);
-  assert.equal(
-    normalizeAutomaticGame(preview).decision?.kind,
-    'mentatQuestion',
-  );
-  for (const id of ['a', 'd', 'o'])
-    assert.equal('mentatQuestionPreview' in viewGame(preview, id), false);
-  delete preview.mentatQuestionPreview;
-  for (const operation of [
-    () => viewGame(preview, 'a'),
-    () => normalizeAutomaticGame(preview),
-    () => applyAction(preview, 'a', { type: 'advanceBots' }),
-  ])
-    assert.throws(operation);
 });
 
 for (const advanced of [false, true])
@@ -430,6 +408,19 @@ void test('legacy unmarked battles are not reopened and later new battles receiv
     viewGame(normalizeAutomaticGame(mentatReload(legacy)), 'a').mentat.pending,
     null,
   );
+  const continued = finishPowers(normalizeAutomaticGame(mentatReload(legacy)));
+  assert.equal(continued.battle!.event, legacy.battle!.event);
+  assert.equal(continued.battle!.mentatQuestionVersion, undefined);
+  assert.equal(continued.battle!.mentatQuestion, undefined);
+  assert.equal(continued.decision, null);
+  assert.deepEqual(viewGame(continued, 'a').mentat.history, []);
+  const planned = applyAction(continued, 'a', {
+    type: 'battlePlan',
+    dial: 0,
+    leader: 'emperor-0',
+  });
+  assert.ok(planned.battle!.plans.a);
+  assert.equal(planned.battle!.mentatQuestion, undefined);
   let game = finishPowers(ask(mentatQuestionGame()));
   const original = game.battle!.mentatQuestionEvent;
   game = applyAction(game, 'a', {

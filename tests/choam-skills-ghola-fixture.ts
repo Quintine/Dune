@@ -61,6 +61,8 @@ export function stagedMarketGhola(
   game = actChoamGhola(game, owner, { type: 'chooseBattle', territory: 'wind_pass', target: opponent });
   for (let step = 0; step < 30; step++) {
     if (game.response) game = passChoamGholaResponses(game);
+    else if (game.decision?.kind === 'mentatQuestion')
+      game = actChoamGhola(game, game.decision.player, { type: 'decision', event: game.decision.event, decline: true });
     else if (game.decision?.kind === 'leaderSkillVisibility')
       game = actChoamGhola(game, game.decision.player, { type: 'leaderSkillVisibility', event: game.decision.event, hide: true });
     else if (game.battle?.preparation)

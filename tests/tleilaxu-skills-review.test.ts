@@ -29,6 +29,8 @@ function open(g: Game, owner = 't') {
   g = act(g, owner, { type: 'chooseBattle', territory: 'wind_pass', target: 'e' });
   for (let i = 0; i < 30; i++) {
     if (g.response) g = act(g, g.players.find(p => !g.response!.passed.includes(p.id))!.id, { type: 'passResponse' });
+    else if (g.decision?.kind === 'mentatQuestion')
+      g = act(g, g.decision.player, { type: 'decision', event: g.decision.event, decline: true });
     else if (g.decision?.kind === 'leaderSkillVisibility')
       g = act(g, g.decision.player, { type: 'leaderSkillVisibility', event: g.decision.event, hide: true });
     else if (g.battle?.preparation) g = act(g, g.battle.preparation.owner, { type: 'declineBattlePower' });

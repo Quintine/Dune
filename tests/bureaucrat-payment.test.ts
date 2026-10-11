@@ -120,6 +120,31 @@ void test('Bureaucrat requires two other players and tracks the unique physical 
     !bureaucratPaymentModeSupported({ expansions: ['choam'], homeworlds: {} }),
   );
 });
+
+void test('Emperor gifts keep private amounts and do not consume Bureaucrat before a later qualifying payment', () => {
+  let game = bureaucratPaymentGame({ advanced: true });
+  bureaucratPlayer(game, 'e').ally = 'g';
+  bureaucratPlayer(game, 'g').ally = 'e';
+  takeBureaucratCard(game, 'p', 'Karama');
+  const pending = applyAction(game, 'e', { type: 'emperorGift', amount: 7 });
+  assert.equal(pending.response?.kind, 'emperorGift');
+  for (const id of ['b', 'p'])
+    assert.equal(viewGame(pending, id).response!.amount, undefined);
+  for (const id of ['e', 'g'])
+    assert.equal(viewGame(pending, id).response!.amount, 7);
+  game = allowBureaucratIncome(bureaucratReload(pending));
+  assert.equal(bureaucratPlayer(game, 'e').spice, 23);
+  assert.equal(bureaucratPlayer(game, 'g').spice, 37);
+  assert.equal(bureaucratPlayer(game, 'b').spice, 30);
+  assert.equal(game.decision, null);
+  assert.equal(viewGame(game, 'b').bureaucrat.usedThisPhase, false);
+  const paid = applyAction(game, 'p', bribe);
+  assert.equal(paid.decision?.kind, 'bureaucratPayment');
+  const redirected = choose(paid);
+  assert.equal(bureaucratPlayer(redirected, 'p').spice, 25);
+  assert.equal(bureaucratPlayer(redirected, 'e').bribes, 3);
+  assert.equal(viewGame(redirected, 'b').bureaucrat.usedThisPhase, true);
+});
 for (const advanced of [false, true])
   for (const choam of [false, true])
     void test(`single-payer ${choam ? 'CHOAM' : 'base'} ${advanced ? 'Advanced' : 'Basic'} shipment diverts two after payment without replaying arrival`, () => {

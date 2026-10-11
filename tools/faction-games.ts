@@ -1088,8 +1088,7 @@ function resumedGame(path: string) {
   if (
     (game.leaderSkills && !nativeExpansionLeaderSkillsProfile(game) && !composedSkills) ||
     ((game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker) && !discovery) ||
-    (game.techTokens && !discovery && !composedSkills && !nativeFactionTechProfile(game) && !classicNexusModulesProfile(game) && !pairedNexusModulesProfile(game) && !mixedE3NexusProfile(game) && !mixedE1E2NexusProfile(game) && !pairedE3NexusProfile(game) && !singleE1E2NexusProfile(game) && !standaloneE3NexusProfile(game)) ||
-    game.mentatQuestionPreview
+    (game.techTokens && !discovery && !composedSkills && !nativeFactionTechProfile(game) && !classicNexusModulesProfile(game) && !pairedNexusModulesProfile(game) && !mixedE3NexusProfile(game) && !mixedE1E2NexusProfile(game) && !pairedE3NexusProfile(game) && !singleE1E2NexusProfile(game) && !standaloneE3NexusProfile(game))
   )
     throw new Error('--resume sample scenarios exclude unsupported optional modules.');
   const sourceName = basename(path), namedSource = sourceName.startsWith('failed-');

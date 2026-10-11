@@ -136,6 +136,7 @@ function clearBattlePreparation(state: Game): Game {
   let g = state;
   while (
     g.decision?.kind === 'leaderSkillVisibility' ||
+    g.decision?.kind === 'mentatQuestion' ||
     g.decision?.kind === 'fullPlanOffer' ||
     g.battle?.preparation
   )
@@ -144,6 +145,12 @@ function clearBattlePreparation(state: Game): Game {
         type: 'leaderSkillVisibility',
         event: g.decision.event,
         hide: false,
+      });
+    else if (g.decision?.kind === 'mentatQuestion')
+      g = applyAction(g, g.decision.player, {
+        type: 'decision',
+        event: g.decision.event,
+        decline: true,
       });
     else if (g.decision?.kind === 'fullPlanOffer')
       g = applyAction(g, g.decision.player, {

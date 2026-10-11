@@ -1,18 +1,31 @@
 # Mentat before Battle Plans
 
-13 September 2026. This developer preview adds the normal Mentat question to
-the existing lower-band strength bonus. It requires an explicit private preview
-opt-in while the user decides whether to accept the uniform card-show step.
-Ordinary Leader Skills starts do not activate it. Leader Skills and public mode
-acceptance remain partial. [Common skill rules](LEADER_SKILLS_RULES.md) govern assignment,
-capture, death and the right to conceal a skilled leader.
+**Normal activation approved 11 October 2026.** The user approved the existing
+uniform private card-show step, including exact matches and sole eligible cards.
+New supported Leader Skills battles now offer the normal Mentat question
+without a separate preview flag. Public module/mode acceptance remains partial.
+[Common skill rules](LEADER_SKILLS_RULES.md) govern assignment, capture, death and the right to conceal a skilled leader.
+
+## Normal activation and approved UX — 11 October 2026
+
+Normal questions use the existing admitted Leader Skills envelope. Naming
+and the compulsory target-owned private show step still precede posture
+and faction powers. This approved extra interaction prevents public stages
+from disclosing held-versus-absent information. It moves no physical card.
+
+The global preview flag and CLI option are removed. Per-battle version,
+event, signed receipt and private observation history remain authoritative.
+Already-opened unversioned battles retain their original continuation;
+existing versioned questions continue without the obsolete global flag.
+Empty-hand skipping remains the earlier explicit unfinished interpretation.
+
 
 **4 October composition:** the explicit preview also admits the bounded
 Advanced native Ixian and/or CHOAM plus classic profile with distinct required
 family decks. Actual private naming/disclosure returns to native posture and
 keeps the shown card held; unrelated players receive no learned card.
 See the [current native contract](LEADER_SKILLS_RUNTIME.md#advanced-native-ixian-and-choam-composition--4-october-2026).
-Ordinary activation, empty hands and other pending rulings remain unchanged.
+The 11 October normal-activation cutover above supersedes the old opt-in; other boundaries remain unchanged.
 The bounded [Advanced Tleilaxu composition](TLEILAXU_LEADER_SKILLS.md#advanced-native-composition--4-october-2026)
 now uses the same explicit preview; original foreign revival does not assign a
 new Mentat or any other skill.
@@ -28,9 +41,8 @@ fourteen skills. Existing classic/CHOAM Basic/Advanced preview coverage remains;
 this does not admit Advanced Ixian/Tleilaxu/Moritani skills or extra modules.
 
 For a fresh ready local lobby, use the existing exact-version/private-backup
-entry with `--profile leader-skills --mentat-question`. Without the explicit
-option, ordinary skill starts still do not activate the question. The option
-cannot be applied through a player action or to a started game.
+entry with `--profile leader-skills`. The normal question is part of supported
+skill behavior; no separate question option or player action enables it.
 
 The same canonical question and target-owned answer controls handle exact Ix
 weapon names, including **Weirding Way**, with its default weapon role.
@@ -43,8 +55,8 @@ Five new behavioral regressions cover all four native families and all four
 legal policies. A separate runtime driver exercises eight native exact/fallback
 battles through Collection plus four policy inquiries: twelve cases pass.
 The earlier Ixian regression failed at the missing question before admission.
-The uniform-response UX and empty-hand questions below remain pending; no
-public module gate or old-game retrofit is enabled.
+The uniform-response UX was approved on 11 October; the empty-hand question
+remains pending. No public module gate or old-battle reopening is enabled.
 
 Final local390px **8HTTTZMA v9** names Weirding Way, shows it privately,
 inspects the learned physical card and conceals the native Mentat. Genuine
@@ -112,10 +124,10 @@ answers would reveal held/absent information through different public stages.
 Target controls alone receive the eligible physical cards; public decision shape,
 logs and number of response steps stay the same across equal-size hands.
 
-That uniform step is an exception to the user's preference to omit forced
-confirmations. The user has been asked to approve it or leave the ability disabled
-pending another design. No answer has been applied. Private QA can exercise the
-reviewable preview; normal activation and any claim of approved UX remain pending.
+The uniform step is an exception to the user's usual forced-confirmation
+preference. **Approved 11 October 2026:** use this private card-show step in
+normal supported Leader Skills battles. Moritani's separate uniform-step
+question is not answered by this approval.
 
 ## Preview evidence and remaining acceptance
 

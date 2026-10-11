@@ -46,6 +46,7 @@ export function nextMoritaniSkillsModulesStep(game: Game): StrongholdFactionsNat
     return nextStrongholdFactionsNativeStep(game);
   const d = game.decision;
   if (d?.kind === 'leaderSkillVisibility') return { actor: d.player, action: { type: 'leaderSkillVisibility', event: d.event, hide: false } };
+  if (d?.kind === 'mentatQuestion') return { actor: d.player, action: { type: 'decision', event: d.event, decline: true } };
   if (d?.kind === 'moritaniSetup') {
     const action = moritaniSkillsModulesPolicy(game, d.player)[0]; assert.ok(action);
     return { actor: d.player, action };

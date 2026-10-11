@@ -34,14 +34,12 @@ export function mentatQuestionGame({
   cards = ['Crysknife', 'Snooper'],
   begin = true,
   captured = false,
-  preview = true,
 }: {
   advanced?: boolean;
   choam?: boolean;
   cards?: string[];
   begin?: boolean;
   captured?: boolean;
-  preview?: boolean;
 } = {}): Game {
   const native = choam ? 'richese' : 'emperor';
   let game = createGame(
@@ -57,8 +55,6 @@ export function mentatQuestionGame({
   joinGame(game, newPlayer('o', 'Observer', 'guild'));
   for (const player of game.players)
     game = applyAction(game, player.id, { type: 'ready' });
-  // Server-only review fixture opt-in; ordinary Leader Skills starts remain unchanged.
-  if (preview) game.mentatQuestionPreview = true;
   const index = LEADER_SKILL_CARDS.findIndex((card) => card.id === 'mentat');
   let cursor = LEADER_SKILL_CARDS.length - 1;
   mock.method(globalThis.crypto, 'getRandomValues', (array: Uint32Array) => {

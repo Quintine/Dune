@@ -117,7 +117,7 @@ export function initializeDiscoveryStandaloneNexusE3Skills(options: DiscoverySta
   assert.ok(advanced || native !== 'ecaz' || game.players.length % 2 === 0, 'Basic odd-seat Ecaz remains source guarded.');
   assert.ok(!strongholds || advanced);
   assert.ok(!game.homeworlds && !game.ecazTreachery && !game.advancedPreview && !game.semutaPreview &&
-    !game.spiceBankerIncomePreview && !game.mentatQuestionPreview);
+    !game.spiceBankerIncomePreview);
   if (game.status === 'lobby') {
     if (!!game.techTokens !== tech) game = applyAction(game, game.host, { type: 'techTokens', enabled: tech });
     if (!!game.strongholdCards !== strongholds) game = applyAction(game, game.host, { type: 'strongholdCards', enabled: strongholds });

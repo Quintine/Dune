@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 8 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 11 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -28,6 +28,25 @@ This is not complete-mode acceptance: exceptional custody, timing variants,
 optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
+
+**Approved skill decisions — 11 October.** Normal Mentat now uses the approved
+uniform private card-show step throughout the existing supported Leader Skills
+envelope; the separate flag and CLI option are removed. Newly opened battles
+carry the question version. Already opened unversioned battles do not reopen.
+The exact-match and sole-card target steps stay private; empty-hand skip and
+Moritani's separate uniform-Continue decision remain unresolved. Emperor gifts
+are explicitly not Bureaucrat payments: no threshold signal or skill consumption,
+and exact gift amounts remain private to sender and ally. Other payments retain
+their existing behavior.
+
+TypeScript/lint pass; the affected 20-file union passes 217 cases, and the two
+changed recovery/module fixture consumers pass 11 cases. Nine isolated engine
+scenarios cover Basic/Advanced matching/fallback shows, all four legal bots,
+and a private 7-spice gift followed by a qualifying 5-spice bribe. Real 390px
+controls show the compulsory private card step and owner-only receipt without
+changing the target hand. CLI help uses normal activation and rejects the removed
+option. No deployed or complete-mode acceptance is claimed. See
+[Mentat](MENTAT_QUESTION.md) and [Bureaucrat](BUREAUCRAT_PAYMENTS.md).
 
 **Owned HMS Sandmaster piles — 9 October.** Storm relocation and Advanced
 Ixian special Karama now select one bonus debit pile per entered territory,
@@ -338,10 +357,10 @@ implemented:
   points into, so Sandmaster collects there before the native collection
   (`game/sandmaster-movement.ts`, `game/engine.ts`).
 
-The remaining recorded questions (Bureaucrat/Emperor gifts, Recruits late
-accounting, ordinary Guild cancellation, base special Karama, Nexus
-composition, Orgiz, Testing Station, Jacurutu, occupied Homeworlds and the
-Homeworld restoration questions) stay pending.
+The earlier remaining questions were Recruits accounting, ordinary Guild
+cancellation, base special Karama, Nexus composition, Discovery benefits
+and Homeworld interpretation/restoration. The Bureaucrat/gift question was
+later resolved on 11 October: gifts are not payments.
 
 **Preserved captures resumed under the rulings.** All 123 preserved
 `failed-*.json` captures were resumed in place (same position, seed and

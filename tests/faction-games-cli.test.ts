@@ -582,7 +582,6 @@ void test('selected genuine three-player Advanced base sample fails honestly, re
   const snapshot = join(first, 'failed-base-3-advanced.json');
   for (const field of [
     'ecazTreachery',
-    'mentatQuestionPreview',
     'moritaniAssassinatePreview',
     'moritaniAssassinate',
     'moritaniAssassinateResume',

@@ -141,12 +141,12 @@ cyborg movement, HMS routes and battle aftermath through the same full deck; see
 connects ordinary skill actions and saved market/revival choices; see
 [CHOAM integration](docs/CHOAM_LEADER_SKILLS.md).
 
-For the private **Mentat question preview**, add `--mentat-question` to the
-existing `--profile leader-skills` entry on a fresh ready lobby. It supports
-existing classic/CHOAM skill profiles and Basic Ixian/Tleilaxu/CHOAM/Moritani
-native starts without changing ordinary activation. The uniform-response UX
-and empty-hand ruling remain pending; see
-[native preview scope and controls](docs/MENTAT_QUESTION.md#native-skill-integration--2-october-2026).
+Normal **Mentat questions** now use the user-approved uniform private
+card-show step in supported Leader Skills development games. Use the
+existing `--profile leader-skills` entry; no separate question flag is
+needed. Exact matching and fallback both use the same private step.
+Empty-hand interpretation and public start gates remain unfinished; see
+[normal activation and controls](docs/MENTAT_QUESTION.md#normal-activation-and-approved-ux--11-october-2026).
 
 For local printed **Kull Wahad** testing, use `node --import tsx tools/start-prototype.ts --profile kull`
 on a fresh ready Basic/Advanced CHOAM-plus-classic lobby with `choam,ix` decks

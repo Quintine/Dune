@@ -161,6 +161,10 @@ void test('CHOAM prepaid ally support consumes its original donor pool and exclu
   const donorFunds = donor.spice;
   const enemyFunds = enemy.spice;
   game = applyAction(game, owner.id, { type: 'chooseBattle', territory: 'wind_pass', target: enemy.id });
+  if (game.decision?.kind === 'mentatQuestion')
+    game = applyAction(game, game.decision.player, {
+      type: 'decision', event: game.decision.event, decline: true,
+    });
   while (game.decision?.kind === 'leaderSkillVisibility')
     game = applyAction(game, game.decision.player,
       { type: 'leaderSkillVisibility', event: game.decision.event, hide: true });

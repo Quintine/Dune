@@ -63,6 +63,8 @@ function killedOriginalSkill(owner: 't' | 'a' = 't'): Game {
   game = act(game, owner, { type: 'chooseBattle', territory: 'wind_pass', target: 'e' });
   for (let step = 0; step < 20; step++) {
     if (game.response) game = passWindow(game);
+    else if (game.decision?.kind === 'mentatQuestion')
+      game = act(game, game.decision.player, { type: 'decision', event: game.decision.event, decline: true });
     else if (game.decision?.kind === 'leaderSkillVisibility') {
       const decision = game.decision;
       game = act(game, decision.player, {

@@ -85,7 +85,9 @@ function openBattle(state: Game, owner = 'm', opponent = 'e', hide = true): Game
     if (g.decision?.kind === 'leaderSkillVisibility') {
       const d = g.decision;
       g = act(g, d.player, { type: 'leaderSkillVisibility', event: d.event, hide: d.player === owner ? hide : true });
-    } else if (g.decision?.kind === 'mentatQuestion' || g.decision?.kind === 'fullPlanOffer') {
+    } else if (g.decision?.kind === 'mentatQuestion') {
+      g = act(g, g.decision.player, { type: 'decision', event: g.decision.event, decline: true });
+    } else if (g.decision?.kind === 'fullPlanOffer') {
       g = act(g, g.decision.player, { type: 'decision', decline: true });
     } else if (g.battle?.preparation) {
       g = act(g, g.battle.preparation.owner, { type: 'declineBattlePower' });

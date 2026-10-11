@@ -149,7 +149,7 @@ export function initializeDiscoveryNativeE3Skills(options: DiscoveryNativeE3Skil
   assert.ok(game.players.every(p => ['moritani', 'guild', 'atreides', 'emperor', 'fremen', 'beneGesserit',
     ...(advanced ? [] : ['harkonnen'])].includes(p.faction)));
   assert.ok(!strongholds || advanced);
-  assert.ok(!game.nexusCards && !game.homeworlds && !game.ecazTreachery && !game.spiceBankerIncomePreview && !game.mentatQuestionPreview);
+  assert.ok(!game.nexusCards && !game.homeworlds && !game.ecazTreachery && !game.spiceBankerIncomePreview);
   if (game.status === 'lobby') {
     if (!!game.techTokens !== tech) game = applyAction(game, game.host, { type: 'techTokens', enabled: tech });
     if (!!game.strongholdCards !== strongholds) game = applyAction(game, game.host, { type: 'strongholdCards', enabled: strongholds });

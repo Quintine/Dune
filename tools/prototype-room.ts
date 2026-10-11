@@ -51,8 +51,6 @@ export type PrototypeProfile = (typeof PROTOTYPE_PROFILES)[number];
 export type PrototypeOptions = {
   /** Explicit independent card variant for the fresh combined-army profile. */
   ecazTreachery?: boolean;
-  /** Private uniform-question preview; ordinary skill starts stay unchanged. */
-  mentatQuestion?: boolean;
   /** Independent classic Nexus/Skills composition, not a public activation. */
   nexusCards?: boolean;
   /** Explicit classic Discovery/Skills composition, not a public activation. */
@@ -98,14 +96,11 @@ export function startPrototypeRoom(
     throw new Error('Unknown prototype profile.');
   if (options.ecazTreachery && profile !== 'ecaz-occupy')
     throw new Error('--ecaz-treachery requires the ecaz-occupy profile.');
-  if (options.mentatQuestion && profile !== 'leader-skills')
-    throw new Error('--mentat-question requires the leader-skills profile.');
   if (options.nexusCards && profile !== 'leader-skills')
     throw new Error('--nexus-cards requires the leader-skills profile.');
   if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus')
     throw new Error('--discoveries requires the leader-skills or nexus profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
-  if (options.mentatQuestion) initial.mentatQuestionPreview = true;
   if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)
     initial.nexusCards = { cards: null, phase: null };
   if (options.discoveries) initial.discoveryEnabled = true;

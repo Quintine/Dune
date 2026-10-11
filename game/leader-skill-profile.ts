@@ -26,7 +26,6 @@ export type LeaderSkillProfile = {
   nexusIxianReplacementPreview?: unknown;
   nexusIxianBetrayalPreview?: unknown;
   nexusHarkonnenBetrayalPreview?: unknown;
-  mentatQuestionPreview?: unknown;
   spiceBankerIncomePreview?: unknown;
 };
 
@@ -47,7 +46,7 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassinatio
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
     !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
-    !game.nexusHarkonnenBetrayalPreview && !game.mentatQuestionPreview &&
+    !game.nexusHarkonnenBetrayalPreview &&
     !game.spiceBankerIncomePreview;
 }
 
@@ -189,7 +188,7 @@ function discoveryLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
     !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
-    !game.nexusHarkonnenBetrayalPreview && !game.mentatQuestionPreview &&
+    !game.nexusHarkonnenBetrayalPreview &&
     !game.spiceBankerIncomePreview;
 }
 
@@ -465,7 +464,7 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview ||
-    game.mentatQuestionPreview || game.spiceBankerIncomePreview) return false;
+    game.spiceBankerIncomePreview) return false;
   return true;
 }
 

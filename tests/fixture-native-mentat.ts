@@ -10,14 +10,13 @@ export const NATIVE_MENTAT_FAMILIES = ['ixians','tleilaxu','choam','moritani'] a
 export type NativeMentatFamily = typeof NATIVE_MENTAT_FAMILIES[number];
 
 /** Real native setup/assignment and Storm; conserved rule-unit battle position. */
-export function nativeMentatBattle(family: NativeMentatFamily, matching = true, preview = true, begin = true): Game {
+export function nativeMentatBattle(family: NativeMentatFamily, matching = true, begin = true): Game {
   const options = {requestedSkill:'mentat' as const};
   let game = family === 'ixians' ? completedIxSkillsGame(options)
     : family === 'tleilaxu' ? completedTleilaxuSkillsGame(options)
     : family === 'choam' ? completedChoamSkillsGame(options)
     : completedMoritaniSkillsGame(options);
   game = finishToMovement(game);
-  if (preview) game.mentatQuestionPreview = true;
   const owner = game.players.find(p => p.faction === family)!;
   const target = game.players.find(p => p.faction === 'emperor')!;
   for (const p of game.players) {

@@ -76,10 +76,11 @@ Every publicly qualifying loss gets the same private reveal-or-continue opportun
 regardless of the hidden eligible card. Only Moritani sees its candidate identities
 and blocked reason; rivals see the same decision and no private options. This
 requires Continue even for an ineligible hand, conflicting with the user's usual
-automatic-action preference. A uniform-private-step UX question is pending, shared
-with Mentat. Until resolved, activation requires an explicit development preview;
-no ordinary action or room API enables it. A publicly spent faction or prior
-normal traitor call can be skipped without consulting hidden eligibility.
+automatic-action preference. Moritani's uniform-private-step approval remains
+separate: the 11 October Mentat approval applies only to that card-show flow.
+This ability still requires its explicit development preview; no ordinary
+action or room API enables it.
+A publicly spent faction or prior normal traitor call can be skipped without consulting hidden eligibility.
 
 All four AI profiles use the same owner-only quote. They choose a legal card or
 decline and do not inspect rival hidden state. The public history shows only
