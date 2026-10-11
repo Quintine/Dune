@@ -29,6 +29,14 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Guidance accuracy — 11 October.** Three stale player/developer records were
+corrected: the card-inspector Semuta availability text now lists every connected
+producer and the approved full-hand exchange; `verification.runtime` marks all ten
+Richese effects as bounded `partial` (Juice of Sapho, Mirror Weapon and Semuta Drug
+were wrongly `not-implemented`); and `RICHESE_COMPONENTS.md` no longer says Juice of
+Sapho play is inert. A tautological test that mirrored the old runtime list was
+deleted. Types/lint pass and 41 cases pass.
+
 **Queued Truthtrance answer — 11 October.** An ordinary definite Truthtrance
 answer now offers its consumed card even when another question remains reserved.
 Only the `remaining === null` software restriction changed: claim or all-seat

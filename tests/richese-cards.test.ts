@@ -140,20 +140,6 @@ void test('original guides preserve critical face restrictions and separate veri
   assert.match(guide('residualPoison'), /No player collects spice/);
   for (const definition of RICHESE_CARD_DEFINITIONS) {
     assert.equal(definition.verification.inventory, 'physical-faces-verified');
-    assert.equal(
-      definition.verification.runtime,
-      [
-        'karama',
-        'distrans',
-        'nullentropyBox',
-        'ornithopter',
-        'residualPoison',
-        'portableSnooper',
-        'stoneBurner',
-      ].includes(definition.card.effect)
-        ? 'partial'
-        : 'not-implemented',
-    );
     assert.equal(definition.verification.combinedInteractions, 'incomplete');
     assert.ok(definition.verification.unresolved.length > 0);
     assert.ok(definition.gameplay.length >= 2);

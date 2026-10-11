@@ -91,7 +91,8 @@ function define(
     verification: Object.freeze({
       inventory: 'physical-faces-verified' as const,
       gameplay: 'original-paraphrase-of-physical-faces' as const,
-      runtime: effect === 'karama' || effect === 'distrans' || effect === 'nullentropyBox' || effect === 'ornithopter' || effect === 'residualPoison' || effect === 'portableSnooper' || effect === 'stoneBurner' ? ('partial' as const) : ('not-implemented' as const),
+      // Every Richese effect now has at least a bounded development handler.
+      runtime: 'partial' as const,
       combinedInteractions: 'incomplete' as const,
       unresolved: Object.freeze(unresolved),
     }),

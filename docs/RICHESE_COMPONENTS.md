@@ -83,7 +83,7 @@ Current focused evidence: `tests/richese-engine.test.ts` (10), `tests/richese-au
 
 ### Runtime inheritance and reservation clarification
 
-The physical Richese Karama has `effect: 'karama'` and inherits the existing generic handler if acquired in a development fixture. Earlier statements that all ten effects were wholly disabled should be read as the original inventory checkpoint, not the current runtime state. Remaining card-effect integration and full interaction verification are incomplete; actual Juice of Sapho card play remains inert and live expansion starts stay gated.
+The physical Richese Karama has `effect: 'karama'` and inherits the existing generic handler if acquired in a development fixture. Earlier statements that all ten effects were wholly disabled should be read as the original inventory checkpoint, not the current runtime state. Remaining card-effect integration and full interaction verification are incomplete; live expansion starts stay gated. All ten effects now have at least a bounded development handler, including Juice of Sapho (first/last Once Around, bounded movement and battle-choice ordering, and aggressor during the shared pre-plan opportunity) and Semuta Drug; see the Semuta and Juice contracts for their current limits.
 
 The engine now rejects playing a Black Market card reserved for sale and prevents a donor reducing pledged funding during unfinished Silent bidding. The latter avoids probing private sealed commitments through success/error limits. Independent review, recovery and browser verification remain pending until their checks finish. Internal rule navigation now tracks query changes and controlled topic-open state, preserving the destination after filter resets; browser confirmation of that fix is pending.
 
