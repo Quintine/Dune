@@ -29,6 +29,18 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / trained Ixian response ownership — 11 October.** Newly admitted
+native Ixian skills exposed a real projection failure: during a printed
+substitution-cancellation cost, the validator ignored the response saved in
+`karamaBattleDiscard` and reported a lost original choice. It now recognizes
+that exact saved Ixian response while preserving quote/signature/force checks.
+Both claim/pass regressions fail before and pass after. Types/lint and70
+affected unit cases across9 files pass; six runtime cases cover claim/pass/four
+legal profiles and all three views. Styled390px Cancel→Commit→later Tooth
+acknowledgements→original Shield choice reaches phase7; actual counters remain
+board2Suboids/Tanks1Cyborg/reserves17, cost held by Richese, with no overflow.
+No skill/native effect, module gate, existing game/store or deployment changed.
+
 **Semuta / explicit original Leader Skills — 11 October.** The initializer's
 optional second argument and `--profile semuta --leader-skills` now delegate
 original all14 native Basic Richese/CHOAM or Advanced E1/E2 training, retaining

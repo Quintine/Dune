@@ -203,3 +203,29 @@ void test('All four profiles legally retire native printed costs and their origi
     }
   }
 });
+
+for (const claim of [false, true]) void test(`Skill-trained Ix cancellation cost ${claim ? 'claim' : 'pass'} preserves the declared response while Semuta owns controls`, () => {
+  const f = semutaNativeIxKaramaFixture(true, true); assert.ok(f.ix);
+  const before = semutaNativeKaramaPreCost(f);
+  assert.ok(before.pendingIxSubstitution?.receipt);
+  const pending = semutaNativeKaramaCost(before, f);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  assert.deepEqual(pending.pendingIxSubstitution!.sources, { [f.ix.location]: 1 });
+  assert.deepEqual(pending.pendingIxSubstitution!.recover, { [f.ix.location]: 1 });
+  for (const player of pending.players)
+    assert.equal(viewGame(reload(pending), player.id).semutaReaction!.event, event);
+  let game = semutaNativeKaramaReact(reload(pending), f, claim);
+  assert.equal(game.pendingIxSubstitution, null);
+  assert.equal(game.lastBattleContext!.ixSubstitution!.completed, true);
+  assert.equal(game.pendingTreacheryDiscard!.continuation.kind, 'winnerMandatoryDiscard');
+  game = semutaNativeKaramaRemainder(game, f);
+  assert.equal(game.phase, 7);
+  assert.equal(semutaIxPlayer(game, f.owner).forces[f.ix.location], 2);
+  assert.equal(semutaIxPlayer(game, f.owner).elites!.forces[f.ix.location] ?? 0, 0);
+  assert.equal(semutaIxPlayer(game, f.owner).elites!.tanks, 1);
+  assert.equal(semutaIxPlayer(game, f.holder).hand.some(card => card.id === f.karama), claim);
+  assert.deepEqual(semutaIxInventory(game), f.cards);
+  for (const player of game.players) viewGame(reload(game), player.id);
+  const cost = semutaNativeKaramaCostStep(f); rejected(game, cost.actor, cost.action);
+  rejected(game, f.holder, { type: 'semutaCommit', event });
+});

@@ -22216,8 +22216,10 @@ function ixSubstitutionIntegrity(g: Game) {
     'The saved Ixian substitution changed its original battle losses, cards or physical counters.');
   const decisions = homeworldSavedDecisions(g);
   const selecting = decisions.filter(d => d.kind === 'ixSubstitution');
-  const exchangeResponse = g.response?.kind === 'ixSubstitution' || g.pendingKarama?.use.kind === 'cancel' &&
-    g.pendingKarama.use.response.kind === 'ixSubstitution';
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const exchangeResponse = g.response?.kind === 'ixSubstitution' ||
+    (g.pendingKarama?.use.kind === 'cancel' && g.pendingKarama.use.response.kind === 'ixSubstitution') ||
+    (continuation?.kind === 'karamaBattleDiscard' && continuation.use.response.kind === 'ixSubstitution');
   requireRule(selecting.every(d => d.player === pending.player && d.territory === pending.territory &&
     JSON.stringify(d.losses) === JSON.stringify(pending.losses)) &&
     (exchangeResponse ? !!pending.sources && !!pending.recover : !pending.sources && !pending.recover) &&

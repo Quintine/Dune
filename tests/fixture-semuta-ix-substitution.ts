@@ -26,12 +26,12 @@ export function semutaIxPhysical(game: Game) {
 }
 
 /** Original native lobby, private Ix card choice, Traitors and actual first Storm/HMS placement. */
-export function initializeSemutaIxGame(advanced = false): Game {
+export function initializeSemutaIxGame(advanced = false, skills = false): Game {
   let game = createGame('SEMUTAIX', newPlayer('r', 'Richese', 'richese'), advanced, ['choam', 'ix']);
   joinGame(game, newPlayer('i', 'Ixians', 'ixians'));
   joinGame(game, newPlayer('e', 'Emperor', 'emperor'));
   for (const p of game.players) { p.bot = 'Medium'; p.ready = true; }
-  game = initializeSemutaGameForAudit(game);
+  game = initializeSemutaGameForAudit(game, skills);
   for (let step = 0; (game.status === 'setup' || game.phase === 1 || !game.mobileStronghold?.location) && step < 160; step++) {
     let next: Game | undefined;
     for (const p of game.players) {
@@ -49,8 +49,8 @@ export function initializeSemutaIxGame(advanced = false): Game {
 }
 
 /** Later rule position uses conserved native pieces, not a synthetic Game or replacement players. */
-export function semutaIxBattleFixture(advanced = false): SemutaIxFixture {
-  const game = initializeSemutaIxGame(advanced);
+export function semutaIxBattleFixture(advanced = false, skills = false): SemutaIxFixture {
+  const game = initializeSemutaIxGame(advanced, skills);
   const cards = semutaIxInventory(game);
   assert.equal(new Set(cards).size, cards.length);
   for (const p of game.players) {

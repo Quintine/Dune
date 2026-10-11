@@ -24,8 +24,8 @@ export function semutaNativeKaramaAct(game: Game, step: SemutaNativeKaramaStep, 
 }
 
 /** Original lobby and conserved later battle; only the existing printed Karama changes hands. */
-export function semutaNativeIxKaramaFixture(advanced = false): SemutaNativeKaramaFixture {
-  const ix = semutaIxBattleFixture(advanced);
+export function semutaNativeIxKaramaFixture(advanced = false, skills = false): SemutaNativeKaramaFixture {
+  const ix = semutaIxBattleFixture(advanced, skills);
   const richese = semutaIxPlayer(ix.game, ix.holder);
   const index = richese.hand.findIndex(card => card.effect === 'karama');
   assert.ok(index >= 0);
@@ -85,6 +85,10 @@ export function semutaNativeKaramaPreCost(f: SemutaNativeKaramaFixture, actions?
       step = { actor: game.battle.preparation.owner, action: { type: 'declineBattlePower' } };
     else if (game.decision?.kind === 'fullPlanOffer')
       step = { actor: game.decision.player, action: { type: 'decision', decline: true } };
+    else if (game.decision?.kind === 'leaderSkillVisibility')
+      step = { actor: game.decision.player, action: { type: 'leaderSkillVisibility', event: game.decision.event, hide: true } };
+    else if (game.decision?.kind === 'mentatQuestion')
+      step = { actor: game.decision.player, action: { type: 'decision', event: game.decision.event, decline: true } };
     else break;
     game = semutaNativeKaramaAct(game, step, actions);
   }

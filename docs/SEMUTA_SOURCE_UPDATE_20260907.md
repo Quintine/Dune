@@ -770,3 +770,15 @@ acknowledgements→Shield cleanup→Collection. Native CHOAM's five eligible nor
 discs exclude Auditor; human training in all three seats reaches real Traitors.
 Observed stale skill guidance was corrected and its actual surface reinspected.
 This is bounded local evidence, not full skill/mode or deployed certification.
+
+**11 October 2026 — trained Ixian saved response.** Actual skill-trained
+substitution cost views previously threw a lost-choice error because
+`ixSubstitutionIntegrity` ignored the detached response in `karamaBattleDiscard`.
+Recognizing that exact saved Ixian response retains its declared sources and
+recovery while Semuta owns controls. Original quote/signature/physical checks
+and one cancellation stay authoritative. Claim/pass do not resurrect the
+exchange; used Tooth and optional Shield cleanup still follow.
+Both regressions fail before and pass after; six runtime cases cover all
+views, claim/pass/four legal profiles and native remainder. Styled390px
+controls finish with board2Suboids/Tanks1Cyborg/reserves17 and Richese's acquired
+Karama, with no overflow. No additional skill/module or mode gate opens.

@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 11 October 2026 — trained Ixian response retained across Semuta cost
+
+The explicit skill entry makes the formerly unadmitted receipt path reachable.
+Actual Advanced native all14 setup, original posture/preparation, first loser
+acknowledgement and declared1/1 exchange precede printed rival Karama. Cost
+staging succeeded but every player projection failed: the skill-trained
+substitution validator recognized only live response/Worthless conversion,
+not the response held by `karamaBattleDiscard`.
+
+The validator now recognizes that exact saved Ixian cancellation response.
+No quote/signature/counter check is weakened, and native cancellation still
+finishes once before the held used Tooth and optional Shield cleanup.
+Existing fixture entrypoints accept an optional skills argument with default
+unchanged; their original preparation consumes actual posture/Mentat controls.
+
+Both consumer-visible claim/pass regressions fail before and pass after.
+Types/lint and70 unit cases across9 files pass. Six actual runtime cases
+cover claim/pass/four legal profiles, all three pause views, retired/repeated
+actions, physical inventory and one native canceled exchange. Styled real
+GameTable at390px completes Cancel with Karama→Commit→Tooth acknowledgements
+→original Shield choice. Force inspector shows board2Suboids, Tanks1Cyborg,
+reserves17; Richese retains acquired Karama at phase7 opening, no overflow.
+
+This was a previously static warning made reproducible by the new skill
+composition, not a Basic/Advanced force-rule difference. Existing native
+handlers, gates and unrelated saves remain unchanged. Temporary probes,
+service and tab removed; existing games/storage/user PDF/deployment untouched.
+
 ## 11 October 2026 — explicit Semuta/original Leader Skills composition
 
 `initializeSemutaGameForAudit(state,skills=false)` and the new scoped
