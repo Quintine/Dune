@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta with a bound Truthtrance shipment promise
+
+The typed `truthtranceDiscard` receipt already carried a bound promise and the
+integrity validator already required it; the Semuta admission check excluded every
+promise. Admitting only `kind === 'shipment'` lets a classic payer's ordinary
+shipment answer offer its consumed card while leaving battle-plan promises and
+every other promise path automatic.
+
+The structured shipment question was still limited to base games, so the Richese
+Semuta profile could not even ask one. `shipmentPromiseModeSupported` now admits
+that profile for a non-Richese active payer, and the result is projected as
+`truthShipmentSupported` so the human Truthtrance panel and the engine validation
+use one boundary instead of the client re-deriving it.
+
+Both regressions fail before the change (no offer; question rejected) and pass
+after, covering claim and decline, promise preservation and enforcement, public
+history, and inventory conservation. Types/lint pass and the 125-case affected
+union passes. Eight isolated CLI scenarios cover both answers across four legal AI
+profiles. A real 390px check confirms the shipment question is selectable for the
+Emperor target and refused for a Richese target, with no horizontal overflow.
+
+Native No-Field shipments and other module combinations remain outside this
+boundary. This is local changed-path proof, not complete Semuta or deployed
+acceptance. Contracts: [source boundary](SEMUTA_SOURCE_UPDATE_20260907.md),
+[discard continuations](SEMUTA_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — Semuta before a reserved Truthtrance question resumes
 
 The typed `truthtranceDiscard` receipt already captured the remaining queue and

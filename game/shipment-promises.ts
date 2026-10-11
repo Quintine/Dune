@@ -150,12 +150,28 @@ export function shipmentClaimText(
 export function shipmentPromiseModeSupported(game: {
   advanced: boolean;
   expansions: readonly unknown[];
-  players: readonly { faction: string }[];
+  players: readonly { id?: string; faction: string }[];
   techTokens?: unknown;
   strongholdCards?: unknown;
   nexusCards?: unknown;
   homeworlds?: unknown;
+  active?: string | null;
+  semutaPreview?: unknown;
+  leaderSkills?: unknown;
+  discoveryEnabled?: unknown;
 }): boolean {
+  if (game.semutaPreview === true && game.expansions.length === 1 &&
+    game.expansions[0] === 'choam' && !game.techTokens &&
+    !game.strongholdCards && !game.nexusCards && !game.homeworlds &&
+    !game.leaderSkills && !game.discoveryEnabled &&
+    game.players.some(player => player.faction === 'richese') &&
+    game.players.every(player => player.faction === 'richese' ||
+      player.faction === 'atreides' || player.faction === 'harkonnen' ||
+      player.faction === 'emperor' || player.faction === 'beneGesserit' ||
+      player.faction === 'fremen')) {
+    const target = game.players.find(player => player.id === game.active);
+    return !!target && target.faction !== 'richese';
+  }
   return (
     !game.expansions.length &&
     (!game.advanced ||

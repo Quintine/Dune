@@ -234,7 +234,7 @@ policy**, not a newly discovered publisher timing rule. Full-hand
 Semuta uses the explicit user-approved atomic exchange; its completed
 hand count is unchanged. Pending gifts, competing responses,
 completed Ornithopter arrivals with Ecaz Ambassador or Moritani Terror,
-promise-bound Truthtrance answers, pending battle rewards and other
+battle-plan Truthtrance answers, pending battle rewards and other
 typed producers retain their automatic continuation; Semuta cannot
 claim those events yet.
 The completed Box's selected
@@ -244,6 +244,21 @@ from this omission. The
 separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
+
+**11 October 2026 — shipment-promise answer.** A classic payer's ordinary
+Truthtrance shipment answer in the Richese Semuta profile now offers the consumed
+card. The binding promise, public history and enforcement are unchanged; claim or
+all-seat decline leaves the same obligation enforceable. To admit it, the
+structured shipment-question scope gained the Richese Semuta profile for a
+non-Richese active payer; the availability boundary is now server-projected
+(`truthShipmentSupported`) so human controls and validation share it. Native
+No-Field shipments and other module combinations stay automatic.
+
+The permanent regressions fail before and pass after. The affected union passes
+125 cases and typecheck/lint pass. Eight isolated CLI scenarios cover both answers
+across four legal AI profiles, plus a real 390px control check that the shipment
+question is selectable for a classic payer and refused for a Richese target. This
+is local changed-path evidence, not complete Semuta or deployed acceptance.
 
 **11 October 2026 — queued Truthtrance answer.** An ordinary definite answer now
 offers its consumed card while another question remains reserved. Only the

@@ -13,7 +13,6 @@ import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { shipmentAvailable as targetShipmentAvailable } from '@/game/shipment-opportunity';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
-import { shipmentPromiseModeSupported } from '@/game/shipment-promises';
 import {
   truthQuestionText,
   type TruthFact,
@@ -69,7 +68,7 @@ export function Truthtrance({
   const invalidMixed = mixedShipmentInputError(mixed, g, target);
   const invalidShipment = shipmentClauses.slice(0, shipmentJoin === 'single' ? 1 : 2).some(invalidShipmentClause);
   const shipmentAvailable =
-    shipmentPromiseModeSupported(g) &&
+    g.truthShipmentSupported &&
     g.phase === 5 &&
     g.active === target &&
     targetShipmentAvailable(g, {id:target,shipped:g.players.find(p => p.id === target)?.shipped ?? false}) &&
@@ -358,11 +357,11 @@ export function Truthtrance({
                   {!shipmentAvailable && (
                     <p className="notice">
                       Automatic enforcement currently supports the active
-                      player’s unused shipment in base Basic games and base
-                      Advanced games without Guild or optional modules. Select
-                      that player and finish pending decisions first. Earlier
-                      questions and other rules configurations remain
-                      unfinished.
+                      player’s unused ordinary shipment in base rules or a
+                      classic payer in the Richese Semuta profile. Select
+                      that player and finish pending decisions first.
+                      Native No-Field shipments and other rules configurations
+                      remain unfinished.
                     </p>
                   )}
                   <p className="notice" aria-label="Public grouped question preview">

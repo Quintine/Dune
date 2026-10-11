@@ -201,7 +201,7 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
         !g.decision &&
         !g.phaseOpening &&
         !g.pendingShipment,
-      'Structured shipment promises currently support base Basic games and base Advanced games without Guild or optional modules, during the active unused shipment. Finish any pending decision first.',
+      'Structured shipment promises require a supported active unused shipment: base rules or a classic payer in the Richese Semuta profile. Finish pending decisions first.',
     );
     try {
       if (v.kind === 'mixedShipment') {

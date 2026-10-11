@@ -6678,7 +6678,7 @@ function semutaOfferSupported(
           !g.pendingArrivalOverlap))) &&
     !(continuation.kind === 'truthtranceDiscard' &&
       continuation.consumed.source === undefined &&
-      continuation.promise === null)) return false;
+      (continuation.promise === null || continuation.promise.kind === 'shipment'))) return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||
@@ -32063,6 +32063,7 @@ export function viewGame(state: Game, id: string) {
     battleChoices: g.status === 'playing' && g.phase === 6 ? battleOrderQuote(g).choices : [],
     battleOrder: projectedBattleOrder(g),
     guildAmbassadorAdvisorChoices: guildAdvisorChoices(g, id),
+    truthShipmentSupported: shipmentPromiseModeSupported(g),
     truthShipmentAnswers:
       g.truthtrance?.stage === 'answer' &&
       g.truthtrance.question?.target === id &&

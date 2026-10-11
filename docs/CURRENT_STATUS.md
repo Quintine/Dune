@@ -29,6 +29,19 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / Truthtrance shipment promise — 11 October.** A classic payer's ordinary
+Truthtrance shipment answer in the Richese Semuta profile now offers the consumed
+card; the binding promise and its enforcement are unchanged. The structured
+shipment-question scope gained that profile for a non-Richese active payer, and the
+availability boundary is now server-projected (`truthShipmentSupported`) so the
+human Truthtrance panel and validation share it. Native No-Field shipments and
+other module combinations stay automatic. Types/lint pass and 125 affected cases
+pass. Eight isolated runtime scenarios cover both answers across four legal AI
+profiles; a real 390px control check confirms the shipment question is selectable
+for a classic payer and refused for a Richese target, with no horizontal overflow.
+No saved store or deployed game was targeted. See
+[the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Guidance accuracy — 11 October.** Three stale player/developer records were
 corrected: the card-inspector Semuta availability text now lists every connected
 producer and the approved full-hand exchange; `verification.runtime` marks all ten

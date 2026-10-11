@@ -736,6 +736,54 @@ void test('a queued definite Truthtrance answer offers its card before the next 
   assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
 });
 
+for (const answer of ['yes', 'no'] as const) void test(
+  `Semuta preserves a ${answer} Truthtrance shipment promise through claim and decline`, () => {
+    const { g, semuta, hajr } = fixture();
+    player(g, 'a').hand = [];
+    g.deck.push(hajr);
+    const truth = take(g, 'truthtrance');
+    player(g, 'a').hand.push(truth);
+    Object.assign(g, { active: 'e', order: ['e', 'a', 'r'], movementRemaining: ['e', 'a', 'r'] });
+    const original = inventory(g);
+    let state = applyAction(g, 'a', { type: 'card', card: truth.id });
+    while (state.truthtrance?.stage === 'priority') {
+      const actor = state.players.find(p => !state.truthtrance!.passed.includes(p.id))!;
+      state = applyAction(state, actor.id, { type: 'truthPass' });
+    }
+    state = applyAction(state, 'a', { type: 'truthAsk',
+      question: { kind: 'shipment', target: 'e', territory: 'carthag', minimum: 2 } });
+    const pending = applyAction(state, 'e', { type: 'truthAnswer', answer });
+    assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(pending.shipmentPromises?.length, 1);
+    assert.equal(pending.shipmentPromises![0].answer, answer === 'yes');
+    const event = pending.pendingTreacheryDiscard!.batch.event;
+    let declined = reload(pending);
+    for (const id of ['e', 'a', 'r'])
+      declined = applyAction(declined, id, { type: 'semutaPass', event });
+    const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+    for (const resumed of [declined, claimed]) {
+      assert.deepEqual(resumed.shipmentPromises, pending.shipmentPromises);
+      assert.deepEqual(resumed.truthHistory, pending.truthHistory);
+      assert.deepEqual(inventory(resumed), original);
+      const wrong = answer === 'yes'
+        ? { type: 'endMovement' }
+        : { type: 'ship', territory: 'carthag', sector: 11, amount: 2 };
+      assert.throws(() => applyAction(resumed, 'e', wrong));
+      const legal = answer === 'yes'
+        ? { type: 'ship', territory: 'carthag', sector: 11, amount: 2 }
+        : { type: 'endMovement' };
+      const fulfilled = applyAction(resumed, 'e', legal);
+      assert.equal(fulfilled.shipmentPromises!.length, 1);
+      assert.equal(fulfilled.shipmentPromises![0].fulfilled, true);
+      assert.equal(fulfilled.truthHistory!.length, 1);
+      if (answer === 'yes')
+        assert.equal(player(fulfilled, 'e').forces['carthag:11'], 2);
+      assert.deepEqual(inventory(fulfilled), original);
+    }
+    assert.equal(player(claimed, 'r').hand.some(card => card.id === truth.id), true);
+    assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
+  });
+
 void test('a completed Sapho first-movement reorder offers its public card before changing the active turn', () => {
   const { g, semuta, hajr } = fixture();
   player(g, 'a').hand = [];
