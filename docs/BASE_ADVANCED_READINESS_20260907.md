@@ -12,6 +12,15 @@ Runtime was frozen for a separate calibration during this audit. No runtime, tes
 
 The coordinator subsequently implemented the two bounded findings concerning Fremen movement cancellation and the public Bene Gesserit setup AI prerequisite. The original finding table below is retained as the audit snapshot. See [FREMEN_MOVEMENT_KARAMA_RULES.md](FREMEN_MOVEMENT_KARAMA_RULES.md), the Fremen checkpoint in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md), and the new movement/setup/recovery tests for current evidence. Ordinary Guild cancellations, broader Truthtrance obligations, the named special-Karama interpretations and genuine Advanced start-to-finish verification remain open. This update does not remove the mode gate.
 
+**11 October 2026 — priority-2 row closed.** The BG setup AI prerequisite is
+connected: `game/bots.ts` enumerates `advisorSetup` only while
+`me.faction === 'beneGesserit' && !me.advisorSetup && me.reserves === 20` and
+every seated Fremen already has exactly ten reserves, matching the engine's
+`advisorSetup` gate. A direct four-profile probe of an Advanced `forces` stage
+returned zero `advisorSetup` candidates while Fremen placement was pending and
+86 candidates once it completed. The priority-2 row below and the closing
+sequence item are therefore historical; keep them as the audit snapshot only.
+
 ## Source-ordered setup follow-up
 
 The later implementation now provides the shared, strict offline initializer described in [ADVANCED_SETUP_TEST_SEAM.md](ADVANCED_SETUP_TEST_SEAM.md). New Basic and offline Advanced tables enforce prediction before private traitors, all traitor selections before force placement, Fremen before the Advanced advisor, and Treachery after every placement. Legacy saved setup continues without redealing. All 456 setup combinations pass. The old `tests/bots.test.ts` Basic-then-flip helper discussed below has been replaced: four profiles now complete registered games from genuine Advanced creation through the shared initializer. The older descriptions below remain the original audit snapshot. The larger [456-game Advanced study](AI_ADVANCED_SETUP_CALIBRATION_20260907.md) now also completes with 116,270 accepted actions and zero rejections or checked failures across all base rosters and player counts. Its selected invariants and 5,943 actual JSON continuations broaden the evidence; they do not resolve the named rules, strength-calibration or browser acceptance gaps.
@@ -141,4 +150,10 @@ The active goal specifies the GF9 2019 base rulebook, official errata and offici
 
 Primary provenance: [GF9 base rulebook](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf), [GF9 Ixians & Tleilaxu rulebook](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf), [GF9 November 2020 FAQ](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf). The November FAQ's Guild distinctions and precedence over April are already examined in `docs/GUILD_RATE_KARAMA_RULES.md`; Truthtrance provenance is recorded at `docs/IMPLEMENTATION_STATUS.md:686–711`. This audit did not claim a newly retrieved FAQ binary or independently settle the unanswered interpretations. No tournament, community, house or other-edition rule was adopted.
 
-Recommended immediate sequence: fix the public BG setup candidate prerequisite; independently audit and implement Fremen movement cancellation; finish the normalized Guild cancellation contract when its material outcome is resolved; audit the named base special-Karama and Truthtrance gaps; then exercise authentic Advanced setup/full-game/browser recovery and revise the mode's complete checklist before changing the gate.
+Recommended immediate sequence (original audit snapshot; the first two items were
+subsequently implemented — see the 11 October closure note above): fix the public
+BG setup candidate prerequisite; independently audit and implement Fremen movement
+cancellation; finish the normalized Guild cancellation contract when its material
+outcome is resolved; audit the named base special-Karama and Truthtrance gaps; then
+exercise authentic Advanced setup/full-game/browser recovery and revise the mode's
+complete checklist before changing the gate.
