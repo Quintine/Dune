@@ -82,7 +82,15 @@ Original unused Tech Tokens may also remain in the CHOAM/optional-Ix entry at
 three through six seats, Basic or Advanced, under its existing native roster
 prerequisites. Genuine setup and printed/first-Storm ownership remain native.
 This does not add Tech to the separate Basic CHOAM/Ecaz Moritani entry or admit
-Skills, Strongholds, other overlays, played-game conversion or public starts.
+Skills, other overlays, played-game conversion or public starts.
+
+Advanced additionally preserves original unused Stronghold Cards at two
+through six seats in the same CHOAM/optional-Ix entry. Combining original Tech
+requires three through six. The existing native Stronghold initializer and
+its shared roster predicate supply genuine setup; original first-Storm Tech
+and final-Mentat Stronghold custody remain native. The six separate public
+module cards never become Treachery discard candidates.
+
 
 It interrupts **clean public
 ordinary-card, paid Box, retired Ornithopter, used Distrans, final
@@ -703,3 +711,26 @@ the app's Tailwind PostCSS plugin; that was corrected from `vite.config.ts`,
 and all five styled paths were repeated. Earlier unstyled screenshots do not
 certify styled presentation. No production dialog patch was needed.
 These are local changed-path proofs, not complete mode or deployed acceptance.
+
+**11 October 2026 — original Advanced Stronghold composition.** The fresh
+Semuta entry now dispatches selected unused Strongholds through the original
+native initializer, retaining optional original Tech. Original E1/E2 roster
+eligibility is extracted once and reused by that initializer and Semuta
+validation; no second profile, redeal, played-save retrofit or public start
+is introduced. Skills, Homeworlds, Nexus, Discovery and the separate Basic
+CHOAM/Ecaz Moritani entry remain outside this composition.
+
+Nine genuine Advanced lobby/setup/first-Storm cases cover Strongholds2–6 and
+both modules3–6. Twelve closing runtime cases cover Strongholds alone/both,
+claim/pass and four legal Semuta profiles. Gamont returns the sole Carthag
+counter, then Semuta retires before the original CHOAM finish. All six cards
+remain unclaimed until that actual END Mentat action; only Arrakeen is awarded
+to Atreides from the changed board, with Carthag unclaimed. Tech owners/ledgers
+and physical Treachery remain unchanged, next turn is3Storm, and retired use
+rejects. Both permanent cases fail before entry admission and pass after.
+Styled real GameTable at390px completes Return this force→Commit→original
+Finish and check victory in both configurations. Public cards show last
+claim2, Arrakeen held by Atreides and Carthag unclaimed, with no overflow.
+The combo's original Tech owners remain visible; source/reference/help and
+persistent warning match the boundary. Full mode/deployment acceptance is
+not certified by these local changed-path proofs.

@@ -1165,7 +1165,9 @@ export function GameTable({
           Semuta Drug development preview · bounded fresh-discard reactions,
           not complete Richese or certified expansion rules. Original Tech Tokens
           may remain in supported fresh 3–6-seat CHOAM/Ix profiles; the original
-          winner’s award follows card cleanup and precedes Face Dance. Native Moritani
+          winner’s award follows card cleanup and precedes Face Dance. Original
+          Stronghold Cards may remain in Advanced 2–6-seat profiles and are claimed
+          only at the end of Mentat. Native Moritani
           support is Basic only: clean shipment/movement Sabotage and Robbery
           overflow plus native losing-ally card-retention cleanup; other arrival
           continuations remain guarded.{' '}

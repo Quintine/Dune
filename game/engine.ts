@@ -5529,7 +5529,8 @@ function treacheryDiscardIntegrity(g: Game) {
   requireRule(g.semutaPreview === undefined || g.semutaPreview === true &&
     g.expansions.includes('choam') && !!byFaction(g, 'richese') &&
     !g.homeworlds && !g.nexusCards && !g.leaderSkills && !g.discoveries &&
-    !g.discoveryEnabled && (!g.techTokens || nativeFactionTechProfile(g, true)) && !g.strongholdCards,
+    !g.discoveryEnabled && (!g.techTokens || nativeFactionTechProfile(g, true)) &&
+    (!g.strongholdCards || nativeStrongholdFactionRoster(g)),
   'This Semuta preview no longer matches its original Richese profile.');
   const pending = g.pendingTreacheryDiscard;
   const sequence = g.treacheryDiscardSequence ?? 0;
@@ -9545,15 +9546,19 @@ export function initializeEcazOccupyGameForAudit(state: Game): Game {
   g.ecazOccupyPreview = true;
   return g;
 }
+/** Original E1/E2 Stronghold roster; shared by fresh setup and Semuta validation. */
+function nativeStrongholdFactionRoster(g: Game): boolean {
+  return g.advanced === true && g.players.length >= 2 && g.players.length <= 6 &&
+    Array.isArray(g.expansions) && g.expansions.length >= 1 && g.expansions.length <= 2 &&
+    g.expansions.every(id => id === 'ix' || id === 'choam') &&
+    (g.expansions.length < 2 || g.expansions[0] !== g.expansions[1]) &&
+    g.players.some(p => faction(p.faction).expansion !== 'base') &&
+    g.players.every(p => faction(p.faction).expansion === 'base' ||
+      g.expansions.includes(faction(p.faction).expansion));
+}
 /** Fresh native Stronghold composition; other overlays and public starts stay gated. */
 export function initializeStrongholdFactionsGameForAudit(state: Game): Game {
-  requireRule(e3StrongholdFactionProfile(state) ||
-    (state.advanced === true && Array.isArray(state.expansions) &&
-      state.expansions.length >= 1 && state.expansions.length <= 2 &&
-      state.expansions.every(id => id === 'ix' || id === 'choam') &&
-      new Set(state.expansions).size === state.expansions.length &&
-      state.players.some(p => faction(p.faction).expansion !== 'base') &&
-      state.players.every(p => faction(p.faction).expansion === 'base' || state.expansions.includes(faction(p.faction).expansion))),
+  requireRule(e3StrongholdFactionProfile(state) || nativeStrongholdFactionRoster(state),
     'Stronghold factions require supported Advanced native factions, classic opponents and their selected distinct decks.');
   requireRule(!state.homeworlds && !state.nexusCards && !state.leaderSkills &&
     !state.discoveryEnabled && !state.discoveries && !state.discoveryStash && !state.greatMaker &&
@@ -9597,8 +9602,8 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   initializeMoritaniAssassinateState(g);
   return g;
 }
-/** Development-only Semuta in fresh Richese games: optional Ix deck and original
- * native Tech profile, or bounded Basic native Moritani/E3. Public starts stay gated. */
+/** Development-only Semuta in fresh Richese games: original native Tech and
+ * Advanced Stronghold compositions, or bounded Basic Moritani/E3. Public starts stay gated. */
 export function initializeSemutaGameForAudit(state: Game): Game {
   const nativeTerror = !state.advanced && state.expansions.length === 2 &&
     state.expansions.includes('choam') && state.expansions.includes('ecaz') &&
@@ -9609,8 +9614,10 @@ export function initializeSemutaGameForAudit(state: Game): Game {
     state.expansions.includes('choam') &&
     (state.expansions.every(id => id === 'choam' || id === 'ix') || nativeTerror) &&
     state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix and original native Tech prerequisites, or Basic native Moritani with CHOAM and Ecaz decks and classic opponents; other optional modules remain excluded.');
-  const g = initializeFactionExpansionsGameForAudit(state);
+  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix, original native Tech prerequisites and Advanced Stronghold Cards, or Basic native Moritani with CHOAM and Ecaz decks and classic opponents; other optional modules remain excluded.');
+  const g = state.strongholdCards
+    ? initializeStrongholdFactionsGameForAudit(state)
+    : initializeFactionExpansionsGameForAudit(state);
   g.semutaPreview = true;
   return g;
 }

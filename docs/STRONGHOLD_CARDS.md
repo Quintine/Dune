@@ -2,6 +2,28 @@
 
 Historical development module checkpoint, 7 September 2026: the six printed effects, public card custody, mobile declaration, support accounting, AI choices and readable faces are integrated. The later user-authorized [classic Advanced preview](ADVANCED_PREVIEW.md) already permits Stronghold Cards; preserve that access. Complete Advanced/expansion release and arbitrary combinations remain gated.
 
+## Semuta composition — 11 October 2026
+
+The fresh `semuta` entry with native Richese, CHOAM and optional Ix decks now
+preserves original unused Strongholds in Advanced2–6; optional unused Tech
+requires3–6. It reuses the original native setup/roster prerequisites and does
+not modify physical card quantities, effects or public release gates.
+
+Closing CHOAM Gamont may offer its used Treachery card to Semuta before the
+original owner finishes. Stronghold custody stays unclaimed across that
+reaction and is assigned only by actual final Mentat using the changed board.
+The six module cards are not Treachery hand/discard cards or Semuta targets.
+No Skills, Homeworlds, Nexus, Discovery, Basic Strongholds, E3 mixture or
+played-game conversion is added by this entry.
+
+Nine actual fresh Advanced setup/first-Storm cases and twelve closing runtime
+cases cover both configurations, claim/pass and four legal profiles. Both
+390px styled table paths retain the original closing control, reach turn3
+Storm and display Arrakeen held by Atreides/Carthag unclaimed at claim2 after
+Gamont removed the sole Carthag force. This is bounded local evidence, not
+complete Stronghold/Semuta/mode or deployed acceptance.
+
+
 ## Original Discovery composition — 5 October 2026
 
 Fresh original `discovery` entry preserves selected unused Strongholds6 in

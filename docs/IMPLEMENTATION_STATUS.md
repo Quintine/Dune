@@ -1,5 +1,38 @@
 # Dune implementation status
 
+## 11 October 2026 — original Advanced Strongholds in fresh Semuta games
+
+Fresh Advanced Richese/CHOAM/optional-Ix Semuta now retains unused original
+Strongholds at2–6, optionally original Tech at3–6. The native Stronghold
+initializer is reused, and its original E1/E2 roster condition is extracted
+once for both setup and Semuta validation. Standalone E3 behavior remains
+unchanged; Basic Moritani/Semuta does not gain modules. No redeal, played-game
+conversion, Skills/other overlay or public gate changes.
+
+Two consumer-visible closing regressions fail at the old optional-module
+exclusion and pass after. Genuine native setup/first Storm precedes conserved
+later card/force staging. Original CHOAM Gamont returns the sole Carthag force;
+Semuta claim/pass preserves unowned module custody and restores the same final
+CHOAM window. Only the original owner Finish assigns cards from the changed
+board: Arrakeen held by Atreides, Carthag unclaimed, claim2, turn3Storm.
+Tech owners/ledgers and physical Treachery remain unchanged; no early or repeat
+claim and no keeper award to the card claimant.
+
+Types/lint and161 unit cases across13 affected files pass; actual launcher
+help prints the updated entry without store access. Nine genuine Advanced
+starts cover Strongholds2–6 and both modules3–6. Twelve closing runtime cases
+cover both configurations, claim/pass/four legal profiles and original final
+assignment. Styled real GameTable at390px completes Return this force→Commit
+→ original Finish in both entries. Public module inspection shows last claim2,
+Arrakeen held/Carthag unclaimed, with original Tech owners visible in the combo
+and no horizontal overflow. A role combobox lookup failed despite its fresh
+AX entry; fresh id-based selection worked. No production control repair needed.
+
+Existing prototype dispatch needs no change because it delegates to the same
+initializer. Warning, help, reference and canonical Semuta/Stronghold contracts
+are updated. Temporary probes/services/tabs removed; existing games, storage,
+user PDF and deployment untouched. No complete-mode/deployed certification.
+
 ## 11 October 2026 — printed native battle-cancellation cost reactions
 
 One shared `karamaBattleDiscard` receipt extends the existing response-discard

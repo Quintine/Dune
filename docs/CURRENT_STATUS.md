@@ -29,6 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / original Advanced Strongholds — 11 October.** Fresh Richese
+CHOAM/optional-Ix games now retain original unused Stronghold Cards at2–6
+Advanced seats, optionally original Tech at3–6. The existing native initializer
+and extracted roster predicate are reused; no redeal, Skills/other overlay,
+Basic Moritani composition, played-save retrofit or public gate opens.
+Both closing regressions fail before entry and pass after. Types/lint and
+161 affected unit cases across13 files pass; entry help executes. Nine genuine
+setup/first-Storm runtime cases and twelve closing cases cover both
+configurations, claim/pass and four legal profiles. Gamont removes sole
+Carthag control before Semuta restores CHOAM's original final owner window.
+Only its actual Finish assigns the six public cards: Arrakeen to Atreides,
+Carthag unclaimed, claim2, next turn3Storm; Tech/card custody stays intact.
+Both styled390px paths show those original controls and public ownership with
+no overflow. Existing games/storage/user PDF/deployment remain untouched.
+See [original Stronghold composition](STRONGHOLD_CARDS.md#semuta-composition--11-october-2026).
+
 **Semuta / printed native battle-cancellation costs — 11 October.** One
 `karamaBattleDiscard` receipt now pauses the physical printed Karama before
 native capture, Auditor, quoted battle-income, Ixian-substitution or Basic
