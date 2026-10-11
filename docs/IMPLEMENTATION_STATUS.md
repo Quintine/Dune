@@ -1,5 +1,39 @@
 # Dune implementation status
 
+## 11 October 2026 — native Face Dance after Semuta battle discards
+
+The battle receipt already validates pending native Face Dance against the
+original winner, territory and Tleilaxu owner. Removing only its battle-reward
+exclusion admits mandatory and winner-card batches without changing native
+replacement, force sources or aftermath ordering. Other reward exclusions
+remain intact; Face Dancer cards are not Treachery targets.
+
+The genuine mixed CHOAM/Ix fixture stages a matching physical Face Dancer by a
+conserved identity swap with the actual reserve/held traitor zones. The
+regression fails before and passes after, covering both discard producers,
+claim/pass, original casualties/cleanup, one replacement and winning leader
+death, card preservation after replacement and retired reaction/Face Dance
+replay rejection.
+
+Twenty-four isolated runtime scenarios cover both producers, both modes,
+claim/pass and all four legal Semuta AI profiles, followed by native replacement.
+Eight further native Face Dance AI cases cover each profile in Basic/Advanced;
+all legally reveal their own matching card and replace three survivors. The old
+winner ends with reserves18/Tanks2 and no board forces; Tleilaxu holds
+board3/reserves12/Tanks5, with one winning-leader death.
+
+Real production GameTable at 390px claims the winner's Hunter Seeker, restores
+the original private reserve/sector controls, then reveals the matching Face
+Dancer and replaces three in Arrakeen10. Hunter Seeker stays held by Richese.
+Phase7's original Ix opening remains; this is not premature Collection proof.
+There is no horizontal overflow. Temporary scripts, isolated server and browser
+tab are removed/stopped; no saved store or deployed game was targeted.
+Types/lint and 117 affected unit cases across eight files pass.
+
+Contracts: [Semuta](SEMUTA_SOURCE_UPDATE_20260907.md),
+[battle ordering](BATTLE_DISCARD_CONTINUATIONS.md). Full Semuta/Tleilaxu,
+combinations and deployed acceptance remain open.
+
 ## 11 October 2026 — original final Mentat after Semuta/Gamont
 
 The Gamont receipt now carries an optional final-Mentat marker and signs the

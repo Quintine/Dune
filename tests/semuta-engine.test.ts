@@ -25,11 +25,11 @@ function inventory(g: Game) {
   assert.equal(new Set(ids).size, ids.length);
   return ids;
 }
-function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emperor' | 'beneGesserit' | 'harkonnen' | 'moritani' | 'choam' = 'emperor', actor: 'atreides' | 'emperor' = 'atreides') {
+function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emperor' | 'beneGesserit' | 'harkonnen' | 'moritani' | 'choam' | 'tleilaxu' = 'emperor', actor: 'atreides' | 'emperor' = 'atreides') {
   let g = createGame('SEMUTAQ2', newPlayer('r', 'Richese', 'richese'), advanced,
     opponent === 'moritani' ? ['choam', 'ecaz'] : ix ? ['choam', 'ix'] : ['choam']);
   joinGame(g, newPlayer('a', actor === 'emperor' ? 'Emperor' : 'Atreides', actor));
-  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : opponent === 'beneGesserit' ? 'Bene Gesserit' : opponent === 'harkonnen' ? 'Harkonnen' : opponent === 'moritani' ? 'Moritani' : opponent === 'choam' ? 'CHOAM' : 'Emperor',
+  joinGame(g, newPlayer('e', ixianAlly ? 'Ixians' : opponent === 'beneGesserit' ? 'Bene Gesserit' : opponent === 'harkonnen' ? 'Harkonnen' : opponent === 'moritani' ? 'Moritani' : opponent === 'choam' ? 'CHOAM' : opponent === 'tleilaxu' ? 'Tleilaxu' : 'Emperor',
     ixianAlly ? 'ixians' : opponent));
   for (const p of g.players) { p.bot = 'Medium'; p.ready = true; }
   g = initializeSemutaGameForAudit(g);
@@ -52,6 +52,95 @@ function fixture(ix = false, ixianAlly = false, advanced = false, opponent: 'emp
     response: null, phaseOpening: null, stormPending: null, movementRemaining: ['a', 'r', 'e'] });
   return { g, semuta, hajr };
 }
+
+void test('Semuta settles mandatory and winner discards before one native Face Dance replacement', () => {
+  const { g, semuta, hajr } = fixture(true, false, true, 'tleilaxu');
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const weapon = take(g, g.deck.find(c => c.kind === 'projectile')!.id);
+  const defense = take(g, g.deck.find(c => c.kind === 'snooper')!.id);
+  player(g, 'a').hand.push(weapon);
+  player(g, 'e').hand.push(defense);
+  for (const p of g.players) Object.assign(p, { forces: {}, reserves: 20, tanks: 0 });
+  for (const id of ['a', 'e']) Object.assign(player(g, id), { forces: { 'arrakeen:10': 5 }, reserves: 15 });
+  const leader = player(g, 'a').leaders[0].id;
+  const tleilaxu = player(g, 'e');
+  if (!tleilaxu.faceDancers!.some(card => card.leader === leader && !card.revealed)) {
+    const dancer = tleilaxu.faceDancers![0];
+    const old = dancer.leader;
+    const reserve = g.traitorReserve!.indexOf(leader);
+    if (reserve >= 0) g.traitorReserve![reserve] = old;
+    else {
+      const holder = g.players.find(p => p.traitors.includes(leader))!;
+      assert.ok(holder, 'The actual traitor identity must exist in a physical zone.');
+      holder.traitors[holder.traitors.indexOf(leader)] = old;
+    }
+    dancer.leader = leader;
+  }
+  Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+    response: null, decision: null, phaseOpening: null, movementRemaining: [], ready: [] });
+  const original = inventory(g);
+  let state = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+  for (let step = 0; step < 40; step++) {
+    if (state.response) {
+      const actor = state.players.find(p => !state.response!.passed.includes(p.id))!;
+      state = applyAction(state, actor.id, { type: 'passResponse' });
+    } else if (state.battle?.preparation)
+      state = applyAction(state, state.battle.preparation.owner, { type: 'declineBattlePower' });
+    else if (state.decision?.kind === 'fullPlanOffer')
+      state = applyAction(state, state.decision.player, { type: 'decision', decline: true });
+    else break;
+  }
+  for (const id of ['a', 'e'])
+    state = applyAction(state, id, { type: 'battlePreparationReady', event: state.battle!.preLeader!.event });
+  state = applyAction(state, 'a', { type: 'battlePlan', dial: 2, support: 2, leader, weapon: weapon.id });
+  state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
+    leader: player(state, 'e').leaders[0].id, defense: defense.id });
+  for (const id of ['a', 'e']) state = applyAction(state, id, { type: 'traitorCall', call: false });
+  assert.equal(state.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(state.pendingFaceDance?.winner, 'a');
+  const pass = (game: Game) => {
+    const event = game.pendingTreacheryDiscard!.batch.event;
+    for (const id of ['a', 'e', 'r']) game = applyAction(game, id, { type: 'semutaPass', event });
+    return game;
+  };
+  const cleaned = pass(reload(state));
+  assert.equal(cleaned.decision?.kind, 'battleCards');
+  const winner = applyAction(reload(cleaned), 'a', { type: 'decision', discard: [weapon.id] });
+  assert.equal(winner.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  for (const pending of [state, winner]) {
+    const event = pending.pendingTreacheryDiscard!.batch.event;
+    const fresh = pending.pendingTreacheryDiscard!.batch.entries[0].card.id;
+    const declined = pass(reload(pending));
+    const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+    for (let resumed of [declined, claimed]) {
+      const took = resumed === claimed;
+      assert.deepEqual(resumed.pendingFaceDance, state.pendingFaceDance);
+      if (resumed.decision?.kind === 'battleCards')
+        resumed = applyAction(resumed, 'a', { type: 'decision', discard: [] });
+      assert.equal(resumed.decision?.kind, 'faceDance');
+      assert.equal(resumed.decision?.player, 'e');
+      assert.equal(player(resumed, 'a').forces['arrakeen:10'], 3);
+      resumed = applyAction(resumed, 'e', { type: 'decision', reveal: true, sources: { reserves: 3 }, sector: 10 });
+      assert.equal(resumed.pendingFaceDance, null);
+      assert.deepEqual(player(resumed, 'a').forces, {});
+      assert.equal(player(resumed, 'a').reserves, 18);
+      assert.equal(player(resumed, 'a').tanks, 2);
+      assert.deepEqual(player(resumed, 'e').forces, { 'arrakeen:10': 3 });
+      assert.equal(player(resumed, 'e').reserves, 12);
+      assert.equal(player(resumed, 'e').tanks, 5);
+      assert.equal(player(resumed, 'a').leaders.find(l => l.id === leader)!.deaths, 1);
+      assert.equal(player(resumed, 'e').faceDancers!.find(c => c.leader === leader)!.revealed, true);
+      assert.deepEqual(inventory(resumed), original);
+      assert.equal(player(resumed, 'r').hand.some(c => c.id === fresh), took);
+      assert.equal(resumed.discard.some(c => c.id === semuta.id), took);
+      assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event }));
+      assert.throws(() => applyAction(resumed, 'e', { type: 'decision', reveal: true, sources: { reserves: 3 }, sector: 10 }));
+    }
+    assert.equal(player(claimed, 'r').hand.some(c => c.id === fresh), true);
+    assert.equal(claimed.discard.some(c => c.id === semuta.id), true);
+  }
+});
 
 void test('Semuta restores closing CHOAM Mentat after Gamont before the native victory check', () => {
   const { g, semuta } = fixture(false, false, false, 'choam');

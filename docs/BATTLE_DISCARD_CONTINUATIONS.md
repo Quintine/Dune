@@ -17,6 +17,12 @@ casualties, cleanup and capture suffix. The capture offer samples no captive
 until its original response finishes. Other pending reward exclusions are
 unchanged; this does not certify complete Semuta or expansion combinations.
 
+The same preview now admits native Tleilaxu Face Dance pending across mandatory
+and winner-card batches. Original casualties and cleanup precede the same
+private opportunity; native replacement runs once and does not undo a Semuta
+claim. Face Dancer cards remain their separate physical deck, never Treachery
+discard targets. Other pending reward exclusions are unchanged.
+
 Sequence retirement precedes the remaining work. Ordinary public actions still drain these saved steps automatically. Test-only observation of unchanged private production dispatch captures real intermediate frames; this is not a public Semuta reaction window.
 
 ## Integrity, privacy and multiplayer

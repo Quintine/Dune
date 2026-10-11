@@ -39,6 +39,12 @@ Harkonnen, loser and territory; winner casualties and optional card cleanup
 still precede the capture offer. Claim or decline neither samples a captive
 early nor repeats the capture. Other pending battle rewards remain gated.
 
+Mandatory and winner battle discards may also pause before native Tleilaxu
+Face Dance. The same saved winner/territory/owner opportunity survives claim or
+decline; original casualties and winner cleanup still precede it. Native
+replacement runs once, and the claimed Treachery card remains held afterward.
+Face Dancer cards are not Treachery cards and never enter the fresh batch.
+
 Completed ordinary Ghola disposal may now offer Semuta during battle as well.
 Revival has already committed; the receipt binds the returned leader/forces and
 original battle, including a sealed opposing plan. Claim or decline restores
@@ -179,8 +185,8 @@ winning-card cleanup uses a separate `winnerMandatoryDiscard` batch,
 and an optional winner selection uses a third `battleCleanup` batch.
 Every supported stage has a neutral all-seat offer; committed holders
 select one fresh card, leave the others in the pile and resume exactly
-once. Native Advanced Harkonnen capture now remains pending across the offer;
-Auditor, tech, Face Dance and CHOAM rewards remain automatic without Semuta.
+once. Native Advanced Harkonnen capture and native Face Dance remain pending
+across the offer; Auditor, tech and CHOAM rewards remain automatic without Semuta.
 
 The explicit Richese preview also accepts a fresh physical Ix deck.
 Clean Thumper disposal stages `thumperDiscard` before `blowSpice`

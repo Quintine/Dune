@@ -29,6 +29,21 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Face Dance — 11 October.** Mandatory and winner battle
+discards now offer Semuta while native Tleilaxu replacement remains pending.
+Original casualties and card cleanup still precede the same private opportunity;
+one native replacement preserves the claimed Treachery card. Other reward
+exclusions are unchanged. The regression fails before and passes after.
+Types/lint and 117 affected unit cases across eight files pass.
+Twenty-four runtime scenarios cover both producers/modes, claim/pass and four
+Semuta AI profiles; eight more prove all four native Face Dance AI continuations
+in both modes. Real GameTable at 390px claims Hunter Seeker, restores the original
+reserves/sector controls and replaces three in Arrakeen10. Old winner
+reserves18/Tanks2, Tleilaxu board3/reserves12/Tanks5, claimed card still held.
+Phase7's native Ix opening remains; no premature Collection claim or overflow.
+Temporary QA scaffolds are removed; no saved store or deployed game was targeted.
+See [the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / CHOAM final Mentat — 11 October.** Gamont disposal in the native
 final opportunity now offers Semuta, then restores the same CHOAM-owned window.
 Claim/pass returns the selected force but never checks victory or advances
