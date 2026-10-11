@@ -2,6 +2,26 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Semuta with original native Nexus — 11 October 2026
+
+Fresh `semuta --nexus-cards` composes native Richese with the original
+single/paired CHOAM or both selected E1/E2 Nexus envelope, Basic/Advanced2–6.
+Optional explicit `--leader-skills`, Tech3+ and Advanced Strongholds2+ keep
+their original prerequisites. Actual native setup and a qualifying end-Spice
+draw remain mandatory: no starting Nexus hand, Homeworlds, Discovery, E3,
+played-game retrofit or public mode gate is introduced.
+
+The two existing CHOAM discard producers retain their printed mode distinction:
+Secret Ally with CHOAM absent spends a Worthless and Nexus for two bank spice
+during Collection; Betrayal with CHOAM seated spends its Nexus and commits a
+uniformly random native CHOAM held Treachery discard without compensation.
+Their original semantic receipts now offer Semuta claim/pass before retirement.
+Public trade cost and private Betrayal face keep their existing disclosure
+boundaries; the victim/former controller is the Betrayal discarder.
+Acquisition does not reroll, repeat payment, undo Nexus spending or create a
+Treachery copy of the Nexus card. Original source/component authority above
+is unchanged; this is composition, not a new timing or capacity ruling.
+
 ## Mixed E3 and three-family Nexus — 7 October 2026
 
 The original `nexus` and `leader-skills --nexus-cards` entries, and the

@@ -96,8 +96,33 @@ module cards never become Treachery discard candidates.
 argument) composes original all14 training in native Basic Richese/CHOAM with
 exact CHOAM, or Advanced E1/E2 with native Richese and selected CHOAM/optional
 Ix decks. Original Tech/Advanced Stronghold prerequisites remain. This does not
-open Basic Ix mixtures, E3, Homeworld/Nexus/Discovery/Banker, unapproved
-empty-hand/Moritani Mentat steps or general public starts.
+open Basic Ix mixtures without their original Nexus envelope, E3,
+Homeworld/Discovery/Banker, unapproved empty-hand/Moritani Mentat steps or public starts.
+
+**Original Nexus composition — 11 October 2026.**
+
+`--profile semuta --nexus-cards` delegates the original unused native Nexus
+initializer; adding `--leader-skills` delegates its original all14 training.
+Single or paired CHOAM and both selected E1/E2 native-family envelopes retain
+their original roster, two-through-six-seat and component prerequisites.
+Original Tech requires three or more seats; Strongholds requires Advanced.
+No starting Nexus hand is added. Actual setup and first Storm precede a
+qualifying Nexus, settled alliance and unallied closing draw.
+Homeworlds, Discovery, E3, played-save conversion and public starts stay excluded.
+
+CHOAM Secret Ally trade remains available only with CHOAM absent and the
+holder unallied during Spice Collection. It spends the printed Nexus and
+selected actual Worthless, paying two bank spice before the public fresh
+discard. Semuta claim/pass completes that same receipt without paying again.
+
+With native CHOAM seated, Betrayal spends an unallied rival's actual CHOAM
+Nexus and commits one uniformly server-sampled held CHOAM Treachery Card.
+The neutral Semuta opportunity retains its private fresh face until commitment;
+the former CHOAM controller remains the discarder, even when a different
+player invoked Betrayal. Claim/pass completes the same sampled receipt.
+CHOAM receives no compensation and the random sample is never repeated.
+Nexus cards are separate components and never become Treachery targets.
+
 
 
 

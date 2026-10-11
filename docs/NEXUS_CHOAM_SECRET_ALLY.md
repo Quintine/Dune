@@ -28,6 +28,19 @@ exchange, or queued automatic Collection choice. It may still be used while its
 owner is ready if Collection has not ended. Exhaustive simultaneous Collection
 combinations remain part of the later integration pass.
 
+### Semuta composition — 11 October 2026
+
+The fresh native Richese `semuta --nexus-cards` entry retains original all12
+Nexus, optionally all14 Skills, original Tech3+ and Advanced Strongholds2+.
+The original qualifying closing draw is required; there is no starting hand.
+The trade remains the absent-CHOAM Secret Ally panel, never native Cunning.
+Its two bank spice and both card costs are committed before Semuta's neutral
+public Worthless opportunity. Claim or Continue completes the original receipt
+once and cannot pay another two spice or reclaim the separate Nexus component.
+Full-hand Semuta uses the existing user-selected atomic exchange.
+Homeworlds, Discovery, E3, public starts and played-save conversion stay gated.
+
+
 ## Connected paths
 
 - `game/nexus-choam-trade.ts` provides the private quote and saved receipt checks.

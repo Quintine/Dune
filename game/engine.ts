@@ -5525,13 +5525,21 @@ function suspendedControlsIntegrity(
   strongholdIntegrity(context);
   auditorIntegrity(context);
 }
+/** Original native Nexus roster/modules with no extra overlay-specific setup. */
+function semutaNexusProfile(g: Game): boolean {
+  return !!g.nexusCards && (g.leaderSkills
+    ? pairedNexusLeaderSkillsProfile(g) || singleE1E2NexusLeaderSkillsProfile(g) ||
+      mixedE1E2NexusLeaderSkillsProfile(g)
+    : pairedNexusModulesProfile(g) || singleE1E2NexusProfile(g) || mixedE1E2NexusProfile(g));
+}
 function treacheryDiscardIntegrity(g: Game) {
   requireRule(g.semutaPreview === undefined || g.semutaPreview === true &&
     g.expansions.includes('choam') && !!byFaction(g, 'richese') &&
-    !g.homeworlds && !g.nexusCards &&
+    !g.homeworlds && (!g.nexusCards || semutaNexusProfile(g)) &&
     (!g.leaderSkills || ordinaryLeaderSkillModeSupported(g)) && !g.discoveries &&
-    !g.discoveryEnabled && (!g.techTokens || (g.leaderSkills
-      ? nativeTechLeaderSkillsProfile(g) : nativeFactionTechProfile(g, true))) &&
+    !g.discoveryEnabled && (!g.techTokens || (g.nexusCards
+      ? semutaNexusProfile(g) : g.leaderSkills
+        ? nativeTechLeaderSkillsProfile(g) : nativeFactionTechProfile(g, true))) &&
     (!g.strongholdCards || nativeStrongholdFactionRoster(g)),
   'This Semuta preview no longer matches its original Richese profile.');
   const pending = g.pendingTreacheryDiscard;
@@ -6700,6 +6708,8 @@ function semutaOfferSupported(
     continuation.kind !== 'nullentropyDiscard' &&
     continuation.kind !== 'distransDiscard' &&
     continuation.kind !== 'terrorDiscard' &&
+    continuation.kind !== 'nexusChoamTrade' &&
+    continuation.kind !== 'nexusChoamBetrayal' &&
     continuation.kind !== 'saphoMovementDiscard' &&
     continuation.kind !== 'saphoAggressorDiscard' &&
     continuation.kind !== 'saphoAuctionDiscard' &&
@@ -6777,7 +6787,8 @@ function semutaOfferSupported(
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
-    (continuation.kind === 'ixAllyCard' || continuation.kind === 'terrorDiscard'
+    (continuation.kind === 'ixAllyCard' || continuation.kind === 'terrorDiscard' ||
+      continuation.kind === 'nexusChoamBetrayal'
       ? entries.length === 1 && !entries[0].publicFace
       : continuation.kind === 'battleCleanup' ||
         continuation.kind === 'winnerMandatoryDiscard' ||
@@ -6800,6 +6811,8 @@ function semutaOfferSupported(
       continuation.kind === 'battleResolved' ||
       continuation.kind === 'ixAllyCard' ||
       continuation.kind === 'terrorDiscard' ||
+      continuation.kind === 'nexusChoamTrade' ||
+      continuation.kind === 'nexusChoamBetrayal' ||
       continuation.kind === 'choamSaleDiscard' ||
       continuation.kind === 'choamKulonDiscard' ||
       continuation.kind === 'choamLaLaLaDiscard' ||
@@ -9604,8 +9617,8 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   initializeMoritaniAssassinateState(g);
   return g;
 }
-/** Development-only Semuta with original native Tech/Advanced Strongholds and
- * explicit native skills, or bounded Basic Moritani/E3. Public starts stay gated. */
+/** Development-only Semuta with original native Tech/Advanced Strongholds/Nexus
+ * and explicit native skills, or bounded Basic Moritani/E3. Public starts stay gated. */
 export function initializeSemutaGameForAudit(state: Game, skills = false): Game {
   const nativeTerror = !state.advanced && state.expansions.length === 2 &&
     state.expansions.includes('choam') && state.expansions.includes('ecaz') &&
@@ -9616,8 +9629,13 @@ export function initializeSemutaGameForAudit(state: Game, skills = false): Game 
     state.expansions.includes('choam') &&
     (state.expansions.every(id => id === 'choam' || id === 'ix') || nativeTerror) &&
     state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix, original Tech/Advanced Strongholds, and explicit native Basic Richese or Advanced E1/E2 Leader Skills; separate Basic Moritani uses CHOAM/Ecaz and classics without modules. Other overlays remain excluded.');
+  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix, original Tech/Advanced Strongholds/Nexus, and explicit native Basic Richese or Advanced E1/E2 Leader Skills; separate Basic Moritani uses CHOAM/Ecaz and classics without modules. Other overlays remain excluded.');
+  if (state.nexusCards) requireRule(!nativeTerror && !state.homeworlds &&
+    !state.discoveryEnabled && !state.discoveries,
+  'Semuta Nexus retains original E1/E2 rosters without Homeworlds, Discovery or E3.');
   const g = skills ? initializeLeaderSkillsGameForAudit(state)
+    : state.nexusCards ? state.expansions.length === 1 && !!byFaction(state, 'choam')
+      ? initializePairedNexusGameForAudit(state) : initializeNexusGameForAudit(state)
     : state.strongholdCards ? initializeStrongholdFactionsGameForAudit(state)
     : initializeFactionExpansionsGameForAudit(state);
   g.semutaPreview = true;

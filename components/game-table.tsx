@@ -1168,7 +1168,11 @@ export function GameTable({
           winner’s award follows card cleanup and precedes Face Dance. Original
           Stronghold Cards may remain in Advanced 2–6-seat profiles and are claimed
           only at the end of Mentat. The explicit Leader Skills entry retains all
-          fourteen original skills and native training; other overlays stay guarded.
+          fourteen original skills and native training. The explicit Nexus entry
+          retains all twelve original Nexus cards and qualifying closing draws,
+          never a starting Nexus hand. CHOAM Secret Ally trade and native CHOAM
+          Betrayal discards can react before their original receipts complete;
+          Homeworlds, Discovery and other overlays stay guarded.
           Native Moritani
           support is Basic only: clean shipment/movement Sabotage and Robbery
           overflow plus native losing-ally card-retention cleanup; other arrival

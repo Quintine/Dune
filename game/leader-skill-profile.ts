@@ -41,7 +41,9 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassinatio
       (!game.discoveries && !game.discoveryEnabled && !game.discoveryStash && !game.greatMaker)) &&
     (!game.techTokens || game.players.length >= 3) &&
     (!game.strongholdCards || game.advanced === true) &&
-    !game.ecazTreachery && !game.semutaPreview &&
+    !game.ecazTreachery && (!game.semutaPreview ||
+      (semutaLeaderSkillContext(game) && !game.homeworlds &&
+        !game.discoveryEnabled && !game.discoveries)) &&
     (!game.moritaniAssassinatePreview || assassination) &&
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
     !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&

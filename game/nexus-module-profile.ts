@@ -2,6 +2,13 @@ import { FACTIONS } from './catalog';
 import { mixedE3NexusRosterProfile, type FactionModuleProfile } from './faction-module-profile';
 import { classicDiscoveryNexusProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
 
+/** Explicit Richese composition only; original predicates still own roster and module legality. */
+function semutaNexusContext(game: FactionModuleProfile): boolean {
+  return game.semutaPreview === true && !game.homeworlds &&
+    !game.discoveryEnabled && !game.discoveries &&
+    game.expansions.includes('choam') && game.players.some(p => p.faction === 'richese');
+}
+
 /** Original classic Nexus modules, optionally Homeworlds; initializer checks undealt components. */
 export function classicNexusModulesProfile(game: FactionModuleProfile): boolean {
   if (game.discoveryEnabled || game.discoveries) return classicDiscoveryNexusProfile(game);
@@ -30,12 +37,12 @@ export function classicNexusModulesProfile(game: FactionModuleProfile): boolean 
 export function pairedNexusModulesProfile(game: FactionModuleProfile): boolean {
   if (game.discoveryEnabled || game.discoveries) return pairedDiscoveryNexusProfile(game);
   if (typeof game.advanced !== 'boolean' || !game.nexusCards ||
-    (!game.techTokens && !game.strongholdCards) || game.expansions.length !== 1 ||
+    (!game.techTokens && !game.strongholdCards && !semutaNexusContext(game)) || game.expansions.length !== 1 ||
     game.players.length < 2 || game.players.length > 6 ||
     (game.techTokens && game.players.length < 3) ||
     (game.strongholdCards && !game.advanced) || game.leaderSkills ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
-    game.ecazTreachery || game.semutaPreview || game.advancedPreview ||
+    game.ecazTreachery || (game.semutaPreview && !semutaNexusContext(game)) || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
@@ -97,7 +104,7 @@ export function singleE1E2NexusProfile(game: FactionModuleProfile): boolean {
     (game.techTokens && game.players.length < 3) ||
     (game.strongholdCards && !game.advanced) || game.leaderSkills ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
-    game.ecazTreachery || game.semutaPreview || game.advancedPreview ||
+    game.ecazTreachery || (game.semutaPreview && !semutaNexusContext(game)) || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;
@@ -125,7 +132,7 @@ export function mixedE1E2NexusProfile(game: FactionModuleProfile): boolean {
     (game.techTokens && game.players.length < 3) ||
     (game.strongholdCards && !game.advanced) || game.leaderSkills ||
     game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
-    game.ecazTreachery || game.semutaPreview || game.advancedPreview ||
+    game.ecazTreachery || (game.semutaPreview && !semutaNexusContext(game)) || game.advancedPreview ||
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview) return false;

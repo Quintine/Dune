@@ -1,5 +1,58 @@
 # Dune implementation status
 
+## 11 October 2026 — original native Nexus and Semuta discard receipts
+
+`initializeSemutaGameForAudit` delegates existing unused original Nexus setup
+when selected; paired CHOAM/Richese uses its original paired initializer,
+single or both selected E1/E2 native families use the generic initializer.
+Explicit Skills remains first and keeps original all14 prerequisites.
+`--profile semuta --nexus-cards`, optionally `--leader-skills`, uses the same
+private fresh-room dispatch, never a player-action gate or played-save retrofit.
+Three original no-Skills Nexus predicates and the shared skill/Nexus module
+predicate recognize only explicit native-Richese Semuta context; original
+roster/module checks remain authoritative. Homeworlds, Discovery/E3 and
+unrelated overlays remain excluded.
+
+The existing `nexusChoamTrade` and `nexusChoamBetrayal` continuations now enter
+Semuta's bounded allowlist. Betrayal uses the original private-single-entry
+branch; both bypass unrelated suspended-response fields. Neither original
+producer nor receipt retirement changed: trade has already paid two bank spice,
+spent Nexus and discarded its Worthless; Betrayal has already spent Nexus and
+uniformly sampled/removed the native CHOAM card without compensation.
+Foreign acquisition cannot repeat either original effect.
+
+Two disjoint lanes supplied genuine four-seat fixture/regression files.
+Original native setup/first Storm and real first turn precede reordered
+still-unplayed turn-two worm, reciprocal alliance and qualifying closing draw.
+Only afterward are original Nexus/Treachery identities moved between conserved
+slots. No phase, turn, wallet, starting held Nexus, skill training or module
+ownership is fabricated. The initial trade tests wrongly assumed a second
+singleton selection: existing Commit completes automatically. The helper and
+bot cases now exercise that behavior; its obsolete manual-selection test was
+deleted rather than changing runtime to satisfy it.
+
+Types/lint pass; affected union119/119 across10 unit files. Eight real
+2/3/6-seat setup/first-Storm scenarios cover single/paired/mixed original
+entry envelopes; two actual SQLite `:memory:` option dispatches save version1
+with original Traitors or Skills and no Nexus hand. Sixteen native reaction
+scenarios cover Basic/Advanced claim/pass/full hands and four legal profiles.
+Actual CLI help executes. Styled390px human trade→Commit→original four-seat
+Collection readiness reaches Mentat: original trader12 spice, spent Nexus,
+Richese4/4 with acquired Trip to Gamont. Native Betrayal→Commit acquires exact
+server-sampled Snooper, leaves CHOAM Maula Pistol/Kulon, and original Charity
+readiness works. Actual acquired-card and printed CHOAM Nexus inspectors render.
+Initial four-seat snapshots measured554px scroll width; post-action frames390,
+so full mobile presentation acceptance remains open.
+
+The isolated QA harness initially omitted image-shim optimizer environment
+defines. Installed Vite8 uses Rolldown, and its optimizer needed the same
+development defines independently of regular transform defines. Corrected
+probe used actual installed Vinext image shim, actual Tailwind PostCSS and real
+GameTable/engine; this was not an application-rule failure. Updated Semuta
+preview guidance was reinspected. All throwaways, own service and tab removed.
+No existing game/store, user PDF, provider/deployment or public gate changed;
+no comprehensive save/privacy/custody campaign was run.
+
 ## 11 October 2026 — trained Ixian response retained across Semuta cost
 
 The explicit skill entry makes the formerly unadmitted receipt path reachable.

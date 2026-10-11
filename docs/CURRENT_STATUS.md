@@ -29,6 +29,30 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / original native Nexus — 11 October.** Fresh `semuta --nexus-cards`
+delegates original single/paired CHOAM or both selected E1/E2 setup, optionally
+explicit Skills and original Tech/Advanced Strongholds. There is no starting
+Nexus hand: actual turn-two worm, reciprocal alliance and unallied closing draws
+precede the changed producers. CHOAM-absent Secret Ally trade pays two bank spice
+and spends both cards before its public Worthless offer; seated-CHOAM Betrayal
+commits one server-random physical hand card before its private offer.
+Semuta claim/pass retires the same original receipt without payment/sampling
+again. Existing singleton-at-Commit behavior remains; an incorrect test-only
+manual selection assumption was removed, not added to runtime.
+Types/lint and119 affected unit cases across10 files pass. Eight original entry
+scenarios, two memory-only prototype option dispatches and sixteen actual
+reaction scenarios cover claim/pass, full hands and four legal profiles.
+Styled390px human trade→Commit→all Collection readiness reaches Mentat with
+Atreides12 spice and Richese's acquired Trip to Gamont at4/4. Native
+Betrayal→Commit acquires the exact Snooper, leaves CHOAM Maula Pistol/Kulon and
+enables original Charity readiness; both enlarged card inspectors work.
+Post-action frames measure390px width; initial four-seat snapshots measured
+554px scroll width, so this is not full presentation acceptance.
+Live preview guidance now names original Nexus. All probes/tabs/services removed;
+existing games/stores, user PDF, deployment and public gates remain untouched.
+See [Nexus composition](NEXUS_CARD_RULES.md#semuta-with-original-native-nexus--11-october-2026)
+and [Semuta ordering](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime).
+
 **Semuta / trained Ixian response ownership — 11 October.** Newly admitted
 native Ixian skills exposed a real projection failure: during a printed
 substitution-cancellation cost, the validator ignored the response saved in

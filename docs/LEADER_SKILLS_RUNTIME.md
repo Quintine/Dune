@@ -10,8 +10,11 @@ records the fresh publisher/designer search requested by the user.
 `--profile semuta --leader-skills` reuses original all14 native setup for Basic
 Richese/CHOAM with exact CHOAM, or Advanced E1/E2 with native Richese and selected
 CHOAM/optional Ix. Original Tech3+ and Advanced Strongholds2+ may remain. Default
-Semuta callers are unchanged. Skills do not add Homeworld/Nexus/Discovery/E3,
-Banker overlays, Basic Ix mixtures, public starts or played-save conversion.
+Semuta callers are unchanged. Adding `--nexus-cards` uses the original
+single/paired CHOAM or both selected E1/E2 Nexus/Skills envelope, retaining
+the actual qualifying closing draw and no starting Nexus hand. Without that
+original envelope, Basic Ix mixtures remain excluded. Homeworlds, Discovery/E3,
+Banker overlays, public starts and played-save conversion stay gated.
 
 Actual offers and training precede real phase/battle controls. Completed Hajr
 claim/pass resumes the original Movement owner, then the approved normal
@@ -31,6 +34,14 @@ one new private Traitor and returns its selected old card before Artillery and
 Shield cleanup; normal private inspection remains inherited, not suppressed.
 No comprehensive privacy/custody/recovery campaign or mode certification is
 claimed by these changed-path proofs.
+
+The Nexus follow-up retains original all14 training through public CHOAM
+Secret Ally trade and private native CHOAM Betrayal discard reactions.
+Semuta never re-pays the two-spice trade or re-samples Betrayal. Actual
+Advanced Skills/Tech/Strongholds controls and full-hand exchanges reuse the
+original singleton-at-Commit rule; there is no extra selection acknowledgement.
+See [Nexus composition](NEXUS_CARD_RULES.md#semuta-with-original-native-nexus--11-october-2026).
+
 
 
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
