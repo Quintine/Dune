@@ -1170,8 +1170,10 @@ export function GameTable({
           only at the end of Mentat. The explicit Leader Skills entry retains all
           fourteen original skills and native training. The explicit Nexus entry
           retains all twelve original Nexus cards and qualifying closing draws,
-          never a starting Nexus hand. CHOAM Secret Ally trade and native CHOAM
-          Betrayal discards can react before their original receipts complete;
+          never a starting Nexus hand. CHOAM Secret Ally trade, native CHOAM
+          Betrayal and the five ordinary Cunning fuel discards can react before
+          their original effects or receipts finish. Cunning fuel keeps its
+          printed identity and private face; Kull retains its separate guard.
           Homeworlds, Discovery and other overlays stay guarded.
           Native Moritani
           support is Basic only: clean shipment/movement Sabotage and Robbery

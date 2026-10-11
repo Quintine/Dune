@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 11 October 2026 — five original Cunning fuel discards through Semuta
+
+Fresh native Nexus admission made five previously excluded `pending.nexusEvent`
+costs reachable. Actual Kulon consumed a canonical projectile, spent the Nexus
+and applied bonus1 with no neutral Semuta opportunity. Producer cutover now
+reuses original Kulon/Gamont/Baliset/La La La/Jubba continuations with an
+optional completed Cunning event. Arbitrary fuel keeps its actual printed
+descriptor and private face, unlike the already-public named printed power.
+
+Five existing signatures include the optional event; undefined omission
+preserves old printed shapes. The validator binds the last original completed
+Nexus receipt/frame to the exact owner/card/effect/targets and source flags,
+retaining original force/parent/state checks. Native cancellation retains fuel
+with Nexus spent. Allowance retires the original receipt and pauses after
+physical disposal, before the one selected effect and original suffix.
+No new initializer, payment, named-card transformation or Kull capability.
+
+Two disjoint lanes supplied shared genuine setup/closing-draw and proactive
+or reactive fixtures. Actual a/b alliance leaves CHOAM unallied to draw its
+own card; only afterward are existing identities/conserved later stocks staged.
+Parent removed static-markup/wording, forwarding/re-export and paired-view audit
+scaffolds. New tests had incidental null/undefined and guaranteed-response
+assumptions; the latter now holds an actual printed Karama instead of changing
+normalizer behavior. Jubba's incorrect protected-spice expectation was repaired:
+printed protection covers forces only. No application storm rule changed.
+
+The reactive fixture assumed Basic dialers in Advanced and ran to final fallback
+without reaching its boundary. A real trace showed Advanced turn3 card distance6
+and zero dialers. The fixture now retains that actual card distance, enumerates
+all exposed territories in crossed sectors and uses original readiness; no
+distance/clock/phase is fabricated or rerolled.
+
+Types/lint pass; affected union120/120 across9 unit files. Two proactive and24
+reactive actual runtime cases cover Basic/Advanced claim/pass, four profiles,
+full hands and original all14/Tech/Strongholds closing. Singleton Commit stays
+automatic. Styled390px actual GameTable completes all five powers through
+original Allow and full-hand Commit. Acquired Slip Tip retains projectile
+text/inspector. Gamont's Hajr fuel never activates Hajr: one elite returns, then
+only original Finish assigns claim2/turn3. La La La preserves3Tanks/0revived/
+10spice before human paid-two revival reaches1Tank/2revived/6spice.
+Advanced Jubba's Crysknife claim preserves3 selected forces, loses3 other CHOAM
+and4 opposing forces, destroys both crossed spice piles and reaches original
+CHOAM market once. All settled frames390px; current warning was reinspected.
+
+Temporary scripts/client/server, own service and tab removed. Existing games,
+stores, user PDF, provider/deployment and public gates untouched; no broad
+recovery/privacy/custody campaign. Full game/module acceptance and Kull remain
+separate from this bounded original five-effect composition.
+
 ## 11 October 2026 — original native Nexus and Semuta discard receipts
 
 `initializeSemutaGameForAudit` delegates existing unused original Nexus setup

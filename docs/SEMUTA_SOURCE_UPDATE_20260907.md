@@ -123,6 +123,21 @@ player invoked Betrayal. Claim/pass completes the same sampled receipt.
 CHOAM receives no compensation and the random sample is never repeated.
 Nexus cards are separate components and never become Treachery targets.
 
+The five original native CHOAM Cunning effects also offer their exact arbitrary
+Treachery fuel after allowance: Kulon, Gamont, Baliset, La La La and Jubba.
+The original Nexus receipt has already completed, but the selected effect
+and its original parent wait behind the fresh discard. An optional native
+event binds owner/card/effect/targets without changing old printed receipts.
+Fuel keeps its canonical category and private face; Commit does not transform
+a projectile, defense or Special into a named Worthless. Claim/pass grants
+one range bonus, one typed return/original closing owner, the stopped ordinary
+move/free-revival restriction, or one native storm protection and suffix.
+Jubba protects forces, not spice; original unprotected own/opposing losses remain.
+Cancellation retains that fuel and leaves the played Nexus spent. Kull and
+other competing parents remain separate. See
+[five-effect evidence](NEXUS_CHOAM_RUNTIME.md#original-five-effect-semuta-composition--11-october-2026).
+
+
 
 
 

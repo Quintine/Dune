@@ -37,6 +37,17 @@ On an allowed use, the **original physical card** crosses into discard exactly o
 
 The effect choice and native use may be public without revealing the rest of CHOAM's hand. Do not add a public poison-income message that identifies a privately discarded category. Preserve existing discard visibility. Successful disposal must pass through the current Semuta/reservation handling, and an interruption must resume the chosen effect and its original parent once. A later retrieval of the discarded card does not undo an already earned effect or permit replaying its receipt.
 
+The explicit native Richese `semuta --nexus-cards` composition now connects
+the five ordinary Cunning fuel disposals through those original continuations.
+An optional completed Cunning event binds the exact original card and chosen
+effect/parent; its arbitrary fuel face remains private until Semuta commitment.
+Claim/pass completes the same selected effect once. Ordinary cancellation
+retains fuel and spends Nexus without offering that fuel; a separately spent
+printed Karama is a distinct discard producer, not a categorical Semuta ban.
+The [dated runtime proof](NEXUS_CHOAM_RUNTIME.md#original-five-effect-semuta-composition--11-october-2026)
+does not add Kull or weaken its separate source/profile boundary.
+
+
 ## Existing boundaries to preserve
 
 - **Kull:** the [source update](CHOAM_KULL_SOURCE_UPDATE.md#user-selected-preview-timing--30-september-2026) records approved distinct-card counters and BG-before-conversion custody as user-selected product policy, not publisher clarification. The new `nexus-kull` profile composes those policies with physical any-Treachery fuel and CHOAM Nexus Cunning. It reserves the interrupted original, retains it and any special once-use on success, and resumes it once on decline or prevention. Unpayable winning-overbid recovery is deliberately deferred; the existing private precommitment fence remains independent of hidden ownership. The old `kull` profile still excludes Nexus, and other Nexus previews do not gain this choice.

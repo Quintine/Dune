@@ -29,6 +29,31 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / original CHOAM Cunning fuel — 11 October.** The five ordinary
+Cunning effects now reuse original Worthless continuations with a completed
+native event binding owner/card/effect/targets and parent flags. Canonical
+arbitrary fuel stays private, never a manufactured named Worthless. Native
+cancellation retains fuel and the spent Nexus; allowance offers the exact
+fresh discard before one original effect/suffix. Old printed receipt signatures
+are unchanged when the optional event is absent.
+Actual Kulon before cutover discarded fuel/applied its bonus without an offer;
+afterward Commit restores one bonus and permits one real distance-two move.
+Types/lint pass; affected union120 cases across9 files. Two proactive and24
+reactive runtime scenarios cover Basic/Advanced claim/pass, four legal profiles
+and original skill/module closing. Actual Advanced storm uses its original
+revealed card, not the Basic fixture's dialers. Incorrect test-only absence,
+response, alias-binding and protected-spice assumptions were repaired; no rule
+was changed to satisfy them, and paired-view audit scaffolds were removed.
+Five styled390px human power→native Allow→full-hand Commit paths pass.
+Gamont returns an elite before restoring original Finish/claim2/turn3; La La La
+keeps3Tanks/0revived/10spice until a legal paid-two revival reaches1/2/6.
+Advanced Jubba keeps3 protected forces, loses3 other CHOAM and4 opposing forces,
+destroys both covered spice piles and reaches original market. Original
+projectile inspector and updated preview guidance were inspected.
+All own probes/service/tab removed; existing games/stores/PDF, deployment,
+Kull and full-mode/public gates remain unchanged. See
+[five-effect contract](NEXUS_CHOAM_RUNTIME.md#original-five-effect-semuta-composition--11-october-2026).
+
 **Semuta / original native Nexus — 11 October.** Fresh `semuta --nexus-cards`
 delegates original single/paired CHOAM or both selected E1/E2 setup, optionally
 explicit Skills and original Tech/Advanced Strongholds. There is no starting

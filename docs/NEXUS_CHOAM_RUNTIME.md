@@ -2,6 +2,48 @@
 
 The historical checkpoint below integrated native CHOAM Cunning with five Worthless effects in Basic and Advanced. The separately verified 1 October 2026 `nexus-kull` profile adds bounded source-aware Kull, with broader verification **Partial**. The [source contract](NEXUS_CHOAM_RULES.md) lists all six printed effects, not a full-family release. The older [printed Kull profile](CHOAM_KULL_DESIGN.md) still excludes Nexus; other Nexus previews still reject Kull. CHOAM Secret Ally and Betrayal retain separate contracts. No profile silently enables new choices in older games or certifies complete CHOAM, Nexus or expansions.
 
+## Original five-effect Semuta composition — 11 October 2026
+
+Fresh native Richese `semuta --nexus-cards` now offers the original CHOAM
+Cunning fuel discard for Kulon, Trip to Gamont, Baliset, La La La and Jubba.
+Actual qualifying closing draw leaves CHOAM unallied with its own Nexus.
+The original quote chooses any eligible canonical held Treachery fuel, not a
+manufactured named Worthless card. Native cancellation retains that fuel and
+the already-spent Nexus; no fuel is discarded or offered on prevention.
+
+Allowance retires the original Cunning receipt and discards its exact fuel.
+The existing five Worthless continuations carry an optional completed
+`nexusEvent`, bound to original owner/card/effect/targets and parent flags.
+Old printed signatures remain unchanged when the optional event is absent.
+Cunning cost faces remain private through the neutral offer; singleton Commit
+acquires the original descriptor and resumes the original selected effect once.
+The original ordinary range bonus, typed return and closing Mentat owner,
+stopped move/free revival, or threatened-territory storm suffix is not replayed.
+Jubba protects CHOAM forces, never storm-covered spice; unprotected own/opposing
+forces and both covered spice piles retain their original losses.
+
+Actual native Kulon exposed the omission before cutover: fuel discarded,
+Nexus spent and bonus applied with no Semuta opportunity. After cutover, the
+cost pauses before that one native bonus. Two proactive and24 reactive
+runtime cases cover Basic/Advanced claim/pass, four legal profiles, full
+hands and original Skills/Tech/Strongholds closing. Actual Advanced storm
+uses its revealed original card distance, not Basic dialers; the fixture now
+uses that real source rather than an unreachable Basic-only boundary.
+The affected unit union passes120/120 across9 files.
+
+Styled390px human controls complete all five original quoted powers through
+native Allow and full-hand Commit. Slip Tip, Hajr, Stunner, Maula Pistol and
+Crysknife remain their actual printed categories. Gamont returns one elite and
+restores its original Finish; only that Finish assigns Stronghold claim2/turn3.
+La La La leaves3
+Tanks/0revived/10spice before a legal paid-two revival reaches1Tank/2revived/
+6spice. Advanced Jubba keeps3 protected forces, loses3 other CHOAM and4
+opposing forces, destroys both covered spice piles and reaches original market.
+Acquired projectile inspector and current preview guidance were inspected.
+Own probes/service/tab are removed; existing games/stores/PDF and deployment
+are untouched. Kull, unrelated parents/modules and complete-mode/public gates
+remain separate. No comprehensive custody/privacy/recovery campaign is claimed.
+
 ## Physical cost and timing
 
 An unallied CHOAM player holding the CHOAM Nexus chooses one actual held Treachery Card and one supported effect. The card need not have the corresponding Worthless name. The engine preserves its original identity, ownership and any reservations; it does not manufacture a named Worthless card or grant a turn-long conversion ability.
