@@ -784,6 +784,50 @@ for (const answer of ['yes', 'no'] as const) void test(
     assert.equal(claimed.discard.some(card => card.id === semuta.id), true);
   });
 
+void test('Semuta claims a battle Ghola without reviving twice or changing the sealed opposing plan', () => {
+  const { g, semuta, hajr } = fixture();
+  player(g, 'a').hand = [];
+  g.deck.push(hajr);
+  const ghola = take(g, 'ghola');
+  player(g, 'a').hand.push(ghola);
+  const leader = player(g, 'a').leaders[0];
+  Object.assign(leader, { dead: true, deaths: 1 });
+  Object.assign(g, { phase: 6, active: 'a', order: ['a', 'e', 'r'],
+    decision: null, response: null, phaseOpening: null, movementRemaining: [] });
+  for (const id of ['a', 'e']) {
+    player(g, id).forces = { 'arrakeen:10': 4 };
+    player(g, id).reserves = 16;
+  }
+  const original = inventory(g);
+  let state = applyAction(g, 'a', { type: 'chooseBattle', territory: 'arrakeen', target: 'e' });
+  while (state.battle?.preparation)
+    state = applyAction(state, state.battle.preparation.owner, { type: 'declineBattlePower' });
+  for (const id of ['a', 'e'])
+    state = applyAction(state, id, { type: 'battlePreparationReady', event: state.battle!.preLeader!.event });
+  state = applyAction(state, 'e', { type: 'battlePlan', dial: 0, support: 0,
+    leader: player(state, 'e').leaders[0].id });
+  const pending = applyAction(state, 'a', { type: 'card', card: ghola.id, leader: leader.id });
+  assert.equal(pending.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+  assert.equal(player(pending, 'a').leaders[0].dead, false);
+  assert.equal(player(pending, 'a').leaders[0].deaths, 1);
+  const event = pending.pendingTreacheryDiscard!.batch.event;
+  let declined = reload(pending);
+  for (const id of ['a', 'e', 'r']) declined = applyAction(declined, id, { type: 'semutaPass', event });
+  const claimed = applyAction(reload(pending), 'r', { type: 'semutaCommit', event });
+  for (const resumed of [declined, claimed]) {
+    assert.deepEqual(resumed.battle, pending.battle);
+    assert.deepEqual(player(resumed, 'a').leaders, player(pending, 'a').leaders);
+    assert.deepEqual(inventory(resumed), original);
+    assert.throws(() => applyAction(resumed, 'r', { type: 'semutaCommit', event }));
+    assert.throws(() => applyAction(resumed, 'a', { type: 'card', card: ghola.id, leader: leader.id }));
+    const planned = applyAction(resumed, 'a', { type: 'battlePlan', dial: 1, support: 0, leader: leader.id });
+    assert.equal(planned.battle!.plans.a.leader, leader.id);
+    assert.deepEqual(planned.battle!.plans.e, state.battle!.plans.e);
+  }
+  assert.equal(player(claimed, 'r').hand.some(c => c.id === ghola.id), true);
+  assert.equal(claimed.discard.some(c => c.id === semuta.id), true);
+});
+
 void test('Semuta preserves an unsubmitted battle-plan promise through claim and decline', () => {
   const { g, semuta, hajr } = fixture();
   player(g, 'a').hand = [];

@@ -16,6 +16,13 @@ The live ordinary-card dispatcher retains its existing timing, selection, owners
 
 The suffix marks the discard sequence resolved, clears the frame and restores `response`, `decision`, `pendingKarama` and `phaseOpening`. It does not replay the original action, repeat availability checks against the post-effect position, regenerate randomness or restore a whole older Game. Normal finalizers run only after restoration. A newly restored Tleilaxu income response may wait for its real cancellation opportunity or settle automatically under the existing rules.
 
+11 October 2026 Semuta update: in the explicit Richese development preview, a
+completed ordinary Ghola may offer its consumed card during battle. The same
+receipt binds the revived pieces and original battle, including a sealed
+opposing plan. Claim or all-seat decline restores controls without reviving
+again, then normal planning may use the returned leader. Competing parents and
+other unsupported producers retain their original boundaries.
+
 ## Ghola custody and earned income
 
 Ghola's existing helper remains authoritative. Force revival transfers the chosen ordinary/elite counts once, preserving normal revival usage and the existing Ixian cyborg exception. An owned dead leader keeps its identity, original pool, death count and control record; only the existing revival changes occur. A controlled foreign leader remains in its original owner's leader array. Captured-leader denial and native-owner denial while foreign control persists remain unchanged. Kwisatz Haderach's revival cycle advances only in the actual Ghola effect, never during recovery.

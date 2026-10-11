@@ -6764,7 +6764,9 @@ function semutaOfferSupported(
       continuation.kind === 'ixAllyCard' || !g.richeseAuction) &&
     (continuation.kind === 'saphoAggressorDiscard' ||
       continuation.kind === 'residualPoisonDiscard' ||
-      continuation.kind === 'truthtranceDiscard' || !g.battle) &&
+      continuation.kind === 'truthtranceDiscard' ||
+      (continuation.kind === 'ordinaryCardDiscard' && continuation.effect === 'ghola') ||
+      !g.battle) &&
     (continuation.kind !== 'choamKulonDiscard' ||
       (!g.ornithopter && !g.pendingChoamMove && !g.summonedWorm &&
         g.wormRides.length === 0)) &&

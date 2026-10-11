@@ -245,6 +245,25 @@ separate [reaction privacy audit](SEMUTA_PRIVACY_REVIEW.md) explains why
 auto-closing only when nobody secretly holds the card would leak
 possession. The main game and public expansion gates remain closed.
 
+**11 October 2026 — ordinary battle Ghola.** The consumed Ghola now receives
+the same Semuta offer during battle after its revival commits. Only the
+battle-presence guard gained the completed ordinary Ghola exception; revival,
+plan legality and existing competing-parent exclusions are unchanged. The
+receipt already binds revived pieces and the original battle. Claim or all-seat
+decline cannot revive again or change a sealed opposing plan.
+
+The permanent regression fails before and passes after, covering a returned
+leader, claim/pass, unchanged opposing plan, card conservation and rejected
+retired-event/original-card replay. Twenty-four isolated engine scenarios cover
+Basic and Advanced, leader or three-force revival, claim/pass and all four legal
+AI profiles. Each resumes legal planning with the same opposing plan and
+exactly the committed revival; force revival leaves Tanks0/reserves16. The
+Advanced probe first needed the existing full-plan inspection declined before
+readiness; no preparation bypass was added. No saved store or deployed game was
+targeted. Human controls reuse the existing Ghola, Semuta and battle-plan panels;
+this checkpoint's changed-path proof is engine runtime, not new browser evidence.
+Types/lint and 101 affected unit cases across seven files pass.
+
 **11 October 2026 — native Harkonnen capture suffix.** Mandatory and winner
 battle discard batches now offer Semuta while the original Advanced Harkonnen
 capture remains pending. Only the capture exclusion changed; the battle receipt

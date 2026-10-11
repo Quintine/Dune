@@ -33,6 +33,12 @@ Harkonnen, loser and territory; winner casualties and optional card cleanup
 still precede the capture offer. Claim or decline neither samples a captive
 early nor repeats the capture. Other pending battle rewards remain gated.
 
+Completed ordinary Ghola disposal may now offer Semuta during battle as well.
+Revival has already committed; the receipt binds the returned leader/forces and
+original battle, including a sealed opposing plan. Claim or decline restores
+planning without reviving again or changing that plan. This does not admit
+competing parents or market-specific Ghola interruptions.
+
 Clean Once Around Sapho stages `saphoAuctionDiscard` after the open
 lot's finite bidder reorder, hand-slot release and public card disposal,
 but before settlement. The saved receipt binds the lot, prior funding,

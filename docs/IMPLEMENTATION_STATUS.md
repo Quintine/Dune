@@ -1,5 +1,34 @@
 # Dune implementation status
 
+## 11 October 2026 — Semuta after ordinary battle Ghola revival
+
+The completed ordinary-card receipt already binds Ghola revival and the original
+battle, but the reaction's battle-presence guard excluded it. The guard now admits
+only that completed ordinary Ghola effect in addition to its existing battle
+producers. Revival and plan legality are unchanged; competing parents and
+market-specific Ghola interruptions remain separate.
+
+The permanent regression fails before and passes after: claim/pass preserves
+the returned leader, death history, sealed opposing plan and physical cards;
+retired-event/original-card replays reject, and the returned leader can be used
+in the next legal plan. Twenty-four isolated engine scenarios cover both rule
+modes, leader or three-force revival, claim/pass and all four legal AI profiles.
+Each resumes legal planning with the original opposing plan and exactly the
+committed revival. Force revival leaves Tanks0/reserves16. The first Advanced
+probe omitted declining the existing full-plan inspection; the corrected
+Advanced run uses its actual decline action before readiness.
+
+Types/lint pass; 101 affected unit cases across seven files pass. The first test
+selection used an unsupported exclusion flag and ran no tests; the corrected
+selection uses the runner's `--suite unit`.
+
+Temporary scripts are removed; no saved store or deployed game was targeted.
+Existing human Ghola, Semuta and plan controls are reused; changed-path evidence
+here is engine runtime, not a new browser check. Full Semuta and deployed
+acceptance remain open. Contracts:
+[Semuta](SEMUTA_SOURCE_UPDATE_20260907.md),
+[completed ordinary effects](ORDINARY_CARD_DISCARD_CONTINUATIONS.md).
+
 ## 11 October 2026 — Semuta before native Advanced Harkonnen capture
 
 The resolved battle and winner-cleanup receipts already validate the original

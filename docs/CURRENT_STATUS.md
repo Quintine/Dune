@@ -29,6 +29,17 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / ordinary battle Ghola — 11 October.** A completed ordinary Ghola
+now offers its consumed card during battle. Revival, the opposing sealed plan
+and existing competing-parent boundaries are unchanged. The regression fails
+before and passes after; 24 isolated runtime scenarios cover Basic/Advanced,
+leader/three-force revival, claim/pass and all four legal AI profiles, then
+legal planning. Resumption cannot revive again or alter the opposing plan.
+Temporary scripts are removed; no saved store or deployed game was targeted.
+Types/lint and 101 affected unit cases across seven files pass.
+Human controls reuse the existing panels; no new browser acceptance is claimed.
+See [the source/runtime boundary](SEMUTA_SOURCE_UPDATE_20260907.md).
+
 **Semuta / native Advanced Harkonnen capture — 11 October.** Mandatory and
 winner-card battle discards now offer Semuta with the original capture pending.
 Claim or all-seat decline preserves winner casualties and cleanup before the
