@@ -29,6 +29,29 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Bureaucrat individual-payer threshold and evidence correction — 13 October.**
+Separate allied shares below five are no longer summed to create Bureaucrat
+eligibility. Basic/Advanced native setup and an actual worm alliance reproduce
+the rejected three-plus-three shipment; four post-cutover shipment/auction
+programs retain the original six-spice payment and full recipient income.
+Eight cases cover three/four personal plus three allied and the still-guarded
+five-plus-three contribution. The actual390px Basic controls pledge three,
+ship six counters for three personal plus three allied and finish Movement.
+This does not open individually qualifying private/split-payment reactions.
+
+The Homeworld Box, Distrans and Truthtrance controls now have six actual390px
+claim/pass flows, including real paid search/transfer/question controls and
+original Movement completion. The evidence bundle is
+`/tmp/dune-homeworld-controls-proof-3212.json`; it is local, not deployed or
+saved-room acceptance. Earlier summaries wrongly claimed these UI runs and
+pre-cutover Box proof; the feature log now distinguishes observed evidence.
+The unrelated shared parent-signature augmentation is removed. It had changed
+other Homeworld receipt bytes; no historical-save certification follows.
+The frozen batch passed types, lint and135/135 across13 unit files. Eight
+native bot programs (both modes × four profiles) complete shipment without
+rejected candidates; Hard/Brutal actually use below-threshold allied shares.
+
+
 **Semuta / Homeworld Truthtrance reaction — 11 October.**
 `truthtranceDiscard` is now admitted in the same envelope, so a definite
 Truthtrance answer offers the consumed card. A genuine original Homeworld
@@ -48,32 +71,30 @@ occupation authority and original Movement are unchanged. The claim/pass
 pair and all four legal bots pass alongside the existing Homeworld cases.
 
 **Semuta / Homeworld paid Box reaction — 11 October.**
-The same envelope also admitted no paid Nullentropy Box reaction, so a
-completed Box search produced no Semuta offer. `semutaOfferSupported` now
-admits `nullentropyDiscard` there as well, and the shared parent signature
-binds Homeworld custody, occupation history and the percentage ledger when a
-Homeworld module is present; non-Homeworld continuations keep their existing
-shape. A genuine original Homeworld state runs a real paid Box search
-(two-spice payment, shuffled pile, used Box on top) and then offers the used
-Box. Claim recovers the exact Box, pass leaves it discarded; the payment,
-searched card, occupation authority and original Movement are unchanged.
-One before program had no offer; the claim/pass pair and all four legal bots
-pass. Other Homeworld producers remain guarded.
+`semutaOfferSupported` admits `nullentropyDiscard` in this envelope.
+A real post-cutover singleton search pays two spice, recovers the selected
+card and places the used Box on top before offering Semuta. Claim recovers
+the exact Box; pass leaves it discarded. No pre-cutover Box program was run;
+the previous absence claim was inferred from the gate. The unrelated shared
+parent-signature augmentation is removed by the subsequent correction:
+it changed other Homeworld receipts and was unnecessary for admission.
+The final Box checkpoint passed 107/107 across ten files with types/lint;
+other producers remain guarded.
 
 **Semuta / Homeworld ordinary-card reaction — 11 October.**
 The Homeworld Semuta envelope admitted only three producers, so a used
 ordinary special card played there produced no reaction even though the
 printed card has no module restriction. `semutaOfferSupported` now also
-admits `ordinaryCardDiscard` in that roster; its existing signature already
-binds Homeworld custody, occupation history and percentage ledger, so no new
-source identity or payment rule was added. A genuine original Homeworld
+admits `ordinaryCardDiscard` in that roster; its existing effect signature
+includes Homeworlds/revival state, not the separate history/percentage fields.
+No new payment rule was added. A genuine original Homeworld
 occupation state at an active Movement owner plays Hajr, commits its
 movement grant, then offers the used card. Claim recovers it, pass leaves it
 discarded; wallets, custody, occupation history, percentage ledger and the
-Hajr grant are unchanged and original Movement still finishes. One before
-program had no offer; four claim/pass and all four legal bot profiles pass;
-seven consumer cases and the frozen six-file union pass with types/lint
-clean. Other Homeworld producers remain guarded.
+Hajr grant are unchanged and original Movement still finishes. The before
+program printed no offer, then failed an incidental null/undefined assertion.
+Four post-cutover programs, seven new cases and the six-file union77/77
+passed with types/lint clean. The actual390px claim and finish were exercised.
 
 **Tleilaxu Ambassador first-death Kwisatz Haderach — 11 October.**
 The source-supported separate KH identity (base p17) now appears in the

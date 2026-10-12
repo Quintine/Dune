@@ -4947,14 +4947,7 @@ function nullentropyParentSignature(
       )
       .sort(([a], [b]) => a.localeCompare(b)),
   );
-  return JSON.stringify({
-    searchEvent, resume, parents,
-    ...(g.homeworlds ? {
-      homeworlds: g.homeworlds,
-      occupation: g.homeworldOccupationHistory,
-      percentages: g.homeworldOccupiedPercentageLedger,
-    } : {}),
-  });
+  return JSON.stringify({ searchEvent, resume, parents });
 }
 type OrdinaryDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -8442,7 +8435,7 @@ function checkBureaucratContributors(g: Game,payee:string|undefined,shares:{paye
   const paid = shares.filter(share => share.amount > 0);
   const owner = nativeBureaucrat(g)?.owner;
   if (!owner || owner === payee || bureaucratUsed(g.bureaucratPayments?.used ?? [],g.turn,g.phase) ||
-    paid.reduce((total,share) => total+share.amount,0) < 5 || !paid.some(share => share.payer !== owner && share.payer !== payee)) return;
+    !paid.some(share => share.amount >= 5 && share.payer !== owner && share.payer !== payee)) return;
   requireRule(bureaucratPaymentModeSupported(g),'Bureaucrat with other optional modules is still being integrated.');
   requireRule(paid.length === 1 && !privateFunding,'Bureaucrat on allied funding or multiple payer contributions is awaiting private payment-split integration.');
 }

@@ -87,15 +87,39 @@ available for a later qualifying payment in that phase.
 
 Existing auction, shipment and bribe paths have public payment amounts; the
 negotiated revival price remains limited to the participating seats and trainer.
-Qualifying allied funding,
-including an aggregate such as three plus three and a payment funded entirely by
-the ally, is guarded before costs or commitment. It needs separate payment-unit
-and privacy work, as does split-recipient Homeworld income. Independent Karama
-shipments paid entirely to the Bank bypass this player-income guard. Do not infer
-eligibility from an aggregate that silently combines payers or reveals concealed
-funding. A successful use is retained for the physical
-card's turn and phase, including a same-phase ownership change. That physical
-card accounting is an explicit implementation inference.
+Allied funding is evaluated per actual payer, not by adding different payers'
+shares to create the five-spice trigger. A three-plus-three payment, or
+four-plus-three, has no eligible payer and proceeds through original funding,
+payment, card/force commitment and recipient income without a Bureaucrat offer.
+Individually qualifying private or split payments (including a payment funded
+entirely by a qualifying ally) still need payment-unit/privacy integration and
+remain guarded before costs. Split-recipient Homeworld income stays separate.
+Independent Karama shipments paid entirely to the Bank bypass player-income
+guards. A successful use remains tied to the physical card's turn and phase,
+including same-phase ownership changes; that accounting is an implementation
+inference.
+
+## Individual allied-payer threshold — 13 October 2026
+
+The shared contributor check previously aggregated all payer shares and
+rejected three-plus-three before commitment. The card's threshold names
+one paying player; separate below-threshold costs are not one six-spice
+payment by that player. The check now preserves that individual threshold
+without opening the unresolved qualifying split-payment reaction.
+
+Real Basic and Advanced skill setup trains Bureaucrat; a real turn-two worm
+forms the Harkonnen/Fremen alliance. Conserved starting counters and undealt
+Spice Card ordering isolate the payments; no wallet, phase, alliance or ledger
+is assigned. Both before shipment programs rejected valid three-plus-three.
+Afterward, Basic/Advanced shipment and ordinary auction programs preserve the
+six-spice debit and full Guild/Emperor receipt. Eight cases in
+`tests/bureaucrat-split-threshold.test.ts` cover three/four personal spice plus
+three allied, ordinary acquisition and the remaining five-plus-three guard.
+The actual390px Basic controls pledge Fremen's three,
+ship six counters into Habbanya Sietch17 for three personal plus three allied,
+credit Guild5→11 and finish the original Movement turn. Initial Vite optimizer
+request aborts and cosmetic action notices are recorded; this is local proof,
+not deployed or full-family acceptance.
 
 ## Saved choices and verification
 

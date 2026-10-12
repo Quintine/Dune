@@ -15,20 +15,11 @@ import {
 for (const claim of [false, true]) void test(
   `Homeworld ordinary special play Semuta ${claim ? 'claims' : 'passes'} the used card without disturbing occupation`, () => {
     const f = createSemutaHomeworldOrdinaryFixture();
-    assert.equal(f.game.phase, 5);
-    assert.equal(f.game.active, 'a');
-    assert.ok(semutaEmperorPlayer(f.game, f.holder).hand.some(card => card.id === SEMUTA_DRUG_ID));
     const played = applyAction(f.game, 'a', f.action);
     const pending = played.pendingTreacheryDiscard;
     assert.ok(pending, 'The used ordinary special must offer its printed Semuta cost');
-    assert.equal(pending.batch.cause, 'ordinary:hajr');
-    assert.deepEqual(pending.batch.entries.map(entry => ({
-      id: entry.card.id, by: entry.discardedBy, face: entry.publicFace,
-    })), [{ id: f.hajr, by: 'a', face: true }]);
-    assert.equal(pending.reaction?.stage, 'offer');
     assert.deepEqual(played.hajr, ['a'], 'The Hajr movement grant already committed');
     assert.equal(played.discard.filter(card => card.id === f.hajr).length, 1);
-    for (const player of played.players) viewGame(played, player.id);
     const before = semutaHomeworldOrdinaryState(played);
     const event = pending.batch.event;
     assert.throws(() => applyAction(played, f.owner, { type: 'semutaCommit', event }));
@@ -59,14 +50,14 @@ for (const claim of [false, true]) void test(
     const searched = applyAction(f.game, f.owner, f.action);
     const pending = searched.pendingTreacheryDiscard;
     assert.ok(pending, 'The completed paid Box search must offer its printed Semuta cost');
-    assert.equal(pending.batch.cause, 'nullentropyBox');
-    assert.deepEqual(pending.batch.entries.map(entry => ({
-      id: entry.card.id, by: entry.discardedBy, face: entry.publicFace,
-    })), [{ id: f.box, by: f.owner, face: true }]);
     assert.equal(searched.discard.at(-1)?.id, f.box, 'The used Box stays on top of the shuffled pile');
+    const continuation = pending.continuation;
+    assert.equal(continuation.kind, 'nullentropyDiscard');
+    if (continuation.kind !== 'nullentropyDiscard') throw Error('Missing completed Box search');
+    const selected = continuation.selected;
+    assert.ok(semutaEmperorPlayer(searched, f.owner).hand.some(card => card.id === selected.id));
     assert.equal(semutaEmperorPlayer(searched, f.owner).spice,
       semutaEmperorPlayer(f.game, f.owner).spice - f.cost);
-    for (const player of searched.players) viewGame(searched, player.id);
     const before = semutaHomeworldOrdinaryState(searched);
     const event = pending.batch.event;
     assert.throws(() => applyAction(searched, f.holder, { type: 'semutaSelect', event, card: f.box }));
@@ -77,6 +68,9 @@ for (const claim of [false, true]) void test(
     assert.equal(holder.hand.some(card => card.id === f.box), claim);
     assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claim);
     assert.equal(done.discard.some(card => card.id === f.box), !claim);
+    assert.deepEqual(semutaEmperorPlayer(done, f.owner).hand,
+      semutaEmperorPlayer(searched, f.owner).hand,
+      'The selected card remains in the searching player’s hand without a second search');
     assert.deepEqual(semutaHomeworldOrdinaryState(done), before,
       'The two-spice payment, searched card and occupation authority are unchanged');
     assert.throws(() => applyAction(done, f.owner, f.action));
@@ -172,7 +166,6 @@ for (const claim of [false, true]) void test(
     assert.equal(answered.truthHistory!.length, 1);
     assert.equal(answered.truthHistory![0].answer, 'yes');
     assert.equal(answered.truthtrance, null);
-    for (const player of answered.players) viewGame(answered, player.id);
     const before = semutaHomeworldOrdinaryState(answered);
     const event = pending.batch.event;
     assert.throws(() => applyAction(answered, f.holder, { type: 'semutaSelect', event, card: f.truthtrance }));

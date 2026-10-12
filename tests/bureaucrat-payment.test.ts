@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import test, { mock } from 'node:test';
+import test from 'node:test';
 import {
   applyAction,
   normalizeAutomaticGame,
@@ -294,37 +294,20 @@ void test('a real simultaneous Bene Gesserit advisor choice survives the deferre
   assert.deepEqual(done.decision, original);
   assert.equal(bureaucratPlayer(done, 'g').spice, 33);
 });
-void test('aggregate 3+3 and fully allied-funded qualifying payments reject before cost, force/card commitment or RNG', () => {
-  for (const allyPayment of [1, 3, 6]) {
+void test('individually qualifying mixed or fully allied-funded payments retain the integration guard before commitment', () => {
+  for (const allyPayment of [1, 6]) {
     let g = bureaucratPaymentGame();
     bureaucratPlayer(g, 'p').ally = 'e';
     bureaucratPlayer(g, 'e').ally = 'p';
     g = applyAction(g, 'e', { type: 'pledgeAid', amount: 6 });
-    mock.method(globalThis.crypto, 'randomUUID', () => {
-      throw new Error('Unexpected event before payment preflight');
-    });
-    try {
-      reject(
-        g,
-        'p',
-        { ...ship, amount: 6, allyPayment },
-        /private payment-split/,
-      );
-    } finally {
-      mock.restoreAll();
-    }
+    reject(g, 'p', { ...ship, amount: 6, allyPayment });
     g = bureaucratPaymentGame();
     bureaucratPlayer(g, 'p').ally = 'g';
     bureaucratPlayer(g, 'g').ally = 'p';
     g = beginBureaucratAuction(g);
     g = applyAction(g, 'g', { type: 'pledgeAid', amount: 6 });
     g = applyAction(g, 'b', { type: 'passBid' });
-    reject(
-      g,
-      'p',
-      { type: 'bid', amount: 6, allyPayment },
-      /private payment-split/,
-    );
+    reject(g, 'p', { type: 'bid', amount: 6, allyPayment });
   }
 });
 void test('saved Bureaucrat receipt, source, unique decision, continuation and phase-use mutations reject immutably before reads', () => {

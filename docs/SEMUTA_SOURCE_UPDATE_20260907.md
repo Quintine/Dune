@@ -862,9 +862,11 @@ card of a completed paid Nullentropy Box search, not only paid Kaitain
 disposal, Tupile cleanup and printed Karama canceling income. The used card is the same public fresh batch; claim recovers it and
 pass leaves it discarded, with Homeworld custody, occupation history, the
 percentage ledger, wallets, the two-spice Box payment and the card's own
-committed effect unchanged. The shared parent signature additionally binds
-Homeworld state when that module is present. One before program lacked the
-offer; the claim/pass pair and all four legal bots pass. Other Homeworld
+committed effect unchanged. The shared parent-signature augmentation was
+unnecessary for this admission and changed other Homeworld receipt bytes;
+the correction removes it. The Hajr before program printed no offer then
+failed an incidental null/undefined assertion. Box, Distrans and Truthtrance
+had post-cutover programs but no observed pre-cutover run. Other Homeworld
 producers remain guarded, not prohibited by a newly found printed rule.
 
 **11 October 2026 — native paid-income cancellation costs.** Printed Karama
