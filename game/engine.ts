@@ -6951,7 +6951,11 @@ function semutaOfferSupported(
       continuation.kind !== 'ordinaryCardDiscard' &&
       continuation.kind !== 'nullentropyDiscard' &&
       continuation.kind !== 'distransDiscard' &&
-      continuation.kind !== 'truthtranceDiscard') return false;
+      continuation.kind !== 'truthtranceDiscard' &&
+      continuation.kind !== 'choamLaLaLaDiscard' &&
+      continuation.kind !== 'choamGamontDiscard' &&
+      continuation.kind !== 'choamKulonDiscard' &&
+      continuation.kind !== 'choamBalisetDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

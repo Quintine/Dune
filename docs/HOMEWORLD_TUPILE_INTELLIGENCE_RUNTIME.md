@@ -14,6 +14,14 @@ card is the same public fresh batch, claim recovers it and pass leaves it
 discarded, and the card's own committed effect, payment, gift, answer
 history, wallets, custody and occupation history are unchanged.
 
+Native printed Kulon, Baliset, La La La and Trip to Gamont disposal also offers
+Semuta in this envelope before that power's original effect. Claim/pass adds
+Kulon's movement bonus once, finishes the free-revival denial without
+inventing forces or a debit, stops the same uncommitted Baliset move, or
+returns one original board counter to its native reserves before the same
+CHOAM closing-Mentat controls resume. Jubba and other producers remain outside
+this batch; no Nexus or wider optional-module combination is admitted.
+
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
 and suspended opening; its lease row remains pending during the neutral

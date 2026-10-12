@@ -855,6 +855,32 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — native CHOAM Homeworld Worthless costs.** The existing
+Homeworld envelope now admits the printed Kulon, Baliset, La La La and Trip
+to Gamont discard continuations. Their original native rules are unchanged;
+the authorized supplied Advanced rulebook physical p29 lists the same four
+powers, and Semuta has no printed Homeworld exclusion. No Nexus fuel, Jubba,
+Kull counter or unrelated producer is added.
+
+Original CHOAM/Richese/Emperor/Atreides Homeworld setup and real phase controls
+produce these costs. Native reserve shipment supplies CHOAM's movement group;
+a real declared Atreides move supplies reactive Baliset. La La La removes the
+original free allowance without fabricated Tanks, and closing Gamont returns
+one original Atreides board counter to Caladan rather than reviving it.
+Eight actual before programs discarded the printed cost without an offer.
+Sixteen parent claim/pass programs after admission retain paid prefixes and
+complete the original movement, Revival or closing-Mentat suffix once.
+
+Four actual390px owned controls declare the powers, pass native Karama,
+recover the used cost and resume original controls. Kulon/Baliset exchange
+at Richese's full4/4 hand; Kulon moves the paid CHOAM counter at range two,
+Baliset leaves the original ten Atreides counters uncommitted before one
+alternate move, La La La leaves forces and wallets unchanged, and Gamont
+returns board10→9/reserves10→11/Tanks0 before CHOAM's original closing choice.
+`/tmp/dune-homeworld-native-powers-3214.json` records accepted actions and
+observed state outside Git. Local staged-card proof is not deployed, saved-room
+or complete-mode acceptance.
+
 **11 October 2026 — Homeworld ordinary-card reaction.** The bounded Homeworld
 entry now also offers Semuta for an ordinary used special card played in its
 roster, a clean Distrans transfer, a definite Truthtrance answer and the used

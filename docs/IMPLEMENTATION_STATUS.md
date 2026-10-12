@@ -1,5 +1,58 @@
 # Dune implementation status
 
+## 13 October 2026 — native Homeworld CHOAM Worthless discard continuation
+
+The Homeworld Semuta producer gate excluded the native printed Kulon,
+Baliset, La La La and Trip to Gamont costs even though their existing native
+effects already worked there. The gate now admits those exact four existing
+continuation kinds; no signature, action shape, payment rule, force rule or
+optional-module profile changes.
+
+The fixtures use the exposed original post-setup snapshot of the real
+CHOAM/Richese/Emperor/Atreides Homeworld initializer, before the older Kaitain
+fixture's hand staging/disposal. Subsequent phase steps are native; selected
+later physical cards and unplayed Spice order are conserved, not minted.
+Native reserve shipment supplies the actual CHOAM movement counter.
+An actual Atreides declaration supplies reactive Baliset's uncommitted move.
+La La La uses the original free allowance without fabricated Tanks, and
+Gamont uses an original Atreides starting board counter.
+
+Eight before programs (both modes × four powers) discarded once without a
+Semuta offer. Sixteen parent post-cutover claim/pass programs all offer and
+finish the same original suffix: range-two Kulon/alternate Baliset movement
+reach Collection with one move, La La La continues to original Movement,
+and Gamont returns one force to Caladan before CHOAM's original close reaches
+turn2 Storm. Native decline/Karama Baliset paths still move the original
+declared group once and retain its unused Baliset.
+
+Four actual390px human flows use native power controls and Karama allowance,
+then the owned Semuta commit. Kulon/Baliset exchange at Richese4/4 and retain
+CHOAM's two-spice paid shipment/reserves19. Kulon moves that counter from
+Red Chasm7 to Minor Erg5; Baliset leaves ten Atreides counters uncommitted
+before its legal Oh Gap9 alternate move. La La La leaves reserves/Tanks and
+wallets unchanged, then reaches the original phase5 Atreides-spice response.
+Gamont returns board10→9/reserves10→11/Tanks0 and restores the actual CHOAM
+closing control, which reaches turn2/phase0. Accepted actions/state are in
+`/tmp/dune-homeworld-native-powers-3214.json` outside Git.
+
+The first browser navigation timed out while Vite optimized/reloaded
+dependencies; the warmed service worked without restarting it. A label/From
+selector mismatch was reported; the actual observed select handled the same
+route. Cosmetic notices sometimes dim captures. Final browser errors were
+empty. Only owned temporary files/service/tab were removed. This is local
+proof, not deployed, persisted-room or complete-rules certification.
+Jubba, Kull counter disposal, Nexus and other producer gates remain unchanged.
+Verification: TypeScript passed after repairing reaction-union narrowing;
+lint passed after removing an unused fixture import. The first test run
+hit an incidental undefined-versus-null expectation for proactive Revival;
+that expectation was deleted, not re-pinned. Actual allowance, force,
+custody and original-control assertions remain. The final eight-file union
+passes122/122, including42 new cases and all four minimal legal profiles.
+The application build also passes. It reports module.register deprecation,
+client chunks over500kB and Vinext static route-classification limitations.
+Those warnings are not hidden; this checkpoint does not certify deployment.
+
+
 ## 13 October 2026 — individual Bureaucrat payer threshold; evidence correction
 
 The printed skill names one other payer's payment of at least five spice.

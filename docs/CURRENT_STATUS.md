@@ -29,6 +29,32 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Homeworld Worthless powers — 13 October.**
+The existing Homeworld envelope now offers the printed Kulon, reactive
+Baliset, La La La and Trip to Gamont discard costs before their original
+effects. Native setup, real Homeworld reserve shipment and original phase
+controls remain; no wallet, clock, alliance or force/custody ledger is assigned.
+Eight actual before programs had no offer. Sixteen parent claim/pass programs
+now finish original movement, Revival or closing Mentat once. Kulon adds one
+range without another move; Baliset stops an uncommitted Atreides move;
+La La La removes only free allowance; Gamont returns one original board
+counter to Caladan, not Tanks revival.
+
+Four actual390px controls declare/allow the powers, recover their costs and
+resume original ownership. Kulon/Baliset exchange at4/4; the paid CHOAM counter
+moves at range two and Atreides takes one alternate move after Baliset.
+Gamont board10→9/reserves10→11/Tanks0 precedes the original CHOAM close to
+turn2. La La La retains forces and reaches original phase5 Atreides foresight.
+Evidence: `/tmp/dune-homeworld-native-powers-3214.json`. This is local staged-
+card proof, not deployed, saved-room or full-mode acceptance. Jubba, Kull
+counter costs, Nexus and unrelated Homeworld producers remain excluded.
+The batch passes types/lint and122/122 across eight affected unit files.
+Forty-two new behavioral cases cover both modes, original decline/cancel,
+full-hand private exchange and all four minimal legal bot profiles.
+The application build passes with Vinext's large-chunk and static route-
+classification warnings; no warning was suppressed and no release gate opens.
+
+
 **Bureaucrat individual-payer threshold and evidence correction — 13 October.**
 Separate allied shares below five are no longer summed to create Bureaucrat
 eligibility. Basic/Advanced native setup and an actual worm alliance reproduce
