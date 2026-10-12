@@ -29,6 +29,19 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Stale battle-frame recovery expectation repaired — 11 October.** The
+`authenticated clean Semuta producers claim once through restart and room CAS`
+case asserted the winner's cheap-hero frame as the first post-battle
+continuation. Actual native order is the mandatory battle batch
+(`battleResolved`/`battle:mandatory`, loser's used defense) followed by the
+winner's compulsory discard (`winnerMandatoryDiscard`/`battle:winnerMandatory`,
+the hero). The case now walks that real order, keeps its restart/room-CAS and
+single-claim assertions on the winner frame, and asserts the loser frame
+separately. Verified pre-existing: the same assertion failed at `5b3729e` in a
+clean worktree, so it was not a regression from this session's slices.
+`tests/semuta-recovery.test.ts` passes15/15; the affected offline rule union
+passes650/650 across60 files; types/lint pass.
+
 **Semuta / printed native CHOAM cancellation cost — 11 October.**
 `karamaChoamWorthlessDiscard` reuses the original response-cost path and
 Worthless cancellation quote for five ordinary printed/Cunning powers.

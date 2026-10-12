@@ -448,14 +448,28 @@ void test('authenticated clean Semuta producers claim once through restart and r
       defense: nextDefense.id });
     mandatoryBattle = await act(1, { type: 'traitorCall', call: false });
     const heroOffer = await act(2, { type: 'traitorCall', call: false });
-    assert.equal(heroOffer.pendingTreacheryDiscard?.continuation.kind, 'winnerMandatoryDiscard');
+    // The winner's cheap hero and the loser's used defense form separate frames:
+    // the mandatory battle batch settles first, then the winner's own compulsory
+    // discard. The Semuta claim under test targets that second frame.
+    assert.equal(heroOffer.pendingTreacheryDiscard?.continuation.kind, 'battleResolved');
+    assert.equal(heroOffer.pendingTreacheryDiscard?.batch.cause, 'battle:mandatory');
     assert.equal(heroOffer.pendingTreacheryDiscard?.reaction?.stage, 'offer');
-    assert.equal(heroOffer.discard.filter(card => card.id === hero.id).length, 1);
+    assert.equal(heroOffer.discard.filter(card => card.id === nextDefense.id).length, 1);
+    let heroFrame = heroOffer;
+    {
+      const mandatoryEvent = heroOffer.pendingTreacheryDiscard!.batch.event;
+      for (const index of [2, 1, 0])
+        heroFrame = await act(index, { type: 'semutaPass', event: mandatoryEvent });
+    }
+    assert.equal(heroFrame.pendingTreacheryDiscard?.continuation.kind, 'winnerMandatoryDiscard');
+    assert.equal(heroFrame.pendingTreacheryDiscard?.batch.cause, 'battle:winnerMandatory');
+    assert.equal(heroFrame.pendingTreacheryDiscard?.reaction?.stage, 'offer');
+    assert.equal(heroFrame.discard.filter(card => card.id === hero.id).length, 1);
     await f.restart().continueRoomAutomatic(code, clock);
-    assert.equal((await f.restart().readRoom(code)).version, heroOffer.version);
+    assert.equal((await f.restart().readRoom(code)).version, heroFrame.version);
     assert.equal((await f.restart().readSeatView(code, auths[0])).semutaReaction?.canCommit, true);
     const heroClaim = await act(0, { type: 'semutaCommit',
-      event: heroOffer.pendingTreacheryDiscard!.batch.event });
+      event: heroFrame.pendingTreacheryDiscard!.batch.event });
     assert.equal(heroClaim.pendingTreacheryDiscard, null);
     assert.equal(heroClaim.decision?.kind, 'battleCards');
     assert.equal(seat(heroClaim, ids[1]).hand.some(card => card.id === nextWeapon.id), true);
