@@ -29,6 +29,19 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / Homeworld paid Box reaction — 11 October.**
+The same envelope also admitted no paid Nullentropy Box reaction, so a
+completed Box search produced no Semuta offer. `semutaOfferSupported` now
+admits `nullentropyDiscard` there as well, and the shared parent signature
+binds Homeworld custody, occupation history and the percentage ledger when a
+Homeworld module is present; non-Homeworld continuations keep their existing
+shape. A genuine original Homeworld state runs a real paid Box search
+(two-spice payment, shuffled pile, used Box on top) and then offers the used
+Box. Claim recovers the exact Box, pass leaves it discarded; the payment,
+searched card, occupation authority and original Movement are unchanged.
+One before program had no offer; the claim/pass pair and all four legal bots
+pass. Other Homeworld producers remain guarded.
+
 **Semuta / Homeworld ordinary-card reaction — 11 October.**
 The Homeworld Semuta envelope admitted only three producers, so a used
 ordinary special card played there produced no reaction even though the

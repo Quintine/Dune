@@ -1,5 +1,26 @@
 # Dune implementation status
 
+## 11 October 2026 — Homeworld paid Box Semuta reaction
+
+The Homeworld envelope also admitted no paid Nullentropy Box reaction, so a
+completed Box search in that roster produced no Semuta offer.
+
+`semutaOfferSupported` now admits `nullentropyDiscard` there, and the shared
+`nullentropyParentSignature` additionally binds Homeworld custody, occupation
+history and the percentage ledger when `g.homeworlds` is present. Non-Homeworld
+continuations keep their previous signature shape, so no existing saved or
+in-flight receipt changes meaning.
+
+A genuine original Homeworld state runs a real paid Box search: two
+uncommitted spice are paid, the pile is shuffled, the selected card is
+recovered and the used Box is placed on top. Semuta is then offered for that
+used Box. Claim recovers the exact Box; pass leaves it discarded. The payment,
+the searched card, Homeworld custody, occupation history, the percentage
+ledger and the remaining Movement are unchanged, and the Box cannot be
+searched again. The before program produced no offer; the claim/pass pair and
+all four legal bot profiles pass. Thirteen consumer cases and the frozen
+six-file union pass with types/lint. Other Homeworld producers remain guarded.
+
 ## 11 October 2026 — Homeworld ordinary-card Semuta reaction
 
 The Homeworld Semuta envelope admitted only paid Kaitain disposal, Tupile

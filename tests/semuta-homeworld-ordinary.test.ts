@@ -5,7 +5,8 @@ import { botActions } from '../game/bots';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { semutaEmperorPlayer } from './fixture-semuta-emperor-share';
 import {
-  createSemutaHomeworldOrdinaryFixture, reactSemutaHomeworldOrdinary,
+  createSemutaHomeworldBoxFixture, createSemutaHomeworldOrdinaryFixture,
+  reactSemutaHomeworldBox, reactSemutaHomeworldOrdinary,
   semutaHomeworldOrdinaryState,
 } from './fixture-semuta-homeworld-ordinary';
 
@@ -47,6 +48,58 @@ for (const claim of [false, true]) void test(
     assert.ok(!suffix.movementRemaining?.includes('a'));
     assert.equal(suffix.phase, 5);
     assert.deepEqual(semutaHomeworldOrdinaryState(suffix), before);
+  },
+);
+
+for (const claim of [false, true]) void test(
+  `Homeworld paid Nullentropy Box Semuta ${claim ? 'claims' : 'passes'} the used Box after its real search`, () => {
+    const f = createSemutaHomeworldBoxFixture();
+    const searched = applyAction(f.game, f.owner, f.action);
+    const pending = searched.pendingTreacheryDiscard;
+    assert.ok(pending, 'The completed paid Box search must offer its printed Semuta cost');
+    assert.equal(pending.batch.cause, 'nullentropyBox');
+    assert.deepEqual(pending.batch.entries.map(entry => ({
+      id: entry.card.id, by: entry.discardedBy, face: entry.publicFace,
+    })), [{ id: f.box, by: f.owner, face: true }]);
+    assert.equal(searched.discard.at(-1)?.id, f.box, 'The used Box stays on top of the shuffled pile');
+    assert.equal(semutaEmperorPlayer(searched, f.owner).spice,
+      semutaEmperorPlayer(f.game, f.owner).spice - f.cost);
+    for (const player of searched.players) viewGame(searched, player.id);
+    const before = semutaHomeworldOrdinaryState(searched);
+    const event = pending.batch.event;
+    assert.throws(() => applyAction(searched, f.holder, { type: 'semutaSelect', event, card: f.box }));
+    const done = reactSemutaHomeworldBox(searched, f, claim);
+    assert.equal(done.pendingTreacheryDiscard, null);
+    assert.equal(done.resolvedTreacheryDiscardSequence, pending.sequence);
+    const holder = semutaEmperorPlayer(done, f.holder);
+    assert.equal(holder.hand.some(card => card.id === f.box), claim);
+    assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claim);
+    assert.equal(done.discard.some(card => card.id === f.box), !claim);
+    assert.deepEqual(semutaHomeworldOrdinaryState(done), before,
+      'The two-spice payment, searched card and occupation authority are unchanged');
+    assert.throws(() => applyAction(done, f.owner, f.action));
+    const suffix = applyAction(done, f.owner, { type: 'endMovement' });
+    assert.ok(!suffix.movementRemaining?.includes(f.owner));
+    assert.equal(suffix.phase, 5);
+  },
+);
+
+for (const difficulty of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) void test(
+  `the ${difficulty} bot settles the Homeworld paid-Box Semuta cost`, () => {
+    const f = createSemutaHomeworldBoxFixture();
+    const searched = applyAction(f.game, f.owner, f.action);
+    const view = viewGame(searched, f.holder);
+    view.players.find(player => player.id === f.holder)!.bot = difficulty;
+    const action = botActions(view)[0];
+    assert.ok(action);
+    const done = applyAction(searched, f.holder, action);
+    assert.equal(done.pendingTreacheryDiscard, null);
+    const holder = done.players.find(player => player.id === f.holder)!;
+    const claimed = holder.hand.some(card => card.id === f.box);
+    assert.equal(claimed || done.discard.some(card => card.id === f.box), true);
+    assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claimed);
+    assert.equal(done.players.find(player => player.id === f.owner)!.spice,
+      f.game.players.find(player => player.id === f.owner)!.spice - f.cost);
   },
 );
 

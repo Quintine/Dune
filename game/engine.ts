@@ -4947,7 +4947,14 @@ function nullentropyParentSignature(
       )
       .sort(([a], [b]) => a.localeCompare(b)),
   );
-  return JSON.stringify({ searchEvent, resume, parents });
+  return JSON.stringify({
+    searchEvent, resume, parents,
+    ...(g.homeworlds ? {
+      homeworlds: g.homeworlds,
+      occupation: g.homeworldOccupationHistory,
+      percentages: g.homeworldOccupiedPercentageLedger,
+    } : {}),
+  });
 }
 type OrdinaryDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
@@ -6948,7 +6955,8 @@ function semutaOfferSupported(
   if (g.homeworlds && continuation.kind !== 'kaitainDiscard' &&
       continuation.kind !== 'tupileCleanupDiscard' &&
       continuation.kind !== 'karamaIncomeDiscard' &&
-      continuation.kind !== 'ordinaryCardDiscard') return false;
+      continuation.kind !== 'ordinaryCardDiscard' &&
+      continuation.kind !== 'nullentropyDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

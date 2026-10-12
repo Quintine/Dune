@@ -857,13 +857,15 @@ module entry, public gate or complete-mode certification follows.
 
 **11 October 2026 — Homeworld ordinary-card reaction.** The bounded Homeworld
 entry now also offers Semuta for an ordinary used special card played in its
-roster, not only paid Kaitain disposal, Tupile cleanup and printed Karama
-canceling income. The used card is the same public fresh batch; claim
-recovers it and pass leaves it discarded, with Homeworld custody, occupation
-history, the percentage ledger, wallets and the card's own committed effect
-unchanged. One before program lacked the offer; four claim/pass and all four
-legal bots pass. Other Homeworld producers remain guarded, not prohibited by
-a newly found printed rule.
+roster and for the used card of a completed paid Nullentropy Box search, not
+only paid Kaitain disposal, Tupile cleanup and printed Karama canceling
+income. The used card is the same public fresh batch; claim recovers it and
+pass leaves it discarded, with Homeworld custody, occupation history, the
+percentage ledger, wallets, the two-spice Box payment and the card's own
+committed effect unchanged. The shared parent signature additionally binds
+Homeworld state when that module is present. One before program lacked the
+offer; the claim/pass pair and all four legal bots pass. Other Homeworld
+producers remain guarded, not prohibited by a newly found printed rule.
 
 **11 October 2026 — native paid-income cancellation costs.** Printed Karama
 canceling original Guild shipment income, non-Ambassador Emperor auction

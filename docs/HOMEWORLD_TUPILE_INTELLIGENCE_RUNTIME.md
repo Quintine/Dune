@@ -7,10 +7,11 @@ Runtime checkpoint, 10 September 2026. Native CHOAM can now request and retain a
 The separate fresh `semuta --homeworlds` entry reuses original occupation setup
 for native Richese/CHOAM and classics, exact CHOAM, with no other optional
 modules. It does not convert played profiles or widen the Basic epoch ruling.
-Besides the three dedicated producers, an ordinary used special card played in
-this roster also offers Semuta: the used card is the same public fresh batch,
-claim recovers it and pass leaves it discarded, and the card's own committed
-effect, wallets, custody and occupation history are unchanged.
+Besides the three dedicated producers, a completed paid Nullentropy Box
+search and an ordinary used special card played in this roster also offer
+Semuta: the used card is the same public fresh batch, claim recovers it and
+pass leaves it discarded, and the card's own committed effect, payment,
+wallets, custody and occupation history are unchanged.
 
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
