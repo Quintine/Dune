@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 13 October 2026 — Homeworld carried-flight and finite Sapho disposal
+
+The producer gate additionally admits existing `ornithopterDiscard`,
+`saphoAuctionDiscard` and `saphoMovementDiscard` kinds. The native range,
+cohort, original groups, queue, funding and event validators remain unchanged.
+No signature, price, physical-order or optional-profile cutover.
+
+Original Homeworld CHOAM/Richese/classic setup and paid native shipment
+provide one/two CHOAM counters. Real first/final moves use the printed range-
+three or two-group card, and an empty original cohort can end early.
+Six before programs disposed once without Semuta. Twelve parent after
+claim/pass programs retain moved1/2/1, counter custody and the original
+arrival/turn suffix to Collection. The existing prior-move/Hajr, advanced
+advisor and active Homeworld-transfer guards remain.
+
+Real Richese Declaration/cache/method controls provide a Once Around lot with
+an earlier one-spice bid. Clean no-Guild unstarted turns provide Movement
+order. Original physical Sapho is conservatively positioned for a non-Richese
+unacted holder. Eight before programs changed only their finite queue and
+disposed without an offer. Sixteen parent after programs preserve earlier
+funding/acquisition/income or one original paid shipment/ground move through
+the same reordered turns. Cyclic/silent, partly completed, first-versus-Guild
+and late battle timing remain excluded; no pending source question is settled.
+
+Three actual390px card controls complete range3, a second original group
+and empty-cohort early end. All recover the physical card at4/4 without
+repeating movement or shipment: paid C8/6/8, reserves19/18/19, moved1/2/1
+and the same original next Atreides turn. Four actual390px Sapho controls
+change first/last, commit Semuta at4/4 and use original actor controls.
+Both finite lots keep Emperor's original10→9 invoice/card and Richese5→6
+credit. First Movement uses one real native shipment and ground move;
+last Movement consumes original r/c/a/e turns once to Collection.
+Physical order remains r/e/c/a. Artifacts outside Git:
+`/tmp/dune-homeworld-native-flight-3218.json`,
+`/tmp/dune-homeworld-native-sapho-3219.json`.
+
+Action notices occasionally cover controls; local Continue acknowledges
+them. One transient DOM failure occurred after a successfully ended Richese
+turn; fresh actual state showed c/a/e remaining, so the accepted action
+was not repeated. Initial optimizer aborts are retained. Only owned QA
+services/tabs/root files were removed. No deployed, saved-room, natural
+full-game or completed-mode certification. New cases cover70 semantic
+paths and all four minimal legal profiles; no strategy tuning.
+The frozen six-file card union passes126/126 with types/lint. Parent kept
+resource, cohort, funded acquisition and actual actor-sequence assertions;
+fixture-only ship/move trace counts were removed. JSON comparison ignores
+incidental omitted undefined controls, not physical/queue/private behavior.
+The application build passes with the existing module.register deprecation,
+client chunks over500kB and Vinext static route-classification limitations.
+No warning threshold is changed.
+
 ## 13 October 2026 — native Homeworld CHOAM completed-sale discard
 
 The existing Homeworld Semuta gate now admits `choamSaleDiscard`. Native

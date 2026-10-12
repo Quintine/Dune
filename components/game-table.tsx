@@ -1171,6 +1171,9 @@ export function GameTable({
               Truthtrance answers and used ordinary special cards offer Semuta.
               Completed legal CHOAM market sales also offer their used card;
               recovery preserves the already credited two or three spice.
+              Final Ornithopter disposal keeps the completed original groups;
+              finite Once Around and clean unstarted movement Sapho costs keep
+              the changed queue before its original next actor continues.
               Native printed Kulon, Baliset, La La La, Trip to Gamont and Jubba
               costs also pause before their original effect. Printed Karama
               canceling these native powers or Guild, Emperor auction or Richese

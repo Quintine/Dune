@@ -855,6 +855,33 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — original Homeworld carried-flight and finite-order costs.**
+The existing profile now admits final `ornithopterDiscard`, clean
+`saphoAuctionDiscard` and `saphoMovementDiscard`. Native range, cohort,
+funding, queue and event rules are unchanged. Active Homeworld transfers,
+Hajr/prior moves, advanced advisor flight and unresolved cyclic/partial/Guild/
+late-Sapho timing remain guarded.
+
+Six real flight before programs and eight real finite-order before programs
+disposed their cards without offers. Twelve parent flight claim/pass programs
+now preserve one/two completed original counters and original turn advancement.
+Sixteen parent Sapho claim/pass programs preserve the earlier one-spice cache
+bid/purchase/income or one original paid shipment and ground move through the
+reordered queue. No global storm-order rewrite or repeated opportunity.
+
+Three actual390px flight controls use range-three, final second group and
+empty-cohort early end; recovery at4/4 leaves moved1/2/1, paid reserves19/18/19
+and the same next actor. Four actual390px Sapho first/last controls preserve
+the original finite lot invoice (Emperor10→9, Richese5→6) or unchanged physical
+order while remaining combined turns reorder. A first Movement turn makes one
+real paid shipment10→8/reserves20→19 and one ground move; last ordering ends
+original r/c/a/e turns to Collection. Scope artifacts outside Git:
+`/tmp/dune-homeworld-native-flight-3218.json`,
+`/tmp/dune-homeworld-native-sapho-3219.json`.
+Cosmetic notices required local acknowledgement; an observed transient DOM
+failure was followed by fresh actual state, not a repeated accepted action.
+Initial optimizer aborts remain recorded. No deployed/save/full-mode claim.
+
 **13 October 2026 — completed native Homeworld CHOAM market disposal.**
 `choamSaleDiscard` is now admitted in the existing Homeworld envelope. The
 original sale still commits its physical discard and two/three-spice credit

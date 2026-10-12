@@ -31,6 +31,13 @@ Worthless-sale prohibition, including Worthless duplicates, is unchanged;
 actual native shipment can lower population before a legal sale. Normal
 duplicates need no low-population exception. No new bank-income ruling follows.
 
+Final Ornithopter and clean finite Sapho auction/Movement order disposal also
+offer their used card in this profile. Completed original groups and paid
+sources stay committed; reordered unacted queues keep earlier bids/funding
+and physical storm order. Recovery only releases the same next native actor.
+Hajr/prior flight, active Homeworld transfers, advisors, cyclic auctions,
+partly completed turns, first-versus-Guild and late battle timing remain guarded.
+
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
 and suspended opening; its lease row remains pending during the neutral

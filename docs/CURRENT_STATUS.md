@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Homeworld flight and finite order — 13 October.**
+Final Ornithopter and clean Sapho Once Around/Movement order costs now
+offer their used card. Six flight/eight order before programs had no offer;
+28 parent after claim/pass programs preserve completed groups, paid prefixes,
+finite opportunities and original turn ownership. Seventy new cases cover
+both modes, empty-cohort early end, queue/funding and all four legal profiles.
+Three actual390px flight paths exchange at4/4 without another move; four
+actual390px Sapho paths exchange at4/4, keep Emperor10→9/Richese5→6 native
+invoice or finish original unstarted turns without global order rewriting.
+Artifacts: `/tmp/dune-homeworld-native-flight-3218.json`,
+`/tmp/dune-homeworld-native-sapho-3219.json`. Hajr/prior movement, active
+Homeworld transfers, advisors and unresolved cyclic/partial/Guild/late Sapho
+timing remain guarded. Local staged-card proof is not release/save/deployed
+or complete-faction acceptance.
+Types/lint and126/126 across six focused card test files pass. Seventy new
+cases keep original flight/finite-order constraints rather than opening
+unresolved timing. No broader assurance suite was substituted.
+The application build passes with deprecation, large-chunk and static
+route-classification warnings recorded; no warning or mode gate is suppressed.
+
 **Semuta / native Homeworld market disposal — 13 October.**
 Completed legal CHOAM market sales now offer their used card after the
 original physical discard and two/three-spice credit. High Tupile's
