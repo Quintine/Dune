@@ -1177,6 +1177,9 @@ export function GameTable({
               Accepted losing-card, mandatory winning-card and selected winner
               disposal are separate fresh events. Recovery keeps the original
               casualties and paid native deployments; combat does not repeat.
+              Clean Residual Poison keeps its one native random leader death
+              without a bounty. Early Sapho aggressor and remaining Battle
+              chooser costs keep their original participants and finite priority.
               Native printed Kulon, Baliset, La La La, Trip to Gamont and Jubba
               costs also pause before their original effect. Printed Karama
               canceling these native powers or Guild, Emperor auction or Richese

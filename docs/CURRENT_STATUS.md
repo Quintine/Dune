@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / clean Homeworld preparation and chooser costs — 13 October.**
+Clean Residual Poison, early Sapho aggressor and remaining Battle chooser
+disposal now offer their used cards without new timing or signatures. Eight
+genuine before programs had no offer;24 parent after programs preserve one
+random death/no bounty or the original tie/finite chooser state and finish
+native Collection. The ready-Poison guard and already-ready Sapho opponent
+retain their distinct original behavior. C is already eligible-last after
+the real R/A prefix, so the legal last fixture uses Emperor, not a forced option.
+Five actual390px flows exchange at4/4 and continue original shared readiness
+or choose the opposing physical attacker from C's control. Artifacts:
+`/tmp/dune-homeworld-native-preparation-3221.json`,
+`/tmp/dune-homeworld-native-chooser-3221.json`.
+UI preparation proof stops before plans; the24 runtime programs reach phase7.
+Late timing, inspected/readied Poison interruption and Advanced Harkonnen
+disclosure remain guarded. No save/deployed/full-mode certification.
+Types/lint and92/92 across seven focused unit files (62 new cases) pass.
+The build passes with existing deprecation/chunk/classification warnings.
+One unused type import failed initial lint; only lint/tests were retried.
+
 **Semuta / original Homeworld battle costs — 13 October.**
 Accepted losing-card, later mandatory winning-card and optional winner-selected
 disposal now offer separate fresh events. Six genuine before programs had no

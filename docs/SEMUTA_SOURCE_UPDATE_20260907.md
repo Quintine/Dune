@@ -855,6 +855,29 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — clean native Homeworld preparation and remaining chooser.**
+Original clean Residual Poison disposal, early Sapho aggressor and between-
+battle first/last costs now offer their physical cards. The printed/native
+effects already committed: one random eligible leader death without bounty,
+changed ordinary tie priority or only remaining chooser priority. Recovery
+does not reroll, change participants, replay a prefix or grant another battle.
+Source/timing contracts above remain; no new late/interception ruling.
+
+Eight actual before programs had no offer. Twenty-four parent after programs
+cover both rules modes, claim/pass/full-hand, the two distinct other-ready
+boundaries, original living-disc plans/ties and one native Collection.
+Poison's clean offer excludes earlier readiness; native death remains legal.
+Early Sapho instead preserves an already-ready opponent under its existing
+pre-plan contract. After the paid R1/A10 prefix, C is already eligible-last;
+the genuine last example uses Emperor, not a fabricated C option.
+
+Five actual390px used-card/exchange/readiness/chooser flows retain original
+E attacker/C defender and physical r/e/c/a order. UI stops before plans;
+runtime reaches phase7. Artifacts:
+`/tmp/dune-homeworld-native-preparation-3221.json`,
+`/tmp/dune-homeworld-native-chooser-3221.json`.
+No private saved room, deployment or full-mode acceptance is claimed.
+
 **13 October 2026 — original Homeworld public battle disposal.**
 `battleResolved`, `winnerMandatoryDiscard` and winner `battleCleanup` now
 offer their existing fresh events in this profile. The first losing batch,

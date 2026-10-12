@@ -44,6 +44,13 @@ deployments and accepted combat remain committed; recovery restores original
 casualties/cleanup, then normal Collection can credit its real board income.
 It does not refund support, revive a killed leader or rerun a battle.
 
+Clean original Residual Poison and early/remaining-Battle Sapho costs also
+offer their used cards. Poison keeps one actual random death with no bounty;
+already-readied/inspected Poison retains automatic disposal without this
+interruption. Early Sapho keeps original participants and ordinary tie priority,
+including an already-ready opponent; between-battle first/last keeps completed
+prefixes and only remaining chooser opportunities. None rewrites storm order.
+
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
 and suspended opening; its lease row remains pending during the neutral

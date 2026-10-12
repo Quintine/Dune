@@ -6964,7 +6964,10 @@ function semutaOfferSupported(
       continuation.kind !== 'saphoMovementDiscard' &&
       continuation.kind !== 'battleResolved' &&
       continuation.kind !== 'winnerMandatoryDiscard' &&
-      continuation.kind !== 'battleCleanup') return false;
+      continuation.kind !== 'battleCleanup' &&
+      continuation.kind !== 'residualPoisonDiscard' &&
+      continuation.kind !== 'saphoAggressorDiscard' &&
+      continuation.kind !== 'saphoBattleOrderDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

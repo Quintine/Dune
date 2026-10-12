@@ -1,5 +1,78 @@
 # Dune implementation status
 
+## 13 October 2026 — clean Homeworld preparation and remaining chooser costs
+
+Only existing `residualPoisonDiscard`, `saphoAggressorDiscard` and
+`saphoBattleOrderDiscard` are admitted by the Homeworld Semuta gate.
+Original death selection, event/readiness, participant, finite-order and
+private-card validators remain unchanged. No payment/profile/signature
+cutover or interpretation of the still-pending late timing.
+
+Two actual Basic/Advanced Poison before programs conserve the printed Richese
+cache card into CHOAM and use native paid E1/C4 shipments to Red Chasm7
+(cost2/8). One actual random eligible Emperor disc enters Tanks, no bounty
+or force delta; the used card disposed without an offer. The initial Advanced
+call had an unsettled original interaction and committed no card/death; the
+fixture resolves that real owner control, not a suppressed guard.
+
+Six actual Sapho before programs cover early C aggressor and remaining first/
+last in both modes. The chooser programs additionally ship original R1 into
+Arrakeen10 for1 and resolve the real R/A battle: R1Tanks, A10 retained, the
+native Caladan reinforcement explicitly declined. With only e/c eligible,
+C is already last and cannot legally spend Sapho for that position. Parent
+adapted last to genuine Emperor card ownership, without new geometry or rules.
+C-first priority is c/r/e/a; E-last is r/c/a/e; physical order stays r/e/c/a.
+The original E attacker/C defender pair remains; C chooses next in either mode.
+
+Ten parent Poison programs cover eight thin/full claim/pass branches and two
+actual opponent-ready guards. JSON/resume preserves the one random victim
+record, wallets and deployments. Original living-disc plans then kill a
+different combat leader, not the Poison victim; C keeps3/reserves16/Tanks1,
+E has one lost force/reserves19, and real Collection takes6 from the printed8.
+Fourteen parent Sapho programs cover both modes, early/first/last claim/pass
+and two already-ready opponent branches. Original equal-value, zero-dial
+battles give C's changed aggressor the tie and four survivors/collection8,
+while chooser reordering leaves native E the tie and one survivor/collection2.
+All24 parent programs reach phase7 turn1 without repeated opportunity.
+
+Five actual390px flows use native Poison in both modes, Advanced early
+aggressor, Basic first and Advanced Emperor-last. Poison exchanges at4/4
+after Caid/Burseg's native death; one victim/deaths1, no bounty or counter
+delta, both original readiness controls close the same event. Early Sapho
+keeps E attacker/C defender/E chooser, changes ordinary tie priority toC,
+exchanges at4/4 and closes original readiness. First/last exchange at4/4
+after the already-completed R/A prefix; C's real Fight Emperor control
+opens E attacker/C defender/C chooser. Advanced last then declines the
+original Atreides foreknowledge offer and uses both native readiness controls.
+These UI proofs stop before plans; runtime evidence covers actual phase7.
+Artifacts outside Git:
+`/tmp/dune-homeworld-native-preparation-3221.json`,
+`/tmp/dune-homeworld-native-chooser-3221.json`.
+
+The clean producer keeps Poison unoffered after an opponent readiness while
+the native death still occurs. Sapho's existing early contract instead
+allows the other combatant already ready; that recorded readiness stays.
+Inspections, closed preparation, late Sapho and Advanced Harkonnen captive
+disclosure remain guarded. No historical/save/full-mode or deployed claim.
+Only the owned QA server was restarted for the final gate/fixture code;
+first-three-flow evidence was retained separately rather than overwritten.
+The owned browser reported no errors. Owned services/tab/root files were
+removed/stopped; unrelated services and saved games remain untouched.
+
+One worker ran its permanent20-case file despite the no-checks contract,
+then withdrew that result as integration proof and froze. Another returned
+local pass counts while denying permanent checks. Parent does not count
+either claim as frozen integration verification. Root removed fixture/input
+echoes and non-empty event/queue pins, corrected the native chooser lookup,
+and retained explicit two-ready-opponent regressions and actual resource/tie
+outcomes.
+Parent frozen verification: types and lint pass; seven related unit files
+pass92/92, including62 new cases. The initial lint failed one unused type
+import; after removal only lint and the not-yet-run tests were retried.
+Build passes with the unchanged module.register deprecation, client chunks
+over500kB and static route-classification warnings. No broader assurance
+or deployed check was substituted for this local changed-path evidence.
+
 ## 13 October 2026 — original Homeworld battle discard producers
 
 The Homeworld Semuta gate now admits only the existing `battleResolved`,
