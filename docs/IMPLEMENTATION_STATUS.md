@@ -1,5 +1,69 @@
 # Dune implementation status
 
+## 13 October 2026 — native paired E2 Bureaucrat funding
+
+The earlier mode guard excluded genuine paired E2 Nexus skill games before
+their allied-funding guard. Existing original paired CHOAM/Richese Nexus
+profile is now admitted specifically without Homeworlds; allied funding
+support is centralized for supported classic or E2 profiles. Source receipts,
+single-payer signatures, physical card use and private projection are unchanged.
+Qualifying E1/E3 and Homeworld allied/split-recipient composition stay separate;
+no new public start, constructor prerequisite or recovery certification follows.
+
+The new common fixture retains all native six-seat setup armies and wallets:
+C26/R5/H7 Basic or9 Advanced/F6/E10/G5 Basic or6 Advanced before actual pledges.
+Native C actually trains Bureaucrat; actual H→F bribe3, first Mentat F3→6,
+second worm and mutual alliance precede T2 funding. Only original unplayed
+cards/entropy/custody are controlled. Both shipment before programs and five
+auction before branches (normal/cache both modes, Advanced Black Market)
+rejected immutably after pledge5 at the original mode guard. The auction
+program initially expected the later funding guard; its expectation was wrong,
+and the final actual branches identify the earlier message rather than invent
+a different rejection.
+
+One genuine Advanced5+5 Guild after program retains original interception,
+Karama allowance and payment order: C26/R5/H4/F1/E10/G6 before credit, G14
+after redirect, one use, original ten reserves at Habbanya17 beside Carthag10,
+then original Finish→Fremen. One Advanced5+5 silent cache after program uses
+the actual Richese seller-credit callback: H4/F1/R5→13/E10/C26; Residual Poison
+once plus native treachery-7 bonus, then original five-card normal pool index0.
+No Richese-income Karama window is fabricated. Ordinary Emperor cancellation
+banks the original gross; free Karama purchases stay normal-only, and Basic
+has no Black Market.
+
+Four parent actual programs additionally cover Basic ordinary5+3 and cache3+5
+redirection, Advanced entirely F-funded5 Black Market allowance and a real
+H/C alliance where only excluded trainer5 funds an H3 cache payment.
+That last payment proceeds with no offer/use, C21/R13/H6/F6, one purchase/bonus.
+Two real last-cache programs preserve pending CHOAM market and actual Done:
+Revival4, R13/H2 Basic or4 Advanced/F1/C26, unchanged purchase/bonus, one prior
+use and renewed phase opportunity; no phase assignment or second debit occurs.
+
+Three actual390px GameTable flows start after actual native commitment.
+Advanced Guild3+5 resolves printed allowance then redirect: G6→12/H6/F1/C26,
+eight reserves at Habbanya17, original Finish→Fremen. Basic cache5+3 allows8:
+R5→13/H2/F3/C26, original Residual Poison and one bonus, original normal lot0/R.
+Advanced wholly donor-funded5 Black Market redirects2: R5→8/H9/F1/C26,
+one original treachery-1 transfer and bonus7; original Richese declaration
+then actual cache-first control reaches cache selection without another cost.
+Browser errors are empty; artifact `/tmp/dune-paired-bureaucrat-3226.json`.
+Only owned isolated host/tab/scaffold is cleaned; existing games/services remain.
+
+Initial frozen union157 cases had155 pass and two incorrect direct-to-Revival
+pins fail: original CHOAM market remains pending. The incidental pin is deleted,
+and that same consumer path now completes real closing with money/cards/use
+assertions. One fixture event narrowing is repaired; focused two-case iteration
+and types pass. The next union exposed an exact sealed-log comparison coupled
+to independent public Storm bidder order (156/157). It is removed, not re-pinned;
+private gross/payee/null-payer fields and actual acquisition/payment remain
+checked. Focused sealed privacy1/1 and final157/157 across eight files pass.
+The affected old shared-gate/bare-not-throw echo test and its dead imports are
+removed rather than replaced with another wiring assertion.
+Final types/lint and app build pass. The first lint run found the unused offer
+initializer left by that removed case; the import is deleted. Existing module
+registration deprecation, chunk-size and static route-classification warnings
+remain unchanged. The app guide and source-ruling boundary match this scope.
+
 ## 13 October 2026 — qualifying classic allied Bureaucrat receipts
 
 Supported classic no-Homeworlds auction and shipment funding now retains each

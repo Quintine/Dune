@@ -66,13 +66,15 @@ The earlier question is now resolved by the 11 October ruling above.
 Gift classification stays separate from the connected ordinary
 [bribe controls](BRIBE_CONTROLS.md).
 
-For native income, the prototype resolves the existing Karama income window
+For native income windows, the prototype resolves the existing Karama response
 first, then offers Bureaucrat before crediting the eligible recipient and
 continuing the original auction or shipment. A canceled income payment goes to
 the Bank, so creates no player-directed trigger. This is an outcome-based
 composition inference. The rulebook's skill-before-faction sentence occurs in
 its battle paragraph and does not expressly order this economic reaction.
 The implementation does not settle Bureaucrat-before-Karama consumption.
+Richese-directed auction proceeds use their original seller-credit callback;
+no additional Richese-income Karama window is invented.
 
 In the Basic Tleilaxu skill profile, a paid revival first commits its force or
 leader custody and deducts the actual price. Its native income response still
@@ -91,13 +93,13 @@ Allied funding is evaluated per actual payer, not by adding different payers'
 shares to create the five-spice trigger. A three-plus-three payment, or
 four-plus-three, has no eligible payer and proceeds through original funding,
 payment, card/force commitment and recipient income without a Bureaucrat offer.
-In supported classic profiles without Homeworlds, individually qualifying
+In supported classic and E2 profiles without Homeworlds, individually qualifying
 allied-funded auction and shipment receipts now offer one optional redirection:
 five-plus-three, three-plus-five, five-plus-five and fully ally-funded five.
 The receipt loses exactly two, never two per contributing payer. A share paid
 by the trainer or recipient cannot qualify, but does not mask a different
-eligible payer. Qualifying expansion-faction funding and split-recipient
-Homeworld income retain their separate integration guards.
+eligible payer. Qualifying E1/E3 funding and Homeworld allied/split-recipient
+composition retain their separate integration boundaries.
 Independent Karama shipments paid entirely to the Bank bypass player-income
 guards. A successful use remains tied to the physical card's turn and phase,
 including same-phase ownership changes; that accounting is an implementation
@@ -171,6 +173,56 @@ The native fixtures and consumer cases are
 `tests/bureaucrat-qualifying-shipment.test.ts`,
 `tests/fixture-bureaucrat-qualifying-auction.ts` and
 `tests/bureaucrat-qualifying-auction.test.ts`.
+
+## Native paired E2 receipts — 13 October 2026
+
+`tests/fixture-bureaucrat-paired-funding.ts` uses original six-seat
+CHOAM/Richese/Harkonnen/Fremen/Emperor/Guild setup with fourteen skills and
+Nexus. CHOAM actually trains Bureaucrat. Real first-turn bribe3, Mentat
+Fremen3→6, next worm and mutual alliance retain every original army/wallet.
+Before pledges: C26/R5/H7 Basic or9 Advanced/F6/E10/G5 Basic or6 Advanced.
+Two before shipment programs and five original auction branches (ordinary/cache
+both modes, Advanced Black Market) rejected immutably at the earlier Bureaucrat
+module guard after actual F pledge5. The original paired E2 Nexus profile is
+now admitted without Homeworlds; allied support is centralized and preserves
+the other profile and printed-price constraints.
+
+Ordinary auctions retain Emperor income cancellation; canceled gross goes to
+Bank with no offer/use. Richese cache and Advanced Black Market retain their
+actual seller-credit and bonus/closing callbacks, not an invented cancellation
+response. Basic still has no Black Market, and free Karama purchases remain
+normal-only. Owner/payee exclusion, donor-only five, sub-five nonpooling and
+sealed-bid privacy use the same private receipt policy as classic funding.
+
+The actual Advanced five-plus-five Guild after program retains interception,
+original Karama allowance, H4/F1/C26/R5/E10/G6 before credit, then G14 on
+redirect with one use and ten original reserves deployed beside Carthag10.
+Its original Finish advances to Fremen. The actual Advanced five-plus-five
+cache after program credits R5→13, H4/F1, one Residual Poison purchase and
+one native bonus, then the original five-card normal pool at index0.
+Four parent actual programs also cover Basic ordinary and cache payments,
+Advanced wholly donor-funded Black Market and an actual trainer-funded
+nonqualifying cache payment. Two actual cache-last programs retain the pending
+CHOAM market, then original Done reaches Revival without another debit,
+purchase or use.
+
+Three actual390px GameTable flows retain C26 and original forces: Advanced
+three-plus-five Guild redirects2, G6→12/H6/F1, Finish→Fremen; Basic five-plus-three
+cache allows8, R5→13/H2/F3, one purchase/bonus and original normal lot0; Advanced
+fully F-funded Black Market redirects2, R5→8/H9/F1, one transferred original
+card/bonus and original Richese declaration. Its actual cache-first control
+reaches original cache selection without another cost. Browser errors are empty.
+Artifact outside Git: `/tmp/dune-paired-bureaucrat-3226.json`.
+
+The frozen consumer union157/157 across eight files passes. Initial feedback
+removed an incorrect direct-to-Revival pin and replaced it with actual original
+closing progression. An exact sealed-log comparison wrongly coupled independent
+public Storm bidder order; that incidental pin is removed, not re-pinned.
+Private receipt fields and actual payment/acquisition outcomes remain checked.
+One fixture event narrowing is repaired. A bare-not-throw/shared-gate echo
+case is removed from the affected CHOAM integration file. No source rule,
+strategy, Homeworld funding, public-start, save/deployed or complete-mode claim
+is changed by this bounded proof.
 
 ## Saved choices and verification
 

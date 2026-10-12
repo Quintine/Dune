@@ -5,14 +5,7 @@ import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { isPlanetologistBattleSpecialCard } from '../game/leader-skill-combat';
 import { LEADER_SKILL_CARDS } from '../game/leader-skill-cards';
-import {
-  basicChoamLeaderSkillsProfile,
-  ordinaryLeaderSkillModeSupported,
-} from '../game/leader-skill-profile';
-import { bureaucratPaymentModeSupported } from '../game/bureaucrat-payment';
-import { planetologistMovementModeSupported } from '../game/planetologist-movement';
-import { sandmasterModeSupported } from '../game/sandmaster-movement';
-import { smugglerBattleModeSupported } from '../game/smuggler-battle';
+import { basicChoamLeaderSkillsProfile } from '../game/leader-skill-profile';
 import {
   applyAction,
   createGame,
@@ -30,7 +23,6 @@ import {
   assertChoamSkillsCustody,
   choamSkillsPlayer as player,
   completedChoamSkillsGame,
-  initializedChoamSkillsOffers,
   reloadChoamSkillsGame as reload,
   rejectChoamSkillsAction as reject,
 } from './choam-skills-fixture';
@@ -102,33 +94,6 @@ void test('all fourteen production skill faces deal through genuine Basic CHOAM 
   }
 });
 
-void test('all bot profiles make a legal private skill choice and exact CHOAM profile gates are shared', () => {
-  const offer = initializedChoamSkillsOffers({
-    requestedSkill: 'planetologist',
-  });
-  for (const difficulty of DIFFICULTIES) {
-    const view = viewGame(reload(offer), 'c');
-    view.players.find((candidate) => candidate.id === 'c')!.bot = difficulty;
-    const action = botActions(view).find(
-      (candidate) => candidate.type === 'leaderSkill',
-    );
-    assert.ok(action, difficulty);
-    assert.doesNotThrow(() => applyAction(offer, 'c', action));
-  }
-
-  const game = completedChoamSkillsGame();
-  for (const gate of [
-    basicChoamLeaderSkillsProfile,
-    ordinaryLeaderSkillModeSupported,
-    bureaucratPaymentModeSupported,
-    planetologistMovementModeSupported,
-    sandmasterModeSupported,
-    smugglerBattleModeSupported,
-  ]) {
-    assert.equal(gate(game), true, gate.name);
-    assert.equal(gate(viewGame(game, 'a')), true, `${gate.name} projected`);
-  }
-});
 
 void test('Advanced CHOAM and Basic Richese retain audit admission without entering the exact normal profile', () => {
   for (const variant of ['advanced', 'richese'] as const) {

@@ -29,6 +29,32 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Bureaucrat / native paired E2 funding — 13 October.**
+Original six-seat CHOAM/Richese/Harkonnen/Fremen/Emperor/Guild Skills Nexus
+now admits qualifying allied normal/cache/Advanced Black Market and shipment
+receipts without Homeworlds. Native CHOAM trains Bureaucrat; real bribe3/Mentat,
+next worm and mutual alliance retain original armies and C26/R5/H7 Basic or9
+Advanced/F6/E10/G5 Basic or6 Advanced before pledges. Two shipment and five
+source-specific auction before programs rejected immutably at the earlier
+module guard. Existing native E2 profile and centralized allied support now
+connect original full costs, one flat2, private receipt fields and four legal bots.
+Native Guild/Emperor cancellation stays first; Richese proceeds use original
+seller credit with no invented cancellation. Basic no-Black-Market and normal-only
+free Karama purchase boundaries remain. E1/E3 and Homeworld funding stay separate.
+Three actual390px flows: Advanced3+5 Guild redirect G12/H6/F1/C26 and original
+Finish→Fremen; Basic5+3 cache allowance R13/H2/F3/C26, one purchase/bonus and
+normal lot0; Advanced wholly F-funded5 Black Market redirect R8/H9/F1/C26,
+one transfer/bonus then original declaration/cache-first selection, no extra cost.
+Artifact: `/tmp/dune-paired-bureaucrat-3226.json`; browser errors empty.
+Four parent actual source programs and two actual cache-last closings retain
+original CHOAM market→Revival, no additional debit/purchase/use. Final157/157
+across eight files pass. Initial direct-to-Revival and exact sealed-log order
+pins were removed, not re-pinned; independent public Storm order is not private
+funding. A fixture narrowing is repaired; one shared-gate/bare-not-throw echo
+case is removed. No rule, strategy, save/deployed/full-mode claim follows.
+Final types/lint and app build pass after removing the unused offer-initializer
+import left by that obsolete case. Existing build warnings are unchanged.
+
 **Bureaucrat / qualifying classic allied receipts — 13 October.**
 Original Basic/Advanced five-plus-three, three-plus-five, five-plus-five and
 fully ally-funded five auction/shipment payments now offer one two-spice Bank
