@@ -8449,7 +8449,7 @@ function nativeBureaucrat(g: Game) {
     getPlayer(g,a.owner).leaders.some(l => l.id === a.leader && !l.dead && !l.capturedBy && !l.gholaBy) &&
     !g.battle?.leaderSkillHidden?.[a.owner]);
 }
-function bureaucratPaymentQuote(g: Game,source: Pick<BureaucratPaymentSource,'payer'|'payee'|'amount'>) {
+function bureaucratPaymentQuote(g: Game,source: Pick<BureaucratPaymentSource,'payer'|'payee'|'amount'|'contributions'>) {
   const owner = nativeBureaucrat(g)?.owner ?? null;
   return quoteBureaucratPayment({...source,owner,turn:g.turn,phase:g.phase,used:g.bureaucratPayments?.used ?? []});
 }
@@ -8460,14 +8460,28 @@ function checkBureaucratContributors(g: Game,payee:string|undefined,shares:{paye
   if (!owner || owner === payee || bureaucratUsed(g.bureaucratPayments?.used ?? [],g.turn,g.phase) ||
     !paid.some(share => share.amount >= 5 && share.payer !== owner && share.payer !== payee)) return;
   requireRule(bureaucratPaymentModeSupported(g),'Bureaucrat with other optional modules is still being integrated.');
-  requireRule(paid.length === 1 && !privateFunding,'Bureaucrat on allied funding or multiple payer contributions is awaiting private payment-split integration.');
+  requireRule(paid.length === 1 && !privateFunding || !g.homeworlds && !g.expansions.length,
+    'Bureaucrat on allied funding or multiple payer contributions with Homeworlds or expansion factions is awaiting integration.');
 }
-function stampBureaucratPayment(g: Game,kind:BureaucratPaymentSource['kind'],payer:string,payee:string,amount:number):
+function stampBureaucratPayment(g: Game,kind:BureaucratPaymentSource['kind'],payer:string,payee:string,amount:number,
+  contributions?:BureaucratPaymentSource['contributions']):
   {bureaucratPayment?:BureaucratPaymentSource;bureaucratPaymentEvent?:string} {
   if (!g.leaderSkills || !bureaucratPaymentModeSupported(g) || amount < 5 || payer === payee) return {};
-  const source:BureaucratPaymentSource = {event:crypto.randomUUID(),turn:g.turn,phase:g.phase,kind,payer,payee,amount,signature:''};
+  const source:BureaucratPaymentSource = {event:crypto.randomUUID(),turn:g.turn,phase:g.phase,kind,payer,payee,amount,
+    ...(contributions ? {contributions,privateFunding:true as const} : {}),signature:''};
   source.signature = bureaucratPaymentSignature(source);
   return {bureaucratPayment:source,bureaucratPaymentEvent:source.event};
+}
+function stampBureaucratContributors(g:Game,kind:'auction'|'shipment',payee:string,
+  shares:{payer:string;amount:number}[],privateFunding:boolean) {
+  const paid = shares.filter(share => share.amount > 0);
+  if (!privateFunding && paid.length === 1)
+    return stampBureaucratPayment(g,kind,paid[0].payer,payee,paid[0].amount);
+  if (g.homeworlds || g.expansions.length) return {};
+  const owner = nativeBureaucrat(g)?.owner;
+  const qualifying = paid.find(share => share.amount >= 5 && share.payer !== owner && share.payer !== payee);
+  return qualifying ? stampBureaucratPayment(g,kind,qualifying.payer,payee,
+    paid.reduce((total,share) => total + share.amount,0),paid) : {};
 }
 function bureaucratPaymentFrame(g: Game): string {
   return JSON.stringify({turn:g.turn,phase:g.phase,active:g.active,order:g.order,
@@ -8484,6 +8498,15 @@ function validateBureaucratSource(g: Game,source:BureaucratPaymentSource) {
     g.players.some(p => p.id === source.payer) && g.players.some(p => p.id === source.payee) && source.payer !== source.payee &&
     Number.isSafeInteger(source.amount) && source.amount >= 5 && source.signature === bureaucratPaymentSignature(source),
     'The saved Bureaucrat payment changed its actual payer, payee, amount or event.');
+  if (source.contributions) {
+    requireRule(!g.homeworlds && !g.expansions.length && source.privateFunding === true &&
+      (source.kind === 'auction' || source.kind === 'shipment') &&
+      source.contributions.length >= 1 && source.contributions.length <= 2 &&
+      source.contributions.every(share => g.players.some(player => player.id === share.payer)) &&
+      source.contributions.some(share => share.payer === source.payer && share.amount >= 5),
+      'The saved Bureaucrat payment lost its original allied contributors.');
+    bureaucratPaymentQuote(g,source);
+  } else requireRule(!source.privateFunding,'The private Bureaucrat payment lost its actual payer contributions.');
 }
 function bureaucratPaymentIntegrity(g: Game) {
   const state = g.bureaucratPayments,events = g.bureaucratUseEvents ?? [];
@@ -8561,7 +8584,8 @@ function projectedBureaucrat(g: Game,viewer: string): BureaucratPaymentView {
   const pending = g.bureaucratPayments?.pending;
   const privateRevival = pending?.source.kind === 'revival' &&
     ![pending.owner,pending.source.payer,pending.source.payee,pending.resume.response?.recipient].includes(viewer);
-  return {pending:pending && !privateRevival ? {event:pending.source.event,owner:pending.owner,payer:pending.source.payer,payee:pending.source.payee,
+  return {pending:pending && !privateRevival ? {event:pending.source.event,owner:pending.owner,
+    payer:pending.source.privateFunding ? null : pending.source.payer,payee:pending.source.payee,
     amount:pending.source.amount,kind:pending.source.kind,redirect:2} : null,
     usedThisPhase:bureaucratUsed(g.bureaucratPayments?.used ?? [],g.turn,g.phase)};
 }
@@ -12246,7 +12270,7 @@ function auctionBureaucratParties(g:Game,p:Player,amount:number,allyPayment:numb
 }
 function stampAuctionBureaucrat(g:Game,p:Player,amount:number,allyPayment:number,seller?:string) {
   const {payee,shares} = auctionBureaucratParties(g,p,amount,allyPayment,seller);
-  return payee && !allyPayment && shares.length === 1 ? stampBureaucratPayment(g,'auction',shares[0].payer,payee,amount) : {};
+  return payee ? stampBureaucratContributors(g,'auction',payee,shares,allyPayment > 0) : {};
 }
 function auctionNext(g: Game) {
   const a = g.auction!;
@@ -16578,7 +16602,8 @@ function guildPaymentResponse(g: Game, owner: string, amounts: number[],payer?:s
   return { kind: 'guildIncome', owner, amount, passed: [],
     ...(g.homeworldOccupationPreview ? { occupiedPayment: { event: crypto.randomUUID(),
       contributions: named ?? [{ payer: payer!, amount }] } } : {}),
-    ...(contributions.length === 1 && payer ? stampBureaucratPayment(g,'shipment',payer,owner,amount) : {}),
+    ...(named ? stampBureaucratContributors(g,'shipment',owner,named,!payer)
+      : contributions.length === 1 && payer ? stampBureaucratPayment(g,'shipment',payer,owner,amount) : {}),
     ...(g.homeworlds?.custody ? { guildContributions: contributions,
       guildPaymentProof: guildPaymentSignature(g, owner, amount, contributions) } : {}) };
 }

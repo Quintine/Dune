@@ -121,6 +121,26 @@ void test('Bureaucrat requires two other players and tracks the unique physical 
   );
 });
 
+void test('allied receipts qualify per other payer, redirect only two once, and reject invalid contribution totals', () => {
+  const base = {owner:'b',payer:'p',payee:'g',amount:8,turn:2,phase:5,used:[]};
+  const contributions = [{payer:'p',amount:3},{payer:'f',amount:5}];
+  assert.deepEqual(quoteBureaucratPayment({...base,contributions}), {redirect:2,income:6});
+  assert.equal(quoteBureaucratPayment({...base,owner:'f',contributions}), null);
+  assert.deepEqual(quoteBureaucratPayment({...base,owner:'p',contributions}), {redirect:2,income:6});
+  assert.equal(quoteBureaucratPayment({...base,payee:'b',contributions}), null);
+  assert.equal(quoteBureaucratPayment({...base,amount:6,
+    contributions:[{payer:'p',amount:3},{payer:'f',amount:3}]}), null);
+  assert.deepEqual(quoteBureaucratPayment({...base,amount:10,
+    contributions:[{payer:'p',amount:5},{payer:'f',amount:5}]}), {redirect:2,income:8});
+  assert.deepEqual(quoteBureaucratPayment({...base,payer:'f',amount:5,
+    contributions:[{payer:'f',amount:5}]}), {redirect:2,income:3});
+  for (const invalid of [
+    [{payer:'p',amount:3},{payer:'f',amount:4}],
+    [{payer:'p',amount:3},{payer:'p',amount:5}],
+    [{payer:'p',amount:3},{payer:'f',amount:-1}],
+  ]) assert.throws(() => quoteBureaucratPayment({...base,contributions:invalid}));
+});
+
 void test('Emperor gifts keep private amounts and do not consume Bureaucrat before a later qualifying payment', () => {
   let game = bureaucratPaymentGame({ advanced: true });
   bureaucratPlayer(game, 'e').ally = 'g';
@@ -293,22 +313,6 @@ void test('a real simultaneous Bene Gesserit advisor choice survives the deferre
   const done = choose(bureaucratReload(pending));
   assert.deepEqual(done.decision, original);
   assert.equal(bureaucratPlayer(done, 'g').spice, 33);
-});
-void test('individually qualifying mixed or fully allied-funded payments retain the integration guard before commitment', () => {
-  for (const allyPayment of [1, 6]) {
-    let g = bureaucratPaymentGame();
-    bureaucratPlayer(g, 'p').ally = 'e';
-    bureaucratPlayer(g, 'e').ally = 'p';
-    g = applyAction(g, 'e', { type: 'pledgeAid', amount: 6 });
-    reject(g, 'p', { ...ship, amount: 6, allyPayment });
-    g = bureaucratPaymentGame();
-    bureaucratPlayer(g, 'p').ally = 'g';
-    bureaucratPlayer(g, 'g').ally = 'p';
-    g = beginBureaucratAuction(g);
-    g = applyAction(g, 'g', { type: 'pledgeAid', amount: 6 });
-    g = applyAction(g, 'b', { type: 'passBid' });
-    reject(g, 'p', { type: 'bid', amount: 6, allyPayment });
-  }
 });
 void test('saved Bureaucrat receipt, source, unique decision, continuation and phase-use mutations reject immutably before reads', () => {
   const pending = applyAction(bureaucratPaymentGame(), 'p', ship),

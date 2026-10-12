@@ -1,5 +1,63 @@
 # Dune implementation status
 
+## 13 October 2026 — qualifying classic allied Bureaucrat receipts
+
+Supported classic no-Homeworlds auction and shipment funding now retains each
+actual positive private payer share in the original signed internal receipt.
+Eligibility is per other payer at least5, excluding trainer and recipient;
+gross prices cannot pool below-five shares. Exactly2 goes to Bank from one
+gross recipient credit, including both-five. Original full debits, committed
+cards/forces, Karama-before-credit ordering and physical once-per-phase use
+remain. A canceled gross receipt creates no Bureaucrat offer/use.
+Single-payer receipts gain no new signature fields. New private receipts project
+public gross/payee with payer null, never shares or selected qualifying payer;
+the owned control explains unchanged contribution costs. Existing legal bot
+choices need only recipient/alliance, not private payer details.
+Qualifying expansion-faction funding and split-recipient Homeworld cases keep
+their integration guards; gifts remain explicitly excluded.
+
+The new shared fixture preserves native five-seat classic armies and wallets.
+Actual first-turn bribe3, original Mentat collection, second-turn worm and
+mutual alliance fund real Fremen pledges. Only conserved unplayed card ordering
+or custody is staged. Both modes and all three qualifying splits rejected
+immutably before at the exact old guard: six shipment plus six auction programs.
+The former threshold fixture folded original board armies into reserves;
+its duplicated below-five and superseded guard tests are deleted, not repinned.
+
+Children each exercised one actual after scenario: five-plus-five shipment in
+both modes (G5/6→13/14 on redirect,15/16 on decline, unchanged on cancellation;
+H2/4,F1,B10/12 and native ten-reserve deployment), and Advanced five-plus-five
+auction (E10→18,H4,F1,B12, original purchased treachery-6 before choice and
+one native treachery-11 bonus afterwards). Parent actual programs prove
+fully allied-funded five in both modes and families: H pays zero/F6→1;
+Guild credits3 or Emperor10→13, original five shipped reserves or purchase/
+one bonus remain. No wallet, phase, force or alliance is assigned.
+
+Two actual390px GameTable flows use original income allowance and new owned
+control. Basic five-plus-three redirects2: G5→11,H2,F3,B10, original eight
+reserves commit beside Carthag10, Finish hands Movement to Fremen once.
+Advanced three-plus-five allows8: E10→18,H6,F1,B12; original one purchase
+and one bonus precede original next-lot inspection allowance, native lot1/F.
+Artifact: `/tmp/dune-native-bureaucrat-3225.json`.
+The isolated host initially failed its virtual React-refresh self import;
+the resolver was corrected. Native styling came from the actual new app
+stylesheet. One stale accessibility-node failure followed accepted allowance;
+authoritative state was inspected without replay. A generic network-idle
+wait timed out; direct controls and fresh state/screenshots supplied proof.
+No production or saved-game/full-mode claim follows.
+
+Initial frozen feedback ran69 cases:67 passed, an obsolete qualifying guard
+and an incorrect unchanged-wallet expectation across native Advanced Collection
+failed. Both implementation/incidental pins were removed, not repinned.
+Four fixture typing issues were repaired; two copy-only renderer tests and dead
+image-alias hooks were removed. The repaired focused two-case iteration passes;
+types pass. Final focused union66/66 across five files, types/lint and app build
+pass with unchanged deprecation, chunk-size and route-classification warnings.
+The new native consumer files register44 cases plus one contributor-quote
+regression. Original aid bounds, owner/payee exclusions, cancellation, stale
+choices, original card/force costs, four legal bots and real phase refresh
+are covered. Broader assurance remains deferred until all rules.
+
 ## 13 October 2026 — original Homeworld battle-reward Karama costs
 
 Only existing `karamaBattleDiscard` is newly admitted by the Homeworld

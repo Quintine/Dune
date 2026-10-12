@@ -29,6 +29,34 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Bureaucrat / qualifying classic allied receipts — 13 October.**
+Original Basic/Advanced five-plus-three, three-plus-five, five-plus-five and
+fully ally-funded five auction/shipment payments now offer one two-spice Bank
+redirection after original Karama allowance, with every original payer cost
+unchanged. Six before shipment and six before auction programs rejected
+immutably at the old guard after actual pledges. New fixtures retain original
+setup armies, first-turn bribe/Mentat credit, real next worm and mutual alliance;
+the old folded-army threshold fixture and obsolete guard assertions are removed.
+Public gross/recipient remain, but private shares and qualifying identity do
+not: allied prompt payer is null. Owner/payee contributions cannot qualify;
+both-five still spends one physical use. Qualifying expansion-faction funding
+and split-recipient Homeworld income remain guarded; gifts stay excluded.
+Four parent actual fully-funded programs and two actual390px GameTable flows
+preserve original forces/acquisitions and one bonus/continuation. Basic Guild
+redirect finishes Movement at Fremen with G11/H2/F3/B10; Advanced Emperor
+decline returns original next lot1 with E18/H6/F1/B12 and no use.
+Artifact: `/tmp/dune-native-bureaucrat-3225.json`.
+The isolated virtual-refresh resolver needed repair and the actual built
+stylesheet supplied styling; one accepted allowance preceded a stale-node
+tool failure and was not replayed. Network-idle timed out; direct fresh control
+and state observations prove both paths. Types/lint and66/66 across five
+affected unit files pass (44 new native consumer cases plus one quote case);
+build passes with unchanged deprecation/chunk/route-classification warnings.
+Initial feedback removed superseded guards, copy-only renderer pins and an
+incorrect unchanged-wallet expectation across legitimate Advanced Collection;
+fixture narrowing was repaired, not game rules or bots.
+No deployed, save/recovery, whole-game or full-mode acceptance follows.
+
 **Semuta / native battle-reward cancellation — 13 October.**
 Original Advanced Harkonnen capture, CHOAM Auditor and quoted force-income
 printed Karama costs now offer before denial. Six positive before programs

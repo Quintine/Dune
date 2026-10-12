@@ -9,6 +9,9 @@ export type BureaucratPaymentSource = {
   payer: string;
   payee: string;
   amount: number;
+  /** Exact internal allied-payer receipts; never projected as public shares. */
+  contributions?: readonly { payer: string; amount: number }[];
+  privateFunding?: true;
   signature: string;
 };
 /** The one physical skill card's use survives death, redraw and controller changes. */
@@ -23,7 +26,7 @@ export type BureaucratPaymentView = {
   pending: null | {
     event: string;
     owner: string;
-    payer: string;
+    payer: string | null;
     payee: string;
     amount: number;
     kind: BureaucratPaymentKind;
@@ -55,6 +58,7 @@ export function quoteBureaucratPayment(input: {
   payer: string;
   payee: string;
   amount: number;
+  contributions?: readonly { payer: string; amount: number }[];
   turn: number;
   phase: number;
   used: readonly BureaucratPaymentUse[];
@@ -73,11 +77,30 @@ export function quoteBureaucratPayment(input: {
     throw new BureaucratPaymentError(
       'Bureaucrat needs a valid actual player payment.',
     );
+  let eligible = input.owner !== input.payer && input.payer !== input.payee &&
+    input.amount >= 5;
+  if (input.contributions) {
+    let total = 0;
+    eligible = false;
+    for (let index = 0; index < input.contributions.length; index++) {
+      const contribution = input.contributions[index];
+      if (!contribution.payer || !Number.isSafeInteger(contribution.amount) ||
+          contribution.amount <= 0)
+        throw new BureaucratPaymentError('Bureaucrat needs distinct actual positive payer contributions.');
+      for (let prior = 0; prior < index; prior++) {
+        if (input.contributions[prior].payer === contribution.payer)
+          throw new BureaucratPaymentError('Bureaucrat needs distinct actual positive payer contributions.');
+      }
+      total += contribution.amount;
+      if (contribution.amount >= 5 && contribution.payer !== input.owner &&
+          contribution.payer !== input.payee) eligible = true;
+    }
+    if (!Number.isSafeInteger(total) || total !== input.amount)
+      throw new BureaucratPaymentError('Bureaucrat contributions must equal the actual recipient payment.');
+  }
   return input.owner &&
-    input.owner !== input.payer &&
     input.owner !== input.payee &&
-    input.payer !== input.payee &&
-    input.amount >= 5 &&
+    eligible &&
     !bureaucratUsed(input.used, input.turn, input.phase)
     ? { redirect: 2, income: input.amount - 2 }
     : null;

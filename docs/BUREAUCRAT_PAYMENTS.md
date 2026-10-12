@@ -91,9 +91,13 @@ Allied funding is evaluated per actual payer, not by adding different payers'
 shares to create the five-spice trigger. A three-plus-three payment, or
 four-plus-three, has no eligible payer and proceeds through original funding,
 payment, card/force commitment and recipient income without a Bureaucrat offer.
-Individually qualifying private or split payments (including a payment funded
-entirely by a qualifying ally) still need payment-unit/privacy integration and
-remain guarded before costs. Split-recipient Homeworld income stays separate.
+In supported classic profiles without Homeworlds, individually qualifying
+allied-funded auction and shipment receipts now offer one optional redirection:
+five-plus-three, three-plus-five, five-plus-five and fully ally-funded five.
+The receipt loses exactly two, never two per contributing payer. A share paid
+by the trainer or recipient cannot qualify, but does not mask a different
+eligible payer. Qualifying expansion-faction funding and split-recipient
+Homeworld income retain their separate integration guards.
 Independent Karama shipments paid entirely to the Bank bypass player-income
 guards. A successful use remains tied to the physical card's turn and phase,
 including same-phase ownership changes; that accounting is an implementation
@@ -107,19 +111,66 @@ one paying player; separate below-threshold costs are not one six-spice
 payment by that player. The check now preserves that individual threshold
 without opening the unresolved qualifying split-payment reaction.
 
-Real Basic and Advanced skill setup trains Bureaucrat; a real turn-two worm
-forms the Harkonnen/Fremen alliance. Conserved starting counters and undealt
-Spice Card ordering isolate the payments; no wallet, phase, alliance or ledger
-is assigned. Both before shipment programs rejected valid three-plus-three.
-Afterward, Basic/Advanced shipment and ordinary auction programs preserve the
-six-spice debit and full Guild/Emperor receipt. Eight cases in
-`tests/bureaucrat-split-threshold.test.ts` cover three/four personal spice plus
-three allied, ordinary acquisition and the remaining five-plus-three guard.
+The former threshold fixture used real skill training, turn-two worm and
+mutual Harkonnen/Fremen alliance, but folded original board armies into
+reserves. Its below-five checks and obsolete qualifying-guard assertions are
+now replaced by the original-army fixtures below; it is not current native-army
+evidence. Before the threshold fix, both shipment programs rejected valid
+three-plus-three. Afterward, the six-spice debit and full Guild/Emperor receipt
+continued without an offer.
 The actual390px Basic controls pledge Fremen's three,
 ship six counters into Habbanya Sietch17 for three personal plus three allied,
 credit Guild5→11 and finish the original Movement turn. Initial Vite optimizer
 request aborts and cosmetic action notices are recorded; this is local proof,
 not deployed or full-family acceptance.
+
+## Qualifying classic allied receipts — 13 October 2026
+
+`tests/fixture-bureaucrat-qualifying-split.ts` retains original setup armies,
+wallets and phase progression. A real first-turn three-spice bribe is collected
+at the original Mentat Pause; the actual next worm and mutual alliance precede
+the turn-two pledge. Only unplayed physical card ordering/custody is staged.
+All six Basic/Advanced qualifying shipment and all six auction before programs
+rejected immutably after the real pledge at the old integration guard.
+
+The signed internal receipt retains each positive actual payer share. Existing
+single-payer receipts gain no new signature fields. The public prompt retains
+the already public gross price and recipient, but its payer is null for allied
+funding: no exact shares, selected qualifying identity or internal source is
+projected. Controls explain unchanged full contributor costs and gross-minus-two
+recipient income. This conservative prompt-composition policy reveals that an
+eligible share exists, not which private contribution meets the threshold.
+
+Original Karama income cancellation still precedes Bureaucrat. Cancellation
+banks the entire gross receipt and creates no offer/use; allowance keeps original
+purchase/force commitment and asks the native trainer before credit. Decline
+preserves later use; a five-plus-five receipt still consumes at most one use.
+Actual native owner/payee funding and real phase-boundary cases are covered.
+The existing bot payee/alliance choice needs no private contributor identity.
+
+Four parent actual programs additionally exercise entirely Fremen-funded five
+in both payment families and modes. Harkonnen pays zero, Fremen6→1, Guild
+receives three after redirection or Emperor10→13; the original five shipped
+reserves or purchased card and one legal Harkonnen bonus remain committed.
+Two actual390px GameTable flows use original Karama allowance then the new
+choice: Basic five-plus-three redirects two, Guild5→11/H2/F3/B10 and original
+Finish hands Movement to Fremen; Advanced three-plus-five allows all eight,
+Emperor10→18/H6/F1/B12, one purchased card plus one bonus, then original next-lot
+inspection allowance returns native Bidding at index1. Artifact outside Git:
+`/tmp/dune-native-bureaucrat-3225.json`.
+
+The isolated host initially failed virtual React-refresh module resolution;
+its resolver was corrected. The actual built app stylesheet supplied native
+styling. A stale accessibility-node failure followed an already accepted
+income allowance; authoritative state was inspected and no action replayed.
+The generic network-idle wait timed out against the live dev host; direct
+controls and fresh state/visual observations supplied the evidence instead.
+This is local rule/control proof, not production, recovery or full-mode proof.
+The native fixtures and consumer cases are
+`tests/fixture-bureaucrat-qualifying-shipment.ts`,
+`tests/bureaucrat-qualifying-shipment.test.ts`,
+`tests/fixture-bureaucrat-qualifying-auction.ts` and
+`tests/bureaucrat-qualifying-auction.test.ts`.
 
 ## Saved choices and verification
 
