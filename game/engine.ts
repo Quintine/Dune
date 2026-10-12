@@ -6956,7 +6956,8 @@ function semutaOfferSupported(
       continuation.kind !== 'tupileCleanupDiscard' &&
       continuation.kind !== 'karamaIncomeDiscard' &&
       continuation.kind !== 'ordinaryCardDiscard' &&
-      continuation.kind !== 'nullentropyDiscard') return false;
+      continuation.kind !== 'nullentropyDiscard' &&
+      continuation.kind !== 'distransDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

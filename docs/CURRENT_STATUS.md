@@ -29,6 +29,15 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / Homeworld Distrans reaction — 11 October.**
+`distransDiscard` is now admitted in the same envelope, so a completed
+private Distrans transfer offers its used card. A genuine original Homeworld
+state plays Distrans, delivers the private card to a real seat, then offers
+the used Distrans; the transferred card is never a candidate. Claim recovers
+the exact Distrans, pass leaves it discarded, and the gift, wallets,
+occupation authority and original Movement are unchanged. The claim/pass
+pair and all four legal bots pass alongside the existing Homeworld cases.
+
 **Semuta / Homeworld paid Box reaction — 11 October.**
 The same envelope also admitted no paid Nullentropy Box reaction, so a
 completed Box search produced no Semuta offer. `semutaOfferSupported` now

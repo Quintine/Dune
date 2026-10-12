@@ -1,5 +1,22 @@
 # Dune implementation status
 
+## 11 October 2026 — Homeworld Distrans Semuta reaction
+
+`distransDiscard` is now admitted in the same Homeworld envelope, so a
+completed private Distrans transfer offers its used card. The continuation
+already binds both hands and the shared parent signature (now Homeworld-aware
+when the module is present), so no new custody or price rule was added.
+
+A genuine original Homeworld state plays Distrans, delivers the chosen private
+card to a real seat, and offers the used Distrans. The transferred card is
+never a candidate; the gift has already completed. Claim recovers the exact
+Distrans, pass leaves it discarded, and the gift, wallets, occupation
+authority and original Movement are unchanged; replaying the transfer is
+rejected. The claim/pass pair and all four legal bot profiles pass alongside
+the existing Homeworld cases. Nineteen consumer cases and the frozen
+six-file union pass with types/lint. Truthtrance, battle and other Homeworld
+producers remain guarded.
+
 ## 11 October 2026 — Homeworld paid Box Semuta reaction
 
 The Homeworld envelope also admitted no paid Nullentropy Box reaction, so a

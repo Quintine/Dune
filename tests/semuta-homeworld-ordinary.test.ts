@@ -5,8 +5,9 @@ import { botActions } from '../game/bots';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { semutaEmperorPlayer } from './fixture-semuta-emperor-share';
 import {
-  createSemutaHomeworldBoxFixture, createSemutaHomeworldOrdinaryFixture,
-  reactSemutaHomeworldBox, reactSemutaHomeworldOrdinary,
+  createSemutaHomeworldBoxFixture, createSemutaHomeworldDistransFixture,
+  createSemutaHomeworldOrdinaryFixture, reactSemutaHomeworldBox,
+  reactSemutaHomeworldDistrans, reactSemutaHomeworldOrdinary,
   semutaHomeworldOrdinaryState,
 } from './fixture-semuta-homeworld-ordinary';
 
@@ -100,6 +101,60 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) void tes
     assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claimed);
     assert.equal(done.players.find(player => player.id === f.owner)!.spice,
       f.game.players.find(player => player.id === f.owner)!.spice - f.cost);
+  },
+);
+
+for (const claim of [false, true]) void test(
+  `Homeworld Distrans transfer Semuta ${claim ? 'claims' : 'passes'} the used Distrans without repeating the gift`, () => {
+    const f = createSemutaHomeworldDistransFixture();
+    const played = applyAction(f.game, f.owner, f.action);
+    const pending = played.pendingTreacheryDiscard;
+    assert.ok(pending, 'The used Distrans must offer its printed Semuta cost');
+    assert.equal(pending.batch.cause, 'distrans');
+    assert.deepEqual(pending.batch.entries.map(entry => ({
+      id: entry.card.id, by: entry.discardedBy, face: entry.publicFace,
+    })), [{ id: f.distrans, by: f.owner, face: true }]);
+    const recipient = semutaEmperorPlayer(played, f.recipient);
+    assert.equal(recipient.hand.some(card => card.id === f.given), true,
+      'The private transfer has already completed');
+    assert.equal(recipient.hand.some(card => card.id === f.distrans), false);
+    assert.equal(played.discard.some(card => card.id === f.distrans), true);
+    for (const player of played.players) viewGame(played, player.id);
+    const before = semutaHomeworldOrdinaryState(played);
+    const event = pending.batch.event;
+    assert.throws(() => applyAction(played, f.holder, { type: 'semutaSelect', event, card: f.given }),
+      'The already-transferred card is not a candidate');
+    const done = reactSemutaHomeworldDistrans(played, f, claim);
+    assert.equal(done.pendingTreacheryDiscard, null);
+    assert.equal(done.resolvedTreacheryDiscardSequence, pending.sequence);
+    const holder = semutaEmperorPlayer(done, f.holder);
+    assert.equal(holder.hand.some(card => card.id === f.distrans), claim);
+    assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claim);
+    assert.equal(semutaEmperorPlayer(done, f.recipient).hand.some(card => card.id === f.given), true);
+    assert.deepEqual(semutaHomeworldOrdinaryState(done), before,
+      'The private gift, wallets and occupation authority are unchanged');
+    assert.throws(() => applyAction(done, f.owner, f.action));
+    const suffix = applyAction(done, f.owner, { type: 'endMovement' });
+    assert.ok(!suffix.movementRemaining?.includes(f.owner));
+    assert.equal(suffix.phase, 5);
+  },
+);
+
+for (const difficulty of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) void test(
+  `the ${difficulty} bot settles the Homeworld Distrans Semuta cost`, () => {
+    const f = createSemutaHomeworldDistransFixture();
+    const played = applyAction(f.game, f.owner, f.action);
+    const view = viewGame(played, f.holder);
+    view.players.find(player => player.id === f.holder)!.bot = difficulty;
+    const action = botActions(view)[0];
+    assert.ok(action);
+    const done = applyAction(played, f.holder, action);
+    assert.equal(done.pendingTreacheryDiscard, null);
+    const holder = done.players.find(player => player.id === f.holder)!;
+    const claimed = holder.hand.some(card => card.id === f.distrans);
+    assert.equal(claimed || done.discard.some(card => card.id === f.distrans), true);
+    assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claimed);
+    assert.equal(semutaEmperorPlayer(done, f.recipient).hand.some(card => card.id === f.given), true);
   },
 );
 

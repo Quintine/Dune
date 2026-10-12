@@ -30,6 +30,40 @@ export function createSemutaHomeworldOrdinaryFixture(): SemutaHomeworldOrdinaryF
     action: { type: 'card', card: hajr } };
 }
 
+export type SemutaHomeworldDistransFixture = {
+  game: Game; holder: string; owner: string; distrans: string; given: string;
+  recipient: string; action: Action;
+};
+
+/** Genuine original Homeworld occupation state; the Distrans transfer and its
+ * given card are conserved physical cards, not minted, and the recipient is a
+ * real seat. No clock, wallet or occupation value is assigned. */
+export function createSemutaHomeworldDistransFixture(): SemutaHomeworldDistransFixture {
+  const income = createSemutaHomeworldGuildIncomeFixture({ advanced: false });
+  const game = income.game;
+  assert.equal(game.phase, 5);
+  assert.equal(game.active, 'a');
+  const holder = income.holder, owner = 'a', recipient = 'e';
+  const distrans = moveSemutaEmperorCard(game,
+    semutaEmperorCardId(game, card => card.effect === 'distrans'), owner);
+  const given = moveSemutaEmperorCard(game, semutaEmperorCardId(game, card =>
+    card.effect !== 'distrans' && card.kind !== 'special' && card.effect !== 'karama' &&
+    card.effect !== 'nullentropyBox'), owner);
+  return { game, holder, owner, distrans, given, recipient,
+    action: { type: 'card', card: distrans, target: recipient, give: given } };
+}
+
+export function reactSemutaHomeworldDistrans(
+  state: Game, fixture: SemutaHomeworldDistransFixture, claim: boolean,
+): Game {
+  const event = state.pendingTreacheryDiscard!.batch.event;
+  if (claim) return applyAction(state, fixture.holder, { type: 'semutaCommit', event });
+  let game = state;
+  for (const player of state.players)
+    game = applyAction(game, player.id, { type: 'semutaPass', event });
+  return game;
+}
+
 export type SemutaHomeworldBoxFixture = {
   game: Game; source: Game; holder: string; box: string; owner: string;
   action: Action; cost: number;
