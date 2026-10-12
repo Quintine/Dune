@@ -1,5 +1,35 @@
 # Dune implementation status
 
+## 11 October 2026 — native Emperor and Moritani continuation evidence corrected
+
+The initial Emperor-share fixture directly assigned phase, clock, alliance,
+wallets and decks. Its cancellation tests and two390px UI flows did not prove
+original setup, source qualification or stock conservation. The fixture now
+uses native setup and phase actions through the first turn, a real turn-two
+worm and reciprocal alliance. Original unplayed Spice Cards are reordered;
+later hand cards and three Tanks are staged by conserved transfers.
+
+Four actual engine claim/pass scenarios reach Charity or Revival with all45
+original Treachery identities and20 counters per faction. The native Emperor
+wallet remains ten; denial moves neither spice nor forces and claiming
+acquires the exact printed Karama. Six consumer cases pass on this setup.
+Guidance now correctly attributes the claimant control to the Semuta holder,
+not the Karama holder. There is no new UI or module-admission claim.
+
+The observed Moritani cleanup mismatch has two legitimate native branches:
+an unused held Karama permits Moritani's special-Karama offer after its
+assassination; absence proceeds directly to winner card cleanup. Two genuine
+runtime scenarios stage that unused physical card before sealed plans and
+prove the owned decline, one Master Bewt death, three-spice bounty and native
+Collection continuation. The existing regression now covers both branches
+without rewriting engine rules or relying on the random starting hand.
+The prior isolated reruns did not prove a pre-existing failure's origin.
+
+Deleted the pure Leader Skills panel wording test, the exact incidental worm
+quote shape and rejection-message pins rather than rewording them.
+Types/lint and the affected five-file union pass39/39. Temporary proof scripts
+were removed. No broad suite, save/recovery campaign or deployed proof.
+
 ## 11 October 2026 — Emperor share cancellation cost through Semuta
 
 Actual native `emperorRevival`/`emperorGift` cancellation discarded the printed
@@ -16,13 +46,11 @@ spice, forces or revival, and the Emperor extra-revival ledger stays empty.
 Signature facts bind the response and the extra-revival ledger for this kind;
 other kinds omit them so their existing shapes are unchanged.
 
-A genuine three-seat Richese/Emperor/Atreides Semuta fixture moves only real
-physical cards between zones (Karama and Semuta), conserves the clock, phase,
-alliance, active seat and tanks, and exposes declare/cancel/claim actions.
-Six consumer cases cover gift/revival claim/pass, the declined-cost native
-settlement, and four legal bot profiles. Types/lint pass; the four-file repair
-set and this file pass. Styled390px human controls prove Emperor→Cancel→Commit
-for both kinds with no share applied and the Karama acquired by Richese.
+The initial three-seat fixture directly assigned its clock, phase, alliance,
+wallets and decks; its six tests and two styled390px human controls exercised
+the cancellation retirement only. They did not prove native setup or source
+qualification. That evidence is superseded by the corrected native fixture
+and changed-path proof in the checkpoint above.
 
 No new module admission, source ruling, saved-game conversion or public gate.
 Temporary QA scripts/server and tab were removed.

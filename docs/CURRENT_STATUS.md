@@ -29,37 +29,38 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Semuta / printed Karama canceling the Emperor share — 11 October.**
-`karamaEmperorShareDiscard` covers `emperorGift` and `emperorRevival`
-cancellations through the existing response-cost union, admission, signature
-and retirement path. A distinct printed Karama now pauses on its public cost
-before the native denial; the canceled share moves no spice, forces or revival
-and the extra-revival ledger stays empty. Claim/pass restores the saved response
-and finishes the cancellation once. Before cutover the Karama was discarded and
-the denial applied with no Semuta opportunity; afterward the offer appears and
-all views work. Types/lint pass. Six consumer cases (gift/revival × claim/pass,
-declined-cost settlement, four legal bot profiles) reuse a genuine three-seat
-Richese/Emperor/Atreides Semuta setup that moves only real physical cards.
-Styled390px human Emperor→Cancel→Commit proves the gift and extra-revival
-denials with no share applied. See
+**Semuta / Emperor-share native continuation proof — 11 October.**
+`karamaEmperorShareDiscard` covers printed Karama canceling `emperorGift`
+and `emperorRevival` before the original denial. The initial fixture assigned
+the clock, phase, alliance and wallets directly; its tests and 390px UI
+exercise did not prove native setup or phase qualification.
+The replacement now completes original setup, the first turn, a real turn-two
+worm and reciprocal alliance through native actions. Only original unplayed
+Spice Cards and conserved later hand/force positions are staged. Gift reaches
+actual Charity; extra revival reaches actual Revival. Four runtime claim/pass
+paths preserve all45 original Treachery identities,20 counters per faction,
+native ten-spice Emperor wallet and the ally's three Tanks. Six consumer cases
+pass; claiming acquires the same printed Karama without applying the denied
+share. This does not certify all Emperor or Semuta compositions. See
 [Semuta ordering](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime).
 
-**Pre-existing red unit tests repaired — 11 October.** Four tests already
-failed at `63e5f22` (verified in a clean worktree): `homeworld-actions-engine`
-pinned the obsolete word "Basic" in a rejection message now reading "base
-rules"; `leader-skills-controls` pinned superseded panel prose; and
-`moritani-skills-worm` omitted the implemented multi-pile `piles` shape. Those
-stale wording/incidental pins were replaced with behavior and presence checks,
-and the multi-pile expectation was aligned. `smuggler-battle` fabricated a
-Leader Skills battle with the Ecaz variant module, a state the profile
-initializer rejects; it now asserts the real gate (the profile rejects
-`ecazTreachery`) and that the fabricated mid-battle state is rejected by reads
-and actions. The four files pass33/33; the full unit suite then ran
-7066/7067. The single failure, `moritani-skills-modules-runtime` expecting
-`battleCards` but sometimes seeing `moritaniSpecialKarama`, is a pre-existing
-intermittent flake from that fixture's real shuffled deal (0 failures in 12
-isolated reruns on this tree, 5/5 at `63e5f22`); it is recorded rather than
-pinned, and the deferred comprehensive review covers it.
+**Obsolete test pins and original Moritani cleanup — 11 October.**
+The previous checkpoint's four repaired unit files passed33/33, but the full
+unit run remained7066/7067. Its remaining failure expected `battleCards`
+instead of `moritaniSpecialKarama`; passing isolated reruns did not establish
+a pre-existing cause.
+The original winner cleanup legitimately offers Moritani's unused special
+Karama when it holds an eligible physical Karama. Deterministic native
+scenarios now control that unused card before sealed plans: without it,
+assassination resumes winner cleanup directly; with it, the owned native
+decline precedes the same cleanup. Both runtime paths finish in Collection
+with one Master Bewt death and exactly three assassination spice; no engine
+rule was changed. Permanent cases retain the original rescue, cleanup and
+income assertions for both branches. The pure panel-wording case, exact
+incidental worm-quote shape and rejection-message pins have been removed,
+not reworded. Comprehensive review and broad-suite acceptance remain deferred.
+The frozen five-file repair union passes39/39 with types/lint clean; the six
+native runtime scenarios above are local evidence, not a green full suite.
 
 **Stale battle-frame recovery expectation repaired — 11 October.** The
 `authenticated clean Semuta producers claim once through restart and room CAS`

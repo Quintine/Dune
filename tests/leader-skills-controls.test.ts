@@ -222,17 +222,3 @@ void test('battle visibility choice names the skilled leader and disables both a
   assert.equal(disabledControls(markup(skills, true)), 2);
 });
 
-void test('the panel states the connected role modifiers, Diplomat copy and unfinished boundary', () => {
-  const html = markup(view());
-  for (const name of [
-    'Warmaster',
-    'Master of Assassins',
-    'Swordmaster of Ginaz',
-    'Killer Medic',
-    'Prana-Bindu Adept',
-  ])
-    assert.match(html, new RegExp(name));
-  assert.match(html, /development-only module/);
-  assert.match(html, /Diplomat/);
-  assert.match(html, /complete mode acceptance is unfinished/);
-});

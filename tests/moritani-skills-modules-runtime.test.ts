@@ -118,8 +118,25 @@ void test('actual first Storm assigns Tech, a real native shipment pays phase-en
   for (const g of [f.afterSetup, f.afterFirstStorm, f.afterFirstMentat, f.afterShipment, f.pending]) custody(g);
 });
 
-void test('the normal face-up unused Guild Suk rescues one first; original held Master Bewt assassination returns Suk and printed3 once without replaying winner income or casualties', () => {
-  const f = fixture(), pending = f.pending;
+for (const hasKarama of [false, true]) void test(`the normal Guild Suk rescue and held Master Bewt assassination preserve cleanup ${hasKarama ? 'after the original Moritani special-Karama decline' : 'without a Moritani Karama'}`, () => {
+  const f = fixture();
+  const prepared = structuredClone(f.game), moritani = player(prepared, f.moritani);
+  // Control only the unused physical Karama, before the real sealed plans.
+  // A random original hand must not silently select a different cleanup path.
+  for (const card of moritani.hand.filter(c => c.effect === 'karama')) {
+    moritani.hand.splice(moritani.hand.indexOf(card), 1);
+    prepared.deck.push(card);
+  }
+  if (hasKarama) {
+    const zone = [prepared.deck, ...prepared.players.filter(p => p.id !== f.moritani).map(p => p.hand)]
+      .find(cards => cards.some(card => card.effect === 'karama'));
+    assert.ok(zone);
+    const index = zone.findIndex(card => card.effect === 'karama');
+    assert.ok(moritani.hand.length < 4);
+    moritani.hand.push(zone.splice(index, 1)[0]);
+  }
+  f.revealed = revealMoritaniSkillsModulesPlans(prepared, f.planActions);
+  const pending = resolveMoritaniSkillsModulesBattle(structuredClone(f.revealed), f.moritani);
   assert.equal(pending.lastBattleContext?.result, 'normal'); assert.equal(pending.lastBattleContext?.winner, f.opponent);
   assert.equal(pending.decision?.kind, 'moritaniAssassinate');
   assert.equal(pending.lastBattleContext?.sukRescue?.completed, true);
@@ -157,6 +174,18 @@ void test('the normal face-up unused Guild Suk rescues one first; original held 
   assert.deepEqual(game.players.map(p => ({ id: p.id, forces: p.forces, reserves: p.reserves, tanks: p.tanks, elites: p.elites })), originalForces);
   assert.deepEqual(game.strongholdCards, pending.strongholdCards);
   assert.deepEqual(game.techTokens, pending.techTokens, 'Assassination does not replay or undo original phase income');
+  if (hasKarama) {
+    assert.equal(game.decision?.kind, 'moritaniSpecialKarama');
+    const choice = game.decision!;
+    assert.equal(choice.player, f.moritani);
+    assert.ok(viewGame(game, f.moritani).moritaniSpecialKarama);
+    reject(game, f.opponent, { type: 'decision', event: choice.event, decline: true });
+    game = applyAction(reload(game), f.moritani, { type: 'decision', event: choice.event, decline: true });
+    assert.deepEqual(game.players.map(p => ({ id: p.id, forces: p.forces, reserves: p.reserves, tanks: p.tanks, elites: p.elites })), originalForces);
+    assert.equal(player(game, f.moritani).spice, moriBalance + 3);
+    assert.equal(player(game, f.opponent).spice, winnerBalance);
+    assert.equal(player(game, f.moritani).hand.some(c => c.effect === 'karama'), true);
+  }
   assert.equal(game.decision?.kind, 'battleCards'); assert.equal(game.decision?.player, f.opponent);
   reject(game, f.moritani, action);
   game = applyAction(reload(game), f.opponent, { type: 'decision', discard: f.opponentCards });

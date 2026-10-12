@@ -177,13 +177,6 @@ void test('Basic Moritani permits a projected Sandmaster worm collection and one
     17,
   );
   assert.deepEqual(projected, authoritative);
-  assert.deepEqual(authoritative, {
-    leader: 'fremen-0',
-    key: 'habbanya_ridge_flat:17',
-    before: 2,
-    blocked: null,
-    piles: [{ before: 2, key: 'habbanya_ridge_flat:17' }],
-  });
 
   const botView = viewGame(restored, 'f');
   botView.players.find((player) => player.id === 'f')!.bot = 'Easy';

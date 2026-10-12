@@ -838,3 +838,19 @@ Both regressions fail before and pass after; six runtime cases cover all
 views, claim/pass/four legal profiles and native remainder. Styled390px
 controls finish with board2Suboids/Tanks1Cyborg/reserves17 and Richese's acquired
 Karama, with no overflow. No additional skill/module or mode gate opens.
+
+**11 October 2026 — Emperor-share cancellation qualification.** Printed Karama
+canceling the Emperor's gift or extra allied revival pauses on its actual
+public discard before the native denial. The original response is retained;
+claim/pass does not transfer spice, revive a force or consume extra-revival
+allowance. The private claimant action belongs to the actual Semuta holder.
+
+The initial tests/UI assigned phases, alliance and wallets directly and did
+not establish native qualification. The replacement fixture completes the
+original setup, first turn and real turn-two worm alliance, then reaches
+actual Charity or Revival through native actions. Four runtime claim/pass
+scenarios retain all45 original Treachery identities and20 faction counters;
+the native Emperor has ten spice and the ally retains three Tanks. Six
+consumer cases pass on that genuine setup. Later held cards/Tanks use
+conserved transfers, not replacement decks or minted forces. No new ruling,
+module entry, public gate or complete-mode certification follows.
