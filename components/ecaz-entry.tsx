@@ -283,10 +283,11 @@ export function EcazEntry({
       ) : entry.stage === 'revival' ? (
         <>
           <p className="m-0 text-sm leading-6">
-            Revive one eligible own leader, or return up to {entry.revival?.maximum ?? 0}
-            {' '}physical forces from the Tanks for free. This independent grant
-            leaves ordinary allowances and income unchanged provisionally.
-            Repeat-death and shared-leader interactions remain unfinished.
+            Revive one eligible first-death own leader, including Atreides’ first
+            killed Kwisatz Haderach, or return up to {entry.revival?.maximum ?? 0}
+            {' '}physical forces for free. This independent grant leaves ordinary
+            allowances and income unchanged provisionally. Repeat-return and
+            shared-leader interactions remain unfinished.
           </p>
           {entry.revival?.blocked && (
             <p className="m-0 text-sm leading-6">{entry.revival.blocked}</p>

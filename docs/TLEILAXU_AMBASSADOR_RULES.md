@@ -2,6 +2,30 @@
 
 Primary-source review, 2026-09-07, with later runtime checkpoints below. This document supplements the [Ambassador effects audit](ECAZ_AMBASSADOR_EFFECTS_AUDIT.md) and [runtime readiness review](TLEILAXU_AMBASSADOR_RUNTIME_READINESS.md). Recorded source questions remain distinct from the Basic-first implementation choices.
 
+## First-death own Kwisatz Haderach — 11 October 2026
+
+The source-supported separate KH identity below now appears in Atreides'
+private native or Bene Gesserit-copied Tleilaxu grant. Its original advanced
+activation and first-kill cycle1 record are required. It is not appended to
+the five ordinary native leaders and does not inherit foreign/shared custody.
+
+The return clears its dead/battle-use state and advances the same cycle
+marker used by original Ghola and ordinary KH returns. Battle losses,
+ordinary roster identities, wallets, force pools and ordinary leader usage
+remain unchanged; quota independence retains the existing first-version
+qualification. A prior return marker stays guarded by the pending repeat-death
+interpretation rather than gaining a new exception.
+
+Two native before programs recorded real seven-loss combat followed by a
+KH Lasgun/Shield death, real worm alliance and Ambassador placement/arrival,
+but offered no KH and rejected its choice. Four native/copied human/Easy
+programs now return the same token and source entrant once. Six consumer
+cases include both paths, owner/stale/exclusive errors, living/prior-return
+exclusion and all four minimal legal bot profiles. Styled390px humans use
+the native button, inspect awakened10-loss status, and explicitly select the
+legal copied Tleilaxu effect before returning KH; original Guild Movement
+still finishes. This does not settle the three policy questions below.
+
 ## First-version leader alternative — 8 October 2026
 
 The beneficiary may now revive one first-death own leader for free instead of

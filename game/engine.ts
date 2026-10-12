@@ -15,6 +15,7 @@ import {
 } from './leader-skill-combat';
 import { quoteSukPhysicalRescue, quoteSukRescue, SukPhysicalRescueError, sukReceiptSignature, sukRescueOptions, type SukForceGroup, type SukPhysicalRescueQuote, type SukPhysicalRescueReceipt, type SukReserveDestinations, type SukRescueOption, type SukRescueReceipt } from './suk-graduate';
 import { quoteTleilaxuAmbassadorForces, TleilaxuAmbassadorForceError } from './tleilaxu-ambassador-forces';
+import { tleilaxuAmbassadorLeaderChoices, tleilaxuAmbassadorLeaderSelection } from './tleilaxu-ambassador-leaders';
 import { leaderSkillStrongholdCount, sandmasterVictorySpice, sandmasterVictoryPiles, type SandmasterVictorySpiceOffer } from './leader-skill-battle-board';
 import { beginRihani, chooseRihaniDraw, finishRihani, validateRihani, type RihaniReceipt, type RihaniSkill } from './rihani-decipherer';
 import { planetologistMovementModeSupported, planetologistLeader, planetologistRange, selectedOriginElites, groundMovementRange, type PlanetologistMovement } from './planetologist-movement';
@@ -16675,8 +16676,8 @@ function resolveAmbassadorEffect(g: Game) {
     return;
   }
   if (effect === 'tleilaxu') {
-    // Initial leader path: first-death own discs, independent of ordinary quota.
-    // Repeat-death and shared-disc interactions remain explicit refinement work.
+    // First-death own identities include KH's separate token under base p17.
+    // Repeat returns, shared discs and ordinary-quota policy stay separate.
     entry.stage = 'revival';
     g.decision = { kind: 'ecazAmbassador', player: p.id };
     log(
@@ -16879,13 +16880,21 @@ function decideAmbassador(g: Game, p: Player, action: Action) {
     if (action.leader !== undefined) {
       requireRule(action.forces === undefined && action.elite === undefined,
         'Choose a leader or forces, not both.');
-      const leader = p.leaders.find(l => l.id === action.leader &&
-        l.faction === p.faction && l.dead && l.deaths === 1 &&
-        !l.capturedBy && !l.gholaBy);
-      requireRule(leader, 'Choose a first-death own leader from the Tanks.');
-      leader.dead = false;
-      delete leader.usedAt;
-      log(g, `${p.name} revived ${leader.name} for free through the Tleilaxu Ambassador. The ordinary leader allowance is unchanged.`,
+      const selected = tleilaxuAmbassadorLeaderSelection(g, p, action.leader);
+      requireRule(selected, 'Choose an eligible first-death own leader or Kwisatz Haderach from the Tanks.');
+      let name: string;
+      if (selected === 'kwisatz') {
+        const kwisatz = p.kwisatz!;
+        kwisatz.dead = false;
+        delete kwisatz.usedAt;
+        kwisatz.revivalCycle = Math.max(p.revivalCycle, kwisatz.revivalCycle ?? 1) + 1;
+        name = 'Kwisatz Haderach';
+      } else {
+        selected.dead = false;
+        delete selected.usedAt;
+        name = selected.name;
+      }
+      log(g, `${p.name} revived ${name} for free through the Tleilaxu Ambassador. The ordinary leader allowance is unchanged.`,
         { faction: 'tleilaxu', name: 'Tleilaxu Ambassador' });
       finishAmbassador(g);
       return;
@@ -32730,9 +32739,7 @@ export function viewGame(state: Game, id: string) {
                     tanks: me.tanks,
                     eliteTanks: me.elites?.tanks ?? 0,
                     eliteRevived: me.elites?.revived ?? 0,
-                    leaders: me.leaders.filter(l => l.faction === me.faction &&
-                      l.dead && l.deaths === 1 && !l.capturedBy && !l.gholaBy)
-                      .map(l => ({ id: l.id, name: l.name, strength: l.strength })),
+                    leaders: tleilaxuAmbassadorLeaderChoices(g, me),
                     blocked:
                       ambassadorEffectBlock(
                         g,

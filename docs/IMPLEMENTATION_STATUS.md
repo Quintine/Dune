@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 11 October 2026 — source-supported first-death KH Ambassador return
+
+The Tleilaxu Ambassador's own-leader alternative excluded Atreides'
+separate Kwisatz Haderach token even though base p17 revives KH like a
+leader without adding it to the ordinary roster. Two native before programs
+with genuine seven-loss combat, an actual KH Lasgun/Shield death, a real
+worm alliance and a real placed-token arrival offered no KH choice and
+rejected it.
+
+Shared `tleilaxu-ambassador-leaders.ts` now supplies the private eligibility
+list and validates the submitted identity for native and Bene Gesserit
+copied grants. KH requires Advanced Atreides, seven battle losses, its own
+dead state and the original cycle1 marker; foreign discs, living KH and a
+prior return marker remain excluded. No response/decision shape, ordinary
+roster, wallet, force or quota calculation changed.
+
+Returning KH clears its dead/battle-use state and advances the same cycle
+marker used by original Ghola and ordinary KH returns. It does not reset
+battle losses, add a physical disc, spend the ordinary leader allowance,
+charge spice or alter force pools. Four native/copied human/Easy runtime
+programs return the same token and resume the original Guild entrant once.
+Six consumer cases cover both paths, owner/stale/exclusive errors, living and
+prior-return exclusion and all four minimal legal bots. The fixture's battle
+preparation and physical Ghola descriptor were corrected during development;
+no engine rule was changed for those fixture errors. Styled390px humans use
+the native button, inspect awakened10-loss status and select the legal
+copied effect before returning KH.
+
+No repeat-return, shared-leader or revival-income interpretation is settled;
+those remain the recorded policy questions. Types/lint and the frozen
+six-file Ambassador union pass44/44; no broad-suite or deployed acceptance.
+
 ## 11 October 2026 — Homeworld income cost before original printed share
 
 Seven source-qualified before programs lacked Semuta for Basic/Advanced low

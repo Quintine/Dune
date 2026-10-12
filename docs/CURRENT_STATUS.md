@@ -29,6 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Tleilaxu Ambassador first-death Kwisatz Haderach — 11 October.**
+The source-supported separate KH identity (base p17) now appears in the
+private native or Bene Gesserit-copied Tleilaxu grant. It is not appended to
+the five ordinary native leaders; battle losses, wallets, force pools and
+ordinary leader usage are unchanged, while its original activation and
+first-kill cycle1 record are required. Every existing KH return advances the
+same cycle marker; a prior return stays guarded by the pending repeat-death
+interpretation. Two native before programs with real seven-loss combat, a
+KH Lasgun/Shield death and an actual placed-token arrival offered no KH and
+rejected it. Four native/copied human/Easy programs now return that same
+token and resume the original entrant. Six consumer cases and all four legal
+bot profiles pass; the frozen six-file union passes44/44 with types/lint
+clean. Styled390px humans use the native button, inspect awakened10-loss
+private status and explicitly select the legal copied effect. No
+repeat-return, shared-leader or revival-income ruling changes.
+
 **Semuta / Homeworld income costs and retained printed shares — 11 October.**
 The existing `karamaIncomeDiscard` now also covers the same source-qualified
 Guild, Emperor auction and Richese special-purchase income in the original
