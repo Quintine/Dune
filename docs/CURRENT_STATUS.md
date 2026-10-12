@@ -29,6 +29,15 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / Homeworld Truthtrance reaction — 11 October.**
+`truthtranceDiscard` is now admitted in the same envelope, so a definite
+Truthtrance answer offers the consumed card. A genuine original Homeworld
+state declares Truthtrance, passes storm priority and answers a real fact;
+the consumed card is then offered. Claim recovers the exact Truthtrance,
+pass leaves it discarded, and the published answer history, wallets,
+occupation authority and original Movement are unchanged. The claim/pass
+pair and all four legal bots pass alongside the existing Homeworld cases.
+
 **Semuta / Homeworld Distrans reaction — 11 October.**
 `distransDiscard` is now admitted in the same envelope, so a completed
 private Distrans transfer offers its used card. A genuine original Homeworld

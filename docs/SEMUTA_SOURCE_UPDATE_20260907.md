@@ -857,9 +857,9 @@ module entry, public gate or complete-mode certification follows.
 
 **11 October 2026 — Homeworld ordinary-card reaction.** The bounded Homeworld
 entry now also offers Semuta for an ordinary used special card played in its
-roster, a clean Distrans transfer and the used card of a completed paid
-Nullentropy Box search, not only paid Kaitain disposal, Tupile cleanup and
-printed Karama canceling income. The used card is the same public fresh batch; claim recovers it and
+roster, a clean Distrans transfer, a definite Truthtrance answer and the used
+card of a completed paid Nullentropy Box search, not only paid Kaitain
+disposal, Tupile cleanup and printed Karama canceling income. The used card is the same public fresh batch; claim recovers it and
 pass leaves it discarded, with Homeworld custody, occupation history, the
 percentage ledger, wallets, the two-spice Box payment and the card's own
 committed effect unchanged. The shared parent signature additionally binds

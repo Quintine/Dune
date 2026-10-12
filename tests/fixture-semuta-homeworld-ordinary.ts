@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  applyAction, type Action, type Game,
+  applyAction, viewGame, type Action, type Game,
 } from '../game/engine';
 import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { createSemutaHomeworldGuildIncomeFixture } from './fixture-semuta-homeworld-guild-income';
@@ -28,6 +28,51 @@ export function createSemutaHomeworldOrdinaryFixture(): SemutaHomeworldOrdinaryF
   assert.ok(semutaEmperorPlayer(game, 'a').hand.some(card => card.id === hajr));
   return { game, source: income.game, holder, owner, semuta: SEMUTA_DRUG_ID, hajr,
     action: { type: 'card', card: hajr } };
+}
+
+export type SemutaHomeworldTruthtranceFixture = {
+  game: Game; holder: string; asker: string; questioned: string;
+  truthtrance: string; answer: Action;
+};
+
+/** Genuine original Homeworld occupation state; a real Truthtrance declaration,
+ * storm priority pass and definite fact answer produce the consumed card. The
+ * Truthtrance and the answering Shield are conserved physical cards. */
+export function createSemutaHomeworldTruthtranceFixture(): SemutaHomeworldTruthtranceFixture {
+  const income = createSemutaHomeworldGuildIncomeFixture({ advanced: false });
+  let game = income.game;
+  assert.equal(game.phase, 5);
+  assert.equal(game.active, 'a');
+  const holder = income.holder, asker = 'a', questioned = income.owner;
+  const truthtrance = moveSemutaEmperorCard(game,
+    semutaEmperorCardId(game, card => card.effect === 'truthtrance'), asker);
+  const shieldIndex = game.deck.findIndex(card => card.name === 'Shield');
+  assert.ok(shieldIndex >= 0, 'A real Shield must remain in the original deck');
+  semutaEmperorPlayer(game, questioned).hand.push(game.deck.splice(shieldIndex, 1)[0]);
+  game = applyAction(game, asker, { type: 'card', card: truthtrance, cards: [] });
+  while (game.truthtrance?.stage === 'priority') {
+    const actor = game.players.find(player => !game.truthtrance!.passed.includes(player.id))!;
+    game = applyAction(game, actor.id, { type: 'truthPass' });
+  }
+  assert.equal(game.truthtrance?.stage, 'ask');
+  game = applyAction(game, game.truthtrance!.queue[0].player, {
+    type: 'truthAsk',
+    question: { kind: 'fact', target: questioned, fact: { kind: 'hand', name: 'Shield' } },
+  });
+  assert.equal(viewGame(game, questioned).truthAnswer, 'yes');
+  return { game, holder, asker, questioned, truthtrance,
+    answer: { type: 'truthAnswer', answer: 'yes' } };
+}
+
+export function reactSemutaHomeworldTruthtrance(
+  state: Game, fixture: SemutaHomeworldTruthtranceFixture, claim: boolean,
+): Game {
+  const event = state.pendingTreacheryDiscard!.batch.event;
+  if (claim) return applyAction(state, fixture.holder, { type: 'semutaCommit', event });
+  let game = state;
+  for (const player of state.players)
+    game = applyAction(game, player.id, { type: 'semutaPass', event });
+  return game;
 }
 
 export type SemutaHomeworldDistransFixture = {

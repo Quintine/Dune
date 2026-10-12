@@ -6,8 +6,9 @@ import { SEMUTA_DRUG_ID } from '../game/semuta-drug';
 import { semutaEmperorPlayer } from './fixture-semuta-emperor-share';
 import {
   createSemutaHomeworldBoxFixture, createSemutaHomeworldDistransFixture,
-  createSemutaHomeworldOrdinaryFixture, reactSemutaHomeworldBox,
-  reactSemutaHomeworldDistrans, reactSemutaHomeworldOrdinary,
+  createSemutaHomeworldOrdinaryFixture, createSemutaHomeworldTruthtranceFixture,
+  reactSemutaHomeworldBox, reactSemutaHomeworldDistrans,
+  reactSemutaHomeworldOrdinary, reactSemutaHomeworldTruthtrance,
   semutaHomeworldOrdinaryState,
 } from './fixture-semuta-homeworld-ordinary';
 
@@ -155,6 +156,59 @@ for (const difficulty of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) void tes
     assert.equal(claimed || done.discard.some(card => card.id === f.distrans), true);
     assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claimed);
     assert.equal(semutaEmperorPlayer(done, f.recipient).hand.some(card => card.id === f.given), true);
+  },
+);
+
+for (const claim of [false, true]) void test(
+  `Homeworld Truthtrance answer Semuta ${claim ? 'claims' : 'passes'} the consumed card after the public answer`, () => {
+    const f = createSemutaHomeworldTruthtranceFixture();
+    const answered = applyAction(f.game, f.questioned, f.answer);
+    const pending = answered.pendingTreacheryDiscard;
+    assert.ok(pending, 'A definite Truthtrance answer must offer its printed Semuta cost');
+    assert.equal(pending.batch.cause, 'truthtrance');
+    assert.deepEqual(pending.batch.entries.map(entry => ({
+      id: entry.card.id, by: entry.discardedBy, face: entry.publicFace,
+    })), [{ id: f.truthtrance, by: f.asker, face: true }]);
+    assert.equal(answered.truthHistory!.length, 1);
+    assert.equal(answered.truthHistory![0].answer, 'yes');
+    assert.equal(answered.truthtrance, null);
+    for (const player of answered.players) viewGame(answered, player.id);
+    const before = semutaHomeworldOrdinaryState(answered);
+    const event = pending.batch.event;
+    assert.throws(() => applyAction(answered, f.holder, { type: 'semutaSelect', event, card: f.truthtrance }));
+    const done = reactSemutaHomeworldTruthtrance(answered, f, claim);
+    assert.equal(done.pendingTreacheryDiscard, null);
+    assert.equal(done.resolvedTreacheryDiscardSequence, pending.sequence);
+    const holder = semutaEmperorPlayer(done, f.holder);
+    assert.equal(holder.hand.some(card => card.id === f.truthtrance), claim);
+    assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claim);
+    assert.equal(done.discard.some(card => card.id === f.truthtrance), !claim);
+    assert.deepEqual(done.truthHistory, answered.truthHistory,
+      'The published answer history is not rewritten by the reaction');
+    assert.deepEqual(semutaHomeworldOrdinaryState(done), before,
+      'The answer, wallets and occupation authority are unchanged');
+    assert.throws(() => applyAction(done, f.questioned, f.answer));
+    const suffix = applyAction(done, f.asker, { type: 'endMovement' });
+    assert.ok(!suffix.movementRemaining?.includes(f.asker));
+    assert.equal(suffix.phase, 5);
+  },
+);
+
+for (const difficulty of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) void test(
+  `the ${difficulty} bot settles the Homeworld Truthtrance Semuta cost`, () => {
+    const f = createSemutaHomeworldTruthtranceFixture();
+    const answered = applyAction(f.game, f.questioned, f.answer);
+    const view = viewGame(answered, f.holder);
+    view.players.find(player => player.id === f.holder)!.bot = difficulty;
+    const action = botActions(view)[0];
+    assert.ok(action);
+    const done = applyAction(answered, f.holder, action);
+    assert.equal(done.pendingTreacheryDiscard, null);
+    const holder = done.players.find(player => player.id === f.holder)!;
+    const claimed = holder.hand.some(card => card.id === f.truthtrance);
+    assert.equal(claimed || done.discard.some(card => card.id === f.truthtrance), true);
+    assert.equal(holder.hand.some(card => card.id === SEMUTA_DRUG_ID), !claimed);
+    assert.deepEqual(done.truthHistory, answered.truthHistory);
   },
 );
 

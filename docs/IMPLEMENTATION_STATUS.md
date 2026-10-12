@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 11 October 2026 — Homeworld Truthtrance Semuta reaction
+
+`truthtranceDiscard` is now admitted in the same Homeworld envelope, so a
+definite Truthtrance answer offers the consumed card. Its signature already
+binds the committed answer record, queue remainder and the shared parent
+signature (Homeworld-aware when the module is present).
+
+A genuine original Homeworld state declares Truthtrance, passes storm
+priority and answers a real held-card fact; the consumed card is then the
+fresh batch. Claim recovers the exact Truthtrance, pass leaves it discarded,
+and the published answer history, wallets, occupation authority and original
+Movement are unchanged; the answer cannot be replayed. The claim/pass pair
+and all four legal bot profiles pass. Twenty-five consumer cases and the
+frozen six-file union pass with types/lint. Battle, Ornithopter, Sapho and
+other Homeworld producers remain guarded.
+
 ## 11 October 2026 — Homeworld Distrans Semuta reaction
 
 `distransDiscard` is now admitted in the same Homeworld envelope, so a
