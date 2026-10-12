@@ -855,6 +855,16 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**11 October 2026 — Homeworld ordinary-card reaction.** The bounded Homeworld
+entry now also offers Semuta for an ordinary used special card played in its
+roster, not only paid Kaitain disposal, Tupile cleanup and printed Karama
+canceling income. The used card is the same public fresh batch; claim
+recovers it and pass leaves it discarded, with Homeworld custody, occupation
+history, the percentage ledger, wallets and the card's own committed effect
+unchanged. One before program lacked the offer; four claim/pass and all four
+legal bots pass. Other Homeworld producers remain guarded, not prohibited by
+a newly found printed rule.
+
 **11 October 2026 — native paid-income cancellation costs.** Printed Karama
 canceling original Guild shipment income, non-Ambassador Emperor auction
 income or Advanced Richese special-purchase income offers that public

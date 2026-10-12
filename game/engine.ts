@@ -6947,7 +6947,8 @@ function semutaOfferSupported(
         continuation.promise.kind === 'battle'))) return false;
   if (g.homeworlds && continuation.kind !== 'kaitainDiscard' &&
       continuation.kind !== 'tupileCleanupDiscard' &&
-      continuation.kind !== 'karamaIncomeDiscard') return false;
+      continuation.kind !== 'karamaIncomeDiscard' &&
+      continuation.kind !== 'ordinaryCardDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

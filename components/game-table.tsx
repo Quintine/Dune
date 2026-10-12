@@ -1166,9 +1166,10 @@ export function GameTable({
             <>
               Semuta Drug with Homeworlds development preview · original Richese,
               CHOAM and classic occupation setup, with no other optional modules.
-              Paid high-Kaitain closing discards, occupied Tupile lost-slot cleanup
-              and printed Karama canceling native Guild, Emperor auction or Richese
-              purchase income offer Semuta here. Private discarded faces remain
+              Paid high-Kaitain closing discards, occupied Tupile lost-slot cleanup,
+              an ordinary used special card played in this profile and printed
+              Karama canceling native Guild, Emperor auction or Richese purchase
+              income offer Semuta here. Private discarded faces remain
               hidden until commitment; a simultaneous group requires one selection.
               Claim or Continue keeps the paid price or lost slot and resumes the
               same original source once. Canceling native income does not cancel

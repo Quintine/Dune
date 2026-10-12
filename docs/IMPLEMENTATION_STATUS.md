@@ -1,5 +1,29 @@
 # Dune implementation status
 
+## 11 October 2026 — Homeworld ordinary-card Semuta reaction
+
+The Homeworld Semuta envelope admitted only paid Kaitain disposal, Tupile
+lost-slot cleanup and printed Karama canceling income, so a used ordinary
+special card played in that roster produced no reaction. The printed Semuta
+card carries no module restriction; the exclusion was an implementation
+boundary of the new envelope.
+
+`semutaOfferSupported` now also admits `ordinaryCardDiscard` when the
+Homeworld roster matches. That continuation's existing signature already
+binds Homeworld custody, occupation history and the percentage ledger, so no
+new source identity, price or economic rule was introduced. Ordinary resume
+already restores the saved response/decision/pending-Karama/opening.
+
+A genuine original Homeworld occupation state at an active Movement owner
+plays Hajr: its movement grant commits, the used card becomes the fresh
+batch, and Semuta is offered. Claim recovers the exact used card; pass leaves
+it discarded. Wallets, Homeworld custody, occupation history, percentage
+ledger, the Hajr grant and the remaining Movement are unchanged; a second
+play and a repeated commit are rejected. The before program produced no
+offer; four claim/pass and all four legal bot profiles pass. Seven consumer
+cases and the frozen six-file union pass with types/lint. Other Homeworld
+producers, Nexus/Skills/module mixtures and public starts remain guarded.
+
 ## 11 October 2026 — source-supported first-death KH Ambassador return
 
 The Tleilaxu Ambassador's own-leader alternative excluded Atreides'

@@ -29,6 +29,21 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / Homeworld ordinary-card reaction — 11 October.**
+The Homeworld Semuta envelope admitted only three producers, so a used
+ordinary special card played there produced no reaction even though the
+printed card has no module restriction. `semutaOfferSupported` now also
+admits `ordinaryCardDiscard` in that roster; its existing signature already
+binds Homeworld custody, occupation history and percentage ledger, so no new
+source identity or payment rule was added. A genuine original Homeworld
+occupation state at an active Movement owner plays Hajr, commits its
+movement grant, then offers the used card. Claim recovers it, pass leaves it
+discarded; wallets, custody, occupation history, percentage ledger and the
+Hajr grant are unchanged and original Movement still finishes. One before
+program had no offer; four claim/pass and all four legal bot profiles pass;
+seven consumer cases and the frozen six-file union pass with types/lint
+clean. Other Homeworld producers remain guarded.
+
 **Tleilaxu Ambassador first-death Kwisatz Haderach — 11 October.**
 The source-supported separate KH identity (base p17) now appears in the
 private native or Bene Gesserit-copied Tleilaxu grant. It is not appended to
