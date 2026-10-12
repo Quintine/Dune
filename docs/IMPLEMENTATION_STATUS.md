@@ -1,5 +1,47 @@
 # Dune implementation status
 
+## 13 October 2026 — native paired E1 Bureaucrat funding
+
+Before this slice the no-Homeworlds paired E1 Nexus profile was absent from
+Bureaucrat mode support, so a funded auction or shipment rejected at the mode
+guard ('Bureaucrat with other optional modules is still being integrated.'),
+byte-identical after a real pledge. A genuine paid revival produced no offer and
+no error: stampBureaucratPayment early-returns when mode support is false and the
+revival path never calls the contributor check. Both gates now admit the paired
+E1 Nexus profile only; single-native E1, preview overlays, multi-expansion and
+Homeworld allied funding stay excluded.
+
+A read-only review confirmed no revival-source change is needed: the source is
+stamped from the payer's actual revival.cost, so the separate one-spice
+free-revival award is excluded; the source is phase 4, single-payer, seated
+Tleilaxu. Axlotl accrual is a separate deferred token; Face Dance has no
+player-to-player payment; foreign-ghola acquisition is Tleilaxu-paid and yields
+no payer income.
+
+The new fixture reuses the genuine paired-Ix setup (real Storm, Mentat,
+conserved worm, real alliance, native closing draws) and scopes only the native
+all14 shuffle order and original unplayed card custody. A classic seat genuinely
+trains Bureaucrat. Forty-nine consumer cases pass across both modes: auction and
+shipment 5+3/3+5/5+5/fully donor-funded five, decline/redirect, sub-five
+nonpooling, owner/payee exclusion without masking an eligible payer, public
+gross/payee with payer null and no shares, stale/cross-actor rejection, four
+minimal bots, one physical use per phase, a single-payer bribe regression, and
+the revival cases (qualifying price, below-five no-offer, Karama-canceled
+no-offer). The genuine Guild Nexus card is exercised: a Guild-authored shipment
+costs the bank and has no third-party payer, so it yields no receipt; Guild
+Secret Ally is unreachable because that offer requires a game without a Guild
+faction. Recorded, not fabricated.
+
+Two actual390px GameTable flows: Basic allied shipment5+3 redirects2 (Guild5→11,
+Harkonnen10→5 with eight reserves committed at Habbanya17, Ixians10→7, one use)
+and Basic paid revival (Atreides10→4 for cost6, Tleilaxu5→10 = paid6 + separate
+free award1 − 2, one use; the private prompt shows the payer only to the owner).
+Browser errors are empty apart from the known Vite optimizer abort for
+next_image.js. Artifact outside Git `/tmp/dune-e1-bureaucrat-3228.json`. Frozen
+union + types/lint/build pass with unchanged build warnings. No source rule,
+strategy, Homeworld funding, public-start, save/deployed or full-mode claim is
+opened by this bounded proof.
+
 ## 13 October 2026 — native paired E3 Bureaucrat funding
 
 The paired E3 Nexus skill profile was already admitted to Bureaucrat mode

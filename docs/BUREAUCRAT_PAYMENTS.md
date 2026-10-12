@@ -93,14 +93,14 @@ Allied funding is evaluated per actual payer, not by adding different payers'
 shares to create the five-spice trigger. A three-plus-three payment, or
 four-plus-three, has no eligible payer and proceeds through original funding,
 payment, card/force commitment and recipient income without a Bureaucrat offer.
-In supported classic, E2 and E3 profiles without Homeworlds, individually
+In supported classic, E1, E2 and E3 profiles without Homeworlds, individually
 qualifying allied-funded auction and shipment receipts now offer one optional
 redirection:
 five-plus-three, three-plus-five, five-plus-five and fully ally-funded five.
 The receipt loses exactly two, never two per contributing payer. A share paid
 by the trainer or recipient cannot qualify, but does not mask a different
-eligible payer. Qualifying E1 funding and Homeworld allied/split-recipient
-composition retain their separate integration boundaries.
+eligible payer. Homeworld allied/split-recipient composition retains its
+separate integration boundary.
 Independent Karama shipments paid entirely to the Bank bypass player-income
 guards. A successful use remains tied to the physical card's turn and phase,
 including same-phase ownership changes; that accounting is an implementation
@@ -268,6 +268,50 @@ eight reserves committed at Habbanya17 beside Imperial Basin6, Moritani12→7,
 Atreides12 unchanged, one use). Browser errors are empty. Artifact outside Git:
 `/tmp/dune-e3-bureaucrat-3227.json`. Local rule/control proof only; no
 deployed, recovery or full-mode claim.
+
+## Native paired E1 receipts — 13 October 2026
+
+`tests/fixture-bureaucrat-e1-funding.ts` uses the original paired E1 roster
+Ixians/Tleilaxu + classics with skills; a classic seat (Atreides, or Harkonnen
+in the five-seat revival roster) genuinely trains Bureaucrat. Real Storm,
+Mentat, conserved worm, real alliance and real closing draws are reused from the
+existing paired Ix fixture; only the native all14 shuffle order and original
+unplayed card custody are scoped.
+
+Before this slice paired E1 was absent from Bureaucrat mode support, so a funded
+auction or shipment rejected at the mode guard
+('Bureaucrat with other optional modules is still being integrated.'),
+byte-identical after a real pledge. A paid revival produced no offer and no
+error: `stampBureaucratPayment` early-returns when mode support is false, and
+the revival path never calls the contributor check. Both gates now admit the
+no-Homeworlds paired E1 Nexus profile and nothing broader: single-native E1,
+preview overlays, multi-expansion and Homeworld allied funding stay excluded.
+
+Paid Tleilaxu revival is a genuine qualifying source: the source is stamped from
+the payer's actual `revival.cost` (not the combined receipt), so a separate
+one-spice free-revival award is excluded. Source kind is `revival`, phase 4,
+single payer, seated Tleilaxu payee. Axlotl accrual is a separate deferred token;
+Face Dance has no player-to-player payment; foreign-ghola acquisition is
+Tleilaxu-paid and yields no payer income. None of these are new blockers.
+
+Forty-nine consumer cases cover both modes: auction and shipment 5+3/3+5/5+5/
+fully donor-funded five, decline/redirect, sub-five nonpooling, owner/payee
+exclusion without masking an eligible payer, public gross/payee with payer null
+and no shares, stale/cross-actor rejection, four minimal bots, one physical use
+per phase, a single-payer bribe regression, and the revival cases above
+(qualifying price, below-five no-offer, Karama-canceled no-offer). The Guild's
+genuine Nexus Guild Cunning card is exercised: a Guild-authored shipment costs
+the bank and has no third-party payer, so it yields no receipt; Guild Secret Ally
+is unreachable because that offer requires a game without a Guild faction.
+Recorded, not fabricated.
+
+Two actual390px GameTable flows: Basic allied shipment5+3 redirects2 (Guild5→11,
+Harkonnen10→5 with eight reserves at Habbanya17, Ixians10→7, one use) and Basic
+paid revival (Atreides10→4 for cost6, Tleilaxu5→10 = paid6 + separate free award1
+− 2, one use). The private revival prompt shows the payer only to the owner.
+Browser errors are empty apart from the known Vite optimizer abort for
+`next_image.js`. Artifact outside Git: `/tmp/dune-e1-bureaucrat-3228.json`.
+Local rule/control proof only; no deployed, recovery or full-mode claim.
 
 ## Saved choices and verification
 

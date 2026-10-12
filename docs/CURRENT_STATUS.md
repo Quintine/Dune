@@ -29,6 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Bureaucrat / native paired E1 funding — 13 October.**
+Original paired E1 (Ixians/Tleilaxu + classics) with skills now admits
+qualifying allied ordinary-auction (Emperor), Guild-shipment and paid Tleilaxu
+revival receipts without Homeworlds. A classic seat genuinely trains Bureaucrat;
+the existing genuine paired-Ix setup supplies real Storm/Mentat/worm/alliance
+and native closing draws. Before this slice both families rejected at the mode
+guard after a real pledge; a paid revival silently produced no offer (mode
+support false). Both gates now admit the no-Homeworlds paired E1 Nexus profile
+only: single-native E1, preview overlays, multi-expansion and Homeworld funding
+stay excluded. Paid revival is stamped from the payer's actual cost, so the
+separate one-spice free award is excluded; Axlotl is a separate token, Face
+Dance has no payment, and foreign-ghola acquisition is Tleilaxu-paid. Forty-nine
+consumer cases cover both modes, 5+3/3+5/5+5/fully donor-funded five,
+decline/redirect, sub-five nonpooling, owner/payee exclusion, public gross/payee
+with payer null, stale/cross-actor, four bots, bribe regression, one use per
+phase and the revival cases. Two actual390px flows redirect2: Basic shipment5+3
+(Guild5→11, Harkonnen10→5 with eight reserves at Habbanya17, Ixians10→7) and
+Basic paid revival (Atreides10→4 for cost6, Tleilaxu5→10 = paid6 + free award1
+− 2). Artifact: `/tmp/dune-e1-bureaucrat-3228.json`. Frozen union + types/lint/
+build pass. No deployed, save/recovery or full-mode claim follows.
+
 **Bureaucrat / native paired E3 funding — 13 October.**
 Original paired E3 roster Ecaz/Moritani/Guild/Atreides/Emperor with skills now
 admits qualifying allied ordinary-auction (Emperor) and Guild-shipment receipts

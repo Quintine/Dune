@@ -39,7 +39,8 @@ export function bureaucratPaymentSignature(value: object): string {
   return JSON.stringify({ ...value, signature: undefined });
 }
 export function bureaucratPaymentModeSupported(game: LeaderSkillProfile): boolean {
-  return (!game.homeworlds && game.expansions.length === 1 && game.expansions[0] === 'choam' &&
+  return (!game.homeworlds && game.expansions.length === 1 &&
+    (game.expansions[0] === 'choam' || game.expansions[0] === 'ix') &&
     pairedNexusLeaderSkillsProfile(game)) ||
     mixedE3NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
     (noOtherLeaderSkillModules(game) &&
@@ -49,8 +50,8 @@ export function bureaucratPaymentModeSupported(game: LeaderSkillProfile): boolea
 }
 export function bureaucratAlliedFundingModeSupported(game: LeaderSkillProfile): boolean {
   if (game.homeworlds || !bureaucratPaymentModeSupported(game)) return false;
-  if (game.expansions.length === 1 && game.expansions[0] === 'ecaz')
-    return pairedE3NexusLeaderSkillsProfile(game);
+  if (game.expansions.length === 1 && (game.expansions[0] === 'ecaz' || game.expansions[0] === 'ix'))
+    return pairedNexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game);
   return !game.expansions.length || game.expansions.length === 1 && game.expansions[0] === 'choam';
 }
 export function bureaucratUsed(
