@@ -1,5 +1,66 @@
 # Dune implementation status
 
+## 13 October 2026 — original Homeworld battle-reward Karama costs
+
+Only existing `karamaBattleDiscard` is newly admitted by the Homeworld
+Semuta gate. Its existing native capture/Auditor/force-income validator,
+original resource/casualty/owner commitments and reward order remain;
+Ix/Moritani stay outside this roster. No signing, price or profile cutover.
+
+Two genuine thin/full capture before programs use original Advanced
+R/C/E/A/H Homeworld setup. E's actual two-normal Kaitain shipment enters
+native Carthag11 for2; H's funded dial1/support1 defeats E's original weak
+leader/dial0 with no weapons. H keeps9/Tanks1, E loses2/reserves18, both
+leaders live and no bounty occurs. H owns and accepts native captureOffer;
+printed E Karama spent without Semuta before original denial. The first
+reported E6 balance included incidental prior native cleanup; it is not a
+shipping-income rule or fixed wallet claim. The final fixture uses real
+spending-free Bidding readiness: original E10→8, H10→9 support, half1 rounds0.
+
+Four genuine thin/full CHOAM before programs use original Advanced R/E/C/A.
+E4 Red Chasm7 shipment8 and C1 shipment2 establish original forces. Actual
+E Fenring6 dial2/support2 pays2 and keeps two survivors/Tanks2; C loses1.
+Native one-spice income quotes half of that eligible two-spice payment.
+Canceling it leaves C8/E0. The audit variant uses actual E Crysknife against
+C's Snooper, kills original Auditor2 and awards original bounty2 (E2).
+Native income first credits C8→9, then C declares its audit; printed E
+Karama spends without Semuta and denies audit before payment/inspection.
+No phase/wealth/force/leader/receipt assignment establishes any of these.
+
+Thirteen parent after/negative programs exercise thin/full claim/pass for
+capture and both CHOAM scopes, plus a true Basic no-capture companion.
+Current original leaders/Traitors, custody, context, casualties, wallets and
+physical unplayed card stay committed. Original Collection quotes precede
+the last close and credit once: H9→11/E8; canceled income C8/E0→4; canceled
+audit C9/E2→6. Actual two E survivors collect4 from the original eight-spice
+blow, leaving4. No recovered cost restores its canceled reward or replay.
+
+Three actual390px flows start at native H captureOffer, C unpaid income or
+dead-Auditor owner offer. H chooses Capture a leader; C chooses Audit opposing
+hand; E's real Cancel with Karama, then R's4/4 Commit, completes denial.
+Capture samples/transfers no disc; canceled force income preserves E support
+debit2; audit keeps C's earlier1 and E's bounty2 without payment/inspection.
+Each uses original C Finish control to phase7 with the quoted balances.
+Artifact outside Git: `/tmp/dune-homeworld-native-reward-3224.json`.
+One fresh DOM observation failed after accepted capture close; fresh server
+state showed phase7 and four original actions accepted. No action was replayed.
+The managed tab's recorded errors were empty; the tool failure remains recorded.
+Only owned service/tab/root files were stopped/removed. No saved/deployed/
+natural-full-game or completed mode is certified.
+
+Parent removed no-module Tech/default and receipt-count echoes. Four-profile
+CHOAM tests now apply the real proposed close and assert actual Collection,
+instead of pinning the bot's action object. The initial frozen TypeScript
+failure was the fixture's union Decision event access; a captured native
+choamAudit discriminator narrows it without casts or a rule change.
+Frozen types/lint pass. The first unit run failed four income rows that
+pinned zero bounty to null; the real quote can represent a zero amount.
+That representation assertion was deleted, not re-pinned; actual paid/bounty
+balances remain asserted. Final affected eight-file union passes117/117,
+including31 new consumer cases. Only failed check dependencies were retried.
+Build passes with unchanged module.register deprecation, client chunks
+over500kB and static route-classification warnings. No broader/deployed proof.
+
 ## 13 October 2026 — original shared-benefit cancellation costs
 
 Only existing `karamaBgCharityDiscard` and `karamaEmperorShareDiscard`

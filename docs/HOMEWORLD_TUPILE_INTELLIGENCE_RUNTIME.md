@@ -65,6 +65,12 @@ real casualties and empty extra-revival ledger stay intact; ordinary legal
 revival is a separate later action. Wealthy Basic BG's ordinary eligibility
 and all unresolved source/publication boundaries remain unchanged.
 
+Native capture, Auditor and quoted battle-income printed Karama costs also
+offer before original denial. Accepted battle, actual paid support, casualties
+and leader death stay committed; recovery cannot sample/transfer a captive,
+pay/inspect an audit or refund/credit canceled income. Earlier allowed income
+precedes a separately canceled audit. Native cleanup/Collection still follows.
+
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
 and suspended opening; its lease row remains pending during the neutral

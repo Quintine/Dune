@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native battle-reward cancellation — 13 October.**
+Original Advanced Harkonnen capture, CHOAM Auditor and quoted force-income
+printed Karama costs now offer before denial. Six positive before programs
+had no offer;13 parent programs preserve paid deployments/support, accepted
+casualties, unsampled captives, killed Auditor and income-before-audit order.
+Three actual390px declaration/cancel/4-of-4 recovery flows finish original
+Collection: H9→11/E8, canceled income C8/E0→4, canceled audit C9/E2→6.
+The two E survivors collect4 once; no support refund, extra income, captive
+transfer, audit payment/inspection or casualty replay. Artifact:
+`/tmp/dune-homeworld-native-reward-3224.json`.
+Basic retains no native capture. No profile/signature/price/public gate changes
+or save/deployed/full-mode acceptance follows.
+Types/lint and117/117 across eight affected unit files pass (31 new cases).
+The initial fixture type narrowing and zero-bounty-null representation pins
+were corrected/removed; no rule or bot change. Build passes with unchanged
+deprecation, large-chunk and static route-classification warnings.
+
 **Semuta / original shared-benefit cancellations — 13 October.**
 Native Advanced BG extra-charity and genuinely allied Emperor gift/extra-revival
 printed Karama costs now offer their cards. Six positive before programs had

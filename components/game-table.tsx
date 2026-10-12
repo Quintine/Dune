@@ -1190,6 +1190,9 @@ export function GameTable({
               Native Advanced BG extra-charity and allied Emperor gift/extra-
               revival cancellation costs also retain the consumed claim and
               original ally, casualties and unawarded benefit.
+              Printed Karama canceling native capture, Auditor or quoted battle
+              income also keeps accepted combat, paid support and original
+              cleanup; the canceled reward does not occur.
               Private discarded faces stay hidden until commitment; a simultaneous
               group requires one selection. Claim or Continue resumes the same
               original source once without undoing payment or force commitment.

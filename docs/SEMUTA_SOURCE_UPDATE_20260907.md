@@ -855,6 +855,25 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — original Homeworld battle-reward cancellation costs.**
+Printed Karama canceling native Advanced capture, CHOAM Auditor or quoted
+force income now offers before its existing denial. Accepted combat,
+paid native deployment/support, casualties and original leader death remain.
+Recovery cannot sample/transfer a captive, pay/inspect an audit, refund support
+or credit canceled income; an audit denial retains already allowed income.
+The same existing private/current-hand and per-payer calculation applies.
+
+Six actual before programs had no offer;13 parent after/negative programs
+preserve original resources and one native Collection. Three actual390px
+owned declaration/cancel/4-of-4 recovery flows reach phase7: H9→11/E8,
+income C8/E0→4, audit C9/E2→6. Two E survivors collect4 once, no new bounty or
+extra payment. Artifact: `/tmp/dune-homeworld-native-reward-3224.json`.
+The initial E6 capture report was incidental native cleanup, not a fee/
+Emperor-income ruling; the corrected real ready-gate preserves E10→8.
+Basic capture remains absent. Tool DOM observation failed after an accepted
+close; actual state was inspected and no action replayed. Existing source,
+profile, signature and public gates remain; no saved/deployed/full-mode claim.
+
 **13 October 2026 — original Homeworld shared-benefit cancellation costs.**
 Native Advanced BG extra-charity and allied Emperor gift/extra-revival
 printed Karama costs now offer before original denial. BG's real consumed
