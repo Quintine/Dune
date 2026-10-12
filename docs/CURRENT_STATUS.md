@@ -29,6 +29,38 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / printed Karama canceling the Emperor share — 11 October.**
+`karamaEmperorShareDiscard` covers `emperorGift` and `emperorRevival`
+cancellations through the existing response-cost union, admission, signature
+and retirement path. A distinct printed Karama now pauses on its public cost
+before the native denial; the canceled share moves no spice, forces or revival
+and the extra-revival ledger stays empty. Claim/pass restores the saved response
+and finishes the cancellation once. Before cutover the Karama was discarded and
+the denial applied with no Semuta opportunity; afterward the offer appears and
+all views work. Types/lint pass. Six consumer cases (gift/revival × claim/pass,
+declined-cost settlement, four legal bot profiles) reuse a genuine three-seat
+Richese/Emperor/Atreides Semuta setup that moves only real physical cards.
+Styled390px human Emperor→Cancel→Commit proves the gift and extra-revival
+denials with no share applied. See
+[Semuta ordering](SEMUTA_SOURCE_UPDATE_20260907.md#30-september-2026--bounded-clean-discard-runtime).
+
+**Pre-existing red unit tests repaired — 11 October.** Four tests already
+failed at `63e5f22` (verified in a clean worktree): `homeworld-actions-engine`
+pinned the obsolete word "Basic" in a rejection message now reading "base
+rules"; `leader-skills-controls` pinned superseded panel prose; and
+`moritani-skills-worm` omitted the implemented multi-pile `piles` shape. Those
+stale wording/incidental pins were replaced with behavior and presence checks,
+and the multi-pile expectation was aligned. `smuggler-battle` fabricated a
+Leader Skills battle with the Ecaz variant module, a state the profile
+initializer rejects; it now asserts the real gate (the profile rejects
+`ecazTreachery`) and that the fabricated mid-battle state is rejected by reads
+and actions. The four files pass33/33; the full unit suite then ran
+7066/7067. The single failure, `moritani-skills-modules-runtime` expecting
+`battleCards` but sometimes seeing `moritaniSpecialKarama`, is a pre-existing
+intermittent flake from that fixture's real shuffled deal (0 failures in 12
+isolated reruns on this tree, 5/5 at `63e5f22`); it is recorded rather than
+pinned, and the deferred comprehensive review covers it.
+
 **Stale battle-frame recovery expectation repaired — 11 October.** The
 `authenticated clean Semuta producers claim once through restart and room CAS`
 case asserted the winner's cheap-hero frame as the first post-battle
@@ -3413,7 +3445,7 @@ These links define bounded working behavior, not complete module certification.
 
 | Area | Remaining gate |
 | --- | --- |
-| Basic core | Ordinary Guild repricing/transport settlement, broader truthful commitments, unresolved special timing and integrated rules/human/AI acceptance. |
+| Basic core | Broader truthful commitments, unresolved special timing and integrated rules/human/AI acceptance. Ordinary Guild rate cancellation now exists: the `guildRate` prepayment response and `guildRateBlocked` turn window cover ordinary reserve shipment, eligible cross-planet transport and Guild return through the normalized `guildTransport`/shipment intents (`game/engine.ts`, `docs/GUILD_RATE_KARAMA_RULES.md`); the older 7 September readiness note that called it absent is superseded. |
 | Six-faction Advanced | Base gaps, provisional special-Karama outcomes, remaining timing audits and authentic multiplayer/browser acceptance. The user-authorized unfinished preview is available; setup matrices and complete samples do not certify full compliance. |
 | Twelve factions and all optional modules | Every missing effect, remaining skill bands, Ecaz card variant, Kull Wahad, unfinished Richese cards, Terror effects, occupation entitlement, Nexus interactions, contested Discoveries and complete games across valid combinations. The 7 October 2026 rulings settled CHOAM's low-population opening income, the Richese exhausted/canceled cache count, Suk/Kwisatz loss counting, the Guild Secret Ally Homeworld reserve return and Sandmaster HMS-relocation eligibility; the preserved captures can be resumed. Detailed boundaries remain in the checklist/decision index. |
 | AI | Maintain minimal legal participation and critical correctness fixes while game features are unfinished. Full implementation, strategy refinement and calibration wait until all non-AI features are complete; then target approximately 75% higher-tier wins for Medium/Easy, Hard/Medium and Brutal/Hard. See the [AI development plan](AI_DEVELOPMENT_PLAN.md). These targets remain unverified. |

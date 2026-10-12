@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { applyAction, normalizeAutomaticGame, viewGame, type Game, type Action } from '../game/engine';
+import { applyAction, createGame, joinGame, newPlayer, initializeLeaderSkillsGameForAudit, normalizeAutomaticGame, viewGame, type Game, type Action } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
 import { ecazTreacheryCards } from '../game/ecaz-cards';
@@ -187,16 +187,18 @@ void test('own modified plans fail before sealing without changing any resources
   reject(trainer, { type: 'battlePlan', leader: 'guild-0', dial: 0, weapon: trainer.players[0].hand[0].id });
 });
 void test('the independent Ecaz card variant is gated before a Smuggler plan is sealed', () => {
-  const game = smugglerBattle();
+  // The Smuggler battle lives in the Leader Skills profile, which never admits
+  // the variant module; a mid-battle toggle is rejected as a changed saved state.
+  let game = createGame('SMUGGLERGATE', newPlayer('a', 'Emperor', 'emperor'), false);
+  joinGame(game, newPlayer('d', 'Guild', 'guild'));
+  for (const player of game.players) game = applyAction(game, player.id, { type: 'ready' });
   game.ecazTreachery = true;
-  game.deck.push(...ecazTreacheryCards());
-  // The variant inventory is valid: admission is rejected for its public scope,
-  // irrespective of which player secretly holds an expansion card.
-  const own = viewGame(game, 'a');
-  assert.equal(own.ecazTreachery, true);
-  const action = { type: 'battlePlan' as const, leader: 'emperor-0', dial: 0 };
-  assert.throws(() => applyAction(game, 'a', action), /other optional modules/);
-  reject(game, action);
+  assert.throws(() => initializeLeaderSkillsGameForAudit(game), /base factions without expansions or optional modules/);
+  const staged = smugglerBattle();
+  staged.ecazTreachery = true;
+  staged.deck.push(...ecazTreacheryCards());
+  assert.throws(() => viewGame(staged, 'a'), /invalid battle version/);
+  reject(staged, { type: 'battlePlan' as const, leader: 'emperor-0', dial: 0 });
 });
 void test('all four actual bot profiles retain a legal unmodified path and finish pending collection', () => {
   for (const difficulty of DIFFICULTIES) {

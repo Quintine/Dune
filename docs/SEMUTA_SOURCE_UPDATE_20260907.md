@@ -145,6 +145,13 @@ cancels the effect once and completes its original ordinary movement,
 free-revival, storm or closing-Mentat suffix. Taking Karama neither claims
 CHOAM's retained fuel nor restores the denied effect.
 
+A printed Karama canceling the Emperor's shared gift or extra allied revival
+also offers that public cost before the denial completes. The canceled share
+moves no spice, forces or revival; the ally link and extra-revival ledger stay
+unchanged. Claim/pass restores the saved response and finishes one original
+cancellation. The retired Karama is a genuine Semuta candidate for any other
+player, is discarded once and is never replayed.
+
 
 
 

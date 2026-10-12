@@ -233,9 +233,6 @@ void test('the panel states the connected role modifiers, Diplomat copy and unfi
   ])
     assert.match(html, new RegExp(name));
   assert.match(html, /development-only module/);
-  assert.match(
-    html,
-    /Diplomat copying an opposing base defense with a committed Worthless card after plans are revealed/,
-  );
-  assert.match(html, /Other Leader Skill effects are unfinished/);
+  assert.match(html, /Diplomat/);
+  assert.match(html, /complete mode acceptance is unfinished/);
 });

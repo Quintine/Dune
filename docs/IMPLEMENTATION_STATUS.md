@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 11 October 2026 — Emperor share cancellation cost through Semuta
+
+Actual native `emperorRevival`/`emperorGift` cancellation discarded the printed
+Karama and applied the denial with no neutral opportunity. New
+`karamaEmperorShareDiscard` extends the existing response-cost union, factory,
+bounded admission, validator, state signature and original retirement path.
+The shared `semutaEmperorShareKaramaResponse` admits only a genuine Emperor
+share to a reciprocal ally with a positive amount and no battle or pending
+shipment/transport, keeping the public cost clean.
+
+The printed Karama is committed first; claim/pass restores the actual saved
+response and completes the cancellation once. The canceled share moves no
+spice, forces or revival, and the Emperor extra-revival ledger stays empty.
+Signature facts bind the response and the extra-revival ledger for this kind;
+other kinds omit them so their existing shapes are unchanged.
+
+A genuine three-seat Richese/Emperor/Atreides Semuta fixture moves only real
+physical cards between zones (Karama and Semuta), conserves the clock, phase,
+alliance, active seat and tanks, and exposes declare/cancel/claim actions.
+Six consumer cases cover gift/revival claim/pass, the declined-cost native
+settlement, and four legal bot profiles. Types/lint pass; the four-file repair
+set and this file pass. Styled390px human controls prove Emperor→Cancel→Commit
+for both kinds with no share applied and the Karama acquired by Richese.
+
+No new module admission, source ruling, saved-game conversion or public gate.
+Temporary QA scripts/server and tab were removed.
+
+## 11 October 2026 — pre-existing unit-suite failures repaired
+
+Four tests failed at `63e5f22` in a clean worktree (so not regressions from
+this session). Three pinned superseded wording or an incomplete shape:
+`homeworld-actions-engine` matched the word "Basic" in a message now saying
+"base rules"; `leader-skills-controls` matched replaced panel prose; and
+`moritani-skills-worm` omitted the implemented multi-pile `piles` result. The
+wording pins were deleted in favour of behavior/presence checks and the shape
+expectation was aligned to the intended multi-pile output.
+
+`smuggler-battle` fabricated a Leader Skills battle with the Ecaz variant
+module. That profile never admits `ecazTreachery`, and toggling it mid-battle
+invalidates the saved Mentat question battle version; the engine correctly
+rejects the state. The test now asserts the real gate and the rejection.
+The four files pass33/33; types/lint pass.
+
 ## 11 October 2026 — printed CHOAM-power cancellation cost through Semuta
 
 Actual native Cunning Kulon canceled immediately while its printed Karama

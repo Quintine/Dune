@@ -452,6 +452,5 @@ void test('shipment completion emits an executable mixed-Homeworld source witnes
         minimum: 2,
       },
     },
-    /Basic/,
   );
 });

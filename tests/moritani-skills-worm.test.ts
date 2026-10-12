@@ -182,6 +182,7 @@ void test('Basic Moritani permits a projected Sandmaster worm collection and one
     key: 'habbanya_ridge_flat:17',
     before: 2,
     blocked: null,
+    piles: [{ before: 2, key: 'habbanya_ridge_flat:17' }],
   });
 
   const botView = viewGame(restored, 'f');

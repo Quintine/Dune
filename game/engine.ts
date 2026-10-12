@@ -1344,7 +1344,7 @@ export type Game = {
           stateSignature: string;
         }
       | {
-          kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard';
+          kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard' | 'karamaEmperorShareDiscard';
           player: string;
           card: string;
           use: Extract<KaramaUse, { kind: 'cancel' }>;
@@ -5161,13 +5161,25 @@ function semutaChoamKaramaResponse(g: Game, response: ResponseWindow): boolean {
   return !movement || (!movement.source && !movement.ornithopterEvent &&
     !movement.ornithopterRange && !movement.discoveryFlight);
 }
+/** Emperor gift/revival cancellation is a clean public cost with no competing parent. */
+function semutaEmperorShareKaramaResponse(g: Game, response: ResponseWindow): boolean {
+  if (response.kind !== 'emperorGift' && response.kind !== 'emperorRevival') return false;
+  const emperor = getPlayer(g, response.owner), recipient = response.recipient
+    ? g.players.find(p => p.id === response.recipient) : null;
+  return !!emperor && !!recipient && emperor.faction === 'emperor' &&
+    emperor.id !== recipient.id && emperor.ally === recipient.id &&
+    recipient.ally === emperor.id && Number.isSafeInteger(response.amount) &&
+    response.amount! > 0 && (response.elite === undefined || response.elite === 0 || response.elite === 1) &&
+    !g.battle && !g.pendingShipment && !g.pendingGuildTransport;
+}
 type KaramaResponseDiscardContinuation = Extract<
   NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
-  { kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard' }
+  { kind: 'karamaCharityDiscard' | 'karamaInflationDiscard' | 'karamaBgCharityDiscard' | 'karamaBattleDiscard' | 'karamaChoamWorthlessDiscard' | 'karamaEmperorShareDiscard' }
 >;
 function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinuation) {
   const battle = c.kind === 'karamaBattleDiscard';
   const worthless = c.kind === 'karamaChoamWorthlessDiscard';
+  const emperorShare = c.kind === 'karamaEmperorShareDiscard';
   return JSON.stringify({
     player: c.player, card: c.card, use: c.use,
     parent: nullentropyParentSignature(g, c.resume,
@@ -5190,6 +5202,9 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
       declaration: g.pendingChoamWorthless, movement: g.pendingChoamMove,
       revival: g.pendingRevival, storm: g.stormResolution,
       mentat: g.choamMentatPending, nexus: g.nexusChoamHistory?.at(-1),
+    } : undefined,
+    emperorShare: emperorShare ? {
+      response: g.response, emperorExtra: g.emperorExtra,
     } : undefined,
     order: g.order,
     players: g.players.map(p => ({
@@ -5959,7 +5974,8 @@ function treacheryDiscardIntegrity(g: Game) {
     continuation?.kind === 'karamaInflationDiscard' ||
     continuation?.kind === 'karamaBgCharityDiscard' ||
     continuation?.kind === 'karamaBattleDiscard' ||
-    continuation?.kind === 'karamaChoamWorthlessDiscard') {
+    continuation?.kind === 'karamaChoamWorthlessDiscard' ||
+    continuation?.kind === 'karamaEmperorShareDiscard') {
     const c = continuation, entry = batch.entries[0];
     requireRule(
       !g.response &&
@@ -5977,7 +5993,9 @@ function treacheryDiscardIntegrity(g: Game) {
         (c.kind === 'karamaBattleDiscard' && g.phase === 6 && !g.battle &&
           semutaBattleKaramaResponse(g, c.use.response)) ||
         (c.kind === 'karamaChoamWorthlessDiscard' &&
-          semutaChoamKaramaResponse(g, c.use.response))) &&
+          semutaChoamKaramaResponse(g, c.use.response)) ||
+        (c.kind === 'karamaEmperorShareDiscard' &&
+          semutaEmperorShareKaramaResponse(g, c.use.response))) &&
       c.use.response.owner !== c.player &&
       c.resume.response?.kind === c.use.response.kind &&
       JSON.stringify(c.resume.response) === JSON.stringify(c.use.response) &&
@@ -6802,6 +6820,7 @@ function semutaOfferSupported(
     continuation.kind !== 'karamaBgCharityDiscard' &&
     continuation.kind !== 'karamaBattleDiscard' &&
     continuation.kind !== 'karamaChoamWorthlessDiscard' &&
+    continuation.kind !== 'karamaEmperorShareDiscard' &&
     continuation.kind !== 'karamaPurchaseDiscard' &&
     continuation.kind !== 'karamaPaymentDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
@@ -6882,12 +6901,15 @@ function semutaOfferSupported(
       continuation.kind === 'karamaInflationDiscard' ||
       continuation.kind === 'karamaBgCharityDiscard' ||
       continuation.kind === 'karamaBattleDiscard' ||
-      continuation.kind === 'karamaChoamWorthlessDiscard'
+      continuation.kind === 'karamaChoamWorthlessDiscard' ||
+      continuation.kind === 'karamaEmperorShareDiscard'
       ? (continuation.kind === 'karamaBattleDiscard'
         ? semutaBattleKaramaResponse(g, continuation.use.response)
         : continuation.kind === 'karamaChoamWorthlessDiscard'
           ? semutaChoamKaramaResponse(g, continuation.use.response)
-          : ['choamCharity', 'choamInflation', 'bgCharity'].includes(continuation.resume.response?.kind ?? '')) &&
+          : continuation.kind === 'karamaEmperorShareDiscard'
+            ? semutaEmperorShareKaramaResponse(g, continuation.use.response)
+            : ['choamCharity', 'choamInflation', 'bgCharity'].includes(continuation.resume.response?.kind ?? '')) &&
         !continuation.resume.decision && !continuation.resume.pendingKarama &&
         !continuation.resume.phaseOpening && !g.pendingKarama &&
         (!g.response || JSON.stringify(g.response) === JSON.stringify(continuation.resume.response))
@@ -6910,6 +6932,7 @@ function semutaOfferSupported(
         continuation.kind === 'karamaBgCharityDiscard' ||
         continuation.kind === 'karamaBattleDiscard' ||
         continuation.kind === 'karamaChoamWorthlessDiscard' ||
+        continuation.kind === 'karamaEmperorShareDiscard' ||
         (!continuation.resume.response && !continuation.resume.decision &&
           !continuation.resume.pendingKarama &&
           (continuation.kind === 'amalDiscard'
@@ -7175,6 +7198,7 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     next.kind === 'karamaBgCharityDiscard' ||
     next.kind === 'karamaBattleDiscard' ||
     next.kind === 'karamaChoamWorthlessDiscard' ||
+    next.kind === 'karamaEmperorShareDiscard' ||
     next.kind === 'karamaPurchaseDiscard' ||
     next.kind === 'karamaPaymentDiscard') {
     g.response = next.resume.response;
@@ -13388,14 +13412,17 @@ function spendKarama(g: Game, p: Player, card: Card, use: KaramaUse, kullOffered
     (use.response.kind === 'choamCharity' ||
       use.response.kind === 'choamInflation' ||
       use.response.kind === 'bgCharity' || semutaBattleKaramaResponse(g, use.response) ||
-      semutaChoamKaramaResponse(g, use.response))) {
+      semutaChoamKaramaResponse(g, use.response) ||
+      semutaEmperorShareKaramaResponse(g, use.response))) {
     const continuation: KaramaResponseDiscardContinuation = {
       kind: use.response.kind === 'choamCharity'
         ? 'karamaCharityDiscard'
         : use.response.kind === 'choamInflation'
           ? 'karamaInflationDiscard'
           : use.response.kind === 'bgCharity' ? 'karamaBgCharityDiscard'
-            : use.response.kind === 'choamWorthless' ? 'karamaChoamWorthlessDiscard' : 'karamaBattleDiscard',
+            : use.response.kind === 'choamWorthless' ? 'karamaChoamWorthlessDiscard'
+              : use.response.kind === 'emperorGift' || use.response.kind === 'emperorRevival'
+                ? 'karamaEmperorShareDiscard' : 'karamaBattleDiscard',
       player: p.id, card: used.id, use,
       resume: { response: g.response, decision: g.decision,
         pendingKarama: g.pendingKarama, phaseOpening: g.phaseOpening },

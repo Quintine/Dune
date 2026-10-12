@@ -1174,9 +1174,9 @@ export function GameTable({
           Betrayal and the five ordinary Cunning fuel discards can react before
           their original effects or receipts finish. Cunning fuel keeps its
           printed identity and private face; Kull retains its separate guard.
-          A printed Karama canceling those native powers also reacts before the
-          original cancellation: CHOAM retains its fuel, and any played Nexus
-          remains spent. Taking Karama cannot restore the denied effect.
+          A printed Karama canceling those native powers or the Emperor’s shared
+          gift/revival also reacts before the original cancellation: the denied
+          effect never applies. Taking Karama cannot restore it.
           Homeworlds, Discovery and other overlays stay guarded.
           Native Moritani
           support is Basic only: clean shipment/movement Sabotage and Robbery
