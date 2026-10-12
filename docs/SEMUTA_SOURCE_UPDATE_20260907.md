@@ -855,6 +855,27 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — original Homeworld public battle disposal.**
+`battleResolved`, `winnerMandatoryDiscard` and winner `battleCleanup` now
+offer their existing fresh events in this profile. The first losing batch,
+later mandatory winning card and optional selected winner cards stay separate.
+At most one other player's exact fresh card is acquired; retained winner cards
+are not candidates. Original paid deployments, result, casualties, leader deaths
+and reward order remain committed. No new timing or combat ruling follows.
+
+Six genuine Basic/Advanced before programs disposed without an offer.
+Fourteen parent after programs exercise both losing-card choices/pass and
+mandatory/selected winner claim/pass. Three actual390px flows recover Maula
+Pistol, Cheap Hero or selected Crysknife at4/4 through original owner controls
+to Collection. Four further programs verify a real eight-spice native blow,
+three survivors collecting six once and original six-spice killed-leader income:
+CHOAM8→14 Basic/7→13 Advanced. The initial constant-balance proof failed because
+it omitted legitimate Collection; production income was not changed.
+Artifact: `/tmp/dune-homeworld-native-battle-3220.json`.
+Temporary hosting404/image/environment errors, optimizer aborts and a fresh
+DOM-observation failure are recorded in implementation evidence. No accepted
+action was replayed; no saved/deployed/full-mode claim is made.
+
 **13 October 2026 — original Homeworld carried-flight and finite-order costs.**
 The existing profile now admits final `ornithopterDiscard`, clean
 `saphoAuctionDiscard` and `saphoMovementDiscard`. Native range, cohort,

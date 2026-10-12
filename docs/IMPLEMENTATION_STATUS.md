@@ -1,5 +1,62 @@
 # Dune implementation status
 
+## 13 October 2026 — original Homeworld battle discard producers
+
+The Homeworld Semuta gate now admits only the existing `battleResolved`,
+`winnerMandatoryDiscard` and `battleCleanup` producers in addition to its
+previous costs. Their original source/reward/queue/casualty validators remain;
+no signature, combat calculation, profile, payment or publication cutover.
+
+Two genuine losing-batch before programs use actual Emperor4 and CHOAM1
+native shipments to Red Chasm7, priced8/2. Both sides play distinct original
+projectile/Shield pairs; accepted Emperor victory discards CHOAM's two played
+cards without an offer under the old gate. Four genuine winning-cost before
+programs use Emperor1/CHOAM4 shipments priced2/8, actual CHOAM projectile and
+printed Hero or original leader, and the real Emperor Worthless. Native killed
+Hasimir Fenring6 provides six original income. Mandatory Hero and later selected
+projectile likewise disposed without Semuta before admission.
+
+Fourteen parent after programs exercise both rules modes, each losing-card
+choice or pass, and mandatory/selected winner claim/pass at Richese's full hand.
+All reach native Collection with original three winner survivors/reserves16/
+Tanks1 and one loser in Tanks/reserves19. Exact discarded custody changes only
+for the chosen physical card; accepted combat and leader death do not repeat.
+Four additional parent programs deliberately position the original Red Chasm
+Spice Card first, producing the printed eight-spice deposit. Original post-
+cleanup Collection takes six once, leaving two; CHOAM8→14 Basic and7→13 Advanced.
+
+The first parent after probe incorrectly expected the battle's8-spice balance
+to remain8 after Collection and failed14≠8. That was a proof error, not a
+production income defect. The new winner tests had the same constant-resource
+assumption; they now use the shared native Collection quote and a deterministic
+physical eight-spice blow, preserving original resources except that legitimate
+credit. Actor/source trace-count echoes were removed, not re-pinned.
+
+Three actual390px controls resolve the real final Traitor pass or selected
+winner disposal, commit Semuta at4/4, and use original cleanup/market controls to
+Collection. Losing Maula Pistol and Shield appear only in the committed exact
+selection; mandatory Hero follows all four passes of the earlier losing
+Worthless; the selected Crysknife leaves the original Shield held. No accepted
+combat or phase closure was replayed. Artifact outside Git:
+`/tmp/dune-homeworld-native-battle-3220.json`.
+
+Owned QA hosting initially returned404 because middleware followed Vite's
+terminal handler, then failed real `next/image` resolution and missing Vinext
+environment definitions. The temporary server used the actual installed image
+shim and ordinary development definitions, not a replacement component.
+Optimizer aborts remain recorded. The optional local action-notice toggle was
+turned off through its normal control after the first battle notice. One fresh
+DOM observation failed after the selected-card phase closure; server state
+showed phase7 and all three original actions accepted, so none was repeated.
+Only owned services/tab/root files were stopped/removed. No saved room,
+deployment, natural full game or completed Homeworld mode is certified.
+Frozen verification: types and lint pass; five focused unit files pass118/118,
+including48 new consumer cases. Initial TypeScript failures were fixture
+reaction/chooser/amount narrowing; the subsequent lint failure required
+explicit two-card comparison. Only the failed check dependency was retried.
+The application build passes with module.register deprecation, client chunks
+over500kB and Vinext static route-classification limitations unchanged.
+
 ## 13 October 2026 — Homeworld carried-flight and finite Sapho disposal
 
 The producer gate additionally admits existing `ornithopterDiscard`,

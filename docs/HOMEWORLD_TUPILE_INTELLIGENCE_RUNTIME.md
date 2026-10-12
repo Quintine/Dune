@@ -38,6 +38,12 @@ and physical storm order. Recovery only releases the same next native actor.
 Hajr/prior flight, active Homeworld transfers, advisors, cyclic auctions,
 partly completed turns, first-versus-Guild and late battle timing remain guarded.
 
+Public losing-card, mandatory winning-card and optional selected-winner
+disposal likewise offer separate fresh battle events. Original paid native
+deployments and accepted combat remain committed; recovery restores original
+casualties/cleanup, then normal Collection can credit its real board income.
+It does not refund support, revive a killed leader or rerun a battle.
+
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
 and suspended opening; its lease row remains pending during the neutral

@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / original Homeworld battle costs — 13 October.**
+Accepted losing-card, later mandatory winning-card and optional winner-selected
+disposal now offer separate fresh events. Six genuine before programs had no
+offer; fourteen parent claim/pass/exact-choice programs preserve paid native
+deployments, accepted combat and original casualty/cleanup order. Four further
+positive-deposit programs preserve six killed-leader income and collect six
+from the original eight-spice blow once: CHOAM8→14 Basic,7→13 Advanced.
+Three actual390px controls recover a losing Maula Pistol, mandatory Cheap Hero
+and selected winner Crysknife at Richese4/4; original winner cards and native
+Collection remain usable. Artifact: `/tmp/dune-homeworld-native-battle-3220.json`.
+No other timing/module/signature/price or public gate changes; local staged
+proof is not deployed/save/natural-full-game acceptance.
+Types/lint,118/118 across five focused files (48 new cases) and the application
+build pass. Initial fixture union-narrowing and comparator lint errors were
+repaired; deprecation, large chunks and static route-classification warnings
+remain recorded, not suppressed.
+
 **Semuta / native Homeworld flight and finite order — 13 October.**
 Final Ornithopter and clean Sapho Once Around/Movement order costs now
 offer their used card. Six flight/eight order before programs had no offer;

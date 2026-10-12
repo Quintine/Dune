@@ -1174,6 +1174,9 @@ export function GameTable({
               Final Ornithopter disposal keeps the completed original groups;
               finite Once Around and clean unstarted movement Sapho costs keep
               the changed queue before its original next actor continues.
+              Accepted losing-card, mandatory winning-card and selected winner
+              disposal are separate fresh events. Recovery keeps the original
+              casualties and paid native deployments; combat does not repeat.
               Native printed Kulon, Baliset, La La La, Trip to Gamont and Jubba
               costs also pause before their original effect. Printed Karama
               canceling these native powers or Guild, Emperor auction or Richese
