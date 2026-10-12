@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Homeworld market disposal — 13 October.**
+Completed legal CHOAM market sales now offer their used card after the
+original physical discard and two/three-spice credit. High Tupile's
+Worthless-sale prohibition remains, including duplicate Worthless cards.
+Actual shipment10 to Habbanya Sietch17 lowers native Tupile20→10 and pays
+ten spice before cashout C0→2; ordinary Shield surplus C2→5 remains legal
+at high Tupile, retaining its same-name witness. Four before programs had
+no offer; eight after claim/pass programs retain credit, paid forces and
+the original closing owner. Fourteen new cases cover both modes, full-hand
+exchange, high prohibition and all four minimal legal profiles.
+Two actual390px sale/allow/commit flows exchange at4/4 and finish the same
+market. Artifact: `/tmp/dune-homeworld-native-sale-3217.json`. Native price
+and bank-income classification are unchanged; no full/deployed certification.
+Types/lint,236/236 across13 affected unit files and the application build
+pass. Build warnings retain deprecation, large chunks and static route
+classification; no suppression or public-release gate change.
+
 **Semuta / original Homeworld storm and native counter costs — 13 October.**
 The same profile now offers Jubba before protection and printed Karama
 canceling a native CHOAM Worthless power before denial. Kull/Nexus and other

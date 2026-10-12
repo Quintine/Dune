@@ -1169,6 +1169,8 @@ export function GameTable({
               Paid high-Kaitain closing discards, occupied Tupile lost-slot cleanup,
               paid Nullentropy Box search, clean Distrans transfer, definite
               Truthtrance answers and used ordinary special cards offer Semuta.
+              Completed legal CHOAM market sales also offer their used card;
+              recovery preserves the already credited two or three spice.
               Native printed Kulon, Baliset, La La La, Trip to Gamont and Jubba
               costs also pause before their original effect. Printed Karama
               canceling these native powers or Guild, Emperor auction or Richese

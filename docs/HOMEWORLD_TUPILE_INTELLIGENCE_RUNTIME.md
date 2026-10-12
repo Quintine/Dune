@@ -24,6 +24,13 @@ denial: its unused Worthless fuel remains held and is not a candidate.
 Canceled Baliset resumes its original move once; no canceled native effect
 is applied. Kull, Nexus and other producer/module combinations remain excluded.
 
+Completed legal CHOAM market sales also offer the used card after the
+original two/three-spice credit. Recovery keeps the paid amount and duplicate
+witness, then restores the same closing market once. High Tupile's
+Worthless-sale prohibition, including Worthless duplicates, is unchanged;
+actual native shipment can lower population before a legal sale. Normal
+duplicates need no low-population exception. No new bank-income ruling follows.
+
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
 and suspended opening; its lease row remains pending during the neutral

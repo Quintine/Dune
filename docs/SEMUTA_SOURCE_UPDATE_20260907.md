@@ -855,6 +855,27 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — completed native Homeworld CHOAM market disposal.**
+`choamSaleDiscard` is now admitted in the existing Homeworld envelope. The
+original sale still commits its physical discard and two/three-spice credit
+before the Semuta offer; claim/pass restores the same market, not the sale.
+High Tupile still prohibits Worthless sales, including Worthless duplicates.
+A real ten-force native shipment into Habbanya Sietch17 lowers Tupile20→10
+and pays the original ten-spice fee before the legal Worthless cashout.
+Ordinary same-name Shield duplicates remain legal at high Tupile.
+
+Four actual Basic/Advanced before programs paid/discarded without an offer.
+Eight after claim/pass programs keep the original credit, paid counter group
+and retained duplicate witness. Two actual390px controls sell Baliset for
+two at low Tupile and a surplus Shield for three at high Tupile, pass native
+Karama and exchange Semuta at4/4. Credit stays C0→2 or C2→5; Shield witness
+stays held. The original market closes to Battle or Spice as before.
+`/tmp/dune-homeworld-native-sale-3217.json` retains accepted actions/state
+outside Git. No bank-income interpretation, profile or public gate changes.
+The initial fixture incorrectly selected Stunner (a projectile); canonical
+category inspection corrected the sale card to actual Worthless Baliset.
+No production rule was changed for that fixture error.
+
 **13 October 2026 — Homeworld Jubba and native Worthless cancellation.**
 The same envelope now admits `choamJubbaDiscard` and
 `karamaChoamWorthlessDiscard`. The existing native cancellation predicate

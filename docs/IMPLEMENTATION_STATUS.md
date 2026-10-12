@@ -1,5 +1,43 @@
 # Dune implementation status
 
+## 13 October 2026 — native Homeworld CHOAM completed-sale discard
+
+The existing Homeworld Semuta gate now admits `choamSaleDiscard`. Native
+sale validation, Karama allowance, physical disposal and payment happen
+first; only the used card is then offered. No payout, signature or profile
+is rewritten. The original CHOAM market resumes once after recovery.
+
+The fixture uses original CHOAM/Richese/Emperor/Atreides Homeworld setup.
+For Worthless cashout, a real native shipment of ten counters pays ten spice
+and lowers Tupile20→10. The high-population sale prohibition is retained,
+including duplicate Worthless sales. A real low-Tupile Baliset sale keeps its
+original two-spice credit. A non-Worthless Shield surplus is independently
+legal at high Tupile and keeps three-spice credit plus its held witness.
+All card positions are conserved; no clocks/wallets/population or ledgers
+are assigned. The initial Stunner choice was wrong because it is a projectile;
+canonical category inspection corrected the fixture to Baliset without
+altering a production rule or the native bank-income interpretation.
+
+Four actual before programs (both modes × both sale kinds) paid/discarded
+without Semuta. Eight parent after claim/pass programs retain the credited
+amount, native paid counter group and duplicate witness, then consume the
+same market close. Fourteen new behavioral cases also cover high-Tupile
+rejection before mutation, full-hand exchange and all four minimal profiles.
+
+Two actual390px controls sell/allow/commit through unmodified GameTable.
+The low-Tupile sale retains CHOAM0→2, reserves10 and board10; the high-Tupile
+Shield sale retains CHOAM2→5/reserves20 and physical Shield witness10 while
+Richese recovers sold Shield9. Both exchange at4/4 and restore original
+market ownership before native Battle/Spice progression. Evidence outside
+Git: `/tmp/dune-homeworld-native-sale-3217.json`. Four initial optimizer
+requests aborted; subsequent controls completed. Only own QA service/tab
+and root temporary files were removed. No deployed, saved-room, natural
+full-game or completed-mode certification follows.
+The frozen thirteen-file unit union passes236/236, with types/lint and the
+application build clean apart from the recorded module.register deprecation,
+large-chunk and Vinext static route-classification warnings. No warning
+threshold was changed or suppressed.
+
 ## 13 October 2026 — Homeworld Jubba and native Worthless Karama costs
 
 The Homeworld producer gate now admits only the additional existing
