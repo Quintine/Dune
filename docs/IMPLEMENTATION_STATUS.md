@@ -1,5 +1,67 @@
 # Dune implementation status
 
+## 13 October 2026 — native economic Karama costs
+
+Only the existing `karamaCharityDiscard`, `karamaInflationDiscard`,
+`karamaPurchaseDiscard` and `karamaPaymentDiscard` are newly admitted by
+the Homeworld Semuta gate. Original response/lot/capacity/physical-card
+validators remain; no signing, price, profile or publication cutover.
+
+Four genuine Basic/Advanced opening-income/Inflation before programs spend
+the original Emperor's printed Karama once with no offer. First phase2
+CHOAM2 stays2 when its native2×4=8 income is canceled. Original Mentat
+Inflation cancellation leaves C10, attemptTurn1, no token/used state.
+Advanced A12 is the actual earlier stronghold Collection, not assigned wealth.
+Four genuine normal-lot purchase/payment before programs use original
+Richese Declaration-last, actual Atreides inspection, bid/pass and payment
+controls. A real winning11-spice bid exceeds A's10 wallet but uses the held
+printed Karama for free payment. The original lot arrives once, all wallets
+stay r5/e10/c10/a10, normalCount3 persists and native Bidding reaches phase5.
+
+Eighteen parent after programs cover both modes, each cost's claim/pass with
+full Richese hands and both Inflation sides. CHOAM denial stays2 into phase3;
+canceled Inflation still permits ordinary next-turn8 income (C18), never
+sixteen/zero. Purchase/payment holds the original lot through Semuta and
+delivers it once at zero price, without income/share/refund or bonus draw.
+Both original normal pool and compulsory cache finish, cacheRemaining8,
+while all original wallets remain unchanged.
+
+Four actual390px flows use native Cancel with Karama, Take current auction
+card or Spend Karama controls and exchange at4/4. Basic opening income
+remains2; Advanced Inflation keeps attempt1/no token and the original C
+Ready control. Basic purchase acquires original Weather after the cost;
+Advanced payment shows bid11, disabled spice payment at A10 and acquires
+original Poison Tooth after the cost. Normal index0→1 and pool3 remain.
+The UI proofs stop at native response/next-lot controls; runtime completes
+the original later queues. Artifact outside Git:
+`/tmp/dune-homeworld-native-economic-3222.json`.
+The owned browser reported no errors; only its service/tab/root files
+were stopped/removed. No saved room, deployment or full mode is certified.
+
+The initial frozen union passed types/lint but failed five fixture assumptions.
+Four auction cases assumed a following response where the native next lot was
+already ready; that response-only step was removed, not re-pinned. One actual
+Advanced Medium next actor legally declared Gamont while the economic helper
+required every response absent. A real conserved-card reproduction observed
+the original CHOAM Worthless response. The helper now settles that different
+native response while still rejecting the original unretired Karama cost/
+denied response, then follows the same closing controls. A deterministic
+consumer regression proves A10→9/reserves11, A12 unchanged, native C18 and no
+Inflation token. The separate actual post-fix program observes the same result.
+No production exception was suppressed or bot strategy changed.
+
+The original Collection quote is taken before the last native Movement close:
+clean phase7 has already credited Collection, and an empty/full-hand phase6
+may be auto-skipped. No clock/wealth rewind supplies that quote. Initial
+uninitialized-attempt and absent-sale input pins were removed. Existing direct
+purchase capacity versus winning-payment spent-card exchange, cache/normal-
+method Black Market exclusions and printed-only/no-Kull limits remain.
+Final frozen checks pass types/lint and176/176 across seven related unit
+files, including68 new consumer cases. The application build passes with
+unchanged module.register deprecation, client chunks over500kB and Vinext
+static route-classification limitations. No broad assurance/deployed
+check is substituted for the actual native cost/control proof.
+
 ## 13 October 2026 — clean Homeworld preparation and remaining chooser costs
 
 Only existing `residualPoisonDiscard`, `saphoAggressorDiscard` and

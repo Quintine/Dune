@@ -51,6 +51,13 @@ interruption. Early Sapho keeps original participants and ordinary tie priority,
 including an already-ready opponent; between-battle first/last keeps completed
 prefixes and only remaining chooser opportunities. None rewrites storm order.
 
+Printed Karama canceling original CHOAM opening income or Inflation placement
+likewise offers before denial. Recovery cannot restore the withheld native
+income or reset the spent placement attempt. Normal-lot direct purchase and
+free winning-bid payment offer their costs before one reserved card arrives
+at zero price; original ordinary/cache pools and later controls stay intact.
+No new low-Tupile income classification or Richese-lot scope is introduced.
+
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
 and suspended opening; its lease row remains pending during the neutral

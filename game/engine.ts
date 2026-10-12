@@ -6967,7 +6967,11 @@ function semutaOfferSupported(
       continuation.kind !== 'battleCleanup' &&
       continuation.kind !== 'residualPoisonDiscard' &&
       continuation.kind !== 'saphoAggressorDiscard' &&
-      continuation.kind !== 'saphoBattleOrderDiscard') return false;
+      continuation.kind !== 'saphoBattleOrderDiscard' &&
+      continuation.kind !== 'karamaCharityDiscard' &&
+      continuation.kind !== 'karamaInflationDiscard' &&
+      continuation.kind !== 'karamaPurchaseDiscard' &&
+      continuation.kind !== 'karamaPaymentDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

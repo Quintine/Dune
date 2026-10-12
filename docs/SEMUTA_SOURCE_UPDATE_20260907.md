@@ -855,6 +855,22 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — original Homeworld economic Karama costs.**
+Printed CHOAM opening-income/Inflation cancellation and normal-lot purchase/
+winning-payment costs now offer before their original terminal effect.
+Claim/pass never restores withheld income or a canceled token, resets the
+placement attempt, re-bids, charges spice or draws/delivers another lot.
+Eight actual before programs had no offer;18 parent after programs preserve
+native C2 denial, ordinary next-turn C18 and original free A10 acquisitions
+(real payment bid11). Normal pool3 and compulsory cache continue unchanged.
+Four actual390px controls exchange at4/4 and return to native response/next
+lot; full later-queue evidence is runtime, not an unplayed UI certification.
+Artifact: `/tmp/dune-homeworld-native-economic-3222.json`.
+One legal Medium Gamont follow-on exposed a fixture-only response assumption;
+actual settlement returns A1 to reserves and keeps original denial/Collection.
+No production price, signature, profile, BG substitute, Kull or Richese-lot
+ruling follows. Existing capacity/timing boundaries and public gates remain.
+
 **13 October 2026 — clean native Homeworld preparation and remaining chooser.**
 Original clean Residual Poison disposal, early Sapho aggressor and between-
 battle first/last costs now offer their physical cards. The printed/native

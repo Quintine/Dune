@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native economic Karama producers — 13 October.**
+Printed Karama canceling CHOAM opening income/Inflation, direct normal-lot
+purchase and free winning-bid payment now offer their costs. Eight genuine
+before programs had no offer;18 parent claim/pass/side programs preserve
+withheld8, spent placement, ordinary next-turn C18 or one free original lot.
+Four actual390px flows exchange at4/4: C stays2 after income denial,
+Inflation attempt1 has no token, and purchase/payment acquires exactly one
+reserved lot without charging A10 (real payment bid11). Normal pool3 and
+cache continuation remain original. Artifact:
+`/tmp/dune-homeworld-native-economic-3222.json`.
+One actual Medium Gamont follow-on settles normally after the retired denial;
+A10→9/reserves11, original A12 Collection and next-turn C18 remain valid.
+No BG substitution, Kull, Richese-lot, signature/profile or public gate change.
+Local staged proof is not save/deployed/natural-full-game acceptance.
+Frozen types/lint and176/176 across seven related files pass (68 new cases).
+The application build passes with unchanged deprecation, large-chunk and
+static route-classification warnings. Five initial fixture assumptions were
+repaired without a production rule or bot change.
+
 **Semuta / clean Homeworld preparation and chooser costs — 13 October.**
 Clean Residual Poison, early Sapho aggressor and remaining Battle chooser
 disposal now offer their used cards without new timing or signatures. Eight
