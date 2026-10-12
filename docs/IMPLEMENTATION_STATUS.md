@@ -1,5 +1,59 @@
 # Dune implementation status
 
+## 13 October 2026 — Homeworld Jubba and native Worthless Karama costs
+
+The Homeworld producer gate now admits only the additional existing
+`choamJubbaDiscard` and `karamaChoamWorthlessDiscard` kinds. The unchanged
+native cancellation predicate still excludes Kull, battle, Ornithopter and
+ecological/arrival-overlap parents. No action, signature, force/payment rule
+or optional-module profile changes.
+
+Jubba uses a real paid reserve shipment, original first-turn suffix, then
+turn2 Weather Control by the original Atreides seat. Storm1 plus actual6
+threatens the single CHOAM Red Chasm7 counter; the ordinary Weather discard
+receipt is passed by original seats. Native readiness opens the real CHOAM
+Storm decision before casualties. The initial fixture mistakenly used the
+Kulon fixture's target=c as Weather caster; that C-caster output was real but
+did not satisfy the specified third-party fixture. It was corrected to the
+actual Atreides seat and the exact closed-gate before proof rerun.
+
+Ten corrected before programs (Jubba in both modes plus four native printed
+power cancellations in both modes) had no cost offer. Twenty-four parent
+post-cutover programs cover claim/pass for those sources plus canceled Jubba.
+Protection keeps the paid counter alive through the same recorded storm;
+canceling retains Jubba, reoffers its original decision, then declining sends
+only that counter to Tanks before the same Spice opening. Native printed
+counter recovery offers only Karama, never the retained Worthless fuel.
+Baliset's original move resumes once; Kulon bonus/LL denial/Gamont return
+remain canceled, with original phase/closing controls preserved.
+
+Four actual390px counter flows cancel with Emperor's held Karama, commit
+Semuta and recover that physical Karama. Kulon/Baliset exchange at4/4;
+CHOAM retains its printed fuel. Baliset reaches real Battle selection with
+Atreides Arrakeen9/Imperial Basin1/moved1, not a second move. Gamont leaves
+board10/reserves10/Tanks0 before the original close reaches turn2. La La La
+leaves allowance/counters unchanged and reaches original Atreides foresight.
+Kulon grants no range and the unused group stays at its original location
+before normal Collection. Two additional390px Storm flows use actual protect,
+native Karama allow/cancel, Semuta and original CHOAM controls: protected
+counter1/Tanks0 versus unprotected counter0/Tanks1, both reserves19 and the
+same storm7/turn2/phase1 suffix. Artifacts outside Git:
+`/tmp/dune-homeworld-native-counter-3215.json`,
+`/tmp/dune-homeworld-native-storm-3216.json`.
+
+Parent removed wording/log-count and copied-receipt assertions from the
+worker tests; real storm position, physical survival/loss and rejected
+duplicate controls prove the transitions. The final ten-file union passes
+192/192, including70 new cases, with types/lint clean. Native first-turn
+Collection can change a fixture wallet, so same-instance baselines preserve
+actual original income rather than assigning a constant. Initial Vite
+dependency request aborts and cosmetic notice dimming are recorded.
+All owned QA services/tabs/root and `/tmp` probe scripts were removed; proof
+JSON/screenshots remain outside Git. No deployed, historical-save, natural
+full-game or complete-mode certification follows.
+The application build passes; module.register deprecation, client chunks
+over500kB and Vinext static route classification remain visible warnings.
+
 ## 13 October 2026 — native Homeworld CHOAM Worthless discard continuation
 
 The Homeworld Semuta producer gate excluded the native printed Kulon,

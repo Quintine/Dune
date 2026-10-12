@@ -6955,7 +6955,9 @@ function semutaOfferSupported(
       continuation.kind !== 'choamLaLaLaDiscard' &&
       continuation.kind !== 'choamGamontDiscard' &&
       continuation.kind !== 'choamKulonDiscard' &&
-      continuation.kind !== 'choamBalisetDiscard') return false;
+      continuation.kind !== 'choamBalisetDiscard' &&
+      continuation.kind !== 'choamJubbaDiscard' &&
+      continuation.kind !== 'karamaChoamWorthlessDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

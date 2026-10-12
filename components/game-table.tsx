@@ -1169,9 +1169,10 @@ export function GameTable({
               Paid high-Kaitain closing discards, occupied Tupile lost-slot cleanup,
               paid Nullentropy Box search, clean Distrans transfer, definite
               Truthtrance answers and used ordinary special cards offer Semuta.
-              Native printed Kulon, Baliset, La La La and Trip to Gamont costs
-              also pause before their original effect. Printed Karama canceling
-              Guild, Emperor auction or Richese purchase income remains supported.
+              Native printed Kulon, Baliset, La La La, Trip to Gamont and Jubba
+              costs also pause before their original effect. Printed Karama
+              canceling these native powers or Guild, Emperor auction or Richese
+              purchase income remains supported.
               Private discarded faces stay hidden until commitment; a simultaneous
               group requires one selection. Claim or Continue resumes the same
               original source once without undoing payment or force commitment.

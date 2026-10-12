@@ -29,6 +29,28 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / original Homeworld storm and native counter costs — 13 October.**
+The same profile now offers Jubba before protection and printed Karama
+canceling a native CHOAM Worthless power before denial. Kull/Nexus and other
+producer gates remain unchanged. Ten corrected before programs had no cost
+offer;24 parent claim/pass programs now complete the original suffixes.
+Jubba protects the actual paid counter through recorded Weather storm1→7;
+canceling it retains the fuel and loses exactly that threatened counter after
+the original protection decision declines. Native counter claims recover
+only Karama: Baliset's original move commits once, Kulon has no bonus,
+La La La keeps free allowance and Gamont returns no force before its close.
+
+Six actual390px flows exercise four power cancellations and protected/canceled
+storm, with movement/storm exchanges at4/4. Evidence:
+`/tmp/dune-homeworld-native-counter-3215.json` and
+`/tmp/dune-homeworld-native-storm-3216.json`. The original Weather was played
+by Atreides; the earlier C-caster probe was superseded after correcting the
+fixture's target alias, not counted as the specified before proof. The frozen
+ten-file unit union passes192/192 with types/lint clean. This is local fixture
+proof, not deployed, saved-room or full-mode acceptance.
+The application build passes with the recorded deprecation, large-chunk and
+static route-classification warnings unchanged; no warning or gate is suppressed.
+
 **Semuta / native Homeworld Worthless powers — 13 October.**
 The existing Homeworld envelope now offers the printed Kulon, reactive
 Baliset, La La La and Trip to Gamont discard costs before their original

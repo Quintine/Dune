@@ -855,6 +855,37 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — Homeworld Jubba and native Worthless cancellation.**
+The same envelope now admits `choamJubbaDiscard` and
+`karamaChoamWorthlessDiscard`. The existing native cancellation predicate
+still excludes Kull, battle/Ornithopter and ecological/arrival-overlap parents;
+no Nexus or new producer profile is opened.
+
+Original paid CHOAM shipment supplies one normal Red Chasm7 counter. The
+first-turn native suffix reaches turn2 Storm; actual Weather Control by
+Atreides moves the recorded storm from1 by6, with the ordinary Weather
+Semuta receipt passed by all original seats. Jubba then disposes its exact
+card before protection. Claim/pass preserves the original counter, moves
+storm1→7 once and resumes the same CHOAM market/Spice opening. Real Karama
+cancellation instead retains Jubba and offers only its spent Karama; the
+original protection decision reopens, and declining loses the one threatened
+counter to Tanks while the same storm/Spice suffix completes.
+
+Native printed Karama cancellation of Kulon, Baliset, La La La and Gamont
+likewise offers only the public spent Karama before the original denial.
+Their retained Worthless fuel is never claimable. Canceled Baliset commits
+its original declared Atreides move once; canceled Kulon gives no bonus,
+canceled La La La keeps free allowance and canceled Gamont returns no force
+before restoring its original CHOAM close. Parent runtime covers16 such
+claim/pass cases plus8 Jubba/protection-counter cases in both modes.
+
+Four actual390px cancellation flows and two actual390px storm flows preserve
+those original controls, including full4/4 exchanges for movement/Jubba.
+`/tmp/dune-homeworld-native-counter-3215.json` and
+`/tmp/dune-homeworld-native-storm-3216.json` retain accepted actions and actual
+state outside Git. Initial optimizer request aborts are recorded; this is
+local fixture proof, not deployed, saved-room or complete-mode acceptance.
+
 **13 October 2026 — native CHOAM Homeworld Worthless costs.** The existing
 Homeworld envelope now admits the printed Kulon, Baliset, La La La and Trip
 to Gamont discard continuations. Their original native rules are unchanged;

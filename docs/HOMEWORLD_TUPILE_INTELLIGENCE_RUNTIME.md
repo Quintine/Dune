@@ -14,13 +14,15 @@ card is the same public fresh batch, claim recovers it and pass leaves it
 discarded, and the card's own committed effect, payment, gift, answer
 history, wallets, custody and occupation history are unchanged.
 
-Native printed Kulon, Baliset, La La La and Trip to Gamont disposal also offers
-Semuta in this envelope before that power's original effect. Claim/pass adds
-Kulon's movement bonus once, finishes the free-revival denial without
-inventing forces or a debit, stops the same uncommitted Baliset move, or
-returns one original board counter to its native reserves before the same
-CHOAM closing-Mentat controls resume. Jubba and other producers remain outside
-this batch; no Nexus or wider optional-module combination is admitted.
+Native printed Kulon, Baliset, La La La, Trip to Gamont and Jubba disposal
+also offers Semuta before that power's original effect. Claim/pass adds one
+movement bonus, finishes denial without a force/debit, stops the same
+uncommitted Baliset move, returns one original counter before CHOAM's same
+closing controls, or applies protection before the same recorded storm moves.
+The printed Karama canceling a native power is offered separately before
+denial: its unused Worthless fuel remains held and is not a candidate.
+Canceled Baliset resumes its original move once; no canceled native effect
+is applied. Kull, Nexus and other producer/module combinations remain excluded.
 
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
