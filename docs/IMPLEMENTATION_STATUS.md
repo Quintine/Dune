@@ -1,5 +1,69 @@
 # Dune implementation status
 
+## 13 October 2026 — original shared-benefit cancellation costs
+
+Only existing `karamaBgCharityDiscard` and `karamaEmperorShareDiscard`
+are newly admitted in the Homeworld Semuta profile. Existing faction,
+phase, consumed claim, allied response and printed-card validators remain.
+No signing, pricing, roster or public-mode cutover.
+
+Two actual Advanced BG before programs (thin/full) use five original
+R/C/E/A/B Homeworld participants, genuine prediction/Harg Pass setup and
+first ten-spice CHOAM income (C2→12). Wealthy BG5 claims its native extra2;
+claimTurn1 is consumed before the response. Emperor's original printed
+Karama discarded once/no offer and denied the same benefit, BG5/C12 intact.
+The actual Basic BG5 claim returns its original unavailable error unchanged,
+without a response, cost or fabricated poverty.
+
+Four actual Emperor before programs use original R/C/E/A setup, an actual
+three-normal Atreides shipment to Red Chasm7 for6, native turn closure,
+printed Weather6 on the second Storm and real1→7 movement. The three deployed
+counters enter Tanks; original Arrakeen10 remains. An actual unplayed worm
+opens turn2 Nexus and E/A form a genuine mutual alliance. Native E10 can
+declare gift3 or extra revival2 in the proper phase. Printed A Karama
+disposed without an offer and canceled the original benefit: no transfer/
+return/extra allowance, Areserves7/Tanks3 and BasicA4/AdvancedA6 preserved.
+No old force-staging creator, clock, wallet, Tank or alliance assignment is
+used by these new native programs.
+
+Twenty-one parent after/negative programs cover thin/full claim/pass for
+Advanced BG, both modes/two Emperor benefits, plus the Basic guard.
+BG5/C12 and claim1 stay consumed through original Bidding. Emperor gift
+leaves E10/A4 or6; revival denial retains the real three Tanks and empty
+extra ledger. Original ordinary revival then returns3/reserves10/Tanks0,
+free2 plus one paid force for2 (BasicA2/AdvancedA4), and original Movement
+becomes usable. Storm7, original alliance turn2, Arrakeen10 and physical
+card custody remain; no Weather, worm or benefit is replayed.
+
+Three actual390px control flows start BEFORE the actual declaration, not
+just its cancellation. Advanced BG claims2 atwealth5, E cancels, R exchanges
+at4/4; BG5/C12/claim1 remain. Basic E declares gift3 through Share wealth,
+A cancels and R exchanges4/4; E10/A4 and actual casualty/ally state stay.
+Advanced E declares extra2, A cancels and R exchanges4/4; extra ledger stays
+empty, A6/reserves7/Tanks3. A's real ordinary Revive3 then passes the original
+CHOAM free-revival owner control and pays2: A4/reserves10/Tanks0, revived3/
+free2, Arrakeen10 unchanged. UI stops at original Revival; runtime covers
+the original later phase3/5 controls. Artifact outside Git:
+`/tmp/dune-homeworld-native-shared-3223.json`.
+The owned browser reported no errors; only its service/tab/root files were
+closed/removed. No saved room, deployed revision or completed mode is certified.
+
+Parent removed fixture-only BG setup status/prediction pins and non-empty
+cancel-card assertions. The shared-cost assertion now accepts exact-card
+custody in discard or the claimant's hand; the alliance stamp compares with
+the real alliance snapshot, not the preceding storm snapshot. Ordinary return
+regressions check the real3/free2 outcome rather than a permissive upper bound.
+One worker expanded its runtime checks into960 fixture constructions,
+14 repeated harnesses and parser diagnostics. Parent stopped those sweeps
+and does not count them as integration proof; frozen owner checks govern.
+Frozen checks pass types/lint and175/175 across seven related unit files,
+including28 new cases. Initial Basic BG failed an Advanced Harg Pass setup
+pin; that location/reserve/population assumption was removed from both modes,
+not re-pinned. Actual original resource preservation and charity eligibility
+remain asserted. Only the failed unit union was rerun. Build passes with
+unchanged module.register deprecation, client chunks over500kB and Vinext
+static route-classification warnings. No broader/deployed certification.
+
 ## 13 October 2026 — native economic Karama costs
 
 Only the existing `karamaCharityDiscard`, `karamaInflationDiscard`,

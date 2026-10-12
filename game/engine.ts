@@ -6971,7 +6971,9 @@ function semutaOfferSupported(
       continuation.kind !== 'karamaCharityDiscard' &&
       continuation.kind !== 'karamaInflationDiscard' &&
       continuation.kind !== 'karamaPurchaseDiscard' &&
-      continuation.kind !== 'karamaPaymentDiscard') return false;
+      continuation.kind !== 'karamaPaymentDiscard' &&
+      continuation.kind !== 'karamaBgCharityDiscard' &&
+      continuation.kind !== 'karamaEmperorShareDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

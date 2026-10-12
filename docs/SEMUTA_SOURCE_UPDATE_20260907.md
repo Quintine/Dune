@@ -855,6 +855,25 @@ consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
 
+**13 October 2026 — original Homeworld shared-benefit cancellation costs.**
+Native Advanced BG extra-charity and allied Emperor gift/extra-revival
+printed Karama costs now offer before original denial. BG's real consumed
+turn claim remains spent; recovery cannot award its withheld2 or renew use.
+Wealthy Basic BG keeps ordinary charity eligibility. Emperor's actual ally,
+paid deployment/three storm casualties, wallets and extra-revival ledger
+remain committed; recovering the cost cannot move the canceled benefit.
+
+Six positive actual before programs had no offer, with a separate Basic
+negative. Twenty-one parent after/negative programs preserve BG5/C12 or
+E10/A4/6, Tanks3/reserves7 and the real turn2 alliance. Ordinary revival is
+still legal3/free2/paid1, not extra2. Three actual390px declaration/claim/
+cancellation/exchange flows retain those boundaries and original next
+controls; runtime proves the later Bidding/Movement phase. Artifact:
+`/tmp/dune-homeworld-native-shared-3223.json`.
+No old staged-force fixture proves these new original paths. No signature,
+price, profile, pending ruling or public gate changes, and no saved/deployed/
+full-mode acceptance is claimed.
+
 **13 October 2026 — original Homeworld economic Karama costs.**
 Printed CHOAM opening-income/Inflation cancellation and normal-lot purchase/
 winning-payment costs now offer before their original terminal effect.

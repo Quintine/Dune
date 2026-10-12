@@ -1187,6 +1187,9 @@ export function GameTable({
               Printed Karama canceling CHOAM opening income or Inflation and
               normal-lot purchase/payment costs keep the original denial,
               spent placement attempt or one zero-spice acquisition.
+              Native Advanced BG extra-charity and allied Emperor gift/extra-
+              revival cancellation costs also retain the consumed claim and
+              original ally, casualties and unawarded benefit.
               Private discarded faces stay hidden until commitment; a simultaneous
               group requires one selection. Claim or Continue resumes the same
               original source once without undoing payment or force commitment.

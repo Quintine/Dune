@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / original shared-benefit cancellations — 13 October.**
+Native Advanced BG extra-charity and genuinely allied Emperor gift/extra-revival
+printed Karama costs now offer their cards. Six positive before programs had
+no offer; a wealthy Basic BG claim rejected immutably. Twenty-one parent
+programs retain BG5/C12 and spent claim1, or real A3 storm casualties, turn2
+E/A alliance and unawarded benefit. Ordinary revival remains3 (free2/paid1),
+not a granted extra allowance. Three actual390px declarations/cancellations/
+4-of-4 exchanges keep those outcomes; Advanced A3 ordinary revival then
+returns toreserves10/Tanks0 atcost2. Artifact:
+`/tmp/dune-homeworld-native-shared-3223.json`.
+No profile/signature/price or public-gate change; no save/deployed/full-mode
+certification follows.
+Types/lint and175/175 across seven focused unit files pass (28 new cases).
+The initial Basic test incorrectly pinned Advanced Harg Pass/population;
+those setup-only assumptions were deleted, not replaced. Build passes with
+unchanged deprecation/chunk/route-classification warnings.
+
 **Semuta / native economic Karama producers — 13 October.**
 Printed Karama canceling CHOAM opening income/Inflation, direct normal-lot
 purchase and free winning-bid payment now offer their costs. Eight genuine

@@ -58,6 +58,13 @@ free winning-bid payment offer their costs before one reserved card arrives
 at zero price; original ordinary/cache pools and later controls stay intact.
 No new low-Tupile income classification or Richese-lot scope is introduced.
 
+Native Advanced BG extra-charity and genuinely allied Emperor gift/extra-
+revival cancellation costs also offer their printed card before denial.
+Consumed BG claim use stays spent. Original alliance, paid native deployment,
+real casualties and empty extra-revival ledger stay intact; ordinary legal
+revival is a separate later action. Wealthy Basic BG's ordinary eligibility
+and all unresolved source/publication boundaries remain unchanged.
+
 Actual selected original cleanup cards are privately discarded first. The
 typed receipt retains only that cleanup's event, original held-ID commitment
 and suspended opening; its lease row remains pending during the neutral
