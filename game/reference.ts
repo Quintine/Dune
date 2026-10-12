@@ -1153,7 +1153,7 @@ export const RULE_TOPICS: RuleTopic[] = [
         definition.card.effect === 'juiceOfSapho'
           ? 'Use the Juice of Sapho panel for an available order change or pre-plan aggressor. Later intervention and other timing modes remain unfinished; consult the timing guide.'
           : definition.card.effect === 'karama'
-            ? 'This physical Karama uses the existing generic handler in development fixtures. In the explicit Semuta preview, clean printed cancellations of CHOAM Charity, Inflation or Bene Gesserit Charity pause on the public cost before settling that response; a clean printed normal-auction purchase or winning-bid payment pauses before its reserved lot settles. Full Richese starts and other Karama-to-Semuta reactions remain unavailable.'
+            ? 'This physical Karama uses the existing generic handler in development fixtures. In the explicit Semuta preview, clean printed cancellations of CHOAM Charity, Inflation or Bene Gesserit Charity pause on the public cost before settling that response; a clean printed normal-auction purchase or winning-bid payment pauses before its reserved lot settles; and a printed cancellation of any ordinary native CHOAM Worthless or Cunning power pauses on its public cost before the denial completes. Full Richese starts and other Karama-to-Semuta reactions remain unavailable.'
             : definition.card.effect === 'distrans'
               ? 'Use the Distrans transfer panel to choose another player and a separate held card. Open-bid timing and self-transfer remain guarded pending clarification.'
               : definition.card.effect === 'nullentropyBox'
