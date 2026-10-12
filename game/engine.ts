@@ -1267,6 +1267,12 @@ export type Game = {
       | { kind: 'nexusChoamTrade'; event: string; owner: string; card: string; spiceAfter: number }
       | { kind: 'nexusChoamBetrayal'; event: string; owner: string; target: string; card: string; handBefore: number }
       | { kind: 'kaitainDiscard'; owner: string; event: string; cost: number; spiceAfter: number }
+      | {
+          kind: 'tupileCleanupDiscard';
+          cleanup: NonNullable<Game['pendingHomeworldTupileCleanup']>;
+          cards: string[];
+          stateSignature: string;
+        }
       | { kind: 'winnerMandatoryDiscard'; event: string; player: string; territory: string; optional: string[]; commitment: NonNullable<Game['pendingWinnerDiscards']> }
       | {
           kind: 'nullentropyDiscard';
@@ -5653,10 +5659,40 @@ function semutaNexusProfile(g: Game): boolean {
       mixedE1E2NexusLeaderSkillsProfile(g)
     : pairedNexusModulesProfile(g) || singleE1E2NexusProfile(g) || mixedE1E2NexusProfile(g));
 }
+/** Original Richese/CHOAM Homeworld occupation only; other optional envelopes stay separate. */
+function semutaHomeworldRoster(g: Game): boolean {
+  return !!g.homeworlds && g.expansions.length === 1 && g.expansions[0] === 'choam' &&
+    g.players.length >= 2 && g.players.length <= 6 &&
+    g.players.some(p => p.faction === 'richese') &&
+    g.players.every(p => p.faction === 'richese' || p.faction === 'choam' ||
+      faction(p.faction).expansion === 'base') &&
+    !g.nexusCards && !g.leaderSkills && !g.techTokens && !g.strongholdCards &&
+    !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
+    !g.greatMaker && !g.ecazTreachery;
+}
+type TupileDiscardContinuation = Extract<
+  NonNullable<Game['pendingTreacheryDiscard']>['continuation'],
+  { kind: 'tupileCleanupDiscard' }
+>;
+function tupileDiscardSignature(g: Game, c: TupileDiscardContinuation) {
+  return JSON.stringify({
+    cleanup: c.cleanup, cards: c.cards, turn: g.turn, phase: g.phase,
+    active: g.active, order: g.order, ready: g.ready, movementRemaining: g.movementRemaining,
+    response: g.response, decision: g.decision, opening: g.phaseOpening,
+    homeworlds: g.homeworlds, history: g.homeworldOccupationHistory,
+    tupile: g.homeworldTupileState,
+    players: g.players.map(p => ({
+      id: p.id, faction: p.faction, ally: p.ally, hand: p.hand.map(card => card.id),
+      spice: p.spice, reserves: p.reserves, tanks: p.tanks, forces: p.forces,
+      elites: p.elites, shipped: p.shipped, moved: p.moved, slot: p.tupileHandSlot,
+    })),
+  });
+}
 function treacheryDiscardIntegrity(g: Game) {
   requireRule(g.semutaPreview === undefined || g.semutaPreview === true &&
     g.expansions.includes('choam') && !!byFaction(g, 'richese') &&
-    !g.homeworlds && (!g.nexusCards || semutaNexusProfile(g)) &&
+    (!g.homeworlds || g.homeworldOccupationPreview === true && semutaHomeworldRoster(g)) &&
+    (!g.nexusCards || semutaNexusProfile(g)) &&
     (!g.leaderSkills || ordinaryLeaderSkillModeSupported(g)) && !g.discoveries &&
     !g.discoveryEnabled && (!g.techTokens || (g.nexusCards
       ? semutaNexusProfile(g) : g.leaderSkills
@@ -6808,6 +6844,26 @@ function treacheryDiscardIntegrity(g: Game) {
       batch.entries[0].discardedBy === c.target && !batch.entries[0].publicFace &&
       batch.entries[0].card.id === c.card && g.nexusChoamBetrayals?.at(-1)?.event === c.event,
       'The CHOAM Nexus Betrayal has changed its random physical discard.');
+  } else if (continuation?.kind === 'tupileCleanupDiscard') {
+    const c = continuation, source = c.cleanup;
+    const row = g.homeworldTupileState?.cleanups.find(cleanup => cleanup.event === source.event);
+    const player = getPlayer(g, source.player);
+    requireRule(semutaHomeworldRoster(g) && g.homeworldTupilePreview &&
+      !g.pendingHomeworldTupileCleanup && !g.decision && !g.response && !g.phaseOpening &&
+      row?.status === 'pending' && row.player === source.player &&
+      source.signature === JSON.stringify([source.event, source.player, source.hand,
+        source.opening, g.turn, g.phase]) &&
+      batch.cause === 'homeworld:tupileCleanup' && c.cards.length > 0 &&
+      batch.entries.length === c.cards.length &&
+      batch.entries.every((entry, index) => !entry.publicFace &&
+        entry.discardedBy === source.player && entry.card.id === c.cards[index]) &&
+      JSON.stringify(player.hand.map(card => card.id)) ===
+        JSON.stringify(source.hand.filter(id => !c.cards.includes(id))) &&
+      c.stateSignature === tupileDiscardSignature(g, c),
+    'The private Tupile discard no longer matches its original cleanup.');
+    const quote = homeworldRule(() => quoteOccupiedTupileCleanup(g, g.homeworldTupileState!, source.event));
+    requireRule(!quote.blocked && quote.excess === 0,
+      'The original normal-limit cleanup must be paid before its Semuta reaction.');
   } else if (continuation?.kind === 'kaitainDiscard') {
     const c = continuation;
     requireRule(g.phase === 3 && g.biddingEnd?.event === c.event &&
@@ -6855,6 +6911,8 @@ function semutaOfferSupported(
     continuation.kind !== 'karamaChoamWorthlessDiscard' &&
     continuation.kind !== 'karamaEmperorShareDiscard' &&
     continuation.kind !== 'karamaIncomeDiscard' &&
+    continuation.kind !== 'kaitainDiscard' &&
+    continuation.kind !== 'tupileCleanupDiscard' &&
     continuation.kind !== 'karamaPurchaseDiscard' &&
     continuation.kind !== 'karamaPaymentDiscard' &&
     continuation.kind !== 'thumperDiscard' &&
@@ -6882,6 +6940,8 @@ function semutaOfferSupported(
       (continuation.promise === null ||
         continuation.promise.kind === 'shipment' ||
         continuation.promise.kind === 'battle'))) return false;
+  if (g.homeworlds && continuation.kind !== 'kaitainDiscard' &&
+      continuation.kind !== 'tupileCleanupDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||
@@ -6923,7 +6983,9 @@ function semutaOfferSupported(
   return g.semutaPreview === true && g.status === 'playing' &&
     g.players.some(p => p.faction === 'richese') &&
     entries.length > 0 &&
-    (continuation.kind === 'ixAllyCard' || continuation.kind === 'terrorDiscard' ||
+    (continuation.kind === 'kaitainDiscard' || continuation.kind === 'tupileCleanupDiscard'
+      ? entries.every(entry => !entry.publicFace)
+      : continuation.kind === 'ixAllyCard' || continuation.kind === 'terrorDiscard' ||
       continuation.kind === 'nexusChoamBetrayal' || choamCunningDiscard(continuation)
       ? entries.length === 1 && !entries[0].publicFace
       : continuation.kind === 'battleCleanup' ||
@@ -6954,6 +7016,8 @@ function semutaOfferSupported(
     (continuation.kind === 'battleCleanup' ||
       continuation.kind === 'winnerMandatoryDiscard' ||
       continuation.kind === 'battleResolved' ||
+      continuation.kind === 'kaitainDiscard' ||
+      continuation.kind === 'tupileCleanupDiscard' ||
       continuation.kind === 'ixAllyCard' ||
       continuation.kind === 'terrorDiscard' ||
       continuation.kind === 'nexusChoamTrade' ||
@@ -7024,7 +7088,9 @@ function semutaOfferSupported(
     (continuation.kind === 'choamSaleDiscard'
       ? !!g.choamMarket && !g.choamMarket.sale &&
         !g.choamMarket.trade && !g.biddingEnd && !g.currentAuctionSale
-      : !g.choamMarket) &&
+      : continuation.kind === 'kaitainDiscard'
+        ? g.biddingEnd?.event === continuation.event && biddingEndError(g) === null
+        : !g.choamMarket) &&
     !g.pendingChoamMarketGhola;
 }
 function semutaContext(g: Game, owner: Player): SemutaContext {
@@ -7150,6 +7216,10 @@ function finishTreacheryDiscard(g: Game, claim?: { player: string; card: string 
     return;
   }
   if (next.kind === 'kaitainDiscard') return;
+  if (next.kind === 'tupileCleanupDiscard') {
+    finishTupileCleanup(g, next.cleanup, next.cards.length);
+    return;
+  }
   if (next.kind === 'ambassador') {
     const p = getPlayer(g, next.entry.beneficiary!);
     if (next.entry.effect === 'ixians') {
@@ -9775,8 +9845,8 @@ export function initializeMoritaniAssassinateGameForAudit(state: Game): Game {
   initializeMoritaniAssassinateState(g);
   return g;
 }
-/** Development-only Semuta with original native Tech/Advanced Strongholds/Nexus
- * and explicit native skills, or bounded Basic Moritani/E3. Public starts stay gated. */
+/** Development-only Semuta with original native modules/skills, separate bounded
+ * Homeworld occupation, or Basic Moritani/E3. Public starts stay gated. */
 export function initializeSemutaGameForAudit(state: Game, skills = false): Game {
   const nativeTerror = !state.advanced && state.expansions.length === 2 &&
     state.expansions.includes('choam') && state.expansions.includes('ecaz') &&
@@ -9787,11 +9857,14 @@ export function initializeSemutaGameForAudit(state: Game, skills = false): Game 
     state.expansions.includes('choam') &&
     (state.expansions.every(id => id === 'choam' || id === 'ix') || nativeTerror) &&
     state.players.some(p => p.faction === 'richese'),
-  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix, original Tech/Advanced Strongholds/Nexus, and explicit native Basic Richese or Advanced E1/E2 Leader Skills; separate Basic Moritani uses CHOAM/Ecaz and classics without modules. Other overlays remain excluded.');
+  'Semuta needs a fresh Richese faction game: CHOAM with optional Ix and supported original modules/skills; separate exact-CHOAM Homeworld occupation has no other modules, while Basic Moritani uses CHOAM/Ecaz and classics without modules. Other overlays remain excluded.');
   if (state.nexusCards) requireRule(!nativeTerror && !state.homeworlds &&
     !state.discoveryEnabled && !state.discoveries,
   'Semuta Nexus retains original E1/E2 rosters without Homeworlds, Discovery or E3.');
-  const g = skills ? initializeLeaderSkillsGameForAudit(state)
+  if (state.homeworlds) requireRule(!skills && semutaHomeworldRoster(state),
+    'Semuta Homeworlds require original Richese/CHOAM and classic factions, exact CHOAM, and no other modules.');
+  const g = state.homeworlds ? initializeHomeworldOccupationGameForAudit(state)
+    : skills ? initializeLeaderSkillsGameForAudit(state)
     : state.nexusCards ? state.expansions.length === 1 && !!byFaction(state, 'choam')
       ? initializePairedNexusGameForAudit(state) : initializeNexusGameForAudit(state)
     : state.strongholdCards ? initializeStrongholdFactionsGameForAudit(state)
@@ -19072,6 +19145,20 @@ function projectedTupileCleanup(g: Game, viewer: string) {
     blocked: quote.blocked ?? (eligibleCards.length < quote.excess
       ? 'The original committed cards must settle before this hand cleanup can complete.' : null) };
 }
+/** Resume only the original cleanup ledger and source controls; cards are already discarded. */
+function finishTupileCleanup(g: Game,
+  cleanup: NonNullable<Game['pendingHomeworldTupileCleanup']>, discarded: number) {
+  const player = getPlayer(g, cleanup.player);
+  g.homeworldTupileState = homeworldRule(() => completeOccupiedTupileCleanup(g,
+    g.homeworldTupileState!, cleanup.event, player.id));
+  g.pendingHomeworldTupileCleanup = null;
+  g.decision = null;
+  g.phaseOpening = cleanup.opening;
+  log(g, `${player.name} discarded ${discarded} Treachery Card${discarded === 1 ? '' : 's'} to the normal hand limit after losing the original occupied Tupile slot.`,
+    { faction: player.faction, name: 'Tupile hand cleanup' });
+  syncTupileSlots(g);
+  prepareTupileCleanup(g);
+}
 function decideTupileCleanup(g: Game, player: Player,
   decision: Extract<Decision, { kind: 'homeworldTupileCleanup' }>, action: Action) {
   tupileSlotsIntegrity(g, decision);
@@ -19085,15 +19172,21 @@ function decideTupileCleanup(g: Game, player: Player,
   requireRule(!quote.blocked && selected.length === quote.excess &&
     selected.every(id => eligible.includes(id) && physical.filter(card => card.id === id).length === 1),
   'Discard exactly the normal-limit excess without consuming a reserved card.');
-  for (const id of selected) discard(g, player, id);
-  g.homeworldTupileState = homeworldRule(() => completeOccupiedTupileCleanup(g, g.homeworldTupileState!, pending.event, player.id));
-  g.pendingHomeworldTupileCleanup = null;
-  g.decision = null;
-  g.phaseOpening = pending.opening;
-  log(g, `${player.name} discarded ${selected.length} Treachery Card${selected.length === 1 ? '' : 's'} to the normal hand limit after losing the original occupied Tupile slot.`,
-    { faction: player.faction, name: 'Tupile hand cleanup' });
-  syncTupileSlots(g);
-  prepareTupileCleanup(g);
+  const entries = selected.map(id => ({ card: discard(g, player, id),
+    discardedBy: player.id, publicFace: false }));
+  if (g.semutaPreview && semutaHomeworldRoster(g) && entries.length > 0) {
+    const continuation: TupileDiscardContinuation = {
+      kind: 'tupileCleanupDiscard', cleanup: structuredClone(pending),
+      cards: [...selected], stateSignature: '',
+    };
+    g.pendingHomeworldTupileCleanup = null;
+    g.decision = null;
+    g.phaseOpening = null;
+    continuation.stateSignature = tupileDiscardSignature(g, continuation);
+    stageTreacheryDiscard(g, 'homeworld:tupileCleanup', entries, continuation);
+    return;
+  }
+  finishTupileCleanup(g, pending, selected.length);
 }
 function tupileAutomatic(g: Game): boolean {
   if (!g.homeworldTupilePreview || g.pendingHomeworldTupileCleanup ||

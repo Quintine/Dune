@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 11 October 2026 — native Homeworld Semuta cost composition
+
+Separate `semuta --homeworlds` private entry reuses original Homeworld
+occupation setup for native Richese/CHOAM and classic factions, exact CHOAM,
+Basic/Advanced2–6, with no other optional modules. CLI selection and stored
+private prototype dispatch use existing undealt-lobby conventions. Runtime
+profile identity retains original custody/occupation/Tupile history. Only
+the following two producers offer Semuta in this envelope; other Homeworld
+producers and combinations remain coverage to finish, not printed bans.
+
+Original `kaitainDiscard` already paid2 per selected physical card and
+retained the closing event. Its private simultaneous batch now offers
+Semuta: singleton completes on commitment; a group exposes candidates only
+after commitment and requires one selection. Taking Karama or Poison Tooth
+does not play it, refund its price or finish Emperor/CHOAM. The original
+paid action clears previous readiness, requiring both owners to acknowledge.
+Original three-spice CHOAM duplicate sale still coexists in the same window.
+
+New `tupileCleanupDiscard` physically discards the owner's exact selected
+normal-limit excess and detaches only its original pending cleanup/opening.
+Its source lease row stays pending during Semuta. Retirement completes the
+same original ledger and restores opening/sync/next-holder once. It does not
+re-discard, restore the lost slot, replay departure or merge distinct holders.
+Unmarked original native cleanup uses the same extracted suffix unchanged.
+
+Four source-qualified native Kaitain before cases and real Guild/Atreides
+two-holder cleanup lacked the reaction; original ready HW entry rejected
+Semuta. Eleven post-cutover programs cover Basic/Advanced singleton/group
+claim/pass and Advanced Tupile claim-first/claim-second/pass-both. Original
+all45 Treachery identities and actual paid source mechanics remain.
+Two real memory-only prototype dispatches reach original setup/playing;
+the CLI flag parses without store access. No existing database was touched.
+
+Twenty new consumer cases, the related five-file unit union51/51 and original
+Semuta prototype-entry case1/1 pass; types/lint pass. Child readiness-shape
+assumptions were removed and replaced by actual required owner acknowledgements;
+CHOAM sale passes now follow the existing native policy until its real response
+closes. Redundant exported fixture aliases, duplicate/default/wiring checks and
+unused typed-force scaffolding were removed rather than made contracts.
+
+Actual styled390px GameTable humans pay4 for Karama/Poison Tooth, privately
+choose Tooth at4/4, observe Emperor6 and finish both owners into Revival.
+Original Guild/Atreides lost-holder controls each go5→4; Richese claims
+Guild's Snooper, the ally discards its distinct Gom Jabbar, all seats continue
+the second neutral event, and Guild finishes its original unused Movement.
+Screenshots show the authorized private group and original ally cleanup;
+observed root widths remain390. Four initial optimizer dependency requests
+were aborted; the exercised controls subsequently rendered and completed.
+Temporary scripts/service/tab were removed. No full-phone/error-free or
+deployed acceptance, new source ruling, public gate or played-save conversion.
+
 ## 11 October 2026 — native income-cancellation costs through Semuta
 
 Five genuine native before scenarios discarded the printed Karama and

@@ -1162,6 +1162,20 @@ export function GameTable({
       )}
       {g.semutaPreview && (
         <p className="notice" role="status">
+          {g.homeworlds ? (
+            <>
+              Semuta Drug with Homeworlds development preview · original Richese,
+              CHOAM and classic occupation setup, with no other optional modules.
+              Only paid high-Kaitain closing-Bidding discards and occupied Tupile
+              lost-slot cleanup offer Semuta here. Private discarded faces remain
+              hidden until commitment; a simultaneous group requires one selection.
+              Claim or Continue keeps the paid price or lost slot and resumes the
+              same closing owner, next old-holder cleanup or phase opening once.
+              Other Homeworld producers and Basic unresolved Tupile loss remain
+              guarded. Not complete or certified Homeworld rules.{' '}
+            </>
+          ) : (
+            <>
           Semuta Drug development preview · bounded fresh-discard reactions,
           not complete Richese or certified expansion rules. Original Tech Tokens
           may remain in supported fresh 3–6-seat CHOAM/Ix profiles; the original
@@ -1185,6 +1199,8 @@ export function GameTable({
           support is Basic only: clean shipment/movement Sabotage and Robbery
           overflow plus native losing-ally card-retention cleanup; other arrival
           continuations remain guarded.{' '}
+            </>
+          )}
           <a href="/rules?topic=card-richese-semuta-drug#card-richese-semuta-drug">Preview rules and limits</a>
         </p>
       )}

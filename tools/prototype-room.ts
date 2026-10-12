@@ -57,6 +57,8 @@ export type PrototypeOptions = {
   discoveries?: boolean;
   /** Explicit original native skills only with the Semuta profile. */
   leaderSkills?: boolean;
+  /** Original Richese/CHOAM and classic Homeworld occupation with Semuta only. */
+  homeworlds?: boolean;
 };
 export function isPrototypeProfile(value: string): value is PrototypeProfile {
   return PROTOTYPE_PROFILES.some((profile) => profile === value);
@@ -104,10 +106,13 @@ export function startPrototypeRoom(
     throw new Error('--discoveries requires the leader-skills or nexus profile.');
   if (options.leaderSkills && profile !== 'semuta')
     throw new Error('--leader-skills requires the semuta profile.');
+  if (options.homeworlds && profile !== 'semuta')
+    throw new Error('--homeworlds requires the semuta profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)
     initial.nexusCards = { cards: null, phase: null };
   if (options.discoveries) initial.discoveryEnabled = true;
+  if (options.homeworlds) initial.homeworlds ??= { custody: null };
   const game =
     profile === 'ix'
       ? initializeIxGameForAudit(initial)

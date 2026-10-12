@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native Homeworld discard composition — 11 October.**
+The separate fresh `--profile semuta --homeworlds` route reuses original
+Richese/CHOAM/classic occupation setup, exact CHOAM, Basic/Advanced2–6 and
+no other optional modules. Only paid high-Kaitain closing disposal and
+proved Tupile lost-slot cleanup offer Semuta in this envelope.
+Four native Kaitain before cases and real two-holder Tupile cleanup had no
+Semuta opportunity; the original ready Homeworld lobby was rejected.
+Eleven post-cutover native programs and two real memory-only prototype
+dispatches pass. Kaitain keeps the2/card debit and original two closing
+owners; private groups require commitment before selection. Tupile keeps
+actual departure, lost limits and separate old-holder costs before original
+Movement. Twenty new consumer cases pass; the frozen five-file union is
+51/51, original Semuta private-entry case1/1, types/lint clean.
+Styled390px humans pay4/select Poison Tooth at4/4, retain Emperor6 spice and
+reach actual Revival only after both owners finish. Guild's Snooper claim,
+Atreides's separate Gom Jabbar disposal and four neutral acknowledgements
+restore both normal4 hands and usable original Guild Movement.
+Basic unresolved Tupile epochs, other Homeworld producers, mixed modules,
+public starts and full/deployed acceptance remain separate.
+
 **Semuta / native income-cancellation costs — 11 October.**
 Printed Karama canceling original `guildIncome`, non-Ambassador
 `emperorIncome` or `richesePurchaseIncome` now offers its public discard before

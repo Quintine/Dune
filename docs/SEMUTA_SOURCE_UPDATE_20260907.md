@@ -872,3 +872,32 @@ Movement and restored Richese declaration/cache choice are usable. Guild
 rate cancellation, Homeworld/Ambassador payments and unsupported overlapping
 parents remain distinct coverage; no printed prohibition or module gate is
 invented to describe those limits.
+
+**11 October 2026 — separate original Homeworld composition.**
+`--profile semuta --homeworlds` reuses original fresh Homeworld occupation
+setup for Richese/CHOAM and classics, exact CHOAM, Basic/Advanced2–6, without
+Nexus, Skills, Tech, Strongholds, Discovery or Ix/E3 mixing. Only the two
+following source-qualified producers offer Semuta here; other Homeworld
+producers are not thereby certified or made illegal by printed rules.
+
+High Kaitain's original closing-Bidding discard pays two spice per selected
+physical card before its private fresh batch. A group requires commitment
+and one private selection; disposal never plays Karama or Poison Tooth.
+Claim/pass keeps the payment and original Emperor/CHOAM closing owners.
+The original paid action clears earlier readiness, so both owners acknowledge
+the changed window before Revival. Original CHOAM duplicate sale can coexist.
+
+Proved occupied Tupile loss privately discards each old holder's exact excess
+before its own fresh event. The original cleanup ledger and source opening
+finish once after Semuta; the next old holder remains queued. Taking the card
+does not restore the lost slot or repeat Guild's actual paid departure.
+Basic unresolved epochs retain their original guard.
+
+Four native Kaitain before cases and real two-holder Tupile cleanup lacked
+Semuta; the original ready Homeworld lobby was rejected. Eleven post-cutover
+native programs pass, plus two real memory-only prototype dispatches through
+original setup; the CLI flag parses without store access. Twenty consumer
+cases cover private choice, full hands, old-holder ordering, readiness and
+legal bots. Styled390px humans pay4, select Poison Tooth, retain Emperor6
+spice and finish both closing owners; separate Guild/Atreides costs restore
+normal4 limits and original Movement. No public gate or full-mode acceptance.

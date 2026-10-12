@@ -2,6 +2,30 @@
 
 Runtime checkpoint, 10 September 2026. Native CHOAM can now request and retain a private Tupile intelligence observation in a game with proven setup history. This implements the bounded disclosure described in the [source contract](HOMEWORLD_TUPILE_INTELLIGENCE_RULES.md); occupation entitlement, expiry and occupied income remain unresolved. Advanced and unfinished expansion starts, publication and complete-rules release retain the gates in [README](../README.md).
 
+## Semuta / original lost-slot discard — 11 October 2026
+
+The separate fresh `semuta --homeworlds` entry reuses original occupation setup
+for native Richese/CHOAM and classics, exact CHOAM, with no other optional
+modules. It does not convert played profiles or widen the Basic epoch ruling.
+
+Actual selected original cleanup cards are privately discarded first. The
+typed receipt retains only that cleanup's event, original held-ID commitment
+and suspended opening; its lease row remains pending during the neutral
+Semuta response. Claim/pass then completes the original ledger, restores its
+opening and prepares the next old holder once. No slot, card draw, departure
+fee or force transfer is restored or repeated. Separate old holders remain
+separate fresh costs rather than a fabricated simultaneous pair.
+
+A genuine Advanced Guild/Atreides worm alliance, original turn-two Guild
+invasion and turn-three paid return establish and end the actual Tupile epoch.
+Conserved later CHOAM/hand positions isolate the source; neither history nor
+alliances are assigned. Both old holders go5→4, Richese exchanges at4, and the
+original unused Guild Movement remains usable. Three claim-first/claim-second/
+pass-both runtime programs and five consumer cases cover that continuation.
+Styled390px humans discard Guild's Snooper, claim it with Richese, discard
+Atreides's separate Gom Jabbar, acknowledge the neutral event and finish
+original Guild Movement. Printed source and underlying lease rules are unchanged.
+
 ## Occupied Tupile slots and original cleanup — 5 October 2026
 
 The fresh original `homeworld-occupation` entry now separately enables Tupile

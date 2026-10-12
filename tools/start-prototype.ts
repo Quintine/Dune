@@ -19,6 +19,7 @@ async function main() {
       'nexus-cards': { type: 'boolean' },
       discoveries: { type: 'boolean' },
       'leader-skills': { type: 'boolean' },
+      homeworlds: { type: 'boolean' },
       help: { type: 'boolean' },
     },
   });
@@ -29,6 +30,7 @@ async function main() {
       '\nSemuta with CHOAM and optional Ix preserves original unused Tech Tokens in fresh 3–6-seat Basic/Advanced Richese lobbies under existing native prerequisites. Advanced additionally retains original unused Stronghold Cards at2–6; both modules require3–6. Native setup, first-Storm Tech and final-Mentat Stronghold assignment remain original. Mandatory/winner discards react before the original winner takes one loser-owned token, before Face Dance. Closing Gamont reacts before the original CHOAM finish and changed-board claim. Optional original skills require --leader-skills as described below; other modules, the separate CHOAM/Ecaz Moritani entry, retrofit and public starts remain excluded.',
       '\n--profile semuta --leader-skills explicitly composes original all14 skills with fresh native Basic Richese/CHOAM and classics using exact CHOAM, or Advanced native E1/E2 with Richese and selected required CHOAM/optional Ix decks, at2–6 seats. Optional original Tech requires3+; Strongholds requires Advanced. Original private offers/training, Auditor exclusion, normal Mentat question, typed Suk rescue and Rihani inspection/exchange remain. Traitor/Face Dancer movement is not a Treachery discard. Basic Ix mixtures without their original Nexus envelope, E3/Moritani, Homeworld/Discovery/Banker overlays, public starts and played-game conversion are not opened.',
       '\n--profile semuta --nexus-cards retains original all12 Nexus in fresh native Richese CHOAM/optional Ix lobbies, optionally --leader-skills, original Tech3+ and Advanced Strongholds2+. Single/paired CHOAM or both selected E1/E2 native families retain original prerequisites. No starting Nexus hand is added: a qualifying actual end-Spice draw follows a Nexus and settled alliance. CHOAM Secret Ally spends a Worthless for two bank spice only with CHOAM absent; CHOAM Betrayal spends its Nexus to discard one server-sampled native CHOAM hand card without compensation. Semuta claim/pass retires the original receipt once, after the committed fresh discard. No Homeworld, Discovery, E3, retrofit or public gate opens.',
+      '\n--profile semuta --homeworlds uses original fresh Basic/Advanced Richese with CHOAM and classic factions, exact CHOAM deck, at2–6 seats. Native Homeworld occupation setup and Tupile source history remain original. This bounded composition offers only paid high-Kaitain closing-Bidding discards and completed occupied-Tupile lost-slot cleanup; other Semuta/Homeworld producers remain guarded. No Nexus, Skills, Tech, Strongholds, Discovery, Ix/E3 mixing, retrofit or public gate opens.',
       '\nEcaz-occupy (--profile ecaz-occupy) opts only a fresh ready 2–6-seat lobby with native Ecaz and classic/Ixian/Tleilaxu/CHOAM/Richese opponents (optional native Moritani). Advanced uses distinct selected ecaz/ix/choam decks; Basic uses the exact ecaz deck with classic/optional Moritani opponents. Ordinary33/47/35 cards retain real original offers/HMS/Auditor/Face Dancers and Richese cache. Explicit --ecaz-treachery independently adds the three physical variant cards, making36/50/38 (Advanced only). Basic combined battles require an even Ecaz force count; the preserved publisher odd-force casualty-rounding conflict rejects before any lead choice. Native Richese ordinary and marker-only pools compose with selected lead plans; original own mixed No-Field dialing, whole-plan disclosure and optional overlays remain guarded.' +
       '\nLeader-skills retains existing classic and Basic native entries and adds native Basic Richese/CHOAM. Advanced Ixians, Tleilaxu, CHOAM and/or Richese plus classic rosters use distinct required family decks and all fourteen skills, with original cache, Face Dancers, Auditor exclusion and typed aftermath. Foreign revival grants no new skill. Separate non-Harkonnen Advanced Moritani uses the ecaz deck and original skill-first assassination preview. Native Ecaz supports its five ordinary discs, original Ambassador/Duke custody and ecaz deck with classic opponents in Basic/Advanced; Advanced Harkonnen retains its existing Duke capture exclusion. Normal Mentat questions use a uniform private card-show step in supported Leader Skills games. Banker-income additionally supports native Richese and Ecaz, never ordinary seller/allowed Emperor income or a bank grant as a payer cost. Basic auction recipients remain unchanged. Public activation, exhausted-cache counts, native Ixian Technology on Richese lots, own mixed No-Field, captured replacement, shared-Duke assignment, combined Occupy skills and other pending module/rulings remain guarded.',
       '\nStronghold-factions additionally admits standalone Advanced Ecaz OR Moritani with classic opponents and the exact ecaz deck, six Stronghold Cards with optional unused Tech Tokens at 3–6 seats. Original setup and actual end-Mentat claims remain. Ecaz holds shared-control cards and only the actual selected holder-plan benefits. Native Moritani retains original assassination with printed bounty and one private Mentat replacement; Harkonnen is excluded there. An E3 pair, E1/E2/E3 mixtures and other modules remain separate.' +
@@ -64,6 +66,8 @@ async function main() {
     throw new Error('--discoveries requires --profile leader-skills or nexus.');
   if (values['leader-skills'] && values.profile !== 'semuta')
     throw new Error('--leader-skills requires --profile semuta.');
+  if (values.homeworlds && values.profile !== 'semuta')
+    throw new Error('--homeworlds requires --profile semuta.');
   if (
     !isPrototypeProfile(values.profile) ||
     !values.db ||
@@ -88,7 +92,7 @@ async function main() {
   try {
     const result = startPrototypeRoom(db, values.room, version, values.profile,
       { ecazTreachery: values['ecaz-treachery'], nexusCards: values['nexus-cards'], discoveries: values.discoveries,
-        leaderSkills: values['leader-skills'] });
+        leaderSkills: values['leader-skills'], homeworlds: values.homeworlds });
     writeFileSync(
       resolve(values.out, 'prototype.json'),
       JSON.stringify(
@@ -99,6 +103,7 @@ async function main() {
           ecazTreachery: !!values['ecaz-treachery'],
           nexusCards: !!values['nexus-cards'],
           leaderSkills: !!values['leader-skills'],
+          homeworlds: !!values.homeworlds,
           source,
           beforeVersion: version,
           ...result,
