@@ -137,6 +137,15 @@ Cancellation retains that fuel and leaves the played Nexus spent. Kull and
 other competing parents remain separate. See
 [five-effect evidence](NEXUS_CHOAM_RUNTIME.md#original-five-effect-semuta-composition--11-october-2026).
 
+Printed Karama canceling one of the five ordinary native CHOAM printed or
+Cunning powers also offers that distinct public cancellation cost before the
+original denial completes. The declared CHOAM card remains held throughout,
+and a played Nexus stays spent. Claim/pass restores the saved response,
+cancels the effect once and completes its original ordinary movement,
+free-revival, storm or closing-Mentat suffix. Taking Karama neither claims
+CHOAM's retained fuel nor restores the denied effect.
+
+
 
 
 

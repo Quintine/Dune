@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 11 October 2026 — printed CHOAM-power cancellation cost through Semuta
+
+Actual native Cunning Kulon canceled immediately while its printed Karama
+entered discard without a neutral opportunity. New
+`karamaChoamWorthlessDiscard` extends the existing response-cost union/factory,
+bounded admission, validator, state signature and original retirement path.
+Original Worthless cancellation quote remains authoritative; native printed
+and Cunning Kulon/Gamont/Baliset/La La La/Jubba reuse the same exact declaration
+and ordinary reactive parent. Kull and unrelated arrival/flight sources stay
+excluded. Old unrelated signatures omit the new optional source facts.
+
+The public printed cancellation cost is committed first. Native CHOAM's
+declared fuel remains held, original Cunning history remains pending and its
+Nexus remains spent. Semuta claim/pass restores the actual saved response,
+cancels once and resumes one original movement/free-revival/storm/Mentat suffix.
+Taking Karama cannot claim the retained fuel or restore the denied effect.
+New signature facts bind declaration, source receipt and affected counters;
+unrelated leader serialization is not added to this nonbattle source.
+
+Eight consumer cases reuse genuine original five-effect fixtures, checking
+claim/pass/full hands, retained printed/Nexus fuel, one source spend and the
+native outcome against original cancellation without Semuta. No whole-save,
+private-paired-state or recovery campaign. Types/lint and179 affected unit
+cases across10 files pass. Thirty actual native reaction cases plus one
+Basic Kulon claim cover all five families and four legal profiles; all cost
+views project while the original receipt remains pending.
+
+Styled390px actual controls prove Gamont declaration→Cancel→Commit without
+returning the Emperor elite: it remains at Arrakeen/reserves4, CHOAM retains
+Hajr, Richese4/4 acquires Karama. Original Finish, not acquisition, assigns
+Arrakeen to Emperor at claim2/turn3. Jubba cancellation retains Maula Pistol
+through claim; original Continue loses all6 CHOAM/4 opposing counters and
+both crossed spice piles, reaching original market once. Actual acquired
+Karama inspector and updated warning were inspected; settled frames390px.
+
+All temporary scripts/client/server, own service and tab removed. Existing
+games/stores, user PDF, provider/deployment and public gates untouched.
+No new module admission or source ruling; comprehensive assurance remains due.
+
 ## 11 October 2026 — five original Cunning fuel discards through Semuta
 
 Fresh native Nexus admission made five previously excluded `pending.nexusEvent`

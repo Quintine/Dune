@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / printed native CHOAM cancellation cost — 11 October.**
+`karamaChoamWorthlessDiscard` reuses the original response-cost path and
+Worthless cancellation quote for five ordinary printed/Cunning powers.
+Public printed Karama now pauses before native denial; CHOAM fuel stays held
+and Cunning's Nexus stays spent. Claim/pass restores the saved response,
+cancels once and resumes the same native movement/revival/storm/Mentat suffix.
+Actual before-cutover Kulon canceled without a cost offer; after-cutover its
+pending native receipt survives all views and a real claim leaves range denied.
+Types/lint and179 affected unit cases across10 files pass. Thirty native
+reaction cases plus one actual Basic case cover five families, claim/pass,
+full hands and four legal profiles. Styled390px Gamont Cancel→Commit preserves
+the Emperor's elite at Arrakeen/reserves4 and CHOAM's Hajr; only original
+Finish assigns Emperor Arrakeen at claim2/turn3. Jubba Cancel→Commit keeps
+Maula Pistol; original Continue loses6 CHOAM/4 opposing counters and both
+covered spice piles, reaching native market once. Acquired Karama inspector
+and current warning were inspected. All own probes/service/tab removed.
+Existing games/stores/PDF, deployment, Kull, unsupported parents and public
+gates unchanged; no assurance campaign. See
+[native cost contract](NEXUS_CHOAM_RUNTIME.md#printed-native-cancellation-cost--11-october-2026).
+
 **Semuta / original CHOAM Cunning fuel — 11 October.** The five ordinary
 Cunning effects now reuse original Worthless continuations with a completed
 native event binding owner/card/effect/targets and parent flags. Canonical

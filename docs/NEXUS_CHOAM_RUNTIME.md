@@ -44,6 +44,37 @@ Own probes/service/tab are removed; existing games/stores/PDF and deployment
 are untouched. Kull, unrelated parents/modules and complete-mode/public gates
 remain separate. No comprehensive custody/privacy/recovery campaign is claimed.
 
+### Printed native cancellation cost — 11 October 2026
+
+A distinct printed Karama canceling any of those five native printed or Cunning
+powers now offers its own exact public discard before cancellation completes.
+`karamaChoamWorthlessDiscard` preserves the original response and live
+declaration/ordinary movement, free-revival, storm or closing-Mentat parent.
+The original cancellation quote remains authoritative; state signature fields
+bind the current declaration, source receipt and affected physical counters.
+Old unrelated response-cost signatures are unchanged.
+
+During the cost offer, CHOAM's declared card remains held and a Cunning receipt
+remains pending with its Nexus spent. Claim/pass restores the original response,
+cancels once and resumes the same native suffix. The original fuel is not a
+Semuta target: acquiring the cancellation Karama cannot grant range, return a
+force, stop movement/free revival, protect the storm or refund Nexus.
+Printed source retains its held Nexus as well as its named Worthless.
+
+Actual before-cutover Kulon canceled immediately without offering its spent
+Karama. Afterward the cost pauses and all views work. Thirty native runtime
+reactions cover five families, claim/pass/full hands and four legal profiles;
+an additional actual Basic Kulon claim retains fuel and leaves range denied.
+The affected unit union passes179/179 across10 files; types/lint pass.
+Styled390px Gamont declaration→Cancel→Commit preserves the Emperor's elite
+at Arrakeen/reserves4 and CHOAM's Hajr; only original Finish assigns Arrakeen
+to Emperor at claim2/turn3. Jubba cancellation→Commit retains Maula Pistol;
+original Continue loses all6 CHOAM/4 opposing counters, removes both covered
+spice piles and reaches native market. Actual acquired Karama inspector and
+updated preview guidance were inspected. No Kull, unrelated source parent,
+new module/public gate, saved-game change, deployment or assurance campaign.
+
+
 ## Physical cost and timing
 
 An unallied CHOAM player holding the CHOAM Nexus chooses one actual held Treachery Card and one supported effect. The card need not have the corresponding Worthless name. The engine preserves its original identity, ownership and any reservations; it does not manufacture a named Worthless card or grant a turn-long conversion ability.
