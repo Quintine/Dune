@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 11 October 2026 — native income-cancellation costs through Semuta
+
+Five genuine native before scenarios discarded the printed Karama and
+completed the income denial without a Semuta offer: Basic/Advanced Guild
+shipment, ordinary Emperor auction, just-purchased auction Karama, and
+Advanced Richese special purchase.
+
+New `karamaIncomeDiscard` reuses the original response-cost union, signature,
+admission and retirement. Admission retains completed native paid sources;
+only their corresponding auction or Richese purchase parent crosses its
+existing fence. Original auction and Richese cancellation quotes remain the
+authority. No fresh source identity, payment calculation or refund is added.
+Signature facts bind original auction/sale, source controls, current Movement
+and committed force/shipment state; older cost kinds omit the new fields.
+
+Ten actual source-action replay/claim/pass programs retain the payment and
+physical transaction. A three-force ordinary Guild shipment costs six spice:
+Atreides stays at four spice with three arrivals and its shipment used, Guild
+stays at five. A one-spice auction keeps Atreides at nine and Emperor at ten,
+advances exactly one lot and restores original Atreides inspection. Spending
+the exact newly bought Karama is legal; its later claim does not refund the
+bid. Advanced Richese pays three, stays at two spice, keeps its cache card and
+spent separate activation, and recovers the original declaration owner.
+
+Sixteen new consumer cases cover those continuations, original full-hand
+exchange, foreign cost ownership, neutral passes and minimal legal bots.
+During integration the Guild fixture's counter baseline was moved after
+native setup: Advanced Emperor's original five elites are created there.
+No engine stock change was needed. Pure fixture-wiring, default and message
+pins were removed rather than added as contracts.
+
+Styled390px actual GameTable Cancel→Commit flows acquire the printed Karama
+at hand4/4 for all three sources. Human Atreides can finish original Movement;
+human Richese can answer its restored declaration and open native cache
+selection, retaining Ornithopter. Screenshots inspect the acquired Karama,
+original next-lot ownership and restored cache controls. Updated live guidance
+was reinspected. Vite HMR reloaded the QA client and aborted four dependency
+fetches; reselecting the existing memory scene recovered the original controls.
+This is bounded local proof, not error-free/full-phone or deployed acceptance.
+
+No module admission, new ruling, public start or played-save conversion.
+Temporary scripts, isolated server and tab were removed; existing games and
+unrelated services remain untouched.
+Types/lint and the frozen seven-file response-cost union pass70/70. The two
+fixture closure-narrowing errors found by typecheck were repaired with the
+existing local reaction binding; no runtime source or rule changed.
+
 ## 11 October 2026 — native Emperor and Moritani continuation evidence corrected
 
 The initial Emperor-share fixture directly assigned phase, clock, alliance,

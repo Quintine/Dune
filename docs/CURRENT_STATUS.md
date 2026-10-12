@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / native income-cancellation costs — 11 October.**
+Printed Karama canceling original `guildIncome`, non-Ambassador
+`emperorIncome` or `richesePurchaseIncome` now offers its public discard before
+the original denial finishes. The existing typed cost envelope restores the
+same saved response once; paid shipment/purchase mechanics are not replayed.
+Five native before scenarios had no cost offer. Ten post-cutover claim/pass
+programs now pass, including Basic/Advanced Guild shipment, paid auction,
+the just-purchased Karama as its own cancellation cost, and Advanced Richese
+special purchase. Guild denial keeps the six-spice debit and three arrived
+forces; auction keeps the one-spice payment and next-lot inspection; Richese
+keeps its three-spice payment, cache acquisition, spent activation and original
+declaration owner. Sixteen new consumer cases pass, including genuine full
+hands and minimal legal bots. Styled390px human Cancel→Commit controls prove
+all three sources; native Movement and Richese cache-choice controls remain
+usable afterward. No Homeworld/Ambassador composition or public gate opens.
+The frozen seven-file response-cost union passes70/70 with types/lint clean.
+
 **Semuta / Emperor-share native continuation proof — 11 October.**
 `karamaEmperorShareDiscard` covers printed Karama canceling `emperorGift`
 and `emperorRevival` before the original denial. The initial fixture assigned

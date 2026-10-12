@@ -854,3 +854,21 @@ the native Emperor has ten spice and the ally retains three Tanks. Six
 consumer cases pass on that genuine setup. Later held cards/Tanks use
 conserved transfers, not replacement decks or minted forces. No new ruling,
 module entry, public gate or complete-mode certification follows.
+
+**11 October 2026 — native paid-income cancellation costs.** Printed Karama
+canceling original Guild shipment income, non-Ambassador Emperor auction
+income or Advanced Richese special-purchase income offers that public
+singleton before the original denial. Claim/pass restores its existing
+response once. Canceling income does not cancel or refund the paid shipment
+or acquisition; the next native Movement, auction or saved Richese control
+still owns the suffix. A purchased Karama may itself pay for canceling its
+auction income; its new Semuta custody does not reverse the bid.
+
+Five genuine before programs lacked the offer; ten source-action replay and
+claim/pass programs now retain original prices, forces and cards. Sixteen
+consumer cases cover full hands, foreign ownership, neutral passes and legal
+bots. Styled390px actual controls complete all three costs; original
+Movement and restored Richese declaration/cache choice are usable. Guild
+rate cancellation, Homeworld/Ambassador payments and unsupported overlapping
+parents remain distinct coverage; no printed prohibition or module gate is
+invented to describe those limits.
