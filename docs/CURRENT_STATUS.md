@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta / Homeworld income costs and retained printed shares — 11 October.**
+The existing `karamaIncomeDiscard` now also covers the same source-qualified
+Guild, Emperor auction and Richese special-purchase income in the original
+Homeworld Semuta envelope. Only its HW income signature adds original
+custody, occupation history and percentage ledger; plain cost shapes stay
+unchanged. Seven before programs had no cost offer; fourteen actual
+post-cutover claim/pass programs retain full payment and canceled native
+credit0. Low native ceilings3 from5 or2 from3 remain original; occupied
+floors2 or1 still go through their original controller/ally allocation once.
+Styled390px humans claim at4/4, settle Junction2 to Richese, settle Kaitain2
+and1 to real Atreides ally, and resume original Movement/auction/cache
+controls. The just-purchased Karama can be the actual canceled-auction cost;
+the separately bought Residual Poison and Richese's paid activation remain.
+No broader module admission, payment policy or public gate changes.
+Twenty-six new consumer cases and the frozen six-file union65/65 pass with
+types/lint clean. No broad-suite or deployed acceptance follows.
+
 **Semuta / native Homeworld discard composition — 11 October.**
 The separate fresh `--profile semuta --homeworlds` route reuses original
 Richese/CHOAM/classic occupation setup, exact CHOAM, Basic/Advanced2–6 and

@@ -1,5 +1,57 @@
 # Dune implementation status
 
+## 11 October 2026 — Homeworld income cost before original printed share
+
+Seven source-qualified before programs lacked Semuta for Basic/Advanced low
+Guild income, Advanced occupied Junction, and clean/occupied Emperor auction
+and Richese special purchase. Original native cancellation already retained
+the printed occupied portion; this checkpoint changes its discard timing,
+not its economics or beneficiary.
+
+Existing `karamaIncomeDiscard` is now admitted in the original separate
+Homeworld Semuta roster. Only that HW income signature adds original
+custody, occupation history and percentage ledger. Plain income fields omit
+the addition; no new response/source identity, callback snapshot, payment
+calculation, module admission or low/occupied ruling is introduced.
+
+Fourteen actual source replay/claim/pass programs retain the price and
+physical transaction. Single-payer shipment5 leaves five arrivals, native
+Guild canceled credit0 and original occupied2; original Movement follows
+allocation. Auction5 and special purchase3 leave native Emperor0 while their
+original occupied controller can allocate2/1 to its real ally. The next
+original Atreides inspection or saved Richese declaration follows once.
+All tested20-counter pools include visitors and original Emperor subsets;
+no force or payment is recreated by the reaction.
+
+Child feedback exposed two fixture assumptions, not engine failures:
+Basic has no separate Salusa, so its included elite subset also counts on
+Kaitain. Conserved Basic low staging now moves that subset with its typed
+counter record to Polar Sink, leaving four actual natives; Advanced retains
+the original Salusa subset. An uncanceled-income baseline still holds its
+Karama and can answer the original Richese declaration response; the helper
+now follows that real queue before cache selection. The obsolete null and
+fixture-wiring assertions were removed, not re-pinned.
+
+Styled390px actual GameTable humans Cancel→Commit at4/4 before any printed
+allocation. Junction2 is settled to original Richese; Guild then resumes the
+same paid Atreides five-force Habbanya Sietch Movement. Original occupied
+Kaitain gives its real Guild/Atreides alliance2 or1, even after native income
+is canceled. The paid-auction Karama itself is acquired; Richese's distinct
+Residual Poison acquisition/activation/debit remain and its real declaration
+opens the next original cache choice after allocation. Screenshots show
+original amounts/controllers, no cancel option for the printed share and
+390px root widths. Four initial optimizer fetches aborted; exercised controls
+subsequently rendered and completed. No error-free/full-phone/deployed claim.
+
+CLI/table/reference scopes now describe the admitted source types. Temporary
+scripts, server and tab were removed; no existing game/database was touched.
+Other Homeworld producers, overlapping/ambassador parents, module mixtures,
+public starts and comprehensive assurance remain separate.
+Twenty-six new consumer cases and the frozen six-file union pass65/65;
+types/lint pass. The bot's raw event-forwarding assertion was deleted; its
+actual native allocation now proves nonnegative owner/ally credits totaling
+the original printed amount without pinning a strategy or response shape.
+
 ## 11 October 2026 — native Homeworld Semuta cost composition
 
 Separate `semuta --homeworlds` private entry reuses original Homeworld

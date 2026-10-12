@@ -5234,6 +5234,10 @@ function karamaResponseDiscardSignature(g: Game, c: KaramaResponseDiscardContinu
       auction: g.auction, sale: g.currentAuctionSale,
       richeseBidding: g.richeseBidding, richeseAuction: g.richeseAuction,
       active: g.active, ready: g.ready, movementRemaining: g.movementRemaining,
+      homeworld: g.homeworlds ? {
+        custody: g.homeworlds, history: g.homeworldOccupationHistory,
+        percentages: g.homeworldOccupiedPercentageLedger,
+      } : undefined,
     } : undefined,
     order: g.order,
     players: g.players.map(p => ({
@@ -6941,7 +6945,8 @@ function semutaOfferSupported(
         continuation.promise.kind === 'shipment' ||
         continuation.promise.kind === 'battle'))) return false;
   if (g.homeworlds && continuation.kind !== 'kaitainDiscard' &&
-      continuation.kind !== 'tupileCleanupDiscard') return false;
+      continuation.kind !== 'tupileCleanupDiscard' &&
+      continuation.kind !== 'karamaIncomeDiscard') return false;
   if (continuation.kind === 'battleResolved' &&
     !g.lastBattleContext?.mandatoryDiscard) return false;
   if ((continuation.kind === 'battleCleanup' ||

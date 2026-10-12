@@ -901,3 +901,26 @@ cases cover private choice, full hands, old-holder ordering, readiness and
 legal bots. Styled390px humans pay4, select Poison Tooth, retain Emperor6
 spice and finish both closing owners; separate Guild/Atreides costs restore
 normal4 limits and original Movement. No public gate or full-mode acceptance.
+
+**11 October 2026 — original Homeworld income costs and printed share.**
+The separate Homeworld entry now also offers the existing printed Karama
+cost for original Guild income, non-Ambassador Emperor auction income and
+Advanced Richese purchase income. Original paid transaction, native low
+rounding and occupation source are signed through the pause. No additional
+module or economic authority is introduced.
+
+Claim/pass completes the native denial once, with credit0 rather than the
+allowed ceiling3 from5 or2 from3. The printed occupied floor2/1 remains
+uncancelable and follows its original controller/reciprocal ally allocation
+before original Movement, next auction or saved purchase controls resume.
+This reuses the existing [occupied-income source contract](HOMEWORLD_OCCUPATION_RULES.md#occupied-economics-bidding-and-advanced-source-cutover--5-october-2026),
+not a newly located FAQ.
+
+Seven before programs lacked the offer; fourteen source-action replay and
+claim/pass programs now retain original payment, acquisition/forces and
+printed allocation. Styled390px humans prove all three source families:
+Junction2 to Richese, Kaitain2/1 to the real Atreides ally, and the next native
+Movement or Richese cache controls. A just-purchased Karama keeps its paid
+identity through the exchange. Basic low staging moves its included elite
+subset from Kaitain; Advanced retains its original Salusa subset. Other
+Homeworld producers, unresolved Basic epochs and module mixtures stay separate.

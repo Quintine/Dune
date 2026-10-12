@@ -1166,11 +1166,14 @@ export function GameTable({
             <>
               Semuta Drug with Homeworlds development preview · original Richese,
               CHOAM and classic occupation setup, with no other optional modules.
-              Only paid high-Kaitain closing-Bidding discards and occupied Tupile
-              lost-slot cleanup offer Semuta here. Private discarded faces remain
+              Paid high-Kaitain closing discards, occupied Tupile lost-slot cleanup
+              and printed Karama canceling native Guild, Emperor auction or Richese
+              purchase income offer Semuta here. Private discarded faces remain
               hidden until commitment; a simultaneous group requires one selection.
               Claim or Continue keeps the paid price or lost slot and resumes the
-              same closing owner, next old-holder cleanup or phase opening once.
+              same original source once. Canceling native income does not cancel
+              the printed occupied share: its original receiver still allocates it
+              before Movement, the next auction lot or saved purchase controls.
               Other Homeworld producers and Basic unresolved Tupile loss remain
               guarded. Not complete or certified Homeworld rules.{' '}
             </>
