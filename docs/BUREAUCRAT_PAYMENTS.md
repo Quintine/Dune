@@ -93,12 +93,13 @@ Allied funding is evaluated per actual payer, not by adding different payers'
 shares to create the five-spice trigger. A three-plus-three payment, or
 four-plus-three, has no eligible payer and proceeds through original funding,
 payment, card/force commitment and recipient income without a Bureaucrat offer.
-In supported classic and E2 profiles without Homeworlds, individually qualifying
-allied-funded auction and shipment receipts now offer one optional redirection:
+In supported classic, E2 and E3 profiles without Homeworlds, individually
+qualifying allied-funded auction and shipment receipts now offer one optional
+redirection:
 five-plus-three, three-plus-five, five-plus-five and fully ally-funded five.
 The receipt loses exactly two, never two per contributing payer. A share paid
 by the trainer or recipient cannot qualify, but does not mask a different
-eligible payer. Qualifying E1/E3 funding and Homeworld allied/split-recipient
+eligible payer. Qualifying E1 funding and Homeworld allied/split-recipient
 composition retain their separate integration boundaries.
 Independent Karama shipments paid entirely to the Bank bypass player-income
 guards. A successful use remains tied to the physical card's turn and phase,
@@ -223,6 +224,50 @@ One fixture event narrowing is repaired. A bare-not-throw/shared-gate echo
 case is removed from the affected CHOAM integration file. No source rule,
 strategy, Homeworld funding, public-start, save/deployed or complete-mode claim
 is changed by this bounded proof.
+
+## Native paired E3 receipts — 13 October 2026
+
+`tests/fixture-bureaucrat-e3-funding.ts` uses the original paired E3 roster
+Ecaz/Moritani/Guild/Atreides/Emperor with skills. Atreides genuinely trains
+Bureaucrat; a real turn-two Great Maker worm forms the actual Ecaz/Moritani
+alliance. Real armies, wallets, phase and assignment come from native setup;
+only original unplayed Spice ordering and, for the cancellation case, one
+unplayed card in a real hand are controlled.
+
+Unlike E2, the paired E3 profile was already admitted to Bureaucrat mode
+support, so the funded five-plus-five was never rejected by a module guard: it
+rejected at the allied-funding guard
+('Bureaucrat on allied funding or multiple payer contributions in this module
+composition is awaiting integration.') for both families and modes, byte-identical
+after a real Moritani→Ecaz pledge5. Boundary wallets Basic:
+Ecaz12/Moritani12/Guild5/Atreides10/Emperor10; Advanced differs only at Guild6
+and Atreides12.
+
+The gate now admits no-Homeworlds single-Ecaz paired E3 while preserving every
+prior admission (empty-expansion classic/nexus, single-CHOAM plain or paired).
+Ix paired, Discovery, Tech, Stronghold, multi-expansion and Homeworld allied
+funding stay excluded. Ix paired is deliberately deferred: enabling it would
+newly admit the existing revival payment stamp in an Ixian-native Tleilaxu
+composition whose Bureaucrat handling is not yet source-reviewed.
+
+Ordinary auctions pay Emperor and retain original Emperor-income cancellation
+(banked gross, no offer/use); Guild shipments retain their original interception,
+income and Movement continuation. Forty-six consumer cases cover both families
+and modes, 5+3/3+5/5+5/fully donor-funded five, decline/redirect, sub-five
+nonpooling, trainer and payee exclusion without masking an eligible payer,
+public gross/payee with payer null and no shares, stale/cross-actor rejection,
+four minimal bots, and a real bribe-to-Mentat phase refresh. Guild-as-ally makes
+a Guild-payee exclusion shipment free by native rule, so payee exclusion is
+covered through the Emperor auction payee instead; that is a native rule, not
+a gap.
+
+Two actual390px GameTable flows use the genuine paid snapshots: Basic allied
+auction5+3 redirects2 (Emperor10→16, Ecaz12→7, Moritani12→9, one use, next lot
+at Guild) and Advanced allied shipment3+5 redirects2 (Guild6→12, Ecaz12→9 with
+eight reserves committed at Habbanya17 beside Imperial Basin6, Moritani12→7,
+Atreides12 unchanged, one use). Browser errors are empty. Artifact outside Git:
+`/tmp/dune-e3-bureaucrat-3227.json`. Local rule/control proof only; no
+deployed, recovery or full-mode claim.
 
 ## Saved choices and verification
 

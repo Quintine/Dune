@@ -29,6 +29,30 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Bureaucrat / native paired E3 funding — 13 October.**
+Original paired E3 roster Ecaz/Moritani/Guild/Atreides/Emperor with skills now
+admits qualifying allied ordinary-auction (Emperor) and Guild-shipment receipts
+without Homeworlds. Atreides genuinely trains Bureaucrat; a real turn-two worm
+forms the actual Ecaz/Moritani alliance, retaining native armies and Basic
+Ecaz12/Moritani12/Guild5/Atreides10/Emperor10 (Advanced differs only at Guild6,
+Atreides12). Unlike E2, E3 mode support already existed, so both families and
+modes rejected only at the allied-funding guard after a real pledge5, byte-identical.
+The gate now admits single-Ecaz paired E3 and preserves every prior admission;
+Ix paired, Discovery, Tech, Stronghold, multi-expansion and Homeworld funding
+stay excluded. Ix paired is deferred because enabling it would newly admit the
+existing revival payment stamp in an Ixian-native Tleilaxu composition whose
+Bureaucrat handling is not yet source-reviewed. Forty-six consumer cases cover
+both families and modes, 5+3/3+5/5+5/fully donor-funded five, decline/redirect,
+sub-five nonpooling, owner/payee exclusion without masking an eligible payer,
+public gross/payee with payer null and no shares, stale/cross-actor rejection,
+four bots, original Emperor-income cancellation and a real phase refresh.
+Two actual390px flows redirect2: Basic auction5+3 (Emperor10→16, Ecaz12→7,
+Moritani12→9, one use, next lot at Guild) and Advanced shipment3+5 (Guild6→12,
+Ecaz12→9 with eight reserves at Habbanya17, Moritani12→7, Atreides12 unchanged).
+Artifact: `/tmp/dune-e3-bureaucrat-3227.json`; browser errors empty. Frozen
+union203/203 across nine files and types/lint/build pass. No deployed,
+save/recovery or full-mode claim follows.
+
 **Bureaucrat / native paired E2 funding — 13 October.**
 Original six-seat CHOAM/Richese/Harkonnen/Fremen/Emperor/Guild Skills Nexus
 now admits qualifying allied normal/cache/Advanced Black Market and shipment

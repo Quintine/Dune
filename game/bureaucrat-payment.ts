@@ -48,9 +48,10 @@ export function bureaucratPaymentModeSupported(game: LeaderSkillProfile): boolea
       nativeExpansionLeaderSkillsProfile(game))) || homeworldLeaderSkillsProfile(game) || classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) || strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) || classicDiscoveryLeaderSkillsProfile(game) || nativeDiscoveryLeaderSkillsProfile(game);
 }
 export function bureaucratAlliedFundingModeSupported(game: LeaderSkillProfile): boolean {
-  return !game.homeworlds &&
-    (!game.expansions.length || game.expansions.length === 1 && game.expansions[0] === 'choam') &&
-    bureaucratPaymentModeSupported(game);
+  if (game.homeworlds || !bureaucratPaymentModeSupported(game)) return false;
+  if (game.expansions.length === 1 && game.expansions[0] === 'ecaz')
+    return pairedE3NexusLeaderSkillsProfile(game);
+  return !game.expansions.length || game.expansions.length === 1 && game.expansions[0] === 'choam';
 }
 export function bureaucratUsed(
   used: readonly BureaucratPaymentUse[],

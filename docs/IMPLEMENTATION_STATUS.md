@@ -1,5 +1,43 @@
 # Dune implementation status
 
+## 13 October 2026 — native paired E3 Bureaucrat funding
+
+The paired E3 Nexus skill profile was already admitted to Bureaucrat mode
+support before this slice, so a funded E3 payment was never blocked by a module
+guard: both payment families and both modes rejected at the allied-funding
+guard, byte-identical after a real Moritani→Ecaz pledge5. The gate now admits
+no-Homeworlds single-Ecaz paired E3; all prior admissions (empty-expansion
+classic/nexus, single-CHOAM plain or paired) are preserved, and Ix paired,
+Discovery, Tech, Stronghold, multi-expansion and Homeworld allied funding stay
+excluded. Ix paired is deferred deliberately: enabling it would newly admit the
+existing revival payment stamp in an Ixian-native Tleilaxu composition whose
+Bureaucrat handling is not yet source-reviewed.
+
+The new fixture retains the original paired E3 roster and native setup. A real
+turn-two Great Maker worm forms the actual Ecaz/Moritani alliance; only original
+unplayed Spice ordering and, for the cancellation case, one unplayed card in a
+real hand are controlled. Boundary wallets Basic: Ecaz12/Moritani12/Guild5/
+Atreides10/Emperor10; Advanced differs only at Guild6 and Atreides12. Atreides
+genuinely trains Bureaucrat.
+
+Forty-six consumer cases pass: both families and modes, 5+3/3+5/5+5/fully
+donor-funded five, decline/redirect, sub-five nonpooling, trainer and payee
+exclusion without masking an eligible payer, public gross/payee with payer null
+and no shares, stale/cross-actor rejection, four minimal bots, original
+Emperor-income cancellation (banked gross, no offer/use) and a real bribe-to-
+Mentat phase refresh. Guild-as-ally makes a Guild-payee exclusion shipment free
+by native rule, so payee exclusion is covered through the Emperor auction payee.
+
+Two actual390px GameTable flows use the genuine paid snapshots. Basic allied
+auction5+3 redirects2: Emperor10→16, Ecaz12→7, Moritani12→9, one use, next lot
+at Guild. Advanced allied shipment3+5 redirects2: Guild6→12, Ecaz12→9 with
+eight reserves committed at Habbanya17 beside Imperial Basin6, Moritani12→7,
+Atreides12 unchanged, one use. Browser errors are empty; artifact outside Git
+`/tmp/dune-e3-bureaucrat-3227.json`. The frozen union203/203 across nine files
+and types/lint/build pass with unchanged build warnings. No source rule,
+strategy, Homeworld funding, public-start, save/deployed or full-mode claim is
+opened by this bounded proof.
+
 ## 13 October 2026 — native paired E2 Bureaucrat funding
 
 The earlier mode guard excluded genuine paired E2 Nexus skill games before
