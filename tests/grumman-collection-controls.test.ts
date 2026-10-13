@@ -43,7 +43,9 @@ function fixture(): GameView {
     event: 'collection-1',
     player: 'm',
     blocked: null,
-    removeBlocked: 'Removing a token awaits a custody ruling.',
+    removeBlocked: 'No placed Terror token is available to return.',
+    removable: [],
+    cunning: null,
     tokens: [
       { id: 'terror-1', kind: 'robbery' },
       { id: 'terror-2', kind: 'sabotage' },
@@ -98,32 +100,6 @@ void test('public map markers group hidden Terror stacks without reading token f
   assert.doesNotMatch(html, /available|removed/);
 });
 
-void test('Grumman controls require an explicit available-token addition before the four-spice reward', () => {
-  const view = fixture();
-  const before = structuredClone(view);
-  assert.deepEqual(grummanCollectionChoice(view, 'terror-2', 'carthag'), {
-    blocked: null,
-    action: {
-      type: 'decision',
-      event: 'collection-1',
-      mode: 'add',
-      token: 'terror-2',
-      territory: 'carthag',
-    },
-  });
-  const html = markup(view);
-  assert.match(html, /Your Terror token/);
-  assert.match(html, /Robbery/);
-  assert.match(html, /Sabotage/);
-  assert.match(html, /only after the addition resolves/);
-  assert.match(html, /Add token and collect 4 spice/);
-  assert.match(
-    html,
-    /Removal unavailable: Removing a token awaits a custody ruling/,
-  );
-  assert.doesNotMatch(html, /<button[^>]*>Remove/);
-  assert.deepEqual(view, before);
-});
 
 void test('stale tokens or destinations cannot add; blocked or exhausted collection can still be declined', () => {
   const view = fixture();

@@ -34,9 +34,23 @@ The singular phase-scoped opportunity supports one selected operation and one aw
 
 For addition, select one available physical Terror token and a permitted stronghold already holding a placed token. The card supplies an exception to ordinary Terrorize's empty-destination requirement; it does not authorize a new token, a second ordinary Mentat placement, relocation from another stronghold, Homeworld placement or use of the Hidden Mobile Stronghold. Storm alone does not prevent ordinary Terror placement. [GF9 E3, pp.5,16](https://www.gf9games.com/dune/wp-content/uploads/EcazMoritani-Rulebook-LOWRES.pdf#page=5).
 
-For removal, select one actual placed token. A spent token, the separate Atomics Aftermath marker, an available supply token or a revealed Extortion record is not a Terror token on the board. The face says removal from the board; it does not expressly name its next custody zone. Returning it to hidden supply is a plausible composition, while ordinary **revelation** expressly removes tokens from the game. Do not claim the latter as authority to permanently spend an unrevealed removal, or call `revealTerror` merely to clear its location. The removal destination remains a source boundary for the coordinator; no new question was sent by this audit.
+The [selected Cunning composition](NEXUS_MORITANI_RULES.md#user-rulings--14-october-2026)
+preserves that ordinary addition prerequisite: an eligible stacked addition
+must already exist before Cunning broadens its selected destination to static
+Arrakis. It never grants relocation, a Homeworld or HMS destination.
 
-Token change and four-spice credit must be one accepted transaction after checking current high population, valid custody, phase and unused opportunity. Reject before mutation or randomness if any check fails. Preserve the six physical identities and every other placed token. If returning a token to hidden supply is adopted from sufficient authority, use the established identity-rotation contract so a previously known face cannot be followed through a persistent public ID.
+For removal, select one actual placed token. A spent token, Atomics Aftermath,
+an available supply token or a revealed Extortion record is not eligible.
+The physical face does not name the next custody zone; the
+[14 October user ruling](GRUMMAN_STACKED_TERROR_RULES.md#user-ruling--14-october-2026)
+selects hidden supply without revelation. Do not call `revealTerror` or
+permanently retire the token to implement this removal.
+
+Token change and four-spice credit are one accepted transaction after current
+high population, placed custody, phase and unused Collection opportunity are
+checked. Reject before mutation or randomness. Preserve all six physical faces,
+other placed tokens and native Mentat usage. Rotate hidden-supply IDs using the
+original return contract so a former public ID cannot track the returned face.
 
 Stacking is a genuine new registry condition. Remove only the global one-token-per-location assumption; retain unique physical identity, exactly one location/status per token and valid stronghold locations. Ordinary Mentat placement still requires an empty destination. Never overwrite an existing token merely because both share a location.
 

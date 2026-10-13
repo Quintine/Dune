@@ -4,6 +4,7 @@ import { HomeworldCustodyError } from './homeworld-custody';
 import { homeworldContext } from './homeworld-game';
 import { homeworldPopulations } from './homeworld-population';
 import {
+  returnTerror,
   TERROR_KINDS,
   TERROR_STRONGHOLDS,
   type TerrorState,
@@ -22,15 +23,14 @@ export type GrummanCollectionQuote = {
   /** Owner-only physical identities and secret faces; never a public projection. */
   tokens: TerrorToken[];
   destinations: string[];
-  removeBlocked: string;
+  /** Owner-only placed identities, including historically authorized Cunning locations. */
+  removable: TerrorToken[];
+  removeBlocked: string | null;
 };
 export type GrummanCollectionAction =
   | { mode: 'add'; token: string; destination: string }
   | { mode: 'decline' }
   | { mode: 'remove'; token: string };
-
-const removalBlock =
-  'Grumman Terror removal awaits a ruling on the removed token’s next custody zone.';
 
 function fail(message: string): never {
   throw new HomeworldCustodyError(message);
@@ -118,6 +118,9 @@ export function quoteGrummanCollection(
         ),
       )
     : [];
+  const removable = high
+    ? state.tokens.filter((token) => token.status === 'placed')
+    : [];
   return {
     player: ownerId,
     population: home?.population ?? null,
@@ -131,16 +134,23 @@ export function quoteGrummanCollection(
           : null,
     tokens: tokens.map((token) => ({ ...token })),
     destinations: [...destinations],
-    removeBlocked: removalBlock,
+    removable: removable.map((token) => ({ ...token })),
+    removeBlocked: !high
+      ? 'Grumman needs at least eight native forces for its collection opportunity.'
+      : !removable.length
+        ? 'There is no placed Terror token to return to supply.'
+        : null,
   };
 }
 
-/** A successful addition and its four bank spice are one quote. No effects,
- * randomness, supply rotation or Mentat placement allowance are consumed here. */
+/** A successful operation and its four bank spice are one quote. Removal
+ * rotates hidden supply with private randomness; Mentat usage remains separate. */
 export function quoteGrummanCollectionAction(
   context: GrummanCollectionContext,
   ownerId: string,
   action: GrummanCollectionAction,
+  random: () => number = () =>
+    crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296,
 ): { state: TerrorState; amount: 0 | 4 } {
   const state = stateFor(context, ownerId);
   if (
@@ -156,7 +166,13 @@ export function quoteGrummanCollectionAction(
     fail('Choose one Grumman collection operation.');
   if (action.mode === 'decline')
     return { state: structuredClone(state), amount: 0 };
-  if (action.mode === 'remove') fail(removalBlock);
+  if (action.mode === 'remove') {
+    const quote = quoteGrummanCollection(context, ownerId);
+    if (quote.removeBlocked) fail(quote.removeBlocked);
+    if (!quote.removable.some((token) => token.id === action.token))
+      fail('Choose a currently placed physical Terror token to return to supply.');
+    return { state: returnTerror(state, action.token, random), amount: 4 };
+  }
   if (action.mode !== 'add') fail('Choose one Grumman collection operation.');
   const quote = quoteGrummanCollection(context, ownerId);
   if (quote.blocked) fail(quote.blocked);

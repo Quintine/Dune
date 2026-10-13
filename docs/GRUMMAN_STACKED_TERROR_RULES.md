@@ -1,6 +1,39 @@
 # Grumman Collection and stacked Terror
 
-Source audit, 10 September 2026. This supplements [HOMEWORLD_COLLECTION_RULES.md](HOMEWORLD_COLLECTION_RULES.md). It does not certify runtime integration or change release gates. The existing user question about unrevealed removal custody remains pending; this audit asks no duplicate question.
+Source audit, 10 September 2026. This supplements [HOMEWORLD_COLLECTION_RULES.md](HOMEWORLD_COLLECTION_RULES.md). It does not certify runtime integration or change release gates. The formerly pending removal-custody question is resolved by the user ruling below, not a new publisher clarification.
+
+## User ruling — 14 October 2026
+
+An unrevealed Grumman removal returns the selected placed Terror token to
+hidden supply without revealing its face. Reuse original hidden-supply ID
+rotation so its former public ID cannot track the returned face. Other placed
+tokens and all six physical faces remain intact.
+
+One completed add-or-remove operation earns four spice, once per Collection;
+declining earns none. Native Mentat placement usage remains independent.
+Available, spent, revealed Extortion and Atomics Aftermath are not placed
+Terror tokens eligible for this removal.
+The user separately selected the
+[Cunning underlying-addition prerequisite](NEXUS_MORITANI_RULES.md#user-rulings--14-october-2026).
+These are selected interpretations, not publisher rulings or mode certification.
+
+## Runtime follow-through — 14 October 2026
+
+The live Grumman quote now separately offers placed-token return even when no
+available supply token exists for addition. The original hidden return rotates
+only available-supply identities, preserves other placements/spent faces and
+leaves native Mentat use unchanged. Historical completion retains the former
+placed ID/location without treating that ID as live supply.
+
+The event-bound add/return selector, owner-only faces and shared legal policy
+connect to the original Collection frame. Current high population, target
+custody and one-use checks precede random supply rotation and four-spice credit.
+Actual390px return pays12→16, clears the placement and keeps the returned face
+hidden/reusable; new native regressions prove its later ordinary Mentat reuse.
+[Native return evidence](../tests/grumman-supply-return.test.ts) and
+[Cunning source/entry/return](../tests/grumman-cunning-runtime.test.ts)
+cover the ruled paths. No complete-mode or deployed acceptance is claimed.
+
 
 ## Evidence and its limits
 
@@ -27,13 +60,18 @@ The chosen token must remain bound to the original entry through Enemy of My Ene
 
 Do not describe that serializer as printed priority. Revalidate current native population when the Grumman action is accepted. An allowed intervening effect that changes population, token custody or the phase must use the same continuation checks; a future noncommuting interaction would require review. Ecaz settlement cannot consume Grumman’s opportunity, and Grumman cannot overwrite an unresolved allocation. Its award is not desert collection and must not create a shared Ecaz allocation or Giedi collection trigger.
 
-## Unresolved removal custody
+## Source ambiguity and selected removal custody
 
 Removal from the board is not revelation. The revelation disposal rule does not establish that an unrevealed Grumman removal is permanently spent. Conversely, other effects’ express return-to-supply instructions do not prove this removal returns to hidden supply. Neither result was authenticated by this audit.
 
-Keep that operation guarded pending the existing question. Do not reveal its face, call the revelation handler, rotate it into reusable supply, or credit four spice before its destination is resolved. Addition can be implemented independently using an actual available token and a stronghold already containing Terror. It does not authorize Homeworlds, the Hidden Mobile Stronghold, an invented token or movement from another stack.
+The original guard was required while custody was unresolved. The selected
+user interpretation above replaces it with a hidden-supply return and four-
+spice award after current population, placed custody and unused Collection
+opportunity are checked. Do not reveal the face or invoke the revelation
+handler. Addition remains an independent supply placement, with its original
+prerequisite unless modified through the selected Cunning composition.
 
-## Concrete code review findings
+## Original code review findings (historical)
 
 At the inspected checkpoint, `openTerrorEntry` in [engine.ts](../game/engine.ts) selects the first placed token at the destination. Stacking requires an owner-visible candidate choice, with hidden faces excluded from other seats, and a durable selected identity afterward.
 

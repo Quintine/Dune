@@ -122,7 +122,7 @@ void test('low seven waits without income and expires on Mentat; a current high 
   stable(declined);
 });
 
-void test('owner event, physical availability, destination and pending removal rulings reject before token or spice mutation', () => {
+void test('owner event, physical availability and destination reject before token or spice mutation', () => {
   const g = enterGrummanCollection(grummanCollectionFixture());
   const event = g.grummanCollection!.event;
   const token = grummanToken(g, 'sabotage').id;
@@ -135,7 +135,6 @@ void test('owner event, physical availability, destination and pending removal r
       territory: 'arrakeen',
     },
     { event, mode: 'add', token, territory: 'carthag' },
-    { event, mode: 'remove', token: grummanToken(g, 'robbery').id },
     { event, decline: true, token },
   ])
     grummanReject(g, 'm', { type: 'decision', ...action });

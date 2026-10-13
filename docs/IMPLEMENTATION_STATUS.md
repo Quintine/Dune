@@ -1,5 +1,56 @@
 # Dune implementation status
 
+## 14 October 2026 — ruled Grumman hidden return and Cunning addition
+
+Four user decisions resolve the earlier Moritani boundaries: Cunning enhances
+supply placement only; HMS stays excluded; Grumman Cunning preserves an actual
+ordinary stacked-addition prerequisite; an unrevealed removal returns to
+rotated hidden supply. All remain user interpretations, not publisher rulings.
+
+BEFORE genuine Basic setups without/with Nexus reached turn2 Collection
+after63/69 original actions, native population14 and a real first-Mentat
+Robbery placement in Arrakeen. Removal rejected the custody-zone guard without
+mutation. Native Grumman Cunning to Red Chasm likewise rejected the ordinary
+stronghold-only destination while holding the actual Moritani card.
+
+AFTER removal uses original `returnTerror` and hidden ID rotation, pays4 once,
+preserves the six faces/other placements and leaves `placementTurn` independent.
+The old public ID/source location stays historical, not live supply identity.
+High-Grumman Cunning reuses physical supply validation and adds a source-
+discriminated phase7 receipt with original Grumman event and ordinary
+prerequisite. Its atomic completion consumes the actual Nexus and pays4;
+Mentat receipts/events and original cancellation remain unchanged.
+The source bridge validates the real completed current Collection frame and
+its historical location authority after later turns. No extra Karama window.
+
+Native Basic/Advanced addition, failed selection/replay, prerequisite loss,
+four existing legal policies, a later real one-force Guild Polar shipment/
+Terror entry, and subsequent unrevealed Cunning-token return are exercised.
+The original other board token remains, and only the selected live Cunning
+authorization retires on return. Native removal permits later genuine Mentat
+redeployment of the same physical face under a new hidden supply ID.
+Initial new behavior tests14/14 pass. A child receipt-mutation test used an
+unnarrowed type-query union; explicit Grumman discriminant types repair it
+without production change. One old persisted removal-veto assertion is removed;
+its independent SQL decline behavior remains.
+
+Actual390px `GameTable` returns Robbery from Arrakeen, pays12→16, rotates
+all six available IDs and leaves Mentat usage1. Separate actual Cunning
+checkbox/destination controls place an available Sneak Attack at Red Chasm,
+spend the Moritani card, pay12→16 and close the original choice with a phase7
+Grumman source/prerequisite receipt. Browser errors empty, no root overflow.
+`/tmp/dune-ruled-grumman-ui-proof.json` records local source/action results.
+Owned tab/host/scaffold removed. No saved room, production server or mode
+gate changed; comprehensive assurance remains deferred.
+
+Final frozen14-file union92/92 and `npm run check:quick` pass. App build
+passes with existing module-registration, large-chunk and unknown-route
+classification warnings. The first union used a nonexistent `terror-location`
+filename fragment and ran no tests; its corrected selection first had62/63
+pass with the obsolete persisted removal-veto failure, then passes after that
+guard assertion is deleted. Independent persisted decline coverage remains.
+No complete-mode, broad-suite or deployed acceptance claim follows.
+
 ## 13 October 2026 — documented Skills CLI admission repaired
 
 Actual `tools/start-prototype.ts --profile guild-betrayal --leader-skills`

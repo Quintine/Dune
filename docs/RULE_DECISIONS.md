@@ -1,6 +1,27 @@
 # Rule decision index
 
-Updated 13 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+Updated 14 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+
+## User decisions — 14 October 2026
+
+- **Moritani Cunning / relocation:** supply placement only. Ordinary relocation
+  remains available, but Cunning does not broaden its destinations.
+- **Moritani Cunning / HMS:** keep the Hidden Mobile Stronghold itself excluded.
+  Printed static Arrakis territories remain within the destination grant;
+  Homeworlds remain excluded.
+- **Moritani Cunning / Grumman addition:** preserve the ordinary prerequisite.
+  An actual high-Grumman supply addition must first be available at an eligible
+  ordinary stronghold already containing Terror; Cunning may then broaden the
+  selected destination. It creates no underlying placement opportunity.
+  [Selected Cunning contract](NEXUS_MORITANI_RULES.md#user-rulings--14-october-2026).
+- **Unrevealed Grumman removal:** return the selected placed token to hidden
+  supply without revealing its face, using original hidden-supply ID rotation.
+  Keep one operation and one four-spice award per Collection, separate from
+  native Mentat placement usage.
+  [Removal ruling](GRUMMAN_STACKED_TERROR_RULES.md#user-ruling--14-october-2026).
+
+These are user-selected interpretations, not newly found publisher rulings.
+No public module/faction or complete-mode gate is opened.
 
 ## User decisions — 13 October 2026
 

@@ -2,6 +2,20 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Moritani Cunning and Grumman user cutover — 14 October 2026
+
+The user selected supply-only Cunning, continued HMS exclusion, an ordinary
+eligible Grumman addition prerequisite, and unrevealed Grumman removal to
+rotated hidden supply. The connected Collection controls now apply that
+separate source without consuming the native Mentat opportunity.
+The phase7 receipt binds the actual Grumman event and original ordinary
+prerequisite; no eligible stacked-addition source means no Cunning spend.
+Physical Nexus disposal, one four-spice award, later static-territory Terror
+entry and hidden return use their original contracts.
+[Selected interpretations and runtime](NEXUS_MORITANI_RULES.md#user-rulings--14-october-2026);
+[removal custody](GRUMMAN_STACKED_TERROR_RULES.md#user-ruling--14-october-2026).
+No publisher ruling, new cancellation window or complete-mode gate is claimed.
+
 ## Classic Nexus with normal Banker income — 13 October 2026
 
 Fresh `banker-income --nexus-cards` now composes the existing deferred normal
@@ -572,10 +586,11 @@ Advanced Harkonnen remains excluded.
 Moritani preserves original Advanced skill-first assassination, normal-Traitor
 forfeiture for the rest of the game, original post-loss printed bounty and one
 actual private Mentat replacement. Basic does not gain that Advanced power.
-Cunning remains an earned Mentat supply placement into a static Arrakis
-territory/stack, not enhanced relocation/HMS/Grumman; the earlier material
-question remains unanswered. Native cancellation and later ordinary relocation
-retain their original timing and physical custody.
+Cunning remains supply-only and excludes HMS/Homeworld destinations under the
+14 October user choices. Native Mentat placement retains its original timing
+and cancellation; the separate high-Grumman source now admits Cunning only
+after an ordinary stacked addition is eligible. It creates no opportunity and
+does not consume Mentat placement. Ordinary relocation remains unchanged.
 
 Ordinary skill support/rescue, bank-held subsidy/defenses/income, card cleanup
 and mandatory original-winner Tech reuse existing handlers. Mandatory Advanced

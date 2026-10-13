@@ -264,16 +264,10 @@ void test('production SQL lost Grumman add response preserves four spice and ind
   } finally { f.sqlite.close(); }
 });
 
-void test('production SQL guarded removal and declined Grumman choice never pay or change token custody', async () => {
+void test('production SQL declined Grumman choice never pays or changes token custody', async () => {
   const f = await persisted();
   try {
     const g = await opened(f);
-    const before = snapshot(f);
-    await assert.rejects(f.rooms.act(f.code, f.auths[0], g.version, {
-      type: 'decision', event: g.grummanCollection!.event, mode: 'remove', token: token(g, 'robbery').id,
-    }, clock));
-    assert.deepEqual(snapshot(f), before);
-    assert.equal(f.writes.length, 0);
     const done = await act(f, g, f.ids[0], { type: 'decision', event: g.grummanCollection!.event, decline: true });
     assert.equal(done.grummanCollection!.outcome, 'decline');
     assert.deepEqual(done.moritaniTerror, g.moritaniTerror);

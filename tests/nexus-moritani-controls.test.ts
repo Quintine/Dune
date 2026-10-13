@@ -66,10 +66,6 @@ void test('genuine Basic and Advanced Mentat keeps native relocation choices and
     assert.doesNotMatch(markup, /checked=""/);
     assert.match(markup, /decision-checkbox min-h-11/);
     assert.match(markup, /Use Moritani Nexus Cunning/);
-    assert.match(
-      markup,
-      /Relocation, Grumman use, Homeworlds and the Hidden Mobile Stronghold are unavailable/,
-    );
     assert.match(markup, /Destination stronghold/);
     assert.match(html(v, true), /disabled=""/);
     assert.match(

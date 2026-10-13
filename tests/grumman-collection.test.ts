@@ -137,7 +137,7 @@ void test('offers need available supply and an existing ordinary stronghold toke
   assert.match(quoteGrummanCollection(g, 'm').blocked!, /no available/);
 });
 
-void test('decline gives zero with cloned unchanged custody; unresolved removal never spends or reveals a token', () => {
+void test('decline gives zero with cloned unchanged custody; removal requires current high population and a placed token', () => {
   for (const native of [7, 8]) {
     const g = fixture(native);
     const before = JSON.stringify(g);
@@ -145,12 +145,17 @@ void test('decline gives zero with cloned unchanged custody; unresolved removal 
     assert.equal(declined.amount, 0);
     assert.deepEqual(declined.state, g.moritaniTerror);
     assert.notEqual(declined.state, g.moritaniTerror);
-    assert.match(quoteGrummanCollection(g, 'm').removeBlocked, /custody zone/);
-    for (const token of ['terror-1', 'terror-2', 'atomics-aftermath', 'absent'])
-      assert.throws(
-        () => quoteGrummanCollectionAction(g, 'm', { mode: 'remove', token }),
-        /custody zone/,
-      );
+    assert.equal(quoteGrummanCollection(g, 'm').removeBlocked === null, native >= 8);
+    for (const token of ['terror-2', 'atomics-aftermath', 'absent'])
+      assert.throws(() => quoteGrummanCollectionAction(g, 'm', { mode: 'remove', token }));
+    if (native < 8)
+      assert.throws(() => quoteGrummanCollectionAction(g, 'm', { mode: 'remove', token: 'terror-1' }));
+    else {
+      const returned = quoteGrummanCollectionAction(g, 'm', { mode: 'remove', token: 'terror-1' }, () => 0);
+      assert.equal(returned.amount, 4);
+      assert.equal(returned.state.tokens.filter(token => token.status === 'available').length, 6);
+      assert.equal(returned.state.placementTurn, 2);
+    }
     assert.equal(JSON.stringify(g), before);
   }
 });

@@ -10,6 +10,51 @@ The [GF9 Ecaz & Moritani rulebook](https://www.gf9games.com/dune/wp-content/uplo
 
 The [Grumman component photograph](https://boardgamegeek.com/image/7767034/dune-ecaz-and-moritani) supplies its separate high-population Collection addition/removal and four-spice award. Its wording and unresolved removal custody are recorded in the linked Grumman audit. Bounded fresh publisher/designer searches found no additional authenticated clarification of Cunning relocation, Hidden Mobile Stronghold placement, or Cunning combined with Grumman. Search results from community discussions were not adopted as rulings.
 
+## User rulings — 14 October 2026
+
+The user selected **supply placement only**, not enhanced relocation, and
+**keep the Hidden Mobile Stronghold excluded**. Ordinary relocation retains
+its native destinations; Homeworlds remain excluded from Terror placement.
+
+For high-Grumman Collection addition, **preserve the prerequisite**: there
+must already be an eligible ordinary supply addition to a stronghold holding
+Terror. Cunning may then broaden the actual selected destination to static
+Arrakis. It does not create an underlying opportunity when none exists.
+The selected physical supply token, current high population, one Collection
+operation/four-spice award and separate Mentat allowance remain required.
+The native Grumman operation is immediate; no new Karama window is introduced.
+
+These are recorded user interpretations, not publisher clarifications.
+Unrevealed Grumman removal independently
+[returns to hidden supply](GRUMMAN_STACKED_TERROR_RULES.md#user-ruling--14-october-2026).
+Current runtime evidence remains in the dashboard; no complete-mode claim
+follows from resolving these source questions.
+
+## Runtime follow-through — 14 October 2026
+
+The Collection controls use the actual high-Grumman frame and current ordinary
+addition quote before offering Cunning. An accepted static-destination supply
+placement spends the singleton Nexus, pays four spice and completes that one
+Grumman frame atomically. It does not open a new Karama window or consume the
+separate native Mentat allowance.
+
+The source-discriminated receipt records `grumman`, phase7, the original
+Collection event and an eligible ordinary prerequisite. Original Mentat
+receipts/events remain unchanged. Existing live/historical location authority
+permits a later real entry at the Cunning territory and retires when that
+selected token returns, while retaining its historical receipt.
+
+Genuine native fixtures provide prior ordinary placement and an actual worm/
+Nexus draw without assigned runtime forces, wallets or hands. New evidence:
+[native Cunning source/entry/return](../tests/grumman-cunning-runtime.test.ts),
+[pure receipt/placement boundaries](../tests/nexus-moritani-grumman.test.ts),
+[hidden return and later Mentat reuse](../tests/grumman-supply-return.test.ts).
+Actual390px Collection controls separately prove return and Red Chasm
+Cunning addition for12→16, with native Mentat usage1 unchanged.
+Local proof is `/tmp/dune-ruled-grumman-ui-proof.json`; no saved room or
+production acceptance is claimed.
+
+
 ## Resolved effect and ordinary composition
 
 1. **One earned placement.** A native unallied Moritani holder can spend this card when making an otherwise earned placement. Ordinary Mentat supply placement is a concrete supported source in Basic and Advanced. The selected physical token must actually be available; no removed or front-of-shield Extortion token becomes supply. Spending the card neither creates a seventh token nor creates another Mentat action.
@@ -21,7 +66,7 @@ The [Grumman component photograph](https://boardgamegeek.com/image/7767034/dune-
 
 Ordinary later relocation can move a Cunning-placed token out to a native-legal destination. Its unusual original location does not change its placed custody status or grant an enlarged destination for the later move. Returning a token to hidden supply ends that placement's custody interval; redeployment requires its own authorization and the existing supply-ID rotation.
 
-## Material boundaries
+## Source ambiguities resolved by the selected interpretations
 
 **Relocation is not expressly placement.** The native rule deliberately offers placing a token or moving one, whereas Cunning names placement. Treating the card as a blanket modifier on the current combined place/move UI would silently include a second source category. No inspected primary clarification establishes that extension. Preserve ordinary relocation; do not present enhanced relocation as a settled printed right.
 
@@ -29,15 +74,18 @@ Ordinary later relocation can move a Cunning-placed token out to a native-legal 
 
 **Grumman is a separate earned placement source.** Cunning has no Mentat-only wording, so a reusable source contract should represent Collection addition as well. A high-Grumman addition from supply is naturally a placement. The unresolved interaction is its destination condition: does Cunning replace Grumman's requirement for a stronghold already containing Terror, allowing an empty territory, or does that requirement establish an eligible addition before Cunning modifies the destination? The former follows a broad destination override; the latter follows an underlying-opportunity prerequisite. No inspected source explicitly chooses between them. Do not silently gate all Grumman use by inventing a Mentat restriction, or describe either destination composition as a publisher ruling. An enhanced Collection integration also needs to preserve its own once-only outcome and four-spice transaction, separate from Mentat usage and its cancellation source.
 
-The coordinator has now asked one combined question about enhanced relocation, the mobile stronghold and Grumman; its answer is pending. The already pending question about unrevealed Grumman removal custody remains unchanged. Cunning places a token; it does not answer removal custody. Other incomplete Terror effects and combined reaction boundaries remain independent release limitations.
+The combined interpretation question is resolved by the user rulings above.
+The separate unrevealed Grumman removal question is also resolved: return to
+hidden supply without revelation. These decisions do not establish a publisher
+answer to the original ambiguities or certify other Terror combinations.
 
-## Smallest complete integration for the resolved source
+## Original source-audit integration plan (historical)
 
 Implement a full ordinary Mentat supply-placement path over static Arrakis territories, with saved cancellation and all supported later entry effects. Keep the unresolved source/destination combinations explicit; a destination-only UI patch is insufficient.
 
 Use a separate Cunning placement quote and receipt instead of widening ordinary [placeTerror](../game/moritani-terror.ts). Suggested original evidence: version, event, owner, turn, phase, source kind and source event, physical token, original custody, destination, roster, and original Terror-state commitment. Keep pending/completed/canceled stage evidence outside mutable current token custody. A completed placement authorizes the corresponding non-stronghold custody interval; a historical receipt alone must not authorize arbitrary later relocation, a returned token's new ID, or another token.
 
-Current adapters requiring coordinated review:
+Adapters identified at the original source-audit checkpoint (not current absence claims):
 
 - [grumman-collection.ts](../game/grumman-collection.ts) validates every placed token against the five ordinary strongholds even when merely quoting unrelated Collection choices. That registry validation must accept independently authorized Cunning custody without widening Grumman's ordinary addition quote.
 - [terror-entry-receipt.ts](../game/terror-entry-receipt.ts) and [moritani-alliance-cancellation.ts](../game/moritani-alliance-cancellation.ts) restrict entry territories to those same five locations. Broaden intrinsic territory validity and separately prove the live token's authorized location. Preserve candidate and selected-token signatures through all children.

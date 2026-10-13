@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 13 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 14 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -28,6 +28,27 @@ This is not complete-mode acceptance: exceptional custody, timing variants,
 optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
+
+**Ruled Grumman removal and Cunning addition — 14 October.**
+The user selected supply-only Cunning, HMS exclusion, preserved Grumman
+addition prerequisite and unrevealed return to hidden supply. Native removal
+now rotates supply IDs and pays4 once without revealing the face or spending
+Mentat placement. High-Grumman Cunning consumes one actual Nexus, binds its
+phase7 source/prerequisite and permits a static Arrakis destination only when
+an ordinary stacked addition was already eligible. No new cancellation window.
+Genuine Basic/Advanced before/after programs preserve all original stock;
+later real Guild entry at Polar Sink recognizes the Cunning placement, and its
+later Grumman removal retires only that live location. No prerequisite means
+no Cunning spend or reward. All four existing policies apply legal choices.
+Actual390px return and Red Chasm Cunning addition each pay12→16, preserve
+Mentat usage1 and close the original choice. Browser errors empty, no root
+overflow; `/tmp/dune-ruled-grumman-ui-proof.json` records local proof.
+[Cunning rulings](NEXUS_MORITANI_RULES.md#user-rulings--14-october-2026)
+and [removal ruling](GRUMMAN_STACKED_TERROR_RULES.md#user-ruling--14-october-2026)
+are interpretations selected by the user, not new publisher answers.
+No complete-mode, broad-assurance or deployed acceptance claim follows.
+Final affected14-file union92/92, types/lint and app build pass with the
+existing module-registration, chunk-size and route-classification warnings.
 
 **Documented Skills CLI validation corrected — 13 October.**
 The actual CLI still rejected `guild-betrayal --leader-skills` with

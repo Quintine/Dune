@@ -324,7 +324,7 @@ export function MoritaniPlacement({
             onChange={(event) => setUseNexus(event.target.checked)} />
           Use Moritani Nexus Cunning
         </label>
-        <p className="fine">Cunning places one available supply token in an Arrakis territory, including one with Terror already present. It spends the Nexus card and this Mentat placement opportunity. Relocation, Grumman use, Homeworlds and the Hidden Mobile Stronghold are unavailable.</p>
+        <p className="fine">Cunning places one available supply token in an Arrakis territory, including one with Terror already present. It spends the Nexus card and this Mentat placement opportunity. It never enhances relocation or permits Homeworlds or the Hidden Mobile Stronghold. High-Grumman Cunning additions use their separate Collection controls and require an ordinary eligible addition.</p>
         {game.nexusMoritani.blocked && <p className="fine">{game.nexusMoritani.blocked}</p>}
       </>}
       <div className="flex min-w-0 flex-col gap-3">

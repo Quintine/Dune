@@ -64,7 +64,7 @@ import { replaceNexusFaceDancers, validateNexusFaceDancerHistory, type NexusFace
 import { createNexusSuboids, validateNexusSuboids, nexusSuboidsActive, type NexusSuboidReceipt } from './nexus-suboids';
 import { quoteNexusAdvisors, createNexusAdvisors, validateNexusAdvisors, type NexusAdvisorReceipt } from './nexus-advisors';
 import { createNexusSardaukar, validateNexusSardaukar, type NexusSardaukarReceipt } from './nexus-sardaukar';
-import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement, type NexusMoritaniReceipt } from './nexus-moritani';
+import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement, quoteNexusMoritaniGrummanPlacement, type NexusMoritaniReceipt } from './nexus-moritani';
 import { moritaniBetrayalOffer } from './nexus-moritani-betrayal';
 import { ecazBetrayalOffer, quoteEcazBetrayal, validateEcazBetrayalSnapshot, type EcazBetrayalSnapshot } from './nexus-ecaz-betrayal';
 import { fremenBetrayalOffer, fremenBetrayalSignature, validateFremenBetrayal, type FremenNexusBetrayal, type StoredFremenNexusBetrayal } from './nexus-fremen-betrayal';
@@ -19383,30 +19383,78 @@ function resumeGrummanCollection(g: Game) {
   frame.signature = grummanCollectionSignature(frame);
   g.decision = { kind: 'grummanCollection', player: frame.player, event: frame.event };
 }
+function grummanCunningGrant(g: Game, frame: GrummanCollection,
+  quote: ReturnType<typeof quoteGrummanCollection>) {
+  const owner = getPlayer(g, frame.player);
+  if (g.nexusCards?.cards?.hands[owner.id] !== 'moritani') return null;
+  return { event: JSON.stringify(['nexusMoritaniGrumman', g.turn, owner.id, frame.event]),
+    blocked: owner.ally ? 'Nexus Cunning requires an unallied Moritani player.' : quote.blocked,
+    prerequisite: quote.destinations[0] ?? null };
+}
 function decideGrummanCollection(g: Game, p: Player, action: Action) {
   const frame = g.grummanCollection;
   requireRule(frame?.stage === 'choice' && frame.player === p.id && frame.event === action.event,
     'Choose the current Grumman Collection opportunity.');
   if (action.decline === true) {
-    requireRule(action.token === undefined && action.territory === undefined && action.mode === undefined,
-      'Declining Grumman does not move a token or collect spice.');
+    requireRule(action.token === undefined && action.territory === undefined &&
+      action.mode === undefined && action.nexus === undefined,
+      'Declining Grumman does not move a token, spend Cunning or collect spice.');
     frame.outcome = 'decline';
     log(g, `${p.name} declined Grumman’s optional Terror change; no bank spice was collected.`);
   } else {
     requireRule(action.mode === 'add' || action.mode === 'remove', 'Choose a Grumman token operation.');
     requireRule(typeof action.token === 'string', 'Choose a physical Terror token.');
-    const destination = typeof action.territory === 'string' ? action.territory : '';
-    requireRule(action.mode !== 'add' || !!destination, 'Choose a stronghold for the added token.');
-    const intent = action.mode === 'remove'
-      ? { mode: 'remove' as const, token: action.token }
-      : { mode: 'add' as const, token: action.token, destination };
-    const quote = homeworldRule(() => quoteGrummanCollectionAction(g, p.id, intent));
-    requireRule(Number.isSafeInteger(p.spice + quote.amount), 'Grumman income would overflow the spice balance.');
-    g.moritaniTerror = quote.state;
-    p.spice += quote.amount;
-    frame.outcome = 'add'; frame.token = action.token; frame.territory = destination;
-    log(g, `${p.name} added one hidden Terror token to ${territory(frame.territory).name}, which already held Terror, and received 4 spice from the bank. The separate Mentat placement remains available according to its own usage.`,
-      { faction: p.faction, name: 'Grumman Collection' });
+    requireRule(Number.isSafeInteger(p.spice + 4), 'Grumman income would overflow the spice balance.');
+    if (action.mode === 'add' && action.nexus !== undefined) {
+      const ordinary = homeworldRule(() => quoteGrummanCollection(g, p.id));
+      const grant = grummanCunningGrant(g, frame, ordinary);
+      requireRule(grant && !grant.blocked && action.nexus === grant.event && grant.prerequisite,
+        grant?.blocked ?? 'Choose the current Cunning modifier for an already eligible Grumman addition.');
+      requireRule(typeof action.territory === 'string', 'Choose a permitted Arrakis destination.');
+      const placed = nexusRule(() => quoteNexusMoritaniGrummanPlacement(g.moritaniTerror!,
+        action.token as string, action.territory as string, grant.prerequisite!));
+      const receipt = nexusRule(() => createNexusMoritani(g, p.id, action.token as string,
+        action.territory as string, { source: 'grumman', sourceEvent: frame.event,
+          prerequisite: grant.prerequisite! }));
+      const record = { receipt, stage: 'complete' as const, before: JSON.stringify(g.moritaniTerror),
+        frame: JSON.stringify({ token: receipt.token, territory: receipt.territory, turn: receipt.turn,
+          nexusEvent: receipt.event, sourceEvent: frame.event, prerequisite: grant.prerequisite }),
+        signature: '' };
+      record.signature = nexusMoritaniRecordSignature(record);
+      g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+      (g.nexusMoritaniHistory ??= []).push(record);
+      g.nexusMoritaniLast = { event: receipt.event, stage: record.stage };
+      g.moritaniTerror = placed;
+      (g.nexusMoritaniLocations ??= {})[receipt.token] = { event: receipt.event, territory: receipt.territory };
+      frame.outcome = 'add'; frame.token = receipt.token; frame.territory = receipt.territory;
+      frame.nexusEvent = receipt.event;
+      p.spice += 4;
+      log(g, `${p.name} used Moritani Nexus Cunning to add one hidden Terror token to ${territory(receipt.territory).name} from an eligible Grumman addition and received 4 spice from the bank. The separate Mentat placement is unchanged.`,
+        { faction: p.faction, name: 'Grumman Collection' });
+    } else {
+      requireRule(action.nexus === undefined, 'Returning a Terror token does not use Cunning.');
+      requireRule(action.mode !== 'remove' || action.territory === undefined,
+        'Returning a Terror token has no destination selection.');
+      const destination = typeof action.territory === 'string' ? action.territory : '';
+      requireRule(action.mode !== 'add' || !!destination, 'Choose a stronghold for the added token.');
+      const original = g.moritaniTerror!.tokens.find(token => token.id === action.token);
+      const intent = action.mode === 'remove'
+        ? { mode: 'remove' as const, token: action.token }
+        : { mode: 'add' as const, token: action.token, destination };
+      const quote = homeworldRule(() => quoteGrummanCollectionAction(g, p.id, intent, random));
+      g.moritaniTerror = quote.state;
+      p.spice += quote.amount;
+      frame.outcome = action.mode; frame.token = action.token;
+      frame.territory = action.mode === 'remove' ? original!.location! : destination;
+      if (action.mode === 'remove') {
+        if (g.nexusMoritaniLocations) delete g.nexusMoritaniLocations[action.token];
+        log(g, `${p.name} returned one unrevealed Terror token from ${territory(frame.territory).name} to hidden supply and received 4 spice from the bank. The separate Mentat placement is unchanged.`,
+          { faction: p.faction, name: 'Grumman Collection' });
+      } else {
+        log(g, `${p.name} added one hidden Terror token to ${territory(frame.territory).name}, which already held Terror, and received 4 spice from the bank. The separate Mentat placement remains available according to its own usage.`,
+          { faction: p.faction, name: 'Grumman Collection' });
+      }
+    }
   }
   frame.stage = 'complete';
   frame.signature = grummanCollectionSignature(frame);
@@ -19415,9 +19463,14 @@ function projectedGrummanCollection(g: Game, player: string) {
   const frame = g.grummanCollection;
   if (frame?.stage !== 'choice') return null;
   const quote = homeworldRule(() => quoteGrummanCollection(g, frame.player));
+  const own = player === frame.player;
+  const cunning = own ? grummanCunningGrant(g, frame, quote) : null;
   return { event: frame.event, player: frame.player, blocked: quote.blocked, removeBlocked: quote.removeBlocked,
-    tokens: player === frame.player ? quote.tokens.map((token) => ({ id: token.id, kind: token.kind })) : [],
-    destinations: player === frame.player ? quote.destinations.map((id) => ({ id, name: territory(id).name })) : [] };
+    tokens: own ? quote.tokens.map(token => ({ id: token.id, kind: token.kind })) : [],
+    destinations: own ? quote.destinations.map(id => ({ id, name: territory(id).name })) : [],
+    removable: own ? quote.removable.map(token => ({ id: token.id, kind: token.kind,
+      territory: token.location!, name: territory(token.location!).name })) : [],
+    cunning: cunning ? { ...cunning, destinations: TERRITORIES.map(place => ({ id: place.id, name: place.name })) } : null };
 }
 function commitCollection(
   g: Game,
@@ -26766,7 +26819,7 @@ function nexusMoritaniOffer(g: Game, owner: string, decision: Game['decision'] =
   else if (g.response || g.truthtrance || g.phaseOpening || g.pendingKarama || g.pendingNullentropy || g.pendingTreacheryDiscard)
     blocked = 'Finish the current interaction before declaring this placement.';
   else if (g.moritaniTerror?.placementTurn === g.turn) blocked = 'This turn’s placement opportunity is already used.';
-  else if (!tokens.length) blocked = 'No supply token is available. Cunning relocation awaits a ruling.';
+  else if (!tokens.length) blocked = 'No supply token is available. Cunning does not enhance ordinary relocation.';
   return {event:JSON.stringify(['nexusMoritani',g.turn,p.id]),blocked,tokens,
     destinations:TERRITORIES.map(t => t.id)};
 }
@@ -26789,9 +26842,23 @@ function nexusMoritaniIntegrity(g: Game) {
         'Moritani Cunning has a changed or duplicated placement record.');
       nexusRule(() => validateNexusMoritani(g,record.receipt));
       const before = nexusRule(() => JSON.parse(record.before)) as TerrorState;
-      nexusRule(() => quoteNexusMoritaniPlacement(before,record.receipt.token,record.receipt.territory,record.receipt.turn));
-      requireRule(record.frame === JSON.stringify({token:record.receipt.token,territory:record.receipt.territory,turn:record.receipt.turn,nexusEvent:record.receipt.event}),
-        'Moritani Cunning has a changed original placement frame.');
+      if (record.receipt.source === 'grumman') {
+        const receipt = record.receipt;
+        nexusRule(() => quoteNexusMoritaniGrummanPlacement(before, receipt.token, receipt.territory, receipt.prerequisite));
+        requireRule(record.stage === 'complete' && record.frame === JSON.stringify({
+          token: receipt.token, territory: receipt.territory, turn: receipt.turn, nexusEvent: receipt.event,
+          sourceEvent: receipt.sourceEvent, prerequisite: receipt.prerequisite }),
+          'Moritani Cunning has changed its original Grumman addition source.');
+        if (receipt.turn === g.turn) requireRule(g.grummanCollection?.event === receipt.sourceEvent &&
+          g.grummanCollection.stage === 'complete' && g.grummanCollection.outcome === 'add' &&
+          g.grummanCollection.token === receipt.token && g.grummanCollection.territory === receipt.territory &&
+          g.grummanCollection.nexusEvent === receipt.event,
+          'Moritani Cunning has lost its completed current Grumman opportunity.');
+      } else {
+        nexusRule(() => quoteNexusMoritaniPlacement(before,record.receipt.token,record.receipt.territory,record.receipt.turn));
+        requireRule(record.frame === JSON.stringify({token:record.receipt.token,territory:record.receipt.territory,turn:record.receipt.turn,nexusEvent:record.receipt.event}),
+          'Moritani Cunning has a changed original placement frame.');
+      }
       const original = before.tokens.find(t => t.id === record.receipt.token)!;
       const current = g.moritaniTerror?.tokens.find(t => t.id === record.receipt.token);
       requireRule(!current || current.kind === original.kind, 'Moritani Cunning has changed the original physical token face.');
