@@ -1,5 +1,21 @@
 # Dune implementation status
 
+## 13 October 2026 — documented Skills CLI admission repaired
+
+Actual `tools/start-prototype.ts --profile guild-betrayal --leader-skills`
+rejected before room access with the obsolete Semuta-only validation.
+`startPrototypeRoom` already admitted the documented classic Guild Betrayal
+and Homeworld occupation Skill combinations. Match that existing fence in
+the CLI; no initializer, rule or supported profile is widened.
+
+Actual isolated CLI starts `GUILDCLI v8` and `HWCLIQA0 v8` both succeed
+through private backup and native setup. Both retain all14 Skill Cards in
+the original offers/deck; Guild retains Nexus deck12, while Homeworld retains
+native custody and occupation preview. Evidence remains outside Git at
+`/tmp/dune-skills-cli-20261013`. Existing saved games are untouched.
+Prototype-room56/56 and `npm run check:quick` pass. No build, deployed,
+full-module or recovery-assurance claim follows.
+
 ## 13 October 2026 — classic Nexus normal Banker income
 
 The current fresh Banker entry rejected classic Nexus before native offers.

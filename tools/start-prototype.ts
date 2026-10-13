@@ -69,8 +69,8 @@ async function main() {
     throw new Error('--nexus-cards requires --profile leader-skills, banker-income or semuta.');
   if (values.discoveries && values.profile !== 'leader-skills' && values.profile !== 'nexus')
     throw new Error('--discoveries requires --profile leader-skills or nexus.');
-  if (values['leader-skills'] && values.profile !== 'semuta')
-    throw new Error('--leader-skills requires --profile semuta.');
+  if (values['leader-skills'] && values.profile !== 'semuta' && values.profile !== 'homeworld-occupation' && values.profile !== 'guild-betrayal')
+    throw new Error('--leader-skills requires --profile semuta, homeworld-occupation or guild-betrayal.');
   if (values.homeworlds && values.profile !== 'semuta')
     throw new Error('--homeworlds requires --profile semuta.');
   if (

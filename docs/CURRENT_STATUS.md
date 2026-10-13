@@ -29,6 +29,17 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Documented Skills CLI validation corrected — 13 October.**
+The actual CLI still rejected `guild-betrayal --leader-skills` with
+`--leader-skills requires --profile semuta`, despite the already-connected
+room dispatcher and documented Homeworld/Skills entry. Its fence now matches
+the existing Semuta, Homeworld occupation and Guild Betrayal support.
+Actual isolated `GUILDCLI v8` and `HWCLIQA0 v8` both reach native
+`leaderSkills` with all14 real offers/deck cards; Guild also retains Nexus12,
+and Homeworld retains original custody and occupation preview.
+Prototype-room56/56 and types/lint pass. No rule, public start or saved-room
+conversion is added.
+
 **Classic Nexus normal Banker income — 13 October.**
 The existing explicit `banker-income --nexus-cards` entry now composes native
 classic Basic/Advanced all14/all12 setup, optionally Tech3+ and Advanced
