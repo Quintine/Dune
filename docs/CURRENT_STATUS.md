@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Bureaucrat / Homeworld allied income and two 13 October rulings — 13 October.**
+Homeworlds + Leader Skills games now connect qualifying allied-funded ordinary
+auction and Guild-shipment income (`bureaucratAlliedFundingModeSupported` returns
+`homeworldLeaderSkillsProfile` for Homeworlds). Genuine Basic/Advanced classic
+Homeworld Skills games train Bureaucrat on Atreides and seat native Guild;
+53 consumer cases cover 5+3/3+5/5+5/fully donor-funded five, decline/redirect,
+sub-five nonpooling, owner/payee exclusion without masking an eligible payer,
+private gross-only invoices with payer null, stale/cross-actor rejection, four
+bots, once-per-phase use and original Karama cancellation for both income types.
+Two actual390px flows redirect2: Basic auction5+3 (Emperor8→14, Harkonnen10→5,
+Guild5→2) and Basic shipment3+5 (Guild5→11, Harkonnen10→7 with eight reserves at
+Habbanya17, Emperor8→3). Artifact: `/tmp/dune-homeworld-bureaucrat-3229.json`.
+Two user rulings were recorded: the diversion comes off the gross before any
+Homeworld occupation split, and a Guild Nexus Betrayal receipt still carries
+Bureaucrat (holder receives the fee minus two). Neither is exercisable yet — the
+occupied-percentage preview and the Betrayal preview are both fenced from Leader
+Skills by explicit validation, so both remain exact recorded boundaries rather
+than silent omissions. Union369/369 across sixteen files, types/lint and build
+pass. No deployed, save/recovery or full-mode claim follows.
+
 **Bureaucrat / native paired E1 funding — 13 October.**
 Original paired E1 (Ixians/Tleilaxu + classics) with skills now admits
 qualifying allied ordinary-auction (Emperor), Guild-shipment and paid Tleilaxu

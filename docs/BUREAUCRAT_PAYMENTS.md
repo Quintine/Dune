@@ -99,8 +99,58 @@ redirection:
 five-plus-three, three-plus-five, five-plus-five and fully ally-funded five.
 The receipt loses exactly two, never two per contributing payer. A share paid
 by the trainer or recipient cannot qualify, but does not mask a different
-eligible payer. Homeworld allied/split-recipient composition retains its
-separate integration boundary.
+eligible payer. Homeworld allied and split-recipient income is connected under
+the ruled gross-first ordering below.
+
+### User rulings — 13 October 2026
+
+**Homeworld split-recipient ordering.** When a qualifying payment's recipient
+income is partly diverted to Homeworld occupiers, Bureaucrat's two spice comes
+off the **gross before** the occupation percentage split. Occupier shares are
+computed from gross−2; the recipient keeps the remainder of gross−2. The payer
+still pays in full. This resolves the previously silent question (the authorized
+Advanced source, physical p.22, does not address Bureaucrat); the earlier
+runtime behavior was the same ordering but had been recorded only as an
+implementation choice.
+
+The ruling is recorded but not yet exercisable: the occupied-percentage preview
+is fenced from Leader Skills (`initializeHomeworldOccupationGameForAudit`
+requires no skills, and `homeworldOccupiedIncomeIntegrity` requires
+`!g.leaderSkills` whenever the preview is active). Plain Homeworlds + Leader
+Skills allied auction/shipment income is connected now, without a split
+recipient. Exercising the ruled ordering requires deliberately widening the
+occupation preview to admit Leader Skills, which is a separate composition
+change, not a silent extension.
+
+**Guild Nexus Betrayal receipt.** Betrayal redirects the full original charged
+shipment fee to the Nexus holder, while Bureaucrat says the recipient receives
+two less. The user ruled that **Bureaucrat applies**: the holder receives
+price−2 and exactly two goes to the Bank. Neither printed card addresses the
+other, so this is an explicit user ruling, not a source derivation. The Betrayal
+preview still excludes Leader Skills until that composition is implemented.
+
+### Payment families deliberately left unconnected — 13 October 2026
+
+A bounded sweep of every player-to-player spice transfer found no other
+qualifying gap:
+
+- **Below threshold, no work due.** Richese Ambassador purchase income is exactly
+  three; CHOAM Auditor charges at most two; Moritani Extortion is a fixed three.
+  The stamp helper already declines amounts below five, so none can qualify.
+- **Not player-to-player payments.** Bank/board income families (Moritani terror
+  bounty, CHOAM battle force-income share, Smuggler collection, Spice Banker
+  deferred income, Guild Secret Ally's bank tariff) have no seated third-party
+  payer and correctly carry no stamp. Moritani Robbery is theft, not a payment.
+- **Emperor gifts** remain excluded by the explicit 11 October ruling.
+- **Guild Nexus Betrayal full-fee receipt** is ruled to carry Bureaucrat (holder
+  receives price−2; see the 13 October ruling above). It remains unconnected
+  because the recorded Betrayal preview contract expressly excludes Leader
+  Skills, so implementing it requires deliberately widening that preview
+  envelope; it is not a silent omission.
+- **Homeworld allied/split-recipient income** is now connected under the ruled
+  gross-first ordering above. Only the ruling makes the ordering authoritative;
+  it must not be attributed to the printed source, which is silent.
+
 Independent Karama shipments paid entirely to the Bank bypass player-income
 guards. A successful use remains tied to the physical card's turn and phase,
 including same-phase ownership changes; that accounting is an implementation

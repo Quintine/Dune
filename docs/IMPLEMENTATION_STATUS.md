@@ -1,5 +1,46 @@
 # Dune implementation status
 
+## 13 October 2026 — Homeworld allied income and two Bureaucrat rulings
+
+`bureaucratAlliedFundingModeSupported` now returns `homeworldLeaderSkillsProfile`
+for Homeworlds games, so qualifying allied-funded ordinary auction and
+Guild-shipment income in Homeworlds + Leader Skills compositions offer the
+one-time two-spice redirection. Nothing broader opened: multi-expansion,
+preview overlays and the occupation/Betrayal previews remain excluded.
+
+The new fixture reuses the genuine classic Homeworld Skills setup (Bureaucrat
+trained on Atreides, native Guild seated, real Storm/Mentat/worm/alliance). Only
+original unplayed entropy and card custody are staged. Fifty-three consumer
+cases cover both modes and both income types: 5+3/3+5/5+5/fully donor-funded
+five, decline/redirect, sub-five nonpooling, trainer and payee exclusion without
+masking an eligible payer, private gross-only invoices with payer null and no
+shares, stale/cross-actor rejection, all four owner bots, once-per-phase use with
+a real second auction lot, and original Karama cancellation for both income
+types (canceled gross reaches the Bank, delivery and army commitment survive,
+and no Bureaucrat offer/use occurs). A negative malformed-save case pins the
+existing fence message for the occupation preview.
+
+Two actual390px GameTable flows redirect two: Basic auction5+3 (Emperor8→14,
+Harkonnen10→5, Guild5→2, one use, original bonus and next lot) and Basic
+shipment3+5 (Guild5→11, Harkonnen10→7 with eight reserves committed at
+Habbanya17 beside Carthag11, Emperor8→3, one use). One click was not recorded
+after a stale accessibility node and was retried; no action was replayed twice.
+Artifact outside Git `/tmp/dune-homeworld-bureaucrat-3229.json`.
+
+Two user rulings are recorded in `docs/BUREAUCRAT_PAYMENTS.md` and the source
+index: (1) Bureaucrat's two comes off the gross before any Homeworld occupation
+percentage split; (2) a Guild Nexus Betrayal receipt still carries Bureaucrat,
+so the holder receives the fee minus two. Neither is exercisable yet: the
+occupied-percentage preview requires no Leader Skills (`initializeHomeworldOccupationGameForAudit`,
+`homeworldOccupiedIncomeIntegrity`), and the Betrayal preview excludes Leader
+Skills in `guildBetrayalModeSupported` and every profile predicate. Both are
+recorded as exact boundaries with code citations, not silent omissions; opening
+either is a separate composition change.
+
+The affected union369/369 across sixteen files, types/lint and the app build
+pass with unchanged build warnings. No source rule, strategy, public-start,
+save/deployed or full-mode claim is opened by this bounded proof.
+
 ## 13 October 2026 — native paired E1 Bureaucrat funding
 
 Before this slice the no-Homeworlds paired E1 Nexus profile was absent from
