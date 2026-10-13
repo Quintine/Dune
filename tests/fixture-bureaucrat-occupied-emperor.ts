@@ -3,6 +3,8 @@ import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { territory } from '../game/board';
 import { homeworldShipmentChoice } from '../game/homeworld-shipment-options';
 import { quoteStableHomeworldOccupation } from '../game/homeworld-stable-occupation';
+import { homeworldContext } from '../game/homeworld-game';
+import { homeworldForceGroups } from '../game/homeworld-custody';
 import {
   assertClassicHomeworldSkillsCustody, classicHomeworldSkillsPlayer,
   createClassicHomeworldSkillsSetup, nextClassicHomeworldSkillsStep,
@@ -88,22 +90,23 @@ export type OccupiedEmperorFixture = {
   lot: string; bonus: string; karama: string; physical: string[]; actions: ClassicHomeworldSkillsStep[];
 };
 
-/** Actual Basic setup -> paid ten-spice lot -> twenty-counter paid shipment ->
+/** Original native setup -> paid ten-spice lot -> twenty-counter paid shipment ->
  * Guild's real bribes through Mentat -> worm/alliance -> empty Kaitain invasion
  * -> later funded auction. No wallet, force, phase, alliance or authority edits. */
 export function createOccupiedEmperorFixture(options: {
   payerShare?: number; donorShare?: number; donor?: 'guild' | 'atreides' | 'emperor';
+  advanced?: boolean;
 } = {}): OccupiedEmperorFixture {
-  const { payerShare = 5, donorShare = 3, donor = 'guild' } = options;
+  const { payerShare = 5, donorShare = 3, donor = 'guild', advanced = false } = options;
   const payer = 'harkonnen', payee = 'emperor', trainer = 'atreides', occupier = 'guild';
-  const native = createClassicHomeworldSkillsSetup({ occupation: true });
+  const native = createClassicHomeworldSkillsSetup({ occupation: true, advanced });
   const setup = structuredClone(native.afterSetup), actions = [...native.actions];
   let game = structuredClone(setup);
   const act = (actor: string, action: Action) => {
     actions.push({ actor, action: structuredClone(action) }); game = applyAction(game, actor, action);
   };
   const reach = (until: (state: Game) => boolean) => { game = advanceOccupiedEmperor(game, until, actions); };
-  orderSpice(game, ['land']);
+  orderSpice(game, advanced ? ['land', 'land'] : ['land']);
   reach(g => g.phase === 3 && !!g.auction && occupiedEmperorClean(g));
   holdKarama(game, payer);
   reach(g => g.auction!.active === payer && occupiedEmperorClean(g));
@@ -121,7 +124,8 @@ export function createOccupiedEmperorFixture(options: {
   const destination = 'habbanya_ridge_sietch';
   assert.ok(game.players.every(p => !Object.keys(p.forces).some(key => key.startsWith(`${destination}:`))));
   act(payee, { type: 'ship', territory: destination, sector: territory(destination).sectors[0], amount: 20, elite,
-    homeworldSources: { 'homeworld:emperor': { normal: 20 - elite, elite } } });
+    homeworldSources: Object.fromEntries(homeworldForceGroups(homeworldContext(game), game.homeworlds!.custody!)
+      .filter(group => group.native === payee).map(group => [group.id, group.forces[payee]])) });
   reach(g => g.phase === 5 && occupiedEmperorClean(g));
   assert.equal(occupiedEmperorPlayer(game, payee).reserves, 0);
   assert.equal(occupiedEmperorPlayer(game, payee).forces[`${destination}:${territory(destination).sectors[0]}`], 20);
@@ -132,7 +136,7 @@ export function createOccupiedEmperorFixture(options: {
   act(occupier, { type: 'bribe', target: payee, amount: 5 });
   reach(occupiedEmperorClean);
   reach(g => g.turn === 2 && g.phase === 1 && occupiedEmperorClean(g));
-  orderSpice(game, ['worm', 'land']);
+  orderSpice(game, advanced ? ['worm', 'land', 'land'] : ['worm', 'land']);
   reach(g => !!g.nexus && !g.spiceWindow && !g.spiceResolution && occupiedEmperorClean(g));
   act(payer, { type: 'alliance', target: donor });
   act(donor, { type: 'alliance', target: payer });

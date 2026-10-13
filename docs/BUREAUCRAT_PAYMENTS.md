@@ -133,8 +133,18 @@ same family names. The native Guild path uses paid Emperor shipping to fund
 the Guild emptying Junction, then a real Harkonnen invasion. The Emperor path
 uses an actual paid auction to fund the original twenty-counter departure,
 then a real Guild invasion of empty Kaitain. No force, cash or occupation
-history is assigned. Basic current-sole receipts are exercised; Advanced fresh
-entry is exercised, not an Advanced retention/full-game certification.
+history is assigned. Basic current-sole and Advanced retained-qualification
+receipts are exercised, not full-game or complete-module certification.
+
+Advanced Emperor departure explicitly selects all native Homeworld groups:
+fifteen normal Kaitain counters and five Salusa elites. The original twenty-
+counter payment and typed delivery remain. Advanced Guild uses native
+Harkonnen preparation and a fifth BG occupier. Flexible Guild timing postpones
+the invasion to turn2; the funded receipt waits for the actual next worm and
+alliance on turn3 rather than chasing an already-past turn2 Spice phase.
+Both actual Advanced gross8 programs settle native3/occupied3/Bank2 with original
+paid8/shares intact; four meaningful allowance/diversion cases and the previous
+Basic consumers pass21/21 across both files, with types/lint.
 
 Actual390px controls redirect the Emperor invoice, then the Guild occupier
 keeps3 through the original allocation control, then the original Harkonnen

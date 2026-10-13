@@ -105,14 +105,18 @@ export type OccupiedGuildFixture = {
 export function createOccupiedGuildFixture(options: {
   payer?: string; donor?: string; occupier?: string; prep?: string;
   payerShare?: number; donorShare?: number;
+  advanced?: boolean;
 } = {}): OccupiedGuildFixture {
   const payer = options.payer ?? 'harkonnen';
   const donor = options.donor ?? 'emperor';
-  const occupier = options.occupier ?? 'harkonnen';
-  const prep = options.prep ?? 'emperor';
-  const { payerShare = 6, donorShare = 2 } = options;
+  const occupier = options.occupier ?? (options.advanced ? 'beneGesserit' : 'harkonnen');
+  const prep = options.prep ?? (options.advanced ? 'harkonnen' : 'emperor');
+  const { payerShare = 6, donorShare = 2, advanced = false } = options;
   const payee = 'guild', trainer = 'atreides';
-  const native = createClassicHomeworldSkillsSetup({ occupation: true });
+  // Use native Harkonnen preparation and a distinct BG occupier in Advanced;
+  // native flexible Guild timing and every original victory rule remain intact.
+  const native = createClassicHomeworldSkillsSetup({ occupation: true, advanced,
+    ...(advanced ? { roster: ['emperor', 'guild', 'atreides', 'harkonnen', 'beneGesserit'] as const } : {}) });
   const setup = structuredClone(native.afterSetup), actions = [...native.actions];
   const staging = [...native.staging];
   let game = structuredClone(setup);
@@ -123,7 +127,7 @@ export function createOccupiedGuildFixture(options: {
   const reach = (until: (state: Game) => boolean) => {
     game = advanceOccupiedGuild(game, until, actions);
   };
-  orderSpice(game, ['land']);
+  orderSpice(game, advanced ? ['land', 'land'] : ['land']);
   reach(g => g.turn === 1 && g.phase === 5 && g.active === prep && occupiedGuildClean(g));
   const opening = occupiedGuildPlayer(game, payee).spice;
   // One real four-spice shipment income funds the native Guild's later tariff.
@@ -155,8 +159,9 @@ export function createOccupiedGuildFixture(options: {
   assert.ok(game.homeworldOccupationHistory!.sources.some(source =>
     source.event === authority.entitlement!.qualification && source.cause !== 'setup'));
   const occupied = structuredClone(game);
-  reach(g => g.turn === 2 && g.phase === 1 && occupiedGuildClean(g));
-  orderSpice(game, ['worm', 'land']);
+  const paymentTurn = game.turn + 1;
+  reach(g => g.turn === paymentTurn && g.phase === 1 && occupiedGuildClean(g));
+  orderSpice(game, advanced ? ['worm', 'land', 'land'] : ['worm', 'land']);
   reach(g => !!g.nexus && !g.spiceWindow && !g.spiceResolution && occupiedGuildClean(g));
   act(payer, { type: 'alliance', target: donor });
   act(donor, { type: 'alliance', target: payer });
@@ -164,7 +169,7 @@ export function createOccupiedGuildFixture(options: {
   assert.equal(occupiedGuildPlayer(game, donor).ally, payer);
   const alliance = structuredClone(game);
   // The later real paid shipment to an empty Arrakis territory.
-  reach(g => g.turn === 2 && g.phase === 5 && g.active === payer && occupiedGuildClean(g));
+  reach(g => g.turn === paymentTurn && g.phase === 5 && g.active === payer && occupiedGuildClean(g));
   const karama = holdKarama(game, trainer);
   const beforePledge = structuredClone(game);
   if (donorShare) act(donor, { type: 'pledgeAid', amount: donorShare });

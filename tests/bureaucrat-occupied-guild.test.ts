@@ -269,3 +269,21 @@ void test('every owner bot resolves the occupied Junction offer and the native p
     outcome(f, done, 2);
   }
 });
+
+for (const redirect of [false, true]) void test(`Advanced occupied Guild ${redirect ? 'diversion' : 'allowance'} follows actual flexible timing without replaying a past phase`, () => {
+  const f = createOccupiedGuildFixture({ advanced: true });
+  assert.ok(f.beforePledge.turn > f.occupied.turn);
+  const paid = declareOccupiedGuild(f);
+  const pending = allowOccupiedGuildIncome(paid);
+  const done = allocateOccupiedGuild(chooseOccupiedGuild(pending, redirect));
+  outcome(f, done, redirect ? 2 : 0);
+  assert.deepEqual(armies(done), armies(paid));
+  const receipt = done.homeworldOccupiedPercentageLedger!.receipts.at(-1)!;
+  assert.equal(receipt.nativeRetained, redirect ? 3 : 4);
+  assert.equal(receipt.occupiedAmount, redirect ? 3 : 4);
+  assert.equal(guildShippingSource(receipt).payment.paid, 8);
+  assert.deepEqual(guildShippingSource(receipt).payment.contributions,
+    [{payer:f.payer,amount:6},{payer:f.donor,amount:2}]);
+  assert.equal(quoteStableHomeworldOccupation(done, 'junction').entitlement!.qualification,
+    quoteStableHomeworldOccupation(f.occupied, 'junction').entitlement!.qualification);
+});

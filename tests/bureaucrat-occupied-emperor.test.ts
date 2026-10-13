@@ -187,3 +187,17 @@ void test('redirect spends only one phase use; decline leaves it for the next ac
     assertClassicHomeworldSkillsCustody(done);
   }
 });
+
+for (const redirect of [false, true]) void test(`Advanced occupied Emperor ${redirect ? 'diversion' : 'allowance'} preserves the original two-world departure and next paid lot`, () => {
+  const f = fixture({ advanced: true });
+  assert.equal(player(f.setup, f.payee).elites!.reserves, 5);
+  assert.equal(player(f.emptyKaitain, f.payee).reserves, 0);
+  assert.equal(player(f.emptyKaitain, f.payee).elites!.reserves, 0);
+  assert.equal(Object.values(player(f.emptyKaitain, f.payee).forces).reduce((a,b) => a+b, 0), 20);
+  assert.equal(Object.values(player(f.emptyKaitain, f.payee).elites!.forces).reduce((a,b) => a+b, 0), 5);
+  const paid = allow(pay(f)); assertPaid(f, paid);
+  const split = choose(paid, redirect), done = allocate(split);
+  assertOutcome(f, split, done, redirect ? 2 : 0);
+  assert.equal(quoteStableHomeworldOccupation(done, 'kaitain').entitlement!.qualification,
+    quoteStableHomeworldOccupation(f.occupied, 'kaitain').entitlement!.qualification);
+});

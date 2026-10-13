@@ -29,6 +29,19 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Advanced occupied Bureaucrat receipts — 13 October.**
+Actual Advanced Emperor and Guild gross8 receipts now prove native3/occupied3/
+Bank2 through retained original qualifications, with original full payer shares.
+Emperor's real twenty-counter departure uses15 normal Kaitain plus5 Salusa
+elites. Guild's native flexible timing delays foreign invasion until turn2;
+the later receipt uses a real turn3 worm/alliance, not a past-phase predicate.
+Native Harkonnen preparation and a fifth BG occupier preserve original rules.
+Initial fixture traversals chased an already-past Spice phase to the native
+turn10 Guild win; turn-relative traversal fixes the fixture without changing
+game rules. The old Basic paths remain. Four new outcome/boundary cases bring
+the two-file union to21/21; types/lint pass. No new production code, strategy,
+save/deployed, full-game or completed-mode claim follows.
+
 **Actual occupied Homeworld / Skills composition — 13 October.**
 The earlier marked-done split-recipient task had only proved plain Homeworld
 funding; it did not finish the ruled occupied allocation. That missing composition

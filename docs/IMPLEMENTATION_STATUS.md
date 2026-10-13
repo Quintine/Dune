@@ -1,5 +1,27 @@
 # Dune implementation status
 
+## 13 October 2026 — actual Advanced occupied receipt coverage
+
+Native Advanced Emperor and Guild programs settle actual gross8 into native3,
+occupied3 and Bureaucrat Bank2 with original paid8/shares intact. Both preserve
+the original retained qualification from the real prior invasion.
+
+Advanced Emperor departure explicitly selects every native pool: Kaitain15
+normal and Salusa5 elite, paying20 and committing20 with5 elites. Existing Basic
+twenty-normal departure remains. Advanced Guild uses native Harkonnen prep and
+a fifth BG occupier; original Guild timing remains flexible. The foreign
+invasion occurs turn2, so a literal turn2 Spice predicate was already past and
+traversed until the native turn10 Guild win. A relative next-turn boundary now
+waits for actual turn3 worm/alliance and payment; no phase, victory or wallet
+is changed. Temporary diagnostics are removed.
+
+Four meaningful Advanced allowance/diversion cases assert original typed
+withdrawal, full payer debits, occupied allocation, retained source, actual next
+lot or committed shipment. Frozen two-file21/21 and types/lint pass. Actual
+native programs cover both families; the earlier390px Basic surface proves
+the unchanged controls. No production change, new strategy, saved-game audit,
+deployment, complete-game or complete-mode certification is claimed.
+
 ## 13 October 2026 — actual occupied income and Leader Skills
 
 Corrected the previous task completion claim:9b83b61 proved plain Homeworld
