@@ -68,7 +68,8 @@ export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boole
 
 /** Fresh classic Nexus/Skills composed only with the bounded Guild Betrayal preview. */
 export function guildBetrayalNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
-  if (game.expansions.length || !game.guildBetrayalPreview ||
+  if (game.expansions.length || !game.guildBetrayalPreview || game.homeworlds ||
+    game.techTokens || game.strongholdCards || game.semutaPreview ||
     !nexusLeaderSkillModulesSupported(game, false, false, true)) return false;
   const players = game.players!;
   for (let i = 0; i < players.length; i++) {
@@ -78,7 +79,7 @@ export function guildBetrayalNexusLeaderSkillsProfile(game: LeaderSkillProfile):
       if (faction.id === players[i].faction) { classic = faction.expansion === 'base'; break; }
     if (!classic) return false;
   }
-  return true;
+  return players.some(player => player.faction === 'guild');
 }
 
 /** Both original natives in one E1/E2 family, optionally Homeworlds/Discovery/Tech/Strongholds. */
@@ -515,6 +516,7 @@ export function ordinaryLeaderSkillModeSupported(game: LeaderSkillProfile): bool
     (!game.expansions.length || nativeExpansionLeaderSkillsProfile(game))) ||
     classicTechLeaderSkillsProfile(game) || nativeTechLeaderSkillsProfile(game) ||
     strongholdLeaderSkillsProfile(game) || classicNexusLeaderSkillsProfile(game) ||
+    guildBetrayalNexusLeaderSkillsProfile(game) ||
     singleE1E2NexusLeaderSkillsProfile(game) ||
     mixedE3NexusLeaderSkillsProfile(game) || mixedE1E2NexusLeaderSkillsProfile(game) || pairedE3NexusLeaderSkillsProfile(game) ||
     pairedNexusLeaderSkillsProfile(game) || standaloneE3NexusLeaderSkillsProfile(game) ||

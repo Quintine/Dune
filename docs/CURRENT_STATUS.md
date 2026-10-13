@@ -29,6 +29,24 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Ordinary Skills in Guild Betrayal — 13 October.**
+The new Bureaucrat composition had exposed all14 cards but omitted its profile
+from ordinary skill quotes. A real Sandmaster move rejected while ordinary
+movement succeeded; native Mentat battle naming was absent before posture.
+The exact native-Guild classic profile now joins ordinary skill legality; it
+explicitly rejects Homeworlds/Tech/Strongholds/Semuta and other overlays.
+Actual CLI `guild-betrayal --leader-skills` dispatch is connected and exercised.
+Native Sandmaster wallet5→6/pile6→5/moved1 precedes original Collection
+wallet8/pile3. Actual390px Mentat naming→target Crysknife show retains the card,
+records the answer only for entitled seats and restores original posture; paid
+trainer wallet3 and all other wallets stay unchanged. Artifact:
+`/tmp/dune-betrayal-mentat-3232.json`; browser errors empty.
+Frozen42/42 across three affected files and types/lint pass after removing a
+nonexistent controller-property pin and an incidental zero-spice-map shape pin.
+No source rule, strategy, public start, saved-game or full-mode claim follows.
+Final68/68 across five related unit files, types/lint and app build pass with
+unchanged warnings; owned QA resources are released.
+
 **Advanced occupied Bureaucrat receipts — 13 October.**
 Actual Advanced Emperor and Guild gross8 receipts now prove native3/occupied3/
 Bank2 through retained original qualifications, with original full payer shares.

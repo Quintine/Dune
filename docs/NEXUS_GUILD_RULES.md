@@ -70,7 +70,16 @@ Integrated verification should exercise first shipment followed by moved/decline
 
 ### Entry, physical cost and funding
 
-The explicit fresh `guild-betrayal` development profile admits two to six ready classic-faction seats in Basic or Advanced, including native Guild and at least one other faction. It uses physical base decks and Nexus; Homeworlds are optional only when genuinely enabled and seeded during setup. It does not retrofit games, silently add Homeworlds, admit other expansion factions/decks or combine Leader Skills, Discoveries, Tech Tokens, Stronghold Cards, Semuta, Kull or Richese previews.
+The explicit fresh `guild-betrayal` development profile admits two to six ready classic-faction seats in Basic or Advanced, including native Guild and at least one other faction. It uses physical base decks and Nexus; Homeworlds are optional only without Skills and when genuinely enabled and seeded during setup. It does not retrofit games, silently add Homeworlds, admit other expansion factions/decks or combine Discoveries, Tech Tokens, Stronghold Cards, Semuta, Kull or Richese previews.
+
+Explicit `--profile guild-betrayal --leader-skills` instead retains the original
+all14 setup and native classic Guild roster with no Homeworlds or other overlays.
+The ordinary skill quote layer admits this exact composition rather than
+silently disabling Mentat questions, Sandmaster movement or related skill bands.
+The user-ruled Bureaucrat offer follows the original completed invoice; on a
+qualified third-party share it diverts two from the holder receipt to Bank.
+Payer costs, donor escrow, physical Nexus discard and shipment remain original.
+See [Bureaucrat ruling and evidence](BUREAUCRAT_PAYMENTS.md#user-rulings--13-october-2026).
 
 Only original native shipment producers are admitted here. Native Guild Nexus Cunning's second shipment and Richese Nexus Secret Ally's discounted shipment are blocked in this profile **before** spending either singleton or creating a native parent. Those effects outside this profile remain unchanged. Guild Secret Ally is already unavailable because native Guild is seated, not because this preview establishes a new prohibition on its printed panel.
 

@@ -39,12 +39,13 @@ function skillLottery<T>(selected: LeaderSkillId[], operation: () => T): T {
   }
 }
 
-function trainedSetup(advanced: boolean, allied: boolean): { initial: Game; trained: Game; trainer: string } {
+export function createGuildBetrayalSkillsSetup(advanced = false, allied = false,
+  trainerSkill: LeaderSkillId = 'bureaucrat'): { initial: Game; trained: Game; trainer: string } {
   const roster: [string, FactionId, LeaderSkillId][] = [
     ['holder', 'atreides', 'warmaster'], ['guild', 'guild', 'killer-medic'],
     ['shipper', 'emperor', 'master-of-assassins'],
     ...(allied ? [['donor', 'harkonnen', 'swordmaster-of-ginaz'] as [string, FactionId, LeaderSkillId]] : []),
-    ['trainer', 'beneGesserit', 'bureaucrat'],
+    ['trainer', 'beneGesserit', trainerSkill],
   ];
   let game = createGame('BUREAUCRATBETRAYAL', newPlayer(roster[0][0], roster[0][0], roster[0][1]), advanced, []);
   for (const [id, faction] of roster.slice(1)) joinGame(game, newPlayer(id, id, faction));
@@ -66,7 +67,7 @@ function trainedSetup(advanced: boolean, allied: boolean): { initial: Game; trai
   }
   assert.equal(game.status, 'setup', 'The shared fixture owns the remaining native setup.');
   validateLeaderSkills(game.leaderSkills!, game.players);
-  assert.equal(game.leaderSkills!.assignments.find(a => a.skill === 'bureaucrat')?.owner, 'trainer');
+  assert.equal(game.leaderSkills!.assignments.find(a => a.owner === 'trainer')?.skill, trainerSkill);
   return { initial, trained: game, trainer: 'trainer' };
 }
 
@@ -114,7 +115,7 @@ export interface BureaucratBetrayalFundingFixture extends GuildBetrayalFixture {
 export function createBureaucratBetrayalFundingFixture({
   advanced = false, primary = 5, donorAmount = 0, own = false, alreadyUsed = false,
 }: { advanced?: boolean; primary?: number; donorAmount?: number; own?: boolean; alreadyUsed?: boolean } = {}): BureaucratBetrayalFundingFixture {
-  const setup = trainedSetup(advanced, donorAmount > 0);
+  const setup = createGuildBetrayalSkillsSetup(advanced, donorAmount > 0);
   const base = createGuildBetrayalFixture({ initial: setup.trained, advanced,
     payer: own ? 'holder' : 'other', allyPayment: donorAmount > 0 ? 1 : 0 });
   let game = structuredClone(base.before);

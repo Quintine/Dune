@@ -1,5 +1,53 @@
 # Dune implementation status
 
+## 13 October 2026 — ordinary skill legality in Guild Betrayal
+
+The previous composition dealt all14 cards but only admitted Bureaucrat to its
+quote union. Original `ordinaryLeaderSkillModeSupported` omitted the new
+Guild Betrayal profile, which also withheld Mentat naming and rejected optional
+Sandmaster collection while allowing the same ordinary move.
+
+The exact composition now joins ordinary skill legality. Its predicate checks
+native Guild and rejects Homeworlds/Tech/Strongholds/Semuta in addition to
+existing unrelated-overlay guards; no broader profile is enabled. Existing
+ordinary quote consumers retain their rule calculations. Actual prototype
+dispatch now supports `--profile guild-betrayal --leader-skills`; an isolated
+in-memory room reaches original setup/offers/Nexus/cursor without touching saves.
+The shared original trained-setup fixture is reusable for an actual chosen
+trainer card; no offer or assignment is replaced.
+
+Native BEFORE Sandmaster: original BG fighter1 Polar Sink/reserves19, printed
+Hagga Basin6. Ordinary ground movement succeeds; identical collecting request
+rejects immutably. One real original paid shipment/all-pass Betrayal prefix stays
+bound. AFTER: exactly one spice debited and credited, original counter moved,
+ordinary moved count1; native endMovement legitimately collects another2,
+ending wallet8/pile3. The child post-Collection assertion expecting5 failed
+after the actual skill path succeeded; no production rule was changed for it.
+
+Native BEFORE Mentat: paid two-force deployment cost2 (BG5→3) against original
+Atreides army, living trained native disc. Battle skipped Mentat naming and
+opened original posture. AFTER: owner names Crysknife, target privately shows
+the held card, entitled history records it and original posture/powers resume.
+The child target plan incorrectly selected a face-up trained Warmaster;
+consumer regression uses a real living untrained target disc and accepts both
+native card-free plans, preserving held cards/resources.
+
+Actual390px owner question and target Show Crysknife privately controls retain
+the weapon and restore original posture. Owner history contains the answer;
+outside history stays empty, paid wallets unchanged. Artifact
+`/tmp/dune-betrayal-mentat-3232.json`; recorded browser errors empty.
+Only owned QA host/tab/scaffold are removed.
+
+Initial frozen42-case union had40 pass/two fixture assertions fail: nonexistent
+assignment.controller and native automatic Collection creating zero pile keys.
+Those representation/default pins are removed rather than re-pinned; the
+abandoned request instead preserves its actual printed pile and trainer cash.
+Final42/42 and types/lint pass. This proves the bounded connected paths, not
+all skill combinations, strategic AI, full games, recovery or deployed acceptance.
+Final frozen related union68/68 across five files, types/lint and app build pass
+with unchanged module-registration/chunk/route-classification warnings.
+
+
 ## 13 October 2026 — actual Advanced occupied receipt coverage
 
 Native Advanced Emperor and Guild programs settle actual gross8 into native3,
