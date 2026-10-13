@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 13 October 2026 — actual occupied income and Leader Skills
+
+Corrected the previous task completion claim:9b83b61 proved plain Homeworld
+allied receipts, not the ruled occupied split. The original occupation entry now
+accepts a second explicit Skills argument for classic rosters only, reusing
+native Skills initialization and original occupation ledgers. CLI
+`--profile homeworld-occupation --leader-skills` reaches this same entry;
+an isolated in-memory prototype dispatch proves persisted setup with real offers
+and the original ledger. No existing room or database is converted/reset.
+
+Redirected occupation sources preserve full original paid amounts/contributions
+with optional `bankDiversion:2`; allocatable source amount is gross−2. The old
+implementation instead shaved one payer share and rejected multiple shares.
+Historical undiverted receipt shape remains unchanged. Original Guild rounding
+is checked against full original shares, not rewritten post-diversion shares.
+The two-odd low/occupied Junction boundary remains guarded before costs.
+
+Two native Basic fixtures use real paid funding, departures, invasions and
+worm alliances: Emperor shipping funds Guild's original15-reserve departure
+before Harkonnen invades Junction; a real ten-spice lot funds Emperor's
+twenty-counter departure before Guild invades empty Kaitain. Source history,
+armies and wallets are never assigned. Guild6+2 and Emperor5+3 gross8 redirect
+to Bank2/native3/occupied3; decline splits4+4. Original Karama cancels native
+income only, leaves occupied4 and creates no Bureaucrat offer/use.
+
+Actual390px GameTable proof starts at the original paid Emperor receipt,
+redirects as Atreides, keeps3 as Guild occupier, and allows the original Harkonnen
+bonus: lot1, E8/H0/G16/A10, one use, original paid8 and5+3 contributions intact.
+Artifact `/tmp/dune-occupied-bureaucrat-3231.json`. A fresh AX observation failed
+after accepted Seat selection; recovered state confirms selection with no
+gameplay action replay. Recorded browser errors are empty. Caption now describes
+the remaining Homeworld allocation instead of promising native gross−2 cash.
+Parent actual Guild program separately proves paid8/shares6+2/remaining6,
+native3/occupied3 and one use with the original delivered forces.
+
+Focused84/84 across four unit files and types/lint pass. Both modes' fresh entry
+are exercised; actual occupied scenarios are Basic. These are bounded rule/control
+proofs, not Advanced retention, deployed, saved-game or complete-mode acceptance.
+Final frozen union110/110 across seven affected unit files, types/lint and app
+build pass with unchanged warnings. Real CLI help lists the new explicit
+occupation+Skills option; only owned QA host/tab/scaffold were removed.
+
+
 ## 13 October 2026 — Guild Nexus Betrayal Bureaucrat receipt
 
 The user ruled that a Betrayal receipt still carries Bureaucrat: the holder

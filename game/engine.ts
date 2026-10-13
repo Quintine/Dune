@@ -8596,7 +8596,9 @@ function projectedBureaucrat(g: Game,viewer: string): BureaucratPaymentView {
     ![pending.owner,pending.source.payer,pending.source.payee,pending.resume.response?.recipient].includes(viewer);
   return {pending:pending && !privateRevival ? {event:pending.source.event,owner:pending.owner,
     payer:pending.source.privateFunding ? null : pending.source.payer,payee:pending.source.payee,
-    amount:pending.source.amount,kind:pending.source.kind,redirect:2} : null,
+    amount:pending.source.amount,kind:pending.source.kind,redirect:2,
+    ...(g.homeworlds && (pending.source.kind === 'auction' || pending.source.kind === 'shipment')
+      ? { homeworldAllocation: true as const } : {})} : null,
     usedThisPhase:bureaucratUsed(g.bureaucratPayments?.used ?? [],g.turn,g.phase)};
 }
 function actBureaucratPayment(g: Game,action:Action) {
@@ -8951,7 +8953,7 @@ export function initializeHomeworldGameForAudit(state: Game): Game {
   return initializeSetupGameForAudit(state, true);
 }
 /** Fresh occupation prototype; ambiguity remains source-gated rather than assigned a controller. */
-export function initializeHomeworldOccupationGameForAudit(state: Game): Game {
+export function initializeHomeworldOccupationGameForAudit(state: Game, leaderSkills = false): Game {
   requireRule(state.homeworlds?.custody === null && !state.homeworldOccupationPreview &&
     !state.homeworldOccupationHistory && !state.nexusCards && !state.leaderSkills &&
     !state.techTokens && !state.strongholdCards && !state.discoveryEnabled &&
@@ -8964,7 +8966,10 @@ export function initializeHomeworldOccupationGameForAudit(state: Game): Game {
   'Occupation requires a fresh Homeworld lobby with original selected faction decks and no other modules.');
   requireFreshBaseRuntime(state);
   requireFreshFactionInventory(state);
-  const g = initializeSetupGameForAudit(state, true, false, false, false, false, false, true);
+  requireRule(!leaderSkills || !state.expansions.length && homeworldLeaderSkillsProfile(state),
+    'Occupation with Leader Skills requires original classic Homeworlds without other modules.');
+  const g = leaderSkills ? initializeLeaderSkillsGameForAudit(state)
+    : initializeSetupGameForAudit(state, true, false, false, false, false, false, true);
   g.homeworldOccupationPreview = true;
   g.pendingHomeworldOccupiedIncome = null;
   g.homeworldOccupiedIncomeHistory = [];
@@ -16493,7 +16498,8 @@ function admitOccupiedPercentage(g: Game, source: OccupiedPercentageSource, alre
   g.decision = owner ? { kind: 'homeworldOccupiedPercentage', player: owner, event: source.event } : null;
   return true;
 }
-function occupiedPaymentSource(g: Game, response: ResponseWindow, gross: number, canceled: boolean): OccupiedPercentageSource {
+function occupiedPaymentSource(g: Game, response: ResponseWindow, gross: number, canceled: boolean,
+  diversion = 0): OccupiedPercentageSource {
   const kind = response.kind === 'guildIncome' ? 'guild-shipping' : 'emperor-treachery', sale = g.currentAuctionSale;
   const buyer = response.source === 'ambassador' ? g.pendingAmbassador!.purchaseReceipt!.buyer :
     response.kind === 'richesePurchaseIncome' ? g.pendingRichesePurchaseIncome!.buyer : sale?.winner;
@@ -16503,19 +16509,22 @@ function occupiedPaymentSource(g: Game, response: ResponseWindow, gross: number,
       sale.occupiedContributions!;
   }
   const paid = contributions.reduce((sum, leg) => sum + leg.amount, 0);
-  if (paid !== gross) {
+  requireRule(diversion === 0 || diversion === 2 && !canceled && paid === gross + diversion,
+    'The occupied receipt lost its original Bureaucrat diversion.');
+  if (!diversion && paid !== gross) {
     requireRule(contributions.length === 1 && paid >= gross, 'The routed payment lost its eligible paid contributions.');
     contributions = [{ ...contributions[0], amount: gross }];
   }
   const id = response.occupiedPayment?.event ?? (response.source === 'ambassador' ? g.pendingAmbassador!.event :
     response.kind === 'richesePurchaseIncome' ? g.pendingRichesePurchaseIncome!.event! : sale!.occupiedEvent!);
   return { kind, event: crypto.randomUUID(), native: response.owner, amount: gross,
-    payment: { id, binding: occupiedProducerProof(g, kind, response), paid: gross, contributions, recipient: response.owner },
+    payment: { id, binding: occupiedProducerProof(g, kind, response), paid: diversion ? paid : gross,
+      contributions, recipient: response.owner, ...(diversion ? { bankDiversion: 2 as const } : {}) },
     nativeIncome: canceled ? 'karama-canceled' : 'received' };
 }
 function settleOccupiedPayment(g: Game, response: ResponseWindow, gross: number, canceled: boolean,
-  suffix: OccupiedPercentageSuffix): boolean {
-  return !!g.homeworldOccupationPreview && admitOccupiedPercentage(g, occupiedPaymentSource(g, response, gross, canceled), 0, suffix);
+  suffix: OccupiedPercentageSuffix, diversion = 0): boolean {
+  return !!g.homeworldOccupationPreview && admitOccupiedPercentage(g, occupiedPaymentSource(g, response, gross, canceled, diversion), 0, suffix);
 }
 function decideOccupiedPercentage(g: Game, p: Player, action: Action) {
   occupiedPercentageIntegrity(g);
@@ -19081,7 +19090,8 @@ function homeworldOccupiedIncomeIntegrity(g: Game) {
     return;
   }
   requireRule(g.homeworldOccupationPreview === true && g.homeworlds && !g.nexusCards &&
-    !g.leaderSkills && !g.techTokens && !g.strongholdCards && !g.discoveryEnabled &&
+    (!g.leaderSkills || !g.expansions.length && homeworldLeaderSkillsProfile(g)) &&
+    !g.techTokens && !g.strongholdCards && !g.discoveryEnabled &&
     Array.isArray(history) && pending !== undefined,
   'The fresh occupation profile lost its original Homeworld module or income ledger.');
   const turns = new Set<number>();
@@ -24110,7 +24120,7 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
         ? { kind: 'richesePurchase', resume: g.pendingRichesePurchaseIncome!.resume } : { kind: 'none', decision: g.decision };
     if (response.kind === 'emperorIncome') awardBankerIncome(g, g.currentAuctionSale?.spiceBankerIncomePayment, canceled);
     if (response.kind === 'guildIncome') awardBankerIncome(g, response.spiceBankerIncomePayment, canceled);
-    const pending = settleOccupiedPayment(g, response, gross, canceled, suffix);
+    const pending = settleOccupiedPayment(g, response, gross, canceled, suffix, bureaucratDiversion ?? 0);
     if (!pending) runOccupiedPercentageSuffix(g, suffix);
     return;
   }

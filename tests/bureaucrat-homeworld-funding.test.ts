@@ -194,16 +194,16 @@ for (const advanced of [false, true]) void test(`${advanced ? 'Advanced' : 'Basi
   }
 });
 
-void test('occupied-percentage entry remains explicitly fenced from an actual trained Homeworld Bureaucrat game', () => {
+void test('played Homeworld skills rooms cannot be converted and incomplete occupation saves reject immutably', () => {
   const f = fixture({ kind: 'shipment' });
   assert.equal(f.game.homeworldOccupationPreview, undefined);
-  assert.throws(() => initializeHomeworldOccupationGameForAudit(f.game),
-    { message: 'Occupation requires a fresh Homeworld lobby with original selected faction decks and no other modules.' });
+  const original = structuredClone(f.game);
+  assert.throws(() => initializeHomeworldOccupationGameForAudit(f.game));
+  assert.deepEqual(f.game, original);
   // Negative malformed-save input only: never claimed as a reachable occupation
   // fixture. No wallet, army, occupation history or skill custody is fabricated.
   const rejectedSave = structuredClone(f.game); rejectedSave.homeworldOccupationPreview = true;
   const before = structuredClone(rejectedSave);
-  assert.throws(() => applyAction(rejectedSave, f.payer, f.action),
-    { message: 'The fresh occupation profile lost its original Homeworld module or income ledger.' });
+  assert.throws(() => applyAction(rejectedSave, f.payer, f.action));
   assert.deepEqual(rejectedSave, before);
 });

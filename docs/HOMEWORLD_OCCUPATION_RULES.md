@@ -82,6 +82,16 @@ Original receipt-free occupation captures may admit a new source lazily; no past
 percentage is back-awarded. A separate fresh marker now connects
 [occupied Tupile slots/cleanup and low-query restoration](HOMEWORLD_TUPILE_INTELLIGENCE_RUNTIME.md#occupied-tupile-slots-and-original-cleanup--5-october-2026).
 Public starts, played-game conversion, other modules and exceptional Duke custody remain separate.
+
+Fresh classic occupation now accepts explicit Leader Skills through
+`--profile homeworld-occupation --leader-skills`. Original all14 setup and
+occupation-ledger custody remain; other optional modules and expansions are
+not added by this composition. The user-ruled Bureaucrat diversion is gross-first:
+an original paid8 remains8 in payer evidence, but two goes to Bank before the
+remaining6 splits3 native/3 occupied. Native Karama cancellation still leaves
+the occupied portion; a canceled receipt never spends Bureaucrat.
+See [actual receipt evidence](BUREAUCRAT_PAYMENTS.md#user-rulings--13-october-2026).
+
 See [percentage receipts](../game/homeworld-occupied-percentage.ts),
 [Bidding authority](../game/homeworld-occupied-bidding.ts) and
 [original consumer programs](../tests/homeworld-occupied-producers-engine.test.ts).

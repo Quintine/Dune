@@ -55,7 +55,7 @@ export type PrototypeOptions = {
   nexusCards?: boolean;
   /** Explicit classic Discovery/Skills composition, not a public activation. */
   discoveries?: boolean;
-  /** Explicit original native skills only with the Semuta profile. */
+  /** Explicit original skills with Semuta or classic Homeworld occupation. */
   leaderSkills?: boolean;
   /** Original Richese/CHOAM and classic Homeworld occupation with Semuta only. */
   homeworlds?: boolean;
@@ -104,8 +104,8 @@ export function startPrototypeRoom(
     throw new Error('--nexus-cards requires the leader-skills or semuta profile.');
   if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus')
     throw new Error('--discoveries requires the leader-skills or nexus profile.');
-  if (options.leaderSkills && profile !== 'semuta')
-    throw new Error('--leader-skills requires the semuta profile.');
+  if (options.leaderSkills && profile !== 'semuta' && profile !== 'homeworld-occupation')
+    throw new Error('--leader-skills requires the semuta or homeworld-occupation profile.');
   if (options.homeworlds && profile !== 'semuta')
     throw new Error('--homeworlds requires the semuta profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
@@ -120,7 +120,7 @@ export function startPrototypeRoom(
         ? initializeHomeworldOccupationGameForAudit({
             ...initial,
             homeworlds: initial.homeworlds ?? { custody: null },
-          })
+          }, options.leaderSkills)
       : profile === 'stronghold-factions'
         ? initializeStrongholdFactionsGameForAudit(initial)
       : profile === 'ecaz-treachery'

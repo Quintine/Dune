@@ -113,14 +113,37 @@ Advanced source, physical p.22, does not address Bureaucrat); the earlier
 runtime behavior was the same ordering but had been recorded only as an
 implementation choice.
 
-The ruling is recorded but not yet exercisable: the occupied-percentage preview
-is fenced from Leader Skills (`initializeHomeworldOccupationGameForAudit`
-requires no skills, and `homeworldOccupiedIncomeIntegrity` requires
-`!g.leaderSkills` whenever the preview is active). Plain Homeworlds + Leader
-Skills allied auction/shipment income is connected now, without a split
-recipient. Exercising the ruled ordering requires deliberately widening the
-occupation preview to admit Leader Skills, which is a separate composition
-change, not a silent extension.
+The original occupied-percentage preview now composes with all fourteen Leader
+Skills in fresh classic Homeworld games. Use `--profile homeworld-occupation
+--leader-skills`; the original setup, occupation history and allocation ledger
+remain authoritative. Expansions, Nexus Cards, Tech, Strongholds, Discovery and
+other overlays remain outside this new entry. Existing games are not converted.
+
+Actual Guild and Emperor receipts demonstrate gross8 → Bureaucrat Bank2 +
+native3 + occupied3. The new receipt records `bankDiversion:2` while retaining
+original `payment.paid:8` and each full actual payer contribution; its allocatable
+`source.amount` is6. Decline splits8 into4+4. Karama before Bureaucrat instead
+banks the native4, preserves the occupied4 and spends no Bureaucrat use.
+The original two-odd Guild contributor rounding guard remains separate:6+2
+is admitted, whereas5+3/3+5/5+5 reject before costs at low/occupied Junction.
+
+The new consumers are `tests/bureaucrat-occupied-guild.test.ts` and
+`tests/bureaucrat-occupied-emperor.test.ts`, with original-army fixtures of the
+same family names. The native Guild path uses paid Emperor shipping to fund
+the Guild emptying Junction, then a real Harkonnen invasion. The Emperor path
+uses an actual paid auction to fund the original twenty-counter departure,
+then a real Guild invasion of empty Kaitain. No force, cash or occupation
+history is assigned. Basic current-sole receipts are exercised; Advanced fresh
+entry is exercised, not an Advanced retention/full-game certification.
+
+Actual390px controls redirect the Emperor invoice, then the Guild occupier
+keeps3 through the original allocation control, then the original Harkonnen
+bonus allowance advances to lot1. E5→8/H5→0/G16→13→16, one use, original
+paid8 and5+3 evidence intact. Artifact: `/tmp/dune-occupied-bureaucrat-3231.json`.
+Fresh AX observation failed after a Seat selection; fresh state confirmed the
+selection and no gameplay action was replayed. Recorded browser errors are empty.
+The caption now says the remainder follows the original Homeworld allocation,
+rather than falsely claiming it all reaches the native recipient.
 
 **Guild Nexus Betrayal receipt.** Betrayal redirects the full original charged
 shipment fee to the Nexus holder, while Bureaucrat says the recipient receives

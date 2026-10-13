@@ -30,9 +30,11 @@ export function BureaucratPayment({
       <h3 className="font-serif text-xl">Bureaucrat payment</h3>
       <p className="text-base leading-7">
         {payer ? <>The payment from {payer} to {payee}</> : <>The qualifying allied-funded payment to {payee}</>}{' '}
-        is {pending.amount} spice. You may redirect {pending.redirect} spice to the Bank: {payee} receives{' '}
-        {redirectAmount} spice and the Bank receives {pending.redirect}, while{' '}
-        {payer ? `${payer} still pays the full amount` : 'each contributor still pays their full original share'}.
+        is {pending.amount} spice. You may redirect {pending.redirect} spice to the Bank.{' '}
+        {pending.homeworldAllocation
+          ? <>{redirectAmount} spice then follows the original Homeworld income allocation, including any occupied share.</>
+          : <>{payee} receives {redirectAmount} spice and the Bank receives {pending.redirect}.</>}{' '}
+        {payer ? `${payer} still pays the full amount` : 'Each contributor still pays their full original share'}.
       </p>
       {pending.kind === 'bribe' && (
         <p className="text-base leading-7">

@@ -31,6 +31,7 @@ export type BureaucratPaymentView = {
     amount: number;
     kind: BureaucratPaymentKind;
     redirect: 2;
+    homeworldAllocation?: true;
   };
   usedThisPhase: boolean;
 };

@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Actual occupied Homeworld / Skills composition — 13 October.**
+The earlier marked-done split-recipient task had only proved plain Homeworld
+funding; it did not finish the ruled occupied allocation. That missing composition
+is now connected through original classic occupation+all14 Skills entry and CLI
+`--profile homeworld-occupation --leader-skills`. Paid receipts preserve original
+amount/shares and carry optional Bank diversion2; allocation uses gross−2.
+Native Basic empty-Junction and empty-Kaitain invasions prove actual occupied
+gross8→Bank2/native3/occupied3, decline4+4, and cancellation native0/occupied4
+without a Bureaucrat use. No armies, wallets or qualification histories are
+assigned. Original low-Junction two-odd funding guards remain;6+2 is legal.
+Actual390px Emperor redirect→Guild allocation→original bonus allowance reaches
+lot1 at E8/H0/G16/A10, one use; evidence
+`/tmp/dune-occupied-bureaucrat-3231.json`. Browser errors empty; one transient
+AX failure after Seat change was recovered without replay.
+Both Basic/Advanced fresh entry and actual prototype dispatch are exercised;
+occupied payment paths here are Basic, not retention/full-game acceptance.
+Final110/110 across seven affected unit files, types/lint and app build pass;
+existing build warnings remain. No deployed or complete-mode claim follows;
+broader rules, administration and final assurance remain due.
+
 **Bureaucrat / Guild Nexus Betrayal receipt — 13 October.**
 Per the user ruling, a Betrayal receipt now carries Bureaucrat: the holder
 receives the fee minus two. A new bounded composition

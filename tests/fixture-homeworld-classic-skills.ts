@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { applyAction, createGame, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, viewGame, type Action, type Game, type Player } from '../game/engine';
+import { applyAction, createGame, initializeHomeworldOccupationGameForAudit, initializeLeaderSkillsGameForAudit, joinGame, newPlayer, viewGame, type Action, type Game, type Player } from '../game/engine';
 import { botActions } from '../game/bots';
 import type { Difficulty } from '../game/bot-profiles';
 import { territory } from '../game/board';
@@ -93,6 +93,7 @@ export function createClassicHomeworldSkillsSetup(options: {
   roster?: readonly FactionId[];
   initial?: Game;
   skill?: LeaderSkillId;
+  occupation?: boolean;
 } = {}): ClassicHomeworldSkillsSetup {
   const roster = options.roster ?? ['emperor', 'guild', 'atreides', 'harkonnen'];
   let game = options.initial ? structuredClone(options.initial)
@@ -128,7 +129,8 @@ export function createClassicHomeworldSkillsSetup(options: {
   const deckOrder = [...prefix, ...cards.map(c => c.id).filter(id => !prefix.includes(id))];
   if (game.status === 'lobby') game = originalLottery(
     [...permutationDraws(canonical, desired), ...permutationDraws(cards.map(c => c.id), deckOrder)],
-    () => initializeLeaderSkillsGameForAudit(game));
+    () => options.occupation ? initializeHomeworldOccupationGameForAudit(game, true)
+      : initializeLeaderSkillsGameForAudit(game));
   let offered: Game | null = null;
   for (let count = 0; game.status === 'setup' && count < 200; count++) {
     let next: ClassicHomeworldSkillsStep;

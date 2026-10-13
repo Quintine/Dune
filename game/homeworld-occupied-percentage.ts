@@ -19,6 +19,8 @@ export type OccupiedPercentagePayment = Readonly<{
   paid: number;
   contributions: readonly OccupiedPercentageContribution[];
   recipient: string;
+  /** Ruled Bureaucrat diversion; original paid amounts and payer shares remain intact. */
+  bankDiversion?: 2;
 }>;
 export type OccupiedPercentageSource = Readonly<{
   event: string;
@@ -127,10 +129,14 @@ function freezeSource(source: OccupiedPercentageSource, game: OccupiedPercentage
     }) });
   }
   const richese = source.kind === 'richese-income';
+  const diverted = !!source.payment && Object.hasOwn(source.payment, 'bankDiversion');
   requireReceipt(keys(source, richese ? ['kind', 'event', 'native', 'amount', 'payment'] :
     ['kind', 'event', 'native', 'amount', 'payment', 'nativeIncome']) &&
     keys(source.payment, richese ? ['id', 'binding', 'paid', 'contributions', 'recipient', 'received'] :
-      ['id', 'binding', 'paid', 'contributions', 'recipient']) && text(source.payment.id) && text(source.payment.binding) &&
+      diverted ? ['id', 'binding', 'paid', 'contributions', 'recipient', 'bankDiversion'] :
+        ['id', 'binding', 'paid', 'contributions', 'recipient']) &&
+    (!diverted || !richese && source.payment.bankDiversion === 2 && source.nativeIncome === 'received') &&
+    text(source.payment.id) && text(source.payment.binding) &&
     whole(source.payment.paid) && source.payment.recipient === source.native && Array.isArray(source.payment.contributions),
   'payment lost its original receipt, actual native recipient or paid provenance.');
   const seen: Record<string, true> = Object.create(null);
@@ -144,7 +150,8 @@ function freezeSource(source: OccupiedPercentageSource, game: OccupiedPercentage
   requireReceipt(total(contributions.map(leg => leg.amount)) === source.payment.paid,
     'original payer contributions do not conserve the paid amount.');
   const payment = { id: source.payment.id, binding: source.payment.binding, paid: source.payment.paid,
-    contributions: Object.freeze(contributions), recipient: source.payment.recipient };
+    contributions: Object.freeze(contributions), recipient: source.payment.recipient,
+    ...(diverted ? { bankDiversion: 2 as const } : {}) };
   if (source.kind === 'richese-income') {
     requireReceipt(whole(source.payment.received) && source.payment.received <= source.payment.paid &&
       source.amount === source.payment.received, 'Richese percentage requires actual net received income, not the gross sale.');
@@ -152,7 +159,8 @@ function freezeSource(source: OccupiedPercentageSource, game: OccupiedPercentage
   }
   requireReceipt(source.nativeIncome === 'received' || source.nativeIncome === 'karama-canceled', 'invalid native income outcome.');
   const eligible = contributions.filter(leg => source.kind !== 'guild-shipping' || leg.payer !== source.native);
-  requireReceipt(total(eligible.map(leg => leg.amount)) === source.amount, 'eligible receipt includes excluded or unpaid spice.');
+  requireReceipt(total(eligible.map(leg => leg.amount)) === source.amount + (diverted ? 2 : 0),
+    'eligible receipt includes excluded or unpaid spice.');
   return Object.freeze({ ...base, kind: source.kind, payment: Object.freeze(payment), nativeIncome: source.nativeIncome });
 }
 function amounts(source: OccupiedPercentageSource, nativeLow: boolean, occupied: boolean) {
@@ -239,7 +247,7 @@ export function quoteOccupiedPercentageSource(
   // comparing rounding; no new transaction-versus-contribution policy is invented.
   if (source.kind === 'guild-shipping' && (payment?.low || stable.entitlement || stable.blocked)) {
     const eligible = source.payment.contributions.filter(leg => leg.payer !== source.native && leg.amount > 0).map(leg => leg.amount);
-    requireReceipt(quoteGuildPaymentRounding(source.amount, eligible).unambiguous,
+    requireReceipt(quoteGuildPaymentRounding(source.amount + (source.payment.bankDiversion ?? 0), eligible).unambiguous,
       'multiple-contributor shipping rounding awaits its original ruling.');
   }
   const candidate = Math.floor(source.amount / 2);
