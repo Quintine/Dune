@@ -8317,12 +8317,14 @@ function bankerIncomeContext(g: Game): BankerIncomeContext {
     assignments: g.leaderSkills?.assignments ?? []};
 }
 function bankerIncomeProfile(g: Game): boolean {
+  const classicNexus = classicNexusLeaderSkillsProfile(g);
   return g.players.length >= 2 && g.players.length <= 6 &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base'))) ||
       nativeExpansionLeaderSkillsProfile(g)) &&
-    !g.nexusCards && !g.homeworlds && (!g.techTokens || classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || strongholdLeaderSkillsProfile(g)) &&
-    (!g.strongholdCards || strongholdLeaderSkillsProfile(g)) && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
+    (!g.nexusCards || classicNexus) && !g.homeworlds &&
+    (!g.techTokens || classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || strongholdLeaderSkillsProfile(g) || classicNexus) &&
+    (!g.strongholdCards || strongholdLeaderSkillsProfile(g) || classicNexus) && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery && !g.semutaPreview &&
     ((!g.moritaniAssassinatePreview && !g.moritaniAssassinate) || advancedMoritaniLeaderSkillsProfile(g)) && !g.advancedPreview &&
     !g.kullPreview && !g.nexusKullPreview && !g.guildBetrayalPreview && !g.richeseBetrayalPreview &&
@@ -10051,7 +10053,7 @@ export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
   g.leaderSkills = createLeaderSkills(random);
   g.spiceBankerIncomePreview = true;
   g.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(g)));
-  const initialized = initializeSetupGameForAudit(g, false, false, false, false, true,
+  const initialized = initializeSetupGameForAudit(g, false, classicNexusLeaderSkillsProfile(g), false, false, true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', g.expansions.length > 0);
   if (advancedMoritaniLeaderSkillsProfile(initialized)) initializeMoritaniAssassinateState(initialized);
   return initialized;

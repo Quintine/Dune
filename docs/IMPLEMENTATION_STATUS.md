@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 13 October 2026 — classic Nexus normal Banker income
+
+The current fresh Banker entry rejected classic Nexus before native offers.
+The classic Nexus skill predicate now admits its explicit income overlay
+without enabling other native-family overlays. The original initializer
+passes Nexus setup and original optional Tech3+/Advanced Strongholds2+ paths.
+Both CLI and room-option validation admit `banker-income --nexus-cards`.
+No printed payment, receipt, deferred-currency or collection rule changes.
+
+Native Guild self-shipment pays4/wallet5→1 and leaves Atreides front1 with no
+available-wallet increase. Actual paid3 earns none; Emperor-to-Guild4 remains
+player income. Native Advanced Guild timing and selected original modules
+continue; actual Heighliners income settles at phase end, never another bank
+invoice. The fixture's initial eight-force Polar shipment exceeded Guild's
+original wallet; use the printed four-force/four-spice shipment instead, with
+no wallet or force fabrication. An incidental empty-collection count pin is
+removed: native Mentat records its epoch even when there is no grant.
+
+The seven-file related union passes158/158 and types/lint pass before adding
+the explicit separate-Tech-credit regression. Actual isolated CLI
+`BANKERQA v8` reaches native `leaderSkills`, all14 in original deck/offers,
+Nexus deck12 and income-v1. Actual390px table shows deferred1 at wallet10;
+the last ordinary Collection Ready enters real Mentat and credits10→11,
+removing the notice with no extra action. Browser errors empty, no root
+overflow. `/tmp/dune-classic-nexus-banker-ui-proof.json` retains evidence.
+Owned UI tab/host/scaffold removed; no live room or saved database changed.
+The existing separate opt-in and provisional earned-custody/per-payer policies
+remain. Homeworlds, Discovery, native-family Nexus, Betrayal, complete-mode
+and deployed acceptance remain outside this checkpoint.
+
+Final seven-file union159/159 and `npm run check:quick` pass. The additional
+native Advanced Emperor-to-Guild receipt proves phase-end Heighliners1,
+independent ordinary Collection, zero Banker sources and unchanged Banker
+wallet at Mentat. No full-suite or deployed acceptance was run for this slice.
+
 ## 13 October 2026 — storm-aware occupation fixture and obsolete guidance tests
 
 The observed Advanced occupied-Guild receipt failure was in the fixture:

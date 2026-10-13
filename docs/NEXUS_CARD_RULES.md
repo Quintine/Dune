@@ -2,6 +2,17 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Classic Nexus with normal Banker income — 13 October 2026
+
+Fresh `banker-income --nexus-cards` now composes the existing deferred normal
+Skill band with classic Basic/Advanced all14/all12 setup, optionally original
+Tech3+ and Advanced Strongholds2+. Actual bank payer legs still qualify once
+per phase; player income and phase-end Tech payouts do not qualify, and the
+original Mentat opening collects automatically. No Nexus hand is dealt at
+setup, no new collect action is added, and no played game is converted.
+Homeworlds, Discovery, native-family Nexus and Betrayal previews remain
+outside this entry. [Source, original costs and runtime proof](SPICE_BANKER_RUNTIME.md#classic-nexus-income-composition--13-october-2026).
+
 ## Semuta with original native Nexus — 11 October 2026
 
 Fresh `semuta --nexus-cards` composes native Richese with the original

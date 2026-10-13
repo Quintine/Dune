@@ -101,8 +101,8 @@ export function startPrototypeRoom(
     throw new Error('Unknown prototype profile.');
   if (options.ecazTreachery && profile !== 'ecaz-occupy')
     throw new Error('--ecaz-treachery requires the ecaz-occupy profile.');
-  if (options.nexusCards && profile !== 'leader-skills' && profile !== 'semuta')
-    throw new Error('--nexus-cards requires the leader-skills or semuta profile.');
+  if (options.nexusCards && profile !== 'leader-skills' && profile !== 'semuta' && profile !== 'banker-income')
+    throw new Error('--nexus-cards requires the leader-skills, banker-income or semuta profile.');
   if (options.discoveries && profile !== 'leader-skills' && profile !== 'nexus')
     throw new Error('--discoveries requires the leader-skills or nexus profile.');
   if (options.leaderSkills && profile !== 'semuta' && profile !== 'homeworld-occupation' && profile !== 'guild-betrayal')

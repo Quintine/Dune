@@ -29,6 +29,20 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Classic Nexus normal Banker income — 13 October.**
+The existing explicit `banker-income --nexus-cards` entry now composes native
+classic Basic/Advanced all14/all12 setup, optionally Tech3+ and Advanced
+Strongholds2+. Printed final-bank-leg, phase-use, deferred budget and original
+Mentat settlement are unchanged. Native Guild pays4/wallet5→1/front1; paid3
+and Emperor's player-recipient4 earn none. Actual390px Collection Ready credits
+Atreides10→11 at real Mentat, removes front1 and adds no collect action.
+CLI `BANKERQA v8` retains real offers/all14, Nexus deck12 and income-v1.
+Existing earned-custody policy and ordinary opt-in remain; Homeworlds,
+Discovery, native-family Nexus, Betrayal and full-mode gates stay separate.
+[Canonical source and local proof](SPICE_BANKER_RUNTIME.md#classic-nexus-income-composition--13-october-2026).
+Final seven-file union159/159 and types/lint pass, including actual separate
+Heighliners settlement. No broad-suite, full-combination or deployed claim.
+
 **Checkpoint test repairs — 13 October.**
 The observed occupied-Guild failure came from always shipping to Arsunt11,
 even when the actual turn3 storm was there. The native fixture now chooses

@@ -1,5 +1,43 @@
 # Spice Banker battle commitment and normal income prototypes
 
+## Classic Nexus income composition — 13 October 2026
+
+`banker-income --nexus-cards` now connects the existing mandatory normal band
+to fresh classic Basic/Advanced Nexus Skills games. Original Tech requires3+;
+Strongholds require Advanced2+, optionally both. This does not admit Homeworlds,
+Discovery, expansion-family Nexus, Semuta or Betrayal previews, change ordinary
+skill defaults, or retrofit played games. All33 Treachery, all14 Skills and
+all12 undealt Nexus remain native. There is no fabricated starting Nexus hand.
+
+The previous entry rejected this fresh composition before offers. The shared
+classic Nexus skill predicate now recognizes the explicit income overlay, and
+the Banker initializer passes the original Nexus setup path. Existing payment,
+recipient, front-shield, per-phase and Mentat calculations are unchanged.
+
+Native Guild self-shipment to Polar Sink pays4 (wallet5→1) and grants Atreides
+one unavailable spice. Three paid earns none; Emperor's four paid to Guild earns
+none. Advanced original Tech/Strongholds retain native Guild timing; actual
+Heighliners income settles at phase end rather than becoming a Banker invoice.
+The existing legal policy continues without spending deferred currency.
+Actual390px table shows front1 while available wallet remains10; the last
+ordinary Collection Ready enters real Mentat, credits10→11 and removes the
+front-shield notice without an extra action. Browser errors empty; no root
+overflow. `/tmp/dune-classic-nexus-banker-ui-proof.json` records local proof.
+
+Actual isolated CLI `BANKERQA v8` reaches `leaderSkills`, income-v1, all14
+original cards in deck/offers and all12 Nexus in deck. No existing room or
+database is changed. Evidence:
+`tests/classic-nexus-banker-income.test.ts` and
+`tests/fixture-classic-nexus-banker-income.ts`.
+Original earned-custody and per-payer policies remain provisional; wider
+printed effects, combination and deployed acceptance are not certified.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile banker-income --nexus-cards \
+  --db /private/local.sqlite --room ROOMCODE --version 7 \
+  --out /private/new-classic-nexus-banker-entry
+```
+
 **2 October normal-band checkpoint:** a separate fresh local `banker-income`
 classic/base33/all-fourteen-skills-only Basic/Advanced profile connects actual
 positive bank payments to automatic current Mentat collection.

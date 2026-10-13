@@ -866,7 +866,6 @@ void test('Banker income rejects incompatible profiles and public activation wit
     game => { game.discoveryEnabled = true; },
     game => { game.ecazTreachery = true; },
     game => { game.semutaPreview = true; },
-    game => { game.nexusCards = { cards: null, phase: null }; },
     game => { game.nexusIxianReplacementPreview = true; },
     game => { game.nexusIxianBetrayalPreview = true; },
     game => { game.nexusHarkonnenBetrayalPreview = true; },
