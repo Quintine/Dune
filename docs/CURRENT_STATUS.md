@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Bureaucrat / Guild Nexus Betrayal receipt — 13 October.**
+Per the user ruling, a Betrayal receipt now carries Bureaucrat: the holder
+receives the fee minus two. A new bounded composition
+(`initializeGuildBetrayalLeaderSkillsGameForAudit`, `guildBetrayalNexusLeaderSkillsProfile`)
+admits classic Nexus + Leader Skills with the Betrayal preview, and the accepted
+Use completes the original native shipment and records the unchanged full-fee
+receipt before offering Bureaucrat from the invoice's own payment legs with the
+holder as payee. Redirect subtracts exactly two from the holder; decline leaves
+the full fee; no offer when the holder is the shipper, no leg reaches five, or
+the skill was already used. No other Betrayal or preview composition is admitted.
+35 consumer cases cover both modes and 5+0/5+3/3+5/5+5/0+5 legs, redirect and
+decline, unchanged invoice/payer/donor debits/escrow/physical shipment/receipt,
+single Nexus discard, no-offer boundaries, private projection with payer null,
+stale/tampered rejection and all four bots. Two actual390px flows redirect2:
+single-leg5 (holder14→12, shipper still pays5) and allied5+3 (holder17→15,
+private payer null, donor escrow consumed). The shared betrayal fixture gained
+distinct conserved Nexus faces for additional unallied seats; existing
+single-extra expectations are unchanged. Union462/462 across twenty-four files,
+types/lint and build pass. No deployed, save/recovery or full-mode claim follows.
+
 **Bureaucrat / Homeworld allied income and two 13 October rulings — 13 October.**
 Homeworlds + Leader Skills games now connect qualifying allied-funded ordinary
 auction and Guild-shipment income (`bureaucratAlliedFundingModeSupported` returns

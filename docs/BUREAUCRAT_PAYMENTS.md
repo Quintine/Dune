@@ -126,8 +126,15 @@ change, not a silent extension.
 shipment fee to the Nexus holder, while Bureaucrat says the recipient receives
 two less. The user ruled that **Bureaucrat applies**: the holder receives
 price−2 and exactly two goes to the Bank. Neither printed card addresses the
-other, so this is an explicit user ruling, not a source derivation. The Betrayal
-preview still excludes Leader Skills until that composition is implemented.
+other, so this is an explicit user ruling, not a source derivation. It is now
+connected through a bounded classic Nexus + Leader Skills Betrayal composition
+(`initializeGuildBetrayalLeaderSkillsGameForAudit`): the accepted Use completes
+the original native shipment and records the full-fee receipt unchanged, then
+offers Bureaucrat from the invoice's own payment legs with the holder as payee.
+A redirect subtracts exactly two from the holder's receipt; a decline leaves the
+full fee. The offer is skipped when the holder is the shipper, no individual leg
+reaches five, or the skill was already used this phase. No other Betrayal or
+preview composition is admitted.
 
 ### Payment families deliberately left unconnected — 13 October 2026
 
@@ -143,10 +150,8 @@ qualifying gap:
   payer and correctly carry no stamp. Moritani Robbery is theft, not a payment.
 - **Emperor gifts** remain excluded by the explicit 11 October ruling.
 - **Guild Nexus Betrayal full-fee receipt** is ruled to carry Bureaucrat (holder
-  receives price−2; see the 13 October ruling above). It remains unconnected
-  because the recorded Betrayal preview contract expressly excludes Leader
-  Skills, so implementing it requires deliberately widening that preview
-  envelope; it is not a silent omission.
+  receives price−2; see the 13 October ruling above) and is now connected
+  through the bounded classic Nexus + Leader Skills Betrayal composition.
 - **Homeworld allied/split-recipient income** is now connected under the ruled
   gross-first ordering above. Only the ruling makes the ordering authoritative;
   it must not be attributed to the printed source, which is silent.

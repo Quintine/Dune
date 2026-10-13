@@ -1,5 +1,54 @@
 # Dune implementation status
 
+## 13 October 2026 — Guild Nexus Betrayal Bureaucrat receipt
+
+The user ruled that a Betrayal receipt still carries Bureaucrat: the holder
+receives the fee minus two and exactly two goes to the Bank. Neither printed card
+addresses the other, so this is an explicit ruling rather than a source
+derivation. A new bounded composition implements it:
+`guildBetrayalNexusLeaderSkillsProfile` (classic Nexus plus Leader Skills plus
+the Betrayal preview) is admitted by `bureaucratPaymentModeSupported`,
+`bureaucratAlliedFundingModeSupported` and `guildBetrayalModeSupported`, and
+`initializeGuildBetrayalLeaderSkillsGameForAudit` deals the composition from a
+fresh classic native-Guild lobby. No other Betrayal or preview composition is
+admitted, and existing no-skills Betrayal behavior is unchanged.
+
+On an accepted Use the engine completes the original native shipment and records
+the unchanged full-fee receipt first, then stamps a `shipment` Bureaucrat source
+from the invoice's own payment legs (shipper `ownPayment`, donor `allyPayment`
+only when a donor exists) with the holder as payee, and offers a new signed
+`guildBetrayal` continuation. Redirect subtracts exactly two from the holder's
+already-credited receipt; decline leaves the full fee. No offer when the holder
+is the shipper, no individual leg reaches five, or the skill was already used
+this phase. The continuation integrity check requires the completed receipt with
+the same event, recipient and full price.
+
+The new fixture composes the bounded setup (Bene Gesserit prediction then the
+real leader-skill choices, Bureaucrat trained on a seat distinct from shipper
+and holder) and reuses the shared betrayal fixture for the genuine funded
+shipment. Thirty-five consumer cases cover both modes and 5+0/5+3/3+5/5+5/0+5
+invoice legs with redirect and decline, unchanged invoice/payer/donor debits,
+escrow consumption, physical shipment, receipt/history and single Nexus discard,
+replay and double-completion rejection, the no-offer boundaries, private
+projection (gross and holder only, payer null), stale/cross-actor and re-signed
+malformed-continuation rejection, and all four owner bots. The shared fixture
+`holdGuildFixtureFace` now assigns distinct conserved Nexus faces to each
+additional unallied seat; the first extra keeps the established `fremen`
+assignment, so existing expectations are unchanged.
+
+Two actual390px GameTable flows redirect two: a single-leg five (holder 14→12
+while the shipper still pays five, one use, original continuation resumed) and an
+allied 5+3 (holder 17→15 with a private payer-null prompt and the donor's escrow
+consumed once). One click was retried after a stale accessibility node; no
+action was applied twice. Artifact outside Git
+`/tmp/dune-betrayal-bureaucrat-3230.json`.
+
+The affected union462/462 across twenty-four files, types/lint and the app build
+pass with unchanged build warnings. A guidance string initially used a plain
+apostrophe inside a single-quoted literal and broke the parse; it was corrected
+to the file's typographic apostrophe. No source rule, strategy, public-start,
+save/deployed or full-mode claim is opened by this bounded proof.
+
 ## 13 October 2026 — Homeworld allied income and two Bureaucrat rulings
 
 `bureaucratAlliedFundingModeSupported` now returns `homeworldLeaderSkillsProfile`

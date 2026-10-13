@@ -34,7 +34,7 @@ export function noOtherLeaderSkillModules(game: LeaderSkillProfile): boolean {
     !game.discoveryEnabled && !game.strongholdCards && !game.techTokens && !game.ecazTreachery;
 }
 
-function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassination = false, discovery = false): boolean {
+function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassination = false, discovery = false, betrayal = false): boolean {
   return !!game.nexusCards && typeof game.advanced === 'boolean' &&
     !!game.players && game.players.length >= 2 && game.players.length <= 6 &&
     ((discovery && game.discoveryEnabled === true) ||
@@ -46,7 +46,7 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassinatio
         !game.discoveryEnabled && !game.discoveries)) &&
     (!game.moritaniAssassinatePreview || assassination) &&
     !game.advancedPreview && !game.kullPreview && !game.nexusKullPreview &&
-    !game.guildBetrayalPreview && !game.richeseBetrayalPreview &&
+    (!game.guildBetrayalPreview || betrayal) && !game.richeseBetrayalPreview &&
     !game.nexusIxianReplacementPreview && !game.nexusIxianBetrayalPreview &&
     !game.nexusHarkonnenBetrayalPreview &&
     !game.spiceBankerIncomePreview;
@@ -55,6 +55,21 @@ function nexusLeaderSkillModulesSupported(game: LeaderSkillProfile, assassinatio
 /** Fresh classic Nexus/Skills, optionally Homeworlds/Discovery/Tech/Advanced Strongholds. */
 export function classicNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
   if (game.expansions.length || !nexusLeaderSkillModulesSupported(game, false, true)) return false;
+  const players = game.players!;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;
+    let classic = false;
+    for (const faction of FACTIONS)
+      if (faction.id === players[i].faction) { classic = faction.expansion === 'base'; break; }
+    if (!classic) return false;
+  }
+  return true;
+}
+
+/** Fresh classic Nexus/Skills composed only with the bounded Guild Betrayal preview. */
+export function guildBetrayalNexusLeaderSkillsProfile(game: LeaderSkillProfile): boolean {
+  if (game.expansions.length || !game.guildBetrayalPreview ||
+    !nexusLeaderSkillModulesSupported(game, false, false, true)) return false;
   const players = game.players!;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < i; j++) if (players[j].faction === players[i].faction) return false;

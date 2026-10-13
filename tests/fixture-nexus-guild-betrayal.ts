@@ -85,6 +85,8 @@ function enterGuildFixtureMovement(state: Game, minimumTurn = 1): Game {
   throw new Error('Genuine Guild fixture did not reach Shipment and Movement.');
 }
 function holdGuildFixtureFace(game: Game, holder: string, face: 'guild' | 'choam'): void {
+  const extraFaces: FactionId[] = ['fremen', 'harkonnen', 'ixians', 'choam', 'ecaz', 'moritani', 'beneGesserit', 'atreides'];
+  let extraIndex = 0;
   // Arrange only the conserved physical Nexus inventory, before any invoice.
   // Public held-card presence is identical across hidden-face fixture variants.
   let cards = game.nexusCards!.cards!;
@@ -93,7 +95,15 @@ function holdGuildFixtureFace(game: Game, holder: string, face: 'guild' | 'choam
     if (held !== null) {cards.deck.push(held); cards.hands[p.id] = null;}
   }
   for (const p of game.players.filter(seat => !seat.ally)) {
-    const desired = p.id === holder ? face : p.faction === 'guild' ? 'atreides' : 'fremen';
+    let desired: FactionId;
+    if (p.id === holder) desired = face;
+    else if (p.faction === 'guild') desired = 'atreides';
+    else {
+      // Distinct conserved faces for every additional unallied seat; the first
+      // extra keeps the established 'fremen' assignment.
+      desired = extraFaces[extraIndex % extraFaces.length];
+      extraIndex++;
+    }
     let index = cards.deck.indexOf(desired);
     if (index < 0) {
       index = cards.discard.indexOf(desired);

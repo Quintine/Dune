@@ -1,7 +1,7 @@
 import { classicNexusModulesProfile, mixedE1E2NexusProfile, mixedE3NexusProfile, pairedE3NexusProfile, pairedNexusModulesProfile, singleE1E2NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
 import { nativeFactionTechProfile } from './faction-module-profile';
 import { classicDiscoveryLeaderSkillsProfile, classicDiscoveryNexusProfile, homeworldDiscoveryProfile, discoveryModeSupported, discoveryModuleProfile, mixedE1E2DiscoveryNexusProfile, mixedE3DiscoveryNexusProfile, pairedDiscoveryNexusProfile, pairedE3DiscoveryNexusProfile, singleE1E2DiscoveryNexusProfile, standaloneE3DiscoveryNexusProfile } from './discovery-module-profile';
-import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
+import { advancedMoritaniLeaderSkillsProfile, advancedNativeLeaderSkillsProfile, homeworldLeaderSkillsProfile, classicNexusLeaderSkillsProfile, classicTechLeaderSkillsProfile, guildBetrayalNexusLeaderSkillsProfile, mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile, nativeDiscoveryLeaderSkillsProfile, nativeExpansionLeaderSkillsProfile, nativeTechLeaderSkillsProfile, ordinaryLeaderSkillModeSupported, pairedE3NexusLeaderSkillsProfile, pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile, strongholdLeaderSkillsProfile } from './leader-skill-profile';
 import { bribeTimingBlock, maximumBribe, type BribeOptions } from './bribe-options';
 import { quoteSpicePlacement, stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './disaster-rules';
 import { isStormCardDistance, type StormCardComponent } from './storm-cards';
@@ -2040,7 +2040,7 @@ export type Game = {
   bureaucratPayments?: {used:BureaucratPaymentUse[];pending?:{
     source:BureaucratPaymentSource;owner:string;leader:string;
     resume:{response:ResponseWindow|null;decision:Decision|null};
-    continuation:{kind:'response'}|{kind:'auction';quote:AuctionContinuationQuote}|{kind:'bribe'};
+    continuation:{kind:'response'}|{kind:'auction';quote:AuctionContinuationQuote}|{kind:'bribe'}|{kind:'guildBetrayal';event:string;recipient:string;amount:number};
     frame:string;signature:string;
   }};
   bureaucratPaymentEvent?: string;
@@ -8562,6 +8562,16 @@ function bureaucratPaymentIntegrity(g: Game) {
   else if (pending.continuation.kind === 'auction') requireRule(g.currentAuctionSale?.bureaucratPaymentEvent === pending.source.event &&
     JSON.stringify(pending.continuation.quote) === JSON.stringify(currentAuctionContinuationQuote(g,{kind:'sale',free:false})),
     'The Bureaucrat sale lost its original seller-credit continuation.');
+  else if (pending.continuation.kind === 'guildBetrayal') {
+    const betrayal = pending.continuation;
+    const receipt = (g.nexusGuildBetrayalHistory ?? []).find(entry => entry.invoice.event === betrayal.event);
+    requireRule(pending.source.kind === 'shipment' && g.guildBetrayal?.status === 'completed' &&
+      !!receipt && receipt.recipient === betrayal.recipient &&
+      receipt.invoice.price === betrayal.amount &&
+      pending.source.payee === betrayal.recipient &&
+      pending.source.amount === betrayal.amount,
+      'The Bureaucrat Betrayal receipt lost its original holder payment.');
+  }
   else requireRule(pending.continuation.kind === 'bribe' && pending.source.kind === 'bribe',
     'The Bureaucrat payment has an invalid continuation.');
 }
@@ -8604,6 +8614,11 @@ function actBureaucratPayment(g: Game,action:Action) {
   g.response = pending.resume.response;g.decision = pending.resume.decision;
   if (pending.continuation.kind === 'response') finishResponse(g,false,redirected);
   else if (pending.continuation.kind === 'auction') commitAuctionContinuation(g,pending.continuation.quote,redirected);
+  else if (pending.continuation.kind === 'guildBetrayal') {
+    // The native adapter already credited the full fee to the holder; the ruled
+    // diversion takes exactly two from that receipt.
+    if (redirected) getPlayer(g,pending.continuation.recipient).spice -= redirected;
+  }
   else getPlayer(g,pending.source.payee).bribes += pending.source.amount-redirected;
 }
 function leaderSkillRevivalBlocked(g: Game, owner: string): boolean {
@@ -9485,11 +9500,31 @@ export function initializeGuildBetrayalGameForAudit(state: Game): Game {
   g.pendingGuildBetrayal = null;
   return g;
 }
+/** Development-only composition of the bounded Betrayal preview with classic Leader Skills. */
+export function initializeGuildBetrayalLeaderSkillsGameForAudit(state: Game): Game {
+  requireRule(!state.leaderSkills && !state.guildBetrayalPreview && !state.guildBetrayal &&
+    !state.pendingGuildBetrayal && !state.nexusGuildBetrayalHistory && !state.guildBetrayalSourceReceipts &&
+    (!state.nexusCards || state.nexusCards.cards === null && state.nexusCards.phase === null) &&
+    !state.homeworlds && !state.discoveryEnabled && !state.discoveries && !state.techTokens &&
+    !state.strongholdCards && !state.ecazTreachery && !state.kullPreview && !state.nexusKullPreview &&
+    !state.richeseBetrayalPreview && !state.mobileStronghold && state.expansions.length === 0 &&
+    state.players.length >= 2 && state.players.length <= 6 && !!byFaction(state, 'guild') &&
+    state.players.every(p => CLASSIC_FACTIONS[p.faction] === true),
+    'Guild Betrayal with Leader Skills needs a fresh classic native-Guild lobby with only Nexus.');
+  const g = structuredClone(state);
+  g.nexusCards = {cards: null, phase: null};
+  g.guildBetrayalPreview = true;
+  g.guildBetrayal = {sequence: 0, event: null, turn: null, sourceSignature: null, status: 'completed'};
+  g.nexusGuildBetrayalHistory = [];
+  g.guildBetrayalSourceReceipts = [];
+  g.pendingGuildBetrayal = null;
+  return initializeLeaderSkillsGameForAudit(g);
+}
 function guildBetrayalModeSupported(g: Game): boolean {
   return !!g.nexusCards && g.expansions.length === 0 && g.players.length >= 2 &&
     g.players.length <= 6 && !!byFaction(g, 'guild') &&
     g.players.every(p => CLASSIC_FACTIONS[p.faction] === true) &&
-    !g.leaderSkills && !g.discoveryEnabled && !g.discoveries && !g.techTokens &&
+    (!g.leaderSkills || guildBetrayalNexusLeaderSkillsProfile(g)) && !g.discoveryEnabled && !g.discoveries && !g.techTokens &&
     !g.strongholdCards && !g.ecazTreachery && !g.kullPreview && !g.nexusKullPreview &&
     !g.richeseBetrayalPreview && !g.mobileStronghold;
 }
@@ -9717,6 +9752,14 @@ function decideGuildBetrayal(g: Game, p: Player, action: Action): void {
     sourceSignature: frame.invoice.sourceSignature, status: 'completed'};
   if (use) log(g, `${p.name} spent Guild Nexus Betrayal to receive the full ${frame.invoice.price}-spice shipment payment. The original funded shipment completed once.`,
     {faction: 'guild', name: 'Betrayal'});
+  if (use && settlement.recipient) {
+    const legs = [{payer: frame.invoice.shipper, amount: frame.invoice.ownPayment},
+      ...(frame.invoice.donor ? [{payer: frame.invoice.donor, amount: frame.invoice.allyPayment}] : [])];
+    const source = stampBureaucratContributors(g, 'shipment', settlement.recipient, legs,
+      frame.invoice.allyPayment > 0).bureaucratPayment;
+    if (offerBureaucratPayment(g, source, {kind: 'guildBetrayal', event: frame.invoice.event,
+      recipient: settlement.recipient, amount: frame.invoice.price})) return;
+  }
 }
 /** Offline paired-faction Nexus setup; public expansion/module starts remain gated. */
 export function initializePairedNexusGameForAudit(state: Game): Game {
@@ -9997,7 +10040,7 @@ export function initializeLeaderSkillsGameForAudit(state: Game): Game {
   const mixedE3 = mixedE3NexusLeaderSkillsProfile(g);
   const initialized = initializeSetupGameForAudit(g, homeworlds, classicNexus || pairedNexusLeaderSkillsProfile(g) ||
     singleE1E2NexusLeaderSkillsProfile(g) || mixedE1E2NexusLeaderSkillsProfile(g) ||
-    mixedE3 || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3, false,
+    mixedE3 || standaloneE3NexusLeaderSkillsProfile(g) || pairedE3 || guildBetrayalNexusLeaderSkillsProfile(g), false,
     classicDiscoveryLeaderSkillsProfile(g) || nativeDiscoveryLeaderSkillsProfile(g) || (g.discoveryEnabled === true && classicNexus), true,
     g.expansions.length === 1 && g.expansions[0] === 'choam', nativeExpansionLeaderSkillsProfile(g));
   if (advancedMoritaniLeaderSkillsProfile(initialized) || ((mixedE3 || pairedE3) && initialized.advanced &&
