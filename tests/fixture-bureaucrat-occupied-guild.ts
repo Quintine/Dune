@@ -174,7 +174,9 @@ export function createOccupiedGuildFixture(options: {
   const beforePledge = structuredClone(game);
   if (donorShare) act(donor, { type: 'pledgeAid', amount: donorShare });
   const beforeAction = structuredClone(game), gross = payerShare + donorShare;
-  const target = 'arsunt', sector = territory(target).sectors[0];
+  const target = 'arsunt';
+  const sector = territory(target).sectors.find(candidate => candidate !== game.storm);
+  assert.ok(sector !== undefined, 'The actual shipment needs a printed Arsunt sector outside the current storm');
   assert.ok(occupiedGuildPlayer(game, payer).spice >= payerShare);
   assert.ok(game.players.every(p => !Object.keys(p.forces).some(key => key.startsWith(`${target}:`))));
   const action: Action = { type: 'ship', territory: target, sector, amount: gross / 2,

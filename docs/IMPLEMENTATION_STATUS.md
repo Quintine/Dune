@@ -1,5 +1,25 @@
 # Dune implementation status
 
+## 13 October 2026 — storm-aware occupation fixture and obsolete guidance tests
+
+The observed Advanced occupied-Guild receipt failure was in the fixture:
+Arsunt11 was selected regardless of the real storm. Select the first printed
+Arsunt sector outside the current storm instead. Both original sectors remain
+available for the scenario; no storm entropy, force stock, payment ledger or
+production rule is altered.
+
+Twenty actual Advanced native receipt programs pass exact original payer6/
+donor2 debits, native3/occupied3/Bank2 and qualification retention. This includes
+an actual storm11 receipt using Arsunt12. The two affected test files pass10/10;
+`npm run check:quick` passes.
+
+`tests/reference.test.ts` no longer pins prose, incidental checklist status,
+source-text links or test-only evidence filenames. Developer evidence paths
+legitimately include helpers, controls and contracts. Keep the meaningful
+public navigation invariant: all phase/faction topics are discoverable and
+every related topic resolves. Behavioral rule/automation tests are untouched.
+No broad-suite, publication or deployed acceptance claim follows.
+
 ## 13 October 2026 — captured Leader Skill replacement ruling
 
 The user resolved the previously gated captured-card replacement question: the

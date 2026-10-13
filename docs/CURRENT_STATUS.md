@@ -29,6 +29,17 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Checkpoint test repairs — 13 October.**
+The observed occupied-Guild failure came from always shipping to Arsunt11,
+even when the actual turn3 storm was there. The native fixture now chooses
+the first printed Arsunt sector outside the current storm; no storm, force,
+payment or occupation rule changes. Twenty actual Advanced receipts retain
+native3/occupied3/Bank2, including storm11 with shipment to Arsunt12.
+The obsolete reference tests pinned prose, checklist defaults and test-only
+evidence paths; these are removed, retaining actual topic/link reachability.
+The two-file union passes10/10 and types/lint pass. No whole-suite or deployed
+acceptance is claimed.
+
 **Captured Leader Skill replacement ruling — 13 October.**
 The user resolved the previously gated captured-card replacement question: the
 original faction keeps its existing Skill assignment while its trained leader is
