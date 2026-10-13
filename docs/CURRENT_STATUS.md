@@ -62,6 +62,16 @@ offer/draw, retained captive card/controller and a conserved all14 deck. Docs
 record the ruling. No expanded-slice, complete-mode, save/deployed or assurance
 claim follows.
 
+Actual390px `GameTable` proof now exercises all three captured-skill controls:
+Thufir5 paid revival10→5, held Ghola10→10 and Emperor special Karama8→8.
+Native dead discs revive once; Lady Jessica/Fenring stay captive under Harkonnen
+with byte-identical Skill state, no replacement offer or draw. Real controls
+remove the consumed Ghola/Karama and the ordinary once-per-phase choice.
+No root overflow or browser errors after the isolated QA host's React/shim
+setup was corrected. Artifact `/tmp/dune-captured-revival-ui-proof.json`;
+owned tab/host/scaffold removed. This is local component/engine proof, not
+production or saved-room acceptance.
+
 **Ordinary Skills in Guild Betrayal — 13 October.**
 The new Bureaucrat composition had exposed all14 cards but omitted its profile
 from ordinary skill quotes. A real Sandmaster move rejected while ordinary

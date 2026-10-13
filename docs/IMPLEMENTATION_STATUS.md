@@ -82,6 +82,20 @@ route was unavailable in the genuine classic three-seat position and remains
 unexercised. No expanded-slice, complete-mode, save/deployed or assurance claim
 follows.
 
+Actual390px browser follow-through uses original `GameTable` against an
+isolated in-memory native fixture host. The paid leader selector shows four
+eligible dead Atreides discs and excludes captured Lady Jessica; selecting
+Thufir and pressing Revive leader pays10→5. The held Ghola target selector
+revives Thufir for10→10 and removes the physical card. Emperor's actual
+Revive Captain Aramsham with special Karama button revives for8→8, records
+the once-use and removes the physical cost. All three preserve the living
+captive, original controller and byte-identical Skill state without an offer.
+Fresh rendered controls and screenshots confirm the completed paths.
+No root390px overflow; browser errors empty after temporary React/shim host
+configuration was corrected. `/tmp/dune-captured-revival-ui-proof.json`
+retains local before/after/action evidence. The owned tab, host and source
+scaffold are removed; no saved room, production server or storage was changed.
+
 ## 13 October 2026 — ordinary skill legality in Guild Betrayal
 
 The previous composition dealt all14 cards but only admitted Bureaucrat to its
