@@ -1,5 +1,67 @@
 # Dune implementation status
 
+## 13 October 2026 — captured Leader Skill replacement ruling
+
+The user resolved the previously gated captured-card replacement question: the
+original faction keeps its existing Skill assignment while its trained leader
+is captured, so reviving a different eligible own leader is legal and simply
+draws no replacement card while that assignment exists. This is the selected
+reading of the authorized supplied Advanced physical p21 condition "if you have
+no Leader Skill Card"; it is not a new publisher ruling. The captor's
+lower-band-only use, the captive's card movement and death-return are unchanged.
+
+The engine's earlier guard vetoed the whole ordinary/Ghola revival instead of
+only the replacement offer. `leaderSkillRevivalBlocked`/`requireLeaderSkillRevival`,
+the `gholaLeaders` early return, the view `revival.leaders: []` filter and the
+beginRevival/Ghola/Emperor-special-Karama call sites are removed.
+`offerRevivedLeaderSkill` is unchanged: one assignment per owner still suppresses
+a second offer or draw.
+
+Program-level BEFORE: on the pre-cutover revision the rejected-action assertions
+at `tests/advanced-native-skills.test.ts:258` and
+`tests/leader-skills-capture.test.ts:322` required ordinary revival to throw
+`/replacement-skill ruling/`, and both passed then. The ordinary case was also
+re-confirmed from a throwaway pre-cutover `git worktree` at HEAD: the projected
+ordinary and Ghola targets were empty and both `reviveLeader` and the held Ghola
+card rejected with the replacement-skill ruling, state unchanged.
+
+AFTER (bounded changed-path smoke, no fabricated state):
+
+- `tests/leader-skills-capture.test.ts` (6/6): a captured skilled leader keeps
+  its public assignment while another own dead leader revives for its exact
+  printed cost, with no draw/offer and a conserved all14 deck; the Collection
+  Medium bot plays the held Ghola to revive a dead disc, no replacement offer.
+- `tests/advanced-native-skills.test.ts`: a captured native trainer keeps its
+  physical skill while another own leader revives with no replacement offer.
+- `tests/captured-skill-revival.test.ts` (`fixture-captured-skill-revival.ts`):
+  native classic Atreides/Harkonnen setup; four real battles genuinely kill
+  `atreides-2/3/4` and `atreides-0`; the fourth is a real Capture + Keep of the
+  trained `atreides-1`; next-turn Revival offers `atreides-0`. Ordinary paid
+  revival (spice 10→5) and the held Ghola free revival both succeed, no draw or
+  offer, intact assignment `{owner a, leader atreides-1, skill sandmaster,
+  controller h, captured true}`. Living captive, wrong actor, cross-phase,
+  second-leader and consumed-Ghola attempts reject without mutation; one exact
+  Easy bot ordinary target is proposed.
+- `tests/captured-skill-special-revival.test.ts`
+  (`fixture-captured-skill-special-revival.ts`): native classic Emperor/
+  Harkonnen/Guild setup; paid Carthag deployment and a sealed projectile battle
+  genuinely kill untrained `emperor-1` while a real Capture + Keep retains
+  trained `emperor-0`; next-turn Revival's free Emperor special Karama revives
+  `emperor-1` (wallet 8→8, `specialKaramaUsed` true, Karama discarded once, no
+  replacement offer, unchanged captive/assignment/deck) and reaches the native
+  phase5 suffix. Wrong captive/foreign target, wrong phase/actor, mixed
+  forces-plus-leader, replay and once-use reject immutably with one exact Easy
+  bot Special action.
+- Related 16-file union 145/145; the two new files 4/4; `tsc --noEmit` and
+  `oxlint` clean.
+
+Docs updated: `RULE_DECISIONS.md` (new user decision),
+`LEADER_SKILLS_CAPTURE.md`, `LEADER_SKILLS_RULES.md` (boundary resolved),
+`NEXUS_CARD_RULES.md` and `CURRENT_STATUS.md`. The Ambassador free-revival
+route was unavailable in the genuine classic three-seat position and remains
+unexercised. No expanded-slice, complete-mode, save/deployed or assurance claim
+follows.
+
 ## 13 October 2026 — ordinary skill legality in Guild Betrayal
 
 The previous composition dealt all14 cards but only admitted Bureaucrat to its

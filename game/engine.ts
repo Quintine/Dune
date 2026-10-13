@@ -8623,17 +8623,6 @@ function actBureaucratPayment(g: Game,action:Action) {
   }
   else getPlayer(g,pending.source.payee).bribes += pending.source.amount-redirected;
 }
-function leaderSkillRevivalBlocked(g: Game, owner: string): boolean {
-  return !!g.leaderSkills?.assignments.some(
-    (a) => a.owner === owner && leaderSkillController(g, a) !== owner,
-  );
-}
-function requireLeaderSkillRevival(g: Game, owner: string) {
-  requireRule(
-    !leaderSkillRevivalBlocked(g, owner),
-    'Reviving another leader while your Leader Skill is captured awaits the replacement-skill ruling.',
-  );
-}
 function finishLeaderSkillCustody(g: Game, before?: Game) {
   if (!g.leaderSkills) return;
   const result = skillRule(() =>
@@ -8664,7 +8653,6 @@ function finishLeaderSkillCustody(g: Game, before?: Game) {
             .find((p) => p.id === player.id)
             ?.leaders.find((l) => l.id === leader.id)?.dead
         ) {
-          requireLeaderSkillRevival(g, player.id);
           g.leaderSkills = skillRule(() =>
             offerRevivedLeaderSkill(
               g.leaderSkills!,
@@ -20362,7 +20350,6 @@ function normalizeBattle(g: Game) {
 /** Ghola follows current control for ordinary leaders, but Duke's printed
  * revival right belongs exclusively to Ecaz, regardless of temporary custody. */
 function gholaLeaders(g: Game, p: Player) {
-  if (leaderSkillRevivalBlocked(g, p.id)) return [];
   const native = controlledLeaders(g, p).filter(
     (l) => l.id !== DUKE_VIDAL_ID && l.dead && !l.capturedBy,
   );
@@ -20556,7 +20543,6 @@ function applyGholaEffect(g: Game, p: Player, action: Action, cardId?: string) {
       `${p.name} revived Kwisatz Haderach with Ghola for use again this turn. No spice or normal leader-revival allowance was spent.`,
     );
   } else if (action.leader) {
-    requireLeaderSkillRevival(g,p.id);
     requireRule(
       action.leader !== DUKE_VIDAL_ID || p.faction === 'ecaz',
       'Only Ecaz may revive Duke Vidal, including with Ghola.',
@@ -23809,7 +23795,6 @@ function finishRevival(
       // Automatic Karama response chains may commit after the action's before/after
       if (revival.kind === 'leader' && g.leaderSkills && !isAuditorLeader(leader) &&
           !leader.capturedBy && p.leaders.some(own => own.id === leader.id)) {
-        requireLeaderSkillRevival(g, p.id);
         g.leaderSkills = skillRule(() => offerRevivedLeaderSkill(
           g.leaderSkills!, p.id, leader.id, crypto.randomUUID()));
       }
@@ -23837,7 +23822,6 @@ function finishRevival(
   }
 }
 function beginRevival(g: Game, revival: PendingRevival) {
-  if (revival.kind === 'leader') requireLeaderSkillRevival(g,revival.player);
   requireRule(
     !revivalPrevented(g, revival.player),
     'Tleilaxu prevented this faction’s normal revivals for this turn.',
@@ -27528,7 +27512,6 @@ export function prepareSpecialKaramaIntent(
       'The Emperor special Karama is used during Revival.',
     );
     if (action.leader) {
-      requireLeaderSkillRevival(g,p.id);
       const l = p.leaders.find((l) => l.id === action.leader);
       requireRule(
         l?.dead && !l.capturedBy && !l.gholaBy,
@@ -33269,7 +33252,7 @@ export function viewGame(state: Game, id: string) {
         g.decision?.kind === 'revivalStop'
           ? homeworldRevivalKaramaBlock(g, g.decision.recipient)
           : null,
-      leaders: leaderSkillRevivalBlocked(g, id) ? [] : leaderRevivals.leaders,
+      leaders: leaderRevivals.leaders,
       kwisatz: leaderRevivals.kwisatz,
       cycleBlock: leaderRevivals.cycleBlock,
       ...(leaderRevivals.auditorCyclePolicy ? { auditorCyclePolicy: leaderRevivals.auditorCyclePolicy } : {}),

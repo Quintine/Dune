@@ -243,7 +243,7 @@ void test('Advanced native admission assigns Atreides Suk and rejects a forged I
   reject(game, actor, { type: 'ready' });
 });
 
-void test('captured native trainer blocks replacement revival, retaining the physical skill and Tanks leader', () => {
+void test('a captured native trainer keeps its physical skill while another own leader revives with no replacement offer', () => {
   let game = completedAdvancedNativeSkillsGame({ family: 'ixians', requestedSkill: 'warmaster', opponents: ['harkonnen', 'emperor'] });
   game = advanceAdvancedNativeSkillsToPhase(game, 4);
   const owner = player(game, 'ixians');
@@ -254,10 +254,21 @@ void test('captured native trainer blocks replacement revival, retaining the phy
     leader.dead = true;
     leader.deaths = 1;
   } // Controlled captured trainer and all other native leaders in Tanks.
+  owner.spice = 20;
+  owner.leaderRevived = false;
+  // User ruling 13 October 2026: the original assignment survives the capture;
+  // only the replacement draw is suppressed, so the ordinary revival is legal.
+  assert.ok(viewGame(game, owner.id).revival.leaders.some(l => l.id === dead.id));
   const skills = structuredClone(game.leaderSkills);
-  reject(game, owner.id, { type: 'reviveLeader', leader: dead.id }, /replacement-skill ruling/);
-  assert.equal(dead.dead, true);
-  assert.equal(trained.capturedBy, player(game, 'harkonnen').id);
-  assert.deepEqual(game.leaderSkills, skills);
-  custody(game);
+  let revived = applyAction(game, owner.id, { type: 'reviveLeader', leader: dead.id });
+  while (revived.response) {
+    const responder = revived.players.find(p => !revived.response!.passed.includes(p.id));
+    assert.ok(responder);
+    revived = applyAction(revived, responder.id, { type: 'passResponse' });
+  }
+  assert.equal(player(revived, 'ixians').leaders.find(l => l.id === dead.id)!.dead, false);
+  assert.equal(player(revived, 'ixians').leaders.find(l => l.id === trained.id)!.capturedBy, player(revived, 'harkonnen').id);
+  assert.deepEqual(revived.leaderSkills, skills);
+  assert.equal(revived.leaderSkills!.offers[owner.id], undefined);
+  custody(revived);
 });

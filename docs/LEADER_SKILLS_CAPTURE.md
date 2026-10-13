@@ -76,10 +76,19 @@ The persistent local source archive is
 The GF9 URLs now redirect or reject some direct clients, but their indexed
 publisher text and the byte-stable local copies agree on the quoted rules.
 
-## Remaining separate ruling
+## User ruling — 13 October 2026
 
-Capture does not settle whether the original faction counts as having no skill
-card while its only card is attached to a captive, and therefore whether a
-later own-leader revival may create a replacement assignment. That entitlement
-should remain gated until separately ruled. It does not affect the custody and
-visibility conclusion above.
+The original faction retains its existing Skill assignment while its trained
+leader is captured. Reviving a different eligible own leader is legal, but
+does not offer or draw a replacement Skill while that original assignment exists.
+This is the user's selected interpretation of the authorized supplied Advanced
+physical p21 condition "if you have no Leader Skill Card"; it is not a new
+publisher ruling. The physical card still accompanies its captive, and the
+normal band remains unavailable to both factions until the captive returns.
+The existing lower battle-band and death-return mechanics remain unchanged.
+
+The engine's earlier replacement-question guard wrongly suppressed the whole
+ordinary/Ghola revival, not merely a replacement offer. The ruled implementation
+removes that revival veto while retaining the existing one-assignment-per-owner
+offer check. No second assignment, forced draw or replacement card is introduced.
+

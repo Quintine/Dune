@@ -752,7 +752,7 @@ skills. Actual foreign revival gives control of the original physical disc but
 never a new skill. Own revival, native trainer normal roles, foreign death and
 negotiated return, Harkonnen capture/revelation/use-return/execution and native
 Face Dance compose through their original handlers. Explicit Mentat/Banker
-opt-ins retain their boundaries; captured replacement, Advanced Atreides Suk/KH,
+opt-ins retain their boundaries; Advanced Atreides Suk/KH,
 unrelated overlays and public starts remain guarded.
 
 ## Advanced native Ixian and CHOAM composition — 4 October 2026
@@ -763,8 +763,8 @@ Select distinct `ix` and/or `choam` decks, including each native faction's
 required family. All fourteen physical skills and original native setup choices
 remain: Ixian starting-card selection and HMS, genuine traitor offers, CHOAM's
 unskilled Auditor, posture before faction powers and optional own revival.
-Basic entries and public activation are unchanged. Foreign gholas, captured
-replacement, Advanced Atreides Suk/Kwisatz Haderach, Richese mixed planning and
+Basic entries and public activation are unchanged. Foreign gholas, Advanced
+Atreides Suk/Kwisatz Haderach, Richese mixed planning and
 unrelated optional overlays retain their explicit guards.
 
 Advanced cyborg support and casualties feed the existing skilled Suk rescue,
@@ -873,10 +873,12 @@ losers and captives. Modified strength and combined modules remain guarded.
 Planetologist and Suk Graduate have the connected
 prototypes described below.
 
-Captured-card replacement entitlement remains unresolved. The prototype rejects
-own-leader revival while its original skill is captured, before beginning a
-paid revival or consuming the Ghola/special-Karama action. This is an explicit
-unsupported boundary, not a ruling that the physical game forbids that revival.
+Captured-card replacement entitlement is resolved by the 13 October 2026
+[ruling](LEADER_SKILLS_CAPTURE.md#user-ruling--13-october-2026): the original
+faction keeps its assignment, and reviving a different own leader now proceeds
+for its paid/Ghola/special cost without drawing a replacement while that card
+exists. The earlier prototype rejected that revival as an explicit unsupported
+boundary; that veto is removed.
 Other expansion rosters and combined optional modules remain gated. Native
 Advanced foreign gholas now follow the bounded Tleilaxu contract above; the
 recorded source-contract timing questions remain open. Planetologist has bounded

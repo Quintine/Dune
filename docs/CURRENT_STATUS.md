@@ -1,6 +1,6 @@
 # Current development status
 
-Updated 11 October 2026. **The full twelve-faction goal is unfinished. Basic
+Updated 13 October 2026. **The full twelve-faction goal is unfinished. Basic
 is playable and the six classic factions have a user-authorized Advanced preview.
 Expansion starts and full rules/publication acceptance remain gated.**
 
@@ -28,6 +28,28 @@ This is not complete-mode acceptance: exceptional custody, timing variants,
 optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
+
+**Captured Leader Skill replacement ruling — 13 October.**
+The user resolved the previously gated captured-card replacement question: the
+original faction keeps its existing Skill assignment while its trained leader is
+captured, so reviving a different eligible own leader is legal and simply draws
+no replacement card while that assignment exists. This is the selected reading
+of the authorized supplied Advanced physical p21 condition "if you have no
+Leader Skill Card"; it is not a new publisher ruling. The engine's earlier
+guard vetoed the whole ordinary/Ghola revival instead of only the replacement
+offer. `leaderSkillRevivalBlocked`/`requireLeaderSkillRevival`, the
+`gholaLeaders` early return, the view `revival.leaders: []` filter and the
+beginRevival/Ghola/Emperor-special-Karama call sites are removed;
+`offerRevivedLeaderSkill` is unchanged and still suppresses a second assignment
+or draw. The previously committed rejection assertions at
+`tests/advanced-native-skills.test.ts:258` and
+`tests/leader-skills-capture.test.ts:322` are the program-level BEFORE; both are
+rewritten to the ruling. Bounded changed-path smoke covers ordinary, Ghola and
+Emperor special-Karama revival of a different own leader with exact cost, no
+offer/draw, retained captive card/controller and a conserved all14 deck. Docs
+`LEADER_SKILLS_CAPTURE.md`, `LEADER_SKILLS_RULES.md` and `NEXUS_CARD_RULES.md`
+record the ruling. No expanded-slice, complete-mode, save/deployed or assurance
+claim follows.
 
 **Ordinary Skills in Guild Betrayal — 13 October.**
 The new Bureaucrat composition had exposed all14 cards but omitted its profile
@@ -2162,6 +2184,8 @@ The original stranded6-seat Collection state also finishes807 accepted actions/
 no rejection after the fix. Original Bureaucrat invoices are no longer guarded
 in this composition; Ghola/ordinary leader guidance obeys existing captured
 training prohibition without removing force Ghola or deciding replacement skills.
+(That captured-training prohibition is superseded by the
+[13 October 2026 replacement ruling](LEADER_SKILLS_CAPTURE.md#user-ruling--13-october-2026).)
 Controlled original backed-up CLI **P4D8MY3V v10 / UVHFYQB8 v8 setup**
 preserves real offers/hands/IDs after a scoped original14 shuffle.
 Human390px **P4D8MY3V v22/Collection** selects trained Fenring6/dial10/

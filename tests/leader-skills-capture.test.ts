@@ -269,7 +269,7 @@ void test('the genuine audit setup offers eligible leaders to all six base facti
   assert.doesNotThrow(() => finishSetup(g, 'emperor-1'));
 });
 
-void test('a captured skilled leader and attached card become public while replacement revival remains rejected atomically', () => {
+void test('a captured skilled leader and attached card become public while another own leader revives without a replacement offer', () => {
   const g = acceptCapture(captureOffer());
   for (const [viewer] of SEATS) {
     const view = viewGame(g, viewer);
@@ -312,17 +312,27 @@ void test('a captured skilled leader and attached card become public while repla
   const emperor = kept.players.find((player) => player.id === 'e')!;
   emperor.spice = 20;
   emperor.leaderRevived = false;
-  const before = structuredClone(kept);
-  assert.throws(
-    () =>
-      applyAction(kept, 'e', {
-        type: 'reviveLeader',
-        leader: 'emperor-0',
-      }),
-    /replacement-skill ruling/,
+  // User ruling 13 October 2026: the original assignment survives the capture,
+  // so the ordinary revival proceeds with no replacement draw.
+  const skills = structuredClone(kept.leaderSkills);
+  const revived = passResponses(
+    applyAction(kept, 'e', { type: 'reviveLeader', leader: 'emperor-0' }),
   );
-  assert.deepEqual(kept, before);
-  assertSkillCustody(kept);
+  assert.equal(
+    revived.players
+      .find((player) => player.id === 'e')!
+      .leaders.find((leader) => leader.id === 'emperor-0')!.dead,
+    false,
+  );
+  assert.equal(
+    revived.players
+      .find((player) => player.id === 'e')!
+      .leaders.find((leader) => leader.id === 'emperor-1')!.capturedBy,
+    'h',
+  );
+  assert.deepEqual(revived.leaderSkills, skills);
+  assert.equal(revived.leaderSkills!.offers.e, undefined);
+  assertSkillCustody(revived);
 });
 
 void test('the captor gets only the lower battle bonus and a surviving captive returns with the same skill', () => {
@@ -490,7 +500,7 @@ void test('capturing an unskilled leader preserves the existing private identity
   assertSkillCustody(g);
 });
 
-void test('captured training excludes blocked Ghola and ordinary leader revivals while preserving a legal Collection pass', () => {
+void test('a captured trained leader still offers a legal Ghola revival while the physical skill and captive stay put', () => {
   const kept = applyAction(acceptCapture(captureOffer()), 'h', { type: 'decision', mode: 'keep' });
   kept.phase = 7;
   kept.decision = null;
@@ -501,17 +511,29 @@ void test('captured training excludes blocked Ghola and ordinary leader revivals
   const ghola = baseDeck().find(card => card.effect === 'ghola')!;
   placeFixtureHand(kept, kept.players.indexOf(emperor), [ghola]);
   emperor.bot = 'Medium';
-  const before = structuredClone(kept);
+  const skills = structuredClone(kept.leaderSkills);
   const view = viewGame(kept, 'e');
-  assert.deepEqual(view.ghola.leaders, []);
-  assert.deepEqual(view.revival.leaders, []);
+  // User ruling 13 October 2026: the capture no longer hides Ghola targets.
+  // Only the captured emperor-1 is excluded; the four dead discs are offered.
+  const dead = ['emperor-0', 'emperor-2', 'emperor-3', 'emperor-4'];
+  assert.deepEqual(view.ghola.leaders.map(leader => leader.id).sort(), dead);
   assert.equal(view.ghola.available, true);
   assert.equal(view.ghola.maxForces, 5, 'Captured training does not prohibit physical force Ghola');
-  const action = botActions(view).find(action => action.type === 'ready');
-  assert.ok(action);
+  const action = botActions(view).find(
+    (candidate) => candidate.type === 'card' && candidate.card === ghola.id,
+  );
+  assert.ok(action, 'Bot custody no longer strands the legal Ghola revival');
   const done = applyAction(kept, 'e', action);
-  assert.equal(done.phase, 8);
-  assert.equal(done.players.find(player => player.id === 'e')!.hand.some(card => card.id === ghola.id), true);
-  assert.deepEqual(kept, before);
+  assert.equal(
+    done.players
+      .find((player) => player.id === 'e')!
+      .leaders.find((leader) => leader.id === action.leader)!.dead,
+    false,
+  );
+  assert.equal(
+    done.players.find((player) => player.id === 'e')!.hand.some((card) => card.id === ghola.id),
+    false,
+  );
+  assert.deepEqual(done.leaderSkills, skills);
   assertSkillCustody(done);
 });

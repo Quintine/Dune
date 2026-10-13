@@ -738,10 +738,11 @@ loser retention keep their independent original windows.
 Genuine games exposed two integration defects: the existing Bureaucrat payment
 guard rejected ordinary invoices in this composition, and Ghola guidance
 offered leader revivals forbidden by captured training, stranding a legal
-Collection pass. Original once-per-phase Bureaucrat settlement is admitted;
-Ghola and ordinary revival projections reuse the exact existing captured
-training restriction. Force Ghola and Kwisatz alternatives are not removed,
-and no replacement-skill ruling is inferred.
+Collection pass. Original once-per-phase Bureaucrat settlement is admitted.
+Under the [13 October 2026 ruling](LEADER_SKILLS_CAPTURE.md#user-ruling--13-october-2026)
+captured training no longer vetoes ordinary or Ghola revival of a different own
+leader: the original assignment is retained and no replacement card is drawn.
+Force Ghola and Kwisatz alternatives remain available.
 
 ```sh
 node --import tsx tools/start-prototype.ts --profile leader-skills \

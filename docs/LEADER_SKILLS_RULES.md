@@ -122,7 +122,10 @@ Prescience.
 The user's requested fresh search resolves the skilled capture's public state
 through its unique, publicly assigned card's required movement. See the
 [capture interpretation and its precise limits](LEADER_SKILLS_CAPTURE.md).
-Captured-card replacement entitlement remains a separate unresolved question.
+The [13 October 2026 replacement ruling](LEADER_SKILLS_CAPTURE.md#user-ruling--13-october-2026)
+then resolves the captured-card replacement question: the original assignment
+is retained and no replacement card is drawn while it exists, while ordinary and
+Ghola revival of another own leader is unaffected.
 
 When Harkonnen captures a skilled leader, the skill card travels with that
 leader. The captor may use only the lower battle effect and only when using
@@ -151,11 +154,12 @@ The same official Q&A settles these boundaries:
 These questions should remain explicit rather than be answered by a generic
 card framework:
 
-1. **Captured-card replacement:** the rules say a captured leader keeps the
-   skill, while revival permits a draw when a faction “has no” skill card. They
-   do not say whether the original faction still counts as having the captured
-   card, or can create a second active assignment after reviving another
-   leader.
+1. **Captured-card replacement — resolved 13 October 2026.** The rules say a
+   captured leader keeps the skill, while revival permits a draw when a faction
+   “has no” skill card. The user selected the strict reading: the original
+   faction still counts as having the captured card, so reviving another leader
+   yields no replacement draw and no second assignment. See
+   [the ruling](LEADER_SKILLS_CAPTURE.md#user-ruling--13-october-2026).
 2. **Spice Banker escrow:** the gained spice waits in front of the shield until
    Mentat Pause. The sources do not say where it goes if the skilled leader
    dies or is captured before collection, nor whether capture transfers that
@@ -245,9 +249,9 @@ the settled Q&A interactions and saved pending choices. Every human action
 needs the same legal AI route, and private Mentat/Rihani information must remain
 seat-scoped across save and recovery.
 
-Keep the six unresolved boundaries above gated or represented as explicit
-pending decisions. In particular, do not pay Smuggler spice irreversibly at
-plan reveal, transfer Spice Banker escrow on capture, or issue a replacement
-skill while the original card is captured without a recorded ruling. This
+Keep the five remaining unresolved boundaries above gated or represented as
+explicit pending decisions. In particular, do not pay Smuggler spice irreversibly
+at plan reveal, transfer Spice Banker escrow on capture, or issue a replacement
+skill while the original card is captured. This
 source contract supports the bounded [runtime prototype](LEADER_SKILLS_RUNTIME.md);
 it is not evidence that the optional module can be enabled publicly.

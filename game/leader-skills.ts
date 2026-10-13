@@ -234,7 +234,10 @@ export function returnDeadLeaderSkills(
   );
   return { state: next, returned };
 }
-/** The capture/replacement question stays guarded while an original skill exists. */
+/**
+ * One assignment per owner: while the original Skill exists (including while
+ * its trained leader is captured) a revived leader draws no replacement card.
+ */
 export function offerRevivedLeaderSkill(
   state: LeaderSkillsState,
   owner: string,

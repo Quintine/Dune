@@ -1,6 +1,20 @@
 # Rule decision index
 
-Updated 11 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+Updated 13 October 2026. This is the authoritative navigation index for existing decisions, not a replacement rulebook or a new ruling. Detailed linked contracts retain their source citations and exact supported boundaries. Runtime follow-ups supersede historical absence claims; passing tests establish software behavior, not publisher authority.
+
+## User decisions — 13 October 2026
+
+- **Captured Leader Skill replacement:** the original faction retains its
+  existing Skill assignment while its trained leader is captured. Reviving a
+  different eligible own leader is legal; it does not offer or draw a
+  replacement Skill while that assignment exists, so no second assignment is
+  created. This is the selected reading of the authorized supplied Advanced
+  physical p21 condition "if you have no Leader Skill Card", not a new publisher
+  ruling. The captor's lower-band-only use, the captive's card movement and
+  death-return are unchanged.
+  [Ruling](LEADER_SKILLS_CAPTURE.md#user-ruling--13-october-2026).
+
+These decisions do not open public module/faction or complete-mode gates.
 
 ## User decisions — 11 October 2026
 
