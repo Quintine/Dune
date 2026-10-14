@@ -101,8 +101,9 @@ export function auctionEmperorIncomeAmount(
     : sale.richeseContribution ?? 0;
 }
 
-/** Deterministic paid-sale continuation only. A returned response, Richese
- * transition or normal phase-end is a boundary, not a simulated future action.
+/** Deterministic original-sale continuation, including retained-price free lots.
+ * A returned response, Richese transition or normal phase-end is a boundary,
+ * not a simulated future action.
  * Never publish this internal quote: returned lot cards remain private. */
 export function quoteAuctionContinuation(
   input: AuctionContinuationInput,
@@ -236,12 +237,12 @@ function calculate(
     requireAuction(
       s &&
         ['cache', 'blackMarket'].includes(s.origin) &&
-        s.free === false &&
+        typeof s.free === 'boolean' &&
         count(s.amount) &&
         seated(s.winner) &&
         s.seller &&
         seated(s.seller)?.faction === 'richese',
-      'The paid Richese sale receipt is malformed.',
+      'The original Richese sale receipt is malformed.',
     );
     requireAuction(
       lot &&
@@ -271,6 +272,20 @@ function calculate(
           ? round.position === null
           : ['first', 'last'].includes(String(round.position))),
       'The paid Richese lot has a stale declaration round.',
+    );
+    requireAuction(
+      lot.source !== 'blackMarket' || (input.advanced && s.seller !== s.winner),
+      'Black Market requires an Advanced sale to another buyer; self-purchase awaits a payment and sale-counting ruling.',
+    );
+    requireAuction(
+      !s.free || (
+        s.amount > 0 && s.richeseContribution === undefined &&
+        s.spiceBankerIncomePayment === undefined && s.bureaucratPayment === undefined &&
+        s.bureaucratPaymentEvent === undefined &&
+        (s.occupiedContributions === undefined ||
+          s.occupiedContributions.every(contribution => contribution.amount === 0))
+      ),
+      'A free Richese purchase cannot carry an actual payment, donor invoice or generated income.',
     );
     sale = { ...s, legacy: false };
     cardId = lot.cardId;
@@ -365,7 +380,7 @@ function calculate(
     next: AuctionContinuationQuote['next'],
   ): AuctionContinuationQuote => ({ sale, steps, next });
   if (stage === 'sale') {
-    if (sale.origin !== 'normal' && sale.seller !== winner.id) {
+    if (!sale.free && sale.origin !== 'normal' && sale.seller !== winner.id) {
       if (sale.recipient !== 'bank') {
         const seller = seated(sale.seller!)!;
         const amount = sale.amount - (sale.richeseContribution ?? 0);

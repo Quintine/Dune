@@ -110,6 +110,7 @@ const decisions = {
   nexusFremenCunningOffer: true,
   nexusFremenProtection: true,
   nexusEmperorPayment: true,
+  nexusEmperorSellerPurchase: true,
   nexusFremenCunningRide: true,
   moritaniRetention: true,
   moritaniSpecialKarama: true,

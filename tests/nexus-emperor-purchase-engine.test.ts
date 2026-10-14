@@ -80,7 +80,9 @@ void test('a prior normal purchase cannot authorize spending Emperor Nexus on a 
   reject(g, owner, first, /current Emperor Nexus/i);
   const second = { type: 'nexusEmperorPurchase', event: viewGame(g, owner).nexusEmperorSecretAlly!.event };
   const done = applyAction(g, owner, second);
-  assert.equal(done.nexusEmperorPurchaseHistory?.[0].auctionIndex, 1);
+  const receipt = done.nexusEmperorPurchaseHistory?.[0];
+  assert.ok(receipt && 'auctionIndex' in receipt);
+  assert.equal(receipt.auctionIndex, 1);
 });
 
 void test('invalid normal-lot custody and full winning hand cannot spend the physical Nexus card', () => {

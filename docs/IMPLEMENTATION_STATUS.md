@@ -1,5 +1,36 @@
 # Dune implementation status
 
+## 14 October 2026 — Emperor Nexus original Richese purchase retention
+
+Connected original positive Richese cache and Advanced Black Market sold lots
+through uniform winning-buyer Pay/actual eligible Emperor Nexus Use after
+original Richese Betrayal. Recommended visibly provisional seller-unpaid
+composition retains the full personally affordable price without bank money,
+paid invoice or refund. Basic/Advanced cache and legal self-cache work;
+original self-Black remains blocked. Original Betrayal self-discard leaves no
+acquisition or Emperor Nexus disposal; bank diversion retains provenance but
+receives nothing on zero-payment Use.
+
+Strict version-two purchase receipts preserve source, seller, round, lot,
+price, physical card and unchanged wallet; old bank receipt remains distinct.
+Original Truthtrance discard restores the same decision. Actual stock removal,
+hand limits, native Harkonnen bonus and source successor continue once.
+Original paid Richese tests/drivers now execute actual public buyer Pay instead
+of stopping at the new confirmation. Incidental wording/action-copy pins are
+removed rather than replaced. Minimal bots use the shared private legal offer.
+
+Affected10-file union108/108 and types/lint/build pass. Twenty actual native
+API profiles cover Basic/Advanced cache Pay/Use, Advanced Black Market Pay/Use,
+original Betrayal pass/bank diversion and legal self-cache. Initial throwaway
+completion predicate incorrectly required no decision at the genuine Black
+Market declaration successor; corrected to original lot/sale completion.
+Actual390px four surfaces retain original wallets, deliver one original lot,
+and finish native Harkonnen bonus/round without overflow/errors. No saved or
+deployed room touched. Direct CHOAM/Ambassador sources, complete combinations,
+assurance and publication remain open. Proof receipts stay outside Git;
+existing build route-classification/chunk-size warnings remain.
+[Canonical policy/proof](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026).
+
 ## 14 October 2026 — Emperor Nexus original extra-return continuation
 
 Replaced direct physical transfer with a fixed-three source entering original

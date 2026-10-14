@@ -48,7 +48,9 @@ Use the final ordinary purchase price and verify the holder's spendable spice be
 
 For an ordinary bank-paid auction, the practical result is one purchased card, unchanged buyer spice and a spent Nexus card. No bank-funded replacement payment is printed. The public proof need establish only that the price is held, not disclose excess private spice. These are implementation consequences of the component, not an extra auction rule.
 
-Special seller payments require a separate ruling: if Richese or another faction would receive that price, is the seller unpaid or paid by the bank? The text only tells the buyer to keep spice. Likewise, it does not expressly decide purchases outside Bidding, such as a card acquisition from an Ambassador. Do not silently route income or broaden a generic purchase hook to those sources.
+Richese cache and Advanced Black Market now use the recommended **seller-unpaid**
+composition below. Direct CHOAM markets, Ambassador acquisitions and other
+purchase sources remain separate; do not broaden a generic acquisition hook.
 
 ### Bounded bank-auction purchase prototype (27 September 2026)
 
@@ -59,15 +61,48 @@ spice without ally contribution. The bank receives no spice; the winner keeps
 that balance, receives the one purchased physical Treachery Card and continues
 through normal auction follow-ups. One private signed receipt records the
 original lot, final price and unchanged buyer balance across JSON/SQLite
-recovery. No Richese/CHOAM seller payment, allied split, expansion, special
-purchase or generic card-acquisition hook is inferred from this path.
+recovery. Its classic-only admission remains distinct from the new Richese
+seller continuation; no allied split or generic acquisition hook is inferred.
 
 Every winner in this bounded public auction context receives the same payment
 confirmation, even without the card or Karama. Otherwise a pause only for the
 concealed holder would disclose Nexus ownership. This is a **provisional
 privacy-preserving product choice**, not a printed timing rule or a user ruling;
-the previously asked confirmation-versus-gate question remains open.
+the recommendation is selected under the user's 14 October decision priority.
 The normal spice and Karama payment choices remain available where legal.
+
+
+### Recommended Richese seller-unpaid purchase — 14 October 2026
+
+Original positive Richese cache and Advanced-only Black Market sales now offer
+every winning buyer the same Pay confirmation, independently of hidden Nexus
+face. Only an actual unallied Emperor-card holder, with native Emperor absent
+and the full price personally affordable, can retain that price. Basic cache
+and legally offered self-cache are included; original Black Market self-purchase
+remains prohibited. Allied funding and ordinary bank-purchase admission are
+unchanged.
+
+**Provisional recommendation: the seller is unpaid.** The printed card tells
+the buyer to keep spice and prints no bank reimbursement. Do not invent seller
+income, bank subsidy, payer, refund or paid-income cancellation when no payment
+occurred. This is conservative source composition selected under the user's
+decision priority, not publisher clarification or a numerical user ruling.
+
+Original Richese Betrayal completes first. Self-purchase forced discard leaves
+no acquisition and no Emperor Nexus spend. A diverted/all-pass sold source then
+offers original Pay or Nexus Use: diversion still records its bank destination,
+but a retained-price purchase transfers no spice to it. Version-two signed
+receipts bind original seller, source, round, lot, physical card, price and
+unchanged buyer wallet without comparing historical snapshots to future hands.
+Original source removal, hand limits, Harkonnen bonus and round successor run
+once; Truthtrance's actual discard restores the same buyer decision.
+
+Affected ten-file union108/108 and types/lint/build pass. Actual390px cache,
+Black Market, self-cache and bank-diverted cache Use keep original wallets,
+deliver one actual card and continue original native bonus/round controls.
+No overflow/browser errors; no saved/deployed rooms touched. API proof and
+phone receipts remain outside Git. Direct CHOAM/Ambassador purchase composition,
+full combinations, assurance and publication acceptance remain open.
 
 ## Secret Ally: three additional free revivals
 

@@ -1,9 +1,10 @@
-# Emperor Nexus Secret Ally revival and bank-auction purchase
+# Emperor Nexus Secret Ally revival and original purchases
 
 Updated 14 October 2026. **Prototyped**, with **Partial** rules coverage.
 Revival now uses the independent extra source through original native pending
 continuations and supported Nexus module envelopes. Bank-auction purchase keeps
-its distinct classic-only boundary. Public starts and publication remain gated.
+its distinct classic-only boundary; original Richese cache/Advanced Black Market
+now have their own seller continuation. Public starts and publication remain gated.
 
 ## Rules and connected behavior
 
@@ -58,16 +59,23 @@ Every winner in this bounded public auction context receives the same payment
 confirmation, including a player with only spice and no Nexus card. Otherwise
 the holder-only pause would disclose hidden ownership. The existing ordinary
 spice/Karama payment choices stay available; bots use a legal purchase when
-owned and otherwise use the ordinary decision. The previously asked
-confirmation-versus-gate question remains pending; this prototype does not
-settle it for release.
+owned and otherwise use the ordinary decision. The recommended confirmation
+is selected under the user's 14 October decision priority; it does not certify
+complete release timing.
 
-Seller-paid Richese/CHOAM transactions, allied split, expansions and other
-Secret Ally purchase sources remain gated. The separate normal-auction forced
-Emperor-payment Betrayal now has a connected
-[provisional full-price funding path](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
-The [Secret Ally source contract](NEXUS_EMPEROR_RULES.md#secret-ally-retain-the-actual-purchase-price)
-retains its distinct seller-payment boundary.
+Original Richese cache and Advanced Black Market now connect a separate
+uniform winning-buyer confirmation after the original Richese Betrayal window.
+Use spends the actual Nexus and delivers one original lot with unchanged buyer
+spice and **no seller/bank reimbursement**. The visible seller-unpaid policy is
+provisional conservative composition, not publisher clarification. Original
+self-cache is supported; Black Market self-purchase remains blocked. Actual
+Truthtrance discard, hand limits, native Harkonnen bonus and source successor
+continue once. Version-two receipts retain original source/payment proof.
+[Policy and changed-path evidence](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026).
+
+Direct CHOAM markets, Ambassador/other acquisitions, allied split and full
+combinations remain open. Normal-auction forced Emperor-payment Betrayal has
+its separate [provisional full-price funding path](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
 
 ## Prototype entry and evidence
 

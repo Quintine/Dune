@@ -14,11 +14,16 @@ function reject(g: Game,id: string,action: Action) {
   assert.throws(() => applyAction(g,id,action));
   assert.equal(JSON.stringify(g),before);
 }
+function payOriginalSeller(g: Game): Game {
+  const frame = g.pendingNexusEmperorSellerPurchase;
+  return frame ? applyAction(g, frame.winner,
+    { type: 'nexusEmperorSellerPurchase', event: frame.event, use: false }) : g;
+}
 function passes(g: Game): Game {
   const receipt = g.pendingRicheseBetrayal!.receipt;
   for (const id of receipt.required)
     g = applyAction(g,id,{type:'richeseBetrayalPass',event:receipt.event});
-  return g;
+  return payOriginalSeller(g);
 }
 function census(g: Game): string[] {
   return [...g.deck,...g.discard,...(g.richeseCache ?? []),...(g.richeseRemoved ?? []),
@@ -71,7 +76,7 @@ void test('cache and concealed Black Market diversion preserve original ally spl
     const before = reload(f.game), bonus = before.deck[0].id;
     assert.equal(before.pendingRicheseBetrayal!.receipt.invoice.ownPayment,4);
     assert.equal(before.pendingRicheseBetrayal!.receipt.invoice.donor,f.ally);
-    const done = applyAction(reload(before),f.holder,{type:'richeseBetrayalUse',event:f.event});
+    const done = payOriginalSeller(applyAction(reload(before),f.holder,{type:'richeseBetrayalUse',event:f.event}));
     assert.equal(player(done,f.buyer).spice,player(before,f.buyer).spice - 4);
     assert.equal(player(done,f.ally!).spice,player(before,f.ally!).spice);
     assert.equal(done.aid[f.ally!].amount,before.aid[f.ally!].amount - 2);
@@ -195,7 +200,7 @@ void test('initializer admits only explicit fresh CHOAM/Richese Nexus compositio
 void test('diversion keeps native bonus cancellation and paid-sale ownership through JSON restore without replaying payment', () => {
   const f = createRicheseBetrayalFixture('sale',{bonusCounter:true});
   const before = reload(f.game);
-  const paid = applyAction(reload(before),f.holder,{type:'richeseBetrayalUse',event:f.event});
+  const paid = payOriginalSeller(applyAction(reload(before),f.holder,{type:'richeseBetrayalUse',event:f.event}));
   assert.equal(paid.response?.kind,'harkonnenBonus');
   assert.equal(paid.currentAuctionSale!.recipient,'bank');
   assert.equal(player(paid,f.target).spice,player(before,f.target).spice);
@@ -229,7 +234,7 @@ void test('Richese can fund its buyer from escrow with no unpledged spice, with 
     const f = createRicheseBetrayalFixture('sale',{source,allyPayment:2,allyIsSeller:true,allySpice:2});
     assert.equal(player(f.game,f.target).spice,0);
     assert.equal(f.game.aid[f.target].amount,2);
-    const done = use ? applyAction(reload(f.game),f.holder,{type:'richeseBetrayalUse',event:f.event}) : passes(reload(f.game));
+    const done = use ? payOriginalSeller(applyAction(reload(f.game),f.holder,{type:'richeseBetrayalUse',event:f.event})) : passes(reload(f.game));
     assert.equal(player(done,f.buyer).spice,player(f.game,f.buyer).spice - 4);
     // The authorized Advanced source sends Richese's own contribution to the
     // Emperor or, with no Emperor seated, to the Bank: the seller receives only

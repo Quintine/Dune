@@ -66,6 +66,20 @@ These decisions do not open public module/faction or complete-mode gates.
 
 These decisions do not open public module/faction or complete-mode gates.
 
+## Recommended Emperor Richese seller retention — 14 October 2026
+
+Choose the conservative **seller-unpaid** interpretation: the buyer keeps the
+full personally affordable original price and no bank reimbursement is printed.
+Original Richese cache/Advanced Black Market now use uniform buyer confirmation
+after original Richese Betrayal. Self-discard precludes acquisition/Nexus spend;
+bank diversion preserves provenance but receives nothing on zero-payment Use.
+Original stock, hand limits, bonus and successor continue. Basic/Advanced cache,
+legal self-cache and Advanced Black Market are covered; self-Black remains
+prohibited. Direct CHOAM/Ambassador purchases and full combinations stay open.
+Visibly provisional source composition selected under decision priority, not
+publisher clarification or a separately answered numerical ruling.
+[Canonical policy/proof](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026).
+
 ## Recommended Emperor independent extra return — 14 October 2026
 
 The conservative composition keeps exactly three additional physical forces
@@ -601,7 +615,7 @@ These are unresolved in the cited records. Do not infer an answer from elapsed t
 | Moritani Secret Ally battle timing | The printed after-loss retention is optional and the Nexus card remains secret. The connected prototype offers the same choice to every loser when Moritani is absent and at least one publicly revealed played card is retainable; a loser with no eligible public card has no useful choice, independent of hidden custody. Only an unallied holder may spend the physical card. This prompt is a privacy-preserving product inference, not publisher timing text. Native Moritani alliance retention and its Karama response remain separate; no generic Secret Ally counter is invented. | [Nexus retention boundary](NEXUS_CARD_RULES.md#moritani-secret-ally-retention-timing) |
 | Ecaz Secret Ally traitor inquiry | The printed panel asks one selected player whether they hold any of the holder's leaders as Traitors, without identifying a leader; it specifies neither native-versus-controlled scope nor answer audience. The connected prototype chooses native printed faction leaders (including dead/captured), ordinary Traitor Cards rather than Face Dancers, and a holder-only historical yes/no. This is a privacy-preserving product interpretation, **not** a publisher ruling. Foreign Ghola/captive scope and table-wide disclosure remain release boundaries. | [Ecaz inquiry source and bounded runtime](NEXUS_ECAZ_RULES.md#bounded-secret-ally-traitor-inquiry-runtime) |
 | Ecaz native Nexus Cunning timing | The printed Cunning takes Duke for this turn even from capture, Tanks or Ghola, without a phase. The quiet Battle prototype now covers living control or set-aside Tanks. Tanks preserve deaths and reset use under a provisional independent-resurrection policy; this is not a numerical user ruling. Captured/Ghola return destinations and Advanced Harkonnen remain guarded; ordinary Ambassador and paid-revival custody are unchanged. | [Source and bounded runtime](NEXUS_ECAZ_RULES.md#bounded-native-cunning-duke-vidal) |
-| Emperor Secret Ally purchase timing | The bounded normal bank-auction prototype chooses a uniform winner payment confirmation in classic-faction Nexus-only games with Emperor absent, including otherwise sole spice payments. This prevents a holder-only pause from exposing hidden card eligibility. It is a provisional product privacy choice, **not** a user or publisher ruling; the previously asked confirmation-versus-gate question remains open. Seller-paid/allied purchases and other sources stay gated. | [Source contract and bounded prototype](NEXUS_EMPEROR_RULES.md#secret-ally-retain-the-actual-purchase-price), [runtime](NEXUS_EMPEROR_SECRET_ALLY_RUNTIME.md#bank-auction-purchase-alternative) |
+| Emperor Secret Ally purchase timing | Uniform winning-buyer confirmation prevents a holder-only pause exposing hidden eligibility. The classic bank-auction boundary remains separate; original Richese cache/Advanced Black Market now use the recommended provisional seller-unpaid policy after original Richese Betrayal. The user's 14 October decision priority selects the recommendation, not a publisher timing ruling. Allied and other purchase sources remain open. | [Purchase policy](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026) |
 | Discovery prototype inferences | Free entry uses storm order and ordinary source-storm restrictions; these are general-rule inferences. Great Maker currently follows ordinary first-turn worm skipping and Sandtrout suppression; an exhausted token type creates no replacement token. These preserve current source interpretation and physical inventory but are not separately confirmed rulings or complete combined-module certification. | [Interpretations for refinement](DISCOVERY_PROTOTYPE.md#interpretations-retained-for-refinement) |
 | Other Homeworld combinations | Population/force splitting, removal custody, replacement shortages, income accounting and placement ordering remain local to their detailed contracts. | [Homeworld rules](HOMEWORLD_RULES.md), [occupation](HOMEWORLD_OCCUPATION_RULES.md) and the effect documents above |
 

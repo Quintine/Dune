@@ -29,6 +29,21 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Emperor Secret Ally original Richese purchases — 14 October.** Basic/Advanced
+cache, legal self-cache and Advanced Black Market now connect uniform buyer
+Pay/eligible Use after original Richese Betrayal. Recommended provisional
+seller-unpaid policy retains the personally affordable full price without bank
+reimbursement. Original self-discard prevents acquisition/Nexus spend; diverted
+bank provenance does not create payment on Use. Signed source receipts preserve
+actual lot; original stock, hand limits, bonus and source successor run once.
+Affected10-file union108/108, types/lint/build and twenty native API profiles
+pass. Actual390px cache/Black/self-cache/diverted-cache Use retains wallets,
+one lot and original bonus/round, with no overflow/errors. Direct CHOAM/
+Ambassador purchases, full combinations, assurance and publication remain open.
+[Source policy and proof](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026).
+No saved/deployed room touched; proof receipts remain outside Git. Existing
+build route-classification/chunk-size warnings remain.
+
 **Emperor Secret Ally original extra-return continuation — 14 October.**
 Exactly three now enters native pending revival after one Nexus spend.
 Requested/returned/denied receipts track real settlement; ordinary force/free

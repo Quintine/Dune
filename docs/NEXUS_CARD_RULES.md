@@ -12,6 +12,17 @@ movement, battle geometry and actual casualties stay unchanged. One original
 Karama response cancels the entire physical batch and keeps the Nexus spent.
 [Source, original native proofs and controls](NEXUS_BENE_GESSERIT_RULES.md#recommended-cunning-card-exceptions--14-october-2026).
 
+## Recommended Emperor Richese seller retention — 14 October 2026
+
+Original Richese cache and Advanced Black Market now offer uniform buyer Pay
+after original Richese Betrayal, or actual private Emperor Nexus Use. Use
+retains the personally affordable full price, leaves seller/bank unpaid and
+delivers one original card through native bonus/round continuation. Self-cache
+is legal where originally offered; self-Black remains prohibited. The unpaid
+seller is a visibly provisional conservative recommendation, not publisher
+clarification. Direct CHOAM/Ambassador acquisitions remain open.
+[Source, policy and changed-path proof](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026).
+
 ## Recommended Emperor independent extra return — 14 October 2026
 
 Secret Ally exact-three now uses original pending revival, with requested/
