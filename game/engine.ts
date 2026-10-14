@@ -309,6 +309,7 @@ import {
   DiscoveryCollectionError,
   type DiscoveryCollectionQuote,
 } from './discovery-collection';
+import {tleilaxuSecretAllyOptions,quoteTleilaxuSecretAlly} from './nexus-tleilaxu-revival';
 import {
   quoteMovementCancellation,
   validateAmbassadorRelocationContext,
@@ -3269,9 +3270,10 @@ function nexusFaceDancerIntegrity(g: Game) {
 }
 function projectedNexusTleilaxu(g: Game, id: string) {
   if (!g.nexusCards?.cards) return null;
-  if (g.nexusCards.cards.hands[id] !== 'tleilaxu') return { cunning: null };
+  if (g.nexusCards.cards.hands[id] !== 'tleilaxu') return { cunning: null, secretAlly: null };
   const p = getPlayer(g, id);
-  if (p.faction !== 'tleilaxu') return { cunning: null };
+  if (p.faction !== 'tleilaxu')
+    return { cunning: null, secretAlly: byFaction(g,'tleilaxu')?null:tleilaxuSecretAllyOptions(g,p) };
   const count = p.faceDancers?.filter(card => card.revealed).length ?? 0;
   let blocked: string | null = null;
   if (g.status !== 'playing') blocked = 'Use Cunning during an active game.';
@@ -3282,7 +3284,7 @@ function projectedNexusTleilaxu(g: Game, id: string) {
   else if (pendingNexusTraitors(g)) blocked = 'Finish the current private Traitor Deck return first.';
   else if (!count) blocked = 'No revealed Face Dancers are available to replace.';
   else if ((g.traitorReserve?.length ?? 0) < count) blocked = 'The Traitor Deck cannot supply the full replacement draw.';
-  return { cunning: { event: JSON.stringify(['nexusFaceDancers', g.turn, g.phase, g.nexusFaceDancerHistory?.length ?? 0, id]), count, blocked } };
+  return { cunning: { event: JSON.stringify(['nexusFaceDancers', g.turn, g.phase, g.nexusFaceDancerHistory?.length ?? 0, id]), count, blocked }, secretAlly: null };
 }
 function playNexusFaceDancers(g: Game, p: Player, action: Action) {
   requireRule(Object.keys(action).every(key => ['type', 'event'].includes(key)),
@@ -3297,6 +3299,46 @@ function playNexusFaceDancers(g: Game, p: Player, action: Action) {
   (g.nexusFaceDancerHistory ??= []).push(result.receipt);
   log(g, `${p.name} set aside ${offer.count} revealed Face Dancer ${offer.count === 1 ? 'Card' : 'Cards'}, secretly drew replacements, then shuffled the set-aside cards into the Traitor Deck. Unrevealed Face Dancers and the normal Mentat replacement allowance are unchanged.`,
     { faction: p.faction, name: 'Nexus Face Dancer replacement' });
+}
+
+function playNexusTleilaxuRevival(g: Game, p: Player, action: Action) {
+  requireRule(Object.keys(action).every(key=>['type','event','leader','amount','elite'].includes(key)),
+    'Use only the owned Nexus revival selection; its price and source are authoritative.');
+  const offer=projectedNexusTleilaxu(g,p.id)?.secretAlly;
+  requireRule(offer&&!offer.blocked&&action.event===offer.event,
+    offer?.blocked??'Choose the current Tleilaxu Secret Ally offer.');
+  const quote=nexusRule(()=>quoteTleilaxuSecretAlly(g,p,{
+    leader:stringField(action.leader),amount:integer(action.amount,0,5,'Forces'),
+    elite:integer(action.elite,0,5,'Elite forces'),
+  }));
+  const group={amount:quote.amount,elite:quote.elite,free:0};
+  const grant=quote.amount>0?requireHomeworldRevivalGrant(g,p,'nexusTleilaxu',group):null;
+  const ordinary=leaderRevivalOptions(g,p);
+  const payment=g.spiceBankerIncomePreview&&quote.cost>0
+    ?bankerIncomePayment(g,'force-revival',[{payer:p.id,amount:quote.cost,recipient:'bank'}]):undefined;
+  g.nexusCards!.cards=nexusRule(()=>discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
+  g.revivalRules??=newRevivalRules();
+  (g.revivalRules.nexusTleilaxu??=[]).push(p.id);
+  if(quote.kind!=='duke'||ordinary.cycle>p.revivalCycle)p.revivalCycle=ordinary.cycle;
+  // The card quote establishes a free own return; the original mutation keeps
+  // Kwisatz/Duke custody, one-leader usage and skill revival lifecycle.
+  finishRevival(g,{
+    pending:{player:p.id,kind:quote.kind==='kwisatz'?'kwisatz':'leader',
+      ...(quote.kind==='kwisatz'?{}:{leader:quote.leader}),normalCost:0,cost:0,free:0,checks:[]},
+    outcome:'revive',
+  });
+  if(quote.amount>0) {
+    p.spice-=quote.cost;
+    addNativeReserves(g,p,quote.amount,quote.elite);
+    p.tanks-=quote.amount;
+    if(p.freeForcesRevived!==undefined||p.revived===0)p.freeForcesRevived??=0;
+    p.revived+=quote.amount;
+    if(p.elites){p.elites.tanks-=quote.elite;p.elites.revived+=quote.elite}
+    if(payment)awardBankerIncome(g,payment);
+    stageHomeworldRevivalReturn(g,p,'nexusTleilaxu',group,grant);
+  }
+  log(g,`${p.name} spent Tleilaxu Nexus Secret Ally: one own leader returned free and ${quote.amount} physical forces returned for ${quote.cost} bank spice. The ordinary leader slot and shared five-force allowance apply.`,
+    {faction:p.faction,name:'Tleilaxu Nexus revival'});
 }
 
 function nexusSuboidIntegrity(g: Game) {
@@ -28796,6 +28838,7 @@ function applyActionInner(
   requireRule(g.nexusCards?.phase?.stage !== 'drawing', 'Finish the closing Nexus card choices first.');
   if (t === 'nexusTraitorDraw') { playNexusTraitorDraw(g, p, action); return g; }
   if (t === 'nexusFaceDancers') { playNexusFaceDancers(g, p, action); return g; }
+  if (t === 'nexusTleilaxuRevival') { playNexusTleilaxuRevival(g,p,action); return g; }
   if (t === 'nexusSuboids') { playNexusSuboids(g, p, action); return g; }
   if (t === 'nexusAdvisors') { playNexusAdvisors(g, p, action); return g; }
   if (t === 'nexusSardaukar') { playNexusSardaukar(g,p,action); return g; }
@@ -31472,8 +31515,9 @@ function applyActionInner(
     requireRule(quote.cost <= p.spice, 'Not enough spice for revival.');
     const checks: PendingRevival['checks'] = [];
     const choamBenefit = p.faction === 'choam' && !g.revivalRules?.choamBlocked;
-    const uncancelableLimit =
-      g.recruits?.turn === g.turn ? 7 : Math.max(3, freeRevivalRate(g, p));
+    const uncancelableLimit = Math.max(
+      g.recruits?.turn === g.turn ? 7 : Math.max(3, freeRevivalRate(g, p)),
+      g.revivalRules?.nexusTleilaxu?.includes(p.id) ? 5 : 0);
     if (choamBenefit && (n > quote.free || p.revived + n > uncancelableLimit))
       checks.push('choamRevival');
     if (!choamBenefit && p.revived + n > uncancelableLimit)

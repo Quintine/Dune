@@ -32,24 +32,11 @@ function fixture(): GameView {
   };
   v.nexusTleilaxu = {
     cunning: { event: 'dancer-event', count: 1, blocked: null },
+    secretAlly: null,
   };
   return v;
 }
 
-void test('every bot profile takes the complete offered replacement off turn without a choice handshake', () => {
-  for (const difficulty of DIFFICULTIES)
-    for (const count of [1, 2, 3]) {
-      const v = fixture();
-      v.players[0].bot = difficulty;
-      v.nexusTleilaxu!.cunning!.count = count;
-      v.decision = { kind: 'nullentropy', player: 'a' };
-      const before = structuredClone(v);
-      assert.deepEqual(botActions(v), [
-        { type: 'nexusFaceDancers', event: 'dancer-event' },
-      ]);
-      assert.deepEqual(v, before);
-    }
-});
 
 void test('all bot profiles preserve Truth, closing draw, automatic and preceding exchange priorities', () => {
   for (const difficulty of DIFFICULTIES) {

@@ -29,6 +29,28 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Tleilaxu Secret Ally combined revival — 14 October.**
+The recommended prototype now provides owner-only leader/paid-force controls
+in quiet Revival, with the actual Tleilaxu Nexus held and faction absent.
+One mandatory own dead leader returns free and consumes the ordinary slot;
+zero-to-five exact counters cost one bank spice each and share an ordinary
+ceiling expanded to at least five. Earlier ordinary returns count; larger
+native/Recruits allowances remain. Only the unopened roster trigger is waived:
+ordinary cycles, repeated deaths, typed caps and special custody remain.
+This policy is visible and provisional, not publisher clarification.
+
+Genuine Basic/Advanced setup, shipment, opposing weapon, eight-counter loss,
+worm pact and real closing draw lead to this action. No target hand/force/
+wallet/death/phase is fabricated. Original skill return, reserves and typed
+Homeworld deployment source are reused. Final nine-file union141/141,
+types/lint/build pass. Four legal profiles execute the real leader+five return.
+Actual390px table: Dr. Yueh alive with deaths1/cycle0; spice11→6,
+Tanks8→3, reserves10→15, returns5 and leader slot consumed, one Nexus
+discard and Ready restored. No overflow or browser errors. Existing Ecaz
+six-disc/Advanced-Harkonnen Duke candidate guards and full module/deployed
+acceptance remain open.
+[Contract](NEXUS_TLEILAXU_RULES.md#recommended-combined-revival-prototype--14-october-2026).
+
 **Moritani Atomics after alliance change — 14 October.**
 The recommended interpretation keeps the permanent hand-limit penalty on
 Moritani and its original ally at detonation. Later Nexus and Enemy of My Enemy

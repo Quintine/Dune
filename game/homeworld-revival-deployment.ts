@@ -16,7 +16,8 @@ export type HomeworldRevivalDeploymentContext = Pick<
 export type HomeworldRevivalDeploymentSource =
   | 'normal'
   | 'emperorExtra'
-  | 'ghola';
+  | 'ghola'
+  | 'nexusTleilaxu';
 export type HomeworldRevivalDeploymentGroup = {
   amount: number;
   elite: number;
@@ -61,7 +62,7 @@ export function quoteHomeworldRevivalDeployment(
   group: HomeworldRevivalDeploymentGroup,
 ): HomeworldRevivalDeploymentQuote | null {
   if (
-    !['normal', 'emperorExtra', 'ghola'].includes(source) ||
+    !['normal', 'emperorExtra', 'ghola', 'nexusTleilaxu'].includes(source) ||
     !group ||
     typeof group !== 'object' ||
     Array.isArray(group) ||

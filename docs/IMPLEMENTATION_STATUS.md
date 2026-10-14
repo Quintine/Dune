@@ -1,5 +1,40 @@
 # Dune implementation status
 
+## 14 October 2026 — Tleilaxu Secret Ally free-leader/paid-force revival
+
+Recommended-option priority closes the earlier whole-effect gate under an
+explicit provisional policy: mandatory free own leader/ordinary leader slot,
+zero-to-five physical counters at one bank spice each, shared ordinary ceiling
+expanded to at least five. Prior returns count; card-first and ordinary-first
+agree. Larger native/Recruits allowance is not reduced; fixed group never
+doubles. Only unopened roster eligibility is waived; original cycles,
+repeated-death/face-down, actual typed caps and special custody are retained.
+
+Two disjoint implementation/native-proof slices were integrated by one owner.
+The pure quote reuses canonical leader/counter eligibility; the engine binds
+actual held card/event, pays the bank once, returns the real leader through
+original skill/custody handling, deposits exact counters and records per-phase
+source permission. Homeworld signed return accepts the new Nexus source.
+Owner-only controls and four minimal legal profiles use the same offered
+selection. Wording/forwarding/fixture-trace assertions were removed rather
+than re-pinned.
+
+Native fixtures retain genuine setup, starting cards, Emperor shipment,
+real weapon death/eight-counter exchange, worm alliance and actual original
+Nexus draw. Only original unplayed deck order and producer entropy are staged.
+Ignored immutable Ready results and Advanced Guild interception were repaired
+in the fixture, never by fabricating phases, hands, deaths, wallets or forces.
+
+Final nine-file union141/141; types/lint and app build pass. Actual390×844
+table returns Dr. Yueh with deaths1 and cycle0 unchanged, spice11→6,
+Tanks8→3/reserves10→15, ordinary returns5 and leader slot consumed.
+One physical Nexus goes to discard, the offer disappears and Ready stays
+enabled. No overflow or browser errors. All four legal policies execute that
+actual five-counter return; not strategic calibration. Owned hosts/tabs/
+scaffolding removed; proof outside Git. Existing build warnings remain.
+Ecaz six-disc/Advanced-Harkonnen Duke candidate restrictions, combined
+modules, full rules, assurance and deployed acceptance remain open.
+
 ## 14 October 2026 — Persistent original Atomics hand-limit targets
 
 Recommended-option priority: the permanent one-card reduction stays on

@@ -44,7 +44,7 @@ Important compositions and exclusions:
 
 ## Secret Ally questions that still affect implementation
 
-The inspected E3 FAQ does not answer these. Keep Secret Ally gated rather than implementing a smaller interpretation disguised as the complete effect.
+The inspected E3 FAQ does not answer these. The earlier blanket gate is superseded by the explicit recommended prototype policy below; that choice is not publisher clarification or a separately answered numerical user ruling.
 
 | Issue | Concrete interpretations requiring a ruling |
 | --- | --- |
@@ -54,10 +54,59 @@ The inspected E3 FAQ does not answer these. Keep Secret Ally gated rather than i
 
 Normal leader revival has an unavailable-roster trigger and a separate repeated-death cycle. E1 expressly permits face-down leaders for its negotiated service, and the FAQ separately discusses native foreign-ghola revival. Neither automatically grants those permissions to an absent-faction Nexus effect. Similarly, the FAQ's Emperor extras are explicitly additional, while this panel does not settle its ordinary counter debit. [Base p.9](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf#page=9), [E1 p.7](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=7), [November FAQ p.6](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=6)
 
-Coordinator question recommendation: ask explicitly about independent versus ordinary force/leader allowance, waived leader prerequisites, and whether the leader portion is optional. The related [Ambassador accounting questions](TLEILAXU_AMBASSADOR_RULES.md) are already pending; do not duplicate those or assume an answer covers differently worded Nexus text. No user question was sent by this audit.
+The 14 October choose-recommended-option instruction supersedes the coordinator's earlier recommendation to ask again. The related Ambassador wording remains a separate contract; this implementation does not invent publisher answers or apply its policy to another component.
 
-Future revival quote inputs should retain source `nexusTleilaxuSecretAlly`, chosen leader/Kwisatz identity, exact normal/starred force counts, payment and existing usage histories. Require a resolved accounting policy before mutating ordinary counters. A receipt must preserve original revival, subsequent Homeworld deployment and phase continuation once; no card/force/spice effect should be inferred afresh from a restored hand or current Tanks.
+The committed action binds the actual held card, current turn/phase/owner event, selected own leader/Kwisatz/Duke and exact physical paid group. It uses the original return/skill/reserve helpers and an explicit `nexusTleilaxu` Homeworld source. The per-phase source permission records the shared five-counter ceiling; no native Tleilaxu income or cancellation owner is manufactured.
 
 ### Source-search follow-up
 
-The requested web search found no publisher/designer answer to the three questions above. The [publisher-authored expansion rulebook, pp. 11, 14–16](https://gamers-hq.de/media/pdf/0f/7a/86/Dune_EcazMoritani_Rulebook_EN.pdf) explains Nexus cards and answers other faction interactions, but does not specify whether this grant is additional to ordinary revival, consumes the ordinary leader slot, or permits using only one part. The printed card wording quoted above establishes quantities and prices, not these accounting or partial-use rules. Search-result summaries that conflate Secret Ally with native Tleilaxu revival or Ghola are not rulings. All three questions remain pending; do not implement an inferred answer.
+The prior requested search found no publisher/designer answer to these questions. The [publisher-authored expansion rulebook, pp. 11, 14–16](https://gamers-hq.de/media/pdf/0f/7a/86/Dune_EcazMoritani_Rulebook_EN.pdf) establishes other Nexus interactions, not this allowance/slot/partial-use accounting. Search summaries conflating Secret Ally with native revival or Ghola are not rulings. Publisher provenance remains unanswered; the explicit recommended prototype policy below is a separate implementation decision.
+
+## Recommended combined revival prototype — 14 October 2026
+
+The selected provisional interpretation is complete and visible:
+
+- **Shared allowance:** expand the ordinary ceiling to at least five, with
+  earlier ordinary returns counting against it, not an extra five. Card-first
+  and ordinary-first both retain that ceiling afterward. A larger native or
+  Recruits allowance is not reduced, but the fixed card group never exceeds
+  five. Every card counter costs one bank spice; none is an actual free force.
+- **Leader:** one own dead leader is mandatory, costs zero and consumes the
+  ordinary one-leader slot. Zero forces is legal; force-only use is not.
+  The card waives the unopened unavailable-roster prerequisite, not repeated
+  death/face-down cycles or special custody. Do not write the synthetic open
+  cycle into ordinary history. Kwisatz/Auditor and own eligible Duke reuse
+  canonical identity rules; captured/living/foreign-Ghola/Cheap Hero choices
+  are excluded.
+- **Existing limits:** Advanced Fedaykin/Sardaukar share their one-per-turn
+  cap across producers; Basic keeps physical stars; Cyborgs keep their actual
+  identity and the printed one-spice price. The explicit card grant does not
+  pass through the native Fremen paid-revival prohibition.
+
+Own Ecaz repeated six-disc cycle and Advanced-Harkonnen Duke custody guards
+remain explicit pre-existing candidate limitations, not a whole-card blank.
+No native Tleilaxu early-revival or income response can exist while that
+faction is absent. Southern Hemisphere receives the actual new typed deposit
+through its original signed deployment/arrival continuation. Broader optional
+module acceptance remains open.
+
+Implementation: `game/nexus-tleilaxu-revival.ts`,
+`game/nexus-tleilaxu-options.ts`, `game/revival.ts`, original engine and
+Homeworld return helpers, `components/nexus-tleilaxu-revival.tsx`.
+Genuine Basic/Advanced fixtures preserve original setup and cards: a real
+Emperor shipment/weapon kills Dr. Yueh during the actual winning eight-counter
+exchange, a real worm opens Nexus, the other two seats ally, and the original
+Tleilaxu singleton is drawn before quiet Revival. Staging is only unplayed
+deck order and original-producer entropy; no hands, forces, deaths, Tanks,
+wallets, alliances or phases are fabricated.
+
+Final nine-file union141/141, types/lint and app build pass. Native cases cover
+paid/zero force use, both ordinary/card orders, typed and repeated-death
+boundaries, wrong actor/quantity/stale event rejection and the next real turn.
+All four legal policies return the actual leader and five counters for5 spice.
+Actual390×844 table: Dr. Yueh returns with deaths1/cycle0 unchanged;
+Atreides spice11→6, Tanks8→3, reserves10→15, ordinary returns5 and leader
+slot consumed. Exactly one physical Nexus is discarded, the offer disappears
+and Ready remains enabled. No overflow or browser errors. Owned hosts/tabs/
+scaffolding were removed; local proof stays outside Git. Full Nexus, faction,
+combined-module and deployed acceptance remain open.

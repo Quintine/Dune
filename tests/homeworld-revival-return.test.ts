@@ -15,7 +15,7 @@ import {
 
 function fixture(
   kind: 'fedaykin' | 'tleilax' = 'fedaykin',
-  source: 'normal' | 'emperorExtra' | 'ghola' = 'normal',
+  source: 'normal' | 'emperorExtra' | 'ghola' | 'nexusTleilaxu' = 'normal',
 ) {
   const players = [
     newPlayer('p', 'Owner', kind === 'fedaykin' ? 'fremen' : 'tleilaxu'),
@@ -85,7 +85,7 @@ function choose(
 }
 
 void test('typed revival receipt survives every source and JSON round trip without aliasing its quote', () => {
-  for (const source of ['normal', 'emperorExtra', 'ghola'] as const) {
+  for (const source of ['normal', 'emperorExtra', 'ghola', 'nexusTleilaxu'] as const) {
     const { g, original, frame } = fixture('fedaykin', source);
     const copy = JSON.parse(JSON.stringify(frame)) as HomeworldRevivalReturn;
     validateHomeworldRevivalReturn(g, copy);

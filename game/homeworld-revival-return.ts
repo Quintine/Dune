@@ -136,7 +136,7 @@ function validateOriginal(frame: Original): void {
     !text(frame.player) ||
     !count(frame.turn, 1, Number.MAX_SAFE_INTEGER) ||
     !count(frame.phase, 0, 8) ||
-    !['normal', 'emperorExtra', 'ghola'].includes(frame.source) ||
+    !['normal', 'emperorExtra', 'ghola', 'nexusTleilaxu'].includes(frame.source) ||
     (frame.source === 'ghola' ? !text(frame.card) : frame.card !== undefined) ||
     !keys(frame.group, ['amount', 'elite', 'free']) ||
     !count(frame.group.amount, 1) ||

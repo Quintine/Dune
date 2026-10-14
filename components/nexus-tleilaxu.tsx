@@ -17,13 +17,11 @@ export function NexusTleilaxu({ game, act, busy }: Props) {
       owner.faction,
       game.players.map((player) => player.faction),
     );
-    if (mode === 'cunning') return null;
+    if (mode === 'cunning' || mode === 'secretAlly') return null;
     return (
       <section aria-label="Tleilaxu Nexus availability">
         <p className="notice">
-          {mode === 'secretAlly'
-            ? 'Secret Ally revival is unavailable while its revival-limit ruling is pending.'
-            : 'Betrayal is unavailable while its private response timing is pending.'}
+          Betrayal is unavailable while its private response timing is pending.
         </p>
       </section>
     );

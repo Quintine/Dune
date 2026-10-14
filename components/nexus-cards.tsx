@@ -13,6 +13,7 @@ import { NEXUS_CARD_REFERENCE, NEXUS_PANEL_NAMES, nexusCardReference } from '@/g
 import { Button } from './ui/button';
 import { NexusEmperorSecretAlly } from './nexus-emperor-secret-ally';
 import { NexusFremenRevival } from './nexus-fremen-revival';
+import {NexusTleilaxuRevival} from './nexus-tleilaxu-revival';
 import { Dialog, DialogClose, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from './ui/dialog';
 
 const panels: NexusCardMode[] = ['betrayal', 'cunning', 'secretAlly'];
@@ -173,6 +174,7 @@ export function NexusCards({ game, act, busy }: { game: GameView; act: (action: 
       )}
       <NexusEmperorSecretAlly game={game} act={act} busy={busy} />
       <NexusFremenRevival game={game} act={act} busy={busy} />
+      <NexusTleilaxuRevival key={game.nexusTleilaxu?.secretAlly?.event??'no-tleilaxu-revival'} game={game} act={act} busy={busy} />
       <div aria-label="Your private Nexus card" className="max-w-xl">
         {offer.card ? <NexusCardFace card={offer.card} mode={mode} /> : <p>You do not hold a Nexus card.</p>}
       </div>

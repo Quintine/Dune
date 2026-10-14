@@ -17,6 +17,8 @@ type RevivalRateContext = Pick<
 >;
 export type RevivalRules = {
   expanded: string[];
+  /** Provisional shared five-return permission from the actual absent-faction Nexus grant. */
+  nexusTleilaxu?: string[];
   choamBlocked?: boolean;
   freeBlocked?: string[];
   limitBlocked: boolean;
@@ -38,6 +40,7 @@ export function forceRevivalLimit(
   p: Pick<Player, 'id' | 'faction'>,
 ) {
   if (p.faction === 'choam' && !g.revivalRules?.choamBlocked) return 20;
+  if (g.revivalRules?.nexusTleilaxu?.includes(p.id)) return 5;
   if (g.revivalRules?.limitBlocked) return 3;
   if (p.faction === 'tleilaxu') return 20;
   return g.revivalRules?.expanded.includes(p.id) ? 5 : 3;

@@ -46,7 +46,7 @@ function deposited(
 
 void test('high Southern Hemisphere returns only the newly revived Fedaykin subset for each supported revival source', () => {
   for (const advanced of [false, true])
-    for (const source of ['normal', 'emperorExtra', 'ghola'] as const) {
+    for (const source of ['normal', 'emperorExtra', 'ghola', 'nexusTleilaxu'] as const) {
       const before = fixture('fremen', 3, advanced);
       before.players[0].elites!.reserves = 1;
       const group = { amount: 4, elite: 2, free: source === 'normal' ? 2 : 0 };
