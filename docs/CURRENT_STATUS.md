@@ -29,7 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Orgiz payer ordering and native Collection proof — 14 October.**
+**Canonical Orgiz Collection sources — 14 October.**
+The original ordinary quote now records positive player/location/amount deposit
+receipts before Orgiz. Both modes use actual collectors, not co-present force
+inference: Basic groups by positive deposit; Advanced groups by territory.
+Original storm-order eligibility skips self, zero actual collection and empty
+purses. City income and unresolved Ecaz escrow cannot identify an ordinary
+payer. The former shared-sector withholding branch and `collectorAt` are gone;
+phase controls and Advanced bilateral allocation remain original.
+
+Genuine Basic/Advanced Sihaya Ridge paths preserve setup, cards, armies,
+alliance, reveal/entry, departure and paid shipments. Exact source receipts
+show both collectors taking2, or one consuming the original6-spice pile with
+the other taking0. Face1 is selected at the actual turn-two forecast shuffle,
+not assigned to a later source. Final six-file union72/72; types/lint and app
+build pass. Actual390px Finish shipment & movement turns phase5→7,
+Ecaz7/Guild10→Ecaz8/Guild14 with one Orgiz transfer and Ready restored.
+No horizontal overflow or browser errors. Basic shared-allocation settlement,
+complete modules and deployed acceptance remain open.
+[Contract](DISCOVERY_PROTOTYPE.md#multi-occupant-and-shared-cisternorgiz-collection--14-october-2026).
+
+**Earlier Orgiz payer ordering and native proof (`bc09ac3`) — 14 October.**
 Every Cistern fighter occupant receives two bank spice. Orgiz occupants resolve
 in original storm order without debt. Advanced charges once per territory,
 selecting the first definite foreign collected-sector payer in storm order that
@@ -48,8 +68,9 @@ types/lint and app build pass. Actual390px table proposal4/0 leaves wallets7/11
 unchanged until Guild accepts, then credits Ecaz10/Guild12 with one transfer,
 no remaining decision and enabled Ready. No horizontal overflow; fresh settled
 surface has no application errors. The earlier checkpoint's genuine-fixture
-and app-build claims were unsupported and are corrected here. Ambiguous
-collected-sector payers and complete/deployed acceptance remain open.
+and app-build claims were unsupported and are corrected here. That checkpoint's
+ordinary-source ambiguity gap is superseded by the canonical receipt pass
+above; Basic shared allocation and complete/deployed acceptance remain open.
 [Contract](DISCOVERY_PROTOTYPE.md#multi-occupant-and-shared-cisternorgiz-collection--14-october-2026).
 
 

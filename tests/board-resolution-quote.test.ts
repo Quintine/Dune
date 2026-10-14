@@ -146,6 +146,10 @@ void test('collection uses storm order and shared remaining spice, with city rat
     { player: 'e', strongholds: 0, collected: 3, desert: 3, balance: 13 },
     { player: 'b', strongholds: 0, collected: 0, desert: 0, balance: 10 },
   ]);
+  assert.deepEqual(q.deposits, [
+    { player: 'a', location: 'red_chasm:7', amount: 6 },
+    { player: 'e', location: 'red_chasm:7', amount: 3 },
+  ]);
   assert.equal(q.spice['red_chasm:7'], 0);
   assert.deepEqual(g, before);
   g.order = ['e', 'a', 'b'];
@@ -153,6 +157,10 @@ void test('collection uses storm order and shared remaining spice, with city rat
     quoteSpiceCollection(g).receipts.map((r) => r.collected),
     [4, 5, 0],
   );
+  assert.deepEqual(quoteSpiceCollection(g).deposits, [
+    { player: 'e', location: 'red_chasm:7', amount: 4 },
+    { player: 'a', location: 'red_chasm:7', amount: 5 },
+  ]);
 });
 void test('collection counts a concealed marker as one without inspecting its secret token or reserve value', () => {
   const g = fixture();

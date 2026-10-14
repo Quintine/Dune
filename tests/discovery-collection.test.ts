@@ -557,7 +557,7 @@ void test('Advanced falls through to the next actual collector when an earlier O
   assert.equal(balance(discovery, 'e'), 1);
 });
 
-void test('Advanced does not select a payer from an uncontested sector when another collected sector is contested', () => {
+void test('Advanced uses actual shared-sector receipts rather than withholding an entire territory for co-present forces', () => {
   const game = fixture(true);
   reveal(game, ORGIZ_PROCESSING_STATION);
   game.players[0].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
@@ -568,10 +568,29 @@ void test('Advanced does not select a payer from an uncontested sector when anot
   assert.equal(ordinary.spice['hagga_basin:12'], 2);
   assert.equal(ordinary.spice['hagga_basin:13'], 0);
   assert.deepEqual(discovery.effects, [{
+    kind: 'orgiz', player: 'a', from: 'h', location: 'hagga_basin:12',
+    amount: 1, source: 'player',
+  }, {
     kind: 'orgiz', player: 'a', from: 'h', location: 'red_chasm:7',
     amount: 1, source: 'player',
   }]);
   assert.equal(balance(discovery, 'g'), ordinary.receipts[2].balance);
+});
+
+void test('Orgiz never charges a co-present faction that collected zero, even with an old wallet', () => {
+  for (const advanced of [false, true])
+    for (const pile of [2, 4]) {
+      const game = fixture(advanced);
+      reveal(game, ORGIZ_PROCESSING_STATION);
+      game.players[1].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1, 'hagga_basin:12': 1 };
+      game.players[2].forces = { 'hagga_basin:12': 1 };
+      game.players[2].spice = 20;
+      const { ordinary, discovery } = composed({ ...game, spice: { 'hagga_basin:12': pile } });
+      assert.equal(ordinary.deposits.some(entry => entry.player === 'g'), pile === 4);
+      assert.equal(balance(discovery, 'g'), 20 + (pile === 4 ? 1 : 0));
+      assert.equal(balance(discovery, 'h'), 2 + (pile === 4 ? 1 : 0));
+      assert.equal(discovery.effects.length, pile === 4 ? 1 : 0);
+    }
 });
 
 void test('Advanced shared territories remain unpaid across all their source keys while independent Collection proceeds', () => {

@@ -1,5 +1,31 @@
 # Dune implementation status
 
+## 14 October 2026 — Canonical positive Collection receipts for Orgiz
+
+The original ordinary quote now emits `deposits` with actual positive
+player/location/amount receipts. It excludes city awards and shared escrow;
+zero-take forces are not collectors. Discovery consumes that original source
+instead of inferring a unique collector from occupancy. `collectorAt` and the
+whole-territory ambiguity guard were removed. Basic groups by positive deposit;
+Advanced groups by territory, retaining source-key event order and original
+storm-order owner/payer selection. Self and empty purses are skipped.
+
+Native Basic/Advanced Ecaz/Guild rock scenarios use genuine setup, token
+lottery/reveal/entry, alliance, departure and paid shipments. Both collect2
+from original Sihaya Ridge spice, or the first actual collector consumes the
+whole6-spice pile and the later co-present force takes0. The latter cannot pay
+solely because it has an old wallet. Actual Storm face1 is selected at the
+original forecast producer after turn-two Storm, not assigned to a later
+forecast or source. Shared desert allocation keeps its original separate path.
+
+Final six-file union72/72, types/lint and app build pass. Actual390px table:
+Finish shipment & movement produces phase7 with two2-spice ordinary source
+receipts, Ecaz8/Guild14 from7/10, exactly one Orgiz transfer, no decision and
+enabled Ready. No horizontal overflow or browser errors. Local proof is
+outside Git; owned hosts/tabs/scaffolding were removed. DEP0205, large-chunk
+and route-classification warnings remain. Basic shared-allocation settlement,
+full modules, assurance and deployed acceptance remain open.
+
 ## 14 October 2026 — Cistern/Orgiz multi-occupant and shared-lot Collection
 
 Recommended-option priority: Advanced Orgiz now chooses one definite actual

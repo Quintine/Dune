@@ -169,6 +169,9 @@ export type CollectionQuote = {
     desert: number;
     balance: number;
   }[];
+  /** Positive ordinary map collections in actual storm order, before Orgiz.
+   * Shared escrow has no recipient until its original allocation settles. */
+  deposits: { player: string; location: string; amount: number }[];
   /** Removed from the map, but not credited until the allies resolve allocation. */
   shared: SharedSpiceLot[];
   collectionBonus: {
@@ -292,6 +295,7 @@ export function quoteSpiceCollection(
   const shared: SharedSpiceLot[] = [];
   const pooled = new Set<string>();
   const receipts: CollectionQuote['receipts'] = [];
+  const deposits: CollectionQuote['deposits'] = [];
   for (const id of g.order) {
     const p = players.find((p) => p.id === id)!,
       original = g.players.find((p) => p.id === id)!;
@@ -334,6 +338,7 @@ export function quoteSpiceCollection(
         continue;
       }
       const amount = Math.min(spice[key] ?? 0, capacity);
+      if (amount > 0) deposits.push({ player: id, location: key, amount });
       collected += amount;
       if (sites.some((site) => site.id === t && site.type === 'sand'))
         desert += amount;
@@ -346,7 +351,7 @@ export function quoteSpiceCollection(
     );
     receipts.push({ player: id, strongholds, collected, desert, balance });
   }
-  return { released, spice, receipts, shared, collectionBonus };
+  return { released, spice, receipts, deposits, shared, collectionBonus };
 }
 
 export type BattlePhaseEndContext = CollectionContext & {

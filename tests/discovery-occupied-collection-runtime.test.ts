@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {applyAction,normalizeAutomaticGame,type Game} from '../game/engine';
 import {CISTERN,ORGIZ_PROCESSING_STATION} from '../game/discovery-collection';
 import {createOccupiedDiscoveryCollectionFixture} from './fixture-discovery-occupied-collection';
+import {prepareOrdinaryPairedOrgizCollection} from './fixture-discovery-shared-orgiz';
 
 const wallets=(game:Game)=>Object.fromEntries(game.players.map(p=>[p.id,p.spice]));
 const stock=(game:Game)=>game.players.map(p=>({id:p.id,
@@ -47,3 +48,25 @@ for(const advanced of [false,true]) {
     assert.deepEqual(wallets(done),expected);
   });
 }
+
+for(const advanced of [false,true])
+  for(const exhaustFirst of [false,true]) {
+    void test(`${advanced?'Advanced':'Basic'} original co-present rock collectors ${exhaustFirst?'exhaust the pile in storm order':'both collect'} without guessing an Orgiz payer`,()=>{
+      const f=prepareOrdinaryPairedOrgizCollection(advanced,exhaustFirst);
+      const before=wallets(f.game);
+      const done=applyAction(f.game,f.finalAction.actor,f.finalAction.action);
+      const expected={...before};
+      if(exhaustFirst)expected[f.first]+=f.amount;
+      else {expected[f.ecaz]+=2;expected[f.guild]+=2}
+      if(advanced)expected[f.guild]+=1; // Original Tuek's Sietch Collection.
+      const ecazCollected=!exhaustFirst||f.first===f.ecaz;
+      if(ecazCollected) {expected[f.ecaz]-=1;expected[f.guild]+=1}
+      assert.deepEqual(wallets(done),expected);
+      assert.equal(done.spice[f.key],exhaustFirst?0:f.amount-4);
+      assert.equal(done.log.filter(entry=>entry.automatic?.name==='Orgiz Processing Station').length,
+        ecazCollected?1:0);
+      assert.equal(done.phase,7);
+      assert.equal(done.decision,null);
+      assert.equal(done.players.find(p=>p.id===f.guild)!.forces[`${ORGIZ_PROCESSING_STATION}:0`],2);
+    });
+  }

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {applyAction,type Action,type Game} from '../game/engine';
 import {splitLocation,territory} from '../game/board';
 import {ORGIZ_PROCESSING_STATION} from '../game/discovery-collection';
+import {quoteSpiceCollection} from '../game/board-resolution-quote';
 import {
   createDiscoveryOccupantsFixture,advanceTestingStationContest,nextTestingStationContestStep,
   type TestingStationContestStep,
@@ -9,70 +10,82 @@ import {
 
 const clean=(game:Game)=>!game.decision&&!game.response&&!game.phaseOpening;
 
-/** Preserve original armies/cards/alliances. Only original unplayed Spice Card
- * order and the actual token lottery are staged by the shared native prefix. */
-export function prepareSharedOrgizCollection() {
-  const prefix=createDiscoveryOccupantsFixture({location:ORGIZ_PROCESSING_STATION,advanced:true,secondAmount:2});
+/** Original setup/forces/cards/alliances. Only unplayed card order, the actual
+ * token lottery and face1 at its real turn-two forecast shuffle are selected. */
+function prepareOrgizCollectors(advanced:boolean,terrainType:'sand'|'rock',exhaustFirst=false) {
+  const prefix=createDiscoveryOccupantsFixture({location:ORGIZ_PROCESSING_STATION,
+    advanced,secondAmount:2,ordinaryBlowTerrain:'sand',forecastOne:true});
   const actions:TestingStationContestStep[]=[...prefix.actions];
   let game=advanceTestingStationContest(prefix.game,g=>g.turn===2&&g.phase===5&&g.active==='ecaz'&&clean(g),actions);
   const leave:Action={type:'move',from:`${ORGIZ_PROCESSING_STATION}:0`,
     territory:prefix.parent,sector:prefix.parentSector,amount:2,elite:0};
   actions.push({actor:'ecaz',action:leave});
   game=applyAction(game,'ecaz',leave);
-  game=advanceTestingStationContest(game,g=>g.turn===2&&g.phase===8&&clean(g),actions);
-  // Two unused printed blows with different sectors guarantee that at least
-  // one new deposit is outside the next real Storm. Never edit a storm source.
-  let firstSector:number|null=null;
+  game=advanceTestingStationContest(game,g=>g.turn===3&&g.phase===0&&
+    g.stormPending!==null&&clean(g),actions);
+  const incomingStorm=(game.storm+game.stormPending!)%18;
   const blowKeys:string[]=[];
   for(let position=0;position<2;position++) {
+    const wanted=position===0?terrainType:'sand';
     const index=game.spiceDeck.findIndex((card,i)=>i>=position&&'territory' in card&&
-      !card.discovery&&territory(card.territory).type==='sand'&&card.sector!==firstSector);
-    assert.ok(index>=position,'Original unused ordinary blows must supply the native Collection route.');
+      !card.discovery&&territory(card.territory).type===wanted&&
+      card.territory!==prefix.parent&&card.sector!==incomingStorm);
+    assert.ok(index>=position,'Original unused blows must supply the native Collection route.');
     const card=game.spiceDeck.splice(index,1)[0];
     game.spiceDeck.splice(position,0,card);
-    if('territory' in card) {
-      firstSector=card.sector;
-      blowKeys.push(`${card.territory}:${card.sector}`);
-    }
+    if('territory' in card)blowKeys.push(`${card.territory}:${card.sector}`);
   }
   game=advanceTestingStationContest(game,g=>g.turn===3&&g.phase===5&&clean(g),actions);
-  const target=Object.entries(game.spice).find(([key,amount])=>blowKeys.includes(key)&&amount>=2&&
-    splitLocation(key).sector!==game.storm&&game.players.every(p=>(p.forces[key]??0)===0));
-  assert.ok(target,'An actual original blow must supply an empty non-storm shared collection deposit.');
-  const destination=splitLocation(target[0]);
+  assert.equal(game.storm,incomingStorm);
+  const key=blowKeys[0];
+  const amount=game.spice[key];
+  assert.ok(amount>=4&&game.players.every(p=>(p.forces[key]??0)===0));
+  const destination=splitLocation(key);
+  const first=game.order.find(id=>id==='ecaz'||id==='guild')!;
   const shipped=new Set<string>();
-  let beforeCollection:Game|null=null;
-  for(let step=0;step<500&&game.turn===3&&!(game.phase===7&&game.decision?.kind==='ecazSpice');step++) {
-    if(game.phase===5&&clean(game)&&game.movementRemaining?.length===1)
-      beforeCollection=game;
+  for(let step=0;step<500&&game.turn===3;step++) {
+    if(game.phase===5&&clean(game)&&game.movementRemaining?.length===1&&shipped.size===2)break;
     let next:TestingStationContestStep|null;
-    if(game.turn===3&&game.phase===5&&clean(game)&&game.active&&
+    if(game.phase===5&&clean(game)&&game.active&&
       ['ecaz','guild'].includes(game.active)&&!shipped.has(game.active)) {
       const actor=game.active;
       next={actor,action:{type:'ship',territory:destination.territory,sector:destination.sector,
-        amount:1,elite:0,allyPayment:0}};
+        amount:exhaustFirst&&actor===first?Math.ceil(amount/2):1,elite:0,allyPayment:0}};
       shipped.add(actor);
     } else next=nextTestingStationContestStep(game);
-    assert.ok(next,`Original shared Collection has no continuation: ${JSON.stringify({
-      status:game.status,turn:game.turn,phase:game.phase,decision:game.decision,
-      active:game.active,shipped:[...shipped],target:target[0],
-    })}`);
+    assert.ok(next,'Original collector route must retain a legal continuation.');
     actions.push(next);
     game=applyAction(game,next.actor,next.action);
   }
-  assert.equal(game.decision?.kind,'ecazSpice',JSON.stringify({
-    turn:game.turn,phase:game.phase,shipped:[...shipped],target:target[0],
-    spice:beforeCollection?.spice[target[0]],storm:beforeCollection?.storm,
-    seats:beforeCollection?.players.map(p=>({id:p.id,ally:p.ally,forces:p.forces[target[0]]})),
-    last:actions.slice(-12),
-  }));
+  assert.equal(game.phase,5);
+  assert.equal(game.movementRemaining?.length,1);
+  assert.equal(shipped.size,2);
   assert.equal(game.players.find(p=>p.id==='ecaz')!.forces[`${ORGIZ_PROCESSING_STATION}:0`],undefined);
   assert.equal(game.players.find(p=>p.id==='guild')!.forces[`${ORGIZ_PROCESSING_STATION}:0`],2);
+  const ordinary=quoteSpiceCollection(game);
+  const finalAction:TestingStationContestStep={actor:game.active!,action:{type:'endMovement'}};
+  return {...prefix,game,actions,ordinary,finalAction,key,amount,first,
+    ecaz:'ecaz',guild:'guild',owner:'guild'};
+}
+
+/** Desert collectors enter the original shared allocation before any credit. */
+export function prepareSharedOrgizCollection() {
+  const position=prepareOrgizCollectors(true,'sand');
+  const game=applyAction(position.game,position.finalAction.actor,position.finalAction.action);
+  assert.equal(game.decision?.kind,'ecazSpice');
   const pending=game.ecazCollection!.allocation!;
   const lot=pending.lots[pending.index];
-  assert.equal(lot.territory,destination.territory);
-  assert.ok(lot.amount>=2);
-  return {...prefix,game,actions,lot,key:target[0],ecaz:'ecaz',guild:'guild',owner:'guild'};
+  assert.equal(lot.territory,splitLocation(position.key).territory);
+  assert.equal(lot.amount,4);
+  return {...position,game,lot,actions:[...position.actions,position.finalAction]};
+}
+
+/** Rock retains ordinary Collection: two allies may be present, but only
+ * actual positive source receipts can fund an Orgiz transfer. */
+export function prepareOrdinaryPairedOrgizCollection(advanced=false,exhaustFirst=false) {
+  const position=prepareOrgizCollectors(advanced,'rock',exhaustFirst);
+  assert.deepEqual(position.ordinary.shared,[]);
+  return position;
 }
 
 export function settleSharedOrgiz(

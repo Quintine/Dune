@@ -10,7 +10,7 @@ import {
   type Game,
 } from '../game/engine';
 import { fighterCount } from '../game/advisors';
-import { gameDistance } from '../game/board';
+import { gameDistance, territory } from '../game/board';
 import { DISCOVERY_CARD_PLACEMENTS, DISCOVERY_SPICE_CARDS, DISCOVERY_TOKEN_BY_ID, type DiscoveryTokenFace } from '../game/discoveries';
 import { discoveryStormActions } from '../game/discovery-storm-options';
 import { PLAYER_CIRCLE_SECTORS } from '../game/player-positions';
@@ -186,6 +186,25 @@ function selectedTokenLottery<T>(
   }
 }
 
+/** Select printed face1 at its actual forecast shuffle after turn-two Storm,
+ * not by assigning a later forecast or movement-source field. */
+function selectedForecastOne<T>(enabled:boolean,operation:()=>T):T {
+  if(!enabled)return operation();
+  const descriptor=Object.getOwnPropertyDescriptor(crypto,'getRandomValues');
+  const native=crypto.getRandomValues.bind(crypto);
+  crypto.getRandomValues=<V extends ArrayBufferView|null>(array:V):V=>{
+    if(array instanceof Uint32Array&&array.length===1) {
+      array[0]=0xffffffff;
+      return array;
+    }
+    return Reflect.apply(native,crypto,[array]) as V;
+  };
+  try{return operation()}finally{
+    if(descriptor)Object.defineProperty(crypto,'getRandomValues',descriptor);
+    else Reflect.deleteProperty(crypto,'getRandomValues');
+  }
+}
+
 /** Held-card staging only: a real unplayed Weather Control card moves to a hand. */
 export function holdTestingStationStormCard(
   game: Game,
@@ -206,7 +225,7 @@ export function holdTestingStationStormCard(
 /** Original setup, printed Discovery supply and real reciprocal alliance create
  * two occupants without fabricated counters, wallets, phases or token faces. */
 export function createDiscoveryOccupantsFixture(
-  options: { location: OccupiedDiscoveryLocation; advanced?: boolean; secondAmount?: number; adjacentBlow?: boolean },
+  options: { location: OccupiedDiscoveryLocation; advanced?: boolean; secondAmount?: number; adjacentBlow?: boolean; ordinaryBlowTerrain?: 'sand' | 'rock'; forecastOne?: boolean },
 ): DiscoveryOccupantsFixture {
   const advanced = options.advanced ?? false, location = options.location;
   const secondAmount = options.secondAmount ?? 1;
@@ -240,10 +259,14 @@ export function createDiscoveryOccupantsFixture(
   const wormPosition = advanced ? 2 : 1;
   frontCard(game, 0, (candidate) => 'territory' in candidate && candidate.discovery === card.discovery);
   if (advanced)
-    frontCard(game, 1, (candidate) => 'territory' in candidate && !candidate.discovery && candidate.territory !== placement.territory);
+    frontCard(game, 1, (candidate) => 'territory' in candidate && !candidate.discovery &&
+      candidate.territory !== placement.territory &&
+      (!options.ordinaryBlowTerrain || territory(candidate.territory).type === options.ordinaryBlowTerrain));
   frontCard(game, wormPosition, (card) => 'worm' in card && !card.greatMaker);
   for (let position = wormPosition + 1; position < wormPosition + 3; position++)
-    frontCard(game, position, (candidate) => 'territory' in candidate && !candidate.discovery && candidate.territory !== placement.territory);
+    frontCard(game, position, (candidate) => 'territory' in candidate && !candidate.discovery &&
+      candidate.territory !== placement.territory &&
+      (!options.ordinaryBlowTerrain || territory(candidate.territory).type === options.ordinaryBlowTerrain));
   if (options.adjacentBlow)
     frontCard(game,wormPosition+1,candidate => 'territory' in candidate && !candidate.discovery &&
       gameDistance(game,`${placement.territory}:${placement.sector}`,`${candidate.territory}:${candidate.sector}`) === 1);
@@ -340,17 +363,18 @@ export function createDiscoveryOccupantsFixture(
     'The first occupant entered through real next-turn free entry; no force was placed there directly.',
   );
 
-  game = advanceTestingStationContest(
-    game,
-    (state) =>
-      state.turn === 2 &&
-      state.phase === 1 &&
-      !!state.nexus &&
-      !state.spiceWindow &&
-      !state.spiceResolution &&
-      clean(state),
-    actions,
-  );
+  game = selectedForecastOne(advanced && !!options.forecastOne, () =>
+    advanceTestingStationContest(
+      game,
+      (state) =>
+        state.turn === 2 &&
+        state.phase === 1 &&
+        !!state.nexus &&
+        !state.spiceWindow &&
+        !state.spiceResolution &&
+        clean(state),
+      actions,
+    ));
   const offer: TestingStationContestStep = { actor: ecaz, action: { type: 'alliance', target: guild } };
   const accept: TestingStationContestStep = { actor: guild, action: { type: 'alliance', target: ecaz } };
   for (const next of [offer, accept]) {

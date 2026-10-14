@@ -1,6 +1,6 @@
 import { isAdvisor } from './advisors';
 import { gameTerritories, splitLocation, type MobileBoard } from './board';
-import type { AdvisorRelease } from './board-resolution-quote';
+import type { AdvisorRelease, CollectionQuote } from './board-resolution-quote';
 import type { Player } from './engine';
 import type { SpiceAllocationReceipt } from './ecaz-spice-allocation';
 import { presenceAt, type ForcePresence } from './force-presence';
@@ -40,6 +40,8 @@ export type DiscoveryBaseCollectionQuote = {
   /** Deposits remaining after ordinary and shared collection. */
   spice: Readonly<Record<string, number>>;
   receipts: readonly DiscoveryBaseCollectionReceipt[];
+  /** Actual positive ordinary source receipts, never inferred from occupancy. */
+  deposits: readonly CollectionQuote['deposits'][number][];
   shared: readonly {
     territory: string;
     ecaz: string;
@@ -103,36 +105,15 @@ export function discoveryCollectionOccupants(
   ).sort((left,right) => context.order.indexOf(left.id)-context.order.indexOf(right.id));
 }
 
-/** Public effective presence only; an ambiguous source cannot identify a payer. */
-function collectorAt(
-  context: DiscoveryCollectionContext,
-  key: string,
-  released: readonly AdvisorRelease[],
-): DiscoveryCollectionSeat | undefined {
-  const { territory, sector } = splitLocation(key);
-  let collector: DiscoveryCollectionSeat | undefined;
-  for (const player of context.players) {
-    if (!isCollectingFighter(player, territory, released)) continue;
-    const marker = player.noField?.deployed?.location;
-    if (
-      (player.forces[key] ?? 0) <= 0 &&
-      !(marker?.territory === territory && marker.sector === sector)
-    ) continue;
-    if (collector) return undefined;
-    collector = player;
-  }
-  return collector;
-}
-
 function transferOrgiz(
   key: string,
-  collector: DiscoveryCollectionSeat | undefined,
+  collector: string,
   ownerReceipt: DiscoveryBaseCollectionReceipt,
   receipts: DiscoveryBaseCollectionReceipt[],
   effects: DiscoveryCollectionQuote['effects'],
 ) {
-  if (!collector || collector.id === ownerReceipt.player) return false;
-  const collectorReceipt = receipts.find(entry => entry.player === collector.id)!;
+  if (collector === ownerReceipt.player) return false;
+  const collectorReceipt = receipts.find(entry => entry.player === collector)!;
   if (collectorReceipt.balance === 0) return false;
   requireCollection(
     Number.isSafeInteger(ownerReceipt.balance + 1),
@@ -141,7 +122,7 @@ function transferOrgiz(
   collectorReceipt.balance -= 1;
   ownerReceipt.balance += 1;
   effects.push({
-    kind: 'orgiz', player: ownerReceipt.player, from: collector.id,
+    kind: 'orgiz', player: ownerReceipt.player, from: collector,
     location: key, amount: 1, source: 'player',
   });
   return true;
@@ -152,10 +133,9 @@ function transferOrgiz(
  * over the canonical ordinary quote. Ordinary `collected` and `desert` remain
  * factual: Cistern is bank income; Orgiz transfers available player spice.
  *
- * Owners resolve in original storm order. Advanced chooses one actual foreign
- * collector per territory in storm order; Basic retains the provisional
- * positive-deposit trigger. Ambiguous collected sectors withhold the territory
- * effect. Shared lots settle after bilateral allocation, not in this quote.
+ * Owners and actual foreign payers resolve in original storm order. Advanced
+ * groups canonical deposits by territory; Basic groups by positive deposit.
+ * Shared escrow settles after bilateral allocation, not in this quote.
  */
 export function quoteDiscoveryCollection(
   context: DiscoveryCollectionContext,
@@ -184,6 +164,7 @@ export function quoteDiscoveryCollection(
       record(collection.spice) &&
       Array.isArray(collection.receipts) &&
       Array.isArray(collection.shared) &&
+      Array.isArray(collection.deposits) &&
       Array.isArray(collection.released) &&
       collection.released.every(
         (entry) => record(entry) &&
@@ -250,6 +231,13 @@ export function quoteDiscoveryCollection(
     ),
     'Discovery collection needs valid retained shared-spice lots.',
   );
+  requireCollection(
+    collection.deposits.every(entry => record(entry) &&
+      typeof entry.player === 'string' && context.order.includes(entry.player) &&
+      typeof entry.location === 'string' && Object.hasOwn(context.spice, entry.location) &&
+      whole(entry.amount) && entry.amount > 0 && entry.amount <= context.spice[entry.location]),
+    'Discovery collection needs actual positive ordinary deposit receipts.',
+  );
 
   const effects: DiscoveryCollectionQuote['effects'] = [];
   const cistern = discoveryCollectionOccupants(context, CISTERN, collection.released);
@@ -271,45 +259,26 @@ export function quoteDiscoveryCollection(
   const orgiz = discoveryCollectionOccupants(context, ORGIZ_PROCESSING_STATION, collection.released);
   if (orgiz.length) {
     const ownerReceipts = orgiz.map(owner => receipts.find(entry => entry.player === owner.id)!);
-    const transfers = context.advanced
-      ? new Map<string, {
-        collectors: { location: string; collector: DiscoveryCollectionSeat }[];
-        ambiguous: boolean;
-      }>()
-      : undefined;
-    for (const key of sourceKeys) {
-      if (context.spice[key] <= collection.spice[key]) continue;
-      const { territory } = splitLocation(key);
-      if (
-        collection.shared.some(
-          (lot) => lot.amount > 0 && lot.territory === territory,
-        )
-      ) continue;
-      const collector = collectorAt(context, key, collection.released);
-      if (!transfers) {
-        for (const ownerReceipt of ownerReceipts)
-          transferOrgiz(key, collector, ownerReceipt, receipts, effects);
-        continue;
-      }
-      let pending = transfers.get(territory);
-      if (!pending) {
-        pending = { collectors: [], ambiguous: false };
-        transfers.set(territory, pending);
-      }
-      if (!collector) pending.ambiguous = true;
-      else if (!pending.collectors.some(entry => entry.collector.id === collector.id))
-        pending.collectors.push({ location: key, collector });
+    const transfers = new Map<string, CollectionQuote['deposits']>();
+    for (const deposit of collection.deposits) {
+      const event = context.advanced ? splitLocation(deposit.location).territory : deposit.location;
+      const candidates = transfers.get(event);
+      if (candidates) candidates.push(deposit);
+      else transfers.set(event, [deposit]);
     }
-    if (transfers)
-      for (const pending of transfers.values()) {
-        if (pending.ambiguous) continue;
-        pending.collectors.sort((left, right) =>
-          context.order.indexOf(left.collector.id) - context.order.indexOf(right.collector.id));
-        for (const ownerReceipt of ownerReceipts)
-          for (const candidate of pending.collectors)
-            if (transferOrgiz(candidate.location, candidate.collector, ownerReceipt, receipts, effects))
-              break;
-      }
+    // Preserve original source-key event order, independent of force-map order.
+    for (const key of sourceKeys) {
+      const event = context.advanced ? splitLocation(key).territory : key;
+      const candidates = transfers.get(event);
+      if (!candidates) continue;
+      transfers.delete(event);
+      candidates.sort((left, right) =>
+        context.order.indexOf(left.player) - context.order.indexOf(right.player));
+      for (const ownerReceipt of ownerReceipts)
+        for (const candidate of candidates)
+          if (transferOrgiz(candidate.location, candidate.player, ownerReceipt, receipts, effects))
+            break;
+    }
   }
 
   return { receipts, effects };
