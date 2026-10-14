@@ -29,6 +29,26 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Cistern and Orgiz multi-occupant Collection — 14 October.**
+Following the same choose-recommended-option priority, the prototype closes two
+withheld benefits: each Cistern fighter occupant now collects its two bank spice
+after ordinary advisor releases, and each Orgiz fighter occupant takes one spice
+from the unique rival collector of a qualifying deposit. Orgiz owners resolve in
+original storm order; an empty purse pays nothing and creates no debt, so
+ordinary Collection continues. Advanced keeps the supplied territory-Collection
+trigger; Basic keeps the provisional positive-deposit mapping. Advanced
+shared-Ecaz lots are no longer withheld: after the real bilateral allocation,
+each occupant takes one spice from the first actual positive foreign recipient
+(Ecaz, then ally), never from a zero share, an old wallet or itself.
+Genuine fixtures reach these windows through real stage/phase controls, paid
+shipments, Collection inspection/reveal, free entry, alliance and the engine's
+own allocation protocol; equal/propose/zero splits, first-eligible recipient,
+one available spice for two owners, lone-advisor exclusion and deterministic
+re-settlement are exercised. Related17-file union127/127, five repeat runs
+8/8, types/lint and app build pass. Contested Cistern/Orgiz ownership and full
+acceptance remain open. [Contract](DISCOVERY_PROTOTYPE.md#multi-occupant-and-shared-cisternorgiz-collection--14-october-2026).
+
+
 **Recommended Jacurutu and Testing Station choices — 14 October.**
 Following the choose-recommended-option priority, mixed physical Jacurutu dials
 now use a defeated-player exact ordinary/elite/paid selection before battle

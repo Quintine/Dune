@@ -64,6 +64,37 @@ retains existing module-registration, chunk-size and route-classification
 warnings. Throwaway native probes are removed; permanent tests exercise
 source/actor/transition/payment boundaries, not wording or fixture-copy echoes.
 
+### Multi-occupant and shared Cistern/Orgiz Collection — 14 October 2026
+
+Cistern now pays every fighter occupant two bank spice after ordinary advisor
+releases; a lone advisor never qualifies. Orgiz resolves each fighter occupant
+in original storm order, taking one spice from the unique rival collector of a
+qualifying deposit. An empty purse simply cannot pay: no debt is created and
+ordinary Collection continues. Advanced keeps the supplied territory-Collection
+trigger and Basic keeps the provisional positive-deposit mapping.
+
+The Advanced shared-Ecaz branch now settles instead of withholding. After the
+real bilateral allocation reports the actual split, each occupant takes one
+spice from the first actual positive foreign recipient — Ecaz first, then the
+ally — never from a zero share, an old wallet or the occupant itself, and never
+beyond that recipient's available spice. Total spice is conserved by the
+transfer; only the real collected lot is credited.
+
+Genuine evidence: the original Station/Ecaz-Guild/Fremen fixtures reach these
+windows through real stage/phase controls, paid shipments, Collection
+inspection/reveal, free entry, alliances and the engine's own allocation
+protocol; only unplayed Spice Card order, printed supply tokens and conserved
+counter positions are controlled. Cases cover equal/propose/zero splits, the
+first-eligible recipient, two owners with one available spice, lone-advisor
+exclusion, JSON normalization and deterministic re-settlement.
+
+`tests/fixture-discovery-occupied-collection.ts`,
+`tests/discovery-occupied-collection-runtime.test.ts`,
+`tests/fixture-discovery-shared-orgiz.ts` and
+`tests/discovery-shared-orgiz-runtime.test.ts`. Other contested sources
+(Cistern/Orgiz ownership contests, Ecaz shared-lot theft ordering variants) and
+full acceptance remain open.
+
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 
 Original native Nx/Discovery now admits both selected Ix+CHOAM families
@@ -828,17 +859,19 @@ conversion was fabricated.
   territory into sector zero of that location. This spends no spice, shipment or
   normal movement. Empty, storm-blocked and occupancy-blocked offers skip without
   holding up the turn. Accepted groups and arrival reactions survive restoration.
-- **Cistern:** during Collection, a sole fighter occupant receives two bank
-  spice after ordinary advisor releases. If two fighters occupy Cistern, the
-  unresolved benefit is withheld without blocking Collection; this boundary
-  does not decide which occupant should receive it.
-- **Orgiz:** during Collection, a sole fighter occupant takes one spice from
-  the unique rival collector of each positive board deposit after ordinary
-  advisor releases. One collected pile is one observable blow even if previous
-  blows stacked there. The transfer occurs after ordinary collection, conserves
-  player spice, appears in the public log, and resumes from saved state without
-  another payment. Unresolved Ecaz shared lots and contested Orgiz occupation
-  withhold their uncertain transfers, not the ordinary Collection phase.
+- **Cistern:** during Collection, after ordinary advisor releases, each fighter
+  occupant of the revealed location receives two bank spice. A lone advisor
+  never qualifies. Two fighters therefore both collect; the former withheld
+  two-fighter gap is closed.
+- **Orgiz:** during Collection, each fighter occupant takes one spice from the
+  unique rival collector of each qualifying deposit after ordinary advisor
+  releases. Owners resolve in original storm order, and an empty purse simply
+  cannot pay; no debt is created and ordinary Collection continues. Advanced
+  uses the territory Collection event; Basic keeps the provisional
+  positive-deposit trigger. For an Ecaz shared lot, the real bilateral
+  allocation settles first, then each occupant takes one from the first actual
+  positive foreign recipient (Ecaz, then ally) that still has spice, never from
+  a zero share, an old wallet or the occupant itself.
 
 - **Jacurutu:** one bank spice per opposing undialed physical counter actually
   sent to the Tanks. Unique readings remain automatic. For different possible

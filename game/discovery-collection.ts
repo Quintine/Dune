@@ -2,6 +2,7 @@ import { isAdvisor } from './advisors';
 import { gameTerritories, splitLocation, type MobileBoard } from './board';
 import type { AdvisorRelease } from './board-resolution-quote';
 import type { Player } from './engine';
+import type { SpiceAllocationReceipt } from './ecaz-spice-allocation';
 import { presenceAt, type ForcePresence } from './force-presence';
 
 export const CISTERN = 'cistern';
@@ -89,7 +90,7 @@ function isCollectingFighter(
     released.some((entry) => entry.player === player.id && entry.territory === territory);
 }
 
-function occupants(
+export function discoveryCollectionOccupants(
   context: DiscoveryCollectionContext,
   location: string,
   released: readonly AdvisorRelease[],
@@ -99,7 +100,7 @@ function occupants(
   return context.players.filter(
     (player) => isCollectingFighter(player, location, released) &&
       presenceAt(player, location) > 0,
-  );
+  ).sort((left,right) => context.order.indexOf(left.id)-context.order.indexOf(right.id));
 }
 
 /** Public effective presence only; an ambiguous source cannot identify a payer. */
@@ -132,9 +133,9 @@ function transferOrgiz(
 ) {
   if (!collector || collector.id === ownerReceipt.player) return;
   const collectorReceipt = receipts.find(entry => entry.player === collector.id)!;
+  if (collectorReceipt.balance === 0) return;
   requireCollection(
-    collectorReceipt.balance >= 1 &&
-      Number.isSafeInteger(ownerReceipt.balance + 1),
+    Number.isSafeInteger(ownerReceipt.balance + 1),
     'Orgiz theft would invalidate a player spice balance.',
   );
   collectorReceipt.balance -= 1;
@@ -146,14 +147,14 @@ function transferOrgiz(
 }
 
 /**
- * Compose sole-occupant Cistern income and a bounded Orgiz transfer over the
- * canonical ordinary collection quote. The ordinary `collected` and `desert`
- * fields remain factual: Cistern is bank income; Orgiz transfers player spice.
+ * Compose each eligible occupant's Cistern income and original Orgiz transfers
+ * over the canonical ordinary quote. Ordinary `collected` and `desert` remain
+ * factual: Cistern is bank income; Orgiz transfers available player spice.
  *
- * Advanced uses the authorized revised rulebook's territory Collection event;
- * Basic retains the provisional one-positive-deposit interpretation. Contested
- * sources, different territory payers and shared lots withhold only their
- * uncertain effect; they never block ordinary collection.
+ * Owners resolve in original storm order. Advanced uses territory Collection;
+ * Basic retains the provisional positive-deposit trigger. Ambiguous collectors
+ * and shared lots still withhold only their uncertain effect. Empty purses
+ * cannot create debt or block ordinary Collection.
  */
 export function quoteDiscoveryCollection(
   context: DiscoveryCollectionContext,
@@ -250,9 +251,9 @@ export function quoteDiscoveryCollection(
   );
 
   const effects: DiscoveryCollectionQuote['effects'] = [];
-  const cistern = occupants(context, CISTERN, collection.released);
-  if (cistern.length === 1) {
-    const receipt = receipts.find((entry) => entry.player === cistern[0].id)!;
+  const cistern = discoveryCollectionOccupants(context, CISTERN, collection.released);
+  for (const owner of cistern) {
+    const receipt = receipts.find((entry) => entry.player === owner.id)!;
     requireCollection(
       Number.isSafeInteger(receipt.balance + 2),
       'Cistern bank income would overflow the spice balance.',
@@ -266,10 +267,9 @@ export function quoteDiscoveryCollection(
     });
   }
 
-  const orgiz = occupants(context, ORGIZ_PROCESSING_STATION, collection.released);
-  if (orgiz.length === 1) {
-    const owner = orgiz[0];
-    const ownerReceipt = receipts.find((entry) => entry.player === owner.id)!;
+  const orgiz = discoveryCollectionOccupants(context, ORGIZ_PROCESSING_STATION, collection.released);
+  if (orgiz.length) {
+    const ownerReceipts = orgiz.map(owner => receipts.find(entry => entry.player === owner.id)!);
     const transfers = context.advanced
       ? new Map<string, { location: string; collector: DiscoveryCollectionSeat | undefined }>()
       : undefined;
@@ -283,7 +283,8 @@ export function quoteDiscoveryCollection(
       ) continue;
       const collector = collectorAt(context, key, collection.released);
       if (!transfers) {
-        transferOrgiz(key, collector, ownerReceipt, receipts, effects);
+        for (const ownerReceipt of ownerReceipts)
+          transferOrgiz(key, collector, ownerReceipt, receipts, effects);
         continue;
       }
       const pending = transfers.get(territory);
@@ -293,8 +294,44 @@ export function quoteDiscoveryCollection(
     }
     if (transfers)
       for (const pending of transfers.values())
-        transferOrgiz(pending.location, pending.collector, ownerReceipt, receipts, effects);
+        for (const ownerReceipt of ownerReceipts)
+          transferOrgiz(pending.location, pending.collector, ownerReceipt, receipts, effects);
   }
 
   return { receipts, effects };
+}
+
+const SHARED_COLLECTION_RELEASES: readonly AdvisorRelease[] = [];
+
+/** Advanced's one-territory event waits for the original bilateral allocation.
+ * Charge the first actual positive foreign recipient (Ecaz, then ally), never
+ * a guessed share, the owner itself, a city award or unavailable spice. */
+export function quoteAdvancedSharedOrgiz(
+  context: DiscoveryCollectionContext,
+  allocation: SpiceAllocationReceipt,
+  balances: Readonly<Record<string,number>>,
+): OrgizCollectionReceipt[] {
+  requireCollection(context.advanced && allocation.ecaz !== allocation.ally &&
+    context.order.includes(allocation.ecaz) && context.order.includes(allocation.ally) &&
+    whole(allocation.ecazAmount) && whole(allocation.allyAmount) &&
+    record(balances) && context.order.every(id => whole(balances[id])),
+    'Shared Orgiz needs the actual Advanced territory allocation and available balances.');
+  const owners = discoveryCollectionOccupants(context,ORGIZ_PROCESSING_STATION,SHARED_COLLECTION_RELEASES);
+  const effects: OrgizCollectionReceipt[] = [];
+  let ecazDebited=0, allyDebited=0;
+  for (const owner of owners) {
+    let payer: string;
+    if (owner.id !== allocation.ecaz && allocation.ecazAmount > 0 &&
+        balances[allocation.ecaz] > ecazDebited) {
+      payer=allocation.ecaz; ecazDebited++;
+    } else if (owner.id !== allocation.ally && allocation.allyAmount > 0 &&
+        balances[allocation.ally] > allyDebited) {
+      payer=allocation.ally; allyDebited++;
+    } else continue;
+    requireCollection(Number.isSafeInteger(balances[owner.id]+1),
+      'Shared Orgiz income would overflow the spice balance.');
+    effects.push({kind:'orgiz',player:owner.id,from:payer,location:allocation.territory,
+      amount:1,source:'player'});
+  }
+  return effects;
 }

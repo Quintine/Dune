@@ -1,5 +1,44 @@
 # Dune implementation status
 
+## 14 October 2026 — Cistern/Orgiz multi-occupant and shared-lot Collection
+
+Same recommended-option priority, no further clarification prompt. Cistern now
+pays each fighter occupant two bank spice after ordinary advisor releases, and
+Orgiz resolves each fighter occupant in original storm order, taking one spice
+from the unique rival collector of a qualifying deposit. An empty purse pays
+nothing, creates no debt and never blocks ordinary Collection. Advanced keeps
+the supplied territory-Collection trigger; Basic keeps the provisional
+positive-deposit mapping. A lone advisor still never qualifies.
+
+Advanced shared-Ecaz lots now settle after their real bilateral allocation:
+each occupant takes one spice from the first actual positive foreign recipient
+(Ecaz first, then ally), never from a zero share, the occupant itself, an old
+wallet or beyond that recipient’s available spice. Total spice is conserved by
+the transfer and only the real collected lot is credited.
+
+BEFORE the two-occupant cases withheld their benefit; the shared Advanced branch
+was explicitly unpaid. AFTER both are connected through the engine’s own
+Collection path. Two superseded expectation tests and one wording assertion were
+deleted rather than re-pinned; the exhausted Cistern/Orgiz guards and their
+instructions were rewritten.
+
+Evidence uses genuine paths only: original Ecaz/Guild/Fremen (or Station)
+Advanced lobbies, real stage/phase controls, paid shipments, Collection
+inspection and reveal, next-turn free entry, a real worm Nexus alliance and the
+engine’s own allocation protocol. Conserved unplayed Spice Card order, printed
+supply tokens and counter positions are the only staging. Cases cover equal,
+propose and zero splits, first-eligible recipient, two owners with a single
+available spice, lone-advisor exclusion, JSON normalization and deterministic
+re-settlement.
+
+Final related17-file union127/127, five consecutive randomised runs8/8, types/
+lint and app build pass with existing module-registration, chunk-size and
+route-classification warnings. Contested Cistern/Orgiz ownership, Ecaz
+shared-lot theft ordering variants, complete modules and deployed acceptance
+remain open.
+
+
+
 ## 14 October 2026 — recommended physical Jacurutu dial and cumulative station queue
 
 The choose-recommended-option priority removes another clarification stop.

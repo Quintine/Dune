@@ -305,6 +305,7 @@ import {
 } from './board-resolution-quote';
 import {
   quoteDiscoveryCollection,
+  quoteAdvancedSharedOrgiz,
   DiscoveryCollectionError,
   type DiscoveryCollectionQuote,
 } from './discovery-collection';
@@ -19689,6 +19690,16 @@ function decideSharedSpice(g: Game, id: string, action: Action) {
       `${territory(receipt.territory).name} shared collection: Ecaz received ${receipt.ecazAmount} spice and ${faction(getPlayer(g, receipt.ally).faction).name} received ${receipt.allyAmount}, ${receipt.method === 'agreement' ? 'by agreement' : 'using the equal split with any odd spice going to the ally'}.`,
       { faction: 'ecaz', name: 'Shared collection' },
     );
+    if (g.advanced) {
+      const balances = Object.fromEntries(g.players.map(player => [player.id,player.spice]));
+      const transfers = nexusRule(() => quoteAdvancedSharedOrgiz(g,receipt,balances));
+      for (const transfer of transfers) {
+        getPlayer(g,transfer.from).spice -= transfer.amount;
+        getPlayer(g,transfer.player).spice += transfer.amount;
+        log(g, `${faction(getPlayer(g,transfer.player).faction).name} took ${transfer.amount} spice from ${faction(getPlayer(g,transfer.from).faction).name} through Orgiz Processing Station after the original shared territory allocation.`,
+          {faction:getPlayer(g,transfer.player).faction,name:'Orgiz Processing Station'});
+      }
+    }
   } else
     log(
       g,

@@ -10,7 +10,8 @@ import {
   type Game,
 } from '../game/engine';
 import { fighterCount } from '../game/advisors';
-import { DISCOVERY_CARD_PLACEMENTS, type DiscoveryTokenFace } from '../game/discoveries';
+import { gameDistance } from '../game/board';
+import { DISCOVERY_CARD_PLACEMENTS, DISCOVERY_SPICE_CARDS, DISCOVERY_TOKEN_BY_ID, type DiscoveryTokenFace } from '../game/discoveries';
 import { discoveryStormActions } from '../game/discovery-storm-options';
 import { PLAYER_CIRCLE_SECTORS } from '../game/player-positions';
 import { nextSpiceBankerIncomeNativeStep } from './fixture-spice-banker-income';
@@ -35,6 +36,13 @@ export type TestingStationContestFixture = {
   /** The two occupants in original storm order. */
   order: [string, string];
   event: string;
+};
+
+export type OccupiedDiscoveryLocation = 'cistern' | 'ecological-testing-station' | 'orgiz-processing-station';
+export type DiscoveryOccupantsFixture = Pick<TestingStationContestFixture,
+  'initial' | 'setup' | 'afterSetup' | 'game' | 'actions' | 'staging' | 'token' | 'parent' | 'parentSector'> & {
+  location: OccupiedDiscoveryLocation;
+  owners: [string,string];
 };
 
 const STATION = 'ecological-testing-station';
@@ -152,11 +160,11 @@ function selectedTokenLottery<T>(
 ): T {
   const pool = game
     .discoveries!.tokens.filter(
-      (token) => token.status === 'supply' && token.type === 'hiereg',
+      (token) => token.status === 'supply' && token.type === DISCOVERY_TOKEN_BY_ID[face].type,
     )
     .map((token) => token.face);
   const index = pool.indexOf(face);
-  assert.ok(index >= 0, 'The station Hiereg token must remain in supply.');
+  assert.ok(index >= 0, 'The original requested Discovery token must remain in its printed supply.');
   const scalar = Math.floor(((index + 0.5) / pool.length) * 0x100000000);
   const descriptor = Object.getOwnPropertyDescriptor(
     crypto,
@@ -195,15 +203,16 @@ export function holdTestingStationStormCard(
   return card;
 }
 
-/** Original fresh Ecaz/Guild/Fremen/Emperor Discovery setup. Two distinct
- * non-advisor occupants reach the revealed station through real controls: the
- * first free-enters from the printed Hagga Basin destination, a real worm Nexus
- * forms the reciprocal alliance, and the ally then pays the ordinary stronghold
- * rate to ship in. No force, phase, source, token or frame is fabricated. */
-export function createTestingStationContestFixture(
-  options: { advanced?: boolean } = {},
-): TestingStationContestFixture {
-  const advanced = options.advanced ?? false;
+/** Original setup, printed Discovery supply and real reciprocal alliance create
+ * two occupants without fabricated counters, wallets, phases or token faces. */
+export function createDiscoveryOccupantsFixture(
+  options: { location: OccupiedDiscoveryLocation; advanced?: boolean; secondAmount?: number; adjacentBlow?: boolean },
+): DiscoveryOccupantsFixture {
+  const advanced = options.advanced ?? false, location = options.location;
+  const secondAmount = options.secondAmount ?? 1;
+  const card = DISCOVERY_SPICE_CARDS.find(candidate =>
+    DISCOVERY_CARD_PLACEMENTS[candidate.discovery].type === DISCOVERY_TOKEN_BY_ID[location].type)!;
+  const placement = DISCOVERY_CARD_PLACEMENTS[card.discovery];
   let game = createGame(
     'TESTINGSTATIONCONTEST',
     newPlayer('ecaz', 'Ecaz', 'ecaz'),
@@ -229,36 +238,38 @@ export function createTestingStationContestFixture(
   // Printed Hagga Basin Discovery blow on turn one; a real ordinary worm on turn
   // two; everything else stays an original unplayed card of the same deck.
   const wormPosition = advanced ? 2 : 1;
-  frontCard(game, 0, (card) => 'territory' in card && card.discovery === 'discovery-hagga-basin');
+  frontCard(game, 0, (candidate) => 'territory' in candidate && candidate.discovery === card.discovery);
   if (advanced)
-    frontCard(game, 1, (card) => 'territory' in card && !card.discovery);
+    frontCard(game, 1, (candidate) => 'territory' in candidate && !candidate.discovery && candidate.territory !== placement.territory);
   frontCard(game, wormPosition, (card) => 'worm' in card && !card.greatMaker);
   for (let position = wormPosition + 1; position < wormPosition + 3; position++)
-    frontCard(game, position, (card) => 'territory' in card && !card.discovery);
+    frontCard(game, position, (candidate) => 'territory' in candidate && !candidate.discovery && candidate.territory !== placement.territory);
+  if (options.adjacentBlow)
+    frontCard(game,wormPosition+1,candidate => 'territory' in candidate && !candidate.discovery &&
+      gameDistance(game,`${placement.territory}:${placement.sector}`,`${candidate.territory}:${candidate.sector}`) === 1);
   staging.push(
-    'Reordered original unplayed Spice Cards only: the printed Hagga Basin Discovery first, then an ordinary Shai-Hulud for turn two.',
+    `Reordered original unplayed Spice Cards only: printed ${card.discovery} first, then ordinary Shai-Hulud for turn two.`,
   );
   const afterSetup = structuredClone(game);
 
-  game = selectedTokenLottery(game, 'ecological-testing-station', () =>
+  game = selectedTokenLottery(game, location, () =>
     advanceTestingStationContest(
       game,
       (state) =>
         state.discoveries!.tokens.some(
-          (token) => token.face === 'ecological-testing-station' && token.status === 'placed',
+          (token) => token.face === location && token.status === 'placed',
         ),
       actions,
     ),
   );
   const token = game.discoveries!.tokens.find(
-    (candidate) => candidate.face === 'ecological-testing-station',
+    (candidate) => candidate.face === location,
   )!;
-  const placement = DISCOVERY_CARD_PLACEMENTS['discovery-hagga-basin'];
   assert.equal(token.status, 'placed');
   assert.equal(token.territory, placement.territory);
   assert.equal(token.sector, placement.sector);
   staging.push(
-    'Selected the actual Hiereg supply lottery; the station token itself was placed by the printed card.',
+    'Selected only the actual printed-type supply lottery; the Discovery card places the original token.',
   );
 
   // Turn one: the collector ships to the token's printed destination, then
@@ -324,9 +335,9 @@ export function createTestingStationContestFixture(
   assert.equal(entry.action.accept, true);
   actions.push(structuredClone(entry));
   game = applyAction(game, entry.actor, entry.action);
-  assert.equal(fighterCount(game.players.find((p) => p.id === ecaz)!, STATION), 2);
+  assert.equal(fighterCount(game.players.find((p) => p.id === ecaz)!, location), 2);
   staging.push(
-    'The station occupant entered through the printed next-turn free entry; no force was placed there directly.',
+    'The first occupant entered through real next-turn free entry; no force was placed there directly.',
   );
 
   game = advanceTestingStationContest(
@@ -357,9 +368,9 @@ export function createTestingStationContestFixture(
     actor: guild,
     action: {
       type: 'ship',
-      territory: STATION,
+      territory: location,
       sector: 0,
-      amount: 1,
+      amount: secondAmount,
       elite: 0,
       allyPayment: 0,
     },
@@ -367,10 +378,21 @@ export function createTestingStationContestFixture(
   actions.push(structuredClone(secondShipment));
   game = applyAction(game, secondShipment.actor, secondShipment.action);
   game = advanceTestingStationContest(game,clean,actions);
-  assert.equal(fighterCount(game.players.find((p) => p.id === guild)!, STATION), 1);
+  assert.equal(fighterCount(game.players.find((p) => p.id === guild)!, location), secondAmount);
   staging.push(
     'A real worm Nexus produced the reciprocal Ecaz/Guild alliance; the ally then used its own ordinary paid shipment into the occupied revealed location.',
   );
+  return {initial,setup,afterSetup,game,actions,staging,location,owners:[ecaz,guild],
+    token:token.id,parent:placement.territory,parentSector:placement.sector};
+}
+
+/** The original station-specific tail retains its real natural Storm window. */
+export function createTestingStationContestFixture(
+  options: {advanced?:boolean} = {},
+): TestingStationContestFixture {
+  const prefix = createDiscoveryOccupantsFixture({...options,location:STATION});
+  const {initial,setup,afterSetup,actions,staging} = prefix;
+  let game = prefix.game;
 
   game = advanceTestingStationContest(
     game,
@@ -428,9 +450,9 @@ export function createTestingStationContestFixture(
     staging,
     owner: occupants[0],
     second: occupants[1],
-    token: token.id,
-    parent: placement.territory,
-    parentSector: placement.sector,
+    token: prefix.token,
+    parent: prefix.parent,
+    parentSector: prefix.parentSector,
     source: {
       turn: game.stormMovementSource!.turn,
       kind: game.stormMovementSource!.kind,

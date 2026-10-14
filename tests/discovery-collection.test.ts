@@ -307,56 +307,7 @@ void test('Orgiz withholds uncertain Ecaz shared theft while collecting an indep
   assert.deepEqual({ game, ordinary }, before);
 });
 
-void test('two allied Orgiz occupants leave ordinary collection playable without uncertain theft', () => {
-  const game = fixture(false, [
-    ['e', 'ecaz'], ['a', 'atreides'], ['g', 'guild'],
-  ]);
-  game.discoveryEnabled = true;
-  reveal(game, ORGIZ_PROCESSING_STATION);
-  game.players[0].ally = 'a';
-  game.players[1].ally = 'e';
-  game.players[0].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
-  game.players[1].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
-  game.players[2].forces = { 'hagga_basin:12': 1 };
-  game.players.forEach(player => {
-    Object.assign(player, {
-      hand: [], traitors: [], traitorChoices: [], shipped: true,
-      moved: 1, reserves: 19,
-    });
-  });
-  game.spice = { 'hagga_basin:12': 2 };
-  const ordinary = quoteSpiceCollection(game);
-  assert.deepEqual(quoteDiscoveryCollection(game, ordinary), {
-    receipts: ordinary.receipts, effects: [],
-  });
-  Object.assign(game, {
-    phase: 5, active: 'g', movementRemaining: ['g'], phaseOpening: null,
-  });
-  const collected = applyAction(game, 'g', { type: 'endMovement' });
-  assert.equal(collected.phase, 7);
-  assert.deepEqual(collected.players.map(player => player.spice), [0, 0, 2]);
-  assert.equal(collected.spice['hagga_basin:12'], 0);
-});
 
-void test('a contested Cistern retains the unresolved bonus without blocking collection', () => {
-  const game = fixture(false, [
-    ['e', 'ecaz'],
-    ['a', 'atreides'],
-    ['g', 'guild'],
-  ]);
-  reveal(game, CISTERN);
-  game.players[0].ally = 'a';
-  game.players[1].ally = 'e';
-  game.players[0].forces = { [`${CISTERN}:0`]: 1 };
-  game.players[1].forces = { [`${CISTERN}:0`]: 1 };
-  const ordinary = quoteSpiceCollection(game);
-  const before = structuredClone({ game, ordinary });
-  assert.deepEqual(quoteDiscoveryCollection(game, ordinary), {
-    receipts: ordinary.receipts,
-    effects: [],
-  });
-  assert.deepEqual({ game, ordinary }, before);
-});
 
 void test('the real collection phase credits Cistern once and preserves the receipt through JSON recovery', () => {
   const game = fixture(false);
@@ -394,14 +345,6 @@ void test('the real collection phase credits Cistern once and preserves the rece
   assert.equal(collected.phase, 7);
   assert.equal(collected.players.find((player) => player.id === 'a')!.spice, 8);
   assert.equal(collected.spice['red_chasm:7'], 0);
-  assert.equal(
-    collected.log.filter((entry) =>
-      entry.text.includes(
-        'received 2 spice from the bank for occupying Cistern',
-      ),
-    ).length,
-    1,
-  );
 
   collected = JSON.parse(JSON.stringify(collected)) as Game;
   assert.deepEqual(normalizeAutomaticGame(collected), collected);
@@ -653,4 +596,40 @@ void test('Discovery Collection requires an explicit mode rather than treating m
   assert.throws(() => quoteDiscoveryCollection(
     missingMode as unknown as DiscoveryCollectionContext, ordinary,
   ), DiscoveryCollectionError);
+});
+
+void test('each Cistern faction earns two, while a lone advisor earns none', () => {
+  const game=fixture(true,[['a','atreides'],['b','beneGesserit'],['g','guild']]);
+  reveal(game,CISTERN);
+  game.players[0].forces={[`${CISTERN}:0`]:1};
+  game.players[1].forces={[`${CISTERN}:0`]:1};
+  game.players[1].advisors={[CISTERN]:{}};
+  game.players[2].forces={[`${CISTERN}:0`]:1};
+  const before=structuredClone(game);
+  const {ordinary,discovery}=composed(game);
+  assert.deepEqual(discovery.effects,[
+    {kind:'cistern',player:'a',amount:2,source:'bank'},
+    {kind:'cistern',player:'g',amount:2,source:'bank'},
+  ]);
+  assert.deepEqual(discovery.receipts.map(r=>r.balance),[2,0,2]);
+  assert.deepEqual(ordinary.receipts.map(r=>r.balance),[0,0,0]);
+  assert.deepEqual(game,before);
+});
+
+void test('two Orgiz owners resolve available collector spice in original storm order without creating debt', () => {
+  for(const first of ['a','g']) {
+    const game=fixture(true);
+    reveal(game,ORGIZ_PROCESSING_STATION);
+    game.order=first==='a'?['a','h','g']:['g','h','a'];
+    game.players[0].forces={[`${ORGIZ_PROCESSING_STATION}:0`]:1};
+    game.players[2].forces={[`${ORGIZ_PROCESSING_STATION}:0`]:1};
+    game.players[1].forces={'hagga_basin:12':1};
+    game.spice={'hagga_basin:12':1};
+    const {discovery}=composed(game);
+    assert.deepEqual(discovery.effects,[{kind:'orgiz',player:first,from:'h',
+      location:'hagga_basin:12',amount:1,source:'player'}]);
+    assert.equal(balance(discovery,first),1);
+    assert.equal(balance(discovery,first==='a'?'g':'a'),0);
+    assert.equal(balance(discovery,'h'),0);
+  }
 });
