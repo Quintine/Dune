@@ -1,13 +1,17 @@
 import { FACTIONS, type FactionId } from './catalog';
-import { handLimit, type Game } from './engine';
+import { handLimit, type Game, type Player } from './engine';
 import { emperorNexusEvent } from './nexus-emperor-secret-ally';
 import { nexusCardMode, validateNexusCards } from './nexus-cards';
+import { validAmbassadorResume } from './ambassador-resume';
+import { ambassadorPhaseAllowed } from './ambassador-phase';
 import {
   pairedNexusModulesProfile, singleE1E2NexusProfile, mixedE1E2NexusProfile, mixedE3NexusProfile,
+  standaloneE3NexusProfile, pairedE3NexusProfile,
 } from './nexus-module-profile';
 import {
   pairedNexusLeaderSkillsProfile, singleE1E2NexusLeaderSkillsProfile,
   mixedE1E2NexusLeaderSkillsProfile, mixedE3NexusLeaderSkillsProfile,
+  standaloneE3NexusLeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile,
 } from './leader-skill-profile';
 import type { RicheseAuction } from './richese-auction';
 import { quoteRicheseSettlement, type RicheseSettlementQuote } from './richese-settlement';
@@ -37,7 +41,31 @@ export type EmperorNexusSellerPurchase = Omit<EmperorNexusBankPurchase, 'auction
   round: string;
   lot: string;
 };
-export type EmperorNexusPurchase = EmperorNexusBankPurchase | EmperorNexusSellerPurchase;
+export type EmperorNexusAmbassadorPurchase = {
+  version: 3;
+  kind: 'purchase';
+  event: string;
+  owner: string;
+  turn: number;
+  /** Actual original entry phase, including source-bound Homeworld arrivals. */
+  phase: number;
+  sequence: number;
+  faction: FactionId;
+  advanced: boolean;
+  origin: 'ambassador';
+  price: 3;
+  card: string;
+  beforeSpice: number;
+  afterSpice: number;
+  signature: string;
+  entry: string;
+  token: string;
+  entrant: string;
+};
+export type EmperorNexusPurchase =
+  | EmperorNexusBankPurchase
+  | EmperorNexusSellerPurchase
+  | EmperorNexusAmbassadorPurchase;
 export type EmperorNexusSellerPurchaseInput = {
   round: string;
   lot: RicheseAuction;
@@ -85,8 +113,23 @@ export function quoteEmperorNexusPurchase(
     );
 }
 
+/** Bind a retained price to the original consumed Ambassador entry and its
+ * purchase sequence, never to the privately drawn card face. */
+export function emperorNexusAmbassadorPurchaseEvent(
+  turn: number, phase: number, owner: string, sequence: number, entry: string,
+): string {
+  return JSON.stringify(['nexusEmperorAmbassadorPurchase', turn, phase, owner, sequence, entry]);
+}
+
 /** Consistency signature, not cryptographic authentication; field order is fixed. */
 export function signEmperorNexusPurchase(record: EmperorNexusPurchase): string {
+  if ('version' in record && record.version === 3)
+    return JSON.stringify([
+      'emperorNexusAmbassadorPurchase', record.version, record.kind, record.event,
+      record.owner, record.turn, record.phase, record.sequence, record.faction,
+      record.advanced, record.origin, record.price, record.card, record.beforeSpice,
+      record.afterSpice, record.entry, record.token, record.entrant,
+    ]);
   if ('version' in record)
     return JSON.stringify([
       'emperorNexusSellerPurchase', record.version, record.kind, record.event,
@@ -148,12 +191,39 @@ export function validateEmperorNexusPurchase(
       context.players.length &&
     new Set(context.players.map((player) => player.faction)).size ===
       context.players.length;
-  if (plain(record) && 'version' in record) {
+  if (plain(record) && 'version' in record && record.version === 3) {
+    if (
+      !validContext ||
+      Object.keys(record).sort().join(',') !==
+        'advanced,afterSpice,beforeSpice,card,entrant,entry,event,faction,kind,origin,owner,phase,price,sequence,signature,token,turn,version' ||
+      record.kind !== 'purchase' || record.origin !== 'ambassador' ||
+      record.price !== 3 || !whole(record.phase) || record.phase < 1 || record.phase > 8 ||
+      !whole(record.turn) || record.turn < 1 || record.turn > context.turn ||
+      !whole(record.sequence) ||
+      !text(record.owner) || !text(record.card) || !text(record.entry) ||
+      !text(record.token) || !text(record.entrant) ||
+      record.entrant === record.owner ||
+      !context.players.some(player => player.id === record.entrant) ||
+      context.players.find(player => player.id === record.owner)?.faction !== record.faction ||
+      record.advanced !== context.advanced ||
+      !whole(record.beforeSpice) || record.beforeSpice < record.price ||
+      !whole(record.afterSpice) || record.afterSpice !== record.beforeSpice ||
+      record.event !== emperorNexusAmbassadorPurchaseEvent(
+        record.turn, record.phase, record.owner, record.sequence, record.entry,
+      ) ||
+      record.signature !== signEmperorNexusPurchase(record)
+    )
+      throw new EmperorNexusPurchaseError(
+        'Emperor Nexus Ambassador purchase has lost its original trigger, buyer, price or retained spice.',
+      );
+    return;
+  }
+  if (plain(record) && 'version' in record && record.version === 2) {
     if (
       !validContext ||
       Object.keys(record).sort().join(',') !==
         'advanced,afterSpice,beforeSpice,card,event,faction,kind,lot,origin,owner,phase,price,round,seller,sequence,signature,turn,version' ||
-      record.version !== 2 || record.kind !== 'purchase' || record.phase !== 3 ||
+      record.kind !== 'purchase' || record.phase !== 3 ||
       !whole(record.turn) || record.turn < 1 || record.turn > context.turn ||
       !whole(record.sequence) || !text(record.owner) || !text(record.card) ||
       !text(record.round) || !text(record.lot) || !text(record.seller) ||
@@ -179,6 +249,7 @@ export function validateEmperorNexusPurchase(
   if (
     !validContext ||
     !plain(record) ||
+    'version' in record ||
     !('auctionIndex' in record) ||
     Object.keys(record).sort().join(',') !==
       'advanced,afterSpice,auctionIndex,beforeSpice,card,event,faction,kind,owner,phase,price,sequence,signature,turn' ||
@@ -342,6 +413,128 @@ export function createEmperorNexusSellerPurchase(
     seller: quote.seller, round: input.round, lot: input.lot.event,
     price: quote.price, card: input.quote.card.id,
     beforeSpice: buyer.spice, afterSpice: buyer.spice, signature: '',
+  };
+  receipt.signature = signEmperorNexusPurchase(receipt);
+  validateEmperorNexusPurchase(g, receipt);
+  return receipt;
+}
+
+/** Public Emperor-absent Ecaz envelope only, reusing the original E3 Nexus and
+ * Skills profiles; it never inspects the concealed Nexus face or a hand. */
+export function emperorNexusAmbassadorPurchaseModeSupported(g: Game): boolean {
+  if (!g.nexusCards || g.ecazTreachery || g.sandtrout ||
+    g.players.some(p => p.faction === 'emperor') ||
+    !g.players.some(p => p.faction === 'ecaz')) return false;
+  if (standaloneE3NexusProfile(g) || pairedE3NexusProfile(g) || mixedE3NexusProfile(g))
+    return true;
+  return !!g.leaderSkills && (standaloneE3NexusLeaderSkillsProfile(g) ||
+    pairedE3NexusLeaderSkillsProfile(g) || mixedE3NexusLeaderSkillsProfile(g));
+}
+
+type AmbassadorPurchaseSource = {
+  buyer: Player | null;
+  entry: NonNullable<Game['pendingAmbassador']> | null;
+  event: string;
+  blocked: string | null;
+};
+
+/** Original consumed-token evidence plus the buyer's private eligibility. The
+ * physical supply is skipped only for the card an already committed draw bound. */
+function ambassadorPurchaseSource(g: Game, owner: string, supply: boolean): AmbassadorPurchaseSource {
+  const entry = g.pendingAmbassador ?? null;
+  const buyer = text(owner) ? g.players.find(p => p.id === owner) ?? null : null;
+  const token = entry && g.ecazAmbassadors?.tokens.find(t => t.id === entry.token);
+  const event = entry && text(entry.event) && text(owner)
+    ? emperorNexusAmbassadorPurchaseEvent(g.turn, g.phase, owner,
+      g.nexusEmperorPurchaseHistory?.length ?? 0, entry.event)
+    : '';
+  let blocked: string | null = null;
+  if (!emperorNexusAmbassadorPurchaseModeSupported(g))
+    blocked = 'Emperor Nexus Ambassador purchase requires a supported native Ecaz Nexus profile with Emperor absent.';
+  else if (g.status !== 'playing')
+    blocked = 'Emperor Nexus Ambassador purchase needs the original game still in progress.';
+  else if (!entry || !text(entry.event) || !text(entry.token))
+    blocked = 'The original Richese Ambassador trigger is no longer current.';
+  else if (!buyer)
+    blocked = 'Emperor Nexus Ambassador purchase lost its original purchaser.';
+  else if (entry.effect !== 'richese')
+    blocked = 'The original Richese Ambassador effect is no longer active.';
+  else if (entry.beneficiary !== owner ||
+    entry.owner !== g.players.find(p => p.faction === 'ecaz')?.id)
+    blocked = 'The original Richese Ambassador purchase belongs to another Ecaz beneficiary.';
+  else if (entry.turn !== g.turn || entry.phase !== g.phase || !ambassadorPhaseAllowed(g))
+    blocked = 'The original Richese Ambassador trigger belongs to another turn or phase.';
+  else if (!validAmbassadorResume(g, entry))
+    blocked = 'The original Richese Ambassador trigger lost its recorded entry source.';
+  else if (entry.entrant === owner || !g.players.some(p => p.id === entry.entrant))
+    blocked = 'The original Richese Ambassador trigger lost its entering player.';
+  else if (!token || !((token.effect === 'richese' && token.zone === 'used') ||
+    (token.effect === 'beneGesserit' && token.zone === 'removed' &&
+      entry.copyChoices.includes('richese'))))
+    blocked = 'The original Richese Ambassador token is no longer consumed for this effect.';
+  if (blocked) throw new EmperorNexusPurchaseError(blocked);
+  if (buyer!.ally)
+    blocked = 'Emperor Nexus Secret Ally requires an unallied buyer.';
+  else if (!g.nexusCards?.cards)
+    blocked = 'Hold the real Emperor Nexus Secret Ally card to retain your purchase price.';
+  else {
+    try {
+      validateNexusCards(g.nexusCards.cards, g.players);
+      if (g.nexusCards.cards.hands[owner] !== 'emperor' ||
+        nexusCardMode('emperor', buyer!.faction, g.players.map(p => p.faction)) !== 'secretAlly')
+        blocked = 'Hold the real Emperor Nexus Secret Ally card to retain your purchase price.';
+      else if (buyer!.hand.length >= handLimit(buyer!))
+        blocked = 'The Richese Ambassador purchase needs room in the buyer’s hand.';
+      else if (!whole(buyer!.spice) || buyer!.spice < 3)
+        blocked = 'The Richese Ambassador purchase needs the three-spice price held in the buyer’s own spice.';
+      else if (supply && !g.deck.length && !g.discard.length)
+        blocked = 'No Treachery Card is available for the Ambassador purchase.';
+    } catch (error) {
+      blocked = error instanceof Error ? error.message
+        : 'Hold the real Emperor Nexus Secret Ally card to retain your purchase price.';
+    }
+  }
+  return { buyer, entry, event, blocked };
+}
+
+/** Pre-commit proof only. Private room, spice, supply and Nexus face disable
+ * Use without gating Pay; malformed original sources remain hard errors. */
+export function quoteEmperorNexusAmbassadorPurchase(
+  g: Game, owner: string,
+): { event: string; price: 3; blocked: string | null } {
+  const source = ambassadorPurchaseSource(g, owner, true);
+  return { event: source.event, price: 3, blocked: source.blocked };
+}
+
+/** Bind the original purchase to the card the engine actually drew before the
+ * buyer's hand changes. The draw already removed it from the deck, so absence
+ * from the physical stock is valid; a duplicate or an undrawn card is not. */
+export function createEmperorNexusAmbassadorPurchase(
+  g: Game, owner: string, card: string,
+): EmperorNexusAmbassadorPurchase {
+  if (!text(owner) || !text(card))
+    throw new EmperorNexusPurchaseError(
+      'Emperor Nexus Ambassador purchase needs its original buyer and drawn Treachery Card.',
+    );
+  const source = ambassadorPurchaseSource(g, owner, false);
+  if (source.blocked) throw new EmperorNexusPurchaseError(source.blocked);
+  const buyer = source.buyer!, entry = source.entry!;
+  const physical = [
+    ...g.players.flatMap(p => p.hand), ...g.deck, ...g.discard,
+    ...(g.richeseCache ?? []), ...(g.richeseRemoved ?? []),
+    ...(g.ixSetupCards ?? []), ...(g.ixAuction?.cards ?? []),
+    ...(g.ornithopter ? [g.ornithopter.card] : []),
+  ].filter(c => c.id === card);
+  if (physical.length !== 0)
+    throw new EmperorNexusPurchaseError(
+      'Emperor Nexus Ambassador purchase lost its single physically drawn Treachery Card.',
+    );
+  const receipt: EmperorNexusAmbassadorPurchase = {
+    version: 3, kind: 'purchase', event: source.event, owner: buyer.id,
+    turn: g.turn, phase: g.phase, sequence: g.nexusEmperorPurchaseHistory?.length ?? 0,
+    faction: buyer.faction, advanced: g.advanced, origin: 'ambassador', price: 3,
+    card, beforeSpice: buyer.spice, afterSpice: buyer.spice, signature: '',
+    entry: entry.event, token: entry.token, entrant: entry.entrant,
   };
   receipt.signature = signEmperorNexusPurchase(receipt);
   validateEmperorNexusPurchase(g, receipt);

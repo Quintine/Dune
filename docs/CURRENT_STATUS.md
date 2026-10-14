@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Emperor Secret Ally original Ambassador purchase — 14 October.** Original
+Richese trigger now offers uniform beneficiary Pay/eligible Use under visibly
+provisional outside-Bidding purchase composition. No new decline, bank payment,
+reimbursement or fake auction. Version-three receipts bind actual entry/token/
+buyer/card; native phase/resume authority, draw/recycling, private inability
+and movement/worm suffix remain. Actual allied Harkonnen Pay bonus runs once;
+forming alliance still disposes held Nexus originally.
+Affected13-file union111/111, types/lint/build and eight native API profiles
+pass. Four actual390px surfaces prove Basic Use11→11, Advanced Pay11→8,
+irrelevant-card Pay and phase-one worm Use11→11, one original card and real
+entrant/spice controls without overflow/errors. CHOAM closing market only
+sells/trades; no missing direct purchase producer is invented. Other real
+purchase sources, full combinations, assurance and deployed gates remain.
+[Canonical policy/proof](NEXUS_EMPEROR_RULES.md#recommended-original-ambassador-purchase--14-october-2026).
+No saved/deployed room touched; proof receipts remain outside Git. Build
+retains existing route-classification/chunk-size warnings.
+
 **Emperor Secret Ally original Richese purchases — 14 October.** Basic/Advanced
 cache, legal self-cache and Advanced Black Market now connect uniform buyer
 Pay/eligible Use after original Richese Betrayal. Recommended provisional
@@ -38,8 +55,8 @@ bank provenance does not create payment on Use. Signed source receipts preserve
 actual lot; original stock, hand limits, bonus and source successor run once.
 Affected10-file union108/108, types/lint/build and twenty native API profiles
 pass. Actual390px cache/Black/self-cache/diverted-cache Use retains wallets,
-one lot and original bonus/round, with no overflow/errors. Direct CHOAM/
-Ambassador purchases, full combinations, assurance and publication remain open.
+one lot and original bonus/round, with no overflow/errors. The distinct
+Ambassador composition is above; full combinations/assurance/publication remain.
 [Source policy and proof](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026).
 No saved/deployed room touched; proof receipts remain outside Git. Existing
 build route-classification/chunk-size warnings remain.

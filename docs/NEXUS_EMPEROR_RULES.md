@@ -48,9 +48,9 @@ Use the final ordinary purchase price and verify the holder's spendable spice be
 
 For an ordinary bank-paid auction, the practical result is one purchased card, unchanged buyer spice and a spent Nexus card. No bank-funded replacement payment is printed. The public proof need establish only that the price is held, not disclose excess private spice. These are implementation consequences of the component, not an extra auction rule.
 
-Richese cache and Advanced Black Market now use the recommended **seller-unpaid**
-composition below. Direct CHOAM markets, Ambassador acquisitions and other
-purchase sources remain separate; do not broaden a generic acquisition hook.
+Richese cache and Advanced Black Market use the recommended **seller-unpaid**
+composition below. Original Richese Ambassador purchases now have their own
+source-bound continuation; do not broaden a generic acquisition hook.
 
 ### Bounded bank-auction purchase prototype (27 September 2026)
 
@@ -101,8 +101,46 @@ Affected ten-file union108/108 and types/lint/build pass. Actual390px cache,
 Black Market, self-cache and bank-diverted cache Use keep original wallets,
 deliver one actual card and continue original native bonus/round controls.
 No overflow/browser errors; no saved/deployed rooms touched. API proof and
-phone receipts remain outside Git. Direct CHOAM/Ambassador purchase composition,
-full combinations, assurance and publication acceptance remain open.
+phone receipts remain outside Git. The distinct Ambassador composition follows
+below; full combinations, assurance and publication acceptance remain open.
+
+### Recommended original Ambassador purchase — 14 October 2026
+
+The [existing source classification](RICHESE_AMBASSADOR_RULES.md#classification-and-beneficiary-coverage)
+treats the fixed-three Richese Ambassador draw as a purchase. The Emperor Nexus
+purchase panel has no Bidding qualifier. Recommended provisional composition
+therefore applies its retained-price benefit to this original purchase, without
+creating an auction, seller reimbursement or income when no spice is paid.
+Ecaz's trigger remains the optional commitment; there is no new beneficiary veto.
+
+Every committed Richese effect in the supported public native-Ecaz Nexus envelope
+now offers the beneficiary original Pay, regardless private card face, hand room
+or funds. Only the actual unallied Emperor holder, with native Emperor absent,
+three own spice, room and drawable stock, can Use. The original conditional
+unavailable Pay still completes without payment/draw and keeps the token spent.
+An allied beneficiary cannot Use. A legal removed BG-copy token uses the same
+source proof; no new placement, copied effect or phase is invented.
+
+Actual draw/recycling happens once at commit, not at offer. Version-three
+receipts bind original entry, token, entrant, buyer, actual phase, card and
+unchanged price. Live source uses original Ambassador phase/resume authority,
+including separately source-bound Homeworld arrivals; historical evidence does
+not demand future wallets/hands equal old snapshots. Malformed source throws;
+private unavailability only disables Use. Original entrant control, physical
+arrival, native bonus and movement/worm suffix remain original.
+
+Affected13-file union111/111 and types/lint/build pass. Eight Basic/Advanced
+shipment/worm API profiles prove Pay3 versus Use0 and native suffix without
+another draw. Actual390px Basic Use11→11, Advanced Pay11→8, irrelevant-card Pay,
+and Advanced phase-one worm Use11→11 deliver one original card, preserve native
+arrival and resume real movement/spice controls without overflow/browser errors.
+Native allied Harkonnen Pay draws the actual bonus once; its automatic response
+does not manufacture a confirmation when nobody can cancel. Original forming
+alliance disposal is retained. Full combination/assurance/deployed gates stay shut.
+
+CHOAM's original closing market only sells to the bank or trades held cards;
+it is not a missing direct purchase producer. Do not invent an Emperor Nexus
+purchase there. Other real purchase sources retain their separate contracts.
 
 ## Secret Ally: three additional free revivals
 

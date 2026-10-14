@@ -2696,6 +2696,9 @@ function policyActions(g: GameView): Action[] {
     if (d.kind === 'nexusEmperorSellerPurchase')
       return [{ type: 'nexusEmperorSellerPurchase', event: d.event,
         use: !!g.nexusEmperorSellerPurchase?.canUse && !g.nexusEmperorSellerPurchase.blocked }];
+    if (d.kind === 'nexusEmperorAmbassadorPurchase')
+      return [{ type: 'nexusEmperorAmbassadorPurchase', event: d.event,
+        use: !!g.nexusEmperorAmbassadorPurchase?.canUse && !g.nexusEmperorAmbassadorPurchase.blocked }];
     if (d.kind === 'nexusFremenCunningOffer')
       return [{ type: 'decision', event: d.event,
         accept: g.nexusCards?.card === 'fremen' && me.faction === 'fremen' &&

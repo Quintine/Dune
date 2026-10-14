@@ -92,6 +92,7 @@ const DECISIONS = {
   nexusFremenProtection: true,
   nexusEmperorPayment: true,
   nexusEmperorSellerPurchase: true,
+  nexusEmperorAmbassadorPurchase: true,
   nexusFremenCunningRide: true,
   moritaniRetention: true,
   moritaniSpecialKarama: true,

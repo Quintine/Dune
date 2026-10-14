@@ -45,7 +45,7 @@ import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayal
 import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
-import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
+import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, emperorNexusSellerPurchaseModeSupported, quoteEmperorNexusSellerPurchase, createEmperorNexusSellerPurchase, emperorNexusAmbassadorPurchaseModeSupported, quoteEmperorNexusAmbassadorPurchase, createEmperorNexusAmbassadorPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
 import { createEmperorPaymentReceipt, validateEmperorPaymentReceipt, emperorPaymentUseBlock, emperorPaymentSourceQuote, requiredEmperorPaymentResponders, emperorPaymentReceiptSignature, type EmperorPaymentReceipt } from './nexus-emperor-payment';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, createFremenNexusRevival, upgradeFremenNexusRevival, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
@@ -935,6 +935,7 @@ export type Decision =
   | { kind: 'auctionPayment'; player: string }
   | { kind: 'nexusEmperorPayment'; player: string; event: string }
   | { kind: 'nexusEmperorSellerPurchase'; player: string; event: string }
+  | { kind: 'nexusEmperorAmbassadorPurchase'; player: string; event: string }
   | {
       kind: 'advisor';
       player: string;
@@ -1636,12 +1637,14 @@ export type Game = {
       | 'loan'
       | 'copy'
       | 'cards'
+      | 'purchase'
       | 'income'
       | 'bonus'
       | 'move'
       | 'ship'
       | 'revival'
       | 'arrival';
+    nexusPurchase?: { event: string; signature: string };
     relocation?: {
       order: FremenAmbassadorMove;
       next: 'flip' | 'intrusion' | 'terror' | 'finish';
@@ -1663,6 +1666,7 @@ export type Game = {
       amount: 3;
       emperor: string | null;
       stage: 'income' | 'bonus';
+      nexusEvent?: string;
     };
     beneficiary?: string;
     effect?: AmbassadorEffect;
@@ -2805,6 +2809,9 @@ function nexusEmperorSecretIntegrity(g:Game) {
       if (!('version' in record))
         requireRule(emperorNexusModeSupported(g) && !g.ecazTreachery && !g.sandtrout,
           'A normal-bank Emperor purchase lost its original supported profile.');
+      else if (record.version === 3)
+        requireRule(emperorNexusAmbassadorPurchaseModeSupported(g),
+          'An Emperor Ambassador purchase lost its original supported native profile.');
       requireRule(record.sequence === index && purchaseEvents[index] === record.event,
         'Emperor Nexus purchase has duplicated or reordered a completed use.');
     }
@@ -16839,6 +16846,100 @@ function continueAmbassadorRelocation(g: Game, event: string) {
   }
   finishAmbassador(g);
 }
+const EMPEROR_AMBASSADOR_POLICY = 'Provisional purchase composition: prove three own spice and retain it. No bank payment or reimbursement is invented; original card acquisition and entry continuation still resolve.';
+function emperorAmbassadorSourceSignature(g: Game): string {
+  const entry = g.pendingAmbassador!;
+  const buyer = getPlayer(g, entry.beneficiary!);
+  return JSON.stringify([entry.event, entry.owner, entry.entrant, entry.token,
+    entry.territory, entry.sector, entry.turn, entry.phase, entry.effect,
+    entry.beneficiary, entry.copyChoices, entry.resume, entry.wormRider,
+    entry.guildAdvisorOrigin, entry.revivalEvent, entry.victoryEvent,
+    g.active, buyer.spice, buyer.ally, g.nexusEmperorPurchaseHistory?.length ?? 0]);
+}
+function nexusEmperorAmbassadorIntegrity(g: Game): void {
+  const entry = g.pendingAmbassador;
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const decision = g.decision?.kind === 'nexusEmperorAmbassadorPurchase' ? g.decision :
+    continuation?.kind === 'truthtranceDiscard' ? continuation.resume.decision : null;
+  if (!entry?.nexusPurchase) {
+    requireRule(entry?.stage !== 'purchase' && decision?.kind !== 'nexusEmperorAmbassadorPurchase',
+      'The original Ambassador purchase lost its buyer confirmation.');
+    return;
+  }
+  const source = entry.nexusPurchase;
+  requireRule(Object.keys(source).sort().join(',') === 'event,signature' &&
+    entry.stage === 'purchase' && !entry.purchaseReceipt &&
+    emperorNexusAmbassadorPurchaseModeSupported(g) &&
+    decision?.kind === 'nexusEmperorAmbassadorPurchase' && decision.player === entry.beneficiary &&
+    decision.event === source.event && source.signature === emperorAmbassadorSourceSignature(g),
+  'The original Ambassador purchase lost its committed entry, price or beneficiary.');
+  const quote = nexusRule(() => quoteEmperorNexusAmbassadorPurchase(g, entry.beneficiary!));
+  requireRule(quote.event === source.event, 'The original Ambassador purchase event changed.');
+}
+function nexusEmperorAmbassadorOffer(g: Game, id: string) {
+  const entry = g.pendingAmbassador;
+  if (!entry?.nexusPurchase || g.decision?.kind !== 'nexusEmperorAmbassadorPurchase' ||
+    g.decision.player !== id || entry.beneficiary !== id) return null;
+  const quote = nexusRule(() => quoteEmperorNexusAmbassadorPurchase(g, id));
+  const blocked = g.truthtrance || pendingNexusTraitors(g) || g.pendingTreacheryDiscard
+    ? 'Finish the original private question or card return before confirming this purchase.' : quote.blocked;
+  return { ...quote, blocked, canUse: !blocked, policy: EMPEROR_AMBASSADOR_POLICY };
+}
+function decideNexusEmperorAmbassadorPurchase(g: Game, p: Player, action: Action): void {
+  const entry = g.pendingAmbassador;
+  requireRule(entry?.nexusPurchase && action.type === 'nexusEmperorAmbassadorPurchase' &&
+    action.event === entry.nexusPurchase.event && typeof action.use === 'boolean' &&
+    Object.keys(action).sort().join(',') === 'event,type,use' &&
+    p.id === entry.beneficiary && g.decision?.kind === 'nexusEmperorAmbassadorPurchase' &&
+    g.decision.player === p.id && !g.truthtrance && !pendingNexusTraitors(g),
+  'Confirm only your current original Ambassador purchase with Pay or Use.');
+  nexusEmperorAmbassadorIntegrity(g);
+  if (action.use) {
+    const quote = nexusRule(() => quoteEmperorNexusAmbassadorPurchase(g, p.id));
+    requireRule(!quote.blocked, quote.blocked ?? 'This Emperor Nexus purchase is unavailable.');
+  }
+  g.decision = null;
+  finishRicheseAmbassadorPurchase(g, action.use);
+}
+function finishRicheseAmbassadorPurchase(g: Game, use = false): void {
+  const entry = g.pendingAmbassador!;
+  const buyer = getPlayer(g, entry.beneficiary!);
+  if (buyer.spice < 3 || buyer.hand.length >= handLimit(buyer) ||
+    (!g.deck.length && !g.discard.length)) {
+    requireRule(!use, 'This Emperor Nexus purchase is no longer available.');
+    delete entry.nexusPurchase;
+    log(g, `${buyer.name} received no card through the Richese Ambassador. No spice was charged; the trigger remains committed.`);
+    finishAmbassador(g);
+    return;
+  }
+  const card = draw(g);
+  requireRule(card, 'No Treachery Card is available for the Ambassador purchase.');
+  let nexusEvent: string | undefined;
+  if (use) {
+    const receipt = nexusRule(() => createEmperorNexusAmbassadorPurchase(g, buyer.id, card.id));
+    nexusEvent = receipt.event;
+    g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, buyer.id, g.players));
+    (g.nexusEmperorPurchaseHistory ??= []).push(receipt);
+    (g.nexusEmperorPurchaseEvents ??= []).push(receipt.event);
+  } else buyer.spice -= 3;
+  delete entry.nexusPurchase;
+  buyer.hand.push(card);
+  const emperor = byFaction(g, 'emperor');
+  entry.purchaseReceipt = {
+    buyer: buyer.id, card: card.id, amount: 3,
+    emperor: emperor && emperor.id !== buyer.id ? emperor.id : null, stage: 'income',
+    ...(nexusEvent ? { nexusEvent } : {}),
+  };
+  log(g, use
+    ? `${buyer.name} spent Emperor Nexus after proving three own spice, retained it and drew the original Richese Ambassador purchase card. No bank payment or reimbursement is created. Provisional purchase composition.`
+    : `${buyer.name} paid 3 spice and drew the top Treachery Card through the Richese Ambassador. Its identity remains private.`,
+  { faction: buyer.faction, name: 'Richese Ambassador purchase' });
+  if (entry.purchaseReceipt.emperor) {
+    entry.stage = 'income';
+    g.response = { kind: 'emperorIncome', source: 'ambassador', intent: entry.event,
+      owner: entry.purchaseReceipt.emperor, amount: 3, passed: [] };
+  } else ambassadorPurchaseBonus(g);
+}
 /** These are consequences of a completed purchase, never an auction lot. */
 function validateAmbassadorPurchaseResponse(g: Game, response: ResponseWindow) {
   const entry = g.pendingAmbassador;
@@ -16877,6 +16978,16 @@ function validateAmbassadorPurchaseResponse(g: Game, response: ResponseWindow) {
       (emperor && emperor.id !== buyer.id ? emperor.id : null),
     'This Ambassador purchase has an invalid income recipient.',
   );
+  if (receipt.nexusEvent) {
+    const original = g.nexusEmperorPurchaseHistory?.find(record => record.event === receipt.nexusEvent);
+    requireRule(original && 'version' in original && original.version === 3 &&
+      original.entry === entry.event && original.token === entry.token &&
+      original.entrant === entry.entrant && original.owner === receipt.buyer &&
+      original.card === receipt.card && original.turn === entry.turn &&
+      original.phase === entry.phase && !receipt.emperor && response.kind !== 'emperorIncome',
+    'The retained-price Ambassador purchase lost its original consumed Nexus source.');
+    nexusRule(() => validateEmperorNexusPurchase(g, original));
+  }
   requireRule(
     response.kind === 'emperorIncome'
       ? entry.stage === 'income' &&
@@ -17262,50 +17373,13 @@ function resolveAmbassadorEffect(g: Game) {
     return;
   }
   if (effect === 'richese') {
-    // Resolve after commitment so Ecaz cannot probe its ally's private funds.
-    if (
-      p.spice < 3 ||
-      p.hand.length >= handLimit(p) ||
-      (!g.deck.length && !g.discard.length)
-    ) {
-      log(
-        g,
-        `${p.name} received no card through the Richese Ambassador. No spice was charged; the trigger remains committed.`,
-      );
-      finishAmbassador(g);
-      return;
-    }
-    const card = draw(g);
-    requireRule(
-      card,
-      'No Treachery Card is available for the Ambassador purchase.',
-    );
-    p.spice -= 3;
-    p.hand.push(card);
-    const emperor = byFaction(g, 'emperor');
-    entry.purchaseReceipt = {
-      buyer: p.id,
-      card: card.id,
-      amount: 3,
-      emperor: emperor && emperor.id !== p.id ? emperor.id : null,
-      stage: 'income',
-    };
-    log(
-      g,
-      `${p.name} paid 3 spice and drew the top Treachery Card through the Richese Ambassador. Its identity remains private.`,
-      { faction: p.faction, name: 'Richese Ambassador purchase' },
-    );
-    if (entry.purchaseReceipt.emperor) {
-      entry.stage = 'income';
-      g.response = {
-        kind: 'emperorIncome',
-        source: 'ambassador',
-        intent: entry.event,
-        owner: entry.purchaseReceipt.emperor,
-        amount: 3,
-        passed: [],
-      };
-    } else ambassadorPurchaseBonus(g);
+    // Uniform timing must not expose a private Nexus face or private ability to pay.
+    if (emperorNexusAmbassadorPurchaseModeSupported(g)) {
+      const quote = nexusRule(() => quoteEmperorNexusAmbassadorPurchase(g, p.id));
+      entry.stage = 'purchase';
+      entry.nexusPurchase = { event: quote.event, signature: emperorAmbassadorSourceSignature(g) };
+      g.decision = { kind: 'nexusEmperorAmbassadorPurchase', player: p.id, event: quote.event };
+    } else finishRicheseAmbassadorPurchase(g);
     return;
   }
   if (
@@ -28710,6 +28784,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   richeseBetrayalIntegrity(state);
   nexusEmperorPaymentIntegrity(state);
   nexusEmperorSellerIntegrity(state);
+  nexusEmperorAmbassadorIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -28800,10 +28875,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   if (g.pendingNexusIxianReplacement) return g;
   if (g.pendingGuildBetrayal) {guildBetrayalIntegrity(g); return g;}
   if (g.pendingRicheseBetrayal) {richeseBetrayalIntegrity(g);return g;}
-  if (g.pendingNexusEmperorPayment || g.pendingNexusEmperorSellerPurchase) {
+  if (g.pendingNexusEmperorPayment || g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) {
     finishActionContinuations(g);
     nexusEmperorPaymentIntegrity(g);
     nexusEmperorSellerIntegrity(g);
+    nexusEmperorAmbassadorIntegrity(g);
     return g;
   }
   if (g.pendingKull) {
@@ -28924,6 +29000,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   richeseBetrayalIntegrity(g);
   nexusEmperorPaymentIntegrity(g);
   nexusEmperorSellerIntegrity(g);
+  nexusEmperorAmbassadorIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -28954,7 +29031,7 @@ function finishActionContinuations(g: Game) {
   if (g.pendingTreacheryDiscard?.reaction) return;
   requireRule(!g.pendingTreacheryDiscard, 'The automatic discard chain did not finish.');
   if (g.pendingNexusEmperorPayment) return;
-  if (g.pendingNexusEmperorSellerPurchase) return;
+  if (g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) return;
   if (pendingNexusTraitors(g)) return;
   observeOccupation(g);
   resumeHomeworldRevivalReturn(g);
@@ -29015,7 +29092,7 @@ function settleAutomaticContinuations(g: Game) {
   if (g.pendingGuildBetrayal) return;
   if (g.pendingRicheseBetrayal) return;
   if (g.pendingNexusEmperorPayment) return;
-  if (g.pendingNexusEmperorSellerPurchase) return;
+  if (g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) return;
   if (g.pendingKull?.stage === 'offer') return;
   if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
@@ -29026,7 +29103,7 @@ function settleAutomaticContinuations(g: Game) {
     if (g.pendingNexusIxianReplacement) return;
     if (g.pendingRicheseBetrayal) return;
     if (g.pendingNexusEmperorPayment) return;
-    if (g.pendingNexusEmperorSellerPurchase) return;
+    if (g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) return;
     syncTupileSlots(g);
     prepareTupileCleanup(g);
     if (g.pendingHomeworldTupileCleanup || tupileSourceBlock(g)) return;
@@ -29086,7 +29163,7 @@ function settleAutomaticContinuations(g: Game) {
     if (g.pendingGuildBetrayal) return;
     if (g.pendingRicheseBetrayal) return;
     if (g.pendingNexusEmperorPayment) return;
-    if (g.pendingNexusEmperorSellerPurchase) return;
+    if (g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) return;
     // Opposing/automatic consequences can release a now-impossible promise;
     // they are not the original actor voluntarily spending a promised resource.
     reconcileBattlePromises(g);
@@ -29112,6 +29189,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   richeseBetrayalIntegrity(state);
   nexusEmperorPaymentIntegrity(state);
   nexusEmperorSellerIntegrity(state);
+  nexusEmperorAmbassadorIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -29152,10 +29230,11 @@ export function normalizeAutomaticGame(state: Game): Game {
   if (g.pendingNexusIxianReplacement) return g;
   if (g.pendingGuildBetrayal) return g;
   if (g.pendingRicheseBetrayal) return g;
-  if (g.pendingNexusEmperorPayment || g.pendingNexusEmperorSellerPurchase) {
+  if (g.pendingNexusEmperorPayment || g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) {
     finishActionContinuations(g);
     nexusEmperorPaymentIntegrity(g);
     nexusEmperorSellerIntegrity(g);
+    nexusEmperorAmbassadorIntegrity(g);
     return g;
   }
   if (g.pendingKull?.stage === 'offer') return g;
@@ -29190,6 +29269,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   richeseBetrayalIntegrity(g);
   nexusEmperorPaymentIntegrity(g);
   nexusEmperorSellerIntegrity(g);
+  nexusEmperorAmbassadorIntegrity(g);
   marketGholaIntegrity(g);
   prepareTupileCleanup(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -29225,7 +29305,7 @@ function applyActionInner(
   'Finish the original occupied Tupile hand cleanup before another action.');
   ecazTreacheryIntegrity(state);
   const g = structuredClone(state);
-  if ((g.pendingNexusEmperorPayment || g.pendingNexusEmperorSellerPurchase) &&
+  if ((g.pendingNexusEmperorPayment || g.pendingNexusEmperorSellerPurchase || g.pendingAmbassador?.nexusPurchase) &&
     !g.truthtrance && !pendingNexusTraitors(g)) {
     const p = getPlayer(g, id);
     const opensTruth = action?.type === 'card' && !action.mode &&
@@ -29234,6 +29314,7 @@ function applyActionInner(
     if (!opensTruth) {
       if (action?.type === 'advanceBots') return g;
       if (g.pendingNexusEmperorSellerPurchase) decideNexusEmperorSellerPurchase(g, p, action);
+      else if (g.pendingAmbassador?.nexusPurchase) decideNexusEmperorAmbassadorPurchase(g, p, action);
       else decideNexusEmperorPayment(g, p, action);
       return g;
     }
@@ -29420,6 +29501,11 @@ function applyActionInner(
   if (g.pendingNexusEmperorSellerPurchase) {
     if (action.type === 'advanceBots') return g;
     decideNexusEmperorSellerPurchase(g, p, action);
+    return g;
+  }
+  if (g.pendingAmbassador?.nexusPurchase) {
+    if (action.type === 'advanceBots') return g;
+    decideNexusEmperorAmbassadorPurchase(g, p, action);
     return g;
   }
   if (t === 'card' && action.card === RECRUITS_CARD_ID) {
@@ -29767,6 +29853,8 @@ function applyActionInner(
       'Use only the original allied-purchase event with Use or Pass.');
     requireRule(decision.kind !== 'nexusEmperorSellerPurchase',
       'Use only the original seller-lot event with Pay or Use.');
+    requireRule(decision.kind !== 'nexusEmperorAmbassadorPurchase',
+      'Use only the original Ambassador-purchase event with Pay or Use.');
     if (decision.kind === 'nexusIxianReplacement') {
       requireRule(false, 'Use only the current purchased-card event with Use or Pass.');
     }
@@ -33205,6 +33293,7 @@ export function viewGame(state: Game, id: string) {
   richeseBetrayalIntegrity(state);
   nexusEmperorPaymentIntegrity(state);
   nexusEmperorSellerIntegrity(state);
+  nexusEmperorAmbassadorIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -33649,6 +33738,7 @@ export function viewGame(state: Game, id: string) {
     nexusEmperorBetrayal: nexusEmperorBetrayalOffer(g, id),
     nexusEmperorPayment: nexusEmperorPaymentOffer(g, id),
     nexusEmperorSellerPurchase: nexusEmperorSellerOffer(g, id),
+    nexusEmperorAmbassadorPurchase: nexusEmperorAmbassadorOffer(g, id),
     nexusBgBetrayal: nexusBgBetrayalOffer(g, id),
     nexusBorrowedVoice: nexusBorrowedVoiceOffer(g, id),
     nexusFremenRevival: fremenNexusRevivalOffer(g,id),

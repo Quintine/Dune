@@ -238,6 +238,7 @@ import { MoritaniExtortion, MoritaniExtortionNotice } from './moritani-extortion
 import { AdvancedAllySeparation } from './advanced-ally-separation';
 import { NexusEmperorPayment } from './nexus-emperor-payment';
 import { NexusEmperorSellerPurchase } from './nexus-emperor-seller-purchase';
+import { NexusEmperorAmbassadorPurchase } from './nexus-emperor-ambassador-purchase';
 export function GameTable({
   game: g,
   send,
@@ -2809,6 +2810,12 @@ export function GameTable({
                                                                                                   ? 'Empty worm: Fremen Cunning'
                                                                                                   : g.decision.kind === 'nexusFremenCunningRide'
                                                                                                     ? 'Fremen Cunning remote ride'
+                                                                                                : g.decision.kind === 'nexusEmperorAmbassadorPurchase'
+                                                                                                  ? 'Richese Ambassador purchase'
+                                                                                                : g.decision.kind === 'nexusEmperorSellerPurchase'
+                                                                                                  ? 'Richese lot payment'
+                                                                                                : g.decision.kind === 'nexusEmperorPayment'
+                                                                                                  ? 'Emperor allied-purchase funding'
                                                                                                 : g
                                                                                                       .decision
                                                                                                       .kind ===
@@ -3517,6 +3524,8 @@ export function GameTable({
                 <NexusEmperorPayment game={g} send={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
               ) : g.decision.kind === 'nexusEmperorSellerPurchase' ? (
                 <NexusEmperorSellerPurchase game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
+              ) : g.decision.kind === 'nexusEmperorAmbassadorPurchase' ? (
+                <NexusEmperorAmbassadorPurchase game={g} act={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
               ) : g.decision.kind === 'auctionPayment' ? (
                 <>
                   <p className="muted">

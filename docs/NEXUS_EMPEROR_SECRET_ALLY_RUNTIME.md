@@ -4,7 +4,8 @@ Updated 14 October 2026. **Prototyped**, with **Partial** rules coverage.
 Revival now uses the independent extra source through original native pending
 continuations and supported Nexus module envelopes. Bank-auction purchase keeps
 its distinct classic-only boundary; original Richese cache/Advanced Black Market
-now have their own seller continuation. Public starts and publication remain gated.
+and the Richese Ambassador have distinct native continuations. Public starts
+and publication remain gated.
 
 ## Rules and connected behavior
 
@@ -73,9 +74,19 @@ Truthtrance discard, hand limits, native Harkonnen bonus and source successor
 continue once. Version-two receipts retain original source/payment proof.
 [Policy and changed-path evidence](NEXUS_EMPEROR_RULES.md#recommended-richese-seller-unpaid-purchase--14-october-2026).
 
-Direct CHOAM markets, Ambassador/other acquisitions, allied split and full
-combinations remain open. Normal-auction forced Emperor-payment Betrayal has
-its separate [provisional full-price funding path](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
+The original Richese Ambassador now offers uniform beneficiary Pay or eligible
+Emperor Nexus Use after trigger commitment. Under the visibly provisional
+purchase composition, Use proves/retains three own spice and draws the original
+card once with no bank payment, seller reimbursement or fake auction. Original
+private inability and native movement/worm continuation remain; allied buyers
+cannot Use. Version-three source receipts and original phase/resume authority
+preserve the distinct entry. Actual Truthtrance discard restores that decision.
+[Ambassador policy/proof](NEXUS_EMPEROR_RULES.md#recommended-original-ambassador-purchase--14-october-2026).
+
+CHOAM closing sales/trades are not direct purchase producers. Other real
+purchase sources, allied splits and full combinations retain separate contracts.
+Normal-auction forced Emperor-payment Betrayal has its separate
+[provisional full-price funding path](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
 
 ## Prototype entry and evidence
 

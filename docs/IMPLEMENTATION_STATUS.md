@@ -1,5 +1,42 @@
 # Dune implementation status
 
+## 14 October 2026 — Emperor Nexus original Ambassador purchase
+
+Connected the existing fixed-three Richese Ambassador purchase classification
+to the printed Emperor Nexus purchase panel without inventing a Bidding-only
+condition. Uniform original-beneficiary Pay/eligible Use follows committed
+trigger, not hidden face/funds/hand capacity. No new beneficiary veto, bank
+payment, reimbursement or fake auction. Original conditional unavailable Pay
+consumes no spice/card and keeps the token spent. Actual unallied holder alone
+can prove/retain three own spice; allied beneficiaries cannot Use.
+
+Version-three signed receipts retain source entry/token/entrant, actual phase,
+buyer, physical drawn card and unchanged price. Malformed original source is a
+hard error; private inability only disables Use. Original phase/resume authority
+also governs source-bound Homeworld arrivals. Draw/recycle happens once at
+commit, never at offer. Original entrant active, movement/spice suffix and native
+bonus stay original; actual Truthtrance discard restores the same decision.
+Minimal profiles share the legal projection. Table decision headings now name
+Ambassador/seller payment and compulsory funding instead of battle spoils.
+
+Affected13-file union111/111, types/lint/build and eight Basic/Advanced actual
+shipment/worm API profiles pass. Four real390px surfaces prove Basic Use11→11,
+Advanced Pay11→8, irrelevant Guild-card Pay and Advanced phase-one worm Use11→11,
+one original card and native movement/spice controls, no overflow/errors.
+Native allied Harkonnen paid acquisition gets its bonus once, automatically
+when nobody can cancel. Fixture-only nonexistent False Wall South Spice Card,
+retained-after-alliance Nexus and forced-response assumptions were removed.
+Source now uses real Rock Outcroppings blow and legal native Fremen reinforcement.
+Copied-action/receipt/default/wording pins are deleted, not re-pinned.
+Temporary QA alias mistakes were fixed against installed Vinext shims; clean
+final surfaces are recorded separately from those failed harness boots.
+
+CHOAM closing market only sells to bank/trades; no direct purchase producer is
+invented. Other real acquisition sources, full combinations, broad assurance
+and deployed acceptance remain open. No saved/deployed room touched. Proof
+receipts remain outside Git; existing build classification/chunk warnings stay.
+[Canonical source and policy](NEXUS_EMPEROR_RULES.md#recommended-original-ambassador-purchase--14-october-2026).
+
 ## 14 October 2026 — Emperor Nexus original Richese purchase retention
 
 Connected original positive Richese cache and Advanced Black Market sold lots
