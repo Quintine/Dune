@@ -2,6 +2,18 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Recommended absent-BG borrowed Voice — 14 October 2026
+
+The named-advantage recommendation now connects Secret Ally Voice through
+a uniform attacker-first continuation in every fresh absent-BG Nexus battle,
+before native/Nexus inspection and sealed plans. Only the actual unallied
+holder can declare. The physical card is spent once; original Karama may
+cancel Voice while preserving the spent card, receipt and native preparation.
+All-pass preserves the card. Existing prepared games are not retrofitted.
+This is an explicitly provisional implementation interpretation, not publisher
+clarification or complete-mode acceptance.
+[Source and changed-path proof](NEXUS_BENE_GESSERIT_RULES.md#recommended-borrowed-voice-prototype--14-october-2026).
+
 ## Moritani Cunning and Grumman user cutover — 14 October 2026
 
 The user selected supply-only Cunning, continued HMS exclusion, an ordinary
@@ -1352,6 +1364,7 @@ The [bounded Ixian Secret Ally replacement integration](NEXUS_IXIAN_REPLACEMENT_
 - No retrieved card or E3 FAQ gives a general rule that every Nexus effect is Karama-immune, or that playing one suspends all ordinary responses. Homeworld immunity on the preceding page is limited to Homeworld advantages/penalties. Audit cancellation of an underlying native advantage separately from cancellation of the Nexus card before enabling each family.
 - Duration is explicit for several panels but not all. Ixian Betrayal's scope over multiple auction lots, the optional continuation after canceling native Prescience, and exact multi-party cancellation priority require the corresponding existing faction timing contract. Do not make an entire-phase cancellation merely from the word “advantage.”
 - Emperor forced ally payment and purchase refunds retain their precise source-invoice requirements. Tleilaxu's combined revival now uses the [explicit recommended policy](NEXUS_TLEILAXU_RULES.md#recommended-combined-revival-prototype--14-october-2026): a mandatory free own leader/ordinary slot and fixed paid physical group sharing an expanded ordinary ceiling, with preserved cycles and typed caps. This is a provisional implementation, not a new publisher answer; the five counters are not free.
+- Bene Gesserit borrowed Voice now follows the [recommended cancellable named-advantage policy](NEXUS_BENE_GESSERIT_RULES.md#recommended-borrowed-voice-prototype--14-october-2026), with neutral pre-Prescience timing and original native command checks. The prototype does not answer generic hidden-reaction priority, fresh advisor/storm permission or broader named-special/module combinations.
 - Richese's two-No-Field effect has a bounded native Cunning shipment follow-up, but wider marker/module compositions remain separate. Its [bounded Betrayal auction contract](NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026) connects public self-cache veto and other-buyer sale diversion, not normal-deck hidden-family self-purchases or private special-Karama acquisition. Ecaz's Duke override needs explicit restoration/end-turn handling across capture, death and Ghola records. These are material implementation tasks, not reasons to invent substitute effects.
 - A complete twelve-card reference/inventory and common lifecycle are substantial first work, but do not alone make all thirty-six panels playable. Keep the public module release gated until every face's supported timing, secrecy, custody, bots, UI, rejection, multiplayer CAS and saved continuation paths are verified. If development supports only Atreides' family first, other faces must remain accurately represented and explicitly unavailable in the audit mode; they must not silently act as blanks in a released module.
 

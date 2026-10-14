@@ -29,6 +29,20 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Bene Gesserit borrowed Voice — 14 October.** The recommended provisional
+policy is now connected: actual unallied absent-BG holder, attacker-first
+neutral continuation before Prescience, one spent-card declaration and the
+original Karama response. Cancellation retains card expenditure and original
+preparation; all-pass preserves the card. Native compliance and special/mode
+restrictions are reused; no in-flight preparation retrofit. Genuine Basic/
+Advanced runtime and four legal profiles pass in the related50-case union;
+types/lint/build pass. Actual390px neutral Continue→projectile command→real
+Karama→native Prescience decline→Seal battle plan preserves one Nexus discard,
+canceled receipt and unchanged forces/spice, without overflow or browser
+errors. QA host configuration errors were repaired before final surface proof.
+Broader combinations, assurance and public/deployed acceptance remain open.
+See [the source-bound contract](NEXUS_BENE_GESSERIT_RULES.md#recommended-borrowed-voice-prototype--14-october-2026).
+
 **Tleilaxu Secret Ally combined revival — 14 October.**
 The recommended prototype now provides owner-only leader/paid-force controls
 in quiet Revival, with the actual Tleilaxu Nexus held and faction absent.

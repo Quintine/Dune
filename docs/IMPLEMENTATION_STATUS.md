@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 14 October 2026 — Bene Gesserit Secret Ally borrowed Voice
+
+Recommended interpretation: one Karama-cancellable named Voice advantage,
+not blanket Nexus immunity. A uniform attacker-first two-combatant queue opens
+in fresh absent-BG Nexus battles before native/Nexus inspection and sealed
+plans. Owner-only actual-card controls use canonical categories and target/
+mode/compulsion restrictions. Cardless combatants only Continue; Use spends
+the physical card and binds the original command. All-pass preserves it.
+
+Pure source frame and genuine native chronology were delegated as disjoint
+slices; one owner integrated engine, quote, cancellation source, UI and bots.
+Native BG response validation remains unchanged; borrowed responses require
+their actual declared combatant source. Original Karama removes only Voice,
+keeps the spent Nexus/receipt and resumes Prescience. No legacy preparation
+retrofit/reset. Fixture continuation now settles original Guild interception
+and Advanced KH responses rather than bypassing them; deterministic initial
+seats replace repeated candidate-game construction. Wording, fixture-trace
+and incidental nonempty assertions were removed.
+
+Related4-file union50/50; types/lint and build pass. Actual390×844 GameTable
+neutral Continue→holder projectile requirement→auctioned Karama cancellation
+→native Prescience decline→enabled Seal battle plan. Source canceled, command
+removed, one Nexus discarded, original force/spice balances unchanged.
+Final document width390 and browser errors empty after repairing isolated
+QA alias/environment configuration. Proof outside Git; no saved game touched.
+Broader special-command/module interactions, comprehensive assurance, complete
+rules and deployed acceptance remain open.
+
 ## 14 October 2026 — Tleilaxu Secret Ally free-leader/paid-force revival
 
 Recommended-option priority closes the earlier whole-effect gate under an

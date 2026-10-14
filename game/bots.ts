@@ -3749,6 +3749,14 @@ function policyActions(g: GameView): Action[] {
     if (!b) return botBattleChoices(g);
     if (b.preparation) {
       if (b.preparation.owner !== me.id) return [];
+      if (b.preparation.kind === 'nexusVoice') {
+        const offer = g.nexusBorrowedVoice;
+        if (!offer || offer.blocked) return [];
+        const command = offer.choices.find(choice => !choice.must && choice.kind === 'shield');
+        return [{ type: 'nexusBorrowedVoice', event: offer.event,
+          use: !!(offer.canUse && command),
+          ...(offer.canUse && command ? { kind: command.kind, must: command.must } : {}) }];
+      }
       if (b.preparation.kind === 'voice')
         return level === 0 || b.preparation.blocked
           ? [{ type: 'declineBattlePower' }]

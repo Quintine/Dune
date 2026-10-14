@@ -133,12 +133,44 @@ export function BattlePreparation({
       <p className="notice">
         Waiting for {game.players.find((p) => p.id === preparation.owner)?.name}
         {preparation.kind === 'voice'
+          || preparation.kind === 'nexusVoice'
           ? ' to choose or decline the Voice.'
           : preparation.kind === 'prescience'
             ? ' to choose or decline prescience.'
             : ' to reveal the requested battle-plan element.'}
       </p>
     );
+  if (preparation.kind === 'nexusVoice') {
+    const offer = game.nexusBorrowedVoice;
+    if (!offer) return <p className="notice">Waiting for the borrowed Voice opportunity.</p>;
+    const selected = offer.choices.find(choice => choice.kind === kind && choice.must === must);
+    return <section aria-label="Borrowed Voice" className="space-y-3">
+      <h3>Bene Gesserit Nexus · Secret Ally</h3>
+      <p className="muted">Both combatants continue in attacker order before Prescience or sealed plans. Only an unallied holder may spend the card.</p>
+      {offer.blocked && <p className="notice">{offer.blocked}</p>}
+      {offer.canUse && <>
+        <label htmlFor="borrowed-voice-kind">Card type
+          <select id="borrowed-voice-kind" value={kind} onChange={e => setKind(e.target.value)}>
+            {VOICE_KINDS.filter(k => offer.choices.some(choice => choice.kind === k))
+              .map(k => <option key={k} value={k}>{battleCardLabel(k)}</option>)}
+          </select>
+        </label>
+        <label className="decision-checkbox">
+          <input type="checkbox" checked={must} onChange={e => setMust(e.target.checked)} />
+          Require this type (unchecked: forbid)
+        </label>
+        <p className="notice">Provisional policy: Karama may cancel the Voice. The Nexus card stays spent.</p>
+        <Button className="game-action" disabled={busy || !!offer.blocked || !selected}
+          onClick={() => act({ type: 'nexusBorrowedVoice', event: offer.event, use: true, kind, must })}>
+          Spend Nexus · Use the Voice
+        </Button>
+      </>}
+      <Button className="game-action" disabled={busy || !!offer.blocked}
+        onClick={() => act({ type: 'nexusBorrowedVoice', event: offer.event, use: false })}>
+        Continue without borrowed Voice
+      </Button>
+    </section>;
+  }
   if (preparation.kind === 'voice')
     return (
       <>

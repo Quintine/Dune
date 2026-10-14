@@ -55,9 +55,43 @@ unfinished Harkonnen Nexus Traitor return suspends both the offer and Voice
 response actions, including the hand-card Karama cancellation, until the
 private card return finishes.
 
-This does not grant absent-BG Secret Ally Voice or change Cunning's advisor
-conversion. Basic and Advanced retain their native Voice legality; the
-optional Nexus module still cannot start as a complete public mode.
+This native Betrayal reaction remains separate from the absent-BG Secret Ally
+prototype below and does not broaden Cunning's advisor conversion.
+Optional Nexus still cannot start as a complete public mode.
+
+## Recommended borrowed Voice prototype — 14 October 2026
+
+The choose-recommended-option instruction selects one **Karama-cancellable
+Voice advantage**. The printed face names that advantage and the general
+one-use rule supports cancellation; no retrieved publisher clarification
+specifically settles this absent-owner combination. The interpretation is
+visible and provisional, not a new publisher answer.
+
+Every fresh Nexus-enabled battle with BG absent opens the same attacker-then-
+defender continuation before native Prescience, Nexus inspection or sealed
+plans, regardless of the hidden card. Only the current unallied combatant
+actually holding BG Nexus may declare one canonical require/forbid command.
+Pass preserves the card; all-pass resumes native preparation. Existing
+in-flight preparations are not retrofitted or reset.
+
+Use discards the physical Nexus once and opens the original Voice Karama
+response with the borrower as owner. Cancellation removes only `battle.voice`,
+keeps the spent card and command receipt, and preserves native Prescience.
+Allow retains the command. Neither outcome reopens the queue. Native command
+classification, target Homeworld restrictions, special-card mode/compulsion
+checks, impossible compliance and existing plan promises are reused.
+Truthtrance and unfinished Traitor exchanges retain priority.
+
+Actual Basic/Advanced setup, paid auction Karama, worm/alliance/closing Nexus
+draw, reserve shipments and original battle chooser feed the focused runtime
+cases. The phone smoke uses the real GameTable: neutral Continue, holder
+projectile requirement, actual Karama cancellation, native Prescience decline
+and enabled Seal battle plan. Nexus remains discarded, source is canceled,
+width/document390 and browser errors empty after QA host configuration repair.
+The four minimal legal policies answer both opportunities. These checks do
+not certify all named-special/module combinations, historical recovery or
+complete rules/deployment.
+
 
 ## Material boundaries requiring a ruling
 
@@ -65,12 +99,12 @@ No retrieved primary clarification resolves these specific combinations. Do not 
 
 1. **Newly accompanied groups:** does Cunning's any/all permission override the same-turn advisor lock, or only the ordinary pre-shipment timing? The face does not name that prohibition.
 2. **Storm:** does Cunning allow an in-place flip in a storm-locked stronghold? The FAQ's prohibition explicitly addresses the earlier ordinary Battle flip; its rationale concerns inability to battle. Applying it to this later card is plausible, not explicit.
-3. **Borrowed Voice and Karama:** the card expressly grants a named advantage, while the normal native owner is absent. E3's secret-alliance terminology and the general alliance-cancellation rule support cancellation; absence of a native BG owner supports the opposite reading used for Atreides' differently worded effect. No retrieved Nexus FAQ selects one. Do not copy that earlier implementation choice as authority.
+3. **Borrowed Voice and Karama:** no retrieved Nexus FAQ selects an interpretation. The recommended prototype above explicitly chooses cancellation for this named advantage; Atreides' differently worded effect is not authority for it.
 
 The remaining private-reaction policy question applies to other hidden effects; the bounded Voice Betrayal path uses a uniform native response. This audit likewise does not settle historical Homeworld occupation ownership. Ordinary unoccupied, older, storm-free advisor groups are a clear selection subset, but broader claims retain the boundaries above.
 
 ## Suggested state and verification contract
 
-Keep stance choices public and event-bound: owner, turn, own-action identity, selected territory IDs, original counts/stances and settled/canceled result. A retry must not flip twice or consume a second card. For borrowed Voice, keep source and receipt separate from native ability ownership, with cancellation behavior dependent on the unresolved ruling.
+Keep stance choices public and event-bound: owner, turn, own-action identity, selected territory IDs, original counts/stances and settled/canceled result. A retry must not flip twice or consume a second card. Borrowed Voice keeps its original occurrence, ordered passes, source owner, command and settled/canceled receipt separate from native ability ownership.
 
-Exercise multi-territory and multi-sector selections, current-owner timing, conserved counters, Basic absence, occupied strongholds, No-Field getter traps, stale selection and saved continuations. Borrowed Voice still needs generic and named special-command, impossible-compliance, prior-inspection, sealed-plan and private-hand-permutation checks before implementation.
+Exercise multi-territory and multi-sector stance selections, current-owner timing, conserved counters, Basic absence, occupied strongholds, No-Field getter traps, stale selection and saved continuations. Borrowed Voice's native chronology now exercises generic compliance, impossible compliance, stale/foreign/late rejection, original Karama and all-pass continuation; broader named-special combinations and comprehensive assurance remain due.

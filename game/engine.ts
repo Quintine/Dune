@@ -58,6 +58,7 @@ import { createIxianBetrayalSource, validateIxianBetrayalFrame, initialIxianBetr
 import { createHarkonnenBetrayalSource, validateHarkonnenBetrayalFrame, initialHarkonnenBetrayalCursor, closeHarkonnenBetrayalSource, validateHarkonnenBetrayalHistory, harkonnenBetrayalResponders, harkonnenBetrayalEligible, createHarkonnenBetrayalReplacement, validateHarkonnenBetrayalReplacements, drawHarkonnenBetrayalReplacement, type HarkonnenBetrayalSource, type HarkonnenBetrayalCursor, type HarkonnenBetrayalReceipt, type HarkonnenBetrayalReplacement, type HarkonnenBetrayalAuthority } from './nexus-harkonnen-betrayal';
 import { createNexusGuildCunning, validateNexusGuildCunning, nexusGuildCunningMoves, type NexusGuildCunningReceipt } from './nexus-guild-cunning';
 import { createNexusRichese, validateNexusRichese, quoteNexusRicheseShipment, type NexusRicheseReceipt } from './nexus-richese';
+import { createNexusBorrowedVoice, currentNexusBorrowedVoiceOwner, passNexusBorrowedVoice, declareNexusBorrowedVoice, finishNexusBorrowedVoice, validateNexusBorrowedVoice, type NexusBorrowedVoiceFrame } from './nexus-borrowed-voice';
 import { createNexusInspection, allowNexusInspection, answerNexusInspection, reopenNexusInspection, cancelNexusInspection, reopenNexusNative, answerNexusNative, validateNexusInspection, committedPlanElements, type NexusInspection, type BattleInspectionContext } from './battle-inspections';
 import { beginNexusTraitorExchange, finishNexusTraitorExchange, validateNexusTraitorExchange, validateNexusTraitorHistory, validateNexusTraitorSnapshot, type NexusTraitorExchange, type NexusTraitorSnapshot } from './nexus-traitor-exchange';
 import { replaceNexusFaceDancers, validateNexusFaceDancerHistory, type NexusFaceDancerReceipt } from './nexus-face-dancers';
@@ -768,8 +769,9 @@ export type Battle = {
     required: string[];
     passed: string[];
   };
+  nexusBorrowedVoice?: NexusBorrowedVoiceFrame;
   preparation?: {
-    kind: 'voice' | 'prescience' | 'prescienceAnswer' | 'nexusPrescienceAnswer';
+    kind: 'voice' | 'nexusVoice' | 'prescience' | 'prescienceAnswer' | 'nexusPrescienceAnswer';
     owner: string;
     beneficiary: string;
     blocked?: string;
@@ -779,7 +781,7 @@ export type Battle = {
     field: PlanField;
     value?: string | number | null;
   };
-  voice?: { target: string; kind: Card['kind'] | 'stoneBurner'; must: boolean };
+  voice?: { target: string; kind: Card['kind'] | 'stoneBurner' | 'mirrorWeapon'; must: boolean };
 };
 export type Auction = {
   peekKnown?: boolean;
@@ -2567,6 +2569,94 @@ function playNexusFremenBetrayal(g: Game, p: Player, action: Action) {
     ? `${p.name} spent Fremen Nexus Betrayal before the first blow to suppress Fremen worm riding for this turn. Worm appearances and protection still resolve; ordinary and remote rides do not.`
     : `${p.name} spent Fremen Nexus Betrayal to suppress the Fremen two-territory movement advantage this turn. Independent ornithopters and movement abilities remain available.`,
     { faction: p.faction, name: 'Fremen Nexus Betrayal' });
+}
+function quoteVoiceCommand(g: Game, target: string, kind: unknown, must: unknown): NonNullable<Battle['voice']> {
+  const occupation = homeworldRule(() => quoteOccupiedHomeworldVoice(g, target));
+  requireRule(occupation.status === 'allowed', occupation.blocked ?? 'This target cannot receive the Voice.');
+  requireRule(typeof kind === 'string' && VOICE_KINDS.includes(kind), 'Choose a card type.');
+  if (kind === 'mirrorWeapon') {
+    const blocked = mirrorWeaponModeBlock(g);
+    requireRule(!blocked, blocked ?? 'Mirror Weapon is unavailable in this battle configuration.');
+  }
+  requireRule(typeof must === 'boolean', 'Choose require or forbid.');
+  if ((kind === 'stoneBurner' || kind === 'mirrorWeapon') && must) {
+    const blocked = stoneCompulsionBlock(g, getPlayer(g, target));
+    requireRule(!blocked, blocked ?? `${kind === 'mirrorWeapon' ? 'Mirror Weapon' : 'Stone Burner'} cannot be compelled in this battle.`);
+  }
+  return { target, kind: kind as NonNullable<Battle['voice']>['kind'], must };
+}
+function nexusBorrowedVoiceIntegrity(g: Game) {
+  const b = g.battle, frame = b?.nexusBorrowedVoice;
+  if (!b || !frame) return;
+  requireRule(b.event && g.nexusCards?.cards && !byFaction(g, 'beneGesserit'),
+    'Borrowed Voice has lost its absent-faction Nexus module.');
+  nexusRule(() => validateNexusBorrowedVoice({
+    turn: g.turn, battle: { event: b.event!, attacker: b.attacker, defender: b.defender },
+  }, frame));
+  if (frame.stage === 'choose') {
+    const owner = currentNexusBorrowedVoiceOwner(frame);
+    requireRule(b.preparation?.kind === 'nexusVoice' && b.preparation.owner === owner &&
+      b.preparation.beneficiary === owner && !b.voice && !b.prescience &&
+      !b.nexusInspection && !Object.keys(b.plans).length,
+      'The borrowed Voice queue has lost its original pre-inspection preparation.');
+  } else if (frame.stage !== 'passed') {
+    requireRule(frame.owner && !getPlayer(g, frame.owner).ally &&
+      g.nexusCards.cards.discard.includes('beneGesserit'),
+      'Borrowed Voice has lost its combatant or spent physical card.');
+    if (frame.stage === 'canceled')
+      requireRule(!b.voice, 'Canceled borrowed Voice cannot regain its command.');
+    else requireRule(b.voice && frame.voice && b.voice.target === frame.voice.target &&
+      b.voice.kind === frame.voice.kind && b.voice.must === frame.voice.must,
+      'Borrowed Voice has lost or changed its declared command.');
+    if (frame.stage === 'declared')
+      requireRule(g.response?.kind === 'voice' && g.response.owner === frame.owner,
+        'Borrowed Voice has lost its original cancellation response.');
+  }
+}
+function nexusBorrowedVoiceOffer(g: Game, id: string) {
+  const b = g.battle, frame = b?.nexusBorrowedVoice;
+  if (!b || !frame || currentNexusBorrowedVoiceOwner(frame) !== id ||
+      b.preparation?.kind !== 'nexusVoice') return null;
+  const p = getPlayer(g, id), target = b.attacker === id ? b.defender : b.attacker;
+  const canUse = !p.ally && g.nexusCards?.cards?.hands[id] === 'beneGesserit';
+  const occupation = homeworldRule(() => quoteOccupiedHomeworldVoice(g, target));
+  const blocked = g.truthtrance || pendingNexusTraitors(g) || g.response || g.decision ||
+    g.pendingKarama || g.pendingTreacheryDiscard || g.pendingNullentropy
+    ? 'Finish the current response before continuing borrowed Voice.' : null;
+  const choices: { kind: NonNullable<Battle['voice']>['kind']; must: boolean }[] = [];
+  if (canUse && occupation.status === 'allowed') for (const kind of VOICE_KINDS) {
+    if (kind === 'mirrorWeapon' && mirrorWeaponModeBlock(g)) continue;
+    choices.push({ kind: kind as NonNullable<Battle['voice']>['kind'], must: false });
+    if (!['stoneBurner', 'mirrorWeapon'].includes(kind) || !stoneCompulsionBlock(g, getPlayer(g, target)))
+      choices.push({ kind: kind as NonNullable<Battle['voice']>['kind'], must: true });
+  }
+  return { event: frame.event, owner: id, target, canUse,
+    blocked: blocked ?? (canUse && occupation.status !== 'allowed' ? occupation.blocked ?? 'This target cannot receive the Voice.' : null),
+    choices };
+}
+function playNexusBorrowedVoice(g: Game, p: Player, action: Action) {
+  const offer = nexusBorrowedVoiceOffer(g, p.id), b = g.battle;
+  requireRule(offer && b && action.event === offer.event && !offer.blocked,
+    'This borrowed Voice opportunity is stale, blocked, or belongs to another combatant.');
+  requireRule(typeof action.use === 'boolean' && Object.keys(action).every(key =>
+    ['type', 'event', 'use', ...(action.use ? ['kind', 'must'] : [])].includes(key)),
+    'Choose borrowed Voice or continue without a command.');
+  if (!action.use) {
+    b.nexusBorrowedVoice = nexusRule(() => passNexusBorrowedVoice(b.nexusBorrowedVoice!, p.id));
+    const next = currentNexusBorrowedVoiceOwner(b.nexusBorrowedVoice);
+    if (next) b.preparation = { kind: 'nexusVoice', owner: next, beneficiary: next };
+    else battlePreparation(g, 'prescience');
+    return;
+  }
+  requireRule(offer.canUse, 'Use the held Bene Gesserit Nexus card while unallied.');
+  const voice = quoteVoiceCommand(g, offer.target, action.kind, action.must);
+  b.nexusBorrowedVoice = nexusRule(() => declareNexusBorrowedVoice(b.nexusBorrowedVoice!, p.id, voice));
+  g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+  b.voice = voice;
+  battlePreparation(g, 'prescience');
+  g.response = { kind: 'voice', owner: p.id, passed: [] };
+  log(g, `${p.name} spent Bene Gesserit Nexus Secret Ally to use the Voice before Prescience. Provisional policy: Karama may cancel the advantage; the Nexus card remains spent.`,
+    { faction: p.faction, name: 'Borrowed Voice' });
 }
 function bgBetrayalWindow(g: Game) {
   const response = g.response, battle = g.battle;
@@ -12161,7 +12251,7 @@ function beginBattlePowers(g: Game) {
   )
     g.decision = { kind: 'choamBattleFunding', player: choam.id };
   else {
-    battlePreparation(g, 'voice');
+    battlePreparation(g, 'voice', true);
     combatResponses(g);
   }
 }
@@ -20377,6 +20467,7 @@ function currentCombatResponseQuote(
         status: g.status,
         phase: g.phase,
         advanced: g.advanced,
+        turn: g.turn,
         ...(g.battle?.ecazOccupy ? { ecazOccupy: ecazBattleProfile(g)! } : {}),
         territoryIds: combatLocations(g).map((t) => t.id),
         players: g.players.map((p) => ({
@@ -20456,8 +20547,18 @@ function finishBattlePreparation(g: Game) {
     currentCombatResponseQuote(g, { kind: 'finishPreparation' }),
   );
 }
-function battlePreparation(g: Game, kind: 'voice' | 'prescience') {
+function battlePreparation(g: Game, kind: 'voice' | 'prescience', fresh = false) {
   const b = g.battle!;
+  if (fresh && kind === 'voice' && g.nexusCards?.cards && !byFaction(g, 'beneGesserit') &&
+      !b.nexusBorrowedVoice && !b.voice && !b.prescience && !b.nexusInspection &&
+      !Object.keys(b.plans).length) {
+    requireRule(b.event, 'Borrowed Voice requires the original battle event.');
+    b.nexusBorrowedVoice = createNexusBorrowedVoice({
+      turn: g.turn, battle: { event: b.event, attacker: b.attacker, defender: b.defender },
+    });
+    b.preparation = { kind: 'nexusVoice', owner: b.attacker, beneficiary: b.attacker };
+    return;
+  }
   const owner = byFaction(g, kind === 'voice' ? 'beneGesserit' : 'atreides');
   const combatants = [b.attacker, b.defender];
   const beneficiary =
@@ -20612,6 +20713,7 @@ function marketGholaIntegrity(g: Game) {
   nexusEmperorBetrayalIntegrity(g);
   nexusFremenBetrayalIntegrity(g);
   nexusBgBetrayalIntegrity(g);
+  nexusBorrowedVoiceIntegrity(g);
   nexusFremenRevivalIntegrity(g);
   nexusFremenCunningIntegrity(g);
   nexusEcazBetrayalIntegrity(g);
@@ -25160,6 +25262,8 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
         canceled,
       }),
     );
+    if (response.kind === 'voice' && g.battle?.nexusBorrowedVoice?.stage === 'declared')
+      g.battle.nexusBorrowedVoice = finishNexusBorrowedVoice(g.battle.nexusBorrowedVoice, canceled);
   } else if (response.kind === 'guildTiming') {
     if (canceled) {
       const quote = movementCancellationQuote(g, response);
@@ -28839,6 +28943,7 @@ function applyActionInner(
   if (t === 'nexusTraitorDraw') { playNexusTraitorDraw(g, p, action); return g; }
   if (t === 'nexusFaceDancers') { playNexusFaceDancers(g, p, action); return g; }
   if (t === 'nexusTleilaxuRevival') { playNexusTleilaxuRevival(g,p,action); return g; }
+  if (t === 'nexusBorrowedVoice') { playNexusBorrowedVoice(g, p, action); return g; }
   if (t === 'nexusSuboids') { playNexusSuboids(g, p, action); return g; }
   if (t === 'nexusAdvisors') { playNexusAdvisors(g, p, action); return g; }
   if (t === 'nexusSardaukar') { playNexusSardaukar(g,p,action); return g; }
@@ -29678,7 +29783,7 @@ function applyActionInner(
         'CHOAM battle funding is unavailable.',
       );
       pledgeAid(g, p, action.amount);
-      battlePreparation(g, 'voice');
+      battlePreparation(g, 'voice', true);
       combatResponses(g);
       return g;
     }
@@ -32298,7 +32403,7 @@ function applyActionInner(
   if (t === 'declineBattlePower') {
     const b = g.battle;
     requireRule(
-      b?.preparation?.owner === id && !['prescienceAnswer', 'nexusPrescienceAnswer'].includes(b.preparation.kind),
+      b?.preparation?.owner === id && !['nexusVoice', 'prescienceAnswer', 'nexusPrescienceAnswer'].includes(b.preparation.kind),
       'You do not own this battle power decision.',
     );
     const kind = b.preparation.kind;
@@ -32393,34 +32498,7 @@ function applyActionInner(
       'Voice must be chosen by Bene Gesserit before prescience and battle plans.',
     );
     const target = b.attacker === b.preparation.beneficiary ? b.defender : b.attacker;
-    const occupation = homeworldRule(() => quoteOccupiedHomeworldVoice(g, target));
-    requireRule(occupation.status === 'allowed', occupation.blocked ?? 'This target cannot receive the Voice.');
-    requireRule(
-      VOICE_KINDS.includes(String(action.kind)),
-      'Choose a card type.',
-    );
-    if (action.kind === 'mirrorWeapon') {
-      const blocked = mirrorWeaponModeBlock(g);
-      requireRule(!blocked, blocked ?? 'Mirror Weapon is unavailable in this battle configuration.');
-    }
-    requireRule(typeof action.must === 'boolean', 'Choose require or forbid.');
-    if ((action.kind === 'stoneBurner' || action.kind === 'mirrorWeapon') && action.must) {
-      const target = getPlayer(
-        g,
-        b.attacker === b.preparation.beneficiary ? b.defender : b.attacker,
-      );
-      const blocked = stoneCompulsionBlock(g, target);
-      requireRule(
-        !blocked,
-        blocked ?? `${action.kind === 'mirrorWeapon' ? 'Mirror Weapon' : 'Stone Burner'} cannot be compelled in this battle.`,
-      );
-    }
-    b.voice = {
-      target:
-        b.attacker === b.preparation.beneficiary ? b.defender : b.attacker,
-      kind: action.kind as NonNullable<Battle['voice']>['kind'],
-      must: action.must,
-    };
+    b.voice = quoteVoiceCommand(g, target, action.kind, action.must);
     battlePreparation(g, 'prescience');
     g.response = { kind: 'voice', owner: id, passed: [] };
     return g;
@@ -33133,6 +33211,7 @@ export function viewGame(state: Game, id: string) {
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
     nexusEmperorBetrayal: nexusEmperorBetrayalOffer(g, id),
     nexusBgBetrayal: nexusBgBetrayalOffer(g, id),
+    nexusBorrowedVoice: nexusBorrowedVoiceOffer(g, id),
     nexusFremenRevival: fremenNexusRevivalOffer(g,id),
     nexusMoritani: nexusMoritaniOffer(g,id),
     nexusMoritaniBetrayal: moritaniBetrayalOffer(g,id,

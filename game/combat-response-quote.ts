@@ -1,6 +1,7 @@
 import { FACTIONS, type FactionId } from './catalog';
 import { VOICE_KINDS } from './battle-cards';
 import { quoteEcazOccupyBattle, type EcazOccupyBattleProfile } from './ecaz-occupy-battle';
+import { validateNexusBorrowedVoice, type NexusBorrowedVoiceFrame } from './nexus-borrowed-voice';
 
 export type CombatCheckKind =
   | 'kwisatz'
@@ -14,6 +15,7 @@ export type CombatResponseInput = {
   status: string;
   phase: number;
   advanced: boolean;
+  turn?: number;
   territoryIds: readonly string[];
   players: readonly {
     id: string;
@@ -22,6 +24,8 @@ export type CombatResponseInput = {
     specialKaramaUsed?: boolean;
   }[];
   battle: {
+    event?: string;
+    nexusBorrowedVoice?: NexusBorrowedVoiceFrame;
     attacker: string;
     defender: string;
     territory: string;
@@ -296,10 +300,21 @@ function calculate(
   }
   const owner = input.players.find((p) => p.id === response.owner),
     faction = response.kind === 'voice' ? 'beneGesserit' : 'atreides';
-  requireCombat(
-    owner?.faction === faction,
-    'Combat preparation response has the wrong faction owner.',
-  );
+  const borrowed = response.kind === 'voice' && b.nexusBorrowedVoice;
+  if (borrowed) {
+    requireCombat(typeof input.turn === 'number' && typeof b.event === 'string',
+      'Borrowed Voice has lost its original battle occurrence.');
+    validateNexusBorrowedVoice({ turn: input.turn,
+      battle: { event: b.event, attacker: b.attacker, defender: b.defender } }, borrowed);
+    requireCombat(borrowed.stage === 'declared' && borrowed.owner === response.owner &&
+      owner && !owner.ally && combatants.includes(owner.id) &&
+      !input.players.some(p => p.faction === 'beneGesserit') && record(b.voice) &&
+      b.voice.target === borrowed.voice?.target && b.voice.kind === borrowed.voice?.kind &&
+      b.voice.must === borrowed.voice?.must,
+      'Borrowed Voice does not match the declared combatant source.');
+  } else requireCombat(owner?.faction === faction,
+    'Combat preparation response has the wrong faction owner.');
+  requireCombat(owner, 'Combat preparation response has no owner.');
   // Match battlePreparation's existing provider selection, including its
   // one-way ally link. CHOAM's queue above independently requires mutual links.
   const beneficiary = combatants.includes(owner.id)

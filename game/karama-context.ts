@@ -70,6 +70,7 @@ const cancellationSources = {
     battle: battleSource(g),
     voice: g.battle?.voice ?? null,
     preparation: g.battle?.preparation ?? null,
+    borrowedVoice: g.battle?.nexusBorrowedVoice ?? null,
   }),
   prescience: (g) => ({
     battle: battleSource(g),
