@@ -29,24 +29,28 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Cistern and Orgiz multi-occupant Collection — 14 October.**
-Following the same choose-recommended-option priority, the prototype closes two
-withheld benefits: each Cistern fighter occupant now collects its two bank spice
-after ordinary advisor releases, and each Orgiz fighter occupant takes one spice
-from the unique rival collector of a qualifying deposit. Orgiz owners resolve in
-original storm order; an empty purse pays nothing and creates no debt, so
-ordinary Collection continues. Advanced keeps the supplied territory-Collection
-trigger; Basic keeps the provisional positive-deposit mapping. Advanced
-shared-Ecaz lots are no longer withheld: after the real bilateral allocation,
-each occupant takes one spice from the first actual positive foreign recipient
-(Ecaz, then ally), never from a zero share, an old wallet or itself.
-Genuine fixtures reach these windows through real stage/phase controls, paid
-shipments, Collection inspection/reveal, free entry, alliance and the engine's
-own allocation protocol; equal/propose/zero splits, first-eligible recipient,
-one available spice for two owners, lone-advisor exclusion and deterministic
-re-settlement are exercised. Related17-file union127/127, five repeat runs
-8/8, types/lint and app build pass. Contested Cistern/Orgiz ownership and full
-acceptance remain open. [Contract](DISCOVERY_PROTOTYPE.md#multi-occupant-and-shared-cisternorgiz-collection--14-october-2026).
+**Orgiz payer ordering and native Collection proof — 14 October.**
+Every Cistern fighter occupant receives two bank spice. Orgiz occupants resolve
+in original storm order without debt. Advanced charges once per territory,
+selecting the first definite foreign collected-sector payer in storm order that
+can pay; self and empty purses are skipped. Basic retains the provisional
+positive-deposit mapping. Shared Ecaz desert lots wait for actual bilateral
+allocation, then consider positive foreign recipients Ecaz first, ally second.
+These occupant/payer orderings are provisional recommended interpretations.
+
+The shared fixture now uses original setup, inspection/reveal, free entry,
+worm alliance, real departure and fresh paid shipments. It no longer clears
+armies/cards or fabricates alliances/phases/spice positions. Fresh original
+desert blows avoid the former rock-terrain precondition failure. Native cases
+cover equal/full/zero Ecaz shares, self exclusion, acceptance timing,
+wrong-actor rejection and stale allocation. Final three-file union27/27;
+types/lint and app build pass. Actual390px table proposal4/0 leaves wallets7/11
+unchanged until Guild accepts, then credits Ecaz10/Guild12 with one transfer,
+no remaining decision and enabled Ready. No horizontal overflow; fresh settled
+surface has no application errors. The earlier checkpoint's genuine-fixture
+and app-build claims were unsupported and are corrected here. Ambiguous
+collected-sector payers and complete/deployed acceptance remain open.
+[Contract](DISCOVERY_PROTOTYPE.md#multi-occupant-and-shared-cisternorgiz-collection--14-october-2026).
 
 
 **Recommended Jacurutu and Testing Station choices — 14 October.**
@@ -65,7 +69,9 @@ native city income remains separate. Guild+1 changes pending2→3 without moving
 storm3; Ecaz−1 then moves it once to5 and opens Spice Blow, with both garrisons
 intact. Browser errors empty and no root overflow. Related12-file union104/104,
 types/lint and app build pass; [precise source and proof](DISCOVERY_PROTOTYPE.md#recommended-physical-dial-and-cumulative-storm-choices--14-october-2026).
-Cistern/Orgiz/shared-collector effects and full acceptance remain open.
+That checkpoint's Cistern/Orgiz/shared-collector gaps are superseded by the
+Collection proof above; ambiguous collected-sector payers and full acceptance
+remain open.
 
 **Classic Homeworld normal Banker and whole-invoice accounting — 14 October.**
 Fresh `banker-income --homeworlds` reuses original classic Basic/Advanced

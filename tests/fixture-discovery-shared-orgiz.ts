@@ -1,103 +1,94 @@
 import assert from 'node:assert/strict';
+import {applyAction,type Action,type Game} from '../game/engine';
+import {splitLocation,territory} from '../game/board';
+import {ORGIZ_PROCESSING_STATION} from '../game/discovery-collection';
 import {
-  applyAction, createGame, initializeDiscoveryGameForAudit, joinGame, newPlayer,
-  normalizeAutomaticGame, viewGame, type Action, type Game,
-} from '../game/engine';
-import { territory } from '../game/board';
-import { quoteSpiceCollection } from '../game/board-resolution-quote';
-import { ORGIZ_PROCESSING_STATION, quoteDiscoveryCollection } from '../game/discovery-collection';
-import { putDiscovery } from './fixture-discovery';
-import { nativeTypedClearBoard, nativeTypedPhase, nativeTypedPlace } from './fixture-discovery-native-typed';
-import { advanceTestingStationContest } from './fixture-testing-station-contest';
+  createDiscoveryOccupantsFixture,advanceTestingStationContest,nextTestingStationContestStep,
+  type TestingStationContestStep,
+} from './fixture-testing-station-contest';
 
-export type SharedOrgizStep = { actor: string; action: Action };
+const clean=(game:Game)=>!game.decision&&!game.response&&!game.phaseOpening;
 
-/** Fresh original Ecaz/Guild/Fremen Advanced Discovery game. Only conserved
- * unplayed Spice Card order, the printed supply token, reserve-counter positions
- * and board spice already produced by real blows are controlled; every phase,
- * reveal, payment, allocation, transfer and Collection is an original action. */
+/** Preserve original armies/cards/alliances. Only original unplayed Spice Card
+ * order and the actual token lottery are staged by the shared native prefix. */
 export function prepareSharedOrgizCollection() {
-  let game = createGame('SHAREDORGIZ', newPlayer('e', 'Ecaz', 'ecaz'), true, ['ecaz']);
-  joinGame(game, newPlayer('g', 'Guild', 'guild'));
-  joinGame(game, newPlayer('f', 'Fremen', 'fremen'));
-  for (const player of game.players)
-    if (!player.ready) game = applyAction(game, player.id, { type: 'ready' });
-  game.discoveryEnabled = true;
-  const initial = structuredClone(game);
-  game = initializeDiscoveryGameForAudit(game);
-  game = advanceTestingStationContest(game, state => state.status === 'playing');
-  const ecaz = 'e', guild = 'g', fremen = 'f';
-  for (const [position, name] of ['hagga_basin', 'cielago_south', 'red_chasm', 'funeral_plain'].entries()) {
-    const index = game.spiceDeck.findIndex((card, i) => i >= position &&
-      'territory' in card && card.territory === name && !card.discovery);
-    assert.ok(index >= position);
-    game.spiceDeck.splice(position, 0, game.spiceDeck.splice(index, 1)[0]);
+  const prefix=createDiscoveryOccupantsFixture({location:ORGIZ_PROCESSING_STATION,advanced:true,secondAmount:2});
+  const actions:TestingStationContestStep[]=[...prefix.actions];
+  let game=advanceTestingStationContest(prefix.game,g=>g.turn===2&&g.phase===5&&g.active==='ecaz'&&clean(g),actions);
+  const leave:Action={type:'move',from:`${ORGIZ_PROCESSING_STATION}:0`,
+    territory:prefix.parent,sector:prefix.parentSector,amount:2,elite:0};
+  actions.push({actor:'ecaz',action:leave});
+  game=applyAction(game,'ecaz',leave);
+  game=advanceTestingStationContest(game,g=>g.turn===2&&g.phase===8&&clean(g),actions);
+  // Two unused printed blows with different sectors guarantee that at least
+  // one new deposit is outside the next real Storm. Never edit a storm source.
+  let firstSector:number|null=null;
+  const blowKeys:string[]=[];
+  for(let position=0;position<2;position++) {
+    const index=game.spiceDeck.findIndex((card,i)=>i>=position&&'territory' in card&&
+      !card.discovery&&territory(card.territory).type==='sand'&&card.sector!==firstSector);
+    assert.ok(index>=position,'Original unused ordinary blows must supply the native Collection route.');
+    const card=game.spiceDeck.splice(index,1)[0];
+    game.spiceDeck.splice(position,0,card);
+    if('territory' in card) {
+      firstSector=card.sector;
+      blowKeys.push(`${card.territory}:${card.sector}`);
+    }
   }
-  game = nativeTypedPhase(game, 5);
-  nativeTypedClearBoard(game);
-  const token = putDiscovery(game, ORGIZ_PROCESSING_STATION);
-  const source = `${token.territory}:${token.sector}`;
-  assert.notEqual(token.sector, game.storm);
-  nativeTypedPlace(game, fremen, source, 2);
-  game = nativeTypedPhase(game, 7);
-  assert.ok(viewGame(game, fremen).discoveries!.canInspect.includes(token.id));
-  game = applyAction(game, fremen, { type: 'discovery', token: token.id, reveal: false });
-  assert.ok(viewGame(game, fremen).discoveries!.canReveal.includes(token.id));
-  game = applyAction(game, fremen, { type: 'discovery', token: token.id, reveal: true });
-  game = nativeTypedPhase(game, 8);
-  game = nativeTypedPhase(game, 5, 2);
-  nativeTypedClearBoard(game);
-  // Ecaz and its Guild ally hold the same real desert territory, so the original
-  // quote creates the shared lot whose allocation decides the actual recipient.
-  const haggaKeys = territory('hagga_basin').sectors.filter(sector => sector !== game.storm)
-    .slice(0, 2).map(sector => `hagga_basin:${sector}`);
-  assert.equal(haggaKeys.length, 2);
-  const untouchedKey = 'the_great_flat:15';
-  nativeTypedPlace(game, fremen, `${ORGIZ_PROCESSING_STATION}:0`, 1);
-  nativeTypedPlace(game, ecaz, haggaKeys[0], 1);
-  nativeTypedPlace(game, guild, haggaKeys[1], 1);
-  // Conserved precondition, as in the original Collection tests: the Ecaz/Guild
-  // alliance exists before this Collection. The governed behavior under audit is
-  // the real allocation-then-transfer sequence below, not the pact's own rules.
-  game.players.find(player => player.id === ecaz)!.ally = guild;
-  game.players.find(player => player.id === guild)!.ally = ecaz;
-  const boardSpice = Object.values(game.spice).reduce((sum, amount) => sum + amount, 0);
-  assert.ok(boardSpice >= 6);
-  game.spice = { [haggaKeys[0]]: 4, [haggaKeys[1]]: 2, [untouchedKey]: boardSpice - 6 };
-  const ordinary = quoteSpiceCollection(game);
-  assert.equal(ordinary.shared.length, 1);
-  assert.deepEqual({ ...ordinary.shared[0], amount: 0 },
-    { territory: 'hagga_basin', ecaz, ally: guild, amount: 0 });
-  assert.ok(ordinary.shared[0].amount > 0, 'The real shared lot must hold collected desert spice.');
-  assert.deepEqual(quoteDiscoveryCollection(game, ordinary).effects, []);
-  const before = structuredClone(game);
-  for (const player of game.players)
-    Object.assign(player, { hand: [], traitors: [], traitorChoices: [], shipped: true, moved: 1 });
-  Object.assign(game, { phase: 5, active: fremen, movementRemaining: [fremen], phaseOpening: null });
-  return { initial, game, before, ordinary, boardSpice, token: token.id, source,
-    haggaKeys, untouchedKey, ecaz, guild, fremen };
+  game=advanceTestingStationContest(game,g=>g.turn===3&&g.phase===5&&clean(g),actions);
+  const target=Object.entries(game.spice).find(([key,amount])=>blowKeys.includes(key)&&amount>=2&&
+    splitLocation(key).sector!==game.storm&&game.players.every(p=>(p.forces[key]??0)===0));
+  assert.ok(target,'An actual original blow must supply an empty non-storm shared collection deposit.');
+  const destination=splitLocation(target[0]);
+  const shipped=new Set<string>();
+  let beforeCollection:Game|null=null;
+  for(let step=0;step<500&&game.turn===3&&!(game.phase===7&&game.decision?.kind==='ecazSpice');step++) {
+    if(game.phase===5&&clean(game)&&game.movementRemaining?.length===1)
+      beforeCollection=game;
+    let next:TestingStationContestStep|null;
+    if(game.turn===3&&game.phase===5&&clean(game)&&game.active&&
+      ['ecaz','guild'].includes(game.active)&&!shipped.has(game.active)) {
+      const actor=game.active;
+      next={actor,action:{type:'ship',territory:destination.territory,sector:destination.sector,
+        amount:1,elite:0,allyPayment:0}};
+      shipped.add(actor);
+    } else next=nextTestingStationContestStep(game);
+    assert.ok(next,`Original shared Collection has no continuation: ${JSON.stringify({
+      status:game.status,turn:game.turn,phase:game.phase,decision:game.decision,
+      active:game.active,shipped:[...shipped],target:target[0],
+    })}`);
+    actions.push(next);
+    game=applyAction(game,next.actor,next.action);
+  }
+  assert.equal(game.decision?.kind,'ecazSpice',JSON.stringify({
+    turn:game.turn,phase:game.phase,shipped:[...shipped],target:target[0],
+    spice:beforeCollection?.spice[target[0]],storm:beforeCollection?.storm,
+    seats:beforeCollection?.players.map(p=>({id:p.id,ally:p.ally,forces:p.forces[target[0]]})),
+    last:actions.slice(-12),
+  }));
+  assert.equal(game.players.find(p=>p.id==='ecaz')!.forces[`${ORGIZ_PROCESSING_STATION}:0`],undefined);
+  assert.equal(game.players.find(p=>p.id==='guild')!.forces[`${ORGIZ_PROCESSING_STATION}:0`],2);
+  const pending=game.ecazCollection!.allocation!;
+  const lot=pending.lots[pending.index];
+  assert.equal(lot.territory,destination.territory);
+  assert.ok(lot.amount>=2);
+  return {...prefix,game,actions,lot,key:target[0],ecaz:'ecaz',guild:'guild',owner:'guild'};
 }
 
-/** Settle the real Collection, then answer each original Ecaz allocation prompt. */
 export function settleSharedOrgiz(
-  position: ReturnType<typeof prepareSharedOrgizCollection>,
-  choice: { kind: 'propose'; ecazShare: number } | { kind: 'equal' } = { kind: 'equal' },
+  position:ReturnType<typeof prepareSharedOrgizCollection>,
+  choice:{kind:'propose';ecazShare:number}|{kind:'equal'}={kind:'equal'},
 ) {
-  const steps: SharedOrgizStep[] = [];
-  let game = applyAction(position.game, position.fremen, { type: 'endMovement' });
-  steps.push({ actor: position.fremen, action: { type: 'endMovement' } });
-  assert.equal(game.phase, 7);
-  const event = game.ecazCollection?.event ?? null;
-  assert.ok(event, 'The real Collection must own its allocation event.');
-  while (game.decision?.kind === 'ecazSpice' && steps.length < 20) {
-    const actor = game.decision.player;
-    const allocation = actor === position.ecaz ? choice : { kind: 'accept' as const };
-    const action = { type: 'decision', event: game.ecazCollection!.event, allocation } as Action;
-    game = applyAction(game, game.decision.player, action);
-    steps.push({ actor: position.ecaz, action });
+  let game=position.game;
+  const event=game.ecazCollection!.event;
+  const steps:TestingStationContestStep[]=[];
+  while(game.decision?.kind==='ecazSpice'&&steps.length<20) {
+    const actor=game.decision.player;
+    const allocation=actor===position.ecaz?choice:{kind:'accept' as const};
+    const action:Action={type:'decision',event,allocation};
+    steps.push({actor,action});
+    game=applyAction(game,actor,action);
   }
-  assert.equal(game.decision, null, 'The original shared allocation must settle without inventing another choice.');
-  const stable = JSON.parse(JSON.stringify(game)) as Game;
-  assert.deepEqual(normalizeAutomaticGame(JSON.parse(JSON.stringify(stable))), stable);
-  return { game, steps, event, receipts: game.ecazCollection?.settled ?? [] };
+  assert.equal(game.decision,null);
+  return {game,steps,event,receipt:game.ecazCollection!.settled.at(-1)!};
 }

@@ -131,9 +131,9 @@ function transferOrgiz(
   receipts: DiscoveryBaseCollectionReceipt[],
   effects: DiscoveryCollectionQuote['effects'],
 ) {
-  if (!collector || collector.id === ownerReceipt.player) return;
+  if (!collector || collector.id === ownerReceipt.player) return false;
   const collectorReceipt = receipts.find(entry => entry.player === collector.id)!;
-  if (collectorReceipt.balance === 0) return;
+  if (collectorReceipt.balance === 0) return false;
   requireCollection(
     Number.isSafeInteger(ownerReceipt.balance + 1),
     'Orgiz theft would invalidate a player spice balance.',
@@ -144,6 +144,7 @@ function transferOrgiz(
     kind: 'orgiz', player: ownerReceipt.player, from: collector.id,
     location: key, amount: 1, source: 'player',
   });
+  return true;
 }
 
 /**
@@ -151,10 +152,10 @@ function transferOrgiz(
  * over the canonical ordinary quote. Ordinary `collected` and `desert` remain
  * factual: Cistern is bank income; Orgiz transfers available player spice.
  *
- * Owners resolve in original storm order. Advanced uses territory Collection;
- * Basic retains the provisional positive-deposit trigger. Ambiguous collectors
- * and shared lots still withhold only their uncertain effect. Empty purses
- * cannot create debt or block ordinary Collection.
+ * Owners resolve in original storm order. Advanced chooses one actual foreign
+ * collector per territory in storm order; Basic retains the provisional
+ * positive-deposit trigger. Ambiguous collected sectors withhold the territory
+ * effect. Shared lots settle after bilateral allocation, not in this quote.
  */
 export function quoteDiscoveryCollection(
   context: DiscoveryCollectionContext,
@@ -271,7 +272,10 @@ export function quoteDiscoveryCollection(
   if (orgiz.length) {
     const ownerReceipts = orgiz.map(owner => receipts.find(entry => entry.player === owner.id)!);
     const transfers = context.advanced
-      ? new Map<string, { location: string; collector: DiscoveryCollectionSeat | undefined }>()
+      ? new Map<string, {
+        collectors: { location: string; collector: DiscoveryCollectionSeat }[];
+        ambiguous: boolean;
+      }>()
       : undefined;
     for (const key of sourceKeys) {
       if (context.spice[key] <= collection.spice[key]) continue;
@@ -287,15 +291,25 @@ export function quoteDiscoveryCollection(
           transferOrgiz(key, collector, ownerReceipt, receipts, effects);
         continue;
       }
-      const pending = transfers.get(territory);
-      if (!pending) transfers.set(territory, { location: key, collector });
-      else if (pending.collector?.id !== collector?.id)
-        pending.collector = undefined;
+      let pending = transfers.get(territory);
+      if (!pending) {
+        pending = { collectors: [], ambiguous: false };
+        transfers.set(territory, pending);
+      }
+      if (!collector) pending.ambiguous = true;
+      else if (!pending.collectors.some(entry => entry.collector.id === collector.id))
+        pending.collectors.push({ location: key, collector });
     }
     if (transfers)
-      for (const pending of transfers.values())
+      for (const pending of transfers.values()) {
+        if (pending.ambiguous) continue;
+        pending.collectors.sort((left, right) =>
+          context.order.indexOf(left.collector.id) - context.order.indexOf(right.collector.id));
         for (const ownerReceipt of ownerReceipts)
-          transferOrgiz(pending.location, pending.collector, ownerReceipt, receipts, effects);
+          for (const candidate of pending.collectors)
+            if (transferOrgiz(candidate.location, candidate.collector, ownerReceipt, receipts, effects))
+              break;
+      }
   }
 
   return { receipts, effects };

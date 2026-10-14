@@ -66,34 +66,37 @@ source/actor/transition/payment boundaries, not wording or fixture-copy echoes.
 
 ### Multi-occupant and shared Cistern/Orgiz Collection — 14 October 2026
 
-Cistern now pays every fighter occupant two bank spice after ordinary advisor
-releases; a lone advisor never qualifies. Orgiz resolves each fighter occupant
-in original storm order, taking one spice from the unique rival collector of a
-qualifying deposit. An empty purse simply cannot pay: no debt is created and
-ordinary Collection continues. Advanced keeps the supplied territory-Collection
-trigger and Basic keeps the provisional positive-deposit mapping.
+Cistern pays every fighter occupant two bank spice after ordinary advisor
+releases; a lone advisor never qualifies. Orgiz resolves fighter occupants in
+original storm order. Advanced charges one actual foreign collector per
+territory, choosing among definite collected-sector payers in original storm
+order and skipping the owner and empty purses. Basic retains the provisional
+positive-deposit mapping. An ambiguous collected sector still withholds that
+territory's transfer. No debt is created; ordinary Collection continues.
 
-The Advanced shared-Ecaz branch now settles instead of withholding. After the
-real bilateral allocation reports the actual split, each occupant takes one
-spice from the first actual positive foreign recipient — Ecaz first, then the
-ally — never from a zero share, an old wallet or the occupant itself, and never
-beyond that recipient's available spice. Total spice is conserved by the
-transfer; only the real collected lot is credited.
+Shared Ecaz desert lots wait for the actual bilateral allocation. Each occupant
+considers positive foreign recipients Ecaz first, then ally, charging at most
+one spice from an available current balance. A zero share or an old wallet
+alone cannot establish eligibility; the owner never pays itself. These occupant
+and payer orderings are recommended provisional interpretations, not new
+publisher rulings or separately answered numerical user questions.
 
-Genuine evidence: the original Station/Ecaz-Guild/Fremen fixtures reach these
-windows through real stage/phase controls, paid shipments, Collection
-inspection/reveal, free entry, alliances and the engine's own allocation
-protocol; only unplayed Spice Card order, printed supply tokens and conserved
-counter positions are controlled. Cases cover equal/propose/zero splits, the
-first-eligible recipient, two owners with one available spice, lone-advisor
-exclusion, JSON normalization and deterministic re-settlement.
+Current native fixtures preserve original armies, wallets, hands, alliances
+and phases. They use real setup, token placement, paid shipments, inspection,
+reveal, free entry, a worm Nexus alliance and allocation. Only original
+unplayed Spice Card order and the actual token lottery are staged. The shared
+route uses two fresh desert blows with different sectors, real Ecaz departure
+from Orgiz, and fresh paid Ecaz/Guild shipments. Rock blows cannot create an
+Ecaz shared lot. Cases cover equal/full/zero Ecaz shares, owner exclusion,
+acceptance timing, wrong-actor rejection and stale-allocation rejection.
 
 `tests/fixture-discovery-occupied-collection.ts`,
 `tests/discovery-occupied-collection-runtime.test.ts`,
 `tests/fixture-discovery-shared-orgiz.ts` and
-`tests/discovery-shared-orgiz-runtime.test.ts`. Other contested sources
-(Cistern/Orgiz ownership contests, Ecaz shared-lot theft ordering variants) and
-full acceptance remain open.
+`tests/discovery-shared-orgiz-runtime.test.ts`. Focused helper regressions also
+cover original storm-order payer selection, one available spice for two owners
+and advisor exclusion. Ambiguous collected-sector sources and complete
+combined-module acceptance remain open.
 
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 
@@ -749,13 +752,15 @@ Existing modified-defense, Atreides Suk/KH and private split-source guards remai
 The supplied `UNOFFICIAL_Revised_Dune_Rulebook_v.2.3_web.pdf`, **physical page 24**,
 says Orgiz steals one collected spice **each time collection occurs in a
 territory containing spice**, rather than the publisher's older per-blow text.
-For Advanced, the quote maps an original territory's positive Collection to
-one transfer, even when multiple collected source keys identify the same
-unique rival payer. A different, missing, contested or shared payer withholds
-that territory's transfer; other territories and ordinary Collection proceed.
-An owner's own Collection is not theft. This is the explicit application of
-the authorized Advanced trigger, not a newly discovered publisher ruling on
-contested ownership or shared allocation.
+For Advanced, each fighter occupant receives at most one transfer per actual
+positive territory Collection. Multiple collected source keys do not multiply
+the transfer. Definite rival collectors are considered in original storm
+order, skipping self and empty purses. A collected sector whose actual payer
+is ambiguous still withholds that territory's transfer. Shared Ecaz desert
+lots wait for the actual bilateral split, then consider positive foreign
+recipients Ecaz first, ally second. Those payer/occupant orderings are explicitly
+provisional implementations under the recommended-option priority; the
+territory trigger is sourced, not the ordering. Ordinary Collection proceeds.
 
 Basic retains its recorded provisional one-transfer-per-positive-deposit
 interpretation. The context requires its existing public `advanced` boolean:
@@ -863,15 +868,15 @@ conversion was fabricated.
   occupant of the revealed location receives two bank spice. A lone advisor
   never qualifies. Two fighters therefore both collect; the former withheld
   two-fighter gap is closed.
-- **Orgiz:** during Collection, each fighter occupant takes one spice from the
-  unique rival collector of each qualifying deposit after ordinary advisor
-  releases. Owners resolve in original storm order, and an empty purse simply
-  cannot pay; no debt is created and ordinary Collection continues. Advanced
-  uses the territory Collection event; Basic keeps the provisional
-  positive-deposit trigger. For an Ecaz shared lot, the real bilateral
-  allocation settles first, then each occupant takes one from the first actual
-  positive foreign recipient (Ecaz, then ally) that still has spice, never from
-  a zero share, an old wallet or the occupant itself.
+- **Orgiz:** during Collection, each fighter occupant resolves in original storm
+  order after ordinary advisor releases. Advanced charges once per territory,
+  choosing the first definite foreign collector in original storm order that
+  can pay. Basic retains one transfer per positive deposit with a unique rival
+  collector. Empty purses never create debt. An ambiguous collected sector
+  withholds the territory effect without blocking ordinary Collection. Shared
+  Ecaz desert lots settle their real bilateral allocation first; positive
+  foreign recipients are considered Ecaz first, ally second. Zero shares and
+  the occupant itself do not qualify. Ordering remains provisional.
 
 - **Jacurutu:** one bank spice per opposing undialed physical counter actually
   sent to the Tanks. Unique readings remain automatic. For different possible
@@ -1017,10 +1022,10 @@ to Spice Blow. Refresh restored the same station forces and private Snooper.
 This is targeted control/recovery evidence, not an unmodified complete game.
 The 187 opening saved rooms remain preserved; no server restart was needed.
 
-1. Resolve contested Cistern/Orgiz benefits and Ecaz shared-lot Orgiz allocation.
-   Jacurutu mixed dial and Testing Station order now use the visible recommended
-   interpretations above. Basic Orgiz remains provisional per collected deposit;
-   the Advanced territory count is source-cut over.
+1. Resolve ambiguous collected-sector Orgiz sources and refine combined
+   Discovery interactions. Multi-occupant Cistern/Orgiz, shared allocation,
+   Jacurutu mixed dials and Testing Station ordering now use the visible
+   recommended interpretations above; Basic Orgiz remains provisional.
 2. Integrate combined modules and complete games, then refine interaction,
    strategy and presentation coverage before opening normal start gates.
 3. Use the existing prototype starter and saved-room verification for further

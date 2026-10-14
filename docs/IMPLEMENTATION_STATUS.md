@@ -2,40 +2,45 @@
 
 ## 14 October 2026 — Cistern/Orgiz multi-occupant and shared-lot Collection
 
-Same recommended-option priority, no further clarification prompt. Cistern now
-pays each fighter occupant two bank spice after ordinary advisor releases, and
-Orgiz resolves each fighter occupant in original storm order, taking one spice
-from the unique rival collector of a qualifying deposit. An empty purse pays
-nothing, creates no debt and never blocks ordinary Collection. Advanced keeps
-the supplied territory-Collection trigger; Basic keeps the provisional
-positive-deposit mapping. A lone advisor still never qualifies.
+Recommended-option priority: Advanced Orgiz now chooses one definite actual
+foreign collected-sector payer per territory in original storm order, skipping
+self and empty purses. Multiple source keys never multiply a territory charge.
+Owners also resolve in original storm order; an earlier owner can exhaust a
+purse, so later owners consider the next eligible actual collector. A sector
+with an ambiguous collector still withholds its territory effect.
 
-Advanced shared-Ecaz lots now settle after their real bilateral allocation:
-each occupant takes one spice from the first actual positive foreign recipient
-(Ecaz first, then ally), never from a zero share, the occupant itself, an old
-wallet or beyond that recipient’s available spice. Total spice is conserved by
-the transfer and only the real collected lot is credited.
+Cistern pays every fighter occupant two bank spice after ordinary advisor
+releases. Basic Orgiz keeps the provisional positive-deposit mapping. Shared
+Advanced Ecaz desert lots wait for actual bilateral allocation, then consider
+positive foreign recipients Ecaz first, ally second. No debt is created.
+Occupant/payer ordering is a provisional recommended interpretation, not a
+new publisher ruling or separately answered numerical user question.
 
-BEFORE the two-occupant cases withheld their benefit; the shared Advanced branch
-was explicitly unpaid. AFTER both are connected through the engine’s own
-Collection path. Two superseded expectation tests and one wording assertion were
-deleted rather than re-pinned; the exhausted Cistern/Orgiz guards and their
-instructions were rewritten.
+Evidence correction for `388c5fa`: its shared fixture directly repositioned
+armies/spice, fabricated alliance/phase fields and cleared physical hands.
+It was not a genuine native route. Its claimed app-build success was also not
+observed. Those claims are superseded, not used as current acceptance.
 
-Evidence uses genuine paths only: original Ecaz/Guild/Fremen (or Station)
-Advanced lobbies, real stage/phase controls, paid shipments, Collection
-inspection and reveal, next-turn free entry, a real worm Nexus alliance and the
-engine’s own allocation protocol. Conserved unplayed Spice Card order, printed
-supply tokens and counter positions are the only staging. Cases cover equal,
-propose and zero splits, first-eligible recipient, two owners with a single
-available spice, lone-advisor exclusion, JSON normalization and deterministic
-re-settlement.
+The replacement preserves original forces, wallets, cards, alliances and
+phases. Original unplayed desert-card order and the actual token lottery are
+the only staging. Real setup, token reveal, free entry, worm alliance, Ecaz
+departure and fresh paid Ecaz/Guild shipments produce the original shared
+allocation. Rock terrain cannot create that lot. The third-party Collector
+fixture now uses a definite Emperor shipment to an actual empty non-storm
+deposit rather than catching arbitrary failures or selecting an Orgiz owner.
+Wording and deterministic-copy assertions were removed. Meaningful cases
+cover payer order/depletion, self/zero-share exclusion, acceptance timing,
+wrong actor and stale allocation.
 
-Final related17-file union127/127, five consecutive randomised runs8/8, types/
-lint and app build pass with existing module-registration, chunk-size and
-route-classification warnings. Contested Cistern/Orgiz ownership, Ecaz
-shared-lot theft ordering variants, complete modules and deployed acceptance
-remain open.
+Current final three-file union27/27; types/lint and app build pass. Actual
+390×844 GameTable proof: original Funeral Plain lot4, proposal4/0 leaves
+Ecaz7/Guild11 unchanged; Guild acceptance produces Ecaz10/Guild12 and one
+Orgiz transfer, no remaining decision and enabled Ready. No horizontal
+overflow; a fresh settled surface has no application errors. Initial temporary
+QA middleware order was corrected before interaction. Local proof is outside
+Git; owned hosts/tabs/scaffolding were removed. Existing DEP0205, large-chunk
+and route-classification build warnings remain. Ambiguous collected-sector
+payers, full modes, combined-module and deployed acceptance remain open.
 
 
 

@@ -513,24 +513,48 @@ void test('Advanced counts each territory once across positive partial sector co
   }
 });
 
-void test('Advanced withholds a territory with distinct collected payers, including an own collection, but not independent theft', () => {
+void test('Advanced selects one actual foreign territory collector in storm order, skipping own collections', () => {
   for (const second of ['a', 'g']) {
     const game = fixture(true);
     reveal(game, ORGIZ_PROCESSING_STATION);
     game.players[0].forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
     game.players[1].forces = { 'hagga_basin:12': 1, 'red_chasm:7': 1 };
     game.players.find(player => player.id === second)!.forces['hagga_basin:13'] = 1;
+    game.order = ['a', 'g', 'h'];
     game.spice = { 'hagga_basin:12': 3, 'hagga_basin:13': 2, 'red_chasm:7': 2 };
     const { ordinary, discovery } = composed(game);
+    const payer = second === 'a' ? 'h' : 'g';
     assert.deepEqual(discovery.effects, [{
+      kind: 'orgiz', player: 'a', from: payer,
+      location: second === 'a' ? 'hagga_basin:12' : 'hagga_basin:13',
+      amount: 1, source: 'player',
+    }, {
       kind: 'orgiz', player: 'a', from: 'h', location: 'red_chasm:7',
       amount: 1, source: 'player',
     }]);
-    assert.equal(balance(discovery, 'a'), ordinary.receipts[0].balance + 1);
-    assert.equal(balance(discovery, 'h'), ordinary.receipts[1].balance - 1);
-    assert.equal(balance(discovery, 'g'), ordinary.receipts[2].balance);
+    assert.equal(balance(discovery, 'a'), ordinary.receipts[0].balance + 2);
+    assert.equal(balance(discovery, 'h'), ordinary.receipts.find(r => r.player === 'h')!.balance - (payer === 'h' ? 2 : 1));
+    assert.equal(balance(discovery, 'g'), ordinary.receipts.find(r => r.player === 'g')!.balance - (payer === 'g' ? 1 : 0));
     assert.equal(ordinary.spice['hagga_basin:13'], 0);
   }
+});
+
+void test('Advanced falls through to the next actual collector when an earlier Orgiz owner exhausts the first purse', () => {
+  const game = fixture(true, [['a', 'atreides'], ['h', 'harkonnen'], ['g', 'guild'], ['e', 'emperor']]);
+  reveal(game, ORGIZ_PROCESSING_STATION);
+  game.order = ['a', 'g', 'h', 'e'];
+  game.players.find(p => p.id === 'a')!.forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
+  game.players.find(p => p.id === 'g')!.forces = { [`${ORGIZ_PROCESSING_STATION}:0`]: 1 };
+  game.players.find(p => p.id === 'h')!.forces = { 'hagga_basin:12': 1 };
+  game.players.find(p => p.id === 'e')!.forces = { 'hagga_basin:13': 1 };
+  game.spice = { 'hagga_basin:12': 1, 'hagga_basin:13': 2 };
+  const { discovery } = composed(game);
+  assert.deepEqual(discovery.effects, [
+    { kind: 'orgiz', player: 'a', from: 'h', location: 'hagga_basin:12', amount: 1, source: 'player' },
+    { kind: 'orgiz', player: 'g', from: 'e', location: 'hagga_basin:13', amount: 1, source: 'player' },
+  ]);
+  assert.equal(balance(discovery, 'h'), 0);
+  assert.equal(balance(discovery, 'e'), 1);
 });
 
 void test('Advanced does not select a payer from an uncontested sector when another collected sector is contested', () => {
