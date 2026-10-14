@@ -185,6 +185,7 @@ for (const advanced of [false, true]) for (const kind of ['emperor', 'fremen'] a
     assert.equal(history.length, 1); assert.equal(history[0].owner, fixture.owner);
     if (kind === 'emperor') {
       const receipt = paid.nexusEmperorSecretHistory![0];
+      assert.ok(receipt.after, 'The requested Nexus return must settle before physical receipt consumption.');
       assert.equal(receipt.before.tanks - receipt.after.tanks, 3);
     } else {
       const grant = paid.nexusFremenRevivalHistory![0];

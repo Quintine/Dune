@@ -88,10 +88,12 @@ export function NexusEmperorSecretAlly({
     <section className="min-w-0 space-y-3" aria-label="Emperor Secret Ally revival">
       <h3 className="font-serif text-xl">Emperor Secret Ally</h3>
       <p className="text-base leading-7">
-        Spend the Emperor Nexus card to revive 3 additional forces for free,
-        beyond your ordinary revival quota. The elite cap still applies.
+        Spend the Emperor Nexus card to request exactly 3 additional forces for free
+        through the normal revival continuation, beyond ordinary force/free allowances.
+        Native typed caps and prevention still apply; Recruits does not double this grant.
       </p>
       {offer.revival.blocked && <p className="notice">{offer.revival.blocked}</p>}
+      {offer.revival.policy && <p className="notice">{offer.revival.policy}</p>}
       {options.length > 1 && (
         <label className="block space-y-2">
           <span className="font-semibold">Elite forces to revive</span>

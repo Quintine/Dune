@@ -44,7 +44,7 @@ import { quoteNexusMoritaniRetention, nexusMoritaniRetentionSignature, type Nexu
 import { quoteNexusChoamBetrayal, validateNexusChoamBetrayal, nexusChoamBetrayalSignature, type NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySignature, validateEcazInquiry, type EcazInquiryReceipt } from './nexus-ecaz-inquiry';
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
-import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
+import { EMPEROR_NEXUS_REVIVALS, emperorNexusModeSupported, quoteEmperorNexusRevival, createEmperorNexusRevival, settleEmperorNexusRevival, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
 import { createEmperorPaymentReceipt, validateEmperorPaymentReceipt, emperorPaymentUseBlock, emperorPaymentSourceQuote, requiredEmperorPaymentResponders, emperorPaymentReceiptSignature, type EmperorPaymentReceipt } from './nexus-emperor-payment';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, createFremenNexusRevival, upgradeFremenNexusRevival, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
@@ -878,6 +878,7 @@ export type Decision =
       player: string;
       recipient: string;
       revival: 'forces' | 'leader';
+      source?: 'nexusEmperor';
     }
   | {
       kind: 'faceDance';
@@ -2731,12 +2732,13 @@ function emperorNexusUniformAuctionPayment(g: Game): boolean {
 function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
   const p = g.players.find(p => p.id === owner);
   if (!p || g.nexusCards?.cards?.hands[owner] !== 'emperor' || byFaction(g,'emperor')) return null;
+  const revival = quoteEmperorNexusRevival(g, owner);
   const purchasing = g.status === 'playing' && g.phase === 3 &&
     g.decision?.kind === 'auctionPayment' && g.decision.player === owner &&
     g.auction?.bidder === owner && !g.currentAuctionSale;
   const event = purchasing
     ? emperorNexusPurchaseEvent(g.turn,owner,g.nexusEmperorPurchaseHistory?.length ?? 0,g.auction!.index,g.auction!.bid)
-    : emperorNexusEvent(g.turn,g.phase,owner,g.nexusEmperorSecretHistory?.length ?? 0);
+    : revival.event;
   let purchase: {blocked:string|null;price:number}|null = null;
   if (purchasing) {
     let purchaseBlock:string|null = null;
@@ -2757,31 +2759,25 @@ function nexusEmperorSecretAllyOffer(g:Game,owner:string) {
     }
     purchase = {blocked:purchaseBlock,price:g.auction!.bid};
   }
-  let blocked:string|null = null;
-  if (p.ally) blocked = 'Emperor Nexus Secret Ally requires an unallied holder.';
-  else if (!emperorNexusModeSupported(g)) blocked = 'Emperor Nexus Secret Ally requires a supported classic Nexus profile; expansions and unrelated modules remain pending.';
-  else if (g.status !== 'playing' || g.phase !== 4) blocked = 'Use the three-force Emperor Nexus return during Revival.';
-  else if (g.response || g.decision || g.truthtrance || g.phaseOpening || g.pendingRevival || g.pendingKarama ||
-    g.pendingTreacheryDiscard || g.pendingNullentropy || g.pendingExchange || g.pendingRicheseGift ||
-    g.pendingRichesePurchaseIncome || g.pendingAmbassador || g.pendingCapture || g.battle ||
-    g.nexusTraitorPending || g.nexusCards.phase?.stage === 'drawing') blocked = 'Finish the current interaction before using Emperor Nexus revival.';
-  else if ((g.revivalPrevention?.turn === g.turn && g.revivalPrevention.player === owner) || g.revivalRules?.freeBlocked?.includes(owner) ||
-    g.revivalRules?.expanded.includes(owner) || g.freeRevival.includes(owner))
-    blocked = 'Emperor Nexus revival with free-revival suppression or expanded revival effects remains pending.';
-  const eliteOptions = emperorNexusRevivalElites(p,g.advanced);
-  if (!blocked && !eliteOptions.length) blocked = 'Emperor Nexus needs exactly three eligible forces in Tanks; a smaller return remains pending.';
-  return {event,revival:{blocked,eliteOptions},purchase};
+  return {event,revival,purchase};
 }
 function nexusEmperorSecretIntegrity(g:Game) {
   const history = g.nexusEmperorSecretHistory, events = g.nexusEmperorSecretEvents;
   if (history === undefined)
     requireRule(events === undefined,'Emperor Nexus has lost its saved revival history.');
   else {
-    requireRule(g.nexusCards?.cards && emperorNexusModeSupported(g) && Array.isArray(history) && history.length > 0 &&
+    requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0 &&
       Array.isArray(events) && events.length === history.length && new Set(events).size === events.length,
       'Emperor Nexus has lost its physical module or independent use markers.');
     for (const [index,record] of history.entries()) {
       nexusRule(() => validateEmperorNexusRevival(g,record));
+      if (!('version' in record))
+        requireRule(emperorNexusModeSupported(g),
+          'A legacy Emperor return lost its original supported roster.');
+      else if (record.stage === 'requested')
+        requireRule(index === history.length - 1 && g.pendingRevival?.nexusEmperorEvent === record.event &&
+          g.pendingRevival.player === record.owner,
+          'The extra-three request lost its original pending revival.');
       requireRule(record.sequence === index && events[index] === record.event,
         'Emperor Nexus has duplicated or reordered a completed revival.');
     }
@@ -2812,19 +2808,27 @@ function playNexusEmperorRevive(g:Game,p:Player,action:Action) {
   requireRule(offer && !offer.revival.blocked && action.event === offer.event &&
     Object.keys(action).sort().join(',') === 'elite,event,type' && offer.revival.eliteOptions.includes(action.elite as number),
     offer?.revival.blocked ?? 'Choose the current Emperor Nexus revival and an eligible exact three-force group.');
-  const elite = action.elite as number, before = emperorNexusPools(p);
+  const record = nexusRule(() => createEmperorNexusRevival(g, p.id, action.elite as number));
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!,p.id,g.players));
-  addNativeReserves(g,p,EMPEROR_NEXUS_REVIVALS,elite); p.tanks -= EMPEROR_NEXUS_REVIVALS;
-  if (p.elites) {p.elites.tanks -= elite;p.elites.revived += elite;}
-  techIncome(g, 'axlotl', p);
-  const record:NexusEmperorRevival = {kind:'revival',event:offer.event,owner:p.id,turn:g.turn,phase:4,
-    faction:p.faction,advanced:g.advanced,
-    sequence:g.nexusEmperorSecretHistory?.length ?? 0,elite,before,after:emperorNexusPools(p),signature:''};
-  record.signature = emperorNexusSignature(record);
   (g.nexusEmperorSecretHistory ??= []).push(record);
   (g.nexusEmperorSecretEvents ??= []).push(record.event);
-  log(g,`${p.name} spent Emperor Nexus Secret Ally to return three forces${elite ? `, including ${elite} Fedaykin` : ''} from Tanks to reserves for free. Ordinary force and free-revival allowances are unchanged.`,
+  log(g, `${p.name} spent Emperor Nexus Secret Ally to request exactly three additional forces for free through the original revival continuation. Ordinary force/free allowances are unchanged; native Tleilaxu prevention applies under the provisional independent-extra-return policy.`,
     {faction:p.faction,name:'Emperor Nexus revival'});
+  beginRevival(g, { player: p.id, kind: 'forces', amount: EMPEROR_NEXUS_REVIVALS,
+    elite: record.elite, free: EMPEROR_NEXUS_REVIVALS, normalCost: 0, cost: 0,
+    checks: [], nexusEmperorEvent: record.event });
+}
+function finishNexusEmperorRevival(g: Game, revival: PendingRevival, outcome: 'returned' | 'denied') {
+  if (!revival.nexusEmperorEvent) return;
+  const history = g.nexusEmperorSecretHistory;
+  const index = history?.findIndex(record => record.event === revival.nexusEmperorEvent) ?? -1;
+  const record = history?.[index];
+  requireRule(record && 'version' in record && record.version === 2 &&
+    record.stage === 'requested' && record.owner === revival.player,
+  'The extra-three revival lost its original consumed Nexus source.');
+  history![index] = nexusRule(() => settleEmperorNexusRevival(g, record, outcome));
+  if (outcome === 'denied')
+    log(g, `${getPlayer(g, revival.player).name}'s Emperor Nexus extra return was prevented. The Nexus remains spent; no counters, payment, revival income or Tech activity was granted.`);
 }
 function playNexusEmperorPurchase(g:Game,p:Player,action:Action) {
   const offer = nexusEmperorSecretAllyOffer(g,p.id), purchase = offer?.purchase;
@@ -24280,7 +24284,8 @@ function finishRevival(
     return;
   }
   const deploymentGrant = revival.kind === 'forces'
-    ? requireHomeworldRevivalGrant(g, p, revival.emperorExtra ? 'emperorExtra' : 'normal', {
+    ? requireHomeworldRevivalGrant(g, p, revival.nexusEmperorEvent ? 'nexusEmperor' :
+      revival.emperorExtra ? 'emperorExtra' : 'normal', {
         amount: revival.amount!, elite: revival.elite ?? 0, free: revival.free,
       })
     : null;
@@ -24294,13 +24299,14 @@ function finishRevival(
   if (revival.kind === 'forces') {
     const n = revival.amount!,
       elite = revival.elite ?? 0;
-    const source = revival.emperorExtra ? 'emperorExtra' : 'normal';
+    const source = revival.nexusEmperorEvent ? 'nexusEmperor' :
+      revival.emperorExtra ? 'emperorExtra' : 'normal';
     const group = { amount: n, elite, free: revival.free };
     addNativeReserves(g, p, n, elite);
     p.tanks -= n;
     if (revival.emperorExtra)
       g.emperorExtra[p.id] = (g.emperorExtra[p.id] ?? 0) + n;
-    else {
+    else if (!revival.nexusEmperorEvent) {
       // Preserve unknown legacy usage instead of guessing how earlier paid returns were priced.
       if (p.freeForcesRevived !== undefined || p.revived === 0)
         p.freeForcesRevived = (p.freeForcesRevived ?? 0) + revival.free;
@@ -24310,6 +24316,7 @@ function finishRevival(
       p.elites.tanks -= elite;
       p.elites.revived += elite;
     }
+    finishNexusEmperorRevival(g, revival, 'returned');
     if (quote.techIncome) {
       const income = quote.techIncome;
       const token = g.techTokens![income.id];
@@ -24375,7 +24382,8 @@ function beginRevival(g: Game, revival: PendingRevival) {
     'Tleilaxu prevented this faction’s normal revivals for this turn.',
   );
   if (revival.kind === 'forces')
-    requireHomeworldRevivalGrant(g, getPlayer(g, revival.player), revival.emperorExtra ? 'emperorExtra' : 'normal',
+    requireHomeworldRevivalGrant(g, getPlayer(g, revival.player),
+      revival.nexusEmperorEvent ? 'nexusEmperor' : revival.emperorExtra ? 'emperorExtra' : 'normal',
       { amount: revival.amount!, elite: revival.elite ?? 0, free: revival.free });
   g.pendingRevival = revival;
   const choam = byFaction(g, 'choam');
@@ -24383,7 +24391,7 @@ function beginRevival(g: Game, revival: PendingRevival) {
     choam &&
     choam.id !== revival.player &&
     revival.free > 0 &&
-    !revival.emperorExtra
+    !revival.emperorExtra && !revival.nexusEmperorEvent
   ) {
     g.decision = {
       kind: 'choamFreeRevival',
@@ -28322,6 +28330,8 @@ export function executeSpecialKaramaIntent(
     discard(g, p, card.id);
     p.specialKaramaUsed = true;
     g.revivalPrevention = { player: target, turn: g.turn };
+    if (g.pendingRevival?.nexusEmperorEvent)
+      finishNexusEmperorRevival(g, g.pendingRevival, 'denied');
     g.pendingRevival = null;
     g.decision = null;
 

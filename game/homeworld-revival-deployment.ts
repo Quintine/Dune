@@ -17,6 +17,7 @@ export type HomeworldRevivalDeploymentSource =
   | 'normal'
   | 'emperorExtra'
   | 'ghola'
+  | 'nexusEmperor'
   | 'nexusTleilaxu';
 export type HomeworldRevivalDeploymentGroup = {
   amount: number;
@@ -62,7 +63,7 @@ export function quoteHomeworldRevivalDeployment(
   group: HomeworldRevivalDeploymentGroup,
 ): HomeworldRevivalDeploymentQuote | null {
   if (
-    !['normal', 'emperorExtra', 'ghola', 'nexusTleilaxu'].includes(source) ||
+    !['normal', 'emperorExtra', 'ghola', 'nexusTleilaxu', 'nexusEmperor'].includes(source) ||
     !group ||
     typeof group !== 'object' ||
     Array.isArray(group) ||
@@ -74,7 +75,9 @@ export function quoteHomeworldRevivalDeployment(
     group.elite > group.amount ||
     !Number.isSafeInteger(group.free) ||
     group.free < 0 ||
-    group.free > group.amount
+    group.free > group.amount ||
+    (source === 'nexusEmperor' &&
+      (group.amount !== 3 || group.free !== 3))
   )
     throw new HomeworldCustodyError(
       'Revival deployment needs a valid source and exact newly returned physical group.',

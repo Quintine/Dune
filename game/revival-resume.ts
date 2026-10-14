@@ -11,6 +11,11 @@ import { TECH_TOKENS, ownedTech } from './tech-tokens';
 import { tleilaxuHomeworldFreeIncomeBlocked } from './homeworld-benefits';
 import { DUKE_VIDAL_ID } from './duke-vidal';
 import { resolveEcazDukeRevival } from './ecaz-duke-revival';
+import {
+  emperorNexusPools,
+  validateEmperorNexusRevival,
+} from './nexus-emperor-secret-ally';
+import { validateNexusCards } from './nexus-cards';
 
 export type RevivalResumeContext = Pick<
   Game,
@@ -18,6 +23,7 @@ export type RevivalResumeContext = Pick<
   | 'phase'
   | 'turn'
   | 'advanced'
+  | 'expansions'
   | 'homeworlds'
   | 'homeworldRevival'
   | 'players'
@@ -29,6 +35,9 @@ export type RevivalResumeContext = Pick<
   | 'revivalFreeIncome'
   | 'dukeVidal'
   | 'revivalRequests'
+  | 'nexusCards'
+  | 'nexusEmperorSecretHistory'
+  | 'nexusEmperorSecretEvents'
 >;
 export type RevivalResumeQuote = {
   /** The frozen request, including the unshifted remaining check queue. */
@@ -55,6 +64,84 @@ function requireResume(condition: unknown, message: string): asserts condition {
 }
 const count = (value: unknown): value is number =>
   Number.isSafeInteger(value) && (value as number) >= 0;
+/** The independent source carries its own event marker and nothing else. */
+const nexusEmperorPendingKeys: Record<string, true> = {
+  player: true,
+  kind: true,
+  amount: true,
+  elite: true,
+  free: true,
+  cost: true,
+  normalCost: true,
+  checks: true,
+  nexusEmperorEvent: true,
+};
+
+/** The consumed card authorizes only its one still-requested frozen source.
+ * Historical returned/denied receipts never authorize another pending revival. */
+function validateNexusEmperorSource(
+  g: RevivalResumeContext,
+  pending: PendingRevival,
+): void {
+  const event = pending.nexusEmperorEvent;
+  requireResume(
+    typeof event === 'string' && event.length > 0 &&
+      Object.keys(pending).every((key) => nexusEmperorPendingKeys[key]) &&
+      pending.kind === 'forces' && pending.amount === 3 &&
+      Number.isSafeInteger(pending.elite) && pending.elite! >= 0 &&
+      pending.elite! <= 3 && pending.free === 3 &&
+      pending.cost === 0 && pending.normalCost === 0 &&
+      pending.payer === undefined && pending.emperorExtra === undefined &&
+      pending.leader === undefined && Array.isArray(pending.checks) &&
+      pending.checks.length === 0,
+    'The Emperor Nexus source needs its original exact-three free request.',
+  );
+  const owner = g.players.find((p) => p.id === pending.player);
+  const history = g.nexusEmperorSecretHistory;
+  const events = g.nexusEmperorSecretEvents;
+  requireResume(
+    owner && !owner.ally &&
+      !g.players.some((p) => p.faction === 'emperor') &&
+      Array.isArray(history) && Array.isArray(events) &&
+      history.length === events.length &&
+      new Set(events).size === events.length &&
+      history.every((receipt, index) =>
+        receipt && typeof receipt === 'object' &&
+        receipt.event === events[index] && receipt.sequence === index) &&
+      history.filter((receipt) => receipt.event === event).length === 1,
+    'The Emperor Nexus request has lost its original owner or source history.',
+  );
+  const receipt = history.find((entry) => entry.event === event)!;
+  const currentPools = emperorNexusPools(owner);
+  requireResume(
+    receipt.version === 2 && receipt.stage === 'requested' &&
+      receipt.owner === owner.id && receipt.turn === g.turn &&
+      receipt.phase === g.phase && receipt.elite === pending.elite &&
+      receipt.after === null &&
+      receipt.before && Object.entries(currentPools).every(([key, value]) =>
+        receipt.before[key as keyof typeof currentPools] === value) &&
+      history.at(-1) === receipt &&
+      history.filter((entry) =>
+        entry.version === 2 && entry.stage === 'requested').length === 1,
+    'The Emperor Nexus request does not match its still-requested physical source.',
+  );
+  try {
+    validateEmperorNexusRevival(g, receipt);
+    const cards = g.nexusCards?.cards;
+    requireResume(cards,
+      'The Emperor Nexus request has lost its consumed physical card.');
+    validateNexusCards(cards, g.players);
+    requireResume(
+      cards.hands[owner.id] === null && cards.discard.includes('emperor'),
+      'The Emperor Nexus request has lost its consumed physical card.',
+    );
+  } catch (error) {
+    if (error instanceof RevivalResumeError) throw error;
+    throw new RevivalResumeError(
+      error instanceof Error ? error.message : 'The Emperor Nexus source is invalid.',
+    );
+  }
+}
 
 /** Only the next deterministic continuation is quoted. A genuine stop decision
  * or benefit response is a boundary, even when the outer automatic-response
@@ -105,6 +192,14 @@ export function quoteRevivalResume(
       : original.payer === undefined,
     'The pending revival has an invalid Emperor funding source.',
   );
+  requireResume(
+    !g.nexusEmperorSecretHistory?.some((receipt) =>
+      receipt.version === 2 && receipt.stage === 'requested') ||
+      original.nexusEmperorEvent !== undefined,
+    'The requested Emperor Nexus source is missing from its pending revival.',
+  );
+  if (original.nexusEmperorEvent !== undefined)
+    validateNexusEmperorSource(g, original);
   if (original.kind === 'forces') {
     requireResume(
       count(original.amount) &&
@@ -121,7 +216,8 @@ export function quoteRevivalResume(
     // ordinary revival usage. Validate the accepted group's free allocation
     // before settlement crosses a population threshold. A later independent
     // request gets the rate at its own declaration.
-    if (g.homeworlds && !original.emperorExtra)
+    if (g.homeworlds && !original.emperorExtra &&
+      original.nexusEmperorEvent === undefined)
       requireResume(
         original.free ===
           Math.min(original.amount, freeRevivalRemaining(g, p)),
@@ -131,7 +227,7 @@ export function quoteRevivalResume(
     const freeCyborgs = paid * 2 + elite - original.normalCost;
     requireResume(
       count(paid * 2) &&
-        (p.faction === 'ixians'
+        (p.faction === 'ixians' && original.nexusEmperorEvent === undefined
           ? count(freeCyborgs) &&
             freeCyborgs >=
               Math.max(0, original.free - (original.amount - elite)) &&
@@ -152,6 +248,7 @@ export function quoteRevivalResume(
         original.amount === undefined &&
         original.elite === undefined &&
         !original.emperorExtra &&
+        original.nexusEmperorEvent === undefined &&
         (original.kind === 'kwisatz'
           ? g.advanced &&
             p.faction === 'atreides' &&
@@ -189,7 +286,8 @@ export function quoteRevivalResume(
             allowed.indexOf(check) >
               allowed.indexOf(original.checks[index - 1])),
       ) &&
-      (!original.emperorExtra || original.checks.length === 0) &&
+      (!(original.emperorExtra || original.nexusEmperorEvent !== undefined) ||
+        original.checks.length === 0) &&
       original.checks.every((check) => check === 'choamRevival' || !!tleilaxu),
     'The pending revival has invalid ordered benefit checks or no benefit owner.',
   );
@@ -214,6 +312,7 @@ export function quoteRevivalResume(
     if (
       pending.kind === 'forces' &&
       !pending.emperorExtra &&
+      pending.nexusEmperorEvent === undefined &&
       p.faction === 'fremen'
     ) {
       requireResume(
@@ -306,17 +405,14 @@ export function quoteRevivalResume(
       }
     }
   }
-  if (stop)
-    return {
-      ...quote,
-      outcome: 'decision',
-      nextDecision: {
-        kind: 'revivalStop',
-        player: tleilaxu.id,
-        recipient: p.id,
-        revival: pending.kind === 'forces' ? 'forces' : 'leader',
-      },
+  if (stop) {
+    const nextDecision: NonNullable<RevivalResumeQuote['nextDecision']> = {
+      kind: 'revivalStop', player: tleilaxu.id, recipient: p.id,
+      revival: pending.kind === 'forces' ? 'forces' : 'leader',
     };
+    if (pending.nexusEmperorEvent) nextDecision.source = 'nexusEmperor';
+    return { ...quote, outcome: 'decision', nextDecision };
+  }
   if (check)
     return {
       ...quote,

@@ -1,8 +1,9 @@
 # Emperor Nexus Secret Ally revival and bank-auction purchase
 
-27 September 2026. **Prototyped**, with **Partial** rules coverage. These
-separate Secret Ally alternatives connect in Basic and Advanced classic-faction
-games with Nexus alone. Public module starts and publication remain gated.
+Updated 14 October 2026. **Prototyped**, with **Partial** rules coverage.
+Revival now uses the independent extra source through original native pending
+continuations and supported Nexus module envelopes. Bank-auction purchase keeps
+its distinct classic-only boundary. Public starts and publication remain gated.
 
 ## Rules and connected behavior
 
@@ -15,22 +16,24 @@ action does not itself end that phase or invent a new card deadline.
 [Printed cards](https://boardgamegeek.com/image/7767032/dune-ecaz-and-moritani),
 [source audit](NEXUS_EMPEROR_RULES.md#secret-ally-three-additional-free-revivals)
 
-The ordinary Advanced one-per-turn special-force revival cap remains in force.
-For this roster, that means Fedaykin. The holder chooses among legal normal/elite
-groups totaling exactly three; one printed counter cannot become two forces.
-Fewer than three eligible counters remains a recorded source gap, not an implicit
-up-to-three option. Recruits, Tleilaxu income/prevention, CHOAM suppression,
-Homeworld deployment and other combined-module producers remain outside this
-batch. A different player's ordinary Fremen ally grant does not block the holder.
-[November FAQ, p. 2](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2)
+The Advanced one-per-turn Fedaykin cap remains; native Ix Cyborgs use their
+separate physical count cap. Select actual normal/elite groups totaling exactly
+three. Fewer than three remains unavailable, not an implicit up-to grant.
+Recruits changes the ordinary rate/limit, not this fixed extra count.
+[Independent-source interpretation and changed-path proof](NEXUS_EMPEROR_RULES.md#recommended-independent-extra-return--14-october-2026).
 
-The engine consumes the physical Nexus and moves the exact force group in one
-action. A private receipt records the original pools, mode and conserved delta;
-independent event markers reject missing, duplicated or reordered history.
-Historical pools are not compared with all later current pools: ordinary revivals,
-Ghola and later battles can legitimately change them. The current card and event
-must still authorize a fresh use. Saved views never expose that receipt or rival
-hands/spice. The private offer creates no table-wide decision or forced pass.
+The card is consumed at declaration, before original pending revival.
+Version-two receipts track requested (no forces yet), returned or denied.
+Native Tleilaxu Allow/Prevent, actual typed reserves, once-only free income,
+Axlotl activity and original Homeworld handling settle the same physical group.
+Prevention remains a visibly provisional composition; ordinary LaLaLa/free
+rates do not reprice this independent extra source. No ordinary force/free or
+native Emperor allied-extra usage grows, and no leader/payer/refund is invented.
+Denial retains both spent cards and returns no forces/income/Tech. Original
+Southern Hemisphere can place the actual returned Fedaykin; Tleilax's ordinary
+Free Revival deployment is not extended to an independently free producer.
+Strict old completed physical receipts stay readable without replay.
+Historical snapshots do not require later pools/wallets to remain unchanged.
 
 All four AI profiles use the same projected legal choices. The UI supplies a
 physical elite selector only when it offers a real choice, shows unavailability

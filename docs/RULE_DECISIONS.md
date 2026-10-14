@@ -66,6 +66,20 @@ These decisions do not open public module/faction or complete-mode gates.
 
 These decisions do not open public module/faction or complete-mode gates.
 
+## Recommended Emperor independent extra return — 14 October 2026
+
+The conservative composition keeps exactly three additional physical forces
+outside ordinary total/free and native Emperor allied-extra usage, with no
+Recruits doubling or ordinary free-rate repricing. Native Tleilaxu prevention
+and once-only actual free-return income still apply. Declaration spends the
+Nexus; native denial spends its Karama and returns no forces/income/Tech,
+without refund. No absent-native-Emperor payment or extra Karama response
+is invented. Original typed deposits and eligible new Fedaykin deployment
+continue; Tleilax's ordinary Free Revival deployment is not relabelled.
+Visibly provisional source composition, not publisher clarification or a
+separately answered numerical user ruling.
+[Native source lifecycle and proof](NEXUS_EMPEROR_RULES.md#recommended-independent-extra-return--14-october-2026).
+
 ## Recommended Emperor compulsory funding — 14 October 2026
 
 The content-first conservative prototype forces exactly the original full

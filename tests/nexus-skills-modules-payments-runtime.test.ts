@@ -87,6 +87,7 @@ for (const config of configurations) {
       assert.equal(paid.nexusCards!.cards!.discard.filter(card => card === (kind === 'emperor-revival' ? 'emperor' : 'fremen')).length, 1);
       if (kind === 'emperor-revival') {
         const receipt = paid.nexusEmperorSecretHistory![0];
+        assert.ok(receipt.after, 'The requested Nexus return must settle before physical receipt consumption.');
         assert.equal(receipt.owner, f.actor); assert.equal(receipt.turn, 2); assert.equal(receipt.phase, 4);
         assert.equal(receipt.before.tanks - receipt.after.tanks, 3);
         assert.equal(receipt.before.spice, receipt.after.spice);

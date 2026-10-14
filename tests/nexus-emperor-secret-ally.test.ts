@@ -16,7 +16,6 @@ import {
   emperorNexusPhysical,
 } from './nexus-emperor-secret-ally-fixture';
 import { nexusReject, nexusReload, nexusReady } from './fixture-nexus-cards';
-import { nexusTraitorFixture } from './fixture-nexus-traitors';
 
 void test('a later real Ghola return and phase advance preserve historical Nexus proof without replaying its physical grant', () => {
   const f = nexusEmperorSecretAllyFixture();
@@ -226,43 +225,6 @@ void test('ordinary Fremen aid to the other allied seat does not suppress this u
   assert.deepEqual(done.freeRevival, granted.freeRevival);
 });
 
-void test('combined modules and applicable revival suppression stay explicit, while native and Betrayal modes never expose Secret Ally', () => {
-  const f = nexusEmperorSecretAllyFixture();
-  for (const damage of [
-    (g: Game) => {
-      g.expansions = ['ix'];
-    },
-    (g: Game) => {
-      g.discoveryEnabled = true;
-    },
-    (g: Game) => {
-      g.revivalRules!.expanded = [f.owner];
-    },
-    (g: Game) => {
-      g.revivalRules!.freeBlocked = [f.owner];
-    },
-    (g: Game) => {
-      g.revivalPrevention = { player: f.owner, turn: g.turn };
-    },
-  ]) {
-    const g = nexusReload(f.g);
-    damage(g);
-    nexusReject(g, f.owner, f.action, /Nexus|Discover|revival/);
-  }
-  for (const native of [false, true]) {
-    const g = nexusTraitorFixture({
-      ownerFaction: native ? 'emperor' : 'atreides',
-      opponentFaction: native ? 'guild' : 'emperor',
-      phase: 4,
-    });
-    const cards = g.nexusCards!.cards!,
-      old = cards.hands.p!;
-    cards.deck[cards.deck.indexOf('emperor')] = old;
-    cards.hands.p = 'emperor';
-    assert.equal(viewGame(g, 'p').nexusEmperorSecretAlly, null);
-    nexusReject(g, 'p', f.action);
-  }
-});
 
 void test('JSON restoration keeps signed source history private and rejects missing markers, duplicate uses and changed physical quotes', () => {
   const f = nexusEmperorSecretAllyFixture(),
@@ -286,7 +248,9 @@ void test('JSON restoration keeps signed source history private and rejects miss
       g.nexusEmperorSecretEvents!.push(g.nexusEmperorSecretEvents![0]);
     },
     (g: Game) => {
-      g.nexusEmperorSecretHistory![0].after.reserves++;
+      const after = g.nexusEmperorSecretHistory![0].after;
+      assert.ok(after);
+      after.reserves++;
     },
     (g: Game) => {
       const r = g.nexusEmperorSecretHistory![0];

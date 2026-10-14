@@ -136,13 +136,15 @@ function validateOriginal(frame: Original): void {
     !text(frame.player) ||
     !count(frame.turn, 1, Number.MAX_SAFE_INTEGER) ||
     !count(frame.phase, 0, 8) ||
-    !['normal', 'emperorExtra', 'ghola', 'nexusTleilaxu'].includes(frame.source) ||
+    !['normal', 'emperorExtra', 'ghola', 'nexusTleilaxu', 'nexusEmperor'].includes(frame.source) ||
     (frame.source === 'ghola' ? !text(frame.card) : frame.card !== undefined) ||
     !keys(frame.group, ['amount', 'elite', 'free']) ||
     !count(frame.group.amount, 1) ||
     !count(frame.group.elite, 0, frame.group.amount) ||
     !count(frame.group.free, 0, frame.group.amount) ||
-    (frame.source !== 'normal' && frame.group.free !== 0) ||
+    (frame.source === 'nexusEmperor'
+      ? frame.group.amount !== 3 || frame.group.free !== 3
+      : frame.source !== 'normal' && frame.group.free !== 0) ||
     !keys(frame.quote, [
       'kind',
       'normal',

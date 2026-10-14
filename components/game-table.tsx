@@ -3022,6 +3022,13 @@ export function GameTable({
                     to prevent their normal force and leader revivals for this
                     turn.
                   </p>
+                  {g.decision.source === 'nexusEmperor' && (
+                    <p className="notice">
+                      Provisional policy: this pending Emperor Nexus extra return also
+                      requires your clearance. Prevention returns no counters or revival
+                      income; both the Nexus and your special Karama remain spent.
+                    </p>
+                  )}
                   <HelpTip topic="tleilaxuSpecial" />
                   {g.revival.specialKaramaBlock && (
                     <p role="status">{g.revival.specialKaramaBlock}</p>

@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 14 October 2026 — Emperor Nexus original extra-return continuation
+
+Replaced direct physical transfer with a fixed-three source entering original
+pending revival after actual Nexus disposal. Version-two requested/returned/
+denied receipts retain strict event/index/signature and actual typed delta;
+old completed records remain evidence without replay. Ordinary total/free and
+native Emperor allied-extra usage stay unchanged. Independent-source policy
+keeps native Tleilaxu prevention/income, ignores ordinary free-rate repricing/
+Recruits doubling, and grants no leader/missing provider/refund. Denial keeps
+both spent cards without physical return, income or Tech. Native owner sees
+the provisional source on its original clearance control.
+
+Original typed reserve, once-only Axlotl and Homeworld paths now accept the
+source. Native Cyborg count caps survive; new Fedaykin can deploy through
+Southern Hemisphere. Tleilax ordinary Free Revival placement is not fabricated
+for an independently zero-cost grant. Signed snapshots settle before later
+native income/placement; later pools/wallets need not equal old snapshots.
+
+Genuine setup, real paid shipments/battles, worm/pact/closing draw and Revival
+produce classic, Tleilaxu, Ix and Fedaykin sources. Wrong Card.kind Karama
+selection was repaired with a conserved original undealt effect selector.
+Test-only constructor expansion admission, mismatched post-declaration ledger
+and orphaned source fixtures were repaired without changing legality. A false
+postbattle wallet pin ignored automatic Collection and was deleted. Native Ix
+requests an actually affordable follow-on, without minting spice. Legal Fremen
+reinforcement uses Sietch Tabr and native zero-support dial6/5; initial out-of-
+range and paid-support assumptions were corrected in the producer only.
+Obsolete guard, SSR wording, action-copy and decision/default pins are deleted,
+not re-pinned; current consumers require completed physical receipts.
+
+Affected16-file union266/266 and types/lint/build pass. Fourteen actual API
+profiles reach Movement, including native Homeworld deposits and Basic/Advanced
+Fedaykin source placement. Actual390px Allow returns3/free-income1/Axlotl1
+without ordinary usage; normal3 then costs2 and pays native income2 without
+repeating bank/Tech bonuses. Prevent spends both cards and commits denied with
+unchanged pools/wallets/Tech. Actual returned star places once at Sietch Tabr14:
+Tanks5→2/reserves4→7→6, ordinary/free0, spice3, native income1. No overflow or
+browser errors; no saved/deployed room is touched. Original publication,
+whole-mode, broader combinations and assurance gates remain.
+[Canonical source contract](NEXUS_EMPEROR_RULES.md#recommended-independent-extra-return--14-october-2026).
+Owned QA host/tab/scaffolding is removed; API/phone receipts remain outside Git.
+Existing build route-classification/chunk-size warnings remain.
+
 ## 14 October 2026 — Emperor Nexus original compulsory purchase
 
 Connected original positive normal-auction allied obligation through a neutral

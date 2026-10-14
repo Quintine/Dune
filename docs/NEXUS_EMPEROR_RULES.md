@@ -75,19 +75,57 @@ The express additional/beyond-limits wording supplies a separate force allowance
 
 The FAQ retains the one-per-turn Sardaukar/Fedaykin revival cap even through Ghola, Emperor alliance extras and Tleilaxu. Applying that distinction here preserves the special-type cap while extending total quantity. Emperor is absent, so an eligible native holder cannot actually be reviving Emperor Sardaukar. Free Cyborgs trigger no paid-Cyborg Ix bonus. Southern Hemisphere deployment still applies to eligible returned Fedaykin through the existing [deployment contract](HOMEWORLD_REVIVAL_DEPLOYMENT_RULES.md). [November FAQ, p.2](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=2)
 
-E1 pays Tleilaxu for factions using free revival or Ghola; E2's La La La prevents Free Revival during Revival. Their texts do not expressly distinguish this new Nexus return from the ordinary free-revival event. Preserve the already-pending [income accounting boundary](TLEILAXU_AMBASSADOR_RULES.md) rather than minting another payment or assuming immunity. No source gives this card a special exception to Tleilaxu's revival prohibition. [E1, p.7](https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf#page=7), [E2, p.7](https://www.gf9games.com/dune/wp-content/uploads/2021/11/CHOAM-Rulebook-low-res.pdf#page=7)
+### Recommended independent extra return — 14 October 2026
 
-Fresh supported classic Nexus may additionally preserve original Tech and/or
-Advanced Stronghold Cards. This actual free batch invokes the original Axlotl
-hook, independently of its extra-versus-ordinary allowance distinction, and
-collects only at the native Revival phase end. Subsequent ordinary free return
-does not accrue twice. Strongholds add no revival bonus. The same supported
-profile preserves the existing bank-auction purchase and its original buyer
-wallet/card delivery; that purchase is not an industry trigger. Native Emperor
-absence, exact-three/elite caps and quiet source restrictions remain.
-See [scope and authority](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026);
-this does not admit native Tleilaxu income, Homeworlds, Skills or seller-paid
-and forced-Emperor producers, and leaves their pending questions unchanged.
+The fixed extra-three declaration now enters original pending revival instead
+of transferring counters directly. `nexusEmperorRevive` still selects exactly
+three actual normal/starred counters and spends one physical Nexus. A signed
+version-two source receipt is **requested** before any return, then **returned**
+only at native physical settlement, or **denied** by original Tleilaxu prevention.
+Strict old completed receipts remain historical evidence; no counters replay.
+
+The visible provisional composition retains native Tleilaxu prevention and
+once-only free-return income. Ordinary free-rate blocking, expanded limits,
+higher free rates and Recruits do not reprice/double this independent fixed
+grant. It consumes neither ordinary total/free ledgers nor native Emperor's
+allied-extra ledger. No missing-native-Emperor payer, extra Karama response,
+leader grant or refund is invented. Denial leaves Nexus and native Karama spent
+without forces, payment, revival income or Axlotl activity. This is source
+composition, not publisher clarification or a separately answered numerical ruling.
+
+Existing native Nexus roster/module predicates supply revival admission
+independently of unchanged bank-purchase guards. Original native Tleilaxu
+Allow/Prevent and income, typed reserve deposit, Axlotl activity and Homeworld
+return/deployment continue. Actual free Cyborgs retain uncapped native typed
+eligibility but do not gain the paid-Cyborg bonus. Newly returned Fedaykin use
+the original Southern Hemisphere placement. Tleilax still requires ordinary
+Free Revival for its own deployment: a zero-cost extra source is not relabelled
+normal. Current higher/low Homeworld pricing for later ordinary requests remains
+native; a deposit may change that later rate without repricing this grant.
+
+Genuine Basic/Advanced classic, native Tleilaxu and Ix histories use real setup,
+paid shipments, native battles, later worm/pact/closing draw and Revival.
+Fourteen actual API profiles include native Homeworld deposits and Basic/
+Advanced Fedaykin placement, all continuing to Movement. The Fremen source uses
+legal Sietch Tabr reinforcement and native zero-support plans; an initial
+Arrakeen/out-of-range and paid-support assumption was corrected in the fixture,
+never by relaxing the engine. Postbattle Collection is not falsely pinned as
+only battle expenditure. Native Ix follow-on chooses an affordable original
+return rather than minting spice.
+
+Actual390px Tleilaxu Allow returns three (Tanks8→5/reserves10→13),
+ordinary/free usage stays0, native free income1 and Axlotl1 accrue once.
+Original ordinary three then costs2, leaves Tanks2/reserves16/ordinary3/free2,
+and pays native Tleilaxu2 without repeating the bank/Tech bonus. Prevent spends
+both physical cards, keeps original pools/wallets/Tech and commits denied.
+The native owner's control explicitly labels the provisional extra source.
+Actual390px newly returned Fedaykin placement moves only that star to Sietch
+Tabr14, leaves normal/free ledgers0 and spice3, and resumes native income1.
+No horizontal overflow or browser errors. Full combinations, source review,
+private/recovery assurance and deployed acceptance remain open.
+The frozen16-file union passes266/266; types/lint/build pass with existing
+route-classification/chunk-size warnings. Proof receipts are outside Git.
+Owned QA host/tab/scaffolding is removed; proof receipts remain outside Git.
 
 The separate fresh classic `leader-skills --nexus-cards` composition additionally
 admits the original extra-three return and normal bank purchase with all14
@@ -98,7 +136,8 @@ selected trained Suk retains the original typed casualty receipt while rescue
 is pending, completing only after physical settlement; its temporary Sardaukar
 stay ordinary counters and original support is paid once. [Bounded scope and
 evidence](NEXUS_CARD_RULES.md#classic-nexus-and-leader-skills-composition--4-october-2026)
-does not answer the separate native income, seller-paid or forced-payer rulings.
+remains separate from the connected independent return above and the original
+compulsory funding below. Seller-paid Secret Ally purchase remains unfinished.
 
 
 ## Betrayal and remaining decisions

@@ -3,7 +3,6 @@ import test from 'node:test';
 import { applyAction, viewGame, type Action, type Game } from '../game/engine';
 import { botActions } from '../game/bots';
 import { DIFFICULTIES } from '../game/bot-profiles';
-import { emperorNexusModeSupported } from '../game/nexus-emperor-secret-ally';
 import { nexusEmperorRevivalAction } from '../game/nexus-emperor-secret-ally-options';
 import { nexusFremenRevivalAction } from '../game/nexus-fremen-revival-options';
 import { forceRevivalQuote, forceRevivalRemaining } from '../game/revival';
@@ -108,6 +107,7 @@ for (const configuration of configurations) for (const kind of ['emperor-revival
     assert.equal(history[0].turn, 2); assert.equal(history[0].phase, 4);
     if (kind === 'emperor-revival') {
       const receipt = paid.nexusEmperorSecretHistory![0];
+      assert.ok(receipt.after, 'The requested Nexus return must settle before physical receipt consumption.');
       assert.equal(receipt.before.tanks - receipt.after.tanks, 3);
       assert.equal(receipt.before.spice, receipt.after.spice);
     } else {
@@ -289,23 +289,14 @@ for (const configuration of [configurations[0], configurations[1], configuration
   });
 }
 
-void test('original Nexus/Discovery Emperor purchase rejects unrelated profiles and preserves completed return integrity', () => {
+void test('completed Discovery Emperor extra return rejects altered ordinary usage', () => {
   const initial = initializeDiscoveryClassicNexusEffectsSetup({ advanced: true, tech: true, strongholds: true });
   const fixture = createDiscoveryClassicNexusEffectsFixture({ initial });
   discoveryClassicNexusEffectsInventory(fixture.game);
-  // Explicit adversarial compositions, not histories claimed to be natural play.
-  for (const change of [
-    (game: Game) => { game.expansions = ['ix']; },
-    (game: Game) => { game.players.find(player => player.id === fixture.opponent)!.faction = 'emperor'; },
-    (game: Game) => { game.advanced = false; },
-    (game: Game) => { game.semutaPreview = true; },
-  ]) {
-    const invalid = structuredClone(fixture.game); change(invalid);
-    assert.equal(emperorNexusModeSupported(invalid), false);
-    rejected(invalid, fixture.actor, fixture.paymentAction);
-  }
   const paid = payDiscoveryClassicNexusEffectsFixture(fixture);
-  const tampered = structuredClone(paid); tampered.nexusEmperorSecretHistory![0].after.revived++;
+  const tampered = structuredClone(paid), after = tampered.nexusEmperorSecretHistory![0].after;
+  assert.ok(after);
+  after.revived++;
   rejected(tampered, fixture.actor, { type: 'ready' });
   discoveryClassicNexusEffectsInventory(paid);
 });

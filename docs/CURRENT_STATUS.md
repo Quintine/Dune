@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Emperor Secret Ally original extra-return continuation — 14 October.**
+Exactly three now enters native pending revival after one Nexus spend.
+Requested/returned/denied receipts track real settlement; ordinary force/free
+and native allied-extra usage stay unchanged. Native Tleilaxu prevention/
+once-only income, actual typed reserves, Axlotl and Homeworld handling continue
+under explicit provisional independent-source policy. Recruits/ordinary free
+blocking do not reprice this fixed grant; no leader/provider/refund is invented.
+Native Ix typed counts and newly returned Fedaykin placement remain physical.
+Affected16-file union266/266, types/lint/build pass. Fourteen real API profiles
+continue to Movement, including Basic/Advanced native deposits and Fedaykin.
+Actual390px Allow→ordinary3, Prevent and Fedaykin placement prove unchanged
+ordinary usage, actual income/Tech once, denied no-return/no-refund, and one
+star to Sietch Tabr14. No overflow/browser errors; no saved/deployed room touched.
+[Canonical policy and proof](NEXUS_EMPEROR_RULES.md#recommended-independent-extra-return--14-october-2026).
+Owned QA host/tab/scaffolding is removed; proof receipts remain outside Git.
+Existing build route-classification/chunk-size warnings remain.
+
 **Emperor Nexus compulsory original purchase — 14 October.** The conservative
 provisional full-price policy now connects normal-auction Betrayal before
 winner payment, with neutral public held-Nexus storm-order acknowledgements.

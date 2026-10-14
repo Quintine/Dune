@@ -42,6 +42,7 @@ export type SingleNexusE1Options = {
   tech?: boolean;
   strongholds?: boolean;
   startingKinds?: readonly Card['kind'][];
+  startingEffects?: readonly Card['effect'][];
   collectorSkill?: LeaderSkillId;
 };
 export type SingleNexusE1Setup = {
@@ -189,7 +190,9 @@ export function createSingleNexusE1Setup(options: SingleNexusE1Options = {}): Si
     const cards = treacheryDeck(g.expansions), remaining = [...cards], prefix: Card[] = [];
     for (const [i, p] of g.players.entries()) for (let j = 0; j < (p.faction === 'harkonnen' ? 2 : 1); j++) {
       const kind = options.startingKinds?.[i] ?? (i < 5 ? 'worthless' : 'shield');
-      const at = remaining.findIndex(c => c.kind === kind); assert.ok(at >= 0); prefix.push(remaining.splice(at, 1)[0]);
+      const effect = options.startingEffects?.[i];
+      const at = remaining.findIndex(c => effect ? c.effect === effect : c.kind === kind);
+      assert.ok(at >= 0); prefix.push(remaining.splice(at, 1)[0]);
     }
     const rolls = [...(skills ? permutation(skillSource, skillOrder) : []),
       ...(discovery ? Array<number>(7).fill(0xffffffff) : []), ...Array<number>(NEXUS_FACTIONS.length - 1).fill(0xffffffff),

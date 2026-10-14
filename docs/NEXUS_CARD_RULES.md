@@ -12,6 +12,20 @@ movement, battle geometry and actual casualties stay unchanged. One original
 Karama response cancels the entire physical batch and keeps the Nexus spent.
 [Source, original native proofs and controls](NEXUS_BENE_GESSERIT_RULES.md#recommended-cunning-card-exceptions--14-october-2026).
 
+## Recommended Emperor independent extra return — 14 October 2026
+
+Secret Ally exact-three now uses original pending revival, with requested/
+returned/denied source receipts instead of a quiet direct transfer. Native
+Tleilaxu Allow/Prevent/income, physical typed deposits, once-only Axlotl activity
+and original Homeworld handling continue. Ordinary total/free and native
+Emperor-extra ledgers remain unchanged; ordinary free blocking, larger rates
+and Recruits do not reprice/double this fixed source. Denial retains both spent
+cards with no forces/income/Tech or refund. Prevention/free-rate distinction
+is visibly provisional. Native Cyborg caps and newly returned Fedaykin placement
+remain their original rules; Tleilax's ordinary Free Revival deployment is
+not extended merely because this source costs zero.
+[Source and changed-path proof](NEXUS_EMPEROR_RULES.md#recommended-independent-extra-return--14-october-2026).
+
 ## Recommended Emperor compulsory funding — 14 October 2026
 
 Normal-auction Betrayal now forces native Emperor to cover the original

@@ -265,6 +265,8 @@ export type PendingRevival = {
   kind: 'forces' | 'leader' | 'kwisatz' | 'foreignGhola';
   payer?: string;
   emperorExtra?: boolean;
+  /** Independent fixed-three source; never native Emperor funding or ordinary usage. */
+  nexusEmperorEvent?: string;
   amount?: number;
   elite?: number;
   leader?: string;

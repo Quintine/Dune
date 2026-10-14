@@ -64,6 +64,10 @@ function requireRevival(
 const nonnegative = (n: unknown): n is number =>
   Number.isSafeInteger(n) && (n as number) >= 0;
 
+/** The Emperor Nexus return is its own fixed source: it moves real Tanks and
+ * reserves without incrementing the ordinary revived/free revival ledgers or
+ * the Emperor-extra allowance, so those counters are never re-floated for it.
+ * Native physical and typed caps below still apply. */
 export function continuationCustody(
   g: RevivalCancellationContext,
   p: Player,
@@ -79,13 +83,14 @@ export function continuationCustody(
     requireRevival(
       nonnegative(p.reserves + n) &&
         nonnegative(p.revived) &&
-        (pending.emperorExtra
-          ? nonnegative(g.emperorExtra[p.id] ?? 0) &&
-            nonnegative((g.emperorExtra[p.id] ?? 0) + n)
-          : nonnegative(p.revived + n) &&
-            ((p.freeForcesRevived === undefined && p.revived !== 0) ||
-              (nonnegative(p.freeForcesRevived ?? 0) &&
-                nonnegative((p.freeForcesRevived ?? 0) + pending.free)))),
+        (pending.nexusEmperorEvent !== undefined ||
+          (pending.emperorExtra
+            ? nonnegative(g.emperorExtra[p.id] ?? 0) &&
+              nonnegative((g.emperorExtra[p.id] ?? 0) + n)
+            : nonnegative(p.revived + n) &&
+              ((p.freeForcesRevived === undefined && p.revived !== 0) ||
+                (nonnegative(p.freeForcesRevived ?? 0) &&
+                  nonnegative((p.freeForcesRevived ?? 0) + pending.free))))),
       'The pending revival would overflow its force or revival counters.',
     );
     if (p.elites)
@@ -207,6 +212,7 @@ export function quoteRevivalCancellation(
   );
   requireRevival(
     ['forces', 'leader', 'kwisatz', 'foreignGhola'].includes(original.kind) &&
+      original.nexusEmperorEvent === undefined &&
       nonnegative(original.cost) &&
       nonnegative(original.normalCost) &&
       original.cost <= original.normalCost &&
