@@ -131,10 +131,10 @@ void test('Fremen paid borrowed Guild tariff does not relocate southern reserves
   collectOnce(f, paid, 0);
 });
 
-// Printed Nexus Emperor: three additional free beyond limits. Printed Fremen:
-// total free three, recorded ordinary-quota interpretation (NEXUS_FREMEN_RULES).
-// E1 p5 classifies both actual phase-4 free batches as Axlotl activity, without
-// conflating their different ordinary quota ledgers or granting native identity.
+// Emperor returns an additional free group directly; Fremen spends its card
+// before a separate ordinary return that uses the fixed free quota of three.
+// Both actual free groups accrue Axlotl through their original return source,
+// without granting native faction identity.
 for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
   for (const strongholds of [false, true]) {
     void test(`${kind} consumes the physical card and exact original ledgers${strongholds ? ' without a Stronghold revival bonus' : ''}, then collects Axlotl once`, () => {
@@ -161,6 +161,7 @@ for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
         assert.equal(quote.cost, 2, 'Atreides keeps its ordinary two-free/one-paid invoice after the additional grant.');
         const wallet = actor.spice;
         paid = applyAction(paid, f.actor, { type: 'revive', amount: 3 });
+        paid = advanceNexusModulePaymentsToPhase(paid, 4);
         actor = paid.players.find(p => p.id === f.actor)!;
         assert.equal(actor.reserves, before.reserves + 6);
         assert.equal(actor.tanks, before.tanks - 6);
@@ -176,17 +177,24 @@ for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
 }
 
 for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
-  void test(`${kind} preserves actual Advanced elite identity and one-per-turn cap, including bot participation`, () => {
+  void test(`${kind} preserves actual Advanced elite identity and one-per-turn cap through bot activation and native selection`, () => {
     const f = createNexusModulePaymentsFixture({ kind, advanced: true, strongholds: true,
       ownerFaction: kind === 'emperor-revival' ? 'fremen' : 'emperor', eliteTanks: 2 });
     const view = viewGame(f.game, f.actor);
-    const offer = kind === 'emperor-revival' ? view.nexusEmperorSecretAlly!.revival : view.nexusFremenRevival!;
-    assert.deepEqual(offer.eliteOptions, [0, 1]);
     rejected(f.game, f.actor, { ...f.paymentAction, elite: 2 });
     view.players.find(p => p.id === f.actor)!.bot = 'Hard';
     const bot = botActions(view).find(action => action.type === f.paymentAction.type);
     assert.ok(bot, 'The actual bot must participate in the newly admitted module option.');
-    const paid = applyAction(f.game, f.actor, bot);
+    let paid = applyAction(f.game, f.actor, bot);
+    if (f.revivalAction) {
+      rejected(paid, f.actor, { type: 'revive', amount: 3, elite: 2 });
+      paid = applyAction(paid, f.actor, f.revivalAction);
+    }
+    for (let n = 0; (paid.response || paid.decision || paid.pendingRevival) && n < 200; n++) {
+      const next = nextNexusModulePaymentsNativeStep(paid);
+      assert.ok(next);
+      paid = applyAction(paid, next.actor, next.action);
+    }
     const actor = paid.players.find(p => p.id === f.actor)!;
     const before = f.beforePayment.players.find(p => p.id === f.actor)!;
     assert.equal(actor.elites!.reserves, before.elites!.reserves + 1);
@@ -201,14 +209,24 @@ for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
   });
 }
 
-void test('Fremen late return and exact-three shortage remain unavailable; a real Truthtrance blocks both Nexus returns', () => {
+void test('Fremen prior free returns count toward the quota, exhausted improvement is unavailable, and real Truthtrance blocks both grants', () => {
   const f = createNexusModulePaymentsFixture({ kind: 'fremen-revival' });
-  const late = applyAction(f.game, f.actor, { type: 'revive', amount: 1 });
-  assert.match(viewGame(late, f.actor).nexusFremenRevival!.blocked!, /before ordinary force revivals/);
-  rejected(late, f.actor, f.paymentAction);
+  const late = advanceNexusModulePaymentsToPhase(applyAction(f.game, f.actor, { type: 'revive', amount: 1 }), 4);
+  const granted = applyAction(late, f.actor, f.paymentAction);
+  assert.equal(granted.players.find(p => p.id === f.actor)!.tanks, late.players.find(p => p.id === f.actor)!.tanks);
+  const returned = advanceNexusModulePaymentsToPhase(applyAction(granted, f.actor, { type: 'revive', amount: 2 }), 4);
+  assert.equal(returned.players.find(p => p.id === f.actor)!.freeForcesRevived, 3);
+  assert.equal(returned.players.find(p => p.id === f.actor)!.revived, 3);
   for (const kind of ['fremen-revival', 'emperor-revival'] as const) {
     const short = createNexusModulePaymentsFixture({ kind, tanks: 2 });
-    rejected(short.game, short.actor, short.paymentAction);
+    if (kind === 'emperor-revival') rejected(short.game, short.actor, short.paymentAction);
+    else {
+      const enabled = applyAction(short.game, short.actor, short.paymentAction);
+      rejected(enabled, short.actor, { type: 'revive', amount: 3 });
+      const partial = advanceNexusModulePaymentsToPhase(applyAction(enabled, short.actor, { type: 'revive', amount: 2 }), 4);
+      assert.equal(partial.players.find(p => p.id === short.actor)!.tanks, 0);
+      assert.equal(partial.players.find(p => p.id === short.actor)!.freeForcesRevived, 2);
+    }
     const quiet = createNexusModulePaymentsFixture({ kind });
     const questioner = quiet.game.players.find(p => p.id !== quiet.actor)!;
     const card = holdNexusRicheseCard(quiet.game, questioner.id, 'truthtrance');

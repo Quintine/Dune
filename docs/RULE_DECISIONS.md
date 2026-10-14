@@ -66,6 +66,19 @@ These decisions do not open public module/faction or complete-mode gates.
 
 These decisions do not open public module/faction or complete-mode gates.
 
+## Recommended Fremen Nexus quota — 14 October 2026
+
+The user's choose-recommended-option instruction selects the provisional
+ordinary total-free-quota-three composition: event-only card activation,
+then native partial/typed revival. Actual prior free returns count; paid
+returns consume total allowance without refund. Higher native free rates,
+Recruits' original doubled native rate/minimum-seven limit, La La La and
+Tleilaxu prevention remain; the independent fixed quota is not doubled.
+No leader grant or extra total-force allowance is inferred. A useless or
+unknown-ledger spend is unavailable. This is not publisher clarification
+or a separately answered numerical ruling.
+[Connected source, controls and evidence](NEXUS_FREMEN_RULES.md#recommended-fixed-ordinary-quota--14-october-2026).
+
 ## Content-first Basic prototypes — 8 October 2026
 
 The user's Basic-first instruction authorizes usable first versions before

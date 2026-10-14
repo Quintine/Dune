@@ -4037,15 +4037,8 @@ export function botActions(g: GameView): Action[] {
     return [{ type: use ? 'nexusIxianReplacementUse' : 'nexusIxianReplacementPass', event: replacement.event }];
   }
   if (g.decision?.kind === 'nexusIxianReplacement') return [];
-  const fremenRevival = g.nexusFremenRevival;
-  if (fremenRevival && !fremenRevival.blocked && fremenRevival.eliteOptions.length) {
-    const own = g.players.find(player => player.id === g.me);
-    const elite = own?.bot === 'Easy'
-      ? Math.min(...fremenRevival.eliteOptions)
-      : Math.max(...fremenRevival.eliteOptions);
-    const action = nexusFremenRevivalAction(g, elite);
-    if (action) return [action];
-  }
+  const fremenRevival = nexusFremenRevivalAction(g);
+  if (fremenRevival) return [fremenRevival];
   const emperorRevival = g.nexusEmperorSecretAlly?.revival;
   if (emperorRevival && !emperorRevival.blocked && emperorRevival.eliteOptions.length) {
     const own = g.players.find((player) => player.id === g.me);

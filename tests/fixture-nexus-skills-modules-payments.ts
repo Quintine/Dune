@@ -44,6 +44,7 @@ export type NexusSkillsModulesPaymentsFixture = {
   opponent: string;
   kind: NexusSkillsModulesPaymentKind;
   paymentAction: Action;
+  revivalAction?: Action;
   amount: number;
   cost: number;
   token: TechId;
@@ -249,7 +250,7 @@ export function createNexusSkillsModulesPaymentsFixture(options: NexusSkillsModu
     const afterClosingDraw = structuredClone(game);
     game = advanceNexusSkillsModulesPayments(game, state => state.nexusCards?.phase?.stage !== 'drawing', actions);
     game = advanceNexusSkillsModulesPaymentsToPhase(game, kind === 'native-shipment' ? 5 : kind === 'emperor-purchase' ? 3 : 4, actions);
-    let paymentAction: Action, destination: string | undefined, cost = 0;
+    let paymentAction: Action, revivalAction: Action | undefined, destination: string | undefined, cost = 0;
     const amount = kind === 'native-shipment' ? options.amount ?? 3 : kind === 'emperor-purchase' ? 1 : 3;
     if (kind === 'emperor-purchase') {
       for (let n = 0; game.decision?.kind !== 'auctionPayment' && n < 160; n++) {
@@ -282,20 +283,26 @@ export function createNexusSkillsModulesPaymentsFixture(options: NexusSkillsModu
       if (player.elites) { player.elites.reserves -= elite; player.elites.tanks += elite; }
       staging.push(`Conserved ${actor}: ${tanks} original reserve counters to Tanks, including ${elite} elites; no revival receipt staged.`);
       const view = viewGame(game, actor);
-      paymentAction = { type: kind === 'emperor-revival' ? 'nexusEmperorRevive' : 'nexusFremenRevive',
-        event: kind === 'emperor-revival' ? view.nexusEmperorSecretAlly!.event : view.nexusFremenRevival!.event, elite: elite ? 1 : 0 };
+      if (kind === 'emperor-revival') paymentAction = { type: 'nexusEmperorRevive',
+        event: view.nexusEmperorSecretAlly!.event, elite: elite ? 1 : 0 };
+      else {
+        paymentAction = { type: 'nexusFremenRevival', event: view.nexusFremenRevival!.event };
+        revivalAction = { type: 'revive', amount: 3, elite: elite ? 1 : 0 };
+      }
     }
     nexusSkillsModulesPaymentsInventory(game);
     const token: TechId = kind === 'native-shipment' ? 'heighliners' : kind === 'emperor-purchase' ? 'production' : 'axlotl';
     const tokenOwner = game.techTokens?.[token].owner ?? null;
     return { initial, afterSetup, beforeFirstMentat, firstMentatStep, afterFirstMentat, beforeClosingDraw, closingDraw,
-      afterClosingDraw, beforePayment: structuredClone(game), game, actor, opponent, kind, paymentAction, amount, cost,
+      afterClosingDraw, beforePayment: structuredClone(game), game, actor, opponent, kind, paymentAction, revivalAction, amount, cost,
       token, tokenOwner, tokenCount: tokenOwner ? ownedTech(game.techTokens, tokenOwner).length : 0, destination, actions, staging };
   });
 }
-/** One original action only: exposes any actual interception/payment response. */
+/** Commits the payment and optional native return, exposing actual settlement responses. */
 export function payNexusSkillsModulesPaymentsFixture(fixture: NexusSkillsModulesPaymentsFixture, state = fixture.game): Game {
-  return applyAction(state, fixture.actor, fixture.paymentAction);
+  let game = applyAction(state, fixture.actor, fixture.paymentAction);
+  if (fixture.revivalAction) game = applyAction(game, fixture.actor, fixture.revivalAction);
+  return game;
 }
 export function finishNexusSkillsModulesPaymentsFixture(_fixture: NexusSkillsModulesPaymentsFixture, state: Game,
   actions?: NexusSkillsModulesPaymentStep[]): Game {

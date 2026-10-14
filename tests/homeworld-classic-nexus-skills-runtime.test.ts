@@ -162,7 +162,7 @@ for (const kind of ['native-suk', 'visitor-suk'] as const) {
 }
 
 for (const advanced of [false, true]) {
-  void test(`${advanced ? 'Advanced typed' : 'Basic ordinary'} real zero-save Suk losses fund exact-three Fremen Nexus return at the next actual Revival`, () => {
+  void test(`${advanced ? 'Advanced typed' : 'Basic ordinary'} real zero-save Suk losses return through the Fremen quota and normal Homeworld revival at the next actual Revival`, () => {
     const f = fixture({ advanced, discovery: advanced, tech: true, strongholds: advanced });
     const pending = settle(reveal(f), 'suk'); assert.ok(pending.decision?.kind === 'sukRescue');
     const choice = pending.decision.options.findIndex(option => !option.normal && !option.elite && !option.kept);
@@ -173,16 +173,22 @@ for (const advanced of [false, true]) {
     assert.equal(player(done, f.owner).elites?.tanks ?? 0, advanced ? 1 : 0);
     assert.equal(done.nexusCards!.cards!.hands[f.owner], 'fremen', 'Battle rescue never spends the unrelated physically held Nexus singleton.');
     const window = revivalWindow(done, f.actions, f.staging), offer = viewGame(window, f.owner).nexusFremenRevival!;
-    assert.equal(offer.blocked, null); assert.ok(offer.eliteOptions.includes(advanced ? 1 : 0));
+    assert.equal(offer.blocked, null);
+    assert.equal(viewGame(window, f.opponent).nexusFremenRevival, null);
     legalPolicies(window, f.owner);
-    const action: Action = { type: 'nexusFremenRevive', event: offer.event, elite: advanced ? 1 : 0 };
+    const action: Action = { type: 'nexusFremenRevival', event: offer.event };
     reject(window, f.opponent, action);
     reject(window, f.owner, { ...action, event: 'stale-free-three' });
-    reject(window, f.owner, { ...action, elite: 2 });
     const before = structuredClone(player(window, f.owner));
     const kaitain = pool(window, f.owner, 'homeworld:emperor');
     const salusa = advanced ? pool(window, f.owner, 'homeworld:emperor:salusa') : null;
-    const paid = applyAction(JSON.parse(JSON.stringify(window)), f.owner, action), after = player(paid, f.owner);
+    const granted = applyAction(JSON.parse(JSON.stringify(window)), f.owner, action);
+    assert.deepEqual(player(granted, f.owner), before, 'Quota activation does not move forces or consume the ordinary return ledger');
+    assert.deepEqual(granted.homeworlds, window.homeworlds);
+    assert.deepEqual(granted.techTokens, window.techTokens, 'Axlotl activity belongs to the native return, not card activation');
+    if (advanced) reject(granted, f.owner, { type: 'revive', amount: 3, elite: 2 });
+    const paid = settle(applyAction(granted, f.owner, { type: 'revive', amount: 3, elite: advanced ? 1 : 0 }));
+    const after = player(paid, f.owner);
     assert.equal(after.spice, before.spice, 'Free-three is not charged as paid revival or external Suk placement.');
     assert.equal(after.tanks, before.tanks - 3); assert.equal(after.reserves, before.reserves + 3);
     assert.equal(after.revived, 3); assert.equal(after.freeForcesRevived, 3);
@@ -193,6 +199,8 @@ for (const advanced of [false, true]) {
       assert.equal(after.elites!.reserves, before.elites!.reserves + 1);
       assert.equal(after.elites!.revived, 1);
     }
+    assert.deepEqual(paid.leaderSkills, window.leaderSkills, 'Normal force revival retains the original trained Skill custody');
+    if (advanced) assert.deepEqual(paid.discoveries, window.discoveries);
     assert.equal(paid.nexusCards!.cards!.hands[f.owner], null);
     assert.equal(paid.nexusCards!.cards!.discard.filter(card => card === 'fremen').length, 1);
     reject(paid, f.owner, action);

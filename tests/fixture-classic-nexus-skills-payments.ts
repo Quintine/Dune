@@ -41,6 +41,7 @@ export type ClassicNexusSkillsPaymentsFixture = {
   opponent: string;
   kind: ClassicNexusSkillsPaymentKind;
   paymentAction: Action;
+  revivalAction?: Action;
   actions: ClassicNexusSkillsPaymentStep[];
   planActions: ClassicNexusSkillsPaymentStep[];
   staging: string[];
@@ -258,7 +259,7 @@ export function createClassicNexusSkillsPaymentsFixture(options: ClassicNexusSki
     assert.equal(game.nexusCards!.cards!.hands[actor], card);
     const afterClosingDraw = structuredClone(game);
     game = advanceClassicNexusSkillsPayments(game, state => state.nexusCards?.phase?.stage !== 'drawing', actions);
-    let paymentAction: Action, declaredIdentity: string | undefined;
+    let paymentAction: Action, revivalAction: Action | undefined, declaredIdentity: string | undefined;
     if (kind === 'emperor-purchase') {
       game = advanceClassicNexusSkillsPaymentsToPhase(game, 3, actions);
       for (let n = 0; game.decision?.kind !== 'auctionPayment' && n < 160; n++) {
@@ -323,20 +324,25 @@ export function createClassicNexusSkillsPaymentsFixture(options: ClassicNexusSki
       if (player.elites) { player.elites.reserves -= elite; player.elites.tanks += elite; }
       staging.push(`Conserved ${actor}: ${tanks} reserve counters to Tanks, including ${elite} original elites; no earned-revival receipt staged.`);
       const view = viewGame(game, actor);
-      paymentAction = { type: kind === 'emperor-revival' ? 'nexusEmperorRevive' : 'nexusFremenRevive',
-        event: kind === 'emperor-revival' ? view.nexusEmperorSecretAlly!.event : view.nexusFremenRevival!.event,
-        elite: elite ? 1 : 0 };
+      if (kind === 'emperor-revival') paymentAction = { type: 'nexusEmperorRevive',
+        event: view.nexusEmperorSecretAlly!.event, elite: elite ? 1 : 0 };
+      else {
+        paymentAction = { type: 'nexusFremenRevival', event: view.nexusFremenRevival!.event };
+        revivalAction = { type: 'revive', amount: 3, elite: elite ? 1 : 0 };
+      }
     }
     classicNexusSkillsPaymentsInventory(game);
     return { initial, afterSetup, beforeFirstMentat, firstMentatStep, afterFirstMentat, beforeClosingDraw,
       closingDraw, afterClosingDraw, beforePayment: structuredClone(game), game, actor, opponent, kind,
-      paymentAction, actions, planActions, staging, declaredIdentity };
+      paymentAction, revivalAction, actions, planActions, staging, declaredIdentity };
   });
 }
 
 /** Stops at the real private Cunning return instead of silently choosing it. */
 export function payClassicNexusSkillsPaymentsFixture(fixture: ClassicNexusSkillsPaymentsFixture, state = fixture.game): Game {
-  return applyAction(state, fixture.actor, fixture.paymentAction);
+  let game = applyAction(state, fixture.actor, fixture.paymentAction);
+  if (fixture.revivalAction) game = applyAction(game, fixture.actor, fixture.revivalAction);
+  return game;
 }
 export function finishClassicNexusSkillsPaymentsFixture(fixture: ClassicNexusSkillsPaymentsFixture,
   state: Game, returned?: string[]): Game {

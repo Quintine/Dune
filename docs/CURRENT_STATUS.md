@@ -29,6 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Fremen Secret Ally ordinary free quota — 14 October.** Recommended
+provisional fixed-three permission now replaces the early-only exact-three
+transfer. Activation spends one Nexus and moves nothing; original revival
+controls support partial/late typed groups and original prevention, income,
+Tech and Homeworld continuations. Prior free use counts, paid returns are
+not refunded, higher native rates and Recruits' minimum-seven total survive.
+The affected20-file union passes329/329; types/lint pass. Four real API
+profiles reach Movement after late activation. Actual390px activation then
+one-plus-two returns uses original Tleilaxu Allow controls, preserves spice13,
+returns three counters and produces native income1 once, with no overflow
+or browser errors. Old physical receipts adopt metadata without replay.
+Final module, assurance and deployed acceptance remain open.
+[Canonical interpretation and proof](NEXUS_FREMEN_RULES.md#recommended-fixed-ordinary-quota--14-october-2026).
+Final connected UI build passes; existing route-classification/chunk-size
+warnings remain. Owned QA scaffolding is removed; proof receipts are outside Git.
+
 **BG Cunning fresh/storm card exceptions — 14 October.** The recommended
 in-place any/all prototype now permits current-turn accompanied and storm-
 bound/separated advisor territories during BG's own Advanced action. Native

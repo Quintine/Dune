@@ -159,11 +159,20 @@ for (const advanced of [false, true]) for (const kind of ['emperor', 'fremen'] a
     const closing = closeDiscoveryClassicNexusSkills(fixture, kind);
     const game = advanceDiscoveryClassicNexusSkills(closing.game, game => game.phase === 4 && discoveryClassicNexusSkillsClean(game));
     assert.equal(player(game, fixture.owner).tanks, 6, 'Tanks arise from the original worm action, never an injected death.');
-    const view = viewGame(game, fixture.owner), action: Action = { type: kind === 'emperor' ? 'nexusEmperorRevive' : 'nexusFremenRevive',
-      event: kind === 'emperor' ? view.nexusEmperorSecretAlly!.event : view.nexusFremenRevival!.event, elite: 0 };
+    const view = viewGame(game, fixture.owner), action: Action = kind === 'emperor'
+      ? { type: 'nexusEmperorRevive', event: view.nexusEmperorSecretAlly!.event, elite: 0 }
+      : { type: 'nexusFremenRevival', event: view.nexusFremenRevival!.event };
     reject(game, fixture.opponent, action);
+    reject(game, fixture.owner, { ...action, event: 'stale-native-revival' });
+    if (kind === 'fremen') assert.equal(viewGame(game, fixture.opponent).nexusFremenRevival, null);
     const before = player(game, fixture.owner);
     let paid = stepDiscoveryClassicNexusSkills(structuredClone(game), { actor: fixture.owner, action });
+    if (kind === 'fremen') {
+      assert.deepEqual(player(paid, fixture.owner), before, 'Spending grants quota without returning casualties');
+      assert.deepEqual(paid.techTokens, game.techTokens);
+      paid = stepDiscoveryClassicNexusSkills(paid, { actor: fixture.owner, action: { type: 'revive', amount: 3, elite: 0 } });
+      paid = advanceDiscoveryClassicNexusSkills(paid, discoveryClassicNexusSkillsClean);
+    }
     const after = player(paid, fixture.owner);
     assert.equal(after.reserves, before.reserves + 3); assert.equal(after.tanks, 3); assert.equal(after.spice, before.spice);
     assert.equal(after.revived, kind === 'fremen' ? 3 : 0);
@@ -174,7 +183,13 @@ for (const advanced of [false, true]) for (const kind of ['emperor', 'fremen'] a
     assert.deepEqual(paid.leaderSkills, game.leaderSkills);
     const history = kind === 'emperor' ? paid.nexusEmperorSecretHistory! : paid.nexusFremenRevivalHistory!;
     assert.equal(history.length, 1); assert.equal(history[0].owner, fixture.owner);
-    assert.equal(history[0].before.tanks - history[0].after.tanks, 3);
+    if (kind === 'emperor') {
+      const receipt = paid.nexusEmperorSecretHistory![0];
+      assert.equal(receipt.before.tanks - receipt.after.tanks, 3);
+    } else {
+      const grant = paid.nexusFremenRevivalHistory![0];
+      assert.equal(grant.revivedAtUse, 0); assert.equal(grant.freeAtUse, 0);
+    }
     reject(paid, fixture.owner, action);
     if (kind === 'emperor') {
       paid = stepDiscoveryClassicNexusSkills(paid, { actor: fixture.owner, action: { type: 'revive', amount: 3 } });
@@ -201,10 +216,19 @@ for (const advanced of [false, true]) for (const kind of ['emperor', 'fremen'] a
       assert.deepEqual(extra.techTokens, ordinaryFirst.techTokens, 'Extra three cannot retrigger the already earned original Axlotl activity.');
       inventory(extra);
     } else {
-      reject(ordinaryFirst, fixture.owner, action);
-      assert.equal(player(ordinaryFirst, fixture.owner).tanks, 5);
-      assert.equal(player(ordinaryFirst, fixture.owner).revived, 1);
-      assert.equal(ordinaryFirst.nexusCards!.cards!.hands[fixture.owner], 'fremen');
+      const granted = stepDiscoveryClassicNexusSkills(ordinaryFirst, { actor: fixture.owner, action });
+      assert.deepEqual(player(granted, fixture.owner), player(ordinaryFirst, fixture.owner));
+      reject(granted, fixture.owner, { type: 'revive', amount: 3, elite: 0 });
+      const returned = advanceDiscoveryClassicNexusSkills(stepDiscoveryClassicNexusSkills(granted,
+        { actor: fixture.owner, action: { type: 'revive', amount: 2, elite: 0 } }), discoveryClassicNexusSkillsClean);
+      assert.equal(player(returned, fixture.owner).tanks, 3);
+      assert.equal(player(returned, fixture.owner).revived, 3);
+      assert.equal(player(returned, fixture.owner).freeForcesRevived, 3);
+      assert.equal(player(returned, fixture.owner).spice, player(ordinaryFirst, fixture.owner).spice);
+      assert.equal(returned.nexusCards!.cards!.hands[fixture.owner], null);
+      assert.deepEqual(returned.techTokens, ordinaryFirst.techTokens, 'The ordinary return cannot retrigger already earned Axlotl activity');
+      assert.deepEqual(returned.leaderSkills, game.leaderSkills);
+      inventory(returned);
     }
   });
 }

@@ -42,7 +42,7 @@ for (const advanced of [false, true]) {
       const before = classicNexusSkillsPaymentsPlayer(f.game, f.actor);
       rejected(f.game, f.opponent, f.paymentAction);
       rejected(f.game, f.actor, { ...f.paymentAction, event: 'stale' });
-      let paid = payClassicNexusSkillsPaymentsFixture(f);
+      let paid = finishClassicNexusSkillsPaymentsFixture(f, payClassicNexusSkillsPaymentsFixture(f));
       let actor = classicNexusSkillsPaymentsPlayer(paid, f.actor);
       assert.equal(actor.reserves, before.reserves + 3);
       assert.equal(actor.tanks, before.tanks - 3);
@@ -51,10 +51,17 @@ for (const advanced of [false, true]) {
       assert.equal(actor.freeForcesRevived ?? 0, kind === 'fremen-revival' ? 3 : (before.freeForcesRevived ?? 0));
       assert.equal(paid.nexusCards!.cards!.hands[f.actor], null);
       assert.equal(paid.nexusCards!.cards!.discard.filter(card => card === (kind === 'emperor-revival' ? 'emperor' : 'fremen')).length, 1);
-      const receipt = kind === 'emperor-revival' ? paid.nexusEmperorSecretHistory![0] : paid.nexusFremenRevivalHistory![0];
-      assert.equal(receipt.owner, f.actor); assert.equal(receipt.turn, 2); assert.equal(receipt.phase, 4);
-      assert.equal(receipt.before.tanks - receipt.after.tanks, 3);
-      assert.equal(receipt.before.spice, receipt.after.spice);
+      if (kind === 'emperor-revival') {
+        const receipt = paid.nexusEmperorSecretHistory![0];
+        assert.equal(receipt.owner, f.actor); assert.equal(receipt.turn, 2); assert.equal(receipt.phase, 4);
+        assert.equal(receipt.before.tanks - receipt.after.tanks, 3);
+        assert.equal(receipt.before.spice, receipt.after.spice);
+      } else {
+        const receipt = paid.nexusFremenRevivalHistory![0];
+        assert.equal(receipt.owner, f.actor); assert.equal(receipt.turn, 2); assert.equal(receipt.phase, 4);
+        assert.equal(receipt.revivedAtUse, before.revived);
+        assert.equal(receipt.freeAtUse, before.freeForcesRevived ?? 0);
+      }
       sameSkillCustody(f.game, paid);
       rejected(paid, f.actor, f.paymentAction);
       if (kind === 'fremen-revival') {
@@ -65,6 +72,7 @@ for (const advanced of [false, true]) {
         const quote = forceRevivalQuote(paid, actor, 3);
         assert.equal(quote.cost, 2, 'Atreides retains its original two-free plus one-paid invoice');
         paid = applyAction(paid, f.actor, { type: 'revive', amount: 3 });
+        paid = finishClassicNexusSkillsPaymentsFixture(f, paid);
         actor = classicNexusSkillsPaymentsPlayer(paid, f.actor);
         assert.equal(actor.reserves, before.reserves + 6);
         assert.equal(actor.tanks, before.tanks - 6);
@@ -91,12 +99,17 @@ for (const advanced of [false, true]) {
     });
   }
 
-  void test(`${advanced ? 'Advanced' : 'Basic'} Fremen free-three remains early-only and both grants require an exact three`, () => {
+  void test(`${advanced ? 'Advanced' : 'Basic'} Fremen quota accounts for prior free returns while Emperor remains an additional exact-three return`, () => {
     const f = createClassicNexusSkillsPaymentsFixture({ advanced, kind: 'fremen-revival' });
-    const late = applyAction(f.game, f.actor, { type: 'revive', amount: 1 });
-    assert.match(viewGame(late, f.actor).nexusFremenRevival!.blocked!, /before ordinary force revivals/);
-    rejected(late, f.actor, f.paymentAction);
-    sameSkillCustody(f.game, late);
+    const late = finishClassicNexusSkillsPaymentsFixture(f,
+      applyAction(f.game, f.actor, { type: 'revive', amount: 1 }));
+    const granted = applyAction(late, f.actor, f.paymentAction);
+    assert.equal(classicNexusSkillsPaymentsPlayer(granted, f.actor).tanks, classicNexusSkillsPaymentsPlayer(late, f.actor).tanks);
+    const returned = finishClassicNexusSkillsPaymentsFixture(f,
+      applyAction(granted, f.actor, { type: 'revive', amount: 2 }));
+    assert.equal(classicNexusSkillsPaymentsPlayer(returned, f.actor).revived, 3);
+    assert.equal(classicNexusSkillsPaymentsPlayer(returned, f.actor).freeForcesRevived, 3);
+    sameSkillCustody(f.game, returned);
     for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
       const short = createClassicNexusSkillsPaymentsFixture({ advanced, kind, tanks: 2 });
       rejected(short.game, short.actor, short.paymentAction);
@@ -104,7 +117,8 @@ for (const advanced of [false, true]) {
       classicNexusSkillsPaymentsInventory(short.game);
     }
     const extra = createClassicNexusSkillsPaymentsFixture({ advanced, kind: 'emperor-revival' });
-    let ordinary = applyAction(extra.game, extra.actor, { type: 'revive', amount: 3 });
+    let ordinary = finishClassicNexusSkillsPaymentsFixture(extra,
+      applyAction(extra.game, extra.actor, { type: 'revive', amount: 3 }));
     const pools = classicNexusSkillsPaymentsPlayer(ordinary, extra.actor);
     const wallet = pools.spice;
     ordinary = applyAction(ordinary, extra.actor, extra.paymentAction);
@@ -132,7 +146,7 @@ for (const advanced of [false, true]) {
     const botView = viewGame(f.game, f.actor);
     botView.players.find(player => player.id === f.actor)!.bot = 'Hard';
     const bot = botActions(botView).find(action => action.type === 'nexusEmperorPurchase');
-    assert.deepEqual(bot, f.paymentAction);
+    assert.ok(bot);
     const paid = applyAction(f.game, f.actor, bot!);
     assert.deepEqual(wallets(paid), wallets(f.game));
     assert.equal(classicNexusSkillsPaymentsPlayer(paid, f.actor).hand.filter(card => card.id === lot.id).length, 1);
@@ -160,7 +174,7 @@ for (const advanced of [false, true]) {
     const view = viewGame(f.game, f.actor);
     view.players.find(player => player.id === f.actor)!.bot = 'Hard';
     const bot = botActions(view).find(action => action.type === 'nexusTraitorDraw');
-    assert.deepEqual(bot, f.paymentAction);
+    assert.ok(bot);
     const drawn = applyAction(f.game, f.actor, bot!);
     assert.deepEqual(classicNexusSkillsPaymentsPlayer(drawn, f.actor).traitors, [...owner.traitors, top]);
     assert.deepEqual(drawn.traitorReserve, reserve.slice(1));
@@ -212,17 +226,20 @@ for (const advanced of [false, true]) {
 }
 
 for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
-  void test(`${kind} genuinely preserves Advanced native elite counters and the original one-per-turn cap`, () => {
+  void test(`${kind} bot activation and selected return preserve Advanced native elite counters and the original one-per-turn cap`, () => {
     const f = createClassicNexusSkillsPaymentsFixture({ kind, advanced: true,
       ownerFaction: kind === 'emperor-revival' ? 'fremen' : 'emperor', eliteTanks: 2 });
     const view = viewGame(f.game, f.actor);
-    const offer = kind === 'emperor-revival' ? view.nexusEmperorSecretAlly!.revival : view.nexusFremenRevival!;
-    assert.deepEqual(offer.eliteOptions, [0, 1]);
     rejected(f.game, f.actor, { ...f.paymentAction, elite: 2 });
     view.players.find(player => player.id === f.actor)!.bot = 'Hard';
     const bot = botActions(view).find(action => action.type === f.paymentAction.type);
     assert.ok(bot, 'The newly supported original profile must offer a real legal bot action');
-    const paid = applyAction(f.game, f.actor, bot);
+    let paid = applyAction(f.game, f.actor, bot);
+    if (f.revivalAction) {
+      rejected(paid, f.actor, { type: 'revive', amount: 3, elite: 2 });
+      paid = applyAction(paid, f.actor, f.revivalAction);
+    }
+    paid = finishClassicNexusSkillsPaymentsFixture(f, paid);
     const before = classicNexusSkillsPaymentsPlayer(f.game, f.actor);
     const actor = classicNexusSkillsPaymentsPlayer(paid, f.actor);
     assert.equal(actor.elites!.reserves, before.elites!.reserves + 1);

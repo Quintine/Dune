@@ -166,25 +166,56 @@ and deployed acceptance remain due.
 
 ## Secret Ally revival
 
-The card's total-of-three wording and the native alliance's ordinary free-three benefit support a **free-rate interpretation within ordinary revival accounting**, rather than three additional counters beyond the usual allowance. This is source composition, not an explicit Nexus FAQ. Preserve it as the proposed contract; do not silently apply Emperor's separate extra-return producer.
-The current first path is a deliberate subset of that proposed contract: with Fremen absent, an unallied base-faction holder in Basic or Advanced Revival may spend the physical Nexus card to transfer exactly three eligible forces from Tanks to reserves at zero spice cost. It is available before any ordinary force return, with no competing expansion/module revival modifier, pending response or decision. The three returned forces consume the ordinary allowance and free-force ledger; they are **not** Emperor-style extra returns. The Advanced one-elite-per-turn cap and physical elite census apply. The server's private offer provides the eligible elite counts; the action validates its current turn and group. A signed before/after receipt and independent event markers persist through JSON saves.
+### Recommended fixed ordinary quota — 14 October 2026
 
-The bounded classic Tech/Advanced Stronghold composition now calls the existing Axlotl activity hook after this actual free batch; spice stays on the token until native phase-end settlement, without changing these ordinary ledgers. See [the composition contract](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026). Tleilaxu income and Homeworld arrivals remain excluded: those broader continuations require the native pending-revival pipeline, not this quiet transfer. Fewer-than-three Tanks, previous force returns and higher free rates/modifiers remain unavailable rather than guessing a ruling. The independent protection prototype above and native Cunning remain separate producers.
+Choose-recommended-option priority adopts the printed total-of-three as a
+phase-bound **ordinary free quota**, not Emperor-style additional returns.
+This is visibly provisional source composition, not a publisher clarification
+or a separately answered numerical user ruling.
 
-The separate fresh classic `leader-skills --nexus-cards` composition preserves
-the same ordinary/free-three ledgers, zero wallet cost, actual counters and
-Advanced one-elite cap with all14 original skills, without Tech/Strongholds
-or other overlays. It does not change physical training, grant leader revival,
-reset prior returns or settle worm-protection reactions. [Scope and bounded
-proof](NEXUS_CARD_RULES.md#classic-nexus-and-leader-skills-composition--4-october-2026)
-remains separate from complete Fremen/Nexus certification.
+With native Fremen absent, an actual unallied Fremen-card holder may enable
+the quota at a quiet Revival boundary. `nexusFremenRevival` spends the single
+physical card and records its original turn/owner and actual total/free usage.
+It returns no counters, leader or spice. Then the **normal revival controls**
+request any legal partial group, retaining the original typed prices/caps.
+Prior actual free returns count toward three; prior paid returns keep their
+price and consume the total allowance. No refund, ledger reset, leader grant
+or new total-force limit is created. Partial Tanks and late activation work.
 
+The effective free rate is the greater of the native rate and three. Higher
+native rates survive. Recruits still doubles its native rate and retains its
+original minimum-seven total limit, but does not double this fixed Nexus
+quota. Native La La La/free blocking and Tleilaxu prevention still apply.
+Unknown prior-free usage and a grant with no additional eligible free return
+are unavailable before disposal. An already-entitled short Tanks group keeps
+its card rather than paying for no improvement.
 
-`game/revival.ts` already computes free rate/remaining from `p.revived`, typed prices and ordinary limits. Engine `beginRevival`/`finishRevival` retains pending requests and Tleilaxu prevention/income continuations. The future combined-mode adapter should be an explicit source-labelled, phase-bound free-rate entitlement consumed by an actual normal revival request, retaining previous returns and exact free/paid normal/starred allocation. Never refund earlier paid revivals or reset `revived`/elite counters on card play or reload.
+`game/revival.ts` owns the shared allowance. Original `beginRevival`/
+`finishRevival` resolve every requested group through actual CHOAM/Tleilaxu
+decisions, typed reserves, Homeworld placement/deployment, Tech activity and
+income. Native Tleilaxu free-revival income occurs once per player/turn after
+actual returns, never on activation or once per partial request. Axlotl
+activity remains on the original token until phase-end settlement. Native
+Cyborg eligibility and Advanced Sardaukar caps retain their own rules.
 
-Keep these questions visible: how the three-total interacts with a higher native free rate, prior paid/free returns, low-Homeworld bonus and Recruits; whether a partial group below three is permitted when Tanks cannot supply three; and whether the benefit survives La La La or Tleilaxu prevention. The [existing revival audit](FREMEN_REVIVAL_AUDIT.md) and [Homeworld benefit audit](HOMEWORLD_BENEFITS_RULES.md) do not by themselves answer differently worded Nexus composition.
+New version-two receipts describe only the source grant. Strictly valid old
+exact-three receipts adopt that metadata without replaying original forces,
+payments or decisions; their physical before/after facts remain retained.
+Malformed signatures are not repaired. The old direct-transfer action and
+Nexus-only elite selector are removed; all affected consumers use activation
+followed by the original revival action.
 
-Tleilaxu may be present even though Fremen is absent. `collectRevivalIncome` uses a per-player/turn free-income marker and a separate Ghola path; do not create another payment merely because a Nexus card was played. Axlotl activation and any eligible Homeworld deployment must follow the actual returned batch. Preserve the existing [revival-accounting questions](TLEILAXU_AMBASSADOR_RULES.md), exact typed caps, and signed return/arrival continuations. No leader, Cheap Hero or foreign leader revival is printed here.
+The twenty-file native/consumer union passes329/329. Genuine Basic/Advanced
+classic and single-native-Tleilaxu fixtures cover one-plus-two returns, late
+free and paid usage, expiry, real income, typed module returns and legacy
+metadata adoption. Four API runs reach original Shipment and Movement after
+late activation without changing costs. Actual390px GameTable enables the
+quota, requests one then two, and uses the native Tleilaxu Allow control for
+each: Tanks8→5, reserves10→13, free3, spice13 unchanged, native income1 once,
+one discard, no overflow or browser errors. Wider combinations and final
+rules/private/recovery/deployed acceptance remain open.
+Final types/lint and connected UI build pass with existing build warnings.
+Owned QA host/tab/scaffolding is removed; proofs remain outside Git.
 
 ## Verification and remaining boundaries
 

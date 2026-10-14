@@ -78,8 +78,8 @@ for (const configuration of configurations) for (const kind of ['emperor-revival
     sourceTransitions(fixture);
     if (configuration.strongholds) assert.equal(fixture.afterEntry.strongholdCards!.owners.arrakeen, fixture.actor);
     const privateView = viewGame(fixture.game, fixture.actor);
-    const control = kind === 'emperor-revival' ? nexusEmperorRevivalAction(privateView, 0) : nexusFremenRevivalAction(privateView, 0);
-    assert.deepEqual(control, fixture.paymentAction, 'Existing human controls bind the actual private physical card offer');
+    const control = kind === 'emperor-revival' ? nexusEmperorRevivalAction(privateView, 0) : nexusFremenRevivalAction(privateView);
+    assert.ok(control, 'Human controls expose the real owner-only card offer');
     assert.equal(kind === 'emperor-revival' ? viewGame(fixture.game, fixture.opponent).nexusEmperorSecretAlly
       : viewGame(fixture.game, fixture.opponent).nexusFremenRevival, null);
     legalPolicies(fixture.game, fixture.actor);
@@ -87,7 +87,13 @@ for (const configuration of configurations) for (const kind of ['emperor-revival
     rejected(fixture.game, fixture.actor, { ...fixture.paymentAction, event: 'stale' });
     rejected(fixture.game, fixture.actor, { ...fixture.paymentAction, bonus: true });
     const before = discoveryClassicNexusEffectsPlayer(fixture.game, fixture.actor);
-    let paid = payDiscoveryClassicNexusEffectsFixture(fixture, structuredClone(fixture.game));
+    const activated = applyAction(structuredClone(fixture.game), fixture.actor, control);
+    if (kind === 'fremen-revival') {
+      assert.deepEqual(discoveryClassicNexusEffectsPlayer(activated, fixture.actor), before, 'Quota activation returns no forces and changes no ordinary ledger');
+      assert.deepEqual(activated.techTokens, fixture.game.techTokens, 'Only the subsequent native return can earn Axlotl income');
+    }
+    let paid = finishDiscoveryClassicNexusEffectsInteraction(fixture.revivalAction
+      ? applyAction(activated, fixture.actor, fixture.revivalAction) : activated);
     const after = discoveryClassicNexusEffectsPlayer(paid, fixture.actor);
     assert.equal(after.reserves, before.reserves + 3); assert.equal(after.tanks, before.tanks - 3);
     assert.deepEqual(wallets(paid), wallets(fixture.game));
@@ -100,8 +106,15 @@ for (const configuration of configurations) for (const kind of ['emperor-revival
     const history = kind === 'emperor-revival' ? paid.nexusEmperorSecretHistory! : paid.nexusFremenRevivalHistory!;
     assert.equal(history.length, 1); assert.equal(history[0].owner, fixture.actor);
     assert.equal(history[0].turn, 2); assert.equal(history[0].phase, 4);
-    assert.equal(history[0].before.tanks - history[0].after.tanks, 3);
-    assert.equal(history[0].before.spice, history[0].after.spice);
+    if (kind === 'emperor-revival') {
+      const receipt = paid.nexusEmperorSecretHistory![0];
+      assert.equal(receipt.before.tanks - receipt.after.tanks, 3);
+      assert.equal(receipt.before.spice, receipt.after.spice);
+    } else {
+      const grant = paid.nexusFremenRevivalHistory![0];
+      assert.equal(grant.revivedAtUse, before.revived);
+      assert.equal(grant.freeAtUse, before.freeForcesRevived ?? 0);
+    }
     unchangedCustody(fixture.game, paid); rejected(paid, fixture.actor, fixture.paymentAction);
     if (kind === 'emperor-revival') {
       const quote = forceRevivalQuote(paid, after, 3);
@@ -140,12 +153,12 @@ void test('Advanced Discovery Emperor extra-three and Fremen free-three retain a
   for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
     const fixture = createDiscoveryClassicNexusEffectsFixture({ kind, advanced: true, tech: true, strongholds: true,
       ownerFaction: kind === 'emperor-revival' ? 'fremen' : 'emperor', eliteTanks: 2 });
-    const view = viewGame(fixture.game, fixture.actor);
-    assert.deepEqual(kind === 'emperor-revival' ? view.nexusEmperorSecretAlly!.revival.eliteOptions : view.nexusFremenRevival!.eliteOptions, [0, 1]);
-    rejected(fixture.game, fixture.actor, { ...fixture.paymentAction, elite: 2 });
+    const activated = kind === 'fremen-revival' ? applyAction(structuredClone(fixture.game), fixture.actor, fixture.paymentAction) : fixture.game;
+    rejected(activated, fixture.actor, kind === 'fremen-revival'
+      ? { type: 'revive', amount: 3, elite: 2 } : { ...fixture.paymentAction, elite: 2 });
     legalPolicies(fixture.game, fixture.actor);
     const before = discoveryClassicNexusEffectsPlayer(fixture.game, fixture.actor);
-    const paid = payDiscoveryClassicNexusEffectsFixture(fixture);
+    const paid = finishDiscoveryClassicNexusEffectsInteraction(payDiscoveryClassicNexusEffectsFixture(fixture));
     const after = discoveryClassicNexusEffectsPlayer(paid, fixture.actor);
     assert.equal(after.elites!.reserves, before.elites!.reserves + 1);
     assert.equal(after.elites!.tanks, before.elites!.tanks - 1); assert.equal(after.elites!.revived, 1);
@@ -156,7 +169,7 @@ void test('Advanced Discovery Emperor extra-three and Fremen free-three retain a
   }
 });
 
-void test('Discovery ordinary-first Emperor return is extra; ordinary-first Fremen is genuinely late and still rejected', () => {
+void test('Discovery ordinary-first Emperor return stays extra; Fremen grants only the remaining ordinary free quota', () => {
   const emperor = createDiscoveryClassicNexusEffectsFixture({ advanced: true, tech: true, strongholds: true });
   const ordinary = finishDiscoveryClassicNexusEffectsInteraction(applyAction(emperor.game, emperor.actor, { type: 'revive', amount: 3 }));
   const paid = payDiscoveryClassicNexusEffectsFixture(emperor, ordinary);
@@ -166,13 +179,26 @@ void test('Discovery ordinary-first Emperor return is extra; ordinary-first Frem
   assert.deepEqual(paid.techTokens, ordinary.techTokens);
   const fremen = createDiscoveryClassicNexusEffectsFixture({ kind: 'fremen-revival', advanced: true, tech: true });
   const late = finishDiscoveryClassicNexusEffectsInteraction(applyAction(fremen.game, fremen.actor, { type: 'revive', amount: 1 }));
-  assert.match(viewGame(late, fremen.actor).nexusFremenRevival!.blocked ?? '', /before ordinary force revivals/);
-  rejected(late, fremen.actor, fremen.paymentAction);
-  for (const kind of ['emperor-revival', 'fremen-revival'] as const) {
-    const short = createDiscoveryClassicNexusEffectsFixture({ kind, tanks: 2 });
-    rejected(short.game, short.actor, short.paymentAction);
-    assert.equal(discoveryClassicNexusEffectsPlayer(short.game, short.actor).tanks, 2);
-  }
+  const granted = applyAction(late, fremen.actor, fremen.paymentAction);
+  assert.deepEqual(discoveryClassicNexusEffectsPlayer(granted, fremen.actor), discoveryClassicNexusEffectsPlayer(late, fremen.actor));
+  rejected(granted, fremen.actor, { type: 'revive', amount: 3 });
+  const returned = finishDiscoveryClassicNexusEffectsInteraction(applyAction(granted, fremen.actor, { type: 'revive', amount: 2, elite: 0 }));
+  assert.equal(discoveryClassicNexusEffectsPlayer(returned, fremen.actor).tanks, 3);
+  assert.equal(discoveryClassicNexusEffectsPlayer(returned, fremen.actor).revived, 3);
+  assert.equal(discoveryClassicNexusEffectsPlayer(returned, fremen.actor).freeForcesRevived, 3);
+  assert.equal(discoveryClassicNexusEffectsPlayer(returned, fremen.actor).spice, discoveryClassicNexusEffectsPlayer(late, fremen.actor).spice);
+  unchangedCustody(late, returned);
+  const shortEmperor = createDiscoveryClassicNexusEffectsFixture({ tanks: 2 });
+  rejected(shortEmperor.game, shortEmperor.actor, shortEmperor.paymentAction);
+  const shortFremen = createDiscoveryClassicNexusEffectsFixture({ kind: 'fremen-revival', tanks: 2 });
+  rejected(shortFremen.game, shortFremen.actor, shortFremen.paymentAction);
+  const shortReturn = finishDiscoveryClassicNexusEffectsInteraction(applyAction(shortFremen.game, shortFremen.actor, { type: 'revive', amount: 2, elite: 0 }));
+  assert.equal(discoveryClassicNexusEffectsPlayer(shortReturn, shortFremen.actor).tanks, 0);
+  assert.equal(discoveryClassicNexusEffectsPlayer(shortReturn, shortFremen.actor).revived, 2);
+  assert.equal(discoveryClassicNexusEffectsPlayer(shortReturn, shortFremen.actor).freeForcesRevived, 2);
+  assert.equal(shortReturn.nexusCards!.cards!.hands[shortFremen.actor], 'fremen',
+    'Both available counters already have native free entitlement; keep the unused Nexus card');
+  unchangedCustody(shortFremen.game, shortReturn);
 });
 
 void test('an earned Discovery/Nexus Axlotl pile cannot settle through an unsettled real printed Truthtrance', () => {

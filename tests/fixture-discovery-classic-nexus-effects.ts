@@ -39,6 +39,7 @@ export type DiscoveryClassicNexusEffectsFixture = {
   opponent: string;
   kind: DiscoveryClassicNexusEffectKind;
   paymentAction: Action;
+  revivalAction?: Action;
   token: string;
   source: string;
   tokenOwner: string | null;
@@ -259,7 +260,7 @@ export function createDiscoveryClassicNexusEffectsFixture(options: DiscoveryClas
     assert.equal(game.nexusCards!.cards!.hands[actor], selected);
     game = advanceDiscoveryClassicNexusEffects(game, game => game.nexusCards?.phase?.stage !== 'drawing', actions);
     game = advanceDiscoveryClassicNexusEffectsToPhase(game, kind === 'guild-shipment' ? 5 : 4, actions);
-    let paymentAction: Action;
+    let paymentAction: Action, revivalAction: Action | undefined;
     if (kind === 'guild-shipment') {
       game = advanceDiscoveryClassicNexusEffects(game, game => game.active === actor && clean(game), actions);
       paymentAction = { type: 'ship', territory: 'shrine', sector: 0, amount: 3, elite: 0,
@@ -272,18 +273,23 @@ export function createDiscoveryClassicNexusEffectsFixture(options: DiscoveryClas
       if (player.elites) { player.elites.reserves -= elite; player.elites.tanks += elite; }
       staging.push(`Conserved ${tanks} original ${actor} reserve counters to Tanks, including ${elite} elites; no return or quota receipt assigned.`);
       const view = viewGame(game, actor);
-      paymentAction = { type: kind === 'emperor-revival' ? 'nexusEmperorRevive' : 'nexusFremenRevive',
-        event: kind === 'emperor-revival' ? view.nexusEmperorSecretAlly!.event : view.nexusFremenRevival!.event, elite: elite ? 1 : 0 };
+      if (kind === 'emperor-revival') {
+        paymentAction = { type: 'nexusEmperorRevive', event: view.nexusEmperorSecretAlly!.event, elite: elite ? 1 : 0 };
+      } else {
+        paymentAction = { type: 'nexusFremenRevival', event: view.nexusFremenRevival!.event };
+        revivalAction = { type: 'revive', amount: 3, elite: elite ? 1 : 0 };
+      }
     }
     discoveryClassicNexusEffectsInventory(game);
     const industry: TechId = kind === 'guild-shipment' ? 'heighliners' : 'axlotl', tokenOwner = game.techTokens?.[industry].owner ?? null;
     return { initial, afterSetup, beforeReveal, afterReveal, beforeEntry, afterEntry, beforeClosingDraw, closingDraw,
-      afterClosingDraw, game, actor, opponent, kind, paymentAction, token: shrine.id, source, industry, tokenOwner,
+      afterClosingDraw, game, actor, opponent, kind, paymentAction, revivalAction, token: shrine.id, source, industry, tokenOwner,
       tokenCount: tokenOwner ? ownedTech(game.techTokens, tokenOwner).length : 0, actions, staging };
   });
 }
 export function payDiscoveryClassicNexusEffectsFixture(fixture: DiscoveryClassicNexusEffectsFixture, game = fixture.game): Game {
-  return applyAction(game, fixture.actor, fixture.paymentAction);
+  const activated = applyAction(game, fixture.actor, fixture.paymentAction);
+  return fixture.revivalAction ? applyAction(activated, fixture.actor, fixture.revivalAction) : activated;
 }
 export function finishDiscoveryClassicNexusEffectsInteraction(state: Game, actions?: DiscoveryClassicNexusEffectStep[]): Game {
   return advanceDiscoveryClassicNexusEffects(state, game => clean(game) && !game.pendingTreacheryDiscard && !game.pendingKarama, actions);

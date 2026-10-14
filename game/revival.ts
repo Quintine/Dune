@@ -19,6 +19,8 @@ export type RevivalRules = {
   expanded: string[];
   /** Provisional shared five-return permission from the actual absent-faction Nexus grant. */
   nexusTleilaxu?: string[];
+  /** Independent fixed ordinary free quota; native Recruits rates remain separate. */
+  nexusFremen?: { turn: number; owners: string[] };
   choamBlocked?: boolean;
   freeBlocked?: string[];
   limitBlocked: boolean;
@@ -78,7 +80,7 @@ export function normalRevivalAllowance(
   p: Pick<Player, 'id' | 'faction' | 'revived' | 'freeForcesRevived'>,
 ) {
   const currentFreeRate = freeRevivalRate(g, p);
-  return recruitsRevivalAllowance(g, {
+  const native = recruitsRevivalAllowance(g, {
     currentFreeRate,
     currentLimit: Math.max(forceRevivalLimit(g, p), currentFreeRate),
     revived: p.revived,
@@ -88,6 +90,15 @@ export function normalRevivalAllowance(
       g.recruits?.turn === g.turn ? (p.freeForcesRevived ?? p.revived) : p.revived,
     freeRateCap: 20,
   });
+  if (g.revivalRules?.nexusFremen?.turn !== g.turn ||
+    !g.revivalRules.nexusFremen.owners.includes(p.id) ||
+    g.revivalRules.freeBlocked?.includes(p.id)) return native;
+  const used = p.freeForcesRevived ?? (p.revived === 0 ? 0 : undefined);
+  if (used === undefined || !Number.isSafeInteger(used) || used < 0 || used > p.revived)
+    throw new RangeError('The Fremen Nexus quota needs the actual prior free-return ledger.');
+  const freeRate = Math.max(native.freeRate, 3);
+  return { ...native, freeRate,
+    freeRemaining: Math.min(native.remaining, Math.max(0, freeRate - used)) };
 }
 export function freeRevivalRemaining(
   g: RevivalRateContext,

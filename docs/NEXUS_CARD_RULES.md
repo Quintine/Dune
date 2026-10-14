@@ -12,6 +12,19 @@ movement, battle geometry and actual casualties stay unchanged. One original
 Karama response cancels the entire physical batch and keeps the Nexus spent.
 [Source, original native proofs and controls](NEXUS_BENE_GESSERIT_RULES.md#recommended-cunning-card-exceptions--14-october-2026).
 
+## Recommended Fremen ordinary free quota — 14 October 2026
+
+The absent-Fremen Secret Ally now enables a fixed ordinary free quota of
+three, followed by original normal revival requests. No counters move at
+activation. Actual prior free usage counts; paid returns keep their price
+and total usage. Partial/late returns, original typed caps, native prevention,
+Homeworld deposits/deployment, Axlotl activity and once-only Tleilaxu income
+use the original pipeline. Higher native rates survive; Recruits does not
+double the fixed quota or lose its native minimum-seven limit. Old exact-three
+receipts adopt strict source metadata without replay. This is the visibly
+provisional recommended composition, not a publisher answer.
+[Contract and changed-path proof](NEXUS_FREMEN_RULES.md#recommended-fixed-ordinary-quota--14-october-2026).
+
 ## Recommended absent-Fremen protection — 14 October 2026
 
 The printed Secret Ally protection now connects before original worm

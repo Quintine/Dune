@@ -46,7 +46,7 @@ import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySig
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
-import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
+import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, createFremenNexusRevival, upgradeFremenNexusRevival, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
 import { createNexusFremenProtection, currentNexusFremenProtectionOwner, answerNexusFremenProtection, validateNexusFremenProtection, type NexusFremenProtectionFrame, type NexusFremenProtectionInput } from './nexus-fremen-protection';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
@@ -2955,10 +2955,34 @@ function nexusFremenCunningIntegrity(g: Game) {
     'A worm occurrence cannot be both offered and already spent.');
 }
 
+function migrateFremenNexusRevival(state: Game): Game {
+  const history = state.nexusFremenRevivalHistory;
+  if (!Array.isArray(history)) return state;
+  let adopted: FremenNexusRevival[] | null = null;
+  const owners: string[] = [];
+  for (const [index, record] of history.entries()) {
+    if (record?.version === 2) continue;
+    const next = nexusRule(() => upgradeFremenNexusRevival(state, record));
+    adopted ??= [...history];
+    adopted[index] = next;
+    if (state.phase === 4 && next.turn === state.turn) owners.push(next.owner);
+  }
+  if (!adopted) return state;
+  const next = { ...state, nexusFremenRevivalHistory: adopted };
+  if (owners.length) {
+    const prior = state.revivalRules?.nexusFremen;
+    next.revivalRules = { ...(state.revivalRules ?? newRevivalRules()), nexusFremen: {
+      turn: state.turn,
+      owners: [...new Set([...(prior?.turn === state.turn ? prior.owners : []), ...owners])],
+    } };
+  }
+  return next;
+}
 function nexusFremenRevivalIntegrity(g: Game) {
   const history = g.nexusFremenRevivalHistory, events = g.nexusFremenRevivalEvents;
   if (history === undefined) {
-    requireRule(events === undefined, 'Fremen Nexus has lost its saved revival history.');
+    requireRule(events === undefined && !g.revivalRules?.nexusFremen,
+      'Fremen Nexus has lost its saved quota history.');
     return;
   }
   requireRule(g.nexusCards?.cards && Array.isArray(history) && history.length > 0 &&
@@ -2975,29 +2999,36 @@ function nexusFremenRevivalIntegrity(g: Game) {
   if (last.turn === g.turn)
     requireRule(g.nexusCards.cards.discard.includes('fremen'),
       'Fremen Nexus has reopened its already spent physical card.');
+  const permission = g.revivalRules?.nexusFremen;
+  if (permission) requireRule(Number.isSafeInteger(permission.turn) &&
+    permission.turn > 0 && permission.turn <= g.turn && Array.isArray(permission.owners) &&
+    permission.owners.length > 0 && new Set(permission.owners).size === permission.owners.length &&
+    permission.owners.every(owner => history.some(record =>
+      record.turn === permission.turn && record.owner === owner)),
+    'The Fremen quota has lost its actual phase-bound source grant.');
+  if (g.phase === 4) for (const record of history.filter(entry => entry.turn === g.turn)) {
+    const player = getPlayer(g, record.owner);
+    requireRule(permission?.turn === g.turn && permission.owners.includes(record.owner) &&
+      player.revived >= record.revivedAtUse &&
+      (player.freeForcesRevived ?? (player.revived === 0 ? 0 : -1)) >= record.freeAtUse,
+      'The Fremen quota has lost its source permission or actual free-return ledger.');
+  }
 }
-function playNexusFremenRevive(g: Game, p: Player, action: Action) {
+function playNexusFremenRevival(g: Game, p: Player, action: Action) {
   const offer = fremenNexusRevivalOffer(g, p.id);
   requireRule(offer && !offer.blocked && action.event === offer.event &&
-    Object.keys(action).sort().join(',') === 'elite,event,type' &&
-    offer.eliteOptions.includes(action.elite as number),
-    offer?.blocked ?? 'Choose a current eligible three-force Fremen Nexus return.');
-  const elite = action.elite as number, before = fremenNexusRevivalPools(p);
+    Object.keys(action).sort().join(',') === 'event,type',
+    offer?.blocked ?? 'Choose your current Fremen ordinary free-quota grant.');
+  const record = nexusRule(() => createFremenNexusRevival(g, p.id));
   g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
-  addNativeReserves(g, p, FREMEN_NEXUS_FREE_FORCES, elite);
-  p.tanks -= FREMEN_NEXUS_FREE_FORCES;
-  p.revived += FREMEN_NEXUS_FREE_FORCES;
-  p.freeForcesRevived = (p.freeForcesRevived ?? 0) + FREMEN_NEXUS_FREE_FORCES;
-  if (p.elites) { p.elites.tanks -= elite; p.elites.revived += elite; }
-  techIncome(g, 'axlotl', p);
-  const record: FremenNexusRevival = { event: offer.event, owner: p.id, turn: g.turn,
-    phase: 4, faction: p.faction, advanced: g.advanced, elite, before,
-    after: fremenNexusRevivalPools(p), signature: '' };
-  record.signature = fremenNexusRevivalSignature(record);
+  g.revivalRules ??= newRevivalRules();
+  const prior = g.revivalRules.nexusFremen;
+  g.revivalRules.nexusFremen = { turn: g.turn,
+    owners: [...(prior?.turn === g.turn ? prior.owners : []), p.id] };
   (g.nexusFremenRevivalHistory ??= []).push(record);
   (g.nexusFremenRevivalEvents ??= []).push(record.event);
-  log(g, `${p.name} spent Fremen Nexus Secret Ally to return three forces${elite ? `, including ${elite} elite` : ''} from Tanks to reserves for free. This uses the ordinary three-force revival allowance.`,
-    { faction: p.faction, name: 'Fremen Nexus revival' });
+  log(g, `${p.name} spent Fremen Nexus Secret Ally to enable a fixed ordinary free quota of ${FREMEN_NEXUS_FREE_FORCES} for this Revival phase. Use the normal controls for partial and typed returns. Prior free usage counts; paid returns are not refunded. Provisional policy: native limits, prevention and higher rates remain; Recruits does not double this card quota.`,
+    { faction: p.faction, name: 'Fremen Nexus free quota' });
 }
 function playNexusChoamTrade(g: Game, p: Player, action: Action) {
   const offer = currentNexusChoamTrade(g, p.id);
@@ -28420,6 +28451,7 @@ function normalizeCardNames(g: Game) {
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
   state = migrateAtomicsTargets(state);
+  state = migrateFremenNexusRevival(state);
   if (state.spiceBankerIncomePreview) {
     const keysBySource: Record<string, readonly string[]> = {
       bid: ['type','amount','allyPayment'], passBid: ['type'],
@@ -28821,6 +28853,7 @@ function settleAutomaticContinuations(g: Game) {
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
   state = migrateAtomicsTargets(state);
+  state = migrateFremenNexusRevival(state);
   harkonnenNexusBetrayalIntegrity(state);
   ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
@@ -29072,7 +29105,7 @@ function applyActionInner(
   if (t === 'nexusEmperorPurchase') { playNexusEmperorPurchase(g,p,action); return g; }
   if (t === 'nexusEmperorBetrayal') { playNexusEmperorBetrayal(g,p,action); return g; }
   if (t === 'nexusBgBetrayal') { playNexusBgBetrayal(g,p,action); return g; }
-  if (t === 'nexusFremenRevive') { playNexusFremenRevive(g,p,action); return g; }
+  if (t === 'nexusFremenRevival') { playNexusFremenRevival(g,p,action); return g; }
   if (t === 'nexusMoritaniBetrayal') { playMoritaniBetrayal(g, p, action); return g; }
   if (t === 'nexusEcazBetrayal') { playEcazBetrayal(g, p, action); return g; }
   if (t === 'nexusFremenBetrayal') { playNexusFremenBetrayal(g, p, action); return g; }
@@ -32876,6 +32909,7 @@ function applyActionInner(
 }
 export function viewGame(state: Game, id: string) {
   state = migrateAtomicsTargets(state);
+  state = migrateFremenNexusRevival(state);
   harkonnenNexusBetrayalIntegrity(state);
   ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);

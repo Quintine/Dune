@@ -35,6 +35,7 @@ export type NexusModulePaymentsFixture = {
   actor: string;
   kind: NexusModulePaymentKind;
   paymentAction: Action;
+  revivalAction?: Action;
   amount: number;
   cost: number;
   token: TechId;
@@ -204,7 +205,7 @@ export function createNexusModulePaymentsFixture(options: NexusModulePaymentsOpt
     const shipment = kind.endsWith('shipment');
     const purchase = kind === 'emperor-purchase';
     game = advanceNexusModulePaymentsToPhase(game, shipment ? 5 : purchase ? 3 : 4, actions);
-    let paymentAction: Action, cost = 0, destination: string | undefined;
+    let paymentAction: Action, revivalAction: Action | undefined, cost = 0, destination: string | undefined;
     const amount = shipment ? 5 : purchase ? 1 : 3;
     if (purchase) {
       for (let n = 0; game.decision?.kind !== 'auctionPayment' && n < 100; n++) {
@@ -243,20 +244,24 @@ export function createNexusModulePaymentsFixture(options: NexusModulePaymentsOpt
       staging.push(`Conserved ${actor}: ${tanks} reserves to Tanks, including ${elite} actual elites.`);
       const view = viewGame(game, actor);
       const event = kind === 'emperor-revival' ? view.nexusEmperorSecretAlly!.event : view.nexusFremenRevival!.event;
-      paymentAction = { type: kind === 'emperor-revival' ? 'nexusEmperorRevive' : 'nexusFremenRevive',
-        event, elite: elite ? 1 : 0 };
+      if (kind === 'emperor-revival') paymentAction = { type: 'nexusEmperorRevive', event, elite: elite ? 1 : 0 };
+      else {
+        paymentAction = { type: 'nexusFremenRevival', event };
+        revivalAction = { type: 'revive', amount: 3, elite: elite ? 1 : 0 };
+      }
     }
     nexusInventory(game);
     const token: TechId = shipment ? 'heighliners' : purchase ? 'production' : 'axlotl';
     const tokenOwner = game.techTokens?.[token].owner ?? null;
     const tokenCount = tokenOwner ? ownedTech(game.techTokens, tokenOwner).length : 0;
     return { game, beforePayment: structuredClone(game), setup, actions, staging, actor, kind,
-      paymentAction, amount, cost, token, tokenOwner, tokenCount, destination };
+      paymentAction, revivalAction, amount, cost, token, tokenOwner, tokenCount, destination };
   });
 }
 
 export function payNexusModulePaymentsFixture(fixture: NexusModulePaymentsFixture): Game {
   let game = applyAction(fixture.game, fixture.actor, fixture.paymentAction);
+  if (fixture.revivalAction) game = applyAction(game, fixture.actor, fixture.revivalAction);
   for (let n = 0; (!clean(game) || game.pendingShipment || game.pendingRevival) && n < 200; n++)
     game = step(game);
   assert.ok(clean(game) && !game.pendingShipment && !game.pendingRevival);

@@ -1,5 +1,32 @@
 # Dune implementation status
 
+## 14 October 2026 — Fremen Nexus fixed ordinary free quota
+
+Recommended provisional composition replaces the early-only direct transfer
+with a physical singleton activation and phase/turn-bound ordinary quota3.
+Normal revival owns partial/typed returns and original pending decisions,
+prevention, free-income, Tech and native Homeworld deposit/deployment.
+Prior actual free usage counts; prior paid returns keep their price and total
+usage. No forces/leader/spice move on activation, and no total limit grows.
+Higher native rates survive; Recruits doubles only its native rate and keeps
+its original minimum-seven ceiling. Useless or unknown-ledger grants reject.
+Strict old receipt adoption retains physical facts without gameplay replay.
+Removed direct-transfer action/selector; all affected module consumers migrate.
+
+Genuine Basic/Advanced classic and single-native-Tleilaxu chronology covers
+partial1+2, late2+1, previously paid expanded returns, expiry, native income,
+original typed caps and actual legal AI. Obsolete wiring/wording/early-only
+pins are removed rather than updated. The frozen20-file union passes329/329;
+types/lint pass. Four API profiles retain original costs/card inventory and
+reach Shipment and Movement after late activation. Actual390px GameTable
+enables quota, requests1 then2 and hands each to original Tleilaxu Allow:
+Tanks8→5/reserves10→13/free3, spice13 unchanged, native income1 once,
+one Nexus discard, no horizontal overflow or browser errors. No saved room
+is reset, touched or deployed. Wider combinations/final assurance remain due.
+[Canonical contract](NEXUS_FREMEN_RULES.md#recommended-fixed-ordinary-quota--14-october-2026).
+Final UI build passes with existing route-classification/chunk-size warnings.
+Owned QA host/tab/scaffolding is removed; API and phone proofs remain outside Git.
+
 ## 14 October 2026 — Native BG Cunning fresh and storm card exceptions
 
 Recommended provisional interpretation: printed any/all permission is an
