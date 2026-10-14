@@ -9,8 +9,8 @@ export type AtomicsAftermath = Readonly<{
   turn: number;
   moritaniId: string;
   allyAtActivation: string | null;
-  /** A later alliance change has no source-backed hand-limit interpretation yet. */
-  alliancePolicy: 'unresolved';
+  /** Provisional permanent targets: Moritani and its ally at activation. */
+  alliancePolicy: 'activation-targets';
 }>;
 
 export type AtomicsPlayer = Pick<
@@ -103,7 +103,7 @@ export function quoteMoritaniAtomics(input: {
   return {
     casualties,
     aftermath: { territory: token.location, turn, moritaniId,
-      allyAtActivation: ally?.id ?? null, alliancePolicy: 'unresolved' },
+      allyAtActivation: ally?.id ?? null, alliancePolicy: 'activation-targets' },
     handReductions,
   };
 }
@@ -116,40 +116,3 @@ export function atomicsShipmentBlocked(
   return aftermath?.territory === destinationTerritory;
 }
 
-/** A public pre-offer guard avoids promises whose acceptance would change Moritani's unresolved penalty recipient. */
-export function atomicsAllianceChangeBlocked(
-  aftermath: Pick<AtomicsAftermath, 'moritaniId' | 'allyAtActivation'> | null | undefined,
-  actor: string,
-  target: string | null,
-): boolean {
-  return !!aftermath && (actor === aftermath.moritaniId ||
-    actor === aftermath.allyAtActivation ||
-    target === aftermath.moritaniId ||
-    target === aftermath.allyAtActivation);
-}
-
-/** Must be checked before interpreting lasting hand limits after any ally change. */
-export function atomicsAllianceStatus(
-  aftermath: AtomicsAftermath,
-  currentAllyId: string | null,
-): 'activation-alliance' | 'clarification-required' {
-  return aftermath.alliancePolicy === 'unresolved' &&
-    currentAllyId === aftermath.allyAtActivation
-    ? 'activation-alliance' : 'clarification-required';
-}
-
-/** A queried player retains the initial reduction only while the alliance remains unchanged. */
-export function atomicsEffectiveHandLimit(
-  aftermath: AtomicsAftermath | null | undefined,
-  playerId: string,
-  currentAllyId: string | null,
-  baseLimit: number,
-): number {
-  requireAtomics(Number.isSafeInteger(baseLimit) && baseLimit >= 1,
-    'Atomics requires an authoritative base hand limit.');
-  if (!aftermath) return baseLimit;
-  requireAtomics(atomicsAllianceStatus(aftermath, currentAllyId) === 'activation-alliance',
-    'A later Moritani alliance change needs an authoritative Atomics hand-limit ruling.');
-  return playerId === aftermath.moritaniId ||
-    playerId === aftermath.allyAtActivation ? baseLimit - 1 : baseLimit;
-}

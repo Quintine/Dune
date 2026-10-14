@@ -1,8 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  atomicsAllianceStatus,
-  atomicsEffectiveHandLimit,
   atomicsShipmentBlocked,
   quoteMoritaniAtomics,
   type AtomicsPlayer,
@@ -46,14 +44,8 @@ void test('no ally at activation: all owners lose typed forces in the territory,
   assert.deepEqual(plan.handReductions,
     [{ playerId: 'm', limit: 3, randomDiscards: 1 }]);
   assert.deepEqual(plan.aftermath, { territory: 'arrakeen', turn: 3,
-    moritaniId: 'm', allyAtActivation: null, alliancePolicy: 'unresolved' });
+    moritaniId: 'm', allyAtActivation: null, alliancePolicy: 'activation-targets' });
   assert.deepEqual(players, before);
-  assert.equal(atomicsEffectiveHandLimit(plan.aftermath, 'ix', null, 4), 4);
-  assert.equal(atomicsEffectiveHandLimit(plan.aftermath, 'm', null, 4), 3);
-  assert.equal(atomicsAllianceStatus(plan.aftermath, null), 'activation-alliance');
-  assert.equal(atomicsAllianceStatus(plan.aftermath, 'newAlly'), 'clarification-required');
-  assert.throws(() => atomicsEffectiveHandLimit(plan.aftermath, 'm', 'newAlly', 4),
-    /alliance change/);
 });
 
 void test('activation ally is reduced with Moritani; counts exceed-one overflow without selecting cards', () => {
@@ -68,13 +60,6 @@ void test('activation ally is reduced with Moritani; counts exceed-one overflow 
     { playerId: 'm', limit: 3, randomDiscards: 3 },
     { playerId: 'choam', limit: 4, randomDiscards: 2 },
   ]);
-  assert.equal(atomicsEffectiveHandLimit(plan.aftermath, 'choam', 'choam', 5), 4);
-  assert.equal(atomicsEffectiveHandLimit(plan.aftermath, 'other', 'choam', 8), 8);
-  for (const next of [null, 'other']) {
-    assert.equal(atomicsAllianceStatus(plan.aftermath, next), 'clarification-required');
-    assert.throws(() => atomicsEffectiveHandLimit(plan.aftermath, 'other', next, 8),
-      /alliance change/);
-  }
 });
 
 void test('Aftermath blocks shipment by territory regardless of faction or sector, not other territories', () => {

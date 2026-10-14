@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 14 October 2026 — Persistent original Atomics hand-limit targets
+
+Recommended-option priority: the permanent one-card reduction stays on
+Moritani and its ally at detonation. Breaks, later Nexus pacts and Enemy of My
+Enemy acceptance do not transfer it to a new ally. An unallied activation has
+no future ally target. This is explicit provisional interpretation, not a new
+publisher ruling or separately answered numerical user question.
+
+Removed both Nexus pre/post-quote guards, Terror offer/accept guards, bot/UI
+filters and dead alliance-status/test-only hand-limit helpers. The original
+Aftermath receipt and player penalties remain the authoritative custody.
+Fresh policy is `activation-targets`; old active unresolved records migrate
+immutably before action/view/automatic integrity without replaying casualties
+or card losses. Unknown policies and forged target custody still fail closed.
+Wording-pinned static-markup tests were removed rather than re-pinned.
+
+Genuine Basic/Advanced four-seat fixtures preserve original setup, forces,
+wallets, cards, token placement, worm pacts, paid arrival and detonation.
+Only unplayed original Spice Card order is staged. Later real Nexus and
+Robbery-triggered Enemy of My Enemy both produce Moritani/Emperor alliances
+while limits remain Moritani3/former Atreides3/new Emperor4 and original
+Moritani6/Emperor1 Tanks losses remain. Unallied activation, exact legacy
+target adoption, corruption rejection and four legal acceptance policies pass.
+
+Final six-file union112/112, types/lint/build pass. Actual390×844 table
+break/offer/accept controls form the later pact; former Atreides still has
+capacity3, Emperor4, and the public notice states the provisional permanent
+targets. No horizontal overflow or browser errors. Owned host/tab/scaffold
+removed; proof outside Git. Existing build warnings remain. Bounded
+classic-plus-Moritani mode, other Atomics compositions, complete modes,
+assurance and deployed acceptance remain open.
+
 ## 14 October 2026 — Native Basic shared Ecaz Orgiz settlement
 
 BEFORE: a genuine Basic equal split paid the real lot but withheld Orgiz:

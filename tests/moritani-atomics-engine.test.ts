@@ -154,7 +154,7 @@ void test('Sneak Attack remains a free reserve entry into an Atomics Aftermath s
   assert.equal(done.moritaniAtomics?.territory, 'arrakeen');
 });
 
-void test('later Moritani alliance change and forged hand penalties reject atomically', () => {
+void test('later Moritani alliances preserve the original penalties while forged targets still reject atomically', () => {
   const { g } = fixture(false, true);
   let state = applyAction(g, 'e', ship);
   state = normalizeAutomaticGame(applyAction(state, 'm', { type: 'decision', reveal: true }));
@@ -162,7 +162,17 @@ void test('later Moritani alliance change and forged hand penalties reject atomi
   state.nexus = true;
   state.spiceWindow = null;
   state.spiceResolution = null;
-  rejected(state, 'm', { type: 'alliance', target: null }, /Atomics/);
+  const broken = applyAction(state, 'm', { type: 'alliance', target: null });
+  assert.equal(seat(broken, 'm').ally, null);
+  assert.equal(seat(broken, 'a').ally, null);
+  const offered = applyAction(broken, 'm', { type: 'alliance', target: 'e' });
+  const accepted = applyAction(offered, 'e', { type: 'alliance', target: 'm' });
+  assert.equal(seat(accepted, 'm').ally, 'e');
+  assert.equal(seat(accepted, 'e').ally, 'm');
+  assert.equal(seat(accepted, 'a').ally, null);
+  assert.deepEqual(accepted.moritaniAtomics, state.moritaniAtomics);
+  for (const [id, limit] of [['m',3],['a',3],['e',4]] as const)
+    assert.equal(viewGame(accepted,id).players.find(p=>p.id===id)!.handLimit,limit);
   for (const mutate of [
     (game: Game) => { delete seat(game, 'a').atomicsHandLimitPenalty; },
     (game: Game) => { game.moritaniAtomics = { ...game.moritaniAtomics!, allyAtActivation: 'e' }; },
@@ -174,7 +184,7 @@ void test('later Moritani alliance change and forged hand penalties reject atomi
   }
 });
 
-void test('a later Nexus filters impossible Moritani offers before bots can stall', () => {
+void test('a later Nexus lets all four legal policies accept Moritani without moving its permanent penalty', () => {
   const { g } = fixture(false, false);
   let state = applyAction(g, 'e', ship);
   state = normalizeAutomaticGame(applyAction(state, 'm', { type: 'decision', reveal: true }));
@@ -183,16 +193,17 @@ void test('a later Nexus filters impossible Moritani offers before bots can stal
   state.spiceWindow = null;
   state.spiceResolution = null;
   state.ready = [];
-  state.allianceOffers = { m: 'e' };
-  for (const p of state.players) state.deck.push(...p.hand.splice(0));
-  seat(state, 'm').bot = 'Medium';
-  seat(state, 'e').bot = 'Medium';
-  rejected(state, 'e', { type: 'alliance', target: 'm' }, /Atomics/);
-  rejected(state, 'm', { type: 'alliance', target: 'e' }, /Atomics/);
-  assert.deepEqual(botActions(viewGame(state, 'm'))[0], { type: 'ready' });
-  assert.equal(botActions(viewGame(state, 'e')).some(action =>
-    action.type === 'alliance' && action.target === 'm'), false);
-  const withdrawn = applyAction(state, 'm', { type: 'alliance' });
-  assert.equal(withdrawn.allianceOffers.m, undefined);
-  assert.equal(withdrawn.players.find(p => p.id === 'm')!.ally, null);
+  const offered = applyAction(state, 'm', { type: 'alliance', target: 'e' });
+  for (const level of ['Easy','Medium','Hard','Brutal'] as const) {
+    const view = viewGame(offered, 'e');
+    view.players.find(player => player.id === 'e')!.bot = level;
+    const action = botActions(view)[0];
+    assert.ok(action);
+    const accepted = applyAction(offered,'e',action);
+    assert.equal(seat(accepted,'e').ally,'m');
+    assert.equal(seat(accepted,'m').ally,'e');
+    assert.equal(viewGame(accepted,'e').players.find(p=>p.id==='e')!.handLimit,4);
+    assert.equal(viewGame(accepted,'m').players.find(p=>p.id==='m')!.handLimit,3);
+    assert.equal(viewGame(accepted,'a').players.find(p=>p.id==='a')!.handLimit,4);
+  }
 });

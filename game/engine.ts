@@ -68,7 +68,7 @@ import { createNexusMoritani, validateNexusMoritani, quoteNexusMoritaniPlacement
 import { moritaniBetrayalOffer } from './nexus-moritani-betrayal';
 import { ecazBetrayalOffer, quoteEcazBetrayal, validateEcazBetrayalSnapshot, type EcazBetrayalSnapshot } from './nexus-ecaz-betrayal';
 import { fremenBetrayalOffer, fremenBetrayalSignature, validateFremenBetrayal, type FremenNexusBetrayal, type StoredFremenNexusBetrayal } from './nexus-fremen-betrayal';
-import { atomicsAllianceChangeBlocked, atomicsAllianceStatus, atomicsShipmentBlocked, quoteMoritaniAtomics, type AtomicsAftermath, type AtomicsQuote } from './moritani-atomics';
+import { atomicsShipmentBlocked, quoteMoritaniAtomics, type AtomicsAftermath, type AtomicsQuote } from './moritani-atomics';
 import { nexusMoritaniRecordSignature, terrorLocationAllowed, terrorEntryLocationAllowed } from './terror-location';
 import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusChoamEffect, type NexusChoamReceipt } from './nexus-choam';
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
@@ -17508,8 +17508,6 @@ function terrorAllianceBlocked(
 ): string | null {
   if (entry.allianceBlocked)
     return 'Karama prevented this alliance opportunity; you may still reveal the token or leave it hidden.';
-  if (g.moritaniAtomics)
-    return 'Changing Moritani’s ally after Atomics awaits a hand-limit ruling.';
   const entrant = getPlayer(g, entry.entrant);
   const owner = byFaction(g, 'moritani')!;
   const homeworldBlock = homeworldAllianceReason(g, owner.id, entrant.id);
@@ -17526,8 +17524,6 @@ function terrorAllianceBlocked(
 function formTerrorAlliance(g: Game, owner: Player, entrant: Player) {
   const blocked = homeworldAllianceReason(g, owner.id, entrant.id);
   requireRule(!blocked, blocked ?? 'This alliance is unavailable.');
-  requireRule(!g.moritaniAtomics,
-    'Changing Moritani’s ally after Atomics awaits a hand-limit ruling.');
   const changed = new Set([owner.id, entrant.id]);
   for (const member of [owner, entrant]) {
     if (member.ally) getPlayer(g, member.ally).ally = null;
@@ -20530,6 +20526,21 @@ function gholaOptions(g: Game, p: Player) {
     reason,
   };
 }
+/** Old Aftermath already records its exact affected seats. Adopt those targets
+ * without rewriting forces, hands, alliances or the original activation. */
+function migrateAtomicsTargets(state: Game): Game {
+  const aftermath = state.moritaniAtomics;
+  if (!aftermath ||
+    (aftermath as unknown as { alliancePolicy?: unknown }).alliancePolicy !== 'unresolved')
+    return state;
+  const migrated = {
+    ...state,
+    moritaniAtomics: { ...aftermath, alliancePolicy: 'activation-targets' as const },
+  };
+  atomicsIntegrity(migrated);
+  return migrated;
+}
+
 function atomicsIntegrity(g: Game) {
   const aftermath = g.moritaniAtomics;
   if (!aftermath) {
@@ -20543,12 +20554,13 @@ function atomicsIntegrity(g: Game) {
     Number.isSafeInteger(aftermath.turn) && aftermath.turn >= 1 &&
     aftermath.turn <= g.turn && TERROR_STRONGHOLDS.includes(aftermath.territory) &&
     token?.status === 'removed' && token.location === null &&
-    aftermath.alliancePolicy === 'unresolved' &&
-    atomicsAllianceStatus(aftermath, owner.ally) === 'activation-alliance' &&
+    aftermath.alliancePolicy === 'activation-targets' &&
+    (aftermath.allyAtActivation === null || g.players.some(player =>
+      player.id === aftermath.allyAtActivation && player.id !== owner.id)) &&
     g.players.every(player =>
       player.atomicsHandLimitPenalty ===
       (player.id === owner.id || player.id === aftermath.allyAtActivation ? true : undefined)),
-    'Atomics Aftermath has lost its revealed token, stable alliance or hand-limit custody.');
+    'Atomics Aftermath has lost its revealed token, original targets or hand-limit custody.');
 }
 function marketGholaIntegrity(g: Game) {
   battleOrderIntegrity(g);
@@ -28150,6 +28162,7 @@ function normalizeCardNames(g: Game) {
   ]);
 }
 export function applyAction(state: Game, id: string, action: Action): Game {
+  state = migrateAtomicsTargets(state);
   if (state.spiceBankerIncomePreview) {
     const keysBySource: Record<string, readonly string[]> = {
       bid: ['type','amount','allyPayment'], passBid: ['type'],
@@ -28550,6 +28563,7 @@ function settleAutomaticContinuations(g: Game) {
 }
 /** Internal authoritative continuation. Callers must persist with their usual CAS fence. */
 export function normalizeAutomaticGame(state: Game): Game {
+  state = migrateAtomicsTargets(state);
   harkonnenNexusBetrayalIntegrity(state);
   ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);
@@ -31011,9 +31025,6 @@ function applyActionInner(
       'Alliances change only during a Nexus.',
     );
     const target = action.target ? stringField(action.target) : null;
-    requireRule(!atomicsAllianceChangeBlocked(g.moritaniAtomics, id, target) ||
-      (target === null && !p.ally),
-      'Changing Moritani’s ally after Atomics awaits a hand-limit ruling.');
     const formerAlly = p.ally ? getPlayer(g, p.ally).name : null;
     const formerOffer = g.allianceOffers[id];
     const formerOfferName = g.players.find((player) => player.id === formerOffer)?.name;
@@ -31037,11 +31048,6 @@ function applyActionInner(
         },
       ),
     );
-    if (g.moritaniAtomics) {
-      const moritani = byFaction(g, 'moritani')!;
-      requireRule(quote.allies[moritani.id] === moritani.ally,
-        'Changing Moritani’s ally after Atomics awaits a hand-limit ruling.');
-    }
     for (const player of g.players) player.ally = quote.allies[player.id];
     g.allianceOffers = quote.offers;
     if (target === null) {
@@ -32633,6 +32639,7 @@ function applyActionInner(
   throw new RuleError('That action is not available.');
 }
 export function viewGame(state: Game, id: string) {
+  state = migrateAtomicsTargets(state);
   harkonnenNexusBetrayalIntegrity(state);
   ixianNexusBetrayalIntegrity(state);
   ixianNexusReplacementIntegrity(state);

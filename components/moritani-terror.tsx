@@ -264,6 +264,8 @@ export function MoritaniTerrorSupply({ game }: { game: GameView }) {
           <p className="mt-1 mb-0">
             A lasting hand-limit reduction of one applies to {affectedNames}.
             Any excess cards were discarded at random when Atomics resolved.
+            The provisional penalty stays on these original players if alliances
+            later change; a new ally does not inherit it.
           </p>
         </div>
       )}
@@ -597,7 +599,9 @@ export function MoritaniEntry({
                 otherwise legal movement or Sneak Attack. Your hand limit
                 falls by one starting this turn; your ally’s at activation
                 does too, if you have one. Each hand over its new limit
-                discards one random card per excess card.
+                discards one random card per excess card. Under the provisional
+                persistent-target interpretation, later alliance changes do not
+                move this penalty to a new ally.
               </p>
             )}
             {entry.kind === 'sneakAttack' && sneak && (

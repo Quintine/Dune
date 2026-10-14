@@ -78,7 +78,7 @@ These are software integration recommendations, not newly asserted publisher tim
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Terror vs. Intrusion, spiritual advisors, ambassadors, Guild income or storm casualties from the same arrival | No complete priority table retrieved. Entry creates the opportunity, but the exact ordering of simultaneous reactions remains material. Do not claim the Ecaz-only interruption FAQ settles every Terror interaction.                                                           |
 | Assassination victim pool                                                                                     | Ordinary live owned leaders are the straightforward case. The short paragraph does not resolve captured leaders, foreign Gholas, Duke Vidal custody or unavailable/already-dead discs. Do not silently pool every printed leader identity.                                      |
-| Atomics and future allies                                                                                     | The lasting reduction is explicit. Whether it follows Moritani's current ally, permanently marks the ally at detonation, or both after alliance changes is not specified by the retrieved passage. Persist enough history to implement the chosen authoritative clarification.  |
+| Atomics and future allies | The retrieved passage does not identify future-ally treatment. Under the choose-recommended-option priority, the prototype now keeps the permanent penalty on Moritani and the ally at detonation, allowing later Nexus and Enemy of My Enemy alliances without transferring it to an uninvolved new ally. Original target history is retained. This is a provisional implementation interpretation, not publisher clarification. |
 | Extortion and other Mentat events                                                                             | Collection precedes recovery/payment by the printed sequence. Relative order against the turn's placement opportunity and other factions' Mentat effects is not explicit. Returning Extortion and immediately placing it again must not emerge accidentally from handler order. |
 | Sabotage recipient hand overflow                                                                              | The normal case frees a slot before the gift. If there was no discardable card or another exceptional capacity change, this paragraph supplies no additional forced-discard procedure.                                                                                          |
 | One placement; unrevealed token retained on decline; no normal movement ban from Aftermath                    | Ordinary composition of the singular option, optional trigger and shipment-specific prohibition. These do not need invented restrictions or a hypothetical FAQ before implementation.                                                                                           |
@@ -136,3 +136,37 @@ Independent review repaired current-payer affordability disclosure and continuat
 The printed Atomics contract above is connected for a bounded classic-plus-Moritani prototype without Guild, Ecaz or optional modules and with Moritani's alliance stable after activation. On an eligible entry the owner may leave Atomics hidden or reveal it; revealing kills every faction's forces in the territory and records public Aftermath there. The public map and Terror notice identify the territory and lasting shipment ban without identifying a still-placed hidden token's face. The owner sees the consequences before choosing to reveal. Ordinary movement and Sneak Attack are not prohibited by Aftermath, but shipments into that territory, including Fremen reinforcements, are.
 
 From activation turn forward, Moritani and the ally **at activation** each have a hand limit reduced by one. Each discards one random card per excess card on resolution, and their projected hand limits reflect the lasting penalty. The Aftermath record includes the territory, turn, Moritani seat and original ally seat; it is not a second secret Terror face. The publisher paragraph ([E3-M, p. 5](https://gamers-hq.de/media/pdf/0f/7a/86/Dune_EcazMoritani_Rulebook_EN.pdf#page=5)) does not resolve what happens on later alliance change, so that transition remains gated rather than assigning the penalty to a new ally by inference. This checkpoint does not enable complete Moritani games or public expansion starts; other reactions and module combinations retain their own gates. Earlier absence statements above describe their dated checkpoints, not current behavior.
+
+## Recommended persistent activation targets — 14 October 2026
+
+The earlier stable-alliance gate is superseded. Moritani and its ally at
+activation keep their one-card hand-limit penalties after a break, a later
+Nexus pact or Enemy of My Enemy acceptance. No later ally inherits a penalty;
+an originally unallied detonation never creates an ally target afterward.
+Original Aftermath territory/turn/seat identities and hand-limit custody stay
+authoritative. The publisher ambiguity above remains; this is the conservative
+recommended prototype choice, not a separately answered numerical user ruling.
+
+Fresh receipts use `alliancePolicy: 'activation-targets'`. Old active
+`'unresolved'` receipts adopt the same stored original targets immutably in
+action, automatic-continuation and view entry paths, without replaying
+casualties or random discards. The unused alliance-status, alliance-block and
+test-only hand-limit helpers were removed. Existing Homeworld alliance
+restrictions, Karama timing and the bounded Atomics mode gate remain intact.
+
+Genuine Basic/Advanced four-seat fixtures use original faction setup, Moritani
+placement, real worms, a reciprocal pact, paid Emperor entry and detonation,
+then a later real Nexus. Only original unplayed Spice Card order is staged.
+The original Moritani6/Emperor1 casualties stay in Tanks; after a new
+Moritani/Emperor pact, hand limits remain Moritani3, former Atreides3, Emperor4.
+An unallied activation leaves the later ally at4. A real later Robbery arrival
+also forms Enemy of My Enemy and returns the hidden token without moving the
+penalty. Migration, corrupted target custody and all four legal acceptance
+policies are exercised.
+
+Final six-file union112/112, types/lint and app build pass. Actual390×844 table
+break/offer/accept controls form the later pact while preserving the original
+Aftermath and public provisional notice. Former Atreides still shows hand
+capacity3; new Emperor remains4. No overflow or browser errors. Owned hosts,
+tabs and scaffolding were removed; proof stays outside Git. Full Moritani,
+other Atomics module combinations and deployed acceptance remain open.

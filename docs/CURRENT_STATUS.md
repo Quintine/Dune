@@ -29,6 +29,24 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Moritani Atomics after alliance change — 14 October.**
+The recommended interpretation keeps the permanent hand-limit penalty on
+Moritani and its original ally at detonation. Later Nexus and Enemy of My Enemy
+alliances are legal without transferring it to an uninvolved new ally; an
+unallied detonation never gains an ally target later. Original stored targets,
+casualties and random discards remain authoritative. The choice is visibly
+provisional, not publisher clarification.
+
+Genuine Basic/Advanced setup, placement, worms, pact, paid entry and detonation
+lead to a later Nexus or Robbery-based Enemy of My Enemy. A new
+Moritani/Emperor pact preserves limits3/3/4 for Moritani/former Atreides/Emperor
+and Tanks6/0/1. Legacy active policy adoption preserves input and effects.
+Final six-file union112/112, types/lint/build pass; actual390px break/offer/
+accept controls and the persistent-target notice are verified with no overflow
+or browser errors. Four legal policies can accept the pact. Full Moritani,
+other Atomics module combinations and deployed acceptance remain open.
+[Contract](MORITANI_TERROR_RULES.md#recommended-persistent-activation-targets--14-october-2026).
+
 **Basic shared Orgiz settlement — 14 October.**
 Both modes now wait for the original Ecaz/ally allocation before Orgiz.
 `quoteSharedOrgiz` replaces the Advanced-only path: Advanced charges once per
