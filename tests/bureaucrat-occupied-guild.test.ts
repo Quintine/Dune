@@ -189,12 +189,7 @@ void test('an original Karama cancellation removes the offer and banks the nativ
   outcome(f, done, 0, true);
 });
 
-void test('occupied Junction refuses two odd contributions and sub-five splits obtain no offer', () => {
-  for (const [payerShare, donorShare] of [[5, 3], [3, 5], [5, 5]]) {
-    const rejected = createOccupiedGuildFixture({ payerShare, donorShare, donor: 'atreides' });
-    assert.equal(rejected.gross, payerShare + donorShare);
-    reject(rejected.game, rejected.payer, rejected.action);
-  }
+void test('sub-five occupied Junction payer shares do not create a Bureaucrat offer', () => {
   const subFive = createOccupiedGuildFixture({ payerShare: 2, donorShare: 2 });
   const settled = allocateOccupiedGuild(allowOccupiedGuildIncome(declareOccupiedGuild(subFive)));
   assert.equal(settled.bureaucratPayments?.used.length ?? 0, 0);

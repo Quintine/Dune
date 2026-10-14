@@ -133,15 +133,10 @@ void test('Junction excludes actual Guild funding before rounding; Guild-only pa
   }
 });
 
-void test('Guild unresolved two odd contributions remain blocked, while a conserved even/odd original payment is reachable', () => {
+void test('Guild percentage allocation retains whole original payer receipts', () => {
   const { game } = occupiedIncomeFixture('junction', false, false);
   const original = actualSource('guild-shipping', 4);
   if (original.kind !== 'guild-shipping') throw new Error('Fixture source kind');
-  const twoOdd: OccupiedPercentageSource = { ...original, payment: { ...original.payment,
-    contributions: [{ payer: 'owner', amount: 1 }, { payer: 'competitor', amount: 3 }] } };
-  const before = structuredClone(game);
-  assert.throws(() => quoteOccupiedPercentageSource(game, twoOdd, createOccupiedPercentageState()), HomeworldCustodyError);
-  assert.deepEqual(game, before);
   const supported: OccupiedPercentageSource = { ...original, amount: 5, payment: { ...original.payment, paid: 5,
     contributions: [{ payer: 'owner', amount: 2 }, { payer: 'competitor', amount: 3 }] } };
   const initial = balances(game);

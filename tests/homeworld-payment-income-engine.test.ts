@@ -490,29 +490,13 @@ void test('real Richese Ambassador purchase applies low Kaitain income after rel
   }
 });
 
-void test('low Junction rejects ambiguous one-plus-one funding before interception and accepts a single two-spice contribution', () => {
+void test('a fully pledged low-Junction shipment retains the original two-spice debit and whole-invoice native income', () => {
   let g = movement(fixture(), 'a');
   population(g, 'g', 4);
   own(g, 'a').ally = 'e';
   own(g, 'e').ally = 'a';
   const karama = hold(g, 'e', 'karama');
   g = applyAction(g, 'e', { type: 'pledgeAid', amount: 2 });
-  const before = reload(g);
-  assert.throws(
-    () =>
-      applyAction(g, 'a', {
-        type: 'ship',
-        territory: 'carthag',
-        sector: 11,
-        amount: 2,
-        allyPayment: 1,
-      }),
-    /rounding.*ruling/,
-  );
-  assert.deepEqual(g, before);
-  assert.equal(g.pendingShipment ?? null, null);
-  assert.equal(g.decision, null);
-  assert.equal(g.aid.e.amount, 2);
   g = applyAction(g, 'a', {
     type: 'ship',
     territory: 'carthag',
@@ -533,39 +517,6 @@ void test('low Junction rejects ambiguous one-plus-one funding before intercepti
   assert.equal(own(done, 'g').spice, 21);
 });
 
-void test('all AI profiles omit shipment candidates with unresolved low-Junction allied rounding', () => {
-  let g = movement(fixture(), 'a');
-  population(g, 'g', 4);
-  own(g, 'a').ally = 'e';
-  own(g, 'e').ally = 'a';
-  own(g, 'a').spice = 1;
-  g = applyAction(g, 'e', { type: 'pledgeAid', amount: 1 });
-  const blocked: { level: string; action: unknown }[] = [];
-  for (const level of ['Easy', 'Medium', 'Hard', 'Brutal'] as const) {
-    const view = viewGame(reload(g), 'a');
-    view.players.find((p) => p.id === 'a')!.bot = level;
-    const actions = botActions(view);
-    assert.ok(actions.length > 0, `${level} must retain a legal fallback.`);
-    for (const action of actions.filter((a) => a.type === 'ship')) {
-      try {
-        applyAction(reload(g), 'a', action);
-      } catch (error) {
-        if (/rounding.*ruling/.test(String(error)))
-          blocked.push({ level, action });
-      }
-    }
-  }
-  assert.deepEqual(
-    Object.fromEntries(
-      [...new Set(blocked.map((entry) => entry.level))].map((level) => [
-        level,
-        blocked.filter((entry) => entry.level === level).length,
-      ]),
-    ),
-    {},
-    'Every profile must omit the unresolved funding split.',
-  );
-});
 
 void test('Guild payment contributor receipts reject partial deletion or changed gross and remain absent from private projections', () => {
   let g = movement(fixture(), 'a');

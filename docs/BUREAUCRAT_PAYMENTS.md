@@ -124,8 +124,14 @@ native3 + occupied3. The new receipt records `bankDiversion:2` while retaining
 original `payment.paid:8` and each full actual payer contribution; its allocatable
 `source.amount` is6. Decline splits8 into4+4. Karama before Bureaucrat instead
 banks the native4, preserves the occupied4 and spends no Bureaucrat use.
-The original two-odd Guild contributor rounding guard remains separate:6+2
-is admitted, whereas5+3/3+5/5+5 reject before costs at low/occupied Junction.
+The 14 October user ruling supersedes the former two-odd fence: low native income
+rounds the whole remaining eligible invoice once. Both5+3 and3+5 are admitted.
+The internal diversion payer is the first individually eligible contribution:
+declared payer first, ally second, never pooled. Final Bank parts of that same
+payer/invoice combine for Banker; no funding or eligibility identity is disclosed.
+The separate fresh `banker-income --homeworlds` entry retains these original
+receipts and automatically collects earned Bank income at native Mentat. See
+[current accounting and proof](SPICE_BANKER_RUNTIME.md#classic-homeworld-final-bank-income--14-october-2026).
 
 The new consumers are `tests/bureaucrat-occupied-guild.test.ts` and
 `tests/bureaucrat-occupied-emperor.test.ts`, with original-army fixtures of the

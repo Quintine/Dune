@@ -1,5 +1,45 @@
 # Dune implementation status
 
+## 14 October 2026 — classic Homeworld final Bank income and ruled accounting
+
+The user selected whole-invoice low Guild/Emperor rounding, first eligible
+Bureaucrat contribution primary-first internally, and same-payer/same-invoice
+combination of redirected2 with other actual final Bank portions. No distinct
+payers/invoices pool and no funding or eligibility identity is newly projected.
+Recommended options are selected without further clarification questions.
+
+BEFORE fresh Homeworld normal Banker admission rejected; original occupied
+5+3 rejected the comparative rounding guard before costs. AFTER the separate
+classic `banker-income --homeworlds` path reuses actual occupation/all14 setup,
+admits original odd funding and preserves original price, escrow, force sources
+and recipient continuations. The old comparison export, table warning and AI
+exclusion are removed without aliases. Expansions, Nexus, Discovery, Tech,
+Strongholds and other overlays stay excluded from this new income branch.
+
+Final receipts supply actual retained Bank amounts. Low unoccupied5+3 gives
+3/1 and no grant; tax2 gives4/1 and one unavailable spice. Occupied allowed
+income banks0 (tax variant only2); cancellation banks native4, not full8,
+and preserves occupied4. Genuine odd11, first-eligible fallback, later same-
+phase payment and replay rejection retain physical native stock and full debits.
+Actual world-to-world4 and half-rate sponsored board-return4 are Bank fees,
+not Guild income. Actual Kaitain capital4 after original eleven-force shipment
+supports a later Guild eight-spice Treachery purchase: native4/Bank4/front1.
+
+Actual isolated `HWBANKQA v8` CLI reaches native setup/income-v1. Actual390px
+Bureaucrat **Redirect2** settles4/1, wallet11/front1; native city Collection
+makes13, and the last original **Ready for next phase** enters Mentat and makes
+14/front0, credit1 once. Browser errors empty; no root overflow. A text wait
+for title-case Mentat timed out because the actual heading is uppercase;
+fresh accessibility/server evidence proves the click succeeded without replay.
+Private local proof: `/tmp/dune-homeworld-banker-ui-proof.json`.
+
+Frozen related18-file union292/292, types/lint and production app build pass.
+Build retains module-registration, chunk-size and unknown-route warnings.
+Pure accounting21 cases and new native14 cases also passed earlier; no
+comprehensive recovery/privacy/custody campaign or deployed acceptance is claimed.
+Fixtures, docs/checklist and obsolete rounding-rejection tests are migrated.
+The user PDF and all existing saves remain untouched.
+
 ## 14 October 2026 — ruled Grumman hidden return and Cunning addition
 
 Four user decisions resolve the earlier Moritani boundaries: Cunning enhances

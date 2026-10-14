@@ -4,6 +4,21 @@ Updated 14 October 2026. This is the authoritative navigation index for existing
 
 ## User decisions — 14 October 2026
 
+- **Recommended-option priority:** choose an available recommended option and
+  continue without further clarification questions. Record its interpretation
+  and scope; no new external privilege or destructive-action authorization.
+- **Banker / Bureaucrat:** combine the redirected two with the same original
+  payer's other final Bank portions of that invoice for the four-spice threshold.
+  Do not pool distinct payers or distinct invoices.
+- **Bureaucrat allied attribution:** use the first eligible contribution:
+  declared primary payer first, then ally if necessary. Determine it internally;
+  preserve the existing gross-only prompt and funding privacy.
+- **Low-Homeworld funded income:** round the whole Guild/Emperor invoice once.
+  Allocate any extra Bank rounding unit primary-payer first, then ally,
+  internally without disclosing funding shares. Full payer debits remain
+  unchanged. This resolves the previous two-odd-contribution fence.
+  [Connected final Bank runtime and evidence](SPICE_BANKER_RUNTIME.md#classic-homeworld-final-bank-income--14-october-2026).
+
 - **Moritani Cunning / relocation:** supply placement only. Ordinary relocation
   remains available, but Cunning does not broaden its destinations.
 - **Moritani Cunning / HMS:** keep the Hidden Mobile Stronghold itself excluded.

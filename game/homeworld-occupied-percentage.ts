@@ -1,6 +1,6 @@
 import { HomeworldCustodyError } from './homeworld-custody';
 import type { HomeworldId } from './homeworld-cards';
-import { quoteGuildPaymentRounding, quoteHomeworldPaymentIncome } from './homeworld-payment-income';
+import { quoteHomeworldPaymentIncome } from './homeworld-payment-income';
 import {
   quoteStableHomeworldOccupation,
   type StableHomeworldOccupationContext,
@@ -243,13 +243,6 @@ export function quoteOccupiedPercentageSource(
   const payment = source.kind === 'emperor-treachery' || source.kind === 'guild-shipping'
     ? quoteHomeworldPaymentIncome(game, source.native, source.kind === 'guild-shipping' ? 'shipment' : 'treachery', source.amount)
     : null;
-  // Keep the existing two-odd-contributor ruling gate. Exclusion happens before
-  // comparing rounding; no new transaction-versus-contribution policy is invented.
-  if (source.kind === 'guild-shipping' && (payment?.low || stable.entitlement || stable.blocked)) {
-    const eligible = source.payment.contributions.filter(leg => leg.payer !== source.native && leg.amount > 0).map(leg => leg.amount);
-    requireReceipt(quoteGuildPaymentRounding(source.amount + (source.payment.bankDiversion ?? 0), eligible).unambiguous,
-      'multiple-contributor shipping rounding awaits its original ruling.');
-  }
   const candidate = Math.floor(source.amount / 2);
   const blocked = candidate > 0 ? stable.blocked : null;
   const entitlement = stable.entitlement ? Object.freeze({ ...stable.entitlement }) : null;

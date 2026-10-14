@@ -107,8 +107,8 @@ export function startPrototypeRoom(
     throw new Error('--discoveries requires the leader-skills or nexus profile.');
   if (options.leaderSkills && profile !== 'semuta' && profile !== 'homeworld-occupation' && profile !== 'guild-betrayal')
     throw new Error('--leader-skills requires the semuta, homeworld-occupation or guild-betrayal profile.');
-  if (options.homeworlds && profile !== 'semuta')
-    throw new Error('--homeworlds requires the semuta profile.');
+  if (options.homeworlds && profile !== 'semuta' && profile !== 'banker-income')
+    throw new Error('--homeworlds requires the semuta or banker-income profile.');
   if (options.ecazTreachery) initial.ecazTreachery = true;
   if ((profile === 'nexus' || options.nexusCards) && !initial.nexusCards)
     initial.nexusCards = { cards: null, phase: null };

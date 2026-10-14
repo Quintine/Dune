@@ -58,7 +58,7 @@ The same fresh `homeworld-occupation` entry connects these original producers:
 | Printed source | Original consumer and ownership |
 | --- | --- |
 | Kaitain | Eligible paid Treachery receipt: native rounded-up half, occupied rounded-down half; buyer payment occurs once. |
-| Junction | Eligible other-player shipping receipt after original Guild-funded exclusions and routing; the existing two-odd-contributor guard remains. |
+| Junction | Eligible other-player shipping receipt after original Guild-funded exclusions and routing; the 14 October user ruling rounds the whole invoice once and admits two odd contributors. |
 | Richese income | Rounded-down half of actual seller net received, not the gross sale or contribution routed to Emperor. |
 | Southern Hemisphere | One completed actual native Collection aggregate, including settled shared and occupied-bank credits; round once and redistribute the already credited amount. |
 | Caladan | Native and occupier inspect the original admitted lot, never the occupier’s ally. Canceling native inspection hides its face from native while the separately admitted printed share survives. |

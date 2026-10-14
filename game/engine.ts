@@ -492,7 +492,7 @@ import { quoteRicheseBetrayalInvoice, requiredRicheseBetrayalResponders, richese
 import { saleOptions, quoteSale, type ChoamMarket } from './choam-market';
 import { highKaitainDiscardsAvailable, quoteKaitainDiscards, homeworldWorthlessSaleBlock } from './homeworld-card-economy';
 import { biddingEndError, biddingEndQuiet, biddingEndPubliclyEmpty, type BiddingEnd } from './bidding-end';
-import { quoteHomeworldPaymentIncome, quoteGuildPaymentRounding } from './homeworld-payment-income';
+import { quoteHomeworldPaymentIncome, quoteHomeworldBankPayment } from './homeworld-payment-income';
 import { quoteEcazPoisonIncome, EcazPoisonIncomeError, type EcazPoisonDiscard } from './ecaz-poison-income';
 import { resolveBattleWeapons } from './effective-weapons';
 import { choamGholaEvent, choamGholaSkillOfferEvent, choamGholaSkillSignature, choamMarketGholaError, choamSaleGholaTiming, type ChoamMarketGhola } from './choam-market-ghola';
@@ -8318,11 +8318,13 @@ function bankerIncomeContext(g: Game): BankerIncomeContext {
 }
 function bankerIncomeProfile(g: Game): boolean {
   const classicNexus = classicNexusLeaderSkillsProfile(g);
+  const homeworlds = !!g.homeworlds && !g.expansions.length && !g.nexusCards &&
+    !g.techTokens && !g.strongholdCards && homeworldLeaderSkillsProfile(g);
   return g.players.length >= 2 && g.players.length <= 6 &&
     new Set(g.players.map(p => p.faction)).size === g.players.length &&
     ((!g.expansions.length && g.players.every(p => FACTIONS.some(f => f.id === p.faction && f.expansion === 'base'))) ||
       nativeExpansionLeaderSkillsProfile(g)) &&
-    (!g.nexusCards || classicNexus) && !g.homeworlds &&
+    (!g.nexusCards || classicNexus) && (!g.homeworlds || homeworlds) &&
     (!g.techTokens || classicTechLeaderSkillsProfile(g) || nativeTechLeaderSkillsProfile(g) || strongholdLeaderSkillsProfile(g) || classicNexus) &&
     (!g.strongholdCards || strongholdLeaderSkillsProfile(g) || classicNexus) && !g.discoveryEnabled && !g.discoveries && !g.discoveryStash &&
     !g.greatMaker && !g.ecazTreachery && !g.semutaPreview &&
@@ -8398,10 +8400,27 @@ function bankerIncomePayment(g: Game, kind: BankerIncomeAuthority['kind'],
   payment.signature = bankerIncomePaymentSignature(payment);
   return payment;
 }
+type BureaucratSettlement = { amount: 0 } | { amount: 2; payer: string };
+function firstBureaucratSettlement(source: BureaucratPaymentSource, owner: string,
+  amount: 0 | 2): BureaucratSettlement {
+  if (amount === 0) return { amount: 0 };
+  let payer: string | undefined;
+  if (source.contributions) {
+    for (const leg of source.contributions) {
+      if (leg.amount < 5 || leg.payer === owner || leg.payer === source.payee) continue;
+      if (leg.payer === source.payer) { payer = leg.payer; break; }
+      if (payer === undefined) payer = leg.payer;
+    }
+  } else if (source.amount >= 5 && source.payer !== owner && source.payer !== source.payee) {
+    payer = source.payer;
+  }
+  requireRule(payer !== undefined, 'The original payment has no eligible Bureaucrat contribution.');
+  return { amount: 2, payer: payer! };
+}
 function awardBankerIncome(g: Game, payment: SpiceBankerIncomePayment | undefined,
-  canceled = false, resolvedBattle = false): void {
+  canceled = false, resolvedBattle = false, finalBankLegs?: BankerIncomeAuthority['bankLegs']): void {
   if (!payment) return;
-  const bankLegs = payment.legs.filter(leg => leg.recipient === 'bank' || canceled)
+  const bankLegs = finalBankLegs ?? payment.legs.filter(leg => leg.recipient === 'bank' || canceled)
     .map(({payer, amount}) => ({payer, amount}));
   if (!bankLegs.length) return;
   const assignment = g.leaderSkills?.assignments.find(a => a.skill === 'spice-banker');
@@ -8422,6 +8441,21 @@ function awardBankerIncome(g: Game, payment: SpiceBankerIncomePayment | undefine
       {faction: owner.faction, name: 'Spice Banker'});
   }
 }
+/** Original invoice legs stay signed and private. Only its actually retained
+ * Bank portion, including the same payer's selected diversion, earns income. */
+function awardFinalFactionBankerIncome(g: Game, payment: SpiceBankerIncomePayment | undefined,
+  bankRetained: number, settlement?: BureaucratSettlement): void {
+  if (!payment) return;
+  const playerLegs: { payer: string; amount: number }[] = [];
+  const bankLegs: BankerIncomeAuthority['bankLegs'] = [];
+  for (const leg of payment.legs) {
+    if (leg.recipient === 'bank') bankLegs.push({ payer: leg.payer, amount: leg.amount });
+    else playerLegs.push({ payer: leg.payer, amount: leg.amount });
+  }
+  const diversion = settlement?.amount === 2 ? { payer: settlement.payer, amount: 2 as const } : undefined;
+  bankLegs.push(...homeworldRule(() => quoteHomeworldBankPayment(playerLegs, bankRetained, diversion)));
+  awardBankerIncome(g, payment, false, false, bankLegs);
+}
 function collectBankerIncome(g: Game): void {
   if (!g.spiceBankerIncomePreview) return;
   const context = bankerIncomeContext(g), authority = {event: crypto.randomUUID(), turn: g.turn, phase: 8 as const};
@@ -8434,14 +8468,17 @@ function collectBankerIncome(g: Game): void {
       {faction: owner.faction, name: 'Spice Banker'});
   }
 }
-function settleBankerShipmentIncome(g: Game, p: Player, cost: number, allyPayment: number): void {
+function settleBankerShipmentIncome(g: Game, p: Player, cost: number, allyPayment: number,
+  recipients?: { own: boolean; ally: boolean }): void {
   if (!g.spiceBankerIncomePreview) return;
   const guild = byFaction(g, 'guild');
   const bankOnly = !guild || g.karamaShipping?.player === p.id;
   const payment = bankerIncomePayment(g, 'shipment', [
-    {payer: p.id, amount: cost - allyPayment, recipient: bankOnly || p.id === guild?.id ? 'bank' : 'player'},
+    {payer: p.id, amount: cost - allyPayment,
+      recipient: recipients ? recipients.own ? 'player' : 'bank' : bankOnly || p.id === guild?.id ? 'bank' : 'player'},
     ...(allyPayment ? [{payer: p.ally!, amount: allyPayment,
-      recipient: bankOnly || p.ally === guild?.id ? 'bank' as const : 'player' as const}] : []),
+      recipient: recipients ? recipients.ally ? 'player' as const : 'bank' as const :
+        bankOnly || p.ally === guild?.id ? 'bank' as const : 'player' as const}] : []),
   ]);
   if (g.response?.kind === 'guildIncome') g.response.spiceBankerIncomePayment = payment;
   else awardBankerIncome(g, payment);
@@ -8608,6 +8645,7 @@ function actBureaucratPayment(g: Game,action:Action) {
   requireRule(action.event === pending.source.event && typeof action.redirect === 'boolean' &&
     Object.keys(action).every(key => ['type','event','redirect'].includes(key)), 'Choose whether to redirect this exact Bureaucrat payment.');
   const redirected = action.redirect ? 2 : 0;
+  const settlement = firstBureaucratSettlement(pending.source, pending.owner, redirected);
   if (redirected) {
     const use:BureaucratPaymentUse = {event:pending.source.event,owner:pending.owner,turn:g.turn,phase:g.phase,signature:''};
     use.signature = bureaucratPaymentSignature(use);
@@ -8616,7 +8654,7 @@ function actBureaucratPayment(g: Game,action:Action) {
   }
   delete g.bureaucratPayments!.pending;delete g.bureaucratPaymentEvent;
   g.response = pending.resume.response;g.decision = pending.resume.decision;
-  if (pending.continuation.kind === 'response') finishResponse(g,false,redirected);
+  if (pending.continuation.kind === 'response') finishResponse(g,false,settlement);
   else if (pending.continuation.kind === 'auction') commitAuctionContinuation(g,pending.continuation.quote,redirected);
   else if (pending.continuation.kind === 'guildBetrayal') {
     // The native adapter already credited the full fee to the holder; the ruled
@@ -9576,7 +9614,7 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
       'This Guild Betrayal profile supports native physical reserve shipments only.');
       validatePhysicalShipment(g, shipment);
       validateShipmentArrival(g, shipment);
-      checkShipmentIncomeRounding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
+      checkShipmentIncomeFunding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
       checkShipmentPromises(g, getPlayer(g, shipment.player), shipment);
       shipper = shipment.player; price = shipment.cost; allyPayment = shipment.allyPayment;
       const p = getPlayer(g, shipper);
@@ -9609,7 +9647,7 @@ function guildBetrayalAuthority(g: Game, continuation: GuildBetrayalContinuation
       shipper = shipment.player; price = quote.cost; allyPayment = shipment.allyPayment;
       originalReceiver = getPlayer(g, shipper).ally !== guild.id && allyPayment > 0 ? guild.id : null;
       const income = getPlayer(g, shipper).ally !== guild.id ? allyPayment : 0;
-      if (income > 0) validateGuildPaymentRounding(g, guild.id, income, [income]);
+      if (income > 0) validateGuildPaymentContributions(g, income, [income]);
       break;
     }
     case 'junction': {
@@ -10049,6 +10087,12 @@ export function initializeSpiceBankerIncomeGameForAudit(state: Game): Game {
     !state.spiceBankerIncomePreview && state.spiceBankerIncome === undefined,
     'Spice Banker income requires a fresh classic or supported native skill lobby without unsupported optional modules.');
   requireFreshSetup(state, state.expansions.length > 0);
+  if (state.homeworlds) {
+    const initialized = initializeHomeworldOccupationGameForAudit(state, true);
+    initialized.spiceBankerIncomePreview = true;
+    initialized.spiceBankerIncome = bankerIncomeRule(() => createBankerIncomeState(bankerIncomeContext(initialized)));
+    return initialized;
+  }
   const g = structuredClone(state);
   g.leaderSkills = createLeaderSkills(random);
   g.spiceBankerIncomePreview = true;
@@ -16453,7 +16497,8 @@ function occupiedPercentageIntegrity(g: Game) {
       g.pendingHomeworldOccupiedBonus === undefined, 'Occupied source receipts require their original fresh profile.');
     return;
   }
-  requireRule(!g.spiceBankerIncomePreview, 'Occupied percentage and deferred Banker routing require a separate source-composition profile.');
+  requireRule(!g.spiceBankerIncomePreview || bankerIncomeProfile(g),
+    'Occupied percentage and deferred Banker routing require their supported classic Homeworld source profile.');
   if (!g.homeworldOccupiedPercentageLedger) {
     requireRule(!g.pendingHomeworldOccupiedPercentage && !g.pendingHomeworldOccupiedBonus,
       'The original occupied percentage ledger is missing.');
@@ -16605,7 +16650,7 @@ function currentFactionPayment(g: Game) {
     requireRule(Array.isArray(response.guildContributions) &&
       response.guildPaymentProof === guildPaymentSignature(g, response.owner, gross, response.guildContributions),
       'The saved Guild payment no longer matches its original contributor receipt.');
-    validateGuildPaymentRounding(g, response.owner, gross, response.guildContributions);
+    validateGuildPaymentContributions(g, gross, response.guildContributions);
   }
   const payment = homeworldRule(() => quoteHomeworldPaymentIncome(g, response.owner, kind, gross));
   const stable = g.homeworldOccupationPreview
@@ -16613,14 +16658,12 @@ function currentFactionPayment(g: Game) {
   return { owner: response.owner, kind, ...payment,
     ...(stable?.entitlement || stable?.blocked ? { income: Math.ceil(gross / 2), bank: 0 } : {}) };
 }
-function validateGuildPaymentRounding(g: Game, owner: string, gross: number, contributions: number[]) {
+function validateGuildPaymentContributions(g: Game, gross: number, contributions: number[]) {
   if (!g.homeworlds?.custody) return;
-  const rounding = homeworldRule(() => quoteGuildPaymentRounding(gross, contributions));
-  const payment = homeworldRule(() => quoteHomeworldPaymentIncome(g, owner, 'shipment', gross));
-  const junction = g.homeworldOccupationPreview
-    ? homeworldRule(() => quoteStableHomeworldOccupation(g, 'junction')) : null;
-  requireRule((!payment.low && !junction?.entitlement && !junction?.blocked) || rounding.unambiguous,
-    'Low Junction rounding for two odd allied contributions awaits a ruling. Choose a different payment split.');
+  requireRule(Number.isSafeInteger(gross) && gross >= 0 && Array.isArray(contributions) &&
+    contributions.length <= 2 && contributions.every(amount => Number.isSafeInteger(amount) && amount >= 0) &&
+    contributions.reduce((sum, amount) => sum + amount, 0) === gross,
+    'Guild contributions must preserve the original eligible whole-invoice payment.');
 }
 function shipmentIncomeContributions(g: Game, p: Player, cost: number, allyPayment: number) {
   const guild = byFaction(g, 'guild');
@@ -16628,19 +16671,19 @@ function shipmentIncomeContributions(g: Game, p: Player, cost: number, allyPayme
   return [p.id === guild.id ? 0 : cost - allyPayment,
     p.ally === guild.id ? 0 : allyPayment].filter(amount => amount > 0);
 }
-function checkShipmentIncomeRounding(g: Game, p: Player, cost: number, allyPayment: number) {
+function checkShipmentIncomeFunding(g: Game, p: Player, cost: number, allyPayment: number) {
   const guild = byFaction(g, 'guild');
   if (!guild) return;
   const amounts = shipmentIncomeContributions(g, p, cost, allyPayment);
   checkBureaucratContributors(g,g.karamaShipping?.player === p.id ? undefined : guild.id,[{payer:p.id,amount:p.id === guild.id ? 0 : cost-allyPayment},
     ...(allyPayment ? [{payer:p.ally!,amount:p.ally === guild.id ? 0 : allyPayment}] : [])],allyPayment > 0);
-  validateGuildPaymentRounding(g, guild.id, amounts.reduce((sum, amount) => sum + amount, 0), amounts);
+  validateGuildPaymentContributions(g, amounts.reduce((sum, amount) => sum + amount, 0), amounts);
 }
 function guildPaymentResponse(g: Game, owner: string, amounts: number[],payer?:string,
   named?: { payer: string; amount: number }[]): ResponseWindow {
   const contributions = amounts.filter(amount => amount > 0);
   const amount = contributions.reduce((sum, value) => sum + value, 0);
-  validateGuildPaymentRounding(g, owner, amount, contributions);
+  validateGuildPaymentContributions(g, amount, contributions);
   return { kind: 'guildIncome', owner, amount, passed: [],
     ...(g.homeworldOccupationPreview ? { occupiedPayment: { event: crypto.randomUUID(),
       contributions: named ?? [{ payer: payer!, amount }] } } : {}),
@@ -24096,7 +24139,8 @@ function completeChoamGamont(
     ? `${owner.name} sent one of ${target.name}’s forces to reserves with Trip to Gamont.`
     : `${owner.name} used Trip to Gamont to reveal ${target.name}’s No-Field. No force was present to return; the card is still used.`);
 }
-function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) {
+function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettlement) {
+  const bureaucratDiversion = settlement?.amount;
   karamaConversionIntegrity(g);
   currentFactionPayment(g);
   const response = g.response!;
@@ -24157,9 +24201,15 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     const suffix: OccupiedPercentageSuffix = response.source === 'ambassador' ? { kind: 'ambassadorBonus' } :
       response.kind === 'emperorIncome' ? { kind: 'auctionBonus' } : response.kind === 'richesePurchaseIncome'
         ? { kind: 'richesePurchase', resume: g.pendingRichesePurchaseIncome!.resume } : { kind: 'none', decision: g.decision };
-    if (response.kind === 'emperorIncome') awardBankerIncome(g, g.currentAuctionSale?.spiceBankerIncomePayment, canceled);
-    if (response.kind === 'guildIncome') awardBankerIncome(g, response.spiceBankerIncomePayment, canceled);
+    const incomePayment = response.kind === 'emperorIncome'
+      ? g.currentAuctionSale?.spiceBankerIncomePayment : response.spiceBankerIncomePayment;
     const pending = settleOccupiedPayment(g, response, gross, canceled, suffix, bureaucratDiversion ?? 0);
+    if (incomePayment) {
+      const receipt = g.homeworldOccupiedPercentageLedger!.receipts.at(-1);
+      requireRule(receipt?.source.native === response.owner && receipt.source.amount === gross,
+        'The final Bank payment lost its original Homeworld income receipt.');
+      awardFinalFactionBankerIncome(g, incomePayment, receipt!.bankRetained, settlement);
+    }
     if (!pending) runOccupiedPercentageSuffix(g, suffix);
     return;
   }
@@ -25124,7 +25174,8 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
     }
   } else if (response.kind === 'guildIncome') {
     const payment = !canceled ? creditFactionPayment(g, response.owner, 'shipment', response.amount!-(bureaucratDiversion ?? 0)) : null;
-    awardBankerIncome(g, response.spiceBankerIncomePayment, canceled);
+    awardFinalFactionBankerIncome(g, response.spiceBankerIncomePayment,
+      canceled ? response.amount! : payment!.bank, settlement);
     log(
       g,
       canceled
@@ -25177,6 +25228,8 @@ function finishResponse(g: Game, canceled: boolean,bureaucratDiversion?:number) 
       const owner = getPlayer(g, response.owner);
       const amount = g.currentAuctionSale ? auctionEmperorIncomeAmount(g.currentAuctionSale) : g.auction!.bid;
       const payment = creditFactionPayment(g, owner.id, 'treachery', amount-(bureaucratDiversion ?? 0));
+      awardFinalFactionBankerIncome(g, g.currentAuctionSale?.spiceBankerIncomePayment,
+        payment.bank, settlement);
       log(
         g,
         `${owner.name} received ${payment.income} spice from another faction’s ${amount}-spice paid auction bid.${payment.bank ? ` Low-population Kaitain leaves ${payment.bank} spice in the bank.` : ''}`,
@@ -25343,7 +25396,7 @@ function quoteJunctionDeclaration(g: Game, p: Player, declaration: JunctionTrans
   const ordinaryIncome = !!arrival && nativeDeparture && p.faction !== 'fremen';
   const contributions = [ordinaryIncome ? quote.cost - allyPayment : 0,
     p.ally === option.owner ? 0 : allyPayment];
-  validateGuildPaymentRounding(g, option.owner,
+  validateGuildPaymentContributions(g,
     contributions.reduce((sum, amount) => sum + amount, 0), contributions);
   return {option, rate, quote, arrival, nativeDeparture, promise, sourceLock, advisors, allyPayment, destination};
 }
@@ -25386,6 +25439,8 @@ function commitJunctionTransport(g: Game, p: Player, declaration: JunctionTransp
     [ordinaryIncome ? quote.cost - allyPayment : 0, p.ally === option.owner ? 0 : allyPayment], undefined,
     [...(ordinaryIncome ? [{ payer: p.id, amount: quote.cost - allyPayment }] : []),
       ...(p.ally !== option.owner && allyPayment ? [{ payer: p.ally!, amount: allyPayment }] : [])]);
+  if (!settlement?.recipient) settleBankerShipmentIncome(g, p, quote.cost, allyPayment,
+    { own: ordinaryIncome && p.id !== option.owner, ally: p.ally !== option.owner });
   const sourceName = quote.originKind === 'arrakis' ? territory(quote.origin).name :
     quote.sources.map((s) => combatLocationName(g, s.key)).join(' and ');
   log(g, `${p.name} accepted ${getPlayer(g, option.owner).name}’s Junction ${rate}-price offer and transported ${quote.amount} physical forces (${quote.elite} special) from ${sourceName} to ${arrival ? `${territory(arrival.territory).name}, sector ${arrival.sector}` : combatLocationName(g, destination)} for ${quote.cost} spice (${quote.cost - allyPayment} own, ${allyPayment} pledged). The shipment is used; movement remains available.`,
@@ -25501,7 +25556,10 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
   const guild = byFaction(g, 'guild');
   const income = guild && p.ally !== guild.id ? shipment.allyPayment : 0;
   if (!settlement?.recipient && guild && income > 0)
-    g.response = guildPaymentResponse(g, guild.id, [income], p.ally!);
+    g.response = guildPaymentResponse(g, guild.id, [income], undefined,
+      [{ payer: p.ally!, amount: income }]);
+  if (!settlement?.recipient) settleBankerShipmentIncome(g, p, quote.cost, shipment.allyPayment,
+    { own: false, ally: !!guild && p.ally !== guild.id });
   finishShipmentPromises(g, p, null);
   log(g, `${p.name} shipped ${quote.amount} physical forces (${quote.elite} special) from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.${shipment.guildSecretEvent ? ' Guild Secret Ally is spent for this half-price shipment; the payment goes to the bank.' : ''}`,
     {faction: shipment.guildSecretEvent ? 'guild' : p.faction, name: shipment.guildSecretEvent ? 'Secret Ally Homeworld shipment' : 'Homeworld shipment'});
@@ -25845,7 +25903,7 @@ function finishGuildRateResponse(g: Game, response: ResponseWindow, canceled: bo
     return;
   }
   shipment.cost = fullCost;
-  checkShipmentIncomeRounding(g, shipper, fullCost, shipment.allyPayment);
+  checkShipmentIncomeFunding(g, shipper, fullCost, shipment.allyPayment);
   commitShipment(g, shipment);
   delete g.guildRateBlocked;
   log(g, `Karama removed Guild's half-price rate. ${shipper.name} paid the full ${fullCost} spice for the unchanged shipment.`);
@@ -25976,7 +26034,7 @@ function validateGuildTransportForCommit(
     to === 'reserves' ? 'reserves' : territory(to).type, amount, halfRate),
     'The declared Guild transport price no longer matches its rate.');
   contribution(g, p, cost, allyPayment);
-  checkShipmentIncomeRounding(g, p, cost, allyPayment);
+  checkShipmentIncomeFunding(g, p, cost, allyPayment);
   checkShipmentPromises(g, p, fromReserves ? { territory: to, amount } : null);
 }
 function commitGuildTransport(
@@ -26062,7 +26120,7 @@ function finishGuildTransportRateResponse(g: Game, response: ResponseWindow, can
 function offerShipment(g: Game, shipment: PendingShipment) {
   validatePhysicalShipment(g, shipment);
   validateShipmentArrival(g, shipment);
-  checkShipmentIncomeRounding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
+  checkShipmentIncomeFunding(g, getPlayer(g, shipment.player), shipment.cost, shipment.allyPayment);
   const p = getPlayer(g, shipment.player),
     id = p.id;
   const { territory: to, sector: s } = shipment;
@@ -31678,7 +31736,7 @@ function applyActionInner(
       // This cancellation window bypasses offerShipment, so reject known
       // unsupported arrival combinations before saving its private intent.
       validateShipmentArrival(g, shipment);
-      checkShipmentIncomeRounding(g, p, cost, allyPayment);
+      checkShipmentIncomeFunding(g, p, cost, allyPayment);
       if (richesePair) recordRichesePairShipment(g, shipment);
       g.pendingShipment = shipment;
       g.response = { kind: 'richeseNoField', owner: p.id, passed: [],
@@ -31787,7 +31845,7 @@ function applyActionInner(
       'Not enough spice.',
     );
     const allyPayment = contribution(g, p, cost, action.allyPayment);
-    checkShipmentIncomeRounding(g, p, cost, allyPayment);
+    checkShipmentIncomeFunding(g, p, cost, allyPayment);
     const frame: GuildTransportOrder = {
       turn: g.turn, player: id, origin, group, eliteGroup, to, sector,
       amount: n, elite, cost, allyPayment, advisors,

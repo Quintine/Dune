@@ -15,10 +15,9 @@ export type HomeworldPaymentIncomeQuote = {
   low: boolean;
 };
 
-/** Split one already eligible payment. Contributor exclusions, payment-unit
- * classification and timing belong to the caller. This does not resolve how
- * multiple contributors define a payment for rounding purposes.
- * This quotes physical low population only, not occupation entitlements. */
+/** Split one whole eligible invoice, including all eligible contributors.
+ * Contributor exclusions, payment-unit classification and timing belong to the
+ * caller. This quotes physical low population only, not occupation entitlements. */
 export function quoteHomeworldPaymentIncome(
   context: HomeworldPaymentIncomeContext,
   ownerId: string,
@@ -51,37 +50,93 @@ export function quoteHomeworldPaymentIncome(
   return { gross, income, bank: gross - income, low };
 }
 
-/** Compare the unresolved transaction and contributor rounding interpretations.
- * The caller may accept agreement; divergence requires an explicit ruling. */
-export function quoteGuildPaymentRounding(
-  gross: number,
-  contributions: number[],
-): { transaction: number; contribution: number; unambiguous: boolean } {
-  if (
-    !Number.isSafeInteger(gross) ||
-    gross < 0 ||
-    !Array.isArray(contributions) ||
-    contributions.length > 2 ||
-    !Array.from(contributions).every(
-      (amount) => Number.isSafeInteger(amount) && amount >= 0,
+/** Attribute the frozen final Bank remainder of one eligible player invoice.
+ * Contributions retain declared primary/ally order. The caller excludes direct
+ * Bank and self-payee legs and selects the first Bureaucrat-eligible payer;
+ * bankRetained excludes that payer's flat diversion. */
+export function quoteHomeworldBankPayment(
+  contributions: readonly { payer: string; amount: number }[],
+  bankRetained: number,
+  diversion?: { payer: string; amount: 2 },
+): { payer: string; amount: number }[] {
+  if (!Array.isArray(contributions))
+    throw new HomeworldCustodyError(
+      'Homeworld Bank payment requires original payer contributions.',
+    );
+  const payers = new Set<string>();
+  let total = 0;
+  for (const leg of contributions) {
+    if (
+      !leg ||
+      typeof leg.payer !== 'string' ||
+      leg.payer.trim().length === 0 ||
+      payers.has(leg.payer) ||
+      !Number.isSafeInteger(leg.amount) ||
+      leg.amount <= 0
     )
+      throw new HomeworldCustodyError(
+        'Homeworld Bank payment requires distinct payers with positive safe original contributions.',
+      );
+    payers.add(leg.payer);
+    total += leg.amount;
+    if (!Number.isSafeInteger(total))
+      throw new HomeworldCustodyError(
+        'Homeworld Bank payment contributions exceed a safe invoice total.',
+      );
+  }
+  let diversionIndex = -1;
+  if (diversion !== undefined) {
+    if (
+      !diversion ||
+      diversion.amount !== 2 ||
+      typeof diversion.payer !== 'string'
+    )
+      throw new HomeworldCustodyError(
+        'Homeworld Bank diversion requires an original payer and exactly two spice.',
+      );
+    diversionIndex = contributions.findIndex(
+      (leg) => leg.payer === diversion.payer,
+    );
+    if (diversionIndex < 0 || contributions[diversionIndex].amount < 5)
+      throw new HomeworldCustodyError(
+        'Homeworld Bank diversion requires a selected original contribution of at least five spice.',
+      );
+  }
+  const remainingTotal = total - (diversionIndex < 0 ? 0 : 2);
+  if (
+    !Number.isSafeInteger(bankRetained) ||
+    (bankRetained !== 0 &&
+      bankRetained !== remainingTotal &&
+      bankRetained !== Math.floor(remainingTotal / 2) &&
+      bankRetained !== Math.ceil(remainingTotal / 2))
   )
     throw new HomeworldCustodyError(
-      'Guild rounding requires a nonnegative safe payment and at most two nonnegative safe contributions.',
+      'Homeworld Bank remainder must match zero, full or whole-invoice half income.',
     );
-  const total = contributions.reduce((sum, amount) => sum + amount, 0);
-  if (!Number.isSafeInteger(total) || total !== gross)
-    throw new HomeworldCustodyError(
-      'Guild contributions must sum to the original eligible payment.',
-    );
-  const transaction = Math.ceil(gross / 2);
-  const contribution = contributions.reduce(
-    (sum, amount) => sum + Math.ceil(amount / 2),
-    0,
-  );
-  return {
-    transaction,
-    contribution,
-    unambiguous: transaction === contribution,
-  };
+  const partial = bankRetained > 0 && bankRetained < remainingTotal;
+  let remainder = 0;
+  if (partial) {
+    let base = 0;
+    for (let i = 0; i < contributions.length; i++) {
+      const remaining = contributions[i].amount - (i === diversionIndex ? 2 : 0);
+      base += Math.floor(remaining / 2);
+    }
+    remainder = bankRetained - base;
+  }
+  const bankLegs: { payer: string; amount: number }[] = [];
+  for (let i = 0; i < contributions.length; i++) {
+    const leg = contributions[i];
+    const remaining = leg.amount - (i === diversionIndex ? 2 : 0);
+    let amount = partial
+      ? Math.floor(remaining / 2)
+      : bankRetained === remainingTotal ? remaining : 0;
+    if (remainder > 0) {
+      const extra = Math.min(remainder, remaining - amount);
+      amount += extra;
+      remainder -= extra;
+    }
+    if (i === diversionIndex) amount += 2;
+    if (amount > 0) bankLegs.push({ payer: leg.payer, amount });
+  }
+  return bankLegs;
 }

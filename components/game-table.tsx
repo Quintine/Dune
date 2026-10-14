@@ -52,7 +52,6 @@ import { atomicsAllianceChangeBlocked } from '@/game/moritani-atomics';
 import { GuildHomeworldShipment } from './guild-homeworld-shipment';
 import { JunctionTransport } from './junction-transport';
 import { BiddingEnd } from './bidding-end';
-import { homeworldShipmentPaymentBlock } from '@/game/homeworld-payment-options';
 import {
   HomeworldTable,
   NativeShipmentChoice,
@@ -683,10 +682,6 @@ export function GameTable({
     selectedAllyPayment >= 0 &&
     selectedAllyPayment <= shipmentCost;
   if (shipmentCost !== null) {
-    if (validShipmentShare) {
-      const blocked = homeworldShipmentPaymentBlock(g, shipmentCost, selectedAllyPayment);
-      if (blocked) shipmentProblems.push(blocked);
-    }
     if (!validShipmentShare)
       shipmentProblems.push(
         `Ally payment must be a whole number from 0 to ${shipmentCost}.`,

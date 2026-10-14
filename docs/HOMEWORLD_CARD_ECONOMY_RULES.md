@@ -105,17 +105,17 @@ stale permission must not remove the card or pay income. Keep the market and
 its parent continuation recoverable. This requirement is independent of the
 older unresolved Kull and Worthless-cancellation interpretation questions.
 
-## Deferred payment splitting
+## Payment splitting: ruled whole invoice
 
 E3 p.15 explicitly splits a five-spice Treachery payment into three for Emperor
 and two for Kaitain's occupier, even if that occupier bought the card. It does
 not give an allied-contribution example. The inspected reverse-face record
 assigns rounded-up half of shipment receipts to low Junction. Neither evidence
-establishes separate rounding per contributor versus once per purchase or
-shipment. Preserve payment identity, actual payer contributions and income
-source separately before integrating those effects; do not infer an answer
-from existing integer arithmetic. Occupation lifecycle questions remain in
-[Homeworld rules](HOMEWORLD_RULES.md).
+establishes separate rounding per contributor versus once per invoice.
+The 14 October user ruling now selects whole-invoice native rounding and
+primary-first internal attribution of extra Bank rounding units. Preserve
+original payment identity and full payer shares; never pool different payers
+or unrelated invoices. [Current source and runtime](HOMEWORLD_PAYMENT_INCOME_RULES.md#supported-receipts-and-ruled-whole-invoice-rounding).
 
 Runtime verification should cover Basic/Advanced and module-off parity,
 threshold transitions, exact card custody, private view/AI boundaries,

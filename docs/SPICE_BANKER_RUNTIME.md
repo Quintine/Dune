@@ -1,5 +1,56 @@
 # Spice Banker battle commitment and normal income prototypes
 
+## Classic Homeworld final Bank income — 14 October 2026
+
+Fresh classic Basic/Advanced `banker-income --homeworlds` composes original
+occupation setup and all14 Skills with income-v1. This branch excludes Nexus,
+Discovery, Tech, Strongholds and native expansion/Betrayal overlays. Other
+existing Banker entries remain unchanged; no public activation or played-game
+conversion is added.
+
+Three user rulings define accounting: combine only the same payer’s final Bank
+portions of one original invoice; attribute Bureaucrat’s two to the first
+individually eligible contribution (declared payer, then ally); round low native
+income on the whole remaining eligible invoice once. Floor each remaining
+contribution’s half and assign extra Bank rounding units primary-first internally.
+No funding or eligibility identity is exposed. The former two-odd declaration,
+UI and AI fence is removed, without changing original prices or payer shares.
+
+Original native or occupied-percentage receipts supply the actual retained
+Bank amount; original payment carriers preserve full payer evidence. Allowed
+unoccupied5+3 gives native4/Bank4, final Bank legs3/1 and no grant. Diverting2
+gives native3/Bank3 plus diversion2, final legs4/1 and one deferred spice.
+Occupied allowed income banks none (or just diversion2); occupied cancellation
+preserves occupier4 and banks native4 as3/1, not the full8, so grants none.
+Odd11 and first-eligible fallback cases retain real payer shares and stock.
+Native world-to-world4 and half-rate Junction board-return4 each remain Bank
+fees, grant one unavailable spice and do not manufacture Guild income.
+Actual low Kaitain after11 native normal counters leave has4 capital counters;
+the later actual Guild eight-spice Treachery purchase gives Emperor4, Bank4,
+and one deferred Banker grant.
+
+Actual390px Bureaucrat **Redirect2** settles final Bank legs4/1, available
+Atreides wallet11/front1. Ordinary city Collection separately makes wallet13;
+the real last **Ready for next phase** enters Mentat and makes14/front0, with
+one collection credit1. Browser errors empty; no root overflow. Private local
+proof: `/tmp/dune-homeworld-banker-ui-proof.json`. The isolated actual CLI
+`HWBANKQA v8` reaches original setup with income-v1 and occupation custody.
+Existing games and databases are untouched.
+
+Frozen related18-file union292/292, types/lint and app build pass. Build retains
+the existing module-registration, chunk-size and route-classification warnings.
+Evidence: `tests/fixture-homeworld-banker-income.ts`,
+`tests/homeworld-banker-income.test.ts`,
+`tests/homeworld-banker-transport.test.ts` and
+`tests/homeworld-bank-payment.test.ts`. Comprehensive assurance, wider module
+combinations, public starts and deployed acceptance remain open.
+
+```sh
+node --import tsx tools/start-prototype.ts --profile banker-income --homeworlds \
+  --db /private/local.sqlite --room ROOMCODE --version 7 \
+  --out /private/new-homeworld-banker-entry
+```
+
 ## Classic Nexus income composition — 13 October 2026
 
 `banker-income --nexus-cards` now connects the existing mandatory normal band

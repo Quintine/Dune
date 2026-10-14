@@ -29,6 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Classic Homeworld normal Banker and whole-invoice accounting — 14 October.**
+Fresh `banker-income --homeworlds` reuses original classic Basic/Advanced
+occupation/all14 setup and income-v1, without Nexus/Discovery/Tech/Strongholds
+or native expansion overlays. The user selected same-payer/same-invoice Bank
+combination, first eligible Bureaucrat contributor primary-first internally,
+and low native whole-invoice rounding with primary-first extra Bank units.
+Original payer shares and private prompts remain unchanged. The two-odd
+declaration/UI/AI fence is removed; actual final native/occupied receipts,
+not wallet deltas or full canceled occupied gross, authorize grants.
+Native5+3 without tax banks3/1 and earns none; tax2 banks4/1 and earns one.
+Occupied cancellation preserves occupier4 and banks only native4 as3/1.
+Actual world-to-world4 and sponsored board-return4 bank fees qualify; low
+Kaitain’s later eight-spice native auction yields Emperor4/Bank4.
+Actual390px **Redirect2** leaves wallet11/front1; ordinary city Collection
+makes13, last native **Ready** enters Mentat and makes14/front0 with one credit.
+Browser errors empty, no root overflow. Isolated actual `HWBANKQA v8` CLI
+retains original setup/custody. Related18-file union292/292, types/lint and
+app build pass with existing warnings. [Accounting contract and proof](SPICE_BANKER_RUNTIME.md#classic-homeworld-final-bank-income--14-october-2026).
+No existing save conversion, complete-mode, broad-assurance or deployed claim.
+Recommended options are chosen without another clarification question.
+
 **Ruled Grumman removal and Cunning addition — 14 October.**
 The user selected supply-only Cunning, HMS exclusion, preserved Grumman
 addition prerequisite and unrevealed return to hidden supply. Native removal

@@ -1,6 +1,6 @@
 # Homeworld payment income runtime
 
-Development checkpoint, 9 September 2026. Low Kaitain and low Junction now reduce supported native faction payment receipts while preserving the payer's original cost. Occupation and divergent allied-contributor rounding remain unfinished. The [source contract](HOMEWORLD_PAYMENT_INCOME_RULES.md) distinguishes printed rules from timing composition and records the pending user question. No Homeworld, Advanced or expansion start gate is opened by this checkpoint.
+The 14 October 2026 user ruling resolves allied rounding: low native income is `ceil(total eligible invoice / 2)` once, not a sum of rounded contributor legs. Original payer costs and eligibility stay unchanged. Fresh classic `banker-income --homeworlds` additionally connects actual final Bank portions to original Mentat; occupation receipts remain authoritative. See [the current Banker contract](SPICE_BANKER_RUNTIME.md#classic-homeworld-final-bank-income--14-october-2026). This is not complete Homeworld or deployed acceptance.
 
 ## Calculation and settlement
 
@@ -12,11 +12,11 @@ Ordinary Karama can prevent the separate Emperor or Guild income advantage. The 
 
 Emperor adapters include ordinary paid auctions, the existing Richese cache self-purchase destination, Richese's advanced three-spice special purchase and successful Richese Ambassador paid draws. Emperor buying for itself creates no self-income. Richese's own seller receipts retain their destination. Guild adapters preserve ordinary and legacy shipment, native return, Homeworld shipment and Junction-sponsored route classifications. Free transport and unrelated bank rewards create no new payment income.
 
-## Unanswered contributor rounding
+## Ruled whole-invoice rounding — 14 October 2026
 
-For two eligible odd contributions, rounding the combined payment and rounding each contributor separately differ. A one-spice plus one-spice non-Guild payment would produce either one or two spice for low Guild. The user question is pending; neither result has been adopted for that case.
+Two eligible odd contributions are now admitted; the former comparative fence and UI/AI exclusion are removed. Five plus three yields native4 and Bank4 when unoccupied and low. Attribution floors each remaining contribution’s half and assigns any extra Bank rounding unit to the declared primary payer first, then the ally. This is internal only: no payer, funding, eligibility or rounding identity is newly projected.
 
-The engine rejects that unsupported split before a low-Junction shipment declaration or cost commits. This is a temporary scope guard, not a printed prohibition. Single positive eligible contributions and two-contributor splits on which both interpretations agree remain supported. The aggregate quote implements their common result; it must not be cited as resolving blocked cases. Original contribution evidence accompanies the receipt for later validation, including population-sensitive settlement. Player shipment controls and all four AI profiles use the same public funding guard; blocked candidates are excluded before declaration.
+When Bureaucrat redirects two, choose the first individually eligible contribution (declared payer first, ally second), subtract two before the native/occupied calculation, and combine that payer’s two with their own other final Bank portions of this invoice. Never pool payers or unrelated invoices. Thus low unoccupied5+3 becomes native3, retained Bank3, diversion2 and final payer Bank legs4/1; it earns one deferred Banker spice. Occupied cancellation instead banks only the native share;5+3 then leaves Bank legs3/1 and earns none. These accounting choices are user rulings, not publisher worked examples.
 
 ## Saved receipts and private information
 
@@ -43,6 +43,6 @@ HTTP test rooms. No saved game was reset.
 
 Desktop and phone browser checks exercised a five-spice bid yielding three to low-population Emperor and two to the bank. Keyboard allowance and refresh of all three seats passed. The coordinating agent inspected the resulting views and reported no page overflow or browser errors. These are bounded payment-flow checks, not complete Homeworld-game acceptance.
 
-Focused entry point: `npm test -- homeworld-payment-income`. The relevant suites are [pure rules](../tests/homeworld-payment-income.test.ts), [engine flows](../tests/homeworld-payment-income-engine.test.ts) and [production SQLite recovery](../tests/homeworld-payment-income-recovery.test.ts). Their coverage includes source routing, unchanged payer cost, native threshold crossings, allowed/canceled receipt recovery, divergence rejection before commitment, proof validation and private projection. The implementation-status checkpoint records the same scoped evidence; complete expansion games and occupation behavior are not certified.
+Focused current evidence includes [whole-invoice quotes](../tests/homeworld-payment-income.test.ts), [Bank attribution](../tests/homeworld-bank-payment.test.ts), [native Banker consumers](../tests/homeworld-banker-income.test.ts), [actual off-planet transport](../tests/homeworld-banker-transport.test.ts) and [existing engine flows](../tests/homeworld-payment-income-engine.test.ts). The 9 September recovery/full-suite counts above are historical evidence; comprehensive assurance is deferred until all rules are implemented. The current frozen related18-file union passes292/292, types/lint and app build pass; actual390px Bureaucrat and native Mentat controls are recorded in the linked Banker contract.
 
 This documentation/reference pass changes no database or automation. The removed automation remains removed. Occupation retention, occupied percentage recipients and Collection income, remaining Homeworld effects and complete expansion acceptance retain their existing release gates.

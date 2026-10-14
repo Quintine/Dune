@@ -879,16 +879,11 @@ void test('Banker income rejects incompatible profiles and public activation wit
     game => { game.players.splice(1); },
     game => { game.players.push(...Array.from({ length: 4 }, (_, index) => newPlayer(`extra${index}`, `Extra ${index}`, 'guild'))); },
   ];
-  const modules = ['homeworlds'].map(type => {
-    const game = applyAction(native, native.host, { type, enabled: true });
-    for (const player of game.players) player.ready = true;
-    return game;
-  });
-  for (const game of [...changes.map(change => {
+  for (const game of changes.map(change => {
     const game = structuredClone(native);
     change(game);
     return game;
-  }), ...modules]) {
+  })) {
     db.prepare('UPDATE rooms SET state=? WHERE code=?').run(JSON.stringify(game), native.code);
     const rooms = db.prepare('SELECT * FROM rooms ORDER BY code').all();
     const credentials = db.prepare('SELECT * FROM seats').all();

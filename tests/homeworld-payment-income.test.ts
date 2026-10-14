@@ -6,10 +6,7 @@ import {
   HomeworldCustodyError,
 } from '../game/homeworld-custody';
 import { homeworldContext } from '../game/homeworld-game';
-import {
-  quoteGuildPaymentRounding,
-  quoteHomeworldPaymentIncome,
-} from '../game/homeworld-payment-income';
+import { quoteHomeworldPaymentIncome } from '../game/homeworld-payment-income';
 
 function fixture(
   faction: 'guild' | 'emperor',
@@ -72,74 +69,20 @@ void test('odd, even, zero and maximal safe single payment conserve spice', () =
   }
 });
 
-void test('Guild rounding comparisons agree for single payer, even-even and mixed parity contributions', () => {
-  for (const [gross, contributions, income] of [
-    [0, [], 0],
-    [0, [0, 0], 0],
-    [1, [1], 1],
-    [5, [5], 3],
-    [5, [0, 5], 3],
-    [6, [2, 4], 3],
-    [5, [2, 3], 3],
-    [Number.MAX_SAFE_INTEGER, [Number.MAX_SAFE_INTEGER], 4_503_599_627_370_496],
-  ] as [number, number[], number][]) {
-    const before = JSON.stringify(contributions);
-    Object.freeze(contributions);
-    assert.deepEqual(quoteGuildPaymentRounding(gross, contributions), {
-      transaction: income,
-      contribution: income,
-      unambiguous: true,
-    });
-    assert.equal(JSON.stringify(contributions), before);
-  }
-});
-
-void test('Guild rounding exposes odd-odd disagreement without selecting either interpretation', () => {
-  assert.deepEqual(quoteGuildPaymentRounding(2, [1, 1]), {
-    transaction: 1,
-    contribution: 2,
-    unambiguous: false,
-  });
-  const restored = JSON.parse('[3,3]') as number[];
-  assert.deepEqual(quoteGuildPaymentRounding(6, restored), {
-    transaction: 3,
-    contribution: 4,
-    unambiguous: false,
-  });
-  assert.deepEqual(restored, [3, 3]);
-});
-
-void test('Guild rounding rejects malformed amounts, overflow, sparse arrays and mismatched payment totals', () => {
-  const invalid: [unknown, unknown][] = [
-    [-1, []],
-    [NaN, []],
-    [Infinity, []],
-    [0.5, [0.5]],
-    [Number.MAX_SAFE_INTEGER + 1, [Number.MAX_SAFE_INTEGER, 1]],
-    [0, undefined],
-    [0, null],
-    [0, {}],
-    [1, '1'],
-    [0, [0, 0, 0]],
-    [0, [-1, 1]],
-    [0, [NaN]],
-    [1, [Infinity]],
-    [1, [0.5, 0.5]],
-    [1, ['1']],
-    [0, Array(1)],
-    [1, []],
-    [3, [1, 1]],
-    [Number.MAX_SAFE_INTEGER, [Number.MAX_SAFE_INTEGER, 1]],
-  ];
-  for (const [gross, contributions] of invalid) {
-    const before = JSON.stringify(contributions);
-    assert.throws(
-      () =>
-        quoteGuildPaymentRounding(gross as number, contributions as number[]),
-      HomeworldCustodyError,
-    );
-    assert.equal(JSON.stringify(contributions), before);
-  }
+void test('low Guild and Emperor round a funded odd-odd invoice once, not each contributor', () => {
+  for (const advanced of [false, true])
+    for (const [faction, kind] of [
+      ['guild', 'shipment'],
+      ['emperor', 'treachery'],
+    ] as const) {
+      const context = fixture(faction, 4, advanced);
+      const contributions = [5, 3];
+      const gross = contributions.reduce((sum, amount) => sum + amount, 0);
+      assert.deepEqual(
+        quoteHomeworldPaymentIncome(context, 'native', kind, gross),
+        { gross: 8, income: 4, bank: 4, low: true },
+      );
+    }
 });
 
 void test('typed Kaitain natives count while Salusa allocation and visiting armies do not', () => {

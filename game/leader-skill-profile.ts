@@ -492,7 +492,9 @@ function homeworldLeaderSkillModulesSupported(game: LeaderSkillProfile): boolean
     game.kullPreview || game.nexusKullPreview || game.guildBetrayalPreview ||
     game.richeseBetrayalPreview || game.nexusIxianReplacementPreview ||
     game.nexusIxianBetrayalPreview || game.nexusHarkonnenBetrayalPreview ||
-    game.spiceBankerIncomePreview) return false;
+    (game.spiceBankerIncomePreview && (game.expansions.length || game.nexusCards ||
+      game.discoveryEnabled || game.discoveries || game.discoveryStash || game.greatMaker ||
+      game.techTokens || game.strongholdCards))) return false;
   return true;
 }
 
