@@ -1,8 +1,6 @@
 import {
-  gameDistance,
   gameTerritories,
   location,
-  MOBILE_LOCATION,
   splitLocation,
   territory,
   validLocation,
@@ -12,8 +10,7 @@ import {
   type BoardContext,
   type BoardSeat,
 } from './board-resolution-quote';
-import { presenceAt, presenceByLocation } from './force-presence';
-import { fighterCount } from './advisors';
+import { presenceAt } from './force-presence';
 import { territoryEntryBlock } from './occupancy';
 import { ecazOccupancyIdentity } from './ecaz-occupy';
 
@@ -126,54 +123,6 @@ function selection(player: BoardSeat, to: string): NexusAdvisorSelection {
         : { lockedTurn: player.advisors![to].lockedTurn },
   };
 }
-function stormBlocked(
-  context: NexusAdvisorContext,
-  players: readonly BoardSeat[],
-  owner: BoardSeat,
-  to: string,
-): boolean {
-  if (context.storm === 0 || territory(to).type === 'polar') return false;
-  const inStorm = (key: string) =>
-    splitLocation(
-      key === MOBILE_LOCATION
-        ? (context.mobileStronghold?.location ?? key)
-        : key,
-    ).sector === context.storm;
-  const keys = (p: BoardSeat) =>
-    Object.entries(presenceByLocation(p))
-      .filter(
-        ([key, count]) => count > 0 && splitLocation(key).territory === to,
-      )
-      .map(([key]) => key);
-  const own = keys(owner);
-  if (own.some(inStorm)) return true;
-  // Only storm-caused separation is an unresolved interaction. No general
-  // requirement to be in a battle-capable territory is imposed by this card.
-  for (const other of players) {
-    if (
-      other.id === owner.id ||
-      other.id === owner.ally ||
-      !fighterCount(other, to)
-    )
-      continue;
-    const theirs = keys(other);
-    if (
-      own.some((x) =>
-        theirs.some((y) => x === y || gameDistance(context, x, y) === 0),
-      ) &&
-      !own.some((x) =>
-        theirs.some(
-          (y) =>
-            !inStorm(x) &&
-            !inStorm(y) &&
-            (x === y || gameDistance(context, x, y, inStorm) === 0),
-        ),
-      )
-    )
-      return true;
-  }
-  return false;
-}
 export function quoteNexusAdvisors(
   context: NexusAdvisorContext,
   owner: string,
@@ -192,17 +141,11 @@ export function quoteNexusAdvisors(
             release.player === owner && release.territory === site.id,
         ),
     )
-    .map((site) => {
-      const original = selection(player, site.id);
-      let blocked = territoryEntryBlock(settled.players, owner, site.id);
-      if (!blocked && player.advisors![site.id].lockedTurn === context.turn)
-        blocked =
-          'Whether Nexus Cunning overrides the same-turn advisor lock is unresolved.';
-      if (!blocked && stormBlocked(context, settled.players, player, site.id))
-        blocked =
-          'Nexus advisor conversion involving storm-blocked forces awaits a ruling.';
-      return { territory: site.id, count: original.count, blocked };
-    });
+    .map((site) => ({
+      territory: site.id,
+      count: presenceAt(player, site.id),
+      blocked: territoryEntryBlock(settled.players, owner, site.id),
+    }));
   return { territories };
 }
 function signature(receipt: Omit<NexusAdvisorReceipt, 'signature'>): string {

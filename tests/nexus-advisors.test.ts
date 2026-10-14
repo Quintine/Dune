@@ -172,24 +172,6 @@ void test('Cunning belongs to the current native Advanced shipment and movement 
   );
 });
 
-void test('fresh advisor locks and storm-locked strongholds remain guarded without partially converting an allowed group', () => {
-  for (const scenario of ['lock', 'storm']) {
-    const g = nexusAdvisorFixture();
-    if (scenario === 'lock')
-      nexusAdvisorPlayer(g).advisors!.arrakeen.lockedTurn = g.turn;
-    else g.storm = 10;
-    const offer = viewGame(g, 'p').nexusAdvisors!.offer!;
-    assert.ok(
-      offer.territories.find((t) => t.territory === 'arrakeen')!.blocked,
-    );
-    assert.equal(
-      offer.territories.find((t) => t.territory === 'pasty_mesa')!.blocked,
-      null,
-    );
-    nexusReject(g, 'p', action(g));
-    assert.ok(nexusAdvisorPlayer(g).advisors!.pasty_mesa);
-  }
-});
 
 void test('a third occupying faction blocks stronghold conversion while leaving other advisor groups available', () => {
   const g = nexusAdvisorFixture();

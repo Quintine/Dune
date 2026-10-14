@@ -185,7 +185,9 @@ export function createNexusFremenProtectionFixture(
     'Original scalar producer lotteries keep every printed shuffle order; native UUID entropy is untouched.',
     'Only the undealt physical Spice Deck is ordered: turn-one land, the real empty turn-two worm, the turn-two sand blow the group ships into, the next accepted real worm, then the replacement draw.',
     'Only the undealt physical Nexus Deck is ordered so the real closing draws give the unallied holder the physical Fremen card and the other unallied seat the physical Bene Gesserit card; no hand is assigned.',
-    'Every storm dialer chooses the printed minimum (0 on turn one, otherwise 1), an original legal dial that keeps the real storm on Meridian at turn one and well clear of the shipped sand source afterwards',
+    advanced
+      ? 'Advanced retains the original storm-card producer after the first Storm; no card distance, storm sector or phase is assigned.'
+      : 'Basic storm dialers choose the native minimum: zero on turn one and one on later turns. No storm sector or phase is assigned.',
     advanced
       ? 'The physically dealt Bene Gesserit seat documents the absent-Fremen case: it holds an irrelevant Nexus face and accepts the native free accompanied advisor arrival at the same sector.'
       : 'No Bene Gesserit is seated; the fourth seat is Harkonnen and holds an irrelevant Nexus face at no other location.',

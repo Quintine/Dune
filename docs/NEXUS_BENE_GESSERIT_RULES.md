@@ -93,12 +93,44 @@ not certify all named-special/module combinations, historical recovery or
 complete rules/deployment.
 
 
-## Material boundaries requiring a ruling
+## Recommended Cunning card exceptions — 14 October 2026
+
+Choose-recommended-option priority now adopts the printed any/all permission
+as an **in-place card exception** for freshly accompanied and storm-bound or
+storm-separated advisor territories, during BG's own Advanced action.
+No retrieved specific publisher clarification settled those combinations;
+this interpretation is visible and provisional, not a new publisher ruling.
+
+Reuse the existing whole-territory quote, physical Nexus spend, exact original
+stance/force receipt and single Karama response. Allow changes only stance;
+cancel keeps every original advisor/lock and leaves the card spent. Ordinary
+flip timing, ally/capacity, storm casualties, movement and battle geometry
+stay unchanged. Basic supplies no advisors. Pending quotes still bind exact
+original groups and cannot become partial conversions.
+
+Native proofs use real setup, closing BG card draws, paid reserve shipments,
+free accompaniment and the existing Advanced card-distance producer. Fresh
+Shield Wall2 is current-turn locked; sheltered Arrakeen2 is under storm10;
+rock False Wall East groups at5/9 are separated by storm7. Only original
+undealt order/producer entropy is staged. Original Karama, all four minimal
+legal policies and original movement continuation are exercised.
+
+The live390px tables declare/allow the fresh group, move one fighter from
+Shield Wall9 to Imperial Basin9, allow the storm-bound group in place, and
+cancel the two-sector rock batch. Costs, pools and native counters stay
+unchanged by conversion. A live existing Move button mismatch was reproduced:
+it offered an impossible storm-origin route that the engine rejected.
+Controls now reuse projected route geometry/range and disable that source
+and the cross-storm route, with an accessible reason. Engine legality was
+not weakened. Related10-file union65/65; wider module and final acceptance
+remain open.
+
+## Material source boundaries and provisional interpretations
 
 No retrieved primary clarification resolves these specific combinations. Do not silently broaden permission or describe a conservative block as the printed rule.
 
-1. **Newly accompanied groups:** does Cunning's any/all permission override the same-turn advisor lock, or only the ordinary pre-shipment timing? The face does not name that prohibition.
-2. **Storm:** does Cunning allow an in-place flip in a storm-locked stronghold? The FAQ's prohibition explicitly addresses the earlier ordinary Battle flip; its rationale concerns inability to battle. Applying it to this later card is plausible, not explicit.
+1. **Newly accompanied groups:** no specific publisher answer was retrieved. The recommended card-exception prototype above allows the in-place Cunning conversion but retains ordinary same-turn flipping/arrival restrictions.
+2. **Storm:** the FAQ's ordinary-flip prohibition is not silently broadened to this later card. The recommended prototype permits in-place Cunning only; native storm movement, casualties and disconnected battle geometry remain unchanged.
 3. **Borrowed Voice and Karama:** no retrieved Nexus FAQ selects an interpretation. The recommended prototype above explicitly chooses cancellation for this named advantage; Atreides' differently worded effect is not authority for it.
 
 The remaining private-reaction policy question applies to other hidden effects; the bounded Voice Betrayal path uses a uniform native response. This audit likewise does not settle historical Homeworld occupation ownership. Ordinary unoccupied, older, storm-free advisor groups are a clear selection subset, but broader claims retain the boundaries above.

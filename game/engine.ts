@@ -3585,7 +3585,7 @@ function playNexusAdvisors(g: Game, p: Player, action: Action) {
   (g.nexusAdvisorHistory ??= []).push(record);
   g.nexusAdvisorLast = {event: receipt.event, stage: record.stage};
   g.response = {kind: 'nexusAdvisorFlip', owner: p.id, intent: receipt.event, passed: []};
-  log(g, `${p.name} spent Bene Gesserit Nexus Cunning to convert all advisors in ${receipt.selections.map(s => territory(s.territory).name).join(', ')}. Karama may prevent this entire conversion.`,
+  log(g, `${p.name} spent Bene Gesserit Nexus Cunning to convert all advisors in ${receipt.selections.map(s => territory(s.territory).name).join(', ')}. Karama may prevent this entire conversion. Provisional card exception: fresh and storm-bound advisors may change stance in place; ordinary movement and battle restrictions remain.`,
     {faction: p.faction, name: 'Nexus advisor conversion declared'});
 }
 function finishNexusAdvisors(g: Game, canceled: boolean) {

@@ -79,6 +79,11 @@ function AdvisorSelection({ game, act, busy }: Props) {
         This spends your Nexus card once. Karama may cancel the entire
         selection. It costs no spice and uses no shipment or movement allowance.
       </p>
+      <p className="notice">
+        Provisional card exception: Cunning may convert freshly accompanied or
+        storm-bound advisors in place. Ordinary flipping, storm movement and
+        battle restrictions remain unchanged.
+      </p>
       {offer.blocked && <p className="notice">{offer.blocked}</p>}
       <div className="flex flex-wrap gap-2">
         <Button

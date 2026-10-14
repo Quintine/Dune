@@ -2,6 +2,16 @@
 
 Original source audit, 10 September 2026, with dated bounded runtime follow-ups below. This document establishes the printed component inventory, source protocol and implementation boundaries; none lifts expansion release gates. The ordinary worm-triggered alliance Nexus already in the engine is distinct from this optional card module.
 
+## Recommended BG Cunning card exceptions — 14 October 2026
+
+The printed any/all conversion now permits fresh accompanied and storm-bound
+or storm-separated advisor territories in native BG's own Advanced action,
+under an explicitly provisional in-place card interpretation. Only Cunning's
+old uncertainty gates are removed: ordinary flip/arrival, capacity/alliance,
+movement, battle geometry and actual casualties stay unchanged. One original
+Karama response cancels the entire physical batch and keeps the Nexus spent.
+[Source, original native proofs and controls](NEXUS_BENE_GESSERIT_RULES.md#recommended-cunning-card-exceptions--14-october-2026).
+
 ## Recommended absent-Fremen protection — 14 October 2026
 
 The printed Secret Ally protection now connects before original worm
@@ -1376,7 +1386,7 @@ The [bounded Ixian Secret Ally replacement integration](NEXUS_IXIAN_REPLACEMENT_
 - No retrieved card or E3 FAQ gives a general rule that every Nexus effect is Karama-immune, or that playing one suspends all ordinary responses. Homeworld immunity on the preceding page is limited to Homeworld advantages/penalties. Audit cancellation of an underlying native advantage separately from cancellation of the Nexus card before enabling each family.
 - Duration is explicit for several panels but not all. Ixian Betrayal's scope over multiple auction lots, the optional continuation after canceling native Prescience, and exact multi-party cancellation priority require the corresponding existing faction timing contract. Do not make an entire-phase cancellation merely from the word “advantage.”
 - Emperor forced ally payment and purchase refunds retain their precise source-invoice requirements. Tleilaxu's combined revival now uses the [explicit recommended policy](NEXUS_TLEILAXU_RULES.md#recommended-combined-revival-prototype--14-october-2026): a mandatory free own leader/ordinary slot and fixed paid physical group sharing an expanded ordinary ceiling, with preserved cycles and typed caps. This is a provisional implementation, not a new publisher answer; the five counters are not free.
-- Bene Gesserit borrowed Voice now follows the [recommended cancellable named-advantage policy](NEXUS_BENE_GESSERIT_RULES.md#recommended-borrowed-voice-prototype--14-october-2026), with neutral pre-Prescience timing and original native command checks. The prototype does not answer generic hidden-reaction priority, fresh advisor/storm permission or broader named-special/module combinations.
+- Bene Gesserit borrowed Voice follows the [recommended cancellable named-advantage policy](NEXUS_BENE_GESSERIT_RULES.md#recommended-borrowed-voice-prototype--14-october-2026), with neutral pre-Prescience timing. Native Cunning separately follows the [recommended in-place fresh/storm exceptions](NEXUS_BENE_GESSERIT_RULES.md#recommended-cunning-card-exceptions--14-october-2026). Neither answers generic hidden-reaction priority or broader named-special/module combinations.
 - Fremen Secret Ally protection now follows the [recommended independent-operation policy](NEXUS_FREMEN_RULES.md#recommended-independent-protection--14-october-2026), using original threatened public membership and pre-devour timing. This does not resolve general reactive Betrayal priority or widen native Cunning, and broader revival/module accounting remains separate.
 - Richese's two-No-Field effect has a bounded native Cunning shipment follow-up, but wider marker/module compositions remain separate. Its [bounded Betrayal auction contract](NEXUS_RICHESE_RULES.md#bounded-betrayal-auction-contract--30-september-2026) connects public self-cache veto and other-buyer sale diversion, not normal-deck hidden-family self-purchases or private special-Karama acquisition. Ecaz's Duke override needs explicit restoration/end-turn handling across capture, death and Ghola records. These are material implementation tasks, not reasons to invent substitute effects.
 - A complete twelve-card reference/inventory and common lifecycle are substantial first work, but do not alone make all thirty-six panels playable. Keep the public module release gated until every face's supported timing, secrecy, custody, bots, UI, rejection, multiplayer CAS and saved continuation paths are verified. If development supports only Atreides' family first, other faces must remain accurately represented and explicitly unavailable in the audit mode; they must not silently act as blanks in a released module.

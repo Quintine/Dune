@@ -87,6 +87,15 @@ export function botMovementRange(
     choamBonus: p.faction === 'choam' ? g.choamMovementBonus : 0,
   }, planetologist && planetologistLeader(g, p.id) ? planetologist : undefined);
 }
+/** Geometry shared by projected controls and policy; range and entry remain separate. */
+export function groundMoveRouteDistance(g: GameView, p: Seat, from: string, to: string): number {
+  const advisors = isAdvisor(p, splitLocation(from).territory);
+  return gameDistance(g, from, to, key => {
+    const loc = splitLocation(key);
+    return (loc.sector !== 0 && loc.sector === g.storm) ||
+      strongholdPathBlocked(g.players, p.id, loc.territory, advisors);
+  });
+}
 export function botGroundMoveAllowed(
   g: GameView,
   p: Seat,
@@ -121,16 +130,7 @@ export function botGroundMoveAllowed(
     )
   )
     return false;
-  const advisors = isAdvisor(p, source.territory);
-  return (
-    gameDistance(g, from, to, (key) => {
-      const loc = splitLocation(key);
-      return (
-        (loc.sector !== 0 && loc.sector === g.storm) ||
-        strongholdPathBlocked(g.players, p.id, loc.territory, advisors)
-      );
-    }) <= botMovementRange(g, p, elite, planetologist)
-  );
+  return groundMoveRouteDistance(g, p, from, to) <= botMovementRange(g, p, elite, planetologist);
 }
 /** Fremen reinforcement radius is static territory geometry, not a ground route. */
 export function fremenReserveEntry(to: string) {

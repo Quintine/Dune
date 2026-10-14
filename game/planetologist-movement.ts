@@ -41,7 +41,7 @@ export function planetologistRange(
 
 /** Cyborgs accompany selected sectors of their own origin, never another origin. */
 export function selectedOriginElites(
-  group: readonly [string, number][],
+  group: readonly (readonly [string, number])[],
   elites: Readonly<Record<string, number>>,
   origin: string,
 ): number {

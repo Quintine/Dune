@@ -78,48 +78,6 @@ void test('Basic and automatically released lone advisors yield no choice; Homew
   );
   assert.throws(() => quoteNexusAdvisors(c, 'g'));
 });
-void test('fresh advisor lock and storm interference expose explicit unresolved reasons while clear sectors remain usable', () => {
-  const fresh = context();
-  fresh.players[0].advisors!.hagga_basin.lockedTurn = 3;
-  assert.match(
-    quoteNexusAdvisors(fresh, 'b').territories.find(
-      (t) => t.territory === 'hagga_basin',
-    )!.blocked!,
-    /same-turn.*unresolved/,
-  );
-  assert.throws(
-    () => createNexusAdvisors(fresh, 'b', 'x', ['arrakeen', 'hagga_basin']),
-    /unresolved/,
-  );
-  const storm = context();
-  storm.storm = 10;
-  assert.match(
-    quoteNexusAdvisors(storm, 'b').territories.find(
-      (t) => t.territory === 'arrakeen',
-    )!.blocked!,
-    /storm.*ruling/,
-  );
-  assert.equal(
-    quoteNexusAdvisors(storm, 'b').territories.find(
-      (t) => t.territory === 'hagga_basin',
-    )!.blocked,
-    null,
-  );
-});
-void test('a storm separating hostile sectors blocks only the affected conversion rather than requiring battle contact everywhere', () => {
-  const c = context();
-  c.players[0].forces = { 'pasty_mesa:5': 2 };
-  c.players[0].advisors = { pasty_mesa: {} };
-  c.players[1].forces = { 'pasty_mesa:8': 1 };
-  c.storm = 7;
-  assert.match(quoteNexusAdvisors(c, 'b').territories[0].blocked!, /storm/);
-  c.storm = 18;
-  assert.equal(quoteNexusAdvisors(c, 'b').territories[0].blocked, null);
-  c.players[0].forces = { 'polar_sink:0': 2 };
-  c.players[0].advisors = { polar_sink: {} };
-  c.players[1].forces = { 'polar_sink:0': 1 };
-  assert.equal(quoteNexusAdvisors(c, 'b').territories[0].blocked, null);
-});
 void test('ordinary allied occupation and a third stronghold faction block conversion using public No-Field presence', () => {
   const allied = context();
   allied.players[0].ally = 'g';
@@ -230,9 +188,6 @@ void test('empty, duplicate, foreign and malformed selections reject immutably a
     },
     (g: NexusAdvisorContext) => {
       g.players[2].forces = { 'arrakeen:10': 1 };
-    },
-    (g: NexusAdvisorContext) => {
-      g.storm = 10;
     },
   ]) {
     const altered = reload(c);

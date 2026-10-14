@@ -29,6 +29,25 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**BG Cunning fresh/storm card exceptions — 14 October.** The recommended
+in-place any/all prototype now permits current-turn accompanied and storm-
+bound/separated advisor territories during BG's own Advanced action. Native
+whole-group custody, one Karama response and ordinary flip/arrival/movement/
+battle rules remain. Real Shield Wall2/lockedTurn2, Arrakeen2 under storm10
+and False Wall East5/9 separated by storm7 feed allow/cancel and four legal
+profiles. Related10-file union65/65 passes; types/lint pass.
+Three actual390px tables prove fresh allowance plus one fighter movement
+and Battle handover, storm-bound stance-only allowance and separated batch
+Karama cancellation. A live existing Move-button mismatch was reproduced
+and fixed using shared projected geometry/range; blocked origin and
+cross-storm detour now disable with accessible explanation. No engine rule
+was weakened. No overflow/browser errors; wider module and release gates stay open.
+Final compiler/lint and app build pass, with existing build warnings. Native
+API receipts show fresh distance1/range1, bound route unreachable and separated
+distance2/range1, with original battle geometry unchanged. Owned QA service/
+scaffold removed and tabs released or auto-closed; proofs remain outside Git.
+See [the source-bound prototype](NEXUS_ADVISOR_RUNTIME.md#fresh-and-storm-card-exception-prototype--14-october-2026).
+
 **Fremen Secret Ally worm protection — 14 October.** The recommended
 independent-operation prototype now saves only the actual unallied holder's
 groups before original devouring. Publicly possible threatened held-Nexus

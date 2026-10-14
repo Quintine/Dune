@@ -1,5 +1,51 @@
 # Dune implementation status
 
+## 14 October 2026 — Native BG Cunning fresh and storm card exceptions
+
+Recommended provisional interpretation: printed any/all permission is an
+in-place card exception for freshly accompanied and storm-bound/separated
+advisor territories during native BG's own Advanced action. Only the
+Cunning uncertainty guards are removed; dead storm-only helper/imports
+are deleted. Quotes count public presence without allocating receipt groups.
+Original declarations still bind exact locations/counts/locked stance,
+one physical Nexus and one native Karama window. Ordinary flip/arrival,
+movement, casualties, allied capacity and battle geometry remain unchanged.
+
+Two disjoint genuine native slices retain real setup, card draws, reserve
+payments/free accompaniment and original Advanced storm cards. An initial
+dial assumption was corrected without changing the producer: actual identity
+card draws reach sheltered Arrakeen storm10 and rock separation storm7.
+The Storm fixture's setup-only action routing was repaired by requiring
+playing status before dials; no phase/board/force/hand state was fabricated.
+Fresh Shield Wall2 locks at turn2; real Karama cancels old+fresh groups as
+one batch, and the previously forbidden ordinary fighter arrival works
+after Cunning. Both storm geometries retain ordinary move/flip/battle blocks.
+
+Unresolved-guard, wording, action-copy, fixture-provenance and incidental
+phase/null assertions were deleted, not re-pinned. The related10-file union
+passes65/65; types/lint pass. Actual390px GameTable declares/allows fresh
+Shield Wall2, moves one to Imperial Basin9 and hands over to Battle; allows
+Arrakeen2 in place under storm10; and cancels False Wall East5/9 as one batch.
+One Nexus remains spent; conversion costs/pools/usage stay unchanged.
+
+Live proof found an existing movement-control bug: Arrakeen10→Polar Sink
+was offered during storm10 although authoritative movement rejected unchanged.
+Controls now share projected geometric distance and native range, including
+selected-origin elites and owned marker routes. Blocked origin/cross-storm
+detour is disabled with an accessible reason; no special Cunning bypass or
+engine-rule relaxation. Selected-elite input accepts immutable tuples without
+copies. Before/after live proof and three native API receipts stay outside Git.
+An earlier Fremen-fixture Storm description was corrected to distinguish
+Basic dials from the unchanged Advanced card producer; behavior is unchanged.
+Final foreground compiler/lint and app build pass, retaining existing
+warnings. Native API receipts observe fresh distance1/range1 and battle
+Shield Wall, unreachable bound origin/range3 with no battle, and separated
+distance2/range1 with no battle. One physical Nexus spends in every actual
+declaration. Owned service/scaffold removed, tabs released/auto-closed; final
+source-bound receipts remain outside Git.
+Three surfaces have no overflow/browser errors. Broader modules/markers,
+saved assurance, calibrated AI, complete modes and deployed acceptance remain open.
+
 ## 14 October 2026 — Absent-Fremen Nexus pre-devour protection
 
 Explicit recommended interpretation: independent printed protection, without

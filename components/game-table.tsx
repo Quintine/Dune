@@ -95,6 +95,7 @@ import { NexusHarkonnenBetrayal } from './nexus-harkonnen-betrayal';
 import { OrnithopterMovement } from './ornithopter-movement';
 import { DiscoveryOrnithopterMovement } from './discovery-flight-movement';
 import { PlanetologistMovement } from './planetologist-movement';
+import { selectedOriginElites } from '@/game/planetologist-movement';
 import { SandmasterMovement } from './sandmaster-movement';
 import { SandmasterWormChoice } from './sandmaster-worm';
 import { sandmasterWormCollection } from '@/game/sandmaster-worm';
@@ -177,7 +178,7 @@ import { SmugglerShipmentChoice } from './smuggler-shipment';
 import { nexusGuildSecretAllyAction, nexusGuildSecretAllyQuote } from '@/game/nexus-guild-secret-ally-options';
 import { nexusRicheseAction, nexusRicheseQuote } from '@/game/nexus-richese-options';
 import { guildTransportQuote } from '@/game/transport-quote';
-import { fremenReserveEntry, botGroundMoveAllowed } from '@/game/bot-mobility';
+import { fremenReserveEntry, botGroundMoveAllowed, botMovementRange, groundMoveRouteDistance } from '@/game/bot-mobility';
 import { isAlliedShipmentVisit } from '@/game/allied-separation';
 import { location as boardLocation } from '@/game/board';
 import { fighterCount, isAdvisor } from '@/game/advisors';
@@ -814,6 +815,15 @@ export function GameTable({
         count > 0 &&
         !botGroundMoveAllowed(g, me, key, boardLocation(selected, sector), 0),
     );
+  const movementTarget = boardLocation(selected, sector);
+  const selectedMovementElite = combineSectors
+    ? selectedOriginElites(physicalDraftEntries, eliteForces, splitLocation(source).territory)
+    : eliteAmount;
+  const ordinaryMovementRange = botMovementRange(g, me, selectedMovementElite);
+  const ordinaryMovementRouteBlocked = physicalDraftEntries.some(([key, count]) =>
+    count > 0 && groundMoveRouteDistance(g, me, key, movementTarget) > ordinaryMovementRange) ||
+    (!!includesNoField && !!ownNoField && groundMoveRouteDistance(g, me,
+      boardLocation(ownNoField.location.territory, ownNoField.location.sector), movementTarget) > ordinaryMovementRange);
   const act = (a: Action) => {
     // Control of one's own seat is independent of every gameplay response.
     if (a.type === 'setAutopilot') { void send(a); return; }
@@ -4674,6 +4684,7 @@ export function GameTable({
                           ordinaryMovementAction,
                           !source ||
                             canceledFremenRouteBlocked ||
+                            ordinaryMovementRouteBlocked ||
                             selectedDestinationInStorm ||
                             (me.moved ?? 0) >= (me.movesAllowed ?? 1) ||
                             (includesNoField
@@ -4681,9 +4692,11 @@ export function GameTable({
                               : (me.forces[source] ?? 0) === 0),
                           selectedDestinationInStorm
                             ? 'movement-storm-unavailable'
-                            : canceledFremenRouteBlocked
-                              ? 'movement-range-unavailable'
-                              : undefined,
+                            : ordinaryMovementRouteBlocked
+                              ? 'movement-route-unavailable'
+                              : canceledFremenRouteBlocked
+                                ? 'movement-range-unavailable'
+                                : undefined,
                         )}
                         {canceledFremenRouteBlocked &&
                           !selectedDestinationInStorm && (
@@ -4697,6 +4710,13 @@ export function GameTable({
                               territory, or use available ornithopters.
                             </p>
                           )}
+                        {ordinaryMovementRouteBlocked && !selectedDestinationInStorm && (
+                          <p id="movement-route-unavailable" className="fine" role="status">
+                            Movement unavailable: this force group has no unblocked
+                            ground route within its ordinary range. Choose a reachable
+                            source or destination outside the storm and blocked strongholds.
+                          </p>
+                        )}
                         {selectedDestinationInStorm && (
                           <p
                             id="movement-storm-unavailable"
@@ -4718,6 +4738,8 @@ export function GameTable({
                               ? 'No ordinary movement is currently available.'
                               : (me.moved ?? 0) >= (me.movesAllowed ?? 1)
                                 ? 'No ordinary movement remains this turn.'
+                                : ordinaryMovementRouteBlocked
+                                  ? 'Choose an unblocked source and route outside the storm.'
                                 : canceledFremenRouteBlocked
                                   ? 'Choose an ordinary route within your available range.'
                                   : selectedDestinationInStorm
