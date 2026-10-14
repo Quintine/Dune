@@ -46,6 +46,7 @@ import { quoteEcazInquiry, ecazInquiryAnswer, ecazInquiryHistory, ecazInquirySig
 import { nexusCleanPlayBlocked } from './nexus-play-boundary';
 import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emperorNexusModeSupported, emperorNexusPools, emperorNexusRevivalElites, validateEmperorNexusRevival, type NexusEmperorRevival } from './nexus-emperor-secret-ally';
 import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
+import { createEmperorPaymentReceipt, validateEmperorPaymentReceipt, emperorPaymentUseBlock, emperorPaymentSourceQuote, requiredEmperorPaymentResponders, emperorPaymentReceiptSignature, type EmperorPaymentReceipt } from './nexus-emperor-payment';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, createFremenNexusRevival, upgradeFremenNexusRevival, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
 import { createNexusFremenProtection, currentNexusFremenProtectionOwner, answerNexusFremenProtection, validateNexusFremenProtection, type NexusFremenProtectionFrame, type NexusFremenProtectionInput } from './nexus-fremen-protection';
@@ -931,6 +932,7 @@ export type Decision =
     }
   | { kind: 'guildTiming'; player: string; next: string; following: string }
   | { kind: 'auctionPayment'; player: string }
+  | { kind: 'nexusEmperorPayment'; player: string; event: string }
   | {
       kind: 'advisor';
       player: string;
@@ -1195,6 +1197,9 @@ export type Game = {
     quote: Extract<RicheseSettlementQuote, {kind:'sold'}>;
     signature: string;
   } | null;
+  /** Original normal-auction obligation; neutral acknowledgements precede funding. */
+  nexusEmperorPayment?: { sequence: number; current: string | null; completed: EmperorPaymentReceipt[] };
+  pendingNexusEmperorPayment?: { receipt: EmperorPaymentReceipt } | null;
   /** Explicit development profile; never enabled by a public start or player action. */
   kullPreview?: boolean;
   nexusKullPreview?: boolean;
@@ -12632,6 +12637,112 @@ function stampAuctionBureaucrat(g:Game,p:Player,amount:number,allyPayment:number
   const {payee,shares} = auctionBureaucratParties(g,p,amount,allyPayment,seller);
   return payee ? stampBureaucratContributors(g,'auction',payee,shares,allyPayment > 0) : {};
 }
+const EMPEROR_PAYMENT_POLICY = 'Provisional full-price funding: Emperor covers this original allied purchase, reusing prepaid aid and adding only the missing spice. No extra gift or bank subsidy is created; original acquisition and native income continue.';
+function nexusEmperorPaymentIntegrity(g: Game): void {
+  const cursor = g.nexusEmperorPayment, frame = g.pendingNexusEmperorPayment;
+  if (!cursor) {
+    requireRule(!frame && g.decision?.kind !== 'nexusEmperorPayment',
+      'Emperor compulsory funding lost its original obligation.');
+    return;
+  }
+  requireRule(g.nexusCards?.cards && Object.keys(cursor).sort().join(',') === 'completed,current,sequence' &&
+    Number.isSafeInteger(cursor.sequence) && cursor.sequence >= 1 && Array.isArray(cursor.completed) &&
+    cursor.sequence === cursor.completed.length + Number(!!frame),
+  'Emperor compulsory funding lost its original occurrence history.');
+  const events = new Set<string>();
+  for (const receipt of cursor.completed) {
+    nexusRule(() => validateEmperorPaymentReceipt(g, receipt));
+    requireRule(receipt.stage !== 'pending' && !events.has(receipt.event),
+      'Emperor compulsory funding repeated or reopened a completed obligation.');
+    events.add(receipt.event);
+  }
+  if (!frame) {
+    requireRule(cursor.current === null && g.decision?.kind !== 'nexusEmperorPayment',
+      'Emperor compulsory funding lost its pending source.');
+    return;
+  }
+  requireRule(Object.keys(frame).join(',') === 'receipt' &&
+    frame.receipt.stage === 'pending' && cursor.current === frame.receipt.event &&
+    !events.has(frame.receipt.event), 'Emperor compulsory funding lost its pending receipt.');
+  nexusRule(() => validateEmperorPaymentReceipt(g, frame.receipt));
+  const owner = frame.receipt.required[frame.receipt.passed.length];
+  const continuation = g.pendingTreacheryDiscard?.continuation;
+  const decision = g.decision?.kind === 'nexusEmperorPayment' ? g.decision :
+    continuation?.kind === 'truthtranceDiscard' ? continuation.resume.decision : null;
+  requireRule(decision?.kind === 'nexusEmperorPayment' && decision.event === frame.receipt.event &&
+    decision.player === owner && g.active === owner,
+  'Emperor compulsory funding lost its original acknowledgement owner.');
+}
+function nexusEmperorPaymentOffer(g: Game, id: string) {
+  const receipt = g.pendingNexusEmperorPayment?.receipt;
+  if (!receipt || g.decision?.kind !== 'nexusEmperorPayment' || g.decision.player !== id ||
+    g.nexusCards?.cards?.hands[id] !== 'emperor') return null;
+  const blocked = nexusRule(() => emperorPaymentUseBlock(g, receipt, id));
+  return { event: receipt.event, canUse: !blocked, blocked, policy: EMPEROR_PAYMENT_POLICY,
+    price: receipt.price, emperor: receipt.emperor, winner: receipt.winner };
+}
+function beginNexusEmperorPayment(g: Game): boolean {
+  if (!g.nexusCards?.cards) return false;
+  const source = nexusRule(() => emperorPaymentSourceQuote(g));
+  if (!source) return false;
+  const last = g.nexusEmperorPayment?.completed.at(-1);
+  if (last?.turn === g.turn && last.auctionIndex === source.auctionIndex &&
+    last.card === source.card && last.winner === source.winner && last.price === source.price) return false;
+  const required = nexusRule(() => requiredEmperorPaymentResponders(g));
+  if (!required.length) return false;
+  const receipt = nexusRule(() => createEmperorPaymentReceipt(g, crypto.randomUUID(), required));
+  const cursor = g.nexusEmperorPayment ??= { sequence: 0, current: null, completed: [] };
+  cursor.sequence++;
+  cursor.current = receipt.event;
+  g.pendingNexusEmperorPayment = { receipt };
+  g.active = required[0];
+  g.decision = { kind: 'nexusEmperorPayment', player: required[0], event: receipt.event };
+  return true;
+}
+function decideNexusEmperorPayment(g: Game, p: Player, action: Action): void {
+  const receipt = g.pendingNexusEmperorPayment!.receipt;
+  requireRule(action.type === 'nexusEmperorPayment' && typeof action.use === 'boolean' &&
+    Object.keys(action).sort().join(',') === 'event,type,use' && action.event === receipt.event &&
+    receipt.required[receipt.passed.length] === p.id,
+  'Acknowledge only your current original allied purchase.');
+  requireRule(!g.truthtrance && !pendingNexusTraitors(g),
+    'Finish Truthtrance and private Traitor returns before the auction reaction.');
+  if (action.use) {
+    const blocked = nexusRule(() => emperorPaymentUseBlock(g, receipt, p.id));
+    requireRule(!blocked, blocked ?? 'This card cannot fund the original purchase.');
+  }
+  const passed = action.use ? receipt.passed : [...receipt.passed, p.id];
+  const stage = action.use ? 'used' : passed.length === receipt.required.length ? 'passed' : 'pending';
+  const next: EmperorPaymentReceipt = { ...receipt, passed, stage,
+    owner: action.use ? p.id : null, signature: '' };
+  next.signature = emperorPaymentReceiptSignature(next);
+  nexusRule(() => validateEmperorPaymentReceipt(g, next));
+  if (stage === 'pending') {
+    g.pendingNexusEmperorPayment!.receipt = next;
+    const owner = next.required[next.passed.length];
+    g.active = owner;
+    g.decision = { kind: 'nexusEmperorPayment', player: owner, event: next.event };
+    return;
+  }
+  const source = nexusRule(() => emperorPaymentSourceQuote(g));
+  requireRule(source, 'The original auction funding obligation is no longer present.');
+  if (action.use) {
+    g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+    getPlayer(g, source.emperor).spice -= source.missing;
+    const credit = g.aid[source.emperor];
+    g.aid[source.emperor] = { recipient: source.winner,
+      amount: (credit?.recipient === source.winner ? credit.amount : 0) + source.missing };
+    g.auction!.allyPayment = source.price;
+    log(g, `${p.name} spent Emperor Nexus Betrayal to compel the original ${source.price}-spice allied purchase. ${source.prepaid} prepaid spice is reused and Emperor supplies ${source.missing}; no extra gift or bank subsidy is created. Provisional full-price interpretation.`);
+  }
+  g.nexusEmperorPayment!.completed.push(next);
+  g.nexusEmperorPayment!.current = null;
+  g.pendingNexusEmperorPayment = null;
+  g.active = source.winner;
+  g.decision = null;
+  if (action.use) settleAuction(g, false);
+  else recoverAuctionPayment(g, getPlayer(g, source.winner));
+}
 function auctionNext(g: Game) {
   const a = g.auction!;
   const eligible = g.order.filter((id) => {
@@ -12653,6 +12764,7 @@ function auctionNext(g: Game) {
       finishNormalBidding(g);
       return;
     }
+    if (beginNexusEmperorPayment(g)) return;
     g.decision = { kind: 'auctionPayment', player: next.player };
     g.active = next.player;
     recoverAuctionPayment(g, getPlayer(g, next.player));
@@ -28476,6 +28588,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
+  nexusEmperorPaymentIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -28566,6 +28679,11 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   if (g.pendingNexusIxianReplacement) return g;
   if (g.pendingGuildBetrayal) {guildBetrayalIntegrity(g); return g;}
   if (g.pendingRicheseBetrayal) {richeseBetrayalIntegrity(g);return g;}
+  if (g.pendingNexusEmperorPayment) {
+    finishActionContinuations(g);
+    nexusEmperorPaymentIntegrity(g);
+    return g;
+  }
   if (g.pendingKull) {
     settleAutomaticContinuations(g);
     if (g.pendingKull) { kullIntegrity(g); marketGholaIntegrity(g); return g; }
@@ -28682,6 +28800,7 @@ export function applyAction(state: Game, id: string, action: Action): Game {
   nexusEcazDukeIntegrity(g);
   richesePairIntegrity(g);
   richeseBetrayalIntegrity(g);
+  nexusEmperorPaymentIntegrity(g);
   marketGholaIntegrity(g);
   homeworldRule(() => homeworldGameIntegrity(g));
   homeworldBattleLossIntegrity(g);
@@ -28711,6 +28830,7 @@ function finishActionContinuations(g: Game) {
     finishTreacheryDiscard(g);
   if (g.pendingTreacheryDiscard?.reaction) return;
   requireRule(!g.pendingTreacheryDiscard, 'The automatic discard chain did not finish.');
+  if (g.pendingNexusEmperorPayment) return;
   if (pendingNexusTraitors(g)) return;
   observeOccupation(g);
   resumeHomeworldRevivalReturn(g);
@@ -28770,6 +28890,7 @@ function settleAutomaticContinuations(g: Game) {
   if (g.pendingNexusIxianReplacement) return;
   if (g.pendingGuildBetrayal) return;
   if (g.pendingRicheseBetrayal) return;
+  if (g.pendingNexusEmperorPayment) return;
   if (g.pendingKull?.stage === 'offer') return;
   if (pendingNexusTraitors(g)) return;
   if (g.pendingNullentropy) return;
@@ -28779,6 +28900,7 @@ function settleAutomaticContinuations(g: Game) {
     if (g.pendingGuildBetrayal) return;
     if (g.pendingNexusIxianReplacement) return;
     if (g.pendingRicheseBetrayal) return;
+    if (g.pendingNexusEmperorPayment) return;
     syncTupileSlots(g);
     prepareTupileCleanup(g);
     if (g.pendingHomeworldTupileCleanup || tupileSourceBlock(g)) return;
@@ -28837,6 +28959,7 @@ function settleAutomaticContinuations(g: Game) {
     if (g.pendingNexusIxianBetrayal) return;
     if (g.pendingGuildBetrayal) return;
     if (g.pendingRicheseBetrayal) return;
+    if (g.pendingNexusEmperorPayment) return;
     // Opposing/automatic consequences can release a now-impossible promise;
     // they are not the original actor voluntarily spending a promised resource.
     reconcileBattlePromises(g);
@@ -28860,6 +28983,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
+  nexusEmperorPaymentIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -28900,6 +29024,11 @@ export function normalizeAutomaticGame(state: Game): Game {
   if (g.pendingNexusIxianReplacement) return g;
   if (g.pendingGuildBetrayal) return g;
   if (g.pendingRicheseBetrayal) return g;
+  if (g.pendingNexusEmperorPayment) {
+    finishActionContinuations(g);
+    nexusEmperorPaymentIntegrity(g);
+    return g;
+  }
   if (g.pendingKull?.stage === 'offer') return g;
   ornithopterIntegrity(g);
   lateDefenseIntegrity(g);
@@ -28930,6 +29059,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   nexusEcazDukeIntegrity(g);
   richesePairIntegrity(g);
   richeseBetrayalIntegrity(g);
+  nexusEmperorPaymentIntegrity(g);
   marketGholaIntegrity(g);
   prepareTupileCleanup(g);
   homeworldRule(() => homeworldGameIntegrity(g));
@@ -28965,6 +29095,17 @@ function applyActionInner(
   'Finish the original occupied Tupile hand cleanup before another action.');
   ecazTreacheryIntegrity(state);
   const g = structuredClone(state);
+  if (g.pendingNexusEmperorPayment && !g.truthtrance && !pendingNexusTraitors(g)) {
+    const p = getPlayer(g, id);
+    const opensTruth = action?.type === 'card' && !action.mode &&
+      p.hand.some(card => card.id === action.card && (card.effect === 'truthtrance' ||
+        Array.isArray(action.shrineTruthtrance) && action.shrineTruthtrance.includes(card.id)));
+    if (!opensTruth) {
+      if (action?.type === 'advanceBots') return g;
+      decideNexusEmperorPayment(g, p, action);
+      return g;
+    }
+  }
   if (g.pendingNexusHarkonnenBetrayal) {
     getPlayer(g,id);
     if (action?.type === 'advanceBots') return g;
@@ -29139,6 +29280,11 @@ function applyActionInner(
     throw error;
   }
   requireRule(!pendingNexusTraitors(g), 'Finish the private Nexus card return before continuing play.');
+  if (g.pendingNexusEmperorPayment) {
+    if (action.type === 'advanceBots') return g;
+    decideNexusEmperorPayment(g, p, action);
+    return g;
+  }
   if (t === 'card' && action.card === RECRUITS_CARD_ID) {
     requireRule(
       Object.keys(action).sort().join(',') === 'card,type',
@@ -29480,6 +29626,8 @@ function applyActionInner(
     const decision = g.decision;
     requireRule(decision.kind !== 'nexusFremenProtection',
       'Use only the original worm protection event with Use or Pass.');
+    requireRule(decision.kind !== 'nexusEmperorPayment',
+      'Use only the original allied-purchase event with Use or Pass.');
     if (decision.kind === 'nexusIxianReplacement') {
       requireRule(false, 'Use only the current purchased-card event with Use or Pass.');
     }
@@ -32916,6 +33064,7 @@ export function viewGame(state: Game, id: string) {
   guildBetrayalIntegrity(state);
   state = migratePrintedKullCounter(state);
   richeseBetrayalIntegrity(state);
+  nexusEmperorPaymentIntegrity(state);
   kullIntegrity(state);
   advancedPreviewIntegrity(state);
   harkonnenExchangeIntegrity(state);
@@ -33358,6 +33507,7 @@ export function viewGame(state: Game, id: string) {
     nexusEcazDuke: nexusRule(() => quoteNexusEcazDuke(g, id)),
     nexusEmperorSecretAlly: nexusEmperorSecretAllyOffer(g,id),
     nexusEmperorBetrayal: nexusEmperorBetrayalOffer(g, id),
+    nexusEmperorPayment: nexusEmperorPaymentOffer(g, id),
     nexusBgBetrayal: nexusBgBetrayalOffer(g, id),
     nexusBorrowedVoice: nexusBorrowedVoiceOffer(g, id),
     nexusFremenRevival: fremenNexusRevivalOffer(g,id),

@@ -66,6 +66,20 @@ These decisions do not open public module/faction or complete-mode gates.
 
 These decisions do not open public module/faction or complete-mode gates.
 
+## Recommended Emperor compulsory funding — 14 October 2026
+
+The content-first conservative prototype forces exactly the original full
+positive normal-auction price for native Emperor's ally, not only buyer
+shortfall. Matching prepaid aid is reused; only missing credit comes from
+Emperor's own spice before original purchase/income. No excessive gift,
+bank-created payment, borrowing against future income or refund is inferred.
+Fully prepaid or insufficient-own-wallet Use is unavailable; Pass retains the
+card and original ordinary winner payment. Public possible-holder storm-order
+acknowledgements protect hidden faces. This is an explicit provisional
+implementation recommendation, not publisher clarification or a separately
+answered numerical ruling; special seller composition remains open.
+[Connected source and proof](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
+
 ## Recommended Fremen Nexus quota — 14 October 2026
 
 The user's choose-recommended-option instruction selects the provisional

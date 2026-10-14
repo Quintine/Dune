@@ -2690,6 +2690,9 @@ function policyActions(g: GameView): Action[] {
         ? [{ type: 'nexusFremenProtection', event: offer.event, use: offer.canUse }]
         : [];
     }
+    if (d.kind === 'nexusEmperorPayment')
+      return [{ type: 'nexusEmperorPayment', event: d.event,
+        use: !!g.nexusEmperorPayment?.canUse && !g.nexusEmperorPayment.blocked }];
     if (d.kind === 'nexusFremenCunningOffer')
       return [{ type: 'decision', event: d.event,
         accept: g.nexusCards?.card === 'fremen' && me.faction === 'fremen' &&

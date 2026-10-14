@@ -236,6 +236,7 @@ import { MoritaniRetention } from './moritani-retention';
 import { MoritaniAssassinate, MoritaniAssassinateHistory } from './moritani-assassinate';
 import { MoritaniExtortion, MoritaniExtortionNotice } from './moritani-extortion';
 import { AdvancedAllySeparation } from './advanced-ally-separation';
+import { NexusEmperorPayment } from './nexus-emperor-payment';
 export function GameTable({
   game: g,
   send,
@@ -3504,6 +3505,8 @@ export function GameTable({
                     </div>
                   ))}
                 </>
+              ) : g.decision.kind === 'nexusEmperorPayment' ? (
+                <NexusEmperorPayment game={g} send={act} busy={transportBusy || !!g.roomControl?.paused || !!g.roomControl?.closed || !!me.autopilot} />
               ) : g.decision.kind === 'auctionPayment' ? (
                 <>
                   <p className="muted">

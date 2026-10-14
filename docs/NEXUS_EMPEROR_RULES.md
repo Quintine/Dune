@@ -121,16 +121,60 @@ receipt, suppression and seat-private offer survive JSON and room restart;
 replay cannot spend it twice. Karama remains an independent alternative in
 the same window.
 
-This does not implement the forced-purchase Betrayal alternative. The bounded
-Secret Ally bank-auction purchase is connected above; Emperor Cunning still
-has its own earlier declaration and response. One unique Emperor Nexus card
-cannot be both Cunning and Betrayal at once. The wider Nexus module remains
-gated.
+The normal-auction forced-purchase alternative is now connected below.
+Secret Ally bank-auction purchase and Cunning retain their separate producers.
+One unique Emperor Nexus cannot pay for two alternatives. The wider module
+remains gated.
+
+### Recommended original full-price funding — 14 October 2026
+
+The original printed photograph was reread: force Emperor to pay for their
+ally's Treachery Card during Bidding, **at least as much spice as necessary**.
+The content-first conservative recommendation covers exactly the original full
+positive normal-auction price, not merely the buyer's shortfall. Reuse matching
+already-prepaid aid first; debit only missing credit from Emperor's own spice.
+No arbitrary excess gift, bank-created subsidy, prospective-income borrowing,
+new bid or refund is inferred. Fully prepaid or underfunded opportunities keep
+the card and permit Pass. This is a visible provisional interpretation, not
+publisher clarification or a separately answered numerical user ruling.
+
+Before original winner payment/recovery, publicly possible unallied held-Nexus
+rivals acknowledge in original storm order regardless of secret face. Current
+neutral Continue retains all wallets/cards/bids; only the current actual Emperor
+holder receives the private Use offer. Truthtrance and private Traitor returns
+retain priority. Its original discard restores the same acknowledgement/event;
+native Semuta continuation remains before that restoration if selected.
+
+`game/nexus-emperor-payment.ts` binds the original physical lot/index, winner,
+price, mutual alliance, declared funding, prepaid escrow, native wallet and
+frozen public roster. Event-bound Use spends one physical Nexus, completes the
+original full-price ally credit, and calls original `settleAuction`. The buyer
+keeps their own spice and gets one original card. Native Emperor income still
+opens its original allow/Karama window; cancellation does not refund the funded
+purchase. All-pass restores original winner payment without changing the bid.
+Completed history does not demand later wallets or holdings equal old snapshots.
+
+Genuine four-seat Basic/Advanced setup/deal, original first turn, real turn-two
+worm/Emperor–Guild alliance, physical closing draws and paid-price-two winning
+bid produce the source. Fifteen pure boundaries and native runtime consumers
+are included in the affected10-file union155/155. The original receipt whitelist
+omission and premature discard fence were repaired; regressions now accept
+native funding and restore the original Truthtrance suffix. Wording,
+action-copy and fixture-provenance pins were deleted, not re-pinned.
+Types/lint/build pass; four actual API profiles restore next-lot Atreides
+inspection with allow/cancel and prior credit. Actual390px neutral Continue,
+holder Use and native income allow/cancel preserve buyer6, reuse prepaid1,
+add only missing1, give one card and spend one Nexus. Emperor10→9→8→10
+when allowed, or stays8 when income is canceled. No overflow/browser errors.
+Original paid purchase advances to lot1 once, without refund. Full combinations,
+special seller lots, assurance and deployed acceptance remain separate.
+Owned QA host/tab/scaffolding is removed; API and phone proofs remain outside Git.
+The final build retains existing route-classification/chunk-size warnings.
 
 The following material cases remain unresolved; no new question was sent:
 
 - **Short groups:** may Cunning operate with fewer than five eligible ordinary counters, or Secret Ally revive fewer than three when Tanks/typed limits cannot supply three? Neither panel says up to. Do not disguise the question as a silently truncated count.
-- **Forced payment:** who chooses Emperor's compulsory contribution, what is the minimum when its ally already holds the full price, and what occurs if Emperor cannot cover the requested amount? The panel's necessary-amount wording does not settle the complete digital transaction.
+- **Wider forced payment:** the normal-auction prototype chooses the full original obligation and refuses missing own funding or an already fully prepaid price. Arbitrary larger transfers and special seller-lot composition remain unimplemented; the printed text is not claimed to answer them.
 - **Special purchases and revival suppression/income:** resolve the concrete boundaries above before connecting broad existing payment/free-revival adapters.
 
 The existing private reaction-policy question still covers other hidden Betrayal timing. This battle path uses a uniform native response rather than an identity-dependent private pause. A native holder and a Betrayal holder cannot possess the same unique Emperor card simultaneously, so do not manufacture Betrayal-versus-Cunning tests with duplicate physical copies.

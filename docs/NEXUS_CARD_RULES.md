@@ -12,6 +12,20 @@ movement, battle geometry and actual casualties stay unchanged. One original
 Karama response cancels the entire physical batch and keeps the Nexus spent.
 [Source, original native proofs and controls](NEXUS_BENE_GESSERIT_RULES.md#recommended-cunning-card-exceptions--14-october-2026).
 
+## Recommended Emperor compulsory funding — 14 October 2026
+
+Normal-auction Betrayal now forces native Emperor to cover the original
+positive allied price, reusing matching prepaid aid and adding only missing
+own-wallet credit. Neutral storm-order held-Nexus acknowledgements precede
+original winner payment regardless of hidden face; only the actual current
+holder may Use. All-pass preserves ordinary payment. One original card,
+one physical Nexus and native income allow/cancel retain original continuation.
+Truthtrance's original discard restores the same event. Full-price rather
+than buyer-shortfall funding is visibly provisional, not a publisher ruling.
+Underfunded/fully prepaid use, excess gifts and special seller lots are not
+silently substituted.
+[Source and changed-path proof](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
+
 ## Recommended Fremen ordinary free quota — 14 October 2026
 
 The absent-Fremen Secret Ally now enables a fixed ordinary free quota of

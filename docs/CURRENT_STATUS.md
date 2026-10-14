@@ -29,6 +29,22 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Emperor Nexus compulsory original purchase — 14 October.** The conservative
+provisional full-price policy now connects normal-auction Betrayal before
+winner payment, with neutral public held-Nexus storm-order acknowledgements.
+One actual card forces native Emperor's full original allied obligation,
+reusing prepaid aid and adding only missing own spice. Original acquisition,
+income allow/cancel and next-lot inspection continue; all-pass keeps ordinary
+payment. Truthtrance's original discard restores the same source event.
+Affected10-file union155/155, types/lint/build pass. Four API profiles and
+actual390px neutral/Use/allow/cancel preserve buyer6, prepaid1/missing1,
+one purchased card and one Nexus; original Emperor income10 or canceled8
+restores next lot1 with no refund, overflow or browser errors.
+Special seller lots, full combinations, assurance and deployed acceptance remain.
+[Source-bound policy and proof](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
+Owned QA scaffolding is removed; API/phone proofs remain outside Git.
+Final build retains existing route-classification/chunk-size warnings.
+
 **Fremen Secret Ally ordinary free quota — 14 October.** Recommended
 provisional fixed-three permission now replaces the early-only exact-three
 transfer. Activation spends one Nexus and moves nothing; original revival

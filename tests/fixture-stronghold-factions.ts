@@ -93,6 +93,8 @@ export function nextStrongholdFactionsNativeStep(game: Game): StrongholdFactions
     const actor = decision.player;
     if (decision.kind === 'nexusFremenProtection')
       return { actor, action: { type: 'nexusFremenProtection', event: decision.event, use: false } };
+    if (decision.kind === 'nexusEmperorPayment')
+      return { actor, action: { type: 'nexusEmperorPayment', event: decision.event, use: false } };
     if (decision.kind === 'ixSetup') return { actor, action: { type: 'decision', card: game.ixSetupCards![0].id } };
     if (decision.kind === 'mobileStronghold') return { actor, action: decision.placement ? { type: 'decision', location: 'polar_sink:0' } : { type: 'decision', decline: true } };
     if (decision.kind === 'ixTechnology' || decision.kind === 'ixSubstitution' || decision.kind === 'captureOffer' || decision.kind === 'fullPlanOffer' || decision.kind === 'choamTradeReply')

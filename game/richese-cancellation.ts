@@ -90,6 +90,7 @@ const DECISIONS = {
   wormRide: true,
   nexusFremenCunningOffer: true,
   nexusFremenProtection: true,
+  nexusEmperorPayment: true,
   nexusFremenCunningRide: true,
   moritaniRetention: true,
   moritaniSpecialKarama: true,

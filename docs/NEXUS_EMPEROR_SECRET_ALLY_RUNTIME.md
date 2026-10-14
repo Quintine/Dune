@@ -59,10 +59,12 @@ owned and otherwise use the ordinary decision. The previously asked
 confirmation-versus-gate question remains pending; this prototype does not
 settle it for release.
 
-Seller-paid Richese/CHOAM transactions, allied split, expansions, other
-purchase sources and the forced Emperor-payment Betrayal alternative remain
-gated. The [source contract](NEXUS_EMPEROR_RULES.md#secret-ally-retain-the-actual-purchase-price)
-records those payment boundaries.
+Seller-paid Richese/CHOAM transactions, allied split, expansions and other
+Secret Ally purchase sources remain gated. The separate normal-auction forced
+Emperor-payment Betrayal now has a connected
+[provisional full-price funding path](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
+The [Secret Ally source contract](NEXUS_EMPEROR_RULES.md#secret-ally-retain-the-actual-purchase-price)
+retains its distinct seller-payment boundary.
 
 ## Prototype entry and evidence
 

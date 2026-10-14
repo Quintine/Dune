@@ -1,5 +1,37 @@
 # Dune implementation status
 
+## 14 October 2026 — Emperor Nexus original compulsory purchase
+
+Connected original positive normal-auction allied obligation through a neutral
+public possible-holder storm-order queue and owner-private actual Emperor
+Nexus Use. Explicit provisional full-price funding reuses matching prepaid
+aid and debits only missing native own-wallet credit before original purchase.
+No new bid, oversized gift, bank-created subsidy or future-income funding.
+Fully prepaid/underfunded Use blocks before disposal; all-pass preserves the
+ordinary funded winner decision. Source receipt binds original lot/price,
+mutual alliance, declared split, escrow/wallet and frozen public membership.
+Native Emperor income remains cancelable separately, never refunding acquisition.
+
+Genuine four-seat Basic/Advanced original setup, undealt starting cards,
+first-turn flow, real later worm/pact/closing draw and Guild price2 auction
+produce the source. Initial strict receipt whitelist omitted winner; repaired.
+A new pending fence prematurely stopped native Truthtrance discard settlement;
+it now permits the original discard/Semuta suffix before resuming the same event.
+Regression passes; unrelated rules are unchanged. Wording, action-copy and
+fixture-provenance pins are removed rather than updated. Minimal Easy policy
+performs actual neutral Pass then Use; strategic AI stays deferred.
+
+Affected10-file union155/155, types/lint/build pass. Four genuine API profiles
+with allow/cancel/prepaid credit restore original next-lot Atreides inspection.
+Actual390px neutral Continue→holder Use→original income allow/cancel preserves
+buyer6, prepaid1/missing1, one actual card and one Nexus. Emperor10→9→8→10
+for allow, or remains8 after cancellation; original lot1 resumes once without
+refund. No horizontal overflow/browser errors; no saved/deployed room targeted.
+Special seller lots and final combinations/rules/assurance remain open.
+[Canonical contract](NEXUS_EMPEROR_RULES.md#recommended-original-full-price-funding--14-october-2026).
+Owned QA host/tab/scaffolding is removed; API/phone proof receipts remain outside
+Git. Final build retains existing route-classification/chunk-size warnings.
+
 ## 14 October 2026 — Fremen Nexus fixed ordinary free quota
 
 Recommended provisional composition replaces the early-only direct transfer
