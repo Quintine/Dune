@@ -2784,7 +2784,7 @@ export function GameTable({
                                                                                               : g
                                                                                                     .decision
                                                                                                     .kind ===
-                                                                                                  'wormProtection'
+                                                                                                  'wormProtection' || g.decision.kind === 'nexusFremenProtection'
                                                                                                 ? 'Protection of Shai-Hulud'
                                                                                                 : g
                                                                                                       .decision
@@ -3590,6 +3590,29 @@ export function GameTable({
                 <DiscoveryDiscardDecision game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
               ) : g.decision.kind === 'greatMakerVote' || g.decision.kind === 'greatMakerRide' ? (
                 <GreatMakerDecision game={g} act={act} busy={transportBusy || (!!g.roomControl?.paused || !!g.roomControl?.closed) || !!me.autopilot} />
+              ) : g.decision.kind === 'nexusFremenProtection' ? (
+                <section aria-label="Fremen Nexus worm protection" className="space-y-3">
+                  <p className="muted">
+                    Shai-Hulud has appeared in {combatName(g.nexusFremenProtection?.territory ?? '')}.
+                    Threatened unallied seats with a held Nexus acknowledge in storm order
+                    before any forces are devoured, regardless of the secret card.
+                  </p>
+                  {g.nexusFremenProtection?.blocked ? (
+                    <p className="notice">{g.nexusFremenProtection.blocked}</p>
+                  ) : <>
+                    {g.nexusFremenProtection?.canUse && <>
+                      <p className="notice">Provisional policy: protect only your forces from this worm.
+                        Spice and other factions remain exposed. This independent protection
+                        has no additional Karama response and grants no worm ride.</p>
+                      {actionButton('Spend Nexus · Protect my forces', {
+                        type: 'nexusFremenProtection', event: g.nexusFremenProtection.event, use: true,
+                      })}
+                    </>}
+                    {g.nexusFremenProtection && actionButton('Continue without worm protection', {
+                      type: 'nexusFremenProtection', event: g.nexusFremenProtection.event, use: false,
+                    })}
+                  </>}
+                </section>
               ) : g.decision.kind === 'wormProtection' ? (
                 <>
                   <p className="muted">

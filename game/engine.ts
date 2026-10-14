@@ -48,6 +48,7 @@ import { EMPEROR_NEXUS_REVIVALS, emperorNexusEvent, emperorNexusSignature, emper
 import { emperorNexusPurchaseEvent, quoteEmperorNexusPurchase, signEmperorNexusPurchase, validateEmperorNexusPurchase, type EmperorNexusPurchase } from './nexus-emperor-purchase';
 import { FREMEN_NEXUS_FREE_FORCES, fremenNexusRevivalOffer, fremenNexusRevivalPools, fremenNexusRevivalSignature, validateFremenNexusRevival, type FremenNexusRevival } from './nexus-fremen-revival';
 import { captureFremenCunningOccurrence, quoteFremenCunning, quoteFremenCunningRide, validateFremenCunningSelection, type FremenCunningOccurrence, type FremenCunningRideAuthorization, type FremenCunningSelection } from './nexus-fremen-cunning';
+import { createNexusFremenProtection, currentNexusFremenProtectionOwner, answerNexusFremenProtection, validateNexusFremenProtection, type NexusFremenProtectionFrame, type NexusFremenProtectionInput } from './nexus-fremen-protection';
 import { truthKnowledgeOf } from './truthtrance-knowledge';
 import { createMoritaniAssassinateOpportunity, moritaniAssassinateTrigger, moritaniAssassinateChoices, quoteMoritaniAssassinate, moritaniAssassinateSignature, validateMoritaniAssassinate, type MoritaniAssassinateState, type MoritaniAssassinateReceipt } from './moritani-assassinate';
 import { createNexusGuildSecretAlly, validateNexusGuildSecretAlly, quoteNexusGuildSecretShipment, type NexusGuildSecretAllyReceipt } from './nexus-guild-secret-ally';
@@ -958,6 +959,7 @@ export type Decision =
     }
   | { kind: 'wormPlacement'; player: string }
   | { kind: 'wormProtection'; player: string; territory: string; ally: string }
+  | { kind: 'nexusFremenProtection'; player: string; event: string }
   | { kind: 'discoveryDiscard'; player: string; event: string }
   | { kind: 'discoveryEntry'; player: string; event: string }
   | { kind: 'ecologicalStorm'; player: string; event: string }
@@ -1899,6 +1901,8 @@ export type Game = {
   /** Optional independent module; complete effect coverage is still release-gated. */
   nexusCards?: { cards: NexusState | null; phase: NexusCardPhase | null } | null;
   nexusTraitorExchanges?: NexusTraitorExchange[];
+  /** Original public threatened-seat queue; a spent card protects only its owner. */
+  nexusFremenProtection?: NexusFremenProtectionFrame;
   /** An initially empty actual worm occurrence; the optional card is not disclosed by this offer. */
   nexusFremenCunningOffer?: { occurrence: FremenCunningOccurrence; owner: string } | null;
   /** Accepted appearances wait for post-Nexus riding, then retain completion custody. */
@@ -10675,6 +10679,26 @@ function devour(
 }
 function beginWorm(g: Game, t: string, origin: 'natural' | 'additional' | 'summoned' = 'natural') {
   const fremen = byFaction(g, 'fremen');
+  if (!fremen && g.nexusCards?.cards && g.players.some(p =>
+    !p.ally && g.nexusCards!.cards!.hands[p.id] && at(p, t) > 0)) {
+    const frame = nexusRule(() => createNexusFremenProtection({
+      event: crypto.randomUUID(), turn: g.turn, territory: t, origin,
+      ...(origin === 'summoned' ? { parent: g.summonedWorm?.event }
+        : { pile: g.spiceSequence?.pile,
+          index: g.spiceSequence ? g.spiceDiscard[g.spiceSequence.pile].length - 1 : undefined }),
+      order: g.order,
+      players: g.players.map(p => ({ id: p.id, faction: p.faction, ally: p.ally,
+        forces: p.forces, noField: p.noField, hasNexus: !!g.nexusCards!.cards!.hands[p.id] })),
+    }));
+    if (frame) {
+      requireRule(g.nexusFremenProtection?.stage !== 'choose',
+        'Finish the original worm protection before another appearance.');
+      g.nexusFremenProtection = frame;
+      g.decision = { kind: 'nexusFremenProtection',
+        player: currentNexusFremenProtectionOwner(frame)!, event: frame.event };
+      return;
+    }
+  }
   // An empty appearance offers the same decision with or without the private
   // Fremen card; the offer itself must not disclose its custody.
   if ((origin !== 'summoned' || (g.summonedWorm?.event &&
@@ -10715,6 +10739,87 @@ function beginWorm(g: Game, t: string, origin: 'natural' | 'additional' | 'summo
       ally: fremen.ally,
     };
   } else wormSurvival(g, t);
+}
+function nexusFremenProtectionInput(g: Game, frame: NexusFremenProtectionFrame): NexusFremenProtectionInput {
+  return {
+    event: frame.event, turn: g.turn, territory: frame.territory, origin: frame.origin,
+    ...(frame.origin === 'summoned' ? { parent: g.summonedWorm?.event }
+      : { pile: g.spiceSequence?.pile,
+        index: g.spiceSequence ? g.spiceDiscard[g.spiceSequence.pile].length - 1 : undefined }),
+    order: g.order,
+    players: g.players.map(p => ({ id: p.id, faction: p.faction, ally: p.ally,
+      forces: p.forces, noField: p.noField,
+      // An anytime Harkonnen exchange may spend an irrelevant card after this
+      // public membership was captured; it cannot erase the original answer.
+      hasNexus: frame.order.includes(p.id) })),
+  };
+}
+function nexusFremenProtectionIntegrity(g: Game) {
+  const frame = g.nexusFremenProtection;
+  const controls = [g, g.pendingExchange, g.pendingNullentropy?.resume,
+    g.pendingRicheseGift?.resume, g.pendingRichesePurchaseIncome?.resume,
+    g.summonedWorm?.resume];
+  const decisions = controls.flatMap(control =>
+    control?.decision?.kind === 'nexusFremenProtection' ? [control.decision] : []);
+  if (!frame || frame.stage === 'complete') {
+    requireRule(!decisions.length, 'Worm protection has lost its original active occurrence.');
+    return;
+  }
+  requireRule(g.status === 'playing' && g.phase === 1 && g.nexusCards?.cards &&
+    !byFaction(g, 'fremen'), 'Worm protection requires its original absent-Fremen Nexus module.');
+  nexusRule(() => validateNexusFremenProtection(nexusFremenProtectionInput(g, frame), frame));
+  requireRule(decisions.length === 1 && decisions[0].event === frame.event &&
+    decisions[0].player === currentNexusFremenProtectionOwner(frame),
+    'The original worm protection has lost its current threatened seat.');
+  if (frame.origin === 'summoned')
+    requireRule(g.summonedWorm?.territory === frame.territory,
+      'Worm protection has lost its summoned territory.');
+  else {
+    const card = frame.pile === undefined || frame.index === undefined ? undefined :
+      g.spiceDiscard[frame.pile][frame.index];
+    requireRule(card && 'worm' in card && !card.suppressed,
+      'Worm protection has lost its actual unconsumed appearance.');
+  }
+  if (frame.protected) requireRule(g.nexusCards.cards.discard.includes('fremen') &&
+    !getPlayer(g, frame.protected).ally,
+    'The pending worm protection has lost its spent card or unallied owner.');
+}
+function nexusFremenProtectionOffer(g: Game, id: string) {
+  const frame = g.nexusFremenProtection;
+  if (!frame || currentNexusFremenProtectionOwner(frame) !== id ||
+    g.decision?.kind !== 'nexusFremenProtection' || g.decision.player !== id ||
+    g.decision.event !== frame.event) return null;
+  const p = getPlayer(g, id);
+  const blocked = g.truthtrance || pendingNexusTraitors(g) || g.response ||
+    g.pendingKarama || g.pendingTreacheryDiscard || g.pendingNullentropy
+    ? 'Finish the current private response before worm protection.' : null;
+  return { event: frame.event, territory: frame.territory, owner: id,
+    canUse: !frame.protected && !p.ally &&
+      g.nexusCards?.cards?.hands[id] === 'fremen' && at(p, frame.territory) > 0,
+    blocked };
+}
+function playNexusFremenProtection(g: Game, p: Player, action: Action) {
+  const frame = g.nexusFremenProtection, offer = nexusFremenProtectionOffer(g, p.id);
+  requireRule(frame && offer && !offer.blocked && action.event === offer.event &&
+    typeof action.use === 'boolean' &&
+    Object.keys(action).every(key => ['type', 'event', 'use'].includes(key)),
+    'Choose only your current worm protection event with Use or Pass.');
+  requireRule(!action.use || offer.canUse,
+    'Only the actual unallied Fremen Nexus holder may protect its threatened forces.');
+  const next = nexusRule(() => answerNexusFremenProtection(frame, p.id, action.use as boolean));
+  if (action.use) {
+    g.nexusCards!.cards = nexusRule(() => discardNexusCard(g.nexusCards!.cards!, p.id, g.players));
+    log(g, `${p.name} spent Fremen Nexus Secret Ally to protect only their forces from this Shai-Hulud. Provisional policy: this independent protection has no additional Karama response.`,
+      { faction: p.faction, name: 'Fremen Nexus protection' });
+  }
+  g.nexusFremenProtection = next;
+  const owner = currentNexusFremenProtectionOwner(next);
+  if (owner) g.decision = { kind: 'nexusFremenProtection', player: owner, event: next.event };
+  else {
+    g.decision = null;
+    devour(g, next.territory, next.protected ?? undefined);
+    afterWorm(g);
+  }
 }
 function currentFremenCunningResponse(g: Game, response: ResponseWindow) {
   const ride = g.nexusFremenCunningRides?.find(row =>
@@ -11099,6 +11204,11 @@ function greatMakerIntegrity(g: Game) {
     });
     if (frame.stage === 'worm') requireRule(
       controls.some(control => control?.decision?.kind === 'wormProtection' && control.decision.territory === frame.territory && control.decision.player === byFaction(g,'fremen')?.id && control.decision.ally === byFaction(g,'fremen')?.ally) ||
+      controls.some(control => control?.decision?.kind === 'nexusFremenProtection' &&
+        g.nexusFremenProtection?.stage === 'choose' &&
+        g.nexusFremenProtection.territory === frame.territory &&
+        g.nexusFremenProtection.pile === frame.pile &&
+        g.nexusFremenProtection.index === frame.index) ||
       responses.some(response => (response?.kind === 'wormSurvival' || response?.kind === 'wormAllyProtection') && response.location === frame.territory && response.owner === byFaction(g,'fremen')?.id &&
         (!response.recipient || response.recipient === byFaction(g,'fremen')?.ally)),
       'The Great Maker has lost its pending worm survival or protection interaction.');
@@ -20716,6 +20826,7 @@ function marketGholaIntegrity(g: Game) {
   nexusBorrowedVoiceIntegrity(g);
   nexusFremenRevivalIntegrity(g);
   nexusFremenCunningIntegrity(g);
+  nexusFremenProtectionIntegrity(g);
   nexusEcazBetrayalIntegrity(g);
   nexusTraitorIntegrity(g);
   nexusFaceDancerIntegrity(g);
@@ -28944,6 +29055,7 @@ function applyActionInner(
   if (t === 'nexusFaceDancers') { playNexusFaceDancers(g, p, action); return g; }
   if (t === 'nexusTleilaxuRevival') { playNexusTleilaxuRevival(g,p,action); return g; }
   if (t === 'nexusBorrowedVoice') { playNexusBorrowedVoice(g, p, action); return g; }
+  if (t === 'nexusFremenProtection') { playNexusFremenProtection(g, p, action); return g; }
   if (t === 'nexusSuboids') { playNexusSuboids(g, p, action); return g; }
   if (t === 'nexusAdvisors') { playNexusAdvisors(g, p, action); return g; }
   if (t === 'nexusSardaukar') { playNexusSardaukar(g,p,action); return g; }
@@ -29333,6 +29445,8 @@ function applyActionInner(
   }
   if (g.decision) {
     const decision = g.decision;
+    requireRule(decision.kind !== 'nexusFremenProtection',
+      'Use only the original worm protection event with Use or Pass.');
     if (decision.kind === 'nexusIxianReplacement') {
       requireRule(false, 'Use only the current purchased-card event with Use or Pass.');
     }
@@ -33213,6 +33327,7 @@ export function viewGame(state: Game, id: string) {
     nexusBgBetrayal: nexusBgBetrayalOffer(g, id),
     nexusBorrowedVoice: nexusBorrowedVoiceOffer(g, id),
     nexusFremenRevival: fremenNexusRevivalOffer(g,id),
+    nexusFremenProtection: nexusFremenProtectionOffer(g, id),
     nexusMoritani: nexusMoritaniOffer(g,id),
     nexusMoritaniBetrayal: moritaniBetrayalOffer(g,id,
       g.grummanCollection?.stage === 'waiting' && grummanCollectionAutomatic(g)),

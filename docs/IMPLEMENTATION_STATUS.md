@@ -1,5 +1,48 @@
 # Dune implementation status
 
+## 14 October 2026 — Absent-Fremen Nexus pre-devour protection
+
+Explicit recommended interpretation: independent printed protection, without
+inventing an absent native Karama provider or a ride. The original public
+threatened/unallied/held-Nexus membership determines one frozen storm-order
+queue; private face determines only Use. Both passes and one physical-card
+declaration precede all original devouring. Protect only that owner; original
+other losses, spice removal, replacement blow and Nexus resume once.
+
+Disjoint public-source and native-proof slices were integrated by one owner.
+Occurrence UUID/turn/territory/pile/index or summon parent, ordered cursor,
+spent owner and current decision are bound before settlement. Public quotes
+read no No-Field denomination. Existing protected-victim skipping retains
+protected markers; unprotected native materialization stays unchanged.
+Unrelated dynamic groups do not block the actual printed worm territory.
+Completed receipts tolerate later legitimate physical-card reshuffling.
+Original Great Maker worm protection now preserves its original vote and
+delays the replacement until that vote finishes.
+
+The native fixture initially selected a storm-caught Cielago South sector;
+its real shipment correctly failed. It now chooses original Hagga Basin12
+through actual paid shipment, with no storm/phase/force/hand rewrite. Setup,
+natural worm/alliance/closing draw, free Advanced BG accompaniment, collection
+and the next accepted worm are original producers; only conserved undealt
+deck order and scoped scalar entropy are staged. Fixture-trace/copy assertions
+were removed. Shared continuation helpers and exhaustive decision catalogs
+now recognize the new protection and preceding borrowed Voice queues.
+
+Related9-file union86/86 and actual390px table pass. Neutral Continue leaves
+all groups/spice intact; holder Use preserves Emperor1/reserves19/Tanks0/
+spice10, moves BG advisor1 to Tanks, removes four source spice and spends one
+Nexus. No ride; original Accept spice blow accepts the resumed Sihaya card.
+No overflow/errors. Four legal profiles execute own Use or neutral Pass.
+Stale Nexus table prose was corrected to list the connected effects and
+supply-only Moritani Cunning rather than claiming Grumman remained unavailable.
+Final types/lint and build pass, retaining existing build warnings. Four
+actual Basic/Advanced normal/Great Maker API runs preserve source4→0,
+owner1/Tanks0/reserves19/spice10 and one discard; the Maker retains vote→
+complete before Sihaya, with no ride. Owned host/tab/scaffold removed;
+source-bound phone/API receipts remain outside Git.
+Broader module/marker continuations, comprehensive assurance, full modes,
+calibration and deployed acceptance remain open.
+
 ## 14 October 2026 — Bene Gesserit Secret Ally borrowed Voice
 
 Recommended interpretation: one Karama-cancellable named Voice advantage,

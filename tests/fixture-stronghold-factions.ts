@@ -91,6 +91,8 @@ export function nextStrongholdFactionsNativeStep(game: Game): StrongholdFactions
   const decision = game.decision;
   if (decision) {
     const actor = decision.player;
+    if (decision.kind === 'nexusFremenProtection')
+      return { actor, action: { type: 'nexusFremenProtection', event: decision.event, use: false } };
     if (decision.kind === 'ixSetup') return { actor, action: { type: 'decision', card: game.ixSetupCards![0].id } };
     if (decision.kind === 'mobileStronghold') return { actor, action: decision.placement ? { type: 'decision', location: 'polar_sink:0' } : { type: 'decision', decline: true } };
     if (decision.kind === 'ixTechnology' || decision.kind === 'ixSubstitution' || decision.kind === 'captureOffer' || decision.kind === 'fullPlanOffer' || decision.kind === 'choamTradeReply')
@@ -111,6 +113,9 @@ export function nextStrongholdFactionsNativeStep(game: Game): StrongholdFactions
     const actor = [game.battle.attacker, game.battle.defender].find(id => !game.battle!.preLeader!.ready.includes(id));
     if (actor) return { actor, action: { type: 'battlePreparationReady', event: game.battle.event } };
   }
+  if (game.battle?.preparation?.kind === 'nexusVoice')
+    return { actor: game.battle.preparation.owner,
+      action: { type: 'nexusBorrowedVoice', event: game.battle.nexusBorrowedVoice!.event, use: false } };
   if (game.battle?.preparation) return { actor: game.battle.preparation.owner, action: { type: 'declineBattlePower' } };
   if (game.battle?.revealed) {
     const actor = viewGame(game, game.host).battle!.traitorVoters.find(id => game.battle!.traitorCalls[id] === undefined);

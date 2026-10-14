@@ -29,6 +29,23 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Fremen Secret Ally worm protection — 14 October.** The recommended
+independent-operation prototype now saves only the actual unallied holder's
+groups before original devouring. Publicly possible threatened held-Nexus
+seats acknowledge in frozen storm order, independent of hidden face; no
+additional Karama provider or riding is invented. Native casualties/spice,
+Great Maker vote and the next blow/Nexus remain original. Actual Basic/
+Advanced source and four legal profiles pass in the related9-file union86/86.
+The390px table preserves Emperor1/reserves19/Tanks0/spice10, devours the BG
+advisor to Tanks1, clears four Hagga Basin spice, spends one Nexus and accepts
+the resumed Sihaya blow without overflow or browser errors. A storm-invalid
+fixture source was corrected to a real safe shipment, not weakened engine
+legality. Broader module/marker combinations and final acceptance stay open.
+Final types/lint/build pass. Four actual Basic/Advanced normal/Great Maker
+API runs preserve those costs, close the original vote where applicable and
+reach Sihaya once. Owned QA host/tab/scaffolding removed; proofs outside Git.
+See [the source-bound policy](NEXUS_FREMEN_RULES.md#recommended-independent-protection--14-october-2026).
+
 **Bene Gesserit borrowed Voice — 14 October.** The recommended provisional
 policy is now connected: actual unallied absent-BG holder, attacker-first
 neutral continuation before Prescience, one spent-card declaration and the

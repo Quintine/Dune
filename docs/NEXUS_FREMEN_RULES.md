@@ -1,6 +1,6 @@
 # Fremen Nexus: worm and revival contract
 
-Primary-source and integration audit, 10 September 2026; narrow Secret Ally Revival and native Cunning prototypes integrated later. This document does not certify Fremen protection, combined-module Cunning or complete Fremen effects, and does not open a release gate. The [common Nexus rules](NEXUS_CARD_RULES.md) apply. No new user question was sent.
+Primary-source and integration audit, 10 September 2026, with dated Secret Ally revival, protection and native Cunning prototypes. These bounded paths do not certify complete Fremen/Nexus effects or open a release gate. The [common Nexus rules](NEXUS_CARD_RULES.md) apply.
 
 ## Evidence
 
@@ -114,16 +114,62 @@ fails before the software guard removal and passes afterward.
 
 ## Secret Ally protection
 
-With Fremen absent, `wormSurvival` currently proceeds directly to destruction. The protection must be committed before that destruction; it cannot revive already devoured troops, prevent removal of spice, or grant a ride. Bind it to one worm occurrence and the holder's affected physical group, including the existing No-Field reveal/capped-materialization path. Other factions remain vulnerable.
+With Fremen absent, protection must be committed before original destruction.
+It saves only the holder's threatened groups at this accepted appearance,
+not already-devoured troops, territory spice or other factions, and grants
+no riding or native Fremen identity.
 
-A pause offered only when the threatened player secretly holds this card would disclose possession. Do not add a holder-dependent automatic stop or an unsolicited confirmation for every victim. This intersects the existing unanswered reaction/automatic-pass policy. A saved public occurrence may support a future permitted response design, but it is not authorization to pick that design here. No source found gives the absent-faction card blanket Karama susceptibility; do not reuse a native Fremen cancellation response without establishing its classification.
+### Recommended independent protection — 14 October 2026
+
+Choose-recommended-option priority adopts the printed protection as an
+independent Secret Ally operation, with **no invented extra Karama response**
+or absent native provider. This contrasts with explicitly borrowed named
+Voice. It is a visible provisional interpretation, not publisher clarification
+or blanket Nexus immunity.
+
+Before devouring, every publicly possible unallied threatened seat holding
+any Nexus acknowledges in original storm order, regardless of private face.
+Seats without public card presence, with no affected group, or allied receive
+no impossible prompt. Only the current actual Fremen-card holder may Use.
+Pass preserves the card; Use discards it once and protects only that owner.
+The entire frozen queue closes before any casualty or spice removal. Its
+original public membership survives an unrelated anytime card exchange.
+Truthtrance and unfinished Traitor returns retain priority.
+
+`game/nexus-fremen-protection.ts` binds original UUID/turn/territory/origin and
+actual pile/index or summon parent, ordered acknowledgements and one protected
+owner. The engine resumes original `devour`/`afterWorm` once. Original protected
+victim skipping also leaves a protected No-Field hidden; unprotected markers
+still use native reserve-capped revelation/casualties. The public quote never
+reads denomination. Unrelated dynamic-board groups do not invalidate this
+printed-territory occurrence. Completed receipts do not require the singleton
+to remain discarded after a later legitimate deck reshuffle.
+
+Genuine Basic/Advanced setup, original worm/alliance/closing draw, paid
+Hagga Basin shipment and Advanced free accompanied advisor produce the source.
+Only undealt physical deck order and scoped scalar producer entropy are staged.
+The original Great Maker path is also exercised: protection precedes its
+unchanged vote, and the replacement is drawn only after that vote. Native
+Fremen protection/riding/Cunning remain separate.
+
+The related nine-file union passes86/86. Actual390px neutral Continue then
+holder Use keeps the Emperor's one ordinary counter/reserves19/Tanks0/spice10,
+devours the BG advisor into Tanks1, removes four Hagga Basin spice, discards
+one Nexus, grants no ride and restores the original Accept spice blow control.
+That control accepts the resumed Sihaya Ridge blow. No horizontal overflow
+or browser errors. Four minimal legal profiles answer their own opportunity.
+Final types/lint/build pass. Four normal/Great Maker Basic/Advanced API runs
+observe the same preserved costs and original vote→replacement sequencing.
+Owned QA host/tab/scaffolding is removed; proof receipts remain outside Git.
+Broader module/No-Field continuations, comprehensive recovery, complete games
+and deployed acceptance remain due.
 
 ## Secret Ally revival
 
 The card's total-of-three wording and the native alliance's ordinary free-three benefit support a **free-rate interpretation within ordinary revival accounting**, rather than three additional counters beyond the usual allowance. This is source composition, not an explicit Nexus FAQ. Preserve it as the proposed contract; do not silently apply Emperor's separate extra-return producer.
 The current first path is a deliberate subset of that proposed contract: with Fremen absent, an unallied base-faction holder in Basic or Advanced Revival may spend the physical Nexus card to transfer exactly three eligible forces from Tanks to reserves at zero spice cost. It is available before any ordinary force return, with no competing expansion/module revival modifier, pending response or decision. The three returned forces consume the ordinary allowance and free-force ledger; they are **not** Emperor-style extra returns. The Advanced one-elite-per-turn cap and physical elite census apply. The server's private offer provides the eligible elite counts; the action validates its current turn and group. A signed before/after receipt and independent event markers persist through JSON saves.
 
-The bounded classic Tech/Advanced Stronghold composition now calls the existing Axlotl activity hook after this actual free batch; spice stays on the token until native phase-end settlement, without changing these ordinary ledgers. See [the composition contract](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026). Tleilaxu income and Homeworld arrivals remain excluded: those broader continuations require the native pending-revival pipeline, not this quiet transfer. Fewer-than-three Tanks, previous force returns and higher free rates/modifiers still remain unavailable rather than guessing a ruling. Protection remains unimplemented; Cunning's bounded path is separate.
+The bounded classic Tech/Advanced Stronghold composition now calls the existing Axlotl activity hook after this actual free batch; spice stays on the token until native phase-end settlement, without changing these ordinary ledgers. See [the composition contract](NEXUS_CARD_RULES.md#classic-tech-and-stronghold-composition--4-october-2026). Tleilaxu income and Homeworld arrivals remain excluded: those broader continuations require the native pending-revival pipeline, not this quiet transfer. Fewer-than-three Tanks, previous force returns and higher free rates/modifiers remain unavailable rather than guessing a ruling. The independent protection prototype above and native Cunning remain separate producers.
 
 The separate fresh classic `leader-skills --nexus-cards` composition preserves
 the same ordinary/free-three ledgers, zero wallet cost, actual counters and

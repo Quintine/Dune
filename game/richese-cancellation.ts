@@ -89,6 +89,7 @@ const DECISIONS = {
   greatMakerRide: true,
   wormRide: true,
   nexusFremenCunningOffer: true,
+  nexusFremenProtection: true,
   nexusFremenCunningRide: true,
   moritaniRetention: true,
   moritaniSpecialKarama: true,

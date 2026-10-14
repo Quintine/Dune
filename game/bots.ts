@@ -2684,6 +2684,12 @@ function policyActions(g: GameView): Action[] {
     if (d.kind === 'jacurutuDial')
       return g.jacurutuDial?.choices.map((_,allocation) => ({type:'decision',event:d.event,allocation})) ?? [];
     if (d.kind === 'greatMakerVote' || d.kind === 'greatMakerRide') return greatMakerBotActions(g);
+    if (d.kind === 'nexusFremenProtection') {
+      const offer = g.nexusFremenProtection;
+      return offer && !offer.blocked
+        ? [{ type: 'nexusFremenProtection', event: offer.event, use: offer.canUse }]
+        : [];
+    }
     if (d.kind === 'nexusFremenCunningOffer')
       return [{ type: 'decision', event: d.event,
         accept: g.nexusCards?.card === 'fremen' && me.faction === 'fremen' &&
