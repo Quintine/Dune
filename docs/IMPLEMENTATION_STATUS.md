@@ -1,5 +1,33 @@
 # Dune implementation status
 
+## 14 October 2026 — Native Basic shared Ecaz Orgiz settlement
+
+BEFORE: a genuine Basic equal split paid the real lot but withheld Orgiz:
+Ecaz9/Guild10 instead of8/11. AFTER: `quoteSharedOrgiz` replaces the
+Advanced-only quote and hook. Both modes use actual bilateral receipts.
+Advanced charges once per territory. Basic counts original positive source-map
+reductions in that territory, excluding unchanged/empty/unrelated keys.
+Positive foreign recipients are considered Ecaz first, then ally; self, zero
+shares and empty purses are skipped. Every transfer updates available balances
+and checks cumulative income overflow. Existing allocation events retain their
+one-time ownership; no saved schema or compatibility alias is introduced.
+
+Genuine Basic/Advanced fixtures preserve original armies, wallets, cards,
+alliance and phases. Cases cover equal/full/zero shares, acceptance timing,
+wrong actor and stale replay. Pure boundaries cover multiple Basic source
+deposits versus one Advanced territory, exhausted-recipient fallback, self
+exclusion, zero-share old wallets and cumulative overflow without mutation.
+One invalid empty-key test fixture was corrected to an actual board sector.
+
+Final six-file union80/80, types/lint and app build pass. Actual390×844 Basic
+table: Use equal split settles the real Red Chasm lot4 and then transfers1,
+changing Ecaz7/Guild8→8/11, leaving phase7 with no decision and enabled Ready.
+No horizontal overflow or browser errors. Easy/Medium/Hard/Brutal each complete
+that Basic split through a real legal engine action; this is not calibration.
+Owned hosts/tabs/scaffolding removed; proof outside Git. Existing build
+warnings remain. Ordering and Basic's positive-deposit mapping are provisional;
+combined modules, full modes, assurance and deployed acceptance remain open.
+
 ## 14 October 2026 — Canonical positive Collection receipts for Orgiz
 
 The original ordinary quote now emits `deposits` with actual positive

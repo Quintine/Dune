@@ -95,8 +95,8 @@ export function DiscoveryPanel({ game, act, busy }: Props) {
         })}
       </div>
       <p className="fine">Inspection and reveal are optional. Next-turn free entry, Cistern income for every fighter occupant and later-turn Ornithopter movement are available in the development prototype. Jacurutu income, Testing Station storm choices and Shrine card conversion are prototyped. {game.advanced
-        ? 'Each Orgiz fighter occupant takes one spice per qualifying territory from the first actual foreign collector in storm order. Shared Ecaz lots wait for the actual allocation: Ecaz first, then ally, excluding zero shares and the occupant itself.'
-        : 'Each Orgiz fighter occupant keeps the provisional one-spice transfer per positive board deposit from the first actual foreign collector in storm order. Basic shared Ecaz allocation remains pending.'} Actual ordinary Collection receipts identify each payer; co-present forces or old wallets alone never qualify. An empty purse never creates debt. Mixed physical Jacurutu dials use a defeated-player choice before settlement. Testing Station occupants each choose once in original storm order, cumulatively. These ordering/allocation interpretations are provisional.</p>
+        ? 'Each Orgiz fighter occupant takes one spice per qualifying territory from the first actual foreign ordinary collector in storm order.'
+        : 'Each Orgiz fighter occupant keeps the provisional one-spice transfer per positive board deposit from the first actual foreign ordinary collector in storm order.'} Shared Ecaz lots wait for actual allocation, then consider positive foreign recipients Ecaz first, ally second, excluding zero shares and the occupant itself. Basic counts actual positive deposits; Advanced counts the territory once. Actual ordinary receipts identify each payer; co-present forces or old wallets alone never qualify. Empty purses never create debt. Mixed Jacurutu dials use a defeated-player choice. Testing Station occupants each choose once in original storm order, cumulatively. These ordering/allocation interpretations are provisional.</p>
     </section>
   );
 }

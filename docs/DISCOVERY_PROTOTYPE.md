@@ -75,13 +75,15 @@ recipients in storm order, skipping self and empty purses: once per territory
 in Advanced, once per positive deposit under Basic's provisional mapping.
 Co-present forces and old wallets alone do not establish collection.
 
-Advanced shared Ecaz desert lots wait for actual bilateral allocation. Each
-occupant considers positive foreign recipients Ecaz first, then ally, charging
-at most one spice from an available current balance. A zero share or an old
-wallet alone cannot establish eligibility; the owner never pays itself. Basic
-shared-allocation Orgiz settlement remains pending. Occupant/payer ordering
-is a recommended provisional interpretation, not a new publisher ruling or
-separately answered numerical user question.
+Shared Ecaz desert lots in both modes wait for actual bilateral allocation.
+Each occupant considers positive foreign recipients Ecaz first, then ally,
+skipping zero shares, self and empty purses. Advanced charges once per
+territory. Basic applies its provisional positive-deposit count to the original
+source-map reductions for that territory, excluding unchanged, empty and
+unrelated keys. Available balances track every transfer and cumulative
+overflow. Original allocation events prevent replay; no saved schema is added.
+Occupant/payer ordering and Basic's mapping remain provisional recommended
+interpretations, not new publisher rulings or separate numerical user answers.
 
 Current native fixtures preserve original armies, wallets, hands, alliances
 and phases. They use real setup, token placement, paid shipments, inspection,
@@ -96,13 +98,15 @@ An exhausted pile leaves the later collector ineligible even with old spice.
 `tests/fixture-discovery-occupied-collection.ts`,
 `tests/discovery-occupied-collection-runtime.test.ts`,
 `tests/fixture-discovery-shared-orgiz.ts` and
-`tests/discovery-shared-orgiz-runtime.test.ts`. Focused helper regressions cover
-original storm-order payer selection, depleted purses, advisor exclusion and
-zero actual collection. The six-file related union72/72, types/lint and app
-build pass. Actual390px Finish shipment & movement produces phase7,
-Ecaz8/Guild14 from7/10, two actual2-spice source receipts, one Orgiz transfer,
-no decision, enabled Ready, no overflow and no browser errors. Basic shared
-allocation, broader combined modules and full acceptance remain open.
+`tests/discovery-shared-orgiz-runtime.test.ts`. Native Basic/Advanced cases
+cover equal/full/zero Ecaz shares, acceptance timing, wrong actors and stale
+allocation. Focused boundaries cover multiple Basic source keys, one Advanced
+territory, exhausted recipients, foreign-ally fallback and cumulative overflow.
+Final six-file union80/80, types/lint and app build pass. Actual390px Basic
+Use equal split credits a real Red Chasm lot4, then transfers1: Ecaz7/Guild8
+become8/11; phase7 has no decision and Ready is enabled. No overflow or browser
+errors. All four minimally configured policies complete the Basic equal split
+through actual engine actions. Broader combinations/full acceptance remain open.
 
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 
@@ -763,10 +767,11 @@ positive territory Collection. Multiple collected source keys do not multiply
 the transfer. Canonical positive ordinary deposit receipts identify actual
 foreign payers in original storm order, including multiple collectors in one
 sector; self and empty purses are skipped. No presence-based ambiguity gate
-remains. Advanced shared Ecaz desert lots wait for actual bilateral allocation,
-then consider positive foreign recipients Ecaz first, ally second. Basic
-shared settlement remains pending. Ordering is provisional under the
-recommended-option priority; the Advanced territory trigger itself is sourced.
+remains. Shared Ecaz desert lots in both modes wait for actual allocation,
+then consider positive foreign recipients Ecaz first, ally second. Advanced
+charges once per territory; Basic uses its provisional count of actually
+reduced source deposits in that territory. Ordering and the Basic mapping are
+provisional; the Advanced territory trigger itself is sourced.
 
 Basic retains its recorded provisional one-transfer-per-positive-deposit
 interpretation. The context requires its existing public `advanced` boolean:
@@ -880,9 +885,10 @@ conversion was fabricated.
   Basic provisionally charges once per positive deposit. The first actual
   foreign collector in storm order with available spice pays; mere presence,
   self and zero actual collection do not qualify. Empty purses never create
-  debt. Advanced shared Ecaz lots wait for allocation, then consider positive
-  foreign recipients Ecaz first, ally second. Basic shared settlement remains
-  pending; occupant/payer ordering remains provisional.
+  debt. Shared Ecaz lots in both modes wait for allocation, then consider actual
+  positive foreign recipients Ecaz first, ally second. Advanced charges once
+  per territory; Basic counts its actually reduced positive source deposits.
+  Owner/payer ordering and the Basic mapping remain provisional.
 
 - **Jacurutu:** one bank spice per opposing undialed physical counter actually
   sent to the Tanks. Unique readings remain automatic. For different possible
@@ -1028,10 +1034,10 @@ to Spice Blow. Refresh restored the same station forces and private Snooper.
 This is targeted control/recovery evidence, not an unmodified complete game.
 The 187 opening saved rooms remain preserved; no server restart was needed.
 
-1. Connect Basic shared-allocation Orgiz settlement and refine combined
-   Discovery interactions. Canonical ordinary receipts now close the guessed
-   shared-sector payer gap. Other recommended Discovery interpretations remain
-   visibly provisional; the Basic positive-deposit mapping is not certified.
+1. Refine combined Discovery interactions. Canonical ordinary receipts and
+   actual bilateral shared settlement now cover both modes without guessed
+   payers or withheld Basic allocation. Recommended interpretations remain
+   visibly provisional; focused evidence is not complete-module certification.
 2. Integrate combined modules and complete games, then refine interaction,
    strategy and presentation coverage before opening normal start gates.
 3. Use the existing prototype starter and saved-room verification for further

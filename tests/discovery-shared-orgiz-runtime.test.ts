@@ -7,9 +7,10 @@ import {prepareSharedOrgizCollection,settleSharedOrgiz} from './fixture-discover
 const wallets=(game:Game)=>Object.fromEntries(game.players.map(p=>[p.id,p.spice]));
 const transfers=(game:Game)=>game.log.filter(entry=>entry.automatic?.name==='Orgiz Processing Station');
 
+for(const advanced of [false,true])
 for(const split of ['equal','all-ecaz','all-guild'] as const) {
-  void test(`Advanced native shared Collection: ${split} respects the actual foreign recipient and sole Orgiz owner`,()=>{
-    const position=prepareSharedOrgizCollection();
+  void test(`${advanced?'Advanced':'Basic'} native shared Collection: ${split} respects the actual foreign recipient and sole Orgiz owner`,()=>{
+    const position=prepareSharedOrgizCollection(advanced);
     const original=structuredClone(position.game);
     const before=wallets(original);
     const choice=split==='equal'?{kind:'equal' as const}:
@@ -35,8 +36,9 @@ for(const split of ['equal','all-ecaz','all-guild'] as const) {
   });
 }
 
-void test('Native shared Orgiz waits for ally acceptance and rejects the wrong actor without changing wallets',()=>{
-  const position=prepareSharedOrgizCollection();
+for(const advanced of [false,true])
+void test(`${advanced?'Advanced':'Basic'} shared Orgiz waits for ally acceptance and rejects the wrong actor without changing wallets`,()=>{
+  const position=prepareSharedOrgizCollection(advanced);
   const before=structuredClone(position.game);
   const event=before.ecazCollection!.event;
   const action={type:'decision' as const,event,allocation:{kind:'propose' as const,ecazShare:position.lot.amount}};

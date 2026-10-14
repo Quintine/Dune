@@ -29,7 +29,27 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
-**Canonical Orgiz Collection sources — 14 October.**
+**Basic shared Orgiz settlement — 14 October.**
+Both modes now wait for the original Ecaz/ally allocation before Orgiz.
+`quoteSharedOrgiz` replaces the Advanced-only path: Advanced charges once per
+territory; Basic counts actually reduced positive deposits in the original
+saved source map for that territory. Positive foreign recipients are considered
+Ecaz first, then ally, skipping zero shares, self and empty purses. Every
+transfer updates available balances and checks cumulative overflow. The
+original allocation event prevents replay; no saved schema is added.
+
+The native Basic equal split reproduced the missing payment before the fix.
+Now equal/full/zero shares, acceptance timing, wrong actors and stale events
+pass in both modes; multi-source/fallback/overflow boundaries also pass.
+Final six-file union80/80, types/lint/build pass. Actual390px Basic Red Chasm
+lot4: Use equal split changes Ecaz7/Guild8→8/11 with one transfer, no decision
+and Ready restored. No horizontal overflow or browser errors. All four legal
+policies independently complete that Basic split through real engine actions.
+Basic's per-deposit mapping and ordering remain provisional; broader module,
+rules-mode and deployed acceptance remain open.
+[Contract](DISCOVERY_PROTOTYPE.md#multi-occupant-and-shared-cisternorgiz-collection--14-october-2026).
+
+**Earlier canonical Orgiz Collection sources (`bcd1b10`) — 14 October.**
 The original ordinary quote now records positive player/location/amount deposit
 receipts before Orgiz. Both modes use actual collectors, not co-present force
 inference: Basic groups by positive deposit; Advanced groups by territory.
@@ -45,8 +65,8 @@ the other taking0. Face1 is selected at the actual turn-two forecast shuffle,
 not assigned to a later source. Final six-file union72/72; types/lint and app
 build pass. Actual390px Finish shipment & movement turns phase5→7,
 Ecaz7/Guild10→Ecaz8/Guild14 with one Orgiz transfer and Ready restored.
-No horizontal overflow or browser errors. Basic shared-allocation settlement,
-complete modules and deployed acceptance remain open.
+No horizontal overflow or browser errors. Basic shared settlement was pending
+at that checkpoint and is now connected above; full/deployed acceptance remains open.
 [Contract](DISCOVERY_PROTOTYPE.md#multi-occupant-and-shared-cisternorgiz-collection--14-october-2026).
 
 **Earlier Orgiz payer ordering and native proof (`bc09ac3`) — 14 October.**

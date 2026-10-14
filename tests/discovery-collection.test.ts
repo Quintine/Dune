@@ -13,6 +13,7 @@ import {
   ORGIZ_PROCESSING_STATION,
   DiscoveryCollectionError,
   quoteDiscoveryCollection,
+  quoteSharedOrgiz,
   type DiscoveryCollectionContext,
   type DiscoveryCollectionQuote,
 } from '../game/discovery-collection';
@@ -675,4 +676,59 @@ void test('two Orgiz owners resolve available collector spice in original storm 
     assert.equal(balance(discovery,first==='a'?'g':'a'),0);
     assert.equal(balance(discovery,'h'),0);
   }
+});
+
+function sharedOrgizBoundary(advanced:boolean) {
+  const game=fixture(advanced,[['a','atreides'],['e','ecaz'],['g','guild']]);
+  reveal(game,ORGIZ_PROCESSING_STATION);
+  game.players[0].forces={[`${ORGIZ_PROCESSING_STATION}:0`]:1};
+  game.players[1].forces={'hagga_basin:12':1};
+  game.players[2].forces={'hagga_basin:13':1,'red_chasm:7':1};
+  game.players[1].ally='g';game.players[2].ally='e';
+  game.spice={'hagga_basin:12':2,'hagga_basin:13':2,'imperial_basin:9':0,'red_chasm:7':3};
+  const ordinary=quoteSpiceCollection(game);
+  return {game,context:{...game,spice:ordinary.spice},originalSpice:game.spice,
+    allocation:{territory:'hagga_basin',ecaz:'e',ally:'g',ecazAmount:2,allyAmount:2,method:'equal' as const}};
+}
+
+void test('shared Orgiz counts actual positive source deposits in Basic, one territory in Advanced, excluding unrelated and empty keys',()=>{
+  for(const advanced of [false,true]) {
+    const f=sharedOrgizBoundary(advanced);
+    const before=structuredClone(f);
+    const effects=quoteSharedOrgiz(f.context,f.allocation,{a:0,e:2,g:4},f.originalSpice);
+    assert.deepEqual(effects.map(effect=>[effect.player,effect.from,effect.location]),
+      advanced?[['a','e','hagga_basin']]:
+        [['a','e','hagga_basin:12'],['a','e','hagga_basin:13']]);
+    assert.deepEqual(f,before);
+  }
+});
+
+void test('Basic shared Orgiz exhausts the first recipient then considers the actual ally, never self',()=>{
+  const f=sharedOrgizBoundary(false);
+  f.context.players[2].forces[`${ORGIZ_PROCESSING_STATION}:0`]=1;
+  const allocation={...f.allocation,ecazAmount:1,allyAmount:3,method:'agreement' as const};
+  const effects=quoteSharedOrgiz(f.context,allocation,{a:0,e:1,g:5},f.originalSpice);
+  assert.deepEqual(effects.map(effect=>[effect.player,effect.from,effect.location]),
+    [['a','e','hagga_basin:12'],['a','g','hagga_basin:13']]);
+});
+
+void test('Basic shared Orgiz skips a zero-share Ecaz wallet and charges only the positive foreign ally',()=>{
+  const f=sharedOrgizBoundary(false);
+  const allocation={...f.allocation,ecazAmount:0,allyAmount:4,method:'agreement' as const};
+  const balances={a:0,e:20,g:6},before=structuredClone(balances);
+  const effects=quoteSharedOrgiz(f.context,allocation,balances,f.originalSpice);
+  assert.deepEqual(effects.map(effect=>effect.from),['g','g']);
+  assert.deepEqual(balances,before);
+});
+
+void test('shared Orgiz checks cumulative income overflow without mutating either purse or original source',()=>{
+  const f=sharedOrgizBoundary(false);
+  const allocation={...f.allocation,ecazAmount:4,allyAmount:0,method:'agreement' as const};
+  const balances={a:Number.MAX_SAFE_INTEGER-1,e:4,g:2};
+  const before=structuredClone({f,balances});
+  assert.throws(()=>quoteSharedOrgiz(f.context,allocation,balances,f.originalSpice),DiscoveryCollectionError);
+  assert.deepEqual({f,balances},before);
+  f.context.advanced=true;
+  assert.deepEqual(quoteSharedOrgiz(f.context,allocation,balances,f.originalSpice),
+    [{kind:'orgiz',player:'a',from:'e',location:'hagga_basin',amount:1,source:'player'}]);
 });

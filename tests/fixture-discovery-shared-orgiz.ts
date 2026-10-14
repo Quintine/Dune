@@ -69,8 +69,8 @@ function prepareOrgizCollectors(advanced:boolean,terrainType:'sand'|'rock',exhau
 }
 
 /** Desert collectors enter the original shared allocation before any credit. */
-export function prepareSharedOrgizCollection() {
-  const position=prepareOrgizCollectors(true,'sand');
+export function prepareSharedOrgizCollection(advanced=true) {
+  const position=prepareOrgizCollectors(advanced,'sand');
   const game=applyAction(position.game,position.finalAction.actor,position.finalAction.action);
   assert.equal(game.decision?.kind,'ecazSpice');
   const pending=game.ecazCollection!.allocation!;
