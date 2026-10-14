@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  jacurutuDialSelection,
   quoteJacurutuBattleIncome,
-  JACURUTU_BATTLE_INCOME_RULE,
+  type JacurutuDialOffer,
 } from '../game/discovery-battle';
 import { applyAction, normalizeAutomaticGame, type Game } from '../game/engine';
 import { JACURUTU_SIETCH } from '../game/discoveries';
@@ -11,7 +12,6 @@ import { discoveryBattleBeforeFinalVote } from './fixture-discovery-battle';
 const reload = (game: Game): Game => JSON.parse(JSON.stringify(game));
 
 void test('the source-bound contract quotes only opposing undialed counters actually sent to the Tanks', () => {
-  assert.match(JACURUTU_BATTLE_INCOME_RULE, /opposing undialed force/);
   const ordinary = {
     normal: 5,
     elite: 0,
@@ -148,7 +148,6 @@ void test('real Basic and Advanced battles pay once from the losing plan and add
       ).length,
       1,
     );
-    assert.match(done.log.at(-1)!.text, /Jacurutu|battle|Ready|won/i);
     const stable = reload(done);
     assert.deepEqual(normalizeAutomaticGame(reload(stable)), stable);
   }
@@ -196,5 +195,125 @@ void test('a real traitor winner still receives only the opposing undialed Tanks
       (entry) => entry.automatic?.name === 'Jacurutu Sietch income',
     ).length,
     1,
+  );
+});
+
+const mixedDialInput = {
+  territory: JACURUTU_SIETCH,
+  jacurutuRevealed: true,
+  winner: 'winner',
+  opponent: 'emperor',
+  opponentForces: {
+    normal: 1,
+    elite: 1,
+    eliteStrength: 2 as const,
+    freeSupport: false,
+  },
+  opponentDial: 2,
+  opponentSupport: 1,
+  sentToTanks: { normal: 1, elite: 1 },
+};
+
+void test('the defeated mixed dial offers both physical readings and the index resolver returns them', () => {
+  const pending = quoteJacurutuBattleIncome(mixedDialInput);
+  assert.equal(pending?.kind, 'allocationRequired');
+  if (pending?.kind !== 'allocationRequired') return;
+  assert.deepEqual(
+    pending.choices.map((choice) => choice.amount),
+    [1, 0],
+  );
+  assert.deepEqual(
+    pending.choices.map((choice) => choice.dialed),
+    [
+      { normal: 0, elite: 1, paidNormal: 0, paidElite: 1 },
+      { normal: 1, elite: 1, paidNormal: 1, paidElite: 0 },
+    ],
+  );
+  assert.deepEqual(pending.sentToTanks, { normal: 1, elite: 1 });
+  const offer: JacurutuDialOffer = {
+    event: 'event',
+    owner: 'emperor',
+    winner: 'winner',
+    choices: pending.choices,
+  };
+  assert.deepEqual(jacurutuDialSelection(offer, 0), {
+    normal: 0,
+    elite: 1,
+    paidNormal: 0,
+    paidElite: 1,
+  });
+  assert.deepEqual(jacurutuDialSelection(offer, 1), {
+    normal: 1,
+    elite: 1,
+    paidNormal: 1,
+    paidElite: 0,
+  });
+  for (const allocation of [2, -1, 0.5, Number.NaN])
+    assert.equal(jacurutuDialSelection(offer, allocation), null);
+  for (const [allocation, amount] of [
+    [0, 1],
+    [1, 0],
+  ] as const)
+    assert.deepEqual(
+      quoteJacurutuBattleIncome({
+        ...mixedDialInput,
+        selectedDial: pending.choices[allocation].dialed,
+      }),
+      {
+        kind: 'income',
+        winner: 'winner',
+        opponent: 'emperor',
+        amount,
+        sentToTanks: { normal: 1, elite: 1 },
+        dialed: [pending.choices[allocation].dialed],
+      },
+    );
+});
+
+void test('a selected reading must be a legal allocation of the revealed dial and never exceed the Tanks', () => {
+  // The same counters with the other paid distribution describe a different
+  // committed strength and are not a reading of this dial and support.
+  assert.throws(
+    () =>
+      quoteJacurutuBattleIncome({
+        ...mixedDialInput,
+        selectedDial: { normal: 1, elite: 1, paidNormal: 0, paidElite: 1 },
+      }),
+    /legal physical allocation/,
+  );
+  // The revealed plan and support cannot have dialed only the ordinary counter.
+  assert.throws(
+    () =>
+      quoteJacurutuBattleIncome({
+        ...mixedDialInput,
+        selectedDial: { normal: 1, elite: 0, paidNormal: 1, paidElite: 0 },
+      }),
+    /legal physical allocation/,
+  );
+  // A real reading of the plan that the settled Tanks losses cannot contain.
+  assert.throws(
+    () =>
+      quoteJacurutuBattleIncome({
+        ...mixedDialInput,
+        sentToTanks: { normal: 0, elite: 1 },
+        selectedDial: { normal: 1, elite: 1, paidNormal: 1, paidElite: 0 },
+      }),
+    /exceeds/,
+  );
+  // Withdrawal leaves the committed Sardaukar reading and a zero reward.
+  assert.deepEqual(
+    quoteJacurutuBattleIncome({
+      ...mixedDialInput,
+      sentToTanks: { normal: 0, elite: 1 },
+      selectedDial: { normal: 0, elite: 1, paidNormal: 0, paidElite: 1 },
+    }),
+    {
+      kind: 'income',
+      winner: 'winner',
+      opponent: 'emperor',
+      amount: 0,
+      sentToTanks: { normal: 0, elite: 1 },
+      dialed: [{ normal: 0, elite: 1, paidNormal: 0, paidElite: 1 }],
+    },
   );
 });

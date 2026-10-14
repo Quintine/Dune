@@ -32,11 +32,11 @@ import { ECAZ_START_FORCES, quoteEcazStartingForces } from './ecaz-setup';
 import { battleCardSlotEligible, battleCategoryInspectionValue, fixedBattleInspectionMatches, validBattleSlotPair } from './battle-card-slots';
 import { HARASS_WITHDRAW_CARD, HarassWithdrawError, isHarassWithdraw, quoteHarassWithdraw, defaultHarassWithdrawAllocation, harassWithdrawNeedsAllocation, type HarassWithdrawSelection, type HarassWithdrawContext, type HarassWithdrawPreview } from './harass-withdraw';
 import { discoveryChoices, discoveryStashSignature, type DiscoveryStash } from './discovery-actions';
-import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
+import { createStormSource, validateStormSource, discoveryStormOffer, createDiscoveryStorm, chooseDiscoveryStorm, validateDiscoveryStorm, finishDiscoveryStorm, discoveryStormDistance, type StormMovementSource, type DiscoveryStorm } from './discovery-storm';
 import { completeDiscoveryFlight, discoveryFlightOffer, quoteDiscoveryFlight, validateDiscoveryFlight, type DiscoveryFlightReceipt } from './discovery-flight';
 import { advanceDiscoveryEntry, beginDiscoveryEntryArrival, createDiscoveryEntryRound, finishDiscoveryEntryArrival, quoteDiscoveryEntry, validateDiscoveryEntryArrivalChild, validateDiscoveryEntryRound, type DiscoveryEntryArrivalChild, type DiscoveryEntryRound, type DiscoveryEntrySelection } from './discovery-entry';
-import { createDiscoveryState, validateDiscoveryState, placeDiscovery, rememberDiscoveryFace, revealDiscoveryToken, isDiscoverySpiceCardId, isDiscoveryTokenId, DISCOVERY_SPICE_CARDS, DISCOVERY_CARD_PLACEMENTS, DISCOVERY_TOKEN_BY_ID, type DiscoveryState } from './discoveries';
-import { quoteJacurutuBattleIncome } from './discovery-battle';
+import { createDiscoveryState, validateDiscoveryState, placeDiscovery, rememberDiscoveryFace, revealDiscoveryToken, isDiscoverySpiceCardId, isDiscoveryTokenId, DISCOVERY_SPICE_CARDS, DISCOVERY_CARD_PLACEMENTS, DISCOVERY_TOKEN_BY_ID, JACURUTU_SIETCH, type DiscoveryState } from './discoveries';
+import { quoteJacurutuBattleIncome, jacurutuDialSelection, type JacurutuDialOffer } from './discovery-battle';
 import { greatMakerSignature, greatMakerMajority, validateGreatMaker, type GreatMaker } from './great-maker';
 import { quoteNexusChoamTrade, validateNexusChoamTrade, nexusChoamTradeSignature, type NexusChoamTrade } from './nexus-choam-trade';
 import { quoteNexusChoamInspection, sampleNexusChoamInspection, nexusChoamInspectionSignature, type NexusChoamInspectionReceipt } from './nexus-choam-inspection';
@@ -695,6 +695,8 @@ export type Battle = {
   smugglerCollectionVersion?: 1;
   smugglerCollection?: SmugglerBattleReceipt | null;
   sandmasterPile?: string;
+  /** The defeated player identifies its revealed physical dial before settlement. */
+  jacurutuDial?: JacurutuDialOffer & { selectedDial?: Casualties; retreat?: DiplomatRetreatSelection };
   /** New battles allow physical withdrawal choice after reveal, never in the sealed plan. */
   harassAllocationVersion?: 1;
   harassAllocationEvent?: string;
@@ -955,6 +957,7 @@ export type Decision =
   | { kind: 'discoveryDiscard'; player: string; event: string }
   | { kind: 'discoveryEntry'; player: string; event: string }
   | { kind: 'ecologicalStorm'; player: string; event: string }
+  | { kind: 'jacurutuDial'; player: string; event: string }
   | { kind: 'greatMakerVote'; player: string; event: string }
   | { kind: 'greatMakerRide'; player: string; event: string }
   | { kind: 'wormRide'; player: string; territory: string }
@@ -10342,7 +10345,7 @@ function startStormMovement(g: Game, n: number) {
   const offer = nexusRule(() => discoveryStormOffer(g));
   if (offer && !offer.blocked) {
     g.ecologicalStorm = nexusRule(() => createDiscoveryStorm(g,crypto.randomUUID()));
-    g.decision = {kind:'ecologicalStorm',player:offer.owner,event:g.ecologicalStorm.event};
+    g.decision = {kind:'ecologicalStorm',player:g.ecologicalStorm.owner,event:g.ecologicalStorm.event};
   } else moveStorm(g,n);
 }
 function choamStormOptions(g: Game) {
@@ -10678,6 +10681,7 @@ function afterWorm(g: Game) {
 }
 function discoveryIntegrity(g: Game) {
   ecologicalStormIntegrity(g);
+  jacurutuDialIntegrity(g);
   discoveryEntryIntegrity(g);
   if (!g.discoveryEnabled) {
     requireRule(!g.discoveries && !g.discoveryStash, 'Discovery custody requires its enabled module.');
@@ -10742,7 +10746,7 @@ function ecologicalStormIntegrity(g: Game) {
     requireRule(source.kind !== 'card' || isStormCardDistance(source.distance),
       'The revealed Storm Card must retain a canonical distance.');
     requireRule(g.status === 'playing' && g.phase === 0 && source.turn === g.turn &&
-      g.stormPending === (frame?.stage === 'traversal' ? source.distance+frame.delta! : source.distance),
+      g.stormPending === (frame && frame.stage !== 'complete' ? discoveryStormDistance(frame) : source.distance),
       'The storm must retain its current turn and original movement source.');
   }
   const controls = [g,g.pendingExchange,g.pendingNullentropy?.resume,g.pendingRicheseGift?.resume,
@@ -10758,7 +10762,7 @@ function ecologicalStormIntegrity(g: Game) {
   else {
     requireRule(!choices.length,'A completed station choice cannot remain open.');
     if (frame.stage === 'traversal') requireRule(g.stormResolution && g.stormResolution.discoveryStorm === frame.signature &&
-      g.stormResolution.from === frame.from && g.stormResolution.distance === frame.base+frame.delta!,
+      g.stormResolution.from === frame.from && g.stormResolution.distance === discoveryStormDistance(frame),
       'The storm traversal has lost its exact station adjustment.');
     else requireRule(!g.stormResolution?.discoveryStorm,'The completed station choice cannot retain a traversal.');
   }
@@ -22055,6 +22059,51 @@ function advanceBattleOutcome(g: Game) {
   log(g, `${getPlayer(g, offer.player).name} may retreat surviving undialed forces with Diplomat before battle losses.`,
     { faction: getPlayer(g, offer.player).faction, name: 'Diplomat retreat' });
 }
+function currentJacurutuIncome(g: Game, quote: ReturnType<typeof currentBattleResolutionQuote>, retreat?: DiplomatRetreatSelection) {
+  const b = g.battle!;
+  if (b.territory !== JACURUTU_SIETCH || !g.discoveryEnabled || !quote.winner ||
+      !g.discoveries?.tokens.some(token => token.face === 'jacurutu-sietch' &&
+        token.status === 'placed' && token.revealedTurn !== null)) return null;
+  const opponent = quote.winner
+    ? getPlayer(g, quote.winner === b.attacker ? b.defender : b.attacker) : null;
+  const forces = opponent
+    ? combatForces(g, opponent, b.territory, getPlayer(g, opponent.id === b.attacker ? b.defender : b.attacker)) : null;
+  const plan = opponent ? b.plans[opponent.id] : null;
+  const withdrawal = quote.harassWithdraw?.find(entry => entry.player === opponent?.id);
+  const withdrawalDial = withdrawal && forces && plan
+    ? casualtyOptions(forces,plan.dial,plan.support).find(choice =>
+      choice.normal === withdrawal.remaining.normal && choice.elite === withdrawal.remaining.elite)
+    : undefined;
+  requireRule(!withdrawal || withdrawalDial, 'Harass & Withdraw must retain its original physical dial.');
+  return nexusRule(() => quoteJacurutuBattleIncome({
+    territory: b.territory,
+    jacurutuRevealed: true,
+    winner: quote.winner,
+    opponent: opponent?.id ?? null,
+    opponentForces: forces,
+    opponentDial: plan?.dial ?? null,
+    opponentSupport: plan?.support ?? null,
+    sentToTanks: forces ? {
+      normal: forces.normal - (withdrawal?.returned.normal ?? 0) - (retreat?.normal ?? 0),
+      elite: forces.elite - (withdrawal?.returned.elite ?? 0) - (retreat?.elite ?? 0),
+    } : null,
+    selectedDial: b.jacurutuDial?.selectedDial ?? withdrawalDial,
+  }));
+}
+function jacurutuDialIntegrity(g: Game) {
+  const frame = g.battle?.jacurutuDial;
+  const decisions = homeworldSavedDecisions(g).filter(decision => decision.kind === 'jacurutuDial');
+  if (!frame && !decisions.length) return;
+  requireRule(frame && g.battle?.revealed && g.phase === 6 && frame.event.length > 0 &&
+    !frame.selectedDial && decisions.length === 1 &&
+    decisions[0].player === frame.owner && decisions[0].event === frame.event &&
+    !!g.battle.diplomatRetreat === !!frame.retreat,
+    'The Jacurutu dial choice must retain its original revealed battle and defeated owner.');
+  const income = currentJacurutuIncome(g, currentBattleResolutionQuote(g), frame.retreat);
+  requireRule(income?.kind === 'allocationRequired' && income.opponent === frame.owner &&
+    income.winner === frame.winner && JSON.stringify(income.choices) === JSON.stringify(frame.choices),
+    'The Jacurutu dial choice changed its original counters, support or Tanks losses.');
+}
 function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
   const b = g.battle!;
   requireRule(!!b.diplomatRetreat === !!retreat, 'Resolve the pending Diplomat retreat before battle losses.');
@@ -22078,29 +22127,18 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
       ? d
       : a
     : null;
-  const losingForces = losingPlayer
-    ? combatForces(g, losingPlayer, b.territory, losingPlayer === a ? d : a)
-    : null;
-  const losingPlan = losingPlayer ? b.plans[losingPlayer.id] : null;
-  const jacurutuIncome = quoteJacurutuBattleIncome({
-    territory: b.territory,
-    jacurutuRevealed:
-      g.discoveryEnabled === true &&
-      !!g.discoveries?.tokens.some(
-        (token) =>
-          token.face === 'jacurutu-sietch' &&
-          token.status === 'placed' &&
-          token.revealedTurn !== null,
-      ),
-    winner: quote.winner,
-    opponent: losingPlayer?.id ?? null,
-    opponentForces: losingForces,
-    opponentDial: losingPlan?.dial ?? null,
-    opponentSupport: losingPlan?.support ?? null,
-    sentToTanks: losingForces
-      ? { normal: losingForces.normal, elite: losingForces.elite }
-      : null,
-  });
+  const jacurutuIncome = currentJacurutuIncome(g, quote, retreat);
+  if (jacurutuIncome?.kind === 'allocationRequired') {
+    b.jacurutuDial ??= { event: crypto.randomUUID(), owner: jacurutuIncome.opponent,
+      winner: jacurutuIncome.winner, choices: jacurutuIncome.choices, ...(retreat ? {retreat} : {}) };
+    g.decision = {kind:'jacurutuDial',player:b.jacurutuDial.owner,event:b.jacurutuDial.event};
+    return;
+  }
+  if (b.jacurutuDial) {
+    requireRule(b.jacurutuDial.selectedDial && jacurutuIncome?.kind === 'income',
+      'Commit the original physical Jacurutu dial before settling its battle.');
+    delete b.jacurutuDial;
+  }
   for (const revelation of quote.revelations) {
     const holder = getPlayer(g, revelation.player),
       identity = revelation.identity;
@@ -22307,14 +22345,6 @@ function resolveBattle(g: Game, retreat?: DiplomatRetreatSelection) {
       g,
       `${winner!.name} gained ${jacurutuIncome.amount} spice from the bank at Jacurutu Sietch for ${jacurutuIncome.amount} opposing undialed force${jacurutuIncome.amount === 1 ? '' : 's'} sent to the Tanks.`,
       { faction: winner!.faction, name: 'Jacurutu Sietch income' },
-    );
-  } else if (jacurutuIncome?.kind === 'allocationRequired') {
-    const amounts = [
-      ...new Set(jacurutuIncome.choices.map((choice) => choice.amount)),
-    ].sort((left, right) => left - right);
-    log(
-      g,
-      `Jacurutu Sietch income remains unpaid: ${losingPlayer!.name}'s revealed dial and support permit ${amounts.join(' or ')} undialed physical forces among the counters sent to the Tanks. The physical dial allocation needs a player choice.`,
     );
   }
   for (const income of quote.strongholdIncome) {
@@ -29911,6 +29941,18 @@ function applyActionInner(
       if (destination === null)
         log(g, `${p.name} declined the Diplomat retreat.`, { faction: p.faction, name: 'Diplomat retreat' });
       resolveBattle(g, { destination: destination as string | null, normal: normal as number, elite: elite as number });
+    } else if (decision.kind === 'jacurutuDial') {
+      const frame = g.battle?.jacurutuDial;
+      requireRule(frame && frame.owner === id && frame.event === decision.event && action.event === decision.event &&
+        Object.keys(action).every(key => ['type','event','allocation'].includes(key)) &&
+        typeof action.allocation === 'number' && Number.isSafeInteger(action.allocation) &&
+        action.allocation >= 0 && action.allocation < frame.choices.length && !frame.selectedDial,
+        'Identify the physical counters represented by your current revealed Jacurutu dial.');
+      const chosen = frame.choices[action.allocation];
+      frame.selectedDial = jacurutuDialSelection(frame,action.allocation)!;
+      log(g, `${p.name} identified ${chosen.dialed.normal} normal and ${chosen.dialed.elite} elite physical counters represented by their Jacurutu dial; the battle winner receives ${chosen.amount} spice for opposing undialed counters actually sent to the Tanks.`,
+        {faction:p.faction,name:'Jacurutu physical dial'});
+      resolveBattle(g, frame.retreat);
     } else if (decision.kind === 'smugglerCollection') {
       const receipt = g.battle?.smugglerCollection;
       requireRule(receipt?.event === decision.event && receipt.player === id &&
@@ -30347,9 +30389,11 @@ function applyActionInner(
       requireRule(g.ecologicalStorm && Object.keys(action).every(key => ['type','event','delta'].includes(key)),
         'Choose only the current station storm adjustment.');
       g.ecologicalStorm = nexusRule(() => chooseDiscoveryStorm(g,g.ecologicalStorm!,p.id,action.event,action.delta));
-      g.stormPending = g.ecologicalStorm.base+g.ecologicalStorm.delta!;
-      log(g, `${p.name} ${g.ecologicalStorm.delta === 0 ? 'kept' : g.ecologicalStorm.delta === 1 ? 'increased' : 'decreased'} storm movement ${g.ecologicalStorm.delta === 0 ? 'at' : 'by one, to'} ${g.stormPending} sectors using Ecological Testing Station.`, {faction:p.faction,name:'Ecological Testing Station'});
-      moveStorm(g,g.stormPending);
+      g.stormPending = nexusRule(() => discoveryStormDistance(g.ecologicalStorm!));
+      log(g, `${p.name} ${action.delta === 0 ? 'kept' : action.delta === 1 ? 'increased' : 'decreased'} storm movement ${action.delta === 0 ? 'at' : 'by one, to'} ${g.stormPending} sectors using Ecological Testing Station.`, {faction:p.faction,name:'Ecological Testing Station'});
+      if (g.ecologicalStorm.stage === 'choose')
+        g.decision = {kind:'ecologicalStorm',player:g.ecologicalStorm.owner,event:g.ecologicalStorm.event};
+      else moveStorm(g,g.stormPending);
     } else if (decision.kind === 'greatMakerVote') {
       decideGreatMakerVote(g,p,action);
     } else if (decision.kind === 'greatMakerRide') {
@@ -33000,8 +33044,11 @@ export function viewGame(state: Game, id: string) {
     ecazOccupyPreview: !!g.ecazOccupyPreview,
     strongholdCards: g.strongholdCards ?? null,
     discoveries: discoveryChoices(g,id,g.phase === 7 && grummanCollectionAutomatic(g)),
+    jacurutuDial: g.decision?.kind === 'jacurutuDial' && g.decision.player === id && g.battle?.jacurutuDial
+      ? {event:g.battle.jacurutuDial.event,owner:g.battle.jacurutuDial.owner,winner:g.battle.jacurutuDial.winner,
+        choices:structuredClone(g.battle.jacurutuDial.choices)} : null,
     ecologicalStorm: g.decision?.kind === 'ecologicalStorm' && g.decision.player === id && g.ecologicalStorm?.stage === 'choose'
-      ? {...nexusRule(() => discoveryStormOffer(g))!,event:g.ecologicalStorm.event} : null,
+      ? {...nexusRule(() => discoveryStormOffer(g,g.ecologicalStorm))!,event:g.ecologicalStorm.event} : null,
     discoveryEntry: g.discoveryEntry?.stage === 'choose' && g.decision?.kind === 'discoveryEntry' && g.decision.player === id
       ? {...nexusRule(() => quoteDiscoveryEntry({...g,discoveries:g.discoveries!},g.discoveryEntry!,id)),event:g.decision.event} : null,
     greatMaker: g.greatMaker ? { event:g.greatMaker.event, turn:g.greatMaker.turn, stage:g.greatMaker.stage, votes:structuredClone(g.greatMaker.votes), order:[...g.greatMaker.order], ride:greatMakerRideOptions(g,id) } : null,

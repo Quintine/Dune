@@ -5,6 +5,7 @@ import { RICHESE_CARD_DEFINITIONS } from './richese-cards';
 // are envelope checks, not a duplicate implementation of each future choice.
 const DECISIONS = {
   ecazBattleLead: true,
+  jacurutuDial: true,
   homeworldOccupiedIncome: true,
   homeworldOccupiedPercentage: true,
   homeworldOccupiedBonus: true,

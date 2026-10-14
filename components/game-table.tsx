@@ -34,6 +34,7 @@ import { GreatMakerDecision } from './great-maker';
 import { DiscoveryPanel, DiscoveryDiscardDecision } from './discoveries';
 import { DiscoveryEntryDecision } from './discovery-entry';
 import { DiscoveryStormDecision } from './discovery-storm';
+import { JacurutuDial } from './jacurutu-dial';
 import { NexusChoamTrade, NexusChoamInspectionDecision, NexusChoamInspectionInsight } from './nexus-choam-trade';
 import { NexusChoamBetrayal } from './nexus-choam-betrayal';
 import { NexusMoritaniBetrayal } from './nexus-moritani-betrayal';
@@ -2616,6 +2617,8 @@ export function GameTable({
                     ? 'Choose Smuggler collection sectors'
                   : g.decision.kind === 'sandmasterVictorySpice'
                     ? 'Choose Sandmaster victory spice sector'
+                  : g.decision.kind === 'jacurutuDial'
+                    ? 'Identify your Jacurutu physical dial'
                   : g.decision.kind === 'harassWithdraw'
                     ? 'Choose undialed forces to return'
                   : g.decision.kind === 'diplomatRetreat'
@@ -3072,6 +3075,9 @@ export function GameTable({
                 <SmugglerBattleCollection key={g.decision.event} offer={g.decision} act={act} busy={busy} />
               ) : g.decision.kind === 'sandmasterVictorySpice' ? (
                 <SandmasterVictorySpice offer={g.decision} act={act} busy={busy} />
+              ) : g.decision.kind === 'jacurutuDial' && g.jacurutuDial ? (
+                <JacurutuDial offer={g.jacurutuDial}
+                  onChoose={allocation => act({type:'decision',event:g.jacurutuDial!.event,allocation})} busy={busy} />
               ) : g.decision.kind === 'harassWithdraw' ? (
                 <>
                   <HarassWithdrawChoice key={g.decision.event} game={g} act={act} busy={busy} />

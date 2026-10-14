@@ -26,6 +26,10 @@ export type DiscoveryStorm = {
   delta: -1 | 0 | 1 | null;
   stage: 'choose' | 'traversal' | 'complete';
   signature: string;
+  queue?: {
+    order: string[];
+    choices: { owner: string; delta: -1 | 0 | 1 }[];
+  };
 };
 export type DiscoveryStormContext = Pick<
   Game,
@@ -37,6 +41,7 @@ export type DiscoveryStormContext = Pick<
   | 'discoveryEnabled'
   | 'discoveries'
   | 'players'
+  | 'order'
 > & { stormMovementSource?: StormMovementSource };
 export function stormSourceSignature(
   source: Omit<StormMovementSource, 'signature'>,
@@ -69,7 +74,7 @@ export function validateStormSource(source: StormMovementSource) {
 export function discoveryStormSignature(
   frame: Omit<DiscoveryStorm, 'signature'>,
 ) {
-  return JSON.stringify([
+  const values: unknown[] = [
     frame.event,
     frame.turn,
     frame.owner,
@@ -78,9 +83,22 @@ export function discoveryStormSignature(
     frame.base,
     frame.delta,
     frame.stage,
-  ]);
+  ];
+  if (frame.queue) values.push(frame.queue.order, frame.queue.choices);
+  return JSON.stringify(values);
 }
-export function discoveryStormOffer(g: DiscoveryStormContext) {
+export function discoveryStormDistance(frame: DiscoveryStorm): number {
+  return frame.base + (frame.queue
+    ? frame.queue.choices.reduce((sum, choice) => sum + choice.delta, 0)
+    : frame.delta ?? 0);
+}
+function stationOccupants(g: DiscoveryStormContext): string[] {
+  return g.order.filter((id) => {
+    const player = g.players.find((p) => p.id === id);
+    return player && fighterCount(player, 'ecological-testing-station') > 0;
+  });
+}
+export function discoveryStormOffer(g: DiscoveryStormContext, frame?: DiscoveryStorm) {
   const token =
     g.discoveryEnabled &&
     g.discoveries?.tokens.find(
@@ -90,11 +108,10 @@ export function discoveryStormOffer(g: DiscoveryStormContext) {
         t.revealedTurn !== null,
     );
   if (!token) return null;
-  const occupants = g.players.filter(
-    (p) => fighterCount(p, 'ecological-testing-station') > 0,
-  );
-  if (occupants.length !== 1) return null;
-  const owner = occupants[0].id,
+  const occupants = stationOccupants(g);
+  if (!occupants.length || occupants.length > 2) return null;
+  if (frame) validateDiscoveryStorm(g, frame);
+  const owner = frame?.owner ?? occupants[0],
     source = g.stormMovementSource;
   if (source) validateStormSource(source);
   let blocked: string | null = null;
@@ -105,10 +122,10 @@ export function discoveryStormOffer(g: DiscoveryStormContext) {
       'This storm was already pending before the station became available. Its original movement is preserved.';
   else if (source.kind === 'weather')
     blocked = 'Ecological Testing Station cannot change Weather Control.';
-  else if (source.distance !== g.stormPending)
+  else if (source.distance !== (frame?.base ?? g.stormPending))
     blocked =
       'The current storm movement no longer matches this station opportunity.';
-  const base = g.stormPending ?? 0;
+  const base = frame ? discoveryStormDistance(frame) : g.stormPending ?? 0;
   const options = ([-1, 0, 1] as const)
     .filter((delta) => base + delta >= 0 && base + delta <= 40)
     .map((delta) => ({ delta, distance: base + delta }));
@@ -121,7 +138,7 @@ export function createDiscoveryStorm(
   const offer = discoveryStormOffer(g);
   need(
     offer && !offer.blocked && typeof event === 'string' && event.length > 0,
-    offer?.blocked ?? 'No sole occupant may adjust this storm.',
+    offer?.blocked ?? 'No station occupant may adjust this storm.',
   );
   const frame: DiscoveryStorm = {
     event,
@@ -134,6 +151,8 @@ export function createDiscoveryStorm(
     stage: 'choose',
     signature: '',
   };
+  const occupants = stationOccupants(g);
+  if (occupants.length === 2) frame.queue = { order: occupants, choices: [] };
   frame.signature = discoveryStormSignature(frame);
   validateDiscoveryStorm(g, frame);
   return frame;
@@ -144,8 +163,9 @@ export function validateDiscoveryStorm(
 ) {
   need(
     record(frame) &&
-      Object.keys(frame).sort().join(',') ===
-        'base,delta,event,from,owner,signature,stage,token,turn' &&
+      Object.keys(frame).sort().join(',') === (frame.queue
+        ? 'base,delta,event,from,owner,queue,signature,stage,token,turn'
+        : 'base,delta,event,from,owner,signature,stage,token,turn') &&
       typeof frame.event === 'string' &&
       frame.event.length > 0 &&
       typeof frame.owner === 'string' &&
@@ -161,9 +181,40 @@ export function validateDiscoveryStorm(
       ['choose', 'traversal', 'complete'].includes(frame.stage) &&
       (frame.stage === 'choose'
         ? frame.delta === null
-        : [-1, 0, 1].includes(frame.delta as number) &&
-          frame.base + frame.delta! >= 0 &&
-          frame.base + frame.delta! <= 40) &&
+        : [-1, 0, 1].includes(frame.delta as number)),
+    'The station has lost its signed storm choice.',
+  );
+  if (frame.queue) {
+    const queue = frame.queue;
+    need(
+      record(queue) &&
+        Object.keys(queue).sort().join(',') === 'choices,order' &&
+        Array.isArray(queue.order) &&
+        queue.order.length === 2 &&
+        new Set(queue.order).size === 2 &&
+        queue.order.every((id) => typeof id === 'string' && g.players.some((p) => p.id === id)) &&
+        Array.isArray(queue.choices) &&
+        queue.choices.length <= 2 &&
+        queue.choices.every((choice, index) =>
+          record(choice) &&
+          Object.keys(choice).sort().join(',') === 'delta,owner' &&
+          choice.owner === queue.order[index] &&
+          [-1, 0, 1].includes(choice.delta)) &&
+        frame.owner === queue.order[Math.min(queue.choices.length, 1)] &&
+        (frame.stage === 'choose'
+          ? queue.choices.length < 2
+          : queue.choices.length === 2 && frame.delta === queue.choices[1].delta),
+      'The station must retain exactly one ordered choice per original occupant.',
+    );
+    let distance = frame.base;
+    for (const choice of queue.choices) {
+      distance += choice.delta;
+      need(distance >= 0 && distance <= 40, 'Every station choice must retain a legal current distance.');
+    }
+  }
+  need(
+    discoveryStormDistance(frame) >= 0 &&
+      discoveryStormDistance(frame) <= 40 &&
       frame.signature === discoveryStormSignature(frame),
     'The station has lost its signed storm choice.',
   );
@@ -197,18 +248,15 @@ export function validateDiscoveryStorm(
     'The station cannot replace its original storm source or affect Weather Control.',
   );
   if (frame.stage === 'choose') {
-    const offer = discoveryStormOffer(g);
+    const occupants = stationOccupants(g);
     need(
-      offer &&
-        !offer.blocked &&
-        offer.owner === frame.owner &&
-        offer.token === frame.token &&
-        offer.base === frame.base,
+      JSON.stringify(occupants) === JSON.stringify(frame.queue?.order ?? [frame.owner]) &&
+        g.stormPending === discoveryStormDistance(frame),
       'The station choice no longer belongs to its original occupant and storm.',
     );
   } else
     need(
-      g.stormPending === frame.base + frame.delta!,
+      g.stormPending === discoveryStormDistance(frame),
       'The adjusted storm must retain the chosen distance.',
     );
 }
@@ -226,14 +274,21 @@ export function chooseDiscoveryStorm(
       frame.event === event &&
       typeof delta === 'number' &&
       [-1, 0, 1].includes(delta) &&
-      frame.base + delta >= 0 &&
-      frame.base + delta <= 40,
+      discoveryStormDistance(frame) + delta >= 0 &&
+      discoveryStormDistance(frame) + delta <= 40,
     'Choose the current station opportunity: decrease one, keep the distance, or increase one.',
   );
-  const next = {
+  const choices = frame.queue
+    ? [...frame.queue.choices, { owner, delta: delta as -1 | 0 | 1 }]
+    : null;
+  const more = choices !== null && choices.length < frame.queue!.order.length;
+  const next: DiscoveryStorm = {
     ...frame,
-    delta: delta as -1 | 0 | 1,
-    stage: 'traversal' as const,
+    owner: more ? frame.queue!.order[choices!.length] : frame.owner,
+    event: more ? `${frame.event}:1` : frame.event,
+    delta: more ? null : delta as -1 | 0 | 1,
+    stage: more ? 'choose' : 'traversal',
+    ...(choices ? { queue: { order: [...frame.queue!.order], choices } } : {}),
     signature: '',
   };
   next.signature = discoveryStormSignature(next);

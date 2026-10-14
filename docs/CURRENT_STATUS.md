@@ -29,6 +29,24 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Recommended Jacurutu and Testing Station choices — 14 October.**
+Following the choose-recommended-option priority, mixed physical Jacurutu dials
+now use a defeated-player exact ordinary/elite/paid selection before battle
+mutates. Original withdrawal/retreat counters do not earn Tanks income;
+unique readings stay automatic, and original payment/casualty/Collection resumes
+once. Testing Station gives each non-advisor occupant one cumulative adjustment
+in original storm order, then traverses once; natural source/base/from/token,
+Weather exclusion and existing sole-frame signatures remain.
+Both are visible provisional interpretations, not new publisher or separately
+answered numerical user rulings. Actual native original setup, token lottery,
+ship/reveal/entry, declared battle or worm alliance retain printed stock and
+starting armies. Actual390px dial choice earns1 with two losing Tanks/one elite;
+native city income remains separate. Guild+1 changes pending2→3 without moving
+storm3; Ecaz−1 then moves it once to5 and opens Spice Blow, with both garrisons
+intact. Browser errors empty and no root overflow. Related12-file union104/104,
+types/lint and app build pass; [precise source and proof](DISCOVERY_PROTOTYPE.md#recommended-physical-dial-and-cumulative-storm-choices--14-october-2026).
+Cistern/Orgiz/shared-collector effects and full acceptance remain open.
+
 **Classic Homeworld normal Banker and whole-invoice accounting — 14 October.**
 Fresh `banker-income --homeworlds` reuses original classic Basic/Advanced
 occupation/all14 setup and income-v1, without Nexus/Discovery/Tech/Strongholds

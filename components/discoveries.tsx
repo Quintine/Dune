@@ -96,7 +96,7 @@ export function DiscoveryPanel({ game, act, busy }: Props) {
       </div>
       <p className="fine">Inspection and reveal are optional. Next-turn free entry, sole-occupant Cistern income and later-turn Ornithopter movement are available in the development prototype. Jacurutu income, Testing Station storm choices and Shrine card conversion are prototyped. {game.advanced
         ? 'A sole Orgiz occupant takes one spice for each territory where one rival collected board spice.'
-        : 'Basic keeps the provisional one-spice transfer per positive board deposit collected by one rival.'} Contested Orgiz, different or shared collectors, mixed-force Jacurutu rewards and contested Cistern/Testing Station benefits remain pending; uncertain transfers do not block ordinary Collection.</p>
+        : 'Basic keeps the provisional one-spice transfer per positive board deposit collected by one rival.'} Mixed physical Jacurutu dials now use a defeated-player choice before settlement. Testing Station occupants each choose once in original storm order, cumulatively. These ordering/allocation interpretations are provisional. Contested Cistern/Orgiz and different or shared collectors remain pending; uncertain transfers do not block ordinary Collection.</p>
     </section>
   );
 }

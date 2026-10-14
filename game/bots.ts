@@ -2682,6 +2682,8 @@ function policyActions(g: GameView): Action[] {
     if (d.kind === 'discoveryDiscard') return discoveryBotActions(g);
     if (d.kind === 'discoveryEntry') return discoveryEntryBotActions(g);
     if (d.kind === 'ecologicalStorm') return discoveryStormActions(g);
+    if (d.kind === 'jacurutuDial')
+      return g.jacurutuDial?.choices.map((_,allocation) => ({type:'decision',event:d.event,allocation})) ?? [];
     if (d.kind === 'greatMakerVote' || d.kind === 'greatMakerRide') return greatMakerBotActions(g);
     if (d.kind === 'nexusFremenCunningOffer')
       return [{ type: 'decision', event: d.event,

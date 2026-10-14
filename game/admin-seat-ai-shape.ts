@@ -24,6 +24,7 @@ const nullableCount = (value: unknown) => value === null || count(value);
 
 const decisions = {
   ecazBattleLead: true,
+  jacurutuDial: true,
   harassWithdraw: true,
   smugglerCollection: true,
   sandmasterVictorySpice: true,

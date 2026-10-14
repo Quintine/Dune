@@ -5,6 +5,65 @@ partial rules coverage. It connects physical components, real actions, private
 controls, AI choices and saved continuation. Normal public Discovery and
 Advanced start gates, and the publication gate, remain closed.
 
+## Recommended physical dial and cumulative storm choices — 14 October 2026
+
+Under the user's choose-recommended-option priority, the prototype now selects
+two explicit implementation interpretations without another question:
+the defeated Jacurutu player identifies the physical reading of their revealed
+dial, and each Testing Station non-advisor occupant chooses once in original
+storm order, cumulatively. These are not separately answered numerical user
+rulings or newly located publisher clarifications. Controls label them provisional.
+
+Jacurutu's owned event and canonical ordinary/elite/paid allocation choices
+pause before support, casualties, card cleanup or rewards mutate. A chosen
+reading must match all four original commitment fields. Only opposing undialed
+counters actually sent to the Tanks earn spice. Original Harass returns bind
+their already selected physical dial; actual withdrawal/retreat counters are
+excluded. Unique readings stay automatic. Native resolution resumes once;
+its subsequent ordinary city Collection remains separate.
+
+Genuine Advanced Emperor/Atreides/Guild setup draws the original Hagga Basin
+Discovery, places the actual Jacurutu supply token at printed Gara Kulon8,
+ships one ordinary/one Sardaukar, inspects/reveals it and free-enters next turn.
+An actual opposing shipment and declared battle produce dial2/support1:
+Sardaukar-only earns1; ordinary-plus-Sardaukar earns0. Both destroy the same two
+losing counters, spend original support once and resume native Collection.
+The same original dial1/support0 position earns1 automatically. All four
+properly configured legal bot policies choose an offered physical reading.
+
+Testing Station preserves the original natural source/base/from/token and
+existing sole-frame signatures. A two-owner signed queue stores original storm
+order and one delta per owner. First choice leaves storm/protection untouched;
+second starts one final traversal. Choices use current cumulative distance,
+bounded0..40. Wrong owner/event/index, replay and Weather Control fail closed.
+No new route, station token, starting army or source is fabricated.
+
+Genuine Ecaz/Guild/Fremen/Emperor setup retains every original starting army:
+real paid shipment, Collection reveal, next-turn entry, worm Nexus, reciprocal
+alliance and allied shipment yield two station occupants. Earlier natural
+sole-occupant opportunities use the real Keep control. The Advanced path also
+finishes its original Guild interception before checking the arrival. Original
+unplayed Spice ordering and actual supply lottery are explicitly staged.
+
+Actual390px Jacurutu selection settles Emperor6→5, opposing Atreides9→10
+(support−2, reward1, original city2) and the same two Tanks/one elite; observer
+Guild13→14 retains its original Collection. Actual station Guild+1 changes
+pending2→3 without moving storm3; Ecaz−1 then moves it once to5 and opens
+Spice Blow, preserving both original garrisons. Browser errors empty; no root
+overflow. `/tmp/dune-discovery-choice-ui-proof.json` records private local proof.
+No complete-module, broad-assurance or deployed acceptance is claimed.
+
+Evidence: `tests/fixture-jacurutu-mixed-dial.ts`,
+`tests/jacurutu-mixed-dial-runtime.test.ts`,
+`tests/fixture-testing-station-contest.ts`,
+`tests/testing-station-contest-runtime.test.ts`, and the original
+`tests/discovery-battle.test.ts` / `tests/discovery-storm.test.ts`.
+
+Frozen related12-file union104/104, types/lint and app build pass. The build
+retains existing module-registration, chunk-size and route-classification
+warnings. Throwaway native probes are removed; permanent tests exercise
+source/actor/transition/payment boundaries, not wording or fixture-copy echoes.
+
 ## Mixed E1/E2 and paired E3 Nexus — 7 October 2026
 
 Original native Nx/Discovery now admits both selected Ix+CHOAM families
@@ -583,9 +642,10 @@ Focused native cases are in `tests/discovery-module-profile.test.ts`,
 `tests/discovery-native-marker-runtime.test.ts` and
 `tests/discovery-native-e3-runtime.test.ts`. Fixtures explicitly label controlled
 unplayed Spice order, placement lottery and conserved counter/card/identity
-positions; clocks, choices and outcomes use original producers. This does not
-resolve contested Cistern/Testing Station/Orgiz, shared-payer theft, mixed-dial
-Jacurutu, complete module strategy or public-start/deployed acceptance.
+positions; clocks, choices and outcomes use original producers. At that earlier
+checkpoint, contested benefits and mixed-dial Jacurutu remained unresolved.
+The 14 October recommended dial and station interpretations supersede those two
+guards; Cistern/Orgiz, shared-payer theft, strategy and full acceptance remain open.
 
 ### Bounded runtime evidence
 
@@ -780,16 +840,16 @@ conversion was fabricated.
   another payment. Unresolved Ecaz shared lots and contested Orgiz occupation
   withhold their uncertain transfers, not the ordinary Collection phase.
 
-- **Jacurutu:** winning a battle here automatically grants one bank spice per
-  opposing undialed physical force sent to the Tanks. Winner casualties and
-  pre-existing Tanks do not count. Ordinary and unambiguous Advanced plans are
-  playable. Mixed normal/elite plans with different possible physical counts
-  leave an explicit unpaid gap pending the allocation ruling below.
-- **Ecological Testing Station:** a sole non-advisor occupant receives an owned
-  decrease/keep/increase choice after the ordinary storm-card window closes,
-  before traversal and CHOAM/Fremen protection. The original natural dial/card
-  source, turn, physical station and chosen distance remain bound through saved
-  protection and typed loss continuations. Weather Control bypasses the station.
+- **Jacurutu:** one bank spice per opposing undialed physical counter actually
+  sent to the Tanks. Unique readings remain automatic. For different possible
+  counts, the defeated owner selects an exact legal ordinary/elite/paid reading
+  before settlement under the provisional 14 October interpretation. Original
+  withdrawal/retreat counters never count; winner losses and old Tanks do not.
+- **Ecological Testing Station:** each non-advisor occupant chooses once in
+  original storm order after the ordinary storm-card window and before traversal.
+  Adjustments accumulate on current movement; bounds0..40 and original source
+  remain authoritative. Weather Control bypasses the station. Sequential
+  cumulative ordering is a visibly provisional implementation interpretation.
 - **Shrine:** current non-advisor occupation of the publicly revealed location
   authorizes Truthtrance as Karama or Karama as Truthtrance in the existing effect
   paths. Cards retain their physical identity and custody. A committed converted
@@ -839,24 +899,23 @@ trigger described above. Two fighters occupying Orgiz still withhold theft.
 An Ecaz shared lot or inconsistent collected payers withholds that territory's
 transfer; independent territories and ordinary Collection proceed.
 
-The Testing Station's two-occupant case leaves ordering and cumulative adjustment
-unresolved. The prototype opens only the sole-occupant path and continues an
-ordinary storm without that contested benefit. Choosing after the ordinary
-storm-card window is an implementation timing interpretation: the printed
-source specifies the Storm phase and excludes Weather Control, but does not
-supply a separate station/card priority order. A legacy pending storm without
-new source metadata keeps its existing movement; a subsequent naturally
-produced storm can use the station. No source is inferred from display logs.
+The 14 October recommended prototype selects one cumulative adjustment per
+Testing Station occupant in original storm order. The printed source specifies
+the Storm phase and excludes Weather Control but does not give a separate
+station/card priority or contested-order FAQ. The selected ordering remains an
+implementation interpretation, not publisher authority. Existing sole-occupant
+signed frames remain valid; no original movement is invented for a legacy
+pending storm without source metadata.
 
 Jacurutu's text says opposing **undialed forces**, not a numeric wheel difference.
 Advanced combat permits different physical allocations: an Emperor with one
 ordinary force and one Sardaukar, dial two and one paid support, can dial the
 supported Sardaukar alone or the supported ordinary plus unsupported Sardaukar.
-Those choices leave one or zero undialed counters. The existing loser resolution
-has no physical allocation choice. The user question asks whether the defeated
-player should select those counters; it remains pending. The prototype records
-the unpaid gap instead of silently choosing a reward. Source: publisher-authored
-Ecaz & Moritani rulebook p13, with no clarification in its bundled Q&A.
+Those choices leave one or zero undialed counters. The 14 October prototype
+selects the recommended defeated-player physical allocation before any battle
+mutation. The former unpaid-gap guard is removed; numeric wheel subtraction
+alone remains invalid. Publisher-authored Ecaz & Moritani p13 supplies the
+undialed-counter trigger, not this choice timing. No new clarification is claimed.
 
 ## Evidence and next dependencies
 
@@ -925,10 +984,10 @@ to Spice Blow. Refresh restored the same station forces and private Snooper.
 This is targeted control/recovery evidence, not an unmodified complete game.
 The 187 opening saved rooms remain preserved; no server restart was needed.
 
-1. Resolve contested Cistern/Orgiz/Testing Station benefits, Ecaz shared-lot
-   Orgiz allocation and Jacurutu's mixed physical dial allocation; complete
-   remaining controls and effects when settled. Basic's per-collected-deposit
-   Orgiz interpretation remains provisional; the Advanced count is source-cut over.
+1. Resolve contested Cistern/Orgiz benefits and Ecaz shared-lot Orgiz allocation.
+   Jacurutu mixed dial and Testing Station order now use the visible recommended
+   interpretations above. Basic Orgiz remains provisional per collected deposit;
+   the Advanced territory count is source-cut over.
 2. Integrate combined modules and complete games, then refine interaction,
    strategy and presentation coverage before opening normal start gates.
 3. Use the existing prototype starter and saved-room verification for further

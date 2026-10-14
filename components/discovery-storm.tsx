@@ -20,11 +20,11 @@ export function DiscoveryStormDecision({
   return (
     <section aria-label="Ecological Testing Station" className="space-y-3">
       <p>
-        Your forces occupy Ecological Testing Station. The storm will move{' '}
-        {offer.base} sectors. You may decrease or increase this by one, or keep
-        the ordinary movement.
+        Your forces occupy Ecological Testing Station. The storm currently
+        moves {offer.base} sectors. You may decrease or increase this by one, or
+        keep the current movement.
       </p>
-      <p className="fine">This choice cannot change Weather Control.</p>
+      <p className="fine">Prototype ordering: each occupying faction chooses once in storm order; adjustments are cumulative. This choice cannot change Weather Control.</p>
       <div className="flex flex-wrap gap-2">
         {offer.options.map((option) => {
           const action = actions.find(

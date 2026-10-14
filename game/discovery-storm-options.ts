@@ -14,7 +14,7 @@ export function discoveryStormActions(game: GameView): Action[] {
     offer.blocked
   )
     return [];
-  // Keeping the ordinary movement is the conservative first prototype policy.
+  // Keeping the current cumulative distance is the conservative policy.
   return [...offer.options]
     .sort((a, b) => Math.abs(a.delta) - Math.abs(b.delta))
     .map((option) => ({

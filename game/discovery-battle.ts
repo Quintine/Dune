@@ -15,6 +15,25 @@ export type JacurutuTankLosses = Readonly<{
   elite: number;
 }>;
 
+/** One legal physical reading of the revealed opposing dial. */
+export type JacurutuDialChoice = Readonly<{
+  /** The physical ordinary/elite counters the defeated player committed to the
+   * revealed dial, with the plan's paid support split. */
+  dialed: Casualties;
+  /** Bank spice the winner collects for the counters left undialed. */
+  amount: number;
+}>;
+
+/** The defeated player's pre-settlement choice between legal physical readings
+ * of a single revealed dial. */
+export type JacurutuDialOffer = Readonly<{
+  event: string;
+  /** The defeated player, who owns the physical allocation of their own dial. */
+  owner: string;
+  winner: string;
+  choices: readonly JacurutuDialChoice[];
+}>;
+
 export type JacurutuBattleIncomeQuote =
   | Readonly<{
       kind: 'income';
@@ -29,7 +48,7 @@ export type JacurutuBattleIncomeQuote =
       winner: string;
       opponent: string;
       sentToTanks: JacurutuTankLosses;
-      choices: readonly Readonly<{ dialed: Casualties; amount: number }>[];
+      choices: readonly JacurutuDialChoice[];
     }>;
 
 export type JacurutuBattleIncomeInput = Readonly<{
@@ -43,6 +62,10 @@ export type JacurutuBattleIncomeInput = Readonly<{
   /** Actual opposing counters destroyed by this battle, after any future
    * withdrawal or other non-Tanks movement has been removed from the pool. */
   sentToTanks: JacurutuTankLosses | null;
+  /** The defeated player's own physical allocation for the revealed dial, once
+   * they have selected one. Absent while the automatic single reading, or a
+   * saved choice, remains pending. */
+  selectedDial?: Casualties | null;
 }>;
 
 export class JacurutuBattleIncomeError extends Error {
@@ -61,7 +84,10 @@ function whole(value: number): boolean {
  *
  * A numeric Battle Wheel dial is not a physical counter count in Advanced
  * combat. When different legal ordinary/elite dial allocations would change
- * the income, the quote preserves those choices instead of inventing one.
+ * the income, the quote preserves those choices instead of inventing one. A
+ * supplied `selectedDial` must equal one offered reading exactly, including its
+ * paid support split: the same counters with a different paid distribution
+ * describe a different committed strength.
  */
 export function quoteJacurutuBattleIncome(
   input: JacurutuBattleIncomeInput,
@@ -90,11 +116,45 @@ export function quoteJacurutuBattleIncome(
     throw new JacurutuBattleIncomeError(
       'Jacurutu income needs the opposing plan and exact forces sent to the Tanks.',
     );
-  const dialed = casualtyOptions(
+  const eligible = casualtyOptions(
     forces,
     input.opponentDial,
     input.opponentSupport,
-  ).filter(
+  );
+  if (!eligible.length)
+    throw new JacurutuBattleIncomeError(
+      'Jacurutu income has no physical dial allocation matching the opposing plan.',
+    );
+  const selected = input.selectedDial;
+  if (selected != null) {
+    // All four canonical fields must match one offered reading: the same
+    // ordinary/elite counters with the same paid support describe a different
+    // committed strength than a different paid distribution of those counters.
+    const match = eligible.find(
+      (choice) =>
+        choice.normal === selected.normal &&
+        choice.elite === selected.elite &&
+        choice.paidNormal === selected.paidNormal &&
+        choice.paidElite === selected.paidElite,
+    );
+    if (!match)
+      throw new JacurutuBattleIncomeError(
+        'The chosen Jacurutu dial allocation is not a legal physical allocation of the opposing revealed forces, dial and support.',
+      );
+    if (match.normal > sent.normal || match.elite > sent.elite)
+      throw new JacurutuBattleIncomeError(
+        'The chosen Jacurutu dial allocation exceeds the opposing counters actually sent to the Tanks.',
+      );
+    return {
+      kind: 'income',
+      winner: input.winner,
+      opponent: input.opponent,
+      amount: sent.normal + sent.elite - match.normal - match.elite,
+      sentToTanks: { ...sent },
+      dialed: [{ ...match }],
+    };
+  }
+  const dialed = eligible.filter(
     (choice) => choice.normal <= sent.normal && choice.elite <= sent.elite,
   );
   if (!dialed.length)
@@ -122,4 +182,14 @@ export function quoteJacurutuBattleIncome(
     sentToTanks: { ...sent },
     dialed: choices.map((choice) => choice.dialed),
   };
+}
+
+/** Resolves the canonical saved choice index to its exact physical allocation. */
+export function jacurutuDialSelection(
+  offer: JacurutuDialOffer,
+  allocation: number,
+): Casualties | null {
+  if (!Number.isSafeInteger(allocation) || allocation < 0) return null;
+  const choice = offer.choices[allocation];
+  return choice ? { ...choice.dialed } : null;
 }

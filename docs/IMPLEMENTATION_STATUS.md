@@ -1,5 +1,52 @@
 # Dune implementation status
 
+## 14 October 2026 — recommended physical Jacurutu dial and cumulative station queue
+
+The choose-recommended-option priority removes another clarification stop.
+The prototype selects defeated-player physical dial allocation at Jacurutu and
+one cumulative Testing Station adjustment per non-advisor occupant in original
+storm order. Both controls label these provisional implementation interpretations;
+the printed source does not supply their choice timing/contested-order FAQ.
+No separate numerical user answer or new publisher ruling is claimed.
+
+Jacurutu's owned event preserves exact canonical ordinary/elite/paid readings
+before battle mutation. Selection must match all four fields; actual Harass
+returns bind their already selected commitment and retreat/withdrawal counters
+never enter Tanks income. Unique readings stay automatic. Both1/0 readings
+spend the same support and produce the same original two losing Tanks/one elite,
+winner losses and original subsequent city Collection; all four configured
+minimal policies produce a legal selection.
+
+Testing Station adds a signed two-owner queue while preserving original sole
+frame signatures. Source/base/from/token and one ordered delta per owner stay
+bound. The first action updates current pending movement without traversal;
+the final action traverses once. Cumulative0..40 bounds, actor/event/replay
+rejection and printed Weather exclusion are exercised.
+
+Native fixtures use real original setup, printed blow/supply lottery, paid
+shipment, Collection inspect/reveal, next-turn entry and actual battle or worm
+alliance. Owner removed a child’s arbitrary conserved starting-force relocation;
+every original starting army remains intact. The station fixture also had to
+choose Keep on its earlier real sole opportunity and finish Advanced Guild
+interception before checking the allied arrival. Initial wallet expectations
+omitted ordinary city Collection; the repaired tests preserve that original
+quote separately rather than changing the engine’s payout. A Weather fixture
+assumed seat order, while actual storm order made its second occupant Ecaz2;
+the meaningful assertion now preserves its actual original garrison. Wording,
+markup, log-growth and staging-copy assertions were deleted, not re-pinned.
+
+Actual390px Jacurutu earns1: Emperor6→5, Atreides9→10 (−2 support,+1 reward,
++2 original city), Guild13→14 from original Collection. Actual station Guild+1
+changes pending2→3 without moving storm3; Ecaz−1 traverses once to5, enters
+Spice Blow and preserves original2/1 garrisons. Browser errors empty; no root
+overflow. Private proof `/tmp/dune-discovery-choice-ui-proof.json`.
+Native throwaways and isolated host/tab/scaffold are removed.
+
+Final related12-file union104/104, types/lint and app build pass with existing
+module-registration, chunk-size and route-classification warnings. The exhaustive
+decision registries are migrated. Comprehensive assurance, other pending
+Discovery effects, complete modes and deployed acceptance remain open.
+
 ## 14 October 2026 — classic Homeworld final Bank income and ruled accounting
 
 The user selected whole-invoice low Guild/Emperor rounding, first eligible
