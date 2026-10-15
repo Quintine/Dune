@@ -1,5 +1,65 @@
 # Dune implementation status
 
+## 16 October 2026 — Semuta retains native BG role, conversion and counter costs
+
+Added `bgKaramaCostDiscard` for the actual Worthless disposal before native
+conversion, using one native emitter for direct and committed-cost paths.
+Claim/decline opens the same original `worthlessKarama` response; it never
+manufactures printed identity or transfers BG's native role. All four uses
+retain their original shipment recipient, canceled power, normal lot/winner
+and incoming reservation.
+
+Added distinct `karamaBgConversionCancelDiscard` for a later printed counter.
+Its saved controls retain the BG pending use; exact fresh counter recovery
+finishes that denial once, never the older cost or a new power. Existing
+passed history remains: restored native responses may finish automatically,
+not reopen for a newly acquired card that already passed the original window.
+
+Claimed-cost provenance now passes through an allowed converted price into
+the existing nonduplication refund boundary. One controlled acquisition/
+phase source uses actual BG conversion, Semuta, actual CHOAM cashout and
+Guild stop; the real rediscarded Worthless remains singly discarded instead
+of being returned to its former owner. Armies/wallets are not staged there.
+Ordinary post-cost conversion opportunity checks remain independent of
+allowed private hand/resource interruptions.
+
+Affected nineteen-file **238/238** passes, including eight new behavior
+cases. Twenty-six original-action runtime/policy paths cover four uses,
+claim/decline, native allowance/denial, typed Caladan and all four profiles
+for both fresh-cost families. Actual cache/normal auctions buy Semuta,
+printed Karama and Baliset in original five-faction setup; no played hand,
+army, wallet, phase or response is staged in those original programmes.
+
+The integration selection exposed three stale Nexus Kull battle fixtures.
+They now finish actual native pre-leader/borrowed Voice using the canonical
+driver, and promised-fuel preflight uses a real Atreides inspection instead
+of deleting preparation/injecting a response. Three focused cases and two
+separate controlled native-parent runtime probes pass. Kull's existing
+before-conversion/discard priority and production queue checks remain intact.
+
+Four actual styled390×844 original-action GameTable journeys pass:
+physical Baliset recovery then native allowance/bank3; first-cost decline
+then printed counter recovery with conversion still denied; converted
+native cancellation paying full4 for Guild's original two forces; original
+normal-auction Chaumurky delivered free once with BG4 spice unchanged.
+Actual original advisor and next-lot inspection choices finish. Viewport/
+scroll width390 and no browser/application errors.
+
+Only an owned memory-only loopback host started/stopped. No worker, D1,
+authenticated saved room, human server, deployed revision or gate was
+exercised or changed. Outside-Git source/API/table/scenes remain under
+`/tmp/dune-semuta-bg-*20261016*`, with the separate
+`/tmp/dune-bg-kull-parent-smoke-20261016.json`. Shrine sources, wider
+E3/combinations, final assurance and the full goal remain unfinished.
+[Native stages/source and scope](SEMUTA_SOURCE_UPDATE_20260907.md#native-bg-worthless-and-conversion-counter-costs--16-october-2026),
+[continuation](SEMUTA_DISCARD_CONTINUATIONS.md#native-bg-cost-and-counter-stages--16-october-2026).
+Final `npm run check:quick` and production build pass with existing
+module-register, large-chunk and Unknown-route warnings. Eight new cases
+pass again after deleting an unreachable fixture-only inspection branch;
+the final action-key assertion uses explicit types for type-aware lint.
+Twelve current local links and54 Semuta evidence paths resolve; all five
+facets stay Partial without final saved/deployed or complete-mode claims.
+
 ## 16 October 2026 — Semuta resumes printed native specials and private CHOAM cashout
 
 Separated validated native activation cost from the single native effect

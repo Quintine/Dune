@@ -3,6 +3,7 @@ import { botActions } from '../game/bots';
 import { takeKullCard } from './fixture-choam-kull';
 import { orderNexusSpice } from './fixture-nexus-cards';
 import type { FactionId } from '../game/catalog';
+import { nextStrongholdFactionsNativeStep } from './fixture-stronghold-factions';
 
 export function createNexusChoamKullFixture(options: {
   advanced?: boolean; bg?: boolean; seatIds?: string[]; nexusFace?: 'choam' | 'richese';
@@ -79,6 +80,22 @@ export function createNexusChoamKullFixture(options: {
     original: original.id, fuel: fuel.id, counter: counter?.id ?? null };
 }
 
+/** Follow the real pre-inspection queue; never clear native preparation by hand. */
+export function passNexusKullBorrowedVoice(state: Game): Game {
+  let game = state;
+  for (let n = 0; game.battle && n < 30 &&
+    ((game.battle.preLeader && !game.battle.preLeader.closed) ||
+      game.battle.preparation?.kind === 'nexusVoice'); n++) {
+    const next = nextStrongholdFactionsNativeStep(game);
+    if (!next) throw new Error('The original pre-Voice preparation needs a legal native action.');
+    game = applyAction(game, next.actor, next.action);
+  }
+  if ((game.battle?.preLeader && !game.battle.preLeader.closed) ||
+    game.battle?.preparation?.kind === 'nexusVoice')
+    throw new Error('The original pre-leader and borrowed Voice queues must actually finish.');
+  return game;
+}
+
 /** A native declaration is produced by actions before its Karama/Kull parent
  * is suspended. The final faction roster is fixed before genuine setup. */
 export function createNexusKullNativeParent(kind: 'inspection' | 'sardaukar' | 'advisors' | 'guild',
@@ -116,8 +133,7 @@ export function createNexusKullNativeParent(kind: 'inspection' | 'sardaukar' | '
     game.active = choice.chooser;
     game = applyAction(game, choice.chooser, { type: 'chooseBattle', territory: choice.territory,
       target: choice.attacker === choice.chooser ? choice.defender : choice.attacker });
-    for (const id of [f.actor, f.other!]) if (game.battle!.preLeader && !game.battle!.preLeader.closed)
-      game = applyAction(game, id, { type: 'battlePreparationReady', event: game.battle!.event });
+    game = passNexusKullBorrowedVoice(game);
     if (kind === 'inspection') {
       if (game.response) game = allowNativeParent(game);
       game = applyAction(game, f.actor, { type: 'prescience', field: 'dial' });

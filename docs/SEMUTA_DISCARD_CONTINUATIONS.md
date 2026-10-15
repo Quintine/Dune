@@ -2,6 +2,33 @@
 
 Read-only engine audit, 2026-09-07. Read the complete `docs/SEMUTA_DRUG_ENGINE_AUDIT.md`, then inspected every current `discard(...)` call, direct Treachery-discard mutation and `draw(g)` caller in `game/engine.ts`, plus the Truthtrance discard callback and pure Box/Distrans results. Names below are integration anchors; approximate current lines are navigation aids only. This report adopts no additional source ruling and changes no project file.
 
+## Native BG cost and counter stages — 16 October 2026
+
+The actual physical Worthless creates `bgKaramaCostDiscard` before the
+ordinary native conversion response. Its original `KaramaUse`, control
+resume and opportunity stay bound. After claim/decline, the single native
+conversion emitter opens the same counter: physical recovery is not
+conversion allowance and does not change the card's printed role.
+
+Printed cancellation of that conversion creates the separate
+`karamaBgConversionCancelDiscard`, retaining the BG pending use in its
+saved controls. Its exact fresh Karama, never the older Worthless, may be
+recovered. Finish native denial once and restore any older power without
+resetting already-passed seats or forcing an otherwise automatic wait.
+
+Claimed-cost provenance passes through an allowed converted price to the
+existing grant refund boundary. Genuine subsequent CHOAM disposal cannot
+make that old cost refundable again. Ordinary opportunity stamps still
+permit previously supported hand/resource/private interruptions after the
+fresh event; no stale Game is restored.
+
+[Current source and scoped proof](SEMUTA_SOURCE_UPDATE_20260907.md#native-bg-worthless-and-conversion-counter-costs--16-october-2026)
+records238 affected cases,26 original paths, one explicitly controlled
+actual-rediscard probe and four original mobile journeys. The separate
+Nexus Kull fixture repair follows existing pre-leader/Voice controls;
+Kull's pre-discard priority and all public-start gates remain unchanged.
+
+
 ## Printed special activation and cashout stages — 16 October 2026
 
 `specialKaramaDiscard` retains the validated original native intent, cost,

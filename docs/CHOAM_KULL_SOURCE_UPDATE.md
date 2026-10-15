@@ -2,6 +2,19 @@
 
 Checked 2026-09-07 for classic GF9 Dune and CHOAM & Richese; preview policy and source-aware Nexus cost boundary updated 30 September 2026. This supplements [CHOAM_KULL_DESIGN.md](CHOAM_KULL_DESIGN.md), [native CHOAM Cunning](NEXUS_CHOAM_RULES.md) and the Kull section of [CHOAM_REMAINING_RULES.md](CHOAM_REMAINING_RULES.md). The source audit itself did not change runtime behavior; later opt-in development implementations follow the explicit selections below. This update does not claim a newly fetched publisher ruling.
 
+## Native fixture integration maintenance — 16 October 2026
+
+The BG Semuta-cost integration selection exposed three stale Nexus Kull
+battle fixtures. Native inspection/Sardaukar and promised-fuel preflight now
+finish the actual pre-leader/borrowed Voice queue using the existing native
+driver. The promise case uses real Atreides prescience rather than clearing
+preparation and injecting a response. Three focused cases, the repaired
+238-case related selection and two controlled native-parent runtime probes
+pass; this is fixture maintenance, not new Kull source/timing authority.
+[Current scoped evidence](SEMUTA_SOURCE_UPDATE_20260907.md#native-bg-worthless-and-conversion-counter-costs--16-october-2026).
+The selected pre-conversion/pre-discard interception below is unchanged.
+
+
 ## User-selected preview timing — 30 September 2026
 
 The user selected **Different Karama**: reserve the interrupted

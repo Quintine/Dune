@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyAction, createGame, initializeNexusKullGameForAudit, joinGame, newPlayer, normalizeAutomaticGame, viewGame, type Action, type Game } from '../game/engine';
 import { createNexusChoamKullFixture, createNexusKullNativeParent, createNexusKullNestedParent,
-  createNexusKullAuctionParent } from './fixture-nexus-choam-kull';
+  createNexusKullAuctionParent, passNexusKullBorrowedVoice } from './fixture-nexus-choam-kull';
 import { choamKullGame, kullShipmentAttempt, takeKullCard } from './fixture-choam-kull';
 import { spiceDeck } from '../game/cards';
 import { createNexusCardPhase } from '../game/nexus-card-phase';
@@ -243,22 +243,15 @@ void test('printed Kull discovers a suspended Nexus parent through direct and BG
 });
 
 void test('Nexus fuel needed by a live own Truthtrance battle promise cannot be accepted', () => {
-  const f = createNexusChoamKullFixture({ fuel: 'weapon' });
+  const f = createNexusChoamKullFixture({ fuel: 'weapon', actorFaction: 'atreides' });
   let game = applyAction(f.game, f.choam, { type: 'kullDecision', event: f.event, decline: true });
   Object.assign(game, { phase: 6, active: f.choam, karamaShipping: null });
   for (const p of game.players) { p.forces = {}; p.reserves = 20; }
   for (const p of game.players.slice(0, 2)) { p.forces = { 'arrakeen:10': 3 }; p.reserves = 17; }
   game = applyAction(game, f.choam, { type: 'chooseBattle', territory: 'arrakeen', target: f.actor });
-  for (let step = 0; game.response && step < 20; step++) {
-    const p = game.players.find(p => {
-      const controls = viewGame(game, p.id).responseControls;
-      return controls && !controls.hasPassed && controls.cancelCards.length > 0;
-    });
-    game = p ? applyAction(game, p.id, { type: 'passResponse' }) : normalizeAutomaticGame(game);
-  }
-  game.battle!.preparation = undefined;
+  game = passNexusKullBorrowedVoice(game);
   game.battle!.truthPromises = [{ player: f.choam, asker: f.other!, claim: { kind: 'weapon', name: 'Hunter Seeker' }, answer: true }];
-  game.response = { kind: 'eliteStrength', owner: f.actor, passed: [] };
+  game = applyAction(game, f.actor, { type: 'prescience', field: 'dial' });
   const offered = applyAction(game, f.other!, { type: 'card', mode: 'cancel', card: f.counter! });
   assert.equal(viewGame(offered, f.choam).kullReaction!.plays.some(play => play.card.id === f.fuel), false);
   reject(offered, f.choam, { type: 'kullDecision', event: offered.pendingKull!.event, source: 'nexus', card: f.fuel });

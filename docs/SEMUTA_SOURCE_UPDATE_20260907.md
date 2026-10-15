@@ -2,6 +2,71 @@
 
 7 September 2026. Read `docs/SEMUTA_DRUG_ENGINE_AUDIT.md` in full, inspected the physical card again, checked current capacity/recovery code, and freshly searched publisher sources. No project runtime edits.
 
+## Native BG Worthless and conversion-counter costs — 16 October 2026
+
+`bgKaramaCostDiscard` offers the actual played **Worthless** before the native
+BG conversion response opens. Claim/pass restores the same original use and
+opens its ordinary `worthlessKarama` counter; recovery neither creates a
+printed Karama nor grants BG's role to the new holder. Price, native
+cancellation, normal-auction purchase and winning payment retain their
+original recipient, response or lot and incoming reservation.
+
+A later printed Karama canceling that conversion is a **different fresh
+cost**, `karamaBgConversionCancelDiscard`. Its saved controls retain the
+original BG pending use. Claim/pass applies that same denial once; the
+earlier Worthless is not another candidate. Denying a BG conversion that
+targeted an older power restores that power and its passed history, not a new response. Native
+normalization may finish that restored power automatically; its real outcome
+and payment, not a forced visible pause, are authoritative.
+
+An allowed converted price carries its already-selected claimed-cost fact
+from `pendingKarama` into the original price grant. The existing no-duplicate
+refund policy therefore survives a later real CHOAM rediscard and Guild
+stop; unclaimed original refunds remain unchanged. Once the cost event
+retires, the ordinary BG opportunity stamp still excludes legal hand,
+balance, pass and seat-control changes as before. This does not freeze the
+whole native conversion or bypass its counter.
+
+Affected nineteen-file **238/238** passes, including eight new behavior cases.
+Twenty-six original-action runtime/policy paths cover all four uses, both
+cost choices, native allow/cancel, typed Caladan sources and all four profiles
+for each new fresh-cost family. Three real paid auctions supply Semuta,
+printed Karama and BG's Baliset. One **controlled acquisition/phase** probe
+then uses actual BG conversion, actual Semuta recovery, real CHOAM cashout
+and native Guild stop to prove rediscard cannot restore refund eligibility.
+No wallet/force staging or synthetic discard is used in that probe.
+
+Four actual styled390×844 original-action GameTable journeys pass: recovered
+Baliset remains Worthless while an allowed price pays bank3; cost decline
+then printed-counter recovery still denies conversion; allowed converted
+native cancellation pays Guild's original full4 for two real forces; and
+normal-auction allowance awards original Chaumurky without charging BG.
+Original advisor/next-lot inspection controls finish through actual actions.
+Viewport/scroll width390 and no browser/application errors.
+
+The wider batch found three stale Nexus Kull fixtures that skipped mandatory
+native pre-leader/borrowed Voice. They now follow the canonical legal queue;
+the promised-fuel case uses actual Atreides prescience instead of clearing
+preparation/staging a response. Three focused cases and two separate
+controlled native-parent runtime probes pass. **Kull remains before BG
+conversion/discard** under the prior user policy; no production queue check
+or timing rule was weakened.
+
+Only owned memory-only loopback hosts ran. No worker, D1, authenticated saved
+room, human server, deployment or mode gate changed. Proof/scenes remain
+outside Git under `/tmp/dune-semuta-bg-*20261016*`, with the separate native
+fixture proof `/tmp/dune-bg-kull-parent-smoke-20261016.json`.
+Shrine-source costs, wider E3/combinations and final assurance remain separate.
+[Conversion stages](SEMUTA_DISCARD_CONTINUATIONS.md#native-bg-cost-and-counter-stages--16-october-2026),
+[native opportunity contract](KARAMA_PREFLIGHT_AND_CONVERSIONS.md).
+Final types/lint and production build pass with existing module-register,
+large-chunk and Unknown-route warnings. The eight new behavior cases pass
+again after removing an unreachable fixture-only inspection branch; final
+type-aware lint also requires explicit typing of its action-key assertion.
+Twelve current local links and54 Semuta evidence paths resolve; all five
+facets remain Partial, without recovery/deployed or complete-mode assurance.
+
+
 ## Printed native special costs and CHOAM cashout — 16 October 2026
 
 `specialKaramaDiscard` now offers a printed special-Karama activation cost

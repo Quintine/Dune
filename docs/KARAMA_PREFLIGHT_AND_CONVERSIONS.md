@@ -2,6 +2,23 @@
 
 7 September 2026. This checkpoint fixes existing Bene Gesserit conversion interruptions and extracts prerequisites needed before a future Karama discard pause. It does **not** implement the complete `karamaCostDiscard` producer, all canceled response bindings, or new rules interpretations. Public Advanced and expansion starts remain gated.
 
+## Native Semuta conversion costs — 16 October 2026
+
+The [current native BG cost continuation](SEMUTA_SOURCE_UPDATE_20260907.md#native-bg-worthless-and-conversion-counter-costs--16-october-2026)
+now offers physical Worthless disposal before its native conversion counter,
+and separately offers a printed counter's cost before the original denial.
+The four-use bindings and incoming-card reservations below remain native.
+Claiming a cost cannot bypass conversion, redirect a lot or manufacture a
+printed Karama role; previously supported later gifts/private interruptions
+retain their ordinary opportunity checks.
+
+An allowed converted shipment price retains claimed-cost provenance for the
+existing nonduplication refund policy, including after a real subsequent
+CHOAM rediscard. Kull still intercepts before conversion/discard. Historical
+absence claims below are superseded only for these bounded connected sources,
+not complete modes, Shrine sources or final assurance.
+
+
 ## Actual play defects fixed
 
 A BG direct purchase originally left the previous normal-auction bidder in place until conversion succeeded. After spending its Worthless card, BG could accept two Richese gifts to fill its hand; conversion then awarded the original auction card as a fifth card. Incoming transfer validation now reserves the pending purchase's slot even before BG becomes bidder. One gift that leaves room remains legal. The pre-fix reproducer is `/tmp/dune-bg-karama-gift-probe.ts` with its corresponding log.

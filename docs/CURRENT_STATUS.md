@@ -29,6 +29,28 @@ optional skill bands, combinations and public expansion starts remain open.
 Rules implementation continues; comprehensive assurance and administration
 remain deferred until all rules are implemented.
 
+**Semuta preserves native BG conversion and the separate counter cost — 16 October.**
+Physical Worthless recovery now precedes the same native conversion counter,
+not its effect. The card stays Worthless in its new faction. A later printed
+counter is its own fresh cost; recovery still applies the same denial and
+restores an older power without resetting passes. Allowed converted prices
+retain claimed-cost provenance through real subsequent CHOAM rediscard/stop.
+
+Affected nineteen-file238/238 passes, including eight new cases.
+Twenty-six original-action runtime/policy paths and one controlled
+acquisition/phase, actual-rediscard refund probe pass. Four actual390px
+original journeys cover bank3, conversion denial, original full4 repricing
+and the unchanged free normal-auction lot. No overflow/browser/application
+errors; actual advisors/next-lot controls finish. Three stale Nexus Kull
+fixtures now follow mandatory native preparation/borrowed Voice; three
+focused cases and two controlled parent runtime probes pass without
+weakening production checks or changing Kull priority.
+No worker/D1/real room, human server, deployment or gate changed.
+[Canonical stages and exact scope](SEMUTA_SOURCE_UPDATE_20260907.md#native-bg-worthless-and-conversion-counter-costs--16-october-2026).
+Final types/lint and production build pass with existing warnings. The
+eight new cases pass again after a fixture-only repair; current source
+links and all five still-partial Semuta evidence facets resolve.
+
 **Semuta preserves native special effects and separate CHOAM cashout — 16 October.**
 Printed special costs now pause at their native disposal point, then resume
 one original effect with the committed card even after recovery. Emperor's
